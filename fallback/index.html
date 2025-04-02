@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Stories Podcast</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="background"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="images/logo.png" alt="F1 Stories Logo" height="50">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#" id="home-link">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#episodes">Episodes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#guests">Guests</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#blog">Blog</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<section id="hero" class="d-flex align-items-center justify-content-center">
+    <div class="hero-overlay"></div>
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <div class="hero-content">
+                    <h1 class="mb-4">Welcome to F1 Stories</h1>
+                    <p class="lead mb-4">Your Pit Stop for All Things Formula 1</p>
+                    <a href="#subscribe" class="cta-button btn-lg">Subscribe</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="listen-now">
+                    <iframe src="https://open.spotify.com/embed/show/0qC80ahDY824BME9FtxryS" width="100%" height="232" frameBorder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="episodes" class="fade-in py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Latest Episodes</h2>
+        <div class="row episode-grid g-4">
+            <!-- Episode cards will be dynamically loaded from YouTube API -->
+            <div class="col-12 text-center">
+                <div class="spinner-border text-light" role="status">
+                    <span class="visually-hidden">Loading episodes...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="about" class="fade-in py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">About Us</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="persona h-100">
+                    <img src="images/LN.webp" alt="Thanasis Batalas" class="avatar">
+                    <h3>Thanasis Batalas <a href="https://www.instagram.com/thanasismpatalas/" target="_blank"><i class="fab fa-instagram"></i></a></h3>
+                    <p>🏎️ F1 Enthusiast & Singer-Songwriter 🎤<br>
+                        Biggest Schumacher fan ❤️<br>
+                        Loves everything about F1 🏁<br>
+                        Thanasis brings his passion for music and F1 to the podcast, offering unique insights and a melodic touch to discussions.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="persona h-100">
+                    <img src="images/SV.webp" alt="Giannis Poulikidis" class="avatar">
+                    <h3>Giannis Poulikidis <a href="https://www.instagram.com/john_pouliks/" target="_blank"><i class="fab fa-instagram"></i></a></h3>
+                    <p>🏎️ F1 Enthusiast & Betting Expert 📊<br>
+                        Lewis Hamilton die-hard fan 💪<br>
+                        Writes F1 betting articles 📝<br>
+                        Giannis has been fascinated by F1 since he was a boy, and his expertise in betting strategies adds a thrilling dimension to the show.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="persona h-100">
+                    <img src="images/FA.webp" alt="Giorgos Balatzis" class="avatar">
+                    <h3>Giorgos Balatzis <a href="https://www.instagram.com/borgos_gialatzis/" target="_blank"><i class="fab fa-instagram"></i></a></h3>
+                    <p>🏎️ F1 Technical Lover & Software Engineer 💻<br>
+                        Ferrari hater 😈<br>
+                        The funny, cynical, and technical guy of the group 🤖<br>
+                        Giorgos dives deep into the technical aspects of F1, providing analytical insights with a touch of humor.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="guests" class="fade-in py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Guests</h2>
+        <div class="row guest-grid g-4">
+            <!-- Guest cards would go here -->
+        </div>
+    </div>
+</section>
+
+<section id="blog" class="fade-in py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Blog</h2>
+        <div class="row blog-posts g-4">
+            <!-- Blog post cards would go here -->
+        </div>
+    </div>
+</section>
+
+<section id="contact" class="fade-in py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Contact Us</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="contact-container">
+                    <form action="https://formsubmit.co/f23f8db8ea80cbf0d76cf6556a5e1b25" method="POST" class="contact-form">
+                        <div class="form-group mb-3">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name" class="form-control" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="message">Message:</label>
+                            <textarea id="message" name="message" class="form-control" required></textarea>
+                        </div>
+                        <!-- FormSubmit.co configuration -->
+                        <input type="hidden" name="_subject" value="New message from F1 Stories website">
+                        <input type="hidden" name="_captcha" value="true">
+                        <input type="hidden" name="_template" value="table">
+                        <input type="hidden" name="_autoresponse" value="Thank you for contacting F1 Stories! We've received your message and will get back to you soon.">
+                        <button type="submit" class="cta-button">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+                <div class="social-media">
+                    <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@myf1stories" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+    <i class="fas fa-chevron-up"></i>
+</button>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Episode Videos JavaScript -->
+<script src="episodes.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

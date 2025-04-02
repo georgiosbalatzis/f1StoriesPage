@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Stories Podcasts</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/pages/styles.css">
+    <link rel="stylesheet" href="/pages/spotify/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="background"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="../index.html">
+                <img src="/pages/images/logo.fallback/logo3podcast.png" alt="F1 Stories Logo" height="50">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/pages/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#">Podcasts</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/pages/episodes/" aria-current="page">Episodes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pages/#blog">Blog</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pages/#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pages/#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- Podcast Header -->
+<section class="podcast-header">
+    <div class="container">
+        <div class="podcast-hero text-center">
+            <img src="/pages/images/logo.fallback/logo3podcast.png" alt="F1 Stories Podcast Logo" class="podcast-logo">
+            <h1>F1 Stories Podcast</h1>
+            <p class="lead">Your Pit Stop for All Things Formula 1</p>
+
+            <div class="platform-links">
+                <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" class="platform-link spotify">
+                    <i class="fab fa-spotify"></i> Spotify
+                </a>
+                <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" class="platform-link apple">
+                    <i class="fab fa-apple"></i> Apple Podcasts
+                </a>
+                <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" class="platform-link google">
+                    <i class="fab fa-google"></i> Google Podcasts
+                </a>
+                <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" class="platform-link amazon">
+                    <i class="fab fa-amazon"></i> Amazon Music
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Player -->
+<div class="container position-relative">
+    <div class="main-player-container">
+        <iframe id="spotify-main-player" src="https://open.spotify.com/embed/show/0qC80ahDY824BME9FtxryS" width="100%" height="232" frameBorder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+    </div>
+</div>
+
+<!-- Episode List -->
+<section class="episode-list">
+    <div class="container">
+        <h2 class="text-center mb-4">All Episodes</h2>
+
+        <div class="filter-controls">
+            <button class="filter-button active" data-filter="all">All Episodes</button>
+            <button class="filter-button" data-filter="race-reviews">Race Reviews</button>
+            <button class="filter-button" data-filter="tech-talks">Tech Talks</button>
+            <button class="filter-button" data-filter="history">F1 History</button>
+        </div>
+
+        <div class="row episode-row">
+            <!-- Episode cards will be loaded from script.js -->
+            <div class="col-12 text-center loading-indicator">
+                <div class="spinner-border text-light" role="status">
+                    <span class="visually-hidden">Loading episodes...</span>
+                </div>
+                <p class="mt-2">Loading podcast episodes...</p>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Episode pagination" class="mt-5 pagination-container" style="display: none;">
+            <ul class="pagination justify-content-center">
+                <li class="page-item active"><a class="page-link" href="#" data-page="1">1</a></li>
+                <li class="page-item"><a class="page-link" href="#" data-page="2">2</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next" data-page="next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</section>
+
+<section class="subscription-cta py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="cta-container text-center">
+                    <h2>Never Miss an Episode</h2>
+                    <p class="lead">Subscribe to our podcast for the latest insights, interviews, and discussions about Formula 1.</p>
+                    <div class="subscription-buttons mt-4">
+                        <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" class="cta-button">
+                            <i class="fab fa-spotify me-2"></i> Subscribe on Spotify
+                        </a>
+                        <a href="#" class="cta-button">
+                            <i class="fas fa-rss me-2"></i> RSS Feed
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+                <div class="social-media">
+                    <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+    <i class="fas fa-chevron-up"></i>
+</button>
+
+<!-- Audio Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalLabel">Episode Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="preview-player-container">
+                    <div class="preview-loading">
+                        <div class="spinner-border text-light" role="status">
+                            <span class="visually-hidden">Loading preview...</span>
+                        </div>
+                    </div>
+                    <iframe id="preview-player" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary listen-full-episode">Listen to Full Episode</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Background Randomizer Script -->
+<script src="../background-randomizer.js"></script>
+<!-- Podcast Scripts -->
+<script src="script.js"></script>
+</body>
+</html>
