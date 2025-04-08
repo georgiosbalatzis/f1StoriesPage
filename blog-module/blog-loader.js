@@ -1,5 +1,14 @@
-// blog-module/blog-loader.js - Enhanced to handle dynamically loaded blog posts
+// blog-module/blog-loader.js - Enhanced to handle dynamically loaded blog posts with pagination
 document.addEventListener('DOMContentLoaded', function() {
+    // Pagination variables
+    const POSTS_PER_PAGE = 6; // Number of posts to display per page
+    let currentPage = 1;
+    let totalPages = 1;
+    let allPosts = []; // All posts from the API
+    let filteredPosts = []; // Posts after applying filters
+    let currentFilter = 'all'; // Current filter type
+    let currentFilterValue = null; // Current filter value (category or tag)
+
     // Helper function to determine if we're on the root page or in a subdirectory
     function getBasePath() {
         // If we're on the root page (index.html), use relative paths
@@ -66,11 +75,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     const month = dateMatch ? dateMatch[1].substring(0, 3).toUpperCase() : 'JAN';
                     const day = dateMatch ? dateMatch[2] : '1';
 
+                    // Fix image path to handle both relative and absolute paths
+                    const imagePath = processImagePath(basePath, post.image);
+                    const fallbackPath = basePath + 'blog-module/images/default-blog.jpg';
+
                     const postHtml = `
                         <div class="col-md-4">
                             <div class="blog-card">
                                 <div class="blog-img-container">
-                                    <img src="${basePath}${post.image.startsWith('/') ? post.image.substring(1) : post.image}" alt="${post.title}" class="blog-img" onerror="this.src='${basePath}blog-module/images/default-blog.jpg'">
+                                    <img src="${imagePath}" alt="${post.title}" class="blog-img" onerror="this.src='${fallbackPath}'">
                                     <div class="blog-date">
                                         <span class="day">${day}</span>
                                         <span class="month">${month}</span>
@@ -113,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Function to load blog posts on the blog index page
+    // Function to load blog posts on the blog index page with pagination
     function loadBlogIndexPosts() {
         // Detect if we're on the blog index page by checking URL patterns
         const path = window.location.pathname;
@@ -162,58 +175,23 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 // Sort posts by date (most recent first)
-                const sortedPosts = data.posts.sort((a, b) => {
+                allPosts = data.posts.sort((a, b) => {
                     return new Date(b.date) - new Date(a.date);
                 });
 
-                // Clear existing content
-                blogContainer.innerHTML = '';
+                // Set up filteredPosts and pagination initially
+                filteredPosts = [...allPosts];
+                setupPagination(filteredPosts);
 
-                // Create the HTML for each post
-                sortedPosts.forEach(post => {
-                    // Extract day and month from display date
-                    const dateMatch = post.displayDate.match(/([A-Za-z]+) (\d+)/);
-                    const month = dateMatch ? dateMatch[1].substring(0, 3).toUpperCase() : 'JAN';
-                    const day = dateMatch ? dateMatch[2] : '1';
+                // Display first page of posts
+                displayPosts(1);
 
-                    const postHtml = `
-                        <div class="col-md-4 blog-card-container" data-id="${post.id}">
-                            <div class="blog-card">
-                                <div class="blog-img-container">
-                                    <img src="${basePath}${post.image.startsWith('/') ? post.image.substring(1) : post.image}" alt="${post.title}" class="blog-img" onerror="this.src='${basePath}blog-module/images/default-blog.jpg'">
-                                    <div class="blog-date">
-                                        <span class="day">${day}</span>
-                                        <span class="month">${month}</span>
-                                    </div>
-                                </div>
-                                <div class="blog-content">
-                                    <h3 class="blog-title">${post.title}</h3>
-                                    <div class="blog-meta">
-                                        <span><i class="fas fa-user"></i> ${post.author}</span>
-                                        <span><i class="fas fa-calendar"></i> ${post.displayDate}</span>
-                                    </div>
-                                    <p class="blog-excerpt">${post.excerpt}</p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="post-info">
-                                            <span class="post-tag"><i class="fas fa-tag"></i> ${post.tag || 'General'}</span>
-                                            <span class="post-category ms-2"><i class="fas fa-folder"></i> ${post.category || 'Uncategorized'}</span>
-                                        </div>
-                                        <a href="${basePath}blog-module/blog-entries/${post.id}/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-
-                    blogContainer.innerHTML += postHtml;
-                });
-
-                // Add hover effects
-                setupHoverEffects();
+                // Setup categories and tags for filtering
+                setupCategories(allPosts);
 
                 // Setup featured post (always use the most recent post)
-                if (sortedPosts.length > 0) {
-                    setupFeaturedPost(sortedPosts[0]);
+                if (allPosts.length > 0) {
+                    setupFeaturedPost(allPosts[0]);
                 }
             })
             .catch(error => {
@@ -226,6 +204,339 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
             });
+    }
+
+    // Function to display posts for a specific page
+    function displayPosts(page) {
+        const blogContainer = document.querySelector('.blog-posts');
+        if (!blogContainer) return;
+
+        const basePath = getBasePath();
+
+        // Calculate which posts to show
+        const startIndex = (page - 1) * POSTS_PER_PAGE;
+        const endIndex = startIndex + POSTS_PER_PAGE;
+        const postsToShow = filteredPosts.slice(startIndex, endIndex);
+
+        // Clear existing content
+        blogContainer.innerHTML = '';
+
+        // If no posts to show
+        if (postsToShow.length === 0) {
+            blogContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        No posts found matching your criteria.
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        // Create the HTML for each post
+        postsToShow.forEach(post => {
+            // Extract day and month from display date
+            const dateMatch = post.displayDate.match(/([A-Za-z]+) (\d+)/);
+            const month = dateMatch ? dateMatch[1].substring(0, 3).toUpperCase() : 'JAN';
+            const day = dateMatch ? dateMatch[2] : '1';
+
+            // Fix image path to handle both relative and absolute paths
+            const imagePath = processImagePath(basePath, post.image);
+            const fallbackPath = basePath + 'blog-module/images/default-blog.jpg';
+
+            const postHtml = `
+                <div class="col-md-4 blog-card-container" data-id="${post.id}" data-tag="${post.tag || 'General'}" data-category="${post.category || 'Uncategorized'}">
+                    <div class="blog-card">
+                        <div class="blog-img-container">
+                            <img src="${imagePath}" alt="${post.title}" class="blog-img" onerror="this.src='${fallbackPath}'">
+                            <div class="blog-date">
+                                <span class="day">${day}</span>
+                                <span class="month">${month}</span>
+                            </div>
+                        </div>
+                        <div class="blog-content">
+                            <h3 class="blog-title">${post.title}</h3>
+                            <div class="blog-meta">
+                                <span><i class="fas fa-user"></i> ${post.author}</span>
+                                <span><i class="fas fa-calendar"></i> ${post.displayDate}</span>
+                            </div>
+                            <p class="blog-excerpt">${post.excerpt}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="post-info">
+                                    <span class="post-tag"><i class="fas fa-tag"></i> ${post.tag || 'General'}</span>
+                                    <span class="post-category ms-2"><i class="fas fa-folder"></i> ${post.category || 'Uncategorized'}</span>
+                                </div>
+                                <a href="${basePath}blog-module/blog-entries/${post.id}/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            blogContainer.innerHTML += postHtml;
+        });
+
+        // Hide featured post in grid if it's included in this page
+        const featuredPost = document.querySelector('.featured-post');
+        const featuredPostId = featuredPost ? featuredPost.getAttribute('data-id') : null;
+
+        if (featuredPostId) {
+            const postInGrid = document.querySelector(`.blog-card-container[data-id="${featuredPostId}"]`);
+            if (postInGrid) {
+                postInGrid.style.display = 'none';
+            }
+        }
+
+        // Add hover effects to all blog cards
+        setupHoverEffects();
+
+        // Update pagination UI
+        updatePaginationUI(page);
+
+        // Update pagination summary
+        const start = startIndex + 1;
+        const end = Math.min(startIndex + postsToShow.length, filteredPosts.length);
+        const total = filteredPosts.length;
+        document.getElementById('pagination-summary').textContent = `Showing ${start}-${end} of ${total} posts`;
+    }
+
+    // Function to set up pagination UI and events
+    function setupPagination(posts) {
+        totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+
+        // Get pagination container
+        const paginationList = document.querySelector('.pagination');
+        if (!paginationList) return;
+
+        // Generate page links
+        let paginationHTML = `
+            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" aria-label="Previous" id="pagination-prev">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        `;
+
+        // Determine which page numbers to show
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, startPage + 4);
+
+        // Adjust if we're near the end
+        if (endPage - startPage < 4 && startPage > 1) {
+            startPage = Math.max(1, endPage - 4);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            paginationHTML += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" data-page="${i}">${i}</a>
+                </li>
+            `;
+        }
+
+        paginationHTML += `
+            <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" aria-label="Next" id="pagination-next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        `;
+
+        paginationList.innerHTML = paginationHTML;
+
+        // Add event listeners to pagination links
+        document.querySelectorAll('.page-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Handle previous button
+                if (this.id === 'pagination-prev') {
+                    if (currentPage > 1) {
+                        changePage(currentPage - 1);
+                    }
+                    return;
+                }
+
+                // Handle next button
+                if (this.id === 'pagination-next') {
+                    if (currentPage < totalPages) {
+                        changePage(currentPage + 1);
+                    }
+                    return;
+                }
+
+                // Handle numbered page links
+                const pageNum = parseInt(this.getAttribute('data-page'));
+                if (!isNaN(pageNum)) {
+                    changePage(pageNum);
+                }
+            });
+        });
+
+        // Show/hide pagination based on number of pages
+        const paginationContainer = document.querySelector('.pagination-container');
+        if (paginationContainer) {
+            paginationContainer.style.display = totalPages > 1 ? 'block' : 'none';
+        }
+    }
+
+    // Function to update pagination UI based on current page
+    function updatePaginationUI(page) {
+        // Update current page
+        currentPage = page;
+
+        // Update active state for all page links
+        document.querySelectorAll('.page-link[data-page]').forEach(link => {
+            const pageNum = parseInt(link.getAttribute('data-page'));
+            link.parentElement.classList.toggle('active', pageNum === currentPage);
+        });
+
+        // Update previous button state
+        const prevButton = document.getElementById('pagination-prev');
+        if (prevButton) {
+            prevButton.parentElement.classList.toggle('disabled', currentPage === 1);
+        }
+
+        // Update next button state
+        const nextButton = document.getElementById('pagination-next');
+        if (nextButton) {
+            nextButton.parentElement.classList.toggle('disabled', currentPage === totalPages);
+        }
+    }
+
+    // Function to change the current page
+    function changePage(page) {
+        if (page < 1 || page > totalPages) return;
+
+        currentPage = page;
+        displayPosts(currentPage);
+
+        // Scroll to top of posts section
+        document.querySelector('.blog-posts').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Function to set up category filters
+    function setupCategories(posts) {
+        const categoriesContainer = document.querySelector('.filter-categories');
+        if (!categoriesContainer) return;
+
+        // Extract unique categories and tags
+        const allCategories = [...new Set(posts.map(post => post.category || 'Uncategorized'))];
+        const allTags = [...new Set(posts.map(post => post.tag || 'General'))];
+
+        // Count posts per category
+        const categoryCounts = {};
+        posts.forEach(post => {
+            const category = post.category || 'Uncategorized';
+            categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+        });
+
+        // Count posts per tag
+        const tagCounts = {};
+        posts.forEach(post => {
+            const tag = post.tag || 'General';
+            tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        });
+
+        // Create "All" button
+        let categoryButtonsHtml = `
+            <button class="filter-button active" data-filter="all">
+                All <span class="category-count">${posts.length}</span>
+            </button>
+        `;
+
+        // Create category buttons
+        allCategories.forEach(category => {
+            categoryButtonsHtml += `
+                <button class="filter-button" data-filter="category" data-category="${category}">
+                    ${category} <span class="category-count">${categoryCounts[category]}</span>
+                </button>
+            `;
+        });
+
+        // Create tag buttons
+        allTags.forEach(tag => {
+            categoryButtonsHtml += `
+                <button class="filter-button" data-filter="tag" data-tag="${tag}">
+                    # ${tag} <span class="category-count">${tagCounts[tag]}</span>
+                </button>
+            `;
+        });
+
+        categoriesContainer.innerHTML = categoryButtonsHtml;
+
+        // Add event listeners to filter buttons
+        document.querySelectorAll('.filter-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const filterType = this.getAttribute('data-filter');
+                const category = this.getAttribute('data-category');
+                const tag = this.getAttribute('data-tag');
+
+                // Remove active class from all buttons
+                document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+
+                // Add active class to clicked button
+                this.classList.add('active');
+
+                // Filter posts
+                filterPosts(filterType, category, tag);
+            });
+        });
+    }
+
+    // Function to filter posts by category or tag
+    function filterPosts(filterType, category, tag) {
+        // Reset search first
+        const searchInput = document.querySelector('.search-bar input');
+        if (searchInput && searchInput.value) {
+            searchInput.value = '';
+            const clearButton = document.querySelector('.search-clear-btn');
+            if (clearButton) clearButton.style.display = 'none';
+        }
+
+        // Remove search results message
+        const resultsMsg = document.querySelector('.search-results-message');
+        if (resultsMsg) resultsMsg.remove();
+
+        // Store current filter settings
+        currentFilter = filterType;
+        currentFilterValue = filterType === 'category' ? category : (filterType === 'tag' ? tag : null);
+
+        // Filter posts
+        if (filterType === 'all') {
+            filteredPosts = [...allPosts];
+        } else if (filterType === 'category') {
+            filteredPosts = allPosts.filter(post => (post.category || 'Uncategorized') === category);
+        } else if (filterType === 'tag') {
+            filteredPosts = allPosts.filter(post => (post.tag || 'General') === tag);
+        }
+
+        // Update pagination
+        setupPagination(filteredPosts);
+
+        // Display first page of filtered posts
+        displayPosts(1);
+    }
+
+    // Helper function to process image paths correctly
+    function processImagePath(basePath, imagePath) {
+        // If imagePath is empty or undefined, return the default image
+        if (!imagePath) {
+            return basePath + 'blog-module/images/default-blog.jpg';
+        }
+
+        // If it's already a full URL, return as is
+        if (imagePath.startsWith('http')) {
+            return imagePath;
+        }
+
+        // If it's an absolute path, make sure to handle it properly
+        if (imagePath.startsWith('/')) {
+            return basePath + imagePath.substring(1);
+        }
+
+        // If it's a relative path, just prepend the base path
+        return basePath + imagePath;
     }
 
     // Function to set up search functionality
@@ -267,45 +578,54 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const blogCards = document.querySelectorAll('.blog-card-container');
-            let visibleCount = 0;
+            // Filter posts by search term
+            filteredPosts = allPosts.filter(post => {
+                const title = post.title.toLowerCase();
+                const excerpt = post.excerpt.toLowerCase();
+                const author = post.author.toLowerCase();
+                const tag = (post.tag || 'General').toLowerCase();
+                const category = (post.category || 'Uncategorized').toLowerCase();
 
-            blogCards.forEach(card => {
-                const title = card.querySelector('.blog-title').textContent.toLowerCase();
-                const excerpt = card.querySelector('.blog-excerpt').textContent.toLowerCase();
-                const author = card.querySelector('.blog-meta').textContent.toLowerCase();
-                const tagCategory = card.querySelector('.post-info') ?
-                    card.querySelector('.post-info').textContent.toLowerCase() : '';
-
-                if (title.includes(searchTerm) ||
+                return title.includes(searchTerm) ||
                     excerpt.includes(searchTerm) ||
                     author.includes(searchTerm) ||
-                    tagCategory.includes(searchTerm)) {
-                    card.style.display = '';
-                    visibleCount++;
-
-                    // Highlight matching text
-                    highlightMatchingText(card, searchTerm);
-
-                    // Add appearance animation
-                    card.classList.add('search-reveal');
-                    setTimeout(() => {
-                        card.classList.remove('search-reveal');
-                    }, 500);
-                } else {
-                    card.style.display = 'none';
-                }
+                    tag.includes(searchTerm) ||
+                    category.includes(searchTerm);
             });
 
+            // Reset category filters - remove 'active' class from all buttons
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Update pagination for search results
+            setupPagination(filteredPosts);
+
+            // Display first page of search results
+            displayPosts(1);
+
             // Show search results message
-            updateSearchResultsMessage(searchTerm, visibleCount);
+            updateSearchResultsMessage(searchTerm, filteredPosts.length);
+
+            // Highlight matching text in visible posts
+            setTimeout(() => {
+                document.querySelectorAll('.blog-card-container').forEach(card => {
+                    if (card.style.display !== 'none') {
+                        highlightMatchingText(card, searchTerm);
+                    }
+                });
+            }, 100);
         };
 
         function resetSearch() {
-            // Reset to show all posts
-            document.querySelectorAll('.blog-card-container').forEach(card => {
-                card.style.display = '';
-            });
+            // Reset filtered posts to all posts
+            filteredPosts = [...allPosts];
+
+            // Update pagination
+            setupPagination(filteredPosts);
+
+            // Display first page
+            displayPosts(1);
 
             // Remove search results message
             const resultsMsg = document.querySelector('.search-results-message');
@@ -314,6 +634,14 @@ document.addEventListener('DOMContentLoaded', function() {
             // Remove highlights
             document.querySelectorAll('.highlight').forEach(el => {
                 el.outerHTML = el.innerHTML;
+            });
+
+            // Reset category filters - set "All" as active
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-filter') === 'all') {
+                    btn.classList.add('active');
+                }
             });
         }
 
@@ -431,12 +759,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const day = dateMatch ? dateMatch[2] : '1';
 
         // Use backgroundImage if available, otherwise use regular image
-        const bgImage = post.backgroundImage || post.image;
-        const processedImage = basePath + (bgImage.startsWith('/') ? bgImage.substring(1) : bgImage);
+        let bgImage = post.backgroundImage || post.image;
+        const processedImage = processImagePath(basePath, bgImage);
+        const fallbackPath = basePath + 'blog-module/images/default-blog-bg.jpg';
+
+        // Store the post ID as a data attribute
+        featuredPost.setAttribute('data-id', post.id);
 
         // Create a rich featured post with more details
         featuredPost.innerHTML = `
-            <img src="${processedImage}" alt="${post.title}" class="featured-post-img" onerror="this.src='${basePath}blog-module/images/default-blog-bg.jpg'">
+            <img src="${processedImage}" alt="${post.title}" class="featured-post-img" onerror="this.src='${fallbackPath}'">
             <div class="featured-post-overlay">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <span class="featured-tag">Featured</span>

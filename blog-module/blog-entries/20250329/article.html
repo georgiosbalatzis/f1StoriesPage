@@ -3,7 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rookies 2025 | F1 Stories Blog</title>
+  <title>Rookies 2025: Η νέα γενιά οδηγών που αναδιαμορφώνει τη Formula 1 | F1 Stories Blog</title>
+
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="Rookies 2025: Η νέα γενιά οδηγών που αναδιαμορφώνει τη Formula 1 | F1 Stories Blog">
+  <meta property="og:description" content="ARTICLE_DESCRIPTION">
+  <meta property="og:image" content="https://f1stories.codeberg.page/blog-module/blog-entries/ARTICLE_FOLDER/2.webp">
+  <meta property="og:url" content="https://f1stories.codeberg.page/blog-module/blog-entries/ARTICLE_FOLDER/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Twitter Card Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Rookies 2025: Η νέα γενιά οδηγών που αναδιαμορφώνει τη Formula 1 | F1 Stories Blog">
+  <meta name="twitter:description" content="ARTICLE_DESCRIPTION">
+  <meta name="twitter:image" content="https://f1stories.codeberg.page/blog-module/blog-entries/ARTICLE_FOLDER/2.webp">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
@@ -15,10 +57,10 @@
 </head>
 <body>
 <div class="background"></div>
-<div class="streak"></div>
-<div class="streak"></div>
-<div class="streak"></div>
-<div class="streak"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
 
 <header>
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
@@ -31,12 +73,12 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#episodes">Episodes</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#about">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#guests">Guests</a></li>
-          <li class="nav-item"><a class="nav-link active" href="/blog-module/blog/index.html">Blog</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#contact">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/pages/episodes/" aria-current="page">Episodes</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#guests">Guests</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#blog">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#contact">Contact</a></li>
         </ul>
       </div>
     </div>
@@ -55,9 +97,9 @@
     <div class="article-container">
       <div class="article-header">
         <!-- Images are local to the article folder -->
-        <img src="2.avif" alt="Rookies 2025" class="article-header-img" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <img src="2.webp" alt="Rookies 2025: Η νέα γενιά οδηγών που αναδιαμορφώνει τη Formula 1" class="article-header-img" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
         <div class="article-header-overlay">
-          <h1 class="article-title">Rookies 2025</h1>
+          <h1 class="article-title">Rookies 2025: Η νέα γενιά οδηγών που αναδιαμορφώνει τη Formula 1</h1>
           <div class="article-meta">
             <span><i class="fas fa-user"></i> F1 Stories Team</span>
             <span><i class="fas fa-calendar"></i> March 29, 2025</span>
@@ -68,49 +110,27 @@
       </div>
       <div class="article-content">
         <!-- Article content goes here -->
-        <p>Η σεζόν της Formula 1 για το 2025 χαρακτηρίζεται από την είσοδο πολλών νέων ταλέντων, με πέντε πρωτοεμφανιζόμενους οδηγούς να καταλαμβάνουν το ένα τέταρτο των διαθέσιμων θέσεων στο grid. Αυτοί οι νεαροί οδηγοί, με μέσο όρο ηλικίας τα 19 έτη, περιλαμβάνουν τους Andrea Kimi Antonelli, Oliver Bearman, Isack Hadjar, Gabriel Bortoleto και Jack Doohan. Η είσοδός τους στο άθλημα έχει προκαλέσει μεγάλο ενδιαφέρον, καθώς φέρνουν νέα δυναμική και προοπτικές για το μέλλον της Formula 1.</p>
-
-<p>**Andrea Kimi Antonelli**</p>
-
-<p>Ο Ιταλός Andrea Kimi Antonelli έκανε το ντεμπούτο του με την ομάδα της Mercedes, αντικαθιστώντας τον επτάκις παγκόσμιο πρωταθλητή Lewis Hamilton. Σε ηλικία 18 ετών και 203 ημερών, έγινε ο τρίτος νεότερος οδηγός στην ιστορία της Formula 1. Στον πρώτο του αγώνα στο Grand Prix της Αυστραλίας, παρά την 16η θέση στις κατατακτήριες λόγω ζημιάς στο πάτωμα του μονοθεσίου, κατάφερε να τερματίσει στην 4η θέση υπό βροχερές συνθήκες, πραγματοποιώντας εντυπωσιακά προσπεράσματα και στρατηγικές επιλογές ελαστικών. Στο Grand Prix της Κίνας, τερμάτισε 6ος, παρά τις ζημιές από συντρίμμια στην πίστα. citeturn0search14</p>
-
-                <figure class="article-figure">
-                    <img src="4.webp" 
-                         alt="Image 3" 
-                         class="article-content-img"
-                         onerror="this.src='/images/blog-default.jpg'; this.onerror=null;">
-                    <figcaption>Image 3</figcaption>
-                </figure>
-
-<p>**Oliver Bearman**</p>
-
-<p>Ο Βρετανός Oliver Bearman, γνωστός για την εξαιρετική του απόδοση στη Formula 2, εντάχθηκε στην ομάδα της Haas. Στο Grand Prix της Αυστραλίας, τερμάτισε στην 10η θέση, κερδίζοντας τον πρώτο του βαθμό στο πρωτάθλημα. Στην Κίνα, αντιμετώπισε μηχανικά προβλήματα που τον ανάγκασαν να εγκαταλείψει τον αγώνα.</p>
-
-<p>**Isack Hadjar**</p>
-
-<p>Ο Γάλλος Isack Hadjar, μέλος της ακαδημίας νέων οδηγών της Red Bull, ανέλαβε θέση στην ομάδα της Visa Cash App Racing Bulls. Στην Αυστραλία, τερμάτισε 12ος, ενώ στην Κίνα βελτίωσε την απόδοσή του, κατακτώντας την 9η θέση και τους πρώτους του βαθμούς.</p>
-
-<p>**Gabriel Bortoleto**</p>
-
-<p>Ο Βραζιλιάνος Gabriel Bortoleto, πρωταθλητής της Formula 3, έκανε το άλμα στη Formula 1 με την ομάδα της Williams. Οι πρώτοι του αγώνες ήταν δύσκολοι, με τερματισμούς εκτός βαθμολογούμενης δεκάδας, αλλά έδειξε σημάδια προσαρμογής και βελτίωσης.</p>
-
-<p>**Jack Doohan**</p>
-
-<p>Ο Αυστραλός Jack Doohan, γιος του πεντάκις παγκόσμιου πρωταθλητή μοτοσικλετών Mick Doohan, εντάχθηκε στην Alpine. Στην Αυστραλία, τερμάτισε 11ος, ενώ στην Κίνα κατέκτησε την 8η θέση, κερδίζοντας τους πρώτους του βαθμούς.</p>
-
-<p>**Αλλαγές Οδηγών και Εξελίξεις**</p>
-
-<p>Μετά από δύο αγώνες, η Red Bull προχώρησε σε αλλαγές στο δυναμικό της. Ο Liam Lawson, που ξεκίνησε τη σεζόν δίπλα στον Max Verstappen, αντικαταστάθηκε από τον Yuki Tsunoda λόγω ανεπαρκών αποτελεσμάτων. Ο Tsunoda, με εμπειρία από την ομάδα της Racing Bulls, ανέλαβε τη θέση στο κύριο σχήμα της Red Bull, ενώ ο Lawson μεταφέρθηκε στη Racing Bulls για να συνεργαστεί με τον νεοεισερχόμενο Isack Hadjar. citeturn0news6</p>
-
-<p>**Τεχνικές Προκλήσεις και Προσαρμογές**</p>
-
-<p>Οι νέοι οδηγοί αντιμετωπίζουν την πρόκληση της προσαρμογής σε μονοθέσια με αυξημένες απαιτήσεις, ιδιαίτερα με τις πρόσφατες αλλαγές στους κανονισμούς. Η αφαίρεση του βαθμού για τον ταχύτερο γύρο και οι νέοι περιορισμοί στο σύστημα DRS απαιτούν από τους οδηγούς να αναπτύξουν νέες στρατηγικές και να προσαρμοστούν γρήγορα στις συνθήκες κάθε αγώνα. citeturn0news3</p>
-
-<p>Η παρουσία αυτών των νέων ταλέντων στη Formula 1 προσθέτει νέο ενδιαφέρον και δυναμική στο πρωτάθλημα του 2025, με τους φιλάθλους να παρακολουθούν με ανυπομονησία την εξέλιξή τους στην κορυφαία κατηγορία του μηχανοκίνητου αθλητισμού.</p>
+        <p></p><h1><a id="_p51ym54kaggp"></a><strong>Rookies 2025: Η νέα γενιά οδηγών που αναδιαμορφώνει τη Formula 1</strong></h1><p>Η σεζόν του 2025 στη Formula 1 καταγράφει μια από τις πιο αξιοσημείωτες ανανεώσεις στο grid των τελευταίων ετών, με πέντε rookies να καταλαμβάνουν το 25% των διαθέσιμων θέσεων. Σε μια εποχή όπου η τεχνολογία εξελίσσεται ραγδαία και οι απαιτήσεις από τους οδηγούς αυξάνονται διαρκώς, η είσοδος νεαρών ταλέντων όπως οι Andrea Kimi Antonelli, Oliver Bearman, Isack Hadjar, Gabriel Bortoleto και Jack Doohan, σηματοδοτεί μια νέα σελίδα στο σπορ.</p><p>Με μέσο όρο ηλικίας τα 19 έτη, οι rookies του 2025 δεν περιορίζονται απλώς στο να μαζεύουν εμπειρίες – φέρνουν αμέσως αποτελέσματα, συχνά σε συνθήκες που δοκιμάζουν και τους πιο έμπειρους του grid.</p><h2><a id="_xbusyv6abe5s"></a><strong>Andrea Kimi Antonelli – Το στοίχημα της Mercedes</strong></h2><p>Η είσοδος του Andrea Kimi Antonelli στη Formula 1 ήρθε με υψηλές προσδοκίες – και ανάλογο βάρος: αντικαθιστώντας τον επτάκις παγκόσμιο πρωταθλητή Lewis Hamilton, ο 18χρονος Ιταλός κλήθηκε να ηγηθεί του νέου κεφαλαίου της Mercedes. Στο Grand Prix της Αυστραλίας, παρά τη 16η θέση στις κατατακτήριες λόγω ζημιάς στο πάτωμα του μονοθεσίου W15, έκανε μια εντυπωσιακή αναρρίχηση στη βροχή, τερματίζοντας στην 4η θέση. Ήταν μια εμφάνιση που συνδύασε ωριμότητα στρατηγικής, δεξιοτεχνία στο βρεγμένο και εξαιρετικό tire management.</p><p>Στην Κίνα, αν και ταλαιπωρήθηκε από ζημιές λόγω συντριμμιών, κατέκτησε την 6η θέση, επιβεβαιώνοντας πως η Mercedes επένδυσε σε έναν οδηγό που όχι μόνο έχει ταλέντο, αλλά και την πνευματική ωριμότητα να ανταποκριθεί από την πρώτη στιγμή.</p><h2><a id="_53nuk8xs0dvj"></a><strong>Oliver Bearman – Το πολύτιμο διαμάντι της Haas</strong></h2><p>Ο Βρετανός Oliver Bearman, με σπουδαία πορεία στη Formula 2, ανέλαβε την πρόκληση να επαναφέρει τη Haas σε τροχιά ανταγωνιστικότητας. Ο μόλις 19 ετών οδηγός άφησε άμεσα το στίγμα του με έναν βαθμό στην Αυστραλία, τερματίζοντας 10ος. Αν και ο αγώνας στην Κίνα έληξε πρόωρα για εκείνον λόγω μηχανικών προβλημάτων, η απόδοσή του στα ελεύθερα δοκιμαστικά και στις κατατακτήριες αποκαλύπτει έναν οδηγό με δομική κατανόηση του μονοθεσίου και συνεχή πρόοδο.</p><h2><a id="_835x3vj8oees"></a><strong>Isack Hadjar – Ο επόμενος κρίκος στην αλυσίδα της Red Bull</strong></h2><p>Ο Isack Hadjar, μέλος της ακαδημίας της Red Bull, έκανε την είσοδό του μέσω της θυγατρικής ομάδας Visa Cash App Racing Bulls. Στην Αυστραλία ξεκίνησε διστακτικά (12ος), όμως στην Κίνα έδειξε σημάδια πραγματικής ωρίμανσης, κατακτώντας την 9η θέση και τους πρώτους του βαθμούς. Η ταχύτητά του σε μικτές συνθήκες και η ικανότητά του να κρατάει ρυθμό σε stint με υψηλή φθορά ελαστικών, τον καθιστούν έναν από τους πιο «έξυπνους» rookies στο grid.</p><h2><a id="_5ufqf4eadnja"></a><strong>Gabriel Bortoleto – Το μέλλον της Audi</strong></h2><p>Ο πρωταθλητής της Formula 3, Gabriel Bortoleto, ανέλαβε το τιμόνι της Williams, με στόχο να συμβάλει στο πλάνο αναγέννησης της ομάδας. Παρότι οι πρώτοι του αγώνες δεν συνοδεύτηκαν από βαθμούς, το οδηγικό του στυλ δείχνει μεγάλη σταθερότητα και προσαρμοστικότητα – δύο κρίσιμα στοιχεία για μια ομάδα σε φάση εξέλιξης. Οι τηλεμετρίες δείχνουν καθαρά φρεναρίσματα και έξυπνη διαχείριση ενέργειας, στοιχείο που η Williams στοχεύει να μετατρέψει σε συγκριτικό πλεονέκτημα.</p><h2><a id="_prpagg8zmmf2"></a><strong>Jack Doohan – Η ανάσταση της Alpine;</strong></h2><p>Γιος του θρύλου των δύο τροχών, Mick Doohan, ο Jack Doohan έχει ήδη εντυπωσιάσει με την Alpine. Ο 11ος τερματισμός στην Αυστραλία δεν λέει όλη την ιστορία: ο Αυστραλός έδειξε ταχύτητα και αποφασιστικότητα απέναντι σε πιο έμπειρους οδηγούς. Στην Κίνα, η 8η θέση και οι πρώτοι του βαθμοί ήρθαν μετά από ένα σταθερό, τακτικά άψογο αγώνα. Η Alpine φαίνεται πως βρήκε έναν οδηγό που μπορεί να συνδυάσει τεχνική κατανόηση και επιθετικότητα – ένα μείγμα που της είχε λείψει.</p><h2><a id="_tvai255pu7fv"></a><strong>Ανακατατάξεις στο grid – Η επιστροφή του Tsunoda</strong></h2><p>Μετά από μόλις δύο αγώνες, η Red Bull αποφάσισε να αντικαταστήσει τον Liam Lawson με τον Yuki Tsunoda. Ο Lawson, που ξεκίνησε τη χρονιά ως teammate του Verstappen, δεν κατάφερε να ανταποκριθεί στις προσδοκίες, με αποτέλεσμα να μετακινηθεί στη Racing Bulls. Ο Tsunoda, πιο ώριμος και πλέον δοκιμασμένος, πήρε τη θέση του στην κύρια ομάδα, με στόχο να προσφέρει σταθερότητα και εσωτερικό ανταγωνισμό.</p><h2><a id="_n5w2qn89rpbc"></a><strong>Τεχνικά εμπόδια και η πρόκληση της προσαρμογής</strong></h2><p>Η σεζόν 2025 δεν είναι μόνο θέμα ταλέντου – είναι και τεχνικά απαιτητική. Οι νέοι κανονισμοί, όπως η κατάργηση του βαθμού για τον ταχύτερο γύρο και οι περιορισμοί στη χρήση του DRS, αλλάζουν τη δυναμική των στρατηγικών. Οι rookies καλούνται να προσαρμοστούν σε μονοθέσια με αυξημένη κάθετη δύναμη, πιο δύσκολη διαχείριση θερμοκρασιών ελαστικών και μεγαλύτερη εξάρτηση από την απόδοση στις κατατακτήριες. Το γεγονός ότι αρκετοί από αυτούς σημείωσαν πρόοδο ακόμα και σε μεικτές συνθήκες, δείχνει ότι η νέα γενιά δεν ήρθε απλά για να «μάθει».</p><h2><a id="_p8i8ibdkv7om"></a><strong>Συμπέρασμα: Μια νέα εποχή ξεκινά</strong></h2><p>Η είσοδος των πέντε rookies φέρνει ανανέωση, φρεσκάδα και μια εντελώς νέα ενέργεια στη Formula 1. Καθένας από αυτούς διαθέτει διαφορετικά χαρακτηριστικά, αλλά όλοι μοιράζονται κάτι κοινό: την αποφασιστικότητα να ξεχωρίσουν από την πρώτη κιόλας χρονιά. Είτε πρόκειται για εντυπωσιακά αποτελέσματα είτε για προσεκτική πρόοδο, το μέλλον της F1 φαίνεται ήδη συναρπαστικό.</p>
       </div>
     </div>
 
-    <!-- No related articles section -->
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20250328/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="/blog-module/blog-entries/20250331/article.html" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+    </div>
   </div>
 </section>
 
@@ -137,9 +157,55 @@
   </div>
 </footer>
 
-<!-- Bootstrap JavaScript -->
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/script.js"></script>
+<!-- Background Randomizer Script -->
+<script src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script src="/scripts/script.js"></script>
 <script src="/blog-module/blog/article-script.js"></script>
-</body>
+
+<!-- Script to fix navbar functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the navbar toggle works
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+
+    if (navbarToggler && navbarCollapse) {
+      navbarToggler.addEventListener('click', function() {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+
+    // Fix any path issues in the navbar links
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+      // If it's a hash link without a base path, add one
+      if (link.getAttribute('href').startsWith('#')) {
+        link.setAttribute('href', '/index.html' + link.getAttribute('href'));
+      }
+    });
+  });
+</script>
+
+    <script>
+    // Debug helper for images
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script>
+    </body>
 </html>

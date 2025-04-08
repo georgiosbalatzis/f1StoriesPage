@@ -25,8 +25,7 @@ COUNT=0
 SKIPPED=0
 
 echo "Starting recursive conversion in: $FOLDER"
-echo "Note: Files with 'logo', 'default-blog', or containing '1' before the extension will be skipped."
-echo "Additional exceptions for the newest folder in 'blog-entries': '2.jpg', '2.png'."
+echo "Note: Files with 'logo' or 'default-blog' will be skipped."
 echo "------------------------"
 
 # Find the newest folder in blog-entries
@@ -37,7 +36,7 @@ find "$FOLDER" -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" \)
     BASENAME=$(basename "$FILE")
 
     # Skip files with global exceptions
-    if [[ "$BASENAME" == *"logo"* ]] || [[ "$BASENAME" == *"default-blog"* ]] || [[ "$BASENAME" =~ .*1\.(png|jpg|jpeg)$ ]]; then
+    if [[ "$BASENAME" == *"logo"* ]] || [[ "$BASENAME" == *"default-blog"* ]]; then
         echo "⏩ Skipping file: $FILE"
         ((SKIPPED++))
         continue
@@ -45,7 +44,7 @@ find "$FOLDER" -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" \)
 
     # Skip additional exceptions for the newest folder in blog-entries
     if [[ "$FILE" == "$NEWEST_BLOG_FOLDER"* ]]; then
-        if [[ "$BASENAME" == *"logo"* ]] || [[ "$BASENAME" == *"default-blog"* ]] || [[ "$BASENAME" =~ .*1\.(png|jpg|jpeg)$ ]] || [[ "$BASENAME" =~ .*2\.(png|jpg|jpeg)$ ]]; then
+        if [[ "$BASENAME" == *"logo"* ]] || [[ "$BASENAME" == *"default-blog"* ]]; then
             echo "⏩ Skipping file: $FILE"
             ((SKIPPED++))
             continue
@@ -110,4 +109,4 @@ done
 
 echo "✅ Conversion complete."
 echo "🔢 Successfully converted $COUNT files."
-echo "⏩ Skipped $SKIPPED files (logos, default-blog, containing '1' before the extension, '2.jpg' or '2.png' in the newest blog-entries folder, or already converted)."
+echo "⏩ Skipped $SKIPPED files (logos, default-blog, or already converted)."

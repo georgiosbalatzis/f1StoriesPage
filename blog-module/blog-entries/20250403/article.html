@@ -3,7 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Max vs TheWorld | F1 Stories Blog</title>
+  <title>Suzuka GP 2025 – Παρασκευή: Ανάλυση Ελεύθερων Δοκιμών & Τεχνικές Παρατηρήσεις | F1 Stories Blog</title>
+
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="Suzuka GP 2025 – Παρασκευή: Ανάλυση Ελεύθερων Δοκιμών & Τεχνικές Παρατηρήσεις | F1 Stories Blog">
+  <meta property="og:description" content="ARTICLE_DESCRIPTION">
+  <meta property="og:image" content="https://f1stories.codeberg.page/blog-module/blog-entries/ARTICLE_FOLDER/2.webp">
+  <meta property="og:url" content="https://f1stories.codeberg.page/blog-module/blog-entries/ARTICLE_FOLDER/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Twitter Card Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Suzuka GP 2025 – Παρασκευή: Ανάλυση Ελεύθερων Δοκιμών & Τεχνικές Παρατηρήσεις | F1 Stories Blog">
+  <meta name="twitter:description" content="ARTICLE_DESCRIPTION">
+  <meta name="twitter:image" content="https://f1stories.codeberg.page/blog-module/blog-entries/ARTICLE_FOLDER/2.webp">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
@@ -15,10 +57,10 @@
 </head>
 <body>
 <div class="background"></div>
-<div class="streak"></div>
-<div class="streak"></div>
-<div class="streak"></div>
-<div class="streak"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
 
 <header>
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
@@ -31,12 +73,12 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#episodes">Episodes</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#about">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#guests">Guests</a></li>
-          <li class="nav-item"><a class="nav-link active" href="/blog-module/blog/index.html">Blog</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#contact">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/pages/episodes/" aria-current="page">Episodes</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#guests">Guests</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#blog">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#contact">Contact</a></li>
         </ul>
       </div>
     </div>
@@ -55,124 +97,142 @@
     <div class="article-container">
       <div class="article-header">
         <!-- Images are local to the article folder -->
-        <img src="2.avif" alt="Max vs TheWorld" class="article-header-img" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <img src="2.webp" alt="Suzuka GP 2025 – Παρασκευή: Ανάλυση Ελεύθερων Δοκιμών & Τεχνικές Παρατηρήσεις" class="article-header-img" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
         <div class="article-header-overlay">
-          <h1 class="article-title">Max vs TheWorld</h1>
+          <h1 class="article-title">Suzuka GP 2025 – Παρασκευή: Ανάλυση Ελεύθερων Δοκιμών & Τεχνικές Παρατηρήσεις</h1>
           <div class="article-meta">
             <span><i class="fas fa-user"></i> F1 Stories Team</span>
             <span><i class="fas fa-calendar"></i> April 3, 2025</span>
-            <span><i class="fas fa-tag"></i> Drivers</span>
-            <span><i class="fas fa-folder"></i> Head2Head</span>
+            <span><i class="fas fa-tag"></i> GP</span>
+            <span><i class="fas fa-folder"></i> 2025</span>
           </div>
         </div>
       </div>
       <div class="article-content">
         <!-- Article content goes here -->
-        <p>Ο Μαξ Φερστάπεν είναι ένας από τους πιο επιτυχημένους οδηγούς στην ιστορία της Φόρμουλα 1, έχοντας κερδίσει τέσσερις τίτλους παγκόσμιου πρωταθλητή μέχρι το 2025. Είναι γνωστός για το επιθετικό του στυλ οδήγησης και την ικανότητά του να εκμεταλλεύεται τις ευκαιρίες στην πίστα. Γεννημένος στις 30 Σεπτεμβρίου 1997 στο Χάσελτ του Βελγίου, ο Φερστάπεν έχει ολλανδική υπηκοότητα και είναι γιος του πρώην οδηγού της Φόρμουλα 1, Γιος Φερστάπεν, και της Σόφι Κούμπεν, πρώην οδηγού καρτ.</p>
-
-<p>### Καριέρα στη Φόρμουλα 1</p>
-
-<p>Ο Φερστάπεν έκανε το ντεμπούτο του στη Φόρμουλα 1 το 2015 με την ομάδα Toro Rosso, όντας ο νεότερος οδηγός που έχει αγωνιστεί ποτέ στην κατηγορία αυτή. Στην πρώτη του σεζόν, σημείωσε τους πρώτους του βαθμούς και τερμάτισε στην 12η θέση του πρωταθλήματος. Το 2016, προήχθη στην Red Bull Racing, όπου κέρδισε τον πρώτο του αγώνα στο Ισπανικό Γκραν Πρι στην Μπαρτσελόνα, γίνοντας ο νεότερος νικητής αγώνα στην ιστορία της Φόρμουλα 1.</p>
-
-                <figure class="article-figure">
-                    <img src="3.webp" 
-                         alt="Image 3" 
-                         class="article-content-img"
-                         onerror="this.src='/images/blog-default.jpg'; this.onerror=null;">
-                    <figcaption>Image 3</figcaption>
-                </figure>
-
-<p>### Πρώτος Τίτλος Παγκόσμιου Πρωταθλητή</p>
-
-<p>Το 2021, ο Φερστάπεν κέρδισε τον πρώτο του τίτλο παγκόσμιου πρωταθλητή μετά από μια συναρπαστική σεζόν όπου ανταγωνίστηκε τον Λιούις Χάμιλτον. Η νίκη του στο τελευταίο Γκραν Πρι της σεζόν στο Άμπου Ντάμπι ήταν αποφασιστική για την κατάκτηση του τίτλου. Ακολούθησαν τρεις ακόμη τίτλοι το 2022, το 2023 και το 2024, επιβεβαιώνοντας την κυριαρχία του στο σπορ.</p>
-
-<p>### Σύγκριση με τους Συνοδηγούς του</p>
-
-                <figure class="article-figure">
-                    <img src="4.webp" 
-                         alt="Image 4" 
-                         class="article-content-img"
-                         onerror="this.src='/images/blog-default.jpg'; this.onerror=null;">
-                    <figcaption>Image 4</figcaption>
-                </figure>
-
-<p>Ο Φερστάπεν έχει αγωνιστεί με διάφορους συνοδηγούς στην καριέρα του, όπως οι Κάρλος Σάινθ, Ντανιίλ Κβιάτ, Ντάνιελ Ρίκιαρντο, Πιερ Γκασλί, Αλεξάντερ Άλμπον και Σέρχιο Πέρεζ. Κάθε ένας από αυτούς είχε τα δικά του στοιχεία και προκλήσεις, αλλά ο Φερστάπεν κατάφερε να ξεχωρίσει με την σταθερότητα και την ταχύτητά του.</p>
-
-<p>#### Κάρλος Σάινθ (2015)</p>
-
-<p>Ο Σάινθ ήταν ο πρώτος συνοδηγός του Φερστάπεν στην Toro Rosso. Αν και ο Σάινθ είχε καλές εμφανίσεις, ο Φερστάπεν ξεχώρισε με την ταχύτητά του και την ικανότητά του να σκοράρει βαθμούς σε σύντομο χρονικό διάστημα.</p>
-
-<p>#### Ντανιίλ Κβιάτ (2016)</p>
-
-<p>Ο Κβιάτ αντικαταστάθηκε από τον Φερστάπεν στην Red Bull μετά από τέσσερις αγώνες το 2016. Ο Φερστάπεν κέρδισε τον πρώτο του αγώνα στο ντεμπούτο του με την ομάδα, ενώ ο Κβιάτ είχε μια σειρά από ατυχήματα και συγκρούσεις.</p>
-
-<p>#### Ντάνιελ Ρίκιαρντο (2016-2018)</p>
-
-<p>Ο Ρίκιαρντο ήταν ένας ισχυρός ανταγωνιστής, αλλά ο Φερστάπεν κατάφερε να τον ξεπεράσει σε πόλους και νίκες. Οι δύο τους είχαν μια εντυπωσιακή σύγκρουση στο Αζερμπαϊτζάν το 2018, όπου και οι δύο εγκατέλειψαν τον αγώνα.</p>
-
-<p>#### Πιερ Γκασλί (2019)</p>
-
-<p>Ο Γκασλί αντικατέστησε τον Ρίκιαρντο το 2019, αλλά δεν κατάφερε να ανταγωνιστεί τον Φερστάπεν. Ο Φερστάπεν κέρδισε περισσότερες νίκες και βαθμούς, ενώ ο Γκασλί αντιμετώπισε προκλήσεις στην απόδοσή του.</p>
-
-<p>#### Αλεξάντερ Άλμπον (2019-2020)</p>
-
-<p>Ο Άλμπον αντικατέστησε τον Γκασλί, αλλά επίσης δεν κατάφερε να ανταγωνιστεί τον Φερστάπεν. Ο Φερστάπεν συνέχισε να κυριαρχεί, κερδίζοντας περισσότερους αγώνες και βαθμούς.</p>
-
-<p>#### Σέρχιο Πέρεζ (2021-2024)</p>
-
-<p>Ο Πέρεζ ήταν ο πιο επιτυχημένος συνοδηγός του Φερστάπεν, κερδίζοντας αρκετούς αγώνες και βοηθώντας την Red Bull να κερδίσει τους τίτλους κατασκευαστών. Ωστόσο, ο Φερστάπεν συνέχισε να είναι ο κορυφαίος οδηγός στην ομάδα.</p>
-
-<p>#### Λιάμ Λόσον (2025)</p>
-
-<p>Ο Λόσον αντικατέστησε τον Πέρεζ το 2025, αλλά αντιμετώπισε δυσκολίες στις πρώτες του εμφανίσεις. Ο Φερστάπεν συνέχισε να είναι ο ηγέτης της ομάδας, κερδίζοντας περισσότερους βαθμούς και νίκες.</p>
-
-<p>### Στατιστικά και Επιτεύγματα</p>
-
-<ul>
-<li>**Τίτλοι Παγκόσμιου Πρωταθλητή:** 4 (2021, 2022, 2023, 2024)</li>
-<li>**Νίκες:** 63</li>
-<li>**Πόντιουμ:** 113</li>
-<li>**Πόλ Ποζίσιον:** 41</li>
-<li>**Γρήγοροι Γύροι:** 29</li>
-</ul>
-<p>### Διαγράμματα και Εικόνες</p>
-
-<p>Στο διάγραμμα παρουσιάζεται η διαφορά στους πόντους μεταξύ του Μαξ Φερστάπεν και των συνοδηγών του κατά τη διάρκεια των ετών. Οι συνοδηγοί του Φερστάπεν ήταν οι εξής:</p>
-
-<ul>
-<li>**Κάρλος Σάινς**: Διαφορά 31 πόντων με τον Φερστάπεν.</li>
-<li>**Ντανιέλ Ρικιάρντο**: Διαφορά 18 πόντων με τον Φερστάπεν.</li>
-<li>**Πιερ Γκασλί**: Διαφορά 117 πόντων με τον Φερστάπεν.</li>
-<li>**Αλεξάντερ Άλμπον**: Διαφορά 130 πόντων με τον Φερστάπεν.</li>
-<li>**Σέρχιο Πέρες**: Διαφορά 58 πόντων με τον Φερστάπεν.</li>
-<li>**Γιούκι Τσουνόντα**: Διαφορά 26 πόντων με τον Φερστάπεν.</li>
-<li>**Λιάμ Λόσον**: Διαφορά 0 πόντων με τον Φερστάπεν (η σεζόν είναι ακόμα σε εξέλιξη).</li>
-</ul>
-<p>Αυτά τα στατιστικά δείχνουν την κυριαρχία του Φερστάπεν στη Φόρμουλα 1 και την ικανότητά του να ξεπερνά τους συνοδηγούς του σε πόντους στο πρωτάθλημα.</p>
-
-<p>### Εισαγωγή Ο Μαξ Φερστάπεν, γεννημένος στις 30 Σεπτεμβρίου 1997 στο Χάσελτ του Βελγίου, είναι ένας Ολλανδός οδηγός αγώνων που αγωνίζεται για την Red Bull Racing στη Φόρμουλα 1. Έχει κερδίσει τέσσερις τίτλους Παγκόσμιου Πρωταθλητή και έχει σημειώσει πολλά ρεκόρ, όπως το νεότερο νικητή αγώνα και το νεότερο οδηγό που σημείωσε πόντους στη Φόρμουλα 1.</p>
-
-<p>### Καριέρα στη Φόρμουλα 1 Ο Φερστάπεν ξεκίνησε την καριέρα του στη Φόρμουλα 1 το 2015 με την Toro Rosso, πριν προαχθεί στη Red Bull Racing. Έχει συνεργαστεί με διάφορους συνοδηγούς, όπως ο Κάρλος Σάινς, ο Ντανιέλ Ρικιάρντο, ο Αλεξάντερ Άλμπον, ο Σέρχιο Πέρες, ο Πιερ Γκασλί, ο Γιούκι Τσουνόντα και ο Λιάμ Λόσον.</p>
-
-<p>### Σύγκριση με τους Συνοδηγούς</p>
-
-<ul>
-<li>**2015**: Συνοδηγός με τον Κάρλος Σάινς. Ο Φερστάπεν είχε μια ισχυρή χρονιά, αλλά ο Σάινς είχε επίσης αξιόλογες εμφανίσεις.</li>
-<li>**2016-2018**: Συνοδηγός με τον Ντανιέλ Ρικιάρντο. Ο Φερστάπεν ανέπτυξε την καριέρα του, κερδίζοντας αγώνες και καθιερώνοντας τον εαυτό του ως έναν από τους κορυφαίους οδηγούς.</li>
-<li>**2019**: Συνοδηγός με τον Πιερ Γκασλί. Ο Φερστάπεν είχε μια εξαιρετική χρονιά, κερδίζοντας αγώνες και τερματίζοντας τρίτος στο πρωτάθλημα.</li>
-<li>**2020**: Συνοδηγός με τον Αλεξάντερ Άλμπον. Ο Φερστάπεν συνέχισε την κυριαρχία του, κερδίζοντας περισσότερους αγώνες και τερματίζοντας τρίτος στο πρωτάθλημα.</li>
-<li>**2021-2024**: Συνοδηγός με τον Σέρχιο Πέρες. Ο Φερστάπεν κέρδισε τέσσερις συνεχόμενους τίτλους Παγκόσμιου Πρωταθλητή, επιδεικνύοντας την κυριαρχία του στο σπορ.</li>
-<li>**2025**: Συνοδηγός με τον Γιούκι Τσουνόντα. Η σεζόν είναι ακόμα σε εξέλιξη, αλλά ο Φερστάπεν παραμένει ένας από τους κορυφαίους οδηγούς.</li>
-</ul>
-<p>### Στατιστικά και Ρεκόρ Ο Φερστάπεν έχει κερδίσει 63 αγώνες και έχει ανεβεί 112 φορές στο βάθρο μέχρι το 2025. Έχει σημειώσει πολλά ρεκόρ, όπως το νεότερο νικητή αγώνα και το νεότερο οδηγό που σημείωσε πόντους στη Φόρμουλα 1.</p>
-
-<p>### Συμπέρασμα Ο Μαξ Φερστάπεν είναι ένας από τους πιο επιτυχημένους οδηγούς στην ιστορία της Φόρμουλα 1. Η αφοσίωσή του, η ταχύτητα και η ικανότητά του να εκμεταλλεύεται τις ευκαιρίες τον έχουν καταστήσει έναν από τους μεγαλύτερους του αθλήματος. Η σύγκριση με τους συνοδηγούς του δείχνει την ανωτερότητά του και την ικανότητά του να ανταγωνίζεται στο υψηλότερο επίπεδο.</p>
-
-<p>Αυτό το άρθρο παρέχει μια ολοκληρωμένη επισκόπηση της καριέρας του Φερστάπεν και των επιτευγμάτων του, εστιάζοντας στη σύγκριση με τους συνοδηγούς του και την εξέλιξή του ως οδηγού στη Φόρμουλα 1.</p>
+        <p><br /><br /></p><h1><a id="_y6elfyez2wu6"></a><strong>Suzuka GP 2025 – Παρασκευή: Ανάλυση Ελεύθερων Δοκιμών &amp; Τεχνικές Παρατηρήσεις</strong></h1><p>Η πρώτη ημέρα δράσης στο Grand Prix της Ιαπωνίας επιβεβαίωσε τον χαρακτήρα του Suzuka ως μιας από τις πιο απρόβλεπτες και απαιτητικές πίστες του πρωταθλήματος. Με δύο συνεδρίες γεμάτες συμβάντα, τεχνικές ενδείξεις και διακυμάνσεις απόδοσης, οι ομάδες βρίσκονται ήδη αντιμέτωπες με σοβαρές αποφάσεις ενόψει του Σαββατοκύριακου.</p><p>Παρακάτω, παρουσιάζουμε τις <strong>10 βασικές παρατηρήσεις</strong> από την Παρασκευή στο Σουζούκα – με έμφαση στην τεχνική εικόνα, τον ρυθμό αγώνα και τις στρατηγικές ενδείξεις που προέκυψαν:</p><h3><a id="_d73zpgt5z1ut"></a><strong>1. Κυριαρχία McLaren στην Παρασκευή</strong></h3><p>Η McLaren έδειξε εξαιρετικά ανταγωνιστική από την αρχή, με τον <strong>Lando Norris</strong> να καταγράφει τον ταχύτερο χρόνο στο FP1 (1:28.549) και τον <strong>Oscar Piastri</strong> να ανεβάζει τον πήχη στο FP2 (1:28.114). Η ισορροπία αμαξώματος και η αεροδυναμική σταθερότητα του MCL60B φάνηκαν ιδανικές για τη χάραξη της Suzuka, ειδικά στις S-curves και στο μεσαίο sector.</p><h3><a id="_yhnazovmjhnp"></a><strong>2. Τέσσερις διακοπές στο FP2: Αστάθεια και ασφάλεια στο προσκήνιο</strong></h3><p>Η δεύτερη περίοδος δοκιμών διακόπηκε τέσσερις φορές λόγω κόκκινων σημαιών, φέρνοντας τις ομάδες σε δύσκολη θέση για long-run αξιολόγηση. Δύο μικρές <strong>πυρκαγιές σε σημεία με ξηρό χόρτο</strong> κοντά στην αγωνιστική γραμμή προκάλεσαν ανησυχίες σχετικά με την αλληλεπίδραση εξαγωγών θερμότητας και περιβάλλοντος.</p><h3><a id="_9ehylbnh0igz"></a><strong>3. Το ατύχημα του Jack Doohan</strong></h3><p>Ο οδηγός της <strong>Alpine</strong> είχε ισχυρό ατύχημα στη στροφή 1, χάνοντας την πρόσφυση στην είσοδο της στροφής με πλήρες φορτίο καυσίμου. Παρά την ένταση της πρόσκρουσης, ο Doohan εξήλθε χωρίς βοήθεια και μεταφέρθηκε στο ιατρικό κέντρο για προληπτικούς ελέγχους. Η ομάδα θα χρειαστεί σημαντική δουλειά στο σασί για τη συνέχεια.</p><h3><a id="_rgtjs2omzgmv"></a><strong>4. Off-track moment για τον Fernando Alonso</strong></h3><p>Ο Alonso βρέθηκε στο χαλίκι της στροφής <strong>Degner 1</strong> μετά από υπερστροφή υπό πίεση στο κατέβασμα. Παρά την έξοδο, είχε θετική εικόνα στα stints μικρής διάρκειας, υποδηλώνοντας ότι η <strong>Aston Martin</strong> έχει βελτιώσει την ισορροπία της AMR25 σε μικτές καμπές.</p><h3><a id="_5kfzzi2hk2qh"></a><strong>5. Εντυπωσιακό ντεμπούτο του Yuki Tsunoda στη Red Bull</strong></h3><p>Ο Ιάπωνας οδηγός έτρεξε για πρώτη φορά με τη <strong>Red Bull Racing</strong> και ήταν 6ος στο FP1, μόλις <strong>0.110s</strong> πίσω από τον Verstappen. Το κοινό της Suzuka ξέσπασε σε ενθουσιασμό, ενώ οι πρώτες ενδείξεις δείχνουν ότι ο Tsunoda έχει προσαρμοστεί ταχύτατα στο RB21 – ειδικά στον τομέα της σταθερότητας φρεναρίσματος.</p><h3><a id="_u8y4yhjjagx2"></a><strong>6. Τεχνικές δυσκολίες για τον Max Verstappen</strong></h3><p>Ο τέσσερις φορές παγκόσμιος πρωταθλητής αντιμετώπισε <strong>υποστροφή σε high-speed στροφές</strong> και έλλειψη front-end precision. Κατετάγη 5ος στο FP1 και μόλις 8ος στο FP2. Η Red Bull φαίνεται να αναζητά το ιδανικό mechanical grip setup, με το μονοθέσιο να υποφέρει σε transient φάσεις στροφής.</p><h3><a id="_b3i1ihz8qmc6"></a><strong>7. Ελπιδοφόροι χρόνοι από τη Mercedes</strong></h3><p>Ο George Russell έγραψε τον 2ο ταχύτερο χρόνο στο FP1, δείχνοντας ότι η W15B έχει καλές βάσεις στην αεροδυναμική σταθερότητα. Το μονοθέσιο φάνηκε ιδιαίτερα αποδοτικό στον τελευταίο τομέα, με καλή επιτάχυνση από το Casio Triangle.</p><h3><a id="_iwrwmnhpuztc"></a><strong>8. Συνεπής εικόνα από τη Ferrari</strong></h3><p>Ο Charles Leclerc (3ος στο FP1) και ο Lewis Hamilton (4ος) έδειξαν πως η SF-25 κινείται ανταγωνιστικά με πλήρες φορτίο. Η Ferrari εργάζεται πάνω σε <strong>rear-end traction και tire degradation</strong>, με θετικά δείγματα για τον αγώνα.</p><h3><a id="_11iu4ltvm49j"></a><strong>9. Σημαντική βελτίωση από τον Liam Lawson</strong></h3><p>Ο Νεοζηλανδός οδηγός της Racing Bulls τερμάτισε 13ος στο FP1 αλλά ανέβηκε στην <strong>5η θέση στο FP2</strong>, δείχνοντας πως βελτιώνει τη σταθερότητα του μονοθεσίου μέσω σταδιακών αλλαγών στο brake migration και differential settings. Δείγμα θετικής προσαρμογής στο νέο του περιβάλλον.</p><h3><a id="_tdjhrsojuu78"></a><strong>10. Συνθήκες Πίστας &amp; Περιβαλλοντικοί Παράγοντες</strong></h3><p>Οι θερμοκρασίες έμειναν σε <strong>ιδανικά επίπεδα (22–25°C)</strong>, με χαμηλή υγρασία και έντονη ηλιοφάνεια. Παρά τις καλές συνθήκες, οι <strong>πυρκαγιές στο γρασίδι</strong> εγείρουν ερωτήματα για τις προδιαγραφές ασφάλειας, καθώς παρατηρήθηκαν θερμικά κύματα από τα diffusers ορισμένων ομάδων (κυρίως Ferrari και Williams).</p><h2><a id="_3c56vwerrehw"></a><strong>Συμπέρασμα Παρασκευής</strong></h2><p>Η McLaren φαίνεται έτοιμη να διεκδικήσει σοβαρά τη νίκη στο Suzuka, ενώ η Red Bull έχει δρόμο μπροστά της για να λύσει κρίσιμα θέματα ρύθμισης. Με δεδομένες τις ανατροπές, τα ατυχήματα και τις διακοπές, το Grand Prix Ιαπωνίας του 2025 διαμορφώνεται ήδη ως ένα από τα πιο απρόβλεπτα της χρονιάς.</p><p>
+            <figure class="article-figure">
+                <!-- Primary image with multiple fallbacks -->
+                <img id="img-3"
+                     src="/blog-module/blog-entries/20250403/3.webp" 
+                     alt="Image 3" 
+                     class="article-content-img"
+                     onerror="if(this.src !== '3.webp') { this.src='3.webp'; } 
+                             else if(this.src !== '/blog-module/blog/images/20250403/3.webp') { this.src='/blog-module/blog/images/20250403/3.webp'; }
+                             else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                <figcaption>Image 3</figcaption>
+            </figure></p><p>
+            <figure class="article-figure">
+                <!-- Primary image with multiple fallbacks -->
+                <img id="img-4"
+                     src="/blog-module/blog-entries/20250403/4.webp" 
+                     alt="Image 4" 
+                     class="article-content-img"
+                     onerror="if(this.src !== '4.webp') { this.src='4.webp'; } 
+                             else if(this.src !== '/blog-module/blog/images/20250403/4.webp') { this.src='/blog-module/blog/images/20250403/4.webp'; }
+                             else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                <figcaption>Image 4</figcaption>
+            </figure></p><p>
+            <figure class="article-figure">
+                <!-- Primary image with multiple fallbacks -->
+                <img id="img-5"
+                     src="/blog-module/blog-entries/20250403/5.avif" 
+                     alt="Image 5" 
+                     class="article-content-img"
+                     onerror="if(this.src !== '5.avif') { this.src='5.avif'; } 
+                             else if(this.src !== '/blog-module/blog/images/20250403/5.avif') { this.src='/blog-module/blog/images/20250403/5.avif'; }
+                             else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                <figcaption>Image 5</figcaption>
+            </figure></p>
       </div>
     </div>
 
-    <!-- No related articles section -->
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20250402/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="/blog-module/blog-entries/20250404/article.html" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250406/1.webp" 
+                             alt="🏁 GP Ιαπωνίας 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση 📍 Σουζούκα, Ιαπωνία – 6 Απριλίου 2025 Πίστα: Suzuka International Racing Course | Μήκος: 5,807 km | Γύροι: 53 | DRS Zones: 1" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250406/1.webp') { this.src='/blog-module/blog/images/20250406/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">6,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">🏁 GP Ιαπωνίας 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση 📍 Σουζούκα, Ιαπωνία – 6 Απριλίου 2025 Πίστα: Suzuka International Racing Course | Μήκος: 5,807 km | Γύροι: 53 | DRS Zones: 1</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250406/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250405/1.webp" 
+                             alt="F1 2025 – Ανάλυση Κατατακτήριων GP Ιαπωνίας" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250405/1.webp') { this.src='/blog-module/blog/images/20250405/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">5,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">F1 2025 – Ανάλυση Κατατακτήριων GP Ιαπωνίας</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250405/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250331/1.webp" 
+                             alt="Suzuka Grand Prix 2025: Η κορυφαία δοκιμασία για οδηγούς και ομάδες" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250331/1.webp') { this.src='/blog-module/blog/images/20250331/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">31,</span>
+                            <span class="month">MAR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Suzuka Grand Prix 2025: Η κορυφαία δοκιμασία για οδηγούς και ομάδες</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250331/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
   </div>
 </section>
 
@@ -199,9 +259,55 @@
   </div>
 </footer>
 
-<!-- Bootstrap JavaScript -->
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/script.js"></script>
+<!-- Background Randomizer Script -->
+<script src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script src="/scripts/script.js"></script>
 <script src="/blog-module/blog/article-script.js"></script>
-</body>
+
+<!-- Script to fix navbar functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the navbar toggle works
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+
+    if (navbarToggler && navbarCollapse) {
+      navbarToggler.addEventListener('click', function() {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+
+    // Fix any path issues in the navbar links
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+      // If it's a hash link without a base path, add one
+      if (link.getAttribute('href').startsWith('#')) {
+        link.setAttribute('href', '/index.html' + link.getAttribute('href'));
+      }
+    });
+  });
+</script>
+
+    <script>
+    // Debug helper for images
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script>
+    </body>
 </html>
