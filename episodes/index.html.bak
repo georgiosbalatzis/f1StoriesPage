@@ -22,7 +22,7 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="../index.html">
+            <a class="navbar-brand" href="/pages/">
                 <img src="../images/logo.png" alt="F1 Stories Logo" height="50">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,16 +30,16 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="../index.htmlepisodes/" aria-current="page">Episodes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pages/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/pages/episodes/" aria-current="page">Episodes</a></li>
                     <li class="nav-item"><a class="nav-link" href="#betcasts">Betcasts</a></li>
                     <li class="nav-item"><a class="nav-link" href="#live">LIVE</a></li>
                     <li class="nav-item"><a class="nav-link" href="#boxbox">BoxBox!?</a></li>
                     <li class="nav-item"><a class="nav-link" href="#podcasts">Podcasts</a></li>
                     <li class="nav-item"><a class="nav-link" href="#shorts">Shorts</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../index.html#blog">Blog</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../index.html#contact">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pages/#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pages/#blog">Blog</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pages/#contact">Contact</a></li>
                 </ul>
             </div>
         </div>

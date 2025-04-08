@@ -48,7 +48,7 @@
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/blog-module/blog-styles.css">
   <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -66,19 +66,19 @@
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
       <a class="navbar-brand" href="/">
-        <img src="../../images/logo.png" alt="F1 Stories Logo" height="50">
+        <img src="/images/logo.png" alt="F1 Stories Logo" height="50">
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
-          <li class="nav-item"><a class="nav-link active" href="../../index.htmlepisodes/" aria-current="page">Episodes</a></li>
-          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="../../index.html#guests">Guests</a></li>
-          <li class="nav-item"><a class="nav-link" href="../../index.html#blog">Blog</a></li>
-          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/pages/episodes/" aria-current="page">Episodes</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#guests">Guests</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#blog">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#contact">Contact</a></li>
         </ul>
       </div>
     </div>
@@ -89,7 +89,7 @@
   <div class="container">
     <!-- Back to Blog Button -->
     <div class="text-start mb-4">
-      <a href="../../blog/index.html" class="btn btn-outline-light">
+      <a href="/blog-module/blog/index.html" class="btn btn-outline-light">
         <i class="fas fa-arrow-left me-2"></i> Back to Blog
       </a>
     </div>
@@ -205,9 +205,9 @@
 <!-- Bootstrap JavaScript - Make sure this loads properly -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Background Randomizer Script -->
-<script src="../../scripts/background-randomizer.js"></script>
+<script src="/scripts/background-randomizer.js"></script>
 <!-- Main Scripts -->
-<script src="../../scripts/script.js"></script>
+<script src="/scripts/script.js"></script>
 <script src="/blog-module/blog/article-script.js"></script>
 
 <!-- Script to fix navbar functionality -->
