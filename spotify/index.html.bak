@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Stories Podcasts</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="podcast.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="../index.html">
+                <img src="../images/logo.png" alt="F1 Stories Logo" height="50">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#">Podcasts</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="../index.htmlepisodes/" aria-current="page">Episodes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../index.html#blog">Blog</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../index.html#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- Podcast Header -->
+<section class="podcast-header">
+    <div class="container">
+        <div class="podcast-hero text-center">
+            <img src="../images/logo.png" alt="F1 Stories Podcast Logo" class="podcast-logo">
+            <h1>F1 Stories Podcast</h1>
+            <p class="lead">Your Pit Stop for All Things Formula 1</p>
+
+            <div class="platform-links">
+                <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" class="platform-link spotify">
+                    <i class="fab fa-spotify"></i> Spotify
+                </a>
+                <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" class="platform-link apple">
+                    <i class="fab fa-apple"></i> Apple Podcasts
+                </a>
+                <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" class="platform-link google">
+                    <i class="fab fa-google"></i> Google Podcasts
+                </a>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Player -->
+<div class="container position-relative">
+    <div class="main-player-container">
+        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/show/0qC80ahDY824BME9FtxryS?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>    </div>
+</div>
+
+<!-- Episode List -->
+<section class="episode-list">
+    <div class="container">
+        <h2 class="text-center mb-4">Latest Episodes</h2>
+        <div class="episode-grid row">
+
+    <div class="col-12 col-md-6">
+        
+        <!-- Episode 12 -->
+        <div class="episode-card">
+            <div class="episode-title">
+                <span class="episode-number">#12</span> Australian GP / Τι ειδαμε
+            </div>
+            <div class="episode-placeholder">
+                  <p>Australian GP / Τι ειδαμε</p>
+                  <a href="https://podcasters.spotify.com/pod/show/f1-stories/episodes/Australian-GP-e315s7v" target="_blank" class="btn btn-primary">Listen Now</a>
+              </div>
+        </div>
+        <!-- Episode 11 -->
+        <div class="episode-card">
+            <div class="episode-title">
+                <span class="episode-number">#11</span> Australian GP / Τα πρωτα δεδομενα
+            </div>
+            <div class="episode-placeholder">
+                  <p>Australian GP / Τα πρωτα δεδομενα</p>
+                  <a href="https://podcasters.spotify.com/pod/show/f1-stories/episodes/Australian-GP-e315s7g" target="_blank" class="btn btn-primary">Listen Now</a>
+              </div>
+        </div>
+        <!-- Episode 10 -->
+        <div class="episode-card">
+            <div class="episode-title">
+                <span class="episode-number">#10</span> GP Chinese - Τι ειδαμε
+            </div>
+            <div class="episode-placeholder">
+                  <p>GP Chinese - Τι ειδαμε</p>
+                  <a href="https://podcasters.spotify.com/pod/show/f1-stories/episodes/GP-Chinese---e315s6q" target="_blank" class="btn btn-primary">Listen Now</a>
+              </div>
+        </div>
+        <!-- Episode 9 -->
+        <div class="episode-card">
+            <div class="episode-title">
+                <span class="episode-number">#9</span> GP China / Τα πρωτα δεδομενα
+            </div>
+            <div class="episode-placeholder">
+                  <p>GP China / Τα πρωτα δεδομενα</p>
+                  <a href="https://podcasters.spotify.com/pod/show/f1-stories/episodes/GP-China-e315s6h" target="_blank" class="btn btn-primary">Listen Now</a>
+              </div>
+        </div>
+        <!-- Episode 8 -->
+        <div class="episode-card">
+            <div class="episode-title">
+                <span class="episode-number">#8</span> Tsunoda στην Redbull
+            </div>
+            <div class="episode-placeholder">
+                  <p>Tsunoda στην Redbull</p>
+                  <a href="https://podcasters.spotify.com/pod/show/f1-stories/episodes/Tsunoda--Redbull-e315s5q" target="_blank" class="btn btn-primary">Listen Now</a>
+              </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6">
+        
+        <!-- Episode 7 -->
+        <div class="episode-card">
+            <div class="episode-title">
+                <span class="episode-number">#7</span> BoxBox!? #1
+            </div>
+            <div class="episode-placeholder">
+                  <p>BoxBox!? : Πρωτο επισοδειο!</p>
+                  <a href="https://podcasters.spotify.com/pod/show/f1-stories/episodes/BoxBox---1-e315s4t" target="_blank" class="btn btn-primary">Listen Now</a>
+              </div>
+        </div>
+        <!-- Episode 6 -->
+        <div class="episode-card">
+            <div class="episode-title">
+                <span class="episode-number">#6</span> Betcast #1: Australian GP
+            </div>
+            <div class="episode-placeholder">
+                  <p>Betcast #1: Australian GP</p>
+                  <a href="https://podcasters.spotify.com/pod/show/f1-stories/episodes/Betcast-1-Australian-GP-e315rtv" target="_blank" class="btn btn-primary">Listen Now</a>
+              </div>
+        </div>
+        <!-- Episode 5 -->
+        <div class="episode-card">
+            <div class="episode-title">
+                <span class="episode-number">#5</span> Betcast #2 : Chinese GP
+            </div>
+            <div class="episode-placeholder">
+                  <p>Στο δεύτερο επεισόδιο της σειράς BetCast, βουτάμε στον κόσμο των στοιχημάτων για το Chinese Grand Prix! Μετά την επιτυχία του πρώτου μας στοιχήματος, αναλύουμε τις στρατηγικές και τις προβλέψεις μας για τον αγώνα στην Κίνα. Ετοιμαστείτε για νέες, δυνατές προτάσεις που μπορεί να γεμίσουν ξανά τις τσέπες μας! Μην το χάσετε – αν θέλετε να κάνετε το στοίχημα που θα σας φέρει κερδισμένους, αυτό το βίντεο είναι για εσάς.Ποντάρουμε:Sprint: Max Verstappen νίκη, Carlos Sainz τοπ 10Κατατακτήριες: Διαφορά 0,0 - 0,1, Max Verstappen τοπ 3Αγώνας: Νίκη Oscar PiastriΤα yolo στοιχήματα ... στο βίντεο</p>
+                  <a href="https://podcasters.spotify.com/pod/show/f1-stories/episodes/Betcast-2--Chinese-GP-e315rk7" target="_blank" class="btn btn-primary">Listen Now</a>
+              </div>
+        </div>
+        <!-- Episode 4 -->
+        <div class="episode-card">
+            <div class="episode-title">
+                <span class="episode-number">#4</span> Betcast #3 : Double Budget
+            </div>
+            <div class="episode-placeholder">
+                  <p>Ανακαλύψτε τις καλύτερες επιλογές για στοιχήματα στον αγώνα της Formula 1 στο θρυλικό Circuit de Suzuka! Στο νέο επεισόδιο του Betcast, αναλύουμε τα δυνατά σημεία του αγώνα και σας προσφέρουμε στρατηγικές στοιχημάτων για να κερδίσετε σε αυτό το συναρπαστικό Grand Prix. Από τις κορυφαίες ομάδες και οδηγούς μέχρι τις πιθανότητες για έκπληξη και αστάθεια στις συνθήκες, όλα τα στοιχεία που χρειάζεστε για να πάρετε τις καλύτερες αποφάσεις στον στοιχηματισμό είναι εδώ. Μην το χάσετε!</p>
+                  <a href="https://podcasters.spotify.com/pod/show/f1-stories/episodes/Betcast-3--Double-Budget-e315rht" target="_blank" class="btn btn-primary">Listen Now</a>
+              </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</section>
+
+<section class="subscription-cta py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="cta-container text-center">
+                    <h2>Never Miss an Episode</h2>
+                    <p class="lead">Subscribe to our podcast for the latest insights, interviews, and discussions about Formula 1.</p>
+                    <div class="subscription-buttons mt-4">
+                        <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" class="cta-button">
+                            <i class="fab fa-spotify me-2"></i> Subscribe on Spotify
+                        </a>
+                        <a href="https://anchor.fm/s/101588098/podcast/rss" target="_blank" class="cta-button">
+                            <i class="fas fa-rss me-2"></i> RSS Feed
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+                <div class="social-media">
+                    <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+    <i class="fas fa-chevron-up"></i>
+</button>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JS -->
+<script src="podcast.js"></script>
+</body>
+</html>
