@@ -15,6 +15,30 @@ document.addEventListener('DOMContentLoaded', function() {
         nextLink.style.display = 'none';
     }
 
+    // Back to Top Button Functionality
+    const scrollToTopBtn = document.getElementById('scroll-to-top');
+
+    if (scrollToTopBtn) {
+        // Show or hide the button based on scroll position
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        // Scroll to top when button is clicked
+        scrollToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    } else {
+        console.warn("Back to top button not found in the document");
+    }
+
     // Enable image lightbox functionality for article images
     const articleImages = document.querySelectorAll('.article-content-img, .gallery-img');
 
@@ -139,4 +163,72 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add cursor pointer to indicate images are clickable
         image.style.cursor = 'pointer';
     });
+});
+
+// Check if the back to top button is missing and add it if needed
+document.addEventListener('DOMContentLoaded', function() {
+    if (!document.getElementById('scroll-to-top')) {
+        console.log("Creating missing back to top button");
+
+        // Create the button element
+        const scrollToTopBtn = document.createElement('button');
+        scrollToTopBtn.id = 'scroll-to-top';
+        scrollToTopBtn.className = 'scroll-to-top-btn';
+        scrollToTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+
+        // Add styling for the button
+        const style = document.createElement('style');
+        style.textContent = `
+            .scroll-to-top-btn {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background: #0073e6;
+                color: white;
+                border: none;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                z-index: 9000;
+                opacity: 0;
+                transform: translateY(20px);
+                transition: opacity 0.3s, transform 0.3s;
+            }
+            
+            .scroll-to-top-btn.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            
+            .scroll-to-top-btn:hover {
+                background: #005bb5;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Add the button to the document
+        document.body.appendChild(scrollToTopBtn);
+
+        // Show or hide the button based on scroll position
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        // Scroll to top when button is clicked
+        scrollToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
 });

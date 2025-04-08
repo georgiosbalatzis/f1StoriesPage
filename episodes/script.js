@@ -193,14 +193,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Create video card HTML
-    function createVideoCardHTML(video, type) {
+    function createVideoCardHTML(video, type, isLive = false) {
         // Add specific class based on the video type
         const typeClass = type ? `${type}-card` : '';
+
+        // Add LIVE badge if needed
+        const liveBadge = isLive ? '<div class="live-badge">LIVE</div>' : '';
 
         return `
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="episode-card ${typeClass} h-100">
                     <div class="video-container position-relative">
+                        ${liveBadge}
                         <div class="ratio ratio-16x9">
                             <iframe 
                                 src="https://www.youtube.com/embed/${video.id}?rel=0" 
@@ -227,10 +231,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Display videos in the appropriate sections
     async function displayVideos() {
         const betcastGrid = document.querySelector('.betcast-grid');
+        const liveGrid = document.querySelector('.live-grid');
+        const boxboxGrid = document.querySelector('.boxbox-grid');
         const podcastGrid = document.querySelector('.podcast-grid');
         const shortsGrid = document.querySelector('.shorts-grid');
 
-        if (!betcastGrid || !podcastGrid || !shortsGrid) {
+        const liveSection = document.getElementById('live');
+        const boxboxSection = document.getElementById('boxbox');
+
+        if (!betcastGrid || !liveGrid || !boxboxGrid || !podcastGrid || !shortsGrid) {
             console.error('One or more grid elements not found!');
             return;
         }
@@ -238,6 +247,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show loading state
         const loadingSpinner = '<div class="col-12 text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Loading...</span></div></div>';
         betcastGrid.innerHTML = loadingSpinner;
+        liveGrid.innerHTML = loadingSpinner;
+        boxboxGrid.innerHTML = loadingSpinner;
         podcastGrid.innerHTML = loadingSpinner;
         shortsGrid.innerHTML = loadingSpinner;
 
@@ -251,6 +262,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Categorize videos
             const betcasts = [];
+            const liveVideos = [];
+            const boxboxVideos = [];
             const podcasts = [];
             const shorts = [];
 
@@ -261,6 +274,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Categorize by title and duration
                 if (title.includes('betcast')) {
                     betcasts.push(video);
+                } else if (title.includes('live') || title.includes('stream')) {
+                    liveVideos.push(video);
+                } else if (title.includes('boxbox')) {
+                    boxboxVideos.push(video);
                 } else if (duration >= 600) { // 10 minutes or longer
                     podcasts.push(video);
                 } else if (duration <= 300) { // 5 minutes or shorter
@@ -270,6 +287,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Clear loading spinners
             betcastGrid.innerHTML = '';
+            liveGrid.innerHTML = '';
+            boxboxGrid.innerHTML = '';
             podcastGrid.innerHTML = '';
             shortsGrid.innerHTML = '';
 
@@ -280,6 +299,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 betcasts.slice(0, 3).forEach(video => {
                     const videoCardHTML = createVideoCardHTML(video, 'betcast');
                     betcastGrid.insertAdjacentHTML('beforeend', videoCardHTML);
+                });
+            }
+
+            // Display LIVE videos (limited to 3) or hide section if none available
+            if (liveVideos.length === 0) {
+                // Hide the LIVE section if no videos
+                if (liveSection) liveSection.style.display = 'none';
+            } else {
+                // Show section and add videos
+                if (liveSection) liveSection.style.display = 'block';
+                liveVideos.slice(0, 3).forEach(video => {
+                    // Add special LIVE badge for these videos
+                    const isCurrentlyLive = video.title.toLowerCase().includes('live') && !video.title.toLowerCase().includes('replay');
+                    const videoCardHTML = createVideoCardHTML(video, 'live', isCurrentlyLive);
+                    liveGrid.insertAdjacentHTML('beforeend', videoCardHTML);
+                });
+            }
+
+            // Display BoxBox videos (limited to 3) or hide section if none available
+            if (boxboxVideos.length === 0) {
+                // Hide the BoxBox section if no videos
+                if (boxboxSection) boxboxSection.style.display = 'none';
+            } else {
+                // Show section and add videos
+                if (boxboxSection) boxboxSection.style.display = 'block';
+                boxboxVideos.slice(0, 3).forEach(video => {
+                    const videoCardHTML = createVideoCardHTML(video, 'boxbox');
+                    boxboxGrid.insertAdjacentHTML('beforeend', videoCardHTML);
                 });
             }
 
@@ -307,6 +354,8 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error displaying videos:', error);
             const errorMessage = '<div class="col-12 text-center"><p>No videos available. Please check back later.</p></div>';
             betcastGrid.innerHTML = errorMessage;
+            liveGrid.innerHTML = errorMessage;
+            boxboxGrid.innerHTML = errorMessage;
             podcastGrid.innerHTML = errorMessage;
             shortsGrid.innerHTML = errorMessage;
         }
@@ -314,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // If the API key is not set, display a message
     if (!apiKey || apiKey === 'YOUR_API_KEY') {
-        const grids = ['.betcast-grid', '.podcast-grid', '.shorts-grid'];
+        const grids = ['.betcast-grid', '.live-grid', '.boxbox-grid', '.podcast-grid', '.shorts-grid'];
         grids.forEach(selector => {
             const grid = document.querySelector(selector);
             if (grid) {
@@ -324,6 +373,70 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         // Initialize display
         displayVideos();
+    }
+
+    // Example function for testing (remove for production)
+    function displayExampleVideos() {
+        // Example LIVE videos (for testing)
+        const exampleLiveVideos = [
+            {
+                id: 'dQw4w9WgXcQ', // Placeholder video ID
+                title: 'LIVE: F1 Pre-Season Testing Day 1',
+                description: 'Join us for live coverage of the first day of Formula 1 pre-season testing direct from Barcelona.',
+                date: 'April 1, 2025',
+                duration: '1:24:30',
+                viewCount: '124K views'
+            },
+            {
+                id: 'dQw4w9WgXcQ', // Placeholder video ID
+                title: 'LIVE: Race Watch-Along - Monaco Grand Prix',
+                description: 'Watch the Monaco Grand Prix with our team as we provide live commentary and analysis throughout the race.',
+                date: 'March 28, 2025',
+                duration: '2:10:45',
+                viewCount: '98.5K views'
+            },
+            {
+                id: 'dQw4w9WgXcQ', // Placeholder video ID
+                title: 'STREAM: F1 Driver Market Rumors Analyzed',
+                description: 'Breaking down the latest rumors about driver transfers and contract negotiations for the upcoming season.',
+                date: 'March 25, 2025',
+                duration: '45:12',
+                viewCount: '67.2K views'
+            }
+        ];
+
+        // Example BoxBox videos (for testing)
+        const exampleBoxBoxVideos = [
+            {
+                id: 'dQw4w9WgXcQ', // Placeholder video ID
+                title: 'BOXBOX!? Dramatic Finish to the Azerbaijan Grand Prix',
+                description: 'The final laps of a chaotic race that saw multiple position changes and unexpected results.',
+                date: 'March 22, 2025',
+                duration: '14:36',
+                viewCount: '187K views'
+            }
+        ];
+
+        // Display example LIVE videos
+        const liveGrid = document.querySelector('.live-grid');
+        if (liveGrid) {
+            liveGrid.innerHTML = '';
+            exampleLiveVideos.forEach(video => {
+                const isCurrentlyLive = video.title.includes('Day 1'); // Mark the first one as currently live
+                const videoCardHTML = createVideoCardHTML(video, 'live', isCurrentlyLive);
+                liveGrid.insertAdjacentHTML('beforeend', videoCardHTML);
+            });
+        }
+
+        // Display example BoxBox videos
+        const boxboxGrid = document.querySelector('.boxbox-grid');
+        if (boxboxGrid) {
+            boxboxGrid.innerHTML = '';
+            exampleBoxBoxVideos.forEach(video => {
+                const videoCardHTML = createVideoCardHTML(video, 'boxbox');
+                boxboxGrid.insertAdjacentHTML('beforeend', videoCardHTML);
+            });
+        }
     }
 
     // Enhanced scroll animations

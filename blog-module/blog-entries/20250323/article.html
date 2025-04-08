@@ -3,7 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chinese  Gp 2025 | F1 Stories Blog</title>
+  <title>GP Κίνας 2025 | F1 Stories Blog</title>
+
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="GP Κίνας 2025 | F1 Stories Blog">
+  <meta property="og:description" content="ARTICLE_DESCRIPTION">
+  <meta property="og:image" content="https://f1stories.codeberg.page/blog-module/blog-entries/ARTICLE_FOLDER/2.webp">
+  <meta property="og:url" content="https://f1stories.codeberg.page/blog-module/blog-entries/ARTICLE_FOLDER/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Twitter Card Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="GP Κίνας 2025 | F1 Stories Blog">
+  <meta name="twitter:description" content="ARTICLE_DESCRIPTION">
+  <meta name="twitter:image" content="https://f1stories.codeberg.page/blog-module/blog-entries/ARTICLE_FOLDER/2.webp">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
@@ -15,10 +57,10 @@
 </head>
 <body>
 <div class="background"></div>
-<div class="streak"></div>
-<div class="streak"></div>
-<div class="streak"></div>
-<div class="streak"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
 
 <header>
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
@@ -31,12 +73,12 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#episodes">Episodes</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#about">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#guests">Guests</a></li>
-          <li class="nav-item"><a class="nav-link active" href="/blog-module/blog/index.html">Blog</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#contact">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/pages/episodes/" aria-current="page">Episodes</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#guests">Guests</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#blog">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#contact">Contact</a></li>
         </ul>
       </div>
     </div>
@@ -55,38 +97,109 @@
     <div class="article-container">
       <div class="article-header">
         <!-- Images are local to the article folder -->
-        <img src="2.avif" alt="Chinese  Gp 2025" class="article-header-img" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <img src="2.webp" alt="GP Κίνας 2025" class="article-header-img" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
         <div class="article-header-overlay">
-          <h1 class="article-title">Chinese  Gp 2025</h1>
+          <h1 class="article-title">GP Κίνας 2025</h1>
           <div class="article-meta">
             <span><i class="fas fa-user"></i> F1 Stories Team</span>
             <span><i class="fas fa-calendar"></i> March 23, 2025</span>
             <span><i class="fas fa-tag"></i> GP</span>
-            <span><i class="fas fa-folder"></i> GP</span>
+            <span><i class="fas fa-folder"></i> 2025</span>
           </div>
         </div>
       </div>
       <div class="article-content">
         <!-- Article content goes here -->
-        <p>### Γκραν Πρι Κίνας 2025: Ένα Εκρηκτικό Σαββατοκύριακο στη Σαγκάη</p>
-<p>Το Γκραν Πρι Κίνας 2025 σηματοδότησε την επιστροφή της Formula 1 στην Κίνα μετά από μια περίοδο απουσίας, φέρνοντας μια εκρηκτική δόση αγώνων και συναισθημάτων στη Σαγκάη. Ο αγωνιστικός χώρος του Shanghai International Circuit, μήκους 5,451 χιλιομέτρων, φιλοξένησε τους κορυφαίους οδηγούς και ομάδες για ένα συναρπαστικό τριήμερο που προσέλκυσε την προσοχή των φιλάθλων παγκοσμίως.</p>
-<p>#### Προπόνηση και Προκριματικά</p>
-<p>Το τριήμερο ξεκίνησε με τις ελεύθερες δοκιμές, όπου οι ομάδες προσπάθησαν να προσαρμόσουν τα μονοθέσιά τους στις συνθήκες της πίστας. Η Ferrari και η McLaren εντυπωσίασαν με την ταχύτητά τους, ενώ η Red Bull αντιμετώπισε προκλήσεις με το ρυθμό της. Τα προκριματικά, που έλαβαν χώρα το Σάββατο, ήταν επίσης εκρηκτικά, με τον Max Verstappen να κατακτά την pole position, ακολουθούμενος από τον Oscar Piastri της McLaren και τον Lewis Hamilton της Ferrari.</p>
-<p>#### Ο Αγώνας Sprint</p>
-<p>Το Σάββατο διεξήχθη ο αγώνας Sprint, μια σύντομη και εκρηκτική μορφή αγώνα που προσέλκυσε την προσοχή των φιλάθλων. Ο Lewis Hamilton, στη δεύτερη του εμφάνιση με τη Ferrari, κατάφερε να κερδίσει τον αγώνα Sprint, παίρνοντας την πρώτη του νίκη με την ιταλική ομάδα. Αυτή η νίκη ήταν σημαντική όχι μόνο για τον Hamilton, αλλά και για τη Ferrari, η οποία είχε ανάγκη από μια καλή απόδοση μετά από ένα απογοητευτικό ξεκίνημα στη σεζόν. Ο Hamilton ξεκίνησε από την pole position και διατήρησε την πρώτη θέση μέχρι την τελική σημαία, αποδεικνύοντας την κυριαρχία του στην πίστα.</p>
-<p>#### Η Κυριακή του Αγώνα</p>
-<p>Η Κυριακή ήταν η μέρα του κύριου γεγονότος, με τους οδηγούς να ανταγωνίζονται για την πρώτη νίκη της σεζόν. Οι συνθήκες ήταν δύσκολες, με βροχές να απειλούν την πίστα, αλλά οι οδηγοί ανταποκρίθηκαν στις προκλήσεις. Ο Verstappen ξεκίνησε δυναμικά, αλλά η μάχη για την πρώτη θέση ήταν σκληρή, με τον Piastri και τον Hamilton να πιέζουν συνεχώς. Τελικά, ο Verstappen κατάφερε να διατηρήσει την πρώτη θέση και να κερδίσει τον αγώνα, δίνοντας στη Red Bull μια υπέροχη ενίσχυση στη σεζόν.</p>
-<p>#### Επιδόσεις και Στατιστικά</p>
-<p>Το Γκραν Πρι Κίνας 2025 ήταν σημαντικό για πολλούς λόγους. Ήταν η πρώτη φορά από το 2019 που η Κίνα φιλοξενούσε τον εναρκτήριο αγώνα της σεζόν. Επιπλέον, ο Verstappen είχε την ευκαιρία να κυνηγήσει τον πέμπτο συνεχόμενο τίτλο του, ενώ ο Hamilton έκανε το ντεμπούτο του με τη Ferrari, προσπαθώντας να κερδίσει τον όγδοο τίτλο του.</p>
-<p>#### Κοινωνικές και Περιβαλλοντικές Πρωτοβουλίες</p>
-<p>Εκτός από τον αγώνα, το Γκραν Πρι Κίνας 2025 προώθησε και κοινωνικές και περιβαλλοντικές πρωτοβουλίες. Η Formula 1 επικεντρώθηκε στη βιωσιμότητα, με μέτρα για τη μείωση των εκπομπών άνθρακα και την προώθηση της ανακύκλωσης. Επιπλέον, υπήρξαν εκδηλώσεις που τίμησαν την πολιτιστική κληρονομιά της Κίνας και προώθησαν την ισότητα και τη συμμετοχή στον αθλητισμό.</p>
-<p>#### Συμπέρασμα</p>
-<p>Το Γκραν Πρι Κίνας 2025 ήταν ένα επιτυχημένο γεγονός που έθεσε τα θεμέλια για μια ενδιαφέρουσα σεζόν της Formula 1. Με τους οδηγούς και τις ομάδες να είναι σε υψηλό επίπεδο, οι φίλαθλοι περιμένουν με ανυπομονησία τους επόμενους αγώνες και τις εξελίξεις που θα φέρει η σεζόν.</p>
-
+        <p></p><h1><a id="_4twsvj1jwgy6"></a><strong>GP Κίνας 2025  <br /></strong></h1><h1><a id="_ugn7i1dh9jm"></a><strong>Η Σαγκάη Επανέρχεται Δυναμικά στον Χάρτη της Formula 1</strong></h1><p>Μετά από απουσία πέντε ετών, το <strong>Shanghai International Circuit</strong> επέστρεψε στο καλεντάρι της Formula 1, και το έκανε με εμφατικό τρόπο. Το Γκραν Πρι Κίνας 2025 αποτέλεσε τον δεύτερο γύρο της σεζόν και προσέφερε ένα τριήμερο γεμάτο στρατηγική ένταση, καιρικές προκλήσεις και νέες ισορροπίες δυνάμεων στο grid.</p><h2><a id="_pge16q72iaky"></a><strong>Παρασκευή – Ανάλυση Πίστας και Προσαρμογή σε Ιδιαίτερες Συνθήκες</strong></h2><p>Η Σαγκάη, με την πλούσια διαμόρφωση των 5,451 χιλιομέτρων και τον χαρακτηριστικό "σαλιγκάρι" της πρώτης στροφής, δοκίμασε την ευελιξία και την ισορροπία των φετινών μονοθεσίων. Η <strong>Ferrari</strong> και η <strong>McLaren</strong> έδειξαν να προσαρμόζονται πιο γρήγορα, αξιοποιώντας το downforce στις παρατεταμένες καμπές. Η <strong>Red Bull</strong>, από την άλλη, πάλευε να σταθεροποιήσει τη συμπεριφορά του πίσω άξονα υπό φρενάρισμα, γεγονός που επηρέασε τον ρυθμό της στα FP1 και FP2.</p><p><strong>Σημαντικό Τεχνικό Σημείο:<br /></strong> Η θερμοκρασία ασφάλτου παρέμεινε σε σχετικά χαμηλά επίπεδα (18–21°C), προκαλώντας προβλήματα στη γρήγορη ενεργοποίηση των εμπρός μέσων γομών – κρίσιμο στο πρώτο sector.</p><h2><a id="_zd7eb1gaxysg"></a><strong>Σάββατο – Προκριματικά και Αγώνας Sprint με Αντίθετες Ιστορίες</strong></h2><h3><a id="_dp1gs16rr5c"></a><strong>Κατατακτήριες Δοκιμές (Q3):</strong></h3><ul><li><strong>Pole: Max Verstappen (Red Bull)</strong> – 1:32.144<br /> Παρά τις δυσκολίες στις ελεύθερες δοκιμές, η Red Bull βρήκε την ισορροπία στη σημαντικότερη στιγμή.<br /></li><li><strong>2ος: Oscar Piastri (McLaren)</strong> – Πολύ δυνατός middle sector, αλλά μικρές απώλειες στο φρενάρισμα της στροφής 6.<br /></li><li><strong>3ος: Lewis Hamilton (Ferrari)</strong> – Εξαιρετικός έλεγχος ροπής και ERS διαχείριση στο τέλος του γύρου.<br /></li></ul><h3><a id="_o5p433vn945u"></a><strong>Sprint Race:</strong></h3><p>Στο πρώτο Sprint της χρονιάς, η Ferrari εμφανίστηκε μεταμορφωμένη. Ο <strong>Hamilton</strong>, εκκινώντας από την pole, απέκρουσε κάθε επίθεση από τον Piastri και κέρδισε με στιβαρή, στρατηγική οδήγηση. Η νίκη αυτή σηματοδότησε την πρώτη του με τη Scuderia και έδωσε σημαντική ψυχολογική ώθηση στην ομάδα.</p><h2><a id="_9wspq0r3cwap"></a><strong>Κυριακή – Κύριος Αγώνας: Στρατηγική, Ελαστικά και Ψιχάλες</strong></h2><p>Η αγωνιστική Κυριακή χαρακτηρίστηκε από απειλή βροχής, και τελικά ελαφριές ψιχάλες στους γύρους 32–38 επηρέασαν τη στρατηγική επιλογή ελαστικών.</p><ul><li><strong>Εκκίνηση:</strong> Ο Verstappen διατήρησε την πρωτοπορία. Πίσω του, ο Piastri πίεζε ασφυκτικά, ενώ ο Hamilton προσπαθούσε να μείνει εντός DRS.<br /></li><li><strong>Κρίσιμο Σημείο:</strong> Η <strong>Red Bull</strong> επιλέγει undercut στον γύρο 19 με μέση γόμα. Η McLaren παρέμεινε έξω για δύο γύρους ακόμα, χάνοντας προσωρινά τη θέση.<br /></li><li><strong>Δεύτερο stint:</strong> Η βροχή απείλησε αλλά δεν οδήγησε σε αλλαγή γομών. Ο Verstappen εκμεταλλεύτηκε τα medium ελαστικά στο απόγειό τους, ενώ η Ferrari δυσκολεύτηκε να διαχειριστεί τη θερμική φθορά.<br /></li></ul><h3><a id="_8nagoa603l67"></a><strong>Τερματισμός:</strong></h3><ol><li><strong>Max Verstappen (Red Bull)<br /></strong></li><li><strong>Oscar Piastri (McLaren)<br /></strong></li><li><strong>Lewis Hamilton (Ferrari)<br /></strong></li></ol><p>Ο Verstappen κατέγραψε την 1η του νίκη για φέτος, αποκαθιστώντας την αγωνιστική ηρεμία στη Red Bull μετά το μη ιδανικό ξεκίνημα στην Αυστραλία.</p><h2><a id="_15bl81eyxc6d"></a><strong>Ανάλυση Απόδοσης και Τεχνικών Στοιχείων</strong></h2><table><thead><tr><th><p><strong>Παράμετρος</strong></p></th><th><p><strong>Red Bull</strong></p></th><th><p><strong>McLaren</strong></p></th><th><p><strong>Ferrari</strong></p></th></tr><tr><th><p>Μέση ταχύτητα (Race Stint)</p></th><th><p>208.4 km/h</p></th><th><p>207.9 km/h</p></th><th><p>206.3 km/h</p></th></tr><tr><th><p>ERS Deployment Zones</p></th><th><p>3</p></th><th><p>3</p></th><th><p>2.5</p></th></tr><tr><th><p>Χρόνος αλλαγής ελαστικών</p></th><th><p>2.35s</p></th><th><p>2.41s</p></th><th><p>2.58s</p></th></tr><tr><th><p>Πτώση απόδοσης Mediums (15 laps)</p></th><th><p>0.9s/lap</p></th><th><p>0.7s/lap</p></th><th><p>1.2s/lap</p></th></tr></thead></table><p><strong>Συμπεράσματα:</strong></p><ul><li>Η <strong>Red Bull</strong> επανέκαμψε εντυπωσιακά στον ρυθμό αγώνα, κυρίως χάρη σε καλή στρατηγική διαχείρισης stint και αναβαθμισμένο δάπεδο που αύξησε την σταθερότητα.<br /></li><li>Η <strong>McLaren</strong> διατηρεί τη σταθερότερη συνολική ισορροπία.<br /></li><li>Η <strong>Ferrari</strong> έχει βελτιωθεί αισθητά, αλλά ακόμα υποφέρει από υψηλή κατανάλωση ERS σε πίστες με μακρές ευθείες όπως η Κίνα.<br /></li></ul><h2><a id="_v3cysrtffw1g"></a><strong>Κοινωνικές &amp; Περιβαλλοντικές Πρωτοβουλίες</strong></h2><p>Η Formula 1 αξιοποίησε το GP Κίνας για να παρουσιάσει σειρά νέων πρωτοβουλιών:</p><ul><li><strong>Αντικατάσταση πλαστικού μιας χρήσης</strong> στο paddock με βιοδιασπώμενα υλικά.<br /></li><li>Συνεργασία με κινεζικά πανεπιστήμια για προγράμματα <strong>STEM &amp; motorsport inclusion</strong>.<br /></li><li>Εκθέσεις που τίμησαν τον πολιτισμό της Σαγκάης και τη συμβολή της περιοχής στη βιωσιμότητα μέσω της "Green City Shanghai" καμπάνιας.<br /></li></ul><h2><a id="_h2oqijk0t2yn"></a><strong>Τελικά Συμπεράσματα &amp; Επιπτώσεις στη Σεζόν</strong></h2><p>Το GP Κίνας 2025 επιβεβαίωσε ότι η Red Bull παραμένει πανίσχυρη – αλλά πλέον όχι ανεξ challenged. Η McLaren και η Ferrari βρίσκονται εντός εμβέλειας, και το πρωτάθλημα δείχνει έτοιμο για μια τριμέτωπη μάχη.</p><p><strong>Η κατάταξη οδηγών μετά από 2 αγώνες:</strong></p><ol><li><strong>Lando Norris – 43 βαθμοί<br /></strong></li><li><strong>Max Verstappen – 38 βαθμοί<br /></strong></li><li><strong>Oscar Piastri – 35 βαθμοί<br /></strong></li><li><strong>Lewis Hamilton – 30 βαθμοί<br /></strong></li></ol><p>Η επιστροφή της Κίνας στην F1 συνοδεύτηκε από στρατηγική πολυπλοκότητα, απρόβλεπτες καιρικές συνθήκες και υψηλό αγωνιστικό επίπεδο. Αν η Σαγκάη μάς δίδαξε κάτι, είναι ότι το 2025 θα έχει αγώνες που θα κερδίζονται όχι μόνο με ταχύτητα – αλλά με ευφυΐα, προσαρμοστικότητα και τεχνική ακρίβεια.</p>
       </div>
     </div>
 
-    <!-- No related articles section -->
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20250316/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="/blog-module/blog-entries/20250328/article.html" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250406/1.webp" 
+                             alt="🏁 GP Ιαπωνίας 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση 📍 Σουζούκα, Ιαπωνία – 6 Απριλίου 2025 Πίστα: Suzuka International Racing Course | Μήκος: 5,807 km | Γύροι: 53 | DRS Zones: 1" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250406/1.webp') { this.src='/blog-module/blog/images/20250406/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">6,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">🏁 GP Ιαπωνίας 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση 📍 Σουζούκα, Ιαπωνία – 6 Απριλίου 2025 Πίστα: Suzuka International Racing Course | Μήκος: 5,807 km | Γύροι: 53 | DRS Zones: 1</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250406/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250405/1.webp" 
+                             alt="F1 2025 – Ανάλυση Κατατακτήριων GP Ιαπωνίας" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250405/1.webp') { this.src='/blog-module/blog/images/20250405/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">5,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">F1 2025 – Ανάλυση Κατατακτήριων GP Ιαπωνίας</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250405/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250403/1.webp" 
+                             alt="Suzuka GP 2025 – Παρασκευή: Ανάλυση Ελεύθερων Δοκιμών & Τεχνικές Παρατηρήσεις" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250403/1.webp') { this.src='/blog-module/blog/images/20250403/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">3,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Suzuka GP 2025 – Παρασκευή: Ανάλυση Ελεύθερων Δοκιμών & Τεχνικές Παρατηρήσεις</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250403/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
   </div>
 </section>
 
@@ -113,9 +226,55 @@
   </div>
 </footer>
 
-<!-- Bootstrap JavaScript -->
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/script.js"></script>
+<!-- Background Randomizer Script -->
+<script src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script src="/scripts/script.js"></script>
 <script src="/blog-module/blog/article-script.js"></script>
-</body>
+
+<!-- Script to fix navbar functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the navbar toggle works
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+
+    if (navbarToggler && navbarCollapse) {
+      navbarToggler.addEventListener('click', function() {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+
+    // Fix any path issues in the navbar links
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+      // If it's a hash link without a base path, add one
+      if (link.getAttribute('href').startsWith('#')) {
+        link.setAttribute('href', '/index.html' + link.getAttribute('href'));
+      }
+    });
+  });
+</script>
+
+    <script>
+    // Debug helper for images
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script>
+    </body>
 </html>

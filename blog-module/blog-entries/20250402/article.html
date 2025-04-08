@@ -3,7 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MiniDrs McLaren | F1 Stories Blog</title>
+  <title>Max Verstappen vs Teammates: Η κυριαρχία ενός πρωταθλητή σε αριθμούς και επιδόσεις | F1 Stories Blog</title>
+
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="Max Verstappen vs Teammates: Η κυριαρχία ενός πρωταθλητή σε αριθμούς και επιδόσεις | F1 Stories Blog">
+  <meta property="og:description" content="ARTICLE_DESCRIPTION">
+  <meta property="og:image" content="https://f1stories.codeberg.page/blog-module/blog-entries/ARTICLE_FOLDER/2.webp">
+  <meta property="og:url" content="https://f1stories.codeberg.page/blog-module/blog-entries/ARTICLE_FOLDER/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Twitter Card Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Max Verstappen vs Teammates: Η κυριαρχία ενός πρωταθλητή σε αριθμούς και επιδόσεις | F1 Stories Blog">
+  <meta name="twitter:description" content="ARTICLE_DESCRIPTION">
+  <meta name="twitter:image" content="https://f1stories.codeberg.page/blog-module/blog-entries/ARTICLE_FOLDER/2.webp">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
@@ -15,10 +57,10 @@
 </head>
 <body>
 <div class="background"></div>
-<div class="streak"></div>
-<div class="streak"></div>
-<div class="streak"></div>
-<div class="streak"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
 
 <header>
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
@@ -31,12 +73,12 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#episodes">Episodes</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#about">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#guests">Guests</a></li>
-          <li class="nav-item"><a class="nav-link active" href="/blog-module/blog/index.html">Blog</a></li>
-          <li class="nav-item"><a class="nav-link" href="/#contact">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/pages/episodes/" aria-current="page">Episodes</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#guests">Guests</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#blog">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/#contact">Contact</a></li>
         </ul>
       </div>
     </div>
@@ -55,94 +97,51 @@
     <div class="article-container">
       <div class="article-header">
         <!-- Images are local to the article folder -->
-        <img src="2.avif" alt="MiniDrs McLaren" class="article-header-img" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <img src="2.webp" alt="Max Verstappen vs Teammates: Η κυριαρχία ενός πρωταθλητή σε αριθμούς και επιδόσεις" class="article-header-img" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
         <div class="article-header-overlay">
-          <h1 class="article-title">MiniDrs McLaren</h1>
+          <h1 class="article-title">Max Verstappen vs Teammates: Η κυριαρχία ενός πρωταθλητή σε αριθμούς και επιδόσεις</h1>
           <div class="article-meta">
             <span><i class="fas fa-user"></i> F1 Stories Team</span>
             <span><i class="fas fa-calendar"></i> April 2, 2025</span>
-            <span><i class="fas fa-tag"></i> Technical</span>
-            <span><i class="fas fa-folder"></i> Technical</span>
+            <span><i class="fas fa-tag"></i> Drivers</span>
+            <span><i class="fas fa-folder"></i> Head2Head</span>
           </div>
         </div>
       </div>
       <div class="article-content">
         <!-- Article content goes here -->
-        <p>Το 2024, η McLaren εισήγαγε έναν καινοτόμο σχεδιασμό πίσω πτέρυγας, γνωστό ως "mini-DRS", ο οποίος προκάλεσε έντονες συζητήσεις και αντιδράσεις στον κόσμο της Formula 1. Αυτή η τεχνολογική εξέλιξη, αν και αρχικά θεωρήθηκε νόμιμη από τη FIA, οδήγησε σε αλλαγές στους κανονισμούς για το 2025, επηρεάζοντας τον τρόπο με τον οποίο οι ομάδες σχεδιάζουν τα αεροδυναμικά τους στοιχεία.</p>
-
-<p>**Τεχνική Περιγραφή του "Mini-DRS"**</p>
-
-<p>Το "mini-DRS" της McLaren αφορούσε έναν μηχανισμό στην πίσω πτέρυγα που επέτρεπε στο άνω στοιχείο να περιστρέφεται ελαφρώς σε υψηλές ταχύτητες, αυξάνοντας το κενό μεταξύ των δύο στοιχείων της πτέρυγας. Αυτό είχε ως αποτέλεσμα τη μείωση της αεροδυναμικής αντίστασης και την αύξηση της τελικής ταχύτητας, παρόμοια με τη λειτουργία του παραδοσιακού DRS, αλλά χωρίς την ανάγκη ενεργοποίησης από τον οδηγό.</p>
-
-                <figure class="article-figure">
-                    <img src="3.webp" 
-                         alt="Image 3" 
-                         class="article-content-img"
-                         onerror="this.src='/images/blog-default.jpg'; this.onerror=null;">
-                    <figcaption>Image 3</figcaption>
-                </figure>
-
-<p>**Αντιδράσεις και Παρεμβάσεις της FIA**</p>
-
-<p>Κατά τη διάρκεια του Grand Prix στο Αζερμπαϊτζάν το 2024, ανταγωνιστικές ομάδες, συμπεριλαμβανομένης της Red Bull, εξέφρασαν ανησυχίες σχετικά με τη νομιμότητα του σχεδιασμού της McLaren. Παρά το γεγονός ότι η πίσω πτέρυγα πέρασε τους ελέγχους ευκαμψίας της FIA και θεωρήθηκε νόμιμη, η ομοσπονδία ζήτησε από τη McLaren να τροποποιήσει τον σχεδιασμό της για τις επόμενες αγώνες, ώστε να αποφευχθεί η δημιουργία ενός νέου "αγώνα εξοπλισμών" μεταξύ των ομάδων για την εκμετάλλευση παρόμοιων λύσεων. citeturn0search0</p>
-
-<p>**Αντίκτυπος στους Κανονισμούς του 2025**</p>
-
-                <figure class="article-figure">
-                    <img src="4.webp" 
-                         alt="Image 4" 
-                         class="article-content-img"
-                         onerror="this.src='/images/blog-default.jpg'; this.onerror=null;">
-                    <figcaption>Image 4</figcaption>
-                </figure>
-
-<p>Οι εξελίξεις αυτές οδήγησαν τη FIA να εισαγάγει αυστηρότερους περιορισμούς στον σχεδιασμό του DRS για τη σεζόν του 2025. Συγκεκριμένα, οι ομάδες περιορίστηκαν σε δύο μόνο θέσεις για το DRS: ανοιχτό και κλειστό, περιορίζοντας έτσι τη δυνατότητα ανάπτυξης παρόμοιων μηχανισμών όπως το "mini-DRS" της McLaren. Αυτή η αλλαγή είχε ως στόχο να διασφαλίσει την ισότητα μεταξύ των ομάδων και να αποτρέψει την εκμετάλλευση γκρίζων ζωνών στους κανονισμούς. citeturn0news12</p>
-
-<p>**Αντιδράσεις από την Κοινότητα της Formula 1**</p>
-
-<p>Η McLaren αντιμετώπισε την όλη κατάσταση ως ένδειξη της προόδου και της καινοτομίας της. Ο τεχνικός διευθυντής της ομάδας, Neil Houldey, δήλωσε ότι το γεγονός πως άλλες ομάδες ανησύχησαν για τον σχεδιασμό τους αποτελεί σημείο υπερηφάνειας και δείχνει την εξέλιξη της McLaren στον τεχνικό τομέα. citeturn0search0</p>
-
-                <figure class="article-figure">
-                    <img src="5.webp" 
-                         alt="Image 5" 
-                         class="article-content-img"
-                         onerror="this.src='/images/blog-default.jpg'; this.onerror=null;">
-                    <figcaption>Image 5</figcaption>
-                </figure>
-
-<p>Παράλληλα, άλλες ομάδες, όπως η Ferrari, βρέθηκαν υπό έρευνα για παρόμοιες τεχνικές λύσεις. Για παράδειγμα, το μονοθέσιο του Lewis Hamilton στη Ferrari τέθηκε υπό έρευνα από τη FIA μετά από καταγγελίες της Red Bull σχετικά με την ευκαμψία της πίσω πτέρυγας, υπογραμμίζοντας την αυξημένη προσοχή της ομοσπονδίας σε τέτοιου είδους τεχνολογικές καινοτομίες. citeturn0news13</p>
-
-<p>**Συμπέρασμα**</p>
-
-<p>Η εισαγωγή του "mini-DRS" από τη McLaren το 2024 αποτέλεσε σημαντικό σημείο συζήτησης στη Formula 1, αναδεικνύοντας την αδιάκοπη αναζήτηση των ομάδων για τεχνολογικά πλεονεκτήματα. Οι επακόλουθες αλλαγές στους κανονισμούς για το 2025 αντικατοπτρίζουν την προσπάθεια της FIA να διατηρήσει την ισορροπία και τη δικαιοσύνη στο άθλημα, ενώ παράλληλα ενθαρρύνει την καινοτομία εντός καθορισμένων ορίων.</p>
-
-                <figure class="article-figure">
-                    <img src="6.webp" 
-                         alt="Image 6" 
-                         class="article-content-img"
-                         onerror="this.src='/images/blog-default.jpg'; this.onerror=null;">
-                    <figcaption>Image 6</figcaption>
-                </figure>
-
+        <p></p><h1><a id="_jgnpxtb2a6z5"></a><strong>Max Verstappen vs Teammates: Η κυριαρχία ενός πρωταθλητή σε αριθμούς και επιδόσεις</strong></h1><p>Ο Max Verstappen έχει εξελιχθεί σε μία από τις πιο επιδραστικές μορφές στην ιστορία της Formula 1. Με τέσσερις τίτλους παγκόσμιου πρωταθλητή μέχρι το 2025, η καριέρα του είναι γεμάτη από νίκες, ρεκόρ και κυρίως – κυριαρχία. Ένα από τα πιο εντυπωσιακά στοιχεία της πορείας του είναι η συνέπειά του απέναντι στους εκάστοτε teammates του, κάτι που αποτελεί ένδειξη απόλυτης οδηγικής ανωτερότητας στο εσωτερικό της ίδιας ομάδας – το σημαντικότερο σημείο σύγκρισης στην κορυφαία κατηγορία του μηχανοκίνητου αθλητισμού.</p><h2><a id="_sx4gsxw7hdx0"></a><strong>Προφίλ Οδηγού</strong></h2><ul><li><strong>Όνομα:</strong> Max Emilian Verstappen<br /></li><li><strong>Ημερομηνία Γέννησης:</strong> 30 Σεπτεμβρίου 1997<br /></li><li><strong>Εθνικότητα:</strong> Ολλανδική<br /></li><li><strong>Ομάδα:</strong> Red Bull Racing<br /></li><li><strong>Τίτλοι Παγκόσμιου Πρωταθλητή:</strong> 4 (2021–2024)<br /></li></ul><p>Γιος του πρώην οδηγού της F1 Jos Verstappen και της πρωταθλήτριας καρτ Sophie Kumpen, ο Max είχε από μικρός την αγωνιστική κουλτούρα στο DNA του. Από το ντεμπούτο του στην Toro Rosso το 2015 μέχρι και σήμερα, οδήγησε σε ένα από τα πιο ασταμάτητα σερί επιτυχιών στην ιστορία του σπορ.</p><h2><a id="_17mp23d2kah8"></a><strong>Ανασκόπηση Καριέρας &amp; Κομβικά Σημεία</strong></h2><h3><a id="_8wdl6g88k8m7"></a><strong>2015: Το Ντεμπούτο με την Toro Rosso</strong></h3><p>Ο νεότερος οδηγός στην ιστορία της F1 έκανε άμεση εντύπωση με το ωμό ταλέντο και την επιθετική του προσέγγιση. Παρά τον ανταγωνισμό με τον Carlos Sainz Jr., σημείωσε τους πρώτους του βαθμούς και τράβηξε τα βλέμματα.</p><h3><a id="_htdas1z4nzq0"></a><strong>2016–2018: Η Άνοδος στην Red Bull και η Συνύπαρξη με Ricciardo</strong></h3><p>Η αντικατάσταση του Kvyat έφερε τον Verstappen απευθείας στη Red Bull. Κέρδισε τον πρώτο του αγώνα στην Ισπανία – η πιο επιτυχημένη πρεμιέρα στην ιστορία. Η περίοδος με τον Ricciardo ήταν γεμάτη ένταση, αλλά τελικά ο Ολλανδός επικράτησε σταθερά.</p><h3><a id="_nrr8od3dfe0s"></a><strong>2019–2020: Εσωτερική Υπεροχή</strong></h3><p>Οι Gasly και Albon δεν κατάφεραν να προσεγγίσουν τον ρυθμό του, με τον Verstappen να δείχνει την πλήρη κυριαρχία του – όχι μόνο σε επίπεδο αποτελεσμάτων αλλά και ως το τεχνικό επίκεντρο της ομάδας.</p><h3><a id="_fxaen3akp9p9"></a><strong>2021–2024: Η Δυναστεία</strong></h3><p>Με τη συνεργασία του με τον Sergio Pérez, η Red Bull εξασφάλισε τόσο οδηγικούς όσο και κατασκευαστικούς τίτλους. Ο Verstappen κατέκτησε τέσσερις συνεχόμενους τίτλους, επιδεικνύοντας απόλυτη κυριαρχία.</p><h2><a id="_h3yk3y4d998v"></a><strong>Head-to-Head: Οι Teammates ως Δείκτης Υπεροχής</strong></h2><p>Η αξιολόγηση της απόδοσης ενός οδηγού απέναντι στους teammates του είναι ένα από τα πιο αντικειμενικά μέτρα οδηγικής υπεροχής. Ακολουθεί μια σύνοψη ανά έτος:</p><table><thead><tr><th><p><strong>Teammate</strong></p></th><th><p><strong>Χρόνια</strong></p></th><th><p><strong>Διαφορά Πόντων</strong></p></th><th><p><strong>Σημαντικές Παρατηρήσεις</strong></p></th></tr><tr><th><p>Carlos Sainz</p></th><th><p>2015</p></th><th><p>+31</p></th><th><p>Ισορροπημένη σεζόν, αλλά ο Verstappen κέρδισε σε σταθερότητα</p></th></tr><tr><th><p>Daniil Kvyat</p></th><th><p>2016 (μέρος)</p></th><th><p>Αντικαταστάθηκε</p></th><th><p>Ο Max πήρε άμεσα νίκη στο ντεμπούτο με Red Bull</p></th></tr><tr><th><p>Daniel Ricciardo</p></th><th><p>2016–2018</p></th><th><p>+18</p></th><th><p>Σταδιακή υπεροχή του Verstappen σε poles &amp; race pace</p></th></tr><tr><th><p>Pierre Gasly</p></th><th><p>2019 (μέρος)</p></th><th><p>+117</p></th><th><p>Ο Gasly αντικαταστάθηκε λόγω απόδοσης</p></th></tr><tr><th><p>Alexander Albon</p></th><th><p>2019–2020</p></th><th><p>+130</p></th><th><p>Ανέτοιμος να αντέξει πίεση και ρυθμό</p></th></tr><tr><th><p>Sergio Pérez</p></th><th><p>2021–2024</p></th><th><p>+58</p></th><th><p>Καλύτερος teammate, αλλά όχι σε θέση να απειλήσει</p></th></tr><tr><th><p>Liam Lawson</p></th><th><p>2025</p></th><th><p>Σε εξέλιξη</p></th><th><p>Ο Verstappen ήδη κυριαρχεί σε βαθμούς και απόδοση</p></th></tr></thead></table><h2><a id="_xiqqpg6y7x7d"></a><strong>Τεχνική Ανάλυση: Τι τον ξεχωρίζει;</strong></h2><ul><li><strong>Απόδοση σε αγώνα:</strong> Εξαιρετική διαχείριση ελαστικών και υψηλός ρυθμός σε καθαρές συνθήκες.<br /></li><li><strong>Κατάταξη:</strong> Πολύ δυνατός σε qualifying, με έμφαση στη συνέπεια.<br /></li><li><strong>Ψυχολογική ανθεκτικότητα:</strong> Μπορεί να αντέξει πίεση, ακόμη και σε ακραία πρωταθληματικά σενάρια (βλ. Abu Dhabi 2021).<br /></li><li><strong>Επικοινωνία με μηχανικούς:</strong> Απόλυτη κατανόηση τεχνικών θεμάτων και εξαιρετικά καθαρά feedback loops.<br /></li></ul><h2><a id="_k8dl17obu1ma"></a><strong>Στατιστικά Καριέρας (μέχρι GP Κίνας 2025)</strong></h2><ul><li>🏆 <strong>Τίτλοι Πρωταθλητή:</strong> 4 (2021–2024)<br /></li><li>🏁 <strong>Νίκες:</strong> 63<br /></li><li>🏅 <strong>Podiums:</strong> 113<br /></li><li>🎯 <strong>Pole Positions:</strong> 41<br /></li><li>⏱️ <strong>Ταχύτεροι Γύροι:</strong> 29<br /></li></ul><h2><a id="_y7dgx4t2gp1q"></a><strong>Διάγραμμα Ανάλυσης: Πόντοι Verstappen vs Συνοδηγών</strong></h2><p>
             <figure class="article-figure">
-                <img src="7.webp" 
-                     alt="Image 7" 
+                <!-- Primary image with multiple fallbacks -->
+                <img id="img-3"
+                     src="/blog-module/blog-entries/20250402/3.webp" 
+                     alt="Image 3" 
                      class="article-content-img"
-                     onerror="this.src='/images/blog-default.jpg'; this.onerror=null;">
-                <figcaption>Image 7</figcaption>
-            </figure>
-
-            <figure class="article-figure">
-                <img src="8.webp" 
-                     alt="Image 8" 
-                     class="article-content-img"
-                     onerror="this.src='/images/blog-default.jpg'; this.onerror=null;">
-                <figcaption>Image 8</figcaption>
-            </figure>
+                     onerror="if(this.src !== '3.webp') { this.src='3.webp'; } 
+                             else if(this.src !== '/blog-module/blog/images/20250402/3.webp') { this.src='/blog-module/blog/images/20250402/3.webp'; }
+                             else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                <figcaption>Image 3</figcaption>
+            </figure></p><p>Το παραπάνω γράφημα απεικονίζει τις διαφορές πόντων μεταξύ του Verstappen και των teammates του. Η σταθερότητα της υπεροχής του σε βάθος χρόνου τονίζει το πόσο σπάνια περίπτωση αποτελεί οδηγικά.</p><h2><a id="_y1jh0rtpxjz"></a><strong>Συμπέρασμα: Ο ορισμός της κυριαρχίας</strong></h2><p>Ο Max Verstappen δεν είναι απλώς ένας ταλαντούχος οδηγός – είναι ένα τεχνικά ολοκληρωμένο πακέτο που συνδυάζει ταχύτητα, ωριμότητα και τεχνογνωσία. Η σύγκριση με τους teammates του αποκαλύπτει έναν αθλητή που δεν επηρεάζεται από εξωτερικά δεδομένα, αλλά υπερτερεί σε όλους τους τομείς, καθιστώντας τον έναν από τους κορυφαίους στην ιστορία της Formula 1.</p>
       </div>
     </div>
 
-    <!-- No related articles section -->
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20250331/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="/blog-module/blog-entries/20250403/article.html" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+    </div>
   </div>
 </section>
 
@@ -169,9 +168,55 @@
   </div>
 </footer>
 
-<!-- Bootstrap JavaScript -->
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/script.js"></script>
+<!-- Background Randomizer Script -->
+<script src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script src="/scripts/script.js"></script>
 <script src="/blog-module/blog/article-script.js"></script>
-</body>
+
+<!-- Script to fix navbar functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the navbar toggle works
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+
+    if (navbarToggler && navbarCollapse) {
+      navbarToggler.addEventListener('click', function() {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+
+    // Fix any path issues in the navbar links
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+      // If it's a hash link without a base path, add one
+      if (link.getAttribute('href').startsWith('#')) {
+        link.setAttribute('href', '/index.html' + link.getAttribute('href'));
+      }
+    });
+  });
+</script>
+
+    <script>
+    // Debug helper for images
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script>
+    </body>
 </html>
