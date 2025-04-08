@@ -6,7 +6,7 @@
     <title>F1 Stories Podcast</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles.css>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -30,18 +30,16 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="#" id="home-link">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#podcasts">Podcasts</a></li>
                     <li class="nav-item"><a class="nav-link" href="#episodes">Episodes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#blog">Blog</a></li>
                     <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
                     <li class="nav-item"><a class="nav-link" href="#guests">Guests</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#blog">Blog</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 </header>
-
 
 <section id="hero" class="d-flex align-items-center justify-content-center">
     <div class="hero-overlay"></div>
@@ -58,28 +56,17 @@
     </div>
 </section>
 
-<section id="podcasts" class="fade-in py-5">
+<section class="py-4">
     <div class="container">
-        <h2 class="text-center mb-5">The Podcast</h2>
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="podcast-container">
-                    <div class="podcast-player">
-                        <!-- Spotify Embed -->
-                        <iframe src="https://open.spotify.com/embed/show/0qC80ahDY824BME9FtxryS" width="100%" height="232" frameBorder="0" allowtransparency="true" allow="encrypted-media" class="spotify-player"></iframe>
-                    </div>
-                    <div class="podcast-info mt-4">
-                        <p class="lead text-center">Listen to our F1 Stories podcast, where we dive deep into the world of Formula 1 with insights, analysis, and exclusive interviews with F1 personalities.</p>
-                        <div class="text-center mt-4">
-                            <a href="/spotify/index.html" class="cta-button">All Podcasts</a>
-                        </div>
-                    </div>
+                <div class="listen-now">
+                    <iframe src="https://open.spotify.com/embed/show/0qC80ahDY824BME9FtxryS" width="100%" height="232" frameBorder="0" allowtransparency="true" allow="encrypted-media"></iframe>
                 </div>
             </div>
         </div>
     </div>
 </section>
-
 
 <section id="episodes" class="fade-in py-5">
     <div class="container">
@@ -92,26 +79,6 @@
                 </div>
             </div>
         </div>
-        <div class="text-center mt-5">
-            <a href="/pages/episodes/" class="cta-button">View All Episodes</a>
-        </div>
-    </div>
-</section>
-
-<section id="blog" class="fade-in py-5">
-    <div class="container">
-        <h2 class="text-center mb-5">Blog</h2>
-        <div class="row blog-posts g-4">
-            <!-- Blog post cards will be dynamically loaded -->
-            <div class="col-12 text-center">
-                <div class="spinner-border text-light" role="status">
-                    <span class="visually-hidden">Loading blog posts...</span>
-                </div>
-            </div>
-        </div>
-        <div class="text-center mt-5">
-            <a href="/pages/blog-module/blog/index.html" class="cta-button">View All Articles</a>
-        </div>
     </div>
 </section>
 
@@ -121,10 +88,8 @@
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="persona h-100">
-                    <a href="https://www.instagram.com/thanasismpatalas/" target="_blank" class="d-block text-center">
-                        <img src="/images/avatars/LN.webp" alt="Thanasis Batalas" class="avatar">
-                        <h3>Thanasis Batalas <i class="fab fa-instagram"></i></h3>
-                    </a>
+                    <img src="/images/LN.webp" alt="Thanasis Batalas" class="avatar">
+                    <h3>Thanasis Batalas <a href="https://www.instagram.com/thanasismpatalas/" target="_blank"><i class="fab fa-instagram"></i></a></h3>
                     <p>🏎️ F1 Enthusiast & Singer-Songwriter 🎤<br>
                         Biggest Schumacher fan ❤️<br>
                         Loves everything about F1 🏁<br>
@@ -134,10 +99,8 @@
             </div>
             <div class="col-md-4">
                 <div class="persona h-100">
-                    <a href="https://www.instagram.com/john_pouliks/" target="_blank" class="d-block text-center">
-                        <img src="/images/avatars/SV.webp" alt="Giannis Poulikidis" class="avatar">
-                        <h3>Giannis Poulikidis <i class="fab fa-instagram"></i></h3>
-                    </a>
+                    <img src="/images/SV.webp" alt="Giannis Poulikidis" class="avatar">
+                    <h3>Giannis Poulikidis <a href="https://www.instagram.com/john_pouliks/" target="_blank"><i class="fab fa-instagram"></i></a></h3>
                     <p>🏎️ F1 Enthusiast & Betting Expert 📊<br>
                         Lewis Hamilton die-hard fan 💪<br>
                         Writes F1 betting articles 📝<br>
@@ -147,10 +110,8 @@
             </div>
             <div class="col-md-4">
                 <div class="persona h-100">
-                    <a href="https://www.instagram.com/borgos_gialatzis/" target="_blank" class="d-block text-center">
-                        <img src="/images/avatars/FA.webp" alt="Giorgos Balatzis" class="avatar">
-                        <h3>Giorgos Balatzis <i class="fab fa-instagram"></i></h3>
-                    </a>
+                    <img src="/images/FA.webp" alt="Giorgos Balatzis" class="avatar">
+                    <h3>Giorgos Balatzis <a href="https://www.instagram.com/borgos_gialatzis/" target="_blank"><i class="fab fa-instagram"></i></a></h3>
                     <p>🏎️ F1 Technical Lover & Software Engineer 💻<br>
                         Ferrari hater 😈<br>
                         The funny, cynical, and technical guy of the group 🤖<br>
@@ -166,45 +127,16 @@
     <div class="container">
         <h2 class="text-center mb-5">Guests</h2>
         <div class="row guest-grid g-4">
-            <div class="col-md-4 mb-4">
-                <div class="persona h-100">
-                    <a href="https://www.instagram.com/guenthersteinerf1/" target="_blank" class="d-block text-center">
-                        <img src="https://s2.qwant.com/thumbr/474x316/e/5/469c9b40afa8bd1af9de43f9d76fd7ab4b04570ec6e4c28345b468bcaed81f/th.jpg?u=https%3A%2F%2Ftse.mm.bing.net%2Fth%3Fid%3DOIP.CcpApunfCNUMqNJ4i3awKAHaE8%26pid%3DApi&q=0&b=1&p=0&a=0" alt="Guenther Steiner" class="avatar">
-                        <h3>Guenther Steiner <i class="fab fa-instagram"></i></h3>
-                    </a>
-                    <p>🏎️ Former Haas F1 Team Principal 👨‍💼<br>
-                        Known for his colorful language and no-nonsense approach 🔥<br>
-                        Author of bestselling book "Surviving to Drive" 📚<br>
-                        Guenther brings his unique blend of tough love, humor, and deep F1 knowledge to our podcast, giving listeners unfiltered insider perspectives on team management.
-                    </p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="persona h-100">
-                    <a href="https://www.instagram.com/maxverstappen1/" target="_blank" class="d-block text-center">
-                        <img src="https://media.formula1.com/content/dam/fom-website/drivers/2024Drivers/verstappen.jpg.img.1920.medium.jpg" alt="Max Verstappen" class="avatar">
-                        <h3>Max Verstappen <i class="fab fa-instagram"></i></h3>
-                    </a>
-                    <p>🏎️ Multiple World Champion F1 Driver 🏆<br>
-                        Racing sim enthusiast and esports team owner 🎮<br>
-                        Known for his aggressive driving style and lightning reflexes ⚡<br>
-                        Max shares fascinating insights about his racing career, discussing everything from race strategies to handling pressure in championship battles.
-                    </p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="persona h-100">
-                    <a href="https://www.instagram.com/briatoreflavio/" target="_blank" class="d-block text-center">
-                        <img src="https://s2.qwant.com/thumbr/474x355/e/e/f2a213f2c36fe780c6a8a5ab5258744d29be7d44a4c5b22aa9ae3f137a7c9b/th.jpg?u=https%3A%2F%2Ftse.mm.bing.net%2Fth%3Fid%3DOIP.iAEgJqw0hWScbAQCtFGCowHaFj%26pid%3DApi&q=0&b=1&p=0&a=0" alt="Flavio Briatore" class="avatar">
-                        <h3>Flavio Briatore <i class="fab fa-instagram"></i></h3>
-                    </a>
-                    <p>🏎️ Legendary Team Principal & Business Mogul 💼<br>
-                        Mastermind behind Benetton/Renault success era 🧠<br>
-                        Discovered and mentored F1 champions 🌟<br>
-                        Flavio offers controversial opinions and entertaining stories from his dramatic F1 career, discussing the evolution of the sport through his unique business-oriented perspective.
-                    </p>
-                </div>
-            </div>
+            <!-- Guest cards would go here -->
+        </div>
+    </div>
+</section>
+
+<section id="blog" class="fade-in py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Blog</h2>
+        <div class="row blog-posts g-4">
+            <!-- Blog post cards would go here -->
         </div>
     </div>
 </section>
@@ -215,7 +147,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="contact-container">
-                    <form id="contact-form" action="https://formspree.io/f/xpzgrowk" method="POST" class="contact-form">
+                    <form action="https://formsubmit.co/f23f8db8ea80cbf0d76cf6556a5e1b25" method="POST" class="contact-form">
                         <div class="form-group mb-3">
                             <label for="name">Name:</label>
                             <input type="text" id="name" name="name" class="form-control" required>
@@ -228,15 +160,11 @@
                             <label for="message">Message:</label>
                             <textarea id="message" name="message" class="form-control" required></textarea>
                         </div>
-                        <!-- Form status messages -->
-                        <div id="form-status" class="mb-3" style="display: none;">
-                            <div id="form-success" class="alert alert-success" style="display: none;">
-                                Thanks for your message! We'll get back to you soon.
-                            </div>
-                            <div id="form-error" class="alert alert-danger" style="display: none;">
-                                Oops! There was a problem sending your message. Please try again.
-                            </div>
-                        </div>
+                        <!-- FormSubmit.co configuration -->
+                        <input type="hidden" name="_subject" value="New message from F1 Stories website">
+                        <input type="hidden" name="_captcha" value="true">
+                        <input type="hidden" name="_template" value="table">
+                        <input type="hidden" name="_autoresponse" value="Thank you for contacting F1 Stories! We've received your message and will get back to you soon.">
                         <button type="submit" class="cta-button">Send Message</button>
                     </form>
                 </div>
@@ -254,7 +182,7 @@
                     <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
                     <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
                     <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.tiktok.com/@myf1stories" target="_blank"><i class="fab fa-tiktok"></i></a>
                     <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
                     <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
                 </div>
@@ -268,16 +196,10 @@
     <i class="fas fa-chevron-up"></i>
 </button>
 
-<!-- Background Randomizer Script -->
-<script src="/scripts/background-randomizer.js"></script>
-<!-- Blog Post Loader Script -->
-<script src="/blog-module/blog-loader.js"></script>
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Episode Videos JavaScript -->
-<script src="/scripts/episodes.js"></script>
-<script src="/scripts/script.js"></script>
-<!-- Live Stream Checker Script -->
-<script src="/scripts/live-stream-checker.js"></script>
+<script src="episodes.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
