@@ -1,0 +1,493 @@
+/**
+ * Modern Column Layout CSS for F1 Stories Podcast Episodes
+ *
+ * Enhanced with gradient backgrounds and modern design elements
+ */
+
+/* Episode list section with gradient background */
+.episode-list {
+    margin-top: 4rem;
+    padding: 3rem 0 4rem;
+    background: linear-gradient(135deg, #0a1525 0%, #1e3c72 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Add subtle pattern overlay */
+.episode-list::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+}
+
+/* Section heading with modern styling */
+.episode-list h2 {
+    color: white;
+    font-weight: 700;
+    position: relative;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1rem;
+}
+
+.episode-list h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #0073e6, #00c6ff);
+    border-radius: 2px;
+}
+
+/* Two-column episode layout for tablets and up */
+@media (min-width: 768px) {
+    .episode-list .row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .episode-list .col-md-6 {
+        padding: 0 15px;
+    }
+
+    /* Add some space between columns */
+    .episode-list .col-md-6:first-child {
+        padding-right: 20px;
+    }
+
+    .episode-list .col-md-6:last-child {
+        padding-left: 20px;
+    }
+
+    /* Modern card styling */
+    .episode-card {
+        height: 100%;
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        position: relative;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        margin-bottom: 30px;
+    }
+
+    /* Enhanced hover effect */
+    .episode-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0, 115, 230, 0.4);
+        border-color: rgba(0, 115, 230, 0.3);
+    }
+
+    /* Active state */
+    .episode-card.active {
+        border: 2px solid #00c6ff;
+        box-shadow: 0 0 25px rgba(0, 198, 255, 0.5);
+    }
+
+    /* Matched heights help with alignment */
+    .episode-card iframe {
+        width: 100%;
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
+    }
+}
+
+/* Mobile styling (single column) */
+@media (max-width: 767px) {
+    .episode-card {
+        margin-bottom: 30px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .episode-card:last-child {
+        margin-bottom: 0;
+    }
+
+    .episode-list {
+        padding: 2rem 0;
+    }
+
+    .episode-list h2 {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Shared styles for all screen sizes */
+.episode-title {
+    padding: 15px 20px;
+    background: linear-gradient(90deg, rgba(0, 30, 60, 0.9), rgba(0, 60, 120, 0.8));
+    color: white;
+    font-weight: 600;
+    border-bottom: 2px solid rgba(0, 198, 255, 0.4);
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Add subtle animation to episode title */
+.episode-title::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: all 0.5s ease;
+}
+
+.episode-card:hover .episode-title::before {
+    left: 100%;
+}
+
+/* Modern placeholder for non-Spotify episodes */
+.episode-placeholder {
+    padding: 25px;
+    background: rgba(0, 30, 60, 0.3);
+    min-height: 152px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.episode-placeholder p {
+    margin-bottom: 20px;
+    color: #f0f0f0;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.episode-placeholder .btn {
+    align-self: flex-start;
+    background: linear-gradient(45deg, #0073e6, #00c6ff);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 4px 10px rgba(0, 115, 230, 0.3);
+}
+
+.episode-placeholder .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 115, 230, 0.4);
+}
+
+/* Add audio wave animation to active episode */
+.episode-card.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 15px;
+    width: 16px;
+    height: 16px;
+    background: #00c6ff;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 198, 255, 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(0, 198, 255, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 198, 255, 0);
+    }
+}
+
+/**
+ * Enhanced Header CSS for F1 Stories Podcast
+ *
+ * Modernizes the podcast header section to match the updated episode list
+ */
+
+/* Header styles */
+.podcast-header {
+    background: linear-gradient(135deg, #0a1525 0%, #1e3c72 100%);
+    padding: 7rem 0 5rem;
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%);
+    margin-top: 70px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Add subtle pattern overlay to header */
+.podcast-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+}
+
+/* Podcast hero content */
+.podcast-hero {
+    position: relative;
+    z-index: 2;
+}
+
+.podcast-hero h1 {
+    color: white;
+    font-weight: 700;
+    margin: 1rem 0;
+    font-size: 2.8rem;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.podcast-hero .lead {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+    font-weight: 300;
+}
+
+/* Podcast logo */
+.podcast-logo {
+    max-width: 200px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    margin-bottom: 2rem;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.podcast-logo:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 115, 230, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Platform links */
+.platform-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.2rem;
+    margin-top: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+.platform-link {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 0.9rem 1.8rem;
+    border-radius: 50px;
+    text-decoration: none;
+    color: white;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.platform-link:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    color: white;
+}
+
+.platform-link.spotify {
+    background: linear-gradient(45deg, rgba(29, 185, 84, 0.9), rgba(26, 163, 74, 0.9));
+}
+
+.platform-link.apple {
+    background: linear-gradient(45deg, rgba(255, 45, 85, 0.9), rgba(218, 30, 69, 0.9));
+}
+
+.platform-link.google {
+    background: linear-gradient(45deg, rgba(66, 133, 244, 0.9), rgba(51, 103, 214, 0.9));
+}
+
+.platform-link i {
+    font-size: 1.5rem;
+    margin-right: 0.75rem;
+}
+
+/* Main player container */
+.main-player-container {
+    background: rgba(10, 21, 37, 0.85);
+    border-radius: 20px;
+    padding: 1.8rem;
+    margin-top: -4.5rem;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(0, 115, 230, 0.2);
+    max-width: 900px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.main-player-container:hover {
+    box-shadow: 0 20px 40px rgba(0, 115, 230, 0.3);
+    border-color: rgba(0, 198, 255, 0.3);
+}
+
+/* Add floating objects in the header for visual interest */
+.podcast-header .floating-object {
+    position: absolute;
+    background: linear-gradient(135deg, rgba(0, 115, 230, 0.2), rgba(0, 198, 255, 0.2));
+    border-radius: 50%;
+    filter: blur(3px);
+    z-index: 1;
+}
+
+.podcast-header .floating-object:nth-child(1) {
+    width: 300px;
+    height: 300px;
+    top: -100px;
+    right: -50px;
+    animation: float 15s ease-in-out infinite;
+}
+
+.podcast-header .floating-object:nth-child(2) {
+    width: 200px;
+    height: 200px;
+    bottom: 50px;
+    left: -100px;
+    animation: float 12s ease-in-out infinite reverse;
+}
+
+.podcast-header .floating-object:nth-child(3) {
+    width: 150px;
+    height: 150px;
+    top: 30%;
+    left: 20%;
+    animation: float 10s ease-in-out infinite 2s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+    }
+    25% {
+        transform: translateY(-15px) translateX(15px);
+    }
+    50% {
+        transform: translateY(10px) translateX(-10px);
+    }
+    75% {
+        transform: translateY(15px) translateX(15px);
+    }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .podcast-header {
+        padding: 5rem 0 3.5rem;
+    }
+
+    .podcast-hero h1 {
+        font-size: 2.2rem;
+    }
+
+    .podcast-hero .lead {
+        font-size: 1.1rem;
+    }
+
+    .platform-links {
+        gap: 0.8rem;
+    }
+
+    .platform-link {
+        padding: 0.7rem 1.4rem;
+        font-size: 0.9rem;
+        width: calc(50% - 0.8rem);
+        justify-content: center;
+    }
+
+    .main-player-container {
+        margin-top: -3rem;
+        padding: 1.2rem;
+    }
+}
+
+/* Navigation styling */
+.navbar {
+    transition: all 0.3s ease;
+    background: transparent;
+    padding: 1rem 0;
+}
+
+.navbar.scrolled {
+    background: rgba(10, 21, 37, 0.95);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.navbar-brand img {
+    transition: all 0.3s ease;
+}
+
+.navbar.scrolled .navbar-brand img {
+    transform: scale(0.9);
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: white !important;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #0073e6, #00c6ff);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-link:hover::after, .nav-link.active::after {
+    width: 80%;
+}
