@@ -1,13 +1,14 @@
 #!/bin/bash
 
-echo "🔍 Dry-run: Listing relative paths that would be rewritten to absolute"
+echo "🔍 Dry Run: Listing problematic absolute paths (starting with `/`)"
 
+# Find all .html files
 find . -name "*.html" | while read file; do
-  matches=$(grep -En 'href="\.\.|src="\.\.' "$file")
+  matches=$(grep -En 'href="/|src="/' "$file")
   if [[ ! -z "$matches" ]]; then
-    echo "🔸 $file:"
+    echo "🔸 In $file:"
     echo "$matches" | sed 's/^/    ➤ /'
   fi
 done
 
-echo "✅ Done. Above lines would be changed by fix-codeberg-paths.sh"
+echo "✅ Dry run completed — these are the paths that would be rewritten."

@@ -1,11 +1,11 @@
 #!/bin/bash
 
-echo "♻️ Reverting HTML files to .bak backups (undo fix)..."
+echo "♻️ Reverting all .html files to their .bak backups..."
 
 find . -name "*.html.bak" | while read bakfile; do
   original="${bakfile%.bak}"
-  echo "⏪ Restoring $original"
+  echo "⏪ Restoring $original from backup"
   mv "$bakfile" "$original"
 done
 
-echo "✅ Revert complete."
+echo "✅ All files restored to original state."
