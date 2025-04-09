@@ -476,3 +476,14 @@ document.head.insertAdjacentHTML('beforeend', `
         }
     </style>
 `);
+
+// Add event listener to eShop button
+document.addEventListener('DOMContentLoaded', function() {
+    const eshopButton = document.querySelector('.eshop-btn');
+    if (eshopButton) {
+        eshopButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'eshop/index.html';
+        });
+    }
+});
