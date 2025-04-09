@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishlist - F1 Gear</title>
+    <title>Product Details - F1 Gear</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -71,29 +71,175 @@
 <div class="racing-stripe"></div>
 
 <div class="container mx-auto mt-8 p-4">
-    <h1 class="text-3xl font-bold mb-6 text-racing-green">Your Wishlist</h1>
+    <!-- Product Details Container -->
+    <div id="product-details" class="grid md:grid-cols-2 gap-8">
+        <!-- Product Image -->
+        <div class="relative bg-racing-white rounded-lg overflow-hidden shadow-lg border border-pit-lane-gray">
+            <img
+                    id="product-image"
+                    src=""
+                    alt="Product Image"
+                    class="w-full object-cover max-h-96"
+            >
+            <div class="absolute top-0 left-0 w-full h-1 bg-racing-green"></div>
+            <div class="absolute top-4 left-4">
+                <span
+                        id="product-category"
+                        class="bg-racing-green text-racing-white px-3 py-1 rounded-full text-sm font-medium"
+                ></span>
+            </div>
+        </div>
 
-    <div id="wishlistItems" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Wishlist items will be dynamically inserted here -->
+        <!-- Product Information -->
+        <div class="bg-racing-white p-6 rounded-lg shadow-lg border border-pit-lane-gray">
+            <div class="mb-4 pb-4 border-b border-pit-lane-gray border-opacity-20">
+                <h1
+                        id="product-name"
+                        class="text-3xl font-bold text-racing-green mb-2"
+                ></h1>
+                <div class="flex items-center">
+                    <div class="flex-1">
+                        <p
+                                id="product-description"
+                                class="text-asphalt-gray"
+                        ></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-6 grid grid-cols-3 gap-4">
+                <div class="bg-carbon-gray bg-opacity-5 p-3 rounded">
+                    <label class="block text-racing-green font-medium mb-1 text-sm">Material</label>
+                    <p
+                            id="product-material"
+                            class="text-asphalt-gray font-medium"
+                    ></p>
+                </div>
+                <div class="bg-carbon-gray bg-opacity-5 p-3 rounded">
+                    <label class="block text-racing-green font-medium mb-1 text-sm">Color</label>
+                    <p
+                            id="product-color"
+                            class="text-asphalt-gray font-medium"
+                    ></p>
+                </div>
+                <div class="bg-carbon-gray bg-opacity-5 p-3 rounded">
+                    <label class="block text-racing-green font-medium mb-1 text-sm">Size</label>
+                    <p
+                            id="product-size"
+                            class="text-asphalt-gray font-medium"
+                    ></p>
+                </div>
+            </div>
+
+            <div class="flex items-center mb-6 pb-6 border-b border-pit-lane-gray border-opacity-20">
+                <span
+                        id="product-price"
+                        class="text-4xl font-bold text-gold-accent mr-4"
+                ></span>
+                <button
+                        id="wishlist-toggle"
+                        class="ml-auto text-pit-lane-gray hover:text-racing-red transition-all"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex space-x-4">
+                    <div class="flex-1">
+                        <label class="block text-racing-green font-medium mb-2">Quantity</label>
+                        <div class="flex border border-pit-lane-gray rounded-md">
+                            <button id="quantity-decrease" class="px-3 py-2 text-racing-green hover:bg-carbon-gray hover:bg-opacity-10">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <input type="number" id="quantity" min="1" value="1" class="w-12 text-center border-x border-pit-lane-gray focus:outline-none text-asphalt-gray" />
+                            <button id="quantity-increase" class="px-3 py-2 text-racing-green hover:bg-carbon-gray hover:bg-opacity-10">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-4">
+                    <button
+                            id="add-to-cart"
+                            class="flex-grow bg-racing-green text-racing-white py-3 rounded hover:bg-gold-accent transition-colors duration-300 font-medium"
+                    >
+                        Add to Cart
+                    </button>
+                    <button
+                            id="buy-now"
+                            class="flex-grow bg-carbon-gray text-racing-white py-3 rounded hover:bg-pit-lane-gray transition-colors duration-300 font-medium"
+                    >
+                        Buy Now
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="emptyWishlist" class="text-center mt-12 py-16 border-2 border-dashed border-pit-lane-gray rounded-lg hidden">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-pit-lane-gray mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-        <p class="text-racing-green text-2xl font-bold mb-2">Your wishlist is empty</p>
-        <p class="text-asphalt-gray mb-6">Save items you love for future reference</p>
-        <a
-                href="index.html"
-                class="inline-block bg-racing-green text-racing-white px-6 py-3 rounded hover:bg-gold-accent transition-colors"
-        >
-            Continue Shopping
-        </a>
+    <!-- Product Details Tab Section -->
+    <div class="mt-12">
+        <div class="flex border-b border-pit-lane-gray">
+            <button class="tab-btn active py-3 px-6 font-medium text-racing-green border-b-2 border-racing-green relative -bottom-px" data-tab="description">Description</button>
+            <button class="tab-btn py-3 px-6 font-medium text-pit-lane-gray hover:text-racing-green transition-colors" data-tab="specifications">Specifications</button>
+            <button class="tab-btn py-3 px-6 font-medium text-pit-lane-gray hover:text-racing-green transition-colors" data-tab="shipping">Shipping & Returns</button>
+        </div>
+
+        <div class="tab-content p-6 bg-racing-white rounded-b-lg shadow-lg">
+            <div id="description-tab" class="tab-pane active">
+                <h3 class="text-xl font-bold text-racing-green mb-4">Product Description</h3>
+                <p id="full-description" class="text-asphalt-gray leading-relaxed"></p>
+            </div>
+            <div id="specifications-tab" class="tab-pane hidden">
+                <h3 class="text-xl font-bold text-racing-green mb-4">Product Specifications</h3>
+                <div class="grid grid-cols-2 gap-y-4 text-asphalt-gray">
+                    <div>
+                        <span class="font-medium text-racing-green">Material:</span>
+                        <span id="specs-material"></span>
+                    </div>
+                    <div>
+                        <span class="font-medium text-racing-green">Color:</span>
+                        <span id="specs-color"></span>
+                    </div>
+                    <div>
+                        <span class="font-medium text-racing-green">Size:</span>
+                        <span id="specs-size"></span>
+                    </div>
+                    <div>
+                        <span class="font-medium text-racing-green">Category:</span>
+                        <span id="specs-category"></span>
+                    </div>
+                </div>
+            </div>
+            <div id="shipping-tab" class="tab-pane hidden">
+                <h3 class="text-xl font-bold text-racing-green mb-4">Shipping & Returns</h3>
+                <div class="space-y-4 text-asphalt-gray">
+                    <p><span class="font-medium text-racing-green">Standard Shipping:</span> 3-5 business days</p>
+                    <p><span class="font-medium text-racing-green">Express Shipping:</span> 1-2 business days</p>
+                    <p><span class="font-medium text-racing-green">Return Policy:</span> Returns accepted within 30 days of purchase for unused items in original packaging.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recently Viewed Section -->
+    <div id="recently-viewed-container" class="mt-16">
+        <!-- Recently viewed items will be dynamically inserted here -->
     </div>
 </div>
 
 <!-- Notification Container -->
 <div id="notification-container" class="fixed top-4 right-4 z-50"></div>
+
+<!-- Error Container -->
+<div id="error-container" class="hidden"></div>
 
 <!-- Racing-themed footer -->
 <!-- Footer - Copy this entire section into all HTML files -->
@@ -257,6 +403,5 @@
         }
     });
 </script>
-<script src="mobile-optimizations.js"></script>
 </body>
 </html>
