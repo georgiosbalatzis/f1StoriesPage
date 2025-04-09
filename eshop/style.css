@@ -1,0 +1,1029 @@
+/* Racing Theme Styles */
+body {
+    background-color: var(--racing-white, #FAFAFA);
+    color: var(--asphalt-gray, #4A4A4A);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Racing-themed Headers */
+header {
+    background-color: var(--racing-green, #003B2B);
+    border-bottom: 3px solid var(--gold-accent, #CBA135);
+}
+
+/* Logo styling */
+.logo h1, .logo a {
+    color: var(--gold-accent, #CBA135);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Navigation Links */
+nav a {
+    color: var(--racing-white, #FAFAFA);
+    transition: color 0.2s, transform 0.2s;
+    position: relative;
+}
+
+nav a:hover {
+    color: var(--gold-accent, #CBA135);
+    transform: translateY(-2px);
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--gold-accent, #CBA135);
+    transition: width 0.3s ease;
+}
+
+nav a:hover::after {
+    width: 100%;
+}
+
+/* Dark Mode Styles */
+body.dark {
+    background-color: var(--racing-black, #121212);
+    color: var(--metallic-silver, #B0B0B0);
+}
+
+body.dark .bg-racing-white {
+    background-color: var(--carbon-gray, #2F2F2F);
+    color: var(--metallic-silver, #B0B0B0);
+}
+
+/* Product Cards */
+.product-card {
+    background-color: var(--racing-white, #FAFAFA);
+    border: 1px solid var(--gold-accent, #CBA135);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    border-color: var(--champagne-gold, #F8E9A1);
+}
+
+.product-card h3 {
+    color: var(--racing-green, #003B2B);
+    font-weight: bold;
+}
+
+.product-card .price {
+    color: var(--gold-accent, #CBA135);
+    font-weight: bold;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--racing-green, #003B2B);
+    color: var(--racing-white, #FAFAFA);
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--gold-accent, #CBA135);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: var(--carbon-gray, #2F2F2F);
+    color: var(--racing-white, #FAFAFA);
+    border: 1px solid var(--gold-accent, #CBA135);
+}
+
+.btn-secondary:hover {
+    background-color: var(--pit-lane-gray, #6A6A6A);
+}
+
+/* Wishlist Heart Icon */
+.wishlist-toggle {
+    transition: transform 0.2s, color 0.2s;
+}
+
+.wishlist-toggle:hover {
+    transform: scale(1.2);
+    color: var(--racing-red, #D50000);
+}
+
+.wishlist-toggle.active {
+    color: var(--racing-red, #D50000);
+}
+
+/* Error Container */
+#error-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--racing-red, #D50000);
+    color: var(--racing-white, #FAFAFA);
+    text-align: center;
+    padding: 10px;
+    z-index: 1000;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--carbon-gray, #2F2F2F);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gold-accent, #CBA135);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--champagne-gold, #F8E9A1);
+}
+
+/* Filter Sidebar */
+#categoryFilters {
+    background-color: var(--carbon-gray, #2F2F2F);
+    color: var(--racing-white, #FAFAFA);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+/* Checkout Form */
+.checkout-form input,
+.checkout-form select,
+.checkout-form textarea {
+    border: 1px solid var(--pit-lane-gray, #6A6A6A);
+    border-radius: 4px;
+    padding: 8px 12px;
+    background-color: var(--racing-white, #FAFAFA);
+    transition: border-color 0.3s;
+}
+
+.checkout-form input:focus,
+.checkout-form select:focus,
+.checkout-form textarea:focus {
+    outline: none;
+    border-color: var(--gold-accent, #CBA135);
+    box-shadow: 0 0 0 2px rgba(203, 161, 53, 0.2);
+}
+
+/* Racing stripe accent */
+.racing-stripe {
+    background: linear-gradient(90deg, var(--racing-green, #003B2B) 0%, var(--racing-green, #003B2B) 70%, var(--gold-accent, #CBA135) 70%, var(--gold-accent, #CBA135) 100%);
+    height: 4px;
+    width: 100%;
+}
+
+/* Hero section enhancement */
+.hero-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--gold-accent, #CBA135) 0%, var(--racing-green, #003B2B) 100%);
+}
+
+/* Back to Top Button */
+#back-to-top {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#back-to-top:hover {
+    transform: translateY(-5px);
+}
+
+.dark #back-to-top {
+    background-color: var(--gold-accent, #CBA135);
+}
+
+.dark #back-to-top:hover {
+    background-color: var(--racing-green, #003B2B);
+}
+
+/* Cart Counter Animation */
+@keyframes cartPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.cart-count {
+    transition: all 0.3s ease;
+}
+
+.cart-pulse {
+    animation: cartPulse 0.3s ease-in-out;
+}
+
+/* Ensure external links look distinct */
+a[href^="https://f1stories.gr"] {
+    position: relative;
+    display: inline-block;
+}
+
+/* Show icon for external links in the footer */
+footer a[href^="https://f1stories.gr"]::after {
+    content: '↗';
+    display: inline-block;
+    margin-left: 2px;
+    font-size: 0.8em;
+    transition: transform 0.2s ease;
+}
+
+footer a[href^="https://f1stories.gr"]:hover::after {
+    transform: translate(2px, -2px);
+}
+
+/* Make sure the page transitions flow smoothly when using back-to-top */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    scroll-padding-top: 70px; /* Adjust based on your header height */
+}
+
+/* Tab System Styling */
+.tab-btn {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.tab-btn:not(.active):hover {
+    color: var(--racing-green, #003B2B);
+}
+
+.tab-content {
+    border: 1px solid var(--pit-lane-gray, #6A6A6A);
+    border-top: none;
+}
+
+/* Notification System */
+.notification {
+    border-left: 4px solid;
+}
+
+.notification.success {
+    border-color: var(--racing-green, #003B2B);
+}
+
+.notification.error {
+    border-color: var(--racing-red, #D50000);
+}
+
+.notification.info {
+    border-color: var(--gold-accent, #CBA135);
+}
+
+/* Quantity Input Styling */
+.quantity-input {
+    display: flex;
+    border: 1px solid var(--pit-lane-gray, #6A6A6A);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.quantity-input button {
+    background-color: var(--racing-white, #FAFAFA);
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.quantity-input button:hover {
+    background-color: var(--gold-accent, #CBA135);
+    color: var(--racing-white, #FAFAFA);
+}
+
+.quantity-input input {
+    border: none;
+    width: 40px;
+    text-align: center;
+    border-left: 1px solid var(--pit-lane-gray, #6A6A6A);
+    border-right: 1px solid var(--pit-lane-gray, #6A6A6A);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .flex {
+        flex-direction: column;
+    }
+
+    #categoryFilters {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    #productGrid {
+        width: 100%;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Adjust racing stripe for mobile */
+    .racing-stripe {
+        height: 3px;
+    }
+
+    /* Stack navigation on mobile */
+    header nav {
+        flex-wrap: wrap;
+    }
+
+    /* Make back-to-top button smaller on mobile */
+    #back-to-top {
+        bottom: 20px;
+        right: 20px;
+        padding: 8px;
+    }
+
+    #back-to-top svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Add these mobile optimizations to style.css */
+
+/* Mobile-First Responsive Adjustments */
+@media (max-width: 768px) {
+    /* Header & Navigation */
+    header {
+        padding: 0.75rem;
+    }
+
+    header .logo a {
+        font-size: 1.5rem; /* Smaller logo text */
+    }
+
+    nav {
+        position: relative;
+    }
+
+    /* Compressed nav links on mobile */
+    header nav {
+        gap: 0.75rem;
+    }
+
+    header nav a svg {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        flex-direction: column;
+        padding: 2rem 1rem;
+    }
+
+    .hero-section > div {
+        width: 100%;
+        padding-right: 0;
+        margin-bottom: 2rem;
+    }
+
+    .hero-section h1 {
+        font-size: 2.25rem;
+        text-align: center;
+    }
+
+    .hero-section p {
+        text-align: center;
+    }
+
+    .hero-section a {
+        display: block;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    /* Main Content Layout */
+    #products {
+        flex-direction: column;
+    }
+
+    #categoryFilters {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+
+    #productGrid {
+        width: 100%;
+        grid-template-columns: repeat(1, 1fr); /* Single column for phones */
+    }
+
+    /* Make product cards larger on mobile */
+    .product-card {
+        margin-bottom: 1.5rem;
+    }
+
+    .product-card img {
+        height: 180px; /* Larger product images on mobile */
+    }
+
+    /* Footer */
+    footer .grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    /* Social media icons */
+    .social-media-icons {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* Larger touch targets for social media icons */
+    .social-media-icons a {
+        padding: 0.5rem;
+    }
+
+    /* Cart, Checkout, Product Details */
+    .grid.md\:grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+
+    /* Back-to-top button position */
+    #back-to-top {
+        bottom: 1rem;
+        right: 1rem;
+    }
+
+    /* Recently viewed section */
+    #recently-viewed-container .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+    /* Extremely small screens */
+    header {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding-bottom: 1rem;
+    }
+
+    header nav {
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    /* Hidden text labels, only icons */
+    .nav-text {
+        display: none;
+    }
+
+    /* Product grid full width items */
+    #productGrid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Checkout form */
+    .grid.grid-cols-3 {
+        grid-template-columns: 1fr;
+    }
+
+    /* Social media icons for tiny screens */
+    .social-media-icons {
+        gap: 0.5rem;
+    }
+}
+
+/* Better Hamburger Menu for Very Small Screens */
+@media (max-width: 380px) {
+    .mobile-menu-wrapper {
+        display: block;
+    }
+
+    .mobile-menu-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        background-color: var(--racing-green);
+        border: none;
+        border-radius: 50%;
+        position: fixed;
+        bottom: 5rem;
+        right: 1rem;
+        z-index: 50;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .mobile-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: var(--racing-green);
+        padding: 0.5rem;
+        display: flex;
+        justify-content: space-around;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 40;
+    }
+}
+
+/* Add these mobile checkout optimizations to style.css */
+
+/* Mobile Checkout Form Improvements */
+@media (max-width: 768px) {
+    /* Checkout page specific styles */
+
+    /* Make form inputs larger and easier to tap on mobile */
+    .checkout-form input,
+    .checkout-form select,
+    .checkout-form textarea {
+        padding: 12px;
+        font-size: 16px; /* Prevents iOS zoom on focus */
+        margin-bottom: 12px;
+    }
+
+    /* Larger tap targets for shipping options */
+    .shipping-option {
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+
+    /* Reorder checkout sections on mobile */
+    .checkout-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .checkout-container .order-summary {
+        order: 1; /* Show summary first on mobile */
+        margin-bottom: 20px;
+    }
+
+    .checkout-container .shipping-form {
+        order: 2;
+    }
+
+    /* Cart page specific styles */
+
+    /* Larger buttons in cart */
+    .cart-actions button {
+        padding: 12px 16px;
+        font-size: 16px;
+    }
+
+    /* Cart item layout for mobile */
+    .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .cart-item-details {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .cart-item-image {
+        width: 100%;
+        height: auto;
+    }
+
+    /* Quantity selector for mobile */
+    .quantity-input {
+        margin: 12px 0;
+    }
+
+    .quantity-input button {
+        width: 36px;
+        height: 36px;
+    }
+
+    /* Payment buttons on mobile */
+    #paypal-button-container {
+        width: 100%;
+    }
+
+    /* Fix for long product names */
+    .product-name {
+        word-break: break-word;
+        hyphens: auto;
+    }
+}
+
+/* Special styles for forms on iOS */
+@supports (-webkit-overflow-scrolling: touch) {
+    input,
+    select,
+    textarea {
+        font-size: 16px !important; /* Prevents iOS zoom */
+    }
+
+    .checkout-form input,
+    .checkout-form select {
+        -webkit-appearance: none;
+        border-radius: 4px;
+    }
+}
+
+/* Custom radio buttons and checkboxes for touch */
+.custom-radio input[type="radio"],
+.custom-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.custom-radio .radio-label,
+.custom-checkbox .checkbox-label {
+    position: relative;
+    padding-left: 35px;
+    cursor: pointer;
+    display: inline-block;
+    line-height: 25px;
+}
+
+.custom-radio .radio-label:before,
+.custom-checkbox .checkbox-label:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 25px;
+    height: 25px;
+    border: 2px solid var(--gold-accent, #CBA135);
+    background: var(--racing-white, #FAFAFA);
+}
+
+.custom-radio .radio-label:before {
+    border-radius: 50%;
+}
+
+.custom-radio input[type="radio"]:checked + .radio-label:after {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 7px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--racing-green, #003B2B);
+}
+
+.custom-checkbox input[type="checkbox"]:checked + .checkbox-label:after {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 4px;
+    width: 9px;
+    height: 15px;
+    border: solid var(--racing-green, #003B2B);
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+/* Mobile sticky cart total bar */
+.sticky-cart-total {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--racing-green, #003B2B);
+    color: var(--racing-white, #FAFAFA);
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 30;
+    transition: transform 0.3s ease;
+}
+
+.sticky-cart-total.hidden {
+    transform: translateY(100%);
+}
+
+.sticky-cart-total.with-mobile-nav {
+    bottom: 60px; /* Adjust based on mobile nav height */
+}
+
+.sticky-cart-total .total-text {
+    font-weight: bold;
+}
+
+.sticky-cart-total .total-amount {
+    color: var(--gold-accent, #CBA135);
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+/* Add this to style.css for responsive social media section */
+
+/* Social Media Icons Responsive Styling */
+.social-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .social-icons {
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+    .social-icons a {
+        /* Larger tap targets on mobile */
+        padding: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .social-icons {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+
+    .social-icons a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .social-icons a svg {
+        margin-bottom: 0.25rem;
+    }
+
+    .social-icons a .icon-label {
+        font-size: 0.75rem;
+        display: block;
+    }
+}
+
+/* Updated Social Media Icons Section in Footer */
+.footer-social-section {
+    margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .footer-social-section {
+        border-top: 1px solid var(--pit-lane-gray, #6A6A6A);
+        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+    }
+}
+
+/* Social Media Platform Specific Colors on Hover */
+.social-youtube:hover {
+    color: #FF0000 !important;
+}
+
+.social-facebook:hover {
+    color: #1877F2 !important;
+}
+
+.social-instagram:hover {
+    color: #E4405F !important;
+}
+
+.social-tiktok:hover {
+    color: #000000 !important;
+    text-shadow: 0 0 2px #69C9D0;
+}
+
+.social-email:hover {
+    color: #D44638 !important;
+}
+
+.social-spotify:hover {
+    color: #1DB954 !important;
+}
+
+/* Enhanced Mobile Filter Button Styles */
+#mobile-filter-button {
+    position: fixed;
+    bottom: 6rem; /* Position above mobile nav */
+    right: 1rem;
+    background-color: var(--racing-green, #003B2B);
+    color: var(--racing-white, #FAFAFA);
+    padding: 0.75rem;
+    border-radius: 50%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    z-index: 40;
+    display: none; /* Hidden by default, shown via JavaScript */
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    width: 3rem;
+    height: 3rem;
+}
+
+#mobile-filter-button:hover,
+#mobile-filter-button:focus {
+    background-color: var(--gold-accent, #CBA135);
+    transform: translateY(-2px);
+}
+
+#mobile-filter-button svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+/* Add a pulsing animation to make it more noticeable */
+@keyframes filterPulse {
+    0% { transform: scale(1); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4); }
+    100% { transform: scale(1); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); }
+}
+
+#mobile-filter-button:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: var(--gold-accent, #CBA135);
+    opacity: 0.3;
+    z-index: -1;
+    animation: filterPulse 2s infinite;
+}
+
+/* Enhanced Mobile Filter Panel */
+#mobile-filter-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--carbon-gray, #2F2F2F);
+    padding: 1.5rem;
+    z-index: 45;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+#mobile-filter-panel.active {
+    transform: translateY(0);
+}
+
+#mobile-filter-panel h3 {
+    color: var(--gold-accent, #CBA135);
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#mobile-filter-panel .close-button {
+    background: none;
+    border: none;
+    color: var(--racing-white, #FAFAFA);
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+#mobile-filter-panel .close-button:hover,
+#mobile-filter-panel .close-button:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-filter-content {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-bottom: 1rem;
+}
+
+/* Mobile Category Button Styles */
+.mobile-category-button {
+    width: 100%;
+    text-align: left;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    font-weight: medium;
+    transition: all 0.2s ease;
+}
+
+.mobile-category-button.active {
+    background-color: var(--racing-green, #003B2B);
+    color: var(--racing-white, #FAFAFA);
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.mobile-category-button:not(.active) {
+    background-color: var(--carbon-gray, #2F2F2F);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-category-button:hover {
+    background-color: var(--gold-accent, #CBA135);
+    transform: translateX(3px);
+}
+/* Fixed footer with scrollable content */
+@media (min-width: 769px) {
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+    }
+
+    #main-content {
+        flex: 1;
+        overflow-y: auto;
+        padding-bottom: 2rem;
+    }
+
+    footer {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+    }
+
+    /* Create overlay effect for the content */
+    #products::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        background: linear-gradient(to bottom, transparent, var(--racing-white, #FAFAFA));
+        pointer-events: none;
+        z-index: 5;
+    }
+
+    body.dark #products::after {
+        background: linear-gradient(to bottom, transparent, var(--racing-black, #121212));
+    }
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+    #categoryFilters {
+        display: none; /* Hide the sidebar filters on mobile */
+    }
+
+    #productGrid {
+        width: 100% !important; /* Full width for products */
+    }
+
+    #mobile-filter-button {
+        display: flex; /* Show the filter button on mobile */
+    }
+
+    #products {
+        flex-direction: column;
+    }
+
+    /* Add padding to prevent content from being hidden by mobile nav */
+    body {
+        padding-bottom: 5rem;
+    }
+
+    /* Make sure the content area takes up available space */
+    #main-content {
+        flex: 1;
+        min-height: calc(100vh - 60px - 60px); /* Viewport height minus header and footer */
+    }
+}

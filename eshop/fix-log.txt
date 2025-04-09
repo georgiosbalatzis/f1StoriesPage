@@ -1,0 +1,6 @@
+🧼 F1 HTML Footer Fix Log — Τετ  9 Απρ 2025 10:17:04 EEST
+✅ Cleaned: ./index.html
+✅ Cleaned: ./product-details.html
+✅ Cleaned: ./checkout.html
+✅ Cleaned: ./cart.html
+✅ Cleaned: ./wishlist.html
