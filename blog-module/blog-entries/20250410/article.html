@@ -93,12 +93,12 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
-          <li class="nav-item"><a class="nav-link active" href="../../episodes/index.html" aria-current="page">Episodes</a></li>
-          <li class="nav-item"><a class="nav-link" href="../../index.html#about">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="../../index.html#guests">Guests</a></li>
-          <li class="nav-item"><a class="nav-link" href="../../blog-module/blog/index.html">Blog</a></li>
-          <li class="nav-item"><a class="nav-link" href="../../index.html#contact">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/'; return false;">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/episodes/index.html'; return false;">Episodes</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#about'; return false;">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#guests'; return false;">Guests</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/blog-module/blog/index.html'; return false;">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#contact'; return false;">Contact</a></li>
         </ul>
       </div>
     </div>
@@ -267,13 +267,15 @@
       });
     }
 
-    // Fix any path issues in the navbar links
+    // Close mobile menu after clicking a link
     const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
     navLinks.forEach(link => {
-      // If it's a hash link without a base path, add one
-      if (link.getAttribute('href').startsWith('#')) {
-        link.setAttribute('href', '/index.html' + link.getAttribute('href'));
-      }
+      link.addEventListener('click', function() {
+        // If mobile menu is open, close it
+        if (navbarCollapse.classList.contains('show')) {
+          navbarCollapse.classList.remove('show');
+        }
+      });
     });
   });
 </script>
