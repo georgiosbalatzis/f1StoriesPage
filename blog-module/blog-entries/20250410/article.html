@@ -58,6 +58,21 @@
 
     gtag('config', 'G-X68J6MQKSM');
   </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the first paragraph of the article
+      const firstParagraph = document.querySelector('.article-content p');
+      if (firstParagraph) {
+        // Extract text and limit to ~150 characters
+        const description = firstParagraph.textContent.substring(0, 150) + '...';
+        // Update meta tag
+        document.querySelector('meta[property="og:description"]').setAttribute('content', description);
+      } else {
+        // Fallback if no paragraph is found
+        document.querySelector('meta[property="og:description"]').setAttribute('content', '🏎️💨 Τελευταία νέα και ιστορίες για τη Formula 1 από το F1 Stories Blog 🏁📈');
+      }
+    });
+  </script>
 
 </head>
 <body>
@@ -138,6 +153,29 @@
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250415,1/1.webp" 
+                             alt="📡 Ζωντανά Δεδομένα: Η Καρδιά της Απόδοσης" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250415,1/1.webp') { this.src='/blog-module/blog/images/20250415,1/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">15,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">📡 Ζωντανά Δεδομένα: Η Καρδιά της Απόδοσης</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250415,1/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
                         <img src="/blog-module/blog-entries/20250412/1.webp" 
                              alt="🔧 Case Study: Η Λύση της McLaren στα Προβλήματα Ψύξης των Φρένων το 2025" 
                              class="blog-img"
@@ -177,29 +215,6 @@
                             <span><i class="fas fa-comments"></i> 0</span>
                         </div>
                         <a href="/blog-module/blog-entries/20250411/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="/blog-module/blog-entries/20250407/1.webp" 
-                             alt="🧪 Case Study: Το DAM (Dirty Air Matters) – Και στη Σουζούκα, Όπως Πάντα" 
-                             class="blog-img"
-                             onerror="if(this.src !== '/blog-module/blog/images/20250407/1.webp') { this.src='/blog-module/blog/images/20250407/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
-                        <div class="blog-date">
-                            <span class="day">7,</span>
-                            <span class="month">APR</span>
-                        </div>
-                    </div>
-                    <div class="blog-content">
-                        <h3 class="blog-title">🧪 Case Study: Το DAM (Dirty Air Matters) – Και στη Σουζούκα, Όπως Πάντα</h3>
-                        <div class="blog-meta">
-                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
-                            <span><i class="fas fa-comments"></i> 0</span>
-                        </div>
-                        <a href="/blog-module/blog-entries/20250407/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
