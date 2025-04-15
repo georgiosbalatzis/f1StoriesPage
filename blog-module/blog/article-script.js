@@ -163,6 +163,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add cursor pointer to indicate images are clickable
         image.style.cursor = 'pointer';
     });
+
+    // Make related articles clickable
+    makeRelatedArticlesClickable();
 });
 
 // Check if the back to top button is missing and add it if needed
@@ -232,3 +235,68 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Function to make related articles clickable
+function makeRelatedArticlesClickable() {
+    // First check for standard related article structure
+    const relatedSection = document.querySelector('.row.mt-5');
+    if (!relatedSection) return;
+
+    // Look for blog cards within the related articles section
+    const relatedCards = relatedSection.querySelectorAll('.blog-card');
+
+    if (relatedCards.length === 0) {
+        // If no .blog-card elements found, look for any card-like elements
+        const possibleCards = relatedSection.querySelectorAll('.col-md-4');
+
+        possibleCards.forEach(card => {
+            const links = card.querySelectorAll('a');
+            // If there's at least one link, use the first link's href
+            if (links.length > 0) {
+                const firstLink = links[0];
+                const url = firstLink.getAttribute('href');
+
+                // If the card is not already wrapped in a link
+                if (card.parentNode.tagName !== 'A') {
+                    // Create wrapper link
+                    const wrapperLink = document.createElement('a');
+                    wrapperLink.href = url;
+                    wrapperLink.className = 'blog-card-link';
+
+                    // Insert the card into the wrapper
+                    card.parentNode.insertBefore(wrapperLink, card);
+                    wrapperLink.appendChild(card);
+
+                    // Add cursor pointer to indicate card is clickable
+                    card.style.cursor = 'pointer';
+                }
+            }
+        });
+    } else {
+        // Process standard blog cards
+        relatedCards.forEach(card => {
+            const readMoreLink = card.querySelector('.blog-read-more');
+            if (readMoreLink) {
+                const articleUrl = readMoreLink.getAttribute('href');
+
+                // Create wrapper link (if the card is not already wrapped in a link)
+                if (card.parentNode.tagName !== 'A') {
+                    const wrapperLink = document.createElement('a');
+                    wrapperLink.href = articleUrl;
+                    wrapperLink.className = 'blog-card-link';
+
+                    // Replace the "Read More" link with a span
+                    const readMoreText = readMoreLink.innerHTML;
+                    const readMoreSpan = document.createElement('span');
+                    readMoreSpan.className = 'blog-read-more';
+                    readMoreSpan.innerHTML = readMoreText;
+                    readMoreLink.replaceWith(readMoreSpan);
+
+                    // Insert the card into the wrapper
+                    card.parentNode.insertBefore(wrapperLink, card);
+                    wrapperLink.appendChild(card);
+                }
+            }
+        });
+    }
+}
