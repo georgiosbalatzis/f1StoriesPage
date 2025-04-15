@@ -483,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (eshopButton) {
         eshopButton.addEventListener('click', function(e) {
             e.preventDefault();
-            window.location.href = 'eshop/index.html';
+            window.location.href = 'https://georgiosbalatzis.github.io/BetCastVisualisation/';
         });
     }
 });
