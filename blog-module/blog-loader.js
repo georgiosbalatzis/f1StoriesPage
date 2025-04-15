@@ -80,7 +80,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     const fallbackPath = basePath + 'blog-module/images/default-blog.jpg';
 
                     const postHtml = `
-                        <div class="col-md-4">
+                    <div class="col-md-4">
+                        <a href="${basePath}blog-module/blog-entries/${post.id}/article.html" class="blog-card-link">
                             <div class="blog-card">
                                 <div class="blog-img-container">
                                     <img src="${imagePath}" alt="${post.title}" class="blog-img" onerror="this.src='${fallbackPath}'">
@@ -101,12 +102,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                             <span class="post-tag"><i class="fas fa-tag"></i> ${post.tag || 'General'}</span>
                                             <span class="post-category ms-2"><i class="fas fa-folder"></i> ${post.category || 'Uncategorized'}</span>
                                         </div>
-                                        <a href="${basePath}blog-module/blog-entries/${post.id}/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                                        <span class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></span>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        </a>
+                    </div>
+                `;
 
                     blogPostsContainer.innerHTML += postHtml;
                 });
@@ -246,30 +248,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const postHtml = `
                 <div class="col-md-4 blog-card-container" data-id="${post.id}" data-tag="${post.tag || 'General'}" data-category="${post.category || 'Uncategorized'}">
-                    <div class="blog-card">
-                        <div class="blog-img-container">
-                            <img src="${imagePath}" alt="${post.title}" class="blog-img" onerror="this.src='${fallbackPath}'">
-                            <div class="blog-date">
-                                <span class="day">${day}</span>
-                                <span class="month">${month}</span>
-                            </div>
-                        </div>
-                        <div class="blog-content">
-                            <h3 class="blog-title">${post.title}</h3>
-                            <div class="blog-meta">
-                                <span><i class="fas fa-user"></i> ${post.author}</span>
-                                <span><i class="fas fa-calendar"></i> ${post.displayDate}</span>
-                            </div>
-                            <p class="blog-excerpt">${post.excerpt}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="post-info">
-                                    <span class="post-tag"><i class="fas fa-tag"></i> ${post.tag || 'General'}</span>
-                                    <span class="post-category ms-2"><i class="fas fa-folder"></i> ${post.category || 'Uncategorized'}</span>
+                    <a href="${basePath}blog-module/blog-entries/${post.id}/article.html" class="blog-card-link">
+                        <div class="blog-card">
+                            <div class="blog-img-container">
+                                <img src="${imagePath}" alt="${post.title}" class="blog-img" onerror="this.src='${fallbackPath}'">
+                                <div class="blog-date">
+                                    <span class="day">${day}</span>
+                                    <span class="month">${month}</span>
                                 </div>
-                                <a href="${basePath}blog-module/blog-entries/${post.id}/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                            <div class="blog-content">
+                                <h3 class="blog-title">${post.title}</h3>
+                                <div class="blog-meta">
+                                    <span><i class="fas fa-user"></i> ${post.author}</span>
+                                    <span><i class="fas fa-calendar"></i> ${post.displayDate}</span>
+                                </div>
+                                <p class="blog-excerpt">${post.excerpt}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="post-info">
+                                        <span class="post-tag"><i class="fas fa-tag"></i> ${post.tag || 'General'}</span>
+                                        <span class="post-category ms-2"><i class="fas fa-folder"></i> ${post.category || 'Uncategorized'}</span>
+                                    </div>
+                                    <span class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             `;
 

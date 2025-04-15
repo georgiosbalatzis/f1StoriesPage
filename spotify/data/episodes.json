@@ -2,11 +2,47 @@
   "podcastTitle": "F1 Stories",
   "podcastDescription": "Podcast για την F1. Απλά και όμορφα...",
   "podcastImage": "https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg",
-  "lastUpdated": "2025-04-06T16:05:29.876Z",
+  "lastUpdated": "2025-04-15T12:33:50.959Z",
   "episodeCount": 10,
   "episodes": [
     {
       "id": 1,
+      "title": "BetCast #4 : Bahrain GP",
+      "number": "16",
+      "spotifyId": null,
+      "description": "Live Στοιχηματικές προτάσεις για το διήμερο !",
+      "pubDate": "Mon, 14 Apr 2025 15:52:55 GMT",
+      "duration": "00:36:16",
+      "audioUrl": "https://anchor.fm/s/101588098/podcast/play/101278607/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-14%2F398383220-44100-2-67d020b12c523.mp3",
+      "imageUrl": "https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg",
+      "link": "https://podcasters.spotify.com/pod/show/f1-stories/episodes/BetCast-4--Bahrain-GP-e31h9ef"
+    },
+    {
+      "id": 2,
+      "title": "BoxBox!？ #2： Vol 1 - Συμφωνώ - Διαφωνώ",
+      "number": "15",
+      "spotifyId": null,
+      "description": "Vol 1 - Συμφωνώ - Διαφωνώ.mp3",
+      "pubDate": "Mon, 14 Apr 2025 15:50:51 GMT",
+      "duration": "00:25:00",
+      "audioUrl": "https://anchor.fm/s/101588098/podcast/play/101278587/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-14%2F43ff7619-0dcd-4b80-eeb7-774a4388874b.mp3",
+      "imageUrl": "https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg",
+      "link": "https://podcasters.spotify.com/pod/show/f1-stories/episodes/BoxBox--2-Vol-1------e31h9dr"
+    },
+    {
+      "id": 3,
+      "title": "Podcast #8 ： Japan",
+      "number": "14",
+      "spotifyId": null,
+      "description": "Japan - Η McLaren Ηγείται, η Mercedes Κοντά",
+      "pubDate": "Mon, 14 Apr 2025 15:50:22 GMT",
+      "duration": "00:24:01",
+      "audioUrl": "https://anchor.fm/s/101588098/podcast/play/101278553/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-14%2F8c75dccb-9993-9d6d-27ad-2ee5f0e7bfad.mp3",
+      "imageUrl": "https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg",
+      "link": "https://podcasters.spotify.com/pod/show/f1-stories/episodes/Podcast-8--Japan-e31h9cp"
+    },
+    {
+      "id": 4,
       "title": "Japan GP / Τι περιμενουμε",
       "number": "13",
       "spotifyId": null,
@@ -18,7 +54,7 @@
       "link": "https://podcasters.spotify.com/pod/show/f1-stories/episodes/Japan-GP-e315s89"
     },
     {
-      "id": 2,
+      "id": 5,
       "title": "Australian GP / Τι ειδαμε",
       "number": "12",
       "spotifyId": null,
@@ -30,7 +66,7 @@
       "link": "https://podcasters.spotify.com/pod/show/f1-stories/episodes/Australian-GP-e315s7v"
     },
     {
-      "id": 3,
+      "id": 6,
       "title": "Australian GP / Τα πρωτα δεδομενα",
       "number": "11",
       "spotifyId": null,
@@ -42,7 +78,7 @@
       "link": "https://podcasters.spotify.com/pod/show/f1-stories/episodes/Australian-GP-e315s7g"
     },
     {
-      "id": 4,
+      "id": 7,
       "title": "GP Chinese - Τι ειδαμε",
       "number": "10",
       "spotifyId": null,
@@ -54,7 +90,7 @@
       "link": "https://podcasters.spotify.com/pod/show/f1-stories/episodes/GP-Chinese---e315s6q"
     },
     {
-      "id": 5,
+      "id": 8,
       "title": "GP China / Τα πρωτα δεδομενα",
       "number": "9",
       "spotifyId": null,
@@ -66,7 +102,7 @@
       "link": "https://podcasters.spotify.com/pod/show/f1-stories/episodes/GP-China-e315s6h"
     },
     {
-      "id": 6,
+      "id": 9,
       "title": "Tsunoda στην Redbull",
       "number": "8",
       "spotifyId": null,
@@ -78,7 +114,7 @@
       "link": "https://podcasters.spotify.com/pod/show/f1-stories/episodes/Tsunoda--Redbull-e315s5q"
     },
     {
-      "id": 7,
+      "id": 10,
       "title": "BoxBox!? #1",
       "number": "7",
       "spotifyId": null,
@@ -88,42 +124,6 @@
       "audioUrl": "https://anchor.fm/s/101588098/podcast/play/100904541/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-6%2F6be987ad-4617-0c6a-cc6c-52c6e458ad16.mp3",
       "imageUrl": "https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg",
       "link": "https://podcasters.spotify.com/pod/show/f1-stories/episodes/BoxBox---1-e315s4t"
-    },
-    {
-      "id": 8,
-      "title": "Betcast #1: Australian GP",
-      "number": "6",
-      "spotifyId": null,
-      "description": "Betcast #1: Australian GP",
-      "pubDate": "Sun, 06 Apr 2025 10:35:04 GMT",
-      "duration": "00:19:17",
-      "audioUrl": "https://anchor.fm/s/101588098/podcast/play/100904319/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-6%2Fc5bf509f-619d-d3e3-a173-1f805d4b94ab.mp3",
-      "imageUrl": "https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg",
-      "link": "https://podcasters.spotify.com/pod/show/f1-stories/episodes/Betcast-1-Australian-GP-e315rtv"
-    },
-    {
-      "id": 9,
-      "title": "Betcast #2 : Chinese GP",
-      "number": "5",
-      "spotifyId": null,
-      "description": "Στο δεύτερο επεισόδιο της σειράς BetCast, βουτάμε στον κόσμο των στοιχημάτων για το Chinese Grand Prix!",
-      "pubDate": "Sun, 06 Apr 2025 10:18:39 GMT",
-      "duration": "00:13:22",
-      "audioUrl": "https://anchor.fm/s/101588098/podcast/play/100904007/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-6%2F7cd1c7cb-de9f-0233-7257-bd8019c410b2.mp3",
-      "imageUrl": "https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg",
-      "link": "https://podcasters.spotify.com/pod/show/f1-stories/episodes/Betcast-2--Chinese-GP-e315rk7"
-    },
-    {
-      "id": 10,
-      "title": "Betcast #3 : Double Budget",
-      "number": "4",
-      "spotifyId": null,
-      "description": "Ανακαλύψτε τις καλύτερες επιλογές για στοιχήματα στον αγώνα της Formula 1 στο θρυλικό Circuit de Suzuka!",
-      "pubDate": "Sun, 06 Apr 2025 10:16:36 GMT",
-      "duration": "00:16:43",
-      "audioUrl": "https://anchor.fm/s/101588098/podcast/play/100903933/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-3-6%2F7a140c20-f7be-4cff-b6e6-e27c8b3eb608.mp3",
-      "imageUrl": "https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/43075446/43075446-1743935295428-2e4b3c4907193.jpg",
-      "link": "https://podcasters.spotify.com/pod/show/f1-stories/episodes/Betcast-3--Double-Budget-e315rht"
     }
   ]
 }

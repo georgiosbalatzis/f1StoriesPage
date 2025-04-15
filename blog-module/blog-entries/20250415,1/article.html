@@ -58,18 +58,43 @@
 
     gtag('config', 'G-X68J6MQKSM');
   </script>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Get the first paragraph of the article
-      const firstParagraph = document.querySelector('.article-content p');
-      if (firstParagraph) {
-        // Extract text and limit to ~150 characters
-        const description = firstParagraph.textContent.substring(0, 150) + '...';
-        // Update meta tag
-        document.querySelector('meta[property="og:description"]').setAttribute('content', description);
-      } else {
-        // Fallback if no paragraph is found
-        document.querySelector('meta[property="og:description"]').setAttribute('content', '🏎️💨 Τελευταία νέα και ιστορίες για τη Formula 1 από το F1 Stories Blog 🏁📈');
+      // Get the meta description tag
+      const metaDescription = document.querySelector('meta[property="og:description"]');
+
+      // Get the first paragraph of the article content for the description
+      const articleContent = document.querySelector('.article-content');
+
+      if (metaDescription && articleContent) {
+        // Find the first paragraph with actual content
+        const paragraphs = articleContent.querySelectorAll('p');
+        let firstParagraph = null;
+
+        // Find the first paragraph with meaningful content (more than 30 characters)
+        for (let i = 0; i < paragraphs.length; i++) {
+          if (paragraphs[i].textContent.trim().length > 30) {
+            firstParagraph = paragraphs[i];
+            break;
+          }
+        }
+
+        if (firstParagraph) {
+          // Extract text and limit to ~160 characters (standard meta description length)
+          let description = firstParagraph.textContent.trim();
+
+          // Truncate the description to around 160 characters at a word boundary
+          if (description.length > 160) {
+            description = description.substring(0, 157) + '...';
+          }
+
+          // Update meta tag
+          metaDescription.setAttribute('content', description);
+        } else {
+          // Fallback description if no suitable paragraph is found
+          metaDescription.setAttribute('content',  '🏎️💨 Τελευταία νέα και ιστορίες για τη Formula 1 από το F1 Stories Blog 🏁📈');
+        }
       }
     });
   </script>

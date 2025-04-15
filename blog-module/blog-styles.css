@@ -872,3 +872,52 @@
         transform: translateY(0);
     }
 }
+
+/* Add these styles to your blog-styles.css file */
+
+/* Make the entire blog card clickable */
+.blog-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.blog-card-link:hover {
+    transform: translateY(-5px);
+    text-decoration: none;
+    color: inherit;
+}
+
+.blog-card-link:hover .blog-card {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.blog-card-link:hover .read-more-btn {
+    background-color: #ff4b4b;
+    color: white;
+}
+
+/* Ensure blog cards maintain their styling */
+.blog-card {
+    height: 100%;
+    transition: box-shadow 0.3s ease;
+    background-color: rgba(15, 15, 15, 0.7);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Style the read more button as a span */
+.blog-card .read-more-btn {
+    display: inline-block;
+    background-color: transparent;
+    color: #ff4b4b;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: 600;
+    margin-top: 10px;
+    border: 2px solid #ff4b4b;
+    transition: all 0.3s ease;
+}
