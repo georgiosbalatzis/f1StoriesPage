@@ -58,6 +58,21 @@
 
     gtag('config', 'G-X68J6MQKSM');
   </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the first paragraph of the article
+      const firstParagraph = document.querySelector('.article-content p');
+      if (firstParagraph) {
+        // Extract text and limit to ~150 characters
+        const description = firstParagraph.textContent.substring(0, 150) + '...';
+        // Update meta tag
+        document.querySelector('meta[property="og:description"]').setAttribute('content', description);
+      } else {
+        // Fallback if no paragraph is found
+        document.querySelector('meta[property="og:description"]').setAttribute('content', '🏎️💨 Τελευταία νέα και ιστορίες για τη Formula 1 από το F1 Stories Blog 🏁📈');
+      }
+    });
+  </script>
 
 </head>
 <body>
