@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏎️ Η Τέχνη της Πρόσφυσης στη Formula 1 | F1 Stories Blog</title>
+
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="🏎️ Η Τέχνη της Πρόσφυσης στη Formula 1 | F1 Stories Blog">
+  <meta property="og:description" content="ARTICLE_DESCRIPTION">
+  <meta property="og:image" content="2.webp">
+  <meta property="og:url" content="https://f1stories.codeberg.page/blog-module/blog-entries/20250421/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/blog-module/blog-styles.css">
+  <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-X68J6MQKSM');
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the meta description tag
+      const metaDescription = document.querySelector('meta[property="og:description"]');
+
+      // Get the first paragraph of the article content for the description
+      const articleContent = document.querySelector('.article-content');
+
+      if (metaDescription && articleContent) {
+        // Find the first paragraph with actual content
+        const paragraphs = articleContent.querySelectorAll('p');
+        let firstParagraph = null;
+
+        // Find the first paragraph with meaningful content (more than 30 characters)
+        for (let i = 0; i < paragraphs.length; i++) {
+          if (paragraphs[i].textContent.trim().length > 30) {
+            firstParagraph = paragraphs[i];
+            break;
+          }
+        }
+
+        if (firstParagraph) {
+          // Extract text and limit to ~160 characters (standard meta description length)
+          let description = firstParagraph.textContent.trim();
+
+          // Truncate the description to around 160 characters at a word boundary
+          if (description.length > 160) {
+            description = description.substring(0, 157) + '...';
+          }
+
+          // Update meta tag
+          metaDescription.setAttribute('content', description);
+        } else {
+          // Fallback description if no suitable paragraph is found
+          metaDescription.setAttribute('content',  '🏎️💨 Τελευταία νέα και ιστορίες για τη Formula 1 από το F1 Stories Blog 🏁📈');
+        }
+      }
+    });
+  </script>
+
+</head>
+<body>
+<div class="background"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
+
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/images/logo.png" alt="F1 Stories Logo" height="50">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/'; return false;">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/episodes/index.html'; return false;">Episodes</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#about'; return false;">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#guests'; return false;">Guests</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/blog-module/blog/index.html'; return false;">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#contact'; return false;">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="py-5 mt-5">
+  <div class="container">
+    <!-- Back to Blog Button -->
+    <div class="text-start mb-4">
+      <a href="/blog-module/blog/index.html" class="btn btn-outline-light">
+        <i class="fas fa-arrow-left me-2"></i> Back to Blog
+      </a>
+    </div>
+
+    <div class="article-container">
+      <div class="article-header">
+        <!-- Images are local to the article folder -->
+        <img src="2.webp" alt="🏎️ Η Τέχνη της Πρόσφυσης στη Formula 1" class="article-header-img" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <div class="article-header-overlay">
+          <h1 class="article-title">🏎️ Η Τέχνη της Πρόσφυσης στη Formula 1</h1>
+          <div class="article-meta">
+            <span><i class="fas fa-user"></i> F1 Stories Team</span>
+            <span><i class="fas fa-calendar"></i> April 21, 2025</span>
+            <span><i class="fas fa-tag"></i> F1</span>
+            <span><i class="fas fa-folder"></i> Technical</span>
+          </div>
+        </div>
+      </div>
+      <div class="article-content">
+        <!-- Article content goes here -->
+        <p></p><h2><a id="_l2c9ijrzodu7"></a>🏎️ Η Τέχνη της Πρόσφυσης στη Formula 1</h2><p>Σε κάθε αγώνα της Formula 1 παρατηρούμε τους καλύτερους οδηγούς στον κόσμο να οδηγούν αυτά τα υπερ-αυτοκίνητα, τα μονοθέσια, με αδιανόητες ταχύτητες. Η κορωνίδα του μηχανοκίνητου αθλητισμού είναι για λίγους – οδηγούς που πρέπει να είναι εξοπλισμένοι με απίστευτες οδηγικές ικανότητες.</p><p>Αυτά τα «όπλα» στα χέρια των οδηγών ονομάζονται <strong>μονοθέσια</strong>, και πίσω τους κρύβονται ομάδες-μεγαθήρια, τεχνογνωσία δεκαετιών και ένα σύνολο εξαρτημάτων που οφείλουν να αποδώσουν στο μέγιστο. Στο άρθρο αυτό, θα εστιάσουμε στον <strong>πρώτο και κύριο παράγοντα</strong> αυτού του αθλήματος: την <strong>πρόσφυση</strong>.</p><p>Η <strong>γρήγορη οδήγηση</strong> είναι τελείως διαφορετική από την καθημερινή, συμβατική οδήγηση – αποτελεί ένα εντελώς ξεχωριστό κεφάλαιο. Η ομάδα του <em>F1 Stories</em> είναι εδώ για να μοιραστεί μαζί σας τη γνώση και την εμπειρία της στη γρήγορη οδήγηση.</p><h2><a id="_pow5ncle4z4"></a>🔍 Τι είναι η πρόσφυση;</h2><p>Η πρόσφυση είναι η τριβή που αναπτύσσεται μεταξύ των ελαστικών και του οδοστρώματος. Είναι ο βασικός λόγος που ένα όχημα:</p><ul><li>παραμένει σταθερό,<br /></li><li>επιταχύνει,<br /></li><li>φρενάρει,<br /></li><li>στρίβει.<br /></li></ul><p>Οι παράγοντες που επηρεάζουν την πρόσφυση είναι πολλοί: η ποιότητα του οδοστρώματος, οι καιρικές συνθήκες, το φορτίο, η αεροδυναμική πίεση κ.ά. Όμως, <strong>η μόνη επαφή με το δρόμο γίνεται μέσω των ελαστικών</strong>.</p><h2><a id="_9nbxqndbe8w2"></a>⚖️ Φορτίο = Βάρος επί των ελαστικών</h2><p>Η προσπάθεια μείωσης του χρόνου ενός γύρου δεν βασίζεται μόνο στην ισχύ του κινητήρα. Τα ελαστικά παίζουν καθοριστικό ρόλο. Από όλα τα εξαρτήματα ενός μονοθεσίου, <strong>μόνο τα ελαστικά έρχονται σε επαφή με τον ασφαλτοτάπητα</strong>.</p><p>Για παράδειγμα, ένα αυτοκίνητο 1.300 κιλών μεταφέρει αυτό το βάρος στον δρόμο <strong>μέσω των ελαστικών</strong> ή/και της <strong>κάθετης δύναμης</strong> που παράγουν τα αεροδυναμικά βοηθήματα. Αυτό το βάρος το ονομάζουμε <strong>φορτίο</strong>.</p><p>📌 Όσο μεγαλύτερο το φορτίο, τόσο μεγαλύτερη η πρόσφυση. Όσο μικρότερο, τόσο μικρότερη η πρόσφυση.</p><h3><a id="_7yzf8lxj0wvu"></a>✈️ Ρόλος της Αεροδυναμικής</h3><p>Στη Formula 1, οι εμπρός και πίσω πτέρυγες αυξάνουν την κάθετη δύναμη, πιέζοντας το μονοθέσιο στο έδαφος. Έτσι, τα ελαστικά αποκτούν <strong>μεγαλύτερη πρόσφυση</strong>, χωρίς να αυξάνεται το βάρος του οχήματος.</p><h2><a id="_4m4clf97wic4"></a>📊 Συντελεστές Τριβής σε Διάφορες Επιφάνειες</h2><table><thead><tr><th><p><strong>Επιφάνεια</strong></p></th><th><p><strong>Συντελεστής Τριβής</strong></p></th></tr><tr><th><p>Μπετόν (στεγνό)</p></th><th><p>1.0 – 0.5</p></th></tr><tr><th><p>Μπετόν (βρεγμένο)</p></th><th><p>0.9 – 0.4</p></th></tr><tr><th><p>Άσφαλτος (στεγνή)</p></th><th><p>1.0 – 0.5</p></th></tr><tr><th><p>Άσφαλτος (βρεγμένη)</p></th><th><p>0.9 – 0.3</p></th></tr><tr><th><p>Χαλίκι</p></th><th><p>0.6 – 0.4</p></th></tr><tr><th><p>Μαλακό χιόνι</p></th><th><p>0.4 – 0.35</p></th></tr><tr><th><p>Σκληρό/στοιβαγμένο χιόνι</p></th><th><p>0.3 – 0.2</p></th></tr><tr><th><p>Παγωμένη επιφάνεια</p></th><th><p>0.2 – 0.1</p></th></tr></thead></table><h2><a id="_n7fs976n9869"></a>🔁 Μεταβολές Φορτίου κατά την Οδήγηση</h2><ul><li><strong>Επιτάχυνση</strong> → βάρος μεταφέρεται πίσω → περισσότερη πρόσφυση στα πίσω ελαστικά.<br /></li><li><strong>Φρενάρισμα</strong> → βάρος μεταφέρεται εμπρός → καλύτερη πρόσφυση μπροστά, αλλά ασταθές πίσω μέρος.<br /></li><li><strong>Στροφή</strong> → βάρος μεταφέρεται στην εξωτερική πλευρά → περισσότερη πρόσφυση στα εξωτερικά ελαστικά.<br /></li></ul><h2><a id="_ettblyvqs98t"></a>🛞 Άξονες &amp; Δυνάμεις</h2><ul><li><strong>Διαμήκης άξονας</strong> → φρενάρισμα και επιτάχυνση<br /></li><li><strong>Εγκάρσιος άξονας</strong> → τιμόνι και στροφές<br /></li></ul><p>Όταν τα ελαστικά <strong>στριγγλίζουν</strong>, βρίσκονται κοντά στο <strong>όριο της πρόσφυσης</strong>. Αυτό το φαινόμενο ονομάζεται <strong>ολίσθηση</strong>.</p><p>🧮 Αν ένα ελαστικό με περιφέρεια 3μ. διανύσει 1,5μ. με μία περιστροφή → έχουμε <strong>50% ολίσθηση</strong>.</p><h2><a id="_fc5mdm6pe3m0"></a>🧭 Κατανομή Πρόσφυσης &amp; Γωνία Ολίσθησης</h2><p>Η πρόσφυση δεν διαχωρίζεται αυστηρά. Είναι μία ενιαία δύναμη που κατανέμεται ανάλογα με τις απαιτήσεις της στιγμής:</p><ul><li>Όταν <strong>φρενάρουμε δυνατά</strong>, δεν μπορούμε να στρίψουμε αποδοτικά.<br /></li><li>Όταν <strong>στρίβουμε πολύ</strong>, δεν μπορούμε να επιταχύνουμε αποτελεσματικά.<br /></li></ul><p>Η σωστή διαδικασία σε στροφή:</p><ol><li>Φρενάρισμα<br /></li><li>Στροφή τιμονιού<br /></li><li>Επαναφορά τιμονιού<br /></li><li>Επιτάχυνση<br /></li></ol><h2><a id="_lfdnbhw26fc6"></a>🚗 Υποστροφή &amp; Υπερστροφή</h2><ul><li><strong>Υπερστροφή</strong> → το πίσω μέρος γλιστράει προς τα έξω.<br /></li><li><strong>Υποστροφή</strong> → το εμπρός μέρος δεν στρίβει επαρκώς.<br /></li></ul><p>Και οι δύο καταστάσεις δείχνουν:</p><ul><li>Λάθος τεχνική,<br /></li><li>Υπερβολική ταχύτητα.<br /></li></ul><p>📌 Η <strong>ιδανική ολίσθηση</strong> είναι 10–15% – το αυτοκίνητο γλιστράει προοδευτικά, <strong>όχι ανεξέλεγκτα</strong>.</p><h2><a id="_rw5ruazfbolu"></a>📐 Τι είναι η Γωνία Ολίσθησης;</h2><p>Η <strong>γωνία ολίσθησης</strong> είναι η διαφορά μεταξύ:</p><ul><li>της κατεύθυνσης των τροχών,<br /></li><li>της πραγματικής κατεύθυνσης του αυτοκινήτου.<br /></li></ul><p>Η <strong>ιδανική γωνία</strong> για μέγιστη πρόσφυση: <strong>7–11 μοίρες</strong>.</p><p>🚫 Περισσότερο τιμόνι ≠ περισσότερη πρόσφυση.<br /> Η απόδοση εξαρτάται από:</p><ul><li>την ταχύτητα,<br /></li><li>το φορτίο στα εμπρός ελαστικά.<br /></li></ul><h2><a id="_4bfqhvwf8g8a"></a>🧠 Συμπέρασμα</h2><p>Είναι κρίσιμο να γνωρίζουμε <strong>πότε, πού και πώς</strong> μπορούμε να πιέσουμε το αυτοκίνητό μας. Στο άρθρο αυτό, αναλύσαμε την έννοια της πρόσφυσης – έναν από τους πιο σημαντικούς παράγοντες στην αγωνιστική οδήγηση.</p><p>📍 <em>Μείνετε μαζί μας – έρχονται ακόμα περισσότερα συναρπαστικά θέματα από τον κόσμο της Formula 1!</em></p>
+      </div>
+    </div>
+
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20250420/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="NEXT_ARTICLE_URL" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250415-1/1.webp" 
+                             alt="📡 Ζωντανά Δεδομένα: Η Καρδιά της Απόδοσης" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250415-1/1.webp') { this.src='/blog-module/blog/images/20250415-1/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">15,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">📡 Ζωντανά Δεδομένα: Η Καρδιά της Απόδοσης</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250415-1/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250412/1.webp" 
+                             alt="🔧 Case Study: Η Λύση της McLaren στα Προβλήματα Ψύξης των Φρένων το 2025" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250412/1.webp') { this.src='/blog-module/blog/images/20250412/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">12,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">🔧 Case Study: Η Λύση της McLaren στα Προβλήματα Ψύξης των Φρένων το 2025</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250412/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250411/1.webp" 
+                             alt="🛠️ Τροποποίηση Πάτωμα Haas: Αγώνας ενάντια στον χρόνο στη Σουζούκα" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250411/1.webp') { this.src='/blog-module/blog/images/20250411/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">11,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">🛠️ Τροποποίηση Πάτωμα Haas: Αγώνας ενάντια στον χρόνο στη Σουζούκα</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250411/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
+  </div>
+</section>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<footer class="py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center">
+        <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+        <div class="social-media">
+          <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+          <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Background Randomizer Script -->
+<script src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script src="/scripts/script.js"></script>
+<script src="/blog-module/blog/article-script.js"></script>
+
+<!-- Script to fix navbar functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the navbar toggle works
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+
+    if (navbarToggler && navbarCollapse) {
+      navbarToggler.addEventListener('click', function() {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+
+    // Close mobile menu after clicking a link
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        // If mobile menu is open, close it
+        if (navbarCollapse.classList.contains('show')) {
+          navbarCollapse.classList.remove('show');
+        }
+      });
+    });
+  });
+</script>
+
+    <script>
+    // Debug helper for images
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script>
+    </body>
+</html>
