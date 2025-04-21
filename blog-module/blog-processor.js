@@ -547,7 +547,8 @@ async function processBlogEntry(entryPath) {
         .replace(/ARTICLE_ID/g, folderName)
         .replace(/ARTICLE_TAG/g, postData.tag)
         .replace(/ARTICLE_CATEGORY/g, postData.category)
-        .replace(/ARTICLE_CONTENT/g, postData.content);
+        .replace(/ARTICLE_CONTENT/g, postData.content)
+        .replace(/CURRENT_URL/g, `https://f1stories.gr/blog-module/blog-entries/${folderName}/article.html`);
 
     // Ensure output directory exists
     if (!fs.existsSync(OUTPUT_HTML_DIR)) {
