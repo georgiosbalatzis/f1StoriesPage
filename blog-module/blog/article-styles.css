@@ -399,3 +399,142 @@ figcaption {
     margin-left: 5px;
     transition: transform 0.3s ease;
 }
+/* Adjust the article header overlay for the new layout */
+.article-header-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    padding: 2rem;
+}
+
+/* Reading time styling at the top */
+.article-meta-top {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.reading-time {
+    color: #fff;
+    font-size: 0.9rem;
+    font-style: italic;
+    background: rgba(0, 115, 230, 0.3);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.reading-time i {
+    margin-right: 5px;
+    color: #00ffff;
+}
+
+/* Author box styling for the header */
+.article-header .author-box {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 1rem;
+    border: 1px solid rgba(0, 115, 230, 0.2);
+    margin-bottom: 1rem;
+    max-width: 500px;
+}
+
+.author-header {
+    display: flex;
+    align-items: center;
+}
+
+.author-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 1rem;
+    background: linear-gradient(135deg, #0073e6, #00c6ff);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+}
+
+.author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-text {
+    display: none;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.author-info {
+    flex: 1;
+}
+
+.author-name {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.author-title {
+    color: #00ffff;
+    font-size: 0.85rem;
+    margin-top: 0.2rem;
+}
+
+/* Adjust regular article meta */
+.article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    color: #e0e0e0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .article-header-overlay {
+        padding: 1.5rem;
+    }
+
+    .article-title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .article-header-overlay {
+        padding: 1rem;
+    }
+
+    .article-meta-top {
+        justify-content: center;
+    }
+
+    .article-title {
+        font-size: 1.8rem;
+        text-align: center;
+    }
+
+    .author-box {
+        max-width: 100%;
+    }
+
+    .article-meta {
+        justify-content: center;
+    }
+}
