@@ -4,12 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🇨🇳 GP Κίνας 2025: Η Σαγκάη Επιστρέφει με Τεχνική Πολυπλοκότητα και Αγωνιστική Ταυτότητα | F1 Stories Blog</title>
-
   <!-- Open Graph Tags for Link Previews -->
   <meta property="og:title" content="🇨🇳 GP Κίνας 2025: Η Σαγκάη Επιστρέφει με Τεχνική Πολυπλοκότητα και Αγωνιστική Ταυτότητα | F1 Stories Blog">
-  <meta property="og:description" content="ARTICLE_DESCRIPTION">
+  <meta property="og:description" content="A READING_TIME read on F1 Stories Blog">
   <meta property="og:image" content="2.webp">
-  <meta property="og:url" content="https://f1stories.codeberg.page/blog-module/blog-entries/20250323G/article.html">
+  <meta property="og:url" content="https://f1stories.gr/blog-module/blog-entries/20250323G/article.html">
   <meta property="og:type" content="article">
 
   <!-- Image Fallback Script -->
@@ -64,36 +63,29 @@
       // Get the meta description tag
       const metaDescription = document.querySelector('meta[property="og:description"]');
 
-      // Get the first paragraph of the article content for the description
+      // Get the article content for calculating reading time
       const articleContent = document.querySelector('.article-content');
 
       if (metaDescription && articleContent) {
-        // Find the first paragraph with actual content
-        const paragraphs = articleContent.querySelectorAll('p');
-        let firstParagraph = null;
+        // Calculate reading time
+        const text = articleContent.textContent || articleContent.innerText;
+        const wordCount = text.trim().split(/\s+/).length;
 
-        // Find the first paragraph with meaningful content (more than 30 characters)
-        for (let i = 0; i < paragraphs.length; i++) {
-          if (paragraphs[i].textContent.trim().length > 30) {
-            firstParagraph = paragraphs[i];
-            break;
-          }
+        // Average reading speed: 200 words per minute
+        const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
+        // Update meta description with reading time
+        metaDescription.setAttribute('content', `A ${readingTimeMinutes} minute read on F1 Stories Blog`);
+
+        // Also update the reading time element in the article if it exists
+        const readingTimeElement = document.getElementById('reading-time-value');
+        if (readingTimeElement) {
+          readingTimeElement.textContent = `${readingTimeMinutes} min read`;
         }
-
-        if (firstParagraph) {
-          // Extract text and limit to ~160 characters (standard meta description length)
-          let description = firstParagraph.textContent.trim();
-
-          // Truncate the description to around 160 characters at a word boundary
-          if (description.length > 160) {
-            description = description.substring(0, 157) + '...';
-          }
-
-          // Update meta tag
-          metaDescription.setAttribute('content', description);
-        } else {
-          // Fallback description if no suitable paragraph is found
-          metaDescription.setAttribute('content',  '🏎️💨 Τελευταία νέα και ιστορίες για τη Formula 1 από το F1 Stories Blog 🏁📈');
+      } else {
+        // Fallback description if article content is not found
+        if (metaDescription) {
+          metaDescription.setAttribute('content', '🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈');
         }
       }
     });
