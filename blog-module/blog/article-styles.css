@@ -432,33 +432,80 @@ figcaption {
     color: #00ffff;
 }
 
-/* Author box styling for the header */
-.article-header .author-box {
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
-    padding: 1rem;
-    border: 1px solid rgba(0, 115, 230, 0.2);
-    margin-bottom: 1rem;
-    max-width: 500px;
+/* Enhanced Author Footer Styles */
+.article-author-footer {
+    margin-top: 3rem;
+    padding: 0;
+    position: relative;
+    margin-bottom: 2.5rem;
+    border-top: none;
+}
+
+/* Modern reading time badge */
+.reading-time-badge {
+    position: absolute;
+    top: -12px;
+    right: 20px;
+    background: linear-gradient(135deg, #0073e6, #00a1ff);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: none;
+    font-weight: 500;
+    z-index: 10;
+}
+
+.reading-time-badge i {
+    margin-right: 8px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Modern author box styling */
+.author-box {
+    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.7), rgba(0, 115, 230, 0.2));
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid rgba(0, 115, 230, 0.3);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Add subtle background effect */
+.author-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at top right, rgba(0, 115, 230, 0.2), transparent 60%);
+    pointer-events: none;
 }
 
 .author-header {
     display: flex;
     align-items: center;
+    margin-bottom: 1.5rem;
+    position: relative;
 }
 
 .author-avatar {
-    width: 60px;
-    height: 60px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     overflow: hidden;
-    margin-right: 1rem;
+    margin-right: 1.5rem;
     background: linear-gradient(135deg, #0073e6, #00c6ff);
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(0, 115, 230, 0.3);
     flex-shrink: 0;
 }
 
@@ -466,14 +513,19 @@ figcaption {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.author-avatar:hover img {
+    transform: scale(1.05);
 }
 
 .avatar-text {
     display: none;
-    font-size: 24px;
+    font-size: 36px;
     font-weight: bold;
     color: white;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
     width: 100%;
@@ -486,14 +538,87 @@ figcaption {
 
 .author-name {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1.6rem;
     color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .author-title {
     color: #00ffff;
-    font-size: 0.85rem;
-    margin-top: 0.2rem;
+    font-size: 0.9rem;
+    margin-top: 0.4rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+.author-bio {
+    color: #e0e0e0;
+    line-height: 1.7;
+    font-size: 1rem;
+    position: relative;
+    padding-left: 1rem;
+    border-left: 3px solid rgba(0, 115, 230, 0.5);
+    margin-left: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .author-box {
+        padding: 1.5rem;
+    }
+
+    .author-avatar {
+        width: 80px;
+        height: 80px;
+    }
+
+    .reading-time-badge {
+        right: 15px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .author-name {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .author-box {
+        padding: 1.5rem 1rem;
+        text-align: center;
+    }
+
+    .author-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .author-avatar {
+        width: 85px;
+        height: 85px;
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+
+    .reading-time-badge {
+        right: 50%;
+        transform: translateX(50%);
+        top: -12px;
+        font-size: 0.8rem;
+    }
+
+    .author-bio {
+        padding-left: 0;
+        border-left: none;
+        margin-left: 0;
+        border-top: 3px solid rgba(0, 115, 230, 0.5);
+        padding-top: 1rem;
+        margin-top: 0.5rem;
+        text-align: left;
+    }
 }
 
 /* Adjust regular article meta */
