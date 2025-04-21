@@ -300,3 +300,63 @@ function makeRelatedArticlesClickable() {
         });
     }
 }
+// Calculate reading time
+document.addEventListener('DOMContentLoaded', function() {
+    // Calculate reading time
+    function calculateReadingTime() {
+        const article = document.querySelector('.article-content');
+        if (!article) return;
+
+        // Get text content and count words
+        const text = article.textContent || article.innerText;
+        const wordCount = text.trim().split(/\s+/).length;
+
+        // Average reading speed: 200 words per minute
+        const readingTimeMinutes = Math.ceil(wordCount / 200);
+
+        // Update the reading time element
+        const readingTimeElement = document.getElementById('reading-time-value');
+        if (readingTimeElement) {
+            readingTimeElement.textContent = `${readingTimeMinutes} min read`;
+        }
+    }
+
+// Simplified author setup function for the header display
+    function setupAuthorInfo() {
+        const authorName = document.getElementById('author-name').textContent;
+        const authorInitial = document.getElementById('author-initial');
+        const authorImage = document.getElementById('author-image');
+        const authorTitle = document.getElementById('author-title');
+
+        // Set author initial from name
+        if (authorInitial && authorName) {
+            authorInitial.textContent = authorName.charAt(0);
+        }
+
+        // Try to load author image
+        if (authorImage && authorName) {
+            // Extract last name for image naming
+            const authorNames = authorName.split(' ');
+            const lastName = authorNames.length > 1 ? authorNames[authorNames.length - 1].toLowerCase() : authorNames[0].toLowerCase();
+
+            // Set image path (you may need to adjust this based on your file structure)
+            authorImage.src = `/images/authors/${lastName}.webp`;
+        }
+
+        // Set author specific information
+        if (authorName.includes('Georgios Balatzis')) {
+            authorTitle.textContent = 'F1 Stories Founder & Editor';
+            authorBio.textContent = 'Georgios is the founder of F1 Stories, with a deep passion for Formula 1 history and technical analysis. When not writing about racing, he enjoys discussing the strategic aspects of motorsport.';
+        } else if (authorName.includes('Giannis Poulikidis')) {
+            authorTitle.textContent = 'Technical Contributor';
+            authorBio.textContent = 'Giannis specializes in the technical side of F1, with particular focus on aerodynamics and car development. His analytical approach brings clarity to complex engineering topics.';
+        } else if (authorName.includes('Thanasis Batalas')) {
+            authorTitle.textContent = 'Racing Historian';
+            authorBio.textContent = 'Thanasis brings historical context to F1 Stories, connecting modern racing to its rich past. His knowledge of classic races and legendary drivers adds depth to current Formula 1 discussions.';
+        }
+    }
+
+    // Run the functions
+    calculateReadingTime();
+    setupAuthorInfo();
+});
