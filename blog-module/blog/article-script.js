@@ -300,7 +300,6 @@ function makeRelatedArticlesClickable() {
         });
     }
 }
-// Calculate reading time
 // Calculate reading time and set up author info
 document.addEventListener('DOMContentLoaded', function() {
     // Calculate reading time
@@ -315,82 +314,80 @@ document.addEventListener('DOMContentLoaded', function() {
         // Average reading speed: 200 words per minute
         const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
 
-        // Update the reading time elements (both header and footer)
-        const readingTimeHeader = document.getElementById('reading-time-value');
-        const readingTimeFooter = document.getElementById('reading-time-value-footer');
-
-        if (readingTimeHeader) {
-            readingTimeHeader.textContent = `${readingTimeMinutes} min read`;
-        }
-
-        if (readingTimeFooter) {
-            readingTimeFooter.textContent = `${readingTimeMinutes} min read`;
+        // Update the reading time element
+        const readingTimeElement = document.getElementById('reading-time-value');
+        if (readingTimeElement) {
+            readingTimeElement.textContent = `${readingTimeMinutes} min read`;
         }
     }
 
-    // Set up author information for both header and footer
+    // Set up author information
     function setupAuthorInfo() {
-        const authorName = document.querySelector('.article-meta')?.textContent.includes('ARTICLE_AUTHOR')
-            ? 'ARTICLE_AUTHOR'
-            : document.getElementById('author-name')?.textContent || 'F1 Stories Team';
+        const authorNameElement = document.getElementById('author-name');
+        if (!authorNameElement) return;
 
-        // Setup author data based on name
-        let authorTitle = 'F1 Stories Contributor';
-        let authorBio = 'Regular contributor to F1 Stories, passionate about motorsport and sharing insights about Formula 1 racing.';
+        const authorName = authorNameElement.textContent;
+        const authorInitial = document.getElementById('author-initial');
+        const authorImage = document.getElementById('author-image');
+        const authorBio = document.getElementById('author-bio');
+        const authorTitle = document.getElementById('author-title');
 
-        if (authorName.includes('Georgios Balatzis')) {
-            authorTitle = 'F1 Stories Founder & Technical Contributor';
-            authorBio = 'Georgios is the founder of F1 Stories, specializes in the technical side of F1, with particular focus on aerodynamics and car development. His analytical approach brings clarity to complex engineering topics.';
-        } else if (authorName.includes('Giannis Poulikidis')) {
-            authorTitle = 'F1 Stories Founder & Technical Contributor, with a deep passion for Formula 1 history and technical analysis. When not writing about racing, he enjoys discussing the strategic aspects of motorsport.';
-            authorBio = 'Giannis ';
-        } else if (authorName.includes('Thanasis Batalas')) {
-            authorTitle = 'Racing Historian';
-            authorBio = 'Thanasis brings historical context to F1 Stories, connecting modern racing to its rich past. His knowledge of classic races and legendary drivers adds depth to current Formula 1 discussions.';
+        // Set author initial from name
+        if (authorInitial && authorName) {
+            authorInitial.textContent = authorName.charAt(0);
         }
 
-        // Get author initial
-        const authorInitial = authorName.charAt(0);
+        // Try to load author image
+        if (authorImage && authorName) {
+            // Extract last name for image naming
+            const authorNames = authorName.split(' ');
+            const lastName = authorNames.length > 1 ?
+                authorNames[authorNames.length - 1].toLowerCase() :
+                authorNames[0].toLowerCase();
 
-        // Determine image path
-        const authorNames = authorName.split(' ');
-        const lastName = authorNames.length > 1 ?
-            authorNames[authorNames.length - 1].toLowerCase() :
-            authorNames[0].toLowerCase();
-        const imagePath = `/images/authors/${lastName}.jpg`;
+            // Set image path based on author name
+            authorImage.src = `/images/authors/${lastName}.webp`;
+        }
 
-        // Update header elements
-        updateAuthorElements('author-name', 'author-title', 'author-initial', 'author-image',
-            authorName, authorTitle, authorInitial, imagePath);
-
-        // Update footer elements
-        updateAuthorElements('author-name-footer', 'author-title-footer', 'author-initial-footer', 'author-image-footer',
-            authorName, authorTitle, authorInitial, imagePath);
-
-        // Update bio
-        const authorBioElement = document.getElementById('author-bio');
-        if (authorBioElement) {
-            authorBioElement.textContent = authorBio;
+        // Set author specific information
+        if (authorName) {
+            if (authorName.includes('Georgios Balatzis')) {
+                if (authorTitle) authorTitle.textContent = 'F1 Stories Founder & Editor';
+                if (authorBio) authorBio.textContent = 'Georgios is the founder of F1 Stories, with a deep passion for Formula 1 history and technical analysis. When not writing about racing, he enjoys discussing the strategic aspects of motorsport.';
+            } else if (authorName.includes('Giannis Poulikidis')) {
+                if (authorTitle) authorTitle.textContent = 'Technical Contributor';
+                if (authorBio) authorBio.textContent = 'Giannis specializes in the technical side of F1, with particular focus on aerodynamics and car development. His analytical approach brings clarity to complex engineering topics.';
+            } else if (authorName.includes('Thanasis Batalas')) {
+                if (authorTitle) authorTitle.textContent = 'Racing Historian';
+                if (authorBio) authorBio.textContent = 'Thanasis brings historical context to F1 Stories, connecting modern racing to its rich past. His knowledge of classic races and legendary drivers adds depth to current Formula 1 discussions.';
+            }
         }
     }
 
-    // Helper function to update author elements
-    function updateAuthorElements(nameId, titleId, initialId, imageId, name, title, initial, imagePath) {
-        const nameElement = document.getElementById(nameId);
-        const titleElement = document.getElementById(titleId);
-        const initialElement = document.getElementById(initialId);
-        const imageElement = document.getElementById(imageId);
-
-        if (nameElement) nameElement.textContent = name;
-        if (titleElement) titleElement.textContent = title;
-        if (initialElement) initialElement.textContent = initial;
-        if (imageElement) {
-            imageElement.src = imagePath;
-            imageElement.alt = name;
+    // Add throttling to scroll event
+    function throttle(func, delay) {
+        let lastCall = 0;
+        return function(...args) {
+            const now = new Date().getTime();
+            if (now - lastCall < delay) return;
+            lastCall = now;
+            return func(...args);
         }
     }
 
-    // Execute functions
+    // Add throttled scroll event for the back-to-top button
+    const scrollToTopBtn = document.getElementById('scroll-to-top');
+    if (scrollToTopBtn) {
+        window.addEventListener('scroll', throttle(function() {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        }, 100));
+    }
+
+    // Run the functions
     calculateReadingTime();
     setupAuthorInfo();
 });
