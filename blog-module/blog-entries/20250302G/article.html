@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F1 2025 – Ανάλυση Βαθμίδας Ανταγωνισμού και Προβλέψεις Τίτλου (Μέρος Β') | F1 Stories Blog</title>
+
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="F1 2025 – Ανάλυση Βαθμίδας Ανταγωνισμού και Προβλέψεις Τίτλου (Μέρος Β') | F1 Stories Blog">
+  <meta property="og:description" content="ARTICLE_DESCRIPTION">
+  <meta property="og:image" content="2.webp">
+  <meta property="og:url" content="https://f1stories.codeberg.page/blog-module/blog-entries/20250302G/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/blog-module/blog-styles.css">
+  <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-X68J6MQKSM');
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the meta description tag
+      const metaDescription = document.querySelector('meta[property="og:description"]');
+
+      // Get the first paragraph of the article content for the description
+      const articleContent = document.querySelector('.article-content');
+
+      if (metaDescription && articleContent) {
+        // Find the first paragraph with actual content
+        const paragraphs = articleContent.querySelectorAll('p');
+        let firstParagraph = null;
+
+        // Find the first paragraph with meaningful content (more than 30 characters)
+        for (let i = 0; i < paragraphs.length; i++) {
+          if (paragraphs[i].textContent.trim().length > 30) {
+            firstParagraph = paragraphs[i];
+            break;
+          }
+        }
+
+        if (firstParagraph) {
+          // Extract text and limit to ~160 characters (standard meta description length)
+          let description = firstParagraph.textContent.trim();
+
+          // Truncate the description to around 160 characters at a word boundary
+          if (description.length > 160) {
+            description = description.substring(0, 157) + '...';
+          }
+
+          // Update meta tag
+          metaDescription.setAttribute('content', description);
+        } else {
+          // Fallback description if no suitable paragraph is found
+          metaDescription.setAttribute('content',  '🏎️💨 Τελευταία νέα και ιστορίες για τη Formula 1 από το F1 Stories Blog 🏁📈');
+        }
+      }
+    });
+  </script>
+
+</head>
+<body>
+<div class="background"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
+
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/images/logo.png" alt="F1 Stories Logo" height="50">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/'; return false;">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/episodes/index.html'; return false;">Episodes</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#about'; return false;">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#guests'; return false;">Guests</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/blog-module/blog/index.html'; return false;">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#contact'; return false;">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="py-5 mt-5">
+  <div class="container">
+    <!-- Back to Blog Button -->
+    <div class="text-start mb-4">
+      <a href="/blog-module/blog/index.html" class="btn btn-outline-light">
+        <i class="fas fa-arrow-left me-2"></i> Back to Blog
+      </a>
+    </div>
+
+    <div class="article-container">
+      <div class="article-header">
+        <!-- Images are local to the article folder -->
+        <img src="2.webp" alt="F1 2025 – Ανάλυση Βαθμίδας Ανταγωνισμού και Προβλέψεις Τίτλου (Μέρος Β')" class="article-header-img" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <div class="article-header-overlay">
+          <h1 class="article-title">F1 2025 – Ανάλυση Βαθμίδας Ανταγωνισμού και Προβλέψεις Τίτλου (Μέρος Β')</h1>
+          <div class="article-meta">
+            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+            <span><i class="fas fa-calendar"></i> March 2, 2025</span>
+            <span><i class="fas fa-tag"></i> Testing</span>
+            <span><i class="fas fa-folder"></i> 2025</span>
+          </div>
+        </div>
+      </div>
+      <div class="article-content">
+        <!-- Article content goes here -->
+        <p></p><h1><a id="_upgvlwsgmb58"></a><strong>F1 2025 – Ανάλυση Βαθμίδας Ανταγωνισμού και Προβλέψεις Τίτλου (Μέρος Β')</strong></h1><p>Συνεχίζοντας την τεχνική αποτίμηση των δοκιμών του Μπαχρέιν, στρέφουμε την προσοχή μας στις ομάδες της μεσαίας και χαμηλής βαθμίδας, καθώς και στις στρατηγικές εκτιμήσεις για το τι μπορούμε να αναμένουμε από τη νέα σεζόν. Παρά το έντονο φως της δημοσιότητας που επικεντρώνεται στις κορυφαίες ομάδες, η πραγματική πολυπλοκότητα του grid συχνά εκφράζεται στη μεσαία τάξη – εκεί όπου η λεπτομέρεια και η συνέπεια κάνουν τη διαφορά.</p><h2><a id="_xsab4gstpba8"></a><strong>Alpine F1 Team: Στην καμπή της επανεκκίνησης</strong></h2><p><strong>Pierre Gasly<br /></strong> Με ταχύτητα που αγγίζει το 1:30.040 και αξιοσημείωτη συνέπεια στις μεγάλες αποστάσεις, ο Gasly φαίνεται ότι ενσωματώνεται στη νέα τεχνική φιλοσοφία της Alpine, παρέχοντας πολύτιμα δεδομένα.</p><p><strong>Jack Doohan<br /></strong> Στην πρώτη του πλήρη σεζόν, ο Doohan επιδεικνύει πειθαρχία και τακτική προσέγγιση. Δεν είχε εντυπωσιακούς χρόνους, αλλά παρουσίασε ομαλή προσαρμογή στις απαιτήσεις της Formula 1.</p><p><strong>Τεχνική Ετυμηγορία:</strong> Η Alpine βρίσκεται σε μεταβατική φάση. Το πακέτο A525 δείχνει δυνητική σταθερότητα, αλλά απαιτείται συνεχής ανάπτυξη για να μπορεί να ανταγωνίζεται αξιόπιστα για βαθμούς και, ευκαιριακά, για θέσεις στο βάθρο.</p><h2><a id="_6iqku25bipko"></a><strong>Visa Cash App Racing Bulls: Ομάδα-έκπληξη με επιθετικό χαρακτήρα</strong></h2><p><strong>Yuki Tsunoda<br /></strong> Ο χρόνος του (1:30.497) συνδυάστηκε με χαρακτηριστική επιθετικότητα, αλλά και στιγμές υπερβολικού ρίσκου. Ο Tsunoda δείχνει αυτοπεποίθηση, αλλά η Racing Bulls θα χρειαστεί να ελέγξει το ταμπεραμέντο του για να μεγιστοποιήσει τα αποτελέσματα.</p><p><strong>Isack Hadjar<br /></strong> Ο νεαρός Γάλλος εμφανίστηκε γρήγορος σε επιμέρους γύρους, αλλά η έλλειψη συνέπειας σε long runs αποτελεί ακόμα ζήτημα. Η προσαρμοστικότητά του παραμένει υπό αξιολόγηση.</p><p><strong>Τεχνική Ετυμηγορία:</strong> Αν το RB02 συνεχίσει να εξελίσσεται, η Racing Bulls μπορεί να μετατραπεί σε "κρυφό χαρτί" της μεσαίας τάξης. Το οδηγικό της δίδυμο διαθέτει ταχύτητα, αλλά η σταθερότητα παραμένει ζητούμενο.</p><h2><a id="_xw4f6lz57h0r"></a><strong>Kick Sauber (προς Audi Sauber): Εσωτερική μετάβαση με εξωτερικές δυσκολίες</strong></h2><p><strong>Nico Hülkenberg<br /></strong> Ο έμπειρος Γερμανός δίνει σαφή τεχνική κατεύθυνση στην ομάδα, αλλά οι χρόνοι του δείχνουν ένα πακέτο που υπολείπεται σε κάθετη πρόσφυση και σταθερότητα σε καμπές υψηλής ταχύτητας.</p><p><strong>Gabriel Bortoleto<br /></strong> Ο rookie παλεύει με την απόδοση του C45 και παρουσιάζει αστάθεια, κυρίως σε stints με αυξημένη φθορά. Η δυναμική του είναι εμφανής, αλλά χρειάζεται χρόνος και τεχνική υποστήριξη.</p><p><strong>Τεχνική Ετυμηγορία:</strong> Η ομάδα βρίσκεται σε αναμονή της πλήρους ένταξής της στην Audi. Ως εκ τούτου, οι προσδοκίες για τη φετινή σεζόν είναι περιορισμένες – με τη Sauber να κινείται στο χαμηλότερο τμήμα της μεσαίας βαθμίδας.</p><h2><a id="_6f1wogm9sk09"></a><strong>MoneyGram Haas F1 Team: Αναζητώντας ταυτότητα σε αβέβαια νερά</strong></h2><p><strong>Esteban Ocon<br /></strong> Ο Ocon παρέμεινε αξιόπιστος, αλλά η Haas δεν του παρέχει ακόμα μονοθέσιο ικανό για σταθερή διεκδίκηση βαθμών. Ο χρόνος του σε long runs υποδηλώνει δυσκολίες στη διαχείριση θερμικού φορτίου.</p><p><strong>Oliver Bearman<br /></strong> Ο Bearman είχε ελπιδοφόρες στιγμές, όμως τα τεχνικά προβλήματα – ιδιαίτερα το περιστατικό με αποκόλληση του καλύμματος κινητήρα – περιόρισαν το συνολικό του έργο. Η ταχύτητα υπάρχει, αλλά απαιτείται ωρίμανση.</p><p><strong>Τεχνική Ετυμηγορία:</strong> Η Haas μοιάζει να παλεύει περισσότερο με τη μηχανολογική της κατεύθυνση παρά με τους αντιπάλους της. Χρειάζονται ριζικές λύσεις σε αξιοπιστία και αεροδυναμική αποδοτικότητα.</p><h2><a id="_htspnvaxitmo"></a><strong>Ανάλυση Κατασκευαστών: Εννέα Δυνάμεις, Τρία Στρατόπεδα</strong></h2><ul><li><strong>Κορυφαία Τετράδα (Red Bull, Mercedes, Ferrari, McLaren):<br /></strong> Διαφορετικές φιλοσοφίες, αλλά παρόμοιοι χρόνοι και ρυθμοί. Η McLaren διαθέτει τη συνολική ισορροπία, ενώ η Mercedes και η Ferrari δείχνουν ικανές να ξεκινήσουν δυναμικά. Η Red Bull θα χρειαστεί στρατηγική συνέπεια και τεχνική σταθερότητα για να διατηρηθεί στην κορυφή.<br /></li><li><strong>Μεσαία Τάξη (Williams, Racing Bulls, Alpine, Aston Martin):<br /></strong> Η Williams είναι το "dark horse" του 2025. Οι Alpine και Racing Bulls θα εναλλάσσονται στα σημεία, με την Aston Martin να εξαρτάται σχεδόν αποκλειστικά από τον Alonso.<br /></li><li><strong>Χαμηλή Τάξη (Kick Sauber, Haas):<br /></strong> Περιορισμένες τεχνικές δυνατότητες και πολλές μεταβλητές. Η ανάπτυξη εντός της σεζόν θα καθορίσει αν μπορούν να προσεγγίσουν τη μάχη για βαθμούς.<br /></li></ul><h2><a id="_fq70ym8qh55x"></a><strong>Πρωτάθλημα Οδηγών: Διεκδικητές, Εκπλήξεις και Πιθανά Σενάρια</strong></h2><h3><a id="_69lg8ooybpsx"></a><strong>Βασικοί Διεκδικητές:</strong></h3><ul><li><strong>Lando Norris</strong> – Ώριμος, ταχύς και με μηχανή που του ταιριάζει απόλυτα.<br /></li><li><strong>George Russell</strong> – Αν η Mercedes διατηρήσει ρυθμό, μπορεί να διεκδικήσει στα ίσια.<br /></li><li><strong>Lewis Hamilton</strong> – Η εμπειρία του μπορεί να μεταφραστεί σε νίκες αν το SF25 παραμείνει ανταγωνιστικό.<br /></li><li><strong>Max Verstappen</strong> – Ποτέ εκτός μάχης, αν και τα πρώτα δείγματα είναι λιγότερο κυριαρχικά σε σχέση με προηγούμενα έτη.<br /></li></ul><h3><a id="_wvb0yvp5dvov"></a><strong>Αναδυόμενοι Παίκτες:</strong></h3><ul><li><strong>Carlos Sainz Jr.</strong> – Σε απόλυτη φόρμα, μπορεί να εκπλήξει σε αρκετές πίστες.<br /></li><li><strong>Oscar Piastri &amp; Alexander Albon</strong> – Ήρεμοι, σταθεροί, τεχνικά ακριβείς. Θα έχουν λόγο στη μάχη κορυφής.<br /></li></ul><h3><a id="_2kpbnn7wh96"></a><strong>Παρατηρήσεις και Πεδία Ρίσκου:</strong></h3><ul><li><strong>Liam Lawson &amp; Oliver Bearman</strong> – Το ταλέντο είναι εκεί, αλλά η έλλειψη εμπειρίας μπορεί να φέρει μεταπτώσεις.<br /></li><li><strong>Isack Hadjar &amp; Gabriel Bortoleto</strong> – Πρέπει να βρουν ρυθμό γρήγορα για να μην χαθούν στις εσωτερικές ιεραρχίες.<br /></li></ul><h2><a id="_p71squj64odf"></a><strong>Συμπεράσματα: Η Σεζόν του Απόλυτου Ανταγωνισμού</strong></h2><p>Η σεζόν του 2025 διαμορφώνεται ως μια από τις πιο πολυσύνθετες και ανοιχτές της τελευταίας δεκαετίας. Οι κορυφαίες ομάδες βρίσκονται κοντά σε ρυθμό, ενώ η μεσαία τάξη έχει πυκνώσει σε ποιότητα. Η επιτυχία θα εξαρτηθεί από την τεχνική συνέπεια, τη διαχείριση αναβαθμίσεων και την ικανότητα των οδηγών να προσαρμόζονται γρήγορα στα εξελισσόμενα μονοθέσια.</p><p>🏁 <em>Το μόνο σίγουρο είναι πως το 2025 δεν θα έχει «εύκολες» νίκες. Θα έχει μόνο σκληρά κερδισμένες μάχες.</em></p>
+      </div>
+    </div>
+
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20250301G/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="/blog-module/blog-entries/20250316G/article.html" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250415G/1.webp" 
+                             alt="🔧 Η Στρατηγική Engine Mapping της Alpine για Βελτιστοποίηση Κατανάλωσης" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250415G/1.webp') { this.src='/blog-module/blog/images/20250415G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">15,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">🔧 Η Στρατηγική Engine Mapping της Alpine για Βελτιστοποίηση Κατανάλωσης</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250415G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250414G/1.avif" 
+                             alt="🏁 Williams F1 2025: Ανασκόπηση των Πρώτων Τεσσάρων Αγώνων" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250414G/1.avif') { this.src='/blog-module/blog/images/20250414G/1.avif'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">14,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">🏁 Williams F1 2025: Ανασκόπηση των Πρώτων Τεσσάρων Αγώνων</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250414G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250406G/1.webp" 
+                             alt="🏁 GP Ιαπωνίας 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250406G/1.webp') { this.src='/blog-module/blog/images/20250406G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">6,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">🏁 GP Ιαπωνίας 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250406G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
+  </div>
+</section>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<footer class="py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center">
+        <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+        <div class="social-media">
+          <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+          <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Background Randomizer Script -->
+<script src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script src="/scripts/script.js"></script>
+<script src="/blog-module/blog/article-script.js"></script>
+
+<!-- Script to fix navbar functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the navbar toggle works
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+
+    if (navbarToggler && navbarCollapse) {
+      navbarToggler.addEventListener('click', function() {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+
+    // Close mobile menu after clicking a link
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        // If mobile menu is open, close it
+        if (navbarCollapse.classList.contains('show')) {
+          navbarCollapse.classList.remove('show');
+        }
+      });
+    });
+  });
+</script>
+
+    <script>
+    // Debug helper for images
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script>
+    </body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛠️ Τροποποίηση Πάτωμα Haas: Αγώνας ενάντια στον χρόνο στη Σουζούκα | F1 Stories Blog</title>
+
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="🛠️ Τροποποίηση Πάτωμα Haas: Αγώνας ενάντια στον χρόνο στη Σουζούκα | F1 Stories Blog">
+  <meta property="og:description" content="ARTICLE_DESCRIPTION">
+  <meta property="og:image" content="2.webp">
+  <meta property="og:url" content="https://f1stories.codeberg.page/blog-module/blog-entries/20250411G/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/blog-module/blog-styles.css">
+  <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-X68J6MQKSM');
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the meta description tag
+      const metaDescription = document.querySelector('meta[property="og:description"]');
+
+      // Get the first paragraph of the article content for the description
+      const articleContent = document.querySelector('.article-content');
+
+      if (metaDescription && articleContent) {
+        // Find the first paragraph with actual content
+        const paragraphs = articleContent.querySelectorAll('p');
+        let firstParagraph = null;
+
+        // Find the first paragraph with meaningful content (more than 30 characters)
+        for (let i = 0; i < paragraphs.length; i++) {
+          if (paragraphs[i].textContent.trim().length > 30) {
+            firstParagraph = paragraphs[i];
+            break;
+          }
+        }
+
+        if (firstParagraph) {
+          // Extract text and limit to ~160 characters (standard meta description length)
+          let description = firstParagraph.textContent.trim();
+
+          // Truncate the description to around 160 characters at a word boundary
+          if (description.length > 160) {
+            description = description.substring(0, 157) + '...';
+          }
+
+          // Update meta tag
+          metaDescription.setAttribute('content', description);
+        } else {
+          // Fallback description if no suitable paragraph is found
+          metaDescription.setAttribute('content',  '🏎️💨 Τελευταία νέα και ιστορίες για τη Formula 1 από το F1 Stories Blog 🏁📈');
+        }
+      }
+    });
+  </script>
+
+</head>
+<body>
+<div class="background"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
+
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/images/logo.png" alt="F1 Stories Logo" height="50">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/'; return false;">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/episodes/index.html'; return false;">Episodes</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#about'; return false;">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#guests'; return false;">Guests</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/blog-module/blog/index.html'; return false;">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#contact'; return false;">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="py-5 mt-5">
+  <div class="container">
+    <!-- Back to Blog Button -->
+    <div class="text-start mb-4">
+      <a href="/blog-module/blog/index.html" class="btn btn-outline-light">
+        <i class="fas fa-arrow-left me-2"></i> Back to Blog
+      </a>
+    </div>
+
+    <div class="article-container">
+      <div class="article-header">
+        <!-- Images are local to the article folder -->
+        <img src="2.webp" alt="🛠️ Τροποποίηση Πάτωμα Haas: Αγώνας ενάντια στον χρόνο στη Σουζούκα" class="article-header-img" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <div class="article-header-overlay">
+          <h1 class="article-title">🛠️ Τροποποίηση Πάτωμα Haas: Αγώνας ενάντια στον χρόνο στη Σουζούκα</h1>
+          <div class="article-meta">
+            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+            <span><i class="fas fa-calendar"></i> April 11, 2025</span>
+            <span><i class="fas fa-tag"></i> Haas</span>
+            <span><i class="fas fa-folder"></i> Technical</span>
+          </div>
+        </div>
+      </div>
+      <div class="article-content">
+        <!-- Article content goes here -->
+        <p></p><h2><a id="_91h4ee3bosyw"></a><strong>🛠️ Τροποποίηση Πάτωμα Haas: Αγώνας ενάντια στον χρόνο στη Σουζούκα</strong></h2><p>Στο Grand Prix Ιαπωνίας του 2025, η Haas εμφανίστηκε με ένα <strong>πειραγμένο πάτωμα</strong> στο μονοθέσιο VF-25 — και όχι, δεν ήταν απλώς ένα ακόμα update. Ήταν μια <strong>επείγουσα παρέμβαση</strong>, σχεδόν “last minute”, για να αντιμετωπιστεί ένα σοβαρό πρόβλημα που είχε εκτεθεί ξεκάθαρα στον πρώτο αγώνα της χρονιάς στη Μελβούρνη. Οι γρήγορες στροφές και οι ανωμαλίες στην άσφαλτο του Albert Park αποκάλυψαν μια σοβαρή αδυναμία στη σχεδίαση του μονοθεσίου, η οποία επηρέασε δραματικά τη σταθερότητα και την εμπιστοσύνη των οδηγών. ⚠️</p><h2><a id="_kmpb3qlqz59q"></a><strong>🇦🇺 Τι Πήγε Στραβά στην Αυστραλία</strong></h2><p>Το GP της Αυστραλίας ήταν αποκαλυπτικό. Η VF-25 υπέφερε από <strong>αεροδυναμικές ταλαντώσεις</strong> σε υψηλές ταχύτητες — ειδικά στο συνδυασμό των Στροφών 9–10. Η διαφορά χρόνου με το υπόλοιπο grid ξεπερνούσε το μισό δευτερόλεπτο ανά γύρο (!). Ο συνδυασμός άκαμπτης ανάρτησης και ανώμαλου οδοστρώματος προκάλεσε <strong>αστάθεια στην παραγόμενη κάθετη δύναμη</strong>, με αποτέλεσμα το μονοθέσιο να "πηδάει" στις στροφές και οι οδηγοί να μη μπορούν να κρατήσουν ρυθμό. 😵‍💫</p><h2><a id="_l53wp2wdox7j"></a><strong>🧩 Επείγουσα Λύση με Ιαπωνική Υπογραφή</strong></h2><p>Με τα δεδομένα από την Αυστραλία να δείχνουν "κόκκινο", η Haas <strong>επισπεύδει</strong> την εξέλιξη ενός νέου πατώματος για τη Σουζούκα — κυριολεκτικά <strong>σε χρόνο ρεκόρ</strong>. Ο τεχνικός συνεργάτης της ομάδας, η Toyota, έπαιξε καθοριστικό ρόλο στο fast-track αυτό update. 🎌</p><p>Οι τροποποιήσεις επικεντρώθηκαν:</p><ul><li>στην ανασχεδίαση του <strong>κεντρικού πατώματος<br /></strong></li><li>στις <strong>κάθετες επιφάνειες (floor fences)<br /></strong></li><li>στην <strong>περιφερειακή περιοχή</strong> του πατώματος<br /></li><li>και στο <strong>διαχύτη<br /></strong></li></ul><p>Στόχος: να μειωθεί η ευαισθησία του μονοθεσίου στις ανωμαλίες και να <strong>βελτιωθεί η αεροδυναμική σταθερότητα</strong>, ειδικά σε μικρό ύψος από το έδαφος στις γρήγορες στροφές της Σουζούκα. Ωστόσο, λόγω χρόνου, δεν υπήρχε περιθώριο για πλήρη δοκιμή στο αεροδυναμικό τούνελ — η ομάδα βασίστηκε 100% στην εμπειρία των αεροδυναμιστών της. 🎯</p><h2><a id="_dmq8m38gdcxq"></a><strong>🎲 Μεγάλο Ρίσκο, Ακόμα Μεγαλύτερη Ανάγκη</strong></h2><p>Ο επικεφαλής της Haas, Ayao Komatsu, το είπε ξεκάθαρα: <strong>ήταν ρίσκο</strong>. Τα εξαρτήματα παράχθηκαν και στάλθηκαν στην Ιαπωνία <strong>πριν ολοκληρωθεί η αεροδυναμική επικύρωση</strong>. Αλλά η εναλλακτική ήταν να επαναληφθεί το καταστροφικό σκηνικό της Μελβούρνης — και αυτό δεν το ήθελε κανείς στην ομάδα. Το ερώτημα δεν ήταν αν θα δουλέψει, αλλά <strong>αν θα αντέξει στην πίστα</strong>. 🧪</p><p>
+            <figure class="article-figure">
+                <!-- Primary image with multiple fallbacks -->
+                <img id="img-3"
+                     src="/blog-module/blog-entries/20250411G/3.webp" 
+                     alt="Image 3" 
+                     class="article-content-img"
+                     onerror="if(this.src !== '3.webp') { this.src='3.webp'; } 
+                             else if(this.src !== '/blog-module/blog/images/20250411G/3.webp') { this.src='/blog-module/blog/images/20250411G/3.webp'; }
+                             else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                <figcaption>Image 3</figcaption>
+            </figure></p><h2><a id="_86ucn086qaly"></a><strong>🏁 Πρώτα Δείγματα και Τι Περιμένουμε</strong></h2><p>Από το πρώτο κιόλας practice, τα σημάδια ήταν θετικά. Το μονοθέσιο φαινόταν <strong>πιο σταθερό</strong>, και οι οδηγοί ανέφεραν πιο <strong>προβλέψιμη συμπεριφορά</strong> στις γρήγορες στροφές. Ωστόσο, η ομάδα παραμένει επιφυλακτική: το πραγματικό crash test είναι πάντα οι κατατακτήριες και ο αγώνας. 🔍</p><p>Η αναβάθμιση αυτή είναι <strong>ορόσημο</strong> για τη Haas. Δεν είναι απλώς ένα update, αλλά δείγμα του πώς μια ομάδα F1 αντιδρά υπό πίεση, με τα χρονικά περιθώρια να εξαντλούνται και τις απαιτήσεις να ανεβαίνουν. Και το σημαντικότερο; Δεν ήταν τυχαίο. Ήταν αποτέλεσμα εμπειρίας, συνεργασίας και τόλμης.</p><h2><a id="_8j42j8698137"></a><strong>🧠 Το Συμπέρασμα</strong></h2><p>Αυτό που έκανε η Haas στη Σουζούκα είναι μια μικρογραφία του τι σημαίνει Formula 1: <strong>ταχύτητα στη λήψη αποφάσεων, τεχνική ακρίβεια, και πίστη στο ρίσκο όταν δεν υπάρχει άλλη επιλογή</strong>. 🚀</p><p>Για όσους αγαπούν την τεχνική πλευρά του σπορ, είναι μια απόδειξη ότι το παιχνίδι δεν παίζεται μόνο στην πίστα — αλλά και στα σχεδιαστήρια, στους CFD servers, και στα hangars με τα αεροπλάνα φορτωμένα ανταλλακτικά.</p>
+      </div>
+    </div>
+
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20250410G/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="/blog-module/blog-entries/20250412G/article.html" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250415-1G/1.webp" 
+                             alt="📡 Ζωντανά Δεδομένα: Η Καρδιά της Απόδοσης" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250415-1G/1.webp') { this.src='/blog-module/blog/images/20250415-1G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">15,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">📡 Ζωντανά Δεδομένα: Η Καρδιά της Απόδοσης</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250415-1G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250412G/1.webp" 
+                             alt="🔧 Case Study: Η Λύση της McLaren στα Προβλήματα Ψύξης των Φρένων το 2025" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250412G/1.webp') { this.src='/blog-module/blog/images/20250412G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">12,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">🔧 Case Study: Η Λύση της McLaren στα Προβλήματα Ψύξης των Φρένων το 2025</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250412G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250410G/1.webp" 
+                             alt="🟥 Ferrari SF-25: Οι Πρώτες Σοβαρές Αναβαθμίσεις Έρχονται στο GP Μπαχρέιν" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250410G/1.webp') { this.src='/blog-module/blog/images/20250410G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">10,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">🟥 Ferrari SF-25: Οι Πρώτες Σοβαρές Αναβαθμίσεις Έρχονται στο GP Μπαχρέιν</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250410G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
+  </div>
+</section>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<footer class="py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center">
+        <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+        <div class="social-media">
+          <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+          <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Background Randomizer Script -->
+<script src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script src="/scripts/script.js"></script>
+<script src="/blog-module/blog/article-script.js"></script>
+
+<!-- Script to fix navbar functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the navbar toggle works
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+
+    if (navbarToggler && navbarCollapse) {
+      navbarToggler.addEventListener('click', function() {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+
+    // Close mobile menu after clicking a link
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        // If mobile menu is open, close it
+        if (navbarCollapse.classList.contains('show')) {
+          navbarCollapse.classList.remove('show');
+        }
+      });
+    });
+  });
+</script>
+
+    <script>
+    // Debug helper for images
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script>
+    </body>
+</html>
