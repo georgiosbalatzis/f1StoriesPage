@@ -22,6 +22,55 @@ document.addEventListener('DOMContentLoaded', function() {
         return '/';
     }
 
+    // Add to blog-loader.js
+    function setupAuthorFilters() {
+        const authorButtons = document.querySelectorAll('.author-filter-btn');
+        if (!authorButtons.length) return;
+
+        // Add event listeners to author filter buttons
+        authorButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const filterType = this.getAttribute('data-filter');
+                const author = this.getAttribute('data-author');
+
+                // Remove active class from all author buttons
+                document.querySelectorAll('.author-filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // Add active class to clicked button
+                this.classList.add('active');
+
+                // Reset category filter buttons
+                document.querySelectorAll('.filter-button').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.getAttribute('data-filter') === 'all') {
+                        btn.classList.add('active');
+                    }
+                });
+
+                // Filter posts by author
+                if (filterType === 'all') {
+                    filteredPosts = [...allPosts];
+                } else if (filterType === 'author') {
+                    filteredPosts = allPosts.filter(post => post.author === author);
+                }
+
+                // Update pagination
+                setupPagination(filteredPosts);
+
+                // Display first page of filtered posts
+                displayPosts(1);
+
+                // Scroll to posts section
+                document.querySelector('.blog-posts').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
+    }
+
     // Function to load blog posts on the homepage
     function loadHomepageBlogPosts() {
         const blogSection = document.getElementById('blog');
@@ -844,6 +893,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.pathname.endsWith('/blog-module/blog/')) {
         loadBlogIndexPosts();
         setupSearch();
+        setupAuthorFilters();
     } else {
         loadHomepageBlogPosts();
     }
