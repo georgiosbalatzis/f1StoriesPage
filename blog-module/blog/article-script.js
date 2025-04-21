@@ -352,14 +352,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Set author specific information
         if (authorName) {
             if (authorName.includes('Georgios Balatzis')) {
-                if (authorTitle) authorTitle.textContent = 'F1 Stories Founder & Editor';
-                if (authorBio) authorBio.textContent = 'Georgios is the founder of F1 Stories, with a deep passion for Formula 1 history and technical analysis. When not writing about racing, he enjoys discussing the strategic aspects of motorsport.';
+                if (authorTitle) authorTitle.textContent = 'F1 Stories Founder & Technical Contributor';
+                if (authorBio) authorBio.textContent = 'Ο Γιώργιος είναι ενας απο τους ιδρυτές του F1 Stories 🏁 και ειδικεύεται στην τεχνική πλευρά της Formula 1 🔧, με ιδιαίτερη έμφαση στην αεροδυναμική και την εξέλιξη των μονοθεσίων ✈️🚗. Η αναλυτική του προσέγγιση φέρνει σαφήνεια σε πολύπλοκα θέματα μηχανολογίας 🧠📊.';
             } else if (authorName.includes('Giannis Poulikidis')) {
-                if (authorTitle) authorTitle.textContent = 'Technical Contributor';
-                if (authorBio) authorBio.textContent = 'Giannis specializes in the technical side of F1, with particular focus on aerodynamics and car development. His analytical approach brings clarity to complex engineering topics.';
+                if (authorTitle) authorTitle.textContent = 'F1 Stories Founder & Editor';
+                if (authorBio) authorBio.textContent = 'Ο Γιαννης είναι ενας απο τους ιδρυτές του F1 Stories 🏁 Mε βαθυ πάθος για την ιστορία της Φόρμουλα 1 🏎️ και την τεχνική ανάλυση. Όταν δεν γράφει για τους αγώνες, απολαμβάνει να συζητάει τις στρατηγικές πτυχές του μηχανοκίνητου αθλητισμού. 📊';
             } else if (authorName.includes('Thanasis Batalas')) {
                 if (authorTitle) authorTitle.textContent = 'Racing Historian';
-                if (authorBio) authorBio.textContent = 'Thanasis brings historical context to F1 Stories, connecting modern racing to its rich past. His knowledge of classic races and legendary drivers adds depth to current Formula 1 discussions.';
+                if (authorBio) authorBio.textContent = 'Ο Θανασης είναι ενας απο τους ιδρυτές του F1 Stories 🏁 Φέρνει ιστορικό πλαίσιο στο F1 Stories 🏁, συνδέοντας τους σύγχρονους αγώνες με το πλούσιο παρελθόν της Formula 1 📚🏎️. Η γνώση του για κλασικούς αγώνες και θρυλικούς οδηγούς 🏆👑 προσθέτει βάθος στις σύγχρονες συζητήσεις γύρω από τη Formula 1 🎙️🧠.';
             }
         }
     }
