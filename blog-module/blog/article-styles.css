@@ -930,3 +930,59 @@ figcaption {
         transform: translateX(50%);
     }
 }
+/* Comments section styling */
+.article-comments {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 2rem;
+}
+
+.article-comments h3 {
+    color: white;
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+}
+
+/* Improvements for Disqus on dark backgrounds */
+#disqus_thread {
+    position: relative;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+
+/* Comments section styling */
+.article-comments {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 2rem;
+}
+
+.article-comments h3 {
+    color: white;
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+}
+
+/* Improvements for Disqus on dark backgrounds */
+#disqus_thread {
+    position: relative;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .article-comments {
+        padding: 0.5rem;
+    }
+
+    .article-comments h3 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+}
