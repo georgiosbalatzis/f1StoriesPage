@@ -160,14 +160,63 @@
             </div>
         </div>
 
-        <!-- Blog Posts Grid -->
-        <div class="row blog-posts g-4">
-            <div class="col-12 text-center">
-                <div class="spinner-border text-light" role="status">
-                    <span class="visually-hidden">Loading blog posts...</span>
+        <!-- F1 Calendar Widget -->
+        <div class="row">
+            <div class="col-lg-3 mb-4">
+                <div class="f1-calendar-widget">
+                    <div class="widget-header">
+                        <h3><i class="fas fa-flag-checkered"></i> 2025 F1 Calendar</h3>
+                    </div>
+                    <div class="widget-content">
+                        <div class="next-race-highlight">
+                            <div class="race-flag" id="next-race-flag"></div>
+                            <div class="race-details">
+                                <h4 id="next-race-name">Loading next race...</h4>
+                                <p id="next-race-circuit">Please wait</p>
+                                <div class="countdown" id="sidebar-countdown">
+                                    <div class="countdown-item">
+                                        <span class="count-value" id="count-days">0</span>
+                                        <span class="count-label">Days</span>
+                                    </div>
+                                    <div class="countdown-item">
+                                        <span class="count-value" id="count-hours">00</span>
+                                        <span class="count-label">Hrs</span>
+                                    </div>
+                                    <div class="countdown-item">
+                                        <span class="count-value" id="count-mins">00</span>
+                                        <span class="count-label">Min</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="races-list-container">
+                            <h5>Upcoming Races</h5>
+                            <ul class="upcoming-races" id="upcoming-races-list">
+                                <!-- Races will be populated by JavaScript -->
+                                <li class="race-placeholder"></li>
+                                <li class="race-placeholder"></li>
+                                <li class="race-placeholder"></li>
+                            </ul>
+                            <div class="calendar-actions">
+                                <button id="toggle-past-races" class="btn btn-sm btn-outline-primary">Show Past Races</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-9">
+                <!-- Blog Posts Grid (moved inside here) -->
+                <div class="row blog-posts g-4">
+                    <div class="col-12 text-center">
+                        <div class="spinner-border text-light" role="status">
+                            <span class="visually-hidden">Loading blog posts...</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
 
         <!-- Pagination -->
         <div class="pagination-container">
@@ -276,6 +325,346 @@
                 }
             });
         });
+    });
+</script>
+
+<!-- F1 Calendar Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 2025 F1 Calendar data (update dates when official calendar is announced)
+        const races = [
+            {
+                name: "Bahrain Grand Prix",
+                circuit: "Bahrain International Circuit",
+                date: "2025-03-02T15:00:00Z",
+                country: "Bahrain",
+                flagCode: "bh"
+            },
+            {
+                name: "Saudi Arabian Grand Prix",
+                circuit: "Jeddah Corniche Circuit",
+                date: "2025-03-09T17:00:00Z",
+                country: "Saudi Arabia",
+                flagCode: "sa"
+            },
+            {
+                name: "Australian Grand Prix",
+                circuit: "Albert Park Circuit",
+                date: "2025-03-23T06:00:00Z",
+                country: "Australia",
+                flagCode: "au"
+            },
+            {
+                name: "Japanese Grand Prix",
+                circuit: "Suzuka International Racing Course",
+                date: "2025-04-06T06:00:00Z",
+                country: "Japan",
+                flagCode: "jp"
+            },
+            {
+                name: "Chinese Grand Prix",
+                circuit: "Shanghai International Circuit",
+                date: "2025-04-20T07:00:00Z",
+                country: "China",
+                flagCode: "cn"
+            },
+            {
+                name: "Miami Grand Prix",
+                circuit: "Miami International Autodrome",
+                date: "2025-05-04T19:00:00Z",
+                country: "United States",
+                flagCode: "us"
+            },
+            {
+                name: "Emilia Romagna Grand Prix",
+                circuit: "Autodromo Internazionale Enzo e Dino Ferrari",
+                date: "2025-05-18T13:00:00Z",
+                country: "Italy",
+                flagCode: "it"
+            },
+            {
+                name: "Monaco Grand Prix",
+                circuit: "Circuit de Monaco",
+                date: "2025-05-25T13:00:00Z",
+                country: "Monaco",
+                flagCode: "mc"
+            },
+            {
+                name: "Canadian Grand Prix",
+                circuit: "Circuit Gilles Villeneuve",
+                date: "2025-06-08T18:00:00Z",
+                country: "Canada",
+                flagCode: "ca"
+            },
+            {
+                name: "Spanish Grand Prix",
+                circuit: "Circuit de Barcelona-Catalunya",
+                date: "2025-06-22T13:00:00Z",
+                country: "Spain",
+                flagCode: "es"
+            },
+            {
+                name: "Austrian Grand Prix",
+                circuit: "Red Bull Ring",
+                date: "2025-06-29T13:00:00Z",
+                country: "Austria",
+                flagCode: "at"
+            },
+            {
+                name: "British Grand Prix",
+                circuit: "Silverstone Circuit",
+                date: "2025-07-06T14:00:00Z",
+                country: "United Kingdom",
+                flagCode: "gb"
+            },
+            {
+                name: "Hungarian Grand Prix",
+                circuit: "Hungaroring",
+                date: "2025-07-27T13:00:00Z",
+                country: "Hungary",
+                flagCode: "hu"
+            },
+            {
+                name: "Belgian Grand Prix",
+                circuit: "Circuit de Spa-Francorchamps",
+                date: "2025-08-03T13:00:00Z",
+                country: "Belgium",
+                flagCode: "be"
+            },
+            {
+                name: "Dutch Grand Prix",
+                circuit: "Circuit Zandvoort",
+                date: "2025-08-24T13:00:00Z",
+                country: "Netherlands",
+                flagCode: "nl"
+            },
+            {
+                name: "Italian Grand Prix",
+                circuit: "Autodromo Nazionale di Monza",
+                date: "2025-09-07T13:00:00Z",
+                country: "Italy",
+                flagCode: "it"
+            },
+            {
+                name: "Azerbaijan Grand Prix",
+                circuit: "Baku City Circuit",
+                date: "2025-09-21T12:00:00Z",
+                country: "Azerbaijan",
+                flagCode: "az"
+            },
+            {
+                name: "Singapore Grand Prix",
+                circuit: "Marina Bay Street Circuit",
+                date: "2025-10-05T12:00:00Z",
+                country: "Singapore",
+                flagCode: "sg"
+            },
+            {
+                name: "United States Grand Prix",
+                circuit: "Circuit of The Americas",
+                date: "2025-10-19T19:00:00Z",
+                country: "United States",
+                flagCode: "us"
+            },
+            {
+                name: "Mexico City Grand Prix",
+                circuit: "Autódromo Hermanos Rodríguez",
+                date: "2025-10-26T20:00:00Z",
+                country: "Mexico",
+                flagCode: "mx"
+            },
+            {
+                name: "Brazilian Grand Prix",
+                circuit: "Autódromo José Carlos Pace",
+                date: "2025-11-09T17:00:00Z",
+                country: "Brazil",
+                flagCode: "br"
+            },
+            {
+                name: "Las Vegas Grand Prix",
+                circuit: "Las Vegas Street Circuit",
+                date: "2025-11-23T06:00:00Z",
+                country: "United States",
+                flagCode: "us"
+            },
+            {
+                name: "Qatar Grand Prix",
+                circuit: "Lusail International Circuit",
+                date: "2025-12-07T15:00:00Z",
+                country: "Qatar",
+                flagCode: "qa"
+            },
+            {
+                name: "Abu Dhabi Grand Prix",
+                circuit: "Yas Marina Circuit",
+                date: "2025-12-14T13:00:00Z",
+                country: "United Arab Emirates",
+                flagCode: "ae"
+            }
+        ];
+
+        // Find next race
+        let nextRace = null;
+        let nextRaceIndex = -1;
+        const now = new Date();
+
+        for (let i = 0; i < races.length; i++) {
+            const raceDate = new Date(races[i].date);
+            if (raceDate > now) {
+                nextRace = races[i];
+                nextRaceIndex = i;
+                break;
+            }
+        }
+
+        // If no future races, use the last one (season completed)
+        if (!nextRace && races.length > 0) {
+            nextRace = races[races.length - 1];
+            nextRaceIndex = races.length - 1;
+        }
+
+        // Update next race information in the widget
+        if (nextRace) {
+            document.getElementById('next-race-name').textContent = nextRace.name;
+            document.getElementById('next-race-circuit').textContent = nextRace.circuit;
+
+            // Create a country flag background with CSS fallback
+            const flagElement = document.getElementById('next-race-flag');
+            flagElement.style.backgroundImage = `url('/images/flags/${nextRace.flagCode}.png')`;
+            flagElement.dataset.country = nextRace.country;
+
+            // Set up countdown
+            const countdownInterval = setInterval(updateCountdown, 60000); // Update every minute
+            updateCountdown(); // Initial update
+
+            // Populate upcoming races list
+            const upcomingRacesList = document.getElementById('upcoming-races-list');
+            upcomingRacesList.innerHTML = ''; // Clear placeholders
+
+            let racesToShow = 5; // Number of upcoming races to show
+            let startIndex = nextRaceIndex + 1; // Start with race after the next one
+
+            // Add next race with special highlight
+            const nextRaceItem = document.createElement('li');
+            nextRaceItem.className = 'race-item';
+            nextRaceItem.innerHTML = `
+      <span class="race-date">${formatDate(new Date(nextRace.date))}</span>
+      <span class="race-name">${nextRace.name}</span>
+      <span class="race-status next" title="Next Race"></span>
+    `;
+            upcomingRacesList.appendChild(nextRaceItem);
+
+            // Add upcoming races
+            for (let i = startIndex; i < races.length && i < startIndex + racesToShow; i++) {
+                const race = races[i];
+                const raceItem = document.createElement('li');
+                raceItem.className = 'race-item';
+                raceItem.innerHTML = `
+        <span class="race-date">${formatDate(new Date(race.date))}</span>
+        <span class="race-name">${race.name}</span>
+        <span class="race-status upcoming" title="Upcoming"></span>
+      `;
+                upcomingRacesList.appendChild(raceItem);
+            }
+
+            // Toggle past races button
+            const togglePastButton = document.getElementById('toggle-past-races');
+            let showingPast = false;
+
+            if (togglePastButton) {
+                togglePastButton.addEventListener('click', function() {
+                    if (!showingPast) {
+                        // Show past races
+                        upcomingRacesList.innerHTML = '';
+
+                        // Add past races
+                        for (let i = 0; i < nextRaceIndex; i++) {
+                            const race = races[i];
+                            const raceItem = document.createElement('li');
+                            raceItem.className = 'race-item past-race';
+                            raceItem.innerHTML = `
+              <span class="race-date">${formatDate(new Date(race.date))}</span>
+              <span class="race-name">${race.name}</span>
+              <span class="race-status completed" title="Completed"></span>
+            `;
+                            upcomingRacesList.appendChild(raceItem);
+                        }
+
+                        togglePastButton.textContent = 'Show Upcoming Races';
+                        showingPast = true;
+                    } else {
+                        // Switch back to upcoming races
+                        upcomingRacesList.innerHTML = '';
+
+                        // Re-add next race
+                        const nextRaceItem = document.createElement('li');
+                        nextRaceItem.className = 'race-item';
+                        nextRaceItem.innerHTML = `
+            <span class="race-date">${formatDate(new Date(nextRace.date))}</span>
+            <span class="race-name">${nextRace.name}</span>
+            <span class="race-status next" title="Next Race"></span>
+          `;
+                        upcomingRacesList.appendChild(nextRaceItem);
+
+                        // Re-add upcoming races
+                        for (let i = startIndex; i < races.length && i < startIndex + racesToShow; i++) {
+                            const race = races[i];
+                            const raceItem = document.createElement('li');
+                            raceItem.className = 'race-item';
+                            raceItem.innerHTML = `
+              <span class="race-date">${formatDate(new Date(race.date))}</span>
+              <span class="race-name">${race.name}</span>
+              <span class="race-status upcoming" title="Upcoming"></span>
+            `;
+                            upcomingRacesList.appendChild(raceItem);
+                        }
+
+                        togglePastButton.textContent = 'Show Past Races';
+                        showingPast = false;
+                    }
+                });
+            }
+        }
+
+        // Function to update countdown timer
+        function updateCountdown() {
+            if (!nextRace) return;
+
+            const now = new Date();
+            const raceTime = new Date(nextRace.date);
+            const timeDiff = raceTime - now;
+
+            if (timeDiff <= 0) {
+                // Race has started/passed, find the new next race
+                document.getElementById('count-days').textContent = "0";
+                document.getElementById('count-hours').textContent = "00";
+                document.getElementById('count-mins').textContent = "00";
+
+                // Reload page after 1 hour to update to next race
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3600000);
+
+                return;
+            }
+
+            // Calculate days, hours, minutes
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+            // Update countdown display
+            document.getElementById('count-days').textContent = days;
+            document.getElementById('count-hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('count-mins').textContent = minutes.toString().padStart(2, '0');
+        }
+
+        // Helper function to format dates
+        function formatDate(date) {
+            const month = date.toLocaleString('default', { month: 'short' });
+            const day = date.getDate();
+            return `${month} ${day}`;
+        }
     });
 </script>
 </body>
