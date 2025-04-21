@@ -7,6 +7,12 @@ const BLOG_DIR = path.join(__dirname, 'blog-entries');
 const OUTPUT_JSON = path.join(__dirname, 'blog-data.json');
 const OUTPUT_HTML_DIR = path.join(__dirname, 'blog');
 const TEMPLATE_PATH = path.join(__dirname, 'blog', 'template.html');
+/* BLOG FOLDER NAMING CONVENTION:
+ * - For single articles on a date: Use YYYYMMDD format (e.g., 20250421)
+ * - For multiple articles on the same date: Use YYYYMMDD-N format (e.g., 20250421-1, 20250421-2)
+ * - Custom named folders are also supported
+ */
+
 
 // Helper function to find an image with specific base name (e.g., "1") regardless of extension
 function findImageByBaseName(entryPath, baseName) {
@@ -394,15 +400,17 @@ async function processBlogEntry(entryPath) {
         rawContent = fs.readFileSync(docPath, 'utf8');
     }
 
-    // Determine date from folder name (assuming YYYYMMDD format)
+// Determine date from folder name (assuming YYYYMMDD format or YYYYMMDD-N for multiple posts per day)
     const folderName = path.basename(entryPath);
     let year, month, day, fullDate;
 
-    // Check if folder name follows the expected format
-    if (/^\d{8}$/.test(folderName)) {
-        year = folderName.substring(0, 4);
-        month = folderName.substring(4, 6);
-        day = folderName.substring(6, 8);
+// Check if folder name follows the expected formats
+    if (/^\d{8}(-\d+)?$/.test(folderName)) {
+        // Extract the base date part (ignoring the suffix if present)
+        const datePart = folderName.split('-')[0];
+        year = datePart.substring(0, 4);
+        month = datePart.substring(4, 6);
+        day = datePart.substring(6, 8);
         fullDate = new Date(`${year}-${month}-${day}`);
     } else {
         // Use current date as fallback
