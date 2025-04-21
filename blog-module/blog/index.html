@@ -169,7 +169,7 @@
                     </div>
                     <div class="widget-content">
                         <div class="next-race-highlight">
-                            <div class="race-flag" id="next-race-flag"></div>
+                            <div class="race-flag" id="next-race-flag">🏁</div>
                             <div class="race-details">
                                 <h4 id="next-race-name">Loading next race...</h4>
                                 <p id="next-race-circuit">Please wait</p>
@@ -530,8 +530,9 @@
 
             // Create a country flag background with CSS fallback
             const flagElement = document.getElementById('next-race-flag');
-            flagElement.style.backgroundImage = `url('/images/flags/${nextRace.flagCode}.png')`;
-            flagElement.dataset.country = nextRace.country;
+            const flagEmoji = getCountryFlagEmoji(nextRace.flagCode);
+            flagElement.textContent = flagEmoji;
+            flagElement.title = nextRace.country;
 
             // Set up countdown
             const countdownInterval = setInterval(updateCountdown, 60000); // Update every minute
@@ -548,10 +549,10 @@
             const nextRaceItem = document.createElement('li');
             nextRaceItem.className = 'race-item';
             nextRaceItem.innerHTML = `
-      <span class="race-date">${formatDate(new Date(nextRace.date))}</span>
-      <span class="race-name">${nextRace.name}</span>
-      <span class="race-status next" title="Next Race"></span>
-    `;
+                  <span class="race-date">${formatDate(new Date(nextRace.date))}</span>
+                  <span class="race-name">${getCountryFlagEmoji(nextRace.flagCode)} ${nextRace.name}</span>
+                  <span class="race-status next" title="Next Race"></span>
+                `;
             upcomingRacesList.appendChild(nextRaceItem);
 
             // Add upcoming races
@@ -560,10 +561,10 @@
                 const raceItem = document.createElement('li');
                 raceItem.className = 'race-item';
                 raceItem.innerHTML = `
-        <span class="race-date">${formatDate(new Date(race.date))}</span>
-        <span class="race-name">${race.name}</span>
-        <span class="race-status upcoming" title="Upcoming"></span>
-      `;
+  <span class="race-date">${formatDate(new Date(race.date))}</span>
+  <span class="race-name">${getCountryFlagEmoji(race.flagCode)} ${race.name}</span>
+  <span class="race-status upcoming" title="Upcoming"></span>
+`;
                 upcomingRacesList.appendChild(raceItem);
             }
 
@@ -583,10 +584,10 @@
                             const raceItem = document.createElement('li');
                             raceItem.className = 'race-item past-race';
                             raceItem.innerHTML = `
-              <span class="race-date">${formatDate(new Date(race.date))}</span>
-              <span class="race-name">${race.name}</span>
-              <span class="race-status completed" title="Completed"></span>
-            `;
+  <span class="race-date">${formatDate(new Date(race.date))}</span>
+  <span class="race-name">${getCountryFlagEmoji(race.flagCode)} ${race.name}</span>
+  <span class="race-status completed" title="Completed"></span>
+`;
                             upcomingRacesList.appendChild(raceItem);
                         }
 
@@ -666,6 +667,38 @@
             return `${month} ${day}`;
         }
     });
+
+    function getCountryFlagEmoji(countryCode) {
+        // Convert country code to uppercase
+        const code = countryCode.toUpperCase();
+
+        // Special cases and mapping for countries without direct emoji mapping
+        const specialFlags = {
+            'GB': '🇬🇧', // UK flag
+            'AE': '🇦🇪', // UAE flag
+            'US': '🇺🇸', // USA flag
+            'BH': '🇧🇭', // Bahrain flag
+            'SA': '🇸🇦', // Saudi Arabia flag
+            'AU': '🇦🇺', // Australia flag
+            'JP': '🇯🇵', // Japan flag
+            'CN': '🇨🇳', // China flag
+            'IT': '🇮🇹', // Italy flag
+            'MC': '🇲🇨', // Monaco flag
+            'CA': '🇨🇦', // Canada flag
+            'ES': '🇪🇸', // Spain flag
+            'AT': '🇦🇹', // Austria flag
+            'HU': '🇭🇺', // Hungary flag
+            'BE': '🇧🇪', // Belgium flag
+            'NL': '🇳🇱', // Netherlands flag
+            'AZ': '🇦🇿', // Azerbaijan flag
+            'SG': '🇸🇬', // Singapore flag
+            'MX': '🇲🇽', // Mexico flag
+            'BR': '🇧🇷', // Brazil flag
+            'QA': '🇶🇦'  // Qatar flag
+        };
+
+        return specialFlags[code] || '🏁'; // Default to checkered flag if not found
+    }
 </script>
 </body>
 </html>
