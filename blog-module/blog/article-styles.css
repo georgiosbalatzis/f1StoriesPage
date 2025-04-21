@@ -538,3 +538,268 @@ figcaption {
         justify-content: center;
     }
 }
+
+/* Reading time and author box styles */
+.article-top-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.reading-time {
+    background: rgba(0, 115, 230, 0.3);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+.reading-time i {
+    margin-right: 5px;
+    color: #00ffff;
+}
+
+.article-author-box {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 10px 15px;
+    margin: 15px 0;
+    border: 1px solid rgba(0, 115, 230, 0.2);
+}
+
+.author-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0073e6, #00c6ff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-text {
+    display: none;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.author-info {
+    flex: 1;
+}
+
+.author-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+}
+
+.author-title {
+    color: #00ffff;
+    font-size: 0.8rem;
+    margin-top: 3px;
+}
+
+/* Make sure these styles are added or existing ones are adjusted */
+.article-header-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    padding: 2rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .article-header-overlay {
+        padding: 1.5rem;
+    }
+
+    .article-title {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .article-header-overlay {
+        padding: 1rem;
+    }
+
+    .article-title {
+        font-size: 1.7rem;
+        text-align: center;
+    }
+
+    .article-author-box {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .author-avatar {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .article-top-row {
+        justify-content: center;
+    }
+
+    .article-meta {
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* Article author footer styles */
+.article-author-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+/* Reading time badge */
+.reading-time-badge {
+    position: absolute;
+    top: -15px;
+    right: 20px;
+    background: rgba(0, 115, 230, 0.3);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 115, 230, 0.4);
+}
+
+.reading-time-badge i {
+    margin-right: 5px;
+    color: #00ffff;
+}
+
+/* Author box styling */
+.author-box {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    padding: 1.5rem;
+    border: 1px solid rgba(0, 115, 230, 0.2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.author-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.author-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 1.5rem;
+    background: linear-gradient(135deg, #0073e6, #00c6ff);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+}
+
+.author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-text {
+    display: none;
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.author-info {
+    flex: 1;
+}
+
+.author-name {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.author-title {
+    color: #0073e6;
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+}
+
+.author-bio {
+    color: #e0e0e0;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* Fix potentially conflicting styles from the header author box */
+.article-top-row, .article-author-box {
+    position: relative;
+    z-index: 5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .reading-time-badge {
+        top: -12px;
+        right: 10px;
+        font-size: 0.8rem;
+        padding: 4px 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .author-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .author-avatar {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+
+    .reading-time-badge {
+        right: 50%;
+        transform: translateX(50%);
+    }
+}

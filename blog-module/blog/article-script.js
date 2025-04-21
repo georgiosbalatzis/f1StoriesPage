@@ -301,6 +301,7 @@ function makeRelatedArticlesClickable() {
     }
 }
 // Calculate reading time
+// Calculate reading time and set up author info
 document.addEventListener('DOMContentLoaded', function() {
     // Calculate reading time
     function calculateReadingTime() {
@@ -312,51 +313,84 @@ document.addEventListener('DOMContentLoaded', function() {
         const wordCount = text.trim().split(/\s+/).length;
 
         // Average reading speed: 200 words per minute
-        const readingTimeMinutes = Math.ceil(wordCount / 200);
+        const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
 
-        // Update the reading time element
-        const readingTimeElement = document.getElementById('reading-time-value');
-        if (readingTimeElement) {
-            readingTimeElement.textContent = `${readingTimeMinutes} min read`;
+        // Update the reading time elements (both header and footer)
+        const readingTimeHeader = document.getElementById('reading-time-value');
+        const readingTimeFooter = document.getElementById('reading-time-value-footer');
+
+        if (readingTimeHeader) {
+            readingTimeHeader.textContent = `${readingTimeMinutes} min read`;
+        }
+
+        if (readingTimeFooter) {
+            readingTimeFooter.textContent = `${readingTimeMinutes} min read`;
         }
     }
 
-// Simplified author setup function for the header display
+    // Set up author information for both header and footer
     function setupAuthorInfo() {
-        const authorName = document.getElementById('author-name').textContent;
-        const authorInitial = document.getElementById('author-initial');
-        const authorImage = document.getElementById('author-image');
-        const authorTitle = document.getElementById('author-title');
+        const authorName = document.querySelector('.article-meta')?.textContent.includes('ARTICLE_AUTHOR')
+            ? 'ARTICLE_AUTHOR'
+            : document.getElementById('author-name')?.textContent || 'F1 Stories Team';
 
-        // Set author initial from name
-        if (authorInitial && authorName) {
-            authorInitial.textContent = authorName.charAt(0);
-        }
+        // Setup author data based on name
+        let authorTitle = 'F1 Stories Contributor';
+        let authorBio = 'Regular contributor to F1 Stories, passionate about motorsport and sharing insights about Formula 1 racing.';
 
-        // Try to load author image
-        if (authorImage && authorName) {
-            // Extract last name for image naming
-            const authorNames = authorName.split(' ');
-            const lastName = authorNames.length > 1 ? authorNames[authorNames.length - 1].toLowerCase() : authorNames[0].toLowerCase();
-
-            // Set image path (you may need to adjust this based on your file structure)
-            authorImage.src = `/images/authors/${lastName}.webp`;
-        }
-
-        // Set author specific information
         if (authorName.includes('Georgios Balatzis')) {
-            authorTitle.textContent = 'F1 Stories Founder & Editor';
-            authorBio.textContent = 'Georgios is the founder of F1 Stories, with a deep passion for Formula 1 history and technical analysis. When not writing about racing, he enjoys discussing the strategic aspects of motorsport.';
+            authorTitle = 'F1 Stories Founder & Technical Contributor';
+            authorBio = 'Georgios is the founder of F1 Stories, specializes in the technical side of F1, with particular focus on aerodynamics and car development. His analytical approach brings clarity to complex engineering topics.';
         } else if (authorName.includes('Giannis Poulikidis')) {
-            authorTitle.textContent = 'Technical Contributor';
-            authorBio.textContent = 'Giannis specializes in the technical side of F1, with particular focus on aerodynamics and car development. His analytical approach brings clarity to complex engineering topics.';
+            authorTitle = 'F1 Stories Founder & Technical Contributor, with a deep passion for Formula 1 history and technical analysis. When not writing about racing, he enjoys discussing the strategic aspects of motorsport.';
+            authorBio = 'Giannis ';
         } else if (authorName.includes('Thanasis Batalas')) {
-            authorTitle.textContent = 'Racing Historian';
-            authorBio.textContent = 'Thanasis brings historical context to F1 Stories, connecting modern racing to its rich past. His knowledge of classic races and legendary drivers adds depth to current Formula 1 discussions.';
+            authorTitle = 'Racing Historian';
+            authorBio = 'Thanasis brings historical context to F1 Stories, connecting modern racing to its rich past. His knowledge of classic races and legendary drivers adds depth to current Formula 1 discussions.';
+        }
+
+        // Get author initial
+        const authorInitial = authorName.charAt(0);
+
+        // Determine image path
+        const authorNames = authorName.split(' ');
+        const lastName = authorNames.length > 1 ?
+            authorNames[authorNames.length - 1].toLowerCase() :
+            authorNames[0].toLowerCase();
+        const imagePath = `/images/authors/${lastName}.jpg`;
+
+        // Update header elements
+        updateAuthorElements('author-name', 'author-title', 'author-initial', 'author-image',
+            authorName, authorTitle, authorInitial, imagePath);
+
+        // Update footer elements
+        updateAuthorElements('author-name-footer', 'author-title-footer', 'author-initial-footer', 'author-image-footer',
+            authorName, authorTitle, authorInitial, imagePath);
+
+        // Update bio
+        const authorBioElement = document.getElementById('author-bio');
+        if (authorBioElement) {
+            authorBioElement.textContent = authorBio;
         }
     }
 
-    // Run the functions
+    // Helper function to update author elements
+    function updateAuthorElements(nameId, titleId, initialId, imageId, name, title, initial, imagePath) {
+        const nameElement = document.getElementById(nameId);
+        const titleElement = document.getElementById(titleId);
+        const initialElement = document.getElementById(initialId);
+        const imageElement = document.getElementById(imageId);
+
+        if (nameElement) nameElement.textContent = name;
+        if (titleElement) titleElement.textContent = title;
+        if (initialElement) initialElement.textContent = initial;
+        if (imageElement) {
+            imageElement.src = imagePath;
+            imageElement.alt = name;
+        }
+    }
+
+    // Execute functions
     calculateReadingTime();
     setupAuthorInfo();
 });
