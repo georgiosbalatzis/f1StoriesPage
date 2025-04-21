@@ -144,7 +144,7 @@
         <!-- Images are local to the article folder -->
         <img src="ARTICLE_IMAGE" alt="ARTICLE_TITLE" class="article-header-img" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
         <div class="article-header-overlay">
-          <div class="article-meta-top">
+          <div class="article-top-row">
             <div class="reading-time">
               <i class="fas fa-clock"></i>
               <span id="reading-time-value">5 min read</span>
@@ -153,16 +153,14 @@
 
           <h1 class="article-title">ARTICLE_TITLE</h1>
 
-          <div class="author-box">
-            <div class="author-header">
-              <div class="author-avatar">
-                <img id="author-image" src="/images/authors/default.jpg" alt="Author" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <span class="avatar-text" id="author-initial">A</span>
-              </div>
-              <div class="author-info">
-                <h4 class="author-name" id="author-name">ARTICLE_AUTHOR</h4>
-                <div class="author-title" id="author-title">F1 Stories Contributor</div>
-              </div>
+          <div class="article-author-box">
+            <div class="author-avatar">
+              <img id="author-image" src="/images/authors/default.jpg" alt="ARTICLE_AUTHOR" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <span class="avatar-text" id="author-initial">A</span>
+            </div>
+            <div class="author-info">
+              <div class="author-name" id="author-name">ARTICLE_AUTHOR</div>
+              <div class="author-title" id="author-title">F1 Stories Contributor</div>
             </div>
           </div>
 
@@ -176,6 +174,29 @@
       <div class="article-content">
         <!-- Article content goes here -->
         ARTICLE_CONTENT
+      </div>
+
+      <div class="article-author-footer">
+        <div class="reading-time-badge">
+          <i class="fas fa-clock"></i>
+          <span id="reading-time-value-footer">5 min read</span>
+        </div>
+
+        <div class="author-box">
+          <div class="author-header">
+            <div class="author-avatar">
+              <img id="author-image-footer" src="/images/authors/default.jpg" alt="ARTICLE_AUTHOR" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <span class="avatar-text" id="author-initial-footer">A</span>
+            </div>
+            <div class="author-info">
+              <h4 class="author-name" id="author-name-footer">ARTICLE_AUTHOR</h4>
+              <div class="author-title" id="author-title-footer">F1 Stories Contributor</div>
+            </div>
+          </div>
+          <div class="author-bio" id="author-bio">
+            Regular contributor to F1 Stories, passionate about motorsport and sharing insight about the technical and human aspects of Formula 1 racing.
+          </div>
+        </div>
       </div>
     </div>
 
