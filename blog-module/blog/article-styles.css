@@ -628,16 +628,6 @@ figcaption {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
 /* Social Share Bar */
 .social-share-bar {
     display: flex;
@@ -772,5 +762,129 @@ figcaption {
 
     .share-buttons {
         justify-content: center;
+    }
+}
+
+
+
+
+
+
+/* Race Countdown in Nav */
+.race-countdown-container {
+    margin-left: auto;
+    margin-right: 15px;
+}
+
+.race-countdown {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 115, 230, 0.2));
+    border-radius: 50px;
+    padding: 5px 15px 5px 5px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.race-countdown:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    border-color: rgba(0, 115, 230, 0.4);
+}
+
+.race-flag {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+}
+
+#race-flag-emoji {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.race-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.next-race-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    line-height: 1;
+}
+
+.countdown-timer {
+    font-size: 13px;
+    color: #00ffff;
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+/* Mobile version */
+.race-countdown-mobile {
+    display: none;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 6px 10px;
+    border-radius: 50px;
+    color: #00ffff;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.race-countdown-mobile i {
+    font-size: 14px;
+    color: white;
+}
+
+/* Tablet/mobile adjustments */
+@media (max-width: 991px) {
+    .race-countdown-container {
+        margin-right: auto;
+        margin-left: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .race-countdown {
+        padding: 4px 12px 4px 4px;
+    }
+
+    .race-flag {
+        width: 30px;
+        height: 30px;
+    }
+
+    #race-flag-emoji {
+        font-size: 18px;
+    }
+
+    .next-race-name {
+        font-size: 12px;
+    }
+
+    .countdown-timer {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 576px) {
+    .race-countdown {
+        display: none;
+    }
+
+    .race-countdown-mobile {
+        display: flex;
     }
 }

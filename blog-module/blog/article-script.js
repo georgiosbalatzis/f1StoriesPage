@@ -391,3 +391,342 @@ document.addEventListener('DOMContentLoaded', function() {
     calculateReadingTime();
     setupAuthorInfo();
 });
+
+
+
+
+
+// F1 Race Countdown with Dynamic Data
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if countdown elements exist on the page
+    const countdownTimer = document.getElementById('race-countdown');
+    const mobileCountdown = document.getElementById('race-countdown-mobile');
+
+    if (!countdownTimer && !mobileCountdown) return;
+
+    // Flag emoji mapping - ISO country code to flag emoji
+    const flagEmojis = {
+        'ae': '🇦🇪', // UAE (Abu Dhabi)
+        'at': '🇦🇹', // Austria
+        'au': '🇦🇺', // Australia
+        'az': '🇦🇿', // Azerbaijan
+        'bh': '🇧🇭', // Bahrain
+        'be': '🇧🇪', // Belgium
+        'br': '🇧🇷', // Brazil
+        'ca': '🇨🇦', // Canada
+        'cn': '🇨🇳', // China
+        'nl': '🇳🇱', // Netherlands
+        'es': '🇪🇸', // Spain
+        'us': '🇺🇸', // USA
+        'fr': '🇫🇷', // France
+        'gb': '🇬🇧', // Great Britain
+        'hu': '🇭🇺', // Hungary
+        'it': '🇮🇹', // Italy
+        'jp': '🇯🇵', // Japan
+        'mc': '🇲🇨', // Monaco
+        'mx': '🇲🇽', // Mexico
+        'qa': '🇶🇦', // Qatar
+        'sa': '🇸🇦', // Saudi Arabia
+        'sg': '🇸🇬', // Singapore
+        'us-tx': '🇺🇸', // USA (Texas)
+        'us-fl': '🇺🇸'  // USA (Florida)
+    };
+
+    // Dynamic race data - fetches from API or uses fallback
+    async function getRaceCalendar() {
+        try {
+            // Try to fetch the current F1 calendar from an API
+            // Note: You'll need to replace this URL with a working F1 calendar API
+            const response = await fetch('https://yourapi.com/f1calendar/2025');
+            if (!response.ok) throw new Error('Failed to fetch calendar');
+
+            const data = await response.json();
+            return data.races; // Adjust based on API response structure
+        } catch (error) {
+            console.warn('Could not fetch F1 calendar, using fallback data', error);
+
+            // Fallback data - replace with actual 2025 schedule when available
+            return [
+                {
+                    name: 'Australian Grand Prix',
+                    shortName: 'Australia',
+                    location: 'Melbourne',
+                    countryCode: 'au',
+                    date: '2025-03-16T05:00:00Z'
+                },
+                {
+                    name: 'Chinese Grand Prix',
+                    shortName: 'China',
+                    location: 'Shanghai',
+                    countryCode: 'cn',
+                    date: '2025-03-23T07:00:00Z'
+                },
+                {
+                    name: 'Japanese Grand Prix',
+                    shortName: 'Japan',
+                    location: 'Suzuka',
+                    countryCode: 'jp',
+                    date: '2025-04-06T05:00:00Z'
+                },
+                {
+                    name: 'Bahrain Grand Prix',
+                    shortName: 'Bahrain',
+                    location: 'Sakhir',
+                    countryCode: 'bh',
+                    date: '2025-04-13T15:00:00Z'
+                },
+                {
+                    name: 'Saudi Arabian Grand Prix',
+                    shortName: 'Saudi Arabia',
+                    location: 'Jeddah',
+                    countryCode: 'sa',
+                    date: '2025-04-20T17:00:00Z'
+                },
+                {
+                    name: 'Miami Grand Prix',
+                    shortName: 'Miami',
+                    location: 'Miami',
+                    countryCode: 'us',
+                    date: '2025-05-04T19:00:00Z'
+                },
+                {
+                    name: 'Emilia Romagna Grand Prix',
+                    shortName: 'Emilia Romagna',
+                    location: 'Imola',
+                    countryCode: 'it',
+                    date: '2025-05-18T13:00:00Z'
+                },
+                {
+                    name: 'Monaco Grand Prix',
+                    shortName: 'Monaco',
+                    location: 'Monaco',
+                    countryCode: 'mc',
+                    date: '2025-05-25T13:00:00Z'
+                },
+                {
+                    name: 'Spanish Grand Prix',
+                    shortName: 'Spain',
+                    location: 'Barcelona',
+                    countryCode: 'es',
+                    date: '2025-06-01T13:00:00Z'
+                },
+                {
+                    name: 'Canadian Grand Prix',
+                    shortName: 'Canada',
+                    location: 'Montreal',
+                    countryCode: 'ca',
+                    date: '2025-06-15T18:00:00Z'
+                },
+                {
+                    name: 'Austrian Grand Prix',
+                    shortName: 'Austria',
+                    location: 'Spielberg',
+                    countryCode: 'at',
+                    date: '2025-06-29T13:00:00Z'
+                },
+                {
+                    name: 'British Grand Prix',
+                    shortName: 'Great Britain',
+                    location: 'Silverstone',
+                    countryCode: 'gb',
+                    date: '2025-07-06T13:00:00Z'
+                },
+                {
+                    name: 'Belgian Grand Prix',
+                    shortName: 'Belgium',
+                    location: 'Spa-Francorchamps',
+                    countryCode: 'be',
+                    date: '2025-07-27T13:00:00Z'
+                },
+                {
+                    name: 'Hungarian Grand Prix',
+                    shortName: 'Hungary',
+                    location: 'Budapest',
+                    countryCode: 'hu',
+                    date: '2025-08-03T13:00:00Z'
+                },
+                {
+                    name: 'Dutch Grand Prix',
+                    shortName: 'Netherlands',
+                    location: 'Zandvoort',
+                    countryCode: 'nl',
+                    date: '2025-08-31T13:00:00Z'
+                },
+                {
+                    name: 'Italian Grand Prix',
+                    shortName: 'Italy',
+                    location: 'Monza',
+                    countryCode: 'it',
+                    date: '2025-09-07T13:00:00Z'
+                },
+                {
+                    name: 'Azerbaijan Grand Prix',
+                    shortName: 'Azerbaijan',
+                    location: 'Baku',
+                    countryCode: 'az',
+                    date: '2025-09-21T11:00:00Z'
+                },
+                {
+                    name: 'Singapore Grand Prix',
+                    shortName: 'Singapore',
+                    location: 'Singapore',
+                    countryCode: 'sg',
+                    date: '2025-10-05T12:00:00Z'
+                },
+                {
+                    name: 'United States Grand Prix',
+                    shortName: 'USA',
+                    location: 'Austin',
+                    countryCode: 'us',
+                    date: '2025-10-19T19:00:00Z'
+                },
+                {
+                    name: 'Mexico City Grand Prix',
+                    shortName: 'Mexico',
+                    location: 'Mexico City',
+                    countryCode: 'mx',
+                    date: '2025-10-26T20:00:00Z'
+                },
+                {
+                    name: 'Sao Paulo Grand Prix',
+                    shortName: 'Brazil',
+                    location: 'Sao Paulo',
+                    countryCode: 'br',
+                    date: '2025-11-09T17:00:00Z'
+                },
+                {
+                    name: 'Las Vegas Grand Prix',
+                    shortName: 'Las Vegas',
+                    location: 'Las Vegas',
+                    countryCode: 'us',
+                    date: '2025-11-22T04:00:00Z'
+                },
+                {
+                    name: 'Qatar Grand Prix',
+                    shortName: 'Qatar',
+                    location: 'Lusail',
+                    countryCode: 'qa',
+                    date: '2025-11-30T16:00:00Z'
+                },
+                {
+                    name: 'Abu Dhabi Grand Prix',
+                    shortName: 'Abu Dhabi',
+                    location: 'Yas Marina',
+                    countryCode: 'ae',
+                    date: '2025-12-07T13:00:00Z'
+                }
+            ];
+        }
+    }
+
+    // Store the race calendar
+    let raceCalendar = [];
+    let currentRace = null;
+
+    // Function to find the next upcoming race
+    function getNextRace() {
+        const now = new Date();
+
+        // Find the first race that's in the future
+        const nextRace = raceCalendar.find(race => new Date(race.date) > now);
+
+        // If no future races found, return the last race
+        return nextRace || (raceCalendar.length ? raceCalendar[raceCalendar.length - 1] : null);
+    }
+
+    // Function to update the countdown
+    function updateCountdown() {
+        if (!currentRace) return;
+
+        const raceDate = new Date(currentRace.date);
+        const now = new Date();
+
+        // Calculate time difference
+        const timeDiff = raceDate - now;
+
+        // If race has passed, update to the next race
+        if (timeDiff <= 0) {
+            initializeRaceData();
+            return;
+        }
+
+        // Calculate days, hours, minutes and seconds
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+        // Update DOM elements
+        if (countdownTimer) {
+            countdownTimer.textContent = `${days}d ${hours}h ${minutes}m`;
+        }
+
+        if (mobileCountdown) {
+            // Simpler display for mobile
+            mobileCountdown.textContent = days > 0 ? `${days}d` : `${hours}h`;
+        }
+
+        // Check if we need to update the race (daily)
+        setTimeout(updateCountdown, 60000); // Update every minute
+    }
+
+    // Function to update race information in the UI
+    function updateRaceInfo(race) {
+        currentRace = race;
+
+        const raceNameElement = document.getElementById('next-race-name');
+        const flagElement = document.getElementById('race-flag-emoji');
+
+        if (!race) {
+            if (raceNameElement) raceNameElement.textContent = 'No races scheduled';
+            if (flagElement) flagElement.textContent = '🏁';
+            return;
+        }
+
+        if (raceNameElement) {
+            raceNameElement.textContent = race.shortName || race.name.split(' ')[0];
+        }
+
+        if (flagElement) {
+            // Get flag emoji or default to checkered flag
+            const flagEmoji = flagEmojis[race.countryCode.toLowerCase()] || '🏁';
+            flagElement.textContent = flagEmoji;
+        }
+    }
+
+    // Initialize race data and start the countdown
+    async function initializeRaceData() {
+        try {
+            // Only fetch calendar if we don't have it yet or need to refresh
+            if (raceCalendar.length === 0) {
+                raceCalendar = await getRaceCalendar();
+            }
+
+            // Get the next race
+            const nextRace = getNextRace();
+
+            // Update UI with race information
+            updateRaceInfo(nextRace);
+
+            // Start/update countdown
+            updateCountdown();
+
+        } catch (error) {
+            console.error('Error initializing race data:', error);
+
+            // Show error in UI
+            const raceNameElement = document.getElementById('next-race-name');
+            if (raceNameElement) {
+                raceNameElement.textContent = 'Calendar unavailable';
+            }
+        }
+    }
+
+    // Load race data and start the countdown
+    initializeRaceData();
+
+    // Refresh race data daily to handle race changes
+    setInterval(() => {
+        raceCalendar = []; // Clear cache to force refresh
+        initializeRaceData();
+    }, 24 * 60 * 60 * 1000); // Every 24 hours
+});
