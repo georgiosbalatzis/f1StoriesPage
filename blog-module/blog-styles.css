@@ -921,3 +921,131 @@
     border: 2px solid #ff4b4b;
     transition: all 0.3s ease;
 }
+/* Author Filters */
+.author-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.author-filter-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(0, 115, 230, 0.2);
+    border-radius: 15px;
+    padding: 15px 10px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    width: 140px;
+    color: #fff;
+}
+
+.author-filter-btn:hover, .author-filter-btn.active {
+    background: rgba(0, 115, 230, 0.3);
+    border-color: rgba(0, 115, 230, 0.6);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.author-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #0073e6, #00c6ff);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-text {
+    display: none;
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.author-name {
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    margin-top: 5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .author-filters {
+        gap: 10px;
+    }
+
+    .author-filter-btn {
+        width: 110px;
+        padding: 10px 5px;
+    }
+
+    .author-avatar {
+        width: 60px;
+        height: 60px;
+    }
+
+    .avatar-text {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 576px) {
+    .author-filters {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 15px;
+        justify-content: flex-start;
+        scrollbar-width: thin;
+        scrollbar-color: #0073e6 rgba(0, 0, 0, 0.2);
+    }
+
+    .author-filters::-webkit-scrollbar {
+        height: 5px;
+    }
+
+    .author-filters::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+    }
+
+    .author-filters::-webkit-scrollbar-thumb {
+        background-color: #0073e6;
+        border-radius: 10px;
+    }
+
+    .author-filter-btn {
+        min-width: 100px;
+        flex-shrink: 0;
+    }
+
+    .author-avatar {
+        width: 50px;
+        height: 50px;
+    }
+
+    .author-name {
+        font-size: 12px;
+    }
+}
