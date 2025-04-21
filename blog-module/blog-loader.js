@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to display posts for a specific page
     function displayPosts(page) {
-        const blogContainer = document.querySelector('.blog-posts');
+        const blogContainer = getElement('.blog-posts');
         if (!blogContainer) return;
 
         const basePath = getBasePath();
@@ -898,3 +898,26 @@ document.addEventListener('DOMContentLoaded', function() {
         loadHomepageBlogPosts();
     }
 });
+// Cache frequently accessed DOM elements
+const domElements = {};
+
+function getElement(selector) {
+    if (!domElements[selector]) {
+        domElements[selector] = document.querySelector(selector);
+    }
+    return domElements[selector];
+}
+
+function getAllElements(selector) {
+    return document.querySelectorAll(selector);
+}
+
+function throttle(func, delay) {
+    let lastCall = 0;
+    return function(...args) {
+        const now = new Date().getTime();
+        if (now - lastCall < delay) return;
+        lastCall = now;
+        return func(...args);
+    }
+}
