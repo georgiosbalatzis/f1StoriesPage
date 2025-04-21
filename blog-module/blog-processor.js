@@ -359,23 +359,51 @@ async function convertToHtml(filePath) {
 
 // Function to process a single blog entry
 async function processBlogEntry(entryPath) {
+    console.log(`\n===================================================`);
     console.log(`Processing blog entry: ${entryPath}`);
+    console.log(`Folder name: ${path.basename(entryPath)}`);
+
+    // Define author mapping
+    const authorMap = {
+        'G': 'Georgios Balatzis',
+        'J': 'Giannis Poulikidis',
+        'T': 'Thanasis Batalas'
+    };
 
     // Read entry contents
-    const entryFiles = fs.readdirSync(entryPath);
-
-    // Find document file
-    const docFile = entryFiles.find(file =>
-        file.endsWith('.docx') || file.endsWith('.txt')
-    );
-
-    if (!docFile) {
-        console.warn(`No document found in ${entryPath}`);
+    let entryFiles;
+    try {
+        entryFiles = fs.readdirSync(entryPath);
+        console.log(`Found files: ${entryFiles.join(', ')}`);
+    } catch (error) {
+        console.error(`Error reading directory ${entryPath}:`, error);
         return null;
     }
 
+    // Find document file
+    const docFile = entryFiles.find(file => {
+        const ext = path.extname(file).toLowerCase();
+        return ext === '.docx' || ext === '.txt';
+    });
+
+    if (!docFile) {
+        console.warn(`⚠️ No document found in ${entryPath}`);
+        return null;
+    }
+
+    console.log(`Using document file: ${docFile}`);
+
     // Full path to document
     const docPath = path.join(entryPath, docFile);
+
+    // Check if we have read permission for the files
+    try {
+        fs.accessSync(docPath, fs.constants.R_OK);
+        console.log(`File ${docPath} is readable`);
+    } catch (error) {
+        console.error(`File ${docPath} is not readable:`, error);
+        return null;
+    }
 
     // Process images before content
     const images = processImages(entryPath, path.basename(entryPath));
@@ -400,60 +428,65 @@ async function processBlogEntry(entryPath) {
         }
     } else {
         // For txt files, read as usual
-        rawContent = fs.readFileSync(docPath, 'utf8');
+        try {
+            rawContent = fs.readFileSync(docPath, 'utf8');
+        } catch (error) {
+            console.error(`Error reading text file: ${docPath}`, error);
+            rawContent = 'Error reading file';
+        }
     }
 
-/// Determine date and author from folder name (YYYYMMDDA or YYYYMMDD-NA where A is G, J, or T)
+    // Determine date and author from folder name (YYYYMMDDA or YYYYMMDD-NA where A is G, J, or T)
     const folderName = path.basename(entryPath);
     let year, month, day, fullDate, authorCode;
 
-// Define author mapping
-    const authorMap = {
-        'G': 'Georgios Balatzis',
-        'J': 'Giannis Poulikidis',
-        'T': 'Thanasis Batalas'
-    };
-
-// Check if folder name follows the expected formats
-    if (/^\d{8}[GJT]$/.test(folderName)) {
-        // Format: YYYYMMDDA
-        year = folderName.substring(0, 4);
-        month = folderName.substring(4, 6);
-        day = folderName.substring(6, 8);
-        authorCode = folderName.substring(8, 9); // Extract author code (G, J, or T)
+    // Check if folder name follows any of the expected formats with more flexible patterns
+    if (/^\d{8}[A-Z]?$/.test(folderName)) {
+        // Format: YYYYMMDD or YYYYMMDDA
+        const dateStr = folderName.substring(0, 8);
+        year = dateStr.substring(0, 4);
+        month = dateStr.substring(4, 6);
+        day = dateStr.substring(6, 8);
+        authorCode = folderName.length > 8 ? folderName.substring(8) : null;
         fullDate = new Date(`${year}-${month}-${day}`);
-    } else if (/^\d{8}-\d+[GJT]$/.test(folderName)) {
-        // Format: YYYYMMDD-NA
+        console.log(`Parsed folder ${folderName}: Date=${year}-${month}-${day}, Author=${authorCode || 'none'}`);
+    } else if (/^\d{8}-\d+[A-Z]?$/.test(folderName)) {
+        // Format: YYYYMMDD-N or YYYYMMDD-NA
         const baseName = folderName.split('-')[0];
         year = baseName.substring(0, 4);
         month = baseName.substring(4, 6);
         day = baseName.substring(6, 8);
-        authorCode = folderName.substring(folderName.length - 1); // Get last character as author
+        authorCode = /[A-Z]$/.test(folderName) ? folderName.charAt(folderName.length - 1) : null;
         fullDate = new Date(`${year}-${month}-${day}`);
-    } else if (/^\d{8}(-\d+)?$/.test(folderName)) {
-        // Legacy format without author code
-        const datePart = folderName.split('-')[0];
-        year = datePart.substring(0, 4);
-        month = datePart.substring(4, 6);
-        day = datePart.substring(6, 8);
-        authorCode = null;
-        fullDate = new Date(`${year}-${month}-${day}`);
+        console.log(`Parsed folder ${folderName}: Date=${year}-${month}-${day}, Author=${authorCode || 'none'}`);
     } else {
-        // Use current date as fallback
-        fullDate = new Date();
-        year = fullDate.getFullYear();
-        month = String(fullDate.getMonth() + 1).padStart(2, '0');
-        day = String(fullDate.getDate()).padStart(2, '0');
-        authorCode = null;
+        // More lenient fallback - try to extract at least a date if possible
+        const match = folderName.match(/(\d{4})(\d{2})(\d{2})/);
+        if (match) {
+            year = match[1];
+            month = match[2];
+            day = match[3];
+            fullDate = new Date(`${year}-${month}-${day}`);
+            authorCode = null;
+            console.log(`Fallback parse for folder ${folderName}: Date=${year}-${month}-${day}`);
+        } else {
+            // Last resort - use current date
+            fullDate = new Date();
+            year = fullDate.getFullYear();
+            month = String(fullDate.getMonth() + 1).padStart(2, '0');
+            day = String(fullDate.getDate()).padStart(2, '0');
+            authorCode = null;
+            console.log(`Using default date for folder ${folderName}: ${year}-${month}-${day}`);
+        }
     }
 
-// Get full author name from the code
+    // Get full author name from the code
     const authorName = authorCode ? authorMap[authorCode] : null;
 
-// Extract metadata
+    // Extract metadata
     const metadata = extractMetadata(docFile, rawContent);
 
-// Override author with the one from folder name if available
+    // Override author with the one from folder name if available
     if (authorName) {
         metadata.author = authorName;
     }
@@ -480,7 +513,7 @@ async function processBlogEntry(entryPath) {
     const postData = {
         id: folderName,
         title: metadata.title,
-        author: authorName, // Use the mapped author name
+        author: metadata.author || 'F1 Stories Team',
         date: `${year}-${month}-${day}`,
         displayDate: fullDate.toLocaleDateString('en-US', {
             year: 'numeric',
@@ -650,13 +683,30 @@ async function processBlogEntries() {
         return;
     }
 
-    // Get all entry folders (accepting both date-based folders and custom named folders)
-    const entryFolders = fs.readdirSync(BLOG_DIR)
-        .filter(folder => {
-            const stats = fs.statSync(path.join(BLOG_DIR, folder));
-            return stats.isDirectory();
-        })
-        .map(folder => path.join(BLOG_DIR, folder));
+    console.log(`Looking for blog entries in: ${BLOG_DIR}`);
+
+    // Get all entry folders (more permissive filtering)
+    let entryFolders;
+    try {
+        entryFolders = fs.readdirSync(BLOG_DIR)
+            .filter(folder => {
+                try {
+                    const folderPath = path.join(BLOG_DIR, folder);
+                    const stats = fs.statSync(folderPath);
+                    return stats.isDirectory();
+                } catch (error) {
+                    console.error(`Error checking directory ${folder}:`, error);
+                    return false;
+                }
+            })
+            .map(folder => path.join(BLOG_DIR, folder));
+    } catch (error) {
+        console.error(`Error reading blog directories:`, error);
+        entryFolders = [];
+    }
+
+    console.log(`Found ${entryFolders.length} potential blog entry folders`);
+    entryFolders.forEach(folder => console.log(` - ${path.basename(folder)}`));
 
     // Process all blog entries
     const blogPosts = [];
@@ -664,11 +714,30 @@ async function processBlogEntries() {
         try {
             const postData = await processBlogEntry(entryPath);
             if (postData) {
+                // Ensure author is properly assigned even for legacy folders
+                if (!postData.author || postData.author === 'F1 Stories Team') {
+                    // Check if folder name ends with a known author code
+                    const folderName = path.basename(entryPath);
+                    const lastChar = folderName.charAt(folderName.length - 1);
+                    if (['G', 'J', 'T'].includes(lastChar)) {
+                        postData.author = authorMap[lastChar];
+                    }
+                }
                 blogPosts.push(postData);
+                console.log(`✅ Successfully processed: ${path.basename(entryPath)}`);
+            } else {
+                console.warn(`❌ Failed to process: ${path.basename(entryPath)}`);
             }
         } catch (error) {
-            console.error(`Error processing blog entry ${entryPath}:`, error);
+            console.error(`❌ Error processing blog entry ${entryPath}:`, error);
         }
+    }
+
+    console.log(`\nProcessed ${blogPosts.length} out of ${entryFolders.length} blog entries`);
+
+    if (blogPosts.length === 0) {
+        console.error("No blog posts were successfully processed!");
+        return;
     }
 
     // Sort posts by date (most recent first)
