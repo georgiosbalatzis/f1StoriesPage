@@ -7,9 +7,12 @@ const BLOG_DIR = path.join(__dirname, 'blog-entries');
 const OUTPUT_JSON = path.join(__dirname, 'blog-data.json');
 const OUTPUT_HTML_DIR = path.join(__dirname, 'blog');
 const TEMPLATE_PATH = path.join(__dirname, 'blog', 'template.html');
+
+
 /* BLOG FOLDER NAMING CONVENTION:
- * - For single articles on a date: Use YYYYMMDD format (e.g., 20250421)
- * - For multiple articles on the same date: Use YYYYMMDD-N format (e.g., 20250421-1, 20250421-2)
+ * - For single articles: Use YYYYMMDDA format (e.g., 20250421G)
+ *   Where A is the author code: G (Georgios Balatzis), J (Giannis Poulikidis), or T (Thanasis Batalas)
+ * - For multiple articles on the same date: Use YYYYMMDD-NA format (e.g., 20250421-1G)
  * - Custom named folders are also supported
  */
 
@@ -400,17 +403,40 @@ async function processBlogEntry(entryPath) {
         rawContent = fs.readFileSync(docPath, 'utf8');
     }
 
-// Determine date from folder name (assuming YYYYMMDD format or YYYYMMDD-N for multiple posts per day)
+/// Determine date and author from folder name (YYYYMMDDA or YYYYMMDD-NA where A is G, J, or T)
     const folderName = path.basename(entryPath);
-    let year, month, day, fullDate;
+    let year, month, day, fullDate, authorCode;
+
+// Define author mapping
+    const authorMap = {
+        'G': 'Georgios Balatzis',
+        'J': 'Giannis Poulikidis',
+        'T': 'Thanasis Batalas'
+    };
 
 // Check if folder name follows the expected formats
-    if (/^\d{8}(-\d+)?$/.test(folderName)) {
-        // Extract the base date part (ignoring the suffix if present)
+    if (/^\d{8}[GJT]$/.test(folderName)) {
+        // Format: YYYYMMDDA
+        year = folderName.substring(0, 4);
+        month = folderName.substring(4, 6);
+        day = folderName.substring(6, 8);
+        authorCode = folderName.substring(8, 9); // Extract author code (G, J, or T)
+        fullDate = new Date(`${year}-${month}-${day}`);
+    } else if (/^\d{8}-\d+[GJT]$/.test(folderName)) {
+        // Format: YYYYMMDD-NA
+        const baseName = folderName.split('-')[0];
+        year = baseName.substring(0, 4);
+        month = baseName.substring(4, 6);
+        day = baseName.substring(6, 8);
+        authorCode = folderName.substring(folderName.length - 1); // Get last character as author
+        fullDate = new Date(`${year}-${month}-${day}`);
+    } else if (/^\d{8}(-\d+)?$/.test(folderName)) {
+        // Legacy format without author code
         const datePart = folderName.split('-')[0];
         year = datePart.substring(0, 4);
         month = datePart.substring(4, 6);
         day = datePart.substring(6, 8);
+        authorCode = null;
         fullDate = new Date(`${year}-${month}-${day}`);
     } else {
         // Use current date as fallback
@@ -418,10 +444,19 @@ async function processBlogEntry(entryPath) {
         year = fullDate.getFullYear();
         month = String(fullDate.getMonth() + 1).padStart(2, '0');
         day = String(fullDate.getDate()).padStart(2, '0');
+        authorCode = null;
     }
 
-    // Extract metadata
+// Get full author name from the code
+    const authorName = authorCode ? authorMap[authorCode] : null;
+
+// Extract metadata
     const metadata = extractMetadata(docFile, rawContent);
+
+// Override author with the one from folder name if available
+    if (authorName) {
+        metadata.author = authorName;
+    }
 
     // Convert to HTML
     let content = await convertToHtml(docPath);
@@ -445,7 +480,7 @@ async function processBlogEntry(entryPath) {
     const postData = {
         id: folderName,
         title: metadata.title,
-        author: metadata.author || 'F1 Stories Team',
+        author: authorName, // Use the mapped author name
         date: `${year}-${month}-${day}`,
         displayDate: fullDate.toLocaleDateString('en-US', {
             year: 'numeric',
