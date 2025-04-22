@@ -1,12 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Pagination variables
-    const POSTS_PER_PAGE = 6; // Number of posts to display per page
+    const POSTS_PER_PAGE = 9; // Number of posts to display per page
     let currentPage = 1;
     let totalPages = 1;
     let allPosts = []; // All posts from the API
     let filteredPosts = []; // Posts after applying filters
     let currentFilter = 'all'; // Current filter type
     let currentFilterValue = null; // Current filter value (category or tag)
+    let featuredPostIds = []; // Store IDs of featured posts to avoid duplication
 
     // Cache DOM elements for better performance
     const domElements = {};
@@ -289,10 +290,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const basePath = getBasePath();
 
+        // Filter out posts that are already in the featured section
+        const nonFeaturedPosts = filteredPosts.filter(post => !featuredPostIds.includes(post.id));
+
         // Calculate which posts to show
         const startIndex = (page - 1) * POSTS_PER_PAGE;
         const endIndex = startIndex + POSTS_PER_PAGE;
-        const postsToShow = filteredPosts.slice(startIndex, endIndex);
+        const postsToShow = nonFeaturedPosts.slice(startIndex, endIndex);
 
         // Clear existing content
         blogContainer.innerHTML = '';
@@ -368,19 +372,21 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add hover effects to all blog cards
         setupHoverEffects();
 
-        // Update pagination UI
-        updatePaginationUI(page);
+        // Update pagination UI with total count of non-featured posts
+        updatePaginationUI(page, nonFeaturedPosts.length);
 
         // Update pagination summary
         const start = startIndex + 1;
-        const end = Math.min(startIndex + postsToShow.length, filteredPosts.length);
-        const total = filteredPosts.length;
+        const end = Math.min(startIndex + postsToShow.length, nonFeaturedPosts.length);
+        const total = nonFeaturedPosts.length;
         document.getElementById('pagination-summary').textContent = `Showing ${start}-${end} of ${total} posts`;
     }
 
     // Function to set up pagination UI and events
     function setupPagination(posts) {
-        totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+        // Filter out posts that are already in the featured section
+        const nonFeaturedPosts = posts.filter(post => !featuredPostIds.includes(post.id));
+        totalPages = Math.ceil(nonFeaturedPosts.length / POSTS_PER_PAGE);
 
         // Get pagination container
         const paginationList = document.querySelector('.pagination');
@@ -459,9 +465,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Function to update pagination UI based on current page
-    function updatePaginationUI(page) {
-        // Update current page
+    function updatePaginationUI(page, totalPostsCount) {
+        // Calculate total pages based on non-featured posts count
+        const calculatedTotalPages = Math.ceil(totalPostsCount / POSTS_PER_PAGE);
+
+        // Update current page and total pages
         currentPage = page;
+        totalPages = calculatedTotalPages;
 
         // Update active state for all page links
         document.querySelectorAll('.page-link[data-page]').forEach(link => {
@@ -812,6 +822,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Store the post ID as a data attribute
         featuredPost.setAttribute('data-id', post.id);
 
+        // Add post ID to featured posts list to prevent duplication
+        if (!featuredPostIds.includes(post.id)) {
+            featuredPostIds.push(post.id);
+        }
+
         // Create a rich featured post with more details
         featuredPost.innerHTML = `
             <img src="${processedImage}" alt="${post.title}" class="featured-post-img" onerror="this.src='${fallbackPath}'">
@@ -889,7 +904,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Clear existing content
         featuredContainer.innerHTML = '';
-
+        featuredPostIds = [];
         fetchBlogData()
             .then(data => {
                 // Sort posts by date (most recent first)
@@ -901,6 +916,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const featuredPosts = sortedPosts.slice(0, 6);
 
                 if (featuredPosts.length === 0) {
+                    // Store the IDs of featured posts to prevent duplication
+                    featuredPostIds = featuredPosts.map(post => post.id);
+                    console.log('Featured post IDs:', featuredPostIds);
                     featuredContainer.innerHTML = '<div class="col-12"><p class="text-light">No posts available.</p></div>';
                     return;
                 }
