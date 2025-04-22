@@ -11,47 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Pagination styles -->
-    <style>
-        .pagination-container {
-            margin-top: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .pagination {
-            justify-content: center;
-        }
-
-        .page-item.active .page-link {
-            background-color: #0073e6;
-            border-color: #0073e6;
-        }
-
-        .page-link {
-            color: #0073e6;
-            background-color: rgba(0, 0, 0, 0.3);
-            border-color: rgba(0, 115, 230, 0.2);
-        }
-
-        .page-link:hover {
-            color: white;
-            background-color: rgba(0, 115, 230, 0.5);
-            border-color: rgba(0, 115, 230, 0.3);
-        }
-
-        .page-item.disabled .page-link {
-            color: #6c757d;
-            background-color: rgba(0, 0, 0, 0.2);
-            border-color: rgba(0, 0, 0, 0.1);
-        }
-
-        .pagination-info {
-            text-align: center;
-            margin-bottom: 1rem;
-            color: #aaa;
-            font-size: 0.9rem;
-        }
-    </style>
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
@@ -59,10 +18,8 @@
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-
         gtag('config', 'G-X68J6MQKSM');
     </script>
-
 </head>
 <body>
 <div class="background"></div>
@@ -75,19 +32,19 @@
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <img src="/images/logo.png" alt="F1 Stories Logo" height="50" onerror="this.src='/images/logo.png'">
+                <img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/'; return false;">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/episodes/index.html'; return false;">Episodes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#about'; return false;">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#guests'; return false;">Guests</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/blog-module/blog/index.html'; return false;">Blog</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#contact'; return false;">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/episodes/index.html">Episodes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/#guests">Guests</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/blog-module/blog/index.html">Blog</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/#contact">Contact</a></li>
                 </ul>
             </div>
         </div>
@@ -117,8 +74,21 @@
 
 <section class="py-5">
     <div class="container">
-        <!-- Featured Post Section -->
-        <div class="featured-post mb-5"></div>
+        <!-- Featured Posts Section -->
+        <div class="featured-posts-section mb-5">
+            <h3 class="section-title mb-3">Featured Stories</h3>
+            <div class="featured-posts-slider">
+                <div class="row g-4" id="featured-posts-container">
+                    <!-- Featured posts will be loaded dynamically -->
+                    <div class="col-md-4 featured-post-placeholder"></div>
+                    <div class="col-md-4 featured-post-placeholder"></div>
+                    <div class="col-md-4 featured-post-placeholder"></div>
+                    <div class="col-md-4 featured-post-placeholder"></div>
+                    <div class="col-md-4 featured-post-placeholder"></div>
+                    <div class="col-md-4 featured-post-placeholder"></div>
+                </div>
+            </div>
+        </div>
 
         <!-- Category Filter Buttons -->
         <div class="filter-section mb-5">
@@ -126,7 +96,7 @@
             <div class="filter-categories"></div>
         </div>
 
-        <!-- Add this after the Category Filter Buttons section in blog/index.html -->
+        <!-- Author Filters Section -->
         <div class="filter-section mb-5">
             <h3 class="mb-3">Authors</h3>
             <div class="author-filters">
@@ -138,21 +108,21 @@
                 </button>
                 <button class="author-filter-btn" data-filter="author" data-author="Georgios Balatzis">
                     <div class="author-avatar">
-                        <img src="/images/avatars/FA.webp" alt="Georgios Balatzis" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img src="/images/avatars/FA.webp" alt="Georgios Balatzis" loading="lazy">
                         <span class="avatar-text">G</span>
                     </div>
                     <span class="author-name">Georgios Balatzis</span>
                 </button>
                 <button class="author-filter-btn" data-filter="author" data-author="Giannis Poulikidis">
                     <div class="author-avatar">
-                        <img src="/images/avatars/SV.webp" alt="Giannis Poulikidis" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img src="/images/avatars/SV.webp" alt="Giannis Poulikidis" loading="lazy">
                         <span class="avatar-text">J</span>
                     </div>
                     <span class="author-name">Giannis Poulikidis</span>
                 </button>
                 <button class="author-filter-btn" data-filter="author" data-author="Thanasis Batalas">
                     <div class="author-avatar">
-                        <img src="/images/avatars/LN.webp" alt="Thanasis Batalas" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img src="/images/avatars/LN.webp" alt="Thanasis Batalas" loading="lazy">
                         <span class="avatar-text">T</span>
                     </div>
                     <span class="author-name">Thanasis Batalas</span>
@@ -160,8 +130,9 @@
             </div>
         </div>
 
-        <!-- F1 Calendar Widget -->
+        <!-- Blog Content Row with Sidebar -->
         <div class="row">
+            <!-- F1 Calendar Widget (Left Column) -->
             <div class="col-lg-3 mb-4">
                 <div class="f1-calendar-widget">
                     <div class="widget-header">
@@ -205,8 +176,8 @@
                 </div>
             </div>
 
+            <!-- Blog Posts Grid (Right Column) -->
             <div class="col-lg-9">
-                <!-- Blog Posts Grid (moved inside here) -->
                 <div class="row blog-posts g-4">
                     <div class="col-12 text-center">
                         <div class="spinner-border text-light" role="status">
@@ -216,7 +187,6 @@
                 </div>
             </div>
         </div>
-
 
         <!-- Pagination -->
         <div class="pagination-container">
@@ -250,12 +220,12 @@
             <div class="col-12 text-center">
                 <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
                 <div class="social-media">
-                    <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
-                    <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
                     <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
-                    <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+                    <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" rel="noopener"><i class="fab fa-spotify"></i></a>
                 </div>
             </div>
         </div>
@@ -267,438 +237,13 @@
     <i class="fas fa-chevron-up"></i>
 </button>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Background Randomizer Script -->
-<script src="/scripts/background-randomizer.js"></script>
-<!-- Blog Loader Script with improved static hosting compatibility -->
-<script src="/blog-module/blog-loader.js"></script>
-<!-- Main Script -->
-<script src="/scripts/script.js"></script>
+<!-- Core Scripts -->
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script defer src="/scripts/background-randomizer.js"></script>
+<script defer src="/scripts/utils.js"></script>
+<script defer src="/scripts/f1-calendar.js"></script>
+<script defer src="/blog-module/blog-loader.js"></script>
+<script defer src="/scripts/script.js"></script>
 
-<!-- Navbar fix script -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Ensure the navbar toggle works
-        const navbarToggler = document.querySelector('.navbar-toggler');
-        const navbarCollapse = document.querySelector('.navbar-collapse');
-
-        if (navbarToggler && navbarCollapse) {
-            navbarToggler.addEventListener('click', function() {
-                navbarCollapse.classList.toggle('show');
-            });
-        }
-
-        // Close mobile menu after clicking a link
-        const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
-        navLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                // If mobile menu is open, close it
-                if (navbarCollapse.classList.contains('show')) {
-                    navbarCollapse.classList.remove('show');
-                }
-            });
-        });
-    });
-</script>
-
-<!-- Error logging for debugging -->
-<script>
-    window.addEventListener('error', function(e) {
-        console.log('Global error handler:', e.message, e.filename, e.lineno);
-    });
-
-    // Fallback image handler
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('img').forEach(img => {
-            img.addEventListener('error', function() {
-                // Check if already has an onerror handler set (to avoid loops)
-                if (!this.hasAttribute('data-error-handled')) {
-                    this.setAttribute('data-error-handled', 'true');
-
-                    // Try relative path as fallback for absolute paths
-                    if (this.src.startsWith('/')) {
-                        const relativePath = this.src.substring(1);
-                        console.log('Trying relative path:', relativePath);
-                        this.src = relativePath;
-                    }
-                }
-            });
-        });
-    });
-</script>
-
-<!-- F1 Calendar Script -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 2025 F1 Calendar data (update dates when official calendar is announced)
-        const races = [
-            {
-                name: "Bahrain Grand Prix",
-                circuit: "Bahrain International Circuit",
-                date: "2025-03-02T15:00:00Z",
-                country: "Bahrain",
-                flagCode: "bh"
-            },
-            {
-                name: "Saudi Arabian Grand Prix",
-                circuit: "Jeddah Corniche Circuit",
-                date: "2025-03-09T17:00:00Z",
-                country: "Saudi Arabia",
-                flagCode: "sa"
-            },
-            {
-                name: "Australian Grand Prix",
-                circuit: "Albert Park Circuit",
-                date: "2025-03-23T06:00:00Z",
-                country: "Australia",
-                flagCode: "au"
-            },
-            {
-                name: "Japanese Grand Prix",
-                circuit: "Suzuka International Racing Course",
-                date: "2025-04-06T06:00:00Z",
-                country: "Japan",
-                flagCode: "jp"
-            },
-            {
-                name: "Chinese Grand Prix",
-                circuit: "Shanghai International Circuit",
-                date: "2025-04-20T07:00:00Z",
-                country: "China",
-                flagCode: "cn"
-            },
-            {
-                name: "Miami Grand Prix",
-                circuit: "Miami International Autodrome",
-                date: "2025-05-04T19:00:00Z",
-                country: "United States",
-                flagCode: "us"
-            },
-            {
-                name: "Emilia Romagna Grand Prix",
-                circuit: "Autodromo Internazionale Enzo e Dino Ferrari",
-                date: "2025-05-18T13:00:00Z",
-                country: "Italy",
-                flagCode: "it"
-            },
-            {
-                name: "Monaco Grand Prix",
-                circuit: "Circuit de Monaco",
-                date: "2025-05-25T13:00:00Z",
-                country: "Monaco",
-                flagCode: "mc"
-            },
-            {
-                name: "Canadian Grand Prix",
-                circuit: "Circuit Gilles Villeneuve",
-                date: "2025-06-08T18:00:00Z",
-                country: "Canada",
-                flagCode: "ca"
-            },
-            {
-                name: "Spanish Grand Prix",
-                circuit: "Circuit de Barcelona-Catalunya",
-                date: "2025-06-22T13:00:00Z",
-                country: "Spain",
-                flagCode: "es"
-            },
-            {
-                name: "Austrian Grand Prix",
-                circuit: "Red Bull Ring",
-                date: "2025-06-29T13:00:00Z",
-                country: "Austria",
-                flagCode: "at"
-            },
-            {
-                name: "British Grand Prix",
-                circuit: "Silverstone Circuit",
-                date: "2025-07-06T14:00:00Z",
-                country: "United Kingdom",
-                flagCode: "gb"
-            },
-            {
-                name: "Hungarian Grand Prix",
-                circuit: "Hungaroring",
-                date: "2025-07-27T13:00:00Z",
-                country: "Hungary",
-                flagCode: "hu"
-            },
-            {
-                name: "Belgian Grand Prix",
-                circuit: "Circuit de Spa-Francorchamps",
-                date: "2025-08-03T13:00:00Z",
-                country: "Belgium",
-                flagCode: "be"
-            },
-            {
-                name: "Dutch Grand Prix",
-                circuit: "Circuit Zandvoort",
-                date: "2025-08-24T13:00:00Z",
-                country: "Netherlands",
-                flagCode: "nl"
-            },
-            {
-                name: "Italian Grand Prix",
-                circuit: "Autodromo Nazionale di Monza",
-                date: "2025-09-07T13:00:00Z",
-                country: "Italy",
-                flagCode: "it"
-            },
-            {
-                name: "Azerbaijan Grand Prix",
-                circuit: "Baku City Circuit",
-                date: "2025-09-21T12:00:00Z",
-                country: "Azerbaijan",
-                flagCode: "az"
-            },
-            {
-                name: "Singapore Grand Prix",
-                circuit: "Marina Bay Street Circuit",
-                date: "2025-10-05T12:00:00Z",
-                country: "Singapore",
-                flagCode: "sg"
-            },
-            {
-                name: "United States Grand Prix",
-                circuit: "Circuit of The Americas",
-                date: "2025-10-19T19:00:00Z",
-                country: "United States",
-                flagCode: "us"
-            },
-            {
-                name: "Mexico City Grand Prix",
-                circuit: "Autódromo Hermanos Rodríguez",
-                date: "2025-10-26T20:00:00Z",
-                country: "Mexico",
-                flagCode: "mx"
-            },
-            {
-                name: "Brazilian Grand Prix",
-                circuit: "Autódromo José Carlos Pace",
-                date: "2025-11-09T17:00:00Z",
-                country: "Brazil",
-                flagCode: "br"
-            },
-            {
-                name: "Las Vegas Grand Prix",
-                circuit: "Las Vegas Street Circuit",
-                date: "2025-11-23T06:00:00Z",
-                country: "United States",
-                flagCode: "us"
-            },
-            {
-                name: "Qatar Grand Prix",
-                circuit: "Lusail International Circuit",
-                date: "2025-12-07T15:00:00Z",
-                country: "Qatar",
-                flagCode: "qa"
-            },
-            {
-                name: "Abu Dhabi Grand Prix",
-                circuit: "Yas Marina Circuit",
-                date: "2025-12-14T13:00:00Z",
-                country: "United Arab Emirates",
-                flagCode: "ae"
-            }
-        ];
-
-        // Find next race
-        let nextRace = null;
-        let nextRaceIndex = -1;
-        const now = new Date();
-
-        for (let i = 0; i < races.length; i++) {
-            const raceDate = new Date(races[i].date);
-            if (raceDate > now) {
-                nextRace = races[i];
-                nextRaceIndex = i;
-                break;
-            }
-        }
-
-        // If no future races, use the last one (season completed)
-        if (!nextRace && races.length > 0) {
-            nextRace = races[races.length - 1];
-            nextRaceIndex = races.length - 1;
-        }
-
-        // Update next race information in the widget
-        if (nextRace) {
-            document.getElementById('next-race-name').textContent = nextRace.name;
-            document.getElementById('next-race-circuit').textContent = nextRace.circuit;
-
-            // Create a country flag background with CSS fallback
-            const flagElement = document.getElementById('next-race-flag');
-            const flagEmoji = getCountryFlagEmoji(nextRace.flagCode);
-            flagElement.textContent = flagEmoji;
-            flagElement.title = nextRace.country;
-
-            // Set up countdown
-            const countdownInterval = setInterval(updateCountdown, 60000); // Update every minute
-            updateCountdown(); // Initial update
-
-            // Populate upcoming races list
-            const upcomingRacesList = document.getElementById('upcoming-races-list');
-            upcomingRacesList.innerHTML = ''; // Clear placeholders
-
-            let racesToShow = 5; // Number of upcoming races to show
-            let startIndex = nextRaceIndex + 1; // Start with race after the next one
-
-            // Add next race with special highlight
-            const nextRaceItem = document.createElement('li');
-            nextRaceItem.className = 'race-item';
-            nextRaceItem.innerHTML = `
-                  <span class="race-date">${formatDate(new Date(nextRace.date))}</span>
-                  <span class="race-name">${getCountryFlagEmoji(nextRace.flagCode)} ${nextRace.name}</span>
-                  <span class="race-status next" title="Next Race"></span>
-                `;
-            upcomingRacesList.appendChild(nextRaceItem);
-
-            // Add upcoming races
-            for (let i = startIndex; i < races.length && i < startIndex + racesToShow; i++) {
-                const race = races[i];
-                const raceItem = document.createElement('li');
-                raceItem.className = 'race-item';
-                raceItem.innerHTML = `
-  <span class="race-date">${formatDate(new Date(race.date))}</span>
-  <span class="race-name">${getCountryFlagEmoji(race.flagCode)} ${race.name}</span>
-  <span class="race-status upcoming" title="Upcoming"></span>
-`;
-                upcomingRacesList.appendChild(raceItem);
-            }
-
-            // Toggle past races button
-            const togglePastButton = document.getElementById('toggle-past-races');
-            let showingPast = false;
-
-            if (togglePastButton) {
-                togglePastButton.addEventListener('click', function() {
-                    if (!showingPast) {
-                        // Show past races
-                        upcomingRacesList.innerHTML = '';
-
-                        // Add past races
-                        for (let i = 0; i < nextRaceIndex; i++) {
-                            const race = races[i];
-                            const raceItem = document.createElement('li');
-                            raceItem.className = 'race-item past-race';
-                            raceItem.innerHTML = `
-  <span class="race-date">${formatDate(new Date(race.date))}</span>
-  <span class="race-name">${getCountryFlagEmoji(race.flagCode)} ${race.name}</span>
-  <span class="race-status completed" title="Completed"></span>
-`;
-                            upcomingRacesList.appendChild(raceItem);
-                        }
-
-                        togglePastButton.textContent = 'Show Upcoming Races';
-                        showingPast = true;
-                    } else {
-                        // Switch back to upcoming races
-                        upcomingRacesList.innerHTML = '';
-
-                        // Re-add next race
-                        const nextRaceItem = document.createElement('li');
-                        nextRaceItem.className = 'race-item';
-                        nextRaceItem.innerHTML = `
-            <span class="race-date">${formatDate(new Date(nextRace.date))}</span>
-            <span class="race-name">${nextRace.name}</span>
-            <span class="race-status next" title="Next Race"></span>
-          `;
-                        upcomingRacesList.appendChild(nextRaceItem);
-
-                        // Re-add upcoming races
-                        for (let i = startIndex; i < races.length && i < startIndex + racesToShow; i++) {
-                            const race = races[i];
-                            const raceItem = document.createElement('li');
-                            raceItem.className = 'race-item';
-                            raceItem.innerHTML = `
-              <span class="race-date">${formatDate(new Date(race.date))}</span>
-              <span class="race-name">${race.name}</span>
-              <span class="race-status upcoming" title="Upcoming"></span>
-            `;
-                            upcomingRacesList.appendChild(raceItem);
-                        }
-
-                        togglePastButton.textContent = 'Show Past Races';
-                        showingPast = false;
-                    }
-                });
-            }
-        }
-
-        // Function to update countdown timer
-        function updateCountdown() {
-            if (!nextRace) return;
-
-            const now = new Date();
-            const raceTime = new Date(nextRace.date);
-            const timeDiff = raceTime - now;
-
-            if (timeDiff <= 0) {
-                // Race has started/passed, find the new next race
-                document.getElementById('count-days').textContent = "0";
-                document.getElementById('count-hours').textContent = "00";
-                document.getElementById('count-mins').textContent = "00";
-
-                // Reload page after 1 hour to update to next race
-                setTimeout(() => {
-                    window.location.reload();
-                }, 3600000);
-
-                return;
-            }
-
-            // Calculate days, hours, minutes
-            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-
-            // Update countdown display
-            document.getElementById('count-days').textContent = days;
-            document.getElementById('count-hours').textContent = hours.toString().padStart(2, '0');
-            document.getElementById('count-mins').textContent = minutes.toString().padStart(2, '0');
-        }
-
-        // Helper function to format dates
-        function formatDate(date) {
-            const month = date.toLocaleString('default', { month: 'short' });
-            const day = date.getDate();
-            return `${month} ${day}`;
-        }
-    });
-
-    function getCountryFlagEmoji(countryCode) {
-        // Convert country code to uppercase
-        const code = countryCode.toUpperCase();
-
-        // Special cases and mapping for countries without direct emoji mapping
-        const specialFlags = {
-            'GB': '🇬🇧', // UK flag
-            'AE': '🇦🇪', // UAE flag
-            'US': '🇺🇸', // USA flag
-            'BH': '🇧🇭', // Bahrain flag
-            'SA': '🇸🇦', // Saudi Arabia flag
-            'AU': '🇦🇺', // Australia flag
-            'JP': '🇯🇵', // Japan flag
-            'CN': '🇨🇳', // China flag
-            'IT': '🇮🇹', // Italy flag
-            'MC': '🇲🇨', // Monaco flag
-            'CA': '🇨🇦', // Canada flag
-            'ES': '🇪🇸', // Spain flag
-            'AT': '🇦🇹', // Austria flag
-            'HU': '🇭🇺', // Hungary flag
-            'BE': '🇧🇪', // Belgium flag
-            'NL': '🇳🇱', // Netherlands flag
-            'AZ': '🇦🇿', // Azerbaijan flag
-            'SG': '🇸🇬', // Singapore flag
-            'MX': '🇲🇽', // Mexico flag
-            'BR': '🇧🇷', // Brazil flag
-            'QA': '🇶🇦'  // Qatar flag
-        };
-
-        return specialFlags[code] || '🏁'; // Default to checkered flag if not found
-    }
-</script>
 </body>
 </html>

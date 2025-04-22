@@ -1,4 +1,3 @@
-// blog-module/blog-loader.js - Enhanced to handle dynamically loaded blog posts with pagination
 document.addEventListener('DOMContentLoaded', function() {
     // Pagination variables
     const POSTS_PER_PAGE = 6; // Number of posts to display per page
@@ -8,6 +7,20 @@ document.addEventListener('DOMContentLoaded', function() {
     let filteredPosts = []; // Posts after applying filters
     let currentFilter = 'all'; // Current filter type
     let currentFilterValue = null; // Current filter value (category or tag)
+
+    // Cache DOM elements for better performance
+    const domElements = {};
+
+    function getElement(selector) {
+        if (!domElements[selector]) {
+            domElements[selector] = document.querySelector(selector);
+        }
+        return domElements[selector];
+    }
+
+    function getAllElements(selector) {
+        return document.querySelectorAll(selector);
+    }
 
     // Helper function to determine if we're on the root page or in a subdirectory
     function getBasePath() {
@@ -22,19 +35,68 @@ document.addEventListener('DOMContentLoaded', function() {
         return '/';
     }
 
-    // Add to blog-loader.js
+    // Helper function to process image paths correctly
+    function processImagePath(basePath, imagePath) {
+        // If imagePath is empty or undefined, return the default image
+        if (!imagePath) {
+            return basePath + 'blog-module/images/default-blog.jpg';
+        }
+
+        // If it's already a full URL, return as is
+        if (imagePath.startsWith('http')) {
+            return imagePath;
+        }
+
+        // If it's an absolute path, make sure to handle it properly
+        if (imagePath.startsWith('/')) {
+            return basePath + imagePath.substring(1);
+        }
+
+        // If it's a relative path, just prepend the base path
+        return basePath + imagePath;
+    }
+
+    // Helper function to fetch blog data with multiple fallbacks
+    async function fetchBlogData() {
+        const basePath = getBasePath();
+        const paths = [
+            basePath + 'blog-module/blog-data.json',
+            '../../blog-module/blog-data.json',
+            '../blog-data.json'
+        ];
+
+        let response;
+        let error;
+
+        for (const path of paths) {
+            try {
+                response = await fetch(path);
+                if (response.ok) {
+                    return await response.json();
+                }
+            } catch (e) {
+                error = e;
+                // Continue to next path
+            }
+        }
+
+        // If we get here, all paths failed
+        throw error || new Error('Failed to fetch blog data');
+    }
+
+    // Setup author filters
     function setupAuthorFilters() {
-        const authorButtons = document.querySelectorAll('.author-filter-btn');
+        const authorButtons = getAllElements('.author-filter-btn');
         if (!authorButtons.length) return;
 
         // Add event listeners to author filter buttons
         authorButtons.forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 const filterType = this.getAttribute('data-filter');
                 const author = this.getAttribute('data-author');
 
                 // Remove active class from all author buttons
-                document.querySelectorAll('.author-filter-btn').forEach(btn => {
+                getAllElements('.author-filter-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
 
@@ -42,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.classList.add('active');
 
                 // Reset category filter buttons
-                document.querySelectorAll('.filter-button').forEach(btn => {
+                getAllElements('.filter-button').forEach(btn => {
                     btn.classList.remove('active');
                     if (btn.getAttribute('data-filter') === 'all') {
                         btn.classList.add('active');
@@ -63,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 displayPosts(1);
 
                 // Scroll to posts section
-                document.querySelector('.blog-posts').scrollIntoView({
+                getElement('.blog-posts').scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
                 });
@@ -90,21 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const basePath = getBasePath();
 
-        // Use a path that works with any base URL
-        fetch(basePath + 'blog-module/blog-data.json')
-            .then(response => {
-                if (!response.ok) {
-                    // Try relative path as fallback
-                    return fetch('blog-module/blog-data.json');
-                }
-                return response;
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+        fetchBlogData()
             .then(data => {
                 // Sort posts by date (most recent first)
                 const sortedPosts = data.posts.sort((a, b) => {
@@ -188,10 +236,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const blogContainer = document.querySelector('.blog-posts');
+        const blogContainer = getElement('.blog-posts');
         if (!blogContainer) return;
-
-        const basePath = getBasePath();
 
         // Add loading indicator
         blogContainer.innerHTML = `
@@ -202,28 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
-        // Try multiple path options for better compatibility
-        fetch(basePath + 'blog-module/blog-data.json')
-            .then(response => {
-                if (!response.ok) {
-                    // Try relative path as fallback
-                    return fetch('../../blog-module/blog-data.json');
-                }
-                return response;
-            })
-            .then(response => {
-                if (!response.ok) {
-                    // Try one more level up
-                    return fetch('../blog-data.json');
-                }
-                return response;
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+        fetchBlogData()
             .then(data => {
                 // Sort posts by date (most recent first)
                 allPosts = data.posts.sort((a, b) => {
@@ -399,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Add event listeners to pagination links
         document.querySelectorAll('.page-link').forEach(link => {
-            link.addEventListener('click', function(e) {
+            link.addEventListener('click', function (e) {
                 e.preventDefault();
 
                 // Handle previous button
@@ -465,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function() {
         displayPosts(currentPage);
 
         // Scroll to top of posts section
-        document.querySelector('.blog-posts').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        getElement('.blog-posts').scrollIntoView({behavior: 'smooth', block: 'start'});
     }
 
     // Function to set up category filters
@@ -520,7 +545,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Add event listeners to filter buttons
         document.querySelectorAll('.filter-button').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 const filterType = this.getAttribute('data-filter');
                 const category = this.getAttribute('data-category');
                 const tag = this.getAttribute('data-tag');
@@ -571,27 +596,6 @@ document.addEventListener('DOMContentLoaded', function() {
         displayPosts(1);
     }
 
-    // Helper function to process image paths correctly
-    function processImagePath(basePath, imagePath) {
-        // If imagePath is empty or undefined, return the default image
-        if (!imagePath) {
-            return basePath + 'blog-module/images/default-blog.jpg';
-        }
-
-        // If it's already a full URL, return as is
-        if (imagePath.startsWith('http')) {
-            return imagePath;
-        }
-
-        // If it's an absolute path, make sure to handle it properly
-        if (imagePath.startsWith('/')) {
-            return basePath + imagePath.substring(1);
-        }
-
-        // If it's a relative path, just prepend the base path
-        return basePath + imagePath;
-    }
-
     // Function to set up search functionality
     function setupSearch() {
         const searchInput = document.querySelector('.search-bar input');
@@ -612,12 +616,12 @@ document.addEventListener('DOMContentLoaded', function() {
         searchWrapper.appendChild(clearButton);
 
         // Show/hide clear button based on input content
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', function () {
             clearButton.style.display = this.value ? 'block' : 'none';
         });
 
         // Clear search when button is clicked
-        clearButton.addEventListener('click', function() {
+        clearButton.addEventListener('click', function () {
             searchInput.value = '';
             clearButton.style.display = 'none';
             resetSearch();
@@ -761,39 +765,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to set up hover effects on blog cards
     function setupHoverEffects() {
         document.querySelectorAll('.blog-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
+            const title = card.querySelector('.blog-title');
+            const readMore = card.querySelector('.blog-read-more');
+            const arrow = card.querySelector('.blog-read-more i');
+            const image = card.querySelector('.blog-img');
+
+            card.addEventListener('mouseenter', function () {
                 this.style.transform = 'translateY(-10px) scale(1.02)';
                 this.style.boxShadow = '0 15px 30px rgba(0,115,230,0.2)';
                 this.style.borderColor = 'rgba(0, 115, 230, 0.3)';
-
-                const title = this.querySelector('.blog-title');
                 if (title) title.style.color = '#00ffff';
-
-                const readMore = this.querySelector('.blog-read-more');
                 if (readMore) readMore.style.color = '#00ffff';
-
-                const arrow = this.querySelector('.blog-read-more i');
                 if (arrow) arrow.style.transform = 'translateX(5px)';
-
-                const image = this.querySelector('.blog-img');
                 if (image) image.style.transform = 'scale(1.1)';
             });
 
-            card.addEventListener('mouseleave', function() {
+            card.addEventListener('mouseleave', function () {
                 this.style.transform = '';
                 this.style.boxShadow = '';
                 this.style.borderColor = '';
-
-                const title = this.querySelector('.blog-title');
                 if (title) title.style.color = '';
-
-                const readMore = this.querySelector('.blog-read-more');
                 if (readMore) readMore.style.color = '';
-
-                const arrow = this.querySelector('.blog-read-more i');
                 if (arrow) arrow.style.transform = '';
-
-                const image = this.querySelector('.blog-img');
                 if (image) image.style.transform = '';
             });
         });
@@ -846,14 +839,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Make the entire featured post clickable
         featuredPost.style.cursor = 'pointer';
-        featuredPost.addEventListener('click', function(e) {
+        featuredPost.addEventListener('click', function (e) {
             // Don't trigger if they clicked on the read more link (it has its own destination)
             if (e.target.closest('.blog-read-more')) return;
             window.location.href = `${basePath}blog-module/blog-entries/${post.id}/article.html`;
         });
 
         // Add hover effect to featured post
-        featuredPost.addEventListener('mouseenter', function() {
+        featuredPost.addEventListener('mouseenter', function () {
             const img = this.querySelector('.featured-post-img');
             if (img) img.style.transform = 'scale(1.03)';
 
@@ -866,7 +859,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.boxShadow = '0 15px 30px rgba(0,115,230,0.3)';
         });
 
-        featuredPost.addEventListener('mouseleave', function() {
+        featuredPost.addEventListener('mouseleave', function () {
             const img = this.querySelector('.featured-post-img');
             if (img) img.style.transform = '';
 
@@ -886,38 +879,231 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Call the appropriate function based on the page
-    if (window.location.pathname.includes('/blog/index.html') ||
-        window.location.pathname.includes('/blog-module/blog/index.html') ||
-        window.location.pathname.endsWith('/blog/') ||
-        window.location.pathname.endsWith('/blog-module/blog/')) {
-        loadBlogIndexPosts();
-        setupSearch();
-        setupAuthorFilters();
-    } else {
-        loadHomepageBlogPosts();
-    }
-});
-// Cache frequently accessed DOM elements
-const domElements = {};
+    // Function to load featured posts
+    function loadFeaturedPosts() {
+        const featuredContainer = document.getElementById('featured-posts-container');
+        if (!featuredContainer) return;
 
-function getElement(selector) {
-    if (!domElements[selector]) {
-        domElements[selector] = document.querySelector(selector);
-    }
-    return domElements[selector];
-}
+        console.log('Loading featured posts...');
+        const basePath = getBasePath();
 
-function getAllElements(selector) {
-    return document.querySelectorAll(selector);
-}
+        // Clear existing content
+        featuredContainer.innerHTML = '';
 
-function throttle(func, delay) {
-    let lastCall = 0;
-    return function(...args) {
-        const now = new Date().getTime();
-        if (now - lastCall < delay) return;
-        lastCall = now;
-        return func(...args);
+        fetchBlogData()
+            .then(data => {
+                // Sort posts by date (most recent first)
+                const sortedPosts = data.posts.sort((a, b) => {
+                    return new Date(b.date) - new Date(a.date);
+                });
+
+                // Take the 6 most recent posts for featuring
+                const featuredPosts = sortedPosts.slice(0, 6);
+
+                if (featuredPosts.length === 0) {
+                    featuredContainer.innerHTML = '<div class="col-12"><p class="text-light">No posts available.</p></div>';
+                    return;
+                }
+
+                // Create the HTML for each featured post
+                featuredPosts.forEach(post => {
+                    // Extract day and month from display date
+                    const dateMatch = post.displayDate ? post.displayDate.match(/([A-Za-z]+) (\d+)/) : null;
+                    const month = dateMatch ? dateMatch[1].substring(0, 3) : 'JAN';
+                    const day = dateMatch ? dateMatch[2] : '1';
+
+                    // Fix image path
+                    const imagePath = processImagePath(basePath, post.image);
+                    const fallbackPath = basePath + 'blog-module/images/default-blog.jpg';
+
+                    const postHtml = `
+                    <div class="col-md-4 col-sm-6 mb-4">
+                        <a href="${basePath}blog-module/blog-entries/${post.id}/article.html" class="featured-post-link">
+                            <div class="featured-post-card">
+                                <img src="${imagePath}" alt="${post.title}" class="featured-post-img" loading="lazy" onerror="this.src='${fallbackPath}'">
+                                <div class="featured-post-content">
+                                    <h3 class="featured-post-title">${post.title}</h3>
+                                    <p class="featured-post-excerpt">${post.excerpt || 'Read this interesting article...'}</p>
+                                    <div class="featured-post-meta">
+                                        <span class="featured-post-date"><i class="fas fa-calendar"></i> ${month} ${day}</span>
+                                        <span class="read-more">Read <i class="fas fa-arrow-right"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                `;
+
+                    featuredContainer.innerHTML += postHtml;
+                });
+
+                // Add hover effects to featured post cards
+                document.querySelectorAll('.featured-post-card').forEach(card => {
+                    const img = card.querySelector('.featured-post-img');
+                    const readMore = card.querySelector('.read-more');
+                    const arrow = card.querySelector('.read-more i');
+
+                    card.parentElement.addEventListener('mouseenter', function() {
+                        card.style.transform = 'translateY(-5px)';
+                        card.style.boxShadow = '0 12px 25px rgba(0, 115, 230, 0.3)';
+                        if (readMore) readMore.style.color = '#00ffff';
+                        if (arrow) arrow.style.transform = 'translateX(3px)';
+                        if (img) img.style.transform = 'scale(1.05)';
+                    });
+
+                    card.parentElement.addEventListener('mouseleave', function() {
+                        card.style.transform = '';
+                        card.style.boxShadow = '';
+                        if (readMore) readMore.style.color = '';
+                        if (arrow) arrow.style.transform = '';
+                        if (img) img.style.transform = '';
+                    });
+                });
+
+                console.log('Featured posts loaded successfully');
+            })
+            .catch(error => {
+                console.error('Error loading featured posts:', error);
+                featuredContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-danger">
+                        Unable to load featured posts. Please try again later.
+                    </div>
+                </div>
+            `;
+            });
     }
-}
+
+// Utility function to throttle frequent events like scroll
+    function throttle(func, delay) {
+        let lastCall = 0;
+        return function(...args) {
+            const now = new Date().getTime();
+            if (now - lastCall < delay) return;
+            lastCall = now;
+            return func(...args);
+        };
+    }
+
+// Setup scroll to top button
+    function setupScrollToTop() {
+        const scrollBtn = document.getElementById('scroll-to-top');
+        if (!scrollBtn) return;
+
+        // Initially hide the button
+        scrollBtn.style.display = 'none';
+
+        // Show/hide button based on scroll position
+        window.addEventListener('scroll', throttle(function() {
+            if (window.pageYOffset > 300) {
+                scrollBtn.style.display = 'block';
+                scrollBtn.style.opacity = '1';
+            } else {
+                scrollBtn.style.opacity = '0';
+                setTimeout(() => {
+                    if (window.pageYOffset <= 300) {
+                        scrollBtn.style.display = 'none';
+                    }
+                }, 300);
+            }
+        }, 100));
+
+        // Scroll to top when clicked
+        scrollBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+// Setup F1 calendar countdown
+    function setupF1CalendarCountdown() {
+        const countdownElement = document.getElementById('sidebar-countdown');
+        if (!countdownElement) return;
+
+        // Example next race data (should be replaced with real API data)
+        const nextRace = {
+            name: "Miami Grand Prix",
+            circuit: "Miami International Autodrome",
+            date: new Date(2025, 4, 4, 20, 0, 0) // May 4, 2025, 8:00 PM
+        };
+
+        // Set race information
+        const nextRaceName = document.getElementById('next-race-name');
+        const nextRaceCircuit = document.getElementById('next-race-circuit');
+        if (nextRaceName) nextRaceName.textContent = nextRace.name;
+        if (nextRaceCircuit) nextRaceCircuit.textContent = nextRace.circuit;
+
+        // Update countdown
+        function updateCountdown() {
+            const now = new Date();
+            const diff = nextRace.date - now;
+
+            if (diff <= 0) {
+                // Race has started
+                document.getElementById('count-days').textContent = '0';
+                document.getElementById('count-hours').textContent = '00';
+                document.getElementById('count-mins').textContent = '00';
+                return;
+            }
+
+            // Calculate days, hours, minutes
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+            // Update DOM elements
+            document.getElementById('count-days').textContent = days;
+            document.getElementById('count-hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('count-mins').textContent = mins.toString().padStart(2, '0');
+        }
+
+        // Initial update
+        updateCountdown();
+
+        // Update every minute
+        setInterval(updateCountdown, 60000);
+    }
+
+// Initialize page functionality based on the current page
+    function initializePage() {
+        const path = window.location.pathname;
+
+        if (path.includes('/blog/index.html') ||
+            path.includes('/blog-module/blog/index.html') ||
+            path.endsWith('/blog/') ||
+            path.endsWith('/blog-module/blog/')) {
+            console.log("Loading blog index page");
+            loadFeaturedPosts();
+            loadBlogIndexPosts();
+            setupSearch();
+            setupAuthorFilters();
+        } else {
+            console.log("Loading homepage blog section");
+            loadHomepageBlogPosts();
+        }
+
+        // Setup common functionality
+        setupScrollToTop();
+        setupF1CalendarCountdown();
+
+        // Setup toggle for past races
+        const togglePastRacesBtn = document.getElementById('toggle-past-races');
+        if (togglePastRacesBtn) {
+            togglePastRacesBtn.addEventListener('click', function() {
+                const pastRaces = document.querySelectorAll('.race-past');
+                const isShowing = this.textContent.includes('Hide');
+
+                pastRaces.forEach(race => {
+                    race.style.display = isShowing ? 'none' : 'flex';
+                });
+
+                this.textContent = isShowing ? 'Show Past Races' : 'Hide Past Races';
+            });
+        }
+    }
+
+// Initialize page on DOMContentLoaded
+    initializePage();
+});// blog-module/blog-loader.js - Enhanced to handle dynamically loaded blog posts with pagination
