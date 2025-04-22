@@ -765,11 +765,6 @@ figcaption {
     }
 }
 
-
-
-
-
-
 /* Race Countdown in Nav */
 .race-countdown-container {
     margin-left: auto;
@@ -886,5 +881,59 @@ figcaption {
 
     .race-countdown-mobile {
         display: flex;
+    }
+}
+
+/* Comments section styling with improved readability */
+.article-comments {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 2rem;
+}
+
+.article-comments h3 {
+    color: white;
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+}
+
+#disqus_thread {
+    position: relative;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.9); /* Light background for contrast */
+    border-radius: 10px;
+    color: #000; /* Dark text for readability */
+    border: 1px solid rgba(0, 115, 230, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Improve space around the comments */
+#disqus_thread::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, transparent, rgba(0, 115, 230, 0.5), transparent);
+    border-radius: 5px 5px 0 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #disqus_thread {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .article-comments {
+        padding: 0.5rem;
+    }
+
+    .article-comments h3 {
+        font-size: 1.5rem;
+        text-align: center;
     }
 }
