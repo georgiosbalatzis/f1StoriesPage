@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F1 Gear CSV Debug Tool</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'racing-green': '#003B2B',
+            'racing-red': '#D50000',
+            'racing-white': '#FAFAFA',
+            'gold-accent': '#CBA135',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-100 p-6">
+<div class="max-w-4xl mx-auto">
+  <h1 class="text-2xl font-bold text-racing-green mb-6">F1 Gear CSV Debug Tool</h1>
+
+  <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-xl font-bold mb-4">Current Configuration</h2>
+    <div class="mb-4">
+      <label class="block text-gray-700 mb-2">Google Sheet CSV URL:</label>
+      <input type="text" id="csvUrl" class="w-full p-2 border rounded" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vT0OVN9h7XTQSvlf4SFMoYp8jMqQ1fYWVV8IGt8hVLWUDI57JhHILTbGy_pJQMyzFKpooCQCOBWdqaa/pub?output=csv">
+    </div>
+    <div class="flex space-x-4">
+      <button id="testFetch" class="bg-racing-green text-racing-white px-4 py-2 rounded hover:bg-opacity-90">
+        Test CSV Fetch
+      </button>
+      <button id="useTestData" class="bg-gold-accent text-racing-white px-4 py-2 rounded hover:bg-opacity-90">
+        Use Test Data
+      </button>
+    </div>
+  </div>
+
+  <div id="results" class="bg-white rounded-lg shadow-md p-6 mb-6 hidden">
+    <h2 class="text-xl font-bold mb-4">Results</h2>
+    <div id="status" class="p-4 mb-4 rounded"></div>
+    <div class="mb-4">
+      <h3 class="font-bold mb-2">CSV Preview:</h3>
+      <pre id="csvPreview" class="bg-gray-100 p-4 rounded overflow-auto max-h-60"></pre>
+    </div>
+    <div class="mb-4">
+      <h3 class="font-bold mb-2">CSV Header:</h3>
+      <div id="csvHeader" class="bg-gray-100 p-4 rounded overflow-auto"></div>
+    </div>
+    <div class="mb-4">
+      <h3 class="font-bold mb-2">Parsed Products:</h3>
+      <div id="productsPreview" class="bg-gray-100 p-4 rounded overflow-auto"></div>
+    </div>
+  </div>
+
+  <div id="productDisplay" class="bg-white rounded-lg shadow-md p-6 mb-6 hidden">
+    <h2 class="text-xl font-bold mb-4">Sample Product Display</h2>
+    <div id="productGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+  </div>
+</div>
+
+<script>
+  // Sample test data
+  const TEST_DATA = [
+    {
+      id: "f1-cap-01",
+      name: "Red Team Racing Cap",
+      price: 29.99,
+      imageUrl: "https://via.placeholder.com/300x200?text=F1+Racing+Cap",
+      category: "Headwear",
+      description: "Official team cap with embroidered logo",
+      details: {
+        material: "Cotton",
+        size: "One Size",
+        color: "Red"
+      }
+    },
+    {
+      id: "f1-tshirt-01",
+      name: "Team Driver T-Shirt",
+      price: 49.99,
+      imageUrl: "https://via.placeholder.com/300x200?text=F1+T-Shirt",
+      category: "Apparel",
+      description: "Official team merchandise with driver number",
+      details: {
+        material: "Polyester",
+        size: "S/M/L/XL",
+        color: "Blue"
+      }
+    },
+    {
+      id: "f1-model-01",
+      name: "Race Car Model 1:18",
+      price: 129.99,
+      imageUrl: "https://via.placeholder.com/300x200?text=F1+Model+Car",
+      category: "Collectibles",
+      description: "Detailed die-cast model of championship car",
+      details: {
+        material: "Die-cast metal",
+        size: "1:18 scale",
+        color: "Team colors"
+      }
+    }
+  ];
+
+  // Parse CSV Row Function
+  function parseCSVRow(row) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < row.length; i++) {
+      const char = row[i];
+
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+
+    result.push(current.trim());
+    return result.map(field =>
+            field.startsWith('"') && field.endsWith('"')
+                    ? field.slice(1, -1)
+                    : field
+    );
+  }
+
+  document.getElementById('testFetch').addEventListener('click', async () => {
+    const csvUrl = document.getElementById('csvUrl').value;
+    const resultsDiv = document.getElementById('results');
+    const statusDiv = document.getElementById('status');
+    const csvPreview = document.getElementById('csvPreview');
+    const csvHeader = document.getElementById('csvHeader');
+    const productsPreview = document.getElementById('productsPreview');
+
+    resultsDiv.classList.remove('hidden');
+    statusDiv.innerHTML = '<div class="animate-pulse">Testing CSV fetch...</div>';
+    csvPreview.textContent = '';
+    csvHeader.innerHTML = '';
+    productsPreview.innerHTML = '';
+
+    try {
+      console.log('Attempting to fetch CSV from:', csvUrl);
+
+      // Test with CORS proxy if direct fetch fails
+      let response;
+      try {
+        response = await fetch(csvUrl);
+      } catch (directError) {
+        console.log('Direct fetch failed, trying CORS proxy');
+        // Try with a CORS proxy (for demonstration only)
+        response = await fetch(`https://cors-anywhere.herokuapp.com/${csvUrl}`);
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const text = await response.text();
+      console.log('CSV Fetch Successful');
+      console.log('Total characters:', text.length);
+
+      // Display success status
+      statusDiv.innerHTML = `
+          <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4">
+            <p class="font-bold">Success!</p>
+            <p>Successfully fetched CSV data (${text.length} characters)</p>
+          </div>
+        `;
+
+      // Display CSV preview
+      csvPreview.textContent = text.slice(0, 500) + '...';
+
+      // Parse and display header
+      const rows = text.trim().split('\n');
+      const headers = parseCSVRow(rows[0]);
+
+      csvHeader.innerHTML = `
+          <table class="min-w-full">
+            <thead>
+              <tr>
+                ${headers.map(h => `<th class="px-4 py-2 bg-gray-200">${h}</th>`).join('')}
+              </tr>
+            </thead>
+          </table>
+        `;
+
+      // Parse data rows for preview
+      const products = rows.slice(1, 4).map((row, index) => {
+        const fields = parseCSVRow(row);
+
+        return {
+          id: fields[0] || `product-${index}`,
+          name: fields[1] || 'Unnamed F1 Gear',
+          price: parseFloat(fields[2] || 0),
+          imageUrl: fields[3] || 'https://via.placeholder.com/300',
+          category: fields[4] || 'Uncategorized',
+          description: fields[5] || 'No description available',
+          details: {
+            material: fields[6] || 'N/A',
+            size: fields[7] || 'N/A',
+            color: fields[8] || 'N/A'
+          }
+        };
+      });
+
+      // Display parsed products
+      productsPreview.innerHTML = `
+          <pre>${JSON.stringify(products, null, 2)}</pre>
+        `;
+
+      // Show product display with sample
+      document.getElementById('productDisplay').classList.remove('hidden');
+      renderProducts(products);
+
+    } catch (error) {
+      console.error('Error fetching CSV:', error);
+
+      statusDiv.innerHTML = `
+          <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4">
+            <p class="font-bold">Error!</p>
+            <p>${error.message}</p>
+            <p class="mt-2 text-sm">This could be due to:</p>
+            <ul class="list-disc ml-5 text-sm">
+              <li>CORS policy restrictions</li>
+              <li>Incorrect URL format</li>
+              <li>Google Sheet permissions issues</li>
+              <li>Network connectivity problems</li>
+            </ul>
+          </div>
+        `;
+    }
+  });
+
+  document.getElementById('useTestData').addEventListener('click', () => {
+    const resultsDiv = document.getElementById('results');
+    const statusDiv = document.getElementById('status');
+
+    resultsDiv.classList.remove('hidden');
+    statusDiv.innerHTML = `
+        <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4">
+          <p class="font-bold">Using Test Data</p>
+          <p>Displaying sample products from built-in test data</p>
+        </div>
+      `;
+
+    document.getElementById('csvPreview').textContent = '[Using built-in test data instead of CSV]';
+    document.getElementById('csvHeader').innerHTML = '<div class="italic text-gray-500">Using test data (no CSV headers)</div>';
+    document.getElementById('productsPreview').innerHTML = `<pre>${JSON.stringify(TEST_DATA, null, 2)}</pre>`;
+
+    // Show product display with test data
+    document.getElementById('productDisplay').classList.remove('hidden');
+    renderProducts(TEST_DATA);
+  });
+
+  function renderProducts(products) {
+    const productGrid = document.getElementById('productGrid');
+    productGrid.innerHTML = '';
+
+    products.forEach(product => {
+      const productCard = document.createElement('div');
+      productCard.className = `
+          bg-racing-white
+          rounded-lg
+          overflow-hidden
+          shadow-lg
+          border
+          hover:border-gold-accent
+          relative
+          transition-all
+          duration-300
+          flex
+          flex-col
+        `;
+
+      productCard.innerHTML = `
+          <div class="relative group">
+            <img
+              src="${product.imageUrl}"
+              alt="${product.name}"
+              class="w-full h-48 object-cover"
+            >
+            <div class="absolute top-0 left-0 w-full h-1 bg-racing-green"></div>
+            <button
+              class="absolute top-2 right-2 text-pit-lane-gray hover:text-racing-red transition-colors p-2"
+              aria-label="Add to wishlist"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </button>
+            <div class="absolute bottom-0 left-0 w-full px-3 py-2 bg-gradient-to-t from-gray-800 to-transparent">
+              <span class="text-white text-sm font-medium rounded-full bg-racing-green px-2 py-1">
+                ${product.category}
+              </span>
+            </div>
+          </div>
+          <div class="p-4 flex-grow">
+            <h3 class="text-gray-800 font-bold mb-2">${product.name}</h3>
+            <p class="text-gray-600 text-sm mb-4">${product.description}</p>
+            <div class="mt-auto">
+              <p class="text-racing-green font-bold text-lg">$${product.price.toFixed(2)}</p>
+              <button
+                class="w-full mt-2 bg-racing-green text-racing-white py-2 rounded hover:bg-gold-accent transition-colors"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        `;
+
+      productGrid.appendChild(productCard);
+    });
+  }
+</script>
+</body>
+</html>
