@@ -26,43 +26,45 @@
             }
         }
     </script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="style.css" rel="stylesheet">
+    <link href="f1-styles.css" rel="stylesheet">
 </head>
-<body class="bg-racing-white text-asphalt-gray">
-<header class="bg-racing-green text-racing-white p-4 flex justify-between items-center">
+<body>
+<div class="streak"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+
+<header class="bg-racing-green text-racing-white p-4 flex justify-between items-center sticky top-0 z-50">
     <div class="logo">
-        <a href="https://f1stories.gr" class="text-2xl font-bold text-gold-accent">F1 GEAR</a>
+        <a href="index.html" class="text-2xl font-bold text-gold-accent">F1 GEAR</a>
     </div>
     <nav class="flex space-x-4 items-center">
         <a href="index.html" class="hover:text-gold-accent transition-all">Home</a>
         <a href="https://f1stories.gr/#about" class="hover:text-gold-accent transition-all">About</a>
         <a href="https://f1stories.gr/#contact" class="hover:text-gold-accent transition-all">Contact</a>
         <a href="wishlist.html" class="hover:text-gold-accent relative transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
+            <i class="fas fa-heart"></i>
             <span
                     id="wishlist-count"
                     class="absolute -top-2 -right-2 bg-racing-red text-racing-white text-xs rounded-full px-2 py-1 hidden"
             >
-        0
-      </span>
+                0
+            </span>
         </a>
         <a href="cart.html" class="hover:text-gold-accent relative transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
+            <i class="fas fa-shopping-cart"></i>
             <span
                     id="cart-count"
                     class="cart-count absolute -top-2 -right-2 bg-racing-red text-racing-white text-xs rounded-full px-2 py-1 hidden"
             >
-        0
-      </span>
+                0
+            </span>
         </a>
         <button id="darkModeToggle" class="hover:text-gold-accent transition-all p-1 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
+            <i class="fas fa-moon"></i>
         </button>
     </nav>
 </header>
@@ -70,191 +72,193 @@
 <!-- Racing stripe accent -->
 <div class="racing-stripe"></div>
 
-<div class="container mx-auto mt-8 p-4">
-    <!-- Product Details Container -->
-    <div id="product-details" class="grid md:grid-cols-2 gap-8">
-        <!-- Product Image -->
-        <div class="relative bg-racing-white rounded-lg overflow-hidden shadow-lg border border-pit-lane-gray">
-            <img
-                    id="product-image"
-                    src=""
-                    alt="Product Image"
-                    class="w-full object-cover max-h-96"
-            >
-            <div class="absolute top-0 left-0 w-full h-1 bg-racing-green"></div>
-            <div class="absolute top-4 left-4">
-                <span
-                        id="product-category"
-                        class="bg-racing-green text-racing-white px-3 py-1 rounded-full text-sm font-medium"
-                ></span>
-            </div>
-        </div>
-
-        <!-- Product Information -->
-        <div class="bg-racing-white p-6 rounded-lg shadow-lg border border-pit-lane-gray">
-            <div class="mb-4 pb-4 border-b border-pit-lane-gray border-opacity-20">
-                <h1
-                        id="product-name"
-                        class="text-3xl font-bold text-racing-green mb-2"
-                ></h1>
-                <div class="flex items-center">
-                    <div class="flex-1">
-                        <p
-                                id="product-description"
-                                class="text-asphalt-gray"
-                        ></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mb-6 grid grid-cols-3 gap-4">
-                <div class="bg-carbon-gray bg-opacity-5 p-3 rounded">
-                    <label class="block text-racing-green font-medium mb-1 text-sm">Material</label>
-                    <p
-                            id="product-material"
-                            class="text-asphalt-gray font-medium"
-                    ></p>
-                </div>
-                <div class="bg-carbon-gray bg-opacity-5 p-3 rounded">
-                    <label class="block text-racing-green font-medium mb-1 text-sm">Color</label>
-                    <p
-                            id="product-color"
-                            class="text-asphalt-gray font-medium"
-                    ></p>
-                </div>
-                <div class="bg-carbon-gray bg-opacity-5 p-3 rounded">
-                    <label class="block text-racing-green font-medium mb-1 text-sm">Size</label>
-                    <p
-                            id="product-size"
-                            class="text-asphalt-gray font-medium"
-                    ></p>
-                </div>
-            </div>
-
-            <div class="flex items-center mb-6 pb-6 border-b border-pit-lane-gray border-opacity-20">
-                <span
-                        id="product-price"
-                        class="text-4xl font-bold text-gold-accent mr-4"
-                ></span>
-                <button
-                        id="wishlist-toggle"
-                        class="ml-auto text-pit-lane-gray hover:text-racing-red transition-all"
+<!-- Main content wrapper for fixed footer -->
+<div id="main-content">
+    <div class="container mx-auto mt-8 p-4">
+        <!-- Product Details Container -->
+        <div id="product-details" class="product-details grid md:grid-cols-2 gap-8 fade-in">
+            <!-- Product Image -->
+            <div class="relative bg-racing-white rounded-lg overflow-hidden shadow-lg border border-pit-lane-gray">
+                <img
+                        id="product-image"
+                        src=""
+                        alt="Product Image"
+                        class="product-img w-full object-cover max-h-96 transition-all duration-500"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                </button>
+                <div class="absolute top-0 left-0 w-full h-1 bg-racing-green"></div>
+                <div class="absolute top-4 left-4">
+                    <span
+                            id="product-category"
+                            class="bg-racing-green text-racing-white px-3 py-1 rounded-full text-sm font-medium"
+                    ></span>
+                </div>
             </div>
 
-            <div class="space-y-4">
-                <div class="flex space-x-4">
-                    <div class="flex-1">
-                        <label class="block text-racing-green font-medium mb-2">Quantity</label>
-                        <div class="flex border border-pit-lane-gray rounded-md">
-                            <button id="quantity-decrease" class="px-3 py-2 text-racing-green hover:bg-carbon-gray hover:bg-opacity-10">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            <input type="number" id="quantity" min="1" value="1" class="w-12 text-center border-x border-pit-lane-gray focus:outline-none text-asphalt-gray" />
-                            <button id="quantity-increase" class="px-3 py-2 text-racing-green hover:bg-carbon-gray hover:bg-opacity-10">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
+            <!-- Product Information -->
+            <div class="bg-racing-white p-6 rounded-lg shadow-lg border border-pit-lane-gray">
+                <div class="mb-4 pb-4 border-b border-pit-lane-gray border-opacity-20">
+                    <h1
+                            id="product-name"
+                            class="text-3xl font-bold text-racing-green mb-2 relative inline-block"
+                    ></h1>
+                    <div class="flex items-center">
+                        <div class="flex-1">
+                            <p
+                                    id="product-description"
+                                    class="text-asphalt-gray"
+                            ></p>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex space-x-4">
+                <div class="mb-6 grid grid-cols-3 gap-4">
+                    <div class="bg-carbon-gray bg-opacity-5 p-3 rounded transition-all duration-300 hover:bg-carbon-gray hover:bg-opacity-10">
+                        <label class="block text-racing-green font-medium mb-1 text-sm">Material</label>
+                        <p
+                                id="product-material"
+                                class="text-asphalt-gray font-medium"
+                        ></p>
+                    </div>
+                    <div class="bg-carbon-gray bg-opacity-5 p-3 rounded transition-all duration-300 hover:bg-carbon-gray hover:bg-opacity-10">
+                        <label class="block text-racing-green font-medium mb-1 text-sm">Color</label>
+                        <p
+                                id="product-color"
+                                class="text-asphalt-gray font-medium"
+                        ></p>
+                    </div>
+                    <div class="bg-carbon-gray bg-opacity-5 p-3 rounded transition-all duration-300 hover:bg-carbon-gray hover:bg-opacity-10">
+                        <label class="block text-racing-green font-medium mb-1 text-sm">Size</label>
+                        <p
+                                id="product-size"
+                                class="text-asphalt-gray font-medium"
+                        ></p>
+                    </div>
+                </div>
+
+                <div class="flex items-center mb-6 pb-6 border-b border-pit-lane-gray border-opacity-20">
+                    <span
+                            id="product-price"
+                            class="text-4xl font-bold text-gold-accent mr-4 transition-all duration-300 hover:scale-110"
+                    ></span>
                     <button
-                            id="add-to-cart"
-                            class="flex-grow bg-racing-green text-racing-white py-3 rounded hover:bg-gold-accent transition-colors duration-300 font-medium"
+                            id="wishlist-toggle"
+                            class="ml-auto text-pit-lane-gray hover:text-racing-red transition-all duration-300 hover:scale-110"
+                            data-product-id=""
                     >
-                        Add to Cart
-                    </button>
-                    <button
-                            id="buy-now"
-                            class="flex-grow bg-carbon-gray text-racing-white py-3 rounded hover:bg-pit-lane-gray transition-colors duration-300 font-medium"
-                    >
-                        Buy Now
+                        <i class="fas fa-heart fa-2x"></i>
                     </button>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Product Details Tab Section -->
-    <div class="mt-12">
-        <div class="flex border-b border-pit-lane-gray">
-            <button class="tab-btn active py-3 px-6 font-medium text-racing-green border-b-2 border-racing-green relative -bottom-px" data-tab="description">Description</button>
-            <button class="tab-btn py-3 px-6 font-medium text-pit-lane-gray hover:text-racing-green transition-colors" data-tab="specifications">Specifications</button>
-            <button class="tab-btn py-3 px-6 font-medium text-pit-lane-gray hover:text-racing-green transition-colors" data-tab="shipping">Shipping & Returns</button>
-        </div>
+                <div class="space-y-4">
+                    <div class="flex space-x-4">
+                        <div class="flex-1">
+                            <label class="block text-racing-green font-medium mb-2">Quantity</label>
+                            <div class="quantity-input flex border border-pit-lane-gray rounded-md">
+                                <button id="quantity-decrease" class="px-3 py-2 text-racing-green hover:bg-carbon-gray hover:bg-opacity-10">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" id="quantity" min="1" value="1" class="w-12 text-center border-x border-pit-lane-gray focus:outline-none text-asphalt-gray" />
+                                <button id="quantity-increase" class="px-3 py-2 text-racing-green hover:bg-carbon-gray hover:bg-opacity-10">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-        <div class="tab-content p-6 bg-racing-white rounded-b-lg shadow-lg">
-            <div id="description-tab" class="tab-pane active">
-                <h3 class="text-xl font-bold text-racing-green mb-4">Product Description</h3>
-                <p id="full-description" class="text-asphalt-gray leading-relaxed"></p>
-            </div>
-            <div id="specifications-tab" class="tab-pane hidden">
-                <h3 class="text-xl font-bold text-racing-green mb-4">Product Specifications</h3>
-                <div class="grid grid-cols-2 gap-y-4 text-asphalt-gray">
-                    <div>
-                        <span class="font-medium text-racing-green">Material:</span>
-                        <span id="specs-material"></span>
-                    </div>
-                    <div>
-                        <span class="font-medium text-racing-green">Color:</span>
-                        <span id="specs-color"></span>
-                    </div>
-                    <div>
-                        <span class="font-medium text-racing-green">Size:</span>
-                        <span id="specs-size"></span>
-                    </div>
-                    <div>
-                        <span class="font-medium text-racing-green">Category:</span>
-                        <span id="specs-category"></span>
+                    <div class="flex space-x-4">
+                        <button
+                                id="add-to-cart"
+                                class="flex-grow bg-racing-green text-racing-white py-3 rounded hover:bg-gold-accent transition-colors duration-300 font-medium relative overflow-hidden"
+                        >
+                            <span class="relative z-10">Add to Cart</span>
+                            <span class="absolute inset-0 bg-gold-accent transform scale-x-0 origin-left transition-transform duration-300"></span>
+                        </button>
+                        <button
+                                id="buy-now"
+                                class="flex-grow bg-carbon-gray text-racing-white py-3 rounded hover:bg-pit-lane-gray transition-colors duration-300 font-medium relative overflow-hidden"
+                        >
+                            <span class="relative z-10">Buy Now</span>
+                            <span class="absolute inset-0 bg-pit-lane-gray transform scale-x-0 origin-left transition-transform duration-300"></span>
+                        </button>
                     </div>
                 </div>
             </div>
-            <div id="shipping-tab" class="tab-pane hidden">
-                <h3 class="text-xl font-bold text-racing-green mb-4">Shipping & Returns</h3>
-                <div class="space-y-4 text-asphalt-gray">
-                    <p><span class="font-medium text-racing-green">Standard Shipping:</span> 3-5 business days</p>
-                    <p><span class="font-medium text-racing-green">Express Shipping:</span> 1-2 business days</p>
-                    <p><span class="font-medium text-racing-green">Return Policy:</span> Returns accepted within 30 days of purchase for unused items in original packaging.</p>
+        </div>
+
+        <!-- Product Details Tab Section -->
+        <div class="mt-12 fade-in">
+            <div class="flex border-b border-pit-lane-gray">
+                <button class="tab-btn active py-3 px-6 font-medium text-racing-green border-b-2 border-racing-green relative -bottom-px" data-tab="description">Description</button>
+                <button class="tab-btn py-3 px-6 font-medium text-pit-lane-gray hover:text-racing-green transition-colors" data-tab="specifications">Specifications</button>
+                <button class="tab-btn py-3 px-6 font-medium text-pit-lane-gray hover:text-racing-green transition-colors" data-tab="shipping">Shipping & Returns</button>
+            </div>
+
+            <div class="tab-content p-6 bg-racing-white rounded-b-lg shadow-lg">
+                <div id="description-tab" class="tab-pane active">
+                    <h3 class="text-xl font-bold text-racing-green mb-4">Product Description</h3>
+                    <p id="full-description" class="text-asphalt-gray leading-relaxed"></p>
+                </div>
+                <div id="specifications-tab" class="tab-pane hidden">
+                    <h3 class="text-xl font-bold text-racing-green mb-4">Product Specifications</h3>
+                    <div class="grid grid-cols-2 gap-y-4 text-asphalt-gray">
+                        <div>
+                            <span class="font-medium text-racing-green">Material:</span>
+                            <span id="specs-material"></span>
+                        </div>
+                        <div>
+                            <span class="font-medium text-racing-green">Color:</span>
+                            <span id="specs-color"></span>
+                        </div>
+                        <div>
+                            <span class="font-medium text-racing-green">Size:</span>
+                            <span id="specs-size"></span>
+                        </div>
+                        <div>
+                            <span class="font-medium text-racing-green">Category:</span>
+                            <span id="specs-category"></span>
+                        </div>
+                    </div>
+                </div>
+                <div id="shipping-tab" class="tab-pane hidden">
+                    <h3 class="text-xl font-bold text-racing-green mb-4">Shipping & Returns</h3>
+                    <div class="space-y-4 text-asphalt-gray">
+                        <div class="p-4 border border-pit-lane-gray border-opacity-20 rounded-lg transition-all duration-300 hover:border-racing-green hover:bg-carbon-gray hover:bg-opacity-5">
+                            <p class="flex items-center"><i class="fas fa-truck text-racing-green mr-2"></i> <span class="font-medium text-racing-green">Standard Shipping:</span> 3-5 business days</p>
+                        </div>
+                        <div class="p-4 border border-pit-lane-gray border-opacity-20 rounded-lg transition-all duration-300 hover:border-racing-green hover:bg-carbon-gray hover:bg-opacity-5">
+                            <p class="flex items-center"><i class="fas fa-shipping-fast text-racing-green mr-2"></i> <span class="font-medium text-racing-green">Express Shipping:</span> 1-2 business days</p>
+                        </div>
+                        <div class="p-4 border border-pit-lane-gray border-opacity-20 rounded-lg transition-all duration-300 hover:border-racing-green hover:bg-carbon-gray hover:bg-opacity-5">
+                            <p class="flex items-center"><i class="fas fa-undo text-racing-green mr-2"></i> <span class="font-medium text-racing-green">Return Policy:</span> Returns accepted within 30 days of purchase for unused items in original packaging.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Recently Viewed Section -->
-    <div id="recently-viewed-container" class="mt-16">
-        <!-- Recently viewed items will be dynamically inserted here -->
+        <!-- Recently Viewed Section -->
+        <div id="recently-viewed-container" class="mt-16 fade-in">
+            <!-- Recently viewed items will be dynamically inserted here -->
+        </div>
+
+        <!-- Notification Container -->
+        <div id="notification-container" class="fixed top-4 right-4 z-50"></div>
     </div>
 </div>
 
-<!-- Notification Container -->
-<div id="notification-container" class="fixed top-4 right-4 z-50"></div>
-
-<!-- Error Container -->
-<div id="error-container" class="hidden"></div>
-
-<!-- Racing-themed footer -->
-<!-- Footer - Copy this entire section into all HTML files -->
 <footer class="bg-racing-green text-racing-white mt-8 py-8">
     <div class="racing-stripe mb-8"></div>
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
                 <h3 class="text-gold-accent text-xl font-bold mb-4">F1 GEAR</h3>
-                <p class="text-metallic-silver">Premium racing merchandise for the true Formula 1 enthusiast.</p>
+                <p class="text-metallic-silver">Premium racing merchandise for the true Formula 1 enthusiast. Get the latest gear from your favorite teams and drivers.</p>
             </div>
             <div>
                 <h3 class="text-gold-accent text-xl font-bold mb-4">Quick Links</h3>
                 <ul class="space-y-2">
-                    <li><a href="https://f1stories.gr" class="text-metallic-silver hover:text-gold-accent transition-colors">Home</a></li>
+                    <li><a href="index.html" class="text-metallic-silver hover:text-gold-accent transition-colors">Home</a></li>
+                    <li><a href="https://f1stories.gr" class="text-metallic-silver hover:text-gold-accent transition-colors">F1 Stories</a></li>
                     <li><a href="https://f1stories.gr/#about" class="text-metallic-silver hover:text-gold-accent transition-colors">About</a></li>
                     <li><a href="https://f1stories.gr/#contact" class="text-metallic-silver hover:text-gold-accent transition-colors">Contact</a></li>
                     <li><a href="cart.html" class="text-metallic-silver hover:text-gold-accent transition-colors">Cart</a></li>
@@ -265,46 +269,25 @@
                 <h3 class="text-gold-accent text-xl font-bold mb-4">Connect With Us</h3>
                 <div class="social-icons">
                     <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" class="text-metallic-silver hover:text-gold-accent transition-colors social-youtube" aria-label="YouTube">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-                        </svg>
-                        <span class="icon-label hidden">YouTube</span>
+                        <i class="fab fa-youtube"></i>
                     </a>
                     <a href="https://www.facebook.com/f1storiess" target="_blank" class="text-metallic-silver hover:text-gold-accent transition-colors social-facebook" aria-label="Facebook">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
-                        </svg>
-                        <span class="icon-label hidden">Facebook</span>
+                        <i class="fab fa-facebook-f"></i>
                     </a>
                     <a href="https://www.instagram.com/myf1stories/" target="_blank" class="text-metallic-silver hover:text-gold-accent transition-colors social-instagram" aria-label="Instagram">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                        </svg>
-                        <span class="icon-label hidden">Instagram</span>
+                        <i class="fab fa-instagram"></i>
                     </a>
                     <a href="https://www.tiktok.com/@f1stories6" target="_blank" class="text-metallic-silver hover:text-gold-accent transition-colors social-tiktok" aria-label="TikTok">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
-                        </svg>
-                        <span class="icon-label hidden">TikTok</span>
+                        <i class="fab fa-tiktok"></i>
                     </a>
                     <a href="mailto:myf1stories@gmail.com" class="text-metallic-silver hover:text-gold-accent transition-colors social-email" aria-label="Email">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <span class="icon-label hidden">Email</span>
+                        <i class="fas fa-envelope"></i>
                     </a>
                     <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" class="text-metallic-silver hover:text-gold-accent transition-colors social-spotify" aria-label="Spotify">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-                        </svg>
-                        <span class="icon-label hidden">Spotify</span>
+                        <i class="fab fa-spotify"></i>
                     </a>
                 </div>
             </div>
-        </div>
-
-        <!-- Visible on mobile only -->
         </div>
 
         <div class="mt-8 pt-8 border-t border-pit-lane-gray text-center text-metallic-silver">
@@ -313,96 +296,310 @@
     </div>
 </footer>
 
-<!-- ✅ Removed duplicate footer social & copyright sections -->
+<!-- Back to top button -->
+<button id="back-to-top" class="back-to-top-btn">
+    <i class="fas fa-chevron-up"></i>
+</button>
 
+<!-- Mobile Navigation for Small Screens -->
 <div class="mobile-menu-wrapper hidden md:hidden">
-    <!-- Mobile Bottom Navigation Bar -->
     <nav class="mobile-nav">
-        <a href="https://f1stories.gr" class="flex flex-col items-center text-racing-white hover:text-gold-accent transition-colors p-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
+        <a href="index.html" class="flex flex-col items-center text-racing-white hover:text-gold-accent transition-colors p-2">
+            <i class="fas fa-home"></i>
             <span class="text-xs mt-1">Home</span>
         </a>
         <a href="cart.html" class="flex flex-col items-center text-racing-white hover:text-gold-accent transition-colors p-2 relative">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
+            <i class="fas fa-shopping-cart"></i>
             <span class="text-xs mt-1">Cart</span>
             <span class="cart-count absolute -top-1 -right-1 bg-racing-red text-racing-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
         </a>
         <a href="wishlist.html" class="flex flex-col items-center text-racing-white hover:text-gold-accent transition-colors p-2 relative">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
+            <i class="fas fa-heart"></i>
             <span class="text-xs mt-1">Wishlist</span>
             <span id="mobile-wishlist-count" class="absolute -top-1 -right-1 bg-racing-red text-racing-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
         </a>
         <button id="mobileDarkModeToggle" class="flex flex-col items-center text-racing-white hover:text-gold-accent transition-colors p-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
+            <i class="fas fa-moon"></i>
             <span class="text-xs mt-1">Theme</span>
         </button>
     </nav>
 </div>
 
 <script>
-    // Mobile Menu Initialization
-    document.addEventListener('DOMContentLoaded', function() {
-        // Check window width and show mobile menu if needed
-        function checkMobileMenu() {
-            const mobileMenuWrapper = document.querySelector('.mobile-menu-wrapper');
-            if (!mobileMenuWrapper) return;
+    // Get product ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
 
-            if (window.innerWidth <= 380) {
-                mobileMenuWrapper.classList.remove('hidden');
-            } else {
-                mobileMenuWrapper.classList.add('hidden');
+    // DOM elements
+    const productImage = document.getElementById('product-image');
+    const productCategory = document.getElementById('product-category');
+    const productName = document.getElementById('product-name');
+    const productDescription = document.getElementById('product-description');
+    const fullDescription = document.getElementById('full-description');
+    const productMaterial = document.getElementById('product-material');
+    const productColor = document.getElementById('product-color');
+    const productSize = document.getElementById('product-size');
+    const productPrice = document.getElementById('product-price');
+    const wishlistToggle = document.getElementById('wishlist-toggle');
+    const specsCategory = document.getElementById('specs-category');
+    const specsMaterial = document.getElementById('specs-material');
+    const specsColor = document.getElementById('specs-color');
+    const specsSize = document.getElementById('specs-size');
+    const quantityInput = document.getElementById('quantity');
+    const addToCartBtn = document.getElementById('add-to-cart');
+    const buyNowBtn = document.getElementById('buy-now');
+
+    // Load product data
+    async function loadProductData() {
+        try {
+            // In a real scenario, this would fetch from state or API
+            // Here we'll simulate by loading all products and finding the one we need
+            const products = state?.products || [];
+
+            if (products.length === 0) {
+                // If products not loaded yet, try to load them
+                if (typeof fetchProducts === 'function') {
+                    await fetchProducts();
+                }
             }
-        }
 
-        // Initial check
-        checkMobileMenu();
+            const product = state.products.find(p => p.id === productId);
 
-        // Check on resize
-        window.addEventListener('resize', checkMobileMenu);
-
-        // Setup mobile dark mode toggle
-        const mobileDarkModeToggle = document.getElementById('mobileDarkModeToggle');
-        if (mobileDarkModeToggle) {
-            mobileDarkModeToggle.addEventListener('click', function() {
-                document.body.classList.toggle('dark');
-                localStorage.setItem('darkMode', document.body.classList.contains('dark'));
-            });
-        }
-
-        // Sync mobile wishlist count with main wishlist count
-        function updateMobileWishlistCount() {
-            const wishlistCount = document.getElementById('wishlist-count');
-            const mobileWishlistCount = document.getElementById('mobile-wishlist-count');
-
-            if (wishlistCount && mobileWishlistCount) {
-                mobileWishlistCount.textContent = wishlistCount.textContent;
-                mobileWishlistCount.classList.toggle('hidden', wishlistCount.classList.contains('hidden'));
+            if (!product) {
+                showNotification('Product not found', 'error');
+                return;
             }
+
+            // Populate the product details
+            document.title = `${product.name} - F1 Gear`;
+            productImage.src = product.imageUrl;
+            productImage.alt = product.name;
+            productCategory.textContent = product.category;
+            productName.textContent = product.name;
+            productDescription.textContent = product.description;
+            fullDescription.textContent = product.description;
+            productMaterial.textContent = product.details.material;
+            productColor.textContent = product.details.color;
+            productSize.textContent = product.details.size;
+            productPrice.textContent = `$${product.price.toFixed(2)}`;
+
+            // Update specifications tab
+            specsCategory.textContent = product.category;
+            specsMaterial.textContent = product.details.material;
+            specsColor.textContent = product.details.color;
+            specsSize.textContent = product.details.size;
+
+            // Set up wishlist toggle
+            wishlistToggle.setAttribute('data-product-id', product.id);
+            updateWishlistToggle(product.id);
+
+            // Set up add to cart button
+            addToCartBtn.onclick = () => {
+                const quantity = parseInt(quantityInput.value, 10);
+                addToCartWithQuantity(product.id, quantity);
+            };
+
+            // Set up buy now button
+            buyNowBtn.onclick = () => {
+                const quantity = parseInt(quantityInput.value, 10);
+                addToCartWithQuantity(product.id, quantity);
+                window.location.href = 'cart.html';
+            };
+
+            // Add to recently viewed
+            addToRecentlyViewed(product.id);
+
+        } catch (error) {
+            console.error('Error loading product:', error);
+            showNotification('Failed to load product details', 'error');
+        }
+    }
+
+    // Update wishlist toggle appearance
+    function updateWishlistToggle(productId) {
+        const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        const isInWishlist = wishlist.some(item => item.id === productId);
+
+        if (isInWishlist) {
+            wishlistToggle.classList.remove('text-pit-lane-gray');
+            wishlistToggle.classList.add('text-racing-red');
+        } else {
+            wishlistToggle.classList.add('text-pit-lane-gray');
+            wishlistToggle.classList.remove('text-racing-red');
         }
 
-        // Initial update
-        updateMobileWishlistCount();
+        // Set up click event
+        wishlistToggle.onclick = () => {
+            toggleWishlist(productId);
+            updateWishlistToggle(productId);
+        };
+    }
 
-        // Update when main count changes (using MutationObserver)
-        const wishlistCount = document.getElementById('wishlist-count');
-        if (wishlistCount) {
-            const observer = new MutationObserver(updateMobileWishlistCount);
-            observer.observe(wishlistCount, {
-                attributes: true,
-                childList: true,
-                characterData: true
-            });
+    // Set up quantity buttons
+    document.getElementById('quantity-decrease').addEventListener('click', () => {
+        const currentValue = parseInt(quantityInput.value, 10);
+        if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
         }
     });
+
+    document.getElementById('quantity-increase').addEventListener('click', () => {
+        const currentValue = parseInt(quantityInput.value, 10);
+        quantityInput.value = currentValue + 1;
+    });
+
+    // Ensure quantity is at least 1
+    quantityInput.addEventListener('change', () => {
+        if (quantityInput.value < 1 || !quantityInput.value) {
+            quantityInput.value = 1;
+        }
+    });
+
+    // Tab functionality
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active class from all buttons and hide all panes
+            tabBtns.forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+
+            // Add active class to clicked button and show corresponding pane
+            btn.classList.add('active');
+            const tabId = btn.getAttribute('data-tab');
+            document.getElementById(`${tabId}-tab`).classList.remove('hidden');
+        });
+    });
+
+    // Enhanced notification system
+    function showNotification(message, type = 'info') {
+        const container = document.getElementById('notification-container') || createNotificationContainer();
+
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+
+        let icon = '';
+        switch(type) {
+            case 'success':
+                icon = '<i class="fas fa-check-circle"></i>';
+                break;
+            case 'error':
+                icon = '<i class="fas fa-exclamation-circle"></i>';
+                break;
+            default:
+                icon = '<i class="fas fa-info-circle"></i>';
+        }
+
+        notification.innerHTML = `
+            <div class="flex items-center">
+                ${icon}
+                <span class="ml-2">${message}</span>
+            </div>
+            <button class="ml-4 text-sm hover:text-gold-accent" onclick="this.parentNode.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+
+        container.appendChild(notification);
+
+        // Animate in
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 3000);
+    }
+
+    // Create notification container if it doesn't exist
+    function createNotificationContainer() {
+        const container = document.createElement('div');
+        container.id = 'notification-container';
+        container.className = 'fixed top-4 right-4 z-50';
+        document.body.appendChild(container);
+        return container;
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadProductData();
+
+        // Initialize animations
+        const fadeElements = document.querySelectorAll('.fade-in');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        fadeElements.forEach(element => {
+            observer.observe(element);
+        });
+
+        // Initialize dark mode
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const mobileDarkModeToggle = document.getElementById('mobileDarkModeToggle');
+        const body = document.body;
+
+        // Check initial dark mode state
+        if (localStorage.getItem('darkMode') === 'true') {
+            body.classList.add('dark');
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            if (mobileDarkModeToggle) {
+                mobileDarkModeToggle.querySelector('i').className = 'fas fa-sun';
+            }
+        }
+
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            const isDark = body.classList.contains('dark');
+            localStorage.setItem('darkMode', isDark);
+            darkModeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            if (mobileDarkModeToggle) {
+                mobileDarkModeToggle.querySelector('i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            }
+        });
+
+        if (mobileDarkModeToggle) {
+            mobileDarkModeToggle.addEventListener('click', () => {
+                body.classList.toggle('dark');
+                const isDark = body.classList.contains('dark');
+                localStorage.setItem('darkMode', isDark);
+                darkModeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+                mobileDarkModeToggle.querySelector('i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            });
+        }
+
+        // Initialize back to top button
+        const backToTopBtn = document.getElementById('back-to-top');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    });
 </script>
+
 <script src="mobile-optimizations.js"></script>
+<script src="f1-scripts.js"></script>
 </body>
 </html>

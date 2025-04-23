@@ -14,7 +14,7 @@ function logCSVFetchError(error) {
         (() => {
             const el = document.createElement('div');
             el.id = 'error-container';
-            el.className = 'fixed top-0 left-0 right-0 bg-red-500 text-white p-4 text-center z-50';
+            el.className = 'fixed top-0 left-0 right-0 bg-racing-red text-racing-white p-4 text-center z-50';
             document.body.prepend(el);
             return el;
         })();
@@ -42,10 +42,13 @@ async function testCSVFetch() {
         console.log('First 500 characters:', text.slice(0, 500));
         console.log('Total characters:', text.length);
         console.log('First few lines:', text.split('\n').slice(0, 5));
+
+        // Hide error message if present
+        const errorContainer = document.getElementById('error-container');
+        if (errorContainer) {
+            errorContainer.style.display = 'none';
+        }
     } catch (error) {
         logCSVFetchError(error);
     }
 }
-
-// Uncomment to test CSV fetch manually
-// testCSVFetch();
