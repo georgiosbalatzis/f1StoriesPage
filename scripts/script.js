@@ -479,7 +479,7 @@ document.head.insertAdjacentHTML('beforeend', `
 
 // Add event listener to eShop button
 document.addEventListener('DOMContentLoaded', function() {
-    const eshopButton = document.querySelector('.eshop-btn');
+    const eshopButton = document.querySelector('.betcast-btn');
     if (eshopButton) {
         eshopButton.addEventListener('click', function(e) {
             e.preventDefault();
