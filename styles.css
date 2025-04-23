@@ -1303,7 +1303,7 @@ footer::before {
 /* Add this to the end of your styles.css file */
 
 /* eShop Button Style */
-.nav-link.eshop-btn {
+.nav-link.betcast-btn {
     display: inline-block;
     background: linear-gradient(45deg, #0073e6, #003366);
     color: white !important; /* Override the default nav-link color */
@@ -1318,7 +1318,7 @@ footer::before {
     margin-left: 0.5rem;
 }
 
-.nav-link.eshop-btn::before {
+.nav-link.betcast-btn::before {
     content: '';
     position: absolute;
     top: 0;
@@ -1329,28 +1329,28 @@ footer::before {
     transition: left 0.7s ease;
 }
 
-.nav-link.eshop-btn:hover {
+.nav-link.betcast-btn:hover {
     background: linear-gradient(45deg, #005bb5, #002a4f);
     transform: translateY(-3px) scale(1.05);
     color: white !important;
     box-shadow: 0 8px 25px rgba(0, 115, 230, 0.3);
 }
 
-.nav-link.eshop-btn:hover::before {
+.nav-link.betcast-btn:hover::before {
     left: 100%;
 }
 
-.nav-link.eshop-btn:active {
+.nav-link.betcast-btn:active {
     transform: translateY(-1px) scale(0.98);
 }
 
-.nav-link.eshop-btn::after {
+.nav-link.betcast-btn::after {
     display: none; /* Remove the underline effect that comes from the nav-link */
 }
 
 /* Responsive adjustments */
 @media (max-width: 991.98px) {
-    .nav-link.eshop-btn {
+    .nav-link.betcast-btn {
         margin: 0.5rem 0;
         text-align: center;
     }
