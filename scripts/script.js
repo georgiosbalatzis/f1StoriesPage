@@ -477,3 +477,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Add this to your existing script.js file
+document.addEventListener('DOMContentLoaded', function() {
+    // Fix for Shop button in navigation
+    const shopButton = document.querySelector('a.nav-link[href="/eshop/index.html"]');
+    if (shopButton) {
+        shopButton.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Get base URL and append the path
+            const baseUrl = window.location.origin;
+            const shopUrl = baseUrl + '/eshop/index.html';
+
+            // Redirect to the shop page
+            window.location.href = shopUrl;
+
+            // Log for debugging
+            console.log('Redirecting to shop:', shopUrl);
+        });
+    } else {
+        console.error('Shop button not found in navigation');
+    }
+});
