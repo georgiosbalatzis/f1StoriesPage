@@ -267,92 +267,82 @@ setInterval(addPulseAnimation, 20000);document.addEventListener('DOMContentLoade
     });
     */
 
-        // Enhanced Contact Form Handler
-        const contactForm = document.getElementById('contact-form');
-        const formStatus = document.getElementById('form-status');
-        const formSuccess = document.getElementById('form-success');
-        const formError = document.getElementById('form-error');
+// Find the contact form section in script.js and replace with this code
+// Enhanced Contact Form Handler
+    const contactForm = document.getElementById('contact-form');
+    const formStatus = document.getElementById('form-status');
+    const formSuccess = document.getElementById('form-success');
+    const formError = document.getElementById('form-error');
 
-        if (contactForm) {
-            // Making absolutely sure the form exists before adding event listener
-            console.log("Contact form found, initializing handler");
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log("Form submission intercepted");
 
-            contactForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                console.log("Form submission intercepted");
+            // Show loading state on the button
+            const submitButton = contactForm.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.textContent;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Sending...';
+            submitButton.disabled = true;
 
-                // Show loading state on the button
-                const submitButton = contactForm.querySelector('button[type="submit"]');
-                const originalButtonText = submitButton.textContent;
-                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Sending...';
-                submitButton.disabled = true;
+            // Initialize the status elements
+            formStatus.style.display = 'block';
+            formSuccess.style.display = 'none';
+            formError.style.display = 'none';
 
-                // Initialize the status elements
-                formStatus.style.display = 'block';
-                formSuccess.style.display = 'none';
-                formError.style.display = 'none';
+            // Get form data - create a FormData object which works better with Formspree
+            const formData = new FormData(contactForm);
 
-                // Get form data
-                const name = document.getElementById('name').value;
-                const email = document.getElementById('email').value;
-                const message = document.getElementById('message').value;
-
-                console.log("Sending data to Formspree:", { name, email, message });
-
-                // For Formspree, we'll use their recommended AJAX approach
-                fetch("https://formspree.io/f/xpzgrowk", {
-                    method: "POST",
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        email: email,
-                        message: message
-                    })
+            // Use the standard form submission method for Formspree
+            fetch("https://formspree.io/f/xpzgrowk", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "Accept": "application/json"
+                }
+            })
+                .then(response => {
+                    console.log("Response status:", response.status);
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error("Form submission failed with status: " + response.status);
+                    }
                 })
-                    .then(response => {
-                        console.log("Response status:", response.status);
-                        if (response.ok) {
-                            return response.json();
-                        } else {
-                            throw new Error("Form submission failed with status: " + response.status);
-                        }
-                    })
-                    .then(data => {
-                        console.log("Success response:", data);
-                        // Show success message
-                        formSuccess.style.display = 'block';
-                        formError.style.display = 'none';
-                        // Reset the form
-                        contactForm.reset();
+                .then(data => {
+                    console.log("Success response:", data);
+                    // Show success message
+                    formSuccess.style.display = 'block';
+                    formError.style.display = 'none';
+                    // Reset the form
+                    contactForm.reset();
 
-                        // Hide success message after 5 seconds
-                        setTimeout(() => {
-                            formStatus.style.display = 'none';
-                        }, 5000);
-                    })
-                    .catch(error => {
-                        console.error("Form submission error:", error);
-                        // Show error message
-                        formSuccess.style.display = 'none';
-                        formError.style.display = 'block';
+                    // Hide success message after 5 seconds
+                    setTimeout(() => {
+                        formStatus.style.display = 'none';
+                    }, 5000);
+                })
+                .catch(error => {
+                    console.error("Form submission error:", error);
+                    // Show error message
+                    formSuccess.style.display = 'none';
+                    formError.style.display = 'block';
+                    formError.textContent = "Sorry, there was a problem sending your message. Please try again or email us directly at myf1stories@gmail.com";
 
-                        // Hide error message after 5 seconds
-                        setTimeout(() => {
-                            formStatus.style.display = 'none';
-                        }, 5000);
-                    })
-                    .finally(() => {
-                        // Restore button state
-                        submitButton.innerHTML = originalButtonText;
-                        submitButton.disabled = false;
-                    });
-            });
-        } else {
-            console.error("Contact form element not found in the DOM");
-        }
+                    // Hide error message after 8 seconds
+                    setTimeout(() => {
+                        formStatus.style.display = 'none';
+                    }, 8000);
+                })
+                .finally(() => {
+                    // Restore button state
+                    submitButton.innerHTML = originalButtonText;
+                    submitButton.disabled = false;
+                });
+        });
+    } else {
+        console.error("Contact form element not found in the DOM");
+    }
 
         // Alternative solution using FormSubmit.co as a fallback
         // This sets up a second form handler that works if Formspree fails
