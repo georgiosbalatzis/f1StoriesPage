@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Memes - F1 Stories Podcast</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="meme-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-X68J6MQKSM');
+    </script>
+</head>
+<body>
+<div class="background"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="../index.html">
+                <img src="../images/logo.png" alt="F1 Stories Logo" height="50">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../index.html#podcasts">Podcasts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../index.html#episodes">Episodes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../index.html#blog">Blog</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../index.html#guests">Guests</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../index.html#contact">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../eshop/index.html">Shop</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.html">Memes</a></li>
+                    <li class="nav-item"><a class="nav-link betcast-btn" href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank">BetCast</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<section
+        id="hero"
+        class="d-flex align-items-center justify-content-center"
+        style="height:20vh; min-height:250px; padding:2rem 0;"
+>
+    <div class="hero-overlay"></div>
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <div class="hero-content">
+                    <h1 class="mb-4">F1 Memes</h1>
+                    <p class="lead mb-4">Daily dose of racing humor</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="meme-of-the-day" class="fade-in py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Meme of the Day</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="meme-container">
+                    <div class="meme-display">
+                        <img id="current-meme" src="" alt="F1 Meme of the Day" class="img-fluid">
+                        <div class="meme-date">
+                            <span id="meme-day" class="day"></span>
+                            <span id="meme-month" class="month"></span>
+                        </div>
+                        <h3 id="meme-title" class="meme-title mt-3"></h3>
+                    </div>
+                    <div class="meme-navigation mt-4">
+                        <button id="prev-meme" class="nav-button nav-prev">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button id="random-meme" class="nav-button nav-random">
+                            <i class="fas fa-random"></i>
+                        </button>
+                        <button id="next-meme" class="nav-button nav-next">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="meme-info mt-3">
+                        <div class="meme-stats">
+                            <span id="meme-number">Meme #1</span> of <span id="total-memes">0</span>
+                        </div>
+                        <div class="meme-social mt-2">
+                            <button class="share-button" data-share="facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </button>
+                            <button class="share-button" data-share="twitter">
+                                <i class="fab fa-twitter"></i>
+                            </button>
+                            <button class="share-button" data-share="whatsapp">
+                                <i class="fab fa-whatsapp"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<footer class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+                <div class="social-media">
+                    <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+    <i class="fas fa-chevron-up"></i>
+</button>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Main Website Scripts -->
+<script src="../scripts/script.js"></script>
+<!-- Meme Page Script -->
+<script src="meme-script.js"></script>
+<!-- Custom Hero Background Script -->
+<script>
+    // Custom background script to replace background-randomizer.js
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set a solid color background for the hero section
+        const heroSection = document.getElementById('hero');
+        if (heroSection) {
+            const heroOverlay = heroSection.querySelector('.hero-overlay');
+            if (heroOverlay) {
+                // Set a gradient background that matches your site style
+                heroOverlay.style.background = 'linear-gradient(135deg, #003366, #0073e6)';
+            }
+        }
+    });
+</script>
+</body>
+</html>
