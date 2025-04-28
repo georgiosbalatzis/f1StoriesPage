@@ -1,0 +1,309 @@
+/* F1 History Widget Styles */
+.f1-this-day-widget {
+    background: var(--dark-bg);
+    border: 1px solid rgba(0, 115, 230, 0.2);
+    border-radius: var(--standard-radius);
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+/* Header Styles */
+.f1-history-header {
+    background: linear-gradient(to right, rgba(0, 115, 230, 0.8), rgba(0, 0, 0, 0.7));
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.f1-history-header h4 {
+    color: white;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.f1-history-header h4 i {
+    margin-right: 8px;
+    color: var(--accent-color);
+    font-size: 0.9rem;
+}
+
+/* Date Picker Styles */
+.date-picker-container {
+    margin-left: auto;
+}
+
+.date-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.date-picker button {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.date-picker button:hover {
+    background: rgba(0, 115, 230, 0.5);
+    transform: scale(1.1);
+}
+
+.date-picker .current-date {
+    color: var(--accent-color);
+    font-weight: 500;
+    font-size: 0.9rem;
+    min-width: 120px;
+    text-align: center;
+}
+
+/* Events Container */
+.f1-history-events {
+    padding: 0.75rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Event Item Styles */
+.f1-history-event {
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 115, 230, 0.2));
+    position: relative;
+    overflow: hidden;
+}
+
+/* Category Colors */
+.f1-history-event::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+}
+
+.f1-history-event.race::before {
+    background: #e10600; /* F1 Red */
+}
+
+.f1-history-event.qualifying::before {
+    background: #00d2be; /* F1 Teal */
+}
+
+.f1-history-event.driver::before {
+    background: #0600ef; /* F1 Blue */
+}
+
+.f1-history-event.team::before {
+    background: #ff8700; /* F1 Orange */
+}
+
+.f1-history-event.technical::before {
+    background: #7b2cff; /* F1 Purple */
+}
+
+.f1-history-event.accident::before {
+    background: #900000; /* Dark Red */
+}
+
+.f1-history-event.record::before {
+    background: #f0c800; /* F1 Yellow */
+}
+
+.f1-history-event.debut::before {
+    background: #0073e6; /* Primary color */
+}
+
+.f1-history-event.retirement::before {
+    background: #777777; /* Gray */
+}
+
+.f1-history-event.general::before {
+    background: #00ffff; /* Accent color */
+}
+
+/* Importance Levels */
+.f1-history-event.importance-3::before {
+    background: #e10600;
+    width: 6px;
+}
+
+.f1-history-event.importance-2::before {
+    background: #ff8700;
+    width: 4px;
+}
+
+.f1-history-event.importance-1::before {
+    background: #00d2be;
+    width: 3px;
+}
+
+/* Event Content */
+.event-year {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    min-width: 45px;
+    text-align: center;
+}
+
+.event-content {
+    flex: 1;
+}
+
+.event-description {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    color: white;
+    font-weight: 500;
+}
+
+.event-details {
+    margin: 0.15rem 0;
+    font-size: 0.8rem;
+    color: white;
+}
+
+.event-details strong {
+    color: var(--accent-color);
+    font-size: 0.8rem;
+}
+
+.event-image {
+    width: 120px;
+    height: 80px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.event-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Event Actions */
+.event-actions {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+}
+
+.share-event {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.share-event:hover {
+    background: rgba(0, 115, 230, 0.5);
+    transform: translateY(-2px);
+}
+
+/* More Events Button */
+.more-events-btn {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem auto 0;
+}
+
+.more-events-btn:hover {
+    background: var(--gradient-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 115, 230, 0.3);
+}
+
+/* Responsive Styles */
+@media (max-width: 991px) {
+    .event-year {
+        font-size: 1rem;
+        min-width: 40px;
+    }
+    
+    .event-description {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .f1-history-event {
+        flex-direction: column;
+    }
+
+    .event-year {
+        text-align: left;
+        margin-bottom: 0.25rem;
+    }
+
+    .event-image {
+        width: 100%;
+        height: 150px;
+        margin-top: 1rem;
+    }
+    
+    .date-picker .current-date {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .f1-this-day-widget {
+        margin-bottom: 0.75rem;
+    }
+    
+    .f1-history-header h4 {
+        font-size: 0.9rem;
+    }
+    
+    .event-year {
+        font-size: 0.9rem;
+    }
+
+    .share-event {
+        position: static;
+        margin-top: 1rem;
+        width: 100%;
+        justify-content: center;
+    }
+} 

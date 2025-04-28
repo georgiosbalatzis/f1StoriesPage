@@ -1,0 +1,34 @@
+{
+    "events": {
+        "4-28": [
+            {
+                "year": 1994,
+                "event": "Ο Ayrton Senna κερδίζει την τελευταία του pole position στο Grand Prix του San Marino.",
+                "driver": "Ayrton Senna",
+                "team": "Williams",
+                "circuit": "Imola",
+                "category": "qualifying",
+                "importance": 3,
+                "image": "senna-imola-1994.jpg"
+            },
+            {
+                "year": 2002,
+                "event": "Ο Michael Schumacher κερδίζει το GP της Ισπανίας, την 3η συνεχόμενη νίκη της σεζόν.",
+                "driver": "Michael Schumacher",
+                "team": "Ferrari",
+                "circuit": "Catalunya",
+                "category": "race",
+                "importance": 2
+            },
+            {
+                "year": 2019,
+                "event": "Ο Valtteri Bottas κατακτά την pole position στο Grand Prix του Αζερμπαϊτζάν.",
+                "driver": "Valtteri Bottas",
+                "team": "Mercedes",
+                "circuit": "Baku",
+                "category": "qualifying",
+                "importance": 1
+            }
+        ]
+    }
+} 
