@@ -937,3 +937,131 @@ figcaption {
         text-align: center;
     }
 }
+
+/* Mobile-specific table styles */
+@media (max-width: 768px) {
+    .article-content table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 1rem 0;
+    }
+
+    .article-content table thead {
+        display: none;
+    }
+
+    .article-content table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+    }
+
+    .article-content table td {
+        display: block;
+        text-align: right;
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .article-content table td:last-child {
+        border-bottom: none;
+    }
+
+    .article-content table td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+        color: #0073e6;
+    }
+
+    /* Mobile image optimizations */
+    .article-content img {
+        max-width: 100%;
+        height: auto;
+        margin: 1rem 0;
+    }
+
+    .article-header {
+        height: 300px;
+    }
+
+    .article-title {
+        font-size: 1.8rem;
+    }
+
+    .article-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .article-content {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+
+    .article-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .article-content h3 {
+        font-size: 1.3rem;
+    }
+}
+
+/* Additional mobile optimizations for very small screens */
+@media (max-width: 576px) {
+    .article-header {
+        height: 250px;
+    }
+
+    .article-title {
+        font-size: 1.5rem;
+    }
+
+    .article-meta span {
+        font-size: 0.9rem;
+    }
+
+    .article-content {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .article-content p {
+        margin-bottom: 1rem;
+    }
+
+    .article-content blockquote {
+        padding-left: 1rem;
+        margin: 1rem 0;
+    }
+
+    .article-tags {
+        gap: 0.3rem;
+    }
+
+    .article-tag {
+        padding: 0.2rem 0.6rem;
+        font-size: 0.8rem;
+    }
+
+    .social-share-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .share-buttons {
+        flex-wrap: wrap;
+        gap: 0.3rem;
+    }
+
+    .share-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+}
