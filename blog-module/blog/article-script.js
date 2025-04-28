@@ -730,3 +730,71 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeRaceData();
     }, 24 * 60 * 60 * 1000); // Every 24 hours
 });
+
+// Mobile table optimization
+function optimizeTablesForMobile() {
+    const tables = document.querySelectorAll('.article-content table');
+    tables.forEach(table => {
+        const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent.trim());
+        const rows = table.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            cells.forEach((cell, index) => {
+                cell.setAttribute('data-label', headers[index]);
+            });
+        });
+    });
+}
+
+// Touch event handling for images
+function setupTouchEvents() {
+    const images = document.querySelectorAll('.article-content img');
+    images.forEach(img => {
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        img.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+        
+        img.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe(img, touchStartX, touchEndX);
+        }, false);
+    });
+}
+
+function handleSwipe(img, startX, endX) {
+    const threshold = 50;
+    if (Math.abs(endX - startX) > threshold) {
+        if (endX > startX) {
+            // Swipe right - zoom in
+            img.classList.toggle('zoomed');
+        } else {
+            // Swipe left - zoom out
+            img.classList.remove('zoomed');
+        }
+    }
+}
+
+// Initialize mobile optimizations
+document.addEventListener('DOMContentLoaded', () => {
+    // ... existing initialization code ...
+    
+    // Add mobile-specific initializations
+    optimizeTablesForMobile();
+    setupTouchEvents();
+    
+    // Add CSS class for mobile detection
+    if (window.innerWidth <= 768) {
+        document.body.classList.add('mobile-view');
+    }
+    
+    // Handle orientation changes
+    window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+            optimizeTablesForMobile();
+        }, 100);
+    });
+});
