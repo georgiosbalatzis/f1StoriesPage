@@ -193,16 +193,18 @@
 
 .blog-card:hover .blog-read-more i {
     transform: translateX(5px);
-}body {
-     font-family: 'Roboto', sans-serif;
-     margin: 0;
-     padding: 0;
-     color: #e0e0e0;
-     scroll-behavior: smooth;
-     overflow-x: hidden;
-     background-color: #000;
-     position: relative;
- }
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #e0e0e0;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    background-color: #000;
+    position: relative;
+}
 
 /* Animated Gradient Background - Enhanced */
 .background {
@@ -1354,4 +1356,285 @@ footer::before {
         margin: 0.5rem 0;
         text-align: center;
     }
+}
+
+/* Mobile Optimization Enhancements */
+
+/* General mobile improvements */
+@media (max-width: 767.98px) {
+    /* Reduce spacing to fit more content on small screens */
+    section {
+        padding: 2.5rem 0;
+    }
+    
+    /* More compact header for mobile */
+    #hero {
+        padding: 5rem 0;
+        min-height: 50vh;
+        clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+    }
+    
+    /* Adjust typography for readability on mobile */
+    .hero-content h1 {
+        font-size: 2.2rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .hero-content p {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    h2 {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Better card layouts for mobile */
+    .blog-card, .episode-card, .persona {
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Improve form usability on mobile */
+    .form-control {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 0.75rem;
+    }
+    
+    /* Larger tap targets for buttons */
+    .cta-button {
+        padding: 0.75rem 1.75rem;
+        min-width: 150px;
+    }
+    
+    /* Better spacing for mobile navigation */
+    .navbar-collapse {
+        padding: 1rem 0;
+    }
+    
+    .navbar-nav .nav-item {
+        margin: 0.25rem 0;
+    }
+    
+    /* Make avatars slightly smaller on mobile */
+    .persona .avatar {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 575.98px) {
+    /* Navbar improvements */
+    .navbar-brand img {
+        height: 40px;
+    }
+    
+    /* Adjust hero section further */
+    #hero {
+        padding: 4rem 0;
+        min-height: 40vh;
+    }
+    
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+    
+    .hero-content p {
+        font-size: 1rem;
+    }
+    
+    /* Card layouts for very small screens */
+    .blog-img-container {
+        height: 150px;
+    }
+    
+    /* Make the contact form more compact */
+    .contact-container {
+        padding: 1.25rem;
+    }
+    
+    .contact-form label {
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    /* Better spacing for podcast player */
+    .spotify-player {
+        height: 180px;
+    }
+    
+    /* Adjust card spacing */
+    .row.g-4 {
+        --bs-gutter-y: 1rem;
+    }
+    
+    /* Reduce bottom padding on last section before footer */
+    section:last-of-type {
+        padding-bottom: 3rem;
+    }
+    
+    /* More visible footer */
+    footer {
+        padding: 1.5rem 0;
+    }
+    
+    .social-media {
+        gap: 0.75rem;
+    }
+    
+    /* Fix spacing of personas/cards */
+    .persona, .blog-card, .episode-card {
+        padding: 1rem;
+    }
+    
+    /* Fix overlay text readability */
+    .blog-date {
+        padding: 5px 8px;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .blog-date .day {
+        font-size: 1.2rem;
+    }
+}
+
+/* Fix for navigation on mobile */
+@media (max-width: 991.98px) {
+    /* Improve mobile menu */
+    .navbar-collapse {
+        background: rgba(0, 10, 30, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 0 0 10px 10px;
+        padding: 1rem;
+        max-height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    
+    .navbar-nav {
+        padding: 0.5rem 0;
+    }
+    
+    .navbar-nav .nav-item {
+        padding: 0.25rem 0;
+    }
+    
+    .navbar-dark .navbar-nav .nav-link {
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+    }
+    
+    .navbar-dark .navbar-nav .nav-link:hover {
+        background: rgba(0, 115, 230, 0.1);
+    }
+    
+    /* BetCast button adjustment for mobile */
+    .nav-link.betcast-btn {
+        margin: 0.5rem 1rem;
+        text-align: center;
+    }
+    
+    /* Single-column layout for side-by-side elements */
+    .row > [class*="col-"] {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (max-width: 767.98px) {
+    /* Larger touch targets */
+    .social-media a {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        font-size: 1.3rem;
+    }
+    
+    /* Adjust scroll-to-top button */
+    .scroll-to-top-btn {
+        width: 45px;
+        height: 45px;
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    /* Better tap targets for blog cards */
+    .blog-read-more {
+        padding: 0.5rem 0;
+        display: inline-block;
+    }
+}
+
+/* Fix content that could overflow on small screens */
+@media (max-width: 767.98px) {
+    /* Prevent horizontal overflow */
+    .container {
+        overflow-x: hidden;
+    }
+    
+    /* Make long text wrap properly */
+    h1, h2, h3, p, .blog-title {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    /* Prevent code or pre elements from breaking layout */
+    pre, code {
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+}
+
+/* Fix for Fixed Position Elements on Mobile */
+@media (max-width: 767.98px) {
+    /* Prevent fixed elements from getting cut off */
+    body {
+        padding-bottom: 60px; /* Space for bottom fixed elements */
+    }
+    
+    /* Adjust fixed position navbar */
+    .fixed-top {
+        position: absolute;
+    }
+    
+    /* Ensure modals are usable on mobile */
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+}
+
+/* Loading state optimizations */
+@media (max-width: 767.98px) {
+    /* More compact loading spinners */
+    .spinner-border {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+}
+
+/* Improved font legibility on mobile */
+@media (max-width: 767.98px) {
+    body {
+        font-size: 15px;
+        line-height: 1.6;
+    }
+    
+    .blog-excerpt {
+        font-size: 0.85rem;
+        line-height: 1.5;
+        -webkit-line-clamp: 2; /* Show fewer lines on mobile */
+    }
+}
+
+/* Better image loading on mobile */
+.blog-img, .avatar {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* Add fast-tap for mobile - removes 300ms delay */
+a, button, .cta-button, .nav-link {
+    touch-action: manipulation;
 }
