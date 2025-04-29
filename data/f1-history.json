@@ -1,34 +1,3178 @@
 {
+    "version": "1.0",
+    "lastUpdated": "2025-04-29",
     "events": {
-        "4-28": [
+        "1-1": [
             {
-                "year": 1994,
-                "event": "Ο Ayrton Senna κερδίζει την τελευταία του pole position στο Grand Prix του San Marino.",
-                "driver": "Ayrton Senna",
+                "year": 1965,
+                "event": "Ο Jim Clark κέρδισε το Γκραν Πρι Νοτίου Αφρικής 1965 με Lotus.",
+                "driver": "Jim Clark",
+                "team": "Lotus",
+                "circuit": "Kyalami",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-2": [
+            {
+                "year": 1967,
+                "event": "Ο Pedro Rodríguez κέρδισε το πρώτο Γκραν Πρι της σεζόν 1967 στη Νότιο Αφρική.",
+                "driver": "Pedro Rodríguez",
+                "team": "Cooper",
+                "circuit": "Kyalami",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-3": [
+            {
+                "year": 1969,
+                "event": "Γεννήθηκε ο επτάκις παγκόσμιος πρωταθλητής Michael Schumacher.",
+                "driver": "Michael Schumacher",
+                "category": "driver",
+                "importance": 3
+            }
+        ],
+        "1-4": [
+            {
+                "year": 1971,
+                "event": "Το Μεξικό Γκραν Πρι του 1971 ακυρώθηκε λόγω οργανωτικών προβλημάτων.",
+                "category": "race",
+                "importance": 1
+            }
+        ],
+        "1-5": [
+            {
+                "year": 2014,
+                "event": "Πέθανε ο κινητήρας της F1, Brian Hart, δημιουργός των κινητήρων Hart.",
+                "category": "team",
+                "importance": 2
+            }
+        ],
+        "1-6": [
+            {
+                "year": 2000,
+                "event": "Ο διάσημος σχολιαστής F1, Murray Walker, συμφώνησε να συνεχίσει την παρουσίαση για άλλη σεζόν.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "1-7": [
+            {
+                "year": 1985,
+                "event": "Γεννήθηκε ο πολλαπλός παγκόσμιος πρωταθλητής Lewis Hamilton.",
+                "driver": "Lewis Hamilton",
+                "team": "McLaren",
+                "category": "driver",
+                "importance": 3
+            }
+        ],
+        "1-8": [
+            {
+                "year": 2014,
+                "event": "Πέθανε η Maria Teresa de Filippis, η πρώτη γυναίκα οδηγός F1.",
+                "category": "driver",
+                "importance": 2
+            }
+        ],
+        "1-9": [
+            {
+                "year": 1977,
+                "event": "O Jody Scheckter κέρδισε το Γκραν Πρι Αργεντινής 1977 με την ομάδα Wolf-Ford.",
+                "driver": "Jody Scheckter",
+                "team": "Wolf-Ford",
+                "circuit": "Buenos Aires",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-10": [
+            {
+                "year": 1971,
+                "event": "Ο Ignazio Giunti σκοτώθηκε σε αγώνα αντοχής στο Nürburgring, οδηγός της Ferrari F1.",
+                "driver": "Ignazio Giunti",
+                "category": "accident",
+                "importance": 3
+            }
+        ],
+        "1-11": [
+            {
+                "year": 1983,
+                "event": "Γεννήθηκε ο Γερμανός οδηγός Adrian Sutil.",
+                "driver": "Adrian Sutil",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "1-12": [
+            {
+                "year": 1975,
+                "event": "Ο Emerson Fittipaldi κέρδισε το Γκραν Πρι Αργεντινής 1975 με McLaren-Ford.",
+                "driver": "Emerson Fittipaldi",
+                "team": "McLaren",
+                "circuit": "Buenos Aires",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-13": [
+            {
+                "year": 1980,
+                "event": "Ο Alan Jones κέρδισε το Γκραν Πρι Αργεντινής 1980 με Williams.",
+                "driver": "Alan Jones",
                 "team": "Williams",
-                "circuit": "Imola",
-                "category": "qualifying",
-                "importance": 3,
-                "image": "senna-imola-1994.jpg"
-            },
+                "circuit": "Buenos Aires",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-14": [
+            {
+                "year": 2018,
+                "event": "Πέθανε ο εμβληματικός οδηγός και κατασκευαστής Dan Gurney.",
+                "category": "driver",
+                "importance": 2
+            }
+        ],
+        "1-15": [
+            {
+                "year": 2003,
+                "event": "Ο Max Mosley απαγόρευσε τα ηλεκτρονικά βοηθήματα οδήγησης στην F1.",
+                "category": "technical",
+                "importance": 2
+            }
+        ],
+        "1-16": [
+            {
+                "year": 1955,
+                "event": "Ο Juan Manuel Fangio κέρδισε το Γκραν Πρι Αργεντινής 1955 με Mercedes.",
+                "driver": "Juan Manuel Fangio",
+                "team": "Mercedes",
+                "circuit": "Buenos Aires",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-17": [
+            {
+                "year": 1954,
+                "event": "Ο Juan Manuel Fangio κέρδισε το Γκραν Πρι Αργεντινής 1954.",
+                "driver": "Juan Manuel Fangio",
+                "team": "Maserati",
+                "circuit": "Buenos Aires",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-18": [
+            {
+                "year": 1950,
+                "event": "Γεννήθηκε ο Gilles Villeneuve, μελλοντικός πρωταθλητής της F1.",
+                "category": "driver",
+                "importance": 3
+            }
+        ],
+        "1-19": [
+            {
+                "year": 1958,
+                "event": "Ο Stirling Moss κέρδισε το Γκραν Πρι Αργεντινής 1958 με Vanwall.",
+                "driver": "Stirling Moss",
+                "team": "Vanwall",
+                "circuit": "Buenos Aires",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-20": [
+            {
+                "year": 2005,
+                "event": "Ο διάσημος γιατρός της F1, Sir Sid Watkins, ανακοίνωσε την αποχώρησή του.",
+                "category": "retirement",
+                "importance": 2
+            }
+        ],
+        "1-21": [
+            {
+                "year": 1979,
+                "event": "Ο Jacques Laffite κέρδισε το Γκραν Πρι Αργεντινής 1979 με Williams.",
+                "driver": "Jacques Laffite",
+                "team": "Williams",
+                "circuit": "Buenos Aires",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-22": [
+            {
+                "year": 1956,
+                "event": "Ο Juan Manuel Fangio κέρδισε το Γκραν Πρι Αργεντινής 1956 με Mercedes.",
+                "driver": "Juan Manuel Fangio",
+                "team": "Mercedes",
+                "circuit": "Buenos Aires",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-23": [
+            {
+                "year": 1972,
+                "event": "Ο Jackie Stewart κέρδισε το Γκραν Πρι Αργεντινής 1972 με Tyrrell.",
+                "driver": "Jackie Stewart",
+                "team": "Tyrrell",
+                "circuit": "Buenos Aires",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-24": [
+            {
+                "year": 2000,
+                "event": "Ο Jenson Button έγινε ο νεότερος Βρετανός οδηγός F1 κατακτώντας την pole στο GP Αυστραλίας 2000.",
+                "driver": "Jenson Button",
+                "team": "Williams",
+                "circuit": "Albert Park",
+                "category": "record",
+                "importance": 2
+            }
+        ],
+        "1-25": [
+            {
+                "year": 1976,
+                "event": "O Niki Lauda κέρδισε το Γκραν Πρι Βραζιλίας 1976 με Ferrari.",
+                "driver": "Niki Lauda",
+                "team": "Ferrari",
+                "circuit": "Interlagos",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-26": [
+            {
+                "year": 1975,
+                "event": "O Carlos Pace κέρδισε το Γκραν Πρι Βραζιλίας 1975, την πρώτη και μοναδική του νίκη.",
+                "driver": "Carlos Pace",
+                "team": "Brabham",
+                "circuit": "Interlagos",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-27": [
+            {
+                "year": 1974,
+                "event": "O Emerson Fittipaldi κέρδισε το Γκραν Πρι Βραζιλίας 1974.",
+                "driver": "Emerson Fittipaldi",
+                "team": "Lotus",
+                "circuit": "Interlagos",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-28": [
+            {
+                "year": 1973,
+                "event": "O Emerson Fittipaldi κέρδισε το Γκραν Πρι Αργεντινής 1973 με Lotus.",
+                "driver": "Emerson Fittipaldi",
+                "team": "Lotus",
+                "circuit": "Buenos Aires",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "1-29": [
+            {
+                "year": 1950,
+                "event": "Γεννήθηκε ο παγκόσμιος πρωταθλητής Jody Scheckter.",
+                "category": "driver",
+                "importance": 2
+            }
+        ],
+        "1-30": [
+            {
+                "year": 2009,
+                "event": "Πέθανε ο συνιδρυτής της McLaren, Teddy Mayer.",
+                "category": "team",
+                "importance": 2
+            }
+        ],
+        "1-31": [
+            {
+                "year": 1930,
+                "event": "Γεννήθηκε ο σουηδός οδηγός F1 Jo Bonnier.",
+                "driver": "Jo Bonnier",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "2-1": [
+            {
+                "year": 2005,
+                "event": "Ο Narain Karthikeyan ανακοινώθηκε ως ο πρώτος Ινδός οδηγός F1 με την ομάδα Jordan.",
+                "driver": "Narain Karthikeyan",
+                "team": "Jordan",
+                "category": "driver",
+                "importance": 2
+            }
+        ],
+        "2-2": [
+            {
+                "year": 1948,
+                "event": "Γεννήθηκε ο Βρετανός οδηγός Roger Williamson.",
+                "driver": "Roger Williamson",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "2-3": [
+            {
+                "year": 1957,
+                "event": "Γεννήθηκε ο Βραζιλιάνος οδηγός Chico Serra.",
+                "driver": "Chico Serra",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "2-4": [
+            {
+                "year": 1979,
+                "event": "Ο Jacques Laffite κέρδισε το Γκραν Πρι Βραζιλίας 1979 με Ligier.",
+                "driver": "Jacques Laffite",
+                "team": "Ligier",
+                "circuit": "Interlagos",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "2-5": [
+            {
+                "year": 2003,
+                "event": "Πέθανε ο Γερμανός οδηγός F1 Manfred von Brauchitsch.",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "2-6": [
+            {
+                "year": 2011,
+                "event": "Ο Robert Kubica υπέστη σοβαρό τραυματισμό σε αγώνα ράλι στο Andora.",
+                "driver": "Robert Kubica",
+                "category": "accident",
+                "importance": 2
+            }
+        ],
+        "2-7": [
+            {
+                "year": 1960,
+                "event": "Ο Bruce McLaren κέρδισε το Γκραν Πρι Αργεντινής 1960, την πρώτη του νίκη στην F1.",
+                "driver": "Bruce McLaren",
+                "team": "Cooper",
+                "circuit": "Buenos Aires",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "2-8": [
+            {
+                "year": 2006,
+                "event": "Το Γκραν Πρι Βελγίου 2006 ακυρώθηκε λόγω προβλημάτων ασφάλειας.",
+                "category": "race",
+                "importance": 1
+            }
+        ],
+        "2-9": [
+            {
+                "year": 2006,
+                "event": "O Gerhard Berger εξαγόρασε το 50% της ομάδας Toro Rosso.",
+                "driver": "Gerhard Berger",
+                "team": "Toro Rosso",
+                "category": "team",
+                "importance": 2
+            }
+        ],
+        "2-10": [
+            {
+                "year": 2003,
+                "event": "Ο Max Mosley εξέφρασε ανησυχίες ότι η F1 εξαρτάται υπερβολικά από τις εργοστασιακές ομάδες.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "2-11": [
+            {
+                "year": 1973,
+                "event": "O Emerson Fittipaldi κέρδισε το Γκραν Πρι Βραζιλίας 1973 με Lotus.",
+                "driver": "Emerson Fittipaldi",
+                "team": "Lotus",
+                "circuit": "Interlagos",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "2-12": [
+            {
+                "year": 2009,
+                "event": "Δοκιμές στη Βαχρέιν διακόπηκαν από σκόνη ερήμου (σκόνη).",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "2-13": [
+            {
+                "year": 1997,
+                "event": "Η ομάδα Prost Grand Prix ανακοινώθηκε επίσημα το 1997 από τον Alain Prost.",
+                "driver": "Alain Prost",
+                "team": "Prost Grand Prix",
+                "category": "team",
+                "importance": 2
+            }
+        ],
+        "2-14": [
+            {
+                "year": 2001,
+                "event": "Ο Nigel Mansell επιστρέφει στην F1 με την ομάδα Minardi.",
+                "driver": "Nigel Mansell",
+                "team": "Minardi",
+                "category": "driver",
+                "importance": 2
+            }
+        ],
+        "2-15": [
+            {
+                "year": 1998,
+                "event": "Γεννήθηκε ο Βρετανός οδηγός F1 George Russell.",
+                "driver": "George Russell",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "2-16": [
+            {
+                "year": 2000,
+                "event": "Ο Jenson Button χτυπήθηκε από πουλί κατά τη διάρκεια δοκιμών στη Βαχρέιν.",
+                "driver": "Jenson Button",
+                "category": "accident",
+                "importance": 1
+            }
+        ],
+        "2-17": [
+            {
+                "year": 2000,
+                "event": "Ο Lewis Hamilton εξέφρασε δημόσια τη φιλοδοξία του να αγωνιστεί στην F1.",
+                "driver": "Lewis Hamilton",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "2-18": [
+            {
+                "year": 1898,
+                "event": "Γεννήθηκε ο ιδρυτής της Ferrari, Enzo Ferrari.",
+                "team": "Ferrari",
+                "category": "team",
+                "importance": 3
+            }
+        ],
+        "2-19": [
+            {
+                "year": 1952,
+                "event": "Γεννήθηκε ο Βρετανός οδηγός F1 Stephen South.",
+                "driver": "Stephen South",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "2-20": [
+            {
+                "year": 1937,
+                "event": "Γεννήθηκε ο πολυπρωταθλητής ιδιοκτήτης ομάδας Roger Penske.",
+                "driver": "Roger Penske",
+                "team": "Team Penske",
+                "category": "team",
+                "importance": 2
+            }
+        ],
+        "2-21": [
+            {
+                "year": 1949,
+                "event": "Γεννήθηκε ο Βρετανός οδηγός Peter Gethin.",
+                "driver": "Peter Gethin",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "2-22": [
+            {
+                "year": 1949,
+                "event": "Γεννήθηκε ο τρις παγκόσμιος πρωταθλητής Niki Lauda.",
+                "driver": "Niki Lauda",
+                "category": "driver",
+                "importance": 3
+            }
+        ],
+        "2-23": [
+            {
+                "year": 1958,
+                "event": "Ο Juan Manuel Fangio απήχθη στην Κούβα το 1958.",
+                "driver": "Juan Manuel Fangio",
+                "category": "accident",
+                "importance": 2
+            }
+        ],
+        "2-24": [
+            {
+                "year": 1955,
+                "event": "Γεννήθηκε ο τέσσερις φορές παγκόσμιος πρωταθλητής Alain Prost.",
+                "driver": "Alain Prost",
+                "category": "driver",
+                "importance": 3
+            }
+        ],
+        "2-25": [
+            {
+                "year": 1932,
+                "event": "Γεννήθηκε ο 'Οδοντίατρος' οδηγός F1 Tony Brooks.",
+                "driver": "Tony Brooks",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "2-26": [
+            {
+                "year": 1917,
+                "event": "Γεννήθηκε ο πρώτος Γάλλος οδηγός F1, Robert La Caze.",
+                "driver": "Robert La Caze",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "2-27": [
+            {
+                "year": 1939,
+                "event": "Γεννήθηκε ο Αμερικανός οδηγός Peter Revson.",
+                "driver": "Peter Revson",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "2-28": [
+            {
+                "year": 1940,
+                "event": "Γεννήθηκε ο παγκόσμιος πρωταθλητής Mario Andretti.",
+                "driver": "Mario Andretti",
+                "category": "driver",
+                "importance": 3
+            }
+        ],
+        "2-29": [
+            {
+                "year": 1932,
+                "event": "Γεννήθηκε ο Αμερικανός οδηγός F1 Masten Gregory.",
+                "driver": "Masten Gregory",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "3-1": [
+            {
+                "year": 1975,
+                "event": "O Jody Scheckter έγινε ο πρώτος Νοτιοαφρικανός που κέρδισε Γκραν Πρι (Νότιος Αφρικής 1975).",
+                "driver": "Jody Scheckter",
+                "team": "Tyrrell",
+                "circuit": "Kyalami",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-2": [
+            {
+                "year": 2024,
+                "event": "O Max Verstappen κέρδισε το Γκραν Πρι του Μπαχρέιν 2024 με την Red Bull.",
+                "driver": "Max Verstappen",
+                "team": "Red Bull Racing",
+                "circuit": "Bahrain Int. Circuit",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-3": [
             {
                 "year": 2002,
-                "event": "Ο Michael Schumacher κερδίζει το GP της Ισπανίας, την 3η συνεχόμενη νίκη της σεζόν.",
+                "event": "O Mark Webber τερμάτισε πέμπτος στο GP Αυστραλίας 2002 στην πρώτη του εμφάνιση.",
+                "driver": "Mark Webber",
+                "team": "Minardi",
+                "circuit": "Albert Park",
+                "category": "race",
+                "importance": 1
+            }
+        ],
+        "3-4": [
+            {
+                "year": 1936,
+                "event": "Γεννήθηκε ο δύο φορές παγκόσμιος πρωταθλητής Jim Clark.",
+                "driver": "Jim Clark",
+                "category": "driver",
+                "importance": 3
+            }
+        ],
+        "3-5": [
+            {
+                "year": 1977,
+                "event": "Πέθανε ο Tom Pryce σε τραγικό δυστύχημα στο Grand Prix Νοτίου Αφρικής 1977.",
+                "driver": "Tom Pryce",
+                "category": "accident",
+                "importance": 3
+            }
+        ],
+        "3-6": [
+            {
+                "year": 2005,
+                "event": "O Giancarlo Fisichella κέρδισε το Γκραν Πρι Αυστραλίας 2005 με Renault.",
+                "driver": "Giancarlo Fisichella",
+                "team": "Renault",
+                "circuit": "Albert Park",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-7": [
+            {
+                "year": 1970,
+                "event": "O Jack Brabham κέρδισε το Grand Prix Αυστραλίας 1970 στη Μελβούρνη.",
+                "driver": "Jack Brabham",
+                "team": "Brabham",
+                "circuit": "Sandown Park",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-8": [
+            {
+                "year": 1998,
+                "event": "O David Coulthard κέρδισε το Grand Prix Αυστραλίας 1998.",
+                "driver": "David Coulthard",
+                "team": "McLaren",
+                "circuit": "Albert Park",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-9": [
+            {
+                "year": 1997,
+                "event": "O David Coulthard κέρδισε το Grand Prix Αυστραλίας 1997.",
+                "driver": "David Coulthard",
+                "team": "McLaren",
+                "circuit": "Albert Park",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-10": [
+            {
+                "year": 1991,
+                "event": "O Ayrton Senna κέρδισε το Grand Prix ΗΠΑ του 1991 στο Phoenix.",
+                "driver": "Ayrton Senna",
+                "team": "McLaren",
+                "circuit": "Phoenix International Raceway",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-11": [
+            {
+                "year": 1990,
+                "event": "O Ayrton Senna σημείωσε την πρώτη του νίκη στο Grand Prix των ΗΠΑ 1990.",
+                "driver": "Ayrton Senna",
+                "team": "McLaren",
+                "circuit": "Phoenix International Raceway",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-12": [
+            {
+                "year": 2006,
+                "event": "O Fernando Alonso κέρδισε το Γκραν Πρι Μπαχρέιν 2006 με Renault.",
+                "driver": "Fernando Alonso",
+                "team": "Renault",
+                "circuit": "Bahrain Int. Circuit",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-13": [
+            {
+                "year": 2021,
+                "event": "Πέθανε ο επί χρόνια σχολιαστής F1 Murray Walker.",
+                "driver": "Murray Walker",
+                "category": "driver",
+                "importance": 2
+            }
+        ],
+        "3-14": [
+            {
+                "year": 1957,
+                "event": "Πέθανε ο Ιταλός οδηγός Eugenio Castellotti σε δοκιμές στην Ιταλία.",
+                "driver": "Eugenio Castellotti",
+                "category": "accident",
+                "importance": 3
+            }
+        ],
+        "3-15": [
+            {
+                "year": 1981,
+                "event": "O Alan Jones κέρδισε το Γκραν Πρι ΗΠΑ West 1981 με Williams.",
+                "driver": "Alan Jones",
+                "team": "Williams",
+                "circuit": "Long Beach",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-16": [
+            {
+                "year": 2014,
+                "event": "O Nico Rosberg κέρδισε το Γκραν Πρι Αυστραλίας 2014 με Mercedes.",
+                "driver": "Nico Rosberg",
+                "team": "Mercedes",
+                "circuit": "Albert Park",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-17": [
+            {
+                "year": 2019,
+                "event": "O Valtteri Bottas κέρδισε το Γκραν Πρι Αυστραλίας 2019 με Mercedes.",
+                "driver": "Valtteri Bottas",
+                "team": "Mercedes",
+                "circuit": "Albert Park",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-18": [
+            {
+                "year": 2021,
+                "event": "O Jenson Button κέρδισε το Γκραν Πρι Αυστραλίας 2021 με Williams.",
+                "driver": "Jenson Button",
+                "team": "Williams",
+                "circuit": "Albert Park",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-19": [
+            {
+                "year": 2023,
+                "event": "O Sergio Pérez κέρδισε το Γκραν Πρι Σαουδικής Αραβίας 2023 με Red Bull.",
+                "driver": "Sergio Pérez",
+                "team": "Red Bull Racing",
+                "circuit": "Jeddah Corniche Circuit",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-20": [
+            {
+                "year": 2022,
+                "event": "O Charles Leclerc κέρδισε το Γκραν Πρι Μπαχρέιν 2022 με Ferrari.",
+                "driver": "Charles Leclerc",
+                "team": "Ferrari",
+                "circuit": "Bahrain Int. Circuit",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-21": [
+            {
+                "year": 2004,
+                "event": "O Michael Schumacher κέρδισε το Γκραν Πρι Μαλαισίας 2004 με Ferrari.",
                 "driver": "Michael Schumacher",
                 "team": "Ferrari",
-                "circuit": "Catalunya",
+                "circuit": "Sepang",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-22": [
+            {
+                "year": 1992,
+                "event": "O Nigel Mansell κέρδισε το Γκραν Πρι Μεξικού 1992 με Williams.",
+                "driver": "Nigel Mansell",
+                "team": "Williams",
+                "circuit": "Autódromo Hermanos Rodríguez",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-23": [
+            {
+                "year": 2008,
+                "event": "O Kimi Räikkönen κέρδισε το Γκραν Πρι Μαλαισίας 2008 με Ferrari.",
+                "driver": "Kimi Räikkönen",
+                "team": "Ferrari",
+                "circuit": "Sepang",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-24": [
+            {
+                "year": 2024,
+                "event": "O Carlos Sainz κέρδισε έκπληξη το Γκραν Πρι Αυστραλίας 2024 με Ferrari.",
+                "driver": "Carlos Sainz",
+                "team": "Ferrari",
+                "circuit": "Albert Park",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-25": [
+            {
+                "year": 2018,
+                "event": "O Sebastian Vettel κέρδισε το Γκραν Πρι Αυστραλίας 2018 με Ferrari.",
+                "driver": "Sebastian Vettel",
+                "team": "Ferrari",
+                "circuit": "Albert Park",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-26": [
+            {
+                "year": 2017,
+                "event": "O Sebastian Vettel κέρδισε το Γκραν Πρι Αυστραλίας 2017 με Ferrari.",
+                "driver": "Sebastian Vettel",
+                "team": "Ferrari",
+                "circuit": "Albert Park",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-27": [
+            {
+                "year": 2022,
+                "event": "O Max Verstappen κέρδισε το Γκραν Πρι Σαουδικής Αραβίας 2022 με Red Bull.",
+                "driver": "Max Verstappen",
+                "team": "Red Bull Racing",
+                "circuit": "Jeddah Corniche Circuit",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-28": [
+            {
+                "year": 2021,
+                "event": "O Lewis Hamilton κέρδισε το Γκραν Πρι Μπαχρέιν 2021 με Mercedes.",
+                "driver": "Lewis Hamilton",
+                "team": "Mercedes",
+                "circuit": "Bahrain Int. Circuit",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-29": [
+            {
+                "year": 2015,
+                "event": "O Sebastian Vettel κέρδισε το Γκραν Πρι Μαλαισίας 2015 με Ferrari.",
+                "driver": "Sebastian Vettel",
+                "team": "Ferrari",
+                "circuit": "Sepang",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-30": [
+            {
+                "year": 2014,
+                "event": "O Lewis Hamilton κέρδισε το Γκραν Πρι Μαλαισίας 2014 με Mercedes.",
+                "driver": "Lewis Hamilton",
+                "team": "Mercedes",
+                "circuit": "Sepang",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "3-31": [
+            {
+                "year": 2019,
+                "event": "Ο Lewis Hamilton κέρδισε το Γκραν Πρι Μπαχρέιν 2019 με Mercedes.",
+                "driver": "Lewis Hamilton",
+                "team": "Mercedes",
+                "circuit": "Bahrain Int. Circuit",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "4-1": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "4-2": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "4-3": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "4-4": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "4-5": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "4-6": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "4-7": [
+            {
+                "year": 1968,
+                "event": "Ο Jim Clark σκοτώθηκε σε δοκιμές στο Hockenheim 1968.",
+                "driver": "Jim Clark",
+                "circuit": "Hockenheim",
+                "category": "accident",
+                "importance": 3
+            }
+        ],
+        "4-8": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "4-9": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "4-10": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "4-11": [
+            {
+                "year": 1993,
+                "event": "Ο Ayrton Senna κέρδισε το Γκραν Πρι Ευρώπης 1993 στον Άντερστοπ.",
+                "driver": "Ayrton Senna",
+                "team": "McLaren",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "4-12": [
+            {
+                "year": 1981,
+                "event": "Ο Nelson Piquet κέρδισε εμφατικά το Γκραν Πρι Αργεντινής 1981.",
+                "driver": "Nelson Piquet",
+                "team": "Brabham",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "4-13": [
+            {
+                "year": 1931,
+                "event": "Γεννήθηκε ο Αμερικανός οδηγός Dan Gurney.",
+                "driver": "Dan Gurney",
+                "category": "driver",
+                "importance": 2
+            }
+        ],
+        "4-14": [
+            {
+                "year": 1929,
+                "event": "Ο πρώτος Γκραν Πρι Μονακό διεξήχθη το 1929, νικητής ο William Grover-Williams.",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "4-15": [
+            {
+                "year": 1999,
+                "event": "Πέθανε ο Harvey Postlethwaite, επιφανής τεχνικός διευθυντής της F1.",
+                "category": "technical",
+                "importance": 2
+            }
+        ],
+        "4-16": [
+            {
+                "year": 1942,
+                "event": "Γεννήθηκε ο ιδρυτής και ιδιοκτήτης της Williams, Sir Frank Williams.",
+                "driver": "Frank Williams",
+                "category": "driver",
+                "importance": 3
+            }
+        ],
+        "4-17": [
+            {
+                "year": 1954,
+                "event": "Γεννήθηκε ο Ιταλός οδηγός Riccardo Patrese.",
+                "driver": "Riccardo Patrese",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "4-18": [
+            {
+                "year": 1942,
+                "event": "Γεννήθηκε ο μοναδικός μεταθανάτιος πρωταθλητής F1, Jochen Rindt.",
+                "driver": "Jochen Rindt",
+                "category": "driver",
+                "importance": 3
+            }
+        ],
+        "4-19": [
+            {
+                "year": 1970,
+                "event": "O Jackie Stewart κέρδισε το Γκραν Πρι Ισπανίας 1970.",
+                "driver": "Jackie Stewart",
+                "team": "March",
+                "circuit": "Jarama",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "4-20": [
+            {
+                "year": 2014,
+                "event": "O Lewis Hamilton κέρδισε το Γκραν Πρι Κίνας 2014 που διεξήχθη σε συντομευμένο χρονοδιάγραμμα.",
+                "driver": "Lewis Hamilton",
+                "team": "Mercedes",
+                "circuit": "Shanghai International Circuit",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "4-21": [
+            {
+                "year": 1985,
+                "event": "O Ayrton Senna κέρδισε το Γκραν Πρι Πορτογαλίας 1985, την πρώτη νίκη της καριέρας του.",
+                "driver": "Ayrton Senna",
+                "team": "Lotus",
+                "circuit": "Estoril",
+                "category": "race",
+                "importance": 3
+            }
+        ],
+        "4-22": [
+            {
+                "year": 2012,
+                "event": "O Sebastian Vettel κέρδισε το Γκραν Πρι Μπαχρέιν 2012 με Red Bull Racing.",
+                "driver": "Sebastian Vettel",
+                "team": "Red Bull Racing",
+                "circuit": "Bahrain Int. Circuit",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "4-23": [
+            {
+                "year": 2006,
+                "event": "O Michael Schumacher κέρδισε το Γκραν Πρι Σαν Μαρίνο 2006 με Ferrari.",
+                "driver": "Michael Schumacher",
+                "team": "Ferrari",
+                "circuit": "Imola",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "4-24": [
+            {
+                "year": 2022,
+                "event": "O Max Verstappen κέρδισε το Γκραν Πρι Εμίλια Ρομάνα 2022 με Red Bull Racing.",
+                "driver": "Max Verstappen",
+                "team": "Red Bull Racing",
+                "circuit": "Imola",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "4-25": [
+            {
+                "year": 1981,
+                "event": "Γεννήθηκε ο Felipe Massa, παγκόσμιος πρωταθλητής F1 με Ferrari.",
+                "driver": "Felipe Massa",
+                "category": "driver",
+                "importance": 2
+            }
+        ],
+        "4-26": [
+            {
+                "year": 2009,
+                "event": "O Jenson Button κέρδισε το Γκραν Πρι Μπαχρέιν 2009 με Brawn GP.",
+                "driver": "Jenson Button",
+                "team": "Brawn GP",
+                "circuit": "Bahrain Int. Circuit",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "4-27": [
+            {
+                "year": 1943,
+                "event": "Γεννήθηκε ο Αυστριακός οδηγός F1 Helmut Marko.",
+                "driver": "Helmut Marko",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "4-28": [
+            {
+                "year": 1974,
+                "event": "O Niki Lauda κέρδισε το πρώτο του Γκραν Πρι (Νορβηγία 1974) με Ferrari.",
+                "driver": "Niki Lauda",
+                "team": "Ferrari",
+                "circuit": "Anderstorp",
                 "category": "race",
                 "importance": 2
             },
             {
                 "year": 2019,
-                "event": "Ο Valtteri Bottas κατακτά την pole position στο Grand Prix του Αζερμπαϊτζάν.",
+                "event": "O Valtteri Bottas κέρδισε το Γκραν Πρι Αζερμπαϊτζάν 2019 με Mercedes.",
                 "driver": "Valtteri Bottas",
                 "team": "Mercedes",
-                "circuit": "Baku",
-                "category": "qualifying",
+                "circuit": "Baku City Circuit",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "4-29": [
+            {
+                "year": 1958,
+                "event": "Γεννήθηκε ο Martin Whitmarsh, πρώην διευθυντής της McLaren Racing.",
+                "driver": "Martin Whitmarsh",
+                "category": "team",
+                "importance": 1
+            },
+            {
+                "year": 2002,
+                "event": "Πέθανε ο θρυλικός ιδιοκτήτης ομάδας, Rob Walker.",
+                "category": "team",
+                "importance": 2
+            }
+        ],
+        "4-30": [
+            {
+                "year": 1994,
+                "event": "O Roland Ratzenberger σκοτώθηκε σε δυστύχημα κατά τη διάρκεια του GP Σαν Μαρίνο 1994.",
+                "driver": "Roland Ratzenberger",
+                "category": "accident",
+                "importance": 3
+            }
+        ],
+        "5-1": [
+            {
+                "year": 1994,
+                "event": "O Ayrton Senna σκοτώθηκε σε δυστύχημα κατά τη διάρκεια του Γκραν Πρι Σαν Μαρίνο 1994.",
+                "driver": "Ayrton Senna",
+                "category": "accident",
+                "importance": 3
+            }
+        ],
+        "5-2": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-3": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-4": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-5": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-6": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-7": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-8": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-9": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-10": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-11": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-12": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-13": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-14": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-15": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-16": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-17": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-18": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-19": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-20": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-21": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-22": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-23": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-24": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-25": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-26": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-27": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-28": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-29": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-30": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "5-31": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-1": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-2": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-3": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-4": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-5": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-6": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-7": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-8": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-9": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-10": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-11": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-12": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-13": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-14": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-15": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-16": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-17": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-18": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-19": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-20": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-21": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-22": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-23": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-24": [
+            {
+                "year": 1911,
+                "event": "Γεννήθηκε ο πέντε φορές παγκόσμιος πρωταθλητής Juan Manuel Fangio.",
+                "driver": "Juan Manuel Fangio",
+                "category": "driver",
+                "importance": 3
+            }
+        ],
+        "6-25": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-26": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-27": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-28": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-29": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "6-30": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-1": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-2": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-3": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-4": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-5": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-6": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-7": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-8": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-9": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-10": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-11": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-12": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-13": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-14": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-15": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-16": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-17": [
+            {
+                "year": 1995,
+                "event": "Πέθανε ο Juan Manuel Fangio, πέντε φορές παγκόσμιος πρωταθλητής F1.",
+                "driver": "Juan Manuel Fangio",
+                "category": "accident",
+                "importance": 3
+            }
+        ],
+        "7-18": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-19": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-20": [
+            {
+                "year": 1985,
+                "event": "O Nelson Piquet κέρδισε το Γκραν Πρι Βραζιλίας 1985.",
+                "driver": "Nelson Piquet",
+                "team": "Brabham",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "7-21": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-22": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-23": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-24": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-25": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-26": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-27": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-28": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-29": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-30": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "7-31": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-1": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-2": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-3": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-4": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-5": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-6": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-7": [
+            {
+                "year": 1952,
+                "event": "Γεννήθηκε ο Ronnie Peterson, διάσημος Σουηδός οδηγός F1.",
+                "driver": "Ronnie Peterson",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "8-8": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-9": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-10": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-11": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-12": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-13": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-14": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-15": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-16": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-17": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-18": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-19": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-20": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-21": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-22": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-23": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-24": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-25": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-26": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-27": [
+            {
+                "year": 1952,
+                "event": "Γεννήθηκε ο Ronnie Peterson, διάσημος Σουηδός οδηγός F1.",
+                "driver": "Ronnie Peterson",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "8-28": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-29": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-30": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "8-31": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-1": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-2": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-3": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-4": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-5": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-6": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-7": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-8": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-9": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-10": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-11": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-12": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-13": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-14": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-15": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-16": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-17": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-18": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-19": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-20": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-21": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-22": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-23": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-24": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-25": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-26": [
+            {
+                "year": 1993,
+                "event": "O Damon Hill κέρδισε το Γκραν Πρι Αιθιοπίας 1993, την πρώτη του νίκη με Williams.",
+                "driver": "Damon Hill",
+                "team": "Williams",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "9-27": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-28": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-29": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "9-30": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-1": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-2": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-3": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-4": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-5": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-6": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-7": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-8": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-9": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-10": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-11": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-12": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-13": [
+            {
+                "year": 1993,
+                "event": "O Ayrton Senna κέρδισε το Γκραν Πρι Ευρώπης 1993, φέρνοντας τον τίτλο.",
+                "driver": "Ayrton Senna",
+                "team": "Williams",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "10-14": [
+            {
+                "year": 1999,
+                "event": "O Mika Häkkinen κέρδισε το Grand Prix Βραζιλίας 1999, την 10η νίκη της καριέρας του.",
+                "driver": "Mika Häkkinen",
+                "team": "McLaren",
+                "category": "race",
+                "importance": 2
+            }
+        ],
+        "10-15": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-16": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-17": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-18": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-19": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-20": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-21": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-22": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-23": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-24": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-25": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-26": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-27": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-28": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-29": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-30": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "10-31": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-1": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-2": [
+            {
+                "year": 2014,
+                "event": "Ο Lewis Hamilton κατέκτησε το πρωτάθλημα F1 2014 οδηγώντας για τη Mercedes.",
+                "driver": "Lewis Hamilton",
+                "team": "Mercedes",
+                "category": "record",
+                "importance": 3
+            }
+        ],
+        "11-3": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-4": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-5": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-6": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-7": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-8": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-9": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-10": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-11": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-12": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-13": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-14": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-15": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-16": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-17": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-18": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-19": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-20": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-21": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-22": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-23": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-24": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-25": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-26": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-27": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-28": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-29": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "11-30": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-1": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-2": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-3": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-4": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-5": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-6": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-7": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-8": [
+            {
+                "year": 1999,
+                "event": "Γεννήθηκε ο Lando Norris, οδηγός της McLaren.",
+                "driver": "Lando Norris",
+                "category": "driver",
+                "importance": 1
+            }
+        ],
+        "12-9": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-10": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-11": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-12": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-13": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-14": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-15": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-16": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-17": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-18": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-19": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-20": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-21": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-22": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-23": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-24": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-25": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-26": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-27": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-28": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-29": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-30": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
+                "importance": 1
+            }
+        ],
+        "12-31": [
+            {
+                "year": 0,
+                "event": "Δεν υπάρχει καταγεγραμμένο γεγονός.",
+                "category": "technical",
                 "importance": 1
             }
         ]
     }
-} 
+}
