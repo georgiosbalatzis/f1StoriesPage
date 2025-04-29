@@ -1,0 +1,300 @@
+/* F1 2025 Cars Specific Styles */
+.cars-container {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.team-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 115, 230, 0.1);
+}
+
+.team-badge {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    filter: grayscale(100%);
+    opacity: 0.6;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid transparent;
+    overflow: hidden;
+    position: relative;
+}
+
+.team-badge::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(0, 115, 230, 0.2), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.team-badge:hover, .team-badge.active {
+    filter: grayscale(0%);
+    opacity: 1;
+    transform: translateY(-5px) scale(1.1);
+    border-color: rgba(0, 115, 230, 0.6);
+    box-shadow: 0 5px 15px rgba(0, 115, 230, 0.3);
+}
+
+.team-badge:hover::after, .team-badge.active::after {
+    opacity: 1;
+}
+
+.team-badge img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.model-container {
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 115, 230, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    position: relative;
+    height: 600px;
+    max-height: 70vh;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.model-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #0073e6, #00ffff, #0073e6);
+    background-size: 200% 100%;
+    animation: gradientFlow 3s linear infinite;
+    pointer-events: none; /* Ensure this doesn't block interaction */
+    z-index: 20; /* Keep above other elements */
+}
+
+.model-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    opacity: 0;
+    transition: opacity 1s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1; /* Add z-index to ensure it's above background elements */
+    pointer-events: none; /* Initially disable pointer events */
+}
+
+.model-frame.visible {
+    opacity: 1;
+    pointer-events: auto; /* Enable pointer events when visible */
+    z-index: 5; /* Higher z-index when visible */
+}
+
+.model-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.sketchfab-embed-wrapper {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.model-frame.visible {
+    opacity: 1;
+}
+
+.model-info {
+    background: rgba(0, 10, 30, 0.8);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border: 1px solid rgba(0, 115, 230, 0.1);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.model-info:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 115, 230, 0.2);
+    border-color: rgba(0, 115, 230, 0.3);
+}
+
+.model-title {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #e0e0e0;
+    border-bottom: 2px solid #0073e6;
+    display: inline-block;
+    padding-bottom: 0.5rem;
+    position: relative;
+}
+
+.model-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #0073e6, #00ffff);
+    animation: gradientFlow 3s linear infinite;
+    background-size: 200% 100%;
+}
+
+.model-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.car-specs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.spec-item {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 3px solid #0073e6;
+    transition: all 0.3s ease;
+}
+
+.spec-item:hover {
+    background: rgba(0, 115, 230, 0.1);
+    transform: translateX(5px);
+}
+
+.spec-title {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-bottom: 0.25rem;
+}
+
+.spec-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #00ffff;
+}
+
+.loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+.team-name {
+    text-align: center;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.team-badge:hover .team-name, .team-badge.active .team-name {
+    opacity: 1;
+}
+
+.badge-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100px;
+}
+
+.model-not-selected {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.model-not-selected i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: rgba(0, 115, 230, 0.4);
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .team-badge {
+        width: 60px;
+        height: 60px;
+    }
+
+    .badge-wrapper {
+        width: 80px;
+    }
+
+    .team-name {
+        font-size: 0.75rem;
+    }
+
+    .model-container {
+        height: 400px;
+    }
+
+    .model-title {
+        font-size: 1.5rem;
+    }
+
+    .model-description {
+        font-size: 1rem;
+    }
+
+    .car-specs {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+
+@media (max-width: 575.98px) {
+    .team-badges {
+        gap: 1rem;
+    }
+
+    .team-badge {
+        width: 50px;
+        height: 50px;
+    }
+
+    .badge-wrapper {
+        width: 70px;
+    }
+
+    .team-name {
+        font-size: 0.7rem;
+    }
+
+    .model-container {
+        height: 300px;
+    }
+}

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 2025 Cars - F1 Stories</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="garage.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-X68J6MQKSM');
+    </script>
+</head>
+<body>
+<div class="background"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="../../images/logo.png" alt="F1 Stories Logo" height="50">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/" id="home-link">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/#podcasts">Podcasts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/#episodes">Episodes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/#blog">Blog</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/#guests">Guests</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/#contact">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/memes/index.html" id="memes-link">Memes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/eshop/index.html">Shop</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/f1-2025-cars/garage.html">2025 Cars</a></li>
+                    <li class="nav-item"><a class="nav-link betcast-btn" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<section id="hero" class="d-flex align-items-center justify-content-center">
+    <div class="hero-overlay"></div>
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <div class="hero-content">
+                    <h1 class="mb-4">F1 2025 Cars</h1>
+                    <p class="lead mb-4">Explore the cutting-edge engineering of this season's Formula 1 cars in 3D</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="f1-cars" class="fade-in py-5">
+    <div class="container cars-container">
+        <h2 class="text-center mb-5">Select a Team</h2>
+
+        <div class="team-badges mb-5">
+            <!-- Team Badges -->
+            <div class="badge-wrapper">
+                <div class="team-badge" data-team="williams">
+                    <img src="https://www.formula1.com/content/dam/fom-website/teams/2023/williams-logo.png.transform/2col/image.png" alt="Williams Racing">
+                </div>
+                <div class="team-name">Williams</div>
+            </div>
+
+            <div class="badge-wrapper">
+                <div class="team-badge" data-team="mercedes">
+                    <img src="https://www.formula1.com/content/dam/fom-website/teams/2023/mercedes-logo.png.transform/2col/image.png" alt="Mercedes-AMG Petronas">
+                </div>
+                <div class="team-name">Mercedes</div>
+            </div>
+
+            <div class="badge-wrapper">
+                <div class="team-badge" data-team="redbull">
+                    <img src="https://www.formula1.com/content/dam/fom-website/teams/2023/red-bull-racing-logo.png.transform/2col/image.png" alt="Red Bull Racing">
+                </div>
+                <div class="team-name">Red Bull</div>
+            </div>
+
+            <div class="badge-wrapper">
+                <div class="team-badge" data-team="ferrari">
+                    <img src="https://www.formula1.com/content/dam/fom-website/teams/2023/ferrari-logo.png.transform/2col/image.png" alt="Scuderia Ferrari">
+                </div>
+                <div class="team-name">Ferrari</div>
+            </div>
+
+            <div class="badge-wrapper">
+                <div class="team-badge" data-team="mclaren">
+                    <img src="https://www.formula1.com/content/dam/fom-website/teams/2023/mclaren-logo.png.transform/2col/image.png" alt="McLaren">
+                </div>
+                <div class="team-name">McLaren</div>
+            </div>
+
+            <div class="badge-wrapper">
+                <div class="team-badge" data-team="aston">
+                    <img src="https://www.formula1.com/content/dam/fom-website/teams/2023/aston-martin-logo.png.transform/2col/image.png" alt="Aston Martin">
+                </div>
+                <div class="team-name">Aston Martin</div>
+            </div>
+
+            <div class="badge-wrapper">
+                <div class="team-badge" data-team="alpine">
+                    <img src="https://www.formula1.com/content/dam/fom-website/teams/2023/alpine-logo.png.transform/2col/image.png" alt="Alpine">
+                </div>
+                <div class="team-name">Alpine</div>
+            </div>
+
+            <div class="badge-wrapper">
+                <div class="team-badge" data-team="haas">
+                    <img src="https://www.formula1.com/content/dam/fom-website/teams/2023/haas-f1-team-logo.png.transform/2col/image.png" alt="Haas F1 Team">
+                </div>
+                <div class="team-name">Haas</div>
+            </div>
+
+            <div class="badge-wrapper">
+                <div class="team-badge" data-team="sauber">
+                    <img src="https://www.formula1.com/content/dam/fom-website/teams/2024/kick-sauber-logo.png.transform/2col/image.png" alt="Kick Sauber">
+                </div>
+                <div class="team-name">Sauber</div>
+            </div>
+
+            <div class="badge-wrapper">
+                <div class="team-badge" data-team="racing-bulls">
+                    <img src="https://www.formula1.com/content/dam/fom-website/teams/2024/visa-cash-app-rb-logo.png.transform/2col/image.png" alt="VCARB Racing Bulls">
+                </div>
+                <div class="team-name">Racing Bulls</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="model-container">
+                    <div class="loading-spinner">
+                        <div class="spinner-border text-light" role="status">
+                            <span class="visually-hidden">Loading model...</span>
+                        </div>
+                    </div>
+
+                    <div class="model-not-selected">
+                        <i class="fas fa-car-side"></i>
+                        <h3>Select a team to view their 2025 car</h3>
+                        <p>Click on any team logo above to explore their car in 3D</p>
+                    </div>
+
+                    <!-- Williams Model -->
+                    <div class="sketchfab-embed-wrapper model-frame" id="williams-model">
+                        <iframe title="F1 2025 Williams Racing FW47" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share style="width: 100%; height: 100%;" src="https://sketchfab.com/models/0bdb3e2a1c244e0bb4851abd3ff7e492/embed"> </iframe>
+                    </div>
+
+                    <!-- Other Team Models (placeholders) -->
+                    <div class="sketchfab-embed-wrapper model-frame" id="mercedes-model">
+                        <iframe title="F1 2025 Mercedes W16" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share style="width: 100%; height: 100%;" src="https://sketchfab.com/models/0bdb3e2a1c244e0bb4851abd3ff7e492/embed"> </iframe>
+                    </div>
+
+                    <div class="sketchfab-embed-wrapper model-frame" id="redbull-model">
+                        <iframe title="F1 2025 Red Bull RB21" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share style="width: 100%; height: 100%;" src="https://sketchfab.com/models/0bdb3e2a1c244e0bb4851abd3ff7e492/embed"> </iframe>
+                    </div>
+
+                    <div class="sketchfab-embed-wrapper model-frame" id="ferrari-model">
+                        <iframe title="F1 2025 Ferrari SF-25" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share style="width: 100%; height: 100%;" src="https://sketchfab.com/models/7929bd7771d8494eaf0eb31404e24bf6/embed"> </iframe>
+                    </div>
+
+                    <div class="sketchfab-embed-wrapper model-frame" id="mclaren-model">
+                        <iframe title="F1 2025 McLaren MCL39" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share style="width: 100%; height: 100%;" src="https://sketchfab.com/models/0bdb3e2a1c244e0bb4851abd3ff7e492/embed"> </iframe>
+                    </div>
+
+                    <div class="sketchfab-embed-wrapper model-frame" id="aston-model">
+                        <iframe title="F1 2025 Aston Martin AMR25" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share style="width: 100%; height: 100%;" src="https://sketchfab.com/models/0bdb3e2a1c244e0bb4851abd3ff7e492/embed"> </iframe>
+                    </div>
+
+                    <div class="sketchfab-embed-wrapper model-frame" id="alpine-model">
+                        <iframe title="Alpine A523 2023" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share style="width: 100%; height: 100%;" src="https://sketchfab.com/models/e97c2bb620d8461c92a03d007d63188c/embed"> </iframe>
+                    </div>
+
+                    <div class="sketchfab-embed-wrapper model-frame" id="haas-model">
+                        <iframe title="F1 2025 Haas VF-25" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share style="width: 100%; height: 100%;" src="https://sketchfab.com/models/0bdb3e2a1c244e0bb4851abd3ff7e492/embed"> </iframe>
+                    </div>
+
+                    <div class="sketchfab-embed-wrapper model-frame" id="sauber-model">
+                        <iframe title="F1 2025 Sauber C44" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share style="width: 100%; height: 100%;" src="https://sketchfab.com/models/0bdb3e2a1c244e0bb4851abd3ff7e492/embed"> </iframe>
+                    </div>
+
+                    <div class="sketchfab-embed-wrapper model-frame" id="racing-bulls-model">
+                        <iframe title="F1 2025 VCARB VCARB01" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share style="width: 100%; height: 100%;" src="https://sketchfab.com/models/0bdb3e2a1c244e0bb4851abd3ff7e492/embed"> </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Car Info Section -->
+        <div class="row mt-4">
+            <div class="col-lg-12">
+                <div class="model-info" id="car-info">
+                    <h3 class="model-title">F1 2025 Technical Showcase</h3>
+                    <p class="model-description">Select a team above to view their 2025 Formula 1 car and technical specifications. These 3D models allow you to explore every detail of the current season's challengers.</p>
+
+                    <!-- Team-specific car info will be loaded here -->
+                    <div id="team-car-info"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+                <div class="social-media">
+                    <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+    <i class="fas fa-chevron-up"></i>
+</button>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Background Randomizer Script -->
+<script src="../../scripts/background-randomizer.js"></script>
+<script src="../../scripts/script.js"></script>
+<!-- F1 2025 Cars JavaScript -->
+<script src="garage.js"></script>
+</body>
+</html>
