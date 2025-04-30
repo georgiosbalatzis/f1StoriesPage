@@ -1638,3 +1638,106 @@ footer::before {
 a, button, .cta-button, .nav-link {
     touch-action: manipulation;
 }
+
+/* Mobile-specific navbar fixes - works for ALL pages */
+@media (max-width: 991.98px) {
+    /* Fix navbar positioning on mobile */
+    body {
+        padding-top: 0 !important; /* Override any existing body padding */
+    }
+
+    header {
+        position: relative;
+        z-index: 1050; /* High z-index */
+    }
+
+    .navbar {
+        position: fixed !important; /* Force fixed position */
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1050; /* Higher z-index to ensure it stays on top */
+        background-color: rgba(0, 0, 0, 0.9) !important; /* More solid background */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Add shadow for better visibility */
+    }
+
+    /* Push content below navbar */
+    #hero {
+        margin-top: 76px !important; /* Match navbar height */
+        position: relative;
+        z-index: 5;
+    }
+
+    /* Fix streak positioning */
+    .streak:first-child {
+        margin-top: 76px;
+    }
+
+    /* Improved mobile menu styling */
+    .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: rgba(0, 0, 0, 0.95);
+        padding: 1rem;
+        max-height: calc(100vh - 76px); /* Limit height and enable scrolling */
+        overflow-y: auto;
+        z-index: 1050;
+        border-radius: 0 0 10px 10px;
+        border-top: 1px solid rgba(0, 115, 230, 0.2);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Better spacing for navbar items on mobile */
+    .navbar-nav .nav-item {
+        margin: 0.25rem 0;
+    }
+
+    .navbar-nav .nav-link {
+        padding: 0.5rem 1rem;
+    }
+
+    /* Better mobile toggler */
+    .navbar-toggler {
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        padding: 0.25rem 0.5rem;
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: 0 0 0 0.15rem rgba(0, 115, 230, 0.5);
+    }
+}
+
+/* Adjustments for very small screens */
+@media (max-width: 575.98px) {
+    #hero {
+        margin-top: 70px !important; /* Slightly smaller on very small screens */
+    }
+
+    .navbar-brand img {
+        height: 40px; /* Smaller logo */
+    }
+
+    .streak:first-child {
+        margin-top: 70px;
+    }
+}
+
+/* Fix for iOS Safari, which has issues with fixed positioning */
+@supports (-webkit-touch-callout: none) {
+    .navbar {
+        position: fixed !important;
+    }
+
+    #hero {
+        margin-top: 76px !important;
+    }
+
+    /* Prevent iOS Safari from overlapping navbar */
+    @media (max-width: 991.98px) {
+        .navbar-brand img {
+            max-height: 40px;
+        }
+    }
+}
