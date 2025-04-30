@@ -244,41 +244,16 @@
     color: rgba(0, 115, 230, 0.4);
 }
 
-/* Responsive adjustments */
+/* Mobile Optimizations */
 @media (max-width: 767.98px) {
-    .team-badge {
-        width: 60px;
-        height: 60px;
+    /* More compact team badge layout */
+    .team-badges {
+        gap: 0.75rem;
+        padding: 0.75rem;
     }
 
     .badge-wrapper {
-        width: 80px;
-    }
-
-    .team-name {
-        font-size: 0.75rem;
-    }
-
-    .model-container {
-        height: 400px;
-    }
-
-    .model-title {
-        font-size: 1.5rem;
-    }
-
-    .model-description {
-        font-size: 1rem;
-    }
-
-    .car-specs {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    }
-}
-
-@media (max-width: 575.98px) {
-    .team-badges {
-        gap: 1rem;
+        width: 60px;
     }
 
     .team-badge {
@@ -286,15 +261,72 @@
         height: 50px;
     }
 
-    .badge-wrapper {
-        width: 70px;
-    }
-
     .team-name {
         font-size: 0.7rem;
     }
 
+    /* Adjust model container height for better mobile viewing */
+    .model-container {
+        height: 400px;
+    }
+
+    /* Make car specs more readable on mobile */
+    .car-specs {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .spec-item {
+        padding: 0.75rem;
+    }
+
+    /* Ensure text is readable */
+    .model-description {
+        font-size: 0.95rem;
+    }
+
+    /* Make the note more visible on mobile */
+    .model-note {
+        padding: 0.75rem;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 575.98px) {
+    /* Further compact the team badges */
+    .team-badges {
+        gap: 0.5rem;
+    }
+
+    .badge-wrapper {
+        width: 52px;
+    }
+
+    .team-badge {
+        width: 45px;
+        height: 45px;
+    }
+
+    .team-name {
+        font-size: 0.65rem;
+    }
+
+    /* Make model container smaller for better fit */
     .model-container {
         height: 300px;
+    }
+
+    /* Single column car specs on very small screens */
+    .car-specs {
+        grid-template-columns: 1fr;
+    }
+
+    /* Increase contrast for better readability */
+    .model-description, .spec-value {
+        color: #fff;
+    }
+
+    /* Reduce title size */
+    .model-title {
+        font-size: 1.5rem;
     }
 }

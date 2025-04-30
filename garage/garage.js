@@ -6,6 +6,226 @@ document.addEventListener('DOMContentLoaded', function() {
     const modelNotSelected = document.querySelector('.model-not-selected');
     const teamCarInfo = document.getElementById('team-car-info');
 
+    // Optimize iframes - only load when needed
+    modelFrames.forEach(frame => {
+        const iframe = frame.querySelector('iframe');
+        if (iframe && iframe.src) {
+            // Store the src attribute value
+            iframe.dataset.src = iframe.src;
+            // Remove the src attribute to prevent loading on page load
+            iframe.removeAttribute('src');
+        }
+    });
+
+    // Lazy-load images and iframes with Intersection Observer
+    if ('IntersectionObserver' in window) {
+        const lazyLoadObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const element = entry.target;
+
+                    // If it's an iframe with data-src
+                    if (element.tagName === 'IFRAME' && element.dataset.src) {
+                        element.src = element.dataset.src;
+                        observer.unobserve(element);
+                    }
+                }
+            });
+        });
+
+        // Observe all iframes with data-src
+        document.querySelectorAll('iframe[data-src]').forEach(iframe => {
+            lazyLoadObserver.observe(iframe);
+        });
+    }
+
+    // Function to reset hero background
+    function resetHeroBackground() {
+        const heroElement = document.getElementById('hero');
+        const heroOverlay = document.querySelector('.hero-overlay');
+
+        if (!heroElement || !heroOverlay) return;
+
+        // Remove background image
+        heroOverlay.style.backgroundImage = '';
+        heroOverlay.classList.remove('image-bg');
+
+        // Remove team background class
+        heroElement.classList.remove('has-team-bg');
+    }
+
+    // Function to hide all models
+    function hideAllModels() {
+        modelFrames.forEach(frame => {
+            frame.classList.remove('visible');
+            // Ensure pointer events are disabled when hidden
+            frame.style.pointerEvents = 'none';
+        });
+        modelNotSelected.style.display = 'block';
+        loadingSpinner.style.display = 'none';
+
+        // Reset hero background when no team is selected
+        resetHeroBackground();
+    }
+
+    // Function to update hero background when a team is selected
+    function updateHeroBackground(teamId) {
+        const heroElement = document.getElementById('hero');
+        const heroOverlay = document.querySelector('.hero-overlay');
+
+        if (!heroElement || !heroOverlay) {
+            console.error('Hero elements not found');
+            return;
+        }
+
+        // Remove existing background class
+        heroOverlay.classList.remove('image-bg');
+
+        // Set team-specific background
+        heroOverlay.style.backgroundImage = `url('data/${teamId}.jpg')`;
+        heroOverlay.classList.add('image-bg');
+
+        // Add class to hero section
+        heroElement.classList.add('has-team-bg');
+    }
+
+    // Function to show selected model with optimized loading
+    function showModel(teamId) {
+        hideAllModels();
+
+        // Reset active state on all badges
+        teamBadges.forEach(badge => {
+            badge.classList.remove('active');
+        });
+
+        // Set active state on selected badge
+        const selectedBadge = document.querySelector(`.team-badge[data-team="${teamId}"]`);
+        if (selectedBadge) {
+            selectedBadge.classList.add('active');
+        }
+
+        // Update hero background
+        updateHeroBackground(teamId);
+
+        // Show loading spinner
+        loadingSpinner.style.display = 'block';
+        modelNotSelected.style.display = 'none';
+
+        // Get model element
+        const modelElement = document.getElementById(`${teamId}-model`);
+        if (!modelElement) {
+            console.error(`Model element for team ${teamId} not found`);
+            return;
+        }
+
+        // Load iframe content if not already loaded
+        const iframe = modelElement.querySelector('iframe');
+        if (iframe && !iframe.src && iframe.dataset.src) {
+            iframe.src = iframe.dataset.src;
+        }
+
+        // Show model (with a slight delay to simulate loading)
+        setTimeout(() => {
+            loadingSpinner.style.display = 'none';
+            modelElement.classList.add('visible');
+            // Enable pointer events on the visible model
+            modelElement.style.pointerEvents = 'auto';
+
+            // Update car info
+            updateCarInfo(teamId);
+        }, 800);
+    }
+
+    // Function to update car information
+    function updateCarInfo(teamId) {
+        if (!teamCarInfo) {
+            console.error('Team car info element not found');
+            return;
+        }
+
+        const car = carData[teamId];
+        if (!car) {
+            console.error(`Car data for team ${teamId} not found`);
+            return;
+        }
+
+        // Create car specs HTML
+        let specsHtml = '<div class="car-specs">';
+        car.specs.forEach(spec => {
+            specsHtml += `
+                <div class="spec-item">
+                    <div class="spec-title">${spec.title}</div>
+                    <div class="spec-value">${spec.value}</div>
+                </div>
+            `;
+        });
+        specsHtml += '</div>';
+
+        // Update car info HTML
+        teamCarInfo.innerHTML = `
+            <h3 class="model-title">${car.name}</h3>
+            <p class="model-description">${car.description}</p>
+            <h4>Technical Specifications</h4>
+            ${specsHtml}
+        `;
+
+        // Update document title to include car name
+        const modelTitle = document.querySelector('.model-title');
+        if (modelTitle) {
+            modelTitle.textContent = car.name;
+        }
+    }
+
+    // Add click event listeners to team badges
+    teamBadges.forEach(badge => {
+        badge.addEventListener('click', function() {
+            const teamId = this.getAttribute('data-team');
+            if (teamId) {
+                showModel(teamId);
+            }
+        });
+    });
+
+    // Initialize with all models hidden
+    hideAllModels();
+
+    // Fade-in animations
+    const fadeElements = document.querySelectorAll('.fade-in');
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        fadeElements.forEach(element => {
+            observer.observe(element);
+        });
+    } else {
+        // Fallback for browsers that don't support IntersectionObserver
+        fadeElements.forEach(element => {
+            element.classList.add('visible');
+        });
+    }
+
+    // Scroll to top button
+    const scrollToTopBtn = document.getElementById('scroll-to-top');
+    if (scrollToTopBtn) {
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
     // Car data
     const carData = {
         williams: {
@@ -129,114 +349,4 @@ document.addEventListener('DOMContentLoaded', function() {
             ]
         }
     };
-
-    // Function to hide all models
-    function hideAllModels() {
-        modelFrames.forEach(frame => {
-            frame.classList.remove('visible');
-            // Ensure pointer events are disabled when hidden
-            frame.style.pointerEvents = 'none';
-        });
-        modelNotSelected.style.display = 'block';
-        loadingSpinner.style.display = 'none';
-    }
-
-    // Function to show selected model
-    function showModel(teamId) {
-        hideAllModels();
-
-        // Reset active state on all badges
-        teamBadges.forEach(badge => {
-            badge.classList.remove('active');
-        });
-
-        // Set active state on selected badge
-        document.querySelector(`.team-badge[data-team="${teamId}"]`).classList.add('active');
-
-        // Show loading spinner
-        loadingSpinner.style.display = 'block';
-        modelNotSelected.style.display = 'none';
-
-        // Get model element
-        const modelElement = document.getElementById(`${teamId}-model`);
-
-        // Show model (with a slight delay to simulate loading)
-        setTimeout(() => {
-            loadingSpinner.style.display = 'none';
-            modelElement.classList.add('visible');
-            // Enable pointer events on the visible model
-            modelElement.style.pointerEvents = 'auto';
-
-            // Update car info
-            updateCarInfo(teamId);
-        }, 800);
-    }
-
-    // Function to update car information
-    function updateCarInfo(teamId) {
-        const car = carData[teamId];
-
-        // Create car specs HTML
-        let specsHtml = '<div class="car-specs">';
-        car.specs.forEach(spec => {
-            specsHtml += `
-                <div class="spec-item">
-                    <div class="spec-title">${spec.title}</div>
-                    <div class="spec-value">${spec.value}</div>
-                </div>
-            `;
-        });
-        specsHtml += '</div>';
-
-        // Update car info HTML
-        teamCarInfo.innerHTML = `
-            <h3 class="model-title">${car.name}</h3>
-            <p class="model-description">${car.description}</p>
-            <h4>Technical Specifications</h4>
-            ${specsHtml}
-        `;
-
-        // Update document title to include car name
-        document.querySelector('.model-title').textContent = car.name;
-    }
-
-    // Add click event listeners to team badges
-    teamBadges.forEach(badge => {
-        badge.addEventListener('click', function() {
-            const teamId = this.getAttribute('data-team');
-            showModel(teamId);
-        });
-    });
-
-    // Initialize with all models hidden
-    hideAllModels();
-
-    // Fade-in animations
-    const fadeElements = document.querySelectorAll('.fade-in');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-            }
-        });
-    }, { threshold: 0.1 });
-
-    fadeElements.forEach(element => {
-        observer.observe(element);
-    });
-
-    // Scroll to top button
-    const scrollToTopBtn = document.getElementById('scroll-to-top');
-
-    window.addEventListener('scroll', function() {
-        if (window.pageYOffset > 300) {
-            scrollToTopBtn.classList.add('visible');
-        } else {
-            scrollToTopBtn.classList.remove('visible');
-        }
-    });
-
-    scrollToTopBtn.addEventListener('click', function() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
 });
