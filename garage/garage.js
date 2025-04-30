@@ -190,6 +190,122 @@ document.addEventListener('DOMContentLoaded', function() {
         loadRelatedArticles(teamId);
     }
 
+    // Function to create article cards
+    function createArticleCard(post, index) {
+        // Extract day and month from display date
+        const dateMatch = post.displayDate ? post.displayDate.match(/([A-Za-z]+) (\d+)/) : null;
+        const month = dateMatch ? dateMatch[1].substring(0, 3).toUpperCase() : 'JAN';
+        const day = dateMatch ? dateMatch[2] : '1';
+
+        // Process image path
+        const imagePath = post.image || '/blog-module/images/default-blog.jpg';
+        const fallbackPath = '/blog-module/images/default-blog.jpg';
+
+        // Create article card
+        return `
+        <div class="col-md-6 col-lg-3">
+            <div class="related-article-card" data-article-id="${post.id}" data-article-index="${index}">
+                <div class="related-article-img-container">
+                    <img src="${imagePath}" alt="${post.title}" class="related-article-img" onerror="this.src='${fallbackPath}'">
+                    <div class="related-article-date">
+                        <span class="day">${day}</span>
+                        <span class="month">${month}</span>
+                    </div>
+                </div>
+                <div class="related-article-content">
+                    <h5 class="related-article-title">${post.title}</h5>
+                    <span class="related-article-read-more">Read More <i class="fas fa-arrow-right"></i></span>
+                </div>
+            </div>
+        </div>
+    `;
+    }
+
+
+// Function to display an article in the page
+    function displayArticle(post) {
+        // Create an article viewer container if it doesn't exist
+        let articleViewer = document.getElementById('article-viewer');
+
+        if (!articleViewer) {
+            articleViewer = document.createElement('div');
+            articleViewer.id = 'article-viewer';
+            articleViewer.className = 'article-viewer';
+
+            // Add to the page after the related articles section
+            const relatedArticles = document.getElementById('related-articles');
+            if (relatedArticles) {
+                relatedArticles.parentNode.insertBefore(articleViewer, relatedArticles.nextSibling);
+            } else {
+                // Fallback if related-articles section doesn't exist
+                const teamCarInfo = document.getElementById('team-car-info');
+                if (teamCarInfo) {
+                    teamCarInfo.appendChild(articleViewer);
+                }
+            }
+        }
+
+        // Build article content
+        let articleContent = post.content || '';
+
+        // If no content is available but there's an excerpt, use that
+        if (!articleContent && post.excerpt) {
+            articleContent = `<p>${post.excerpt}</p><p>Full article content is not available for inline viewing.</p>`;
+        }
+
+        // Get background image if available
+        const backgroundImage = post.backgroundImage || post.image || '';
+        const backgroundStyle = backgroundImage ?
+            `style="background-image: url('${backgroundImage}'); background-size: cover; background-position: center;"` : '';
+
+        // Create article header with title, date, and close button
+        const articleHtml = `
+        <div class="article-header" ${backgroundStyle}>
+            <div class="article-header-overlay">
+                <button class="close-article-btn"><i class="fas fa-times"></i></button>
+                <h2 class="article-title">${post.title}</h2>
+                <div class="article-meta">
+                    <span><i class="fas fa-user"></i> ${post.author || 'Unknown'}</span>
+                    <span><i class="fas fa-calendar"></i> ${post.displayDate || 'No date'}</span>
+                    <span><i class="fas fa-tag"></i> ${post.tag || 'Untagged'}</span>
+                </div>
+            </div>
+        </div>
+        <div class="article-body">
+            ${articleContent}
+        </div>
+        <div class="article-footer">
+            <button class="close-article-btn-bottom">Close Article</button>
+        </div>
+    `;
+
+        // Update the article viewer with the content
+        articleViewer.innerHTML = articleHtml;
+        articleViewer.scrollTop = 0;
+
+        // Add slide-in animation
+        articleViewer.classList.add('active');
+
+        // Add event listener to close button
+        const closeButtons = articleViewer.querySelectorAll('.close-article-btn, .close-article-btn-bottom');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                articleViewer.classList.remove('active');
+                // Remove after animation completes
+                setTimeout(() => {
+                    if (!articleViewer.classList.contains('active')) {
+                        articleViewer.innerHTML = '';
+                    }
+                }, 500);
+            });
+        });
+
+        // Scroll to the article viewer
+        setTimeout(() => {
+            articleViewer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
+
     // Function to load related articles
     function loadRelatedArticles(teamId) {
         const relatedContainer = document.querySelector('.related-articles-container');
@@ -206,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 tagToMatch = 'RacingBulls'; // Special case for Racing Bulls
                 break;
             case 'mclaren':
-                tagToMatch = 'McLaren'; // Special case for McLaren (though it's just capitalized correctly)
+                tagToMatch = 'McLaren'; // Special case for McLaren
                 break;
             default:
                 // Default: capitalize first letter
@@ -244,6 +360,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error('No valid blog data found');
                 }
 
+                // Store the blog data for later use
+                window.blogData = data;
+
                 // Filter posts by team tag and Technical category
                 let relatedPosts = data.posts.filter(post => {
                     const postTag = post.tag || '';
@@ -268,49 +387,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
+                // Store the related posts for this team
+                window.currentRelatedPosts = relatedPosts;
+
                 // Clear existing content
                 relatedContainer.innerHTML = '';
 
                 // Create HTML for each related post
-                relatedPosts.forEach(post => {
-                    // Extract day and month from display date
-                    const dateMatch = post.displayDate ? post.displayDate.match(/([A-Za-z]+) (\d+)/) : null;
-                    const month = dateMatch ? dateMatch[1].substring(0, 3).toUpperCase() : 'JAN';
-                    const day = dateMatch ? dateMatch[2] : '1';
-
-                    // Get post URL - use the url property if available, otherwise construct it
-                    const postUrl = post.url || `/blog-module/blog-entries/${post.id}/article.html`;
-
-                    // Process image path - use the actual path as is since your blog-data.json uses absolute paths
-                    const imagePath = post.image || '/blog-module/images/default-blog.jpg';
-                    const fallbackPath = '/blog-module/images/default-blog.jpg';
-
-                    // Create article card
-                    const articleHtml = `
-                    <div class="col-md-6 col-lg-3">
-                        <a href="${postUrl}" class="related-article-link">
-                            <div class="related-article-card">
-                                <div class="related-article-img-container">
-                                    <img src="${imagePath}" alt="${post.title}" class="related-article-img" onerror="this.src='${fallbackPath}'">
-                                    <div class="related-article-date">
-                                        <span class="day">${day}</span>
-                                        <span class="month">${month}</span>
-                                    </div>
-                                </div>
-                                <div class="related-article-content">
-                                    <h5 class="related-article-title">${post.title}</h5>
-                                    <span class="related-article-read-more">Read More <i class="fas fa-arrow-right"></i></span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                `;
-
-                    relatedContainer.innerHTML += articleHtml;
+                relatedPosts.forEach((post, index) => {
+                    relatedContainer.innerHTML += createArticleCard(post, index);
                 });
 
-                // Add hover effects
+                // Add click event listeners to the cards
                 document.querySelectorAll('.related-article-card').forEach(card => {
+                    // Add hover effects
                     card.addEventListener('mouseenter', function() {
                         this.style.transform = 'translateY(-5px)';
                         this.style.boxShadow = '0 8px 20px rgba(0,115,230,0.2)';
@@ -337,6 +427,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         const arrow = this.querySelector('.related-article-read-more i');
                         if (arrow) arrow.style.transform = '';
+                    });
+
+                    // Add click handler to display article
+                    card.addEventListener('click', function() {
+                        const articleIndex = parseInt(this.getAttribute('data-article-index'));
+                        if (!isNaN(articleIndex) && window.currentRelatedPosts) {
+                            const post = window.currentRelatedPosts[articleIndex];
+                            if (post) {
+                                displayArticle(post);
+                            }
+                        }
                     });
                 });
             })
