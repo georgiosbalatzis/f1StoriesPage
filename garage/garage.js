@@ -47,8 +47,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!heroElement || !heroOverlay) return;
 
         // Remove background image
-        heroOverlay.style.backgroundImage = '';
         heroOverlay.classList.remove('image-bg');
+        heroOverlay.style.backgroundImage = 'url("data/default.jpg")';
 
         // Remove team background class
         heroElement.classList.remove('has-team-bg');
