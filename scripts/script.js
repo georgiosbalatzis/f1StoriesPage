@@ -521,3 +521,25 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Memes button not found in navigation');
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Fix for Garage button in navigation
+    const garageButton = document.querySelector('a.nav-link[href="https://f1stories.gr/garage/garage.html"], a.nav-link[href="/garage/garage.html"]');
+    if (garageButton) {
+        garageButton.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Get base URL and append the path
+            const baseUrl = window.location.origin;
+            const garageUrl = baseUrl + '/garage/garage.html';
+
+            // Redirect to the garage page
+            window.location.href = garageUrl;
+
+            // Log for debugging
+            console.log('Redirecting to garage:', garageUrl);
+        });
+    } else {
+        console.error('Garage button not found in navigation');
+    }
+});
