@@ -998,7 +998,7 @@ body.team-haas {
     text-align: center;
     padding: 5rem 0; /* Reduced padding for smaller hero */
     margin-top: 70px;
-    min-height: 60vh; /* Reduced from 80vh to half the size */
+    min-height: 55vh; /* Reduced from 80vh to half the size */
     display: flex;
     align-items: center;
     justify-content: center;

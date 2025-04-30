@@ -325,10 +325,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }
 
-// Function to load related articles with carousel
+// Updated loadRelatedArticles function with better debugging and more flexible tag matching
     function loadRelatedArticles(teamId) {
         const relatedContainer = document.querySelector('.related-articles-container');
         if (!relatedContainer) return;
+
+        // Show loading state
+        relatedContainer.innerHTML = `
+        <div class="col-12 text-center">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Loading articles...</span>
+            </div>
+        </div>
+    `;
 
         // Get team tag based on teamId with special cases
         let tagToMatch;
@@ -355,6 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '/blog-module/blog-data.json',
             '../blog-module/blog-data.json',
             '../../blog-module/blog-data.json',
+            'https://f1stories.gr/blog-module/blog-data.json', // Try absolute URL
             '/blog-data.json',
             '../blog-data.json'
         ];
@@ -365,6 +375,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (!response.ok) {
                         throw new Error(`Failed to fetch from ${path}`);
                     }
+                    console.log(`Successfully fetched blog data from: ${path}`);
                     return response.json();
                 })
                 .catch(error => {
@@ -382,11 +393,47 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Store the blog data for later use
                 window.blogData = data;
 
-                // Filter posts by team tag
+                // Debug: Log all unique tags in the data to help identify tag format issues
+                const allTags = [...new Set(data.posts.map(post => post.tag || ''))];
+                console.log('All available tags in blog data:', allTags);
+
+                // Primary search: Exact match first
                 let relatedPosts = data.posts.filter(post => {
                     const postTag = post.tag || '';
                     return postTag === tagToMatch;
                 });
+
+                // Secondary search: Case-insensitive contains match if no exact matches found
+                if (relatedPosts.length === 0) {
+                    console.log(`No exact matches for '${tagToMatch}'. Trying case-insensitive search...`);
+                    relatedPosts = data.posts.filter(post => {
+                        const postTag = (post.tag || '').toLowerCase();
+                        const searchTag = tagToMatch.toLowerCase();
+                        return postTag.includes(searchTag) || searchTag.includes(postTag);
+                    });
+                }
+
+                // Tertiary search: Check for team name in title or content if still no matches
+                if (relatedPosts.length === 0) {
+                    console.log(`No tag matches for '${tagToMatch}'. Looking in titles and content...`);
+                    const searchTerm = teamId.toLowerCase();
+                    relatedPosts = data.posts.filter(post => {
+                        const title = (post.title || '').toLowerCase();
+                        const content = (post.content || '').toLowerCase();
+                        return title.includes(searchTerm) || content.includes(searchTerm);
+                    });
+                }
+
+                // Last resort: Show F1 general articles if nothing team-specific found
+                if (relatedPosts.length === 0) {
+                    console.log(`No team-specific content found. Looking for general F1 articles...`);
+                    relatedPosts = data.posts.filter(post => {
+                        const postTag = (post.tag || '').toLowerCase();
+                        const title = (post.title || '').toLowerCase();
+                        return postTag.includes('f1') || postTag.includes('formula') ||
+                            title.includes('f1') || title.includes('formula');
+                    }).slice(0, 8); // Limit to 8 articles to prevent overload
+                }
 
                 console.log(`Found ${relatedPosts.length} related articles for ${tagToMatch}`);
 
@@ -423,9 +470,19 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error loading related articles:', error);
+                // Show error message to user instead of hiding
+                relatedContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> 
+                        We're currently updating our article database. Check back soon for team-specific content!
+                    </div>
+                </div>
+            `;
+
                 const relatedSection = document.getElementById('related-articles');
                 if (relatedSection) {
-                    relatedSection.style.display = 'none';
+                    relatedSection.style.display = 'block'; // Keep visible to show message
                 }
             });
     }
