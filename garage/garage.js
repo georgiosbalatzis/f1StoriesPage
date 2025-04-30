@@ -245,6 +245,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // Create a fixed close button for long articles (will be shown/hidden on scroll)
+        let fixedCloseBtn = document.getElementById('fixed-close-btn');
+        if (!fixedCloseBtn) {
+            fixedCloseBtn = document.createElement('button');
+            fixedCloseBtn.id = 'fixed-close-btn';
+            fixedCloseBtn.className = 'close-article-btn-fixed';
+            fixedCloseBtn.innerHTML = '<i class="fas fa-times"></i>';
+            document.body.appendChild(fixedCloseBtn);
+        }
+
         // Build article content
         let articleContent = post.content || '';
 
@@ -281,28 +291,57 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Update the article viewer with the content
         articleViewer.innerHTML = articleHtml;
-        articleViewer.scrollTop = 0;
 
-        // Add slide-in animation
-        articleViewer.classList.add('active');
+        // Add slide-in animation (slightly delayed to allow DOM to update)
+        setTimeout(() => {
+            articleViewer.classList.add('active');
+        }, 10);
 
-        // Add event listener to close button
-        const closeButtons = articleViewer.querySelectorAll('.close-article-btn, .close-article-btn-bottom');
+        // Handle the fixed close button visibility on scroll
+        const handleScroll = () => {
+            const footerPosition = document.querySelector('.article-footer').getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+
+            // Show fixed button when footer is not visible
+            if (footerPosition > windowHeight) {
+                fixedCloseBtn.classList.add('visible');
+            } else {
+                fixedCloseBtn.classList.remove('visible');
+            }
+        };
+
+        // Add scroll event listener
+        window.addEventListener('scroll', handleScroll);
+
+        // Function to close the article viewer
+        const closeArticleViewer = () => {
+            articleViewer.classList.remove('active');
+            fixedCloseBtn.classList.remove('visible');
+
+            // Remove after animation completes
+            setTimeout(() => {
+                if (!articleViewer.classList.contains('active')) {
+                    articleViewer.innerHTML = '';
+                    window.removeEventListener('scroll', handleScroll);
+                }
+            }, 500);
+        };
+
+        // Add event listener to close buttons
+        const closeButtons = document.querySelectorAll('.close-article-btn, .close-article-btn-bottom');
         closeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                articleViewer.classList.remove('active');
-                // Remove after animation completes
-                setTimeout(() => {
-                    if (!articleViewer.classList.contains('active')) {
-                        articleViewer.innerHTML = '';
-                    }
-                }, 500);
-            });
+            button.addEventListener('click', closeArticleViewer);
         });
+
+        // Add event listener to fixed close button
+        fixedCloseBtn.addEventListener('click', closeArticleViewer);
 
         // Scroll to the article viewer
         setTimeout(() => {
             articleViewer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Check if footer is initially visible
+            handleScroll();
         }, 100);
     }
 
