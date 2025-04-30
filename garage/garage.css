@@ -706,3 +706,286 @@
         font-size: 1.3rem;
     }
 }
+
+/* Team-specific color schemes */
+:root {
+    /* Default F1 Colors */
+    --primary-color: #0073e6;
+    --secondary-color: #00ffff;
+    --accent-color: #003366;
+    --dark-color: #0a0f1e;
+    --light-color: #e0e0e0;
+    --highlight-color: #00ffff;
+    --background-start: #003366;
+    --background-end: #0073e6;
+    --card-bg: rgba(20, 20, 40, 0.8);
+    --card-border: rgba(0, 115, 230, 0.1);
+    --spec-border: #0073e6;
+}
+
+/* Alpine Colors */
+body.team-alpine {
+    --primary-color: #0D62A7;
+    --secondary-color: #5E8BA4;
+    --accent-color: #CF8097;
+    --dark-color: #0D1824;
+    --light-color: #e0e0e0;
+    --highlight-color: #CF8097;
+    --background-start: #0D1824;
+    --background-end: #0D62A7;
+    --card-bg: rgba(13, 24, 36, 0.8);
+    --card-border: rgba(94, 139, 164, 0.3);
+    --spec-border: #5E8BA4;
+}
+
+/* Mercedes Colors */
+body.team-mercedes {
+    --primary-color: #00B19C;
+    --secondary-color: #B3B6B9;
+    --accent-color: #111213;
+    --dark-color: #111213;
+    --light-color: #FFFFFF;
+    --highlight-color: #00B19C;
+    --background-start: #111213;
+    --background-end: #2D2F31;
+    --card-bg: rgba(45, 47, 49, 0.8);
+    --card-border: rgba(0, 177, 156, 0.3);
+    --spec-border: #00B19C;
+}
+
+/* Red Bull Colors */
+body.team-redbull {
+    --primary-color: #0D152B;
+    --secondary-color: #E10600;
+    --accent-color: #FFD200;
+    --dark-color: #1A1A1A;
+    --light-color: #FFFFFF;
+    --highlight-color: #E10600;
+    --background-start: #0D152B;
+    --background-end: #1A1A1A;
+    --card-bg: rgba(13, 21, 43, 0.8);
+    --card-border: rgba(225, 6, 0, 0.3);
+    --spec-border: #E10600;
+}
+
+/* Aston Martin Colors */
+body.team-aston {
+    --primary-color: #006747;
+    --secondary-color: #009F70;
+    --accent-color: #D8E70E;
+    --dark-color: #111111;
+    --light-color: #FFFFFF;
+    --highlight-color: #D8E70E;
+    --background-start: #111111;
+    --background-end: #006747;
+    --card-bg: rgba(0, 103, 71, 0.8);
+    --card-border: rgba(216, 231, 14, 0.3);
+    --spec-border: #D8E70E;
+}
+
+/* Williams Colors */
+body.team-williams {
+    --primary-color: #436489;
+    --secondary-color: #B26A40;
+    --accent-color: #1A1F24;
+    --dark-color: #1A1F24;
+    --light-color: #FFFFFF;
+    --highlight-color: #B26A40;
+    --background-start: #1A1F24;
+    --background-end: #436489;
+    --card-bg: rgba(26, 31, 36, 0.8);
+    --card-border: rgba(67, 100, 137, 0.3);
+    --spec-border: #B26A40;
+}
+
+/* McLaren Colors */
+body.team-mclaren {
+    --primary-color: #FF5800;
+    --secondary-color: #003087;
+    --accent-color: #1A1A1A;
+    --dark-color: #1A1A1A;
+    --light-color: #FFFFFF;
+    --highlight-color: #FF5800;
+    --background-start: #1A1A1A;
+    --background-end: #333333;
+    --card-bg: rgba(26, 26, 26, 0.8);
+    --card-border: rgba(255, 88, 0, 0.3);
+    --spec-border: #FF5800;
+}
+
+/* Ferrari Colors */
+body.team-ferrari {
+    --primary-color: #C8102E;
+    --secondary-color: #009DDC;
+    --accent-color: #FFD200;
+    --dark-color: #111111;
+    --light-color: #FFFFFF;
+    --highlight-color: #C8102E;
+    --background-start: #111111;
+    --background-end: #C8102E;
+    --card-bg: rgba(17, 17, 17, 0.8);
+    --card-border: rgba(200, 16, 46, 0.3);
+    --spec-border: #C8102E;
+}
+
+/* Kick Sauber Colors */
+body.team-sauber {
+    --primary-color: #00FF41;
+    --secondary-color: #002814;
+    --accent-color: #181818;
+    --dark-color: #000000;
+    --light-color: #FFFFFF;
+    --highlight-color: #00FF41;
+    --background-start: #000000;
+    --background-end: #002814;
+    --card-bg: rgba(0, 0, 0, 0.8);
+    --card-border: rgba(0, 255, 65, 0.3);
+    --spec-border: #00FF41;
+}
+
+/* Racing Bulls Colors */
+body.team-racing-bulls {
+    --primary-color: #1C2F56;
+    --secondary-color: #E10600;
+    --accent-color: #FFD700;
+    --dark-color: #1C2F56;
+    --light-color: #FFFFFF;
+    --highlight-color: #00C853;
+    --background-start: #1C2F56;
+    --background-end: #E10600;
+    --card-bg: rgba(28, 47, 86, 0.8);
+    --card-border: rgba(225, 6, 0, 0.3);
+    --spec-border: #FFD700;
+}
+
+/* Haas Colors */
+body.team-haas {
+    --primary-color: #C8102E;
+    --secondary-color: #B0B0B0;
+    --accent-color: #111111;
+    --dark-color: #111111;
+    --light-color: #FFFFFF;
+    --highlight-color: #C8102E;
+    --background-start: #111111;
+    --background-end: #333333;
+    --card-bg: rgba(17, 17, 17, 0.8);
+    --card-border: rgba(200, 16, 46, 0.3);
+    --spec-border: #C8102E;
+}
+
+/* Apply CSS variables to elements */
+.background {
+    background: linear-gradient(-45deg, var(--background-start), var(--background-end), var(--primary-color), var(--background-start));
+    background-size: 400% 400%;
+    animation: gradientAnimation 15s ease infinite;
+}
+
+.streak {
+    background: linear-gradient(90deg, transparent, rgba(var(--light-color), 0.5), transparent);
+}
+
+.hero-content h1 {
+    color: var(--light-color);
+}
+
+.hero-content p {
+    color: var(--light-color);
+}
+
+.model-title, h2, h3, h4 {
+    color: var(--highlight-color) !important;
+}
+
+.spec-item {
+    border-left: 3px solid var(--spec-border);
+}
+
+.spec-value {
+    color: var(--highlight-color) !important;
+}
+
+.cta-button {
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+}
+
+.cta-button:hover {
+    background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+}
+
+.blog-card, .related-article-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+}
+
+.blog-card:hover, .related-article-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 15px 30px rgba(var(--primary-color-rgb), 0.2);
+}
+
+.blog-title, .related-article-title {
+    color: var(--light-color);
+}
+
+.blog-card:hover .blog-title, .related-article-card:hover .related-article-title {
+    color: var(--highlight-color);
+}
+
+.blog-read-more, .related-article-read-more {
+    color: var(--primary-color);
+}
+
+.blog-card:hover .blog-read-more, .related-article-card:hover .related-article-read-more {
+    color: var(--highlight-color);
+}
+
+.blog-date .day, .related-article-date .day {
+    color: var(--highlight-color);
+}
+
+.article-viewer {
+    background: var(--dark-color);
+    border: 1px solid var(--card-border);
+}
+
+.article-header::before {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), var(--dark-color));
+}
+
+.article-title {
+    color: var(--light-color);
+}
+
+.article-meta i {
+    color: var(--primary-color);
+}
+
+.article-body h1,
+.article-body h2,
+.article-body h3,
+.article-body h4 {
+    color: var(--highlight-color);
+}
+
+.article-body a {
+    color: var(--primary-color);
+}
+
+.article-body a:hover {
+    color: var(--highlight-color);
+}
+
+.article-body blockquote {
+    border-left: 4px solid var(--primary-color);
+}
+
+.article-footer {
+    border-top: 1px solid var(--card-border);
+}
+
+.close-article-btn-bottom {
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+}
+
+.close-article-btn-bottom:hover {
+    background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+}

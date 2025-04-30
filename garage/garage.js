@@ -66,6 +66,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Reset hero background when no team is selected
         resetHeroBackground();
+
+        // Reset team color scheme
+        resetTeamColorScheme();
     }
 
     // Function to update hero background when a team is selected
@@ -106,6 +109,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Update hero background
         updateHeroBackground(teamId);
+
+        // Update team color scheme
+        updateTeamColorScheme(teamId);
 
         // Show loading spinner
         loadingSpinner.style.display = 'block';
@@ -538,6 +544,55 @@ document.addEventListener('DOMContentLoaded', function() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
+
+
+    // Function to update team color scheme
+    function updateTeamColorScheme(teamId) {
+        // Remove any existing team color classes
+        document.body.classList.remove(
+            'team-alpine',
+            'team-mercedes',
+            'team-redbull',
+            'team-aston',
+            'team-williams',
+            'team-mclaren',
+            'team-ferrari',
+            'team-sauber',
+            'team-racing-bulls',
+            'team-haas'
+        );
+
+        // Set the appropriate team color class
+        if (teamId) {
+            document.body.classList.add(`team-${teamId}`);
+        }
+
+
+    }
+
+
+    // Function to reset team color scheme
+    function resetTeamColorScheme() {
+        // Remove all team color classes
+        document.body.classList.remove(
+            'team-alpine',
+            'team-mercedes',
+            'team-redbull',
+            'team-aston',
+            'team-williams',
+            'team-mclaren',
+            'team-ferrari',
+            'team-sauber',
+            'team-racing-bulls',
+            'team-haas'
+        );
+
+
+    }
+
+
+
+
 
     // Car data
     const carData = {
