@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Function to update car information
+    // Function to update car information and load related articles
     function updateCarInfo(teamId) {
         if (!teamCarInfo) {
             console.error('Team car info element not found');
@@ -153,27 +154,199 @@ document.addEventListener('DOMContentLoaded', function() {
         let specsHtml = '<div class="car-specs">';
         car.specs.forEach(spec => {
             specsHtml += `
-                <div class="spec-item">
-                    <div class="spec-title">${spec.title}</div>
-                    <div class="spec-value">${spec.value}</div>
-                </div>
-            `;
+            <div class="spec-item">
+                <div class="spec-title">${spec.title}</div>
+                <div class="spec-value">${spec.value}</div>
+            </div>
+        `;
         });
         specsHtml += '</div>';
 
         // Update car info HTML
         teamCarInfo.innerHTML = `
-            <h3 class="model-title">${car.name}</h3>
-            <p class="model-description">${car.description}</p>
-            <h4>Technical Specifications</h4>
-            ${specsHtml}
-        `;
+        <h3 class="model-title">${car.name}</h3>
+        <p class="model-description">${car.description}</p>
+        <h4>Technical Specifications</h4>
+        ${specsHtml}
+        <div id="related-articles" class="mt-4">
+            <h4 class="mb-3">Technical Articles</h4>
+            <div class="related-articles-container row g-3">
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-light" role="status">
+                        <span class="visually-hidden">Loading articles...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 
         // Update document title to include car name
         const modelTitle = document.querySelector('.model-title');
         if (modelTitle) {
             modelTitle.textContent = car.name;
         }
+
+        // Load related articles
+        loadRelatedArticles(teamId);
+    }
+
+    // Function to load related articles
+    function loadRelatedArticles(teamId) {
+        const relatedContainer = document.querySelector('.related-articles-container');
+        if (!relatedContainer) return;
+
+        // Get team tag based on teamId with special cases
+        let tagToMatch;
+
+        switch(teamId) {
+            case 'redbull':
+                tagToMatch = 'RedBull'; // Special case for Red Bull
+                break;
+            case 'racing-bulls':
+                tagToMatch = 'RacingBulls'; // Special case for Racing Bulls
+                break;
+            case 'mclaren':
+                tagToMatch = 'McLaren'; // Special case for McLaren (though it's just capitalized correctly)
+                break;
+            default:
+                // Default: capitalize first letter
+                tagToMatch = teamId.charAt(0).toUpperCase() + teamId.slice(1);
+        }
+
+        console.log(`Looking for articles with tag: "${tagToMatch}" and category: "Technical"`);
+
+        // Fetch blog data
+        const paths = [
+            '/blog-module/blog-data.json',
+            '../blog-module/blog-data.json',
+            '../../blog-module/blog-data.json',
+            '/blog-data.json',
+            '../blog-data.json'
+        ];
+
+        let fetchPromises = paths.map(path =>
+            fetch(path)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch from ${path}`);
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    console.log(`Couldn't fetch from ${path}:`, error);
+                    return null;
+                })
+        );
+
+        Promise.any(fetchPromises)
+            .then(data => {
+                if (!data || !data.posts) {
+                    throw new Error('No valid blog data found');
+                }
+
+                // Filter posts by team tag and Technical category
+                let relatedPosts = data.posts.filter(post => {
+                    const postTag = post.tag || '';
+                    const postCategory = post.category || '';
+
+                    return postTag === tagToMatch && postCategory === 'Technical';
+                });
+
+                console.log(`Found ${relatedPosts.length} related articles for ${tagToMatch}`);
+
+                // Sort by date (newest first) and take only the last 4
+                relatedPosts = relatedPosts.sort((a, b) => {
+                    return new Date(b.date) - new Date(a.date);
+                }).slice(0, 4);
+
+                // Update the container
+                if (relatedPosts.length === 0) {
+                    const relatedSection = document.getElementById('related-articles');
+                    if (relatedSection) {
+                        relatedSection.style.display = 'none';
+                    }
+                    return;
+                }
+
+                // Clear existing content
+                relatedContainer.innerHTML = '';
+
+                // Create HTML for each related post
+                relatedPosts.forEach(post => {
+                    // Extract day and month from display date
+                    const dateMatch = post.displayDate ? post.displayDate.match(/([A-Za-z]+) (\d+)/) : null;
+                    const month = dateMatch ? dateMatch[1].substring(0, 3).toUpperCase() : 'JAN';
+                    const day = dateMatch ? dateMatch[2] : '1';
+
+                    // Get post URL - use the url property if available, otherwise construct it
+                    const postUrl = post.url || `/blog-module/blog-entries/${post.id}/article.html`;
+
+                    // Process image path - use the actual path as is since your blog-data.json uses absolute paths
+                    const imagePath = post.image || '/blog-module/images/default-blog.jpg';
+                    const fallbackPath = '/blog-module/images/default-blog.jpg';
+
+                    // Create article card
+                    const articleHtml = `
+                    <div class="col-md-6 col-lg-3">
+                        <a href="${postUrl}" class="related-article-link">
+                            <div class="related-article-card">
+                                <div class="related-article-img-container">
+                                    <img src="${imagePath}" alt="${post.title}" class="related-article-img" onerror="this.src='${fallbackPath}'">
+                                    <div class="related-article-date">
+                                        <span class="day">${day}</span>
+                                        <span class="month">${month}</span>
+                                    </div>
+                                </div>
+                                <div class="related-article-content">
+                                    <h5 class="related-article-title">${post.title}</h5>
+                                    <span class="related-article-read-more">Read More <i class="fas fa-arrow-right"></i></span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                `;
+
+                    relatedContainer.innerHTML += articleHtml;
+                });
+
+                // Add hover effects
+                document.querySelectorAll('.related-article-card').forEach(card => {
+                    card.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-5px)';
+                        this.style.boxShadow = '0 8px 20px rgba(0,115,230,0.2)';
+
+                        const image = this.querySelector('.related-article-img');
+                        if (image) image.style.transform = 'scale(1.1)';
+
+                        const readMore = this.querySelector('.related-article-read-more');
+                        if (readMore) readMore.style.color = '#00ffff';
+
+                        const arrow = this.querySelector('.related-article-read-more i');
+                        if (arrow) arrow.style.transform = 'translateX(3px)';
+                    });
+
+                    card.addEventListener('mouseleave', function() {
+                        this.style.transform = '';
+                        this.style.boxShadow = '';
+
+                        const image = this.querySelector('.related-article-img');
+                        if (image) image.style.transform = '';
+
+                        const readMore = this.querySelector('.related-article-read-more');
+                        if (readMore) readMore.style.color = '';
+
+                        const arrow = this.querySelector('.related-article-read-more i');
+                        if (arrow) arrow.style.transform = '';
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('Error loading related articles:', error);
+                const relatedSection = document.getElementById('related-articles');
+                if (relatedSection) {
+                    relatedSection.style.display = 'none';
+                }
+            });
     }
 
     // Add click event listeners to team badges
