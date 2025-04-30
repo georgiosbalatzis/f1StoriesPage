@@ -286,5 +286,86 @@
 <script defer src="../scripts/script.js"></script>
 <!-- F1 2025 Cars JavaScript -->
 <script defer src="garage.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fix navigation links
+        document.querySelectorAll('.navbar-nav .nav-link').forEach(function(navLink) {
+            navLink.addEventListener('click', function(e) {
+                // Get the href attribute
+                const href = this.getAttribute('href');
+
+                // Skip if it's the current active page
+                if (this.classList.contains('active')) {
+                    return;
+                }
+
+                // Check if it's an internal page link (starts with #)
+                if (href && href.startsWith('#')) {
+                    // For internal links, use default behavior (don't prevent default)
+                    return;
+                }
+
+                // Prevent default for all other links
+                e.preventDefault();
+
+                // Get base URL
+                const baseUrl = window.location.origin;
+
+                // Special handling for homepage
+                if (href === 'https://f1stories.gr/') {
+                    window.location.href = baseUrl;
+                    return;
+                }
+
+                // Handle links pointing to different locations
+                if (href) {
+                    // Remove domain part if present
+                    let cleanHref = href;
+                    if (cleanHref.startsWith('https://f1stories.gr')) {
+                        cleanHref = cleanHref.replace('https://f1stories.gr', '');
+                    }
+
+                    // Make sure it starts with /
+                    if (!cleanHref.startsWith('/') && !cleanHref.startsWith('http')) {
+                        cleanHref = '/' + cleanHref;
+                    }
+
+                    // If it's an external link (http or https), use as is
+                    if (cleanHref.startsWith('http')) {
+                        window.location.href = cleanHref;
+                        return;
+                    }
+
+                    // Construct the full URL
+                    const fullUrl = baseUrl + cleanHref;
+
+                    // Navigate to the URL
+                    window.location.href = fullUrl;
+                    console.log('Navigating to:', fullUrl);
+                }
+            });
+        });
+
+        // Close mobile menu when a link is clicked
+        document.querySelectorAll('.navbar-nav .nav-link').forEach(function(navLink) {
+            navLink.addEventListener('click', function() {
+                const navbarCollapse = document.querySelector('.navbar-collapse');
+                if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                    // Using Bootstrap's collapse API if available
+                    if (typeof bootstrap !== 'undefined') {
+                        const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                        if (bsCollapse) {
+                            bsCollapse.hide();
+                        }
+                    } else {
+                        // Fallback: toggle the class manually
+                        navbarCollapse.classList.remove('show');
+                    }
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>
