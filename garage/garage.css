@@ -457,3 +457,216 @@
         font-size: 0.85rem;
     }
 }
+
+
+
+/* Article Viewer Styling */
+.article-viewer {
+    background: rgba(10, 15, 30, 0.95);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 115, 230, 0.2);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    margin: 2rem 0;
+    opacity: 0;
+    transform: translateY(20px);
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.article-viewer.active {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 2000px;
+}
+
+.article-header {
+    position: relative;
+    padding: 3rem 2rem;
+    color: white;
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+}
+
+.article-header-overlay {
+    position: relative;
+    z-index: 2;
+}
+
+.article-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,10,30,0.9));
+    z-index: 1;
+}
+
+.article-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #fff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+.article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.article-meta span {
+    display: flex;
+    align-items: center;
+}
+
+.article-meta i {
+    margin-right: 5px;
+    color: #0073e6;
+}
+
+.article-body {
+    padding: 2rem;
+    color: #e0e0e0;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.article-body p {
+    margin-bottom: 1.5rem;
+}
+
+.article-body h1,
+.article-body h2,
+.article-body h3,
+.article-body h4 {
+    color: #00ffff;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.article-body a {
+    color: #0073e6;
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(0, 115, 230, 0.5);
+    transition: all 0.3s ease;
+}
+
+.article-body a:hover {
+    color: #00ffff;
+    border-bottom-color: #00ffff;
+}
+
+.article-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.article-body ul,
+.article-body ol {
+    margin-bottom: 1.5rem;
+    padding-left: 2rem;
+}
+
+.article-body li {
+    margin-bottom: 0.5rem;
+}
+
+.article-body blockquote {
+    border-left: 4px solid #0073e6;
+    padding-left: 1rem;
+    margin-left: 0;
+    margin-right: 0;
+    font-style: italic;
+    color: #aaa;
+}
+
+.article-footer {
+    padding: 1.5rem;
+    text-align: center;
+    border-top: 1px solid rgba(0, 115, 230, 0.1);
+}
+
+.close-article-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 5;
+}
+
+.close-article-btn:hover {
+    background: rgba(255, 0, 0, 0.3);
+    transform: rotate(90deg);
+}
+
+.close-article-btn-bottom {
+    background: linear-gradient(45deg, #0073e6, #003366);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.close-article-btn-bottom:hover {
+    background: linear-gradient(45deg, #005bb5, #002a4f);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 115, 230, 0.3);
+}
+
+/* Make article cards clickable */
+.related-article-card {
+    cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .article-header {
+        padding: 2rem 1rem;
+    }
+
+    .article-title {
+        font-size: 1.5rem;
+    }
+
+    .article-body {
+        padding: 1.5rem 1rem;
+    }
+
+    .article-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .article-header {
+        padding: 1.5rem 1rem;
+    }
+
+    .article-title {
+        font-size: 1.3rem;
+    }
+}
