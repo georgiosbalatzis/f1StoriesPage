@@ -1311,3 +1311,62 @@ body.team-haas {
         padding: 0 1.5rem;
     }
 }
+
+/* Mobile navbar positioning fix */
+@media (max-width: 991.98px) {
+    /* Fix header positioning */
+    header {
+        position: relative;
+        z-index: 1030; /* Ensure header is above other elements */
+        width: 100%;
+        top: 0;
+        left: 0;
+    }
+
+    /* Ensure navbar is fixed at top */
+    .navbar {
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1030;
+    }
+
+    /* Adjust hero section to not overlap navbar */
+    #hero {
+        margin-top: 70px; /* Match the navbar height */
+        padding-top: 2rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Fix potential logo alignment issues on mobile */
+    .navbar-brand {
+        padding: 0.5rem 0;
+    }
+
+    /* Adjust top blue streak positioning */
+    .streak:first-child {
+        top: 70px; /* Position below navbar */
+    }
+
+    /* Make sure content doesn't overlap with fixed navbar */
+    body {
+        padding-top: 0; /* Remove any existing padding-top */
+    }
+}
+
+/* For very small screens, adjust navbar height */
+@media (max-width: 575.98px) {
+    .navbar {
+        padding: 0.25rem 1rem;
+    }
+
+    .navbar-brand img {
+        height: 40px;
+    }
+
+    #hero {
+        margin-top: 60px; /* Slightly smaller for very small screens */
+    }
+}
