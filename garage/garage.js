@@ -324,8 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
             handleScroll();
         }, 100);
     }
-
-    // Updated loadRelatedArticles function with grid layout and pagination
+    // Optimized loadRelatedArticles function with race condition fix
     function loadRelatedArticles(teamId) {
         const relatedContainer = document.querySelector('.related-articles-container');
         if (!relatedContainer) return;
@@ -359,17 +358,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log(`Looking for articles with tag: "${tagToMatch}"`);
 
-        // Fetch blog data
+        // Check if we already have cached blog data
+        if (window.blogData && window.blogData.posts && window.blogData.posts.length > 0) {
+            console.log('Using cached blog data');
+            processArticles(window.blogData);
+            return;
+        }
+
+        // Flag to track if data has been processed
+        let dataProcessed = false;
+
+        // Fetch blog data - using proven successful paths first based on logs
         const paths = [
+            // These paths have been seen to succeed in logs, try them first
             '/blog-module/blog-data.json',
             '../blog-module/blog-data.json',
             '../../blog-module/blog-data.json',
-            'https://f1stories.gr/blog-module/blog-data.json', // Try absolute URL
+            'https://f1stories.gr/blog-module/blog-data.json',
+            // These paths have been seen to fail in logs, try them last
             '/blog-data.json',
             '../blog-data.json'
         ];
 
-        let fetchPromises = paths.map(path =>
+        // Process fetches in order with a small delay between attempts
+        let currentPathIndex = 0;
+
+        function tryNextPath() {
+            if (currentPathIndex >= paths.length || dataProcessed) {
+                return;
+            }
+
+            const path = paths[currentPathIndex];
+            currentPathIndex++;
+
             fetch(path)
                 .then(response => {
                     if (!response.ok) {
@@ -378,108 +399,125 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log(`Successfully fetched blog data from: ${path}`);
                     return response.json();
                 })
+                .then(data => {
+                    if (dataProcessed) return; // Another path already succeeded
+
+                    if (!data || !data.posts) {
+                        throw new Error('Invalid data format');
+                    }
+
+                    dataProcessed = true;
+
+                    // Store the blog data for later use
+                    window.blogData = data;
+
+                    // Process the articles
+                    processArticles(data);
+                })
                 .catch(error => {
                     console.log(`Couldn't fetch from ${path}:`, error);
-                    return null;
-                })
-        );
 
-        Promise.any(fetchPromises)
-            .then(data => {
-                if (!data || !data.posts) {
-                    throw new Error('No valid blog data found');
-                }
-
-                // Store the blog data for later use
-                window.blogData = data;
-
-                // Debug: Log all unique tags in the data
-                const allTags = [...new Set(data.posts.map(post => post.tag || ''))];
-                console.log('All available tags in blog data:', allTags);
-
-                // Primary search: Exact match first
-                let relatedPosts = data.posts.filter(post => {
-                    const postTag = post.tag || '';
-                    return postTag === tagToMatch;
+                    // Try next path after a small delay (100ms)
+                    setTimeout(tryNextPath, 100);
                 });
+        }
 
-                // Secondary search: Case-insensitive contains match if no exact matches found
-                if (relatedPosts.length === 0) {
-                    console.log(`No exact matches for '${tagToMatch}'. Trying case-insensitive search...`);
-                    relatedPosts = data.posts.filter(post => {
-                        const postTag = (post.tag || '').toLowerCase();
-                        const searchTag = tagToMatch.toLowerCase();
-                        return postTag.includes(searchTag) || searchTag.includes(postTag);
-                    });
-                }
+        // Start the fetch sequence
+        tryNextPath();
 
-                // Tertiary search: Check for team name in title or content if still no matches
-                if (relatedPosts.length === 0) {
-                    console.log(`No tag matches for '${tagToMatch}'. Looking in titles and content...`);
-                    const searchTerm = teamId.toLowerCase();
-                    relatedPosts = data.posts.filter(post => {
-                        const title = (post.title || '').toLowerCase();
-                        const content = (post.content || '').toLowerCase();
-                        return title.includes(searchTerm) || content.includes(searchTerm);
-                    });
-                }
-
-                // Last resort: Show F1 general articles if nothing team-specific found
-                if (relatedPosts.length === 0) {
-                    console.log(`No team-specific content found. Looking for general F1 articles...`);
-                    relatedPosts = data.posts.filter(post => {
-                        const postTag = (post.tag || '').toLowerCase();
-                        const title = (post.title || '').toLowerCase();
-                        return postTag.includes('f1') || postTag.includes('formula') ||
-                            title.includes('f1') || title.includes('formula');
-                    });
-                }
-
-                console.log(`Found ${relatedPosts.length} related articles for ${tagToMatch}`);
-
-                // Sort by date (newest first)
-                relatedPosts = relatedPosts.sort((a, b) => {
-                    return new Date(b.date) - new Date(a.date);
-                });
-
-                // Update the container
-                if (relatedPosts.length === 0) {
-                    const relatedSection = document.getElementById('related-articles');
-                    if (relatedSection) {
-                        relatedSection.style.display = 'none';
-                    }
-                    return;
-                }
-
-                // Store the related posts for this team
-                window.currentRelatedPosts = relatedPosts;
-
-                // Show related articles section
-                const relatedSection = document.getElementById('related-articles');
-                if (relatedSection) {
-                    relatedSection.style.display = 'block';
-                }
-
-                // Display articles with pagination if more than 4
-                displayArticlesWithPagination(relatedPosts, relatedContainer);
-            })
-            .catch(error => {
-                console.error('Error loading related articles:', error);
+        // Set a timeout to check if any data was loaded
+        setTimeout(() => {
+            if (!dataProcessed && !window.blogData) {
+                console.error('Error loading related articles: Timeout after trying all paths');
                 // Show error message to user
                 relatedContainer.innerHTML = `
                 <div class="col-12">
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle"></i> 
-                        We're currently updating our article database. Check back soon for team-specific content!
+                        We're currently updating our article database. Please try selecting a different team or refreshing the page.
                     </div>
                 </div>
             `;
 
                 const relatedSection = document.getElementById('related-articles');
                 if (relatedSection) {
-                    relatedSection.style.display = 'block'; // Keep visible to show message
+                    relatedSection.style.display = 'block';
                 }
+            }
+        }, 5000); // 5 second timeout as a fallback
+
+        // Function to process articles data and update the UI
+        function processArticles(data) {
+            // Debug: Log all unique tags in the data
+            const allTags = [...new Set(data.posts.map(post => post.tag || ''))];
+            console.log('All available tags in blog data:', allTags);
+
+            // Primary search: Exact match first
+            let relatedPosts = data.posts.filter(post => {
+                const postTag = post.tag || '';
+                return postTag === tagToMatch;
             });
+
+            // Secondary search: Case-insensitive contains match if no exact matches found
+            if (relatedPosts.length === 0) {
+                console.log(`No exact matches for '${tagToMatch}'. Trying case-insensitive search...`);
+                relatedPosts = data.posts.filter(post => {
+                    const postTag = (post.tag || '').toLowerCase();
+                    const searchTag = tagToMatch.toLowerCase();
+                    return postTag.includes(searchTag) || searchTag.includes(postTag);
+                });
+            }
+
+            // Tertiary search: Check for team name in title or content if still no matches
+            if (relatedPosts.length === 0) {
+                console.log(`No tag matches for '${tagToMatch}'. Looking in titles and content...`);
+                const searchTerm = teamId.toLowerCase();
+                relatedPosts = data.posts.filter(post => {
+                    const title = (post.title || '').toLowerCase();
+                    const content = (post.content || '').toLowerCase();
+                    return title.includes(searchTerm) || content.includes(searchTerm);
+                });
+            }
+
+            // Last resort: Show F1 general articles if nothing team-specific found
+            if (relatedPosts.length === 0) {
+                console.log(`No team-specific content found. Looking for general F1 articles...`);
+                relatedPosts = data.posts.filter(post => {
+                    const postTag = (post.tag || '').toLowerCase();
+                    const title = (post.title || '').toLowerCase();
+                    return postTag.includes('f1') || postTag.includes('formula') ||
+                        title.includes('f1') || title.includes('formula');
+                });
+            }
+
+            console.log(`Found ${relatedPosts.length} related articles for ${tagToMatch}`);
+
+            // Sort by date (newest first)
+            relatedPosts = relatedPosts.sort((a, b) => {
+                return new Date(b.date) - new Date(a.date);
+            });
+
+            // Update the container
+            if (relatedPosts.length === 0) {
+                const relatedSection = document.getElementById('related-articles');
+                if (relatedSection) {
+                    relatedSection.style.display = 'none';
+                }
+                return;
+            }
+
+            // Store the related posts for this team
+            window.currentRelatedPosts = relatedPosts;
+
+            // Show related articles section
+            const relatedSection = document.getElementById('related-articles');
+            if (relatedSection) {
+                relatedSection.style.display = 'block';
+            }
+
+            // Display articles with pagination
+            displayArticlesWithPagination(relatedPosts, relatedContainer);
+        }
     }
 
     // Function to display articles with pagination
