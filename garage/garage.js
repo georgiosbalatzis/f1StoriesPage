@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }
 
-// Updated loadRelatedArticles function with better debugging and more flexible tag matching
+    // Updated loadRelatedArticles function with grid layout and pagination
     function loadRelatedArticles(teamId) {
         const relatedContainer = document.querySelector('.related-articles-container');
         if (!relatedContainer) return;
@@ -393,7 +393,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Store the blog data for later use
                 window.blogData = data;
 
-                // Debug: Log all unique tags in the data to help identify tag format issues
+                // Debug: Log all unique tags in the data
                 const allTags = [...new Set(data.posts.map(post => post.tag || ''))];
                 console.log('All available tags in blog data:', allTags);
 
@@ -432,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const title = (post.title || '').toLowerCase();
                         return postTag.includes('f1') || postTag.includes('formula') ||
                             title.includes('f1') || title.includes('formula');
-                    }).slice(0, 8); // Limit to 8 articles to prevent overload
+                    });
                 }
 
                 console.log(`Found ${relatedPosts.length} related articles for ${tagToMatch}`);
@@ -460,17 +460,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     relatedSection.style.display = 'block';
                 }
 
-                // Create carousel if more than 4 articles
-                if (relatedPosts.length > 4) {
-                    createArticleCarousel(relatedPosts, relatedContainer);
-                } else {
-                    // For 4 or fewer articles, display them in a grid
-                    displayArticleGrid(relatedPosts, relatedContainer);
-                }
+                // Display articles with pagination if more than 4
+                displayArticlesWithPagination(relatedPosts, relatedContainer);
             })
             .catch(error => {
                 console.error('Error loading related articles:', error);
-                // Show error message to user instead of hiding
+                // Show error message to user
                 relatedContainer.innerHTML = `
                 <div class="col-12">
                     <div class="alert alert-info">
@@ -487,6 +482,178 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
+    // Function to display articles with pagination
+    function displayArticlesWithPagination(posts, container) {
+        // Clear existing content
+        container.innerHTML = '';
+
+        // Set variables for pagination
+        const postsPerPage = 4;
+        const totalPages = Math.ceil(posts.length / postsPerPage);
+
+        // Create a data attribute to store current page
+        container.dataset.currentPage = "1";
+
+        // Function to display a specific page
+        function displayPage(pageNum) {
+            // Calculate starting and ending indices
+            const startIndex = (pageNum - 1) * postsPerPage;
+            const endIndex = Math.min(startIndex + postsPerPage, posts.length);
+
+            // Get posts for current page
+            const currentPagePosts = posts.slice(startIndex, endIndex);
+
+            // Create HTML for grid
+            let gridHTML = '<div class="row g-3">';
+
+            // Add article cards
+            currentPagePosts.forEach((post, index) => {
+                gridHTML += `
+            <div class="col-md-6 col-lg-3">
+                ${createArticleCard(post, startIndex + index)}
+            </div>`;
+            });
+
+            gridHTML += '</div>';
+
+            // Create pagination controls if needed
+            if (totalPages > 1) {
+                gridHTML += `
+            <div class="pagination-controls mt-4 d-flex justify-content-center">
+                <button class="pagination-prev me-2" ${pageNum === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <div class="pagination-info mx-3">
+                    Page ${pageNum} of ${totalPages}
+                </div>
+                <button class="pagination-next ms-2" ${pageNum === totalPages ? 'disabled' : ''}>
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>`;
+            }
+
+            // Update container HTML
+            container.innerHTML = gridHTML;
+
+            // Update current page attribute
+            container.dataset.currentPage = pageNum.toString();
+
+            // Add event listeners for pagination buttons
+            const prevButton = container.querySelector('.pagination-prev');
+            const nextButton = container.querySelector('.pagination-next');
+
+            if (prevButton) {
+                prevButton.addEventListener('click', () => {
+                    if (pageNum > 1) {
+                        displayPage(pageNum - 1);
+
+                        // Scroll to top of container smoothly
+                        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            }
+
+            if (nextButton) {
+                nextButton.addEventListener('click', () => {
+                    if (pageNum < totalPages) {
+                        displayPage(pageNum + 1);
+
+                        // Scroll to top of container smoothly
+                        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            }
+
+            // Add event listeners to article cards
+            setupArticleCardListeners();
+        }
+
+        // Display first page
+        displayPage(1);
+    }
+
+// Function to create article card (used in displayArticlesWithPagination)
+    function createArticleCard(post, index) {
+        // Extract day and month from display date
+        const dateMatch = post.displayDate ? post.displayDate.match(/([A-Za-z]+) (\d+)/) : null;
+        const month = dateMatch ? dateMatch[1].substring(0, 3).toUpperCase() : 'JAN';
+        const day = dateMatch ? dateMatch[2] : '1';
+
+        // Process image path
+        const imagePath = post.image || '/blog-module/images/default-blog.jpg';
+        const fallbackPath = '/blog-module/images/default-blog.jpg';
+
+        // Create article card
+        return `
+    <div class="related-article-card" data-article-id="${post.id}" data-article-index="${index}">
+        <div class="related-article-img-container">
+            <img src="${imagePath}" alt="${post.title}" class="related-article-img" onerror="this.src='${fallbackPath}'">
+            <div class="related-article-date">
+                <span class="day">${day}</span>
+                <span class="month">${month}</span>
+            </div>
+        </div>
+        <div class="related-article-content">
+            <h5 class="related-article-title">${post.title}</h5>
+            <span class="related-article-read-more">Read More <i class="fas fa-arrow-right"></i></span>
+        </div>
+    </div>
+    `;
+    }
+
+// CSS for pagination controls
+    const paginationStyles = `
+<style>
+.pagination-controls {
+    margin-top: 2rem;
+}
+
+.pagination-controls button {
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: 1px solid var(--primary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pagination-controls button:hover:not([disabled]) {
+    background: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.pagination-controls button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    color: var(--light-color);
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+@media (max-width: 575.98px) {
+    .pagination-controls {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .pagination-controls button {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+</style>
+`;
+    // Add pagination styles to document head
+    document.head.insertAdjacentHTML('beforeend', paginationStyles);
+
 // Function to display articles in a simple grid
     function displayArticleGrid(posts, container) {
         // Clear existing content
@@ -501,151 +668,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setupArticleCardListeners();
     }
 
-// Function to create article cards
-    function createArticleCard(post, index) {
-        // Extract day and month from display date
-        const dateMatch = post.displayDate ? post.displayDate.match(/([A-Za-z]+) (\d+)/) : null;
-        const month = dateMatch ? dateMatch[1].substring(0, 3).toUpperCase() : 'JAN';
-        const day = dateMatch ? dateMatch[2] : '1';
-
-        // Process image path
-        const imagePath = post.image || '/blog-module/images/default-blog.jpg';
-        const fallbackPath = '/blog-module/images/default-blog.jpg';
-
-        // Create article card
-        return `
-        <div class="col-md-6 col-lg-3">
-            <div class="related-article-card" data-article-id="${post.id}" data-article-index="${index}">
-                <div class="related-article-img-container">
-                    <img src="${imagePath}" alt="${post.title}" class="related-article-img" onerror="this.src='${fallbackPath}'">
-                    <div class="related-article-date">
-                        <span class="day">${day}</span>
-                        <span class="month">${month}</span>
-                    </div>
-                </div>
-                <div class="related-article-content">
-                    <h5 class="related-article-title">${post.title}</h5>
-                    <span class="related-article-read-more">Read More <i class="fas fa-arrow-right"></i></span>
-                </div>
-            </div>
-        </div>
-    `;
-    }
-
-
-// Function to create a carousel for articles
-    function createArticleCarousel(posts, container) {
-        // Clear existing content
-        container.innerHTML = '';
-
-        // Calculate number of slides based on viewport
-        let itemsPerSlide = 4;
-        if (window.innerWidth < 992) itemsPerSlide = 3;
-        if (window.innerWidth < 768) itemsPerSlide = 2;
-        if (window.innerWidth < 576) itemsPerSlide = 1;
-
-        // Calculate number of slides
-        const numSlides = Math.ceil(posts.length / itemsPerSlide);
-
-        // Create carousel container
-        const carouselHTML = `
-        <div class="articles-carousel">
-            <button class="carousel-nav prev"><i class="fas fa-chevron-left"></i></button>
-            <div class="articles-slide">
-                ${posts.map((post, index) => `
-                    <div class="carousel-item">
-                        ${createArticleCard(post, index).replace('col-md-6 col-lg-3', '')}
-                    </div>
-                `).join('')}
-            </div>
-            <button class="carousel-nav next"><i class="fas fa-chevron-right"></i></button>
-            <div class="carousel-indicators">
-                ${Array(numSlides).fill().map((_, i) => `
-                    <div class="carousel-dot ${i === 0 ? 'active' : ''}" data-slide="${i}"></div>
-                `).join('')}
-            </div>
-        </div>
-    `;
-
-        // Add carousel to container
-        container.innerHTML = carouselHTML;
-
-        // Set up carousel functionality
-        setupCarousel(itemsPerSlide);
-
-        // Add event listeners to cards
-        setupArticleCardListeners();
-    }
-
-// Function to set up carousel navigation
-    function setupCarousel(itemsPerSlide) {
-        const carousel = document.querySelector('.articles-carousel');
-        if (!carousel) return;
-
-        const slide = carousel.querySelector('.articles-slide');
-        const items = carousel.querySelectorAll('.carousel-item');
-        const prevBtn = carousel.querySelector('.carousel-nav.prev');
-        const nextBtn = carousel.querySelector('.carousel-nav.next');
-        const dots = carousel.querySelectorAll('.carousel-dot');
-
-        let currentSlide = 0;
-        const numSlides = Math.ceil(items.length / itemsPerSlide);
-
-        // Set initial state
-        updateCarousel();
-
-        // Add event listeners
-        prevBtn.addEventListener('click', () => {
-            currentSlide = (currentSlide - 1 + numSlides) % numSlides;
-            updateCarousel();
-        });
-
-        nextBtn.addEventListener('click', () => {
-            currentSlide = (currentSlide + 1) % numSlides;
-            updateCarousel();
-        });
-
-        dots.forEach(dot => {
-            dot.addEventListener('click', () => {
-                currentSlide = parseInt(dot.getAttribute('data-slide'));
-                updateCarousel();
-            });
-        });
-
-        // Function to update carousel position
-        function updateCarousel() {
-            // Update slide position
-            slide.style.transform = `translateX(-${currentSlide * 100 / numSlides}%)`;
-
-            // Update dots
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === currentSlide);
-            });
-
-            // Show/hide nav buttons for single slide
-            if (numSlides <= 1) {
-                prevBtn.style.display = 'none';
-                nextBtn.style.display = 'none';
-            } else {
-                prevBtn.style.display = 'flex';
-                nextBtn.style.display = 'flex';
-            }
-        }
-
-        // Update on window resize
-        window.addEventListener('resize', () => {
-            let newItemsPerSlide = 4;
-            if (window.innerWidth < 992) newItemsPerSlide = 3;
-            if (window.innerWidth < 768) newItemsPerSlide = 2;
-            if (window.innerWidth < 576) newItemsPerSlide = 1;
-
-            if (newItemsPerSlide !== itemsPerSlide) {
-                itemsPerSlide = newItemsPerSlide;
-                currentSlide = 0;
-                updateCarousel();
-            }
-        });
-    }
 
 // Function to set up event listeners for article cards
     function setupArticleCardListeners() {
