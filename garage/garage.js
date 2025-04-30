@@ -71,7 +71,6 @@ document.addEventListener('DOMContentLoaded', function() {
         resetTeamColorScheme();
     }
 
-    // Function to update hero background when a team is selected
     function updateHeroBackground(teamId) {
         const heroElement = document.getElementById('hero');
         const heroOverlay = document.querySelector('.hero-overlay');
@@ -196,36 +195,6 @@ document.addEventListener('DOMContentLoaded', function() {
         loadRelatedArticles(teamId);
     }
 
-    // Function to create article cards
-    function createArticleCard(post, index) {
-        // Extract day and month from display date
-        const dateMatch = post.displayDate ? post.displayDate.match(/([A-Za-z]+) (\d+)/) : null;
-        const month = dateMatch ? dateMatch[1].substring(0, 3).toUpperCase() : 'JAN';
-        const day = dateMatch ? dateMatch[2] : '1';
-
-        // Process image path
-        const imagePath = post.image || '/blog-module/images/default-blog.jpg';
-        const fallbackPath = '/blog-module/images/default-blog.jpg';
-
-        // Create article card
-        return `
-        <div class="col-md-6 col-lg-3">
-            <div class="related-article-card" data-article-id="${post.id}" data-article-index="${index}">
-                <div class="related-article-img-container">
-                    <img src="${imagePath}" alt="${post.title}" class="related-article-img" onerror="this.src='${fallbackPath}'">
-                    <div class="related-article-date">
-                        <span class="day">${day}</span>
-                        <span class="month">${month}</span>
-                    </div>
-                </div>
-                <div class="related-article-content">
-                    <h5 class="related-article-title">${post.title}</h5>
-                    <span class="related-article-read-more">Read More <i class="fas fa-arrow-right"></i></span>
-                </div>
-            </div>
-        </div>
-    `;
-    }
 
 
 // Function to display an article in the page
@@ -269,6 +238,8 @@ document.addEventListener('DOMContentLoaded', function() {
             articleContent = `<p>${post.excerpt}</p><p>Full article content is not available for inline viewing.</p>`;
         }
 
+        // Get full article URL
+        const articleUrl = post.url || `https://f1stories.gr/blog-module/blog-entries/${post.id}/article.html`;
         // Get background image if available
         const backgroundImage = post.backgroundImage || post.image || '';
         const backgroundStyle = backgroundImage ?
@@ -291,7 +262,10 @@ document.addEventListener('DOMContentLoaded', function() {
             ${articleContent}
         </div>
         <div class="article-footer">
-            <button class="close-article-btn-bottom">Close Article</button>
+            <div class="article-actions">
+                <button class="close-article-btn-bottom">Close Article</button>
+                <a href="${articleUrl}" class="visit-article-btn" target="_blank">Visit Full Article <i class="fas fa-external-link-alt"></i></a>
+            </div>
         </div>
     `;
 
@@ -351,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }
 
-    // Function to load related articles
+// Function to load related articles with carousel
     function loadRelatedArticles(teamId) {
         const relatedContainer = document.querySelector('.related-articles-container');
         if (!relatedContainer) return;
@@ -374,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 tagToMatch = teamId.charAt(0).toUpperCase() + teamId.slice(1);
         }
 
-        console.log(`Looking for articles with tag: "${tagToMatch}" and category: "Technical"`);
+        console.log(`Looking for articles with tag: "${tagToMatch}"`);
 
         // Fetch blog data
         const paths = [
@@ -408,20 +382,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Store the blog data for later use
                 window.blogData = data;
 
-                // Filter posts by team tag and Technical category
+                // Filter posts by team tag
                 let relatedPosts = data.posts.filter(post => {
                     const postTag = post.tag || '';
-                    const postCategory = post.category || '';
-
-                    return postTag === tagToMatch && postCategory === 'Technical';
+                    return postTag === tagToMatch;
                 });
 
                 console.log(`Found ${relatedPosts.length} related articles for ${tagToMatch}`);
 
-                // Sort by date (newest first) and take only the last 4
+                // Sort by date (newest first)
                 relatedPosts = relatedPosts.sort((a, b) => {
                     return new Date(b.date) - new Date(a.date);
-                }).slice(0, 4);
+                });
 
                 // Update the container
                 if (relatedPosts.length === 0) {
@@ -435,56 +407,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Store the related posts for this team
                 window.currentRelatedPosts = relatedPosts;
 
-                // Clear existing content
-                relatedContainer.innerHTML = '';
+                // Show related articles section
+                const relatedSection = document.getElementById('related-articles');
+                if (relatedSection) {
+                    relatedSection.style.display = 'block';
+                }
 
-                // Create HTML for each related post
-                relatedPosts.forEach((post, index) => {
-                    relatedContainer.innerHTML += createArticleCard(post, index);
-                });
-
-                // Add click event listeners to the cards
-                document.querySelectorAll('.related-article-card').forEach(card => {
-                    // Add hover effects
-                    card.addEventListener('mouseenter', function() {
-                        this.style.transform = 'translateY(-5px)';
-                        this.style.boxShadow = '0 8px 20px rgba(0,115,230,0.2)';
-
-                        const image = this.querySelector('.related-article-img');
-                        if (image) image.style.transform = 'scale(1.1)';
-
-                        const readMore = this.querySelector('.related-article-read-more');
-                        if (readMore) readMore.style.color = '#00ffff';
-
-                        const arrow = this.querySelector('.related-article-read-more i');
-                        if (arrow) arrow.style.transform = 'translateX(3px)';
-                    });
-
-                    card.addEventListener('mouseleave', function() {
-                        this.style.transform = '';
-                        this.style.boxShadow = '';
-
-                        const image = this.querySelector('.related-article-img');
-                        if (image) image.style.transform = '';
-
-                        const readMore = this.querySelector('.related-article-read-more');
-                        if (readMore) readMore.style.color = '';
-
-                        const arrow = this.querySelector('.related-article-read-more i');
-                        if (arrow) arrow.style.transform = '';
-                    });
-
-                    // Add click handler to display article
-                    card.addEventListener('click', function() {
-                        const articleIndex = parseInt(this.getAttribute('data-article-index'));
-                        if (!isNaN(articleIndex) && window.currentRelatedPosts) {
-                            const post = window.currentRelatedPosts[articleIndex];
-                            if (post) {
-                                displayArticle(post);
-                            }
-                        }
-                    });
-                });
+                // Create carousel if more than 4 articles
+                if (relatedPosts.length > 4) {
+                    createArticleCarousel(relatedPosts, relatedContainer);
+                } else {
+                    // For 4 or fewer articles, display them in a grid
+                    displayArticleGrid(relatedPosts, relatedContainer);
+                }
             })
             .catch(error => {
                 console.error('Error loading related articles:', error);
@@ -493,6 +428,211 @@ document.addEventListener('DOMContentLoaded', function() {
                     relatedSection.style.display = 'none';
                 }
             });
+    }
+
+// Function to display articles in a simple grid
+    function displayArticleGrid(posts, container) {
+        // Clear existing content
+        container.innerHTML = '';
+
+        // Create HTML for each related post
+        posts.forEach((post, index) => {
+            container.innerHTML += createArticleCard(post, index);
+        });
+
+        // Add event listeners to cards
+        setupArticleCardListeners();
+    }
+
+// Function to create article cards
+    function createArticleCard(post, index) {
+        // Extract day and month from display date
+        const dateMatch = post.displayDate ? post.displayDate.match(/([A-Za-z]+) (\d+)/) : null;
+        const month = dateMatch ? dateMatch[1].substring(0, 3).toUpperCase() : 'JAN';
+        const day = dateMatch ? dateMatch[2] : '1';
+
+        // Process image path
+        const imagePath = post.image || '/blog-module/images/default-blog.jpg';
+        const fallbackPath = '/blog-module/images/default-blog.jpg';
+
+        // Create article card
+        return `
+        <div class="col-md-6 col-lg-3">
+            <div class="related-article-card" data-article-id="${post.id}" data-article-index="${index}">
+                <div class="related-article-img-container">
+                    <img src="${imagePath}" alt="${post.title}" class="related-article-img" onerror="this.src='${fallbackPath}'">
+                    <div class="related-article-date">
+                        <span class="day">${day}</span>
+                        <span class="month">${month}</span>
+                    </div>
+                </div>
+                <div class="related-article-content">
+                    <h5 class="related-article-title">${post.title}</h5>
+                    <span class="related-article-read-more">Read More <i class="fas fa-arrow-right"></i></span>
+                </div>
+            </div>
+        </div>
+    `;
+    }
+
+
+// Function to create a carousel for articles
+    function createArticleCarousel(posts, container) {
+        // Clear existing content
+        container.innerHTML = '';
+
+        // Calculate number of slides based on viewport
+        let itemsPerSlide = 4;
+        if (window.innerWidth < 992) itemsPerSlide = 3;
+        if (window.innerWidth < 768) itemsPerSlide = 2;
+        if (window.innerWidth < 576) itemsPerSlide = 1;
+
+        // Calculate number of slides
+        const numSlides = Math.ceil(posts.length / itemsPerSlide);
+
+        // Create carousel container
+        const carouselHTML = `
+        <div class="articles-carousel">
+            <button class="carousel-nav prev"><i class="fas fa-chevron-left"></i></button>
+            <div class="articles-slide">
+                ${posts.map((post, index) => `
+                    <div class="carousel-item">
+                        ${createArticleCard(post, index).replace('col-md-6 col-lg-3', '')}
+                    </div>
+                `).join('')}
+            </div>
+            <button class="carousel-nav next"><i class="fas fa-chevron-right"></i></button>
+            <div class="carousel-indicators">
+                ${Array(numSlides).fill().map((_, i) => `
+                    <div class="carousel-dot ${i === 0 ? 'active' : ''}" data-slide="${i}"></div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+
+        // Add carousel to container
+        container.innerHTML = carouselHTML;
+
+        // Set up carousel functionality
+        setupCarousel(itemsPerSlide);
+
+        // Add event listeners to cards
+        setupArticleCardListeners();
+    }
+
+// Function to set up carousel navigation
+    function setupCarousel(itemsPerSlide) {
+        const carousel = document.querySelector('.articles-carousel');
+        if (!carousel) return;
+
+        const slide = carousel.querySelector('.articles-slide');
+        const items = carousel.querySelectorAll('.carousel-item');
+        const prevBtn = carousel.querySelector('.carousel-nav.prev');
+        const nextBtn = carousel.querySelector('.carousel-nav.next');
+        const dots = carousel.querySelectorAll('.carousel-dot');
+
+        let currentSlide = 0;
+        const numSlides = Math.ceil(items.length / itemsPerSlide);
+
+        // Set initial state
+        updateCarousel();
+
+        // Add event listeners
+        prevBtn.addEventListener('click', () => {
+            currentSlide = (currentSlide - 1 + numSlides) % numSlides;
+            updateCarousel();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentSlide = (currentSlide + 1) % numSlides;
+            updateCarousel();
+        });
+
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                currentSlide = parseInt(dot.getAttribute('data-slide'));
+                updateCarousel();
+            });
+        });
+
+        // Function to update carousel position
+        function updateCarousel() {
+            // Update slide position
+            slide.style.transform = `translateX(-${currentSlide * 100 / numSlides}%)`;
+
+            // Update dots
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlide);
+            });
+
+            // Show/hide nav buttons for single slide
+            if (numSlides <= 1) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'flex';
+                nextBtn.style.display = 'flex';
+            }
+        }
+
+        // Update on window resize
+        window.addEventListener('resize', () => {
+            let newItemsPerSlide = 4;
+            if (window.innerWidth < 992) newItemsPerSlide = 3;
+            if (window.innerWidth < 768) newItemsPerSlide = 2;
+            if (window.innerWidth < 576) newItemsPerSlide = 1;
+
+            if (newItemsPerSlide !== itemsPerSlide) {
+                itemsPerSlide = newItemsPerSlide;
+                currentSlide = 0;
+                updateCarousel();
+            }
+        });
+    }
+
+// Function to set up event listeners for article cards
+    function setupArticleCardListeners() {
+        document.querySelectorAll('.related-article-card').forEach(card => {
+            // Add hover effects
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 8px 20px rgba(0,115,230,0.2)';
+
+                const image = this.querySelector('.related-article-img');
+                if (image) image.style.transform = 'scale(1.1)';
+
+                const readMore = this.querySelector('.related-article-read-more');
+                if (readMore) readMore.style.color = '#00ffff';
+
+                const arrow = this.querySelector('.related-article-read-more i');
+                if (arrow) arrow.style.transform = 'translateX(3px)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+                this.style.boxShadow = '';
+
+                const image = this.querySelector('.related-article-img');
+                if (image) image.style.transform = '';
+
+                const readMore = this.querySelector('.related-article-read-more');
+                if (readMore) readMore.style.color = '';
+
+                const arrow = this.querySelector('.related-article-read-more i');
+                if (arrow) arrow.style.transform = '';
+            });
+
+            // Add click handler to display article
+            card.addEventListener('click', function() {
+                const articleIndex = parseInt(this.getAttribute('data-article-index'));
+                if (!isNaN(articleIndex) && window.currentRelatedPosts) {
+                    const post = window.currentRelatedPosts[articleIndex];
+                    if (post) {
+                        displayArticle(post);
+                    }
+                }
+            });
+        });
     }
 
     // Add click event listeners to team badges
@@ -545,7 +685,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-
     // Function to update team color scheme
     function updateTeamColorScheme(teamId) {
         // Remove any existing team color classes
@@ -570,7 +709,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     }
 
-
     // Function to reset team color scheme
     function resetTeamColorScheme() {
         // Remove all team color classes
@@ -589,10 +727,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     }
-
-
-
-
 
     // Car data
     const carData = {
