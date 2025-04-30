@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Remove background image
         heroOverlay.classList.remove('image-bg');
-        heroOverlay.style.backgroundImage = 'url("data/default.jpg")';
+        heroOverlay.style.backgroundImage = 'url("data/default.webp")';
 
         // Remove team background class
         heroElement.classList.remove('has-team-bg');
@@ -83,8 +83,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Remove existing background class
         heroOverlay.classList.remove('image-bg');
 
-        // Set team-specific background
-        heroOverlay.style.backgroundImage = `url('data/${teamId}.jpg')`;
+        // Set team-specific background with WebP extension
+        heroOverlay.style.backgroundImage = `url('data/${teamId}.webp')`;
         heroOverlay.classList.add('image-bg');
 
         // Add class to hero section
@@ -351,6 +351,12 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'mclaren':
                 tagToMatch = 'McLaren'; // Special case for McLaren
                 break;
+            case 'aston':
+                tagToMatch = 'Aston'; // Special case for Aston Martin
+                break;
+            case 'sauber':
+                tagToMatch = 'Sauber'; // Special case for Kick Sauber
+                break;
             default:
                 // Default: capitalize first letter
                 tagToMatch = teamId.charAt(0).toUpperCase() + teamId.slice(1);
@@ -458,36 +464,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 return postTag === tagToMatch;
             });
 
-            // Secondary search: Case-insensitive contains match if no exact matches found
-            if (relatedPosts.length === 0) {
+            // For teams that we know don't have specific articles, show "Technical" or "AllTeams" content
+            // instead of falling back to case-insensitive search which might show unrelated content
+            if (relatedPosts.length === 0 &&
+                (teamId === 'racing-bulls' || teamId === 'aston' || teamId === 'sauber')) {
+                console.log(`No specific articles for ${teamId}. Showing general technical articles instead.`);
+
+                // Try to show articles specifically tagged for all teams
+                relatedPosts = data.posts.filter(post => {
+                    const postTag = post.tag || '';
+                    return postTag === 'AllTeams' || postTag === 'Technical';
+                });
+
+                // Limit to a reasonable number
+                relatedPosts = relatedPosts.slice(0, 4);
+            }
+            // For others, continue with the normal fallback search approach
+            else if (relatedPosts.length === 0) {
                 console.log(`No exact matches for '${tagToMatch}'. Trying case-insensitive search...`);
                 relatedPosts = data.posts.filter(post => {
                     const postTag = (post.tag || '').toLowerCase();
                     const searchTag = tagToMatch.toLowerCase();
                     return postTag.includes(searchTag) || searchTag.includes(postTag);
                 });
+
+                // Third attempt: Check for team name in title or content
+                if (relatedPosts.length === 0) {
+                    console.log(`No tag matches for '${tagToMatch}'. Looking in titles and content...`);
+                    const searchTerm = teamId.toLowerCase();
+                    relatedPosts = data.posts.filter(post => {
+                        const title = (post.title || '').toLowerCase();
+                        const content = (post.content || '').toLowerCase();
+                        return title.includes(searchTerm) || content.includes(searchTerm);
+                    });
+                }
             }
 
-            // Tertiary search: Check for team name in title or content if still no matches
+            // Last resort: Show specific F1 technical articles if nothing team-specific found
             if (relatedPosts.length === 0) {
-                console.log(`No tag matches for '${tagToMatch}'. Looking in titles and content...`);
-                const searchTerm = teamId.toLowerCase();
-                relatedPosts = data.posts.filter(post => {
-                    const title = (post.title || '').toLowerCase();
-                    const content = (post.content || '').toLowerCase();
-                    return title.includes(searchTerm) || content.includes(searchTerm);
-                });
-            }
-
-            // Last resort: Show F1 general articles if nothing team-specific found
-            if (relatedPosts.length === 0) {
-                console.log(`No team-specific content found. Looking for general F1 articles...`);
+                console.log(`No team-specific content found. Looking for technical articles...`);
                 relatedPosts = data.posts.filter(post => {
                     const postTag = (post.tag || '').toLowerCase();
-                    const title = (post.title || '').toLowerCase();
-                    return postTag.includes('f1') || postTag.includes('formula') ||
-                        title.includes('f1') || title.includes('formula');
-                });
+                    return postTag === 'technical' || postTag === 'allteams';
+                }).slice(0, 4); // Limit to 4 articles
+
+                // If still nothing, then try general F1 articles
+                if (relatedPosts.length === 0) {
+                    relatedPosts = data.posts.filter(post => {
+                        const postTag = (post.tag || '').toLowerCase();
+                        const title = (post.title || '').toLowerCase();
+                        return postTag.includes('f1') || postTag.includes('formula') ||
+                            title.includes('f1') || title.includes('formula');
+                    }).slice(0, 4); // Limit to 4 articles
+                }
             }
 
             console.log(`Found ${relatedPosts.length} related articles for ${tagToMatch}`);
@@ -497,7 +526,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return new Date(b.date) - new Date(a.date);
             });
 
-            // Update the container
+            // If no relevant articles found at all, hide the section
             if (relatedPosts.length === 0) {
                 const relatedSection = document.getElementById('related-articles');
                 if (relatedSection) {
@@ -513,6 +542,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const relatedSection = document.getElementById('related-articles');
             if (relatedSection) {
                 relatedSection.style.display = 'block';
+
+                // Change the heading to reflect the content better for teams without specific articles
+                const heading = relatedSection.querySelector('h4');
+                if (heading && (teamId === 'racing-bulls' || teamId === 'aston' || teamId === 'sauber')) {
+                    heading.textContent = 'F1 Technical Articles';
+                } else if (heading) {
+                    heading.textContent = 'Technical Articles';
+                }
             }
 
             // Display articles with pagination
@@ -618,8 +655,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const day = dateMatch ? dateMatch[2] : '1';
 
         // Process image path
-        const imagePath = post.image || '/blog-module/images/default-blog.jpg';
-        const fallbackPath = '/blog-module/images/default-blog.jpg';
+        const imagePath = post.image || '/blog-module/images/default-blog.webp';
+        const fallbackPath = '/blog-module/images/default-blog.webp';
 
         // Create article card
         return `
