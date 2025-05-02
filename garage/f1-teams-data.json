@@ -1,0 +1,338 @@
+{
+    "williams": {
+        "drivers": [
+            {
+                "name": "Alex Albon",
+                "number": "23",
+                "id": "albon",
+                "nationality": "Thai-British",
+                "age": "29",
+                "position": "8th"
+            },
+            {
+                "name": "Carlos Sainz",
+                "number": "55",
+                "id": "sainz",
+                "nationality": "Spanish",
+                "age": "31",
+                "position": "15th"
+            }
+        ],
+        "constructor": {
+            "name": "Williams Racing",
+            "principal": "James Vowles",
+            "base": "Grove, United Kingdom",
+            "firstSeason": "1977",
+            "championshipPosition": "5th",
+            "points": "25",
+            "powerUnit": "Mercedes-AMG F1 M14",
+            "chassis": "FW47"
+        }
+    },
+    "mercedes": {
+        "drivers": [
+            {
+                "name": "George Russell",
+                "number": "63",
+                "id": "russell",
+                "nationality": "British",
+                "age": "27",
+                "position": "4th"
+            },
+            {
+                "name": "Andrea Kimi Antonelli",
+                "number": "87",
+                "id": "antonelli",
+                "nationality": "Italian",
+                "age": "19",
+                "position": "6th"
+            }
+        ],
+        "constructor": {
+            "name": "Mercedes Formula 1 Team",
+            "principal": "Toto Wolff",
+            "base": "Brackley, United Kingdom",
+            "firstSeason": "1954 (returned in 2010)",
+            "championshipPosition": "2nd",
+            "points": "111",
+            "powerUnit": "Mercedes-AMG F1 M14",
+            "chassis": "W16"
+        }
+    },
+    "redbull": {
+        "drivers": [
+            {
+                "name": "Max Verstappen",
+                "number": "1",
+                "id": "max_verstappen",
+                "nationality": "Dutch",
+                "age": "28",
+                "position": "3rd"
+            },
+            {
+                "name": "Yuki Tsunoda",
+                "number": "22",
+                "id": "tsunoda",
+                "nationality": "Japanese",
+                "age": "25",
+                "position": "16th"
+            }
+        ],
+        "constructor": {
+            "name": "Red Bull Racing",
+            "principal": "Christian Horner",
+            "base": "Milton Keynes, United Kingdom",
+            "firstSeason": "2005",
+            "championshipPosition": "3rd",
+            "points": "89",
+            "powerUnit": "Honda RBPT H003",
+            "chassis": "RB21"
+        }
+    },
+    "ferrari": {
+        "drivers": [
+            {
+                "name": "Charles Leclerc",
+                "number": "16",
+                "id": "leclerc",
+                "nationality": "Monegasque",
+                "age": "28",
+                "position": "5th"
+            },
+            {
+                "name": "Lewis Hamilton",
+                "number": "44",
+                "id": "hamilton",
+                "nationality": "British",
+                "age": "40",
+                "position": "7th"
+            }
+        ],
+        "constructor": {
+            "name": "Scuderia Ferrari",
+            "principal": "Frédéric Vasseur",
+            "base": "Maranello, Italy",
+            "firstSeason": "1950",
+            "championshipPosition": "4th",
+            "points": "78",
+            "powerUnit": "Ferrari 068/9",
+            "chassis": "SF-25"
+        }
+    },
+    "mclaren": {
+        "drivers": [
+            {
+                "name": "Lando Norris",
+                "number": "4",
+                "id": "norris",
+                "nationality": "British",
+                "age": "26",
+                "position": "2nd"
+            },
+            {
+                "name": "Oscar Piastri",
+                "number": "81",
+                "id": "piastri",
+                "nationality": "Australian",
+                "age": "24",
+                "position": "1st"
+            }
+        ],
+        "constructor": {
+            "name": "McLaren Formula 1 Team",
+            "principal": "Andrea Stella",
+            "base": "Woking, United Kingdom",
+            "firstSeason": "1966",
+            "championshipPosition": "1st",
+            "points": "188",
+            "powerUnit": "Mercedes-AMG F1 M14",
+            "chassis": "MCL39"
+        }
+    },
+    "aston": {
+        "drivers": [
+            {
+                "name": "Fernando Alonso",
+                "number": "14",
+                "id": "alonso",
+                "nationality": "Spanish",
+                "age": "44",
+                "position": "17th"
+            },
+            {
+                "name": "Lance Stroll",
+                "number": "18",
+                "id": "stroll",
+                "nationality": "Canadian",
+                "age": "27",
+                "position": "10th"
+            }
+        ],
+        "constructor": {
+            "name": "Aston Martin F1 Team",
+            "principal": "Mike Krack",
+            "base": "Silverstone, United Kingdom",
+            "firstSeason": "2021 (as Aston Martin)",
+            "championshipPosition": "7th",
+            "points": "10",
+            "powerUnit": "Mercedes-AMG F1 M14",
+            "chassis": "AMR25"
+        }
+    },
+    "alpine": {
+        "drivers": [
+            {
+                "name": "Pierre Gasly",
+                "number": "10",
+                "id": "gasly",
+                "nationality": "French",
+                "age": "29",
+                "position": "11th"
+            },
+            {
+                "name": "Jack Doohan",
+                "number": "5",
+                "id": "doohan",
+                "nationality": "Australian",
+                "age": "22",
+                "position": "19th"
+            }
+        ],
+        "constructor": {
+            "name": "Alpine F1 Team",
+            "principal": "Oliver Oakes",
+            "base": "Enstone, United Kingdom",
+            "firstSeason": "2021 (as Alpine)",
+            "championshipPosition": "9th",
+            "points": "6",
+            "powerUnit": "Renault E-Tech RE25",
+            "chassis": "A525"
+        }
+    },
+    "haas": {
+        "drivers": [
+            {
+                "name": "Oliver Bearman",
+                "number": "50",
+                "id": "bearman",
+                "nationality": "British",
+                "age": "20",
+                "position": "13th"
+            },
+            {
+                "name": "Esteban Ocon",
+                "number": "31",
+                "id": "ocon",
+                "nationality": "French",
+                "age": "29",
+                "position": "9th"
+            }
+        ],
+        "constructor": {
+            "name": "Haas F1 Team",
+            "principal": "Ayao Komatsu",
+            "base": "Kannapolis, United States",
+            "firstSeason": "2016",
+            "championshipPosition": "6th",
+            "points": "20",
+            "powerUnit": "Ferrari 068/9",
+            "chassis": "VF-25"
+        }
+    },
+    "sauber": {
+        "drivers": [
+            {
+                "name": "Nico Hulkenberg",
+                "number": "27",
+                "id": "hulkenberg",
+                "nationality": "German",
+                "age": "38",
+                "position": "12th"
+            },
+            {
+                "name": "Gabriel Bortoleto",
+                "number": "96",
+                "id": "bortoleto",
+                "nationality": "Brazilian",
+                "age": "21",
+                "position": "20th"
+            }
+        ],
+        "constructor": {
+            "name": "Sauber F1 Team",
+            "principal": "Alessandro Alunni Bravi",
+            "base": "Hinwil, Switzerland",
+            "firstSeason": "1993",
+            "championshipPosition": "10th",
+            "points": "6",
+            "powerUnit": "Ferrari 068/9",
+            "chassis": "C44"
+        }
+    },
+    "racing-bulls": {
+        "drivers": [
+            {
+                "name": "Liam Lawson",
+                "number": "40",
+                "id": "lawson",
+                "nationality": "New Zealander",
+                "age": "23",
+                "position": "18th"
+            },
+            {
+                "name": "Isack Hadjar",
+                "number": "41",
+                "id": "hadjar",
+                "nationality": "French",
+                "age": "20",
+                "position": "14th"
+            }
+        ],
+        "constructor": {
+            "name": "RB F1 Team",
+            "principal": "Laurent Mekies",
+            "base": "Faenza, Italy",
+            "firstSeason": "2024 (as Racing Bulls)",
+            "championshipPosition": "8th",
+            "points": "8",
+            "powerUnit": "Honda RBPT H003",
+            "chassis": "VCARB01"
+        }
+    },
+    "standings": {
+        "drivers": [
+            { "position": 1, "driver": "Oscar Piastri", "team": "McLaren Formula 1 Team", "points": 99 },
+            { "position": 2, "driver": "Lando Norris", "team": "McLaren Formula 1 Team", "points": 89 },
+            { "position": 3, "driver": "Max Verstappen", "team": "Red Bull Racing", "points": 87 },
+            { "position": 4, "driver": "George Russell", "team": "Mercedes Formula 1 Team", "points": 73 },
+            { "position": 5, "driver": "Charles Leclerc", "team": "Scuderia Ferrari", "points": 47 },
+            { "position": 6, "driver": "Andrea Kimi Antonelli", "team": "Mercedes Formula 1 Team", "points": 38 },
+            { "position": 7, "driver": "Lewis Hamilton", "team": "Scuderia Ferrari", "points": 31 },
+            { "position": 8, "driver": "Alex Albon", "team": "Williams Racing", "points": 20 },
+            { "position": 9, "driver": "Esteban Ocon", "team": "Haas F1 Team", "points": 14 },
+            { "position": 10, "driver": "Lance Stroll", "team": "Aston Martin F1 Team", "points": 10 },
+            { "position": 11, "driver": "Pierre Gasly", "team": "Alpine F1 Team", "points": 6 },
+            { "position": 12, "driver": "Nico Hulkenberg", "team": "Sauber F1 Team", "points": 6 },
+            { "position": 13, "driver": "Oliver Bearman", "team": "Haas F1 Team", "points": 6 },
+            { "position": 14, "driver": "Isack Hadjar", "team": "RB F1 Team", "points": 5 },
+            { "position": 15, "driver": "Carlos Sainz", "team": "Williams Racing", "points": 5 },
+            { "position": 16, "driver": "Yuki Tsunoda", "team": "Red Bull Racing", "points": 5 },
+            { "position": 17, "driver": "Fernando Alonso", "team": "Aston Martin F1 Team", "points": 0 },
+            { "position": 18, "driver": "Liam Lawson", "team": "RB F1 Team", "points": 0 },
+            { "position": 19, "driver": "Jack Doohan", "team": "Alpine F1 Team", "points": 0 },
+            { "position": 20, "driver": "Gabriel Bortoleto", "team": "Sauber F1 Team", "points": 0 }
+        ],
+        "teams": [
+            { "position": 1, "team": "McLaren Formula 1 Team", "points": 188 },
+            { "position": 2, "team": "Mercedes Formula 1 Team", "points": 111 },
+            { "position": 3, "team": "Red Bull Racing", "points": 89 },
+            { "position": 4, "team": "Scuderia Ferrari", "points": 78 },
+            { "position": 5, "team": "Williams Racing", "points": 25 },
+            { "position": 6, "team": "Haas F1 Team", "points": 20 },
+            { "position": 7, "team": "Aston Martin F1 Team", "points": 10 },
+            { "position": 8, "team": "RB F1 Team", "points": 8 },
+            { "position": 9, "team": "Alpine F1 Team", "points": 6 },
+            { "position": 10, "team": "Sauber F1 Team", "points": 6 }
+        ]
+    }
+}
