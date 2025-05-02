@@ -188,6 +188,260 @@ function extractMetadata(filename, content) {
     };
 }
 
+
+
+// Εντοπισμός και μετατροπή ενσωματωμένων CSV πινάκων σε responsive HTML
+function processEmbeddedCSV(htmlContent) {
+    // Εύρεση ενσωματωμένων πινάκων
+    const csvTablePattern = /<p>CSV_TABLE:([^<]+)<\/p>/g;
+
+    // Αντικατάσταση των μοτίβων CSV_TABLE με HTML πίνακες
+    return htmlContent.replace(csvTablePattern, (match, csvFileName) => {
+        try {
+            // Καθαρισμός του ονόματος αρχείου
+            csvFileName = csvFileName.trim();
+            console.log(`Βρέθηκε αναφορά σε CSV αρχείο: ${csvFileName}`);
+
+            // Ανάγνωση του CSV αρχείου
+            const csvFilePath = path.join(BLOG_DIR, csvFileName);
+            if (!fs.existsSync(csvFilePath)) {
+                console.warn(`Το CSV αρχείο δεν βρέθηκε: ${csvFilePath}`);
+                return `<div class="csv-error">CSV αρχείο δεν βρέθηκε: ${csvFileName}</div>`;
+            }
+
+            const csvContent = fs.readFileSync(csvFilePath, 'utf8');
+            return createResponsiveTableFromCSV(csvContent, csvFileName);
+        } catch (error) {
+            console.error(`Σφάλμα επεξεργασίας CSV αρχείου: ${error.message}`);
+            return `<div class="csv-error">Σφάλμα επεξεργασίας CSV: ${error.message}</div>`;
+        }
+    });
+}
+
+// Δημιουργία responsive πίνακα από CSV περιεχόμενο
+function createResponsiveTableFromCSV(csvContent, csvFileName) {
+    try {
+        // Διαχωρισμός γραμμών CSV
+        const rows = csvContent.split(/\r?\n/).filter(row => row.trim() !== '');
+
+        if (rows.length === 0) {
+            console.warn('Το CSV δεν περιέχει γραμμές δεδομένων');
+            return '<div class="csv-error">Κενό CSV αρχείο</div>';
+        }
+
+        // Διαχωρισμός επικεφαλίδων (υπόθεση ότι η πρώτη γραμμή περιέχει τις επικεφαλίδες)
+        const headers = parseCSVRow(rows[0]);
+
+        if (headers.length === 0) {
+            console.warn('Δεν ήταν δυνατή η εξαγωγή επικεφαλίδων από το CSV');
+            return '<div class="csv-error">Αδυναμία ανάλυσης επικεφαλίδων CSV</div>';
+        }
+
+        // Δημιουργία του πίνακα με επιλογές προβολής
+        const tableName = getTableName(csvFileName);
+        const tableId = `csv-table-${sanitizeId(csvFileName)}`;
+
+        let html = `
+        <div class="table-responsive-container">
+            <div class="table-controls">
+                <h4 class="table-title">${tableName}</h4>
+                <div class="view-toggle">
+                    <button class="view-toggle-btn scroll-view active" data-view="scroll" data-table="${tableId}">
+                        <i class="fas fa-table"></i> Προβολή πίνακα
+                    </button>
+                    <button class="view-toggle-btn card-view" data-view="card" data-table="${tableId}">
+                        <i class="fas fa-th-large"></i> Προβολή καρτών
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container scroll-view active" id="${tableId}-scroll">
+                <div class="table-scroll-indicator">
+                    <span>Σύρετε για περισσότερα</span>
+                    <i class="fas fa-arrows-left-right"></i>
+                </div>
+                <table class="responsive-table">
+                    <thead>
+                        <tr>
+        `;
+
+        // Προσθήκη επικεφαλίδων
+        headers.forEach(header => {
+            html += `<th>${header}</th>`;
+        });
+
+        html += `
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        // Προσθήκη γραμμών δεδομένων
+        for (let i = 1; i < rows.length; i++) {
+            const cells = parseCSVRow(rows[i]);
+
+            // Παράλειψη κενών γραμμών
+            if (cells.length === 0 || (cells.length === 1 && cells[0] === '')) {
+                continue;
+            }
+
+            html += '<tr>';
+
+            // Προσθήκη κελιών
+            for (let j = 0; j < headers.length; j++) {
+                const cellValue = j < cells.length ? cells[j] : '';
+                html += `<td data-label="${headers[j]}">${cellValue}</td>`;
+            }
+
+            html += '</tr>';
+        }
+
+        html += `
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-container card-view" id="${tableId}-card">
+                <div class="card-container">
+        `;
+
+        // Προσθήκη προβολής καρτών για κινητά
+        for (let i = 1; i < rows.length; i++) {
+            const cells = parseCSVRow(rows[i]);
+
+            // Παράλειψη κενών γραμμών
+            if (cells.length === 0 || (cells.length === 1 && cells[0] === '')) {
+                continue;
+            }
+
+            html += '<div class="data-card">';
+
+            // Προσθήκη κελιών ως ζεύγη ετικέτας/τιμής
+            for (let j = 0; j < headers.length; j++) {
+                const cellValue = j < cells.length ? cells[j] : '';
+                html += `
+                    <div class="card-field">
+                        <div class="card-label">${headers[j]}</div>
+                        <div class="card-value">${cellValue}</div>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+        }
+
+        html += `
+                </div>
+            </div>
+            
+            <div class="table-footer">
+                <div class="table-source">Πηγή: ${csvFileName}</div>
+            </div>
+        </div>
+
+        <script>
+            // Κώδικας εναλλαγής προβολής πίνακα/καρτών
+            document.addEventListener('DOMContentLoaded', function() {
+                const tableId = '${tableId}';
+                const toggleButtons = document.querySelectorAll(\`.view-toggle-btn[data-table="\${tableId}"]\`);
+                
+                toggleButtons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const viewType = this.getAttribute('data-view');
+                        const tableContainers = document.querySelectorAll(\`#\${tableId}-scroll, #\${tableId}-card\`);
+                        
+                        // Ενημέρωση κουμπιών
+                        toggleButtons.forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        // Ενημέρωση προβολών
+                        tableContainers.forEach(container => {
+                            if (container.id === \`\${tableId}-\${viewType}\`) {
+                                container.classList.add('active');
+                            } else {
+                                container.classList.remove('active');
+                            }
+                        });
+                    });
+                });
+                
+                // Έλεγχος εάν ο πίνακας έχει οριζόντια κύλιση
+                const tableContainer = document.getElementById(\`\${tableId}-scroll\`);
+                const table = tableContainer.querySelector('table');
+                
+                if (table.offsetWidth > tableContainer.offsetWidth) {
+                    tableContainer.classList.add('has-scroll');
+                } else {
+                    tableContainer.querySelector('.table-scroll-indicator').style.display = 'none';
+                }
+            });
+        </script>
+        `;
+
+        return html;
+    } catch (error) {
+        console.error(`Σφάλμα δημιουργίας πίνακα από CSV: ${error.message}`);
+        return `<div class="csv-error">Σφάλμα δημιουργίας πίνακα: ${error.message}</div>`;
+    }
+}
+
+// Ανάλυση γραμμής CSV (χειρισμός κομμάτων και παραθέσεων)
+function parseCSVRow(row) {
+    const cells = [];
+    let currentCell = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < row.length; i++) {
+        const char = row[i];
+
+        if (char === '"') {
+            // Χειρισμός διπλών εισαγωγικών
+            if (inQuotes && i + 1 < row.length && row[i + 1] === '"') {
+                // Διπλά εισαγωγικά μέσα σε εισαγωγικά = ένα εισαγωγικό
+                currentCell += '"';
+                i++; // Παράλειψη του επόμενου χαρακτήρα
+            } else {
+                // Εναλλαγή κατάστασης εισαγωγικών
+                inQuotes = !inQuotes;
+            }
+        } else if (char === ',' && !inQuotes) {
+            // Τέλος κελιού
+            cells.push(currentCell);
+            currentCell = '';
+        } else {
+            // Κανονικός χαρακτήρας
+            currentCell += char;
+        }
+    }
+
+    // Προσθήκη του τελευταίου κελιού
+    cells.push(currentCell);
+
+    return cells;
+}
+
+// Εξαγωγή ονόματος πίνακα από το όνομα αρχείου CSV
+function getTableName(csvFileName) {
+    // Αφαίρεση της επέκτασης
+    let tableName = csvFileName.replace(/\.[^.]+$/, '');
+
+    // Μετατροπή του CamelCase σε κενά
+    tableName = tableName.replace(/([A-Z])/g, ' $1');
+
+    // Καθαρισμός και κεφαλαιοποίηση πρώτου χαρακτήρα
+    tableName = tableName.trim();
+    tableName = tableName.charAt(0).toUpperCase() + tableName.slice(1);
+
+    return tableName;
+}
+
+// Δημιουργία ασφαλούς ID από συμβολοσειρά
+function sanitizeId(str) {
+    return str.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+}
+
+
+
 // Function to convert Word or text document to HTML
 async function convertToHtml(filePath) {
     const ext = path.extname(filePath);
@@ -254,9 +508,12 @@ async function convertToHtml(filePath) {
                 }
             }
 
-            // Log any warnings
+            // Αναγνώριση και μετατροπή ενσωματωμένων CSV πινάκων
+            htmlContent = processEmbeddedCSV(htmlContent);
+
+            //Log any warnings
             if (result.messages && result.messages.length > 0) {
-                console.log("Mammoth warnings:", result.messages);
+                console.log("Προειδοποιήσεις Mammoth:", result.messages);
             }
 
             return htmlContent;
@@ -352,7 +609,7 @@ async function convertToHtml(filePath) {
             return htmlContent;
         }
     } catch (error) {
-        console.error(`Error converting document: ${filePath}`, error);
+        console.error(`Σφάλμα μετατροπής εγγράφου: ${filePath}`, error);
         return '';
     }
 }
