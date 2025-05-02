@@ -158,30 +158,30 @@ document.addEventListener('DOMContentLoaded', function() {
         let specsHtml = '<div class="car-specs">';
         car.specs.forEach(spec => {
             specsHtml += `
-        <div class="spec-item">
-            <div class="spec-title">${spec.title}</div>
-            <div class="spec-value">${spec.value}</div>
-        </div>
-    `;
+    <div class="spec-item">
+        <div class="spec-title">${spec.title}</div>
+        <div class="spec-value">${spec.value}</div>
+    </div>
+`;
         });
         specsHtml += '</div>';
 
-        // Update car info HTML
+        // Update car info HTML - Add related articles section BEFORE telemetry dashboard
         teamCarInfo.innerHTML = `
-    <h3 class="model-title">${car.name}</h3>
-    <p class="model-description">${car.description}</p>
-    <h4>Technical Specifications</h4>
-    ${specsHtml}
-    <div id="related-articles" class="mt-4">
-        <h4 class="mb-3">Technical Articles</h4>
-        <div class="related-articles-container row g-3">
-            <div class="col-12 text-center">
-                <div class="spinner-border text-light" role="status">
-                    <span class="visually-hidden">Loading articles...</span>
-                </div>
+<h3 class="model-title">${car.name}</h3>
+<p class="model-description">${car.description}</p>
+<h4>Technical Specifications</h4>
+${specsHtml}
+<div id="related-articles" class="mt-4">
+    <h4 class="mb-3">Technical Articles</h4>
+    <div class="related-articles-container row g-3">
+        <div class="col-12 text-center">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Loading articles...</span>
             </div>
         </div>
     </div>
+</div>
 `;
 
         // Show telemetry dashboard for all teams
@@ -212,12 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // If iframe is already loaded, reset it to prevent endless loading
                 iframe.src = 'about:blank';
             }
-        }
-
-        // Update document title to include car name
-        const modelTitle = document.querySelector('.model-title');
-        if (modelTitle) {
-            modelTitle.textContent = car.name;
         }
 
         // Load related articles

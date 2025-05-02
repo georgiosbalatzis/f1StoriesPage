@@ -409,6 +409,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        // Save the related articles section before modifying the DOM
+        const relatedArticles = teamCarInfo.querySelector('#related-articles');
+
         // Check if enhanced content already exists
         if (teamCarInfo.querySelector('.driver-section')) {
             console.log("Enhanced content already exists, will remove and rebuild");
@@ -434,6 +437,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Clear team car info and add new content
         teamCarInfo.innerHTML = enhancedHTML;
+
+        // Re-append the related articles section if it existed
+        if (relatedArticles) {
+            teamCarInfo.appendChild(relatedArticles);
+        }
 
         // Add click event to reset button
         const resetButton = document.getElementById('reset-team-button');
