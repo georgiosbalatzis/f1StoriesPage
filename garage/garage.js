@@ -458,10 +458,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const allTags = [...new Set(data.posts.map(post => post.tag || ''))];
             console.log('All available tags in blog data:', allTags);
 
-            // Primary search: Exact match first
+            // Primary search: Exact match first AND AllTeams articles
             let relatedPosts = data.posts.filter(post => {
                 const postTag = post.tag || '';
-                return postTag === tagToMatch;
+                // Include both team-specific articles AND AllTeams articles
+                return postTag === tagToMatch || postTag === 'AllTeams';
             });
 
             // For teams that we know don't have specific articles, show "Technical" or "AllTeams" content
@@ -521,7 +522,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             console.log(`Found ${relatedPosts.length} related articles for ${tagToMatch}`);
 
-            // Sort by date (newest first)
+            // Sort the articles by date after filtering
             relatedPosts = relatedPosts.sort((a, b) => {
                 return new Date(b.date) - new Date(a.date);
             });
