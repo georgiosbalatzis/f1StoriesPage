@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
             teamStandings = data.standings.teams;
 
             // Remove standings from team data
-            const { standings, ...teamsOnly } = data;
+            const {standings, ...teamsOnly} = data;
             enhancedTeamData = teamsOnly;
 
             console.log("Team data loaded successfully");
@@ -61,6 +61,15 @@ document.addEventListener('DOMContentLoaded', function() {
         addResetButton();
     }
 
+    // Function to find driver points from standings
+    function findDriverPoints(driverName) {
+        if (!driverStandings || driverStandings.length === 0) return '0';
+
+        // Find driver in standings
+        const driver = driverStandings.find(d => d.driver === driverName);
+        return driver ? driver.points : '0';
+    }
+
     // Function to create driver cards HTML for a team
     function createDriverCardsHTML(teamId) {
         if (!enhancedTeamData[teamId]) {
@@ -87,12 +96,16 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div><span class="driver-label">Nationality:</span>${driver.nationality}</div>
                             <div><span class="driver-label">Age:</span>${driver.age}</div>
                         </div>
-                        <div class="driver-stats">
-                            <div class="driver-position">
-                                <span class="driver-label">Position:</span>
-                                <span class="driver-position-number">${driver.position}</span>
+                            <div class="driver-stats">
+                                <div class="driver-position">
+                                    <span class="driver-label">Position:</span>
+                                    <span class="driver-position-number">${driver.position}</span>
+                                </div>
+                                <div class="driver-points">
+                                    <span class="driver-label">Points:</span>
+                                    <span class="driver-points-number">${findDriverPoints(driver.name) || '0'}</span>
+                                </div>
                             </div>
-                        </div>
                     </div>
                     <div class="driver-number-container">
                         <div class="driver-number">${driver.number}</div>
@@ -513,7 +526,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function addTeamBadgeListeners() {
         const teamBadges = document.querySelectorAll('.team-badge');
         teamBadges.forEach(badge => {
-            badge.addEventListener('click', function() {
+            badge.addEventListener('click', function () {
                 const teamId = this.getAttribute('data-team');
                 if (teamId) {
                     console.log("Team badge clicked:", teamId);
