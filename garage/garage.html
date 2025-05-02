@@ -41,6 +41,63 @@
 
         gtag('config', 'G-X68J6MQKSM');
     </script>
+    <!-- Dashboard Styles -->
+    <style>
+        .dashboard-toggle-btn {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary-color, #ff0000);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            margin-bottom: 0;
+        }
+
+        .dashboard-toggle-btn:hover {
+            background-color: rgba(20, 20, 20, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .dashboard-toggle-btn .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-toggle-btn.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .dashboard-container {
+            border: 1px solid var(--primary-color, #ff0000);
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            padding: 0;
+            background-color: rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-container iframe {
+            transition: opacity 0.5s ease;
+        }
+
+        .dashboard-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1;
+        }
+    </style>
 </head>
 <body>
 <div class="background"></div>
@@ -242,6 +299,25 @@
 
                     <!-- Team-specific car info will be loaded here -->
                     <div id="team-car-info"></div>
+
+                    <!-- F1 Telemetry Dashboard -->
+                    <div id="telemetry-dashboard" class="mt-4 mb-4" style="display: none;">
+                        <h4 class="dashboard-toggle-btn" onclick="toggleDashboard()">
+                            <i class="fas fa-chart-line"></i> <span id="team-dashboard-title">F1 Telemetry Dashboard</span>
+                            <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
+                        </h4>
+                        <div id="dashboard-container" class="dashboard-container" style="display: none;">
+                            <iframe
+                                    id="f1-dashboard-iframe"
+                                    data-src="https://georgiosbalatzis.github.io/f1-telemetry-dashboard/"
+                                    width="100%"
+                                    height="600px"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                    </div>
 
                     <div class="model-note mt-4">
                         <p>Note: Williams, Ferrari 2025. The 3D models currently displayed are the 2024 versions. The 2025 models are ordered and on their way.</p>
