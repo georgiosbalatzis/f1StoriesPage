@@ -812,3 +812,80 @@
         padding: 0.8rem;
     }
 }
+
+.driver-stats-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.driver-position, .driver-points {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+}
+
+.driver-position-number, .driver-points-number {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    padding: 0.3rem 0.8rem;
+    display: inline-block;
+    font-weight: bold;
+    min-width: 2.5rem;
+    text-align: center;
+}
+
+.driver-position-number {
+    color: #ffffff;
+}
+
+.driver-points-number {
+    color: var(--highlight-color, #00ffff);
+}
+
+@media (max-width: 767px) {
+    .driver-stats-row {
+        gap: 0.8rem;
+    }
+
+    .driver-label {
+        min-width: 70px;
+    }
+}
+
+@media (max-width: 480px) {
+    .driver-stats-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .driver-label {
+        min-width: 65px;
+        font-size: 0.85rem;
+    }
+
+    .driver-position-number, .driver-points-number {
+        padding: 0.2rem 0.5rem;
+        min-width: 2rem;
+    }
+}
+.driver-card {
+    position: relative;
+    background: rgba(20, 20, 40, 0.7);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    height: 180px; /* Reduced height as stats are now side by side */
+    display: flex;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(0, 115, 230, 0.3);
+}
+
+@media (max-width: 480px) {
+    .driver-card {
+        height: 200px; /* Still need more height on mobile as stats will stack */
+    }
+}

@@ -97,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div><span class="driver-label">Age:</span>${driver.age}</div>
                         </div>
                             <div class="driver-stats">
+                            <div class="driver-stats-row">
                                 <div class="driver-position">
                                     <span class="driver-label">Position:</span>
                                     <span class="driver-position-number">${driver.position}</span>
@@ -106,6 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <span class="driver-points-number">${findDriverPoints(driver.name) || '0'}</span>
                                 </div>
                             </div>
+                        </div>
                     </div>
                     <div class="driver-number-container">
                         <div class="driver-number">${driver.number}</div>
