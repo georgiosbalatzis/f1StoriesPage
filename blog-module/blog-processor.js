@@ -188,34 +188,381 @@ function extractMetadata(filename, content) {
     };
 }
 
+// Function to convert Word or text document to HTML
+async function convertToHtml(filePath) {
+    const ext = path.extname(filePath);
 
+    try {
+        if (ext === '.docx') {
+            // First, extract raw text to identify the first two words
+            const textResult = await mammoth.extractRawText({path: filePath});
+            const rawText = textResult.value;
+            const firstTwoWords = rawText.trim().split(/\s+/).slice(0, 2);
 
-// Εντοπισμός και μετατροπή ενσωματωμένων CSV πινάκων σε responsive HTML
-function processEmbeddedCSV(htmlContent) {
-    // Εύρεση ενσωματωμένων πινάκων
-    const csvTablePattern = /<p>CSV_TABLE:([^<]+)<\/p>/g;
+            // Now get the full content with formatting
+            const options = {
+                path: filePath,
+                transformDocument: mammoth.transforms.paragraph(paragraph => {
+                    // Handle special paragraph types if needed
+                    return paragraph;
+                }),
+                convertImage: mammoth.images.imgElement(function(image) {
+                    return {
+                        src: image.src,
+                        alt: "Image"
+                    };
+                }),
+                styleMap: [
+                    "p[style-name='Heading 1'] => h1:fresh",
+                    "p[style-name='Heading 2'] => h2:fresh",
+                    "p[style-name='Heading 3'] => h3:fresh",
+                    "p[style-name='Title'] => h1.title:fresh",
+                    "b => strong",
+                    "i => em",
+                    "u => u",
+                    "br => br"
+                ]
+            };
 
-    // Αντικατάσταση των μοτίβων CSV_TABLE με HTML πίνακες
-    return htmlContent.replace(csvTablePattern, (match, csvFileName) => {
-        try {
-            // Καθαρισμός του ονόματος αρχείου
-            csvFileName = csvFileName.trim();
-            console.log(`Βρέθηκε αναφορά σε CSV αρχείο: ${csvFileName}`);
+            // Convert to HTML
+            const result = await mammoth.convertToHtml(options);
 
-            // Ανάγνωση του CSV αρχείου
-            const csvFilePath = path.join(BLOG_DIR, csvFileName);
-            if (!fs.existsSync(csvFilePath)) {
-                console.warn(`Το CSV αρχείο δεν βρέθηκε: ${csvFilePath}`);
-                return `<div class="csv-error">CSV αρχείο δεν βρέθηκε: ${csvFileName}</div>`;
+            // Process headers that use markdown-style markup
+            let htmlContent = result.value;
+
+            // Process markdown-style headers (# and ##)
+            htmlContent = htmlContent.replace(/<p>(#+)\s+(.*?)<\/p>/g, (match, hashes, content) => {
+                const level = hashes.length;
+                if (level >= 1 && level <= 6) {
+                    return `<h${level}>${content}</h${level}>`;
+                }
+                return match;
+            });
+
+            // Remove the first two words (tag and category) from the content
+            // First try to find them at the beginning of the document
+            if (firstTwoWords.length === 2) {
+                const firstWordPattern = new RegExp(`<p>${firstTwoWords[0]}\\s+${firstTwoWords[1]}`);
+                const startingParagraph = htmlContent.match(firstWordPattern);
+
+                if (startingParagraph) {
+                    // Found the first paragraph with the tag and category
+                    htmlContent = htmlContent.replace(firstWordPattern, '<p>');
+                } else {
+                    // Try a more general approach - remove the first paragraph if it's short
+                    htmlContent = htmlContent.replace(/<p>[^<]{1,50}<\/p>/, '');
+                }
             }
 
-            const csvContent = fs.readFileSync(csvFilePath, 'utf8');
-            return createResponsiveTableFromCSV(csvContent, csvFileName);
-        } catch (error) {
-            console.error(`Σφάλμα επεξεργασίας CSV αρχείου: ${error.message}`);
-            return `<div class="csv-error">Σφάλμα επεξεργασίας CSV: ${error.message}</div>`;
+            // Αναγνώριση και μετατροπή ενσωματωμένων CSV πινάκων
+            const entryPath = path.dirname(filePath);
+            console.log(`Διαδρομή εγγράφου: ${filePath}, Διαδρομή φακέλου: ${entryPath}`);
+            htmlContent = processEmbeddedCSV(htmlContent, entryPath);
+
+            //Log any warnings
+            if (result.messages && result.messages.length > 0) {
+                console.log("Προειδοποιήσεις Mammoth:", result.messages);
+            }
+
+            htmlContent = processEmbeddedCSV(htmlContent, path.dirname(filePath));
+            return htmlContent;
+        } else if (ext === '.txt') {
+            let content = fs.readFileSync(filePath, 'utf8');
+
+            // Remove metadata section if present
+            content = content.replace(/^---\n[\s\S]*?\n---\n/, '');
+
+            // If no frontmatter, we need to remove the first two words (tag and category)
+            if (!content.startsWith('---')) {
+                // Replace the first two words more aggressively to ensure they're removed
+                content = content.replace(/^\s*(\S+)\s+(\S+)/, '');
+            }
+
+            // Improved text formatting:
+            const lines = content.split('\n');
+            let htmlContent = '';
+            let currentParagraph = '';
+            let inList = false;
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+
+                // Skip empty lines
+                if (line === '') {
+                    if (currentParagraph !== '') {
+                        htmlContent += `<p>${currentParagraph}</p>\n`;
+                        currentParagraph = '';
+                    }
+                    continue;
+                }
+
+                // Check for headers
+                if (line.startsWith('# ')) {
+                    if (currentParagraph !== '') {
+                        htmlContent += `<p>${currentParagraph}</p>\n`;
+                        currentParagraph = '';
+                    }
+                    const headerText = line.substring(2);
+                    htmlContent += `<h2>${headerText}</h2>\n`;
+                    continue;
+                }
+
+                if (line.startsWith('## ')) {
+                    if (currentParagraph !== '') {
+                        htmlContent += `<p>${currentParagraph}</p>\n`;
+                        currentParagraph = '';
+                    }
+                    const headerText = line.substring(3);
+                    htmlContent += `<h3>${headerText}</h3>\n`;
+                    continue;
+                }
+
+                // Check for bullet points
+                if (line.startsWith('- ') || line.startsWith('* ')) {
+                    if (currentParagraph !== '') {
+                        htmlContent += `<p>${currentParagraph}</p>\n`;
+                        currentParagraph = '';
+                    }
+
+                    // Start a list if not already started
+                    if (!inList) {
+                        htmlContent += '<ul>\n';
+                        inList = true;
+                    }
+
+                    const bulletText = line.substring(2);
+                    htmlContent += `<li>${bulletText}</li>\n`;
+
+                    // Check if next line is also a bullet point
+                    if (i === lines.length - 1 ||
+                        !(lines[i+1].trim().startsWith('- ') || lines[i+1].trim().startsWith('* '))) {
+                        htmlContent += '</ul>\n';
+                        inList = false;
+                    }
+                    continue;
+                }
+
+                // Regular line, add to current paragraph
+                if (currentParagraph === '') {
+                    currentParagraph = line;
+                } else {
+                    currentParagraph += ' ' + line;
+                }
+            }
+
+            // Add any remaining paragraph
+            if (currentParagraph !== '') {
+                htmlContent += `<p>${currentParagraph}</p>\n`;
+            }
+
+            htmlContent = processEmbeddedCSV(htmlContent, path.dirname(filePath));
+            return htmlContent;
         }
+    } catch (error) {
+        console.error(`Σφάλμα μετατροπής εγγράφου: ${filePath}`, error);
+        return '';
+    }
+}
+
+// Συνάρτηση εντοπισμού ετικετών CSV
+function enhancedExtractCSVTags(htmlContent) {
+    console.log("Εκτέλεση βελτιωμένου εντοπισμού ετικετών CSV_TABLE");
+
+    // Αποτύπωση του αρχικού HTML για αποσφαλμάτωση
+    console.log(`Αρχικό HTML περιεχόμενο (πρώτοι 200 χαρακτήρες): ${htmlContent.substring(0, 200)}...`);
+
+    // Ανίχνευση διαφορετικών πιθανών μορφών ετικετών CSV_TABLE
+    const possiblePatterns = [
+        /<p>CSV_TABLE:([^<]+)<\/p>/g,                // Κανονική μορφή
+        /<p[^>]*>CSV_TABLE:([^<]+)<\/p>/g,           // Παράγραφος με πρόσθετα χαρακτηριστικά
+        /CSV_TABLE:([^\s<]+)/g,                      // Χωρίς περιβάλλοντα tags
+        /<div[^>]*>CSV_TABLE:([^<]+)<\/div>/g,       // Μέσα σε div
+        /<span[^>]*>CSV_TABLE:([^<]+)<\/span>/g      // Μέσα σε span
+    ];
+
+    let allMatches = [];
+    let matchCount = 0;
+
+    // Εντοπισμός όλων των πιθανών ετικετών
+    possiblePatterns.forEach((pattern, index) => {
+        let matches = [];
+        let match;
+
+        // Επαναφορά του κανονικού expression για κάθε επανάληψη
+        pattern.lastIndex = 0;
+
+        while ((match = pattern.exec(htmlContent)) !== null) {
+            matchCount++;
+            console.log(`Βρέθηκε ετικέτα CSV με pattern #${index + 1}: ${match[0]} -> ${match[1]}`);
+
+            // Προσθήκη του ονόματος αρχείου στη λίστα ευρημάτων
+            matches.push({
+                fullMatch: match[0],
+                fileName: match[1].trim(),
+                pattern: index
+            });
+        }
+
+        allMatches = [...allMatches, ...matches];
     });
+
+    console.log(`Συνολικά βρέθηκαν ${matchCount} ετικέτες CSV_TABLE`);
+
+    return allMatches;
+}
+
+// Συνάρτηση δημιουργίας μηνύματος σφάλματος
+function createCSVErrorMessage(csvFileName) {
+    return `
+    <div class="csv-error">
+        <strong>CSV αρχείο δεν βρέθηκε:</strong> ${csvFileName}
+        <div class="csv-error-details">
+            <p>Το αρχείο πρέπει να βρίσκεται στον ίδιο φάκελο με το DOCX ή στον φάκελο 'data/'. Ελέγξτε:</p>
+            <ul>
+                <li>Την ορθογραφία του ονόματος αρχείου</li>
+                <li>Τα πεζά/κεφαλαία γράμματα</li>
+                <li>Την επέκταση αρχείου (.csv)</li>
+                <li>Ότι το αρχείο έχει μεταφορτωθεί μαζί με το DOCX</li>
+            </ul>
+        </div>
+    </div>`;
+}
+
+// Συνάρτηση εύρεσης CSV αρχείου
+function findCSVFile(csvFileName, entryPath) {
+    console.log(`Αναζήτηση CSV αρχείου: ${csvFileName} στο φάκελο: ${entryPath || "μη ορισμένο"}`);
+
+    // Έλεγχος αν το entryPath είναι έγκυρο
+    if (!entryPath || typeof entryPath !== 'string') {
+        console.error(`Σφάλμα: Το entryPath δεν είναι έγκυρο: ${entryPath}`);
+        entryPath = BLOG_DIR; // Χρήση του BLOG_DIR ως fallback
+        console.log(`Χρήση εναλλακτικής διαδρομής: ${entryPath}`);
+    }
+
+    // Λίστα με πιθανές διαδρομές αρχείων για αναζήτηση
+    const possiblePaths = [
+        // 1. Ακριβής διαδρομή στον φάκελο του άρθρου
+        path.join(entryPath, csvFileName),
+
+        // 2. Διαδρομή στον φάκελο data/
+        path.join(BLOG_DIR, 'data', csvFileName),
+
+        // 3. Διαδρομή στον root φάκελο του blog
+        path.join(BLOG_DIR, csvFileName)
+    ];
+
+    // Αναζήτηση στις πιθανές διαδρομές
+    for (const filePath of possiblePaths) {
+        console.log(`Έλεγχος διαδρομής: ${filePath}`);
+
+        if (fs.existsSync(filePath)) {
+            console.log(`Το CSV αρχείο βρέθηκε: ${filePath}`);
+            try {
+                const content = fs.readFileSync(filePath, 'utf8');
+                return { filePath, content };
+            } catch (error) {
+                console.error(`Σφάλμα ανάγνωσης αρχείου ${filePath}: ${error.message}`);
+            }
+        }
+    }
+
+    // Τελευταία προσπάθεια: Αναζήτηση με διαφορετική πεζότητα
+    console.log("Αναζήτηση με διαφορετική πεζότητα...");
+
+    try {
+        const entryDir = fs.readdirSync(entryPath);
+        const lowercaseFileName = csvFileName.toLowerCase();
+
+        const matchingFile = entryDir.find(file =>
+            file.toLowerCase() === lowercaseFileName ||
+            file.toLowerCase() === lowercaseFileName + '.csv');
+
+        if (matchingFile) {
+            const filePath = path.join(entryPath, matchingFile);
+            console.log(`Το CSV αρχείο βρέθηκε με διαφορετική πεζότητα: ${matchingFile}`);
+
+            try {
+                const content = fs.readFileSync(filePath, 'utf8');
+                return { filePath, content };
+            } catch (error) {
+                console.error(`Σφάλμα ανάγνωσης αρχείου ${filePath}: ${error.message}`);
+            }
+        }
+    } catch (error) {
+        console.error(`Σφάλμα ανάγνωσης φακέλου ${entryPath}: ${error.message}`);
+    }
+
+    // Το αρχείο δεν βρέθηκε
+    console.warn(`Το CSV αρχείο δεν βρέθηκε: ${csvFileName}`);
+    return { filePath: null, content: null };
+}
+
+// Συνάρτηση επεξεργασίας ενσωματωμένων CSV
+function processEmbeddedCSV(htmlContent, entryPath) {
+    // Εξασφάλιση ότι το entryPath είναι έγκυρο
+    if (!entryPath) {
+        console.error("Σφάλμα: Λείπει το entryPath στην processEmbeddedCSV");
+        entryPath = BLOG_DIR; // Χρήση fallback
+    }
+
+    console.log(`Επεξεργασία CSV με entryPath: ${entryPath}`);
+    // Εντοπισμός όλων των ετικετών CSV_TABLE
+    const csvTags = enhancedExtractCSVTags(htmlContent);
+
+    // Αν δεν βρέθηκαν ετικέτες, επιστροφή του αρχικού περιεχομένου
+    if (csvTags.length === 0) {
+        console.log("Δεν βρέθηκαν ετικέτες CSV_TABLE");
+        return htmlContent;
+    }
+
+    // Επεξεργασία κάθε ετικέτας και αντικατάσταση με τον αντίστοιχο πίνακα
+    let processedContent = htmlContent;
+
+    for (const tag of csvTags) {
+        try {
+            const csvFileName = tag.fileName;
+            console.log(`Επεξεργασία ετικέτας CSV για το αρχείο: ${csvFileName}`);
+
+            // Εντοπισμός του CSV αρχείου (βελτιωμένη συνάρτηση αναζήτησης)
+            const { filePath, content } = findCSVFile(csvFileName, entryPath);
+
+            // Αν βρέθηκε το αρχείο, μετατροπή σε πίνακα
+            let replacement;
+            if (content) {
+                console.log(`Δημιουργία πίνακα από το CSV: ${filePath}`);
+                replacement = createResponsiveTableFromCSV(content, csvFileName);
+            } else {
+                // Βελτιωμένο μήνυμα σφάλματος
+                console.warn(`Το CSV αρχείο δεν βρέθηκε: ${csvFileName}`);
+                replacement = createCSVErrorMessage(csvFileName);
+            }
+
+            // Απόδραση ειδικών χαρακτήρων στο regex
+            const escapedMatch = tag.fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+            // Αντικατάσταση της ετικέτας με τον πίνακα ή το μήνυμα σφάλματος
+            processedContent = processedContent.replace(new RegExp(escapedMatch, 'g'), replacement);
+        } catch (error) {
+            console.error(`Σφάλμα επεξεργασίας ετικέτας CSV: ${error.message}`);
+
+            // Απόδραση ειδικών χαρακτήρων στο regex
+            const escapedMatch = tag.fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+            // Αντικατάσταση της ετικέτας με μήνυμα σφάλματος
+            const errorMessage = `
+            <div class="csv-error">
+                <strong>Σφάλμα επεξεργασίας CSV:</strong> ${error.message}
+                <div class="csv-error-details">
+                    <p>Λεπτομέρειες σφάλματος:</p>
+                    <pre>${error.stack}</pre>
+                </div>
+            </div>`;
+
+            processedContent = processedContent.replace(new RegExp(escapedMatch, 'g'), errorMessage);
+        }
+    }
+
+    return processedContent;
 }
 
 // Δημιουργία responsive πίνακα από CSV περιεχόμενο
@@ -385,7 +732,7 @@ function createResponsiveTableFromCSV(csvContent, csvFileName) {
     }
 }
 
-// Ανάλυση γραμμής CSV (χειρισμός κομμάτων και παραθέσεων)
+// Ανάλυση γραμμής CSV
 function parseCSVRow(row) {
     const cells = [];
     let currentCell = '';
@@ -438,180 +785,6 @@ function getTableName(csvFileName) {
 // Δημιουργία ασφαλούς ID από συμβολοσειρά
 function sanitizeId(str) {
     return str.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
-}
-
-
-
-// Function to convert Word or text document to HTML
-async function convertToHtml(filePath) {
-    const ext = path.extname(filePath);
-
-    try {
-        if (ext === '.docx') {
-            // First, extract raw text to identify the first two words
-            const textResult = await mammoth.extractRawText({path: filePath});
-            const rawText = textResult.value;
-            const firstTwoWords = rawText.trim().split(/\s+/).slice(0, 2);
-
-            // Now get the full content with formatting
-            const options = {
-                path: filePath,
-                transformDocument: mammoth.transforms.paragraph(paragraph => {
-                    // Handle special paragraph types if needed
-                    return paragraph;
-                }),
-                convertImage: mammoth.images.imgElement(function(image) {
-                    return {
-                        src: image.src,
-                        alt: "Image"
-                    };
-                }),
-                styleMap: [
-                    "p[style-name='Heading 1'] => h1:fresh",
-                    "p[style-name='Heading 2'] => h2:fresh",
-                    "p[style-name='Heading 3'] => h3:fresh",
-                    "p[style-name='Title'] => h1.title:fresh",
-                    "b => strong",
-                    "i => em",
-                    "u => u",
-                    "br => br"
-                ]
-            };
-
-            // Convert to HTML
-            const result = await mammoth.convertToHtml(options);
-
-            // Process headers that use markdown-style markup
-            let htmlContent = result.value;
-
-            // Process markdown-style headers (# and ##)
-            htmlContent = htmlContent.replace(/<p>(#+)\s+(.*?)<\/p>/g, (match, hashes, content) => {
-                const level = hashes.length;
-                if (level >= 1 && level <= 6) {
-                    return `<h${level}>${content}</h${level}>`;
-                }
-                return match;
-            });
-
-            // Remove the first two words (tag and category) from the content
-            // First try to find them at the beginning of the document
-            if (firstTwoWords.length === 2) {
-                const firstWordPattern = new RegExp(`<p>${firstTwoWords[0]}\\s+${firstTwoWords[1]}`);
-                const startingParagraph = htmlContent.match(firstWordPattern);
-
-                if (startingParagraph) {
-                    // Found the first paragraph with the tag and category
-                    htmlContent = htmlContent.replace(firstWordPattern, '<p>');
-                } else {
-                    // Try a more general approach - remove the first paragraph if it's short
-                    htmlContent = htmlContent.replace(/<p>[^<]{1,50}<\/p>/, '');
-                }
-            }
-
-            // Αναγνώριση και μετατροπή ενσωματωμένων CSV πινάκων
-            htmlContent = processEmbeddedCSV(htmlContent);
-
-            //Log any warnings
-            if (result.messages && result.messages.length > 0) {
-                console.log("Προειδοποιήσεις Mammoth:", result.messages);
-            }
-
-            return htmlContent;
-        } else if (ext === '.txt') {
-            let content = fs.readFileSync(filePath, 'utf8');
-
-            // Remove metadata section if present
-            content = content.replace(/^---\n[\s\S]*?\n---\n/, '');
-
-            // If no frontmatter, we need to remove the first two words (tag and category)
-            if (!content.startsWith('---')) {
-                // Replace the first two words more aggressively to ensure they're removed
-                content = content.replace(/^\s*(\S+)\s+(\S+)/, '');
-            }
-
-            // Improved text formatting:
-            const lines = content.split('\n');
-            let htmlContent = '';
-            let currentParagraph = '';
-            let inList = false;
-
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-
-                // Skip empty lines
-                if (line === '') {
-                    if (currentParagraph !== '') {
-                        htmlContent += `<p>${currentParagraph}</p>\n`;
-                        currentParagraph = '';
-                    }
-                    continue;
-                }
-
-                // Check for headers
-                if (line.startsWith('# ')) {
-                    if (currentParagraph !== '') {
-                        htmlContent += `<p>${currentParagraph}</p>\n`;
-                        currentParagraph = '';
-                    }
-                    const headerText = line.substring(2);
-                    htmlContent += `<h2>${headerText}</h2>\n`;
-                    continue;
-                }
-
-                if (line.startsWith('## ')) {
-                    if (currentParagraph !== '') {
-                        htmlContent += `<p>${currentParagraph}</p>\n`;
-                        currentParagraph = '';
-                    }
-                    const headerText = line.substring(3);
-                    htmlContent += `<h3>${headerText}</h3>\n`;
-                    continue;
-                }
-
-                // Check for bullet points
-                if (line.startsWith('- ') || line.startsWith('* ')) {
-                    if (currentParagraph !== '') {
-                        htmlContent += `<p>${currentParagraph}</p>\n`;
-                        currentParagraph = '';
-                    }
-
-                    // Start a list if not already started
-                    if (!inList) {
-                        htmlContent += '<ul>\n';
-                        inList = true;
-                    }
-
-                    const bulletText = line.substring(2);
-                    htmlContent += `<li>${bulletText}</li>\n`;
-
-                    // Check if next line is also a bullet point
-                    if (i === lines.length - 1 ||
-                        !(lines[i+1].trim().startsWith('- ') || lines[i+1].trim().startsWith('* '))) {
-                        htmlContent += '</ul>\n';
-                        inList = false;
-                    }
-                    continue;
-                }
-
-                // Regular line, add to current paragraph
-                if (currentParagraph === '') {
-                    currentParagraph = line;
-                } else {
-                    currentParagraph += ' ' + line;
-                }
-            }
-
-            // Add any remaining paragraph
-            if (currentParagraph !== '') {
-                htmlContent += `<p>${currentParagraph}</p>\n`;
-            }
-
-            return htmlContent;
-        }
-    } catch (error) {
-        console.error(`Σφάλμα μετατροπής εγγράφου: ${filePath}`, error);
-        return '';
-    }
 }
 
 // Function to process a single blog entry
