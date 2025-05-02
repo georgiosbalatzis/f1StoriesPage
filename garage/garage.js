@@ -142,7 +142,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Function to update car information
-    // Function to update car information and load related articles
     function updateCarInfo(teamId) {
         if (!teamCarInfo) {
             console.error('Team car info element not found');
@@ -159,31 +158,61 @@ document.addEventListener('DOMContentLoaded', function() {
         let specsHtml = '<div class="car-specs">';
         car.specs.forEach(spec => {
             specsHtml += `
-            <div class="spec-item">
-                <div class="spec-title">${spec.title}</div>
-                <div class="spec-value">${spec.value}</div>
-            </div>
-        `;
+        <div class="spec-item">
+            <div class="spec-title">${spec.title}</div>
+            <div class="spec-value">${spec.value}</div>
+        </div>
+    `;
         });
         specsHtml += '</div>';
 
         // Update car info HTML
         teamCarInfo.innerHTML = `
-        <h3 class="model-title">${car.name}</h3>
-        <p class="model-description">${car.description}</p>
-        <h4>Technical Specifications</h4>
-        ${specsHtml}
-        <div id="related-articles" class="mt-4">
-            <h4 class="mb-3">Technical Articles</h4>
-            <div class="related-articles-container row g-3">
-                <div class="col-12 text-center">
-                    <div class="spinner-border text-light" role="status">
-                        <span class="visually-hidden">Loading articles...</span>
-                    </div>
+    <h3 class="model-title">${car.name}</h3>
+    <p class="model-description">${car.description}</p>
+    <h4>Technical Specifications</h4>
+    ${specsHtml}
+    <div id="related-articles" class="mt-4">
+        <h4 class="mb-3">Technical Articles</h4>
+        <div class="related-articles-container row g-3">
+            <div class="col-12 text-center">
+                <div class="spinner-border text-light" role="status">
+                    <span class="visually-hidden">Loading articles...</span>
                 </div>
             </div>
         </div>
-    `;
+    </div>
+`;
+
+        // Show telemetry dashboard for all teams
+        const telemetryDashboard = document.getElementById('telemetry-dashboard');
+        const teamDashboardTitle = document.getElementById('team-dashboard-title');
+        if (telemetryDashboard && teamDashboardTitle) {
+            // Show dashboard section for all teams
+            telemetryDashboard.style.display = 'block';
+
+            // Update dashboard title with team name
+            const teamName = car.name.split(' ')[0]; // Get just the team name part
+            teamDashboardTitle.textContent = `${teamName} Telemetry Dashboard`;
+
+            // Reset dashboard state when switching teams
+            const dashboardContainer = document.getElementById('dashboard-container');
+            const toggleBtn = document.querySelector('.dashboard-toggle-btn');
+            const iframe = document.getElementById('f1-dashboard-iframe');
+
+            if (dashboardContainer) dashboardContainer.style.display = 'none';
+            if (toggleBtn) toggleBtn.classList.remove('active');
+
+            // Update iframe - store URL in data-src instead of setting src directly
+            if (iframe) {
+                // Set the data-src attribute but don't load the iframe yet
+                const baseUrl = 'https://georgiosbalatzis.github.io/f1-telemetry-dashboard/';
+                iframe.setAttribute('data-src', baseUrl);
+
+                // If iframe is already loaded, reset it to prevent endless loading
+                iframe.src = 'about:blank';
+            }
+        }
 
         // Update document title to include car name
         const modelTitle = document.querySelector('.model-title');
@@ -1004,6 +1033,56 @@ document.addEventListener('DOMContentLoaded', function() {
                 {title: "0-100 km/h", value: "2.6 seconds"},
                 {title: "Drivers", value: "Liam Lawson, Isack Hadjar"}
             ]
+        }
+    };
+
+    // Dashboard toggle functionality
+    // Dashboard toggle functionality
+    window.toggleDashboard = function() {
+        const dashboardContainer = document.getElementById('dashboard-container');
+        const toggleBtn = document.querySelector('.dashboard-toggle-btn');
+        const iframe = document.getElementById('f1-dashboard-iframe');
+
+        if (dashboardContainer.style.display === 'none') {
+            // Show dashboard
+            dashboardContainer.style.display = 'block';
+            toggleBtn.classList.add('active');
+
+            // Remove any existing loading indicators first
+            const existingLoader = dashboardContainer.querySelector('.dashboard-loading');
+            if (existingLoader) existingLoader.remove();
+
+            // Add loading indicator
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'dashboard-loading';
+            loadingDiv.innerHTML = `
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Loading dashboard...</span>
+            </div>
+        `;
+            dashboardContainer.appendChild(loadingDiv);
+
+            // Initialize iframe if needed
+            if (!iframe.getAttribute('src') || iframe.getAttribute('src') === 'about:blank') {
+                iframe.src = iframe.getAttribute('data-src') || 'https://georgiosbalatzis.github.io/f1-telemetry-dashboard/';
+            }
+
+            iframe.style.opacity = '0';
+
+            // Remove loading indicator when iframe loads
+            iframe.onload = function() {
+                iframe.style.opacity = '1';
+
+                // Remove loading indicator after a short delay
+                setTimeout(() => {
+                    const loadingElem = dashboardContainer.querySelector('.dashboard-loading');
+                    if (loadingElem) loadingElem.remove();
+                }, 500);
+            };
+        } else {
+            // Hide dashboard
+            dashboardContainer.style.display = 'none';
+            toggleBtn.classList.remove('active');
         }
     };
 });
