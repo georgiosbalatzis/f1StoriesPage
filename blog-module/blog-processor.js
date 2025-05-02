@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const mammoth = require('mammoth');
+const sharp = require('sharp');
+const AdmZip = require('adm-zip');
 
 // Configuration
 const BLOG_DIR = path.join(__dirname, 'blog-entries');
@@ -107,19 +109,150 @@ function processImages(entryPath, folderName) {
     return processedImages;
 }
 
+
+async function extractAndConvertDocxImages(docxPath, outputFolder, folderName) {
+    console.log(`Extracting images from: ${docxPath} to ${outputFolder}`);
+
+    try {
+        // Read the docx file
+        const docxData = fs.readFileSync(docxPath);
+        const zip = await JSZip.loadAsync(docxData);
+
+        // Create output directory
+        const imageOutputDir = path.join(outputFolder, 'images', folderName);
+        fs.mkdirSync(imageOutputDir, { recursive: true });
+
+        // Create article folder output directory
+        const articleImageDir = path.dirname(docxPath);
+
+        // Find all image files in word/media folder
+        const imageFiles = [];
+        let imageIndex = 1;
+
+        const promises = [];
+
+        zip.forEach(async (relativePath, zipEntry) => {
+            if (relativePath.startsWith('word/media/')) {
+                const imageBuffer = await zipEntry.async('nodebuffer');
+                const fileName = `${imageIndex}.webp`;
+                const avifName = `${imageIndex}.avif`;
+                imageIndex++;
+
+                // Save the original image path for reference
+                const imageInfo = {
+                    originalPath: relativePath,
+                    webpName: fileName,
+                    avifName: avifName,
+                    buffer: imageBuffer
+                };
+
+                imageFiles.push(imageInfo);
+
+                // Process each image (convert to WebP and AVIF)
+                const webpPromise = sharp(imageBuffer)
+                    .webp({ quality: 80 })
+                    .toFile(path.join(imageOutputDir, fileName))
+                    .then(() => {
+                        // Also save directly to article folder
+                        return sharp(imageBuffer)
+                            .webp({ quality: 80 })
+                            .toFile(path.join(articleImageDir, fileName));
+                    })
+                    .catch(err => console.error(`Error saving WebP image: ${err}`));
+
+                const avifPromise = sharp(imageBuffer)
+                    .avif({ quality: 80 })
+                    .toFile(path.join(imageOutputDir, avifName))
+                    .then(() => {
+                        // Also save directly to article folder
+                        return sharp(imageBuffer)
+                            .avif({ quality: 80 })
+                            .toFile(path.join(articleImageDir, avifName));
+                    })
+                    .catch(err => console.error(`Error saving AVIF image: ${err}`));
+
+                promises.push(webpPromise, avifPromise);
+            }
+        });
+
+        // Wait for all conversions to complete
+        await Promise.all(promises);
+
+        console.log(`Extracted and converted ${imageFiles.length} images`);
+        return imageFiles;
+    } catch (error) {
+        console.error(`Error extracting images: ${error.message}`);
+        return [];
+    }
+}
+
 // Function to extract and modify image paths in HTML content
-function processContentImages(content, folderName) {
-    // Use a simple regex to find and update image paths
-    return content.replace(
-        /src="([^"]+)"/g,
-        (match, imagePath) => {
-            // If it's a relative path, update it
-            if (!imagePath.startsWith('http') && !imagePath.startsWith('/')) {
-                return `src="/blog-module/blog/images/${folderName}/${path.basename(imagePath)}"`
+function processContentImages(content, folderName, extractedImages = []) {
+    console.log("Processing content images for: " + folderName);
+    console.log("Number of extracted images: " + extractedImages.length);
+
+    // Create a fresh version of content with proper image paths
+    let processedContent = content;
+
+    // Handle image tags from DOCX - replacing with local numbered images
+    if (extractedImages.length > 0) {
+        // First, find all image tags in the content
+        const imagePattern = /<img[^>]*?>/g;
+        const images = content.match(imagePattern) || [];
+        console.log(`Found ${images.length} image tags to replace`);
+
+        // Build a string with proper numbered image references
+        let imageHtml = '';
+        for (let i = 0; i < extractedImages.length; i++) {
+            // Start numbering from 3 since 1 and 2 are reserved for banners
+            const imageNumber = i + 3;
+            // Create enhanced image tag with fallback using just local filename
+            imageHtml += `<img src="${imageNumber}.webp" 
+                alt="Racing Bulls Miami Special Livery ${i+1}" 
+                class="article-content-img" 
+                onerror="if(this.src !== '${imageNumber}.avif') { this.src='${imageNumber}.avif'; } else { this.src='/images/default-blog.jpg'; this.onerror=null; }">`;
+        }
+
+        // Find the paragraph with the images
+        const imgParagraphPattern = /<p>(<img[^>]*?>)+<\/p>/;
+
+        // If there's a paragraph with images, replace it; otherwise append to content
+        if (imgParagraphPattern.test(processedContent)) {
+            processedContent = processedContent.replace(imgParagraphPattern, `<p>${imageHtml}</p>`);
+        } else {
+            // Just add after the first h1 or at the beginning
+            const h1Pattern = /<\/h1>/;
+            if (h1Pattern.test(processedContent)) {
+                processedContent = processedContent.replace(h1Pattern, '</h1><p>' + imageHtml + '</p>');
+            } else {
+                processedContent = '<p>' + imageHtml + '</p>' + processedContent;
+            }
+        }
+        return processedContent;
+    }
+
+
+    // Handle image tags from DOCX
+    if (extractedImages.length > 0) {
+        // Find image tags and replace them
+        const imageTagPattern = /<img[^>]*?data-original-src="([^"]*?)"[^>]*?>/g;
+
+        let imageIndex = 0;
+        processedContent = processedContent.replace(imageTagPattern, (match, originalSrc) => {
+            if (imageIndex < extractedImages.length) {
+                const image = extractedImages[imageIndex++];
+
+                // Create enhanced image tag with fallback
+                return `<img src="${image.fileName}" 
+                     alt="Article image ${imageIndex}" 
+                     class="article-content-img" 
+                     onerror="if(this.src !== '${image.fileName.replace('.webp', '.avif')}') { this.src='${image.fileName.replace('.webp', '.avif')}'; } else { this.src='/images/default-blog.jpg'; this.onerror=null; }">`;
             }
             return match;
-        }
-    );
+        });
+    }
+
+    return processedContent ;
 }
 
 // Helper function to extract metadata from filename or content
@@ -188,6 +321,69 @@ function extractMetadata(filename, content) {
     };
 }
 
+async function convertToWebP(inputPath, outputPath) {
+    try {
+        // Use sharp for image conversion
+        const sharp = require('sharp');
+        await sharp(inputPath)
+            .webp({ quality: 80 })
+            .toFile(outputPath);
+
+        console.log(`Converted image to WebP: ${outputPath}`);
+        return true;
+    } catch (error) {
+        console.error(`Error converting image to WebP: ${error.message}`);
+
+        // Try fallback to AVIF if WebP fails
+        try {
+            await sharp(inputPath)
+                .avif({ quality: 80 })
+                .toFile(outputPath.replace('.webp', '.avif'));
+
+            console.log(`Converted image to AVIF: ${outputPath.replace('.webp', '.avif')}`);
+            return true;
+        } catch (fallbackError) {
+            console.error(`Error converting image to AVIF: ${fallbackError.message}`);
+            return false;
+        }
+    }
+}
+
+async function extractImagesFromDocx(docPath, entryPath) {
+    const extractDir = path.join(entryPath, 'extracted');
+    fs.mkdirSync(extractDir, { recursive: true });
+
+    try {
+        // Extract the docx as a zip
+        const zip = new require('adm-zip')(docPath);
+        const entries = zip.getEntries();
+
+        // Find and extract all media files
+        const mediaFiles = [];
+
+        entries.forEach(entry => {
+            if (entry.entryName.startsWith('word/media/')) {
+                const originalFileName = path.basename(entry.entryName);
+
+                zip.extractEntryTo(entry, extractDir, false, true);
+
+                mediaFiles.push({
+                    original: entry.entryName,
+                    extracted: path.join(extractDir, originalFileName),
+                    originalFileName: originalFileName
+                });
+            }
+        });
+
+        console.log(`Extracted ${mediaFiles.length} images from DOCX`);
+        return mediaFiles;
+    } catch (error) {
+        console.error(`Error extracting images from DOCX: ${error.message}`);
+        return [];
+    }
+}
+
+
 // Function to convert Word or text document to HTML
 async function convertToHtml(filePath) {
     const ext = path.extname(filePath);
@@ -207,9 +403,13 @@ async function convertToHtml(filePath) {
                     return paragraph;
                 }),
                 convertImage: mammoth.images.imgElement(function(image) {
+                    // Extract original image filename from path
+                    const imageName = image.altText || `image-${Date.now()}`;
                     return {
                         src: image.src,
-                        alt: "Image"
+                        alt: imageName,
+                        class: "article-content-img",
+                        "data-original-src": image.src
                     };
                 }),
                 styleMap: [
@@ -267,6 +467,7 @@ async function convertToHtml(filePath) {
             htmlContent = processEmbeddedCSV(htmlContent, path.dirname(filePath));
             return htmlContent;
         } else if (ext === '.txt') {
+            // Existing txt file handling code
             let content = fs.readFileSync(filePath, 'utf8');
 
             // Remove metadata section if present
@@ -793,6 +994,9 @@ async function processBlogEntry(entryPath) {
     console.log(`Processing blog entry: ${entryPath}`);
     console.log(`Folder name: ${path.basename(entryPath)}`);
 
+    // Define folder name early to avoid reference error
+    const folderName = path.basename(entryPath);
+
     // Define author mapping
     const authorMap = {
         'G': 'Georgios Balatzis',
@@ -835,8 +1039,62 @@ async function processBlogEntry(entryPath) {
         return null;
     }
 
+    // Process extracted images (if this is a DOCX file)
+    let extractedImages = [];
+    if (docFile.endsWith('.docx')) {
+        console.log(`Extracting images from DOCX: ${docPath}`);
+        // Extract images from DOCX
+        extractedImages = await extractImagesFromDocx(docPath, entryPath);
+
+        // Create output image directory
+        const outputImageDir = path.join(OUTPUT_HTML_DIR, 'images', folderName);
+        fs.mkdirSync(outputImageDir, { recursive: true });
+
+        // Process each extracted image
+        for (let i = 0; i < extractedImages.length; i++) {
+            const image = extractedImages[i];
+            // Start numbering from 3 since 1 and 2 are reserved for banners
+            const imageNumber = i + 3;
+
+            // Use simple numbered filenames
+            const webpPathOutput = path.join(outputImageDir, `${imageNumber}.webp`);
+            const webpPathArticle = path.join(entryPath, `${imageNumber}.webp`);
+
+            await convertToWebP(image.extracted, webpPathOutput);
+
+            // Copy the same file to article folder
+            fs.copyFileSync(webpPathOutput, webpPathArticle);
+
+            console.log(`Processed image: ${imageNumber}.webp`);
+
+            // Create AVIF version as a fallback
+            const avifPathOutput = path.join(outputImageDir, `${imageNumber}.avif`);
+            const avifPathArticle = path.join(entryPath, `${imageNumber}.avif`);
+
+            try {
+                const sharp = require('sharp');
+                await sharp(image.extracted)
+                    .avif({ quality: 80 })
+                    .toFile(avifPathOutput);
+
+                // Copy AVIF to article folder too
+                fs.copyFileSync(avifPathOutput, avifPathArticle);
+
+                console.log(`Created AVIF fallback: ${imageNumber}.avif`);
+            } catch (error) {
+                console.warn(`Failed to create AVIF fallback: ${error.message}`);
+            }
+
+            // Update the image object with the new filenames
+            extractedImages[i].fileName = `${imageNumber}.webp`;
+            extractedImages[i].avifName = `${imageNumber}.avif`;
+        }
+    }
+
     // Process images before content
-    const images = processImages(entryPath, path.basename(entryPath));
+    const images = processImages(entryPath, folderName);
+
+    // Continue with the rest of the function...
 
     // For docx files, we can't read as utf8 string directly
     let rawContent = '';
@@ -867,7 +1125,6 @@ async function processBlogEntry(entryPath) {
     }
 
     // Determine date and author from folder name (YYYYMMDDA or YYYYMMDD-NA where A is G, J, or T)
-    const folderName = path.basename(entryPath);
     let year, month, day, fullDate, authorCode;
 
     // Check if folder name follows any of the expected formats with more flexible patterns
@@ -925,7 +1182,7 @@ async function processBlogEntry(entryPath) {
     let content = await convertToHtml(docPath);
 
     // Process content for image paths
-    content = processContentImages(content, folderName);
+    content = processContentImages(content, folderName, extractedImages);
 
     // Process the [img-instert-tag] tags and replace them with actual image embeds
     content = processImageInsertTags(content, images, folderName);
