@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>VR F1 Car Viewer</title>
+    <!-- A-Frame core -->
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+</head>
+<body style="margin:0; padding:0;">
+
+<!-- Scene with WebXR VR support -->
+<a-scene
+        vr-mode-ui="enabled: true"
+        webxr="optionalFeatures: local-floor, bounded-floor"
+        renderer="antialias: true;"
+>
+    <!-- Ambient + directional light -->
+    <a-entity light="type: ambient; intensity: 0.6"></a-entity>
+    <a-entity light="type: directional; intensity: 0.8" position="1 2 1"></a-entity>
+
+    <!-- Floor -->
+    <a-plane
+            rotation="-90 0 0"
+            width="20" height="20"
+            color="#444"
+            shadow
+            receive-shadow>
+    </a-plane>
+
+    <!-- Your car model at world origin -->
+    <a-entity
+            gltf-model="url(data/AudiF12026.glb)"
+            position="0 0 0"
+            rotation="0 180 0"
+            scale="0.5 0.5 0.5"
+            shadow
+    ></a-entity>
+
+    <!-- Rig: camera + controls -->
+    <a-entity id="rig" position="0 1.6 3">
+        <!-- Enables headset/cardboard controls when in VR -->
+        <a-camera
+                camera
+                wasd-controls="acceleration: 20"
+                look-controls
+                universal-controls
+        ></a-camera>
+    </a-entity>
+</a-scene>
+
+</body>
+</html>
