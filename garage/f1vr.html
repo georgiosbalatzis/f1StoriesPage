@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>VR F1 Track + Car Viewer with Toggle</title>
+    <title>VR F1 Track + Car Viewer with Toggles</title>
     <style>
         body { margin:0; overflow:hidden; }
-        #toggle-track {
+        button {
             position: absolute;
-            top: 1em;
             left: 1em;
             z-index: 999;
             padding: 0.5em 1em;
@@ -19,10 +18,15 @@
             font-size: 1em;
             cursor: pointer;
         }
+        #toggle-track { top: 1em; }
+        #toggle-car { top: 4em; }
+        #resize-car { top: 7em; }
     </style>
 </head>
 <body>
 <button id="toggle-track">Κρύψε Πίστα</button>
+<button id="toggle-car">Κρύψε Αυτοκίνητο</button>
+<button id="resize-car">Μεγέθυνση Αυτοκίνητου</button>
 
 <script type="module">
     import * as THREE from 'https://unpkg.com/three@0.157.0/build/three.module.js';
@@ -42,15 +46,19 @@
     document.body.appendChild(renderer.domElement);
     document.body.appendChild(VRButton.createButton(renderer));
 
+    // Lights
     scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.6));
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
     dirLight.position.set(1, 3, 2);
     scene.add(dirLight);
 
+    // Floor grid reference
     const grid = new THREE.GridHelper(20, 40, 0x888888, 0x444444);
     scene.add(grid);
 
     let trackModel = null;
+    let carModel = null;
+
     // Load USDZ track scene
     new USDZLoader().load(
         'data/f1circ.usdz',
@@ -63,15 +71,15 @@
         (err) => console.error('USDZ load error:', err)
     );
 
-    // Load GLB car model
+    // Load GLB car model at normal scale
     new GLTFLoader().load(
         'data/AudiF12026.glb',
         (gltf) => {
-            const car = gltf.scene;
-            car.scale.set(30, 30, 30);
-            car.position.set(0, 0, 0);
-            car.rotation.y = Math.PI;
-            scene.add(car);
+            carModel = gltf.scene;
+            carModel.scale.set(1, 1, 1);
+            carModel.position.set(0, 0, 0);
+            carModel.rotation.y = Math.PI;
+            scene.add(carModel);
         },
         undefined,
         (err) => console.error('GLB load error:', err)
@@ -84,6 +92,28 @@
         document.getElementById('toggle-track').textContent = trackModel.visible ? 'Κρύψε Πίστα' : 'Εμφάνισε Πίστα';
     });
 
+    // Toggle car visibility
+    document.getElementById('toggle-car').addEventListener('click', () => {
+        if (!carModel) return;
+        carModel.visible = !carModel.visible;
+        document.getElementById('toggle-car').textContent = carModel.visible ? 'Κρύψε Αυτοκίνητο' : 'Εμφάνισε Αυτοκίνητο';
+    });
+
+    // Toggle car resize between normal and 3000%
+    let isResized = false;
+    document.getElementById('resize-car').addEventListener('click', () => {
+        if (!carModel) return;
+        if (!isResized) {
+            carModel.scale.set(30, 30, 30);
+            document.getElementById('resize-car').textContent = 'Επαναφορά Μεγέθους';
+        } else {
+            carModel.scale.set(1, 1, 1);
+            document.getElementById('resize-car').textContent = 'Μεγέθυνση Αυτοκίνητου';
+        }
+        isResized = !isResized;
+    });
+
+    // Animation loop
     function animate() {
         renderer.setAnimationLoop(() => {
             renderer.render(scene, camera);
@@ -91,6 +121,7 @@
     }
     animate();
 
+    // Handle resize
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth/window.innerHeight;
         camera.updateProjectionMatrix();
