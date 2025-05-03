@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>VR/AR F1 Car Viewer</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+        .button-container {
+            position: absolute;
+            top: 1em;
+            left: 1em;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5em;
+        }
+        .button-container button {
+            padding: 0.5em 1em;
+            font-size: 1em;
+            border: none;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="button-container" id="btnContainer">
+    <!-- Static Resize Button -->
+    <button id="resizeBtn">Μεγέθυνση Αυτοκίνητου</button>
+</div>
+
+<script type="module">
+    import * as THREE from 'https://esm.sh/three@0.157.0';
+    import { VRButton } from 'https://esm.sh/three@0.157.0/examples/jsm/webxr/VRButton.js';
+    import { ARButton } from 'https://esm.sh/three@0.157.0/examples/jsm/webxr/ARButton.js';
+    import { GLTFLoader } from 'https://esm.sh/three@0.157.0/examples/jsm/loaders/GLTFLoader.js';
+
+    // Scene setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x202025);
+
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1.6, 3);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.xr.enabled = true;
+    document.body.appendChild(renderer.domElement);
+
+    // Button container
+    const btnContainer = document.getElementById('btnContainer');
+    // Add VR and AR buttons
+    btnContainer.appendChild(VRButton.createButton(renderer));
+    btnContainer.appendChild(ARButton.createButton(renderer));
+
+    // Lighting
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6);
+    hemiLight.position.set(0, 20, 0);
+    scene.add(hemiLight);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(3, 10, 10);
+    scene.add(dirLight);
+
+    // Floor
+    const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(10, 10),
+        new THREE.MeshStandardMaterial({ color: 0x444444 })
+    );
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    // Load car model immediately
+    let carModel;
+    let enlarged = false;
+    new GLTFLoader().load(
+        'data/AudiF12026.glb',
+        (gltf) => {
+            carModel = gltf.scene;
+            carModel.scale.set(1, 1, 1);
+            carModel.position.set(0, 0, 0);
+            carModel.rotation.y = Math.PI;
+            scene.add(carModel);
+        },
+        undefined,
+        (err) => console.error('GLB load error:', err)
+    );
+
+    // Resize button
+    const resizeBtn = document.getElementById('resizeBtn');
+    resizeBtn.addEventListener('click', () => {
+        if (!carModel) return;
+        if (!enlarged) {
+            carModel.scale.set(30, 30, 30);
+            resizeBtn.textContent = 'Επαναφορά Μεγέθους';
+        } else {
+            carModel.scale.set(1, 1, 1);
+            resizeBtn.textContent = 'Μεγέθυνση Αυτοκίνητου';
+        }
+        enlarged = !enlarged;
+    });
+
+    // Render loop
+    function render() {
+        renderer.setAnimationLoop(() => {
+            renderer.render(scene, camera);
+        });
+    }
+    render();
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+</script>
+</body>
+</html>
