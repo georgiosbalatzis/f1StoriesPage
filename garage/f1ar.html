@@ -2,17 +2,20 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Dynamic Anchor GPS-AR</title>
+  <title>Dynamic Anchor GPS-AR (Controls Bottom Right)</title>
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   <style>
     body, html { margin:0; padding:0; overflow:hidden; }
     #controls {
       position: absolute;
-      top: 1em; left: 1em;
+      bottom: 1em;
+      right: 1em;
       background: rgba(255,255,255,0.9);
-      padding: 0.5em; border-radius: 4px;
+      padding: 0.5em;
+      border-radius: 4px;
       font-family: sans-serif;
+      text-align: right;
     }
     #controls input { width: 5em; }
     #controls button { margin-left: 0.5em; }
@@ -23,8 +26,8 @@
 <div id="controls">
   <label>Lat: <input type="number" id="lat" step="0.000001" value="37.4219999"></label><br>
   <label>Lng: <input type="number" id="lng" step="0.000001" value="-122.0840575"></label><br>
-  <button id="set">Set Anchor</button>
-  <button id="use-me">Use My Location</button>
+  <button id="set">Ορισμός Αγκύρωσης</button>
+  <button id="use-me">Χρήση της Θέσης μου</button>
 </div>
 
 <a-scene
@@ -32,7 +35,6 @@
         vr-mode-ui="enabled: false"
         arjs="sourceType: webcam; debugUIEnabled: false;"
 >
-  <!-- our car, with placeholder coords -->
   <a-entity
           id="car"
           gps-entity-place="latitude: 37.4219999; longitude: -122.0840575;"
@@ -51,12 +53,12 @@
     car.setAttribute('gps-entity-place',
             `latitude: ${lat}; longitude: ${lng};`
     );
-    alert(`Anchor updated to:\n${lat}, ${lng}`);
+    alert(`Η αγκύρωση ενημερώθηκε σε:\n${lat}, ${lng}`);
   };
 
   document.getElementById('use-me').onclick = () => {
     if (!navigator.geolocation) {
-      return alert('Geolocation not supported');
+      return alert('Geolocation όχι υποστηριζόμενο');
     }
     navigator.geolocation.getCurrentPosition(pos => {
       const { latitude, longitude } = pos.coords;
@@ -65,8 +67,8 @@
       car.setAttribute('gps-entity-place',
               `latitude: ${latitude}; longitude: ${longitude};`
       );
-      alert(`Using your position:\n${latitude}, ${longitude}`);
-    }, err => alert('Failed to get location'));
+      alert(`Χρήση της θέσης σας:\n${latitude}, ${longitude}`);
+    }, err => alert('Αποτυχία ανάκτησης τοποθεσίας'));
   };
 </script>
 </body>
