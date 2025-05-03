@@ -1,28 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="el">
 <head>
   <meta charset="utf-8">
-  <title>Dynamic Anchor GPS-AR (Controls Bottom Right)</title>
+  <title>Δυναμική Θέση GPS-AR (Στοιχεία κάτω δεξιά)</title>
+  <!-- A-Frame & AR.js -->
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ar.js@3.3.2/aframe/build/aframe-ar.js"></script>
   <style>
     body, html { margin:0; padding:0; overflow:hidden; }
+    /* Σκηνή κάτω */
+    a-scene, a-scene canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    /* Πάνελ ελέγχου πάνω από τη σκηνή */
     #controls {
       position: absolute;
       bottom: 1em;
       right: 1em;
+      z-index: 10;
       background: rgba(255,255,255,0.9);
       padding: 0.5em;
       border-radius: 4px;
       font-family: sans-serif;
       text-align: right;
+      pointer-events: auto;
     }
     #controls input { width: 5em; }
     #controls button { margin-left: 0.5em; }
   </style>
 </head>
 <body>
-
+<!-- Πάνελ ελέγχου -->
 <div id="controls">
   <label>Lat: <input type="number" id="lat" step="0.000001" value="37.4219999"></label><br>
   <label>Lng: <input type="number" id="lng" step="0.000001" value="-122.0840575"></label><br>
@@ -30,10 +43,11 @@
   <button id="use-me">Χρήση της Θέσης μου</button>
 </div>
 
+<!-- AR.js σκηνή -->
 <a-scene
         embedded
         vr-mode-ui="enabled: false"
-        arjs="sourceType: webcam; debugUIEnabled: false;"
+        arjs="sourceType: webcam; debugUIEnabled: false; gpsMinAccuracy: 1000;"
 >
   <a-entity
           id="car"
@@ -47,29 +61,28 @@
 
 <script>
   const car = document.getElementById('car');
-  document.getElementById('set').onclick = () => {
+  const setBtn = document.getElementById('set');
+  const useBtn = document.getElementById('use-me');
+
+  setBtn.addEventListener('click', () => {
     const lat = parseFloat(document.getElementById('lat').value);
     const lng = parseFloat(document.getElementById('lng').value);
-    car.setAttribute('gps-entity-place',
-            `latitude: ${lat}; longitude: ${lng};`
-    );
+    car.setAttribute('gps-entity-place', `latitude: ${lat}; longitude: ${lng};`);
     alert(`Η αγκύρωση ενημερώθηκε σε:\n${lat}, ${lng}`);
-  };
+  });
 
-  document.getElementById('use-me').onclick = () => {
+  useBtn.addEventListener('click', () => {
     if (!navigator.geolocation) {
-      return alert('Geolocation όχι υποστηριζόμενο');
+      return alert('Η συσκευή δεν υποστηρίζει γεωεντοπισμό.');
     }
-    navigator.geolocation.getCurrentPosition(pos => {
+    navigator.geolocation.getCurrentPosition((pos) => {
       const { latitude, longitude } = pos.coords;
       document.getElementById('lat').value = latitude.toFixed(6);
       document.getElementById('lng').value = longitude.toFixed(6);
-      car.setAttribute('gps-entity-place',
-              `latitude: ${latitude}; longitude: ${longitude};`
-      );
+      car.setAttribute('gps-entity-place', `latitude: ${latitude}; longitude: ${longitude};`);
       alert(`Χρήση της θέσης σας:\n${latitude}, ${longitude}`);
-    }, err => alert('Αποτυχία ανάκτησης τοποθεσίας'));
-  };
+    }, () => alert('Αποτυχία ανάκτησης τοποθεσίας.'));
+  });
 </script>
 </body>
 </html>
