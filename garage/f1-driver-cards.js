@@ -188,14 +188,48 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             });
     }
-    
-    // Function to find driver points from standings
-    function findDriverPoints(driverName) {
-        if (!driverStandings || driverStandings.length === 0) return '0';
 
-        // Find driver in standings
-        const driver = driverStandings.find(d => d.driver === driverName);
-        return driver ? driver.points : '0';
+// Add helper functions to find driver and constructor in standings
+    function findDriverInStandings(driverName) {
+        if (!driverStandings || driverStandings.length === 0) return null;
+
+        // Try exact match first
+        let driver = driverStandings.find(d => d.driver === driverName);
+
+        // If exact match fails, try case-insensitive match
+        if (!driver) {
+            const normalizedName = driverName.toLowerCase().replace(/\s+/g, '');
+            driver = driverStandings.find(d =>
+                d.driver.toLowerCase().replace(/\s+/g, '') === normalizedName
+            );
+        }
+
+        return driver;
+    }
+
+    function findConstructorInStandings(constructorName) {
+        if (!teamStandings || teamStandings.length === 0) return null;
+
+        // Try exact match first
+        let constructor = teamStandings.find(t => t.team === constructorName);
+
+        // If exact match fails, try case-insensitive match
+        if (!constructor) {
+            const normalizedName = constructorName.toLowerCase().replace(/\s+/g, '');
+            constructor = teamStandings.find(t =>
+                t.team.toLowerCase().replace(/\s+/g, '') === normalizedName
+            );
+        }
+
+        // If still not found, try to match part of the name
+        if (!constructor) {
+            constructor = teamStandings.find(t =>
+                constructorName.toLowerCase().includes(t.team.toLowerCase()) ||
+                t.team.toLowerCase().includes(constructorName.toLowerCase())
+            );
+        }
+
+        return constructor;
     }
 
     // Function to create driver cards HTML for a team
@@ -209,102 +243,127 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Create drivers section HTML
         let driversHtml = `
-            <div class="info-section driver-section">
-                <h4 class="section-title">2025 Driver Lineup</h4>
-                <div class="drivers-grid">
-        `;
+        <div class="info-section driver-section">
+            <h4 class="section-title">2025 Driver Lineup</h4>
+            <div class="drivers-grid">
+    `;
 
-        // Add each driver with headshot image
+        // Add each driver with headshot image and updated standings
         teamInfo.drivers.forEach(driver => {
+            // Find driver in standings data
+            const driverInStandings = findDriverInStandings(driver.name);
+
+            // Use position from standings if available, otherwise fallback to JSON
+            const position = driverInStandings ?
+                formatPosition(driverInStandings.position) :
+                driver.position;
+
+            // Use points from standings if available
+            const points = driverInStandings ?
+                driverInStandings.points :
+                '0';
+
             driversHtml += `
-                <div class="driver-card">
-                    <div class="driver-info">
-                        <div class="driver-name">${driver.name}</div>
-                        <div class="driver-details">
-                            <div><span class="driver-label">Nationality:</span>${driver.nationality}</div>
-                            <div><span class="driver-label">Age:</span>${driver.age}</div>
-                        </div>
-                            <div class="driver-stats">
-                            <div class="driver-stats-row">
-                                <div class="driver-position">
-                                    <span class="driver-label">Position:</span>
-                                    <span class="driver-position-number">${driver.position}</span>
-                                </div>
-                                <div class="driver-points">
-                                    <span class="driver-label">Points:</span>
-                                    <span class="driver-points-number">${findDriverPoints(driver.name) || '0'}</span>
-                                </div>
+            <div class="driver-card">
+                <div class="driver-info">
+                    <div class="driver-name">${driver.name}</div>
+                    <div class="driver-details">
+                        <div><span class="driver-label">Nationality:</span>${driver.nationality}</div>
+                        <div><span class="driver-label">Age:</span>${driver.age}</div>
+                    </div>
+                        <div class="driver-stats">
+                        <div class="driver-stats-row">
+                            <div class="driver-position">
+                                <span class="driver-label">Position:</span>
+                                <span class="driver-position-number">${position}</span>
+                            </div>
+                            <div class="driver-points">
+                                <span class="driver-label">Points:</span>
+                                <span class="driver-points-number">${points}</span>
                             </div>
                         </div>
                     </div>
-                    <div class="driver-number-container">
-                        <div class="driver-number">${driver.number}</div>
-                    </div>
-                    <img src="https://r2.blaineharper.com/def/f1_headshot_trans/f1/drivers/${driver.id}/2025/headshot_trans.webp" 
-                         alt="${driver.name}" 
-                         class="driver-image"
-                         onerror="this.style.display='none'"
-                    />
                 </div>
-            `;
+                <div class="driver-number-container">
+                    <div class="driver-number">${driver.number}</div>
+                </div>
+                <img src="https://r2.blaineharper.com/def/f1_headshot_trans/f1/drivers/${driver.id}/2025/headshot_trans.webp" 
+                     alt="${driver.name}" 
+                     class="driver-image"
+                     onerror="this.style.display='none'"
+                />
+            </div>
+        `;
         });
 
         driversHtml += `
-                </div>
             </div>
-        `;
+        </div>
+    `;
 
-        // Create constructor info section with championship position and car icon
+        // Create constructor info section with updated championship position and points
         const constructor = teamInfo.constructor;
 
+        // Find constructor in standings data
+        const constructorInStandings = findConstructorInStandings(constructor.name);
+
+        // Use position and points from standings if available, otherwise fallback to JSON
+        const championshipPosition = constructorInStandings ?
+            formatPosition(constructorInStandings.position) :
+            constructor.championshipPosition;
+
+        const points = constructorInStandings ?
+            constructorInStandings.points :
+            constructor.points;
+
         let constructorHtml = `
-            <div class="info-section constructor-section">
-                <div class="constructor-header">
-                    <h4 class="section-title">Constructor Information</h4>
-                    <div class="constructor-championship">
-                        <div class="championship-position">${constructor.championshipPosition}</div>
-                        <div class="championship-points">${constructor.points} POINTS</div>
-                    </div>
-                </div>
-                
-                <div class="constructor-info-container">
-                    <div class="info-grid">
-                        <div class="info-card">
-                            <div class="info-label">Official Name</div>
-                            <div class="info-value">${constructor.name}</div>
-                        </div>
-                        <div class="info-card">
-                            <div class="info-label">Team Principal</div>
-                            <div class="info-value">${constructor.principal}</div>
-                        </div>
-                        <div class="info-card">
-                            <div class="info-label">Base</div>
-                            <div class="info-value">${constructor.base}</div>
-                        </div>
-                        <div class="info-card">
-                            <div class="info-label">First F1 Season</div>
-                            <div class="info-value">${constructor.firstSeason}</div>
-                        </div>
-                        <div class="info-card">
-                            <div class="info-label">Power Unit</div>
-                            <div class="info-value">${constructor.powerUnit}</div>
-                        </div>
-                        <div class="info-card">
-                            <div class="info-label">Chassis</div>
-                            <div class="info-value">${constructor.chassis} <i class="fas fa-car-side car-icon"></i></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="car-image-container">
-                    <img src="data/${teamId}-car.webp" 
-                         alt="${constructor.name} car" 
-                         class="car-image" 
-                         onerror="this.onerror=null; this.src='data/${teamId}-car.webp'; this.onerror=function(){this.parentNode.innerHTML = '<div class=\\'car-image-fallback\\'><i class=\\'fas fa-car-side\\'></i></div>'}"
-                    >
+        <div class="info-section constructor-section">
+            <div class="constructor-header">
+                <h4 class="section-title">Constructor Information</h4>
+                <div class="constructor-championship">
+                    <div class="championship-position">${championshipPosition}</div>
+                    <div class="championship-points">${points} POINTS</div>
                 </div>
             </div>
-        `;
+            
+            <div class="constructor-info-container">
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-label">Official Name</div>
+                        <div class="info-value">${constructor.name}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Team Principal</div>
+                        <div class="info-value">${constructor.principal}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Base</div>
+                        <div class="info-value">${constructor.base}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">First F1 Season</div>
+                        <div class="info-value">${constructor.firstSeason}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Power Unit</div>
+                        <div class="info-value">${constructor.powerUnit}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Chassis</div>
+                        <div class="info-value">${constructor.chassis} <i class="fas fa-car-side car-icon"></i></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="car-image-container">
+                <img src="data/${teamId}-car.webp" 
+                     alt="${constructor.name} car" 
+                     class="car-image" 
+                     onerror="this.onerror=null; this.src='data/${teamId}-car.webp'; this.onerror=function(){this.parentNode.innerHTML = '<div class=\\'car-image-fallback\\'><i class=\\'fas fa-car-side\\'></i></div>'}"
+                >
+            </div>
+        </div>
+    `;
 
         // Extract tech specs from the page and reformat them
         const techSpecs = extractTechSpecs();
@@ -312,37 +371,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (techSpecs && techSpecs.length > 0) {
             techSpecsHtml = `
-                <div class="info-section tech-section">
-                    <h4 class="section-title">Technical Specifications</h4>
-                    <div class="info-grid">
-            `;
+            <div class="info-section tech-section">
+                <h4 class="section-title">Technical Specifications</h4>
+                <div class="info-grid">
+        `;
 
             // Filter out the "Drivers" spec if it exists
             const filteredSpecs = techSpecs.filter(spec => spec.title !== "Drivers");
 
             filteredSpecs.forEach(spec => {
                 techSpecsHtml += `
-                    <div class="info-card">
-                        <div class="info-label">${spec.title}</div>
-                        <div class="info-value">${spec.value}</div>
-                    </div>
-                `;
+                <div class="info-card">
+                    <div class="info-label">${spec.title}</div>
+                    <div class="info-value">${spec.value}</div>
+                </div>
+            `;
             });
 
             techSpecsHtml += `
-                    </div>
                 </div>
-            `;
+            </div>
+        `;
         }
 
         // Add reset button
         let resetButtonHtml = `
-            <div class="reset-button-container">
-                <button id="reset-team-button" class="reset-team-button">
-                    <i class="fas fa-home"></i> Return to Standings
-                </button>
-            </div>
-        `;
+        <div class="reset-button-container">
+            <button id="reset-team-button" class="reset-team-button">
+                <i class="fas fa-home"></i> Return to Standings
+            </button>
+        </div>
+    `;
 
         return resetButtonHtml + driversHtml + constructorHtml + techSpecsHtml;
     }
