@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (authorName) {
             if (authorName.includes('Georgios Balatzis')) {
                 if (authorTitle) authorTitle.textContent = 'F1 Stories Founder & Technical Contributor';
-                if (authorBio) authorBio.textContent = 'Ο Γιώργιος είναι ενας απο τους ιδρυτές του F1 Stories 🏁 και ειδικεύεται στην τεχνική πλευρά της Formula 1 🔧, με ιδιαίτερη έμφαση στην αεροδυναμική και την εξέλιξη των μονοθεσίων ✈️🚗. Η αναλυτική του προσέγγιση φέρνει σαφήνεια σε πολύπλοκα θέματα μηχανολογίας 🧠📊.';
+                if (authorBio) authorBio.textContent = 'Ο Γιώργος είναι ενας απο τους ιδρυτές του F1 Stories 🏁 και ειδικεύεται στην τεχνική πλευρά της Formula 1 🔧, με ιδιαίτερη έμφαση στην αεροδυναμική και την εξέλιξη των μονοθεσίων ✈️🚗. Η αναλυτική του προσέγγιση φέρνει σαφήνεια σε πολύπλοκα θέματα μηχανολογίας 🧠📊.';
             } else if (authorName.includes('Giannis Poulikidis')) {
                 if (authorTitle) authorTitle.textContent = 'F1 Stories Founder & Editor';
                 if (authorBio) authorBio.textContent = 'Ο Γιαννης είναι ενας απο τους ιδρυτές του F1 Stories 🏁 Mε βαθυ πάθος για την ιστορία της Φόρμουλα 1 🏎️ και την τεχνική ανάλυση. Όταν δεν γράφει για τους αγώνες, απολαμβάνει να συζητάει τις στρατηγικές πτυχές του μηχανοκίνητου αθλητισμού. 📊';
