@@ -39,6 +39,37 @@
     });
   </script>
 
+  <style>
+    /* YouTube embed container for responsive videos */
+    .youtube-embed-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+      margin: 2rem 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .youtube-embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+    }
+
+    .video-caption {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
@@ -264,7 +295,7 @@
                 <div class="blog-card">
                     <div class="blog-img-container">
                         <img src="/blog-module/blog-entries/20250505-2G/1.webp" 
-                             alt="🌴🤌🇮🇹 Μην αρχίζεις την μουρμούρα; 🇮🇹🤌🌴" 
+                             alt="🏁🇺🇸 Η Ferrari σε κρίση στρατηγικής – Όταν οι οδηγοί χάνουν την πίστη τους στο pit wall 🔴🧠" 
                              class="blog-img"
                              onerror="if(this.src !== '/blog-module/blog/images/20250505-2G/1.webp') { this.src='/blog-module/blog/images/20250505-2G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
                         <div class="blog-date">
@@ -273,7 +304,7 @@
                         </div>
                     </div>
                     <div class="blog-content">
-                        <h3 class="blog-title">🌴🤌🇮🇹 Μην αρχίζεις την μουρμούρα; 🇮🇹🤌🌴</h3>
+                        <h3 class="blog-title">🏁🇺🇸 Η Ferrari σε κρίση στρατηγικής – Όταν οι οδηγοί χάνουν την πίστη τους στο pit wall 🔴🧠</h3>
                         <div class="blog-meta">
                             <span><i class="fas fa-user"></i> Georgios Balatzis</span>
                             <span><i class="fas fa-comments"></i> 0</span>
