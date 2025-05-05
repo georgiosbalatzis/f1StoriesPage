@@ -799,13 +799,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Social Sharing Script with Web Share API Support
+// Social Sharing Script with Instagram DM support
 document.addEventListener('DOMContentLoaded', function() {
     // Replace placeholder URLs with actual URL
     const currentUrl = window.location.href;
     const articleTitle = document.querySelector('.article-title').textContent;
     const encodedTitle = encodeURIComponent(articleTitle);
-    const articleImage = document.querySelector('.article-header-img').src;
 
     // Update sharing links
     document.querySelectorAll('.share-btn[href]').forEach(btn => {
@@ -816,15 +815,79 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Handle native share button (for Instagram and other apps)
-    const nativeShareBtn = document.getElementById('native-share-btn');
-    if (nativeShareBtn) {
+    // Instagram DM button
+    const instagramDmBtn = document.getElementById('instagram-dm-btn');
+    if (instagramDmBtn) {
+        instagramDmBtn.addEventListener('click', function() {
+            // First detect if it's a mobile device
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+            if (isMobile) {
+                // Try to open Instagram app with direct message intent
+                window.location.href = `instagram://direct?text=${encodeURIComponent(`Check out this F1 article: ${articleTitle} ${currentUrl}`)}`;
+
+                // Set a timeout to check if the app opened
+                setTimeout(function() {
+                    // If still on the same page, Instagram app probably not installed
+                    // Offer to copy text instead
+                    const now = new Date().getTime();
+                    if (document.hidden || document.webkitHidden) {
+                        // App was opened
+                        return;
+                    }
+                    // App wasn't opened, show alternate option
+                    showCopyOption();
+                }, 1500);
+            } else {
+                // On desktop, just show the copy option directly
+                showCopyOption();
+            }
+        });
+
+        function showCopyOption() {
+            // Create Instagram-friendly text
+            const instagramText = `Check out this F1 article: ${articleTitle} ${currentUrl}`;
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(instagramText)
+                .then(() => {
+                    // Show success message
+                    instagramDmBtn.classList.add('copy-success');
+
+                    // Change icon temporarily
+                    const icon = instagramDmBtn.querySelector('i');
+                    icon.classList.remove('fa-instagram');
+                    icon.classList.add('fa-check');
+
+                    // Show tooltip
+                    const tooltip = document.createElement('span');
+                    tooltip.className = 'copy-tooltip';
+                    tooltip.textContent = 'Copied! Paste in Instagram DM';
+                    instagramDmBtn.appendChild(tooltip);
+
+                    // Reset after 3 seconds
+                    setTimeout(() => {
+                        instagramDmBtn.classList.remove('copy-success');
+                        icon.classList.remove('fa-check');
+                        icon.classList.add('fa-instagram');
+                        tooltip.remove();
+                    }, 3000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy text:', err);
+                });
+        }
+    }
+
+    // Web Share API button (for any installed app on mobile)
+    const webShareBtn = document.getElementById('web-share-btn');
+    if (webShareBtn) {
         // Check if Web Share API is supported
         if (navigator.share) {
-            nativeShareBtn.addEventListener('click', function() {
+            webShareBtn.addEventListener('click', function() {
                 navigator.share({
                     title: articleTitle,
-                    text: 'Check out this F1 article: ' + articleTitle,
+                    text: `Check out this F1 article: ${articleTitle}`,
                     url: currentUrl
                 })
                     .catch(err => {
@@ -833,7 +896,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         } else {
             // Hide the button if Web Share API is not supported
-            nativeShareBtn.style.display = 'none';
+            webShareBtn.style.display = 'none';
         }
     }
 
@@ -850,15 +913,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     icon.classList.remove('fa-link');
                     icon.classList.add('fa-check');
 
+                    // Add tooltip
+                    const tooltip = document.createElement('span');
+                    tooltip.className = 'copy-tooltip';
+                    tooltip.textContent = 'Link copied!';
+                    copyLinkBtn.appendChild(tooltip);
+
                     // Reset after 2 seconds
                     setTimeout(() => {
                         copyLinkBtn.classList.remove('copy-success');
                         icon.classList.remove('fa-check');
                         icon.classList.add('fa-link');
+                        tooltip.remove();
                     }, 2000);
                 })
                 .catch(err => {
-                    console.error('Failed to copy: ', err);
+                    console.error('Failed to copy:', err);
                 });
         });
     }
