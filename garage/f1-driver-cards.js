@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let enhancedTeamData = {};
     let driverStandings = [];
     let teamStandings = [];
+    let usingApiData = false;
+    let lastUpdated = null;
 
     // Ensure CSS is loaded
     const cssLink = document.createElement('link');
@@ -41,26 +43,152 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize after data is loaded
     function init() {
-        // Check if a team is already selected
-        const activeTeamBadge = document.querySelector('.team-badge.active');
-        if (activeTeamBadge) {
-            // Team is selected, show team details
-            setTimeout(insertDriverCards, 500);
-        } else {
-            // No team selected, show standings tables
-            displayStandingsTables();
-        }
-
-        // Add event listeners to team badges
-        addTeamBadgeListeners();
-
-        // Add observer to detect model changes
-        setupModelChangeDetection();
-
-        // Add reset button
-        addResetButton();
+        // Πρώτα προσπαθούμε να πάρουμε δεδομένα από το F1 API
+        fetchF1StandingsData()
+            .then(success => {
+                if (!success) {
+                    console.log("Επιστροφή στα τοπικά δεδομένα JSON");
+                    // Θα χρησιμοποιήσουμε τα δεδομένα που έχουν ήδη φορτωθεί από το JSON
+                    usingApiData = false;
+                    lastUpdated = new Date();
+                }
+                
+                // Συνέχιση της αρχικοποίησης ανεξάρτητα από την πηγή δεδομένων
+                // Έλεγχος αν έχει ήδη επιλεγεί ομάδα
+                const activeTeamBadge = document.querySelector('.team-badge.active');
+                if (activeTeamBadge) {
+                    // Η ομάδα έχει επιλεγεί, εμφάνιση λεπτομερειών ομάδας
+                    setTimeout(insertDriverCards, 500);
+                } else {
+                    // Δεν έχει επιλεγεί ομάδα, εμφάνιση πινάκων κατάταξης
+                    displayStandingsTables();
+                }
+    
+                // Προσθήκη event listeners στα εμβλήματα ομάδων
+                addTeamBadgeListeners();
+    
+                // Προσθήκη παρατηρητή για ανίχνευση αλλαγών μοντέλου
+                setupModelChangeDetection();
+    
+                // Προσθήκη κουμπιού επαναφοράς
+                addResetButton();
+            })
+            .catch(error => {
+                console.error("Σφάλμα κατά την αρχικοποίηση:", error);
+                // Συνέχιση με υπάρχοντα δεδομένα
+                const activeTeamBadge = document.querySelector('.team-badge.active');
+                if (activeTeamBadge) {
+                    setTimeout(insertDriverCards, 500);
+                } else {
+                    displayStandingsTables();
+                }
+                
+                // Προσθήκη event listeners και κουμπιού επαναφοράς
+                addTeamBadgeListeners();
+                setupModelChangeDetection();
+                addResetButton();
+            });
     }
 
+    // Function to fetch the F1 standings data from Jolpica API
+    function fetchF1StandingsData() {
+        console.log("Φόρτωση δεδομένων κατάταξης F1 από το Jolpica API");
+        
+        // Το τρέχον έτος είναι 2025 με βάση την ημερομηνία
+        const currentYear = 2025;
+        
+        // Δημιουργία promises για τις δύο κλήσεις API
+        // Για την κατάταξη οδηγών: /ergast/f1/{season}/driverstandings.json
+        // Για την κατάταξη κατασκευαστών: /ergast/f1/{season}/constructorstandings.json
+        const driversPromise = fetch(`https://api.jolpi.ca/ergast/f1/${currentYear}/driverstandings.json`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Αποτυχία φόρτωσης δεδομένων πρωταθλήματος οδηγών');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Δεδομένα κατάταξης οδηγών:", data);
+                if (!data || !data.MRData || !data.MRData.StandingsTable || 
+                    !data.MRData.StandingsTable.StandingsLists || 
+                    data.MRData.StandingsTable.StandingsLists.length === 0) {
+                    throw new Error('Μη έγκυρη μορφή δεδομένων οδηγών ή κενή κατάταξη');
+                }
+                
+                // Αντιστοίχιση δεδομένων API στη δική μας μορφή
+                // Η δομή JSON ακολουθεί: MRData.StandingsTable.StandingsLists[0].DriverStandings
+                const driverStandingsList = data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
+                
+                return driverStandingsList.map(standing => {
+                    return {
+                        position: standing.position,
+                        driver: `${standing.Driver.givenName} ${standing.Driver.familyName}`,
+                        team: standing.Constructors[0]?.name || 'Άγνωστη Ομάδα',
+                        points: standing.points
+                    };
+                });
+            })
+            .catch(error => {
+                console.error("Σφάλμα κατά τη φόρτωση δεδομένων οδηγών:", error);
+                return null;
+            });
+            
+        const constructorsPromise = fetch(`https://api.jolpi.ca/ergast/f1/${currentYear}/constructorstandings.json`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Αποτυχία φόρτωσης δεδομένων πρωταθλήματος κατασκευαστών');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Δεδομένα κατάταξης κατασκευαστών:", data);
+                if (!data || !data.MRData || !data.MRData.StandingsTable || 
+                    !data.MRData.StandingsTable.StandingsLists || 
+                    data.MRData.StandingsTable.StandingsLists.length === 0) {
+                    throw new Error('Μη έγκυρη μορφή δεδομένων κατασκευαστών ή κενή κατάταξη');
+                }
+                
+                // Αντιστοίχιση δεδομένων API στη δική μας μορφή
+                // Η δομή JSON ακολουθεί: MRData.StandingsTable.StandingsLists[0].ConstructorStandings
+                const constructorStandingsList = data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings;
+                
+                return constructorStandingsList.map(standing => {
+                    return {
+                        position: standing.position,
+                        team: standing.Constructor.name,
+                        points: standing.points
+                    };
+                });
+            })
+            .catch(error => {
+                console.error("Σφάλμα κατά τη φόρτωση δεδομένων κατασκευαστών:", error);
+                return null;
+            });
+        
+        // Επιστροφή promise που επιλύεται όταν ολοκληρωθούν και οι δύο κλήσεις API
+        return Promise.all([driversPromise, constructorsPromise])
+            .then(([driversData, constructorsData]) => {
+                console.log("Τα δεδομένα API φορτώθηκαν επιτυχώς");
+                
+                // Αν λάβαμε έγκυρα δεδομένα και από τις δύο κλήσεις, ενημερώνουμε την κατάταξη
+                if (driversData && constructorsData) {
+                    driverStandings = driversData;
+                    teamStandings = constructorsData;
+                    usingApiData = true;
+                    lastUpdated = new Date();
+                    return true;
+                } else {
+                    // Αν αποτύχει μία ή και οι δύο κλήσεις, θα χρησιμοποιήσουμε τα δεδομένα από το αρχείο JSON
+                    console.warn("Μία ή και οι δύο κλήσεις API απέτυχαν, επιστροφή στα δεδομένα JSON");
+                    return false;
+                }
+            })
+            .catch(error => {
+                console.error("Σφάλμα κατά τη φόρτωση δεδομένων API:", error);
+                return false;
+            });
+    }
+    
     // Function to find driver points from standings
     function findDriverPoints(driverName) {
         if (!driverStandings || driverStandings.length === 0) return '0';
@@ -245,19 +373,23 @@ document.addEventListener('DOMContentLoaded', function() {
                             </tr>
                         </thead>
                         <tbody>
-        `;
-
+    `;
+    
         // Add constructor standings rows
+        // Handle API data format which might return positions like "1st" instead of "1"
         teamStandings.forEach(team => {
+            // Extract just the number part from the position if needed (e.g., "1st" becomes "1")
+            const position = String(team.position).replace(/^(\d+).*$/, '$1');
+            
             html += `
                 <tr>
-                    <td>${team.position}</td>
+                    <td>${position}</td>
                     <td>${team.team}</td>
                     <td>${team.points}</td>
                 </tr>
             `;
         });
-
+    
         html += `
                         </tbody>
                     </table>
@@ -277,26 +409,30 @@ document.addEventListener('DOMContentLoaded', function() {
                             </tr>
                         </thead>
                         <tbody>
-        `;
-
+    `;
+    
         // Add driver standings rows
+        // Handle API data format which might return positions like "1st" instead of "1"
         driverStandings.forEach(driver => {
+            // Extract just the number part from the position if needed (e.g., "1st" becomes "1")
+            const position = String(driver.position).replace(/^(\d+).*$/, '$1');
+            
             html += `
                 <tr>
-                    <td>${driver.position}</td>
+                    <td>${position}</td>
                     <td>${driver.driver}</td>
                     <td>${driver.team}</td>
                     <td>${driver.points}</td>
                 </tr>
             `;
         });
-
+    
         html += `
                         </tbody>
                     </table>
                 </div>
             </div>
-        `;
+    `;
 
         return html;
     }
@@ -336,25 +472,110 @@ document.addEventListener('DOMContentLoaded', function() {
         return specs;
     }
 
+    // Function to format position number (handles both string and numerical formats from API)
+    function formatPosition(position) {
+        // Εξαγωγή μόνο του αριθμητικού μέρους (π.χ., το "1st" γίνεται "1")
+        return String(position).replace(/^(\d+).*$/, '$1');
+    }
+    
+    // Function to add data source indicator
+    function addDataSourceIndicator() {
+        // Προσθήκη δείκτη πηγής δεδομένων
+        const constructorSection = document.querySelector('.standings-section:nth-of-type(2)');
+        const driverSection = document.querySelector('.standings-section:nth-of-type(3)');
+    
+        if (constructorSection) {
+            const dataSourceDiv = document.createElement('div');
+            dataSourceDiv.className = 'data-source-info';
+            
+            if (usingApiData) {
+                dataSourceDiv.innerHTML = `<i class="fas fa-check-circle"></i> <span class="data-source-api">Ζωντανά δεδομένα από το API F1</span>`;
+            } else {
+                dataSourceDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> <span class="data-source-fallback">Εφεδρικά δεδομένα</span>`;
+            }
+            
+            constructorSection.appendChild(dataSourceDiv);
+        }
+    
+        if (driverSection && lastUpdated) {
+            const timestampDiv = document.createElement('div');
+            timestampDiv.className = 'standings-timestamp';
+            
+            // Μορφοποίηση της χρονικής στιγμής
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            const formattedTime = lastUpdated.toLocaleDateString(undefined, options);
+            
+            timestampDiv.textContent = `Τελευταία ενημέρωση: ${formattedTime}`;
+            driverSection.appendChild(timestampDiv);
+            
+            // Προσθήκη κουμπιού ανανέωσης αν χρησιμοποιούνται εφεδρικά δεδομένα
+            if (!usingApiData) {
+                const refreshButton = document.createElement('button');
+                refreshButton.className = 'refresh-button';
+                refreshButton.innerHTML = '<i class="fas fa-sync-alt"></i> Δοκίμασε ζωντανά δεδομένα';
+                
+                refreshButton.addEventListener('click', function() {
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Φόρτωση...';
+                    this.disabled = true;
+                    
+                    fetchF1StandingsData()
+                        .then(success => {
+                            if (success) {
+                                displayStandingsTables();
+                                console.log("Επιτυχής ανανέωση με δεδομένα API");
+                            } else {
+                                this.innerHTML = '<i class="fas fa-exclamation-circle"></i> Αδυναμία φόρτωσης ζωντανών δεδομένων';
+                                this.disabled = false;
+                                
+                                setTimeout(() => {
+                                    this.innerHTML = '<i class="fas fa-sync-alt"></i> Προσπάθησε ξανά';
+                                }, 3000);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Σφάλμα κατά την ανανέωση δεδομένων:", error);
+                            this.innerHTML = '<i class="fas fa-exclamation-circle"></i> Σφάλμα';
+                            this.disabled = false;
+                            
+                            setTimeout(() => {
+                                this.innerHTML = '<i class="fas fa-sync-alt"></i> Προσπάθησε ξανά';
+                            }, 3000);
+                        });
+                });
+                
+                driverSection.appendChild(refreshButton);
+            }
+        }
+    }
+    
     // Function to display standings tables
     function displayStandingsTables() {
         console.log("Displaying standings tables");
-
+    
         // Find the team car info element
         const teamCarInfo = document.getElementById('team-car-info');
         if (!teamCarInfo) {
             console.error("Team car info element not found");
             return;
         }
-
+    
         // Clear existing content
         teamCarInfo.innerHTML = '';
-
+    
         // Generate standings tables HTML
         const tablesHTML = createStandingsTablesHTML();
-
+    
         // Insert the tables
         teamCarInfo.innerHTML = tablesHTML;
+    
+        // Add data source indicator
+        addDataSourceIndicator();
 
         // Update model container to show "no model selected" state
         updateModelContainerState(true);
@@ -603,6 +824,58 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const styles = `
             <style id="f1-standings-css">
+                /* API Data Source Indicators */
+                .data-source-info {
+                    text-align: right;
+                    font-size: 0.8rem;
+                    color: #aaa;
+                    font-style: italic;
+                    margin-top: 0.5rem;
+                    padding-right: 0.5rem;
+                }
+    
+                .data-source-info i {
+                    margin-right: 0.3rem;
+                    color: var(--highlight-color, #00ffff);
+                }
+    
+                .data-source-api {
+                    color: #00cc66;
+                }
+    
+                .data-source-fallback {
+                    color: #ffaa00;
+                }
+    
+                .standings-timestamp {
+                    font-size: 0.8rem;
+                    color: #aaa;
+                    text-align: right;
+                    margin-top: 0.5rem;
+                    padding-right: 0.5rem;
+                }
+    
+                .refresh-button {
+                    background: rgba(0, 115, 230, 0.2);
+                    color: white;
+                    border: 1px solid var(--highlight-color, #00ffff);
+                    padding: 0.5rem 1rem;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    margin-top: 0.5rem;
+                    float: right;
+                }
+    
+                .refresh-button:hover {
+                    background: rgba(0, 115, 230, 0.4);
+                    transform: translateY(-2px);
+                }
+                
                 /* Standings Tables */
                 .standings-section {
                     padding: 1.5rem;
