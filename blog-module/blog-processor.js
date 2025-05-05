@@ -19,6 +19,50 @@ const TEMPLATE_PATH = path.join(__dirname, 'blog', 'template.html');
  */
 
 
+// Function to detect and process YouTube links in content
+function processYouTubeLinks(htmlContent) {
+    console.log("Processing YouTube links in content");
+
+    // Regular expressions to match different YouTube URL formats
+    const youtubePatterns = [
+        // Standard YouTube URL
+        /<p>(https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})(&[^<]*)?)(<\/p>|<br>)/g,
+        // Shortened youtu.be URL
+        /<p>(https?:\/\/(www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})(&[^<]*)?)(<\/p>|<br>)/g,
+        // Embedded in an <a> tag
+        /<a[^>]*href="(https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})(&[^"]*)?)"[^>]*>[^<]*<\/a>/g,
+        // Embedded in an <a> tag with youtu.be
+        /<a[^>]*href="(https?:\/\/(www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})(&[^"]*)?)"[^>]*>[^<]*<\/a>/g
+    ];
+
+    let modifiedContent = htmlContent;
+    let replaceCount = 0;
+
+    // Process each YouTube URL pattern
+    youtubePatterns.forEach(pattern => {
+        modifiedContent = modifiedContent.replace(pattern, (match, url, domain, videoId) => {
+            console.log(`Found YouTube video: ${videoId} from URL: ${url}`);
+            replaceCount++;
+
+            // Create responsive iframe embed
+            return `
+      <div class="youtube-embed-container">
+        <iframe 
+          src="https://www.youtube.com/embed/${videoId}" 
+          title="YouTube video player" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen>
+        </iframe>
+        <div class="video-caption">Video: YouTube</div>
+      </div>`;
+        });
+    });
+
+    console.log(`Replaced ${replaceCount} YouTube links with embeds`);
+    return modifiedContent;
+}
+
 // Helper function to find an image with specific base name (e.g., "1") regardless of extension
 function findImageByBaseName(entryPath, baseName) {
     const entryFiles = fs.readdirSync(entryPath);
@@ -452,8 +496,9 @@ async function convertToHtml(filePath) {
                     // Try a more general approach - remove the first paragraph if it's short
                     htmlContent = htmlContent.replace(/<p>[^<]{1,50}<\/p>/, '');
                 }
+                //MAYBE HERE
             }
-
+            htmlContent = processYouTubeLinks(htmlContent);
             // Αναγνώριση και μετατροπή ενσωματωμένων CSV πινάκων
             const entryPath = path.dirname(filePath);
             console.log(`Διαδρομή εγγράφου: ${filePath}, Διαδρομή φακέλου: ${entryPath}`);
@@ -555,6 +600,7 @@ async function convertToHtml(filePath) {
             if (currentParagraph !== '') {
                 htmlContent += `<p>${currentParagraph}</p>\n`;
             }
+            htmlContent = processYouTubeLinks(htmlContent);
 
             htmlContent = processEmbeddedCSV(htmlContent, path.dirname(filePath));
             return htmlContent;
