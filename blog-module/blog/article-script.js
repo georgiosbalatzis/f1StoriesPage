@@ -798,3 +798,68 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 100);
     });
 });
+
+// Social Sharing Script with Web Share API Support
+document.addEventListener('DOMContentLoaded', function() {
+    // Replace placeholder URLs with actual URL
+    const currentUrl = window.location.href;
+    const articleTitle = document.querySelector('.article-title').textContent;
+    const encodedTitle = encodeURIComponent(articleTitle);
+    const articleImage = document.querySelector('.article-header-img').src;
+
+    // Update sharing links
+    document.querySelectorAll('.share-btn[href]').forEach(btn => {
+        if (btn.href) {
+            btn.href = btn.href
+                .replace('CURRENT_URL', encodeURIComponent(currentUrl))
+                .replace('ARTICLE_TITLE', encodedTitle);
+        }
+    });
+
+    // Handle native share button (for Instagram and other apps)
+    const nativeShareBtn = document.getElementById('native-share-btn');
+    if (nativeShareBtn) {
+        // Check if Web Share API is supported
+        if (navigator.share) {
+            nativeShareBtn.addEventListener('click', function() {
+                navigator.share({
+                    title: articleTitle,
+                    text: 'Check out this F1 article: ' + articleTitle,
+                    url: currentUrl
+                })
+                    .catch(err => {
+                        console.error('Share failed:', err);
+                    });
+            });
+        } else {
+            // Hide the button if Web Share API is not supported
+            nativeShareBtn.style.display = 'none';
+        }
+    }
+
+    // Handle copy link button
+    const copyLinkBtn = document.getElementById('copy-link-btn');
+    if (copyLinkBtn) {
+        copyLinkBtn.addEventListener('click', function() {
+            navigator.clipboard.writeText(currentUrl)
+                .then(() => {
+                    copyLinkBtn.classList.add('copy-success');
+
+                    // Change icon temporarily to checkmark
+                    const icon = copyLinkBtn.querySelector('i');
+                    icon.classList.remove('fa-link');
+                    icon.classList.add('fa-check');
+
+                    // Reset after 2 seconds
+                    setTimeout(() => {
+                        copyLinkBtn.classList.remove('copy-success');
+                        icon.classList.remove('fa-check');
+                        icon.classList.add('fa-link');
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        });
+    }
+});
