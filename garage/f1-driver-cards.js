@@ -250,18 +250,55 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Add each driver with headshot image and updated standings
         teamInfo.drivers.forEach(driver => {
-            // Find driver in standings data
-            const driverInStandings = findDriverInStandings(driver.name);
+            // Special case handling for Hulkenberg and Albon
+            let driverStanding = null;
 
-            // Use position from standings if available, otherwise fallback to JSON
-            const position = driverInStandings ?
-                formatPosition(driverInStandings.position) :
+            if (driver.name === "Nico Hulkenberg" || driver.name === "Nico Hülkenberg") {
+                // Manual lookup for Hulkenberg
+                driverStanding = driverStandings.find(d =>
+                    d.driver.toLowerCase().includes("ulkenberg") ||
+                    d.driver.toLowerCase().includes("ülkenberg")
+                );
+            }
+            else if (driver.name === "Alex Albon" || driver.name === "Alexander Albon") {
+                // Manual lookup for Albon
+                driverStanding = driverStandings.find(d =>
+                    d.driver.toLowerCase().includes("albon")
+                );
+            }
+            else {
+                // For other drivers, use regular matching
+                driverStanding = driverStandings.find(d => d.driver === driver.name);
+
+                // If exact match fails, try matching by last name
+                if (!driverStanding) {
+                    const nameParts = driver.name.split(' ');
+                    if (nameParts.length >= 2) {
+                        const lastName = nameParts[nameParts.length - 1].toLowerCase();
+
+                        driverStanding = driverStandings.find(d => {
+                            const driverNameParts = d.driver.split(' ');
+                            if (driverNameParts.length >= 2) {
+                                const dLastName = driverNameParts[driverNameParts.length - 1].toLowerCase();
+                                return dLastName === lastName;
+                            }
+                            return false;
+                        });
+                    }
+                }
+            }
+
+            // Get position and points from standings or fallback to default values
+            const position = driverStanding ?
+                String(driverStanding.position).replace(/^(\d+).*$/, '$1') :
                 driver.position;
 
-            // Use points from standings if available
-            const points = driverInStandings ?
-                driverInStandings.points :
+            const points = driverStanding ?
+                driverStanding.points :
                 '0';
+
+            // Log what we found for debugging
+            console.log(`Driver: ${driver.name}, Position: ${position}, Points: ${points}`);
 
             driversHtml += `
             <div class="driver-card">
@@ -305,16 +342,38 @@ document.addEventListener('DOMContentLoaded', function() {
         const constructor = teamInfo.constructor;
 
         // Find constructor in standings data
-        const constructorInStandings = findConstructorInStandings(constructor.name);
+        let constructorStanding = null;
+
+        // Try various matching strategies for the constructor
+        // 1. Exact match
+        constructorStanding = teamStandings.find(t => t.team === constructor.name);
+
+        // 2. Partial match
+        if (!constructorStanding) {
+            // Extract key team name parts
+            const teamNameWords = constructor.name.toLowerCase().split(/[\s\-]+/);
+            for (const word of teamNameWords) {
+                if (word.length < 3 || ["team", "racing", "f1"].includes(word)) continue;
+
+                constructorStanding = teamStandings.find(t =>
+                    t.team.toLowerCase().includes(word)
+                );
+
+                if (constructorStanding) break;
+            }
+        }
 
         // Use position and points from standings if available, otherwise fallback to JSON
-        const championshipPosition = constructorInStandings ?
-            formatPosition(constructorInStandings.position) :
+        const championshipPosition = constructorStanding ?
+            String(constructorStanding.position).replace(/^(\d+).*$/, '$1') :
             constructor.championshipPosition;
 
-        const points = constructorInStandings ?
-            constructorInStandings.points :
+        const points = constructorStanding ?
+            constructorStanding.points :
             constructor.points;
+
+        // Log what we found for debugging
+        console.log(`Constructor: ${constructor.name}, Position: ${championshipPosition}, Points: ${points}`);
 
         let constructorHtml = `
         <div class="info-section constructor-section">
