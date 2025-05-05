@@ -1315,3 +1315,23 @@ figcaption {
         }
     }
 }
+
+
+/* Add this to your article-styles.css */
+.share-btn.threads {
+    background: #000000;
+}
+
+/* Update for Instagram button */
+.share-btn.instagram {
+    background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+    border: none;
+    cursor: pointer;
+}
+
+/* Ensure Web Share API button displays properly on all devices */
+@media (min-width: 992px) {
+    .share-btn.instagram {
+        display: none; /* Hide on desktop where Web Share API typically isn't available */
+    }
+}
