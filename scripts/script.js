@@ -788,6 +788,44 @@ gtag('config', 'G-X68J6MQKSM', {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Fix Bootstrap mobile menu issue
+    // This ensures the mobile menu doesn't immediately collapse after opening
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.getElementById('navbarNav');
+
+    if (navbarToggler && navbarCollapse) {
+        navbarToggler.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent event bubbling
+        });
+    }
+
+    // Handle dropdowns in mobile view
+    const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+
+    dropdownToggles.forEach(function(toggle) {
+        toggle.addEventListener('click', function(e) {
+            if (window.innerWidth < 992) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const parent = this.closest('.dropdown');
+                const isOpen = parent.classList.contains('show');
+
+                // Close all other dropdowns
+                document.querySelectorAll('.dropdown.show').forEach(function(openDropdown) {
+                    if (openDropdown !== parent) {
+                        openDropdown.classList.remove('show');
+                        openDropdown.querySelector('.dropdown-menu').classList.remove('show');
+                    }
+                });
+
+                // Toggle this dropdown
+                parent.classList.toggle('show');
+                parent.querySelector('.dropdown-menu').classList.toggle('show');
+            }
+        });
+    });
+
     // Set active nav item based on current path
     function setActiveNavItem() {
         const currentPath = window.location.pathname;
@@ -838,16 +876,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update active state when hash changes (for single-page sections)
     window.addEventListener('hashchange', setActiveNavItem);
 
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', function(e) {
-        const navbarCollapse = document.getElementById('navbarNav');
-        const isExpanded = navbarCollapse.classList.contains('show');
-
-        if (isExpanded && !e.target.closest('.navbar')) {
-            const navbarToggler = document.querySelector('.navbar-toggler');
-            if (navbarToggler) {
+    // Close mobile menu when clicking on a nav item that links to the current page
+    document.querySelectorAll('.navbar-nav .nav-link:not(.dropdown-toggle)').forEach(function(link) {
+        link.addEventListener('click', function() {
+            if (window.innerWidth < 992 && navbarCollapse.classList.contains('show')) {
                 navbarToggler.click();
             }
+        });
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth < 992 &&
+            navbarCollapse.classList.contains('show') &&
+            !e.target.closest('.navbar')) {
+            navbarToggler.click();
         }
     });
 });
