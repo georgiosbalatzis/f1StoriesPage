@@ -47,10 +47,10 @@
 
                     <!-- Podcast dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="podcastDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="podcastDropdown" role="button">
                             Podcast
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="podcastDropdown">
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
                             <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
                             <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
@@ -59,10 +59,10 @@
 
                     <!-- Stories & Media dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="mediaDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="mediaDropdown" role="button">
                             Stories &amp; Media
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="mediaDropdown">
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
                             <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
                             <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
@@ -71,10 +71,10 @@
 
                     <!-- About dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button">
                             About
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/#about">About Us</a></li>
                             <li><a class="dropdown-item" href="/#guests">Guests</a></li>
                             <li><a class="dropdown-item" href="/#contact">Contact</a></li>
@@ -85,7 +85,6 @@
         </div>
     </nav>
 </header>
-
 
 <section id="hero" class="d-flex align-items-center justify-content-center">
     <div class="hero-overlay"></div>
@@ -403,5 +402,99 @@
 <script src="../../scripts/live-stream-checker.js"></script>
 <!-- F1 Calendar Past Races Fix -->
 <script defer src="../../scripts/calendar-fix.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function to check if we're in mobile view
+        const isMobile = () => window.innerWidth < 992;
+
+        // Get all dropdown toggles
+        const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+
+        // Handle dropdown toggles on mobile
+        dropdownToggles.forEach(function(toggle) {
+            // Remove Bootstrap's data attributes that control dropdown behavior
+            toggle.removeAttribute('data-bs-toggle');
+            toggle.removeAttribute('data-bs-auto-close');
+
+            // Add click event listener
+            toggle.addEventListener('click', function(event) {
+                if (isMobile()) {
+                    // Prevent default link behavior and event propagation
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    // Get parent dropdown
+                    const parent = this.closest('.dropdown');
+
+                    // Toggle show class
+                    parent.classList.toggle('show');
+
+                    // Stop the event from bubbling up to document
+                    return false;
+                }
+            });
+        });
+
+        // For desktop view, re-enable Bootstrap's dropdown behavior
+        function setupDesktopDropdowns() {
+            if (!isMobile()) {
+                dropdownToggles.forEach(function(toggle) {
+                    toggle.setAttribute('data-bs-toggle', 'dropdown');
+                });
+            }
+        }
+
+        // Initial setup based on screen size
+        setupDesktopDropdowns();
+
+        // Update when screen size changes
+        window.addEventListener('resize', function() {
+            setupDesktopDropdowns();
+        });
+
+        // Set active class based on current URL
+        function setActiveNavItem() {
+            const currentPath = window.location.pathname;
+            const currentHash = window.location.hash;
+
+            const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+
+            // Set active based on path
+            if (currentPath === '/' || currentPath === '/index.html') {
+                document.getElementById('home-link').classList.add('active');
+
+                // For home page hash sections
+                if (currentHash.includes('about') || currentHash.includes('guests') || currentHash.includes('contact')) {
+                    document.getElementById('aboutDropdown').classList.add('active');
+                } else if (currentHash.includes('podcasts') || currentHash.includes('episodes')) {
+                    document.getElementById('podcastDropdown').classList.add('active');
+                }
+            } else if (currentPath.includes('/spotify/') || currentPath.includes('/episodes/') || currentPath.includes('BetCast')) {
+                document.getElementById('podcastDropdown').classList.add('active');
+            } else if (currentPath.includes('/blog') || currentPath.includes('/memes') || currentPath.includes('/garage')) {
+                document.getElementById('mediaDropdown').classList.add('active');
+            } else if (currentPath.includes('/privacy/')) {
+                document.getElementById('aboutDropdown').classList.add('active');
+            }
+        }
+
+        // Set active nav item on page load
+        setActiveNavItem();
+
+        // Update when hash changes
+        window.addEventListener('hashchange', setActiveNavItem);
+
+        // Close dropdowns when clicking on a link
+        const navbarLinks = document.querySelectorAll('.navbar-nav .dropdown-item');
+        navbarLinks.forEach(function(link) {
+            link.addEventListener('click', function(event) {
+                // Let the navigation happen normally - no special handling needed
+                // The page will reload, resetting the menu state
+            });
+        });
+    });
+</script>
 </body>
 </html>

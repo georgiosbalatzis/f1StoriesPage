@@ -2031,6 +2031,15 @@ input:checked + .toggle-slider:before {
     }
 }
 
+
+
+
+
+
+
+
+
+
 /* Dropdown Menu Styling */
 .dropdown-menu {
     background: rgba(0, 10, 30, 0.95);
@@ -2098,44 +2107,28 @@ input:checked + .toggle-slider:before {
     .navbar-collapse {
         max-height: calc(100vh - 76px);
         overflow-y: auto;
-        transition: max-height 0.3s ease;
     }
 
-    /* Fix for disappearing menu issue */
-    .navbar-collapse.collapsing {
-        height: auto !important;
-        overflow: hidden;
-        transition: height 0.35s ease;
-    }
-
-    /* Proper styling for dropdown menus in mobile */
+    /* Style dropdown menus in mobile */
     .dropdown-menu {
-        background: rgba(0, 15, 40, 0.8);
+        background: rgba(0, 15, 40, 0.5);
         border: none;
         border-left: 1px solid rgba(0, 115, 230, 0.3);
         border-radius: 0;
         box-shadow: none;
-        padding-left: 1rem;
-        margin-top: 0;
-        max-height: none;
-        overflow: visible;
-        position: static;
-        float: none;
-        width: 100%;
-        display: block;
-        opacity: 1;
-    }
-
-    /* Hide dropdown menus by default in mobile */
-    .navbar-nav .dropdown-menu {
+        padding: 0.5rem 0 0.5rem 1rem;
+        margin-top: 0.25rem;
+        margin-bottom: 0.25rem;
+        /* Hide dropdowns by default in mobile */
         display: none;
     }
 
-    /* Show dropdown menu when .show class is added */
-    .navbar-nav .dropdown.show .dropdown-menu {
+    /* Show dropdown when parent has show class */
+    .dropdown.show .dropdown-menu {
         display: block;
     }
 
+    /* Adjust dropdown items for mobile */
     .dropdown-item {
         padding: 0.5rem 1rem;
         white-space: normal;
@@ -2149,16 +2142,7 @@ input:checked + .toggle-slider:before {
         left: 0.3rem;
     }
 
-    .navbar-dark .navbar-nav .dropdown-menu .dropdown-item {
-        color: #ccc;
-    }
-
-    .navbar-dark .navbar-nav .dropdown-menu .dropdown-item:hover,
-    .navbar-dark .navbar-nav .dropdown-menu .dropdown-item:focus {
-        color: #fff;
-    }
-
-    /* Additional space for dropdown toggles on mobile */
+    /* Space out nav items slightly */
     .navbar-nav .nav-item {
         margin-bottom: 0.25rem;
     }
@@ -2167,13 +2151,5 @@ input:checked + .toggle-slider:before {
     .navbar-collapse::-webkit-scrollbar {
         width: 0;
         background: transparent;
-    }
-
-    /* Make dropdown toggles easier to tap */
-    .navbar-nav .dropdown-toggle {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-right: 1.5rem;
     }
 }
