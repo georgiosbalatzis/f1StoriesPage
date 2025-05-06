@@ -2094,6 +2094,21 @@ input:checked + .toggle-slider:before {
 
 /* Mobile optimization for dropdown menus */
 @media (max-width: 991.98px) {
+    /* Make sure navbar collapse has proper max-height */
+    .navbar-collapse {
+        max-height: calc(100vh - 76px);
+        overflow-y: auto;
+        transition: max-height 0.3s ease;
+    }
+
+    /* Fix for disappearing menu issue */
+    .navbar-collapse.collapsing {
+        height: auto !important;
+        overflow: hidden;
+        transition: height 0.35s ease;
+    }
+
+    /* Proper styling for dropdown menus in mobile */
     .dropdown-menu {
         background: rgba(0, 15, 40, 0.8);
         border: none;
@@ -2104,11 +2119,21 @@ input:checked + .toggle-slider:before {
         margin-top: 0;
         max-height: none;
         overflow: visible;
+        position: static;
+        float: none;
+        width: 100%;
+        display: block;
+        opacity: 1;
     }
 
-    .navbar-collapse {
-        max-height: calc(100vh - 76px);
-        overflow-y: auto;
+    /* Hide dropdown menus by default in mobile */
+    .navbar-nav .dropdown-menu {
+        display: none;
+    }
+
+    /* Show dropdown menu when .show class is added */
+    .navbar-nav .dropdown.show .dropdown-menu {
+        display: block;
     }
 
     .dropdown-item {
@@ -2133,9 +2158,22 @@ input:checked + .toggle-slider:before {
         color: #fff;
     }
 
+    /* Additional space for dropdown toggles on mobile */
+    .navbar-nav .nav-item {
+        margin-bottom: 0.25rem;
+    }
+
     /* Prevent navbar collapse from having visible scrollbars */
     .navbar-collapse::-webkit-scrollbar {
         width: 0;
         background: transparent;
+    }
+
+    /* Make dropdown toggles easier to tap */
+    .navbar-nav .dropdown-toggle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-right: 1.5rem;
     }
 }
