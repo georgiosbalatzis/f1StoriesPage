@@ -263,6 +263,7 @@
     </div>
 </section>
 
+<!-- Updated Footer Implementation -->
 <footer class="py-4">
     <div class="container">
         <div class="row">
@@ -276,16 +277,89 @@
                     <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
                     <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
                 </div>
+                <div class="footer-links mt-3">
+                    <a href="/privacy/privacy.html" class="footer-link">Privacy Policy</a>
+                    <span class="footer-separator">|</span>
+                    <a href="/privacy/terms.html" class="footer-link">Terms of Use</a>
+                    <span class="footer-separator">|</span>
+                    <a href="#" class="footer-link manage-cookies-link">Manage Cookies</a>
+                </div>
             </div>
         </div>
     </div>
 </footer>
 
+<!-- Cookie Consent Banner -->
+<div id="cookie-consent" class="cookie-banner">
+    <div class="cookie-content">
+        <div class="cookie-header">
+            <h3>Cookie Consent</h3>
+            <button id="close-cookie" class="close-btn"><i class="fas fa-times"></i></button>
+        </div>
+        <p>F1 Stories uses cookies to enhance your browsing experience, analyze site traffic, and personalize content. We respect your privacy choices.</p>
+
+        <div class="cookie-details">
+            <div class="cookie-section">
+                <h4>Essential Cookies <span class="badge-essential">Always Active</span></h4>
+                <p>Necessary for the website to function properly. These cannot be disabled.</p>
+            </div>
+
+            <div class="cookie-section">
+                <div class="cookie-toggle">
+                    <h4>Analytics Cookies</h4>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="analytics-cookies">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <p>Help us understand how visitors interact with our website by collecting anonymous information.</p>
+            </div>
+
+            <div class="cookie-section">
+                <div class="cookie-toggle">
+                    <h4>Marketing Cookies</h4>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="marketing-cookies">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <p>Allow us to provide personalized content and ads based on your browsing behavior.</p>
+            </div>
+        </div>
+
+        <div class="cookie-actions">
+            <button id="reject-all" class="cookie-btn reject-btn">Reject All</button>
+            <button id="accept-selected" class="cookie-btn accept-selected-btn">Accept Selected</button>
+            <button id="accept-all" class="cookie-btn accept-btn">Accept All</button>
+        </div>
+
+        <div class="cookie-footer">
+            <a href="/privacy/privacy.html" target="_blank">Privacy Policy</a>
+            <a href="/privacy/terms.html" target="_blank">Cookie Policy</a>
+        </div>
+    </div>
+</div>
+
 <!-- Scroll To Top Button -->
 <button id="scroll-to-top" class="scroll-to-top-btn">
     <i class="fas fa-chevron-up"></i>
 </button>
-
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const manageConsentLink = document.querySelector('.manage-cookies-link');
+        if (manageConsentLink) {
+            manageConsentLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (typeof showCookieBanner === 'function') {
+                    showCookieBanner();
+                } else {
+                    // If on another page, redirect to home with cookies parameter
+                    window.location.href = '/#cookies';
+                }
+            });
+        }
+    });
+</script>
 <!-- Background Randomizer Script -->
 <script src="../../scripts/background-randomizer.js"></script>
 <!-- Blog Post Loader Script -->
