@@ -35,7 +35,7 @@
             <a class="navbar-brand" href="/">
                 <img src="../../images/logo.png" alt="F1 Stories Logo" height="50">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" id="mobile-toggler">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -46,11 +46,11 @@
                     </li>
 
                     <!-- Podcast dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="podcastDropdown" role="button">
-                            Podcast
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">
+                            Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
                         </a>
-                        <ul class="dropdown-menu">
+                        <ul class="custom-dropdown-menu">
                             <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
                             <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
                             <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
@@ -58,11 +58,11 @@
                     </li>
 
                     <!-- Stories & Media dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="mediaDropdown" role="button">
-                            Stories &amp; Media
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
+                            Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
                         </a>
-                        <ul class="dropdown-menu">
+                        <ul class="custom-dropdown-menu">
                             <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
                             <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
                             <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
@@ -70,11 +70,11 @@
                     </li>
 
                     <!-- About dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button">
-                            About
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
+                            About <i class="fas fa-chevron-down dropdown-icon"></i>
                         </a>
-                        <ul class="dropdown-menu">
+                        <ul class="custom-dropdown-menu">
                             <li><a class="dropdown-item" href="/#about">About Us</a></li>
                             <li><a class="dropdown-item" href="/#guests">Guests</a></li>
                             <li><a class="dropdown-item" href="/#contact">Contact</a></li>
@@ -325,7 +325,7 @@
             <h3>Cookie Consent</h3>
             <button id="close-cookie" class="close-btn"><i class="fas fa-times"></i></button>
         </div>
-        <p>F1 Stories uses cookies to enhance your browsing experience, analyze site traffic, and personalize content. We respect your privacy choices.</p>
+        <p class="cookie-intro">F1 Stories uses cookies to enhance your browsing experience, analyze site traffic, and personalize content. We respect your privacy choices.</p>
 
         <div class="cookie-details">
             <div class="cookie-section">
@@ -364,7 +364,7 @@
 
         <div class="cookie-footer">
             <a href="/privacy/privacy.html" target="_blank">Privacy Policy</a>
-            <a href="/privacy/terms.html" target="_blank">Cookie Policy</a>
+            <a href="/privacy/terms.html" target="_blank">Terms of Use</a>
         </div>
     </div>
 </div>
@@ -402,74 +402,78 @@
 <script src="../../scripts/live-stream-checker.js"></script>
 <!-- F1 Calendar Past Races Fix -->
 <script defer src="../../scripts/calendar-fix.js"></script>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Function to check if we're in mobile view
-        const isMobile = () => window.innerWidth < 992;
+        // Mobile menu toggle
+        const mobileToggler = document.getElementById('mobile-toggler');
+        const navbarCollapse = document.getElementById('navbarNav');
 
-        // Get all dropdown toggles
-        const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+        mobileToggler.addEventListener('click', function() {
+            navbarCollapse.classList.toggle('show');
+        });
 
-        // Handle dropdown toggles on mobile
+        // Dropdown toggles
+        const dropdownToggles = document.querySelectorAll('.custom-dropdown-toggle');
+
         dropdownToggles.forEach(function(toggle) {
-            // Remove Bootstrap's data attributes that control dropdown behavior
-            toggle.removeAttribute('data-bs-toggle');
-            toggle.removeAttribute('data-bs-auto-close');
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
 
-            // Add click event listener
-            toggle.addEventListener('click', function(event) {
-                if (isMobile()) {
-                    // Prevent default link behavior and event propagation
-                    event.preventDefault();
-                    event.stopPropagation();
+                const parent = this.parentElement;
+                const isOpen = parent.classList.contains('open');
 
-                    // Get parent dropdown
-                    const parent = this.closest('.dropdown');
+                // On mobile, we just toggle this dropdown without closing others
+                if (window.innerWidth < 992) {
+                    parent.classList.toggle('open');
+                } else {
+                    // On desktop, close other dropdowns first
+                    document.querySelectorAll('.custom-dropdown.open').forEach(function(dropdown) {
+                        if (dropdown !== parent) {
+                            dropdown.classList.remove('open');
+                        }
+                    });
 
-                    // Toggle show class
-                    parent.classList.toggle('show');
-
-                    // Stop the event from bubbling up to document
-                    return false;
+                    // Then toggle this one
+                    parent.classList.toggle('open');
                 }
             });
         });
 
-        // For desktop view, re-enable Bootstrap's dropdown behavior
-        function setupDesktopDropdowns() {
-            if (!isMobile()) {
-                dropdownToggles.forEach(function(toggle) {
-                    toggle.setAttribute('data-bs-toggle', 'dropdown');
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.custom-dropdown')) {
+                document.querySelectorAll('.custom-dropdown.open').forEach(function(dropdown) {
+                    dropdown.classList.remove('open');
                 });
             }
-        }
 
-        // Initial setup based on screen size
-        setupDesktopDropdowns();
-
-        // Update when screen size changes
-        window.addEventListener('resize', function() {
-            setupDesktopDropdowns();
+            // Only close navbar collapse when clicking completely outside navbar
+            if (window.innerWidth < 992 && !e.target.closest('.navbar') && navbarCollapse.classList.contains('show')) {
+                navbarCollapse.classList.remove('show');
+            }
         });
 
-        // Set active class based on current URL
+        // Set active state based on current URL
         function setActiveNavItem() {
             const currentPath = window.location.pathname;
             const currentHash = window.location.hash;
 
-            const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
-            navLinks.forEach(link => link.classList.remove('active'));
+            // Reset all active states
+            document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
 
             // Set active based on path
             if (currentPath === '/' || currentPath === '/index.html') {
                 document.getElementById('home-link').classList.add('active');
 
-                // For home page hash sections
-                if (currentHash.includes('about') || currentHash.includes('guests') || currentHash.includes('contact')) {
-                    document.getElementById('aboutDropdown').classList.add('active');
-                } else if (currentHash.includes('podcasts') || currentHash.includes('episodes')) {
-                    document.getElementById('podcastDropdown').classList.add('active');
+                // For home page section hashes
+                if (currentHash) {
+                    if (currentHash.includes('about') || currentHash.includes('guests') || currentHash.includes('contact')) {
+                        document.getElementById('aboutDropdown').classList.add('active');
+                    } else if (currentHash.includes('podcasts') || currentHash.includes('episodes')) {
+                        document.getElementById('podcastDropdown').classList.add('active');
+                    }
                 }
             } else if (currentPath.includes('/spotify/') || currentPath.includes('/episodes/') || currentPath.includes('BetCast')) {
                 document.getElementById('podcastDropdown').classList.add('active');
@@ -486,12 +490,12 @@
         // Update when hash changes
         window.addEventListener('hashchange', setActiveNavItem);
 
-        // Close dropdowns when clicking on a link
-        const navbarLinks = document.querySelectorAll('.navbar-nav .dropdown-item');
-        navbarLinks.forEach(function(link) {
-            link.addEventListener('click', function(event) {
-                // Let the navigation happen normally - no special handling needed
-                // The page will reload, resetting the menu state
+        // Prevent dropdown links from closing menu too soon
+        const dropdownItems = document.querySelectorAll('.dropdown-item');
+        dropdownItems.forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Don't close the navbar collapse, let the navigation happen normally
             });
         });
     });

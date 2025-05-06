@@ -1757,6 +1757,8 @@ a, button, .cta-button, .nav-link {
     transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     opacity: 0;
     visibility: hidden;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .cookie-banner.show {
@@ -1779,6 +1781,10 @@ a, button, .cta-button, .nav-link {
     margin-bottom: 1rem;
     border-bottom: 1px solid rgba(0, 115, 230, 0.2);
     padding-bottom: 0.5rem;
+    position: sticky;
+    top: 0;
+    background: rgba(0, 10, 30, 0.95);
+    z-index: 5;
 }
 
 .cookie-header h3 {
@@ -1794,11 +1800,20 @@ a, button, .cta-button, .nav-link {
     font-size: 1.25rem;
     cursor: pointer;
     transition: all 0.3s ease;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .close-btn:hover {
     color: #00ffff;
     transform: scale(1.1);
+}
+
+.cookie-intro {
+    line-height: 1.5;
 }
 
 .cookie-details {
@@ -1826,6 +1841,243 @@ a, button, .cta-button, .nav-link {
 .cookie-toggle h4 {
     margin: 0;
     font-size: 1.1rem;
+}
+
+.badge-essential {
+    background: linear-gradient(90deg, #0073e6, #00ffff);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    transition: 0.4s;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+}
+
+input:checked + .toggle-slider {
+    background: linear-gradient(90deg, #0073e6, #00ffff);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+.cookie-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+}
+
+.cookie-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    min-width: 150px;
+}
+
+.reject-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+}
+
+.reject-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+}
+
+.accept-selected-btn {
+    background: rgba(0, 115, 230, 0.3);
+    color: #e0e0e0;
+}
+
+.accept-selected-btn:hover {
+    background: rgba(0, 115, 230, 0.5);
+    transform: translateY(-3px);
+}
+
+.accept-btn {
+    background: linear-gradient(45deg, #0073e6, #003366);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.accept-btn:hover {
+    background: linear-gradient(45deg, #005bb5, #002a4f);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 115, 230, 0.3);
+}
+
+.cookie-footer {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.cookie-footer a {
+    color: #0073e6;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.cookie-footer a:hover {
+    color: #00ffff;
+    text-decoration: underline;
+}
+
+/* Toast notification for consent actions */
+.consent-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 10, 30, 0.9);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 5px;
+    z-index: 9998;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 115, 230, 0.3);
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.consent-toast.show {
+    opacity: 1;
+}
+
+/* Mobile optimizations */
+@media (max-width: 767.98px) {
+    .cookie-banner {
+        bottom: 0;
+        max-height: 80vh;
+        border-radius: 0;
+    }
+
+    .cookie-content {
+        padding: 1rem;
+    }
+
+    .cookie-header h3 {
+        font-size: 1.25rem;
+    }
+
+    .cookie-section {
+        padding: 0.75rem;
+    }
+
+    .cookie-toggle h4 {
+        font-size: 1rem;
+        max-width: 70%;
+    }
+
+    .badge-essential {
+        padding: 2px 6px;
+        font-size: 0.65rem;
+        margin-left: 6px;
+    }
+
+    .toggle-switch {
+        width: 40px;
+        height: 22px;
+    }
+
+    .toggle-slider:before {
+        height: 16px;
+        width: 16px;
+    }
+
+    input:checked + .toggle-slider:before {
+        transform: translateX(18px);
+    }
+
+    .cookie-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+        margin: 1rem 0;
+    }
+
+    .cookie-btn {
+        width: 100%;
+        padding: 0.6rem 1rem;
+        min-width: auto;
+    }
+
+    .cookie-footer {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .consent-toast {
+        max-width: 90%;
+        text-align: center;
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 359.98px) {
+    .cookie-banner {
+        max-height: 90vh;
+    }
+
+    .cookie-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .cookie-section p {
+        font-size: 0.9rem;
+    }
+
+    .cookie-toggle h4 {
+        font-size: 0.9rem;
+    }
 }
 
 .badge-essential {
@@ -2039,9 +2291,48 @@ input:checked + .toggle-slider:before {
 
 
 
+/* Base Navbar Styling */
+.navbar {
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-/* Dropdown Menu Styling */
-.dropdown-menu {
+.navbar-toggler {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+}
+
+.navbar-toggler:focus {
+    outline: none;
+}
+
+/* Custom Dropdown Styling */
+.custom-dropdown {
+    position: relative;
+}
+
+.custom-dropdown-toggle {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dropdown-icon {
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.custom-dropdown.open .dropdown-icon {
+    transform: rotate(180deg);
+}
+
+.custom-dropdown-menu {
     background: rgba(0, 10, 30, 0.95);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(0, 115, 230, 0.3);
@@ -2049,6 +2340,17 @@ input:checked + .toggle-slider:before {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
     padding: 0.5rem 0;
     margin-top: 0.5rem;
+    list-style: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 200px;
+    z-index: 1000;
+    display: none;
+}
+
+.custom-dropdown.open .custom-dropdown-menu {
+    display: block;
 }
 
 .dropdown-item {
@@ -2057,6 +2359,8 @@ input:checked + .toggle-slider:before {
     font-size: 0.95rem;
     position: relative;
     transition: all 0.3s ease;
+    display: block;
+    text-decoration: none;
 }
 
 .dropdown-item:hover, .dropdown-item:focus {
@@ -2077,79 +2381,75 @@ input:checked + .toggle-slider:before {
     transform: translateY(-50%);
 }
 
-.dropdown-item:active {
-    background-color: rgba(0, 115, 230, 0.2);
-}
-
-/* BetCast highlight in dropdown */
+/* BetCast highlight */
 .betcast-item {
     background: linear-gradient(90deg, rgba(0, 115, 230, 0.1), transparent);
     border-left: 2px solid #0073e6;
 }
 
 /* Active state for navigation */
-.navbar-nav .nav-link.active,
-.navbar-nav .nav-item.active .nav-link,
-.navbar-nav .show > .nav-link {
+.navbar-nav .nav-link.active {
     color: #00ffff;
     position: relative;
 }
 
-.navbar-nav .nav-link.active::after,
-.navbar-nav .nav-item.active .nav-link::after,
-.navbar-nav .show > .nav-link::after {
+.navbar-nav .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
     width: 80%;
+    height: 2px;
+    background: linear-gradient(90deg, #0073e6, #00ffff);
 }
 
-/* Mobile optimization for dropdown menus */
+/* Mobile Specific Styling */
 @media (max-width: 991.98px) {
-    /* Make sure navbar collapse has proper max-height */
     .navbar-collapse {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(0, 10, 30, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        z-index: 1000;
         max-height: calc(100vh - 76px);
         overflow-y: auto;
     }
 
-    /* Style dropdown menus in mobile */
-    .dropdown-menu {
+    .navbar-collapse.show {
+        display: block;
+    }
+
+    .custom-dropdown-menu {
+        position: static;
         background: rgba(0, 15, 40, 0.5);
         border: none;
         border-left: 1px solid rgba(0, 115, 230, 0.3);
         border-radius: 0;
         box-shadow: none;
-        padding: 0.5rem 0 0.5rem 1rem;
-        margin-top: 0.25rem;
-        margin-bottom: 0.25rem;
-        /* Hide dropdowns by default in mobile */
-        display: none;
+        padding-left: 1rem;
+        margin: 0.5rem 0;
+        width: 100%;
     }
 
-    /* Show dropdown when parent has show class */
-    .dropdown.show .dropdown-menu {
-        display: block;
-    }
-
-    /* Adjust dropdown items for mobile */
     .dropdown-item {
         padding: 0.5rem 1rem;
-        white-space: normal;
     }
 
-    .dropdown-item:hover {
-        padding-left: 1.3rem;
+    .navbar-nav {
+        width: 100%;
     }
 
-    .dropdown-item:hover::before {
-        left: 0.3rem;
-    }
-
-    /* Space out nav items slightly */
     .navbar-nav .nav-item {
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.5rem;
     }
 
-    /* Prevent navbar collapse from having visible scrollbars */
-    .navbar-collapse::-webkit-scrollbar {
-        width: 0;
-        background: transparent;
+    .custom-dropdown-toggle {
+        width: 100%;
+        justify-content: space-between;
     }
 }
