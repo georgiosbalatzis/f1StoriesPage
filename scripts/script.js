@@ -786,3 +786,68 @@ gtag('js', new Date());
 gtag('config', 'G-X68J6MQKSM', {
     'anonymize_ip': true
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set active nav item based on current path
+    function setActiveNavItem() {
+        const currentPath = window.location.pathname;
+        const currentHash = window.location.hash;
+
+        // Function to check if a path includes a certain segment
+        function pathIncludes(path, segment) {
+            return path.includes(segment);
+        }
+
+        // Reset all active states first
+        document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        // Home link
+        if (currentPath === '/' || currentPath === '/index.html') {
+            document.getElementById('home-link').classList.add('active');
+
+            // For home page sections
+            if (currentHash) {
+                if (currentHash.includes('about') || currentHash.includes('guests') || currentHash.includes('contact')) {
+                    document.getElementById('aboutDropdown').classList.add('active');
+                } else if (currentHash.includes('podcasts') || currentHash.includes('episodes')) {
+                    document.getElementById('podcastDropdown').classList.add('active');
+                } else if (currentHash.includes('blog')) {
+                    document.getElementById('mediaDropdown').classList.add('active');
+                }
+            }
+        }
+        // Podcast dropdown
+        else if (pathIncludes(currentPath, '/spotify/') || pathIncludes(currentPath, '/episodes/') || pathIncludes(currentPath, 'BetCast')) {
+            document.getElementById('podcastDropdown').classList.add('active');
+        }
+        // Stories & Media dropdown
+        else if (pathIncludes(currentPath, '/blog') || pathIncludes(currentPath, '/memes') || pathIncludes(currentPath, '/garage')) {
+            document.getElementById('mediaDropdown').classList.add('active');
+        }
+        // Privacy and Terms pages
+        else if (pathIncludes(currentPath, '/privacy/')) {
+            document.getElementById('aboutDropdown').classList.add('active');
+        }
+    }
+
+    // Set active nav item on page load
+    setActiveNavItem();
+
+    // Update active state when hash changes (for single-page sections)
+    window.addEventListener('hashchange', setActiveNavItem);
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+        const navbarCollapse = document.getElementById('navbarNav');
+        const isExpanded = navbarCollapse.classList.contains('show');
+
+        if (isExpanded && !e.target.closest('.navbar')) {
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            if (navbarToggler) {
+                navbarToggler.click();
+            }
+        }
+    });
+});

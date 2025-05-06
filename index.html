@@ -32,7 +32,7 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="/">
                 <img src="../../images/logo.png" alt="F1 Stories Logo" height="50">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,16 +40,46 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#" id="home-link">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#podcasts">Podcasts</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#episodes">Episodes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#blog">Blog</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#guests">Guests</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/memes/index.html" id="memes-link">Memes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
-                    <li class="nav-item"><a class="nav-link betcast-btn" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+                    <!-- Home -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/" id="home-link">Home</a>
+                    </li>
+
+                    <!-- Podcast dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="podcastDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Podcast
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="podcastDropdown">
+                            <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+                            <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
+                            <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Stories & Media dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="mediaDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Stories &amp; Media
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="mediaDropdown">
+                            <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
+                            <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+                            <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- About dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            About
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
+                            <li><a class="dropdown-item" href="/#about">About Us</a></li>
+                            <li><a class="dropdown-item" href="/#guests">Guests</a></li>
+                            <li><a class="dropdown-item" href="/#contact">Contact</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
