@@ -1,6 +1,6 @@
 /**
  * F1 Stories Podcast Page Scripts
- * Client-side solution using Spotify embeds
+ * Direct Spotify Embed solution for displaying latest episodes
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -33,305 +33,127 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Load episodes dynamically using RSS feed
-    loadLatestEpisodes();
+    // Load episodes using Spotify direct embeds
+    loadEpisodesDirectly();
 
     // Add animated background effect to episode list
     setupEpisodeListBackground();
 });
 
 /**
- * Loads the latest podcast episodes
- * This approach uses a CORS proxy to fetch the RSS feed
+ * Loads episodes directly using Spotify embed API
+ * This approach doesn't require any external API calls or proxies
  */
-function loadLatestEpisodes() {
-    // Show loading indicator
-    document.getElementById('episodes-loading').style.display = 'block';
-    
-    // Use a CORS proxy to access the RSS feed
-    const corsProxy = 'https://api.allorigins.win/raw?url=';
-    const rssFeedUrl = 'https://anchor.fm/s/101588098/podcast/rss';
-    
-    fetch(corsProxy + encodeURIComponent(rssFeedUrl))
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch RSS feed');
-            }
-            return response.text();
-        })
-        .then(xmlText => {
-            // Parse the XML
-            const parser = new DOMParser();
-            const xml = parser.parseFromString(xmlText, 'application/xml');
-            
-            // Extract episodes
-            const items = Array.from(xml.querySelectorAll('item')).slice(0, 6);
-            
-            const episodes = items.map((item, index) => {
-                // Extract Spotify ID from enclosure URL if available
-                const enclosureUrl = item.querySelector('enclosure')?.getAttribute('url') || '';
-                
-                // Try to extract Spotify ID from the URL
-                let spotifyId = null;
-                const spotifyMatch = enclosureUrl.match(/episode\/([a-zA-Z0-9]+)/);
-                if (spotifyMatch && spotifyMatch[1]) {
-                    spotifyId = spotifyMatch[1];
-                }
-                
-                // If not found in enclosure, try to find it in link or guid
-                if (!spotifyId) {
-                    const link = item.querySelector('link')?.textContent || '';
-                    const linkMatch = link.match(/episode\/([a-zA-Z0-9]+)/);
-                    if (linkMatch && linkMatch[1]) {
-                        spotifyId = linkMatch[1];
-                    }
-                }
-                
-                // Get title and clean it
-                const title = item.querySelector('title').textContent;
-                
-                // Get episode number from title if available
-                const numberMatch = title.match(/#(\d+)/);
-                const episodeNumber = numberMatch ? numberMatch[1] : (index + 1);
-                
-                // Get description and clean it (remove HTML tags)
-                let description = '';
-                const descElement = item.querySelector('description');
-                if (descElement) {
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = descElement.textContent;
-                    description = tempDiv.textContent || tempDiv.innerText || '';
-                    
-                    // Truncate if too long
-                    if (description.length > 150) {
-                        description = description.substring(0, 147) + '...';
-                    }
-                }
-                
-                return {
-                    id: spotifyId || `episode-${index}`,
-                    title: title,
-                    description: description,
-                    pubDate: item.querySelector('pubDate')?.textContent || '',
-                    link: item.querySelector('link')?.textContent || enclosureUrl,
-                    number: episodeNumber
-                };
-            });
-            
-            // Display episodes
-            displayEpisodes(episodes);
-        })
-        .catch(error => {
-            console.error('Error loading episodes:', error);
-            // Show error message
-            document.getElementById('episodes-error').style.display = 'block';
-            
-            // Fall back to Spotify show embed
-            fallbackToSpotifyEmbed();
-        })
-        .finally(() => {
-            // Hide loading indicator
-            document.getElementById('episodes-loading').style.display = 'none';
-        });
-}
+function loadEpisodesDirectly() {
+    // Hide loading indicator
+    document.getElementById('episodes-loading').style.display = 'none';
 
-/**
- * Displays episodes in the UI
- * @param {Array} episodes - Array of episode objects from RSS feed
- */
-function displayEpisodes(episodes) {
+    // Get episode grid
     const episodeGrid = document.querySelector('.episode-grid');
     if (!episodeGrid) return;
-    
-    // Clear existing content
+
+    // Clear any existing content
     episodeGrid.innerHTML = '';
-    
-    // Create left and right columns
+
+    // Define Spotify episode IDs for the latest 6 episodes
+    // These IDs come from your Spotify episode URLs
+    // Format: https://open.spotify.com/episode/[ID]
+    const latestEpisodes = [
+        {
+            id: "episode-id-1", // Replace with actual IDs
+            title: "Australian GP / Τι ειδαμε",
+            number: 12
+        },
+        {
+            id: "episode-id-2",
+            title: "Australian GP / Τα πρωτα δεδομενα",
+            number: 11
+        },
+        {
+            id: "episode-id-3",
+            title: "GP Chinese - Τι ειδαμε",
+            number: 10
+        },
+        {
+            id: "episode-id-4",
+            title: "GP China / Τα πρωτα δεδομενα",
+            number: 9
+        },
+        {
+            id: "episode-id-5",
+            title: "Tsunoda στην Redbull",
+            number: 8
+        },
+        {
+            id: "episode-id-6",
+            title: "BoxBox!? #1",
+            number: 7
+        }
+    ];
+
+    // Create left and right columns for responsive layout
     const leftColumn = document.createElement('div');
     leftColumn.className = 'col-12 col-md-6';
-    
+
     const rightColumn = document.createElement('div');
     rightColumn.className = 'col-12 col-md-6';
-    
-    // Process episodes and create cards
-    episodes.forEach((episode, index) => {
-        const episodeCard = createEpisodeCard(episode, index + 1);
-        
-        // Add to left column for even indices (0, 2, 4), right for odd (1, 3, 5)
+
+    // Add episodes to columns - alternate between left and right
+    latestEpisodes.forEach((episode, index) => {
+        const card = createEpisodeCard(episode);
+
         if (index % 2 === 0) {
-            leftColumn.appendChild(episodeCard);
+            leftColumn.appendChild(card);
         } else {
-            rightColumn.appendChild(episodeCard);
+            rightColumn.appendChild(card);
         }
     });
-    
-    // Add columns to the grid
+
+    // Add columns to grid
     episodeGrid.appendChild(leftColumn);
     episodeGrid.appendChild(rightColumn);
-    
-    // Setup interactions for the newly created episode cards
+
+    // Setup interactions
     setupEpisodeInteractions();
 }
 
 /**
- * Creates an episode card element
- * @param {Object} episode - Episode data from RSS feed
- * @param {Number} index - Episode display index
+ * Creates an episode card with Spotify embed
+ * @param {Object} episode - Episode data with id, title, number
  * @returns {HTMLElement} - The created episode card element
  */
-function createEpisodeCard(episode, index) {
+function createEpisodeCard(episode) {
     const card = document.createElement('div');
     card.className = 'episode-card';
     card.dataset.episodeId = episode.id;
-    
+
     // Create title section
     const titleDiv = document.createElement('div');
     titleDiv.className = 'episode-title';
-    titleDiv.innerHTML = `<span class="episode-number">#${episode.number || index}</span> ${episode.title}`;
-    
-    // Create content section
+    titleDiv.innerHTML = `<span class="episode-number">#${episode.number}</span> ${episode.title}`;
+
+    // Create content section with Spotify embed
     const contentDiv = document.createElement('div');
-    contentDiv.className = 'episode-placeholder';
-    
-    // Add description if available
-    if (episode.description) {
-        const description = document.createElement('p');
-        description.textContent = episode.description;
-        contentDiv.appendChild(description);
-    } else {
-        const description = document.createElement('p');
-        description.textContent = episode.title;
-        contentDiv.appendChild(description);
-    }
-    
-    // Add listen button
-    const listenBtn = document.createElement('a');
-    listenBtn.href = episode.link;
-    listenBtn.className = 'btn btn-primary';
-    listenBtn.textContent = 'Listen Now';
-    listenBtn.target = '_blank';
-    contentDiv.appendChild(listenBtn);
-    
-    // If we have a Spotify ID, add a Load Player button
-    if (episode.id && episode.id.match(/^[a-zA-Z0-9]+$/)) {
-        const loadPlayerBtn = document.createElement('button');
-        loadPlayerBtn.className = 'btn btn-outline-primary load-spotify-btn';
-        loadPlayerBtn.textContent = 'Load Player';
-        loadPlayerBtn.dataset.episodeId = episode.id;
-        contentDiv.appendChild(loadPlayerBtn);
-        
-        // Add event listener to the button
-        loadPlayerBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // Create iframe
-            const iframe = document.createElement('iframe');
-            iframe.style.borderRadius = '12px';
-            iframe.src = `https://open.spotify.com/embed/episode/${episode.id}?utm_source=generator`;
-            iframe.width = '100%';
-            iframe.height = '152';
-            iframe.frameBorder = '0';
-            iframe.allowFullscreen = '';
-            iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
-            iframe.loading = 'lazy';
-            
-            // Replace the content with the iframe
-            contentDiv.innerHTML = '';
-            contentDiv.appendChild(iframe);
-            
-            // Update the main player
-            updateMainPlayer(episode.id);
-        });
-    }
-    
-    // Assemble the card
-    card.appendChild(titleDiv);
-    card.appendChild(contentDiv);
-    
-    return card;
-}
+    contentDiv.className = 'episode-embed-container';
 
-/**
- * Updates the main Spotify player with the specified episode
- * @param {String} episodeId - Spotify episode ID
- */
-function updateMainPlayer(episodeId) {
-    const mainPlayerContainer = document.querySelector('.main-player-container');
-    if (!mainPlayerContainer) return;
-    
-    // Check if iframe exists, create if not
-    let iframe = mainPlayerContainer.querySelector('iframe');
-    if (!iframe) {
-        iframe = document.createElement('iframe');
-        iframe.id = 'spotify-main-player';
-        iframe.style.borderRadius = '12px';
-        iframe.width = '100%';
-        iframe.height = '352';
-        iframe.frameBorder = '0';
-        iframe.allowFullscreen = '';
-        iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
-        iframe.loading = 'lazy';
-        mainPlayerContainer.appendChild(iframe);
-    }
-    
-    // Update iframe source
-    iframe.src = `https://open.spotify.com/embed/episode/${episodeId}?utm_source=generator`;
-    
-    // Scroll to main player with smooth animation
-    mainPlayerContainer.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-    });
-    
-    // Add highlight effect to main player
-    mainPlayerContainer.classList.add('highlight-pulse');
-    setTimeout(() => {
-        mainPlayerContainer.classList.remove('highlight-pulse');
-    }, 2000);
-}
-
-/**
- * Fallback method when RSS feed fails - use Spotify show embed
- */
-function fallbackToSpotifyEmbed() {
-    console.log('Falling back to Spotify show embed');
-    
-    // Get the episode grid
-    const episodeGrid = document.querySelector('.episode-grid');
-    if (!episodeGrid) return;
-    
-    // Clear existing content
-    episodeGrid.innerHTML = '';
-    
-    // Create a single column with the Spotify show embed
-    const column = document.createElement('div');
-    column.className = 'col-12';
-    
-    // Add notice
-    const notice = document.createElement('div');
-    notice.className = 'alert alert-info text-center mb-4';
-    notice.innerHTML = '<i class="fas fa-info-circle me-2"></i> Showing episodes directly from Spotify';
-    column.appendChild(notice);
-    
-    // Create container for show embed
-    const showEmbed = document.createElement('div');
-    showEmbed.className = 'spotify-show-embed';
-    
-    // Add Spotify show iframe
+    // Create Spotify iframe
     const iframe = document.createElement('iframe');
     iframe.style.borderRadius = '12px';
-    iframe.src = 'https://open.spotify.com/embed/show/0qC80ahDY824BME9FtxryS?utm_source=generator';
+    iframe.src = `https://open.spotify.com/embed/episode/${episode.id}?utm_source=generator&theme=0`;
     iframe.width = '100%';
-    iframe.height = '352';
+    iframe.height = '152';
     iframe.frameBorder = '0';
     iframe.allowFullscreen = '';
     iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
     iframe.loading = 'lazy';
-    
-    showEmbed.appendChild(iframe);
-    column.appendChild(showEmbed);
-    episodeGrid.appendChild(column);
+
+    contentDiv.appendChild(iframe);
+
+    // Assemble the card
+    card.appendChild(titleDiv);
+    card.appendChild(contentDiv);
+
+    return card;
 }
 
 /**
@@ -343,10 +165,8 @@ function setupEpisodeInteractions() {
     episodeCards.forEach(function(card) {
         // Add click event for the card
         card.addEventListener('click', function(e) {
-            // Prevent click if user is clicking on the iframe or a button
-            if (e.target.tagName.toLowerCase() === 'iframe' ||
-                e.target.tagName.toLowerCase() === 'button' ||
-                e.target.tagName.toLowerCase() === 'a') {
+            // Prevent click if user is clicking on the iframe
+            if (e.target.tagName.toLowerCase() === 'iframe') {
                 return;
             }
 
@@ -358,10 +178,9 @@ function setupEpisodeInteractions() {
             // Add active state to clicked card
             this.classList.add('active');
 
-            // If this card has a Spotify ID, update the main player
-            const loadBtn = this.querySelector('.load-spotify-btn');
-            if (loadBtn && loadBtn.dataset.episodeId) {
-                updateMainPlayer(loadBtn.dataset.episodeId);
+            // Update main player with this episode
+            if (this.dataset.episodeId) {
+                updateMainPlayer(this.dataset.episodeId);
             }
         });
     });
@@ -405,6 +224,45 @@ function setupEpisodeInteractions() {
 }
 
 /**
+ * Updates the main Spotify player with the specified episode
+ * @param {String} episodeId - Spotify episode ID
+ */
+function updateMainPlayer(episodeId) {
+    const mainPlayerContainer = document.querySelector('.main-player-container');
+    if (!mainPlayerContainer) return;
+
+    // Check if iframe exists, create if not
+    let iframe = mainPlayerContainer.querySelector('iframe');
+    if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'spotify-main-player';
+        iframe.style.borderRadius = '12px';
+        iframe.width = '100%';
+        iframe.height = '352';
+        iframe.frameBorder = '0';
+        iframe.allowFullscreen = '';
+        iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
+        iframe.loading = 'lazy';
+        mainPlayerContainer.appendChild(iframe);
+    }
+
+    // Update iframe source
+    iframe.src = `https://open.spotify.com/embed/episode/${episodeId}?utm_source=generator`;
+
+    // Scroll to main player with smooth animation
+    mainPlayerContainer.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+    });
+
+    // Add highlight effect to main player
+    mainPlayerContainer.classList.add('highlight-pulse');
+    setTimeout(() => {
+        mainPlayerContainer.classList.remove('highlight-pulse');
+    }, 2000);
+}
+
+/**
  * Sets up animated background effects for the episode list section
  */
 function setupEpisodeListBackground() {
@@ -440,7 +298,7 @@ function setupEpisodeListBackground() {
         particlesContainer.appendChild(particle);
     }
 
-    // Add CSS for particles and loading styles
+    // Add CSS for particles and styling
     const style = document.createElement('style');
     style.textContent = `
         .particles-background {
@@ -494,55 +352,35 @@ function setupEpisodeListBackground() {
             }
         }
         
-        .load-spotify-btn {
-            margin-left: 10px;
-            border-color: #0073e6;
-            color: #0073e6;
+        .episode-embed-container {
+            padding: 15px;
+            background: rgba(0, 30, 60, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .episode-card {
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
         
-        .load-spotify-btn:hover {
-            background: rgba(0, 115, 230, 0.1);
-            transform: translateY(-2px);
+        .episode-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 115, 230, 0.4);
+            border-color: rgba(0, 115, 230, 0.3);
         }
         
-        /* Loading spinner styles */
-        #episodes-loading {
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        #episodes-loading .spinner-border {
-            width: 3rem;
-            height: 3rem;
-            color: rgba(0, 198, 255, 0.8);
-        }
-        
-        #episodes-loading p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.1rem;
-            margin-top: 1rem;
-        }
-        
-        /* Error message styles */
-        #episodes-error {
-            background: rgba(255, 193, 7, 0.2);
-            border-color: rgba(255, 193, 7, 0.3);
-            color: #ffe082;
-        }
-        
-        /* Spotify show embed in fallback mode */
-        .spotify-show-embed {
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
-            margin-bottom: 3rem;
+        .episode-card.active {
+            border: 2px solid #00c6ff;
+            box-shadow: 0 0 25px rgba(0, 198, 255, 0.5);
         }
     `;
 
     document.head.appendChild(style);
 }
-            
