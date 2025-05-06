@@ -82,7 +82,7 @@
     <div class="container">
         <h2 class="text-center mb-4">Latest Episodes</h2>
 
-        <!-- Loading indicator -->
+        <!-- Loading indicator - this will be hidden by JavaScript -->
         <div id="episodes-loading" class="text-center py-5">
             <div class="spinner-border text-light" role="status">
                 <span class="visually-hidden">Loading episodes...</span>
@@ -93,12 +93,6 @@
         <!-- Episodes will be loaded here -->
         <div class="episode-grid row">
             <!-- Dynamic content will replace this -->
-        </div>
-
-        <!-- Error message (hidden by default) -->
-        <div id="episodes-error" class="alert alert-warning text-center my-4" style="display: none;">
-            <i class="fas fa-exclamation-triangle me-2"></i>
-            Couldn't load the latest episodes. Please try refreshing the page.
         </div>
     </div>
 </section>
@@ -150,6 +144,6 @@
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Custom JS -->
-<script src="bak.podcast.js"></script>
+<script src="podcast.js"></script>
 </body>
 </html>
