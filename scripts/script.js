@@ -611,13 +611,28 @@ document.addEventListener('DOMContentLoaded', function() {
             showCookieBanner();
         });
     });
+
+    // Disable scrolling on body when cookie banner is open on mobile
+    function toggleBodyScroll(disable) {
+        if (window.innerWidth < 768) {
+            if (disable) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+    }
 });
 
 // Make the showCookieBanner function globally accessible
-// so it can be called from footer link
 function showCookieBanner() {
     const banner = document.getElementById('cookie-consent');
     banner.classList.add('show');
+
+    // Toggle body scroll on mobile
+    if (window.innerWidth < 768) {
+        document.body.style.overflow = 'hidden';
+    }
 
     // Load saved preferences if available
     const cookieConsent = localStorage.getItem('cookieConsent');
@@ -631,6 +646,11 @@ function showCookieBanner() {
 function hideCookieBanner() {
     const banner = document.getElementById('cookie-consent');
     banner.classList.remove('show');
+
+    // Restore body scroll on mobile
+    if (window.innerWidth < 768) {
+        document.body.style.overflow = '';
+    }
 }
 
 function saveConsentPreferences(preferences) {
@@ -732,31 +752,6 @@ function showConsentToast(message) {
         toast.id = 'consent-toast';
         toast.className = 'consent-toast';
         document.body.appendChild(toast);
-
-        // Add toast styling
-        const style = document.createElement('style');
-        style.textContent = `
-            .consent-toast {
-                position: fixed;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(0, 10, 30, 0.9);
-                color: white;
-                padding: 12px 24px;
-                border-radius: 5px;
-                z-index: 9998;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-                border: 1px solid rgba(0, 115, 230, 0.3);
-                font-weight: bold;
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            }
-            .consent-toast.show {
-                opacity: 1;
-            }
-        `;
-        document.head.appendChild(style);
     }
 
     // Set toast message and show
@@ -768,21 +763,3 @@ function showConsentToast(message) {
         toast.classList.remove('show');
     }, 3000);
 }
-
-// Update Google Analytics to respect consent
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-
-// Default to requiring consent
-gtag('consent', 'default', {
-    'analytics_storage': 'denied',
-    'ad_storage': 'denied',
-    'ad_user_data': 'denied',
-    'ad_personalization': 'denied'
-});
-
-// Only initialize GA after consent
-gtag('js', new Date());
-gtag('config', 'G-X68J6MQKSM', {
-    'anonymize_ip': true
-});
