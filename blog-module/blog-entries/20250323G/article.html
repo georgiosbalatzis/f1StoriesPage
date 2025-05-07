@@ -252,7 +252,24 @@
         <div class="author-box">
           <div class="author-header">
             <div class="author-avatar">
-              <img id="author-image" src="/images/authors/default.webp" alt="Georgios Balatzis" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <img id="author-image" src="/f1stories.github.io/images/avatars/FA.webp" alt="Georgios Balatzis"
+                   onerror="
+         const paths = [
+           '/f1stories.github.io/images/authors/default.webp',
+           '/images/authors/default.webp',
+           '../../../images/authors/default.webp',
+           '../../images/authors/default.webp'
+         ];
+         let currentPath = 0;
+         const tryNextPath = () => {
+           if (currentPath < paths.length) {
+             this.src = paths[currentPath++];
+           } else {
+             this.style.display='none';
+             document.getElementById('author-initial').style.display='flex';
+           }
+         };
+         tryNextPath();">
               <span class="avatar-text" id="author-initial">A</span>
             </div>
             <div class="author-info">

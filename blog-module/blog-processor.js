@@ -1271,6 +1271,30 @@ async function processBlogEntry(entryPath) {
         ? backgroundImage.substring(backgroundImage.lastIndexOf('/') + 1)
         : backgroundImage;
 
+
+    // Add custom author image handling for GitHub Pages
+    let authorImagePath = '';
+// Map author names to their avatar filenames
+    switch(postData.author) {
+        case 'Georgios Balatzis':
+            authorImagePath = 'FA.webp';
+            break;
+        case 'Giannis Poulikidis':
+            authorImagePath = 'SV.webp';
+            break;
+        case 'Thanasis Batalas':
+            authorImagePath = 'LN.webp';
+            break;
+        case '2Fast':
+            authorImagePath = 'AS.webp';
+            break;
+        case 'Dimitris Keramidiotis':
+            authorImagePath = 'dr3R.webp';
+            break;
+        default:
+            authorImagePath = 'default.webp';
+    }
+
     // Generate individual blog HTML
     const templateHtml = fs.readFileSync(TEMPLATE_PATH, 'utf8');
     const blogHtml = templateHtml
@@ -1283,7 +1307,10 @@ async function processBlogEntry(entryPath) {
         .replace(/ARTICLE_TAG/g, postData.tag)
         .replace(/ARTICLE_CATEGORY/g, postData.category)
         .replace(/ARTICLE_CONTENT/g, postData.content)
-        .replace(/CURRENT_URL/g, `https://f1stories.gr/blog-module/blog-entries/${folderName}/article.html`);
+        .replace(/CURRENT_URL/g, `https://f1stories.gr/blog-module/blog-entries/${folderName}/article.html`)
+        .replace(
+            /src="\/images\/authors\/default\.webp"/,
+            `src="/f1stories.github.io/images/avatars/${authorImagePath}"`);
 
     // Ensure output directory exists
     if (!fs.existsSync(OUTPUT_HTML_DIR)) {

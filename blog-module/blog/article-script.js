@@ -321,6 +321,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Function to find the correct path to author images
+    function getAuthorImagePath(authorName) {
+        let imagePath = '';
+
+        // Map author names to their avatar filenames
+        switch(authorName) {
+            case 'Georgios Balatzis':
+                imagePath = 'FA.webp';
+                break;
+            case 'Giannis Poulikidis':
+                imagePath = 'SV.webp';
+                break;
+            case 'Thanasis Batalas':
+                imagePath = 'LN.webp';
+                break;
+            case '2Fast':
+                imagePath = 'AS.webp';
+                break;
+            case 'Dimitris Keramidiotis':
+                imagePath = 'dr3R.webp';
+                break;
+            default:
+                imagePath = 'default.webp';
+        }
+
+        // Try different path options for GitHub Pages
+        return [
+            `/f1stories.github.io/images/avatars/${imagePath}`,
+            `/images/avatars/${imagePath}`,
+            `../../../images/avatars/${imagePath}`,
+            `../../images/avatars/${imagePath}`
+        ];
+    }
+
+
     // Set up author information
     function setupAuthorInfo() {
         const authorNameElement = document.getElementById('author-name');
@@ -337,16 +372,29 @@ document.addEventListener('DOMContentLoaded', function() {
             authorInitial.textContent = authorName.charAt(0);
         }
 
-        // Try to load author image
+        // Try to load author image with fallback paths
         if (authorImage && authorName) {
-            // Extract last name for image naming
-            const authorNames = authorName.split(' ');
-            const lastName = authorNames.length > 1 ?
-                authorNames[authorNames.length - 1].toLowerCase() :
-                authorNames[0].toLowerCase();
+            const imagePaths = getAuthorImagePath(authorName);
 
-            // Set image path based on author name
-            authorImage.src = `/images/authors/${lastName}.webp`;
+            // Create a function to try loading from each path
+            let currentPathIndex = 0;
+
+            function tryNextPath() {
+                if (currentPathIndex < imagePaths.length) {
+                    authorImage.src = imagePaths[currentPathIndex];
+                    currentPathIndex++;
+                } else {
+                    // If all paths fail, show the initial instead
+                    authorImage.style.display = 'none';
+                    if (authorInitial) authorInitial.style.display = 'flex';
+                }
+            }
+
+            // Set up error handler to try next path
+            authorImage.onerror = tryNextPath;
+
+            // Start with first path
+            tryNextPath();
         }
 
         // Set author specific information
