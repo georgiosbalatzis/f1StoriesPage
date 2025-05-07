@@ -264,16 +264,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Draw the meme
                 ctx.drawImage(img, 0, 0);
 
-                // Watermark text setup
+                // Improved watermark styling
                 const text = 'f1stories.gr';
                 const fontSize = Math.round(canvas.height * 0.05);
                 ctx.font = `${fontSize}px sans-serif`;
-                ctx.fillStyle    = 'rgba(255,255,255,0.8)';
                 ctx.textBaseline = 'bottom';
 
-                // Position in bottom-right with 10px padding
+                // Measure text
                 const textWidth = ctx.measureText(text).width;
-                ctx.fillText(text, canvas.width - textWidth - 10, canvas.height - 10);
+                const padding   = Math.round(fontSize * 0.3);
+                const x = canvas.width - textWidth - 10;
+                const y = canvas.height - 10;
+
+                // Draw semi-transparent black background “pill”
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(
+                    x - padding,
+                    y - fontSize - padding,
+                    textWidth + padding * 2,
+                    fontSize + padding * 2
+                );
+
+                // Draw crisp white text on top
+                ctx.fillStyle = 'white';
+                ctx.fillText(text, x, y);
+
 
                 // Export as Blob
                 canvas.toBlob(
@@ -321,19 +336,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 shareData.text = `${shareText} ${shareUrl}`;
             }
 
-            // 3️⃣ Use Web Share API if available
+            // 3️⃣ Try Web-Share with files (mobile/tablet)
             if (navigator.canShare && navigator.canShare(shareData)) {
                 await navigator.share(shareData);
-            } else {
-                // Fallback: trigger download + inform user
-                const urlBlob = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = urlBlob;
-                a.download = 'f1stories.png';
-                a.click();
-                URL.revokeObjectURL(urlBlob);
-                alert(`Downloaded watermarked meme; please share it via ${platform}.`);
+                return;
             }
+
+            // 4️⃣ Fallback: Web-Share text+URL only (some desktop browsers)
+            if (navigator.share) {
+                await navigator.share({
+                    title: meme.title,
+                    text: shareText,
+                    url: shareUrl
+                });
+                return;
+            }
+
+            // 5️⃣ Final fallback: open web-share URLs in a popup
+            let shareLink;
+            switch (platform) {
+                case 'facebook':
+                    shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+                    break;
+                case 'messenger':
+                    // A simple web-dialog for Messenger (no file)
+                    shareLink = `https://www.facebook.com/dialog/send?link=${encodeURIComponent(shareUrl)}&app_id=YOUR_APP_ID&redirect_uri=${encodeURIComponent(shareUrl)}`;
+                    break;
+                case 'instagram-dm':
+                    // Desktop IG DM doesn’t support pre-attaching, so open Instagram web
+                    shareLink = `https://www.instagram.com/?url=${encodeURIComponent(shareUrl)}`;
+                    break;
+                case 'whatsapp':
+                    shareLink = `https://web.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
+                    break;
+                default:
+                    return;
+            }
+            window.open(shareLink, '_blank', 'width=600,height=400');
         } catch (err) {
             console.error('Share failed', err);
             alert('Sorry, sharing isn’t supported on this device.');
