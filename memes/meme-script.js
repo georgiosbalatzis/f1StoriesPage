@@ -245,9 +245,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle meme social sharing
     function shareMeme(platform) {
         if (memesData.length === 0) return;
-
-        const meme = memesData[currentIndex];
-        const shareUrl = window.location.href;
+        const meme    = memesData[currentIndex];
+        const shareUrl  = window.location.href;
         const shareText = `Check out this F1 meme: "${meme.title}" on F1 Stories!`;
         let shareLink;
 
@@ -255,17 +254,42 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'facebook':
                 shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
                 break;
-            case 'twitter':
-                shareLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+
+            case 'messenger':
+                // Facebook Messenger app/web
+                shareLink = `fb-messenger://share?link=${encodeURIComponent(shareUrl)}`;
                 break;
+
             case 'whatsapp':
                 shareLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
                 break;
+
+            case 'instagram-dm':
+                // Note: Instagram DM deep‐link (iOS/Android only)
+                shareLink = `instagram://share?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
+                break;
+
+            case 'threads':
+                // Threads web share endpoint
+                shareLink = `https://www.threads.net/share?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+                break;
+
+            case 'copy':
+                navigator.clipboard.writeText(shareUrl)
+                    .then(() => {
+                        const btn = document.querySelector('.share-button[data-share="copy"]');
+                        // swap icon & add green class
+                        btn.innerHTML = '<i class="fas fa-check"></i>';
+                        btn.classList.add('copied');
+                    })
+                    .catch(err => console.error('Copy failed', err));
+                return;
+
             default:
                 return;
         }
 
-        // Open share dialog
+        // For all the above except copy, open a popup
         window.open(shareLink, '_blank', 'width=600,height=400');
     }
 
