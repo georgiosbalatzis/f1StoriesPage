@@ -210,15 +210,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Share buttons
-        if (shareButtons) {
-            shareButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const shareType = button.getAttribute('data-share');
-                    shareMeme(shareType);
-                });
+        // unified share-button handler
+        document.querySelectorAll('.share-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const platform = btn.dataset.share;
+                shareMeme(platform);
             });
-        }
+        });
 
         // Meme submission form
         if (memeForm) {
@@ -242,56 +240,106 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Handle meme social sharing
-    function shareMeme(platform) {
-        if (memesData.length === 0) return;
-        const meme    = memesData[currentIndex];
-        const shareUrl  = window.location.href;
-        const shareText = `Check out this F1 meme: "${meme.title}" on F1 Stories!`;
-        let shareLink;
+    /**
+     * Draws the current meme into a canvas,
+     * stamps “f1stories.gr” at bottom-right,
+     * and returns a PNG Blob.
+     */
+    function watermarkMeme() {
+        return new Promise((resolve, reject) => {
+            const imgEl = document.querySelector('.meme-image');
+            if (!imgEl) return reject('No meme image found');
 
-        switch (platform) {
-            case 'facebook':
-                shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-                break;
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.src = imgEl.src;
 
-            case 'messenger':
-                // Facebook Messenger app/web
-                shareLink = `fb-messenger://share?link=${encodeURIComponent(shareUrl)}`;
-                break;
+            img.onload = () => {
+                // Create canvas matching image size
+                const canvas = document.createElement('canvas');
+                canvas.width  = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                const ctx = canvas.getContext('2d');
 
-            case 'whatsapp':
-                shareLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
-                break;
+                // Draw the meme
+                ctx.drawImage(img, 0, 0);
 
-            case 'instagram-dm':
-                // Note: Instagram DM deep‐link (iOS/Android only)
-                shareLink = `instagram://share?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
-                break;
+                // Watermark text setup
+                const text = 'f1stories.gr';
+                const fontSize = Math.round(canvas.height * 0.05);
+                ctx.font = `${fontSize}px sans-serif`;
+                ctx.fillStyle    = 'rgba(255,255,255,0.8)';
+                ctx.textBaseline = 'bottom';
 
-            case 'threads':
-                // Threads web share endpoint
-                shareLink = `https://www.threads.net/share?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
-                break;
+                // Position in bottom-right with 10px padding
+                const textWidth = ctx.measureText(text).width;
+                ctx.fillText(text, canvas.width - textWidth - 10, canvas.height - 10);
 
-            case 'copy':
-                navigator.clipboard.writeText(shareUrl)
-                    .then(() => {
-                        const btn = document.querySelector('.share-button[data-share="copy"]');
-                        // swap icon & add green class
-                        btn.innerHTML = '<i class="fas fa-check"></i>';
-                        btn.classList.add('copied');
-                    })
-                    .catch(err => console.error('Copy failed', err));
-                return;
+                // Export as Blob
+                canvas.toBlob(
+                    blob => blob ? resolve(blob) : reject('Canvas export failed'),
+                    'image/png'
+                );
+            };
 
-            default:
-                return;
+            img.onerror = () => reject('Image load failed');
+        });
+    }
+
+
+    /**
+     * Shares the watermarked meme image (plus text+link for Facebook),
+     * or handles copy-link.
+     */
+    async function shareMeme(platform) {
+        if (!memesData.length) return;
+        const meme     = memesData[currentIndex];
+        const shareUrl = window.location.href;
+        const shareText= `Check out this F1 meme: "${meme.title}" on F1 Stories!`;
+
+        // 1️⃣ Handle “Copy link” as before
+        if (platform === 'copy') {
+            const btn = document.querySelector('.share-button[data-share="copy"]');
+            navigator.clipboard.writeText(shareUrl)
+                .then(() => {
+                    btn.innerHTML = '<i class="fas fa-check"></i>';
+                    btn.classList.add('copied');
+                })
+                .catch(err => console.error('Copy failed', err));
+            return;
         }
 
-        // For all the above except copy, open a popup
-        window.open(shareLink, '_blank', 'width=600,height=400');
+        // 2️⃣ For all other platforms, generate watermarked image
+        try {
+            const blob = await watermarkMeme();                          // from Step 2
+            const file = new File([blob], 'f1stories.png', { type: 'image/png' });
+
+            // Build share payload
+            const shareData = { files: [file] };
+            if (platform === 'facebook') {
+                // Facebook gets caption + link
+                shareData.text = `${shareText} ${shareUrl}`;
+            }
+
+            // 3️⃣ Use Web Share API if available
+            if (navigator.canShare && navigator.canShare(shareData)) {
+                await navigator.share(shareData);
+            } else {
+                // Fallback: trigger download + inform user
+                const urlBlob = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = urlBlob;
+                a.download = 'f1stories.png';
+                a.click();
+                URL.revokeObjectURL(urlBlob);
+                alert(`Downloaded watermarked meme; please share it via ${platform}.`);
+            }
+        } catch (err) {
+            console.error('Share failed', err);
+            alert('Sorry, sharing isn’t supported on this device.');
+        }
     }
+
 
     // Handle meme submission form
     function handleMemeSubmission() {
