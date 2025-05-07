@@ -1047,7 +1047,9 @@ async function processBlogEntry(entryPath) {
     const authorMap = {
         'G': 'Georgios Balatzis',
         'J': 'Giannis Poulikidis',
-        'T': 'Thanasis Batalas'
+        'T': 'Thanasis Batalas',
+        'W': '2Fast',
+        'D': 'Dimitris Keramidiotis'
     };
 
     // Read entry contents

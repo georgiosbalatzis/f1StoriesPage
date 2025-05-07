@@ -353,13 +353,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (authorName) {
             if (authorName.includes('Georgios Balatzis')) {
                 if (authorTitle) authorTitle.textContent = 'F1 Stories Founder & Technical Contributor';
-                if (authorBio) authorBio.textContent = 'Ο Γιώργος είναι ενας απο τους ιδρυτές του F1 Stories 🏁 και ειδικεύεται στην τεχνική πλευρά της Formula 1 🔧, με ιδιαίτερη έμφαση στην αεροδυναμική και την εξέλιξη των μονοθεσίων ✈️🚗. Η αναλυτική του προσέγγιση φέρνει σαφήνεια σε πολύπλοκα θέματα μηχανολογίας 🧠📊.';
+                if (authorBio) authorBio.textContent = 'Ο Γιώργος είναι ενας απο τους ιδρυτές του F1 Stories 🏁 και ειδικεύεται στην τεχνική πλευρά της Formula 1 🔧, με ιδιαίτερη έμφαση στην αεροδυναμική και την εξέλιξη των μονοθεσιών ✈️🚗. Η αναλυτική του προσέγγιση φέρνει σαφήνεια σε πολύπλοκα θέματα μηχανολογίας 🧠📊.';
             } else if (authorName.includes('Giannis Poulikidis')) {
                 if (authorTitle) authorTitle.textContent = 'F1 Stories Founder & Editor';
                 if (authorBio) authorBio.textContent = 'Ο Γιαννης είναι ενας απο τους ιδρυτές του F1 Stories 🏁 Mε βαθυ πάθος για την ιστορία της Φόρμουλα 1 🏎️ και την τεχνική ανάλυση. Όταν δεν γράφει για τους αγώνες, απολαμβάνει να συζητάει τις στρατηγικές πτυχές του μηχανοκίνητου αθλητισμού. 📊';
             } else if (authorName.includes('Thanasis Batalas')) {
                 if (authorTitle) authorTitle.textContent = 'Racing Historian';
                 if (authorBio) authorBio.textContent = 'Ο Θανασης είναι ενας απο τους ιδρυτές του F1 Stories 🏁 Φέρνει ιστορικό πλαίσιο στο F1 Stories 🏁, συνδέοντας τους σύγχρονους αγώνες με το πλούσιο παρελθόν της Formula 1 📚🏎️. Η γνώση του για κλασικούς αγώνες και θρυλικούς οδηγούς 🏆👑 προσθέτει βάθος στις σύγχρονες συζητήσεις γύρω από τη Formula 1 🎙️🧠.';
+            } else if (authorName.includes('Dimitris Keramidiotis')) {
+                if (authorTitle) authorTitle.textContent = 'F1 Genius ';
+                if (authorBio) authorBio.textContent = 'Ο Δημητρης είναι Ένας φανατικός οπαδός των αγώνων 🏁 και ιδιοφυΐα στα F1 trivia! 🏆 Ξέρει όλα τα ρεκόρ, αναλύει κανόνες 📜 και ζει το πάθος των πίστας. 🏎️✨';
+            } else if (authorName.includes('2Fast')) {
+                if (authorTitle) authorTitle.textContent = 'Racing Historian';
+                if (authorBio) authorBio.textContent = 'Ο 2Fast Ένας παθιασμένος ιστορικός της F1 🏎️🏁 με βαθιά γνώση και αφόρητο ενθουσιασμό! Διηγείται ανέκδοτα, αναλύει μονοθέσια 📊 και μοιράζεται την αγάπη του για το σπορ. 🏆✨.';
             }
         }
     }
