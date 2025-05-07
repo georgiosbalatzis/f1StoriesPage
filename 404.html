@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | F1 Stories</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* 404 Page Specific Styles */
+        #error-container {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .error-content {
+            background: rgba(0, 10, 30, 0.9);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 800px;
+            border: 1px solid rgba(0, 115, 230, 0.3);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 2;
+            animation: fadeInUp 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .error-content h1 {
+            font-size: 6rem;
+            margin-bottom: 1rem;
+            color: #ff3030;
+            font-weight: 900;
+            position: relative;
+            display: inline-block;
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 0, 0, 0.5);
+            letter-spacing: -3px;
+        }
+
+        .error-content h2 {
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            color: #ff9500;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-weight: 700;
+        }
+
+        .error-content p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            color: #ffffff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+            font-weight: 500;
+        }
+
+        .error-content .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .error-image {
+            max-width: 300px;
+            margin: 2rem auto;
+            position: relative;
+            animation: floatAnimation 3s ease-in-out infinite;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+            border: 3px solid #ff3030;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .error-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            transition: all 0.5s ease;
+        }
+
+        .checkered-flag {
+            position: absolute;
+            width: 100%;
+            height: 40px;
+            bottom: 0;
+            left: 0;
+            background-image: repeating-linear-gradient(45deg, #000 0, #000 20px, #fff 20px, #fff 40px);
+            opacity: 0.9;
+            z-index: 1;
+        }
+
+        /* Race track animation */
+        .race-track {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .track-line {
+            position: absolute;
+            height: 10px;
+            background-color: white;
+            top: 50%;
+            width: 100px;
+            opacity: 0.1;
+            transform: rotate(-20deg) translateY(-50%);
+            animation: trackLineAnimation 3s linear infinite;
+        }
+
+        @keyframes trackLineAnimation {
+            0% {
+                transform: rotate(-20deg) translateY(-50%) translateX(-100vw);
+            }
+            100% {
+                transform: rotate(-20deg) translateY(-50%) translateX(100vw);
+            }
+        }
+
+        /* Racing car animations */
+        .racing-car {
+            position: absolute;
+            font-size: 2.5rem;
+            z-index: 3;
+            animation: moveRacingCar 15s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes moveRacingCar {
+            0% {
+                bottom: 0;
+                left: 0;
+                transform: rotate(0deg);
+                opacity: 1;
+            }
+            25% {
+                bottom: 90%;
+                left: 30%;
+                transform: rotate(90deg);
+                opacity: 1;
+            }
+            50% {
+                bottom: 90%;
+                left: 90%;
+                transform: rotate(180deg);
+                opacity: 1;
+            }
+            75% {
+                bottom: 10%;
+                left: 90%;
+                transform: rotate(270deg);
+                opacity: 1;
+            }
+            95% {
+                bottom: 0;
+                left: 30%;
+                transform: rotate(359deg);
+                opacity: 1;
+            }
+            100% {
+                bottom: 0;
+                left: 0;
+                transform: rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Horizontal racing car */
+        .horizontal-car {
+            position: absolute;
+            font-size: 2.5rem;
+            z-index: 3;
+            animation: moveHorizontal 8s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes moveHorizontal {
+            0% {
+                top: 20%;
+                left: -50px;
+                transform: rotate(0deg);
+                opacity: 1;
+            }
+            45% {
+                top: 20%;
+                left: 30%;
+                transform: rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                top: 20%;
+                left: 35%;
+                transform: rotate(90deg);
+                opacity: 1;
+            }
+            55% {
+                top: 25%;
+                left: 35%;
+                transform: rotate(180deg);
+                opacity: 1;
+            }
+            95% {
+                top: 25%;
+                left: -50px;
+                transform: rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                top: 25%;
+                left: -100px;
+                transform: rotate(180deg);
+                opacity: 0;
+            }
+        }
+
+        /* Diagonal racing car */
+        .diagonal-car {
+            position: absolute;
+            font-size: 2.2rem;
+            z-index: 3;
+            animation: moveDiagonal 10s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes moveDiagonal {
+            0% {
+                top: -50px;
+                left: -50px;
+                transform: rotate(45deg);
+                opacity: 1;
+            }
+            80% {
+                top: 100%;
+                left: 100%;
+                transform: rotate(45deg);
+                opacity: 1;
+            }
+            100% {
+                top: 110%;
+                left: 110%;
+                transform: rotate(45deg);
+                opacity: 0;
+            }
+        }
+
+        /* Zigzag racing car */
+        .zigzag-car {
+            position: absolute;
+            font-size: 2.5rem;
+            z-index: 3;
+            animation: moveZigzag 12s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes moveZigzag {
+            0% {
+                top: 0;
+                left: 50%;
+                transform: rotate(90deg);
+                opacity: 1;
+            }
+            20% {
+                top: 20%;
+                left: 20%;
+                transform: rotate(45deg);
+                opacity: 1;
+            }
+            40% {
+                top: 40%;
+                left: 80%;
+                transform: rotate(135deg);
+                opacity: 1;
+            }
+            60% {
+                top: 60%;
+                left: 20%;
+                transform: rotate(225deg);
+                opacity: 1;
+            }
+            80% {
+                top: 80%;
+                left: 80%;
+                transform: rotate(315deg);
+                opacity: 1;
+            }
+            100% {
+                top: 100%;
+                left: 50%;
+                transform: rotate(270deg);
+                opacity: 0;
+            }
+        }
+
+        /* Crash effect */
+        .crash {
+            position: absolute;
+            z-index: 3;
+            font-size: 3rem;
+            animation: crashEffect 5s ease-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes crashEffect {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            10% {
+                transform: scale(1.5);
+                opacity: 1;
+            }
+            20% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            80% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Smoke effect */
+        .smoke {
+            position: absolute;
+            z-index: 2;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(100, 100, 100, 0.7);
+            filter: blur(10px);
+            animation: smokeEffect 4s ease-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes smokeEffect {
+            0% {
+                transform: scale(0.5) translateY(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(3) translateY(-100px);
+                opacity: 0;
+            }
+        }
+
+        /* Debris effect */
+        .debris {
+            position: absolute;
+            z-index: 2;
+            width: 10px;
+            height: 10px;
+            background: #ff3030;
+            animation: debrisEffect 3s ease-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes debrisEffect {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Floating animation */
+        @keyframes floatAnimation {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Fade in up animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Warning tape */
+        .warning-tape {
+            position: absolute;
+            width: 200%;
+            height: 30px;
+            background: repeating-linear-gradient(45deg, #ff3030, #ff3030 20px, #ffff00 20px, #ffff00 40px);
+            top: -15px;
+            left: -50%;
+            transform: rotate(-3deg);
+            opacity: 0.8;
+            z-index: 3;
+        }
+
+        .warning-tape-bottom {
+            top: auto;
+            bottom: -15px;
+            transform: rotate(2deg);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 767.98px) {
+            .error-content {
+                padding: 2rem 1.5rem;
+                margin: 0 1rem;
+            }
+
+            .error-content h1 {
+                font-size: 4rem;
+            }
+
+            .error-content h2 {
+                font-size: 1.5rem;
+            }
+
+            .error-content p {
+                font-size: 1.1rem;
+            }
+
+            .error-content .buttons {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .error-image {
+                max-width: 220px;
+            }
+
+            .racing-car, .horizontal-car, .diagonal-car, .zigzag-car {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Navigation styles for centering */
+        .navbar-nav {
+            display: flex;
+            justify-content: center;
+        }
+
+        .navbar-nav .nav-item {
+            margin: 0 10px;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            padding: 0.5rem 0.75rem !important;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Custom highlight for active links - properly centered */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #0073e6, #00ffff);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link.active::after,
+        .custom-dropdown-toggle.active::after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="background"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+<div class="streak"></div>
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img src="/images/logo.png" alt="F1 Stories Logo" height="50">
+            </a>
+            <button class="navbar-toggler" type="button" id="mobile-toggler">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <!-- Home -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/" id="home-link">Home</a>
+                    </li>
+
+                    <!-- Podcast dropdown -->
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">
+                            Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+                            <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
+                            <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Stories & Media dropdown -->
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
+                            Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
+                            <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+                            <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- About dropdown -->
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
+                            About <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="/#about">About Us</a></li>
+                            <li><a class="dropdown-item" href="/#guests">Guests</a></li>
+                            <li><a class="dropdown-item" href="/#contact">Contact</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/privacy/privacy.html">Privacy Policy</a></li>
+                            <li><a class="dropdown-item" href="/privacy/terms.html">Terms of Use</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div id="error-container">
+    <!-- Racing track animation -->
+    <div class="race-track">
+        <!-- Generate racing track lines -->
+        <div class="track-line" style="animation-delay: 0s;"></div>
+        <div class="track-line" style="animation-delay: 0.5s;"></div>
+        <div class="track-line" style="animation-delay: 1s;"></div>
+        <div class="track-line" style="animation-delay: 1.5s;"></div>
+        <div class="track-line" style="animation-delay: 2s;"></div>
+        <div class="track-line" style="animation-delay: 2.5s;"></div>
+        <div class="track-line" style="top: 30%"></div>
+        <div class="track-line" style="top: 70%"></div>
+        <div class="track-line" style="top: 20%"></div>
+        <div class="track-line" style="top: 80%"></div>
+    </div>
+
+    <!-- Racing cars -->
+    <div class="racing-car" style="animation-delay: 0s;">🏎️</div>
+    <div class="racing-car" style="animation-delay: 5s;">🏎️</div>
+    <div class="racing-car" style="animation-delay: 10s;">🏎️</div>
+
+    <!-- Horizontal racing cars -->
+    <div class="horizontal-car" style="animation-delay: 0s;">🏎️</div>
+    <div class="horizontal-car" style="animation-delay: 3s;">🏎️</div>
+    <div class="horizontal-car" style="animation-delay: 6s;">🏎️</div>
+
+    <!-- Diagonal racing cars -->
+    <div class="diagonal-car" style="animation-delay: 0s;">🏎️</div>
+    <div class="diagonal-car" style="animation-delay: 3.5s;">🏎️</div>
+    <div class="diagonal-car" style="animation-delay: 7s;">🏎️</div>
+
+    <!-- Zigzag racing cars -->
+    <div class="zigzag-car" style="animation-delay: 0s;">🏎️</div>
+    <div class="zigzag-car" style="animation-delay: 4s;">🏎️</div>
+    <div class="zigzag-car" style="animation-delay: 8s;">🏎️</div>
+
+    <!-- Crash effects -->
+    <div class="crash" style="top: 15%; left: 75%; animation-delay: 2s;">💥</div>
+    <div class="crash" style="top: 65%; left: 15%; animation-delay: 5.5s;">💥</div>
+    <div class="crash" style="top: 35%; left: 85%; animation-delay: 8.7s;">💥</div>
+    <div class="crash" style="top: 75%; left: 65%; animation-delay: 11.5s;">💥</div>
+
+    <!-- Smoke effects -->
+    <div class="smoke" style="top: 18%; left: 78%; animation-delay: 2.2s;"></div>
+    <div class="smoke" style="top: 68%; left: 18%; animation-delay: 5.7s;"></div>
+    <div class="smoke" style="top: 38%; left: 88%; animation-delay: 8.9s;"></div>
+    <div class="smoke" style="top: 78%; left: 68%; animation-delay: 11.7s;"></div>
+
+    <!-- Debris effects -->
+    <div class="debris" style="top: 15%; left: 75%; --tx: 50px; --ty: 50px; animation-delay: 2.3s;"></div>
+    <div class="debris" style="top: 15%; left: 75%; --tx: -30px; --ty: 60px; animation-delay: 2.4s;"></div>
+    <div class="debris" style="top: 15%; left: 75%; --tx: 70px; --ty: -40px; animation-delay: 2.5s;"></div>
+    <div class="debris" style="top: 65%; left: 15%; --tx: 60px; --ty: 40px; animation-delay: 5.8s;"></div>
+    <div class="debris" style="top: 65%; left: 15%; --tx: -50px; --ty: 30px; animation-delay: 5.9s;"></div>
+    <div class="debris" style="top: 65%; left: 15%; --tx: 30px; --ty: -70px; animation-delay: 6.0s;"></div>
+
+    <div class="error-content">
+        <div class="warning-tape"></div>
+        <div class="warning-tape warning-tape-bottom"></div>
+
+        <h1>404</h1>
+        <h2>RED FLAG! Page Not Found</h2>
+
+        <div class="error-image" id="error-image">
+            <img src="/images/4041.webp" alt="F1 Crash" id="error-img">
+            <div class="checkered-flag"></div>
+        </div>
+
+        <p>The page you're looking for has crashed out of the race. Our virtual safety car is deployed while we investigate, but in the meantime, why not head back to the pit lane?</p>
+
+        <div class="buttons">
+            <a href="/" class="cta-button">
+                <i class="fas fa-home me-2"></i> Return to Home
+            </a>
+            <a href="/episodes/" class="cta-button">
+                <i class="fas fa-podcast me-2"></i> Listen to Podcast
+            </a>
+        </div>
+
+        <p class="mt-4" style="color: #ff9500; font-weight: bold;">Error code: RED FLAG - Session suspended due to track incident!</p>
+    </div>
+</div>
+
+<footer class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+                <div class="social-media">
+                    <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+                </div>
+                <div class="footer-links mt-3">
+                    <a href="/privacy/privacy.html" class="footer-link">Privacy Policy</a>
+                    <span class="footer-separator">|</span>
+                    <a href="/privacy/terms.html" class="footer-link">Terms of Use</a>
+                    <span class="footer-separator">|</span>
+                    <a href="#" class="footer-link manage-cookies-link">Manage Cookies</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Background Randomizer Script -->
+<script src="/scripts/background-randomizer.js"></script>
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Main Website Scripts -->
+<script src="/scripts/script.js"></script>
+
+<!-- Mobile navigation script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile menu toggle
+        const mobileToggler = document.getElementById('mobile-toggler');
+        const navbarCollapse = document.getElementById('navbarNav');
+
+        mobileToggler.addEventListener('click', function() {
+            navbarCollapse.classList.toggle('show');
+        });
+
+        // Dropdown toggles
+        const dropdownToggles = document.querySelectorAll('.custom-dropdown-toggle');
+
+        dropdownToggles.forEach(function(toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const parent = this.parentElement;
+                const isOpen = parent.classList.contains('open');
+
+                // On mobile, we just toggle this dropdown without closing others
+                if (window.innerWidth < 992) {
+                    parent.classList.toggle('open');
+                } else {
+                    // On desktop, close other dropdowns first
+                    document.querySelectorAll('.custom-dropdown.open').forEach(function(dropdown) {
+                        if (dropdown !== parent) {
+                            dropdown.classList.remove('open');
+                        }
+                    });
+
+                    // Then toggle this one
+                    parent.classList.toggle('open');
+                }
+            });
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.custom-dropdown')) {
+                document.querySelectorAll('.custom-dropdown.open').forEach(function(dropdown) {
+                    dropdown.classList.remove('open');
+                });
+            }
+
+            // Only close navbar collapse when clicking completely outside navbar
+            if (window.innerWidth < 992 && !e.target.closest('.navbar') && navbarCollapse.classList.contains('show')) {
+                navbarCollapse.classList.remove('show');
+            }
+        });
+
+        // Randomly alternate images
+        const errorImg = document.getElementById('error-img');
+        const images = ['/images/4041.webp', '/images/4042.webp'];
+
+        // Set initial random image
+        errorImg.src = images[Math.floor(Math.random() * images.length)];
+
+        // Change image every 5 seconds
+        setInterval(function() {
+            errorImg.style.opacity = 0;
+
+            setTimeout(function() {
+                errorImg.src = images[Math.floor(Math.random() * images.length)];
+                errorImg.style.opacity = 1;
+            }, 500);
+        }, 5000);
+    });
+</script>
+</body>
+</html>
