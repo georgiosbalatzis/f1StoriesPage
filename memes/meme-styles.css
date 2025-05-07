@@ -188,15 +188,35 @@
     box-shadow: 0 5px 15px rgba(59, 89, 152, 0.4);
 }
 
-.share-button[data-share="twitter"]:hover {
-    background-color: #1DA1F2;
-    box-shadow: 0 5px 15px rgba(29, 161, 242, 0.4);
-}
 
 .share-button[data-share="whatsapp"]:hover {
     background-color: #25D366;
     box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
 }
+
+/* Messenger (blue) */
+.share-button[data-share="messenger"]:hover {
+    background-color: #0084ff;
+    box-shadow: 0 5px 15px rgba(0, 132, 255, 0.4);
+}
+
+/* Instagram DM (gradient/pink) */
+.share-button[data-share="instagram-dm"]:hover {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    box-shadow: 0 5px 15px rgba(255, 45, 85, 0.4);
+}
+
+/* Copy-link default hover (optional) */
+.share-button[data-share="copy"]:hover {
+    background-color: rgba(80, 200, 120, 0.1);
+    box-shadow: 0 5px 15px rgba(80, 200, 120, 0.4);
+}
+
+/* After copy: swap icon to check & color green */
+.share-button[data-share="copy"].copied {
+    color: #28a745;        /* green */
+}
+
 
 /* Meme Gallery Grid */
 .meme-thumbnail {
