@@ -987,3 +987,104 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Mobile menu toggle
+    const mobileToggler = document.getElementById('mobile-toggler');
+    const navbarCollapse = document.getElementById('navbarNav');
+
+    if (mobileToggler && navbarCollapse) {
+        mobileToggler.addEventListener('click', function() {
+            navbarCollapse.classList.toggle('show');
+        });
+    }
+
+    // Dropdown toggles
+    const dropdownToggles = document.querySelectorAll('.custom-dropdown-toggle');
+
+    dropdownToggles.forEach(function(toggle) {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const parent = this.parentElement;
+            const isOpen = parent.classList.contains('open');
+
+            // On mobile, we just toggle this dropdown without closing others
+            if (window.innerWidth < 992) {
+                parent.classList.toggle('open');
+            } else {
+                // On desktop, close other dropdowns first
+                document.querySelectorAll('.custom-dropdown.open').forEach(function(dropdown) {
+                    if (dropdown !== parent) {
+                        dropdown.classList.remove('open');
+                    }
+                });
+
+                // Then toggle this one
+                parent.classList.toggle('open');
+            }
+        });
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            document.querySelectorAll('.custom-dropdown.open').forEach(function(dropdown) {
+                dropdown.classList.remove('open');
+            });
+        }
+
+        // Only close navbar collapse when clicking completely outside navbar
+        if (window.innerWidth < 992 && !e.target.closest('.navbar') && navbarCollapse.classList.contains('show')) {
+            navbarCollapse.classList.remove('show');
+        }
+    });
+
+    // Set active state based on current URL
+    function setActiveNavItem() {
+        const currentPath = window.location.pathname;
+        const currentHash = window.location.hash;
+
+        // Reset all active states
+        document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        // Set active based on path
+        if (currentPath === '/' || currentPath === '/index.html') {
+            document.getElementById('home-link').classList.add('active');
+
+            // For home page section hashes
+            if (currentHash) {
+                if (currentHash.includes('about') || currentHash.includes('guests') || currentHash.includes('contact')) {
+                    document.getElementById('aboutDropdown').classList.add('active');
+                } else if (currentHash.includes('podcasts') || currentHash.includes('episodes')) {
+                    document.getElementById('podcastDropdown').classList.add('active');
+                }
+            }
+        } else if (currentPath.includes('/spotify/') || currentPath.includes('/episodes/') || currentPath.includes('BetCast')) {
+            document.getElementById('podcastDropdown').classList.add('active');
+        } else if (currentPath.includes('/blog') || currentPath.includes('/memes') || currentPath.includes('/garage')) {
+            document.getElementById('mediaDropdown').classList.add('active');
+        } else if (currentPath.includes('/privacy/')) {
+            document.getElementById('aboutDropdown').classList.add('active');
+        }
+    }
+
+    // Set active nav item on page load
+    setActiveNavItem();
+
+    // Update when hash changes
+    window.addEventListener('hashchange', setActiveNavItem);
+
+    // Prevent dropdown links from closing menu too soon
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    dropdownItems.forEach(function(item) {
+        item.addEventListener('click', function(e) {
+            e.stopPropagation();
+            // Don't close the navbar collapse, let the navigation happen normally
+        });
+    });
+});

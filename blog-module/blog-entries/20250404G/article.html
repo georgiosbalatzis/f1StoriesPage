@@ -134,13 +134,12 @@
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
       <a class="navbar-brand" href="/">
-        <img src="/images/logo.png" alt="F1 Stories Logo" height="50">
+        <img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy">
       </a>
-
       <div class="race-countdown-container">
         <div class="race-countdown">
           <div class="race-flag">
-            <span id="race-flag-emoji">🇺🇸</span>
+            <span id="race-flag-emoji">🏁</span>
           </div>
           <div class="race-info">
             <span class="next-race-name" id="next-race-name">Loading...</span>
@@ -153,18 +152,51 @@
           <span id="race-countdown-mobile">--</span>
         </div>
       </div>
-
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" id="mobile-toggler">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/'; return false;">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/episodes/index.html'; return false;">Episodes</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#about'; return false;">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#guests'; return false;">Guests</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/blog-module/blog/index.html'; return false;">Blog</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#contact'; return false;">Contact</a></li>
+          <!-- Home -->
+          <li class="nav-item">
+            <a class="nav-link" href="/" id="home-link">Home</a>
+          </li>
+
+          <!-- Podcast dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">
+              Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+              <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
+              <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+            </ul>
+          </li>
+
+          <!-- Stories & Media dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
+              Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
+              <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+              <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+            </ul>
+          </li>
+
+          <!-- About dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
+              About <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/#about">About Us</a></li>
+              <li><a class="dropdown-item" href="/#guests">Guests</a></li>
+              <li><a class="dropdown-item" href="/#contact">Contact</a></li>
+            </ul>
+          </li>
         </ul>
       </div>
     </div>
