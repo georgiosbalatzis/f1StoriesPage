@@ -206,6 +206,12 @@
     box-shadow: 0 5px 15px rgba(255, 45, 85, 0.4);
 }
 
+/* Viber (purple) */
+.share-button[data-share="viber"]:hover {
+    background-color: #665CAC;
+    box-shadow: 0 5px 15px rgba(102, 92, 172, 0.4);
+}
+
 /* Copy-link default hover (optional) */
 .share-button[data-share="copy"]:hover {
     background-color: rgba(80, 200, 120, 0.1);
