@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏁🇺🇸 Η Ferrari σε κρίση στρατηγικής – Όταν οι οδηγοί χάνουν την πίστη τους στο pit wall 🔴🧠 | F1 Stories Blog</title>
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="🏁🇺🇸 Η Ferrari σε κρίση στρατηγικής – Όταν οι οδηγοί χάνουν την πίστη τους στο pit wall 🔴🧠 | F1 Stories Blog">
+  <meta property="og:description" content="🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈">
+  <meta property="og:image" content="2.webp">
+  <meta property="og:url" content="https://f1stories.gr/blog-module/blog-entries/20250505-2GF/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
+  <style>
+    /* YouTube embed container for responsive videos */
+    .youtube-embed-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+      margin: 2rem 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .youtube-embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+    }
+
+    .video-caption {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/blog-module/blog-styles.css">
+  <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-X68J6MQKSM');
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the meta description tag
+      const metaDescription = document.querySelector('meta[property="og:description"]');
+
+      // Get the article content for calculating reading time
+      const articleContent = document.querySelector('.article-content');
+
+      if (metaDescription && articleContent) {
+        // Calculate reading time
+        const text = articleContent.textContent || articleContent.innerText;
+        const wordCount = text.trim().split(/\s+/).length;
+
+        // Average reading speed: 200 words per minute
+        const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
+        // Update meta description with reading time
+        metaDescription.setAttribute('content', `A ${readingTimeMinutes} minute read on F1 Stories Blog`);
+
+        // Also update the reading time element in the article if it exists
+        const readingTimeElement = document.getElementById('reading-time-value');
+        if (readingTimeElement) {
+          readingTimeElement.textContent = `${readingTimeMinutes} min read`;
+        }
+      } else {
+        // Fallback description if article content is not found
+        if (metaDescription) {
+          metaDescription.setAttribute('content', '🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈');
+        }
+      }
+    });
+  </script>
+
+</head>
+<body>
+<div class="background"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
+
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/images/logo.png" alt="F1 Stories Logo" height="50">
+      </a>
+
+      <div class="race-countdown-container">
+        <div class="race-countdown">
+          <div class="race-flag">
+            <span id="race-flag-emoji">🇺🇸</span>
+          </div>
+          <div class="race-info">
+            <span class="next-race-name" id="next-race-name">Loading...</span>
+            <div class="countdown-timer" id="race-countdown">--</div>
+          </div>
+        </div>
+        <!-- Mobile version - visible only on small screens -->
+        <div class="race-countdown-mobile">
+          <i class="fas fa-flag-checkered"></i>
+          <span id="race-countdown-mobile">--</span>
+        </div>
+      </div>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/'; return false;">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/episodes/index.html'; return false;">Episodes</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#about'; return false;">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#guests'; return false;">Guests</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/blog-module/blog/index.html'; return false;">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="window.location.href='https://f1stories.gr/#contact'; return false;">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="py-5 mt-5">
+  <div class="container">
+    <!-- Back to Blog Button -->
+    <div class="text-start mb-4">
+      <a href="/blog-module/blog/index.html" class="btn btn-outline-light">
+        <i class="fas fa-arrow-left me-2"></i> Back to Blog
+      </a>
+    </div>
+
+    <div class="article-container">
+      <div class="article-header">
+        <!-- Images are local to the article folder -->
+        <img src="2.webp" alt="🏁🇺🇸 Η Ferrari σε κρίση στρατηγικής – Όταν οι οδηγοί χάνουν την πίστη τους στο pit wall 🔴🧠" class="article-header-img" loading="lazy" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <div class="article-header-overlay">
+          <h1 class="article-title">🏁🇺🇸 Η Ferrari σε κρίση στρατηγικής – Όταν οι οδηγοί χάνουν την πίστη τους στο pit wall 🔴🧠</h1>
+          <div class="article-meta">
+            <span><i class="fas fa-calendar"></i> May 5, 2025</span>
+            <span><i class="fas fa-tag"></i> Ferrari</span>
+            <span><i class="fas fa-folder"></i> Drivers</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add social sharing bar here -->
+      <!-- Updated Social Share Bar -->
+      <div class="social-share-bar">
+        <div class="share-label">
+          <i class="fas fa-share-alt"></i>
+          <span>Share this article:</span>
+        </div>
+        <div class="share-buttons">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://f1stories.gr/blog-module/blog-entries/20250505-2GF/article.html" target="_blank" class="share-btn facebook" aria-label="Share on Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://www.addtoany.com/add_to/threads?linkurl=https://f1stories.gr/blog-module/blog-entries/20250505-2GF/article.html&linkname=🏁🇺🇸 Η Ferrari σε κρίση στρατηγικής – Όταν οι οδηγοί χάνουν την πίστη τους στο pit wall 🔴🧠" target="_blank" class="share-btn threads" aria-label="Share on Threads">
+            <i class="fab fa-threads"></i>
+          </a>
+          <button id="instagram-dm-btn" class="share-btn instagram" aria-label="Share via Instagram DM">
+            <i class="fab fa-instagram"></i>
+          </button>
+          <a href="https://api.whatsapp.com/send?text=🏁🇺🇸 Η Ferrari σε κρίση στρατηγικής – Όταν οι οδηγοί χάνουν την πίστη τους στο pit wall 🔴🧠%20https://f1stories.gr/blog-module/blog-entries/20250505-2GF/article.html" target="_blank" class="share-btn whatsapp" aria-label="Share on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+          <a href="https://t.me/share/url?url=https://f1stories.gr/blog-module/blog-entries/20250505-2GF/article.html&text=🏁🇺🇸 Η Ferrari σε κρίση στρατηγικής – Όταν οι οδηγοί χάνουν την πίστη τους στο pit wall 🔴🧠" target="_blank" class="share-btn telegram" aria-label="Share on Telegram">
+            <i class="fab fa-telegram-plane"></i>
+          </a>
+          <button id="web-share-btn" class="share-btn web-share" aria-label="Share on installed apps">
+            <i class="fas fa-share-nodes"></i>
+          </button>
+          <button class="share-btn copy-link" id="copy-link-btn" aria-label="Copy link">
+            <i class="fas fa-link"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="article-content">
+        <!-- Article content goes here -->
+        <p></p><h1><a id="_jynchjqtr8ov"></a><strong>🏁🇺🇸 Η Ferrari σε κρίση στρατηγικής – Όταν οι οδηγοί χάνουν την πίστη τους στο pit wall 🔴🧠</strong></h1><p>Η Ferrari βρέθηκε ξανά στο επίκεντρο αρνητικής δημοσιότητας στο Grand Prix του Μαϊάμι 2025, καθώς η στρατηγική της ομάδας και η επικοινωνία με τους οδηγούς της, Lewis Hamilton και Charles Leclerc, προκάλεσαν έντονες αντιδράσεις και ερωτήματα για την ικανότητα της Scuderia να διαχειριστεί κρίσιμες καταστάσεις.</p><h2><a id="_xvdr1j5kog0x"></a><strong>🔄 Η στρατηγική σύγχυση και οι εντολές ομάδας</strong></h2><p>Κατά τη διάρκεια του αγώνα, ο Hamilton, ο οποίος είχε επιλέξει μεσαίας σκληρότητας ελαστικά, βρέθηκε πίσω από τον Leclerc, ο οποίος αντιμετώπιζε προβλήματα με τη φθορά των ελαστικών του. Ο Hamilton ζήτησε επανειλημμένα να του επιτραπεί να προσπεράσει, θεωρώντας ότι είχε καλύτερο ρυθμό. Η ομάδα καθυστέρησε να δώσει την εντολή, με αποτέλεσμα ο Hamilton να χάσει πολύτιμο χρόνο και να φθείρει τα ελαστικά του. Όταν τελικά του δόθηκε η εντολή, ήταν ήδη αργά για να επιδιώξει ένα καλύτερο αποτέλεσμα.</p><h2><a id="_wbswkdo2xlv4"></a><strong>🎙️ Οι αντιδράσεις των οδηγών</strong></h2><p>Ο Hamilton εξέφρασε τη δυσαρέσκειά του μέσω ραδιοεπικοινωνίας, λέγοντας ειρωνικά στην ομάδα να "πάρει ένα τσάι" ενώ περίμενε την εντολή προσπέρασης. Μετά τον αγώνα, δήλωσε ότι δεν θα ζητήσει συγγνώμη για τα σχόλιά του, καθώς προήλθαν από την επιθυμία του να κερδίσει και όχι από έλλειψη σεβασμού προς την ομάδα. Ο Leclerc, από την πλευρά του, απέφυγε να σχολιάσει εκτενώς, λέγοντας ότι "είναι προφανές πως δεν ήταν ο τρόπος που θέλουμε να διαχειριζόμαστε τον αγώνα".</p><h2><a id="_excs3ioghb5b"></a><strong>🧩 Τεχνική ανάλυση</strong></h2><p>Η καθυστέρηση στην αλλαγή θέσεων μεταξύ των οδηγών της Ferrari ανέδειξε προβλήματα στη στρατηγική και την επικοινωνία της ομάδας. Η έλλειψη αποφασιστικότητας κόστισε πολύτιμο χρόνο και πιθανές θέσεις στο βάθρο. Η ομάδα φαίνεται να δυσκολεύεται να λάβει γρήγορες αποφάσεις υπό πίεση, κάτι που είναι κρίσιμο στη Formula 1.</p><h2><a id="_cq68mevdqbru"></a><strong>📊 Αποτελέσματα και επιπτώσεις</strong></h2><p>Ο Hamilton τερμάτισε στην 8η θέση και ο Leclerc στην 7η, με τη Ferrari να συγκεντρώνει συνολικά 10 βαθμούς από τον αγώνα. Η ομάδα βρίσκεται πλέον στην 4η θέση του πρωταθλήματος κατασκευαστών, πίσω από τις McLaren, Mercedes και Red Bull. Η απόδοση της Ferrari στο Μαϊάμι ανέδειξε την ανάγκη για βελτιώσεις τόσο στο μονοθέσιο όσο και στη στρατηγική της ομάδας.</p><h2><a id="_ujue548rv6p1"></a><strong>🔍 Συμπεράσματα</strong></h2><p>Η Ferrari πρέπει να βελτιώσει την εσωτερική της επικοινωνία και τη λήψη αποφάσεων κατά τη διάρκεια των αγώνων. Η συνεργασία μεταξύ οδηγών και ομάδας είναι κρίσιμη για την επίτευξη καλύτερων αποτελεσμάτων. Η ομάδα πρέπει να αναλύσει τα λάθη της στο Μαϊάμι και να προχωρήσει σε αλλαγές που θα της επιτρέψουν να είναι πιο ανταγωνιστική στους επόμενους αγώνες.</p><p><em>Για περισσότερες λεπτομέρειες, μπορείτε να παρακολουθήσετε τη συνέντευξη του Charles Leclerc μετά τον αγώνα:</em></p><p>
+      <div class="youtube-embed-container">
+        <iframe 
+          src="https://www.youtube.com/embed/sxbSCWsYhmw" 
+          title="YouTube video player" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen>
+        </iframe>
+        <div class="video-caption">Video: YouTube</div>
+      </div></p>
+      </div>
+
+      <!-- Add this author section here -->
+      <div class="article-author-footer">
+        <div class="reading-time-badge">
+          <i class="fas fa-clock"></i>
+          <span id="reading-time-value">5 min read</span>
+        </div>
+
+        <div class="author-box">
+          <div class="author-header">
+            <div class="author-avatar">
+              <img id="author-image" src="/images/authors/default.webp" alt="F1 Stories Team" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <span class="avatar-text" id="author-initial">A</span>
+            </div>
+            <div class="author-info">
+              <h4 class="author-name" id="author-name">F1 Stories Team</h4>
+              <div class="author-title" id="author-title">F1 Stories Contributor</div>
+            </div>
+          </div>
+          <div class="author-bio" id="author-bio">
+            Regular contributor to F1 Stories, passionate about motorsport and sharing insight about Formula 1 racing.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="article-comments">
+      <h3>Comments</h3>
+      <div id="disqus_thread"></div>
+      <script>
+        var disqus_config = function () {
+          this.page.url = window.location.href;  // Gets the current page URL
+          this.page.identifier = '20250505-2GF';   // Will be replaced with your article ID
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+          var d = document, s = d.createElement('script');
+          s.src = 'https://f1stories-gr.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20250505GF/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="/blog-module/blog-entries/20250505-1G/article.html" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250429-1G/1.webp" 
+                             alt="🏁 SF-25 Μέρος 4ο: Ελαστικά, Συμπεριφορά & Τεχνικός Πόλεμος Εξέλιξης – Το Μεγάλο Στοίχημα της Ferrari" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250429-1G/1.webp') { this.src='/blog-module/blog/images/20250429-1G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">29,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">🏁 SF-25 Μέρος 4ο: Ελαστικά, Συμπεριφορά & Τεχνικός Πόλεμος Εξέλιξης – Το Μεγάλο Στοίχημα της Ferrari</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250429-1G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250428G/1.webp" 
+                             alt="⚙️ SF-25 Μέρος 3ο: Κινητήρας, Υβριδικό Σύστημα και Μετάδοση – Η Καρδιά και ο Εγκέφαλος της Ferrari" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250428G/1.webp') { this.src='/blog-module/blog/images/20250428G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">28,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">⚙️ SF-25 Μέρος 3ο: Κινητήρας, Υβριδικό Σύστημα και Μετάδοση – Η Καρδιά και ο Εγκέφαλος της Ferrari</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250428G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250426G/1.webp" 
+                             alt="Lewis Hamilton: Το νέο ταξίδι με τη Ferrari" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250426G/1.webp') { this.src='/blog-module/blog/images/20250426G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">26,</span>
+                            <span class="month">APR</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Lewis Hamilton: Το νέο ταξίδι με τη Ferrari</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250426G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
+  </div>
+</section>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<footer class="py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center">
+        <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+        <div class="social-media">
+          <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+          <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Background Randomizer Script -->
+<script defer src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script defer src="/scripts/script.js"></script>
+<script defer src="/blog-module/blog/article-script.js"></script>
+
+<!-- Script to fix navbar functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the navbar toggle works
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+
+    if (navbarToggler && navbarCollapse) {
+      navbarToggler.addEventListener('click', function() {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+
+    // Close mobile menu after clicking a link
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        // If mobile menu is open, close it
+        if (navbarCollapse.classList.contains('show')) {
+          navbarCollapse.classList.remove('show');
+        }
+      });
+    });
+  });
+</script>
+
+<!-- Social Sharing Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Replace placeholder URLs with actual URL
+    const currentUrl = window.location.href;
+    const articleTitle = document.querySelector('.article-title').textContent;
+    const encodedTitle = encodeURIComponent(articleTitle);
+
+    // Update sharing links
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      if (btn.href) {
+        btn.href = btn.href
+                .replace('https://f1stories.gr/blog-module/blog-entries/20250505-2GF/article.html', encodeURIComponent(currentUrl))
+                .replace('🏁🇺🇸 Η Ferrari σε κρίση στρατηγικής – Όταν οι οδηγοί χάνουν την πίστη τους στο pit wall 🔴🧠', encodedTitle);
+      }
+    });
+
+    // Handle copy link button
+    const copyLinkBtn = document.getElementById('copy-link-btn');
+    if (copyLinkBtn) {
+      copyLinkBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(currentUrl)
+                .then(() => {
+                  copyLinkBtn.classList.add('copy-success');
+
+                  // Change icon temporarily to checkmark
+                  const icon = copyLinkBtn.querySelector('i');
+                  icon.classList.remove('fa-link');
+                  icon.classList.add('fa-check');
+
+                  // Reset after 2 seconds
+                  setTimeout(() => {
+                    copyLinkBtn.classList.remove('copy-success');
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-link');
+                  }, 2000);
+                })
+                .catch(err => {
+                  console.error('Failed to copy: ', err);
+                });
+      });
+    }
+  });
+</script>
+
+    <script>
+    // Debug helper for images
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script>
+    </body>
+</html>

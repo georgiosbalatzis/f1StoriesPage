@@ -1,6 +1,8 @@
+// Modified blog-loader.js with author and featured article filters
 document.addEventListener('DOMContentLoaded', function() {
     // Pagination variables
     const POSTS_PER_PAGE = 9; // Number of posts to display per page
+    const FEATURED_POSTS_LIMIT = 3; // Updated to only show 3 featured posts
     let currentPage = 1;
     let totalPages = 1;
     let allPosts = []; // All posts from the API
@@ -85,6 +87,46 @@ document.addEventListener('DOMContentLoaded', function() {
         throw error || new Error('Failed to fetch blog data');
     }
 
+// Function to determine author based on folder name pattern
+    function determineAuthor(post) {
+        // If post already has an author, return it
+        if (post.author && post.author.trim() !== '') {
+            return post.author;
+        }
+
+        // Get the folder ID
+        const folderId = post.id || '';
+
+        // Check for 2Fast (W indicator)
+        if (folderId.includes('W')) {
+            return "2Fast";
+        }
+
+        // Check for Dimitris Keramidiotis (D indicator)
+        if (folderId.includes('D')) {
+            return "Dimitris Keramidiotis";
+        }
+
+        // Check for other authors by last character if format is YYYYMMDDX
+        if (/^\d{8}[A-Z]$/.test(folderId) || /^\d{8}[A-Z]F$/.test(folderId)) {
+            const authorCode = folderId.charAt(folderId.length - 1);
+            if (authorCode === 'G') return "Georgios Balatzis";
+            if (authorCode === 'J') return "Giannis Poulikidis";
+            if (authorCode === 'T') return "Thanasis Batalas";
+        }
+
+        // Check for author in folder names like YYYYMMDD-NX
+        if (/^\d{8}-\d+[A-Z]$/.test(folderId) || /^\d{8}-\d+[A-Z]F$/.test(folderId)) {
+            const authorCode = folderId.charAt(folderId.length - 1);
+            if (authorCode === 'G') return "Georgios Balatzis";
+            if (authorCode === 'J') return "Giannis Poulikidis";
+            if (authorCode === 'T') return "Thanasis Batalas";
+        }
+
+        // Default author if no match
+        return post.author || "Unknown";
+    }
+
     // Setup author filters
     function setupAuthorFilters() {
         const authorButtons = getAllElements('.author-filter-btn');
@@ -155,6 +197,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         fetchBlogData()
             .then(data => {
+                // Process authors based on folder naming conventions
+                data.posts.forEach(post => {
+                    post.author = determineAuthor(post);
+                });
+
                 // Sort posts by date (most recent first)
                 const sortedPosts = data.posts.sort((a, b) => {
                     return new Date(b.date) - new Date(a.date);
@@ -251,6 +298,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         fetchBlogData()
             .then(data => {
+                // Process authors based on folder naming conventions
+                data.posts.forEach(post => {
+                    post.author = determineAuthor(post);
+                });
+
                 // Sort posts by date (most recent first)
                 allPosts = data.posts.sort((a, b) => {
                     return new Date(b.date) - new Date(a.date);
@@ -266,9 +318,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Setup categories and tags for filtering
                 setupCategories(allPosts);
 
-                // Setup featured post (always use the most recent post)
-                if (allPosts.length > 0) {
-                    setupFeaturedPost(allPosts[0]);
+                // Setup featured post (always use the most recent post that matches the featured criteria)
+                const featuredCandidates = allPosts.filter(isFeaturedPost);
+                if (featuredCandidates.length > 0) {
+                    setupFeaturedPost(featuredCandidates[0]);
                 }
             })
             .catch(error => {
@@ -281,6 +334,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
             });
+    }
+
+    // Function to check if post should be featured
+    function isFeaturedPost(post) {
+        // Check if folder ID matches YYYYMMDDXF or YYYYMMDD-XF format
+        // Where X is the author indicator (G, J, T, W, D) and F means Featured
+        const folderPattern1 = /^\d{8}[A-Z]F$/; // YYYYMMDDXF
+        const folderPattern2 = /^\d{8}-\d+[A-Z]F$/; // YYYYMMDD-XF
+
+        // Also check patterns specifically for 2Fast and Dimitris
+        const folderPattern3 = /^\d{8}WF$/; // YYYYMMDDWF (2Fast)
+        const folderPattern4 = /^\d{8}-\d+WF$/; // YYYYMMDD-XWF (2Fast)
+        const folderPattern5 = /^\d{8}DF$/; // YYYYMMDDDF (Dimitris)
+        const folderPattern6 = /^\d{8}-\d+DF$/; // YYYYMMDD-XDF (Dimitris)
+
+        return folderPattern1.test(post.id) ||
+            folderPattern2.test(post.id) ||
+            folderPattern3.test(post.id) ||
+            folderPattern4.test(post.id) ||
+            folderPattern5.test(post.id) ||
+            folderPattern6.test(post.id);
     }
 
     // Function to display posts for a specific page
@@ -772,7 +846,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return text.replace(regex, '<span class="highlight">$1</span>');
     }
 
-    // Function to set up hover effects on blog cards
+// Function to set up hover effects on blog cards
     function setupHoverEffects() {
         document.querySelectorAll('.blog-card').forEach(card => {
             const title = card.querySelector('.blog-title');
@@ -907,24 +981,32 @@ document.addEventListener('DOMContentLoaded', function() {
         featuredPostIds = [];
         fetchBlogData()
             .then(data => {
+                // Process authors based on folder naming conventions
+                data.posts.forEach(post => {
+                    post.author = determineAuthor(post);
+                });
+
                 // Sort posts by date (most recent first)
                 const sortedPosts = data.posts.sort((a, b) => {
                     return new Date(b.date) - new Date(a.date);
                 });
 
-                // Take the 6 most recent posts for featuring
-                const featuredPosts = sortedPosts.slice(0, 6);
+                // Filter featured posts based on folder naming pattern
+                const featuredPosts = sortedPosts.filter(isFeaturedPost);
 
-                if (featuredPosts.length === 0) {
+                // Take only the 3 most recent featured posts
+                const postsToDisplay = featuredPosts.slice(0, FEATURED_POSTS_LIMIT);
+
+                if (postsToDisplay.length === 0) {
                     // Store the IDs of featured posts to prevent duplication
-                    featuredPostIds = featuredPosts.map(post => post.id);
+                    featuredPostIds = postsToDisplay.map(post => post.id);
                     console.log('Featured post IDs:', featuredPostIds);
-                    featuredContainer.innerHTML = '<div class="col-12"><p class="text-light">No posts available.</p></div>';
+                    featuredContainer.innerHTML = '<div class="col-12"><p class="text-light">No featured posts available.</p></div>';
                     return;
                 }
 
                 // Create the HTML for each featured post
-                featuredPosts.forEach(post => {
+                postsToDisplay.forEach(post => {
                     // Extract day and month from display date
                     const dateMatch = post.displayDate ? post.displayDate.match(/([A-Za-z]+) (\d+)/) : null;
                     const month = dateMatch ? dateMatch[1].substring(0, 3) : 'JAN';
@@ -992,7 +1074,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-// Utility function to throttle frequent events like scroll
+    // Utility function to throttle frequent events like scroll
     function throttle(func, delay) {
         let lastCall = 0;
         return function(...args) {
@@ -1003,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-// Setup scroll to top button
+    // Setup scroll to top button
     function setupScrollToTop() {
         const scrollBtn = document.getElementById('scroll-to-top');
         if (!scrollBtn) return;
@@ -1035,16 +1117,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-// Setup F1 calendar countdown
+    // Setup F1 calendar countdown
     function setupF1CalendarCountdown() {
         const countdownElement = document.getElementById('sidebar-countdown');
         if (!countdownElement) return;
 
         // Example next race data (should be replaced with real API data)
         const nextRace = {
-            name: "Miami Grand Prix",
-            circuit: "Miami International Autodrome",
-            date: new Date(2025, 4, 4, 20, 0, 0) // May 4, 2025, 8:00 PM
+            name: "Emilia Romagna Grand Prix",
+            circuit: "Autodromo Enzo e Dino Ferrari",
+            date: new Date(2025, 4, 18, 14, 0, 0) // May 18, 2025, 2:00 PM
         };
 
         // Set race information
@@ -1084,7 +1166,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setInterval(updateCountdown, 60000);
     }
 
-// Initialize page functionality based on the current page
+    // Initialize page functionality based on the current page
     function initializePage() {
         const path = window.location.pathname;
 
@@ -1122,6 +1204,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-// Initialize page on DOMContentLoaded
+    // Initialize page on DOMContentLoaded
     initializePage();
-});// blog-module/blog-loader.js - Enhanced to handle dynamically loaded blog posts with pagination
+});
