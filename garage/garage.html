@@ -109,24 +109,57 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="https://f1stories.gr/">
-                <img src="../images/logo.png" alt="F1 Stories Logo" height="50">
+            <a class="navbar-brand" href="/">
+                <img src="../../images/logo.png" alt="F1 Stories Logo" height="50">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" id="mobile-toggler">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/#podcasts">Podcasts</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/#episodes">Episodes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/#blog">Blog</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/#guests">Guests</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/#contact">Contact</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://f1stories.gr/memes/index.html">Memes</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="https://f1stories.gr/garage/garage.html">2025 Cars</a></li>
-                    <li class="nav-item"><a class="nav-link betcast-btn" href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank">BetCast</a></li>
+                <ul class="navbar-nav mx-auto">
+                    <!-- Home -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/" id="home-link">Home</a>
+                    </li>
+
+                    <!-- Podcast dropdown -->
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">
+                            Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+                            <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
+                            <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Stories & Media dropdown -->
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
+                            Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
+                            <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+                            <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- About dropdown -->
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
+                            About <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="/#about">About Us</a></li>
+                            <li><a class="dropdown-item" href="/#guests">Guests</a></li>
+                            <li><a class="dropdown-item" href="/#contact">Contact</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/privacy/privacy.html">Privacy Policy</a></li>
+                            <li><a class="dropdown-item" href="/privacy/terms.html">Terms of Use</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
