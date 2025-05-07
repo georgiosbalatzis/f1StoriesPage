@@ -329,9 +329,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const blob = await watermarkMeme();                          // from Step 2
             const file = new File([blob], 'f1stories.png', { type: 'image/png' });
 
-            // Build share payload
+            // Build share payload // For Facebook, WhatsApp & Viber, include title+link as text
             const shareData = { files: [file] };
-            if (platform === 'facebook') {
+            if (platform === 'facebook'|| platform === 'whatsapp' || platform === 'viber') {
                 // Facebook gets caption + link
                 shareData.text = `${shareText} ${shareUrl}`;
             }
@@ -368,6 +368,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
                 case 'whatsapp':
                     shareLink = `https://web.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
+                    break;
+                case 'viber':
+                    // Attempts to open the Viber app
+                    shareLink = `viber://forward?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
                     break;
                 default:
                     return;
