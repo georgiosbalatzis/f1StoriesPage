@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (podcasts.length === 0) {
                 podcastGrid.innerHTML = '<div class="col-12 text-center"><p>No podcast videos found. Please check back later.</p></div>';
             } else {
-                podcasts.slice(0, 6).forEach(video => {
+                podcasts.slice(0, 3).forEach(video => {
                     const videoCardHTML = createVideoCardHTML(video, 'podcast');
                     podcastGrid.insertAdjacentHTML('beforeend', videoCardHTML);
                 });
@@ -375,69 +375,6 @@ document.addEventListener('DOMContentLoaded', function() {
         displayVideos();
     }
 
-    // Example function for testing (remove for production)
-    function displayExampleVideos() {
-        // Example LIVE videos (for testing)
-        const exampleLiveVideos = [
-            {
-                id: 'dQw4w9WgXcQ', // Placeholder video ID
-                title: 'LIVE: F1 Pre-Season Testing Day 1',
-                description: 'Join us for live coverage of the first day of Formula 1 pre-season testing direct from Barcelona.',
-                date: 'April 1, 2025',
-                duration: '1:24:30',
-                viewCount: '124K views'
-            },
-            {
-                id: 'dQw4w9WgXcQ', // Placeholder video ID
-                title: 'LIVE: Race Watch-Along - Monaco Grand Prix',
-                description: 'Watch the Monaco Grand Prix with our team as we provide live commentary and analysis throughout the race.',
-                date: 'March 28, 2025',
-                duration: '2:10:45',
-                viewCount: '98.5K views'
-            },
-            {
-                id: 'dQw4w9WgXcQ', // Placeholder video ID
-                title: 'STREAM: F1 Driver Market Rumors Analyzed',
-                description: 'Breaking down the latest rumors about driver transfers and contract negotiations for the upcoming season.',
-                date: 'March 25, 2025',
-                duration: '45:12',
-                viewCount: '67.2K views'
-            }
-        ];
-
-        // Example BoxBox videos (for testing)
-        const exampleBoxBoxVideos = [
-            {
-                id: 'dQw4w9WgXcQ', // Placeholder video ID
-                title: 'BOXBOX!? Dramatic Finish to the Azerbaijan Grand Prix',
-                description: 'The final laps of a chaotic race that saw multiple position changes and unexpected results.',
-                date: 'March 22, 2025',
-                duration: '14:36',
-                viewCount: '187K views'
-            }
-        ];
-
-        // Display example LIVE videos
-        const liveGrid = document.querySelector('.live-grid');
-        if (liveGrid) {
-            liveGrid.innerHTML = '';
-            exampleLiveVideos.forEach(video => {
-                const isCurrentlyLive = video.title.includes('Day 1'); // Mark the first one as currently live
-                const videoCardHTML = createVideoCardHTML(video, 'live', isCurrentlyLive);
-                liveGrid.insertAdjacentHTML('beforeend', videoCardHTML);
-            });
-        }
-
-        // Display example BoxBox videos
-        const boxboxGrid = document.querySelector('.boxbox-grid');
-        if (boxboxGrid) {
-            boxboxGrid.innerHTML = '';
-            exampleBoxBoxVideos.forEach(video => {
-                const videoCardHTML = createVideoCardHTML(video, 'boxbox');
-                boxboxGrid.insertAdjacentHTML('beforeend', videoCardHTML);
-            });
-        }
-    }
 
     // Enhanced scroll animations
     const observer = new IntersectionObserver(entries => {
@@ -528,4 +465,96 @@ document.addEventListener('DOMContentLoaded', function() {
     scrollToTopBtn.addEventListener('click', function() {
         smoothScrollTo(0, 800);
     });
+});
+
+// Mobile Menu Navigation
+document.addEventListener('DOMContentLoaded', function() {
+    // Mobile menu toggle
+    const mobileToggler = document.getElementById('mobile-toggler');
+    const navbarCollapse = document.getElementById('navbarNav');
+
+    mobileToggler.addEventListener('click', function() {
+        navbarCollapse.classList.toggle('show');
+    });
+
+    // Dropdown toggles
+    const dropdownToggles = document.querySelectorAll('.custom-dropdown-toggle');
+
+    dropdownToggles.forEach(function(toggle) {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const parent = this.parentElement;
+            const isOpen = parent.classList.contains('open');
+
+            // On mobile, we just toggle this dropdown without closing others
+            if (window.innerWidth < 992) {
+                parent.classList.toggle('open');
+            } else {
+                // On desktop, close other dropdowns first
+                document.querySelectorAll('.custom-dropdown.open').forEach(function(dropdown) {
+                    if (dropdown !== parent) {
+                        dropdown.classList.remove('open');
+                    }
+                });
+
+                // Then toggle this one
+                parent.classList.toggle('open');
+            }
+        });
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            document.querySelectorAll('.custom-dropdown.open').forEach(function(dropdown) {
+                dropdown.classList.remove('open');
+            });
+        }
+
+        // Only close navbar collapse when clicking completely outside navbar
+        if (window.innerWidth < 992 && !e.target.closest('.navbar') && navbarCollapse.classList.contains('show')) {
+            navbarCollapse.classList.remove('show');
+        }
+    });
+
+    // Handle section link clicks (like #live, #boxbox, etc.)
+    const sectionLinks = document.querySelectorAll('.dropdown-item[href^="#"]');
+    sectionLinks.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Close the mobile menu
+            if (window.innerWidth < 992 && navbarCollapse.classList.contains('show')) {
+                navbarCollapse.classList.remove('show');
+            }
+
+            // Scroll to the section
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+
+            if (targetElement) {
+                const offsetTop = targetElement.offsetTop - 80; // Adjust for navbar height
+                window.scrollTo({
+                    top: offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Handle page links and add active class
+    function updateActiveLinks() {
+        const currentPath = window.location.pathname;
+
+        // Check for Episodes page
+        if (currentPath.includes('/episodes/')) {
+            document.querySelector('#podcastDropdown').classList.add('active');
+        }
+
+        // Update any other active classes based on specific pages
+    }
+
+    // Call immediately
+    updateActiveLinks();
 });

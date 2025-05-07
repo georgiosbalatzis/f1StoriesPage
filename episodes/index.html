@@ -36,21 +36,54 @@
             <a class="navbar-brand" href="../">
                 <img src="../images/logo.png" alt="F1 Stories Logo" height="50">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" id="mobile-toggler">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="../episodes/index.html" aria-current="page">Episodes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#betcasts">Betcasts</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#live">LIVE</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#boxbox">BoxBox!?</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#podcasts">Podcasts</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#shorts">Shorts</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../index.html#blog">Blog</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../index.html#contact">Contact</a></li>
+                    <!-- Home -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="../" id="home-link">Home</a>
+                    </li>
+
+                    <!-- Podcast dropdown -->
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle active" href="#" id="podcastDropdown">
+                            Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+                            <li><a class="dropdown-item active-item" href="/episodes/">Episodes</a></li>
+                            <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+                            <li><a class="dropdown-item" href="#live">LIVE</a></li>
+                            <li><a class="dropdown-item" href="#boxbox">BoxBox!?</a></li>
+                            <li><a class="dropdown-item" href="#shorts">Shorts</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Stories & Media dropdown -->
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
+                            Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
+                            <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+                            <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- About dropdown -->
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
+                            About <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="../#about">About Us</a></li>
+                            <li><a class="dropdown-item" href="../#guests">Guests</a></li>
+                            <li><a class="dropdown-item" href="../#contact">Contact</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -64,7 +97,7 @@
             <div class="col-lg-8">
                 <div class="hero-content">
                     <h1 class="mb-4">F1 Stories Episodes</h1>
-                    <p class="lead mb-4">Watch our latest Formula 1 content</p>
+                    <p class="lead mb-4">Watch our latest F1 video content</p>
                 </div>
             </div>
         </div>
