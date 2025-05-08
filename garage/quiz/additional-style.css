@@ -1,0 +1,275 @@
+/* Additional CSS for notifications and optimization */
+
+/* Body class for reduced animations */
+.reduce-animations * {
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.001s !important;
+}
+
+.reduce-animations .background {
+    background: linear-gradient(135deg, #003366, #0073e6);
+    animation: none;
+}
+
+.reduce-animations .welcome-f1-car {
+    animation: none;
+}
+
+.reduce-animations .streak {
+    display: none;
+}
+
+/* Notifications */
+.offline-notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(50, 50, 50, 0.9);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 5px;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.5s ease;
+}
+
+.offline-notification i {
+    color: #ff5555;
+}
+
+/* Progress notification */
+.progress-notification {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 9500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.notification-content {
+    background: rgba(0, 15, 40, 0.9);
+    border: 1px solid rgba(0, 115, 230, 0.3);
+    border-radius: 10px;
+    padding: 2rem;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.notification-content p {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: #e0e0e0;
+}
+
+.notification-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* Screen reader only class */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Fallback styles for older browsers */
+@supports not (backdrop-filter: blur(5px)) {
+    .navbar, .quiz-card, .loading-indicator, .progress-notification {
+        background-color: rgba(0, 0, 0, 0.9) !important;
+    }
+}
+
+/* Focus styles for accessibility */
+a:focus, button:focus, .option:focus {
+    outline: 2px solid #00ffff;
+    outline-offset: 2px;
+}
+
+/* Focus visible only when using keyboard */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+.option:focus:not(:focus-visible) {
+    outline: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+.option:focus-visible {
+    outline: 2px solid #00ffff;
+    outline-offset: 2px;
+}
+
+/* Helper classes for lazy loading */
+.lazy-load {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.lazy-load.loaded {
+    opacity: 1;
+}
+
+/* Responsive navigation improvements */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        background: rgba(0, 10, 30, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        padding: 1rem;
+        max-height: calc(100vh - 76px);
+        overflow-y: auto;
+    }
+
+    .navbar-toggler {
+        border: none;
+        padding: 0.5rem;
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: none;
+        outline: 2px solid rgba(0, 255, 255, 0.5);
+    }
+}
+
+/* Improve form inputs for touch devices */
+input, button, select, textarea {
+    font-size: 16px !important; /* Prevents iOS zoom */
+}
+
+/* RTL language support */
+html[dir="rtl"] .result-image {
+    margin-right: 0;
+    margin-left: 1.5rem;
+}
+
+html[dir="rtl"] .option-checkmark {
+    right: auto;
+    left: 15px;
+}
+
+html[dir="rtl"] .option-text {
+    padding-right: 0;
+    padding-left: 30px;
+}
+
+html[dir="rtl"] .match-label {
+    margin-right: 0;
+    margin-left: 1rem;
+}
+
+html[dir="rtl"] .match-percentage {
+    margin-left: 0;
+    margin-right: 1rem;
+}
+
+/* Print optimization */
+@media print {
+    .result-image {
+        max-width: 100px;
+        height: auto;
+    }
+
+    .result-card {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .result-text {
+        color: #000 !important;
+    }
+}
+
+/* Battery saving dark mode */
+@media (prefers-color-scheme: dark) and (max-width: 768px) {
+    .background {
+        opacity: 0.7;
+    }
+
+    .streak {
+        opacity: 0.5;
+    }
+}
+
+/* Fix for various mobile issues */
+@media (max-width: 360px) {
+    .welcome-container h1 {
+        font-size: 1.8rem;
+    }
+
+    .quiz-container {
+        padding: 1rem;
+    }
+
+    .quiz-card {
+        padding: 1rem;
+    }
+
+    .question {
+        font-size: 1rem;
+    }
+
+    .option {
+        padding: 0.7rem;
+    }
+
+    .option-text {
+        font-size: 0.9rem;
+    }
+
+    .notification-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .notification-buttons .cta-button {
+        width: 100%;
+    }
+}
+
+/* Safari specific fixes */
+@media not all and (min-resolution:.001dpcm) {
+    @supports (-webkit-appearance:none) {
+        .quiz-card, .result-card {
+            -webkit-transform: translateZ(0);
+        }
+
+        .welcome-f1-car {
+            -webkit-transform: translateZ(0);
+        }
+    }
+}
+
+/* Adjust for notched phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    footer {
+        padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+    }
+
+    .offline-notification {
+        bottom: calc(20px + env(safe-area-inset-bottom));
+    }
+}

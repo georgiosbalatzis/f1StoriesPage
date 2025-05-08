@@ -2,12 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Discover which Formula 1 team and driver best match your racing style and preferences with the F1 Affinity Quiz">
+    <meta name="theme-color" content="#0073e6">
     <title>F1 Affinity Quiz | F1 Stories</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="f1-quiz.css">
+    <link rel="icon" type="image/png" href="https://f1stories.gr/images/favicon.png">
 </head>
 <body>
 <!-- Background Elements -->
@@ -20,8 +26,8 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="#">
-            <img src="https://f1stories.gr/images/logo.png" alt="F1 Stories Logo" height="50">
+        <a class="navbar-brand" href="#" aria-label="F1 Stories">
+            <img src="https://f1stories.gr/images/logo.png" alt="F1 Stories Logo" height="50" width="auto">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -32,7 +38,7 @@
                     <a class="nav-link" href="https://f1stories.gr/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">F1 Affinity Quiz</a>
+                    <a class="nav-link active" href="#" aria-current="page">F1 Affinity Quiz</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="https://f1stories.gr/spotify/index.html">Podcast</a>
@@ -50,19 +56,19 @@
         <p>Discover which Formula 1 team and driver align best with your racing philosophy, technical preferences, and personality. Answer a few questions and we'll match you with your F1 soulmates!</p>
         <button id="start-quiz" class="start-button">Start the Quiz <i class="fas fa-chevron-right ms-2"></i></button>
         <div class="welcome-graphic">
-            <img src="https://api.placeholder.com/400/200" alt="F1 Car" class="welcome-f1-car">
+            <img src="https://api.placeholder.com/400/200" alt="F1 Car" class="welcome-f1-car" width="300" height="150">
         </div>
     </div>
 
     <!-- Quiz Card -->
     <div id="quiz-card" class="quiz-card" style="display:none;">
         <h2>F1 Affinity Quiz</h2>
-        <div class="quiz-progress" id="quiz-progress">
+        <div class="quiz-progress" id="quiz-progress" aria-label="Quiz progress">
             <!-- Progress steps will be added dynamically -->
         </div>
         <div id="question-container" class="question-container">
             <p class="question" id="question-text">Question text goes here?</p>
-            <div class="options-container" id="options-container">
+            <div class="options-container" id="options-container" role="radiogroup">
                 <!-- Options will be added dynamically -->
             </div>
         </div>
@@ -83,7 +89,7 @@
         <div class="result-card" id="team-result">
             <h3>Your F1 Team Match</h3>
             <div class="result-info">
-                <img id="team-image" src="" alt="Team Logo" class="result-image">
+                <img id="team-image" src="" alt="Team Logo" class="result-image" width="120" height="120">
                 <div class="result-description">
                     <div id="team-name" class="result-title"></div>
                     <div id="team-subtitle" class="result-subtitle"></div>
@@ -93,7 +99,7 @@
             <div class="result-match">
                 <span class="match-label">Match Rate:</span>
                 <div class="match-bar">
-                    <div id="team-match-value" class="match-value"></div>
+                    <div id="team-match-value" class="match-value" aria-label="Team match percentage"></div>
                 </div>
                 <span id="team-match-percentage" class="match-percentage">0%</span>
             </div>
@@ -103,7 +109,7 @@
         <div class="result-card" id="driver-result">
             <h3>Your F1 Driver Match</h3>
             <div class="result-info">
-                <img id="driver-image" src="" alt="Driver Photo" class="result-image">
+                <img id="driver-image" src="" alt="Driver Photo" class="result-image" width="120" height="120">
                 <div class="result-description">
                     <div id="driver-name" class="result-title"></div>
                     <div id="driver-subtitle" class="result-subtitle"></div>
@@ -114,7 +120,7 @@
             <div class="result-match">
                 <span class="match-label">Match Rate:</span>
                 <div class="match-bar">
-                    <div id="driver-match-value" class="match-value"></div>
+                    <div id="driver-match-value" class="match-value" aria-label="Driver match percentage"></div>
                 </div>
                 <span id="driver-match-percentage" class="match-percentage">0%</span>
             </div>
@@ -124,9 +130,9 @@
         <div class="restart-container">
             <button id="restart-quiz" class="cta-button">Take the Quiz Again</button>
             <div class="social-share">
-                <a href="#" class="share-twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="share-facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="share-whatsapp"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" class="share-twitter" aria-label="Share on Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="share-facebook" aria-label="Share on Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="share-whatsapp" aria-label="Share on WhatsApp"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>
     </div>
@@ -137,18 +143,18 @@
     <div class="container">
         <p>&copy; 2025 F1 Stories. All rights reserved.</p>
         <div class="social-media">
-            <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
-            <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
-            <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
-            <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS" target="_blank"><i class="fab fa-spotify"></i></a>
+            <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.facebook.com/f1storiess" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/myf1stories/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@f1stories6" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+            <a href="mailto:myf1stories@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+            <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS" target="_blank" aria-label="Spotify"><i class="fab fa-spotify"></i></a>
         </div>
     </div>
 </footer>
 
 <!-- Bootstrap JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="f1-quiz.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+<script src="f1-quiz.js" defer></script>
 </body>
 </html>
