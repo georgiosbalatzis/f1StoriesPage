@@ -2500,3 +2500,209 @@ input:checked + .toggle-slider:before {
         height: 80%;
     }
 }
+
+/* Theme Toggle Styles */
+.theme-toggle-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    background: rgba(10, 14, 23, 0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 50px;
+    padding: 6px 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle-container:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.theme-toggle-button {
+    background: transparent;
+    border: none;
+    width: 48px;
+    height: 28px;
+    border-radius: 14px;
+    position: relative;
+    cursor: pointer;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle-button:focus-visible {
+    box-shadow: 0 0 0 2px rgba(0, 136, 255, 0.5);
+}
+
+.theme-toggle-icon {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #0073e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.theme-toggle-button.modern .theme-toggle-icon {
+    left: calc(100% - 26px);
+    background: linear-gradient(135deg, #0088ff, #00ddff);
+}
+
+.theme-toggle-icon i {
+    color: white;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle-icon .fa-sun {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.theme-toggle-icon .fa-moon {
+    opacity: 0;
+    transform: translateY(20px);
+    position: absolute;
+}
+
+.theme-toggle-button.modern .theme-toggle-icon .fa-sun {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.theme-toggle-button.modern .theme-toggle-icon .fa-moon {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.theme-label {
+    margin-left: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #e0e0e0;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+/* Modern theme specific adjustments */
+.modern-theme .theme-toggle-container {
+    background: rgba(17, 25, 39, 0.85);
+    border-color: rgba(0, 136, 255, 0.2);
+}
+
+.modern-theme .theme-label {
+    color: #f0f0f0;
+}
+
+/* Responsive styling for different screen sizes */
+@media (max-width: 991.98px) {
+    .theme-toggle-container {
+        top: 80px; /* Below navbar on tablets */
+        right: 15px;
+        padding: 4px 12px;
+    }
+
+    .theme-toggle-button {
+        width: 44px;
+        height: 26px;
+    }
+
+    .theme-toggle-icon {
+        width: 22px;
+        height: 22px;
+    }
+
+    .theme-toggle-button.modern .theme-toggle-icon {
+        left: calc(100% - 24px);
+    }
+
+    .theme-label {
+        font-size: 13px;
+        margin-left: 10px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .theme-toggle-container {
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+        padding: 4px;
+        border-radius: 50%;
+        background: rgba(10, 14, 23, 0.95);
+    }
+
+    .theme-label {
+        display: none; /* Hide the label on mobile */
+    }
+
+    .theme-toggle-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+
+    .theme-toggle-icon {
+        top: 8px;
+        left: 8px;
+        width: 24px;
+        height: 24px;
+    }
+
+    .theme-toggle-button.modern .theme-toggle-icon {
+        left: 8px;
+        background: linear-gradient(135deg, #0088ff, #00ddff);
+    }
+
+    /* Increase tap target size for mobile */
+    .theme-toggle-container::before {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+    }
+}
+
+/* Animation for theme change */
+@keyframes themeTransition {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.theme-transition {
+    animation: themeTransition 0.5s ease;
+}
+
+/* Adding a subtle bounce effect when clicking the toggle */
+.theme-toggle-button:active .theme-toggle-icon {
+    transform: scale(0.9);
+}
+
+/* When in the fixed position, ensure it doesn't interfere with other elements */
+.scroll-to-top-btn {
+    margin-bottom: 60px; /* Add space above the scroll-to-top button on mobile */
+}
+
+@media (max-width: 767.98px) {
+    #cookie-consent.show {
+        padding-bottom: 70px; /* Add space at the bottom for the theme toggle */
+    }
+}
