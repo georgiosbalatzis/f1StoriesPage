@@ -8,6 +8,7 @@ body {
     overflow-x: hidden;
     background-color: #000;
     position: relative;
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
 }
 
 /* Animated Gradient Background */
@@ -65,15 +66,17 @@ body {
 
 /* Navigation */
 .navbar {
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* For Safari */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding: 0.5rem 1rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1050; /* Ensure navbar stays on top */
 }
 
 .navbar.scrolled {
-    background: rgba(0, 10, 30, 0.9);
+    background: rgba(0, 10, 30, 0.95);
     box-shadow: 0 2px 10px rgba(0, 115, 230, 0.2);
 }
 
@@ -86,7 +89,7 @@ body {
 }
 
 .navbar-brand img {
-    height: 50px;
+    height: 45px;
     transition: filter 0.3s ease;
 }
 
@@ -96,11 +99,13 @@ body {
 
 /* Main app container */
 .quiz-container {
+    width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1.5rem;
     position: relative;
     min-height: calc(100vh - 180px);
+    box-sizing: border-box;
 }
 
 .cta-button {
@@ -118,6 +123,7 @@ body {
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    touch-action: manipulation; /* Improves touch responsiveness */
 }
 
 .cta-button::before {
@@ -131,7 +137,7 @@ body {
     transition: left 0.7s ease;
 }
 
-.cta-button:hover {
+.cta-button:hover, .cta-button:active {
     background: linear-gradient(45deg, #005bb5, #002a4f);
     transform: translateY(-5px) scale(1.05);
     color: white;
@@ -148,16 +154,19 @@ body {
 
 /* Quiz styles */
 .quiz-card {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* For Safari */
     border: 1px solid rgba(0, 115, 230, 0.2);
     border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    padding: 2rem;
+    padding: 1.5rem;
     margin-bottom: 2rem;
     overflow: hidden;
     position: relative;
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .quiz-card::before {
@@ -197,6 +206,9 @@ body {
     scrollbar-width: none;
     -ms-overflow-style: none;
     padding-bottom: 10px;
+    justify-content: center; /* Center on wide screens */
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    gap: 5px; /* Space between wrapped items */
 }
 
 .quiz-progress::-webkit-scrollbar {
@@ -204,8 +216,8 @@ body {
 }
 
 .progress-step {
-    width: 30px;
-    height: 10px;
+    width: 25px;
+    height: 8px;
     background: rgba(255, 255, 255, 0.2);
     margin-right: 5px;
     border-radius: 5px;
@@ -215,7 +227,7 @@ body {
 
 .progress-step.active {
     background: linear-gradient(90deg, #0073e6, #00ffff);
-    width: 40px;
+    width: 35px;
 }
 
 .progress-step.completed {
@@ -238,13 +250,13 @@ body {
     margin-bottom: 1.5rem;
     color: #e0e0e0;
     text-align: center;
-    padding: 0 1rem;
+    padding: 0 0.5rem;
 }
 
 .options-container {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem;
     margin-bottom: 2rem;
 }
 
@@ -257,9 +269,12 @@ body {
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
+    user-select: none; /* Prevent text selection on mobile */
+    -webkit-user-select: none;
+    touch-action: manipulation; /* Improves touch responsiveness */
 }
 
-.option:hover {
+.option:hover, .option:active {
     background: rgba(0, 115, 230, 0.2);
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -276,9 +291,12 @@ body {
     font-size: 1.1rem;
     color: #e0e0e0;
     transition: color 0.3s ease;
+    padding-right: 30px; /* Space for checkmark */
 }
 
-.option:hover .option-text, .option.selected .option-text {
+.option:hover .option-text,
+.option:active .option-text,
+.option.selected .option-text {
     color: #ffffff;
 }
 
@@ -300,6 +318,7 @@ body {
     display: flex;
     justify-content: space-between;
     margin-top: 2rem;
+    gap: 1rem;
 }
 
 .btn-prev {
@@ -325,6 +344,8 @@ body {
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .result-container.active {
@@ -383,10 +404,12 @@ body {
     width: 120px;
     height: 120px;
     border-radius: 10px;
-    object-fit: cover;
+    object-fit: contain; /* Ensure logos display fully */
+    background-color: rgba(0, 0, 0, 0.3); /* Background for transparent logos */
     margin-right: 1.5rem;
     border: 2px solid rgba(0, 115, 230, 0.5);
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    flex-shrink: 0; /* Prevent image from shrinking */
 }
 
 .result-card:hover .result-image {
@@ -509,12 +532,12 @@ body {
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.social-share a:hover {
+.social-share a:hover, .social-share a:active {
     color: #fff;
     transform: translateY(-5px) scale(1.2);
 }
 
-.social-share a:hover::before {
+.social-share a:hover::before, .social-share a:active::before {
     opacity: 1;
     transform: scale(1);
 }
@@ -522,11 +545,11 @@ body {
 /* Welcome screen */
 .welcome-container {
     text-align: center;
-    padding: 3rem 1rem;
+    padding: 2rem 1rem;
 }
 
 .welcome-container h1 {
-    font-size: 2.8rem;
+    font-size: 2.5rem;
     color: #00ffff;
     margin-bottom: 1.5rem;
     animation: fadeInUp 1s ease forwards;
@@ -574,6 +597,7 @@ body {
     animation: fadeInUp 1s ease forwards;
     animation-delay: 0.4s;
     opacity: 0;
+    touch-action: manipulation; /* Improves touch responsiveness */
 }
 
 .start-button::before {
@@ -587,7 +611,7 @@ body {
     transition: left 0.7s ease;
 }
 
-.start-button:hover {
+.start-button:hover, .start-button:active {
     background: linear-gradient(45deg, #005bb5, #002a4f);
     transform: translateY(-5px) scale(1.05);
     box-shadow: 0 15px 40px rgba(0, 115, 230, 0.4);
@@ -650,6 +674,7 @@ footer::before {
     display: flex;
     justify-content: center;
     gap: 1rem;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 
 .social-media a {
@@ -664,6 +689,7 @@ footer::before {
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.3);
     position: relative;
+    margin: 0.25rem; /* Add margin for wrapped items */
 }
 
 .social-media a::before {
@@ -681,12 +707,12 @@ footer::before {
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.social-media a:hover {
+.social-media a:hover, .social-media a:active {
     color: #fff;
     transform: translateY(-5px) scale(1.2);
 }
 
-.social-media a:hover::before {
+.social-media a:hover::before, .social-media a:active::before {
     opacity: 1;
     transform: scale(1);
 }
@@ -700,6 +726,7 @@ footer::before {
     height: 100%;
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px); /* For Safari */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -742,14 +769,251 @@ footer::before {
     }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Body class for reduced animations */
+.reduce-animations * {
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.001s !important;
+}
+
+.reduce-animations .background {
+    background: linear-gradient(135deg, #003366, #0073e6);
+    animation: none;
+}
+
+.reduce-animations .welcome-f1-car {
+    animation: none;
+}
+
+.reduce-animations .streak {
+    display: none;
+}
+
+/* Notifications */
+.offline-notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(50, 50, 50, 0.9);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 5px;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.5s ease;
+}
+
+.offline-notification i {
+    color: #ff5555;
+}
+
+/* Progress notification */
+.progress-notification {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 9500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.notification-content {
+    background: rgba(0, 15, 40, 0.9);
+    border: 1px solid rgba(0, 115, 230, 0.3);
+    border-radius: 10px;
+    padding: 2rem;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.notification-content p {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: #e0e0e0;
+}
+
+.notification-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* Screen reader only class */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Fallback styles for older browsers */
+@supports not (backdrop-filter: blur(5px)) {
+    .navbar, .quiz-card, .loading-indicator, .progress-notification {
+        background-color: rgba(0, 0, 0, 0.9) !important;
+    }
+}
+
+/* Focus styles for accessibility */
+a:focus, button:focus, .option:focus {
+    outline: 2px solid #00ffff;
+    outline-offset: 2px;
+}
+
+/* Focus visible only when using keyboard */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+.option:focus:not(:focus-visible) {
+    outline: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+.option:focus-visible {
+    outline: 2px solid #00ffff;
+    outline-offset: 2px;
+}
+
+/* Helper classes for lazy loading */
+.lazy-load {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.lazy-load.loaded {
+    opacity: 1;
+}
+
+/* Responsive navigation improvements */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        background: rgba(0, 10, 30, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        padding: 1rem;
+        max-height: calc(100vh - 76px);
+        overflow-y: auto;
+    }
+
+    .navbar-toggler {
+        border: none;
+        padding: 0.5rem;
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: none;
+        outline: 2px solid rgba(0, 255, 255, 0.5);
+    }
+}
+
+/* Improve form inputs for touch devices */
+input, button, select, textarea {
+    font-size: 16px !important; /* Prevents iOS zoom */
+}
+
+/* RTL language support */
+html[dir="rtl"] .result-image {
+    margin-right: 0;
+    margin-left: 1.5rem;
+}
+
+html[dir="rtl"] .option-checkmark {
+    right: auto;
+    left: 15px;
+}
+
+html[dir="rtl"] .option-text {
+    padding-right: 0;
+    padding-left: 30px;
+}
+
+html[dir="rtl"] .match-label {
+    margin-right: 0;
+    margin-left: 1rem;
+}
+
+html[dir="rtl"] .match-percentage {
+    margin-left: 0;
+    margin-right: 1rem;
+}
+
+/* Responsive Design - Tablet */
+@media (min-width: 768px) and (max-width: 991px) {
     .quiz-container {
-        padding: 1.5rem;
+        padding: 2rem;
     }
 
     .quiz-card {
-        padding: 1.5rem;
+        padding: 1.75rem;
+    }
+
+    .welcome-container h1 {
+        font-size: 2.5rem;
+    }
+
+    .navigation-buttons {
+        justify-content: space-between;
+        flex-direction: row;
+    }
+
+    .cta-button {
+        width: auto;
+        margin: 0.5rem;
+    }
+
+    .result-info {
+        flex-direction: row;
+    }
+
+    .progress-step {
+        width: 28px;
+        height: 9px;
+    }
+
+    .progress-step.active {
+        width: 38px;
+    }
+
+    .option {
+        padding: 1rem;
+    }
+
+    .option-text {
+        font-size: 1.05rem;
+    }
+
+    .result-image {
+        width: 110px;
+        height: 110px;
+    }
+}
+
+/* Responsive Design - Mobile */
+@media (max-width: 767px) {
+    .quiz-container {
+        padding: 1.25rem;
+    }
+
+    .quiz-card {
+        padding: 1.25rem;
     }
 
     .question {
@@ -793,11 +1057,39 @@ footer::before {
         text-align: center;
         margin: 0;
     }
+
+    .progress-step {
+        width: 22px;
+        height: 8px;
+        margin-right: 4px;
+    }
+
+    .progress-step.active {
+        width: 30px;
+    }
+
+    .result-header h2 {
+        font-size: 1.8rem;
+    }
+
+    .result-card h3 {
+        font-size: 1.3rem;
+    }
+
+    .match-label {
+        font-size: 0.8rem;
+    }
+
+    .match-percentage {
+        font-size: 0.9rem;
+        min-width: 40px;
+    }
 }
 
+/* Small phones specific optimizations */
 @media (max-width: 480px) {
     .quiz-card h2 {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
     }
 
     .start-button {
@@ -810,6 +1102,530 @@ footer::before {
     }
 
     .result-header h2 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+    }
+
+    .result-image {
+        width: 100px;
+        height: 100px;
+    }
+
+    .social-share {
+        gap: 0.75rem;
+    }
+
+    .social-share a {
+        width: 36px;
+        height: 36px;
+        line-height: 36px;
+        font-size: 1.1rem;
+    }
+
+    .option-text {
+        font-size: 0.95rem;
+    }
+
+    .question {
+        font-size: 1.1rem;
+    }
+
+    .navbar-brand img {
+        height: 40px;
+    }
+
+    .quiz-progress {
+        margin-bottom: 1.5rem;
+    }
+
+    .progress-step {
+        width: 18px;
+        height: 7px;
+        margin-right: 3px;
+    }
+
+    .progress-step.active {
+        width: 25px;
+    }
+
+    .result-title {
+        font-size: 1.2rem;
+    }
+
+    .result-text {
+        font-size: 0.9rem;
     }
 }
+
+/* Landscape mode optimizations */
+@media (max-height: 600px) and (orientation: landscape) {
+    .welcome-container {
+        padding: 1rem;
+    }
+
+    .welcome-container h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .welcome-container p {
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .welcome-graphic {
+        margin-top: 1.5rem;
+    }
+
+    .welcome-f1-car {
+        height: 80px;
+    }
+
+    .quiz-card {
+        padding: 1rem;
+    }
+
+    .quiz-card h2 {
+        margin-bottom: 1rem;
+    }
+
+    .quiz-progress {
+        margin-bottom: 1rem;
+        padding-bottom: 5px;
+    }
+
+    .option {
+        padding: 0.7rem;
+    }
+
+    .options-container {
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .navigation-buttons {
+        margin-top: 1.5rem;
+        flex-direction: row;
+        gap: 0.75rem;
+    }
+
+    .cta-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+    /* Fix for fixed position elements */
+    .navbar {
+        position: fixed !important;
+    }
+
+    /* Fix for border radius overflow issues */
+    .option, .result-card, .quiz-card {
+        -webkit-mask-image: -webkit-radial-gradient(white, black);
+    }
+
+    /* Fix for button rendering */
+    .cta-button, .start-button {
+        -webkit-appearance: none;
+    }
+
+    /* Fix for smooth scrolling */
+    html {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+    .quiz-card {
+        background: rgba(0, 5, 15, 0.8);
+    }
+
+    .option {
+        background: rgba(0, 10, 25, 0.7);
+    }
+
+    .option:hover, .option:active {
+        background: rgba(0, 115, 230, 0.25);
+    }
+
+    .option.selected {
+        background: rgba(0, 115, 230, 0.35);
+    }
+
+    .result-card {
+        background: rgba(0, 10, 25, 0.8);
+    }
+
+    .loading-indicator {
+        background: rgba(0, 5, 15, 0.9);
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: more) {
+    body {
+        color: #ffffff;
+    }
+
+    .quiz-card, .result-card {
+        border: 2px solid rgba(0, 200, 255, 0.5);
+    }
+
+    .option {
+        border: 2px solid rgba(0, 200, 255, 0.3);
+    }
+
+    .option.selected {
+        border: 2px solid #00ffff;
+    }
+
+    .cta-button, .start-button {
+        background: #0073e6;
+        color: #ffffff;
+    }
+
+    .match-value {
+        background: #0073e6;
+    }
+
+    .result-title, .question, .quiz-card h2, .result-header h2 {
+        color: #ffffff;
+    }
+}
+
+/* Reduce animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001s !important;
+        animation-delay: 0s !important;
+        transition-duration: 0.001s !important;
+    }
+
+    .background {
+        background: linear-gradient(135deg, #003366, #0073e6);
+        animation: none;
+    }
+
+    .streak {
+        display: none;
+    }
+
+    .welcome-f1-car {
+        animation: none;
+    }
+
+    .quiz-card::before {
+        background: #0073e6;
+        animation: none;
+    }
+
+    .option:hover, .option:active, .option.selected {
+        transform: none;
+    }
+
+    .cta-button:hover, .cta-button:active, .start-button:hover, .start-button:active {
+        transform: none;
+    }
+
+    .result-card:hover {
+        transform: none;
+    }
+
+    .result-card:hover .result-image {
+        transform: none;
+    }
+
+    .social-media a:hover, .social-media a:active, .social-share a:hover, .social-share a:active {
+        transform: none;
+    }
+}
+
+/* Print styles for quiz results */
+@media print {
+    .navbar, .navigation-buttons, .social-share, footer, .restart-container, .background, .streak {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    .quiz-container {
+        padding: 0;
+    }
+
+    .result-container {
+        display: block !important;
+        opacity: 1;
+        transform: none;
+    }
+
+    .result-card {
+        background: white;
+        color: black;
+        border: 1px solid #ccc;
+        box-shadow: none;
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-bottom: 1cm;
+    }
+
+    .result-header h2, .result-card h3, .result-title {
+        color: #0073e6;
+    }
+
+    .result-subtitle, .result-text, .match-label {
+        color: #333;
+    }
+
+    .match-bar {
+        border: 1px solid #ccc;
+    }
+
+    .match-value {
+        background: #0073e6;
+    }
+
+    .match-percentage {
+        color: #0073e6;
+    }
+
+    .driver-team {
+        color: #0073e6;
+        background: #f0f0f0;
+    }
+
+    a[href]::after {
+        content: " (" attr(href) ")";
+    }
+}
+
+/* Battery saving dark mode */
+@media (prefers-color-scheme: dark) and (max-width: 768px) {
+    .background {
+        opacity: 0.7;
+    }
+
+    .streak {
+        opacity: 0.5;
+    }
+}
+
+/* Fix for various mobile issues */
+@media (max-width: 360px) {
+    .welcome-container h1 {
+        font-size: 1.8rem;
+    }
+
+    .quiz-container {
+        padding: 1rem;
+    }
+
+    .quiz-card {
+        padding: 1rem;
+    }
+
+    .question {
+        font-size: 1rem;
+    }
+
+    .option {
+        padding: 0.7rem;
+    }
+
+    .option-text {
+        font-size: 0.9rem;
+    }
+
+    .notification-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .notification-buttons .cta-button {
+        width: 100%;
+    }
+}
+
+/* Safari specific fixes */
+@media not all and (min-resolution:.001dpcm) {
+    @supports (-webkit-appearance:none) {
+        .quiz-card, .result-card {
+            -webkit-transform: translateZ(0);
+        }
+
+        .welcome-f1-car {
+            -webkit-transform: translateZ(0);
+        }
+    }
+}
+
+/* Adjust for notched phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    footer {
+        padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+    }
+
+    .offline-notification {
+        bottom: calc(20px + env(safe-area-inset-bottom));
+    }
+}
+
+/* Improved focus outline for keyboard users */
+:focus-visible {
+    outline: 3px solid #00ffff !important;
+    outline-offset: 3px !important;
+    border-radius: 5px;
+}
+
+/* Only show focus outline for keyboard navigation, not mouse clicks */
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+.option:focus:not(:focus-visible) {
+    outline: none !important;
+}
+
+/* Fix styling for buttons to ensure touch areas are large enough */
+.navigation-buttons .cta-button {
+    min-height: 44px; /* Apple recommends 44px minimum tap target size */
+}
+
+/* Making options more tappable on mobile */
+@media (max-width: 767px) {
+    .option {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+}
+
+/* Add clear navigation cues for touchscreen users */
+.option::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(0, 115, 230, 0.2) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.option:active::after {
+    opacity: 1;
+}
+
+/* Custom scrollbar for browsers that support it */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 115, 230, 0.5);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 115, 230, 0.8);
+}
+
+/* Smooth transitions between quiz sections */
+.quiz-card, .result-container, .welcome-container {
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Optimize the navbar for better readability */
+.navbar .nav-link {
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.navbar .nav-link.active {
+    color: #00ffff !important;
+    font-weight: 700;
+}
+
+/* Enhanced readability for text */
+.result-text, .welcome-container p, .option-text {
+    letter-spacing: 0.2px;
+}
+
+/* Improved quiz option selection feedback */
+.option.selected::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(to bottom, #0073e6, #00ffff);
+    border-radius: 2px 0 0 2px;
+}
+
+/* Better cursor feedback */
+.option, .cta-button, .start-button, .social-share a, .social-media a {
+    cursor: pointer;
+}
+
+body.drag-scroll {
+    cursor: grabbing;
+}
+
+/* Reset button styling to be consistent */
+button {
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+}
+
+/* Ensure fluid typography scaling */
+html {
+    font-size: 16px;
+}
+
+@media (min-width: 1400px) {
+    html {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 767px) {
+    html {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 400px) {
+    html {
+        font-size: 14px;
+    }
+}
+
+/* Optimize for ultra-wide displays */
+@media (min-width: 2000px) {
+    .quiz-container {
+        max-width: 1000px;
+    }
+
+    .result-image {
+        width: 150px;
+        height: 150px;
+    }
+}
+
+/* End of styles.css */
