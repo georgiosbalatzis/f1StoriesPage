@@ -1629,3 +1629,268 @@ html {
 }
 
 /* End of styles.css */
+
+/* Driver Ranking Button Styles */
+.rank-button {
+    display: inline-block;
+    background: linear-gradient(45deg, #0073e6, #003366);
+    color: white;
+    border: none;
+    padding: 0.9rem 2rem;
+    font-size: 1.15rem;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    margin-top: 1rem;
+    opacity: 0;
+    animation: fadeInUp 1s ease forwards;
+    animation-delay: 0.6s;
+}
+
+.rank-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.7s ease;
+}
+
+.rank-button:hover, .rank-button:active {
+    background: linear-gradient(45deg, #005bb5, #002a4f);
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 15px 40px rgba(0, 115, 230, 0.4);
+}
+
+.rank-button:hover::before {
+    left: 100%;
+}
+
+/* Driver Ranking Section Styles */
+#driver-ranking-section {
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(0, 10, 25, 0.5);
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(0, 115, 230, 0.2);
+    max-width: 800px;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.section-description {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    color: #e0e0e0;
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#ranking-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.driver-ranking-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem 0;
+}
+
+.driver-item {
+    background: rgba(0, 15, 40, 0.7);
+    border: 1px solid rgba(0, 115, 230, 0.2);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    cursor: grab;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.driver-item:hover {
+    background: rgba(0, 115, 230, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.driver-item:active {
+    cursor: grabbing;
+}
+
+.driver-item.sortable-ghost {
+    opacity: 0.4;
+    background: rgba(0, 200, 255, 0.3);
+}
+
+.driver-item.sortable-chosen {
+    background: rgba(0, 115, 230, 0.3);
+    border-color: #00ffff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.driver-number {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 115, 230, 0.2);
+    border-radius: 50%;
+    font-weight: bold;
+    margin-right: 10px;
+    color: #00ffff;
+}
+
+.driver-drag-handle {
+    color: #0073e6;
+    margin-right: 12px;
+    opacity: 0.7;
+}
+
+.driver-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.driver-name {
+    font-weight: bold;
+    color: #e0e0e0;
+}
+
+.driver-team {
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+.ranking-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+#results-chart-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.chart-wrapper {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    height: 600px;
+    width: 100%;
+}
+
+.chart-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* Animation for transitions */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Handle mobile responsiveness */
+@media (max-width: 767px) {
+    .driver-info {
+        font-size: 0.9rem;
+    }
+
+    .driver-item {
+        padding: 0.6rem 0.75rem;
+    }
+
+    .driver-number {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+    }
+
+    .chart-wrapper {
+        height: 500px;
+        padding: 1rem;
+    }
+
+    .ranking-actions button, .chart-actions button {
+        flex: 1 0 40%;
+        margin: 0.25rem;
+    }
+
+    #driver-ranking-section {
+        padding: 1rem;
+    }
+
+    .rank-button, .start-button {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}
+
+/* Animation for chart appearance */
+@keyframes chartFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#results-chart-container.show-chart {
+    display: block;
+    animation: chartFadeIn 0.5s ease forwards;
+}
+
+/* Shake animation for button */
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+.shake-animation {
+    animation: shake 0.5s ease-in-out;
+}

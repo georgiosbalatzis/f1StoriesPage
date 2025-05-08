@@ -58,7 +58,203 @@
         <div class="welcome-graphic">
             <img src="https://api.placeholder.com/400/200" alt="F1 Car" class="welcome-f1-car" width="300" height="150">
         </div>
+        <button id="rank-drivers-btn" class="rank-button">
+            <i class="fas fa-sort-amount-down me-2"></i>Rank the F1 Drivers
+        </button>
     </div>
+
+    <!-- F1 Driver Ranking Section (Hidden Initially) -->
+    <section id="driver-ranking-section" class="quiz-section" style="display:none;">
+        <div class="section-header">
+            <h2>Rank the F1 Drivers by Pure Skill</h2>
+            <p class="section-description">If all F1 drivers had the same car, how would you rank them by pure driving skill? Drag to reorder the list, with your #1 pick at the top.</p>
+        </div>
+
+        <div id="ranking-container">
+            <ul id="sortable-drivers" class="driver-ranking-list">
+                <!-- Current 2025 F1 drivers -->
+                <li class="driver-item" data-driver-id="VER">
+                    <div class="driver-number">1</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Max Verstappen</span>
+                        <span class="driver-team">Red Bull Racing</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="PER">
+                    <div class="driver-number">2</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Sergio Perez</span>
+                        <span class="driver-team">Red Bull Racing</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="LEC">
+                    <div class="driver-number">3</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Charles Leclerc</span>
+                        <span class="driver-team">Ferrari</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="HAM">
+                    <div class="driver-number">4</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Lewis Hamilton</span>
+                        <span class="driver-team">Ferrari</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="NOR">
+                    <div class="driver-number">5</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Lando Norris</span>
+                        <span class="driver-team">McLaren</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="PIA">
+                    <div class="driver-number">6</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Oscar Piastri</span>
+                        <span class="driver-team">McLaren</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="RUS">
+                    <div class="driver-number">7</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">George Russell</span>
+                        <span class="driver-team">Mercedes</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="ANT">
+                    <div class="driver-number">8</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Andrea Kimi Antonelli</span>
+                        <span class="driver-team">Mercedes</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="SAI">
+                    <div class="driver-number">9</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Carlos Sainz</span>
+                        <span class="driver-team">Williams</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="ALB">
+                    <div class="driver-number">10</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Alexander Albon</span>
+                        <span class="driver-team">Williams</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="ALO">
+                    <div class="driver-number">11</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Fernando Alonso</span>
+                        <span class="driver-team">Aston Martin</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="STR">
+                    <div class="driver-number">12</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Lance Stroll</span>
+                        <span class="driver-team">Aston Martin</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="GAS">
+                    <div class="driver-number">13</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Pierre Gasly</span>
+                        <span class="driver-team">Alpine</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="COL">
+                    <div class="driver-number">14</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Franco Colapinto</span>
+                        <span class="driver-team">Alpine</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="HUL">
+                    <div class="driver-number">15</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Nico Hulkenberg</span>
+                        <span class="driver-team">Sauber</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="BOR">
+                    <div class="driver-number">16</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Gabriel Bortoleto</span>
+                        <span class="driver-team">Sauber</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="OCO">
+                    <div class="driver-number">17</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Esteban Ocon</span>
+                        <span class="driver-team">Haas</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="BEA">
+                    <div class="driver-number">18</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Oliver Bearman</span>
+                        <span class="driver-team">Haas</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="TSU">
+                    <div class="driver-number">19</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Yuki Tsunoda</span>
+                        <span class="driver-team">Racing Bulls</span>
+                    </div>
+                </li>
+                <li class="driver-item" data-driver-id="LAW">
+                    <div class="driver-number">20</div>
+                    <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+                    <div class="driver-info">
+                        <span class="driver-name">Liam Lawson</span>
+                        <span class="driver-team">Racing Bulls</span>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="ranking-actions">
+                <button id="submit-ranking" class="cta-button">Submit Ranking</button>
+                <button id="reset-ranking" class="cta-button btn-prev">Reset Order</button>
+                <button id="back-to-home" class="cta-button btn-prev">Back to Home</button>
+            </div>
+        </div>
+
+        <div id="results-chart-container" style="display: none;">
+            <h3>Your Driver Skill Ranking</h3>
+            <div class="chart-wrapper">
+                <canvas id="drivers-chart"></canvas>
+            </div>
+            <div class="chart-actions">
+                <button id="back-to-ranking" class="cta-button btn-prev">Adjust Ranking</button>
+                <button id="share-ranking" class="cta-button">Share Your Ranking</button>
+                <button id="chart-to-home" class="cta-button btn-prev">Back to Home</button>
+            </div>
+        </div>
+    </section>
+
 
     <!-- Quiz Card -->
     <div id="quiz-card" class="quiz-card" style="display:none;">
@@ -137,7 +333,6 @@
         </div>
     </div>
 </div>
-
 <!-- Footer -->
 <footer>
     <div class="container">
@@ -156,5 +351,462 @@
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
 <script src="f1-quiz.js" defer></script>
+
+<!-- Load external libraries from CDNs -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- Driver Ranking Script -->
+<script>
+    // Wait for the DOM to be fully loaded before initializing
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cache DOM elements
+        const rankDriversBtn = document.getElementById('rank-drivers-btn');
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const quizCard = document.getElementById('quiz-card');
+        const driverRankingSection = document.getElementById('driver-ranking-section');
+        const driversList = document.getElementById('sortable-drivers');
+        const submitButton = document.getElementById('submit-ranking');
+        const resetButton = document.getElementById('reset-ranking');
+        const backButton = document.getElementById('back-to-ranking');
+        const backToHomeBtn = document.getElementById('back-to-home');
+        const chartToHomeBtn = document.getElementById('chart-to-home');
+        const shareButton = document.getElementById('share-ranking');
+        const rankingContainer = document.getElementById('ranking-container');
+        const resultsContainer = document.getElementById('results-chart-container');
+        const chartCanvas = document.getElementById('drivers-chart');
+
+        // Store original order for reset functionality
+        // Update these IDs in your originalOrder initialization
+        const originalOrder = Array.from(driversList.children).map(item => item.dataset.driverId);
+
+        // Track if user has interacted with the list
+        let hasRanked = false;
+
+        // Initialize Sortable.js on the drivers list
+        const sortable = new Sortable(driversList, {
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            dragClass: 'sortable-drag',
+            handle: '.driver-drag-handle',
+            onEnd: function() {
+                hasRanked = true;
+                updateNumbers();
+            }
+        });
+
+        // Update the numbers shown beside each driver based on current order
+        function updateNumbers() {
+            const items = driversList.querySelectorAll('.driver-item');
+            items.forEach((item, index) => {
+                const numberElement = item.querySelector('.driver-number');
+                numberElement.textContent = index + 1;
+            });
+        }
+
+        // Show driver ranking section, hide welcome screen
+        rankDriversBtn.addEventListener('click', function() {
+            // Hide welcome screen and any quiz elements
+            welcomeScreen.style.display = 'none';
+            if (quizCard) quizCard.style.display = 'none';
+
+            // Show driver ranking section
+            driverRankingSection.style.display = 'block';
+
+            // If there's a saved ranking, load it
+            loadSavedRanking();
+
+            // Scroll to the ranking section
+            driverRankingSection.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Reset the list to its original order
+        resetButton.addEventListener('click', function() {
+            // Clear the list
+            driversList.innerHTML = '';
+
+            // Rebuild the driver list from scratch in the original order
+            originalOrder.forEach((driverId, index) => {
+                // Find driver info for this ID
+                const driverInfo = getDriverInfo(driverId);
+
+                // Create a new driver item
+                const driverItem = document.createElement('li');
+                driverItem.className = 'driver-item';
+                driverItem.dataset.driverId = driverId;
+
+                driverItem.innerHTML = `
+            <div class="driver-number">${index + 1}</div>
+            <div class="driver-drag-handle"><i class="fas fa-grip-lines"></i></div>
+            <div class="driver-info">
+                <span class="driver-name">${driverInfo.name}</span>
+                <span class="driver-team">${driverInfo.team}</span>
+            </div>
+        `;
+
+                // Add to the list
+                driversList.appendChild(driverItem);
+            });
+
+            // Reset the tracking variable
+            hasRanked = false;
+        });
+
+        // Helper function to get driver info by ID
+        function getDriverInfo(driverId) {
+            // Define driver info map
+            const driverInfoMap = {
+                'VER': { name: 'Max Verstappen', team: 'Red Bull Racing' },
+                'PER': { name: 'Sergio Perez', team: 'Red Bull Racing' },
+                'LEC': { name: 'Charles Leclerc', team: 'Ferrari' },
+                'HAM': { name: 'Lewis Hamilton', team: 'Ferrari' },
+                'NOR': { name: 'Lando Norris', team: 'McLaren' },
+                'PIA': { name: 'Oscar Piastri', team: 'McLaren' },
+                'RUS': { name: 'George Russell', team: 'Mercedes' },
+                'ANT': { name: 'Andrea Kimi Antonelli', team: 'Mercedes' },
+                'SAI': { name: 'Carlos Sainz', team: 'Williams' },
+                'ALB': { name: 'Alexander Albon', team: 'Williams' },
+                'ALO': { name: 'Fernando Alonso', team: 'Aston Martin' },
+                'STR': { name: 'Lance Stroll', team: 'Aston Martin' },
+                'GAS': { name: 'Pierre Gasly', team: 'Alpine' },
+                'COL': { name: 'Franco Colapinto', team: 'Alpine' }, // Changed from DOO/Jack Doohan
+                'HUL': { name: 'Nico Hulkenberg', team: 'Sauber' },
+                'BOR': { name: 'Gabriel Bortoleto', team: 'Sauber' }, // Changed from BOT/Valtteri Bottas
+                'OCO': { name: 'Esteban Ocon', team: 'Haas' },
+                'BEA': { name: 'Oliver Bearman', team: 'Haas' },
+                'TSU': { name: 'Yuki Tsunoda', team: 'Racing Bulls' },
+                'LAW': { name: 'Liam Lawson', team: 'Racing Bulls' }
+            };
+
+            return driverInfoMap[driverId] || { name: 'Unknown Driver', team: 'Unknown Team' };
+        }
+
+        // Handle submission of rankings
+        submitButton.addEventListener('click', function() {
+            if (!hasRanked) {
+                // If user hasn't changed the order, encourage them to rank
+                submitButton.classList.add('shake-animation');
+                setTimeout(() => submitButton.classList.remove('shake-animation'), 500);
+
+                // Change button text as a hint
+                submitButton.textContent = "Please rank drivers first!";
+                setTimeout(() => submitButton.textContent = "Submit Ranking", 2000);
+                return;
+            }
+
+            // Hide ranking container and show results
+            rankingContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
+            resultsContainer.classList.add('show-chart');
+
+            // Get the current order of drivers
+            const currentRanking = Array.from(driversList.querySelectorAll('.driver-item')).map(item => {
+                return {
+                    id: item.dataset.driverId,
+                    name: item.querySelector('.driver-name').textContent,
+                    team: item.querySelector('.driver-team').textContent,
+                    rank: parseInt(item.querySelector('.driver-number').textContent)
+                };
+            });
+
+            // Generate the chart
+            createChart(currentRanking);
+
+            // Save to localStorage for persistence
+            localStorage.setItem('f1DriverRanking', JSON.stringify(currentRanking));
+        });
+
+        // Go back to ranking from results
+        backButton.addEventListener('click', function() {
+            resultsContainer.classList.remove('show-chart');
+            setTimeout(() => {
+                resultsContainer.style.display = 'none';
+                rankingContainer.style.display = 'block';
+            }, 300);
+        });
+
+        // Back to home from ranking
+        backToHomeBtn.addEventListener('click', function() {
+            driverRankingSection.style.display = 'none';
+            welcomeScreen.style.display = 'block';
+        });
+
+        // Back to home from chart
+        chartToHomeBtn.addEventListener('click', function() {
+            driverRankingSection.style.display = 'none';
+            welcomeScreen.style.display = 'block';
+        });
+
+        // Share ranking functionality
+        shareButton.addEventListener('click', function() {
+            // Get the current ranking
+            const currentRanking = JSON.parse(localStorage.getItem('f1DriverRanking') || '[]');
+
+            // Create a shareable text
+            let shareText = "My F1 Driver Skill Ranking:\n\n";
+            currentRanking.slice(0, 10).forEach(driver => {
+                shareText += `${driver.rank}. ${driver.name} (${driver.team})\n`;
+            });
+
+            // Add a link to the quiz
+            shareText += "\nCreate your own ranking: " + window.location.href;
+
+            // Try to use the Web Share API if available
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My F1 Driver Skill Ranking',
+                    text: shareText
+                }).catch(err => {
+                    console.error('Error sharing:', err);
+                    // Fallback to clipboard
+                    copyToClipboard(shareText);
+                });
+            } else {
+                // Fallback to clipboard
+                copyToClipboard(shareText);
+            }
+        });
+
+        // Helper function to copy text to clipboard
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            try {
+                document.execCommand('copy');
+                alert('Ranking copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy text:', err);
+                alert('Could not copy ranking. Please try again.');
+            }
+
+            document.body.removeChild(textarea);
+        }
+
+        // Load saved ranking from localStorage
+        function loadSavedRanking() {
+            const savedRanking = localStorage.getItem('f1DriverRanking');
+            if (savedRanking) {
+                const ranking = JSON.parse(savedRanking);
+
+                // If we have a previous ranking, apply it
+                if (ranking.length > 0) {
+                    // Sort the list according to saved ranks
+                    ranking.sort((a, b) => a.rank - b.rank);
+
+                    // Get current items
+                    const items = Array.from(driversList.querySelectorAll('.driver-item'));
+
+                    // Remove all items
+                    while (driversList.firstChild) {
+                        driversList.removeChild(driversList.firstChild);
+                    }
+
+                    // Add items in saved order
+                    ranking.forEach(driver => {
+                        const matchingItem = items.find(item => item.dataset.driverId === driver.id);
+                        if (matchingItem) {
+                            driversList.appendChild(matchingItem);
+                        }
+                    });
+
+                    // Update numbers
+                    updateNumbers();
+                    hasRanked = true;
+                }
+            }
+        }
+
+        // Create the Chart.js visualization
+        function createChart(ranking) {
+            // Sort by rank (ascending)
+            ranking.sort((a, b) => a.rank - b.rank);
+
+            // Prepare data for chart
+            const driverNames = ranking.map(d => d.name);
+            const driverTeams = ranking.map(d => d.team);
+
+            // Calculate scores (inverse of rank)
+            // The highest ranked driver (rank 1) gets 100 points, the lowest gets 5
+            const maxScore = 100;
+            const minScore = 5;
+            const range = maxScore - minScore;
+            const scoreStep = range / (ranking.length - 1);
+
+            const scores = ranking.map((driver, index) => maxScore - (index * scoreStep));
+
+            // Generate team-specific colors
+            const teamColors = {
+                'Red Bull Racing': 'rgba(6, 0, 239, 0.8)',
+                'Ferrari': 'rgba(220, 0, 0, 0.8)',
+                'Mercedes': 'rgba(0, 210, 190, 0.8)',
+                'McLaren': 'rgba(255, 135, 0, 0.8)',
+                'Williams': 'rgba(0, 90, 255, 0.8)',
+                'Aston Martin': 'rgba(0, 111, 98, 0.8)',
+                'Alpine': 'rgba(0, 144, 255, 0.8)',
+                'Sauber': 'rgba(135, 206, 235, 0.8)',
+                'Haas': 'rgba(180, 180, 180, 0.8)',
+                'Racing Bulls': 'rgba(69, 10, 115, 0.8)'
+            };
+
+            const barColors = ranking.map(d => teamColors[d.team] || 'rgba(100, 100, 100, 0.8)');
+
+            // Check if there's an existing chart and destroy it
+            if (window.driverChart) {
+                window.driverChart.destroy();
+            }
+
+            // Create a new chart
+            window.driverChart = new Chart(chartCanvas, {
+                type: 'bar',
+                data: {
+                    labels: driverNames,
+                    datasets: [{
+                        label: 'Driver Skill Rating',
+                        data: scores,
+                        backgroundColor: barColors,
+                        borderColor: barColors.map(color => color.replace('0.8', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // horizontal bar chart
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return tooltipItems[0].label;
+                                },
+                                label: function(context) {
+                                    const index = context.dataIndex;
+                                    return [`Team: ${driverTeams[index]}`, `Rank: #${ranking[index].rank}`];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: maxScore + 10,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.9)',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        // Check for mobile devices and adjust chart height if necessary
+        function adjustForMobile() {
+            const isMobile = window.innerWidth < 768;
+            const chartWrapper = document.querySelector('.chart-wrapper');
+
+            if (chartWrapper) {
+                chartWrapper.style.height = isMobile ? '500px' : '600px';
+            }
+
+            // Adjust button styles for mobile
+            const actionButtons = document.querySelectorAll('.ranking-actions button, .chart-actions button');
+            if (isMobile) {
+                actionButtons.forEach(button => {
+                    button.style.width = 'calc(50% - 0.5rem)';
+                    button.style.margin = '0.25rem';
+                });
+            } else {
+                actionButtons.forEach(button => {
+                    button.style.width = 'auto';
+                    button.style.margin = '0.5rem';
+                });
+            }
+        }
+
+        // Call adjust function on load and resize
+        window.addEventListener('load', adjustForMobile);
+        window.addEventListener('resize', adjustForMobile);
+
+        // Check if the result section should be shown directly
+        // (e.g., if the user has just completed the ranking and refreshed the page)
+        function checkDirectResultView() {
+            // Check URL param for direct result view
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('showResults') && urlParams.get('showResults') === 'true') {
+                // Show ranking section
+                driverRankingSection.style.display = 'block';
+                // Hide the welcome screen
+                welcomeScreen.style.display = 'none';
+                if (quizCard) quizCard.style.display = 'none';
+
+                // Load saved ranking
+                const savedRanking = localStorage.getItem('f1DriverRanking');
+                if (savedRanking) {
+                    const ranking = JSON.parse(savedRanking);
+
+                    // Show results immediately
+                    rankingContainer.style.display = 'none';
+                    resultsContainer.style.display = 'block';
+                    resultsContainer.classList.add('show-chart');
+
+                    // Create chart
+                    createChart(ranking);
+                }
+            }
+        }
+
+        // Check for direct result view on page load
+        checkDirectResultView();
+
+        // Add hash navigation support
+        window.addEventListener('hashchange', function() {
+            if (window.location.hash === '#ranking') {
+                rankDriversBtn.click();
+            } else if (window.location.hash === '#results' && hasRanked) {
+                rankDriversBtn.click();
+                setTimeout(() => {
+                    submitButton.click();
+                }, 500);
+            }
+        });
+
+        // Check for hash on initial load
+        if (window.location.hash === '#ranking') {
+            rankDriversBtn.click();
+        } else if (window.location.hash === '#results') {
+            if (localStorage.getItem('f1DriverRanking')) {
+                rankDriversBtn.click();
+                setTimeout(() => {
+                    submitButton.click();
+                }, 500);
+            }
+        }
+    });
+</script>
+
 </body>
 </html>
