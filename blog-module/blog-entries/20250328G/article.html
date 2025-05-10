@@ -591,6 +591,229 @@
     }
   });
 </script>
+<!-- Theme Toggle Button and Functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Create style element for modern theme
+    const modernThemeStyles = document.createElement('style');
+    modernThemeStyles.id = 'modern-theme-styles';
+    modernThemeStyles.textContent = `
+    /* F1 Stories Modern Dark Mode Styles */
+    body.modern-theme {
+      background-color: #0a0e17;
+      color: #f0f0f0;
+    }
+
+    .modern-theme .navbar,
+    .modern-theme .contact-container,
+    .modern-theme .blog-card,
+    .modern-theme .episode-card,
+    .modern-theme .persona,
+    .modern-theme .cookie-banner,
+    .modern-theme .modal-content {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(10, 14, 23, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .modern-theme .background {
+      background: linear-gradient(-45deg, #001a33, #003366, #004080, #001a33);
+      background-size: 400% 400%;
+      animation: gradientAnimation 18s ease infinite;
+      opacity: 0.8;
+    }
+
+    .modern-theme .blog-card:hover,
+    .modern-theme .episode-card:hover,
+    .modern-theme .persona:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+      border-color: rgba(0, 136, 255, 0.2);
+      background: rgba(17, 25, 39, 0.9);
+    }
+
+    .modern-theme h1 {
+      background: linear-gradient(135deg, #0088ff, #00ddff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    .modern-theme .cta-button {
+      background: linear-gradient(135deg, #0088ff, #00ddff);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .modern-theme .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+  `;
+    document.head.appendChild(modernThemeStyles);
+
+    // Create style element for toggle button
+    const toggleStyles = document.createElement('style');
+    toggleStyles.id = 'theme-toggle-styles';
+    toggleStyles.textContent = `
+    #theme-toggle-container {
+      position: fixed;
+      top: 90px;
+      right: 20px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      background: rgba(10, 14, 23, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 50px;
+      padding: 6px 16px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #theme-toggle-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      width: 48px;
+      height: 28px;
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      padding: 0;
+      outline: none;
+    }
+
+    #toggle-icon {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #0073e6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .modern-active #toggle-icon {
+      left: calc(100% - 26px);
+      background: linear-gradient(135deg, #0088ff, #00ddff);
+    }
+
+    #toggle-icon .fa-sun {
+      color: white;
+      font-size: 14px;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    #toggle-icon .fa-moon {
+      color: white;
+      font-size: 14px;
+      opacity: 0;
+      position: absolute;
+      transition: opacity 0.3s ease;
+    }
+
+    .modern-active #toggle-icon .fa-sun {
+      opacity: 0;
+    }
+
+    .modern-active #toggle-icon .fa-moon {
+      opacity: 1;
+    }
+
+    #theme-label {
+      margin-left: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #e0e0e0;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 767.98px) {
+      #theme-toggle-container {
+        top: auto;
+        bottom: 20px;
+        right: auto;
+        left: 20px;
+        padding: 8px;
+        border-radius: 50%;
+      }
+
+      #theme-label {
+        display: none;
+      }
+
+      #theme-toggle-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+      }
+
+      #toggle-icon {
+        top: 8px;
+        left: 8px;
+      }
+
+      .modern-active #toggle-icon {
+        left: 8px;
+      }
+    }
+  `;
+    document.head.appendChild(toggleStyles);
+
+    // Create toggle button HTML
+    const toggleContainer = document.createElement('div');
+    toggleContainer.id = 'theme-toggle-container';
+    toggleContainer.innerHTML = `
+    <button id="theme-toggle-btn">
+      <div id="toggle-icon">
+        <i class="fas fa-sun"></i>
+        <i class="fas fa-moon"></i>
+      </div>
+    </button>
+    <span id="theme-label">Original Theme</span>
+  `;
+    document.body.appendChild(toggleContainer);
+
+    // Initialize from saved preference
+    const savedTheme = localStorage.getItem('f1stories-theme');
+    if (savedTheme === 'modern') {
+      enableModernTheme();
+    }
+
+    // Add click event
+    document.getElementById('theme-toggle-btn').addEventListener('click', function() {
+      if (document.body.classList.contains('modern-theme')) {
+        disableModernTheme();
+        localStorage.setItem('f1stories-theme', 'original');
+      } else {
+        enableModernTheme();
+        localStorage.setItem('f1stories-theme', 'modern');
+      }
+    });
+
+    // Enable modern theme
+    function enableModernTheme() {
+      document.body.classList.add('modern-theme');
+      document.getElementById('theme-toggle-container').classList.add('modern-active');
+      document.getElementById('theme-label').textContent = 'Modern Theme';
+    }
+
+    // Disable modern theme
+    function disableModernTheme() {
+      document.body.classList.remove('modern-theme');
+      document.getElementById('theme-toggle-container').classList.remove('modern-active');
+      document.getElementById('theme-label').textContent = 'Original Theme';
+    }
+  });
+</script>
 
     <script>
     // Debug helper for images
