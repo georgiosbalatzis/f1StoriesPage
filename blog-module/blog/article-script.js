@@ -1088,3 +1088,136 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+/**
+ * Implements a scroll progress bar for articles
+ * Adds a bar below the navbar that fills as the user scrolls through the article
+ */
+function initScrollProgressBar() {
+    // First check if we're on an article page by looking for article-content element
+    const articleContent = document.querySelector('.article-content');
+    if (!articleContent) return;
+
+    // Create the scroll progress container and bar
+    const progressContainer = document.createElement('div');
+    progressContainer.className = 'scroll-progress-container';
+
+    const progressBar = document.createElement('div');
+    progressBar.className = 'scroll-progress-bar';
+
+    // Add the elements to the DOM
+    progressContainer.appendChild(progressBar);
+    document.body.appendChild(progressContainer);
+
+    // Function to calculate and update scroll progress
+    function updateScrollProgress() {
+        // Calculate how far down the page the user has scrolled
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+
+        // Calculate scroll percentage, accounting for the window height
+        const scrollableHeight = documentHeight - windowHeight;
+        const scrollPercentage = (scrollTop / scrollableHeight) * 100;
+
+        // Update the progress bar width
+        progressBar.style.width = `${Math.min(scrollPercentage, 100)}%`;
+
+        // Add a class when the scroll is complete
+        if (scrollPercentage >= 99.5) {
+            progressBar.classList.add('scroll-complete');
+        } else {
+            progressBar.classList.remove('scroll-complete');
+        }
+    }
+
+    // Add scroll event listener with throttling for performance
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                updateScrollProgress();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+
+    // Initialize the progress bar
+    updateScrollProgress();
+
+    // Update on resize (in case document height changes)
+    window.addEventListener('resize', updateScrollProgress);
+
+    // Add the CSS styles if they don't exist
+    if (!document.getElementById('scroll-progress-styles')) {
+        const style = document.createElement('style');
+        style.id = 'scroll-progress-styles';
+        style.textContent = `
+      /* Scroll Progress Bar Styling */
+      .scroll-progress-container {
+        position: fixed;
+        top: 76px; /* Positioned right below the navbar */
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        overflow: hidden;
+      }
+      
+      .scroll-progress-bar {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--ctp-blue, #89b4fa), var(--ctp-sky, #89dceb));
+        transition: width 0.1s ease; /* Smooth animation as scrolling occurs */
+        box-shadow: 0 0 10px rgba(137, 180, 250, 0.3);
+      }
+      
+      /* Style variations for light mode */
+      body:not(.dark-theme) .scroll-progress-bar {
+        background: linear-gradient(90deg, #0073e6, #00c6ff);
+      }
+      
+      /* Add a subtle glow effect */
+      .scroll-progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        width: 30px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        animation: progressGlow 2s ease-in-out infinite;
+      }
+      
+      @keyframes progressGlow {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(300%); }
+      }
+      
+      /* Add a style for completed scrolling */
+      .scroll-progress-bar.scroll-complete {
+        box-shadow: 0 0 15px rgba(137, 220, 235, 0.5);
+      }
+      
+      /* Responsive adjustments */
+      @media (max-width: 991.98px) {
+        .scroll-progress-container {
+          top: 70px; /* Adjust for smaller navbar on tablets */
+        }
+      }
+      
+      @media (max-width: 767.98px) {
+        .scroll-progress-container {
+          top: 65px; /* Further adjust for mobile */
+          height: 3px;
+        }
+      }
+    `;
+        document.head.appendChild(style);
+    }
+}
+
+// Initialize scroll progress bar when the DOM is loaded
+document.addEventListener('DOMContentLoaded', initScrollProgressBar);
