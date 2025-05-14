@@ -179,227 +179,650 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Custom JS -->
 <script src="podcast.js"></script>
-
 <!-- Theme Toggle Button and Functionality -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Create style element for modern theme
-        const modernThemeStyles = document.createElement('style');
-        modernThemeStyles.id = 'modern-theme-styles';
-        modernThemeStyles.textContent = `
-    /* F1 Stories Modern Dark Mode Styles */
-    body.modern-theme {
-      background-color: #0a0e17;
-      color: #f0f0f0;
-    }
+        // Create style element for Catppuccin theme CSS variables
+        const catppuccinVariables = document.createElement('style');
+        catppuccinVariables.id = 'catppuccin-variables';
+        catppuccinVariables.textContent = `
+        /* Catppuccin Frappé */
+        .catppuccin-frappe {
+          /* Base colors */
+          --ctp-base: #303446;
+          --ctp-mantle: #292c3c;
+          --ctp-crust: #232634;
 
-    .modern-theme .navbar,
-    .modern-theme .contact-container,
-    .modern-theme .blog-card,
-    .modern-theme .episode-card,
-    .modern-theme .persona,
-    .modern-theme .cookie-banner,
-    .modern-theme .modal-content {
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      background: rgba(10, 14, 23, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-    }
+          /* Text colors */
+          --ctp-text: #c6d0f5;
+          --ctp-subtext1: #b5bfe2;
+          --ctp-subtext0: #a5adce;
 
-    .modern-theme .background {
-      background: linear-gradient(-45deg, #001a33, #003366, #004080, #001a33);
-      background-size: 400% 400%;
-      animation: gradientAnimation 18s ease infinite;
-      opacity: 0.8;
-    }
+          /* Overlay colors */
+          --ctp-overlay2: #949cbb;
+          --ctp-overlay1: #838ba7;
+          --ctp-overlay0: #737994;
 
-    .modern-theme .blog-card:hover,
-    .modern-theme .episode-card:hover,
-    .modern-theme .persona:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
-      border-color: rgba(0, 136, 255, 0.2);
-      background: rgba(17, 25, 39, 0.9);
-    }
+          /* Surface colors */
+          --ctp-surface2: #626880;
+          --ctp-surface1: #51576d;
+          --ctp-surface0: #414559;
 
-    .modern-theme h1 {
-      background: linear-gradient(135deg, #0088ff, #00ddff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-    }
+          /* Accent colors */
+          --ctp-rosewater: #f2d5cf;
+          --ctp-flamingo: #eebebe;
+          --ctp-pink: #f4b8e4;
+          --ctp-mauve: #ca9ee6;
+          --ctp-red: #e78284;
+          --ctp-maroon: #ea999c;
+          --ctp-peach: #ef9f76;
+          --ctp-yellow: #e5c890;
+          --ctp-green: #a6d189;
+          --ctp-teal: #81c8be;
+          --ctp-sky: #99d1db;
+          --ctp-sapphire: #85c1dc;
+          --ctp-blue: #8caaee;
+          --ctp-lavender: #babbf1;
+        }
 
-    .modern-theme .cta-button {
-      background: linear-gradient(135deg, #0088ff, #00ddff);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    }
+        /* Catppuccin Macchiato */
+        .catppuccin-macchiato {
+          /* Base colors */
+          --ctp-base: #24273a;
+          --ctp-mantle: #1e2030;
+          --ctp-crust: #181926;
 
-    .modern-theme .cta-button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-    }
-  `;
-        document.head.appendChild(modernThemeStyles);
+          /* Text colors */
+          --ctp-text: #cad3f5;
+          --ctp-subtext1: #b8c0e0;
+          --ctp-subtext0: #a5adcb;
+
+          /* Overlay colors */
+          --ctp-overlay2: #939ab7;
+          --ctp-overlay1: #8087a2;
+          --ctp-overlay0: #6e738d;
+
+          /* Surface colors */
+          --ctp-surface2: #5b6078;
+          --ctp-surface1: #494d64;
+          --ctp-surface0: #363a4f;
+
+          /* Accent colors */
+          --ctp-rosewater: #f4dbd6;
+          --ctp-flamingo: #f0c6c6;
+          --ctp-pink: #f5bde6;
+          --ctp-mauve: #c6a0f6;
+          --ctp-red: #ed8796;
+          --ctp-maroon: #ee99a0;
+          --ctp-peach: #f5a97f;
+          --ctp-yellow: #eed49f;
+          --ctp-green: #a6da95;
+          --ctp-teal: #8bd5ca;
+          --ctp-sky: #91d7e3;
+          --ctp-sapphire: #7dc4e4;
+          --ctp-blue: #8aadf4;
+          --ctp-lavender: #b7bdf8;
+        }
+
+        /* Catppuccin Mocha */
+        .catppuccin-mocha {
+          /* Base colors */
+          --ctp-base: #1e1e2e;
+          --ctp-mantle: #181825;
+          --ctp-crust: #11111b;
+
+          /* Text colors */
+          --ctp-text: #cdd6f4;
+          --ctp-subtext1: #bac2de;
+          --ctp-subtext0: #a6adc8;
+
+          /* Overlay colors */
+          --ctp-overlay2: #9399b2;
+          --ctp-overlay1: #7f849c;
+          --ctp-overlay0: #6c7086;
+
+          /* Surface colors */
+          --ctp-surface2: #585b70;
+          --ctp-surface1: #45475a;
+          --ctp-surface0: #313244;
+
+          /* Accent colors */
+          --ctp-rosewater: #f5e0dc;
+          --ctp-flamingo: #f2cdcd;
+          --ctp-pink: #f5c2e7;
+          --ctp-mauve: #cba6f7;
+          --ctp-red: #f38ba8;
+          --ctp-maroon: #eba0ac;
+          --ctp-peach: #fab387;
+          --ctp-yellow: #f9e2af;
+          --ctp-green: #a6e3a1;
+          --ctp-teal: #94e2d5;
+          --ctp-sky: #89dceb;
+          --ctp-sapphire: #74c7ec;
+          --ctp-blue: #89b4fa;
+          --ctp-lavender: #b4befe;
+        }
+        `;
+        document.head.appendChild(catppuccinVariables);
+
+        // Create style element for Dark Theme
+        const darkThemeStyles = document.createElement('style');
+        darkThemeStyles.id = 'dark-theme-styles';
+        darkThemeStyles.textContent = `
+        /* F1 Stories Dark Mode Styles */
+        body.dark-theme {
+          background-color: var(--ctp-base);
+          color: var(--ctp-text);
+          transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .dark-theme .navbar,
+        .dark-theme .contact-container,
+        .dark-theme .blog-card,
+        .dark-theme .episode-card,
+        .dark-theme .persona,
+        .dark-theme .cookie-banner,
+        .dark-theme .modal-content {
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          background: rgba(var(--ctp-base-rgb, 30, 30, 46), 0.85);
+          border: 1px solid rgba(var(--ctp-surface2-rgb, 88, 91, 112), 0.08);
+          box-shadow: 0 4px 16px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.3);
+          transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dark-theme .background {
+          background: linear-gradient(-45deg, var(--ctp-mantle), var(--ctp-base), var(--ctp-surface0), var(--ctp-mantle));
+          background-size: 400% 400%;
+          animation: gradientAnimation 18s ease infinite;
+          opacity: 0.9;
+        }
+
+        .dark-theme .streak {
+          background: linear-gradient(90deg, transparent, rgba(var(--ctp-lavender-rgb, 180, 190, 254), 0.2), transparent);
+        }
+
+        .dark-theme .blog-card:hover,
+        .dark-theme .episode-card:hover,
+        .dark-theme .persona:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 8px 28px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.4);
+          border-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.9);
+        }
+
+        .dark-theme h1,
+        .dark-theme h2 {
+          background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sky));
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0 2px 4px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.3));
+        }
+
+        .dark-theme .cta-button {
+          background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sapphire));
+          box-shadow: 0 4px 15px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.3);
+        }
+
+        .dark-theme .cta-button:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.4);
+          background: linear-gradient(135deg, var(--ctp-sapphire), var(--ctp-sky));
+        }
+
+        /* Navbar customization */
+        .dark-theme .navbar-dark .navbar-nav .nav-link {
+          color: var(--ctp-subtext1);
+        }
+
+        .dark-theme .navbar-dark .navbar-nav .nav-link:hover {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .navbar-dark .navbar-nav .nav-link.active {
+          color: var(--ctp-blue) !important;
+        }
+
+        /* Dropdown styling */
+        .dark-theme .custom-dropdown-menu {
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.95);
+          border-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+        }
+
+        .dark-theme .dropdown-item:hover {
+          background-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.1);
+          color: var(--ctp-sky);
+        }
+
+        /* Form controls */
+        .dark-theme input,
+        .dark-theme textarea {
+          background-color: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.9);
+          border-color: var(--ctp-surface1);
+          color: var(--ctp-text);
+        }
+
+        .dark-theme input:focus,
+        .dark-theme textarea:focus {
+          border-color: var(--ctp-blue);
+          box-shadow: 0 0 0 3px rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.3);
+        }
+
+        /* Social media icons */
+        .dark-theme .social-media a:hover::before {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        /* Theme toggle button customization */
+        .dark-theme #theme-toggle-container {
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.85);
+          border-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+        }
+
+        .dark-theme #toggle-icon {
+          background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        /* Cookie banner customization */
+        .dark-theme .cookie-banner {
+          background: rgba(var(--ctp-base-rgb, 30, 30, 46), 0.95);
+          border-top-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.3);
+        }
+
+        .dark-theme .cookie-header h3 {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .badge-essential {
+          background: linear-gradient(90deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        .dark-theme input:checked + .toggle-slider {
+          background: linear-gradient(90deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        .dark-theme .cookie-btn.accept-btn {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-sapphire));
+        }
+
+        .dark-theme .cookie-btn.accept-btn:hover {
+          background: linear-gradient(45deg, var(--ctp-sapphire), var(--ctp-sky));
+        }
+
+        /* Scroll to top button */
+        .dark-theme .scroll-to-top-btn {
+          background: linear-gradient(45deg, var(--ctp-surface0), var(--ctp-blue));
+        }
+
+        .dark-theme .scroll-to-top-btn:hover::before {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        /* Hero section */
+        .dark-theme #hero::before {
+          background: linear-gradient(to right, rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.7), rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.7));
+        }
+
+        /* Other text elements */
+        .dark-theme .blog-title:hover {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .blog-card:hover .blog-read-more {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .persona:hover h3 {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .footer-link:hover {
+          color: var(--ctp-sky);
+        }
+
+        /* Status colors - using appropriate Catppuccin colors */
+        .dark-theme .text-success {
+          color: var(--ctp-green) !important;
+        }
+
+        .dark-theme .text-danger {
+          color: var(--ctp-red) !important;
+        }
+
+        .dark-theme .text-warning {
+          color: var(--ctp-yellow) !important;
+        }
+
+        .dark-theme .text-info {
+          color: var(--ctp-sky) !important;
+        }
+
+        /* Theme toggle button */
+        .dark-active #toggle-icon {
+          background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        /* Additional styling for dark theme elements */
+        .dark-theme section::before {
+          background: radial-gradient(ellipse at center, rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.05) 0%, transparent 70%);
+        }
+
+        .dark-theme h2::after {
+          background: linear-gradient(90deg, var(--ctp-blue), var(--ctp-sapphire));
+        }
+
+        .dark-theme .persona::before {
+          background: radial-gradient(ellipse at top, rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.1), transparent 70%);
+        }
+
+        .dark-theme .persona .avatar {
+          border-color: var(--ctp-blue);
+        }
+
+        .dark-theme .persona:hover .avatar {
+          border-color: var(--ctp-sky);
+        }
+
+        .dark-theme .contact-container::before {
+          background: linear-gradient(90deg, var(--ctp-blue), var(--ctp-sky), var(--ctp-blue));
+        }
+
+        .dark-theme .blog-date {
+          border-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.3);
+        }
+
+        .dark-theme .blog-date .day {
+          color: var(--ctp-sky);
+        }
+
+        /* Modal customizations */
+        .dark-theme .modal-header {
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.8);
+          border-bottom-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+        }
+
+        .dark-theme .modal-header::after {
+          background: linear-gradient(to right, transparent, rgba(var(--ctp-sky-rgb, 137, 220, 235), 0.5), transparent);
+        }
+
+        .dark-theme .modal-content::before {
+          background: radial-gradient(ellipse at top right, rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2), transparent 70%);
+        }
+
+        .dark-theme .social-link-item:hover {
+          background-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.1);
+        }
+
+        .dark-theme .social-link-item .btn {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-surface0));
+        }
+
+        .dark-theme .social-link-item:hover .btn {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        .dark-theme .modal-footer {
+          border-top-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.5);
+        }
+
+        /* Theme transition animation */
+        @keyframes themeTransition {
+          0% { opacity: 0.8; }
+          100% { opacity: 1; }
+        }
+
+        .theme-transition {
+          animation: themeTransition 0.5s ease forwards;
+        }
+
+        /* Specific animation for card hover states in dark theme */
+        .dark-theme .blog-card,
+        .dark-theme .episode-card,
+        .dark-theme .persona {
+          transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                    box-shadow 0.5s ease,
+                    border-color 0.3s ease,
+                    background 0.3s ease;
+        }
+
+        /* CSS RGB helper variables to use rgba */
+        .catppuccin-frappe, .catppuccin-macchiato, .catppuccin-mocha {
+          --ctp-base-rgb: 30, 30, 46;
+          --ctp-crust-rgb: 17, 17, 27;
+          --ctp-surface0-rgb: 49, 50, 68;
+          --ctp-surface2-rgb: 88, 91, 112;
+          --ctp-blue-rgb: 137, 180, 250;
+          --ctp-sky-rgb: 137, 220, 235;
+          --ctp-lavender-rgb: 180, 190, 254;
+        }
+
+        .catppuccin-frappe {
+          --ctp-base-rgb: 48, 52, 70;
+          --ctp-crust-rgb: 35, 38, 52;
+          --ctp-surface0-rgb: 65, 69, 89;
+          --ctp-surface2-rgb: 98, 104, 128;
+          --ctp-blue-rgb: 140, 170, 238;
+          --ctp-sky-rgb: 153, 209, 219;
+          --ctp-lavender-rgb: 186, 187, 241;
+        }
+
+        .catppuccin-macchiato {
+          --ctp-base-rgb: 36, 39, 58;
+          --ctp-crust-rgb: 24, 25, 38;
+          --ctp-surface0-rgb: 54, 58, 79;
+          --ctp-surface2-rgb: 91, 96, 120;
+          --ctp-blue-rgb: 138, 173, 244;
+          --ctp-sky-rgb: 145, 215, 227;
+          --ctp-lavender-rgb: 183, 189, 248;
+        }
+        `;
+        document.head.appendChild(darkThemeStyles);
 
         // Create style element for toggle button
         const toggleStyles = document.createElement('style');
         toggleStyles.id = 'theme-toggle-styles';
         toggleStyles.textContent = `
-    #theme-toggle-container {
-      position: fixed;
-      top: 90px;
-      right: 20px;
-      z-index: 2000;
-      display: flex;
-      align-items: center;
-      background: rgba(10, 14, 23, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 50px;
-      padding: 6px 16px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+        #theme-toggle-container {
+          position: fixed;
+          top: 90px;
+          right: 20px;
+          z-index: 2000;
+          display: flex;
+          align-items: center;
+          background: rgba(10, 14, 23, 0.85);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 50px;
+          padding: 6px 16px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-    #theme-toggle-btn {
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      width: 48px;
-      height: 28px;
-      border-radius: 14px;
-      position: relative;
-      cursor: pointer;
-      padding: 0;
-      outline: none;
-    }
+        #theme-toggle-btn {
+          background: rgba(255, 255, 255, 0.1);
+          border: none;
+          width: 48px;
+          height: 28px;
+          border-radius: 14px;
+          position: relative;
+          cursor: pointer;
+          padding: 0;
+          outline: none;
+        }
 
-    #toggle-icon {
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: #0073e6;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-    }
+        #toggle-icon {
+          position: absolute;
+          top: 2px;
+          left: 2px;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #0073e6;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+        }
 
-    .modern-active #toggle-icon {
-      left: calc(100% - 26px);
-      background: linear-gradient(135deg, #0088ff, #00ddff);
-    }
+        .dark-active #toggle-icon {
+          left: calc(100% - 26px);
+        }
 
-    #toggle-icon .fa-sun {
-      color: white;
-      font-size: 14px;
-      opacity: 1;
-      transition: opacity 0.3s ease;
-    }
+        #toggle-icon .fa-sun {
+          color: white;
+          font-size: 14px;
+          opacity: 1;
+          transition: opacity 0.3s ease;
+        }
 
-    #toggle-icon .fa-moon {
-      color: white;
-      font-size: 14px;
-      opacity: 0;
-      position: absolute;
-      transition: opacity 0.3s ease;
-    }
+        #toggle-icon .fa-moon {
+          color: white;
+          font-size: 14px;
+          opacity: 0;
+          position: absolute;
+          transition: opacity 0.3s ease;
+        }
 
-    .modern-active #toggle-icon .fa-sun {
-      opacity: 0;
-    }
+        .dark-active #toggle-icon .fa-sun {
+          opacity: 0;
+        }
 
-    .modern-active #toggle-icon .fa-moon {
-      opacity: 1;
-    }
+        .dark-active #toggle-icon .fa-moon {
+          opacity: 1;
+        }
 
-    #theme-label {
-      margin-left: 12px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #e0e0e0;
-      white-space: nowrap;
-    }
+        #theme-label {
+          margin-left: 12px;
+          font-size: 14px;
+          font-weight: 500;
+          color: #e0e0e0;
+          white-space: nowrap;
+        }
 
-    @media (max-width: 767.98px) {
-      #theme-toggle-container {
-        top: auto;
-        bottom: 20px;
-        right: auto;
-        left: 20px;
-        padding: 8px;
-        border-radius: 50%;
-      }
+        @media (max-width: 767.98px) {
+          #theme-toggle-container {
+            top: auto;
+            bottom: 20px;
+            right: auto;
+            left: 20px;
+            padding: 8px;
+            border-radius: 50%;
+          }
 
-      #theme-label {
-        display: none;
-      }
+          #theme-label {
+            display: none;
+          }
 
-      #theme-toggle-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-      }
+          #theme-toggle-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+          }
 
-      #toggle-icon {
-        top: 8px;
-        left: 8px;
-      }
+          #toggle-icon {
+            top: 8px;
+            left: 8px;
+          }
 
-      .modern-active #toggle-icon {
-        left: 8px;
-      }
-    }
-  `;
+          .dark-active #toggle-icon {
+            left: 8px;
+          }
+        }
+        `;
         document.head.appendChild(toggleStyles);
 
         // Create toggle button HTML
         const toggleContainer = document.createElement('div');
         toggleContainer.id = 'theme-toggle-container';
         toggleContainer.innerHTML = `
-    <button id="theme-toggle-btn">
-      <div id="toggle-icon">
-        <i class="fas fa-sun"></i>
-        <i class="fas fa-moon"></i>
-      </div>
-    </button>
-    <span id="theme-label">Original Theme</span>
-  `;
+        <button id="theme-toggle-btn">
+          <div id="toggle-icon">
+            <i class="fas fa-sun"></i>
+            <i class="fas fa-moon"></i>
+          </div>
+        </button>
+        <span id="theme-label">Light Mode</span>
+        `;
         document.body.appendChild(toggleContainer);
 
-        // Initialize from saved preference
+        // Initialize from saved preferences
         const savedTheme = localStorage.getItem('f1stories-theme');
-        if (savedTheme === 'modern') {
-            enableModernTheme();
+        if (savedTheme === 'dark') {
+            // Get saved flavor if available
+            let savedFlavor = localStorage.getItem('f1stories-catppuccin-flavor');
+
+            // Add dark theme class
+            document.body.classList.add('dark-theme');
+            document.getElementById('theme-toggle-container').classList.add('dark-active');
+
+            // If no saved flavor, randomly select one
+            if (!savedFlavor || !['frappe', 'macchiato', 'mocha'].includes(savedFlavor)) {
+                const flavors = ['frappe', 'macchiato', 'mocha'];
+                savedFlavor = flavors[Math.floor(Math.random() * flavors.length)];
+                localStorage.setItem('f1stories-catppuccin-flavor', savedFlavor);
+            }
+
+            // Add the flavor class
+            document.body.classList.add(`catppuccin-${savedFlavor}`);
+
+            // Update the theme label
+            document.getElementById('theme-label').textContent = `Dark Mode (${savedFlavor})`;
         }
 
         // Add click event
         document.getElementById('theme-toggle-btn').addEventListener('click', function() {
-            if (document.body.classList.contains('modern-theme')) {
-                disableModernTheme();
-                localStorage.setItem('f1stories-theme', 'original');
+            if (document.body.classList.contains('dark-theme')) {
+                disableDarkMode();
+                localStorage.setItem('f1stories-theme', 'light');
             } else {
-                enableModernTheme();
-                localStorage.setItem('f1stories-theme', 'modern');
+                enableDarkMode();
+                localStorage.setItem('f1stories-theme', 'dark');
             }
         });
 
-        // Enable modern theme
-        function enableModernTheme() {
-            document.body.classList.add('modern-theme');
-            document.getElementById('theme-toggle-container').classList.add('modern-active');
-            document.getElementById('theme-label').textContent = 'Modern Theme';
+        // Enable Dark Mode with random Catppuccin palette
+        function enableDarkMode() {
+            // Remove any existing Catppuccin flavor classes
+            document.body.classList.remove('catppuccin-frappe', 'catppuccin-macchiato', 'catppuccin-mocha');
+
+            // Add dark theme class
+            document.body.classList.add('dark-theme');
+            document.getElementById('theme-toggle-container').classList.add('dark-active');
+
+            // Randomly select a Catppuccin flavor - latte removed
+            const flavors = ['frappe', 'macchiato', 'mocha'];
+            const randomFlavor = flavors[Math.floor(Math.random() * flavors.length)];
+
+            // Add the flavor class
+            document.body.classList.add(`catppuccin-${randomFlavor}`);
+
+            // Set the theme label
+            document.getElementById('theme-label').textContent = `Dark Mode (${randomFlavor})`;
+
+            // Save the selected flavor
+            localStorage.setItem('f1stories-catppuccin-flavor', randomFlavor);
+
+            // Add a subtle transition effect when changing themes
+            document.body.classList.add('theme-transition');
+            setTimeout(() => {
+                document.body.classList.remove('theme-transition');
+            }, 500);
         }
 
-        // Disable modern theme
-        function disableModernTheme() {
-            document.body.classList.remove('modern-theme');
-            document.getElementById('theme-toggle-container').classList.remove('modern-active');
-            document.getElementById('theme-label').textContent = 'Original Theme';
+        // Disable Dark Mode
+        function disableDarkMode() {
+            document.body.classList.remove('dark-theme');
+            document.body.classList.remove('catppuccin-frappe', 'catppuccin-macchiato', 'catppuccin-mocha');
+            document.getElementById('theme-toggle-container').classList.remove('dark-active');
+            document.getElementById('theme-label').textContent = 'Light Mode';
+
+            // Add a subtle transition effect when changing themes
+            document.body.classList.add('theme-transition');
+            setTimeout(() => {
+                document.body.classList.remove('theme-transition');
+            }, 500);
         }
     });
 </script>
