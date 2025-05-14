@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Η πρώτη συνέντευξη του Άντριαν Νιούι στην Aston Martin: Διαβάζοντας ανάμεσα στις γραμμές | F1 Stories Blog</title>
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="Η πρώτη συνέντευξη του Άντριαν Νιούι στην Aston Martin: Διαβάζοντας ανάμεσα στις γραμμές | F1 Stories Blog">
+  <meta property="og:description" content="🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈">
+  <meta property="og:image" content="2.webp">
+  <meta property="og:url" content="https://f1stories.gr/blog-module/blog-entries/20250515GF/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
+  <style>
+    /* YouTube embed container for responsive videos */
+    .youtube-embed-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+      margin: 2rem 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .youtube-embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+    }
+
+    .video-caption {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/blog-module/blog-styles.css">
+  <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-X68J6MQKSM');
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the meta description tag
+      const metaDescription = document.querySelector('meta[property="og:description"]');
+
+      // Get the article content for calculating reading time
+      const articleContent = document.querySelector('.article-content');
+
+      if (metaDescription && articleContent) {
+        // Calculate reading time
+        const text = articleContent.textContent || articleContent.innerText;
+        const wordCount = text.trim().split(/\s+/).length;
+
+        // Average reading speed: 200 words per minute
+        const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
+        // Update meta description with reading time
+        metaDescription.setAttribute('content', `A ${readingTimeMinutes} minute read on F1 Stories Blog`);
+
+        // Also update the reading time element in the article if it exists
+        const readingTimeElement = document.getElementById('reading-time-value');
+        if (readingTimeElement) {
+          readingTimeElement.textContent = `${readingTimeMinutes} min read`;
+        }
+      } else {
+        // Fallback description if article content is not found
+        if (metaDescription) {
+          metaDescription.setAttribute('content', '🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈');
+        }
+      }
+    });
+  </script>
+
+</head>
+<body>
+<div class="background"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
+
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy">
+      </a>
+      <div class="race-countdown-container">
+        <div class="race-countdown">
+          <div class="race-flag">
+            <span id="race-flag-emoji">🏁</span>
+          </div>
+          <div class="race-info">
+            <span class="next-race-name" id="next-race-name">Loading...</span>
+            <div class="countdown-timer" id="race-countdown">--</div>
+          </div>
+        </div>
+        <!-- Mobile version - visible only on small screens -->
+        <div class="race-countdown-mobile">
+          <i class="fas fa-flag-checkered"></i>
+          <span id="race-countdown-mobile">--</span>
+        </div>
+      </div>
+      <button class="navbar-toggler" type="button" id="mobile-toggler">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <!-- Home -->
+          <li class="nav-item">
+            <a class="nav-link" href="/" id="home-link">Home</a>
+          </li>
+
+          <!-- Podcast dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">
+              Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+              <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
+              <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+            </ul>
+          </li>
+
+          <!-- Stories & Media dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
+              Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
+              <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+              <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+            </ul>
+          </li>
+
+          <!-- About dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
+              About <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/#about">About Us</a></li>
+              <li><a class="dropdown-item" href="/#guests">Guests</a></li>
+              <li><a class="dropdown-item" href="/#contact">Contact</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="py-5 mt-5">
+  <div class="container">
+    <!-- Back to Blog Button -->
+    <div class="text-start mb-4">
+      <a href="/blog-module/blog/index.html" class="btn btn-outline-light">
+        <i class="fas fa-arrow-left me-2"></i> Back to Blog
+      </a>
+    </div>
+
+    <div class="article-container">
+      <div class="article-header">
+        <!-- Images are local to the article folder -->
+        <img src="2.webp" alt="Η πρώτη συνέντευξη του Άντριαν Νιούι στην Aston Martin: Διαβάζοντας ανάμεσα στις γραμμές" class="article-header-img" loading="lazy" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <div class="article-header-overlay">
+          <h1 class="article-title">Η πρώτη συνέντευξη του Άντριαν Νιούι στην Aston Martin: Διαβάζοντας ανάμεσα στις γραμμές</h1>
+          <div class="article-meta">
+            <span><i class="fas fa-calendar"></i> May 15, 2025</span>
+            <span><i class="fas fa-tag"></i> AstonMartin</span>
+            <span><i class="fas fa-folder"></i> 2025</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add social sharing bar here -->
+      <!-- Updated Social Share Bar -->
+      <div class="social-share-bar">
+        <div class="share-label">
+          <i class="fas fa-share-alt"></i>
+          <span>Share this article:</span>
+        </div>
+        <div class="share-buttons">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://f1stories.gr/blog-module/blog-entries/20250515GF/article.html" target="_blank" class="share-btn facebook" aria-label="Share on Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://www.addtoany.com/add_to/threads?linkurl=https://f1stories.gr/blog-module/blog-entries/20250515GF/article.html&linkname=Η πρώτη συνέντευξη του Άντριαν Νιούι στην Aston Martin: Διαβάζοντας ανάμεσα στις γραμμές" target="_blank" class="share-btn threads" aria-label="Share on Threads">
+            <i class="fab fa-threads"></i>
+          </a>
+          <button id="instagram-dm-btn" class="share-btn instagram" aria-label="Share via Instagram DM">
+            <i class="fab fa-instagram"></i>
+          </button>
+          <a href="https://api.whatsapp.com/send?text=Η πρώτη συνέντευξη του Άντριαν Νιούι στην Aston Martin: Διαβάζοντας ανάμεσα στις γραμμές%20https://f1stories.gr/blog-module/blog-entries/20250515GF/article.html" target="_blank" class="share-btn whatsapp" aria-label="Share on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+          <a href="https://t.me/share/url?url=https://f1stories.gr/blog-module/blog-entries/20250515GF/article.html&text=Η πρώτη συνέντευξη του Άντριαν Νιούι στην Aston Martin: Διαβάζοντας ανάμεσα στις γραμμές" target="_blank" class="share-btn telegram" aria-label="Share on Telegram">
+            <i class="fab fa-telegram-plane"></i>
+          </a>
+          <button id="web-share-btn" class="share-btn web-share" aria-label="Share on installed apps">
+            <i class="fas fa-share-nodes"></i>
+          </button>
+          <button class="share-btn copy-link" id="copy-link-btn" aria-label="Copy link">
+            <i class="fas fa-link"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="article-content">
+        <!-- Article content goes here -->
+        <p></p><h1><a id="_tm7ci9ycdtgs"></a><strong>Η πρώτη συνέντευξη του Άντριαν Νιούι στην Aston Martin: Διαβάζοντας ανάμεσα στις γραμμές</strong></h1><h2><a id="_r7fd43cj7pyt"></a></h2><h2><a id="_staxxtrz1moh"></a><strong>Γενικό πλαίσιο και ύφος της συνέντευξης</strong></h2><p>Η πολυαναμενόμενη πρώτη συνέντευξη του Άντριαν Νιούι ως μέλους της Aston Martin πραγματοποιήθηκε δύο μήνες μετά την ένταξή του στην ομάδα (Μάρτιος 2025). Δημοσιεύτηκε στην επίσημη ιστοσελίδα της ομάδας, στο πλαίσιο της σειράς <strong>"UNDERCUT"</strong>. Το ύφος της συνέντευξης ήταν σοβαρό, ειλικρινές και τεχνικά κατατοπιστικό, με τον ίδιο τον Νιούι να εμφανίζεται ταπεινός αλλά και ενθουσιώδης για την πρόκληση. Η εισαγωγή της συνέντευξης τον περιγράφει βυθισμένο στον σχεδιασμό – με μολύβι στο χέρι, χαμένο σε ένα σχέδιο μεγέθους Α0 στο σχεδιαστήριό του – υπογραμμίζοντας την αφοσίωσή του και την περίφημη <strong>φιλοσοφία “5% έμπνευση, 95% ιδρώτας”</strong> που πρεσβεύει. Από την πρώτη στιγμή, ο τόνος δίνεται: ο <strong>Νιούι</strong> είναι εστιασμένος στη δουλειά του και δεν ενδιαφέρεται για φανφάρες ή τη δημοσιότητα που τον συνοδεύει μετά από δεκαετίες επιτυχιών.</p><p>Παρά το γεγονός ότι πρόκειται για επίσημη συνέντευξη ομάδας (άρα αναμενόμενα θετική σε ύφος), ο Νιούι μιλά με χαρακτηριστική ευθύτητα. <strong>Δεν επιδίδεται σε μεγαλοστομίες ούτε υπόσχεται θαύματα</strong>, αλλά κάνει μια ρεαλιστική αποτίμηση της κατάστασης. Ο δημοσιογράφος τονίζει το μοναδικό του στάτους ως “θρύλος” της F1, όμως ο ίδιος αποφεύγει επιδεικτικά κάθε είδους κομπασμό. Όπως σημειώνεται, η υμνολογία για τις επιτυχίες του τον κάνει να αισθάνεται άβολα – αυτό που πραγματικά τον <strong>κινεί είναι η πρόκληση ενός νέου “παζλ” στην μηχανολογία και η ευκαιρία να συνεργαστεί με μια ομάδα ομοϊδεατών</strong>. Αυτή η εισαγωγή δίνει το πλαίσιο: ο Νιούι προσέρχεται στην Aston Martin με σεμνότητα, δίψα για δουλειά και πνεύμα συνεργασίας, στοιχεία που διαπερνούν όλη τη συνέντευξη.</p><h2><a id="_nqnbv0njvvtf"></a><strong>Τι υπονοεί (και τι αποφεύγει να πει) ο Νιούι</strong></h2><p>Διαβάζοντας ανάμεσα στις γραμμές, ο Άντριαν Νιούι αφήνει να εννοηθούν πολλά – ίσως εξίσου σημαντικά με αυτά που λέει ρητά. Για αρχή, όταν ρωτήθηκε πώς βρήκε την ομάδα στους πρώτους του μήνες, <strong>εξήρε την θερμή υποδοχή που του επιφύλαξαν</strong> όλοι: <em>«το πρώτο που μπορώ να πω είναι ότι όλοι στην ομάδα ήταν πολύ φιλόξενοι»</em> σημείωσε, προσθέτοντας με νόημα ότι <em>«αυτό δεν συνέβαινε πάντα όταν ξεκινούσα σε νέα ομάδα»</em>. Με μια φράση, υπογραμμίζει ότι στο παρελθόν έχει βιώσει δυσκολίες ένταξης αλλού – χωρίς να κατονομάσει συγκεκριμένα ομάδες, υπονοεί όμως ότι η Aston Martin διαθέτει μια κουλτούρα πιο ανοιχτή στους νεοφερμένους κορυφαίους ειδικούς.</p><p>Επίσης, ο <strong>Νιούι αποφεύγει επιδέξια να μιλήσει για την προηγούμενη εργοδότη του, τη Red Bull, με το όνομά της</strong>. Όταν αναφέρεται στις εγκαταστάσεις της Aston Martin – το νέο υπερσύγχρονο εργοστάσιο στο Σίλβερστον με προσομοιωτή και την πιο προηγμένη αεροσήραγγα στην F1 – αντί να αρκεστεί σε κολακευτικά λόγια, κάνει μια αποκαλυπτική σύγκριση: <em>«Η προηγούμενη ομάδα μου είχε μία από τις χειρότερες αεροσήραγγες στην F1 και στεγαζόταν σε μια σειρά από αδιάφορα βιομηχανικά κτίρια, αλλά κατάφερε να ενώσει τους ανθρώπους της και να δημιουργήσει ένα εξαιρετικό σύνολο»</em>. Εδώ, χωρίς να το λέει ευθέως, παραδέχεται ότι η Red Bull (με τις σχετικά μέτριες εγκαταστάσεις) πέτυχε χάρη στην οργάνωση και το ταλέντο του ανθρώπινου δυναμικού της. <strong>Υπονοεί λοιπόν ότι οι υπερσύγχρονες εγκαταστάσεις της Aston Martin, όσο εντυπωσιακές κι αν είναι, δεν εγγυώνται από μόνες τους επιτυχία</strong> – το κλειδί θα είναι να αξιοποιηθούν σωστά από τους ανθρώπους της ομάδας. <em>«Η πίστα είναι θέμα ανθρώπων»</em>, επαναλαμβάνει ο Νιούι, θέλοντας να μεταφέρει ότι η τεχνολογία είναι εργαλείο, αλλά οι άνθρωποι είναι αυτοί που καθοδηγούν την πρόοδο.</p><p>Ακόμη, ο Νιούι <strong>σκόπιμα δεν κάνει μεγάλες προβλέψεις ή δηλώσεις βεβαιότητας</strong> για τίτλους. Όταν τίθεται το “μεγάλο ερώτημα” αν μπορεί να επαναλάβει τα επιτεύγματά του και να κάνει την Aston Martin πρωταθλήτρια, η απάντησή του είναι χαρακτηριστικά συγκρατημένη: <em>«Δεν έχει νόημα να ονειροβατούμε για το μέλλον. Σημασία έχει να στρωθούμε στη δουλειά – αν την κάνουμε σωστά, ελπίζουμε τα πράγματα να έρθουν»</em>. Με αυτή τη φράση ο Νιούι ουσιαστικά <em>αποφεύγει να τάξει πρωταθλήματα</em>, επιμένοντας ότι δεν υπάρχουν μαγικές συνταγές. Μάλιστα, όταν ο δημοσιογράφος αναφέρει ότι πολλοί θεωρούν περίπου <strong>αναπόφευκτο</strong> το να γίνει η Aston Martin πρωταθλήτρια με τον Νιούι στο δυναμικό της, εκείνος προειδοποιεί πως <strong>«δεν υπάρχουν μαγικές σφαίρες στη Formula 1»</strong>. Περιγράφει το σύγχρονο μονοθέσιο ως έναν <strong>τρομερά περίπλοκο “μηχανισμό”</strong>, με αμέτρητα εξαρτήματα και εξίσου πολύπλοκη διαδικασία ανάπτυξης μέσω προσομοιώσεων, CFD, αεροσήραγγας και συσχέτισης δεδομένων. Εν ολίγοις, <em>υπονοεί ότι η επιτυχία θα έρθει μόνο μέσω μεθοδικής δουλειάς και εξέλιξης των εργαλείων της ομάδας</em>, όχι απλώς επειδή προστέθηκε ο ίδιος στο ρόστερ. Είναι αξιοσημείωτο πως <strong>δεν αναφέρει καθόλου τη λέξη “πρωτάθλημα”</strong> – κρατά χαμηλούς τόνους, πιθανώς για να μη δημιουργήσει υπερβολικές προσδοκίες εσωτερικά και εξωτερικά.</p><p>Τέλος, ένα ακόμη υπονοούμενο προκύπτει από την παραδοχή του ότι <strong>ορισμένα τμήματα της Aston Martin χρειάζονται ενίσχυση</strong>. Συγκεκριμένα, δηλώνει πως <em>«ένα κομμάτι της ομάδας που πρέπει να μεγαλώσει είναι το τμήμα αεροδυναμικής»</em>, αναγνωρίζοντας ότι παρότι η ομάδα έχει ήδη αυξήσει ραγδαία το προσωπικό της, υπάρχουν τομείς όπου χρειάζονται ακόμα περισσότερα άτομα. Αυτή η φράση φανερώνει – χωρίς δραματικό τόνο – ότι ο Νιούι εντόπισε ίσως μια αδυναμία ή έλλειψη βάθους στο δυναμικό, ειδικά στον κρίσιμο τομέα της αεροδυναμικής. Δεν θα το βρει κανείς διατυπωμένο ως κριτική, αλλά <strong>“ανάμεσα στις γραμμές” φαίνεται η πρόκληση που έχει μπροστά του: να στελεχώσει και να οργανώσει καλύτερα το τεχνικό τμήμα για να αξιοποιήσει πλήρως τις δυνατότητες της ομάδας</strong>.</p><h2><a id="_x79noqy2lop5"></a><strong>Ο ρόλος του Νιούι και η δυναμική στην ομάδα</strong></h2><p>Μια από τις πρώτες ερωτήσεις αφορούσε τον ίδιο τον τίτλο της θέσης του: <strong>«Managing Technical Partner»</strong>. Πρόκειται για έναν πρωτόγνωρο ρόλο στα χρονικά της F1, και ο Νιούι εξηγεί ότι ήταν ιδέα του προέδρου <strong>Λόρενς Στρολ</strong>. <em>«Ο Λόρενς μού πρότεινε να γίνω Τεχνικός Συνεταίρος στη διαχείριση – μου έχει εμπιστευτεί να είμαι συνεργάτης του στην ανάπτυξη του τεχνικού τομέα της ομάδας»</em> λέει ο Άντριαν, τονίζοντας τη λέξη <strong>“partner” (συνεταίρος)</strong>. Αυτό <strong>δείχνει πολλά για τη δυναμική μέσα στην Aston Martin</strong>: ο ιδιοκτήτης δεν βλέπει τον Νιούι απλώς ως έναν ακόμη υπάλληλο ή επικεφαλής σχεδιασμού, αλλά τον θεωρεί σχεδόν ισότιμο συνεργάτη στην προσπάθεια ανύψωσης της ομάδας. Ο Νιούι ουσιαστικά τοποθετείται δίπλα στην ηγεσία, με λόγο σε στρατηγικές αποφάσεις και την ελευθερία να "οδηγήσει" την τεχνική κατεύθυνση χωρίς γραφειοκρατικούς περιορισμούς.</p><p>Η δυναμική αυτή αντανακλάται και στη σχέση του <strong>Νιούι με τον Άντι Κάουελ</strong>, τον νέο CEO της Aston Martin Performance Technologies (και άλλοτε αρχιτέκτονα των κινητήρων της Mercedes). Οι δυο τους χαρακτηρίστηκαν ως "ονειρικό δίδυμο" στο ερώτημα του δημοσιογράφου. Ο Νιούι, ωστόσο, <strong>διευκρινίζει ότι έχουν διακριτούς ρόλους</strong>: <em>«Ο Άντι κοιτάζει περισσότερο τη μεγάλη εικόνα της εταιρείας, ενώ εγώ επικεντρώνομαι στο αμιγώς τεχνικό κομμάτι – αλλά φυσικά υπάρχει μεγάλη επικάλυψη, ανταλλάσσουμε ιδέες και έχουμε πολύ καλή σύμπνοια»</em>. Αυτό δείχνει ότι <strong>η ομάδα λειτουργεί πολυμετωπικά</strong>: ο Κάουελ οργανώνει το σύνολο (και ειδικά την προετοιμασία για τη δική του ειδικότητα, τη μονάδα ισχύος του 2026), ενώ ο Νιούι ασχολείται με την αγωνιστική μηχανολογία και το μονοθέσιο. Η “σύμπνοια” που αναφέρει σημαίνει ότι <strong>οι αποφάσεις θα λαμβάνονται σε συνεργασία</strong> – μια δυαρχία στην τεχνική ηγεσία, με κοινούς στόχους.</p><p>Ενδιαφέρον έχει και το πώς ο Νιούι αντιλαμβάνεται τον ρόλο του ως <strong>ηγέτης εντός της ομάδας μηχανικών</strong>. Παραδέχεται ότι μια ομάδα χωρίς ιστορία νικών μπορεί να έχει εθιστεί στη μετριότητα: <em>«όταν μια ομάδα δεν έχει πολλές επιτυχίες, το να </em><strong><em>μην κερδίζει γίνεται η νόρμα</em></strong><em>. Πρέπει να δημιουργήσουμε την αυτοπεποίθηση ότι συλλογικά μπορούμε να τα καταφέρουμε»</em>. Αυτός ο στόχος – η καλλιέργεια <strong>νοοτροπίας νικητή</strong> – είναι κεντρικός στο ρόλο του. Ο ίδιος βέβαια σπεύδει να σημειώσει ότι <strong>δεν είναι “cheerleader” ή προπονητής αμερικανικού football για να βγάζει λόγους</strong>. Αντίθετα, προτιμά να ηγηθεί με το παράδειγμα και τη συνεργασία: <em>«δουλεύω μαζί με όλους και εξελισσόμαστε μαζί»</em>, λέει, αποφεύγοντας τη λογική του ενός ανδρός. Έχει διττή προσέγγιση: αφενός <strong>τεχνική ηγεσία μέσω σχεδιασμού</strong> (αναλύοντας κανονισμούς, μιλώντας με οδηγούς, προτείνοντας λύσεις στο σχεδιαστήριο) και αφετέρου <strong>ηγεσία ομάδας</strong> (συζητώντας με τους μηχανικούς, αξιολογώντας τις ιδέες τους και κατευθύνοντας την προσπάθεια).</p><p>Αυτή η στάση φανερώνει πολλά για τη δυναμική εντός Aston Martin: <strong>ο Νιούι δεν έρχεται ως “μεσσίας” επιβάλλοντας μονομερώς τις ιδέες του, αλλά ως καταλύτης που θα ενώσει και θα καθοδηγήσει το υπάρχον ταλέντο</strong>. Μάλιστα, ήδη από τις πρώτες εβδομάδες του, φαίνεται να ενσωματώνεται παραγωγικά – αποκάλυψε ότι κρατά <em>«μεσημεριανές συζητήσεις»</em> με μια μικρή ομάδα αεροδυναμικών που συνεχίζουν να δουλεύουν πάνω στο μονοθέσιο του 2025, ανταλλάσσοντας ιδέες για βελτιώσεις. Αυτό δείχνει ότι παρότι η κύρια αποστολή του είναι το μέλλον, ο Νιούι δεν διστάζει να προσφέρει <strong>άμεση καθοδήγηση</strong> όπου μπορεί να βοηθήσει.</p><p>Σημαντικό στοιχείο της δυναμικής είναι και η σχέση του με τους οδηγούς. Ο Νιούι αποκάλυψε ότι <strong>έχει ήδη μιλήσει εκτενώς με τον Φερνάντο Αλόνσο και τον Λανς Στρολ</strong> για τα δυνατά και αδύναμα σημεία του τωρινού μονοθεσίου, καθώς και για την αντιστοιχία μεταξύ όσων νιώθουν στην πίστα και των δεδομένων στον προσομοιωτή. Θεωρεί την ανατροφοδότηση των οδηγών <strong>“απαραίτητο μέρος του κύκλου”</strong> εξέλιξης: οι οδηγοί μπορεί να προσαρμόζουν το στυλ τους ώστε να καλύπτουν αδυναμίες του μονοθεσίου, πολλές φορές ασυναίσθητα, οπότε <em>«δεν μπορείς να βασιστείς μόνο στα δεδομένα – πρέπει να μπεις και στο μυαλό τους»</em> εξηγεί. Με άλλα λόγια, ο ρόλος του <strong>γεφυρώνει το τεχνικό τμήμα με την πίστα</strong>: θέλει να διασφαλίσει ότι η φωνή των οδηγών (ειδικά ενός τόσο έμπειρου όσο ο Αλόνσο) θα ενσωματωθεί στο σχεδιασμό. Αυτή η πτυχή υπογραμμίζει τη <strong>συλλογική φιλοσοφία</strong> που φέρνει – δεν σχεδιάζει σε απομόνωση, αλλά ως μέρος ενός ευρύτερου συνόλου που περιλαμβάνει όλους, από τους αεροδυναμιστές μέχρι τους οδηγούς.</p><h2><a id="_t0ltoj5zkvdy"></a><strong>Τεχνικές και αγωνιστικές επιπτώσεις της συνεργασίας</strong></h2><p>Η άφιξη του Άντριαν Νιούι στην Aston Martin είναι φυσικά γεμάτη προσδοκίες για τις <strong>τεχνικές επιδόσεις</strong> της ομάδας. Ως ο πιο πετυχημένος σχεδιαστής μονοθεσίων της εποχής μας, ο Νιούι κουβαλά εμπειρία και γνώση που μπορούν να απογειώσουν την ομάδα αγωνιστικά. Διαφαίνεται ότι η <strong>κύρια συνεισφορά του θα αφορά το μεγάλο στοίχημα των κανονισμών του 2026</strong>. Ο ίδιος επιβεβαιώνει ότι έχει στραμμένη την προσοχή του στην επόμενη χρονιά και κυρίως στη σεζόν 2026, όταν θα αλλάξουν ριζικά τόσο οι τεχνικοί κανονισμοί για το σασί όσο και οι κανονισμοί για τις μονάδες ισχύος. Περιγράφει αυτή τη διπλή αλλαγή ως <em>“ενδιαφέρουσα... και ελαφρώς τρομακτική”</em> – γεγονός πρωτόγνωρο στη θητεία του, καθώς δεν θυμάται άλλη περίπτωση που σασί και κινητήρας να αλλάζουν μαζί. Αυτό όμως σημαίνει και <strong>μεγάλες ευκαιρίες</strong>. Ο Νιούι, έχοντας ξαναπεράσει από μεγάλη αλλαγή κανονισμών το 2022, δηλώνει ότι αρχικά οι νέοι κανόνες του 2026 έμοιαζαν υπερβολικά περιοριστικοί, <em>«λες και δεν μένει πολύς χώρος για τον σχεδιαστή»</em>. Όμως, με πιο προσεκτική μελέτη, ανακάλυψε ότι υπάρχει <strong>«περισσότερη ευελιξία για καινοτομία και διαφορετικές προσεγγίσεις απ’ ό,τι φαίνεται με την πρώτη ματιά»</strong>. Θυμίζει ότι στις αρχές του 2022 είδαμε ομάδες να ακολουθούν πολύ διαφορετικές κατευθύνσεις σχεδιασμού προτού συγκλίνουν – και προβλέπει με αισιοδοξία πως <em>το ίδιο θα συμβεί και το 2026</em>, τουλάχιστον στα πρώτα χρόνια του νέου κύκλου.</p><p>Αυτή η δήλωση είναι ιδιαίτερα σημαντική: <strong>φανερώνει τον τρόπο που ο Νιούι προσεγγίζει το σχεδιαστικό πρόβλημα</strong>. Βλέπει εκεί που άλλοι ίσως βλέπουν εμπόδια, δυνατότητες για εξυπνότερες λύσεις. Η εμπειρία του να “ξεκλειδώνει” τους κανονισμούς προς όφελος της απόδοσης είναι γνωστή – το έκανε το 2009 στη Red Bull, το έκανε ξανά το 2014-15 και το 2017, το έκανε και το 2022. Τώρα, φέρνει αυτή την ικανότητα στην Aston Martin. <strong>Τεχνικά, η συνεργασία με τον Νιούι μπορεί να σημάνει ένα πιο τολμηρό και καινοτόμο μονοθέσιο</strong>, ειδικά ενόψει 2026 όπου το πεδίο είναι ανοιχτό. Ήδη ανέφερε ότι η ομάδα <em>εξερευνά πολλαπλές κατευθύνσεις</em> στον σχεδιασμό ενόψει του νέου μονοθεσίου, αν και δεν μπορεί κανείς να ξέρει ποια θα αποδώσει. Με τον περιορισμό πόρων (budget cap) απαιτείται στρατηγική επιλογή – κι εδώ είναι που η πείρα του θα βοηθήσει να διακρίνουν τα <strong>αδιέξοδα μονοπάτια από τις υποσχόμενες ιδέες</strong>.</p><p>Σε αγωνιστικό επίπεδο, οι συνέπειες της έλευσης Νιούι ίσως δεν φανούν αμέσως, αλλά θα είναι βαθιές. <strong>Το 2025 πιθανότατα θα αποτελέσει μεταβατική χρονιά</strong> – ο ίδιος ομολογεί ότι πέρα από μερικές συμβουλές στο μεσημεριανό προς τους αεροδυναμιστές, δεν εμπλέκεται πλήρως στην εξέλιξη του φετινού AMR25 μονοθεσίου. Αυτό σημαίνει ότι οι <strong>μεγάλες αλλαγές θα τις δούμε στο μονοθέσιο του 2026</strong>, το πρώτο <em>εξ ολοκλήρου “Newey project”</em> στην Aston Martin. Εκεί θα αποτυπωθεί η φιλοσοφία του: η ολιστική προσέγγιση που τον χαρακτηρίζει (συνδυασμός αεροδυναμικής, μηχανικής και δυναμικής οχήματος) και η έμφαση στη συνολική ισορροπία του μονοθεσίου. Δεν είναι τυχαίο που η εισαγωγή της συνέντευξης τον περιγράφει ως “throwback” σε μια εποχή που ένας σχεδιαστής έβλεπε ολόκληρο το αυτοκίνητο ως ενιαίο σύστημα. Αυτή η ικανότητα, <em>να ενορχηστρώνει κάθε πτυχή του μονοθεσίου</em>, είναι που μπορεί να δώσει στην Aston Martin το κάτι παραπάνω έναντι ομάδων με πιο κατακερματισμένη προσέγγιση.</p><p>Επιπλέον, η συνεργασία του Νιούι με την <strong>Honda</strong> δεν πρέπει να υποτιμηθεί. Από το 2026, η Aston Martin θα έχει εργοστασιακή συνεργασία με τη Honda για τους νέους κινητήρες. Ο Νιούι έχει ιστορικά δουλέψει με διάφορους κινητήρες (Renault, Mercedes, Ferrari, Honda) και ξέρει πόσο κρίσιμο είναι το σασί-με-κινητήρα να λειτουργούν σε απόλυτη αρμονία. Στη συνέντευξη εξέφρασε την εμπιστοσύνη του στη Honda, έχοντας συνεργαστεί μαζί τους στο παρελθόν, και τόνισε ότι είναι μια εταιρεία «που την οδηγούν οι μηχανικοί» – κάτι που εκτιμά ιδιαίτερα. Αναγνωρίζει όμως ότι <em>η Honda έκανε ένα διάλειμμα και τώρα “παίζει λίγο κυνηγητό”</em> στην εξέλιξη, αφήνοντας να εννοηθεί πως μπορεί να υπάρξουν αρχικά διαφοροποιήσεις στην απόδοση μεταξύ των κατασκευαστών το 2026. <strong>Οι τεχνικές συνέπειες</strong> αυτής της τριπλής σύμπραξης (Aston Martin + Newey + Honda) είναι συναρπαστικές: αν καταφέρουν να ευθυγραμμίσουν ιδανικά το νέο πλαίσιο με τη νέα μονάδα ισχύος, η Aston Martin θα μπορούσε να κάνει <em>άλμα ανταγωνιστικότητας</em>. Ο ίδιος ο Νιούι προβλέπει ότι στις αρχές του 2026 ενδέχεται να δούμε διακυμάνσεις και στις απόψεις των κινητήρων ανά ομάδες, όπως έγινε το 2014. Συνεπώς, η ομάδα που θα βρει το καλύτερο συνολικό πακέτο μπορεί να πάρει σημαντικό προβάδισμα.</p><p>Τέλος, μια πιο <strong>υποκειμενική αλλά ουσιαστική επίπτωση</strong>: η παρουσία του Νιούι ήδη ανεβάζει τον πήχη μέσα στην ομάδα. Το υπάρχον προσωπικό ξέρει ότι δουλεύει πλέον δίπλα σε έναν θρύλο του χώρου – αυτό από μόνο του μπορεί να εμπνεύσει μεγαλύτερη προσπάθεια, να προσελκύσει ακόμη περισσότερα ταλέντα (μηχανικούς από άλλες ομάδες που θα ήθελαν να εργαστούν υπό τον Νιούι) και να δημιουργήσει μια αίσθηση <strong>«τώρα μπορούμε κι εμείς»</strong> στα μέλη της Aston Martin. Όπως παρατηρεί ο ίδιος, πρέπει να καλλιεργηθεί η αυτοπεποίθηση της νίκης. Η έλευσή του προσφέρει αξιοπιστία στο εγχείρημα της Aston Martin: δεν πρόκειται πια για έναν “μεσαίο” οργανισμό, αλλά για μια ομάδα που πείθει ότι παίρνει στα σοβαρά το στόχο του πρωταθλητισμού.</p><h2><a id="_y5ukhgfreq3"></a><strong>Προοπτικές για το μέλλον της ομάδας</strong></h2><p>Με τον Άντριαν Νιούι στο τιμόνι του τεχνικού τμήματος, οι προοπτικές της Aston Martin διαγράφονται ιδιαίτερα <strong>φιλόδοξες</strong>. Η ομάδα έχει επενδύσει σε όλους τους τομείς: νέες εγκαταστάσεις, κορυφαία αεροδυναμική σήραγγα, υπερσύγχρονο προσομοιωτή, πρόσληψη δεκάδων μηχανικών από ανταγωνιστές τα τελευταία χρόνια. Έλειπε όμως ίσως το κομμάτι-κλειδί, <strong>“το μεγαλύτερο κομμάτι του παζλ”</strong> όπως χαρακτηρίστηκε από πολλούς: ένας επικεφαλής σχεδιαστής με αποδεδειγμένη ικανότητα να φτιάχνει πρωταθλητές. Ο Νιούι ενσαρκώνει ακριβώς αυτό. Δεν είναι υπερβολή να πούμε ότι <strong>όπου έχει πάει, οι πιθανότητες τίτλου έχουν εκτοξευθεί</strong>: στη Williams στις αρχές της δεκαετίας του ’90, στη McLaren στα τέλη των ’90s, και φυσικά στη Red Bull που τη μετέτρεψε από νεοφερμένη σε δυναστεία πρωταθλημάτων τη δεκαετία του 2010.</p><p>Η <strong>σημερινή Aston Martin θυμίζει σε πολλά τη Red Bull του 2008-2009</strong>: μια ομάδα με καλό εργοστάσιο (τώρα πια), ισχυρή χρηματοδότηση, έμπειρο πρωταθλητή οδηγό (τον Αλόνσο, όπως τότε τον Κούλθαρντ/Φέτελ), και πλέον με τον ίδιο αρχιμηχανικό. Τότε, χρειάστηκαν λίγα χρόνια ώσπου το παζλ να δέσει – αξιοποιώντας και μια αλλαγή κανονισμών (2009) προς όφελός τους. <strong>Οι κανονισμοί του 2026 αποτελούν αντίστοιχη ευκαιρία</strong> για την Aston Martin. Το γεγονός ότι ο Νιούι έχει στρέψει προσωπικά το βλέμμα του εκεί, ακόμη και εις βάρος της παρουσίας του στα φετινά Γκραν Πρι, δείχνει πόσο κρίσιμη θεωρεί αυτή τη χρονική στιγμή. Ο ίδιος αποκάλυψε ότι <em>δεν εμφανίστηκε σε αγώνες από τότε που ανέλαβε</em> διότι οι προθεσμίες για το project του 2026 είναι πολύ πιεστικές και απαιτούν την πλήρη προσοχή του στο εργοστάσιο. Αυτό σημαίνει ότι <strong>η ομάδα “παίζει το χαρτί” του 2026 με όλες της τις δυνάμεις</strong>. Από την επόμενη σεζόν (2025) θα ξεκινήσει η συνεργασία με τη Honda στο παρασκήνιο, χτίζοντας την μονάδα ισχύος. Όλα συγκλίνουν προς έναν στόχο: να είναι η Aston Martin πανέτοιμη να διεκδικήσει νίκες – ακόμη και το πρωτάθλημα – όταν όλοι θα ξεκινήσουν σχεδόν από το μηδέν με τους νέους κανόνες.</p><p>Βεβαίως, οι δηλώσεις του Νιούι μας προσγειώνουν στην πραγματικότητα ότι <em>τίποτα δεν είναι εγγυημένο</em>. Μια φράση-κλειδί είναι ότι <em>«όλα αυτά χρειάζονται χρόνο»</em>. Ακόμη κι αν η συνταγή δείχνει σωστή στα χαρτιά (ή στις οθόνες CAD και στα σχεδιαστήρια), χρειάζεται υπομονή και συνεχής εξέλιξη. Η Aston Martin του 2026-27 ίσως έχει όλα τα φόντα να πρωταγωνιστήσει, αλλά ο ανταγωνισμός (Red Bull, Mercedes, Ferrari και ίσως άλλοι) δεν θα μένει στάσιμος. Το καλό για την Aston Martin είναι ότι πλέον <strong>έχει συγκεντρώσει όλα τα “όπλα”</strong>: χρήματα, εγκαταστάσεις, ανθρώπινο δυναμικό και τεχνογνωσία κορυφαίου επιπέδου. Η παρουσία του Νιούι προσθέτει και κάτι άυλο: <strong>το κύρος και την αυτοπεποίθηση</strong>. Όπως είπε, το να κερδίζεις πρέπει να γίνει συνήθεια – και η ομάδα φαίνεται διατεθειμένη να το πιστέψει.</p><p>Εφόσον δεν υπάρξουν απρόοπτα, το πιο ρεαλιστικό σενάριο είναι ότι <em>το 2025 θα αποτελέσει χρόνο προετοιμασίας</em>, με κάποιες μικρές βελτιώσεις στο τρέχον μονοθέσιο (ήδη ο Νιούι συμμετέχει σε συζητήσεις για πιθανές αναβαθμίσεις) αλλά χωρίς ριζικές διαφοροποιήσεις. Το πραγματικό στοίχημα είναι η <strong>σεζόν 2026</strong>, όπου θα δούμε τον “καρπό” της δουλειάς Νιούι και συνεργατών. Αν αυτός ο καρπός αποδειχθεί γλυκός – ένα μονοθέσιο ικανό για νίκες – τότε η Aston Martin θα μεταβεί οριστικά από την μεσαία τάξη των ομάδων στην ελίτ. Οι προοπτικές λοιπόν είναι συναρπαστικές αλλά και απαιτητικές: <strong>η ομάδα έχει βάλει τα θεμέλια για να γράψει ιστορία, όμως οι επόμενοι 18 μήνες θα καθορίσουν αν το όραμα θα υλοποιηθεί</strong>.</p><h2><a id="_pwugnjubnuc3"></a><strong>Συμπέρασμα: Ένα πράσινο στοίχημα με... μολύβι και χαρτί</strong></h2><p>Ο Άντριαν Νιούι στη συνέντευξή του μας έδειξε έναν άνθρωπο που <strong>κρατά χαμηλούς τόνους, αλλά δουλεύει μεθοδικά για κάτι μεγάλο</strong>. Διαβάζοντας ανάμεσα στις γραμμές, καταλαβαίνουμε ότι η μετακίνησή του στην Aston Martin δεν ήταν απλώς μια μεταγραφή-βόμβα, αλλά μια στρατηγική κίνηση που αλλάζει τις ισορροπίες στη Formula 1. Ο ίδιος μπορεί να κρατά μικρό καλάθι – και ένα <em>μεγάλο σημειωματάριο</em> – σχετικά με τις προβλέψεις, όμως η παρουσία του ήδη <strong>ζωγραφίζει ένα πιο φωτεινό μέλλον</strong> για την ομάδα του Σίλβερστον. Δεν θα το παραδεχτεί ο ίδιος, αλλά οι υπόλοιποι στο paddock έχουν κάθε λόγο να ανησυχούν: αν κάποιος μπορεί να μετατρέψει ένα σωρό νέους κανονισμούς και ένα φιλόδοξο project σε πρωταθλήματα, αυτός είναι ο Άντριαν Νιούι. Και όπως εύστοχα αστειεύτηκε, <em>το μόνο που μπορεί να αποκαλύψει για το επόμενο μονοθέσιο είναι ότι «πιθανότατα θα είναι πράσινο»</em> – όλα τα υπόλοιπα θα τα μάθουμε στην πίστα. Αν τελικά αυτό το πράσινο μονοθέσιο αρχίσει να κερδίζει, πολλοί αντίπαλοι ενδέχεται να... πρασινίσουν από τη ζήλια. Σε κάθε περίπτωση, η κίνηση της Aston Martin να φέρει τον κορυφαίο σχεδιαστή της εποχής μας ήδη <strong>συνοδεύεται από μια αίσθηση αισιοδοξίας</strong>: το μολύβι του Νιούι ίσως γράψει το επόμενο μεγάλο κεφάλαιο της ομάδας – και μάλιστα με πράσινο μελάνι.</p>
+      </div>
+
+      <!-- Add this author section here -->
+      <div class="article-author-footer">
+        <div class="reading-time-badge">
+          <i class="fas fa-clock"></i>
+          <span id="reading-time-value">5 min read</span>
+        </div>
+
+        <div class="author-box">
+          <div class="author-header">
+            <div class="author-avatar">
+              <img id="author-image" src="/f1stories.github.io/images/avatars/default.webp" alt="F1 Stories Team"
+                   onerror="
+         const paths = [
+           '/f1stories.github.io/images/authors/default.webp',
+           '/images/authors/default.webp',
+           '../../../images/authors/default.webp',
+           '../../images/authors/default.webp'
+         ];
+         let currentPath = 0;
+         const tryNextPath = () => {
+           if (currentPath < paths.length) {
+             this.src = paths[currentPath++];
+           } else {
+             this.style.display='none';
+             document.getElementById('author-initial').style.display='flex';
+           }
+         };
+         tryNextPath();">
+              <span class="avatar-text" id="author-initial">A</span>
+            </div>
+            <div class="author-info">
+              <h4 class="author-name" id="author-name">F1 Stories Team</h4>
+              <div class="author-title" id="author-title">F1 Stories Contributor</div>
+            </div>
+          </div>
+          <div class="author-bio" id="author-bio">
+            Regular contributor to F1 Stories, passionate about motorsport and sharing insight about Formula 1 racing.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="article-comments">
+      <h3>Comments</h3>
+      <div id="disqus_thread"></div>
+      <script>
+        var disqus_config = function () {
+          this.page.url = window.location.href;  // Gets the current page URL
+          this.page.identifier = '20250515GF';   // Will be replaced with your article ID
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+          var d = document, s = d.createElement('script');
+          s.src = 'https://f1stories-gr.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20250514-1G/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="NEXT_ARTICLE_URL" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250507-1G/1.webp" 
+                             alt="🚗💨 Τεχνικός έλεγχος της FIA στο μονοθέσιο της McLaren μετά το Miami GP 2025 🚗💨" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250507-1G/1.webp') { this.src='/blog-module/blog/images/20250507-1G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">7,</span>
+                            <span class="month">MAY</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">🚗💨 Τεχνικός έλεγχος της FIA στο μονοθέσιο της McLaren μετά το Miami GP 2025 🚗💨</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250507-1G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250507W/1.webp" 
+                             alt="Aston Martin AMR23 – Η αναγέννηση της Βρετανικής ομάδας" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250507W/1.webp') { this.src='/blog-module/blog/images/20250507W/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">7,</span>
+                            <span class="month">MAY</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Aston Martin AMR23 – Η αναγέννηση της Βρετανικής ομάδας</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> 2Fast</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250507W/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250505GF/1.webp" 
+                             alt="🏁 GP Μαϊάμι 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση 🧠📊" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250505GF/1.webp') { this.src='/blog-module/blog/images/20250505GF/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">5,</span>
+                            <span class="month">MAY</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">🏁 GP Μαϊάμι 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση 🧠📊</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250505GF/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
+  </div>
+</section>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<footer class="py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center">
+        <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+        <div class="social-media">
+          <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+          <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Background Randomizer Script -->
+<script defer src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script defer src="/scripts/script.js"></script>
+<script defer src="/blog-module/blog/article-script.js"></script>
+
+<!-- Script to fix navbar functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the navbar toggle works
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+
+    if (navbarToggler && navbarCollapse) {
+      navbarToggler.addEventListener('click', function() {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+
+    // Close mobile menu after clicking a link
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        // If mobile menu is open, close it
+        if (navbarCollapse.classList.contains('show')) {
+          navbarCollapse.classList.remove('show');
+        }
+      });
+    });
+  });
+</script>
+
+<!-- Social Sharing Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Replace placeholder URLs with actual URL
+    const currentUrl = window.location.href;
+    const articleTitle = document.querySelector('.article-title').textContent;
+    const encodedTitle = encodeURIComponent(articleTitle);
+
+    // Update sharing links
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      if (btn.href) {
+        btn.href = btn.href
+                .replace('https://f1stories.gr/blog-module/blog-entries/20250515GF/article.html', encodeURIComponent(currentUrl))
+                .replace('Η πρώτη συνέντευξη του Άντριαν Νιούι στην Aston Martin: Διαβάζοντας ανάμεσα στις γραμμές', encodedTitle);
+      }
+    });
+
+    // Handle copy link button
+    const copyLinkBtn = document.getElementById('copy-link-btn');
+    if (copyLinkBtn) {
+      copyLinkBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(currentUrl)
+                .then(() => {
+                  copyLinkBtn.classList.add('copy-success');
+
+                  // Change icon temporarily to checkmark
+                  const icon = copyLinkBtn.querySelector('i');
+                  icon.classList.remove('fa-link');
+                  icon.classList.add('fa-check');
+
+                  // Reset after 2 seconds
+                  setTimeout(() => {
+                    copyLinkBtn.classList.remove('copy-success');
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-link');
+                  }, 2000);
+                })
+                .catch(err => {
+                  console.error('Failed to copy: ', err);
+                });
+      });
+    }
+  });
+</script>
+<!-- Theme Toggle Button and Functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Create style element for modern theme
+    const modernThemeStyles = document.createElement('style');
+    modernThemeStyles.id = 'modern-theme-styles';
+    modernThemeStyles.textContent = `
+    /* F1 Stories Modern Dark Mode Styles */
+    body.modern-theme {
+      background-color: #0a0e17;
+      color: #f0f0f0;
+    }
+
+    .modern-theme .navbar,
+    .modern-theme .contact-container,
+    .modern-theme .blog-card,
+    .modern-theme .episode-card,
+    .modern-theme .persona,
+    .modern-theme .cookie-banner,
+    .modern-theme .modal-content {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(10, 14, 23, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .modern-theme .background {
+      background: linear-gradient(-45deg, #001a33, #003366, #004080, #001a33);
+      background-size: 400% 400%;
+      animation: gradientAnimation 18s ease infinite;
+      opacity: 0.8;
+    }
+
+    .modern-theme .blog-card:hover,
+    .modern-theme .episode-card:hover,
+    .modern-theme .persona:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+      border-color: rgba(0, 136, 255, 0.2);
+      background: rgba(17, 25, 39, 0.9);
+    }
+
+    .modern-theme h1 {
+      background: linear-gradient(135deg, #0088ff, #00ddff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    .modern-theme .cta-button {
+      background: linear-gradient(135deg, #0088ff, #00ddff);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .modern-theme .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+  `;
+    document.head.appendChild(modernThemeStyles);
+
+    // Create style element for toggle button
+    const toggleStyles = document.createElement('style');
+    toggleStyles.id = 'theme-toggle-styles';
+    toggleStyles.textContent = `
+    #theme-toggle-container {
+      position: fixed;
+      top: 90px;
+      right: 20px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      background: rgba(10, 14, 23, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 50px;
+      padding: 6px 16px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #theme-toggle-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      width: 48px;
+      height: 28px;
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      padding: 0;
+      outline: none;
+    }
+
+    #toggle-icon {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #0073e6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .modern-active #toggle-icon {
+      left: calc(100% - 26px);
+      background: linear-gradient(135deg, #0088ff, #00ddff);
+    }
+
+    #toggle-icon .fa-sun {
+      color: white;
+      font-size: 14px;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    #toggle-icon .fa-moon {
+      color: white;
+      font-size: 14px;
+      opacity: 0;
+      position: absolute;
+      transition: opacity 0.3s ease;
+    }
+
+    .modern-active #toggle-icon .fa-sun {
+      opacity: 0;
+    }
+
+    .modern-active #toggle-icon .fa-moon {
+      opacity: 1;
+    }
+
+    #theme-label {
+      margin-left: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #e0e0e0;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 767.98px) {
+      #theme-toggle-container {
+        top: auto;
+        bottom: 20px;
+        right: auto;
+        left: 20px;
+        padding: 8px;
+        border-radius: 50%;
+      }
+
+      #theme-label {
+        display: none;
+      }
+
+      #theme-toggle-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+      }
+
+      #toggle-icon {
+        top: 8px;
+        left: 8px;
+      }
+
+      .modern-active #toggle-icon {
+        left: 8px;
+      }
+    }
+  `;
+    document.head.appendChild(toggleStyles);
+
+    // Create toggle button HTML
+    const toggleContainer = document.createElement('div');
+    toggleContainer.id = 'theme-toggle-container';
+    toggleContainer.innerHTML = `
+    <button id="theme-toggle-btn">
+      <div id="toggle-icon">
+        <i class="fas fa-sun"></i>
+        <i class="fas fa-moon"></i>
+      </div>
+    </button>
+    <span id="theme-label">Original Theme</span>
+  `;
+    document.body.appendChild(toggleContainer);
+
+    // Initialize from saved preference
+    const savedTheme = localStorage.getItem('f1stories-theme');
+    if (savedTheme === 'modern') {
+      enableModernTheme();
+    }
+
+    // Add click event
+    document.getElementById('theme-toggle-btn').addEventListener('click', function() {
+      if (document.body.classList.contains('modern-theme')) {
+        disableModernTheme();
+        localStorage.setItem('f1stories-theme', 'original');
+      } else {
+        enableModernTheme();
+        localStorage.setItem('f1stories-theme', 'modern');
+      }
+    });
+
+    // Enable modern theme
+    function enableModernTheme() {
+      document.body.classList.add('modern-theme');
+      document.getElementById('theme-toggle-container').classList.add('modern-active');
+      document.getElementById('theme-label').textContent = 'Modern Theme';
+    }
+
+    // Disable modern theme
+    function disableModernTheme() {
+      document.body.classList.remove('modern-theme');
+      document.getElementById('theme-toggle-container').classList.remove('modern-active');
+      document.getElementById('theme-label').textContent = 'Original Theme';
+    }
+  });
+</script>
+
+    <script>
+    // Debug helper for images
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script>
+    </body>
+</html>
