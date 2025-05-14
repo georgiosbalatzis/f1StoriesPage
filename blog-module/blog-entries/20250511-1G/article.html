@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📊 Mercedes W16 – Μέρος 4ο: «Πίστες & Αντίπαλοι» | F1 Stories Blog</title>
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="📊 Mercedes W16 – Μέρος 4ο: «Πίστες & Αντίπαλοι» | F1 Stories Blog">
+  <meta property="og:description" content="🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈">
+  <meta property="og:image" content="2.webp">
+  <meta property="og:url" content="https://f1stories.gr/blog-module/blog-entries/20250511-1G/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
+  <style>
+    /* YouTube embed container for responsive videos */
+    .youtube-embed-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+      margin: 2rem 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .youtube-embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+    }
+
+    .video-caption {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/blog-module/blog-styles.css">
+  <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-X68J6MQKSM');
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the meta description tag
+      const metaDescription = document.querySelector('meta[property="og:description"]');
+
+      // Get the article content for calculating reading time
+      const articleContent = document.querySelector('.article-content');
+
+      if (metaDescription && articleContent) {
+        // Calculate reading time
+        const text = articleContent.textContent || articleContent.innerText;
+        const wordCount = text.trim().split(/\s+/).length;
+
+        // Average reading speed: 200 words per minute
+        const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
+        // Update meta description with reading time
+        metaDescription.setAttribute('content', `A ${readingTimeMinutes} minute read on F1 Stories Blog`);
+
+        // Also update the reading time element in the article if it exists
+        const readingTimeElement = document.getElementById('reading-time-value');
+        if (readingTimeElement) {
+          readingTimeElement.textContent = `${readingTimeMinutes} min read`;
+        }
+      } else {
+        // Fallback description if article content is not found
+        if (metaDescription) {
+          metaDescription.setAttribute('content', '🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈');
+        }
+      }
+    });
+  </script>
+
+</head>
+<body>
+<div class="background"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
+
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy">
+      </a>
+      <div class="race-countdown-container">
+        <div class="race-countdown">
+          <div class="race-flag">
+            <span id="race-flag-emoji">🏁</span>
+          </div>
+          <div class="race-info">
+            <span class="next-race-name" id="next-race-name">Loading...</span>
+            <div class="countdown-timer" id="race-countdown">--</div>
+          </div>
+        </div>
+        <!-- Mobile version - visible only on small screens -->
+        <div class="race-countdown-mobile">
+          <i class="fas fa-flag-checkered"></i>
+          <span id="race-countdown-mobile">--</span>
+        </div>
+      </div>
+      <button class="navbar-toggler" type="button" id="mobile-toggler">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <!-- Home -->
+          <li class="nav-item">
+            <a class="nav-link" href="/" id="home-link">Home</a>
+          </li>
+
+          <!-- Podcast dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">
+              Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+              <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
+              <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+            </ul>
+          </li>
+
+          <!-- Stories & Media dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
+              Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
+              <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+              <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+            </ul>
+          </li>
+
+          <!-- About dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
+              About <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/#about">About Us</a></li>
+              <li><a class="dropdown-item" href="/#guests">Guests</a></li>
+              <li><a class="dropdown-item" href="/#contact">Contact</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="py-5 mt-5">
+  <div class="container">
+    <!-- Back to Blog Button -->
+    <div class="text-start mb-4">
+      <a href="/blog-module/blog/index.html" class="btn btn-outline-light">
+        <i class="fas fa-arrow-left me-2"></i> Back to Blog
+      </a>
+    </div>
+
+    <div class="article-container">
+      <div class="article-header">
+        <!-- Images are local to the article folder -->
+        <img src="2.webp" alt="📊 Mercedes W16 – Μέρος 4ο: «Πίστες & Αντίπαλοι»" class="article-header-img" loading="lazy" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <div class="article-header-overlay">
+          <h1 class="article-title">📊 Mercedes W16 – Μέρος 4ο: «Πίστες & Αντίπαλοι»</h1>
+          <div class="article-meta">
+            <span><i class="fas fa-calendar"></i> May 11, 2025</span>
+            <span><i class="fas fa-tag"></i> Mercedes</span>
+            <span><i class="fas fa-folder"></i> Technical</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add social sharing bar here -->
+      <!-- Updated Social Share Bar -->
+      <div class="social-share-bar">
+        <div class="share-label">
+          <i class="fas fa-share-alt"></i>
+          <span>Share this article:</span>
+        </div>
+        <div class="share-buttons">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://f1stories.gr/blog-module/blog-entries/20250511-1G/article.html" target="_blank" class="share-btn facebook" aria-label="Share on Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://www.addtoany.com/add_to/threads?linkurl=https://f1stories.gr/blog-module/blog-entries/20250511-1G/article.html&linkname=📊 Mercedes W16 – Μέρος 4ο: «Πίστες & Αντίπαλοι»" target="_blank" class="share-btn threads" aria-label="Share on Threads">
+            <i class="fab fa-threads"></i>
+          </a>
+          <button id="instagram-dm-btn" class="share-btn instagram" aria-label="Share via Instagram DM">
+            <i class="fab fa-instagram"></i>
+          </button>
+          <a href="https://api.whatsapp.com/send?text=📊 Mercedes W16 – Μέρος 4ο: «Πίστες & Αντίπαλοι»%20https://f1stories.gr/blog-module/blog-entries/20250511-1G/article.html" target="_blank" class="share-btn whatsapp" aria-label="Share on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+          <a href="https://t.me/share/url?url=https://f1stories.gr/blog-module/blog-entries/20250511-1G/article.html&text=📊 Mercedes W16 – Μέρος 4ο: «Πίστες & Αντίπαλοι»" target="_blank" class="share-btn telegram" aria-label="Share on Telegram">
+            <i class="fab fa-telegram-plane"></i>
+          </a>
+          <button id="web-share-btn" class="share-btn web-share" aria-label="Share on installed apps">
+            <i class="fas fa-share-nodes"></i>
+          </button>
+          <button class="share-btn copy-link" id="copy-link-btn" aria-label="Copy link">
+            <i class="fas fa-link"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="article-content">
+        <!-- Article content goes here -->
+        <p><br /><br /></p><h1><a id="_q6mt56o2ds7"></a><strong>📊 Mercedes W16 – Μέρος 4ο: «Πίστες &amp; Αντίπαλοι»</strong></h1><p>Και φτάνουμε στο <strong>Μέρος 4ο</strong>: η κορύφωση της σειράς! Εδώ εξετάζουμε <strong>πώς η Mercedes W16 αποδίδει στην πράξη</strong>, συγκρίνουμε με Red Bull και Ferrari, και βλέπουμε <strong>σε ποιες πίστες υπερέχει ή υστερεί</strong>. Αν αγαπάς τα δεδομένα, τις πίστες και την τεχνική ανάλυση του real-world performance, αυτό είναι για εσένα. 📊🏎️</p><h2><a id="_ghg9ae712w84"></a><strong>Όταν τα νούμερα, οι αγώνες και οι συγκρίσεις λένε την αλήθεια 🧠🏁</strong></h2><p>Το καλύτερο σχέδιο στον κόσμο δεν έχει νόημα αν δεν αποδίδει στην πίστα. Και για τη Mercedes W16, το ζητούμενο ήταν ξεκάθαρο: <strong>να γίνει ένα μονοθέσιο για κάθε πίστα και κάθε συνθήκη</strong>. Όχι απλώς γρήγορο, αλλά <strong>προβλέψιμο, ρυθμίσιμο και ανταγωνιστικό</strong> σε κάθε στροφή του πρωταθλήματος.</p><h2><a id="_vxg8fze9tdbt"></a><strong>🏎️ Απόδοση σε διαφορετικούς τύπους πίστας</strong></h2><h3><a id="_d020s4flt8df"></a><strong>1. Πίστες υψηλής ταχύτητας (Suzuka, Silverstone, Spa)</strong></h3><p>Στα γρήγορα σιρκουί, η W16 <strong>ανταγωνίζεται στα ίσια</strong> Red Bull &amp; Ferrari.<br /> ✅ Σταθερή στο high-speed<br /> ✅ Αεροδυναμικά αποδοτική με ήπιο drag<br /> ⚠️ Ίσως ελαφρώς πίσω στο απόλυτο max downforce της Red Bull στα πολύ γρήγορα κομμάτια – π.χ. S-curves Suzuka.</p><h3><a id="_aswzxuck4skp"></a><strong>2. Δρόμοι και σφιχτές στροφές (Monaco, Σιγκαπούρη, Βουδαπέστη)</strong></h3><p>Το μεγάλο στοίχημα του 2025: να <strong>εξαλειφθεί η χρόνια υποστροφή</strong>.<br /> 📉 Η W15 ήταν ασταθής, η W16 δείχνει:</p><ul><li>Εντυπωσιακή ευελιξία<br /></li><li>Καλό traction στην έξοδο<br /></li><li>Προβλέψιμο φρενάρισμα<br /> 🟢 Αν η τάση συνεχιστεί, η Mercedes μπορεί <strong>να κυριαρχήσει σε Monaco/Singapore</strong>, όπου το παρελθόν την τιμωρούσε.<br /></li></ul><h3><a id="_es9ngpw9wpbn"></a><strong>3. Πίστες “όλων των ταχυτήτων” (Βαρκελώνη, COTA, Κίνα)</strong></h3><p>Εδώ κρίνεται η <strong>πραγματική συνοχή ενός μονοθεσίου</strong>.<br /> Η W16 έχει αποδείξει:</p><ul><li>Καλές αλλαγές κατεύθυνσης<br /></li><li>Φιλική προς τα ελαστικά συμπεριφορά<br /></li><li>Σταθερότητα σε θερμοκρασιακές διακυμάνσεις<br /> 🏅 Αυτό δείχνει πως η W16 <strong>έχει όντως ευρύ παράθυρο λειτουργίας</strong>, ένα από τα κύρια ζητούμενα της φετινής εξέλιξης.<br /></li></ul><h2><a id="_w2gzxdgggwg9"></a><strong>⚔️ Head-to-Head: Mercedes W16 vs Αντίπαλοι</strong></h2><h3><a id="_1v4pomuejjzn"></a><strong>🔵 Red Bull RB21</strong></h3><p>🔹 <em>Τεχνικά:</em> εξαιρετικό ground effect, κορυφαία DRS<br /> 🔹 <em>W16 vs RB:</em></p><ul><li>Πλησίασε στο traction<br /></li><li>Ίσως λίγο πίσω σε DRS boost<br /></li><li>Καλύτερη ισορροπία σε low-speed<br /></li></ul><p>✅ Η Mercedes <strong>έκλεισε την ψαλίδα</strong> και παίζει πλέον στην ίδια στρατόσφαιρα.</p><h3><a id="_pnfv6k8t84ea"></a><strong>🔴 Ferrari SF-25</strong></h3><p>🔹 <em>Τεχνικά:</em> επιθετική γεωμετρία, pull-rod παντού, αναθεωρημένο aero<br /> 🔹 <em>W16 vs SF-25:</em></p><ul><li>Η W16 πιο σταθερή στο high-speed<br /></li><li>Ferrari πιο aggressive στις αλλαγές κατεύθυνσης<br /></li><li>Mercedes πιο προβλέψιμη στη διάρκεια stint<br /></li></ul><p>⚖️ Μια μάχη στο όριο – η W16 ίσως είναι <strong>λιγότερο εκρηκτική, αλλά πιο σταθερή</strong> σε βάθος αγώνα.</p><h2><a id="_pmfk5xsunw89"></a><strong>📈 Αγωνιστικά δεδομένα (Αρχές 2025)</strong></h2><ul><li><strong>Αυστραλία</strong>: βάθρο με Russell, σταθερή απόδοση, καλύτερο tire management από Ferrari<br /></li><li><strong>Ιαπωνία</strong>: P5 με Russell – καλό pace, όχι κορυφή → πιθανό aero gap σε υψηλής ταχύτητας πίστα<br /></li><li><strong>Μπαχρέιν</strong>: εξαιρετικό traction, P2 με ωριμότητα<br /></li><li><strong>Κίνα</strong>: θετικό race pace, πολύ καλή συμπεριφορά στην τελευταία αργή στροφή<br /></li></ul><p>👉 Σε όλα τα GP, η W16 ήταν <strong>μέσα στην κορυφαία 4άδα σε ρυθμό</strong>, δείγμα πραγματικά <strong>πολυδιάστατου μονοθεσίου</strong>.</p><h2><a id="_lh1rl982cqwq"></a><strong>🔄 Επόμενα βήματα: Ανάπτυξη και στρατηγική</strong></h2><p>Η Mercedes σχεδιάζει <strong>μεγάλο πακέτο αναβαθμίσεων για Imola</strong> και πέρα. Ο στόχος είναι:</p><ul><li>Βελτιώσεις στην DRS απόδοση<br /></li><li>Εξάλειψη κάθε αεροδυναμικής αστάθειας<br /></li><li>Μείωση drag για πίστες όπως Monza/Βέγκας<br /></li></ul><p>👨‍💻 Παράλληλα, η ομάδα δουλεύει ήδη για το 2026, όμως η W16 <strong>δεν έχει "παραδοθεί"</strong>. Είναι ακόμα σε μάχη τίτλου – ή τουλάχιστον νικών.</p><h2><a id="_usjiem2z3of2"></a><strong>🧠 Τι μάθαμε από τη W16;</strong></h2><p>Η Mercedes δεν έκανε "θαύματα", αλλά κάτι πιο δύσκολο:<br /> <strong>Έφτιαξε ένα αυτοκίνητο που δουλεύει καλά... παντού.<br /></strong> Και αυτό, στην εποχή των ground effect, είναι σπάνιο.</p><p>📌 Δεν είναι (ακόμα) το απόλυτο καλύτερο – αλλά είναι <strong>το πιο ολοκληρωμένο</strong>.</p><p>🎬 Αυτή ήταν η τεχνική μας σειρά για τη Mercedes W16!<br />Σε ευχαριστούμε που μας παρακολουθησες και διάβασες το άρθρο μας!</p>
+      </div>
+
+      <!-- Add this author section here -->
+      <div class="article-author-footer">
+        <div class="reading-time-badge">
+          <i class="fas fa-clock"></i>
+          <span id="reading-time-value">5 min read</span>
+        </div>
+
+        <div class="author-box">
+          <div class="author-header">
+            <div class="author-avatar">
+              <img id="author-image" src="/f1stories.github.io/images/avatars/FA.webp" alt="Georgios Balatzis"
+                   onerror="
+         const paths = [
+           '/f1stories.github.io/images/authors/default.webp',
+           '/images/authors/default.webp',
+           '../../../images/authors/default.webp',
+           '../../images/authors/default.webp'
+         ];
+         let currentPath = 0;
+         const tryNextPath = () => {
+           if (currentPath < paths.length) {
+             this.src = paths[currentPath++];
+           } else {
+             this.style.display='none';
+             document.getElementById('author-initial').style.display='flex';
+           }
+         };
+         tryNextPath();">
+              <span class="avatar-text" id="author-initial">A</span>
+            </div>
+            <div class="author-info">
+              <h4 class="author-name" id="author-name">Georgios Balatzis</h4>
+              <div class="author-title" id="author-title">F1 Stories Contributor</div>
+            </div>
+          </div>
+          <div class="author-bio" id="author-bio">
+            Regular contributor to F1 Stories, passionate about motorsport and sharing insight about Formula 1 racing.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="article-comments">
+      <h3>Comments</h3>
+      <div id="disqus_thread"></div>
+      <script>
+        var disqus_config = function () {
+          this.page.url = window.location.href;  // Gets the current page URL
+          this.page.identifier = '20250511-1G';   // Will be replaced with your article ID
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+          var d = document, s = d.createElement('script');
+          s.src = 'https://f1stories-gr.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20250511W/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="/blog-module/blog-entries/20250512G/article.html" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250514-1G/1.webp" 
+                             alt="🛠️ McLaren MCL39 – Φρένα, Cockpit & Εξέλιξη Σεζόν (Μέρος 4/4)" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250514-1G/1.webp') { this.src='/blog-module/blog/images/20250514-1G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">14,</span>
+                            <span class="month">MAY</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">🛠️ McLaren MCL39 – Φρένα, Cockpit & Εξέλιξη Σεζόν (Μέρος 4/4)</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250514-1G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250513-1G/1.webp" 
+                             alt="⚙️ RB21 Μέρος 4: Power Unit, Ενσωμάτωση & Ενεργειακή Μαεστρία" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250513-1G/1.webp') { this.src='/blog-module/blog/images/20250513-1G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">13,</span>
+                            <span class="month">MAY</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">⚙️ RB21 Μέρος 4: Power Unit, Ενσωμάτωση & Ενεργειακή Μαεστρία</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250513-1G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250512-1G/1.webp" 
+                             alt="Μέρος 4: Ηλεκτρονικά, Δεδομένα & Επίδοση – Το Ψηφιακό Κέντρο Ελέγχου του Alpine A525 ⚙️💻📈" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250512-1G/1.webp') { this.src='/blog-module/blog/images/20250512-1G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">12,</span>
+                            <span class="month">MAY</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Μέρος 4: Ηλεκτρονικά, Δεδομένα & Επίδοση – Το Ψηφιακό Κέντρο Ελέγχου του Alpine A525 ⚙️💻📈</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250512-1G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
+  </div>
+</section>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<footer class="py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center">
+        <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+        <div class="social-media">
+          <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+          <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Background Randomizer Script -->
+<script defer src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script defer src="/scripts/script.js"></script>
+<script defer src="/blog-module/blog/article-script.js"></script>
+
+<!-- Script to fix navbar functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the navbar toggle works
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+
+    if (navbarToggler && navbarCollapse) {
+      navbarToggler.addEventListener('click', function() {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+
+    // Close mobile menu after clicking a link
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        // If mobile menu is open, close it
+        if (navbarCollapse.classList.contains('show')) {
+          navbarCollapse.classList.remove('show');
+        }
+      });
+    });
+  });
+</script>
+
+<!-- Social Sharing Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Replace placeholder URLs with actual URL
+    const currentUrl = window.location.href;
+    const articleTitle = document.querySelector('.article-title').textContent;
+    const encodedTitle = encodeURIComponent(articleTitle);
+
+    // Update sharing links
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      if (btn.href) {
+        btn.href = btn.href
+                .replace('https://f1stories.gr/blog-module/blog-entries/20250511-1G/article.html', encodeURIComponent(currentUrl))
+                .replace('📊 Mercedes W16 – Μέρος 4ο: «Πίστες & Αντίπαλοι»', encodedTitle);
+      }
+    });
+
+    // Handle copy link button
+    const copyLinkBtn = document.getElementById('copy-link-btn');
+    if (copyLinkBtn) {
+      copyLinkBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(currentUrl)
+                .then(() => {
+                  copyLinkBtn.classList.add('copy-success');
+
+                  // Change icon temporarily to checkmark
+                  const icon = copyLinkBtn.querySelector('i');
+                  icon.classList.remove('fa-link');
+                  icon.classList.add('fa-check');
+
+                  // Reset after 2 seconds
+                  setTimeout(() => {
+                    copyLinkBtn.classList.remove('copy-success');
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-link');
+                  }, 2000);
+                })
+                .catch(err => {
+                  console.error('Failed to copy: ', err);
+                });
+      });
+    }
+  });
+</script>
+<!-- Theme Toggle Button and Functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Create style element for modern theme
+    const modernThemeStyles = document.createElement('style');
+    modernThemeStyles.id = 'modern-theme-styles';
+    modernThemeStyles.textContent = `
+    /* F1 Stories Modern Dark Mode Styles */
+    body.modern-theme {
+      background-color: #0a0e17;
+      color: #f0f0f0;
+    }
+
+    .modern-theme .navbar,
+    .modern-theme .contact-container,
+    .modern-theme .blog-card,
+    .modern-theme .episode-card,
+    .modern-theme .persona,
+    .modern-theme .cookie-banner,
+    .modern-theme .modal-content {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(10, 14, 23, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .modern-theme .background {
+      background: linear-gradient(-45deg, #001a33, #003366, #004080, #001a33);
+      background-size: 400% 400%;
+      animation: gradientAnimation 18s ease infinite;
+      opacity: 0.8;
+    }
+
+    .modern-theme .blog-card:hover,
+    .modern-theme .episode-card:hover,
+    .modern-theme .persona:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+      border-color: rgba(0, 136, 255, 0.2);
+      background: rgba(17, 25, 39, 0.9);
+    }
+
+    .modern-theme h1 {
+      background: linear-gradient(135deg, #0088ff, #00ddff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    .modern-theme .cta-button {
+      background: linear-gradient(135deg, #0088ff, #00ddff);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .modern-theme .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+  `;
+    document.head.appendChild(modernThemeStyles);
+
+    // Create style element for toggle button
+    const toggleStyles = document.createElement('style');
+    toggleStyles.id = 'theme-toggle-styles';
+    toggleStyles.textContent = `
+    #theme-toggle-container {
+      position: fixed;
+      top: 90px;
+      right: 20px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      background: rgba(10, 14, 23, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 50px;
+      padding: 6px 16px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #theme-toggle-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      width: 48px;
+      height: 28px;
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      padding: 0;
+      outline: none;
+    }
+
+    #toggle-icon {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #0073e6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .modern-active #toggle-icon {
+      left: calc(100% - 26px);
+      background: linear-gradient(135deg, #0088ff, #00ddff);
+    }
+
+    #toggle-icon .fa-sun {
+      color: white;
+      font-size: 14px;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    #toggle-icon .fa-moon {
+      color: white;
+      font-size: 14px;
+      opacity: 0;
+      position: absolute;
+      transition: opacity 0.3s ease;
+    }
+
+    .modern-active #toggle-icon .fa-sun {
+      opacity: 0;
+    }
+
+    .modern-active #toggle-icon .fa-moon {
+      opacity: 1;
+    }
+
+    #theme-label {
+      margin-left: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #e0e0e0;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 767.98px) {
+      #theme-toggle-container {
+        top: auto;
+        bottom: 20px;
+        right: auto;
+        left: 20px;
+        padding: 8px;
+        border-radius: 50%;
+      }
+
+      #theme-label {
+        display: none;
+      }
+
+      #theme-toggle-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+      }
+
+      #toggle-icon {
+        top: 8px;
+        left: 8px;
+      }
+
+      .modern-active #toggle-icon {
+        left: 8px;
+      }
+    }
+  `;
+    document.head.appendChild(toggleStyles);
+
+    // Create toggle button HTML
+    const toggleContainer = document.createElement('div');
+    toggleContainer.id = 'theme-toggle-container';
+    toggleContainer.innerHTML = `
+    <button id="theme-toggle-btn">
+      <div id="toggle-icon">
+        <i class="fas fa-sun"></i>
+        <i class="fas fa-moon"></i>
+      </div>
+    </button>
+    <span id="theme-label">Original Theme</span>
+  `;
+    document.body.appendChild(toggleContainer);
+
+    // Initialize from saved preference
+    const savedTheme = localStorage.getItem('f1stories-theme');
+    if (savedTheme === 'modern') {
+      enableModernTheme();
+    }
+
+    // Add click event
+    document.getElementById('theme-toggle-btn').addEventListener('click', function() {
+      if (document.body.classList.contains('modern-theme')) {
+        disableModernTheme();
+        localStorage.setItem('f1stories-theme', 'original');
+      } else {
+        enableModernTheme();
+        localStorage.setItem('f1stories-theme', 'modern');
+      }
+    });
+
+    // Enable modern theme
+    function enableModernTheme() {
+      document.body.classList.add('modern-theme');
+      document.getElementById('theme-toggle-container').classList.add('modern-active');
+      document.getElementById('theme-label').textContent = 'Modern Theme';
+    }
+
+    // Disable modern theme
+    function disableModernTheme() {
+      document.body.classList.remove('modern-theme');
+      document.getElementById('theme-toggle-container').classList.remove('modern-active');
+      document.getElementById('theme-label').textContent = 'Original Theme';
+    }
+  });
+</script>
+
+    <script>
+    // Debug helper for images
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script>
+    </body>
+</html>
