@@ -1592,69 +1592,251 @@ figcaption {
     100% { transform: rotate(0deg); }
 }
 
-/* Adjust the position of the mobile TOC button */
+
+
+
+/* Refined Table of Contents with Proper Positioning */
+
+/* Theme-specific styles */
+.dark-theme .article-toc {
+    background: rgba(var(--ctp-base-rgb, 30, 30, 46), 0.8);
+    border-color: rgba(var(--ctp-surface2-rgb, 88, 91, 112), 0.2);
+}
+
+.article-toc {
+    position: fixed;
+    right: 20px;
+    top: 150px; /* Increased top position to be below theme selector */
+    width: 250px;
+    background: rgba(0, 0, 0, 0.7); /* Default dark background */
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    z-index: 90; /* Lower than theme selector (100) */
+    max-height: 60vh;
+    overflow: hidden;
+    transition: transform 0.3s ease, opacity 0.3s ease, max-height 0.3s ease;
+    display: block !important; /* Ensure visibility */
+}
+
+.toc-header {
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(0, 115, 230, 0.2), transparent);
+}
+
+.dark-theme .toc-header {
+    border-bottom: 1px solid rgba(var(--ctp-surface2-rgb, 88, 91, 112), 0.1);
+    background: linear-gradient(135deg, rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2), transparent);
+}
+
+.toc-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: #00c6ff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.dark-theme .toc-header h4 {
+    color: var(--ctp-sky, #89dceb);
+}
+
+.toc-toggle {
+    background: transparent;
+    border: none;
+    color: var(--ctp-subtext1, #b5bfe2);
+    cursor: pointer;
+    padding: 5px;
+    font-size: 0.9rem;
+}
+
+.toc-body {
+    padding: 0.5rem 0;
+    overflow-y: auto;
+    max-height: calc(60vh - 3.5rem);
+}
+
+.toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.toc-item {
+    padding: 0;
+    margin: 0;
+}
+
+.toc-h2 {
+    padding-left: 1rem;
+}
+
+.toc-h3 {
+    padding-left: 2rem;
+}
+
+.toc-link {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: #e0e0e0; /* Default light color */
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.toc-link:hover {
+    background: rgba(0, 115, 230, 0.2);
+    color: #ffffff;
+}
+
+.toc-link.toc-active {
+    color: #0073e6;
+    border-left: 2px solid #0073e6;
+    background: rgba(0, 115, 230, 0.1);
+    font-weight: 500;
+}
+
+/* Dark theme styles */
+.dark-theme .toc-link {
+    color: var(--ctp-text, #cdd6f4);
+}
+
+.dark-theme .toc-link:hover {
+    background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.5);
+    color: var(--ctp-blue, #89b4fa);
+}
+
+.dark-theme .toc-link.toc-active {
+    color: var(--ctp-blue, #89b4fa);
+    border-left: 2px solid var(--ctp-blue, #89b4fa);
+    background: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.1);
+}
+
+/* Collapsed state for desktop */
+.toc-collapsed .toc-body {
+    max-height: 0;
+    padding: 0;
+}
+
+/* Mobile TOC Panel styling */
+.mobile-toc-panel {
+    position: fixed;
+    top: 140px; /* Position just below the button */
+    right: 20px; /* Align with the button */
+    width: 250px; /* Same width as desktop TOC */
+    max-height: 60vh;
+    background: rgba(0, 0, 0, 0.85);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+    z-index: 89; /* Just below the button */
+    overflow: hidden;
+    transform: translateY(-10px); /* Animate from above */
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.dark-theme .mobile-toc-panel {
+    background: rgba(var(--ctp-base-rgb, 30, 30, 46), 0.95);
+    border: 1px solid rgba(var(--ctp-surface2-rgb, 88, 91, 112), 0.2);
+}
+
+.mobile-toc-panel.active {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mobile-toc-panel .toc-header {
+    padding: 0.75rem;
+}
+
+.mobile-toc-panel .toc-body {
+    max-height: calc(50vh - 3rem);
+    padding: 0.5rem 0;
+    overflow-y: auto;
+}
+
+.mobile-toc-panel .toc-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+}
+
+/* Media queries for mobile view */
+@media (max-width: 767px) {
+    /* Hide the desktop TOC */
+    .article-toc {
+        display: none !important;
+    }
+
+    /* Show the mobile TOC button */
+    .mobile-toc-button {
+        display: flex !important;
+    }
+
+    /* Fix position for smaller screens */
+    @media (max-width: 400px) {
+        .mobile-toc-button {
+            right: 20px !important;
+            top: 80px !important; /* Position at top like theme selector */
+        }
+
+        .mobile-toc-panel {
+            top: 140px !important;
+            right: 20px !important;
+            width: 250px !important;
+        }
+    }
+}
+
+/* Mobile TOC Button - Positioned at the top like theme selector */
 .mobile-toc-button {
     position: fixed;
-    right: 30px;
-    bottom: 100px; /* Increased from 90px to give more space */
+    right: 20px;
+    top: 80px; /* Position at top where theme selector is */
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--ctp-blue, #89b4fa), var(--ctp-mauve, #cba6f7));
+    background: linear-gradient(135deg, #0073e6, #00a1ff);
     color: white;
     border: none;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     cursor: pointer;
-    z-index: 8999;
-    display: flex;
+    z-index: 90;
+    display: none; /* Hidden by default, shown only on mobile */
     align-items: center;
     justify-content: center;
     font-size: 1.2rem;
     transition: all 0.3s ease;
 }
 
-/* Ensure the scroll-to-top button has appropriate positioning */
-.scroll-to-top-btn {
-    position: fixed;
-    bottom: 30px; /* Keep at 30px */
-    right: 30px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--ctp-blue, #89b4fa), var(--ctp-sky, #89dceb));
-    color: white;
-    border: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 9000; /* Higher than TOC button */
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.3s, transform 0.3s;
+/* Dark theme styles for button */
+.dark-theme .mobile-toc-button {
+    background: linear-gradient(135deg, var(--ctp-blue, #89b4fa), var(--ctp-mauve, #cba6f7));
 }
 
-/* Add pulse animation for the button click effect */
-@keyframes btnPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+.mobile-toc-button:hover,
+.mobile-toc-button:focus {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
 
-.btn-pulse {
-    animation: btnPulse 0.7s ease;
+.mobile-toc-button i {
+    transition: transform 0.3s ease;
 }
 
-/* Adjust for smaller screens */
-@media (max-width: 400px) {
-    .mobile-toc-button {
-        right: 20px;
-        bottom: 100px; /* Adjusted from 90px */
-    }
-
-    .scroll-to-top-btn {
-        right: 20px;
-        bottom: 30px;
-    }
+.mobile-toc-active .mobile-toc-button i {
+    transform: rotate(180deg);
 }

@@ -1391,3 +1391,241 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+/**
+ * Refined Table of Contents implementation with proper positioning
+ * Creates a floating TOC below theme selector on desktop
+ * Creates a button above Return to Top on mobile
+ */
+function createTableOfContents() {
+    const articleContent = document.querySelector('.article-content');
+    if (!articleContent) return;
+
+    const headings = articleContent.querySelectorAll('h2, h3');
+    // Minimum headings check - use 2 headings as the minimum
+    if (headings.length < 2) {
+        console.log("Not enough headings to create TOC", headings.length);
+        return;
+    }
+
+    // Check if we're on mobile
+    const isMobile = window.innerWidth <= 767;
+
+    // Find the scroll-to-top button to ensure we position relative to it
+    const scrollToTopBtn = document.getElementById('scroll-to-top');
+    const themeToggle = document.getElementById('theme-toggle-container');
+
+    // Adjust positioning based on these elements if they exist
+    if (scrollToTopBtn) {
+        // Add a z-index to ensure proper stacking
+        scrollToTopBtn.style.zIndex = "9000";
+    }
+
+    if (themeToggle) {
+        // Ensure theme toggle has higher z-index
+        themeToggle.style.zIndex = "9100";
+    }
+
+    if (isMobile) {
+        createMobileTOC(headings, scrollToTopBtn);
+    } else {
+        createDesktopTOC(headings, themeToggle);
+    }
+
+    // Re-initialize if window size changes between mobile and desktop
+    window.addEventListener('resize', function() {
+        const currentIsMobile = window.innerWidth <= 767;
+
+        // Only rebuild if we're crossing the mobile breakpoint
+        if (currentIsMobile !== isMobile) {
+            // Remove existing TOC elements
+            const existingTOC = document.querySelector('.article-toc');
+            const existingMobileTOC = document.querySelector('.mobile-toc-button');
+            const existingMobilePanel = document.querySelector('.mobile-toc-panel');
+
+            if (existingTOC) existingTOC.remove();
+            if (existingMobileTOC) existingMobileTOC.remove();
+            if (existingMobilePanel) existingMobilePanel.remove();
+
+            // Rebuild appropriate TOC
+            if (currentIsMobile) {
+                createMobileTOC(headings, scrollToTopBtn);
+            } else {
+                createDesktopTOC(headings, themeToggle);
+            }
+        }
+    });
+}
+
+/**
+ * Creates the desktop version of the Table of Contents
+ * @param {NodeList} headings - The h2/h3 elements to include
+ * @param {Element} themeToggle - The theme toggle element to position relative to
+ */
+function createDesktopTOC(headings, themeToggle) {
+    // Create TOC container
+    const tocContainer = document.createElement('div');
+    tocContainer.className = 'article-toc';
+    tocContainer.innerHTML = `
+    <div class="toc-header">
+      <h4>Table of Contents</h4>
+      <button class="toc-toggle"><i class="fas fa-chevron-up"></i></button>
+    </div>
+    <div class="toc-body">
+      <ul class="toc-list"></ul>
+    </div>
+  `;
+
+    // If theme toggle exists, position the TOC below it
+    if (themeToggle) {
+        const themeRect = themeToggle.getBoundingClientRect();
+        const topPosition = themeRect.bottom + 20; // 20px gap
+        tocContainer.style.top = `${topPosition}px`;
+    }
+
+    const tocList = tocContainer.querySelector('.toc-list');
+
+    // Add IDs to headings and create TOC entries
+    buildTOCEntries(headings, tocList);
+
+    // Add TOC to the page
+    const articleContainer = document.querySelector('.article-container');
+    if (articleContainer) {
+        articleContainer.appendChild(tocContainer);
+        console.log("Desktop TOC added to article container");
+    } else {
+        document.body.appendChild(tocContainer);
+        console.log("Desktop TOC added to body as fallback");
+    }
+
+    // Update TOC appearance when theme changes
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', function() {
+            // If the theme toggle adds/removes dark-theme class, our CSS will handle it
+            console.log("Theme toggle clicked, TOC styling should update automatically");
+        });
+    }
+
+    // Toggle TOC visibility on desktop
+    const tocToggle = tocContainer.querySelector('.toc-toggle');
+    tocToggle.addEventListener('click', function() {
+        tocContainer.classList.toggle('toc-collapsed');
+        this.querySelector('i').classList.toggle('fa-chevron-up');
+        this.querySelector('i').classList.toggle('fa-chevron-down');
+    });
+
+    // Setup scroll highlighting
+    setupScrollHighlighting();
+}
+
+/**
+ * Builds TOC entries for both desktop and mobile
+ */
+function buildTOCEntries(headings, tocList) {
+    headings.forEach((heading, index) => {
+        // Create ID if it doesn't exist
+        if (!heading.id) {
+            heading.id = `section-${index}`;
+        }
+
+        // Create TOC entry
+        const listItem = document.createElement('li');
+        listItem.className = `toc-item toc-${heading.tagName.toLowerCase()}`;
+
+        const link = document.createElement('a');
+        link.href = `#${heading.id}`;
+        link.textContent = heading.textContent;
+        link.className = 'toc-link';
+
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+
+        // Add click event to scroll smoothly
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const targetElement = document.querySelector(this.getAttribute('href'));
+            if (targetElement) {
+                // Get the scroll position, accounting for fixed navbar height
+                const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - 20; // Add extra padding
+
+                // Scroll to the target with smooth animation
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+}
+
+/**
+ * Sets up scroll highlighting for TOC entries
+ */
+function setupScrollHighlighting() {
+    const navbarHeight = document.querySelector('.navbar').offsetHeight;
+
+    // Function to highlight active section
+    function highlightActiveSection() {
+        const tocLinks = document.querySelectorAll('.toc-link');
+
+        // Find which section is currently visible
+        const fromTop = window.scrollY + navbarHeight + 100; // Adjust offset
+
+        let currentActive = null;
+
+        // Find the current section by checking all headings
+        tocLinks.forEach(link => {
+            const section = document.querySelector(link.getAttribute('href'));
+
+            if (section) {
+                const sectionTop = section.offsetTop;
+                const sectionBottom = sectionTop + section.offsetHeight;
+
+                if (fromTop >= sectionTop && fromTop <= sectionBottom) {
+                    currentActive = link;
+                }
+            }
+        });
+
+        // Remove active class from all links
+        tocLinks.forEach(link => {
+            link.classList.remove('toc-active');
+        });
+
+        // Add active class to current section link
+        if (currentActive) {
+            currentActive.classList.add('toc-active');
+        } else if (tocLinks.length > 0) {
+            // If no section is active (we're at the top), highlight the first one
+            const scrollPosition = window.scrollY;
+            if (scrollPosition < 200) {
+                tocLinks[0].classList.add('toc-active');
+            }
+        }
+    }
+
+    // Throttle scroll event for better performance
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                highlightActiveSection();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+
+    // Initial highlight
+    highlightActiveSection();
+}
+
+// Ensure the function gets called when the DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM loaded, initializing Table of Contents...");
+    setTimeout(createTableOfContents, 100); // Small delay to ensure all elements are ready
+});
