@@ -1591,3 +1591,70 @@ figcaption {
     0% { transform: rotate(360deg); }
     100% { transform: rotate(0deg); }
 }
+
+/* Adjust the position of the mobile TOC button */
+.mobile-toc-button {
+    position: fixed;
+    right: 30px;
+    bottom: 100px; /* Increased from 90px to give more space */
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--ctp-blue, #89b4fa), var(--ctp-mauve, #cba6f7));
+    color: white;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 8999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+/* Ensure the scroll-to-top button has appropriate positioning */
+.scroll-to-top-btn {
+    position: fixed;
+    bottom: 30px; /* Keep at 30px */
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--ctp-blue, #89b4fa), var(--ctp-sky, #89dceb));
+    color: white;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 9000; /* Higher than TOC button */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+/* Add pulse animation for the button click effect */
+@keyframes btnPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.btn-pulse {
+    animation: btnPulse 0.7s ease;
+}
+
+/* Adjust for smaller screens */
+@media (max-width: 400px) {
+    .mobile-toc-button {
+        right: 20px;
+        bottom: 100px; /* Adjusted from 90px */
+    }
+
+    .scroll-to-top-btn {
+        right: 20px;
+        bottom: 30px;
+    }
+}

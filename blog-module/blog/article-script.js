@@ -1286,3 +1286,108 @@ function removeF1Loader(loader) {
         loader.parentNode.removeChild(loader);
     }
 }
+
+
+/**
+ * Creates the mobile version of the Table of Contents with button
+ * @param {NodeList} headings - The h2/h3 elements to include
+ * @param {Element} scrollToTopBtn - The "Return to Top" button to position relative to
+ */
+function createMobileTOC(headings, scrollToTopBtn) {
+    // Create mobile TOC button
+    const tocButton = document.createElement('button');
+    tocButton.className = 'mobile-toc-button';
+    tocButton.innerHTML = '<i class="fas fa-list"></i>';
+    tocButton.setAttribute('aria-label', 'Table of Contents');
+
+    // Position button above the Return to Top button with adequate spacing
+    if (scrollToTopBtn) {
+        // Instead of using dynamic positioning relative to the scroll button,
+        // we'll rely on fixed CSS positioning with proper spacing
+        document.body.appendChild(tocButton);
+    } else {
+        // If scroll button doesn't exist yet, still add the TOC button
+        // The CSS will handle positioning
+        document.body.appendChild(tocButton);
+    }
+
+    // Create mobile TOC panel
+    const tocPanel = document.createElement('div');
+    tocPanel.className = 'mobile-toc-panel';
+    tocPanel.innerHTML = `
+    <div class="toc-header">
+      <h4>Contents</h4>
+    </div>
+    <div class="toc-body">
+      <ul class="toc-list"></ul>
+    </div>
+  `;
+
+    const tocList = tocPanel.querySelector('.toc-list');
+
+    // Add IDs to headings and create TOC entries
+    buildTOCEntries(headings, tocList);
+
+    // Add panel to the page
+    document.body.appendChild(tocPanel);
+
+    // Toggle mobile TOC panel
+    tocButton.addEventListener('click', function() {
+        tocPanel.classList.toggle('active');
+        document.body.classList.toggle('mobile-toc-active');
+    });
+
+    // Close the panel when clicking a link
+    tocPanel.querySelectorAll('.toc-link').forEach(link => {
+        link.addEventListener('click', function() {
+            tocPanel.classList.remove('active');
+            document.body.classList.remove('mobile-toc-active');
+        });
+    });
+
+    // Close panel when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!tocPanel.contains(e.target) && !tocButton.contains(e.target)) {
+            tocPanel.classList.remove('active');
+            document.body.classList.remove('mobile-toc-active');
+        }
+    });
+
+    // Setup scroll highlighting
+    setupScrollHighlighting();
+}
+
+// Check if the back to top button is missing and add it if needed
+document.addEventListener('DOMContentLoaded', function() {
+    if (!document.getElementById('scroll-to-top')) {
+        console.log("Creating missing back to top button");
+
+        // Create the button element
+        const scrollToTopBtn = document.createElement('button');
+        scrollToTopBtn.id = 'scroll-to-top';
+        scrollToTopBtn.className = 'scroll-to-top-btn';
+        scrollToTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+
+        // We'll rely on CSS for positioning instead of dynamic calculation
+
+        // Add the button to the document
+        document.body.appendChild(scrollToTopBtn);
+
+        // Show or hide the button based on scroll position
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        // Scroll to top when button is clicked
+        scrollToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+});
