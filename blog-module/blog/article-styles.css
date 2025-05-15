@@ -60,15 +60,71 @@
     color: #0073e6;
 }
 
+/* Enhanced Typography for Article Content */
 .article-content {
-    padding: 2rem;
-    color: #e0e0e0;
-    font-size: 1.1rem;
+    font-family: 'Roboto', sans-serif;
     line-height: 1.8;
+    color: #e0e0e0;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
 }
 
+/* Add subtle left border as reading guide */
 .article-content p {
     margin-bottom: 1.5rem;
+    position: relative;
+    padding-left: 1rem;
+}
+
+.article-content p::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 2px;
+    background: linear-gradient(to bottom,
+    transparent,
+    rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.3),
+    transparent);
+}
+
+/* Enhanced blockquote styling */
+.article-content blockquote {
+    margin: 2rem 0;
+    padding: 1.5rem 2rem;
+    background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.4);
+    border-radius: 8px;
+    position: relative;
+    font-style: italic;
+    color: #e0e0e0;
+    border-left: none;
+}
+
+.article-content blockquote::before {
+    content: """;
+    position: absolute;
+    top: -20px;
+    left: 10px;
+    font-size: 5rem;
+    color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+    line-height: 1;
+    font-family: Georgia, serif;
+}
+
+/* First letter styling for article opening */
+.article-content > p:first-of-type::first-letter {
+    font-size: 3.5rem;
+    float: left;
+    line-height: 0.8;
+    margin-right: 0.5rem;
+    background: linear-gradient(135deg, var(--ctp-blue, #89b4fa), var(--ctp-sky, #89dceb));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding: 0.5rem 0.5rem 0.5rem 0;
+    font-weight: bold;
 }
 
 .article-content h2,
