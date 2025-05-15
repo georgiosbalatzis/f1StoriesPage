@@ -1237,3 +1237,32 @@ function initScrollProgressBar() {
 
 // Initialize scroll progress bar when the DOM is loaded
 document.addEventListener('DOMContentLoaded', initScrollProgressBar);
+
+// Add smooth section transitions on scroll
+function initSectionAnimations() {
+    // Check for IntersectionObserver support
+    if ('IntersectionObserver' in window) {
+        const sections = document.querySelectorAll('.article-content h2, .article-content h3, .article-content p, .article-content figure');
+
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('section-visible');
+                    // Stop observing after it's been shown
+                    sectionObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            rootMargin: '0px 0px -10% 0px',
+            threshold: 0.1
+        });
+
+        sections.forEach(section => {
+            section.classList.add('section-animate');
+            sectionObserver.observe(section);
+        });
+    }
+}
+
+// Call this function when the DOM is loaded
+document.addEventListener('DOMContentLoaded', initSectionAnimations);
