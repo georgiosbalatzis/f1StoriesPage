@@ -5,6 +5,44 @@
 * - Other numbered images (3.jpg, 4.jpg, etc.) can be used within article content
 */
 
+
+/* CSS RGB helper variables to use rgba */
+.catppuccin-frappe, .catppuccin-macchiato, .catppuccin-mocha {
+    --ctp-base-rgb: 30, 30, 46;
+    --ctp-crust-rgb: 17, 17, 27;
+    --ctp-surface0-rgb: 49, 50, 68;
+    --ctp-surface2-rgb: 88, 91, 112;
+    --ctp-blue-rgb: 137, 180, 250;
+    --ctp-sky-rgb: 137, 220, 235;
+    --ctp-lavender-rgb: 180, 190, 254;
+    --ctp-red-rgb: 243, 139, 168;
+    --ctp-peach-rgb: 250, 179, 135;
+}
+
+.catppuccin-frappe {
+    --ctp-base-rgb: 48, 52, 70;
+    --ctp-crust-rgb: 35, 38, 52;
+    --ctp-surface0-rgb: 65, 69, 89;
+    --ctp-surface2-rgb: 98, 104, 128;
+    --ctp-blue-rgb: 140, 170, 238;
+    --ctp-sky-rgb: 153, 209, 219;
+    --ctp-lavender-rgb: 186, 187, 241;
+    --ctp-red-rgb: 231, 130, 132;
+    --ctp-peach-rgb: 239, 159, 118;
+}
+
+.catppuccin-macchiato {
+    --ctp-base-rgb: 36, 39, 58;
+    --ctp-crust-rgb: 24, 25, 38;
+    --ctp-surface0-rgb: 54, 58, 79;
+    --ctp-surface2-rgb: 91, 96, 120;
+    --ctp-blue-rgb: 138, 173, 244;
+    --ctp-sky-rgb: 145, 215, 227;
+    --ctp-lavender-rgb: 183, 189, 248;
+    --ctp-red-rgb: 237, 135, 150;
+    --ctp-peach-rgb: 245, 169, 127;
+}
+
 /* Article specific styles */
 .article-container {
     background: rgba(0, 0, 0, 0.7);
@@ -377,10 +415,10 @@ figcaption {
     margin-right: 1rem;
 }
 
-/* Back to Top Button Styles */
+/* Ensure the scroll-to-top button has appropriate positioning */
 .scroll-to-top-btn {
     position: fixed;
-    bottom: 30px;
+    bottom: 30px; /* Keep at 30px */
     right: 30px;
     width: 50px;
     height: 50px;
@@ -393,7 +431,7 @@ figcaption {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 9000;
+    z-index: 9000; /* Higher than TOC button */
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.3s, transform 0.3s;
@@ -1505,4 +1543,51 @@ figcaption {
 .section-visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* F1 Tire Loading Spinner */
+.f1-loader {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 5px solid rgba(var(--ctp-surface2-rgb, 88, 91, 112), 0.3);
+    border-top: 5px solid var(--ctp-red, #f38ba8);
+    animation: f1Spin 1s linear infinite;
+    position: relative;
+    margin: 2rem auto;
+}
+
+.f1-loader::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 50%;
+    border: 1px dashed rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.5);
+    animation: f1SpinReverse 3s linear infinite;
+    pointer-events: none;
+}
+
+.f1-loader::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--ctp-surface0, #313244), transparent);
+    transform: translate(-50%, -50%);
+}
+
+@keyframes f1Spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes f1SpinReverse {
+    0% { transform: rotate(360deg); }
+    100% { transform: rotate(0deg); }
 }
