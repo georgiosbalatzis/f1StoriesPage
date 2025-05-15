@@ -1266,3 +1266,23 @@ function initSectionAnimations() {
 
 // Call this function when the DOM is loaded
 document.addEventListener('DOMContentLoaded', initSectionAnimations);
+
+
+// Helper function to show F1 loading spinner
+function showF1Loader(containerSelector) {
+    const container = document.querySelector(containerSelector);
+    if (!container) return null;
+
+    const loader = document.createElement('div');
+    loader.className = 'f1-loader';
+    container.appendChild(loader);
+
+    return loader;
+}
+
+// Helper function to remove loader
+function removeF1Loader(loader) {
+    if (loader && loader.parentNode) {
+        loader.parentNode.removeChild(loader);
+    }
+}
