@@ -1166,17 +1166,19 @@ function initScrollProgressBar() {
         overflow: hidden;
       }
       
+      /* Default light mode styles */
       .scroll-progress-bar {
         height: 100%;
         width: 0;
-        background: linear-gradient(90deg, var(--ctp-blue, #89b4fa), var(--ctp-sky, #89dceb));
+        background: linear-gradient(90deg, #0073e6, #00c6ff);
         transition: width 0.1s ease; /* Smooth animation as scrolling occurs */
-        box-shadow: 0 0 10px rgba(137, 180, 250, 0.3);
+        box-shadow: 0 0 10px rgba(0, 115, 230, 0.3);
       }
       
-      /* Style variations for light mode */
-      body:not(.dark-theme) .scroll-progress-bar {
-        background: linear-gradient(90deg, #0073e6, #00c6ff);
+      /* Dark theme styles - specifically target when dark-theme class is present */
+      .dark-theme .scroll-progress-bar {
+        background: linear-gradient(90deg, var(--ctp-blue, #89b4fa), var(--ctp-sky, #89dceb));
+        box-shadow: 0 0 10px rgba(137, 180, 250, 0.3);
       }
       
       /* Add a subtle glow effect */
@@ -1198,6 +1200,10 @@ function initScrollProgressBar() {
       
       /* Add a style for completed scrolling */
       .scroll-progress-bar.scroll-complete {
+        box-shadow: 0 0 15px rgba(0, 198, 255, 0.5);
+      }
+      
+      .dark-theme .scroll-progress-bar.scroll-complete {
         box-shadow: 0 0 15px rgba(137, 220, 235, 0.5);
       }
       
@@ -1216,6 +1222,16 @@ function initScrollProgressBar() {
       }
     `;
         document.head.appendChild(style);
+    }
+
+    // Update progress bar colors when theme changes
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', function() {
+            // The theme toggle will add/remove the dark-theme class
+            // Our CSS will automatically apply the right styles
+            updateScrollProgress(); // Update progress to make sure it looks consistent
+        });
     }
 }
 
