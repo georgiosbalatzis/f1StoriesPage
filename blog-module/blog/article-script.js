@@ -446,10 +446,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setupAuthorInfo();
 });
 
-
-
-
-
 // F1 Race Countdown with Dynamic Data
 document.addEventListener('DOMContentLoaded', function() {
     // Check if countdown elements exist on the page
