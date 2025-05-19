@@ -232,8 +232,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return { month, day };
     }
 
-    // Function to determine which race is next with corrected date comparison
-    function determineNextRace() {
+    // Function to determine which race is next
+    function findNextRace() {
         const now = new Date();
 
         // Loop through races to find the next one
@@ -258,73 +258,123 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
 
-                return i; // Return the index of the next race
+                return {
+                    race: races[i],
+                    index: i
+                };
             }
         }
 
-        // If all races are in the past, just mark them all as completed
-        // and return the last race (for the season finale)
-        races.forEach(race => race.status = "completed");
-        return races.length - 1;
+        // If all races are in the past, return the last race
+        races.forEach(race => {
+            race.status = "completed";
+        });
+
+        return {
+            race: races[races.length - 1],
+            index: races.length - 1,
+            seasonEnded: true
+        };
     }
 
-    // ========== BLOG CALENDAR FUNCTIONS ==========
+    // Clear any existing race highlight first
+    function clearExistingRaceHighlight() {
+        // First, let's get all elements from the next-race-highlight that might contain race info
+        const nextRaceElements = document.querySelectorAll('.next-race-highlight *');
 
-    // Setup the next race highlight for the blog sidebar
-    function setupBlogCalendar() {
-        // Determine which race is next
-        nextRaceIndex = determineNextRace();
-        const nextRace = races[nextRaceIndex];
+        // Clear any existing hardcoded races
+        nextRaceElements.forEach(element => {
+            // Clear text content of elements that might contain race names
+            if (element.id === 'next-race-name' ||
+                element.id === 'next-race-circuit' ||
+                element.className === 'race-title' ||
+                element.className === 'race-circuit') {
+                element.textContent = '';
+            }
 
-        if (!nextRace) {
-            console.error("Could not determine the next race");
+            // Clear flag if it exists
+            if (element.id === 'next-race-flag') {
+                element.textContent = '';
+            }
+
+            // Clear any countdown elements
+            if (element.id === 'count-days' ||
+                element.id === 'count-hours' ||
+                element.id === 'count-mins') {
+                element.textContent = '';
+            }
+        });
+    }
+
+    // Set the next race highlight in the sidebar
+    function updateNextRaceHighlight(race, seasonEnded) {
+        // First clear any existing hardcoded content
+        clearExistingRaceHighlight();
+
+        // Get the next race highlight container
+        const highlightContainer = document.querySelector('.next-race-highlight');
+        if (!highlightContainer) {
+            console.error('Next race highlight container not found');
             return;
         }
 
-        // Get the sidebar elements
-        const nextRaceName = document.getElementById('next-race-name');
-        const nextRaceCircuit = document.getElementById('next-race-circuit');
-        const nextRaceFlag = document.getElementById('next-race-flag');
+        // Get elements inside the highlight container
+        const raceNameEl = highlightContainer.querySelector('#next-race-name');
+        const raceCircuitEl = highlightContainer.querySelector('#next-race-circuit');
+        const raceFlagEl = highlightContainer.querySelector('#next-race-flag');
 
-        // These elements are in the blog sidebar
-        if (nextRaceName) nextRaceName.textContent = nextRace.name;
-        if (nextRaceCircuit) nextRaceCircuit.textContent = nextRace.circuit;
-        if (nextRaceFlag) nextRaceFlag.textContent = nextRace.flag;
-
-        // Setup countdown in sidebar
-        const countDays = document.getElementById('count-days');
-        const countHours = document.getElementById('count-hours');
-        const countMins = document.getElementById('count-mins');
-
-        if (countDays || countHours || countMins) {
-            updateSidebarCountdown(nextRace.date);
-            setInterval(() => updateSidebarCountdown(nextRace.date), 60000);
+        // Update the race info
+        if (raceNameEl) {
+            raceNameEl.textContent = seasonEnded ? 'Season Complete' : race.name;
+        } else {
+            console.warn('Race name element not found in highlight');
         }
 
-        // Populate races list
-        populateRacesList();
+        if (raceCircuitEl) {
+            raceCircuitEl.textContent = seasonEnded ? 'See you next season!' : race.circuit;
+        } else {
+            console.warn('Race circuit element not found in highlight');
+        }
 
-        // Setup toggle for past races
-        setupPastRacesToggle();
+        if (raceFlagEl) {
+            raceFlagEl.textContent = race.flag;
+        } else {
+            console.warn('Race flag element not found in highlight');
+        }
+
+        // Update the countdown
+        updateRaceCountdown(race.date, seasonEnded);
     }
 
-    // Update sidebar countdown
-    function updateSidebarCountdown(raceDate) {
-        const countDays = document.getElementById('count-days');
-        const countHours = document.getElementById('count-hours');
-        const countMins = document.getElementById('count-mins');
+    // Update the race countdown in the sidebar
+    function updateRaceCountdown(raceDate, seasonEnded) {
+        // Get countdown elements
+        const daysEl = document.getElementById('count-days');
+        const hoursEl = document.getElementById('count-hours');
+        const minsEl = document.getElementById('count-mins');
 
-        if (!countDays && !countHours && !countMins) return;
+        if (!daysEl || !hoursEl || !minsEl) {
+            console.warn('Countdown elements not found');
+            return;
+        }
 
-        // Calculate time difference
+        // If season has ended, just show zeros
+        if (seasonEnded) {
+            daysEl.textContent = '0';
+            hoursEl.textContent = '00';
+            minsEl.textContent = '00';
+            return;
+        }
+
+        // Calculate time until race
         const now = new Date();
         const diff = raceDate - now;
 
+        // If the race has already started
         if (diff <= 0) {
-            // Race has passed or is happening now
-            if (countDays) countDays.textContent = "0";
-            if (countHours) countHours.textContent = "00";
-            if (countMins) countMins.textContent = "00";
+            daysEl.textContent = '0';
+            hoursEl.textContent = '00';
+            minsEl.textContent = '00';
             return;
         }
 
@@ -333,41 +383,45 @@ document.addEventListener('DOMContentLoaded', function() {
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-        // Update the DOM
-        if (countDays) countDays.textContent = days;
-        if (countHours) countHours.textContent = hours.toString().padStart(2, '0');
-        if (countMins) countMins.textContent = mins.toString().padStart(2, '0');
+        // Update countdown elements
+        daysEl.textContent = days.toString();
+        hoursEl.textContent = hours.toString().padStart(2, '0');
+        minsEl.textContent = mins.toString().padStart(2, '0');
+
+        // Schedule next update
+        setTimeout(() => updateRaceCountdown(raceDate, seasonEnded), 60000); // Update every minute
     }
 
-    // Get races to display based on current state
+    // Get races to display in the list
     function getDisplayRaces() {
         if (nextRaceIndex === -1) {
-            // Fallback if next race not determined
             return races.slice(0, 6);
         }
 
         // Get upcoming races (next race + 5 more)
-        const upcomingRaces = races.slice(nextRaceIndex, nextRaceIndex + 6);
+        const upcomingRaces = races.slice(nextRaceIndex, Math.min(races.length, nextRaceIndex + 6));
 
-        // If showing past races, include up to 5 past races before the next one
+        // If showing past races, include up to 5 past races
         if (showingPastRaces && nextRaceIndex > 0) {
             const pastRaces = races.slice(Math.max(0, nextRaceIndex - 5), nextRaceIndex);
             return [...pastRaces, ...upcomingRaces];
         }
 
-        // Otherwise just return the upcoming races
         return upcomingRaces;
     }
 
-    // Populate races list
+    // Populate the races list
     function populateRacesList() {
         const racesList = document.getElementById('upcoming-races-list');
-        if (!racesList) return;
+        if (!racesList) {
+            console.error('Races list element not found');
+            return;
+        }
 
-        // Clear any existing races or placeholders
+        // Clear the list
         racesList.innerHTML = '';
 
-        // Get races to display based on current state
+        // Get races to display
         const displayRaces = getDisplayRaces();
 
         // Add each race to the list
@@ -399,122 +453,115 @@ document.addEventListener('DOMContentLoaded', function() {
     // Setup toggle for past races
     function setupPastRacesToggle() {
         const toggleBtn = document.getElementById('toggle-past-races');
-        if (!toggleBtn) return;
+        if (!toggleBtn) {
+            console.warn('Past races toggle button not found');
+            return;
+        }
 
         toggleBtn.addEventListener('click', function() {
-            // Toggle the display state
+            // Toggle state
             showingPastRaces = !showingPastRaces;
 
             // Update button text
             this.textContent = showingPastRaces ? 'Hide Past Races' : 'Show Past Races';
 
-            // Re-populate the races list with the new state
+            // Update races list
             populateRacesList();
         });
     }
 
-    // ========== NAVBAR COUNTDOWN FUNCTIONS ==========
+    // Setup navbar countdown if elements exist
+    function setupNavbarCountdown(race, seasonEnded) {
+        // Check if navbar countdown elements exist
+        const navCountdown = document.getElementById('race-countdown');
+        const mobileCountdown = document.getElementById('race-countdown-mobile');
 
-    // Check if navbar countdown elements exist
-    const navCountdownTimer = document.getElementById('race-countdown');
-    const navMobileCountdown = document.getElementById('race-countdown-mobile');
-
-    function setupNavbarCountdown() {
-        if (!navCountdownTimer && !navMobileCountdown) return;
-
-        // Convert our race data to the format expected by navbar countdown
-        const navRaceCalendar = races.map(race => ({
-            name: race.name,
-            shortName: race.shortName,
-            location: race.location,
-            countryCode: race.countryCode,
-            date: race.date.toISOString()
-        }));
-
-        // Function to find the next upcoming race for navbar
-        function getNavNextRace() {
-            const now = new Date();
-
-            // Find the first race that's in the future
-            const nextRace = navRaceCalendar.find(race => new Date(race.date) > now);
-
-            // If no future races found, return the last race
-            return nextRace || (navRaceCalendar.length ? navRaceCalendar[navRaceCalendar.length - 1] : null);
+        if (!navCountdown && !mobileCountdown) {
+            return; // No navbar countdown elements found
         }
 
-        // Function to update navbar race info
-        function updateNavRaceInfo(race) {
-            if (!race) return;
+        // Get navbar race elements
+        const navRaceName = document.querySelector('.navbar .race-info #next-race-name');
+        const navRaceFlag = document.querySelector('.navbar .race-flag #race-flag-emoji');
 
-            const raceNameElement = document.getElementById('next-race-name');
-            const flagElement = document.getElementById('race-flag-emoji');
+        // Update navbar race info
+        if (navRaceName) {
+            navRaceName.textContent = seasonEnded ? 'Season Over' : (race.shortName || race.name);
+        }
 
-            if (raceNameElement) {
-                raceNameElement.textContent = race.shortName || race.name.split(' ')[0];
-            }
-
-            if (flagElement) {
-                // Use flag directly from our race data
-                const originalRace = races.find(r => r.name === race.name);
-                flagElement.textContent = originalRace ? originalRace.flag : '🏁';
-            }
+        if (navRaceFlag) {
+            navRaceFlag.textContent = race.flag;
         }
 
         // Function to update navbar countdown
-        function updateNavCountdown() {
-            // Find the next race from navbar calendar
-            const nextRace = getNavNextRace();
-            if (!nextRace) return;
+        function updateNavbarCountdown() {
+            if (!navCountdown && !mobileCountdown) return;
 
-            const raceDate = new Date(nextRace.date);
-            const now = new Date();
-
-            // Calculate time difference
-            const timeDiff = raceDate - now;
-
-            // If race has passed, update to the next race
-            if (timeDiff <= 0) {
-                // This will re-run the whole system and find a new next race
-                initializeCalendar();
+            // If season has ended
+            if (seasonEnded) {
+                if (navCountdown) navCountdown.textContent = 'Season Over';
+                if (mobileCountdown) mobileCountdown.textContent = 'End';
                 return;
             }
 
-            // Calculate days, hours, minutes
-            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            // Calculate time remaining
+            const now = new Date();
+            const raceDate = race.date;
+            const diff = raceDate - now;
 
-            // Update DOM elements
-            if (navCountdownTimer) {
-                navCountdownTimer.textContent = `${days}d ${hours}h ${minutes}m`;
+            // If race has already started
+            if (diff <= 0) {
+                if (navCountdown) navCountdown.textContent = 'Race Today!';
+                if (mobileCountdown) mobileCountdown.textContent = 'Today';
+                return;
             }
 
-            if (navMobileCountdown) {
-                // Simpler display for mobile
-                navMobileCountdown.textContent = days > 0 ? `${days}d` : `${hours}h`;
+            // Calculate time units
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+            // Update countdown displays
+            if (navCountdown) {
+                navCountdown.textContent = `${days}d ${hours}h ${mins}m`;
             }
 
-            // Update every minute
-            setTimeout(updateNavCountdown, 60000);
+            if (mobileCountdown) {
+                mobileCountdown.textContent = days > 0 ? `${days}d` : `${hours}h`;
+            }
+
+            // Schedule next update
+            setTimeout(updateNavbarCountdown, 60000); // Update every minute
         }
 
-        // Initialize navbar countdown
-        const nextRace = getNavNextRace();
-        if (nextRace) {
-            updateNavRaceInfo(nextRace);
-            updateNavCountdown();
-        }
+        // Start updating navbar countdown
+        updateNavbarCountdown();
     }
 
-    // Main initialization function
+    // Initialize the F1 calendar
     function initializeCalendar() {
-        // Setup blog calendar
-        setupBlogCalendar();
+        // Find the next race
+        const { race: nextRace, index, seasonEnded } = findNextRace();
+        nextRaceIndex = index;
+
+        console.log(`Next race determined: ${nextRace.name}, Index: ${index}`);
+
+        // Update the next race highlight
+        updateNextRaceHighlight(nextRace, seasonEnded);
+
+        // Populate the races list
+        populateRacesList();
+
+        // Setup past races toggle
+        setupPastRacesToggle();
 
         // Setup navbar countdown
-        setupNavbarCountdown();
+        setupNavbarCountdown(nextRace, seasonEnded);
     }
 
-    // Start everything
-    initializeCalendar();
+    // We need to wait a bit to make sure DOM is fully loaded and any other scripts have run
+    setTimeout(() => {
+        console.log('Initializing F1 Calendar');
+        initializeCalendar();
+    }, 100);
 });
