@@ -107,16 +107,35 @@ document.addEventListener('DOMContentLoaded', function() {
             return "Dimitris Keramidiotis";
         }
 
-        // Check for other authors by last character if format is YYYYMMDDX
-        if (/^\d{8}[A-Z]$/.test(folderId) || /^\d{8}[A-Z]F$/.test(folderId)) {
+        // Handle featured posts with format YYYYMMDDXF
+        if (/^\d{8}[A-Z]F$/.test(folderId)) {
+            const authorCode = folderId.charAt(folderId.length - 2); // Get the character before F
+            if (authorCode === 'G') return "Georgios Balatzis";
+            if (authorCode === 'J') return "Giannis Poulikidis";
+            if (authorCode === 'T') return "Thanasis Batalas";
+            // The W and D cases are already handled above
+        }
+
+        // Handle featured posts with format YYYYMMDD-NXF
+        if (/^\d{8}-\d+[A-Z]F$/.test(folderId)) {
+            const authorCode = folderId.charAt(folderId.length - 2); // Get the character before F
+            if (authorCode === 'G') return "Georgios Balatzis";
+            if (authorCode === 'J') return "Giannis Poulikidis";
+            if (authorCode === 'T') return "Thanasis Batalas";
+            // The W and D cases are already handled above
+        }
+
+        // Check for author in standard formats (non-featured)
+        // Check for YYYYMMDDX format
+        if (/^\d{8}[A-Z]$/.test(folderId)) {
             const authorCode = folderId.charAt(folderId.length - 1);
             if (authorCode === 'G') return "Georgios Balatzis";
             if (authorCode === 'J') return "Giannis Poulikidis";
             if (authorCode === 'T') return "Thanasis Batalas";
         }
 
-        // Check for author in folder names like YYYYMMDD-NX
-        if (/^\d{8}-\d+[A-Z]$/.test(folderId) || /^\d{8}-\d+[A-Z]F$/.test(folderId)) {
+        // Check for YYYYMMDD-NX format
+        if (/^\d{8}-\d+[A-Z]$/.test(folderId)) {
             const authorCode = folderId.charAt(folderId.length - 1);
             if (authorCode === 'G') return "Georgios Balatzis";
             if (authorCode === 'J') return "Giannis Poulikidis";
