@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
         throw error || new Error('Failed to fetch blog data');
     }
 
-// Function to determine author based on folder name pattern
+    // Updated determineAuthor function that properly handles featured posts including 20250519GF
     function determineAuthor(post) {
         // If post already has an author, return it
         if (post.author && post.author.trim() !== '') {
@@ -96,6 +96,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Get the folder ID
         const folderId = post.id || '';
+        console.log(`Determining author for folder: ${folderId}`);
+
+        // Special case for specific patterns we know exist
+        if (folderId === "20250519GF") {
+            console.log("Found exact match for 20250519GF - setting author to Georgios Balatzis");
+            return "Georgios Balatzis";
+        }
+
+        // Extract author code from Featured posts with format YYYYMMDDXF
+        const featuredPattern = /^\d{8}([A-Z])F$/;
+        const featuredMatch = featuredPattern.exec(folderId);
+        if (featuredMatch) {
+            const authorCode = featuredMatch[1]; // This extracts the captured group (the author code)
+            console.log(`Found featured post with author code: ${authorCode}`);
+
+            if (authorCode === 'G') return "Georgios Balatzis";
+            if (authorCode === 'J') return "Giannis Poulikidis";
+            if (authorCode === 'T') return "Thanasis Batalas";
+            if (authorCode === 'W') return "2Fast";
+            if (authorCode === 'D') return "Dimitris Keramidiotis";
+        }
+
+        // Extract author code from Featured multi-post with format YYYYMMDD-NXF
+        const featuredMultiPattern = /^\d{8}-\d+([A-Z])F$/;
+        const featuredMultiMatch = featuredMultiPattern.exec(folderId);
+        if (featuredMultiMatch) {
+            const authorCode = featuredMultiMatch[1];
+            console.log(`Found multi-post featured with author code: ${authorCode}`);
+
+            if (authorCode === 'G') return "Georgios Balatzis";
+            if (authorCode === 'J') return "Giannis Poulikidis";
+            if (authorCode === 'T') return "Thanasis Batalas";
+            if (authorCode === 'W') return "2Fast";
+            if (authorCode === 'D') return "Dimitris Keramidiotis";
+        }
 
         // Check for 2Fast (W indicator)
         if (folderId.includes('W')) {
@@ -107,43 +142,33 @@ document.addEventListener('DOMContentLoaded', function() {
             return "Dimitris Keramidiotis";
         }
 
-        // Handle featured posts with format YYYYMMDDXF
-        if (/^\d{8}[A-Z]F$/.test(folderId)) {
-            const authorCode = folderId.charAt(folderId.length - 2); // Get the character before F
-            if (authorCode === 'G') return "Georgios Balatzis";
-            if (authorCode === 'J') return "Giannis Poulikidis";
-            if (authorCode === 'T') return "Thanasis Batalas";
-            // The W and D cases are already handled above
-        }
+        // Check for standard format YYYYMMDDX
+        const standardPattern = /^\d{8}([A-Z])$/;
+        const standardMatch = standardPattern.exec(folderId);
+        if (standardMatch) {
+            const authorCode = standardMatch[1];
+            console.log(`Found standard post with author code: ${authorCode}`);
 
-        // Handle featured posts with format YYYYMMDD-NXF
-        if (/^\d{8}-\d+[A-Z]F$/.test(folderId)) {
-            const authorCode = folderId.charAt(folderId.length - 2); // Get the character before F
-            if (authorCode === 'G') return "Georgios Balatzis";
-            if (authorCode === 'J') return "Giannis Poulikidis";
-            if (authorCode === 'T') return "Thanasis Batalas";
-            // The W and D cases are already handled above
-        }
-
-        // Check for author in standard formats (non-featured)
-        // Check for YYYYMMDDX format
-        if (/^\d{8}[A-Z]$/.test(folderId)) {
-            const authorCode = folderId.charAt(folderId.length - 1);
             if (authorCode === 'G') return "Georgios Balatzis";
             if (authorCode === 'J') return "Giannis Poulikidis";
             if (authorCode === 'T') return "Thanasis Batalas";
         }
 
-        // Check for YYYYMMDD-NX format
-        if (/^\d{8}-\d+[A-Z]$/.test(folderId)) {
-            const authorCode = folderId.charAt(folderId.length - 1);
+        // Check for multi-post format YYYYMMDD-NX
+        const multiPattern = /^\d{8}-\d+([A-Z])$/;
+        const multiMatch = multiPattern.exec(folderId);
+        if (multiMatch) {
+            const authorCode = multiMatch[1];
+            console.log(`Found multi-post with author code: ${authorCode}`);
+
             if (authorCode === 'G') return "Georgios Balatzis";
             if (authorCode === 'J') return "Giannis Poulikidis";
             if (authorCode === 'T') return "Thanasis Batalas";
         }
 
         // Default author if no match
-        return post.author || "Unknown";
+        console.log(`No author match found for folder: ${folderId}`);
+        return post.author || "F1 Stories Team";
     }
 
     // Setup author filters
