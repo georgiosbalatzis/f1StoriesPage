@@ -1,11 +1,21 @@
-Position,Οδηγός,Ομάδα,Χρόνος
-1,Oscar Piastri,McLaren,1:14.670
-2,Max Verstappen,Red Bull,1:14.704
-3,George Russell,Mercedes,1:14.807
-4,Lando Norris,McLaren,1:14.962
-5,Fernando Alonso,Aston Martin,1:15.431
-6,Carlos Sainz,Williams,1:15.432
-7,Alex Albon,Williams,1:15.473
-8,Lance Stroll,Aston Martin,1:15.581
-9,Isack Hadjar,Racing Bulls,1:15.746
-10,Pierre Gasly,Alpine,1:15.787
+Θέση,Οδηγός,Ομάδα,Q1,Q2,Q3
+1,Oscar Piastri,McLaren,1:15.500,1:15.214,1:14.670
+2,Max Verstappen,Red Bull Racing,1:15.175,1:15.394,1:14.704
+3,George Russell,Mercedes,1:15.852,1:15.334,1:14.807
+4,Lando Norris,McLaren,1:15.894,1:15.261,1:14.962
+5,Fernando Alonso,Aston Martin,1:15.695,1:15.442,1:15.431
+6,Carlos Sainz,Williams,1:15.987,1:15.198,1:15.432
+7,Alex Albon,Williams,1:16.123,1:15.521,1:15.473
+8,Lance Stroll,Aston Martin,1:15.817,1:15.497,1:15.581
+9,Isack Hadjar,Racing Bulls,1:16.253,1:15.510,1:15.746
+10,Pierre Gasly,Alpine,1:15.937,1:15.505,1:15.787
+11,Charles Leclerc,Ferrari,1:16.108,1:15.605,
+12,Lewis Hamilton,Ferrari,1:16.163,1:15.772,
+13,Kimi Antonelli,Mercedes,1:15.943,1:15.772,
+14,Gabriel Bortoleto,Sauber,1:16.340,1:16.260,
+15,Franco Colapinto,Alpine,1:16.256,N/A,
+16,Liam Lawson,Racing Bulls,1:16.379,,
+17,Nico Hulkenberg,Sauber,1:16.518,,
+18,Esteban Ocon,Haas,1:16.613,,
+19,Oliver Bearman,Haas,1:16.918,,
+20,Yuki Tsunoda,Red Bull Racing,N/A,,
