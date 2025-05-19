@@ -96,20 +96,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Get the folder ID
         const folderId = post.id || '';
-        console.log(`Determining author for folder: ${folderId}`);
-
-        // Special case for specific patterns we know exist
-        if (folderId === "20250519GF") {
-            console.log("Found exact match for 20250519GF - setting author to Georgios Balatzis");
-            return "Georgios Balatzis";
-        }
 
         // Extract author code from Featured posts with format YYYYMMDDXF
         const featuredPattern = /^\d{8}([A-Z])F$/;
         const featuredMatch = featuredPattern.exec(folderId);
         if (featuredMatch) {
             const authorCode = featuredMatch[1]; // This extracts the captured group (the author code)
-            console.log(`Found featured post with author code: ${authorCode}`);
 
             if (authorCode === 'G') return "Georgios Balatzis";
             if (authorCode === 'J') return "Giannis Poulikidis";
@@ -123,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const featuredMultiMatch = featuredMultiPattern.exec(folderId);
         if (featuredMultiMatch) {
             const authorCode = featuredMultiMatch[1];
-            console.log(`Found multi-post featured with author code: ${authorCode}`);
 
             if (authorCode === 'G') return "Georgios Balatzis";
             if (authorCode === 'J') return "Giannis Poulikidis";
@@ -133,12 +124,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Check for 2Fast (W indicator)
-        if (folderId.includes('W')) {
+        if (folderId.includes('W') && !folderId.endsWith('F')) {
             return "2Fast";
         }
 
         // Check for Dimitris Keramidiotis (D indicator)
-        if (folderId.includes('D')) {
+        if (folderId.includes('D') && !folderId.endsWith('F')) {
             return "Dimitris Keramidiotis";
         }
 
@@ -147,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const standardMatch = standardPattern.exec(folderId);
         if (standardMatch) {
             const authorCode = standardMatch[1];
-            console.log(`Found standard post with author code: ${authorCode}`);
 
             if (authorCode === 'G') return "Georgios Balatzis";
             if (authorCode === 'J') return "Giannis Poulikidis";
@@ -159,7 +149,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const multiMatch = multiPattern.exec(folderId);
         if (multiMatch) {
             const authorCode = multiMatch[1];
-            console.log(`Found multi-post with author code: ${authorCode}`);
 
             if (authorCode === 'G') return "Georgios Balatzis";
             if (authorCode === 'J') return "Giannis Poulikidis";
@@ -167,7 +156,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Default author if no match
-        console.log(`No author match found for folder: ${folderId}`);
         return post.author || "F1 Stories Team";
     }
 
@@ -422,12 +410,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // If no posts to show
         if (postsToShow.length === 0) {
             blogContainer.innerHTML = `
-                <div class="col-12">
-                    <div class="alert alert-info">
-                        No posts found matching your criteria.
-                    </div>
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No posts found matching your criteria.
                 </div>
-            `;
+            </div>
+        `;
             return;
         }
 
@@ -442,36 +430,39 @@ document.addEventListener('DOMContentLoaded', function() {
             const imagePath = processImagePath(basePath, post.image);
             const fallbackPath = basePath + 'blog-module/images/default-blog.jpg';
 
+            // Make sure author is used from the post object
+            const author = post.author || "F1 Stories Team";
+
             const postHtml = `
-                <div class="col-md-4 blog-card-container" data-id="${post.id}" data-tag="${post.tag || 'General'}" data-category="${post.category || 'Uncategorized'}">
-                    <a href="${basePath}blog-module/blog-entries/${post.id}/article.html" class="blog-card-link">
-                        <div class="blog-card">
-                            <div class="blog-img-container">
-                                <img src="${imagePath}" alt="${post.title}" class="blog-img" onerror="this.src='${fallbackPath}'">
-                                <div class="blog-date">
-                                    <span class="day">${day}</span>
-                                    <span class="month">${month}</span>
-                                </div>
-                            </div>
-                            <div class="blog-content">
-                                <h3 class="blog-title">${post.title}</h3>
-                                <div class="blog-meta">
-                                    <span><i class="fas fa-user"></i> ${post.author}</span>
-                                    <span><i class="fas fa-calendar"></i> ${post.displayDate}</span>
-                                </div>
-                                <p class="blog-excerpt">${post.excerpt}</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="post-info">
-                                        <span class="post-tag"><i class="fas fa-tag"></i> ${post.tag || 'General'}</span>
-                                        <span class="post-category ms-2"><i class="fas fa-folder"></i> ${post.category || 'Uncategorized'}</span>
-                                    </div>
-                                    <span class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></span>
-                                </div>
+            <div class="col-md-4 blog-card-container" data-id="${post.id}" data-tag="${post.tag || 'General'}" data-category="${post.category || 'Uncategorized'}">
+                <a href="${basePath}blog-module/blog-entries/${post.id}/article.html" class="blog-card-link">
+                    <div class="blog-card">
+                        <div class="blog-img-container">
+                            <img src="${imagePath}" alt="${post.title}" class="blog-img" onerror="this.src='${fallbackPath}'">
+                            <div class="blog-date">
+                                <span class="day">${day}</span>
+                                <span class="month">${month}</span>
                             </div>
                         </div>
-                    </a>
-                </div>
-            `;
+                        <div class="blog-content">
+                            <h3 class="blog-title">${post.title}</h3>
+                            <div class="blog-meta">
+                                <span><i class="fas fa-user"></i> ${author}</span>
+                                <span><i class="fas fa-calendar"></i> ${post.displayDate}</span>
+                            </div>
+                            <p class="blog-excerpt">${post.excerpt}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="post-info">
+                                    <span class="post-tag"><i class="fas fa-tag"></i> ${post.tag || 'General'}</span>
+                                    <span class="post-category ms-2"><i class="fas fa-folder"></i> ${post.category || 'Uncategorized'}</span>
+                                </div>
+                                <span class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        `;
 
             blogContainer.innerHTML += postHtml;
         });
@@ -945,30 +936,34 @@ document.addEventListener('DOMContentLoaded', function() {
             featuredPostIds.push(post.id);
         }
 
+        // IMPORTANT: Make sure we're using the correct author that was determined earlier
+        // Get the author from the post object - it should already be properly determined
+        const author = post.author || "F1 Stories Team";
+
         // Create a rich featured post with more details
         featuredPost.innerHTML = `
-            <img src="${processedImage}" alt="${post.title}" class="featured-post-img" onerror="this.src='${fallbackPath}'">
-            <div class="featured-post-overlay">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <span class="featured-tag">Featured</span>
-                    <div class="featured-date">
-                        <span class="day">${day}</span>
-                        <span class="month">${month}</span>
-                    </div>
-                </div>
-                <h2 class="featured-post-title">${post.title}</h2>
-                <div class="blog-meta mb-3 text-light">
-                    <span><i class="fas fa-user"></i> ${post.author}</span>
-                    <span><i class="fas fa-calendar"></i> ${post.displayDate}</span>
-                    <span><i class="fas fa-tag"></i> ${post.tag || 'General'}</span>
-                    <span><i class="fas fa-folder"></i> ${post.category || 'Uncategorized'}</span>
-                </div>
-                <p class="featured-post-excerpt">${post.excerpt}</p>
-                <div class="d-flex align-items-center justify-content-between">
-                    <a href="${basePath}blog-module/blog-entries/${post.id}/article.html" class="blog-read-more">Read Full Article <i class="fas fa-arrow-right"></i></a>
+        <img src="${processedImage}" alt="${post.title}" class="featured-post-img" onerror="this.src='${fallbackPath}'">
+        <div class="featured-post-overlay">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <span class="featured-tag">Featured</span>
+                <div class="featured-date">
+                    <span class="day">${day}</span>
+                    <span class="month">${month}</span>
                 </div>
             </div>
-        `;
+            <h2 class="featured-post-title">${post.title}</h2>
+            <div class="blog-meta mb-3 text-light">
+                <span><i class="fas fa-user"></i> ${author}</span>
+                <span><i class="fas fa-calendar"></i> ${post.displayDate}</span>
+                <span><i class="fas fa-tag"></i> ${post.tag || 'General'}</span>
+                <span><i class="fas fa-folder"></i> ${post.category || 'Uncategorized'}</span>
+            </div>
+            <p class="featured-post-excerpt">${post.excerpt}</p>
+            <div class="d-flex align-items-center justify-content-between">
+                <a href="${basePath}blog-module/blog-entries/${post.id}/article.html" class="blog-read-more">Read Full Article <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    `;
 
         // Make the entire featured post clickable
         featuredPost.style.cursor = 'pointer';
@@ -1028,6 +1023,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Process authors based on folder naming conventions
                 data.posts.forEach(post => {
                     post.author = determineAuthor(post);
+                    console.log(`Post ${post.id} author set to: ${post.author}`);
                 });
 
                 // Sort posts by date (most recent first)
@@ -1037,6 +1033,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Filter featured posts based on folder naming pattern
                 const featuredPosts = sortedPosts.filter(isFeaturedPost);
+                console.log(`Found ${featuredPosts.length} featured posts`);
+
+                // Log featured posts for debugging
+                featuredPosts.forEach(post => {
+                    console.log(`Featured post: ${post.id}, Author: ${post.author}`);
+                });
 
                 // Take only the 3 most recent featured posts
                 const postsToDisplay = featuredPosts.slice(0, FEATURED_POSTS_LIMIT);
@@ -1060,23 +1062,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     const imagePath = processImagePath(basePath, post.image);
                     const fallbackPath = basePath + 'blog-module/images/default-blog.jpg';
 
+                    // Make sure author is used from the post object
+                    const author = post.author || "F1 Stories Team";
+
                     const postHtml = `
-                    <div class="col-md-4 col-sm-6 mb-4">
-                        <a href="${basePath}blog-module/blog-entries/${post.id}/article.html" class="featured-post-link">
-                            <div class="featured-post-card">
-                                <img src="${imagePath}" alt="${post.title}" class="featured-post-img" loading="lazy" onerror="this.src='${fallbackPath}'">
-                                <div class="featured-post-content">
-                                    <h3 class="featured-post-title">${post.title}</h3>
-                                    <p class="featured-post-excerpt">${post.excerpt || 'Read this interesting article...'}</p>
-                                    <div class="featured-post-meta">
-                                        <span class="featured-post-date"><i class="fas fa-calendar"></i> ${month} ${day}</span>
-                                        <span class="read-more">Read <i class="fas fa-arrow-right"></i></span>
-                                    </div>
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <a href="${basePath}blog-module/blog-entries/${post.id}/article.html" class="featured-post-link">
+                        <div class="featured-post-card">
+                            <img src="${imagePath}" alt="${post.title}" class="featured-post-img" loading="lazy" onerror="this.src='${fallbackPath}'">
+                            <div class="featured-post-content">
+                                <h3 class="featured-post-title">${post.title}</h3>
+                                <div class="featured-post-meta">
+                                    <span class="featured-post-author"><i class="fas fa-user"></i> ${author}</span>
+                                </div>
+                                <p class="featured-post-excerpt">${post.excerpt || 'Read this interesting article...'}</p>
+                                <div class="featured-post-meta">
+                                    <span class="featured-post-date"><i class="fas fa-calendar"></i> ${month} ${day}</span>
+                                    <span class="read-more">Read <i class="fas fa-arrow-right"></i></span>
                                 </div>
                             </div>
-                        </a>
-                    </div>
-                `;
+                        </div>
+                    </a>
+                </div>
+            `;
 
                     featuredContainer.innerHTML += postHtml;
                 });
@@ -1109,12 +1117,12 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error('Error loading featured posts:', error);
                 featuredContainer.innerHTML = `
-                <div class="col-12">
-                    <div class="alert alert-danger">
-                        Unable to load featured posts. Please try again later.
-                    </div>
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    Unable to load featured posts. Please try again later.
                 </div>
-            `;
+            </div>
+        `;
             });
     }
 
