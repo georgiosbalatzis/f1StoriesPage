@@ -177,6 +177,7 @@ function loadEpisodesDirectly() {
 function createEpisodeCard(episode) {
     const card = document.createElement('div');
     card.className = 'episode-card';
+    // ADD THIS LINE to make episodes detectable
     card.dataset.episodeId = episode.id;
 
     // Create title section
