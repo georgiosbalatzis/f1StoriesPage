@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grand Prix Ουγγαρίας 2025: Η Στρατηγική της McLaren, η Κατάρρευση της Ferrari και ο Θρίαμβος του Norris! 🏁🏆🇭🇺 | F1 Stories Blog</title>
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="Grand Prix Ουγγαρίας 2025: Η Στρατηγική της McLaren, η Κατάρρευση της Ferrari και ο Θρίαμβος του Norris! 🏁🏆🇭🇺 | F1 Stories Blog">
+  <meta property="og:description" content="🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈">
+  <meta property="og:image" content="2.webp">
+  <meta property="og:url" content="https://f1stories.gr/blog-module/blog-entries/20250804G/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
+  <style>
+    /* YouTube embed container for responsive videos */
+    .youtube-embed-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+      margin: 2rem 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .youtube-embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+    }
+
+    .video-caption {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/blog-module/blog-styles.css">
+  <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-X68J6MQKSM');
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the meta description tag
+      const metaDescription = document.querySelector('meta[property="og:description"]');
+
+      // Get the article content for calculating reading time
+      const articleContent = document.querySelector('.article-content');
+
+      if (metaDescription && articleContent) {
+        // Calculate reading time
+        const text = articleContent.textContent || articleContent.innerText;
+        const wordCount = text.trim().split(/\s+/).length;
+
+        // Average reading speed: 200 words per minute
+        const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
+        // Update meta description with reading time
+        metaDescription.setAttribute('content', `A ${readingTimeMinutes} minute read on F1 Stories Blog`);
+
+        // Also update the reading time element in the article if it exists
+        const readingTimeElement = document.getElementById('reading-time-value');
+        if (readingTimeElement) {
+          readingTimeElement.textContent = `${readingTimeMinutes} min read`;
+        }
+      } else {
+        // Fallback description if article content is not found
+        if (metaDescription) {
+          metaDescription.setAttribute('content', '🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈');
+        }
+      }
+    });
+  </script>
+
+</head>
+<body>
+<div class="background"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
+
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy">
+      </a>
+      <div class="race-countdown-container">
+        <div class="race-countdown">
+          <div class="race-flag">
+            <span id="race-flag-emoji">🏁</span>
+          </div>
+          <div class="race-info">
+            <span class="next-race-name" id="next-race-name">Loading...</span>
+            <div class="countdown-timer" id="race-countdown">--</div>
+          </div>
+        </div>
+        <!-- Mobile version - visible only on small screens -->
+        <div class="race-countdown-mobile">
+          <i class="fas fa-flag-checkered"></i>
+          <span id="race-countdown-mobile">--</span>
+        </div>
+      </div>
+      <button class="navbar-toggler" type="button" id="mobile-toggler">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <!-- Home -->
+          <li class="nav-item">
+            <a class="nav-link" href="/" id="home-link">Home</a>
+          </li>
+
+          <!-- Podcast dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">
+              Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+              <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
+              <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+            </ul>
+          </li>
+
+          <!-- Stories & Media dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
+              Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
+              <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+              <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+            </ul>
+          </li>
+
+          <!-- About dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
+              About <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/#about">About Us</a></li>
+              <li><a class="dropdown-item" href="/#guests">Guests</a></li>
+              <li><a class="dropdown-item" href="/#contact">Contact</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="py-5 mt-5">
+  <div class="container">
+    <!-- Back to Blog Button -->
+    <div class="text-start mb-4">
+      <a href="/blog-module/blog/index.html" class="btn btn-outline-light">
+        <i class="fas fa-arrow-left me-2"></i> Back to Blog
+      </a>
+    </div>
+
+    <div class="article-container">
+      <div class="article-header">
+        <!-- Images are local to the article folder -->
+        <img src="2.webp" alt="Grand Prix Ουγγαρίας 2025: Η Στρατηγική της McLaren, η Κατάρρευση της Ferrari και ο Θρίαμβος του Norris! 🏁🏆🇭🇺" class="article-header-img" loading="lazy" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <div class="article-header-overlay">
+          <h1 class="article-title">Grand Prix Ουγγαρίας 2025: Η Στρατηγική της McLaren, η Κατάρρευση της Ferrari και ο Θρίαμβος του Norris! 🏁🏆🇭🇺</h1>
+          <div class="article-meta">
+            <span><i class="fas fa-calendar"></i> August 4, 2025</span>
+            <span><i class="fas fa-tag"></i> GP</span>
+            <span><i class="fas fa-folder"></i> 2025</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add social sharing bar here -->
+      <!-- Updated Social Share Bar -->
+      <div class="social-share-bar">
+        <div class="share-label">
+          <i class="fas fa-share-alt"></i>
+          <span>Share this article:</span>
+        </div>
+        <div class="share-buttons">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://f1stories.gr/blog-module/blog-entries/20250804G/article.html" target="_blank" class="share-btn facebook" aria-label="Share on Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://www.addtoany.com/add_to/threads?linkurl=https://f1stories.gr/blog-module/blog-entries/20250804G/article.html&linkname=Grand Prix Ουγγαρίας 2025: Η Στρατηγική της McLaren, η Κατάρρευση της Ferrari και ο Θρίαμβος του Norris! 🏁🏆🇭🇺" target="_blank" class="share-btn threads" aria-label="Share on Threads">
+            <i class="fab fa-threads"></i>
+          </a>
+          <button id="instagram-dm-btn" class="share-btn instagram" aria-label="Share via Instagram DM">
+            <i class="fab fa-instagram"></i>
+          </button>
+          <a href="https://api.whatsapp.com/send?text=Grand Prix Ουγγαρίας 2025: Η Στρατηγική της McLaren, η Κατάρρευση της Ferrari και ο Θρίαμβος του Norris! 🏁🏆🇭🇺%20https://f1stories.gr/blog-module/blog-entries/20250804G/article.html" target="_blank" class="share-btn whatsapp" aria-label="Share on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+          <a href="https://t.me/share/url?url=https://f1stories.gr/blog-module/blog-entries/20250804G/article.html&text=Grand Prix Ουγγαρίας 2025: Η Στρατηγική της McLaren, η Κατάρρευση της Ferrari και ο Θρίαμβος του Norris! 🏁🏆🇭🇺" target="_blank" class="share-btn telegram" aria-label="Share on Telegram">
+            <i class="fab fa-telegram-plane"></i>
+          </a>
+          <button id="web-share-btn" class="share-btn web-share" aria-label="Share on installed apps">
+            <i class="fas fa-share-nodes"></i>
+          </button>
+          <button class="share-btn copy-link" id="copy-link-btn" aria-label="Copy link">
+            <i class="fas fa-link"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="article-content">
+        <!-- Article content goes here -->
+        <p></p><h1>Grand Prix Ουγγαρίας 2025: Η Στρατηγική της McLaren, η Κατάρρευση της Ferrari και ο Θρίαμβος του Norris! 🏁🏆🇭🇺</h1><h3>Το Grand Prix σε 3 Λεπτά</h3><p>Το Grand Prix της Ουγγαρίας για το 2025, ο 14ος γύρος του παγκοσμίου πρωταθλήματος και ο τελευταίος αγώνας πριν το καλοκαιρινό διάλειμμα, θα μείνει στην ιστορία ως μια από τις πιο συναρπαστικές στρατηγικές αναμετρήσεις της σύγχρονης εποχής. Ήταν ένα Σαββατοκύριακο που ξεκίνησε με την απόλυτη κυριαρχία της McLaren, ανατράπηκε από μια απρόσμενη pole position της Ferrari, και κρίθηκε από μια παρτίδα σκάκι υψηλής ταχύτητας μεταξύ των δύο οδηγών της McLaren, του Lando Norris και του Oscar Piastri.</p><p>Ο Lando Norris, παρότι έπεσε στην πέμπτη θέση στην εκκίνηση, εκτέλεσε μια αριστουργηματική και τολμηρή στρατηγική ενός pit stop για να κατακτήσει μια νίκη που φαινόταν αδύνατη. Απέκρουσε την καταιγιστική επίθεση του teammate του, Oscar Piastri, ο οποίος με φρέσκα ελαστικά από μια στρατηγική δύο στάσεων, τον πλησίασε σε απόσταση αναπνοής στους τελευταίους γύρους, με τη διαφορά τους στη γραμμή του τερματισμού να είναι μόλις 0.698 δευτερόλεπτα.</p><p>Αυτή δεν ήταν απλώς μια νίκη, αλλά ένας ιστορικός θρίαμβος για τη McLaren, καθώς σήμανε την 200ή νίκη της ομάδας στην ιστορία της Formula 1, ένα ορόσημο που μόνο η Ferrari έχει ξεπεράσει. Ταυτόχρονα, έβαλε φωτιά στη μάχη του τίτλου, με τον Norris να μειώνει τη διαφορά από τον πρωτοπόρο Piastri σε μόλις εννέα βαθμούς.</p><p>Από την άλλη πλευρά, η Ferrari βίωσε ένα Σαββατοκύριακο ακραίων συναισθημάτων. Ο Charles Leclerc κατέκτησε μια εντυπωσιακή και εντελώς απρόσμενη pole position το Σάββατο, μόνο για να δει τον ρυθμό του να καταρρέει ανεξήγητα στο τελευταίο μέρος του αγώνα, τερματίζοντας τελικά στην τέταρτη θέση. Στο βάθρο, μαζί με τους δύο οδηγούς της McLaren, ανέβηκε ο George Russell της Mercedes, ο οποίος με μια επιθετική οδήγηση κατάφερε να προσπεράσει τον Leclerc.</p><p>Το Σαββατοκύριακο ανέδειξε επίσης την εντυπωσιακή απόδοση του rookie Gabriel Bortoleto, ο οποίος με την Kick Sauber κατέκτησε την έκτη θέση και το βραβείο του "Οδηγού της Ημέρας", επιβεβαιώνοντας τη φήμη του ως ένα από τα μεγαλύτερα ταλέντα της νέας γενιάς.</p><h2>Το Σκηνικό στο Hungaroring – Το "Μονακό χωρίς μπαριέρες"</h2><p>Το Hungaroring δεν είναι μια τυπική πίστα. Είναι ένα τεχνικό αίνιγμα που απαιτεί ένα μοναδικό συνδυασμό μηχανικής ακρίβειας και οδηγικής δεξιοτεχνίας. Τα χαρακτηριστικά του, σε συνδυασμό με τις απρόβλεπτες καιρικές συνθήκες, έθεσαν τις βάσεις για το στρατηγικό δράμα που ακολούθησε.</p><h3>1.1 Ανάλυση Πίστας: Μια Δοκιμασία Υψηλής Κάθετης Δύναμης</h3><p>Με μήκος 4.381 χιλιόμετρα και 14 στροφές (με ορισμένες πηγές να μετρούν τις εσωτερικές καμπές των σικέιν ως ξεχωριστές στροφές, φτάνοντας τις 16), το Hungaroring είναι διαβόητο για τη στενή, γεμάτη στροφές και συχνά σκονισμένη επιφάνειά του. Συχνά αποκαλείται "το Μονακό χωρίς τις μπαριέρες" ή "πίστα καρτ", λόγω της έλλειψης μεγάλων ευθειών και της συνεχούς αλληλουχίας αργών και μέσης ταχύτητας στροφών.</p><p>Αυτά τα χαρακτηριστικά επιβάλλουν στις ομάδες να χρησιμοποιούν ρυθμίσεις μέγιστης αεροδυναμικής κάθετης δύναμης (high downforce), παρόμοιες με αυτές του Μονακό, για να εξασφαλίσουν την απαραίτητη πρόσφυση στις στροφές. Η προσπέραση είναι εξαιρετικά δύσκολη, με την κύρια ευκαιρία να παρουσιάζεται στην ευθεία εκκίνησης-τερματισμού με τη βοήθεια του DRS, πριν τη στενή Στροφή 1. Αυτό καθιστά τη θέση εκκίνησης υψίστης σημασίας, καθώς μια καλή κατάταξη στις δοκιμές μπορεί να καθορίσει σε μεγάλο βαθμό την έκβαση του αγώνα.</p><p><strong>Στατιστικά Πίστας Hungaroring</strong></p><table><thead><tr><th><p>Χαρακτηριστικό</p></th><th><p>Τιμή</p></th></tr><tr><th><p>Μήκος Πίστας</p></th><th><p>4.381 km </p></th></tr><tr><th><p>Αριθμός Γύρων</p></th><th><p>70 </p></th></tr><tr><th><p>Απόσταση Αγώνα</p></th><th><p>306.63 km </p></th></tr><tr><th><p>Αριθμός Στροφών</p></th><th><p>14 </p></th></tr><tr><th><p>Ζώνες DRS</p></th><th><p>2 </p></th></tr><tr><th><p>Απαίτηση Κάθετης Δύναμης</p></th><th><p>Υψηλή </p></th></tr></thead></table><h3>1.2 Ο Παράγοντας Καιρός: Μια Ευκαιρία για Εναλλακτικές Στρατηγικές</h3><p>Ενώ η βροχή που προβλεπόταν αρχικά για τον αγώνα της Κυριακής δεν εμφανίστηκε ποτέ, ο καιρός έπαιξε έναν αποφασιστικό, αν και έμμεσο, ρόλο στην εξέλιξη του Σαββατοκύριακου. Η αλλαγή των συνθηκών μεταξύ των δοκιμών, των κατατακτήριων και του αγώνα δημιούργησε ένα περιβάλλον αβεβαιότητας που ανέτρεψε τις προσδοκίες και άνοιξε την πόρτα σε στρατηγικές εκπλήξεις.</p><p>Η Παρασκευή ήταν ηλιόλουστη και ζεστή, με τη θερμοκρασία αέρα να φτάνει τους 28°C, συνθήκες που ευνόησαν την κυριαρχία της McLaren στις ελεύθερες δοκιμές.<sup>16</sup> Ωστόσο, το Σάββατο, κατά τη διάρκεια των κατατακτήριων δοκιμών, το σκηνικό άλλαξε. Παρότι η βροχή παρέμεινε μακριά, η θερμοκρασία της πίστας έπεσε δραματικά, από πάνω από 50°C σε κάτω από 40°C, ενώ ο άνεμος ενισχύθηκε. Αυτή η απότομη αλλαγή αποδείχθηκε καθοριστική. Διατάραξε την ισορροπία των μονοθεσίων και δημιούργησε ένα πολύ στενό "παράθυρο" λειτουργίας. Μέσα σε αυτό το χαοτικό περιβάλλον, η Ferrari του Charles Leclerc βρήκε την τέλεια ισορροπία τη στιγμή που μετρούσε περισσότερο, επιτρέποντάς του να "κλέψει" την pole position από τις θεωρητικά ταχύτερες McLaren.</p><p>Την Κυριακή, ο καιρός συνέχισε το παιχνίδι του. Η έντονη βροχή κατά τη διάρκεια της νύχτας "καθάρισε" την πίστα από τη γόμα που είχε στρωθεί, κάνοντάς την πιο ολισθηρή στην αρχή του αγώνα.<sup>19</sup> Το πιο σημαντικό, όμως, ήταν ότι η θερμοκρασία αέρα παρέμεινε πιο χαμηλή από την Παρασκευή, γύρω στους 25-27°C. Αυτές οι ψυχρότερες συνθήκες ήταν λιγότερο απαιτητικές για τα ελαστικά. Αυτή η λεπτομέρεια, που φαινόταν ασήμαντη, ήταν το κλειδί που "ξεκλείδωσε" τη στρατηγική του ενός pit stop, μια επιλογή που θεωρούνταν σχεδόν αδύνατη με βάση τα δεδομένα της Παρασκευής. Ο καιρός, λοιπόν, δεν επηρέασε τον αγώνα με βροχή, αλλά διαμόρφωσε το στρατηγικό τοπίο, δίνοντας στη Ferrari μια pole που δεν μπορούσε να υπερασπιστεί και επιτρέποντας στον Norris να εκτελέσει μια στρατηγική που τον οδήγησε στη νίκη.</p><p><strong>Καιρικές Συνθήκες Τριημέρου</strong></p><table><thead><tr><th><p>Περίοδος</p></th><th><p>Συνθήκες</p></th><th><p>Θερμ. Αέρα (περίπου)</p></th><th><p>Πιθανότητα Βροχής</p></th></tr><tr><th><p><strong>FP1 &amp; FP2</strong></p></th><th><p>Ηλιόλουστος, Στεγνός</p></th><th><p>28°C</p></th><th><p>&lt;20% </p></th></tr><tr><th><p><strong>FP3 &amp; Κατατακτήριες</strong></p></th><th><p>Συννεφιά, Πτώση Θερμ. Πίστας</p></th><th><p>27-28°C</p></th><th><p>20% </p></th></tr><tr><th><p><strong>Αγώνας</strong></p></th><th><p>Συννεφιά, Στεγνός, Ψυχρότερος</p></th><th><p>25-27°C</p></th><th><p>20% (μειωμένη από αρχική πρόβλεψη) </p></th></tr></thead></table><h2>Ελεύθερες Δοκιμές: Η McLaren Δείχνει τα Δόντια της</h2><p>Οι τρεις περίοδοι ελεύθερων δοκιμών στην Ουγγαρία δημιούργησαν μια ισχυρή, αλλά τελικά παραπλανητική, αίσθηση προβλεψιμότητας. Η McLaren έδειξε από την πρώτη στιγμή ότι ήταν η ομάδα που έπρεπε να νικήσει κανείς, ενώ η Red Bull βυθιζόταν σε ένα σερι προβλημάτων ισορροπίας.</p><h3>2.1 FP1: Η McLaren Ξεκινά Δυναμικά</h3><p>Από την πρώτη κιόλας περίοδο, η McLaren έθεσε τον τόνο. Ο Lando Norris σημείωσε τον ταχύτερο χρόνο με 1:16.052, με τον teammate του, Oscar Piastri, να ακολουθεί σε απόσταση αναπνοής, μόλις 0.019 δευτερόλεπτα πίσω του. Ο Charles Leclerc με τη Ferrari ήταν ο πλησιέστερος αντίπαλος, αλλά ήδη 0.217 δευτερόλεπτα μακριά, σηματοδοτώντας από νωρίς τη διαφορά δυναμικότητας. Η περίοδος είχε και τα δικά της μικρά δράματα: ο Paul Aron, που οδηγούσε για τη Sauber στη θέση του Nico Hulkenberg, είδε την προσπάθειά του να τελειώνει πρόωρα λόγω τεχνικού προβλήματος, προκαλώντας την εμφάνιση του Εικονικού Αυτοκινήτου Ασφαλείας. Επίσης, ο Fernando Alonso αναγκάστηκε να παραχωρήσει τη θέση του στον εφεδρικό οδηγό της Aston Martin, Felipe Drugovich, λόγω ενός τραυματισμού στην πλάτη, δημιουργώντας αβεβαιότητα για τη συμμετοχή του στο υπόλοιπο τριήμερο.</p><h3>2.2 FP2: Norris Εδραιώνει την Κυριαρχία, ο Verstappen σε Αμηχανία</h3><p>Η δεύτερη περίοδος ελεύθερων δοκιμών επιβεβαίωσε και ενίσχυσε την εικόνα της πρώτης. Ο Lando Norris ήταν και πάλι ταχύτερος, βελτιώνοντας τον χρόνο του σε 1:15.624, και πάλι με τον Piastri στη δεύτερη θέση και τον Leclerc στην τρίτη.<sup>22</sup> Η Aston Martin έδειξε σημάδια ανάκαμψης, με τον Lance Stroll και τον Fernando Alonso (που επέστρεψε στο cockpit) να καταλαμβάνουν την τέταρτη και πέμπτη θέση αντίστοιχα, υποδηλώνοντας ότι η πίστα ταίριαζε στο μονοθέσιό τους.</p><p>Η μεγάλη ιστορία της περιόδου, ωστόσο, ήταν τα συνεχιζόμενα προβλήματα του Max Verstappen. Ο παγκόσμιος πρωταθλητής παραπονέθηκε έντονα για την ισορροπία του μονοθεσίου του, λέγοντας χαρακτηριστικά στον ασύρματο ότι οδηγούσε "πάνω σε πάγο". Ολοκλήρωσε την περίοδο μόλις στη 14η θέση, μια εικόνα ασυνήθιστη για τον Ολλανδό, και μάλιστα βρέθηκε υπό έρευνα από τους αγωνοδίκες για ένα περίεργο συμβάν όπου φάνηκε να πετάει μια πετσέτα από το cockpit του ενώ οδηγούσε αργά.</p><h3>2.3 FP3: Η Τελική Πρόβα Ανήκει στον Piastri</h3><p>Η τελευταία περίοδος δοκιμών πριν τις κατατακτήριες δεν έφερε καμία αλλαγή στο σκηνικό. Αυτή τη φορά ήταν η σειρά του Oscar Piastri να βρεθεί στην κορυφή των χρόνων με 1:14.916, με τον Norris να είναι μόλις 0.032 δευτερόλεπτα πίσω του. Ο Leclerc παρέμεινε σταθερά στην τρίτη θέση, επιβεβαιώνοντας τη θέση της Ferrari ως "η καλύτερη των υπολοίπων". Τα προβλήματα για τον Verstappen συνεχίστηκαν αμείωτα. Παρά τις προσπάθειες της ομάδας να βρει μια λύση, ο Ολλανδός ανέφερε ότι "προσπαθείς να φτιάξεις το πίσω μέρος και το μονοθέσιο βυθίζεται στην υποστροφή", τερματίζοντας στη 12η θέση.</p><p>Συνολικά, οι ελεύθερες δοκιμές ζωγράφισαν μια ξεκάθαρη εικόνα: η McLaren ήταν σε δικό της πρωτάθλημα, με τους δύο οδηγούς της να εναλλάσσονται στην κορυφή. Η Ferrari φαινόταν ασφαλής στην τρίτη θέση, και η Red Bull αντιμετώπιζε ένα από τα πιο δύσκολα Σαββατοκύριακα της σεζόν. Όλα έδειχναν ότι η μάχη για την pole position θα ήταν μια εσωτερική υπόθεση της McLaren. Κανείς δεν μπορούσε να προβλέψει την ανατροπή που θα ακολουθούσε.</p><h2>Κατατακτήριες Δοκιμές – Η Κεραυνοβόλος Απάντηση της Ferrari</h2><p>Οι κατατακτήριες δοκιμές του Grand Prix της Ουγγαρίας εξελίχθηκαν σε ένα από τα πιο συναρπαστικά και απρόβλεπτα sessions της σεζόν. Ενώ όλοι περίμεναν μια μονομαχία μεταξύ των δύο McLaren, ο Charles Leclerc και η Ferrari είχαν άλλα σχέδια, εκμεταλλευόμενοι τις μεταβαλλόμενες συνθήκες για να πετύχουν το ακατόρθωτο.</p><h3>3.1 Q1 &amp; Q2: Οι Πρώτες Εκπλήξεις και Απογοητεύσεις</h3><p>Το <strong>Q1</strong> ξεκίνησε με τον Oscar Piastri να θέτει τον ταχύτερο χρόνο, επιβεβαιώνοντας την ταχύτητα της McLaren.<sup>8</sup> Ωστόσο, η μάχη για την αποφυγή του αποκλεισμού ήταν έντονη. Στο τέλος της περιόδου, οι οδηγοί που αποκλείστηκαν ήταν ο Yuki Tsunoda (Red Bull), ο Pierre Gasly (Alpine), ο Esteban Ocon (Haas), ο Nico Hulkenberg (Sauber) και ο Alex Albon (Williams).</p><p>Το <strong>Q2</strong> έφερε τη μεγαλύτερη έκπληξη της ημέρας. Ο Lewis Hamilton, επτά φορές παγκόσμιος πρωταθλητής και πολυνίκης στην Ουγγαρία, δεν κατάφερε να βρει ρυθμό και αποκλείστηκε, καταλαμβάνοντας μόλις τη 12η θέση. Η απογοήτευσή του ήταν έκδηλη στον ασύρματο, όπου ακούστηκε να λέει με αναστεναγμό "κάθε φορά". Ήταν το χειρότερο αποτέλεσμά του σε κατατακτήριες στο Hungaroring. Ο rookie της Mercedes, Kimi Antonelli, επίσης αντιμετώπισε δυσκολίες, καθώς είδε τον καλύτερο χρόνο του να διαγράφεται λόγω παραβίασης των ορίων της πίστας, με αποτέλεσμα να πέσει στη 15η θέση.</p><h3>3.2 Q3: Ο Leclerc Κλέβει την Δόξα στο Φινάλε</h3><p>Το Q3 διεξήχθη κάτω από ένα μεταβαλλόμενο σκηνικό. Ελαφριές ψιχάλες έπεσαν σε σημεία της πίστας, η θερμοκρασία έπεφτε και ο άνεμος ενισχυόταν, δημιουργώντας εξαιρετικά δύσκολες συνθήκες. Αυτή η αστάθεια αποδείχθηκε το κλειδί. Ενώ οι McLaren δυσκολεύονταν να επαναλάβουν τους κυρίαρχους χρόνους των δοκιμών, ο Charles Leclerc βρήκε την τέλεια ισορροπία.</p><p>Στην τελευταία του ιπτάμενη προσπάθεια, ο Μονεγάσκος της Ferrari έκανε έναν σχεδόν τέλειο γύρο, σταματώντας το χρονόμετρο στο <strong>1:15.372</strong>. Ήταν ένας χρόνος που σόκαρε το paddock. Ο Leclerc κατέκτησε την pole position με απειροελάχιστη διαφορά, αφήνοντας τον Oscar Piastri στη δεύτερη θέση για μόλις</p><p><strong>0.026 δευτερόλεπτα</strong>. Ο Lando Norris ήταν τρίτος, μόλις 0.015 δευτερόλεπτα πίσω από τον teammate του, με τους έξι πρώτους οδηγούς να χωρίζονται από περίπου ένα δέκατο του δευτερολέπτου, σε μια από τις πιο κλειστές μάχες της χρονιάς.</p><p>Η αντίδραση του Leclerc τα έλεγε όλα. "Δεν έχω λόγια. Είναι ίσως μια από τις καλύτερες pole positions που έχω πάρει, γιατί ήταν τόσο απρόσμενη," δήλωσε, μην μπορώντας να πιστέψει το κατόρθωμά του. Η Ferrari, που φαινόταν να είναι η τέταρτη ταχύτερη ομάδα σε απόλυτο ρυθμό κατά τη διάρκεια του Σαββατοκύριακου, κατάφερε να βρεθεί στην κορυφή χάρη σε έναν συνδυασμό οδηγικής μαεστρίας και της ικανότητας του μονοθεσίου να λειτουργεί σε ένα πολύ συγκεκριμένο, ψυχρότερο παράθυρο συνθηκών.</p><h3>3.3 Τελική Κατάταξη Κατατακτήριων &amp; Ποινές</h3><p>Η τελική κατάταξη των κατατακτήριων δοκιμών διαμόρφωσε ένα συναρπαστικό grid για τον αγώνα της Κυριακής, με τη Ferrari στην pole, τις δύο McLaren να την καταδιώκουν, και τους Verstappen και Hamilton να ξεκινούν από ασυνήθιστα χαμηλές θέσεις.</p><p>Μια σημαντική αλλαγή στο grid πριν τον αγώνα αφορούσε τον Yuki Tsunoda. Παρότι είχε καταταγεί 16ος, η Red Bull αποφάσισε να αλλάξει εξαρτήματα της μονάδας ισχύος στο μονοθέσιό του υπό καθεστώς parc fermé. Ως αποτέλεσμα, ο Ιάπωνας οδηγός υποχρεώθηκε να εκκινήσει τον αγώνα από το pit lane.</p><p><strong>Αναλυτικά Αποτελέσματα Κατατακτήριων Δοκιμών - GP Ουγγαρίας 2025</strong></p><table><thead><tr><th><p>Θέση</p></th><th><p>Οδηγός</p></th><th><p>Ομάδα</p></th><th><p>Χρόνος Q3</p></th></tr><tr><th><p><strong>1</strong></p></th><th><p>Charles Leclerc</p></th><th><p>Ferrari</p></th><th><p>1:15.372 </p></th></tr><tr><th><p><strong>2</strong></p></th><th><p>Oscar Piastri</p></th><th><p>McLaren</p></th><th><p>1:15.398 </p></th></tr><tr><th><p><strong>3</strong></p></th><th><p>Lando Norris</p></th><th><p>McLaren</p></th><th><p>1:15.413 </p></th></tr><tr><th><p><strong>4</strong></p></th><th><p>George Russell</p></th><th><p>Mercedes</p></th><th><p>1:15.425 </p></th></tr><tr><th><p><strong>5</strong></p></th><th><p>Fernando Alonso</p></th><th><p>Aston Martin</p></th><th><p>1:15.481 </p></th></tr><tr><th><p><strong>6</strong></p></th><th><p>Lance Stroll</p></th><th><p>Aston Martin</p></th><th><p>1:15.498 </p></th></tr><tr><th><p><strong>7</strong></p></th><th><p>Gabriel Bortoleto</p></th><th><p>Kick Sauber</p></th><th><p>1:15.725 </p></th></tr><tr><th><p><strong>8</strong></p></th><th><p>Max Verstappen</p></th><th><p>Red Bull Racing</p></th><th><p>1:15.728 </p></th></tr><tr><th><p><strong>9</strong></p></th><th><p>Liam Lawson</p></th><th><p>Racing Bulls</p></th><th><p>1:15.821 </p></th></tr><tr><th><p><strong>10</strong></p></th><th><p>Isack Hadjar</p></th><th><p>Racing Bulls</p></th><th><p>1:15.915 </p></th></tr><tr><th><p><strong>11</strong></p></th><th><p>Oliver Bearman</p></th><th><p>Haas</p></th><th><p>(Αποκλείστηκε στο Q2)</p></th></tr><tr><th><p><strong>12</strong></p></th><th><p>Lewis Hamilton</p></th><th><p>Ferrari</p></th><th><p>(Αποκλείστηκε στο Q2)</p></th></tr><tr><th><p><strong>13</strong></p></th><th><p>Carlos Sainz</p></th><th><p>Williams</p></th><th><p>(Αποκλείστηκε στο Q2)</p></th></tr><tr><th><p><strong>14</strong></p></th><th><p>Franco Colapinto</p></th><th><p>Alpine</p></th><th><p>(Αποκλείστηκε στο Q2)</p></th></tr><tr><th><p><strong>15</strong></p></th><th><p>Kimi Antonelli</p></th><th><p>Mercedes</p></th><th><p>(Αποκλείστηκε στο Q2)</p></th></tr><tr><th><p><strong>16</strong></p></th><th><p>Pierre Gasly</p></th><th><p>Alpine</p></th><th><p>(Αποκλείστηκε στο Q1)</p></th></tr><tr><th><p><strong>17</strong></p></th><th><p>Esteban Ocon</p></th><th><p>Haas</p></th><th><p>(Αποκλείστηκε στο Q1)</p></th></tr><tr><th><p><strong>18</strong></p></th><th><p>Nico Hulkenberg</p></th><th><p>Kick Sauber</p></th><th><p>(Αποκλείστηκε στο Q1)</p></th></tr><tr><th><p><strong>19</strong></p></th><th><p>Alex Albon</p></th><th><p>Williams</p></th><th><p>(Αποκλείστηκε στο Q1)</p></th></tr><tr><th><p><strong>PL</strong></p></th><th><p>Yuki Tsunoda</p></th><th><p>Red Bull Racing</p></th><th><p>(Αποκλείστηκε στο Q1)*</p></th></tr></thead></table><p><em>*Ο Yuki Tsunoda εκκίνησε από το pit lane λόγω αλλαγής εξαρτημάτων.</em></p><h2>Ο Αγώνας – Μια Παρτίδα Σκάκι Υψηλής Ταχύτητας</h2><p>Ο αγώνας της Κυριακής εξελίχθηκε σε μια συναρπαστική επίδειξη στρατηγικής ευφυΐας και οδηγικής αντοχής. Δεν κρίθηκε από την ωμή ταχύτητα, αλλά από τις αποφάσεις που πάρθηκαν στο pit wall, την άψογη διαχείριση ελαστικών και την ικανότητα ενός οδηγού να μετατρέψει μια καταστροφική εκκίνηση σε έναν απρόσμενο θρίαμβο.</p><h3>4.1 Επίσημη Σειρά Εκκίνησης</h3><p>Μετά την ποινή του Yuki Tsunoda, η τελική σειρά εκκίνησης διαμορφώθηκε ως εξής, με τον Ιάπωνα να ξεκινά από την έξοδο του pit lane.</p><ol><li>Charles Leclerc (Ferrari)</li><li>Oscar Piastri (McLaren)</li><li>Lando Norris (McLaren)</li><li>George Russell (Mercedes)</li><li>Fernando Alonso (Aston Martin)</li><li>Lance Stroll (Aston Martin)</li><li>Gabriel Bortoleto (Sauber)</li><li>Max Verstappen (Red Bull)</li><li>Liam Lawson (Racing Bulls)</li><li>Isack Hadjar (Racing Bulls)</li><li>Oliver Bearman (Haas)</li><li>Lewis Hamilton (Ferrari)</li><li>Carlos Sainz (Williams)</li><li>Franco Colapinto (Alpine)</li><li>Kimi Antonelli (Mercedes)</li><li>Pierre Gasly (Alpine)</li><li>Esteban Ocon (Haas)</li><li>Nico Hulkenberg (Sauber)</li><li>Alex Albon (Williams)<br />PL. Yuki Tsunoda (Red Bull)</li></ol><h3>4.2 Εκκίνηση και Πρώτοι Γύροι: Το Λάθος που Άλλαξε τα Πάντα</h3><p>Όταν έσβησαν τα πέντε κόκκινα φώτα, ο Charles Leclerc έκανε μια εξαιρετική εκκίνηση από την pole position και κατάφερε να κρατήσει την πρωτοπορία στην πρώτη στροφή. Πίσω του, ο Oscar Piastri διατήρησε τη δεύτερη θέση, τοποθετώντας τη McLaren του ακριβώς πίσω από τη Ferrari.</p><p>Η κρισιμότερη στιγμή της εκκίνησης, και όπως αποδείχθηκε, ολόκληρου του αγώνα, συνέβη ακριβώς πίσω τους. Ο Lando Norris, ξεκινώντας από την τρίτη θέση, βρέθηκε εγκλωβισμένος. Φρενάροντας νωρίς για να αποφύγει τον Piastri, άφησε την εξωτερική γραμμή ανοιχτή, επιτρέποντας στον George Russell και τον Fernando Alonso να τον προσπεράσουν. Μέσα σε λίγα δευτερόλεπτα, ο Norris είχε πέσει από την τρίτη στην πέμπτη θέση. Εκείνη τη στιγμή, φαινόταν σαν μια καταστροφή για τις ελπίδες του για νίκη. Στην πραγματικότητα, ήταν το γεγονός που του άνοιξε τον δρόμο προς αυτήν.</p><h3>4.3 Η Στρατηγική: Ένα ή Δύο Pit Stop;</h3><p>Αυτό το αρχικό "λάθος" του Norris ανάγκασε τη McLaren να σκεφτεί διαφορετικά. Με τον Piastri να μάχεται για την πρωτοπορία με τον Leclerc, η ομάδα τον κράτησε στην προκαθορισμένη, και θεωρητικά ταχύτερη, στρατηγική των δύο pit stop. Ο Piastri μπήκε στα pits στον γύρο 18, σε μια προσπάθεια να κάνει το "undercut" στον Leclerc, ο οποίος απάντησε στον επόμενο γύρο για να καλύψει την κίνηση. Ο Piastri έκανε τη δεύτερη στάση του στον γύρο 45, δεσμευμένος σε αυτό το πλάνο.</p><p>Για τον Norris, όμως, η κατάσταση ήταν διαφορετική. Κολλημένος πίσω από τον Russell στην τέταρτη θέση (αφού προσπέρασε γρήγορα τον Alonso), μια στρατηγική δύο στάσεων θα τον οδηγούσε πιθανότατα σε έναν μοναχικό αγώνα για την τέταρτη θέση. Η ομάδα πήρε μια τολμηρή απόφαση: τον μετέτρεψε σε στρατηγική ενός pit stop. Αυτό δεν ήταν το αρχικό σχέδιο. Ο Norris παρέμεινε στην πίστα για έναν εξαιρετικά μεγάλο πρώτο stint, μπαίνοντας στα pits μόλις στον γύρο 31. Από εκείνο το σημείο, έπρεπε να κάνει 39 ολόκληρους γύρους με το ίδιο σετ σκληρών ελαστικών μέχρι το τέλος του αγώνα.</p><p>Αυτό δημιούργησε ένα στρατηγικό παράδοξο. Ο Piastri, που έκανε την καλύτερη εκκίνηση, βρέθηκε "κλειδωμένος" σε μια στρατηγική που υπαγορευόταν από τη μάχη του με τον Leclerc. Ο Norris, που έκανε τη χειρότερη εκκίνηση, απέκτησε τη στρατηγική ελευθερία να ρισκάρει. Η αρχική του απώλεια του έδωσε την ευκαιρία να κερδίσει.</p><h3>4.4 Μάχες, Συμβάντα και Εγκαταλείψεις</h3><p>Καθώς ο αγώνας προχωρούσε, η στρατηγική του Norris άρχισε να αποδίδει καρπούς. Μετά τις δεύτερες στάσεις των Piastri και Leclerc, ο Βρετανός βρέθηκε να ηγείται του αγώνα. Το ερώτημα ήταν αν τα φθαρμένα του ελαστικά θα άντεχαν την πίεση.</p><ul><li><strong>Η Μονομαχία της McLaren:</strong> Στους τελευταίους 20 γύρους, ο Piastri, με πολύ πιο φρέσκα ελαστικά, άρχισε να "ροκανίζει" τη διαφορά των 10 δευτερολέπτων από τον Norris.<sup>35</sup> Η καταδίωξη ήταν καταιγιστική. Στον 69ο από τους 70 γύρους, ο Piastri έκανε την κίνησή του. Βούτηξε στην εσωτερική της Στροφής 1, αλλά μπλόκαρε τους τροχούς του και παραλίγο να συγκρουστεί με τον teammate του. Ο Norris αμύνθηκε ψύχραιμα και κράτησε τη θέση του, για να περάσει τη γραμμή του τερματισμού με διαφορά μόλις 0.698 δευτερολέπτων.</li><li><strong>Russell εναντίον Leclerc:</strong> Πιο πίσω, ο George Russell έδινε τη δική του μάχη. Προσπέρασε τον Leclerc για την τρίτη θέση, με τον Μονεγάσκο να αμύνεται επιθετικά. Οι αγωνοδίκες έκριναν ότι η άμυνα του Leclerc ήταν υπερβολική και του επέβαλαν ποινή 5 δευτερολέπτων για "απρόβλεπτη οδήγηση". Η ποινή δεν άλλαξε την τελική του κατάταξη, καθώς η διαφορά του από τον πέμπτο Alonso ήταν μεγάλη.</li><li><strong>Verstappen εναντίον Hamilton:</strong> Σε μια μάχη βετεράνων, ο Verstappen έκανε μια κίνηση στον Hamilton που ανάγκασε τον οδηγό της Ferrari να βγει εκτός πίστας. Το συμβάν εξετάστηκε μετά τον αγώνα, αλλά οι αγωνοδίκες αποφάσισαν να μην επιβάλουν ποινή.</li><li><strong>Εγκαταλείψεις:</strong> Ο μοναδικός οδηγός που δεν τερμάτισε τον αγώνα ήταν ο Ollie Bearman της Haas. Ενώ βρισκόταν εντός της βαθμολογούμενης δεκάδας, αναγκάστηκε να εγκαταλείψει στον 48ο γύρο λόγω ζημιάς στο πάτωμα του μονοθεσίου του.</li><li><strong>Ταχύτερος Γύρος:</strong> Ο <strong>George Russell</strong> σημείωσε τον ταχύτερο γύρο του αγώνα με χρόνο <strong>1:19.409</strong>, εξασφαλίζοντας τον επιπλέον βαθμό.</li></ul><h3>4.5 Τελική Κατάταξη Αγώνα</h3><p>Η καρό σημαία βρήκε τον Lando Norris να πανηγυρίζει μια από τις πιο έξυπνες και δύσκολες νίκες της καριέρας του, με τη McLaren να γράφει ιστορία με το 1-2.</p><p><strong>Επίσημα Αποτελέσματα Αγώνα - GP Ουγγαρίας 2025</strong></p><table><thead><tr><th><p>Θέση</p></th><th><p>Οδηγός</p></th><th><p>Ομάδα</p></th><th><p>Γύροι</p></th><th><p>Χρόνος/Κατάσταση</p></th><th><p>Βαθμοί</p></th></tr><tr><th><p><strong>1</strong></p></th><th><p>Lando Norris</p></th><th><p>McLaren</p></th><th><p>70</p></th><th><p>1:35:21.231</p></th><th><p>25</p></th></tr><tr><th><p><strong>2</strong></p></th><th><p>Oscar Piastri</p></th><th><p>McLaren</p></th><th><p>70</p></th><th><p>+0.698s</p></th><th><p>18</p></th></tr><tr><th><p><strong>3</strong></p></th><th><p>George Russell</p></th><th><p>Mercedes</p></th><th><p>70</p></th><th><p>+21.916s</p></th><th><p>16</p></th></tr><tr><th><p><strong>4</strong></p></th><th><p>Charles Leclerc</p></th><th><p>Ferrari</p></th><th><p>70</p></th><th><p>+42.560s**</p></th><th><p>12</p></th></tr><tr><th><p><strong>5</strong></p></th><th><p>Fernando Alonso</p></th><th><p>Aston Martin</p></th><th><p>70</p></th><th><p>+59.040s</p></th><th><p>10</p></th></tr><tr><th><p><strong>6</strong></p></th><th><p>Gabriel Bortoleto</p></th><th><p>Kick Sauber</p></th><th><p>70</p></th><th><p>+1:06.169</p></th><th><p>8</p></th></tr><tr><th><p><strong>7</strong></p></th><th><p>Lance Stroll</p></th><th><p>Aston Martin</p></th><th><p>70</p></th><th><p>+1:08.174</p></th><th><p>6</p></th></tr><tr><th><p><strong>8</strong></p></th><th><p>Liam Lawson</p></th><th><p>Racing Bulls</p></th><th><p>70</p></th><th><p>+1:09.451</p></th><th><p>4</p></th></tr><tr><th><p><strong>9</strong></p></th><th><p>Max Verstappen</p></th><th><p>Red Bull Racing</p></th><th><p>70</p></th><th><p>+1:12.645</p></th><th><p>2</p></th></tr><tr><th><p><strong>10</strong></p></th><th><p>Kimi Antonelli</p></th><th><p>Mercedes</p></th><th><p>69</p></th><th><p>+1 γύρος</p></th><th><p>1</p></th></tr><tr><th><p><strong>11</strong></p></th><th><p>Isack Hadjar</p></th><th><p>Racing Bulls</p></th><th><p>69</p></th><th><p>+1 γύρος</p></th><th><p>0</p></th></tr><tr><th><p><strong>12</strong></p></th><th><p>Lewis Hamilton</p></th><th><p>Ferrari</p></th><th><p>69</p></th><th><p>+1 γύρος</p></th><th><p>0</p></th></tr><tr><th><p><strong>13</strong></p></th><th><p>Nico Hulkenberg</p></th><th><p>Kick Sauber</p></th><th><p>69</p></th><th><p>+1 γύρος</p></th><th><p>0</p></th></tr><tr><th><p><strong>14</strong></p></th><th><p>Carlos Sainz</p></th><th><p>Williams</p></th><th><p>69</p></th><th><p>+1 γύρος</p></th><th><p>0</p></th></tr><tr><th><p><strong>15</strong></p></th><th><p>Alex Albon</p></th><th><p>Williams</p></th><th><p>69</p></th><th><p>+1 γύρος</p></th><th><p>0</p></th></tr><tr><th><p><strong>16</strong></p></th><th><p>Esteban Ocon</p></th><th><p>Haas</p></th><th><p>69</p></th><th><p>+1 γύρος</p></th><th><p>0</p></th></tr><tr><th><p><strong>17</strong></p></th><th><p>Yuki Tsunoda</p></th><th><p>Red Bull Racing</p></th><th><p>69</p></th><th><p>+1 γύρος</p></th><th><p>0</p></th></tr><tr><th><p><strong>18</strong></p></th><th><p>Franco Colapinto</p></th><th><p>Alpine</p></th><th><p>69</p></th><th><p>+1 γύρος</p></th><th><p>0</p></th></tr><tr><th><p><strong>19</strong></p></th><th><p>Pierre Gasly</p></th><th><p>Alpine</p></th><th><p>69</p></th><th><p>+1 γύρος</p></th><th><p>0</p></th></tr><tr><th><p><strong>NC</strong></p></th><th><p>Oliver Bearman</p></th><th><p>Haas</p></th><th><p>48</p></th><th><p>DNF</p></th><th><p>0</p></th></tr></thead></table><p>**Ο Leclerc δέχθηκε ποινή 5 δευτερολέπτων για απρόβλεπτη οδήγηση, η οποία δεν επηρέασε την τελική του θέση.</p><p>Πηγή: 40</p><h3>Οδηγός της Ημέρας: Gabriel Bortoleto 🌟</h3><p>Για δεύτερη φορά μέσα στη σεζόν, ο rookie της Kick Sauber, <strong>Gabriel Bortoleto</strong>, κέρδισε την ψήφο του κοινού για τον "Οδηγό της Ημέρας" με ποσοστό 18.8%. Ο νεαρός Βραζιλιάνος πραγματοποίησε μια εκπληκτική εμφάνιση. Ξεκινώντας από την έβδομη θέση, οδήγησε με ωριμότητα, διαχειρίστηκε άψογα τα ελαστικά του σε μια στρατηγική ενός pit stop και τερμάτισε στην έκτη θέση, το καλύτερο αποτέλεσμα της καριέρας του. Ήταν μια εμφάνιση που τον έφερε να μάχεται στην πίστα με τον μάνατζέρ του, Fernando Alonso, και τον Max Verstappen, μια εμπειρία που ο ίδιος χαρακτήρισε "σουρεαλιστική".</p><h2>Η Εικόνα του Πρωταθλήματος πριν το Καλοκαιρινό Διάλειμμα</h2><p>Το Grand Prix της Ουγγαρίας δεν καθόρισε απλώς έναν νικητή, αλλά αναδιαμόρφωσε δραματικά το τοπίο του πρωταθλήματος, στέλνοντας τις ομάδες στο καλοκαιρινό διάλειμμα με μια νέα, συναρπαστική δυναμική.</p><h3>6.1 Η Μάχη του Τίτλου Εντείνεται</h3><p>Το κυριότερο αποτέλεσμα του αγώνα είναι η δραματική σύσφιξη της μάχης για το πρωτάθλημα οδηγών. Η νίκη του Lando Norris, σε συνδυασμό με τη δεύτερη θέση του Oscar Piastri, μείωσε τη διαφορά μεταξύ των δύο οδηγών της McLaren από 16 βαθμούς σε μόλις <strong>9</strong>. Η μάχη για τον τίτλο του 2025 είναι πλέον ξεκάθαρα μια εσωτερική υπόθεση της McLaren, υποσχόμενη ένα εκρηκτικό δεύτερο μισό της σεζόν.</p><p>Για τον Max Verstappen, το Σαββατοκύριακο στην Ουγγαρία ήταν ένα ακόμη καρφί στο φέρετρο των ελπίδων του για την υπεράσπιση του τίτλου. Με μόλις δύο βαθμούς από την ένατη θέση, βρίσκεται πλέον 97 βαθμούς πίσω από τον Piastri, μια διαφορά που μοιάζει σχεδόν αδύνατο να καλυφθεί.</p><p>Στο πρωτάθλημα κατασκευαστών, το τέταρτο συνεχόμενο 1-2 της McLaren εκτόξευσε την κυριαρχία της. Η ομάδα του Woking προηγείται πλέον με 559 βαθμούς, με τη Ferrari να ακολουθεί στη δεύτερη θέση με 260, μια διαφορά σχεδόν 300 βαθμών.</p><h3>6.2 Ενημερωμένη Βαθμολογία Πρωταθλήματος Οδηγών</h3><table><thead><tr><th><p>Θέση</p></th><th><p>Οδηγός</p></th><th><p>Ομάδα</p></th><th><p>Βαθμοί</p></th></tr><tr><th><p><strong>1</strong></p></th><th><p>Oscar Piastri</p></th><th><p>McLaren</p></th><th><p>284</p></th></tr><tr><th><p><strong>2</strong></p></th><th><p>Lando Norris</p></th><th><p>McLaren</p></th><th><p>275</p></th></tr><tr><th><p><strong>3</strong></p></th><th><p>Max Verstappen</p></th><th><p>Red Bull Racing</p></th><th><p>187</p></th></tr><tr><th><p><strong>4</strong></p></th><th><p>George Russell</p></th><th><p>Mercedes</p></th><th><p>172</p></th></tr><tr><th><p><strong>5</strong></p></th><th><p>Charles Leclerc</p></th><th><p>Ferrari</p></th><th><p>151</p></th></tr><tr><th><p><strong>6</strong></p></th><th><p>Lewis Hamilton</p></th><th><p>Ferrari</p></th><th><p>109</p></th></tr><tr><th><p><strong>7</strong></p></th><th><p>Kimi Antonelli</p></th><th><p>Mercedes</p></th><th><p>64</p></th></tr><tr><th><p><strong>8</strong></p></th><th><p>Alex Albon</p></th><th><p>Williams</p></th><th><p>54</p></th></tr><tr><th><p><strong>9</strong></p></th><th><p>Nico Hulkenberg</p></th><th><p>Kick Sauber</p></th><th><p>37</p></th></tr><tr><th><p><strong>10</strong></p></th><th><p>Esteban Ocon</p></th><th><p>Haas</p></th><th><p>27</p></th></tr><tr><th><p><strong>11</strong></p></th><th><p>Fernando Alonso</p></th><th><p>Aston Martin</p></th><th><p>26</p></th></tr><tr><th><p><strong>12</strong></p></th><th><p>Lance Stroll</p></th><th><p>Aston Martin</p></th><th><p>26</p></th></tr><tr><th><p><strong>13</strong></p></th><th><p>Isack Hadjar</p></th><th><p>Racing Bulls</p></th><th><p>22</p></th></tr><tr><th><p><strong>14</strong></p></th><th><p>Pierre Gasly</p></th><th><p>Alpine</p></th><th><p>20</p></th></tr><tr><th><p><strong>15</strong></p></th><th><p>Liam Lawson</p></th><th><p>Racing Bulls</p></th><th><p>20</p></th></tr><tr><th><p><strong>16</strong></p></th><th><p>Carlos Sainz</p></th><th><p>Williams</p></th><th><p>16</p></th></tr><tr><th><p><strong>17</strong></p></th><th><p>Gabriel Bortoleto</p></th><th><p>Kick Sauber</p></th><th><p>14</p></th></tr><tr><th><p><strong>18</strong></p></th><th><p>Yuki Tsunoda</p></th><th><p>Red Bull Racing</p></th><th><p>10</p></th></tr><tr><th><p><strong>19</strong></p></th><th><p>Oliver Bearman</p></th><th><p>Haas</p></th><th><p>8</p></th></tr><tr><th><p><strong>20</strong></p></th><th><p>Franco Colapinto</p></th><th><p>Alpine</p></th><th><p>0</p></th></tr><tr><th><p><strong>21</strong></p></th><th><p>Jack Doohan</p></th><th><p>Alpine</p></th><th><p>0</p></th></tr></thead></table><h3>6.3 Ενημερωμένη Βαθμολογία Πρωταθλήματος Κατασκευαστών</h3><table><thead><tr><th><p>Θέση</p></th><th><p>Ομάδα</p></th><th><p>Βαθμοί</p></th></tr><tr><th><p><strong>1</strong></p></th><th><p>McLaren</p></th><th><p>559</p></th></tr><tr><th><p><strong>2</strong></p></th><th><p>Ferrari</p></th><th><p>260</p></th></tr><tr><th><p><strong>3</strong></p></th><th><p>Mercedes</p></th><th><p>236</p></th></tr><tr><th><p><strong>4</strong></p></th><th><p>Red Bull Racing</p></th><th><p>194</p></th></tr><tr><th><p><strong>5</strong></p></th><th><p>Williams</p></th><th><p>70</p></th></tr><tr><th><p><strong>6</strong></p></th><th><p>Aston Martin</p></th><th><p>52</p></th></tr><tr><th><p><strong>7</strong></p></th><th><p>Kick Sauber</p></th><th><p>51</p></th></tr><tr><th><p><strong>8</strong></p></th><th><p>Racing Bulls</p></th><th><p>45</p></th></tr><tr><th><p><strong>9</strong></p></th><th><p>Haas</p></th><th><p>35</p></th></tr><tr><th><p><strong>10</strong></p></th><th><p>Alpine</p></th><th><p>20</p></th></tr></thead></table>
+      </div>
+
+      <!-- Add this author section here -->
+      <div class="article-author-footer">
+        <div class="reading-time-badge">
+          <i class="fas fa-clock"></i>
+          <span id="reading-time-value">5 min read</span>
+        </div>
+
+        <div class="author-box">
+          <div class="author-header">
+            <div class="author-avatar">
+              <img id="author-image" src="/f1stories.github.io/images/avatars/FA.webp" alt="Georgios Balatzis"
+                   onerror="
+         const paths = [
+           '/f1stories.github.io/images/authors/default.webp',
+           '/images/authors/default.webp',
+           '../../../images/authors/default.webp',
+           '../../images/authors/default.webp'
+         ];
+         let currentPath = 0;
+         const tryNextPath = () => {
+           if (currentPath < paths.length) {
+             this.src = paths[currentPath++];
+           } else {
+             this.style.display='none';
+             document.getElementById('author-initial').style.display='flex';
+           }
+         };
+         tryNextPath();">
+              <span class="avatar-text" id="author-initial">A</span>
+            </div>
+            <div class="author-info">
+              <h4 class="author-name" id="author-name">Georgios Balatzis</h4>
+              <div class="author-title" id="author-title">F1 Stories Contributor</div>
+            </div>
+          </div>
+          <div class="author-bio" id="author-bio">
+            Regular contributor to F1 Stories, passionate about motorsport and sharing insight about Formula 1 racing.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="article-comments">
+      <h3>Comments</h3>
+      <div id="disqus_thread"></div>
+      <script>
+        var disqus_config = function () {
+          this.page.url = window.location.href;  // Gets the current page URL
+          this.page.identifier = '20250804G';   // Will be replaced with your article ID
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+          var d = document, s = d.createElement('script');
+          s.src = 'https://f1stories-gr.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20250801G/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="NEXT_ARTICLE_URL" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250801G/1.webp" 
+                             alt="Grand Prix Ουγγαρίας 2025: Ανάλυση Αναβαθμίσεων, Στρατηγικής και Προκλήσεων στο Τεχνικό Hungaroring! 🏁🇭🇺🏎️" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250801G/1.webp') { this.src='/blog-module/blog/images/20250801G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">1,</span>
+                            <span class="month">AUG</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Grand Prix Ουγγαρίας 2025: Ανάλυση Αναβαθμίσεων, Στρατηγικής και Προκλήσεων στο Τεχνικό Hungaroring! 🏁🇭🇺🏎️</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250801G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250727G/1.webp" 
+                             alt="Ο Piastri κυριαρχεί στο Spa, η McLaren Βασιλεύει στο Χάος της Βροχής 🇧🇪🏆" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250727G/1.webp') { this.src='/blog-module/blog/images/20250727G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">27,</span>
+                            <span class="month">JUL</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Ο Piastri κυριαρχεί στο Spa, η McLaren Βασιλεύει στο Χάος της Βροχής 🇧🇪🏆</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250727G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250725G/1.webp" 
+                             alt="Grand Prix Βελγίου 2025: Πλήρης Ανάλυση Αναβαθμίσεων, Στρατηγικής και Προκλήσεων στο Θρυλικό Spa-Francorchamps! 🏁🇧🇪🏎️" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250725G/1.webp') { this.src='/blog-module/blog/images/20250725G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">25,</span>
+                            <span class="month">JUL</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Grand Prix Βελγίου 2025: Πλήρης Ανάλυση Αναβαθμίσεων, Στρατηγικής και Προκλήσεων στο Θρυλικό Spa-Francorchamps! 🏁🇧🇪🏎️</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250725G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
+  </div>
+</section>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<footer class="py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center">
+        <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+        <div class="social-media">
+          <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+          <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Background Randomizer Script -->
+<script defer src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script defer src="/scripts/script.js"></script>
+<script defer src="/blog-module/blog/article-script.js"></script>
+
+<!-- Script to fix navbar functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the navbar toggle works
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+
+    if (navbarToggler && navbarCollapse) {
+      navbarToggler.addEventListener('click', function() {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+
+    // Close mobile menu after clicking a link
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        // If mobile menu is open, close it
+        if (navbarCollapse.classList.contains('show')) {
+          navbarCollapse.classList.remove('show');
+        }
+      });
+    });
+  });
+</script>
+
+<!-- Social Sharing Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Replace placeholder URLs with actual URL
+    const currentUrl = window.location.href;
+    const articleTitle = document.querySelector('.article-title').textContent;
+    const encodedTitle = encodeURIComponent(articleTitle);
+
+    // Update sharing links
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      if (btn.href) {
+        btn.href = btn.href
+                .replace('https://f1stories.gr/blog-module/blog-entries/20250804G/article.html', encodeURIComponent(currentUrl))
+                .replace('Grand Prix Ουγγαρίας 2025: Η Στρατηγική της McLaren, η Κατάρρευση της Ferrari και ο Θρίαμβος του Norris! 🏁🏆🇭🇺', encodedTitle);
+      }
+    });
+
+    // Handle copy link button
+    const copyLinkBtn = document.getElementById('copy-link-btn');
+    if (copyLinkBtn) {
+      copyLinkBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(currentUrl)
+                .then(() => {
+                  copyLinkBtn.classList.add('copy-success');
+
+                  // Change icon temporarily to checkmark
+                  const icon = copyLinkBtn.querySelector('i');
+                  icon.classList.remove('fa-link');
+                  icon.classList.add('fa-check');
+
+                  // Reset after 2 seconds
+                  setTimeout(() => {
+                    copyLinkBtn.classList.remove('copy-success');
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-link');
+                  }, 2000);
+                })
+                .catch(err => {
+                  console.error('Failed to copy: ', err);
+                });
+      });
+    }
+  });
+</script>
+<!-- Theme Toggle Button and Functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Create style element for Catppuccin theme CSS variables
+    const catppuccinVariables = document.createElement('style');
+    catppuccinVariables.id = 'catppuccin-variables';
+    catppuccinVariables.textContent = `
+        /* Catppuccin Frappé */
+        .catppuccin-frappe {
+          /* Base colors */
+          --ctp-base: #303446;
+          --ctp-mantle: #292c3c;
+          --ctp-crust: #232634;
+
+          /* Text colors */
+          --ctp-text: #c6d0f5;
+          --ctp-subtext1: #b5bfe2;
+          --ctp-subtext0: #a5adce;
+
+          /* Overlay colors */
+          --ctp-overlay2: #949cbb;
+          --ctp-overlay1: #838ba7;
+          --ctp-overlay0: #737994;
+
+          /* Surface colors */
+          --ctp-surface2: #626880;
+          --ctp-surface1: #51576d;
+          --ctp-surface0: #414559;
+
+          /* Accent colors */
+          --ctp-rosewater: #f2d5cf;
+          --ctp-flamingo: #eebebe;
+          --ctp-pink: #f4b8e4;
+          --ctp-mauve: #ca9ee6;
+          --ctp-red: #e78284;
+          --ctp-maroon: #ea999c;
+          --ctp-peach: #ef9f76;
+          --ctp-yellow: #e5c890;
+          --ctp-green: #a6d189;
+          --ctp-teal: #81c8be;
+          --ctp-sky: #99d1db;
+          --ctp-sapphire: #85c1dc;
+          --ctp-blue: #8caaee;
+          --ctp-lavender: #babbf1;
+        }
+
+        /* Catppuccin Macchiato */
+        .catppuccin-macchiato {
+          /* Base colors */
+          --ctp-base: #24273a;
+          --ctp-mantle: #1e2030;
+          --ctp-crust: #181926;
+
+          /* Text colors */
+          --ctp-text: #cad3f5;
+          --ctp-subtext1: #b8c0e0;
+          --ctp-subtext0: #a5adcb;
+
+          /* Overlay colors */
+          --ctp-overlay2: #939ab7;
+          --ctp-overlay1: #8087a2;
+          --ctp-overlay0: #6e738d;
+
+          /* Surface colors */
+          --ctp-surface2: #5b6078;
+          --ctp-surface1: #494d64;
+          --ctp-surface0: #363a4f;
+
+          /* Accent colors */
+          --ctp-rosewater: #f4dbd6;
+          --ctp-flamingo: #f0c6c6;
+          --ctp-pink: #f5bde6;
+          --ctp-mauve: #c6a0f6;
+          --ctp-red: #ed8796;
+          --ctp-maroon: #ee99a0;
+          --ctp-peach: #f5a97f;
+          --ctp-yellow: #eed49f;
+          --ctp-green: #a6da95;
+          --ctp-teal: #8bd5ca;
+          --ctp-sky: #91d7e3;
+          --ctp-sapphire: #7dc4e4;
+          --ctp-blue: #8aadf4;
+          --ctp-lavender: #b7bdf8;
+        }
+
+        /* Catppuccin Mocha */
+        .catppuccin-mocha {
+          /* Base colors */
+          --ctp-base: #1e1e2e;
+          --ctp-mantle: #181825;
+          --ctp-crust: #11111b;
+
+          /* Text colors */
+          --ctp-text: #cdd6f4;
+          --ctp-subtext1: #bac2de;
+          --ctp-subtext0: #a6adc8;
+
+          /* Overlay colors */
+          --ctp-overlay2: #9399b2;
+          --ctp-overlay1: #7f849c;
+          --ctp-overlay0: #6c7086;
+
+          /* Surface colors */
+          --ctp-surface2: #585b70;
+          --ctp-surface1: #45475a;
+          --ctp-surface0: #313244;
+
+          /* Accent colors */
+          --ctp-rosewater: #f5e0dc;
+          --ctp-flamingo: #f2cdcd;
+          --ctp-pink: #f5c2e7;
+          --ctp-mauve: #cba6f7;
+          --ctp-red: #f38ba8;
+          --ctp-maroon: #eba0ac;
+          --ctp-peach: #fab387;
+          --ctp-yellow: #f9e2af;
+          --ctp-green: #a6e3a1;
+          --ctp-teal: #94e2d5;
+          --ctp-sky: #89dceb;
+          --ctp-sapphire: #74c7ec;
+          --ctp-blue: #89b4fa;
+          --ctp-lavender: #b4befe;
+        }
+        `;
+    document.head.appendChild(catppuccinVariables);
+
+    // Create style element for Dark Theme
+    const darkThemeStyles = document.createElement('style');
+    darkThemeStyles.id = 'dark-theme-styles';
+    darkThemeStyles.textContent = `
+        /* F1 Stories Dark Mode Styles */
+        body.dark-theme {
+          background-color: var(--ctp-base);
+          color: var(--ctp-text);
+          transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .dark-theme .navbar,
+        .dark-theme .contact-container,
+        .dark-theme .blog-card,
+        .dark-theme .episode-card,
+        .dark-theme .persona,
+        .dark-theme .cookie-banner,
+        .dark-theme .modal-content {
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          background: rgba(var(--ctp-base-rgb, 30, 30, 46), 0.85);
+          border: 1px solid rgba(var(--ctp-surface2-rgb, 88, 91, 112), 0.08);
+          box-shadow: 0 4px 16px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.3);
+          transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dark-theme .background {
+          background: linear-gradient(-45deg, var(--ctp-mantle), var(--ctp-base), var(--ctp-surface0), var(--ctp-mantle));
+          background-size: 400% 400%;
+          animation: gradientAnimation 18s ease infinite;
+          opacity: 0.9;
+        }
+
+        .dark-theme .streak {
+          background: linear-gradient(90deg, transparent, rgba(var(--ctp-lavender-rgb, 180, 190, 254), 0.2), transparent);
+        }
+
+        .dark-theme .blog-card:hover,
+        .dark-theme .episode-card:hover,
+        .dark-theme .persona:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 8px 28px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.4);
+          border-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.9);
+        }
+
+        .dark-theme h1,
+        .dark-theme h2 {
+          background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sky));
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0 2px 4px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.3));
+        }
+
+        .dark-theme .cta-button {
+          background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sapphire));
+          box-shadow: 0 4px 15px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.3);
+        }
+
+        .dark-theme .cta-button:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.4);
+          background: linear-gradient(135deg, var(--ctp-sapphire), var(--ctp-sky));
+        }
+
+        /* Navbar customization */
+        .dark-theme .navbar-dark .navbar-nav .nav-link {
+          color: var(--ctp-subtext1);
+        }
+
+        .dark-theme .navbar-dark .navbar-nav .nav-link:hover {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .navbar-dark .navbar-nav .nav-link.active {
+          color: var(--ctp-blue) !important;
+        }
+
+        /* Dropdown styling */
+        .dark-theme .custom-dropdown-menu {
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.95);
+          border-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+        }
+
+        .dark-theme .dropdown-item:hover {
+          background-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.1);
+          color: var(--ctp-sky);
+        }
+
+        /* Form controls */
+        .dark-theme input,
+        .dark-theme textarea {
+          background-color: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.9);
+          border-color: var(--ctp-surface1);
+          color: var(--ctp-text);
+        }
+
+        .dark-theme input:focus,
+        .dark-theme textarea:focus {
+          border-color: var(--ctp-blue);
+          box-shadow: 0 0 0 3px rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.3);
+        }
+
+        /* Social media icons */
+        .dark-theme .social-media a:hover::before {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        /* Theme toggle button customization */
+        .dark-theme #theme-toggle-container {
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.85);
+          border-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+        }
+
+        .dark-theme #toggle-icon {
+          background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        /* Cookie banner customization */
+        .dark-theme .cookie-banner {
+          background: rgba(var(--ctp-base-rgb, 30, 30, 46), 0.95);
+          border-top-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.3);
+        }
+
+        .dark-theme .cookie-header h3 {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .badge-essential {
+          background: linear-gradient(90deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        .dark-theme input:checked + .toggle-slider {
+          background: linear-gradient(90deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        .dark-theme .cookie-btn.accept-btn {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-sapphire));
+        }
+
+        .dark-theme .cookie-btn.accept-btn:hover {
+          background: linear-gradient(45deg, var(--ctp-sapphire), var(--ctp-sky));
+        }
+
+        /* Scroll to top button */
+        .dark-theme .scroll-to-top-btn {
+          background: linear-gradient(45deg, var(--ctp-surface0), var(--ctp-blue));
+        }
+
+        .dark-theme .scroll-to-top-btn:hover::before {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        /* Hero section */
+        .dark-theme #hero::before {
+          background: linear-gradient(to right, rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.7), rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.7));
+        }
+
+        /* Other text elements */
+        .dark-theme .blog-title:hover {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .blog-card:hover .blog-read-more {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .persona:hover h3 {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .footer-link:hover {
+          color: var(--ctp-sky);
+        }
+
+        /* Status colors - using appropriate Catppuccin colors */
+        .dark-theme .text-success {
+          color: var(--ctp-green) !important;
+        }
+
+        .dark-theme .text-danger {
+          color: var(--ctp-red) !important;
+        }
+
+        .dark-theme .text-warning {
+          color: var(--ctp-yellow) !important;
+        }
+
+        .dark-theme .text-info {
+          color: var(--ctp-sky) !important;
+        }
+
+        /* Theme toggle button */
+        .dark-active #toggle-icon {
+          background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        /* Additional styling for dark theme elements */
+        .dark-theme section::before {
+          background: radial-gradient(ellipse at center, rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.05) 0%, transparent 70%);
+        }
+
+        .dark-theme h2::after {
+          background: linear-gradient(90deg, var(--ctp-blue), var(--ctp-sapphire));
+        }
+
+        .dark-theme .persona::before {
+          background: radial-gradient(ellipse at top, rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.1), transparent 70%);
+        }
+
+        .dark-theme .persona .avatar {
+          border-color: var(--ctp-blue);
+        }
+
+        .dark-theme .persona:hover .avatar {
+          border-color: var(--ctp-sky);
+        }
+
+        .dark-theme .contact-container::before {
+          background: linear-gradient(90deg, var(--ctp-blue), var(--ctp-sky), var(--ctp-blue));
+        }
+
+        .dark-theme .blog-date {
+          border-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.3);
+        }
+
+        .dark-theme .blog-date .day {
+          color: var(--ctp-sky);
+        }
+
+        /* Modal customizations */
+        .dark-theme .modal-header {
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.8);
+          border-bottom-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+        }
+
+        .dark-theme .modal-header::after {
+          background: linear-gradient(to right, transparent, rgba(var(--ctp-sky-rgb, 137, 220, 235), 0.5), transparent);
+        }
+
+        .dark-theme .modal-content::before {
+          background: radial-gradient(ellipse at top right, rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2), transparent 70%);
+        }
+
+        .dark-theme .social-link-item:hover {
+          background-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.1);
+        }
+
+        .dark-theme .social-link-item .btn {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-surface0));
+        }
+
+        .dark-theme .social-link-item:hover .btn {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        .dark-theme .modal-footer {
+          border-top-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.5);
+        }
+
+        /* Theme transition animation */
+        @keyframes themeTransition {
+          0% { opacity: 0.8; }
+          100% { opacity: 1; }
+        }
+
+        .theme-transition {
+          animation: themeTransition 0.5s ease forwards;
+        }
+
+        /* Specific animation for card hover states in dark theme */
+        .dark-theme .blog-card,
+        .dark-theme .episode-card,
+        .dark-theme .persona {
+          transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                    box-shadow 0.5s ease,
+                    border-color 0.3s ease,
+                    background 0.3s ease;
+        }
+
+        /* CSS RGB helper variables to use rgba */
+        .catppuccin-frappe, .catppuccin-macchiato, .catppuccin-mocha {
+          --ctp-base-rgb: 30, 30, 46;
+          --ctp-crust-rgb: 17, 17, 27;
+          --ctp-surface0-rgb: 49, 50, 68;
+          --ctp-surface2-rgb: 88, 91, 112;
+          --ctp-blue-rgb: 137, 180, 250;
+          --ctp-sky-rgb: 137, 220, 235;
+          --ctp-lavender-rgb: 180, 190, 254;
+        }
+
+        .catppuccin-frappe {
+          --ctp-base-rgb: 48, 52, 70;
+          --ctp-crust-rgb: 35, 38, 52;
+          --ctp-surface0-rgb: 65, 69, 89;
+          --ctp-surface2-rgb: 98, 104, 128;
+          --ctp-blue-rgb: 140, 170, 238;
+          --ctp-sky-rgb: 153, 209, 219;
+          --ctp-lavender-rgb: 186, 187, 241;
+        }
+
+        .catppuccin-macchiato {
+          --ctp-base-rgb: 36, 39, 58;
+          --ctp-crust-rgb: 24, 25, 38;
+          --ctp-surface0-rgb: 54, 58, 79;
+          --ctp-surface2-rgb: 91, 96, 120;
+          --ctp-blue-rgb: 138, 173, 244;
+          --ctp-sky-rgb: 145, 215, 227;
+          --ctp-lavender-rgb: 183, 189, 248;
+        }
+        `;
+    document.head.appendChild(darkThemeStyles);
+
+    // Create style element for toggle button
+    const toggleStyles = document.createElement('style');
+    toggleStyles.id = 'theme-toggle-styles';
+    toggleStyles.textContent = `
+        #theme-toggle-container {
+          position: fixed;
+          top: 90px;
+          right: 20px;
+          z-index: 2000;
+          display: flex;
+          align-items: center;
+          background: rgba(10, 14, 23, 0.85);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 50px;
+          padding: 6px 16px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #theme-toggle-btn {
+          background: rgba(255, 255, 255, 0.1);
+          border: none;
+          width: 48px;
+          height: 28px;
+          border-radius: 14px;
+          position: relative;
+          cursor: pointer;
+          padding: 0;
+          outline: none;
+        }
+
+        #toggle-icon {
+          position: absolute;
+          top: 2px;
+          left: 2px;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #0073e6;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+        }
+
+        .dark-active #toggle-icon {
+          left: calc(100% - 26px);
+        }
+
+        #toggle-icon .fa-sun {
+          color: white;
+          font-size: 14px;
+          opacity: 1;
+          transition: opacity 0.3s ease;
+        }
+
+        #toggle-icon .fa-moon {
+          color: white;
+          font-size: 14px;
+          opacity: 0;
+          position: absolute;
+          transition: opacity 0.3s ease;
+        }
+
+        .dark-active #toggle-icon .fa-sun {
+          opacity: 0;
+        }
+
+        .dark-active #toggle-icon .fa-moon {
+          opacity: 1;
+        }
+
+        #theme-label {
+          margin-left: 12px;
+          font-size: 14px;
+          font-weight: 500;
+          color: #e0e0e0;
+          white-space: nowrap;
+        }
+
+        @media (max-width: 767.98px) {
+          #theme-toggle-container {
+            top: auto;
+            bottom: 20px;
+            right: auto;
+            left: 20px;
+            padding: 8px;
+            border-radius: 50%;
+          }
+
+          #theme-label {
+            display: none;
+          }
+
+          #theme-toggle-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+          }
+
+          #toggle-icon {
+            top: 8px;
+            left: 8px;
+          }
+
+          .dark-active #toggle-icon {
+            left: 8px;
+          }
+        }
+        `;
+    document.head.appendChild(toggleStyles);
+
+    // Create toggle button HTML
+    const toggleContainer = document.createElement('div');
+    toggleContainer.id = 'theme-toggle-container';
+    toggleContainer.innerHTML = `
+        <button id="theme-toggle-btn">
+          <div id="toggle-icon">
+            <i class="fas fa-sun"></i>
+            <i class="fas fa-moon"></i>
+          </div>
+        </button>
+        <span id="theme-label">Light Mode</span>
+        `;
+    document.body.appendChild(toggleContainer);
+
+    // Initialize from saved preferences
+    const savedTheme = localStorage.getItem('f1stories-theme');
+    if (savedTheme === 'dark') {
+      // Get saved flavor if available
+      let savedFlavor = localStorage.getItem('f1stories-catppuccin-flavor');
+
+      // Add dark theme class
+      document.body.classList.add('dark-theme');
+      document.getElementById('theme-toggle-container').classList.add('dark-active');
+
+      // If no saved flavor, randomly select one
+      if (!savedFlavor || !['frappe', 'macchiato', 'mocha'].includes(savedFlavor)) {
+        const flavors = ['frappe', 'macchiato', 'mocha'];
+        savedFlavor = flavors[Math.floor(Math.random() * flavors.length)];
+        localStorage.setItem('f1stories-catppuccin-flavor', savedFlavor);
+      }
+
+      // Add the flavor class
+      document.body.classList.add(`catppuccin-${savedFlavor}`);
+
+      // Update the theme label
+      document.getElementById('theme-label').textContent = `Dark Mode (${savedFlavor})`;
+    }
+
+    // Add click event
+    document.getElementById('theme-toggle-btn').addEventListener('click', function() {
+      if (document.body.classList.contains('dark-theme')) {
+        disableDarkMode();
+        localStorage.setItem('f1stories-theme', 'light');
+      } else {
+        enableDarkMode();
+        localStorage.setItem('f1stories-theme', 'dark');
+      }
+    });
+
+    // Enable Dark Mode with random Catppuccin palette
+    function enableDarkMode() {
+      // Remove any existing Catppuccin flavor classes
+      document.body.classList.remove('catppuccin-frappe', 'catppuccin-macchiato', 'catppuccin-mocha');
+
+      // Add dark theme class
+      document.body.classList.add('dark-theme');
+      document.getElementById('theme-toggle-container').classList.add('dark-active');
+
+      // Randomly select a Catppuccin flavor - latte removed
+      const flavors = ['frappe', 'macchiato', 'mocha'];
+      const randomFlavor = flavors[Math.floor(Math.random() * flavors.length)];
+
+      // Add the flavor class
+      document.body.classList.add(`catppuccin-${randomFlavor}`);
+
+      // Set the theme label
+      document.getElementById('theme-label').textContent = `Dark Mode (${randomFlavor})`;
+
+      // Save the selected flavor
+      localStorage.setItem('f1stories-catppuccin-flavor', randomFlavor);
+
+      // Add a subtle transition effect when changing themes
+      document.body.classList.add('theme-transition');
+      setTimeout(() => {
+        document.body.classList.remove('theme-transition');
+      }, 500);
+    }
+
+    // Disable Dark Mode
+    function disableDarkMode() {
+      document.body.classList.remove('dark-theme');
+      document.body.classList.remove('catppuccin-frappe', 'catppuccin-macchiato', 'catppuccin-mocha');
+      document.getElementById('theme-toggle-container').classList.remove('dark-active');
+      document.getElementById('theme-label').textContent = 'Light Mode';
+
+      // Add a subtle transition effect when changing themes
+      document.body.classList.add('theme-transition');
+      setTimeout(() => {
+        document.body.classList.remove('theme-transition');
+      }, 500);
+    }
+  });
+</script>
+
+    <script>
+    // Debug helper for images
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script>
+    </body>
+</html>
