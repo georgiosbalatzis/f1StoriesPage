@@ -1628,6 +1628,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Text-to-Speech Functionality
 function initTextToSpeech() {
+    const wasCollapsed = localStorage.getItem('tts-collapsed') === 'true';
+    if (wasCollapsed && widget) {
+        widget.classList.add('collapsed');
+    }
     // Check if browser supports speech synthesis
     if (!('speechSynthesis' in window)) {
         console.warn('Text-to-speech not supported in this browser');
@@ -1769,10 +1773,25 @@ function initTextToSpeech() {
 
     // Toggle widget visibility
     header.addEventListener('click', function(e) {
-        if (e.target.closest('.tts-toggle') || e.target === header) {
+        // Don't toggle if clicking on other controls inside header
+        if (e.target.closest('.tts-toggle') ||
+            e.target.closest('.tts-header') === header) {
+            e.stopPropagation();
             widget.classList.toggle('collapsed');
+
+            // Optional: Save collapsed state
+            const isCollapsed = widget.classList.contains('collapsed');
+            localStorage.setItem('tts-collapsed', isCollapsed);
         }
     });
+
+// Also add this to handle the toggle button specifically
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            widget.classList.toggle('collapsed');
+        });
+    }
 
     // Play button
     playBtn.addEventListener('click', function() {
@@ -1906,3 +1925,187 @@ function initTextToSpeech() {
 document.addEventListener('DOMContentLoaded', function() {
     initTextToSpeech();
 });
+
+
+// 1. READING TIME ESTIMATE
+function getReadingTimeEstimate() {
+    const text = getArticleText();
+    const wordsPerMinute = 150; // Average TTS speed
+    const words = text.split(' ').length;
+    const minutes = Math.ceil(words / wordsPerMinute);
+    return minutes;
+}
+
+// Add to initTextToSpeech() after getting article text:
+const readingTime = getReadingTimeEstimate();
+if (status) {
+    status.textContent = `⏱️ Εκτιμώμενος χρόνος: ${readingTime} λεπτά`;
+}
+
+// 2. KEYBOARD SHORTCUTS
+document.addEventListener('keydown', function(e) {
+    // Only if TTS widget exists and no input is focused
+    if (!widget || document.activeElement.tagName === 'INPUT') return;
+
+    switch(e.key) {
+        case ' ': // Spacebar - Play/Pause
+            e.preventDefault();
+            if (speechSynthesis.speaking && !isPaused) {
+                pauseBtn.click();
+            } else {
+                playBtn.click();
+            }
+            break;
+
+        case 's': // S - Stop
+        case 'S':
+            stopBtn.click();
+            break;
+
+        case 'ArrowUp': // Up - Increase speed
+            e.preventDefault();
+            speedInput.value = Math.min(2, parseFloat(speedInput.value) + 0.1);
+            speedInput.dispatchEvent(new Event('input'));
+            break;
+
+        case 'ArrowDown': // Down - Decrease speed
+            e.preventDefault();
+            speedInput.value = Math.max(0.5, parseFloat(speedInput.value) - 0.1);
+            speedInput.dispatchEvent(new Event('input'));
+            break;
+    }
+});
+
+// 3. SAVE USER PREFERENCES
+// Load saved preferences
+function loadPreferences() {
+    const savedSpeed = localStorage.getItem('tts-speed');
+    const savedVoice = localStorage.getItem('tts-voice');
+
+    if (savedSpeed) {
+        speedInput.value = savedSpeed;
+        speedValue.textContent = savedSpeed + 'x';
+    }
+
+    if (savedVoice) {
+        // Wait for voices to load, then select saved voice
+        setTimeout(() => {
+            voiceSelect.value = savedVoice;
+        }, 500);
+    }
+}
+
+// Save preferences when changed
+speedInput.addEventListener('change', function() {
+    localStorage.setItem('tts-speed', this.value);
+});
+
+voiceSelect.addEventListener('change', function() {
+    localStorage.setItem('tts-voice', this.value);
+});
+
+// Call loadPreferences() in initTextToSpeech()
+loadPreferences();
+
+// 4. MINI MODE FOR MOBILE
+function createMiniMode() {
+    if (window.innerWidth > 768) return;
+
+    const miniBtn = document.createElement('button');
+    miniBtn.className = 'tts-mini-btn';
+    miniBtn.innerHTML = '🎧';
+    miniBtn.style.cssText = `
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ff0000, #0073e6);
+        color: white;
+        border: none;
+        font-size: 24px;
+        z-index: 1000;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        display: none;
+    `;
+
+    document.body.appendChild(miniBtn);
+
+    // Show mini button when widget is collapsed
+    miniBtn.addEventListener('click', function() {
+        widget.classList.remove('collapsed');
+        widget.scrollIntoView({ behavior: 'smooth' });
+        miniBtn.style.display = 'none';
+    });
+
+    // Show/hide based on widget state
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (widget.classList.contains('collapsed')) {
+                miniBtn.style.display = 'block';
+            } else {
+                miniBtn.style.display = 'none';
+            }
+        });
+    });
+
+    observer.observe(widget, { attributes: true, attributeFilter: ['class'] });
+}
+
+// Add to initTextToSpeech()
+createMiniMode();
+
+// 5. SECTION NAVIGATION (for long articles)
+function createSectionNavigation() {
+    const sections = document.querySelectorAll('.article-content h2, .article-content h3');
+    if (sections.length < 2) return;
+
+    const navDiv = document.createElement('div');
+    navDiv.className = 'tts-sections';
+    navDiv.innerHTML = 'Skip to section:';
+    navDiv.style.cssText = `
+        margin-bottom: 1rem;
+        padding: 0.5rem 1rem;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        border: 1px solid rgba(0, 115, 230, 0.2);
+    `;
+
+    const select = navDiv.querySelector('select');
+    select.innerHTML = '';
+
+    sections.forEach((section, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = section.textContent;
+        select.appendChild(option);
+    });
+
+    // Insert after voice selector
+    voiceSelect.parentElement.insertAdjacentElement('afterend', navDiv);
+
+    select.addEventListener('change', function() {
+        if (this.value === '') {
+            startReading();
+        } else {
+            // Start reading from selected section
+            const sectionElement = sections[this.value];
+            const contentAfterSection = [];
+            let currentElement = sectionElement;
+
+            while (currentElement = currentElement.nextElementSibling) {
+                if (currentElement.textContent) {
+                    contentAfterSection.push(currentElement.textContent);
+                }
+            }
+
+            // Read from this section onward
+            const sectionText = contentAfterSection.join(' ');
+            // Use sectionText in utterance instead of full articleText
+        }
+    });
+}
+
+// Add to initTextToSpeech()
+createSectionNavigation();
