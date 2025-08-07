@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p></p><p><a id="_na9edvy4tee3"></a>⚡️🔋 Boost και Φρενάρισμα: Αποκωδικοποιώντας το KERS στη Σύγχρονη F1 🚀🛑</p><p>Το Kinetic Energy Recovery System (KERS) έκανε το ντεμπούτο του στη Formula 1 το 2009, παρέχοντας μέχρι και 60 kW (≈80 hp) προσωρινής ώθησης 🚀💥. Μετά μια παύση το 2010, επανήλθε το 2011 και, από το 2014, εξελίχθηκε στο ευρύτερο Hybrid Energy Recovery System (ERS) που συνδυάζει MGU-K και MGU-H, με την απόδοση της κινητικής ανάκτησης να διπλασιάζεται σε 120 kW (≈161 hp) ⚡️🔋. Σήμερα, αυτό το υβριδικό σύστημα δεν λειτουργεί μόνο ως “boost” αλλά πρωτίστως ως εργαλείο μείωσης κατανάλωσης (110 kg καυσίμου ανά αγώνα έναντι 135 l στα V8) ⛽️📉, ενώ η τεχνολογία βελτιώνεται συνεχώς με έμφαση στις βιώσιμες λύσεις προς το 2026 🔮🌱.</p><h2><a id="_srrqvusbq6q7"></a><strong>⚙️ Τι είναι το KERS;</strong></h2><p>Το KERS (Kinetic Energy Recovery System) είναι το σύστημα ανάκτησης κινητικής ενέργειας που εισήγαγε η FIA στη F1 το 2009, με στόχο την αξιοποίηση της ενέργειας του φρεναρίσματος για επιπλέον ώθηση ή οικονομία καυσίμου. Λειτουργεί με έναν ηλεκτροκινητήρα–γεννήτρια (MGU-K) συνδεδεμένο στον άξονα μετάδοσης: κατά το φρενάρισμα μετατρέπει κινητική ενέργεια σε ηλεκτρική, που αποθηκεύεται σε μπαταρία ή φλάι-ουιλ (μηχανική αποθήκευση) για να «επιστραφεί» όταν ο οδηγός πατήσει το κουμπί boost στο τιμόνι.</p><ul><li><strong>400 kJ ανά γύρο</strong> 🔋: Μέγιστο όριο αποθήκευσης, με 60 kW (≈80 hp) ισχύ απελευθέρωσης για ~6,7 sec, δηλαδή ~0,2–0,3 sec το πλεονέκτημα ανά γύρο 🚗💨.<br /></li><li><strong>Δύο τύποι αποθήκευσης</strong>:<br /><ul><li>Ηλεκτρική – λιθίου-ιονική μπαταρία, ~20–25 kg.<br /></li><li>Μηχανική – flywheel 240 mm, 5 kg, έως 64.500 rpm (Flybrid ~24 kg).<br /></li></ul></li><li><strong>Αποδοτικότητα round-trip &gt;70%</strong>: χάρη σε εξελιγμένα συστήματα ψύξης και διαχείρισης ισχύος, μεμονωμένες απώλειες μειώνονται σημαντικά.<br /></li><li><strong>Πλήρης επαναφόρτιση</strong> κάθε γύρο – μόλις ο οδηγός φρενάρει, το σύστημα γεμίζει ξανά στο 100% των 400 kJ, έτοιμο για νέο boost 🔘🏁.<br /></li></ul><h3><a id="_yih582kjvyrv"></a><strong>Οι προκλήσεις</strong></h3><ul><li><strong>Βάρος &amp; Συσκευασία</strong>: +20–25 kg στο πίσω μέρος, επηρεάζει κέντρο βάρους &amp; ανάσυρση.<br /></li><li><strong>Αξιοπιστία</strong>: τάσεις 500–1.000 V, απαιτούν άριστη μόνωση για αποφυγή ηλεκτροσόκ ή πυρκαγιάς.<br /></li><li><strong>Διαχείριση Θερμοκρασίας</strong>: θερμότητα από φόρτιση/εκφόρτιση χρειάζεται εξελιγμένη ψύξη για σταθερή απόδοση.<br /></li></ul><h2><a id="_6pqgyjj6va03"></a><strong>🔄 Εξέλιξη του KERS σε ERS</strong></h2><h3><a id="_giar653qgfvn"></a><strong>2009–2011: Πρώτα βήματα</strong></h3><ul><li>Μόνο Ferrari, Renault, BMW, McLaren έτρεξαν το 2009· Renault &amp; BMW αποσύρθηκαν λόγω βάρους/πολυπλοκότητας.<br /></li><li>Το 2010 απουσίαζε, αλλά οι αλλαγές στο ελάχιστο βάρος το 2011 επέτρεψαν την επιστροφή του KERS προαιρετικά.<br /></li></ul><h3><a id="_opqb0s7npvpr"></a><strong>Από το 2014: Ολικό restart σε ERS</strong></h3><ul><li>Εισαγωγή <strong>MGU-H</strong>: ανακτά θερμική ενέργεια από τα καυσαέρια, με απεριόριστη «τροφοδοσία» ενέργειας, βελτιώνοντας το turbo-lag.<br /></li><li><strong>MGU-K</strong> πλέον ανακτά 2 MJ/γύρο και μπορεί να απελευθερώσει έως 4 MJ.<br /></li><li>Συνδυασμός MGU-H + MGU-K + μπαταρία + Control Electronics δημιουργεί ένα ισχυρό, πλήρως διαχειριζόμενο υβριδικό σύστημα με <strong>120 kW</strong> κινητικής ανάκτησης (≈161 hp).<br /></li></ul><h2><a id="_kaa47l450vbt"></a><strong>🎛️ Control Electronics &amp; Διαχείριση Ενέργειας</strong></h2><p>Το «εγκέφαλο» του ERS αναλαμβάνει η Control Electronics (CE):</p><ul><li><strong>Τάση έως 1 000 V</strong>: ελέγχει και κατανέμει την ενέργεια ανάμεσα σε MGU-K, MGU-H και ES (Energy Store).<br /></li><li><strong>Αλγόριθμοι στρατηγικής</strong>: “φιλοσοφία” ανάκτησης vs. απελευθέρωσης, βελτιστοποιεί χρήση ανά συνθήκη πίστας (αμυντική vs. επιθετική).<br /></li><li><strong>Οθόνες &amp; κουμπιά</strong>: στον πίνακα του οδηγού υπάρχουν bars και αριθμητικά readouts για % φόρτιση, διαθέσιμα MJ, timeout derate κ.ά.<br /></li></ul><h2><a id="_wzxdpyg1rtn5"></a><strong>🌡️ Derate Protection: Το «αλάνθαστο» safety-net</strong></h2><p>Κατά τις ζώνες υψηλών θερμοκρασιών ή στροφών, το ERS ενεργοποιεί το derate:</p><ul><li><strong>Περιορισμός MGU-H</strong> όταν ξεπερνά ασφαλή rpm, αποφεύγοντας ζημιές στον άξονα του turbo.<br /></li><li>Χαρακτηριστικός ήχος “flutter” από το wastegate – ηχηρό σκαρίφημα στους αισθητήρες του turbo όταν “σταματούν” στιγμιαία οι υπερστροφές.<br /></li><li><strong>Αυτόματη επαναφορά</strong> μόλις επανέλθουν οι συνθήκες, χωρίς επέμβαση οδηγού.<br /></li></ul><h2><a id="_5ob5jcqokqt0"></a><strong>⛽️ Ο ρόλος στην Οικονομία Καυσίμου</strong></h2><p>Με όρια 100 kg/h fuel flow και 110 kg/αγώνα, το ERS αποδεικνύεται βασικό:</p><ul><li><strong>110 kg καυσίμου</strong> (2025) vs. 135 l V8 παρελθόντος.<br /></li><li><strong>Boost στρατηγική</strong>: ο οδηγός «χτίζει» το πλεόνασμα en­er­gy για κρίσιμες προσπεράσεις, συνδυάζοντας slipstream + ERS σε DRS ζώνες.<br /></li><li><strong>Energy save mode</strong>: μειωμένη ανάκτηση για εξοικονόμηση λίτρων σε φάσεις διαχείρισης μονοθέσιου (π.χ. στο MGU-H feed-forward mode).<br /></li></ul><h2><a id="_dwbaklwdnywd"></a><strong>🔧📈 Ενημερώσεις 2025 &amp; Κοιτώντας το Μέλλον</strong></h2><ul><li><strong>Μικρές βελτιώσεις 2025</strong>: πιο ομαλή απόκριση ERS drive, μειώσεις latency στο κουμπί boost (30 ms faster).<br /></li><li><strong>Regulations 2026</strong>: αποχώρηση MGU-H, ενίσχυση μπαταρίας σε 350 kW peak, απλούστευση συστήματος.<br /></li><li><strong>100% sustainable fuel</strong>: μείωση CO₂, στρέψη σε e-fuel blends, ERS κλειδί για maximal απόδοση με «πράσινα» καύσιμα.<br /></li><li><strong>Miami GP 2025</strong>: στο FP3 οι ομάδες δοκίμασαν extreme derate settings στο Turn 11, με μείωση MGU-H rpm κατά 10% για προστασία component σε πρωτοφανείς ζέστες 🌡️🏎️.<br /></li></ul><h2><a id="_bms2awd0lqx7"></a><strong>🏁 Συμπέρασμα</strong></h2><p>Από την πρώτη “boost” εποχή του KERS (60 kW) στο πλήρες ERS (120 kW + θερμική ανάκτηση), το σύστημα έχει εξελιχθεί σε αναπόσπαστο κομμάτι της απόδοσης και της οικονομίας στην F1. Σήμερα, κάθε πάτημα του κουμπιού στα τιμόνια των μονοθεσίων ισορροπεί ανάμεσα σε επιθετικές επιταχύνσεις και περιβαλλοντική ευαισθησία 🌱⚖️</p>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

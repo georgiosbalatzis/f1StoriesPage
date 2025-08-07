@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p></p><h1><a id="_9tlik4iikjbs"></a><strong>🟥 SF-25: Η Νέα Φιλοσοφία της Ferrari – Αεροδυναμική, Σασί &amp; Υλικά</strong></h1><p>Η Ferrari μπήκε στο 2025 με ένα ξεκάθαρο μήνυμα: <strong>«Νέα αρχή, νέα φιλοσοφία»</strong>. Το SF-25 είναι, όπως τόνισαν οι ίδιοι, ένα εντελώς νέο μονοθέσιο, χτισμένο πάνω στα διδάγματα της προηγούμενης σεζόν. Στο πρώτο αυτό μέρος της ανάλυσης, εξετάζουμε τις μεγάλες τεχνικές αλλαγές στο αεροδυναμικό πακέτο, στο σασί και στα υλικά κατασκευής — και τι σημαίνουν όλα αυτά για την απόδοση της Scuderia μέσα στη χρονιά.</p><h2><a id="_ne3h5jsvkw0u"></a><strong>🔺 Αεροδυναμική: Μια Επιθετική Στροφή</strong></h2><p>Το πιο εμφανές χαρακτηριστικό του SF-25 είναι οι <strong>βαθιές αλλαγές στο σώμα του αυτοκινήτου</strong>. Η Ferrari αύξησε το μεταξόνιο, μετακινώντας το cockpit πιο πίσω και δίνοντας στον εμπρός άξονα περισσότερο "χώρο" να αναπνεύσει αεροδυναμικά. Αυτή η επιλογή:</p><ul><li>Μειώνει τον «θόρυβο» από τους εμπρός τροχούς που επηρεάζει τη ροή προς τα sidepods<br /></li><li>Επιτρέπει <strong>πιο βαθιά κοψίματα στο κάτω μέρος των sidepods</strong>, αυξάνοντας την ταχύτητα του αέρα προς το πάτωμα<br /></li><li>Διευκολύνει τον σχεδιασμό <strong>μεγαλύτερων και πιο αποτελεσματικών εισαγωγών ψύξης</strong> χωρίς αύξηση drag<br /></li></ul><p>Οι νέες εισαγωγές θυμίζουν το λεγόμενο <strong>"P-shaped" concept</strong> που είχε λανσάρει η Red Bull και υιοθέτησε σταδιακά και η Mercedes. Η Ferrari είχε πειραματιστεί με αυτό στα μέσα του 2024 και το υιοθέτησε πλήρως για το 2025.</p><p>👉 Οι πάνω «χείλες» των sidepods πλέον προεξέχουν περισσότερο, δημιουργώντας μια <strong>σαγόνι-σαν γεωμετρία</strong> που βοηθά στη διοχέτευση του αέρα προς το κέντρο του αυτοκινήτου.</p><h2><a id="_xgell02wkw2r"></a><strong>🪄 Πάτωμα &amp; Diffuser: Το Ιερό Δισκοπότηρο των Ground Effect</strong></h2><p>Στον κόσμο των ground effect αυτοκινήτων, <strong>το πάτωμα είναι ο βασιλιάς</strong> 👑. Και η Ferrari έκανε πολλές αλλαγές για να βελτιώσει τη σταθερότητα και την παραγόμενη κάθετη δύναμη:</p><ul><li>Επανέφερε έναν πιο <strong>ψηλό εσωτερικό "φράχτη" (floor fence)</strong> στο εσωτερικό των venturi tunnels, εμπνευσμένο από την F1-75<br /></li><li>Το εξωτερικό τελείωμα του πατώματος απέκτησε <strong>οδοντωτές άκρες</strong>, οι οποίες βοηθούν στον έλεγχο των στροβίλων που δημιουργούνται και στη σταθερότητα της ροής<br /></li><li>Ο diffuser ανασχεδιάστηκε με <strong>πιο λείο τελείωμα</strong>, βελτιώνοντας την πίεση εξόδου και βοηθώντας το πίσω μέρος του αυτοκινήτου να "ρουφά" το έδαφος χωρίς απότομες μεταβολές<br /></li></ul><p>Σε αναβάθμιση που ήρθε ήδη από το Μπαχρέιν 🇴🇲, προστέθηκαν <strong>μικρά φτεράκια στην άκρη του πατώματος</strong> που λειτουργούν ως vortex generators. Η στόχευση είναι να <strong>κρατηθεί η ροή σφραγισμένη στο πάτωμα ακόμα και με μεγαλύτερο ύψος</strong>, ώστε να μπορεί να «αντέξει» σε πιο ανώμαλες επιφάνειες.</p><p>📈 Αποτέλεσμα; Καλύτερη απόδοση στις γρήγορες στροφές και δυνατότητα για πιο ευέλικτες ρυθμίσεις ύψους (ride height).</p><h2><a id="_bt6xdxp1iamb"></a><strong>🦾 Πίσω Πτέρυγα &amp; Beam Wing: Η Λεπτομέρεια Κάνει τη Διαφορά</strong></h2><p>Η Ferrari εισήγαγε μια νέα πίσω πτέρυγα, με πιο βαθύ προφίλ στο κέντρο – γύρω από το DRS actuator – και <strong>καμπύλες πλάκες άκρων που τυλίγονται ελαφρώς προς τα μέσα</strong>. Αυτή η γεωμετρία:</p><ul><li>Αυξάνει το downforce στο μέσο της πτέρυγας, εκεί όπου μπορεί να αξιοποιηθεί χωρίς μεγάλη αύξηση drag<br /></li><li>Εξασφαλίζει πιο «καθαρή» έξοδο των στροβίλων από τις άκρες<br /></li></ul><p>Η <strong>beam wing</strong> παραμένει διπλού στοιχείου στα περισσότερα setup, αν και η Ferrari έχει και μόνο στοιχείο για πίστες χαμηλής αντίστασης.</p><p>🎯 Σε συνδυασμό με τις νέες εξόδους ψύξης και τη χαμηλότερη κλίση της ουράς (tapered engine cover), το αμάξωμα πίσω είναι πιο συμπαγές — ιδανικό για να ενισχύσει τον diffuser.</p><h2><a id="_8d6bijp6zowt"></a><strong>🧱 Σασί και Υλικά: Ό,τι Δεν Βλέπεις, Κάνει τη Διαφορά</strong></h2><p>Το σασί (monocoque) του SF-25 είναι <strong>εντελώς επανασχεδιασμένο</strong>. Παρά την οπτική ομοιότητα με τον προκάτοχό του, η μεταφορά του cockpit πιο πίσω άλλαξε ριζικά τη δυναμική του πλαισίου:</p><ul><li>Καλύτερη κατανομή μάζας προς τα πίσω ➜ αυξημένη σταθερότητα στις γρήγορες αλλαγές κατεύθυνσης<br /></li><li>Περισσότερος χώρος για νέες γωνίες ανάρτησης και νέους rocker arms<br /></li></ul><p>Το σασί είναι κατασκευασμένο από <strong>υψηλής αντοχής ανθρακονήματα</strong>, με ειδική κατανομή υφασμάτων για κάθε ζώνη:</p><ul><li>Σκληρά σύνθετα για πλευρική προστασία<br /></li><li>Ειδικά πλέγματα Zylon για την αποτροπή διάτρησης σε ακραίες καταστάσεις<br /></li><li>Ενισχημένα σημεία στήριξης για ανάρτηση, κινητήρα και κιβωτιο<br /></li></ul><p>🛠️ Τα σημεία σύνδεσης (hardpoints) με τον κινητήρα και την ανάρτηση είναι από τιτάνιο, συν-θερμικά ενσωματωμένα στο composite υλικό για αντοχή και ακρίβεια.</p><h2><a id="_5kdz36rplh8v"></a><strong>📐 Σε Σχέση με Ανταγωνισμό</strong></h2><ul><li><strong>Mercedes W16:</strong> Κράτησε την ίδια γεωμετρία σασί με το W15, εστιάζοντας σε επιμέρους βελτιώσεις (όπως συντομότερο κιβώτιο)<br /></li><li><strong>Red Bull RB21:</strong> Διατήρησε τη βασική φιλοσοφία RB19/20, με μικρές παρεμβάσεις στο cooling και fine-tuning<br /></li><li><strong>Ferrari SF-25:</strong> Ο μόνος από τους τρεις που τόλμησε <strong>ριζική αλλαγή στο σασί και αεροδυναμική φιλοσοφία<br /></strong></li></ul><p>Η Ferrari έπαιξε επιθετικά. Αν θα δικαιωθεί, θα το δούμε στα επόμενα μέρη της ανάλυσης...</p><p>👋 <strong>Στο επόμενο άρθρο (ΜΕΡΟΣ 2):</strong> θα αναλύσουμε τη νέα γεωμετρία ανάρτησης – ειδικά τη μετάβαση σε pull-rod εμπρός – και πώς αυτό αλλάζει το στήσιμο και τη συμπεριφορά του SF-25 μέσα στην πίστα.</p>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

@@ -1840,3 +1840,214 @@ figcaption {
 .mobile-toc-active .mobile-toc-button i {
     transform: rotate(180deg);
 }
+
+
+/* Text-to-Speech Widget Styles */
+.tts-widget {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(0, 115, 230, 0.3);
+    border-radius: 10px;
+    margin: 1.5rem 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.tts-header {
+    background: linear-gradient(to right, rgba(0, 115, 230, 0.3), rgba(0, 0, 0, 0.5));
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+}
+
+.tts-header i {
+    color: #00c6ff;
+    margin-right: 0.5rem;
+}
+
+.tts-header span {
+    color: white;
+    font-weight: 500;
+    flex: 1;
+}
+
+.tts-toggle {
+    background: transparent;
+    border: none;
+    color: #00c6ff;
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.3s ease;
+}
+
+.tts-widget.collapsed .tts-toggle {
+    transform: rotate(-90deg);
+}
+
+.tts-body {
+    padding: 1rem 1.5rem;
+    max-height: 300px;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.tts-widget.collapsed .tts-body {
+    max-height: 0;
+    padding: 0 1.5rem;
+}
+
+.tts-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.tts-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0073e6, #00a1ff);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.tts-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 115, 230, 0.4);
+}
+
+.tts-btn:active {
+    transform: scale(0.95);
+}
+
+.tts-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tts-speed-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    margin-left: 1rem;
+}
+
+.tts-speed-control label {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.tts-speed-control input[type="range"] {
+    flex: 1;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.tts-speed-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    background: #00c6ff;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.tts-speed-control input[type="range"]::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    background: #00c6ff;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+#tts-speed-value {
+    color: #00c6ff;
+    font-weight: 500;
+    min-width: 35px;
+}
+
+.tts-voice-selector {
+    margin-bottom: 1rem;
+}
+
+.tts-voice-selector label {
+    color: #aaa;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+}
+
+.tts-voice-selector select {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(0, 115, 230, 0.3);
+    border-radius: 5px;
+    padding: 0.3rem 0.5rem;
+    outline: none;
+}
+
+.tts-progress {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.tts-progress-bar {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #0073e6, #00c6ff);
+    transition: width 0.3s ease;
+}
+
+.tts-status {
+    color: #aaa;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* Dark theme support */
+.dark-theme .tts-widget {
+    background: rgba(var(--ctp-base-rgb, 30, 30, 46), 0.8);
+    border-color: rgba(var(--ctp-surface2-rgb, 88, 91, 112), 0.2);
+}
+
+.dark-theme .tts-header {
+    background: linear-gradient(to right, rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2), transparent);
+}
+
+.dark-theme .tts-btn {
+    background: linear-gradient(135deg, var(--ctp-blue, #89b4fa), var(--ctp-sapphire, #74c7ec));
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .tts-widget {
+        margin: 1rem 0.5rem;
+    }
+
+    .tts-controls {
+        flex-wrap: wrap;
+    }
+
+    .tts-speed-control {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 0.5rem;
+    }
+}

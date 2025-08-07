@@ -1625,3 +1625,231 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM loaded, initializing Table of Contents...");
     setTimeout(createTableOfContents, 100); // Small delay to ensure all elements are ready
 });
+
+// Text-to-Speech Functionality
+function initTextToSpeech() {
+    // Check if browser supports speech synthesis
+    if (!('speechSynthesis' in window)) {
+        console.warn('Text-to-speech not supported in this browser');
+        const widget = document.getElementById('tts-widget');
+        if (widget) widget.style.display = 'none';
+        return;
+    }
+
+    // DOM elements
+    const widget = document.getElementById('tts-widget');
+    const toggleBtn = document.getElementById('tts-toggle');
+    const playBtn = document.getElementById('tts-play');
+    const pauseBtn = document.getElementById('tts-pause');
+    const stopBtn = document.getElementById('tts-stop');
+    const speedInput = document.getElementById('tts-speed');
+    const speedValue = document.getElementById('tts-speed-value');
+    const voiceSelect = document.getElementById('tts-voice');
+    const progressBar = document.getElementById('tts-progress-bar');
+    const status = document.getElementById('tts-status');
+    const header = document.querySelector('.tts-header');
+
+    if (!widget) return;
+
+    let utterance = null;
+    let voices = [];
+    let isPaused = false;
+    let currentCharIndex = 0;
+    let articleText = '';
+
+    // Get article text
+    function getArticleText() {
+        const articleContent = document.querySelector('.article-content');
+        if (!articleContent) return '';
+
+        // Clone the content to avoid modifying the original
+        const clone = articleContent.cloneNode(true);
+
+        // Remove scripts and style elements
+        clone.querySelectorAll('script, style, noscript').forEach(el => el.remove());
+
+        // Get text content
+        let text = clone.textContent || clone.innerText || '';
+
+        // Clean up the text
+        text = text.replace(/\s+/g, ' ').trim();
+
+        return text;
+    }
+
+    // Populate voice options
+    function populateVoices() {
+        voices = speechSynthesis.getVoices();
+        voiceSelect.innerHTML = '
+
+        ';
+
+        // Group voices by language
+        const voicesByLang = {};
+        voices.forEach((voice, index) => {
+            const lang = voice.lang.substring(0, 2);
+            if (!voicesByLang[lang]) voicesByLang[lang] = [];
+            voicesByLang[lang].push({ voice, index });
+        });
+
+        // Add English voices first, then others
+        if (voicesByLang['en']) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = 'English';
+            voicesByLang['en'].forEach(({ voice, index }) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = voice.name + (voice.default ? ' (Default)' : '');
+                optgroup.appendChild(option);
+            });
+            voiceSelect.appendChild(optgroup);
+        }
+
+        // Add other languages
+        Object.keys(voicesByLang).forEach(lang => {
+            if (lang !== 'en') {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = lang.toUpperCase();
+                voicesByLang[lang].forEach(({ voice, index }) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = voice.name;
+                    optgroup.appendChild(option);
+                });
+                voiceSelect.appendChild(optgroup);
+            }
+        });
+    }
+
+    // Initialize voices
+    populateVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = populateVoices;
+    }
+
+    // Toggle widget visibility
+    header.addEventListener('click', function(e) {
+        if (e.target.closest('.tts-toggle') || e.target === header) {
+            widget.classList.toggle('collapsed');
+        }
+    });
+
+    // Play button
+    playBtn.addEventListener('click', function() {
+        if (isPaused && utterance) {
+            speechSynthesis.resume();
+            isPaused = false;
+            playBtn.style.display = 'none';
+            pauseBtn.style.display = 'flex';
+            status.textContent = 'Reading...';
+        } else {
+            startReading();
+        }
+    });
+
+    // Pause button
+    pauseBtn.addEventListener('click', function() {
+        if (speechSynthesis.speaking && !isPaused) {
+            speechSynthesis.pause();
+            isPaused = true;
+            pauseBtn.style.display = 'none';
+            playBtn.style.display = 'flex';
+            status.textContent = 'Paused';
+        }
+    });
+
+    // Stop button
+    stopBtn.addEventListener('click', function() {
+        stopReading();
+    });
+
+    // Speed control
+    speedInput.addEventListener('input', function() {
+        speedValue.textContent = this.value + 'x';
+        if (utterance) {
+            utterance.rate = parseFloat(this.value);
+        }
+    });
+
+    // Voice selection
+    voiceSelect.addEventListener('change', function() {
+        if (speechSynthesis.speaking) {
+            stopReading();
+        }
+    });
+
+    // Start reading
+    function startReading() {
+        // Stop any ongoing speech
+        speechSynthesis.cancel();
+
+        articleText = getArticleText();
+        if (!articleText) {
+            status.textContent = 'No content to read';
+            return;
+        }
+
+        utterance = new SpeechSynthesisUtterance(articleText);
+        utterance.rate = parseFloat(speedInput.value);
+        utterance.pitch = 1;
+        utterance.volume = 1;
+
+        // Set voice
+        if (voiceSelect.value && voices[voiceSelect.value]) {
+            utterance.voice = voices[voiceSelect.value];
+        }
+
+        // Event handlers
+        utterance.onstart = function() {
+            playBtn.style.display = 'none';
+            pauseBtn.style.display = 'flex';
+            status.textContent = 'Reading...';
+            isPaused = false;
+        };
+
+        utterance.onend = function() {
+            stopReading();
+            status.textContent = 'Finished reading';
+        };
+
+        utterance.onerror = function(event) {
+            console.error('Speech synthesis error:', event);
+            status.textContent = 'Error occurred';
+            stopReading();
+        };
+
+        utterance.onboundary = function(event) {
+            if (event.charIndex) {
+                currentCharIndex = event.charIndex;
+                const progress = (currentCharIndex / articleText.length) * 100;
+                progressBar.style.width = progress + '%';
+            }
+        };
+
+        // Start speaking
+        speechSynthesis.speak(utterance);
+    }
+
+    // Stop reading
+    function stopReading() {
+        speechSynthesis.cancel();
+        pauseBtn.style.display = 'none';
+        playBtn.style.display = 'flex';
+        progressBar.style.width = '0%';
+        status.textContent = 'Ready to read';
+        isPaused = false;
+        currentCharIndex = 0;
+    }
+
+    // Stop speech when leaving page
+    window.addEventListener('beforeunload', function() {
+        if (speechSynthesis.speaking) {
+            speechSynthesis.cancel();
+        }
+    });
+}
+
+// Initialize TTS when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initTextToSpeech();
+});

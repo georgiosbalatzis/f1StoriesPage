@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p></p><h2><a id="_tkc3wl5ehur7"></a></h2><h1><a id="_stvedv98t77j"></a><strong>🧠 McLaren MCL39 – Τεχνική Ανάλυση Υψηλής Ακρίβειας (Μέρος 1/4)</strong></h1><h2><a id="_b7sih93l72z"></a><strong>Εισαγωγή</strong></h2><p>Η MCL39 είναι η αγωνιστική πρόταση της McLaren για το Πρωτάθλημα Formula 1 του 2025 – ένα μονοθέσιο που συνδυάζει επιθετική τεχνολογική εξέλιξη με την ωριμότητα ενός concept που δοκιμάστηκε με επιτυχία το 2024. Ο επικεφαλής της ομάδας, Andrea Stella, τόνισε ότι σχεδόν <strong>κάθε βασικό στοιχείο της αρχιτεκτονικής του μονοθεσίου έχει επανασχεδιαστεί ή εξελιχθεί</strong>, με στόχο τη συνολική αναβάθμιση σε κάθε επίπεδο.</p><p>Η παρούσα ανάλυση διασπά το σύνολο της τεχνικής φιλοσοφίας της MCL39 σε τομείς: <strong>αεροδυναμική, ενσωμάτωση κινητήρα, ανάρτηση, σασί, πέδηση και εξέλιξη εντός σεζόν</strong>. Σε κάθε ενότητα γίνεται τεχνική σύγκριση με τους βασικούς ανταγωνιστές: <strong>Ferrari SF-25</strong>, <strong>Red Bull RB21</strong>, και <strong>Mercedes W16</strong>.</p><h2><a id="_2msub4hezbp8"></a><strong>Αεροδυναμική Φιλοσοφία &amp; Εξέλιξη</strong></h2><h3><a id="_1z3kjcvhghm5"></a><strong>Σταθερότητα Πλατφόρμας</strong></h3><p>Η MCL39 έχει σχεδιαστεί γύρω από μια αρχή που η McLaren θεωρεί θεμελιώδη: <strong>σταθερότητα της αεροδυναμικής πλατφόρμας</strong>. Η ομάδα επέλεξε να θυσιάσει μικρό μέρος απόλυτου κάθετου φορτίου υπέρ της αεροδυναμικής συνέπειας – μια προσέγγιση που καθιστά το μονοθέσιο λιγότερο ευαίσθητο σε μεταβολές ύψους και γωνίας κλίσης κατά το φρενάρισμα και την επιτάχυνση.</p><p>Αυτό ενισχύεται από μια <strong>προχωρημένη γεωμετρία ανάρτησης με υψηλό βαθμό anti-dive</strong> εμπρός (βλέπε Μέρος 3), που επιτρέπει στον εμπρός άξονα να διατηρεί την αεροδυναμική του θέση κατά το φρενάρισμα. Ο μπροστινός πτέρυγας είναι εξέλιξη της επιτυχημένης διάταξης που εμφανίστηκε για πρώτη φορά στο Grand Prix των ΗΠΑ το 2024 – με κατανομή φόρτισης σχεδόν ομοιόμορφη κατά μήκος του πτερυγίου και επανασχεδιασμένες άκρες (endplates) που ενισχύουν το φαινόμενο outwash.</p><h3><a id="_bpdv61ezaq4r"></a><strong>Εισαγωγή Αέρα &amp; Sidepods</strong></h3><p>Η πιο ορατή εξέλιξη της MCL39 βρίσκεται στις <strong>πλευρικές εισαγωγές (sidepod intakes)</strong> και τη γεωμετρία των sidepods συνολικά. Το νέο “P-shape” σχήμα αντικαθιστά την πιο οριζόντια διάταξη της MCL38 και αποτελείται από:</p><ul><li><strong>Κατακόρυφη, στενή είσοδο στο κάτω μέρος</strong> – η οποία εισάγει αέρα με αυξημένη ταχύτητα<br /></li><li><strong>Εκτεταμένη οριζόντια προέκταση ("overbite") στο άνω μέρος</strong>, η οποία λειτουργεί ως προφίλ δημιουργίας στροβίλου και κατευθύνει τον αέρα προς την άνω επιφάνεια του sidepod<br /></li></ul><p>Η γεωμετρία αυτή έχει διπλό στόχο:</p><ol><li>Βελτίωση της ποιότητας ροής προς τα ψυγεία<br /></li><li><strong>Απελευθέρωση όγκου στην κάτω πλευρά</strong>, επιτρέποντας έναν εξαιρετικά βαθύ undercut που διοχετεύει υψηλής ενέργειας ροή κατά μήκος του πατώματος, προς τον διαχύτη και την πίσω πτέρυγα (beam wing).<br /></li></ol><p>Τα sidepods έχουν επίσης εξομαλυνθεί στην εξωτερική τους επιφάνεια – καταργήθηκαν οι τοπικές “σακούλες” ή κοιλότητες που υπήρχαν στην MCL38. Η σχεδίαση είναι πλέον πιο γραμμική, εξασφαλίζοντας προσκόλληση του ρεύματος και καλύτερη “παράκαμψη” (bypass) γύρω από τα πίσω ελαστικά.</p><h3><a id="_cyqkoxvgfuis"></a><strong>Εισαγωγή Αέρα Roll-Hoop</strong></h3><p>Άλλη μία αξιοσημείωτη διαφοροποίηση: η <strong>εισαγωγή αέρα πάνω από το κεφάλι του οδηγού (roll-hoop)</strong>. Η MCL39 διαθέτει μια <strong>σημαντικά διευρυμένη ελλειπτική είσοδο</strong>, πιθανόν για την τροφοδοσία ενός επιπλέον ψυγείου (για ERS ή συμπιεστή). Αυτή η αλλαγή είχε ως αποτέλεσμα τη μείωση των ανοιγμάτων ψύξης στα sidepods – δίνοντας περισσότερο χώρο για aero διαμόρφωση – ενώ επιπλέον βελτιώθηκε και η ροή αέρα προς την πίσω αεροδυναμική περιοχή.</p><p>Η McLaren επίσης ενσωμάτωσε μικρές κάθετες πτερύγες στη βάση του halo (“bull horns”) – δημιουργούν τοπικά στροβίλους που ενεργοποιούν τη ροή γύρω από τη βάση του sidepod, αποτρέποντας διαχωρισμό της ροής (separation zones) σε κρίσιμες περιοχές.</p>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p></p><p><a id="_hhlkcg2ob03v"></a>Η στήριξη του Frank Williams στους εργαζόμενους του</p><p>Η προσπάθεια του Φελίπε Μάσα να πείσει τον Φρανκ Γουίλιαμς να προμηθεύονται αποκλειστικά ανταλλακτικά από τη Mercedes ήταν μέρος μιας ευρύτερης στρατηγικής για την αναβάθμιση της αγωνιστικής απόδοσης της ομάδας Williams στη Formula 1.</p><p>Κατά την περίοδο που ο Μάσα οδηγούσε για τη Williams (2014–2017), η ομάδα ήδη χρησιμοποιούσε κινητήρες Mercedes, οι οποίοι θεωρούνταν οι καλύτεροι εκείνη την εποχή. Ωστόσο, τα υπόλοιπα εξαρτήματα (όπως το κιβώτιο ταχυτήτων, η ανάρτηση και η πίσω ανάρτηση) δεν προέρχονταν απαραίτητα από τη Mercedes, γεγονός που περιόριζε την απόδοση σε σύγκριση με τις εργοστασιακές ομάδες.</p><p>Ο Μάσα, με την εμπειρία του από τη Ferrari και την τεχνογνωσία του, φέρεται να πίεζε τη διοίκηση να υιοθετήσει μια πιο «πελατειακή» σχέση με τη Mercedes, προμηθευόμενη περισσότερα εξαρτήματα απευθείας από αυτούς, όπως έκανε π.χ. η Force India. Ο στόχος ήταν να περιοριστούν τα τεχνικά ρίσκα και να εστιάσει η ομάδα στην αεροδυναμική και το στήσιμο του μονοθεσίου.</p><p>Ωστόσο, ο Φρανκ Γουίλιαμς και η τεχνική διεύθυνση (με τον Πάτι Λόου αργότερα) ήταν παραδοσιακά υπέρ της κατασκευής του μέγιστου δυνατού in-house, κάτι που σχετίζεται και με την αγωνιστική φιλοσοφία της Williams ως ανεξάρτητης ομάδας.</p>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

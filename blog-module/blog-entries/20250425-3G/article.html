@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p></p><h2><a id="_yb9kouju7ojm"></a><strong>🧩 RB21 Μέρος 1: Η Φιλοσοφία Σχεδίασης και η Εξέλιξη από το Παρελθόν</strong></h2><h3><a id="_9mjmlg9iybm0"></a><strong>✍️ Εισαγωγή</strong></h3><p>Η Red Bull Racing συνεχίζει να γράφει το δικό της τεχνολογικό έπος στη Formula 1, και η RB21 αποτελεί το πιο πρόσφατο κεφάλαιο. Μετά από μια κυριαρχική σεζόν με την RB19, η ομάδα του Adrian Newey δεν επαναπαύτηκε. Η RB21 φέρει στοιχεία εξέλιξης αλλά και ριζικές αναθεωρήσεις – όχι για να διορθώσει, αλλά για να <em>τελειοποιήσει</em>. Πάμε να δούμε πώς μεταμορφώθηκε το ήδη κορυφαίο μονοθέσιο της F1.</p><h3><a id="_e8hjijc2u7pd"></a><strong>🔍 Εξέλιξη ή Επανάσταση;</strong></h3><p>Σε αντίθεση με τις παραδοσιακές προσθήκες της RB19 που βασίζονταν σε διαδοχικά updates, η RB21 είναι προϊόν μιας πλήρους αναθεώρησης. Αν και το concept παραμένει σταθερό (ground effect, aggressive undercut, downwash philosophy), η Red Bull εντόπισε τα όρια απόδοσης του περσινού σασί και αποφάσισε να δημιουργήσει μια πιο ευέλικτη πλατφόρμα.</p><p><strong>Βασικά σημεία σχεδίασης:</strong></p><ul><li>📏 <em>Νέο σασί με διαφορετική κατανομή μάζας και ελαφρώς μικρότερο μεταξόνιο<br /></em></li><li>🪂 <em>Αναθεωρημένο πάτωμα με ακόμα πιο "έξυπνα" tunnels για βελτιωμένο ground effect<br /></em></li><li>🎯 <em>Αεροδυναμική προσέγγιση που επιτρέπει μεγαλύτερο setup εύρος<br /></em></li></ul><h3><a id="_7c4qb698b67a"></a><strong>🧠 Η Φιλοσοφία Newey σε πλήρη ισχύ</strong></h3><p>Ο Adrian Newey παραμένει ο αρχιτέκτονας του τεχνολογικού ονείρου. Η RB21 δείχνει ότι η ομάδα δε σχεδιάζει απλώς γρήγορα μονοθέσια, αλλά <em>πλατφόρμες εξέλιξης</em> που δουλεύουν από το πρώτο FP1 μέχρι το τέλος της σεζόν. Η προσοχή στη λεπτομέρεια (όπως η μικρομετρική αναδιάταξη ψυγείων και ηλεκτρονικών) δείχνει πώς η Red Bull "χτίζει" performance ακόμα και από τα αόρατα σημεία του μονοθεσίου.</p><h3><a id="_14jkureu2vpf"></a><strong>🔚 Συμπέρασμα Μέρους 1</strong></h3><p>Η RB21 δεν είναι "απλώς" η RB19 με νέα φτερά. Είναι μια εκλεπτυσμένη, πιο επιθετική έκδοση ενός ήδη αήττητου μονοθεσίου. Στο επόμενο μέρος, θα εστιάσουμε στο <strong>αεροδυναμικό πακέτο</strong> και τις πιο εντυπωσιακές λύσεις που είδαμε στην παρουσίαση – από sidepods μέχρι beam wings.</p>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

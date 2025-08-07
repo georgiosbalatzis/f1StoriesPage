@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p><br /></p><h1><a id="_x4ltm5ygjxfv"></a><br /> 🛠️🏎️ <strong>Μέρος 3: Πλαίσιο, Ανάρτηση &amp; Υλικά – Η Μηχανική Καρδιά του A525</strong> 🛠️🏎️</h1><h2><a id="_e1j0te66jds"></a><strong>1. Τι θα αναλύσουμε εδώ</strong></h2><p>Στο τρίτο μέρος της τεχνικής ανάλυσης του Alpine A525, εστιάζουμε στην <strong>μηχανική βάση</strong> του μονοθεσίου: το πλαίσιο (monocoque), το σύστημα ανάρτησης εμπρός και πίσω, καθώς και τα υλικά που επιλέγονται για απόλυτη ακαμψία, χαμηλό βάρος και στιβαρότητα.</p><p>Συγκεκριμένα, θα δούμε:</p><ul><li>🧱 Το carbon πλαίσιο &amp; crash structures<br /></li><li>⚙️ Ανάρτηση εμπρός και πίσω (push-rod)<br /></li><li>🧬 Προηγμένα υλικά, 3D printing και εξοικονόμηση βάρους<br /></li></ul><h2><a id="_oqhme7bzope0"></a><strong>2. Πλαίσιο &amp; Monocoque – Η σπονδυλική στήλη του A525 🦴</strong></h2><p>Το monocoque του A525 είναι ένα <strong>μονοκόμματο κέλυφος από ανθρακονήματα (carbon fibre)</strong>, κατασκευασμένο μέσω σύνθεσης (lay-up) και ωρίμανσης σε autoclave υψηλής πίεσης και θερμοκρασίας. Αυτό περιλαμβάνει:</p><ul><li><strong>100+ στρώσεις υφάσματος</strong> με στρατηγικές γωνίες (0°, ±45°, 90°)<br /></li><li><strong>Zylon panels</strong> στα πλαϊνά, για προστασία από διάτρηση σε πλευρικές συγκρούσεις<br /></li><li><strong>Ενισχύσεις τιτανίου</strong> στα σημεία στήριξης αναρτήσεων και κινητήρα<br /></li></ul><p>📌 <em>Trivia:</em> H Alpine το 2024 επανέφερε νέο, ελαφρύτερο chassis, και στο A525 συνέχισε με ακόμη πιο εξευγενισμένο lay-up — συνδυάζοντας ακαμψία &amp; ευελιξία.</p><h3><a id="_4okj2q25pvzw"></a><strong>Crash structures</strong></h3><ul><li><strong>Μύτη (nosecone):</strong> Το A525 έχει συντομότερη μύτη για αεροδυναμικούς λόγους, η οποία όμως εξακολουθεί να πληροί τα πρότυπα απορρόφησης πρόσκρουσης της FIA.<br /></li><li><strong>Πίσω crash δομή:</strong> Τοποθετείται πάνω στο κιβώτιο και είναι σχεδιασμένη να απορροφά κινητική ενέργεια μέσω συντριβής ειδικής ανθρακονηματικής δομής.<br /></li></ul><h2><a id="_evubwvj3tmc4"></a><strong>3. Ανάρτηση – Ελεγχόμενη δυναμική σε κάθε εκατοστό 🔩</strong></h2><h3><a id="_sbm25nyaxjg9"></a><strong>3.1. Εμπρός Ανάρτηση – Push-Rod με anti-dive</strong></h3><p>Η Alpine επέλεξε να διατηρήσει το <strong>push-rod layout εμπρός</strong>, κάτι που προσφέρει:</p><ul><li>Καλύτερη προσβασιμότητα στο σύστημα<br /></li><li>Τοποθέτηση των ελατηρίων/αμορτισέρ στο επάνω μέρος του σασί<br /></li><li>Αεροδυναμική ευελιξία στη διαμόρφωση των wishbones<br /></li></ul><p>🦾 <strong>Anti-dive geometry:</strong> Η ανώτερη ράβδος έχει αρνητική κλίση (πίσω άκρο χαμηλότερα), που μειώνει τη βύθιση του εμπρός μέρους στο φρενάρισμα.</p><h3><a id="_rwm93kpvcj7s"></a><strong>3.2. Πίσω Ανάρτηση – Push-Rod με anti-squat</strong></h3><p>Η Alpine είναι από τις λίγες ομάδες που χρησιμοποιούν <strong>push-rod και πίσω</strong>, ενώ η πλειονότητα (π.χ. Red Bull) επιλέγει pull-rod.</p><ul><li><strong>Οφέλη:<br /></strong><ul><li>Μεγαλύτερη ελευθερία στο κάτω μέρος για τον diffuser<br /></li><li>Τοποθέτηση των damper/rocker συστημάτων πάνω στο κιβώτιο<br /></li><li>Καλύτερη διαχείριση pitch &amp; squat με κατάλληλη γεωμετρία<br /></li></ul></li></ul><p>🔧 <em>Anti-squat:</em> Η εμπρός άκρη του πάνω ψαλιδιού είναι πιο ψηλά, κάτι που μειώνει τη «βουτιά» του πίσω μέρους στην επιτάχυνση — ιδανικό για καλύτερη πρόσφυση.</p><h3><a id="_4zpjklhk398z"></a><strong>3.3. Τεχνολογία 3D-printing στο σύστημα ανάρτησης</strong></h3><p>Η Alpine, σε συνεργασία με τη 3D Systems, κατασκεύασε <strong>υδραυλικούς συσσωρευτές τιτανίου</strong> (hydraulic accumulators) για το σύστημα heave damper στο πίσω μέρος:</p><ul><li>💡 Έχουν εσωτερικές σπειροειδείς διαδρομές για μέγιστη απόσβεση κραδασμών<br /></li><li>🪶 Είναι ελαφρύτεροι κατά ~15–20% σε σχέση με κατεργασμένους από συμπαγές τιτάνιο<br /></li><li>✅ Καθαρίζονται σε ειδικές συνθήκες για απόλυτη υδραυλική καθαρότητα<br /></li></ul><h2><a id="_6ft3ger0acc2"></a><strong>4. Προηγμένα Υλικά – Ελαφρύτερα, ισχυρότερα, πιο έξυπνα 🧪</strong></h2><ul><li><strong>Ανθρακονήματα (CFRP):</strong> Διαφορετικά weaves (υψηλής αντοχής / υψηλού modulus) χρησιμοποιούνται σε κρίσιμα σημεία — π.χ. στο bulkhead ή στα σημεία στήριξης του Halo.<br /></li><li><strong>Ζylon &amp; Kevlar:</strong> Ενισχύσεις για απορρόφηση ενέργειας και προστασία από διάτρηση<br /></li><li><strong>Τιτάνιο (6Al-4V):</strong> Σε ακραίες εφαρμογές όπως upright, toe-links, και εξαρτήματα πίεσης<br /></li><li><strong>Αλουμίνιο αεροπορικού τύπου:</strong> Για εξαρτήματα χαμηλού φορτίου όπως brackets ή καλύμματα αισθητήρων<br /></li><li><strong>Ειδικά κράματα για φρένα:</strong> Carbon-Carbon δίσκοι και pads (Carbon Industrie), Brembo calipers από κράματα αλουμινίου/λιθίου<br /></li></ul><p>💡 <em>Smart detail:</em> H Alpine χρησιμοποιεί <em>ακατέργαστο carbon</em> χωρίς χρώμα σε πολλές επιφάνειες, για εξοικονόμηση ~400 g από την απουσία βαφής.</p><h2><a id="_j17bg0u2so4d"></a><strong>5. Βάρος &amp; Κατανομή – Το παιχνίδι των χιλιοστών ⚖️</strong></h2><ul><li><strong>Στόχος:</strong> Το A525 ξεκίνησε από την 1η αγωνιστική στο ελάχιστο όριο βάρους, σε αντίθεση με το A524.<br /></li><li><strong>Μπαγιόν (ballast):</strong> Περίπου 5–10 kg στρατηγικά τοποθετημένα στο πάτωμα για βέλτιστη κατανομή (46–47% μπροστά).<br /></li><li><strong>Καλωδιώσεις:</strong> Χρησιμοποιούνται ultra-light καλώδια, συνδετήρες Deutsch, και καλωδιώσεις custom-cut χωρίς έξτρα μήκος.<br /></li></ul><p>📌 <em>Tech Tip:</em> Όσο πιο ελαφρύ το πλαίσιο, τόσο περισσότερες επιλογές ισορροπίας έχεις. Όλα τα περιττά γραμμάρια αφαιρούνται για να «μεταφερθούν» εκεί που μετρούν.</p><h2><a id="_xagaborgcaqd"></a><strong>6. Συμπέρασμα</strong></h2><p>Το Alpine A525, μηχανικά, είναι μια <strong>σταθερή εξέλιξη γεωμετρικής ακρίβειας και υλικού engineering</strong>. Δεν αναζητά επαναστατικές αλλαγές, αλλά μέσω προσεγμένων λεπτομερειών και προηγμένης κατασκευής επιτυγχάνει:</p><ul><li>Καλύτερη διαχείριση της δυναμικής του πλαισίου<br /></li><li>Προβλέψιμη συμπεριφορά στις αλλαγές φορτίου<br /></li><li>Μέγιστη ευελιξία στην κατανομή βάρους<br /></li></ul><p>Στο τελευταίο <strong>Μέρος 4</strong>, θα εξετάσουμε τα <strong>ηλεκτρονικά συστήματα, το λογισμικό, τα δεδομένα, και την πραγματική επίδοση του A525</strong>, με συγκρίσεις απέναντι στο περσινό A524 και το φετινό Williams FW47. Μείνετε συντονισμένοι! ⚡📊</p>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>
