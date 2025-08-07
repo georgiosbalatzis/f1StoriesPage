@@ -367,10 +367,10 @@
 
     <!-- Article navigation -->
     <div class="article-navigation">
-      <a href="/blog-module/blog-entries/20250530-1G/article.html" id="prev-article-link" class="article-nav-link prev">
+      <a href="/blog-module/blog-entries/20250530G/article.html" id="prev-article-link" class="article-nav-link prev">
         <i class="fas fa-arrow-left"></i> Previous Article
       </a>
-      <a href="/blog-module/blog-entries/20250601W/article.html" id="next-article-link" class="article-nav-link next">
+      <a href="/blog-module/blog-entries/20250530-1G/article.html" id="next-article-link" class="article-nav-link next">
         Next Article <i class="fas fa-arrow-right"></i>
       </a>
     </div>
@@ -403,6 +403,7 @@
                     </div>
                 </div>
             </div>
+        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -425,6 +426,7 @@
                     </div>
                 </div>
             </div>
+        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -447,6 +449,7 @@
                     </div>
                 </div>
             </div>
+        
     </div>
   </div>
 </section>
@@ -1200,20 +1203,23 @@
   });
 </script>
 
-            <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                console.log("Article loaded, checking images...");
-                document.querySelectorAll('img').forEach(img => {
-                    img.addEventListener('error', function() {
-                        console.error("Image failed to load:", this.src);
-                        this.style.border = "2px dashed red";
-                        this.style.padding = "10px";
-                        this.setAttribute('data-failed', 'true');
-                    });
-                    img.addEventListener('load', function() {
-                        console.log("Image loaded successfully:", this.src);
-                    });
-                });
+    <script>
+    // Debug helper for images
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
             });
-            </script></body>
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script>
+    </body>
 </html>
