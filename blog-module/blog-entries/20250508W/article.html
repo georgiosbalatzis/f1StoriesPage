@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p></p><p><a id="_49ylvehupi5o"></a>Τζάκι Ιξ επιστρέφοντας από την κόλαση</p><p>«Κάθε φορά που τον κυρίευε η αμφιβολία, όταν μέσα του φούντωνε η σκέψη πως ίσως αυτό που είχε βάλει σκοπό να κάνει ήταν άδικο,  ο Τζάκι Iξ γύριζε πίσω, με τη μνήμη του καρφωμένη σ’ εκείνο το ατύχημα που του είχε συμβεί στην αρχή της σεζόν του 1970. Ήταν στον πρώτο γύρο του Γκραν Πρι της Ισπανίας, όταν βρέθηκε ένα βήμα πριν τον θάνατο.</p><p> Η BRM του Όλιβερ είχε στραφεί μπροστά του και τον είχε χτυπήσει κατά μέτωπο ή μήπως ήταν εκείνος που την είχε χτυπήσει; </p><p>Δεν ήταν πια σίγουρος για το πώς ακριβώς είχε γίνει. </p><p>Το μόνο που θυμόταν καθαρά, ήταν οι δύο φλεγόμενες μηχανές, η Ferrari του τυλιγμένη στις φλόγες, κι εκείνος παγιδευμένος, ανήμπορος να λύσει τις ζώνες και να δραπετεύσει από την κόλαση.</p><p>Κατάφερε να ενεργοποιήσει το πυροσβεστικό σύστημα.</p><p> Ήξερε πως ο αφρός θα του χάριζε λίγα μόνο δευτερόλεπτα ζωής, αν δεν γινόταν έκρηξη, καθώς ήταν μόλις ο πρώτος γύρος και τα ρεζερβουάρ ήταν γεμάτα. </p><p>Τυλιγμένος απ’ τη φωτιά, με τη θερμότητα να τον πλησιάζει απειλητικά, πάλευε με μανία να λυθεί.</p><p> Ήξερε πως οι κριτές δεν φορούσαν αμιαντοστολές και κανείς δεν θα έμπαινε σ’ εκείνη τη φωτιά για να τον σώσει.</p><p> Έπρεπε να σωθεί μόνος του.</p><p> Ή να πεθάνει, τόσο νωρίς,  στην αρχή μιας λαμπρής καριέρας, με μια όμορφη αρραβωνιαστικιά που τον περίμενε για γάμο το καλοκαίρι.</p><p>Ο αφρός τελείωνε. </p><p>Ο αέρας λιγόστευε.</p><p> Αν δεν έκανε κάτι αμέσως, θα πέθαινε από ασφυξία και το μόνο που θα έμενε από εκείνον θα ήταν το απανθρακωμένο σώμα μέσα στο κουφάρι της Ferrari. </p><p>Με την απελπισία για όπλο, μ’ όση δύναμη του είχε απομείνει, κατάφερε να λύσει τις ζώνες. Πετάχτηκε έξω σαν ελατήριο και σωριάστηκε στο γρασίδι, κυλιόμενος για να σβήσει τις φλόγες από τη φόρμα του.</p><p> Είχε σωθεί.</p><p>Κι έτσι, πέντε μήνες αργότερα, όταν τον έζωναν οι αμφιβολίες για το αν ήταν σωστό να παλέψει να πάρει τον τίτλο από τον Ριντ, που είχε επίσης χαθεί τραγικά στην Monza σκεφτόταν εκείνες τις φλόγες της Ισπανίας. </p><p>Κι έλεγε στον εαυτό του ότι τουλάχιστον εκείνες του είχαν δώσει το δικαίωμα να προσπαθήσει.»</p>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

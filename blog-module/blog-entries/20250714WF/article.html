@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p></p><h1>Ο Πρίγκιπας των Τροχών</h1><p><strong>Κάποτε, στην καρδιά της Ευρώπης, σ’ ένα ήσυχο χωριουδάκι της Γερμανίας, γεννήθηκε ένα παιδί με ασυνήθιστα γρήγορα όνειρα. Ενώ τα άλλα παιδιά έπαιζαν με ξύλινα σπαθιά, εκείνος έπαιζε με τιμόνια από φαντασία και ρόδες από προορισμό. Ο Σεμπάστιαν, όπως τον ονόμασαν, δεν ήταν σαν τους αλλά παιδιά.</strong></p><p><strong>Το Βάπτισμα στον Θρύλο</strong></p><p><strong>Ο νεαρός αυτός ήρωας μπήκε στον σκληρό κόσμο των μονοθεσίων, όχι με τη βοήθεια μαγικών φίλτρων, αλλά με ιδρώτα και πείσμα. Πέρασε από το βασίλειο της Toro Rosso, κι εκεί, μια βροχερή μέρα στη Μόντσα, ύψωσε για πρώτη φορά το σπαθί του απέναντι στους γίγαντες. Και τους νίκησε. Στα 21 του χρόνια, έγινε ο νεότερος βασιλιάς ενός Grand Prix.</strong></p><p><strong>Αυτό δεν ήταν παρά μόνο η αρχή.</strong></p><p><strong>Η Χρυσή Τετραετία</strong></p><p><strong>Το βασίλειο της Red Bull Racing τον δέχτηκε με τιμές, και ο Σεμπάστιαν αντάμειψε την εμπιστοσύνη με μια δυναστεία. Τέσσερα διαδοχικά στέμματα 2010, 2011, 2012, 2013,  χρόνια όπου η ταχύτητα και η στρατηγική έγιναν ένας ενιαίος παλμός κάτω από την κόκκινη σημαία του ταύρου.</strong></p><p><strong>Κανείς δεν τον σταματούσε. Κανείς δεν τον αμφισβητούσε. Μα όπως κάθε ήρωας που κοιτά ψηλά, ένιωσε την ανάγκη για κάτι περισσότερο από νίκες. Έψαξε το νόημα, όχι μόνο το πώς κερδίζει, αλλά και το γιατί.</strong></p><p><strong>Ο Πόλεμος με τους Δαίμονες</strong></p><p><strong>Η Ferrari τον κάλεσε. Ο θρύλος του Σουμάχερ τον στοίχειωνε, και ο Φέτελ είδε στο κάλεσμα αυτό όχι απλώς μια μετάβαση, αλλά ένα κάλεσμα μοίρας. Πέντε χρόνια πολέμησε με το άλογο της Maranello ενάντια σε νεότερους αντιπάλους και αδυσώπητες μηχανές. Δεν φόρεσε τον κόκκινο θρόνο. Μα δεν γονάτισε.</strong></p><p><strong>Η ήττα δεν τον λύγισε τον έκανε σοφότερο. Εκείνος, που κάποτε έβγαζε κραυγές θριάμβου στον ασύρματο, τώρα μιλούσε με λόγια σοφίας, για δικαιοσύνη, για τη γη, για τη ζωή έξω από τα paddock.</strong></p><p><strong>Ο Αντάρτης της Συνείδησης</strong></p><p><strong>Ο Σεμπάστιαν σταμάτησε να είναι απλώς οδηγός. Έγινε φωνή. Έβαλε λουλούδια στο κράνος του και σήκωσε πανό για την ελπίδα. Δεν τον ένοιαζε πλέον το βάθρο,  τον ένοιαζε να είναι σωστός και ανθρώπινος.</strong></p><p><strong>Στα τελευταία του χρόνια στους αγώνες, έμοιαζε με ήρωα που είχε ολοκληρώσει την αποστολή του και δίδασκε. Κάποιοι έλεγαν ότι ο παλιός του εαυτός χάθηκε. Οι πιο ψαγμενοι, όμως, ήξεραν ο Σεμπάστιαν δεν έχασε τίποτα,  βρήκε τον αληθινό του προορισμό.</strong></p><p><strong> Η Σιγή του Θρύλου</strong></p><p><strong>Όταν έκλεισε το κράνος του για τελευταία φορά, δεν ακούστηκε πανηγυρισμός. Ακούστηκε μια σιγή.</strong></p><p><strong>Σαν όταν φεύγει ένας μεγάλος βασιλιάς από την αίθουσα και όλοι σκύβουν το κεφάλι, όχι γιατί πρέπει, αλλά γιατί το νιώθουν.</strong></p><p><strong>Ο Φέτελ δεν είναι πια στις πίστες, μα ζει στα βλέμματα κάθε νεαρού οδηγού που ονειρεύεται καθαρότητα, σε κάθε φιλάθλο που νοσταλγεί πάθος με αρχές.</strong></p><p><strong>Και όταν ρωτήθηκαν: “Ποιος ήταν ο Σεμπάστιαν Φέτελ;”</strong></p><p><strong>Η απάντηση δεν ήταν "ο τέσσερις φορές παγκόσμιος πρωταθλητής".</strong></p><p><strong>«Ήταν ο ιππότης των τροχών. Ο ήσυχος επαναστάτης. Ο άνθρωπος που μας δίδαξε ότι μπορείς να τρέχεις με 300 χλμ/ώρα και να έχεις ακόμα καρδιά.»</strong></p>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

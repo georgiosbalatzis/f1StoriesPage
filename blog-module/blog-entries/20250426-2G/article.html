@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p><br /></p><h1><a id="_ayvpkkk8n67j"></a><br /><strong>Μέρος 2: Αεροδυναμική – Από το Εμπρός Φτερό έως το DRS</strong> 🛩️🌬️</h1><h2><a id="_ker2diohtz09"></a><strong>1. Εισαγωγή – Τι θα μάθουμε σ’ αυτό το μέρος</strong></h2><p>Σ’ αυτό το δεύτερο κεφάλαιο της σειράς θα εξετάσουμε με λεπτομέρεια πώς το Alpine A525 «σμιλεύει» τον αέρα για να παράγει downforce και ταυτόχρονα να ελαχιστοποιεί την αντίσταση. Θα καλύψουμε:</p><ol><li>🟢 <strong>Μπροστινό φτερό &amp; Κοντύτερη μύτη<br /></strong></li><li>🟢 <strong>Sidepod “under-bite” &amp; διαχείριση ψύξης<br /></strong></li><li>🟢 <strong>Ground-effect δάπεδο &amp; diffuser<br /></strong></li><li>🟢 <strong>Πίσω φτερό &amp; σύστημα DRS<br /></strong></li></ol><p>Στόχος μας: να καταλάβουμε πώς κάθε τεχνική λεπτομέρεια συνεργάζεται για μέγιστο αεροδυναμικό αποτέλεσμα.</p><h2><a id="_8tigey6gvkks"></a><strong>2. Μπροστινό Φτερό &amp; Κοντύτερη Μύτη 🔱</strong></h2><ul><li><strong>Σχεδίαση 4 στοιχείων:</strong> Το A525 διατηρεί ένα κύριο επίπεδο (mainplane) και τρία επιπλέον flaps. Κάθε στρώση έχει προσεκτικά επιλεγμένη καμπυλότητα (camber) για να δημιουργήσει σταθερό downforce.<br /></li><li><strong>Σχισμή κάτω από τη μύτη (slot gap):</strong> Η μύτη έχει «ξυριστεί» σε μήκος, ώστε να μην εφάπτεται στον κύριο πίνακα του φτερού. Το κενό αυτό επιτρέπει στον αέρα να περάσει ανεμπόδιστα, αποτρέποντας τη δημιουργία «νεκρής» ζώνης αργού αέρα (boundary layer) και διατηρώντας το ρεύμα «κολλημένο» στο φτερό.<br /></li><li><strong>Αεροδυναμική των ψαλιδιών (wishbones):</strong> Οι carbon ράβδοι της ανάρτησης έχουν προφίλ αεροδυναμικής πτέρυγας, ώστε να συμβάλλουν στην εκτροπή του αέρα γύρω από τους εμπρός τροχούς. Η χωριστή τοποθέτηση του track-rod μπροστά από το κάτω ψαλίδι δείχνει ότι η Alpine επέλεξε ευρύτερη αερο-εισαγωγή στις ράβδους, αντί να «στριμώξει» το steering arm επάνω σε ένα ψαλίδι για εξοικονόμηση χώρου.<br /></li></ul><p>📐 <em>Tech Tip:</em> Η διατήρηση «καθαρού» ρεύματος κάτω από τη μύτη βελτιώνει την αποτελεσματικότητα του όλου αεροπακέτου – κάθε γραμμή πίεσης μετράει!</p><h2><a id="_fw76yjfakq33"></a><strong>3. Sidepod “Under-Bite” &amp; Ψύξη ❄️🔧</strong></h2><ul><li><strong>Under-bite φιλοσοφία:</strong> Τα εισαγωγικά «σαγόνια» των sidepods τοποθετούν τους υπόλοιπους κραδασμούς ψηλά, αφήνοντας τον κύριο αεραγωγό χαμηλά στο σώμα του μονοθεσίου. Έτσι, η εισαγωγή δεν εμποδίζει τον αέρα που κινείται κατά μήκος της επιφάνειας, μειώνοντας το μπλοκάρισμα των ψυγείων.<br /></li><li><strong>Σχήμα inlets:</strong> Το A525 υιοθέτησε ελαφρώς «επίπεδη» εισαγωγή αέρα, με ευρύτερη οριζόντια διάσταση και χαμηλότερο profile, για πιο ομοιόμορφη κατανομή πίεσης και καλύτερο περίβλημα της ροής.<br /></li><li><strong>Έξοδοι θερμότητας:</strong> Αντί για μεγάλες γρίλιες, το A525 χρησιμοποιεί μικρά flap και διακριτικά gills στην επάνω επιφάνεια του engine cover (το «A»-bulge), απελευθερώνοντας τη θερμότητα χωρίς να «σπάει» την καθαρή γραμμή του πίσω τμήματος.<br /></li></ul><p>🌡️ <em>Tech Tip:</em> Η καλύτερη κατανομή θερμικού φορτίου επιτρέπει μικρότερα ψυγεία, άρα στενότερο bodywork και χαμηλότερη χωρική αντίσταση (drag).</p><h2><a id="_et6dz8dvhcjk"></a><strong>4. Ground-Effect Δάπεδο &amp; Diffuser 🌪️</strong></h2><ul><li><strong>Ανάγλυφα στοιχεία (fences &amp; vanes):</strong> Στην περιοχή πίσω από τον εμπρός τροχό, το δάπεδο φέρει σειρά κάθετων λεπίδων (vortex generators) που δημιουργούν στροβιλισμούς. Αυτοί «σφραγίζουν» τον αέρα κάτω από το δάπεδο, αυξάνοντας την πίεση διαφοράς και ενισχύοντας το αναρρόφησης.<br /></li><li><strong>Κλείσιμο αρχικών αεραγωγών (floor outlets):</strong> Η μικρή «γέφυρα» που υπήρχε στο A524 έχει αφαιρεθεί, επιτρέποντας στα fences να δουλεύουν σε πιο προβλέψιμες συνθήκες.<br /></li><li><strong>Diffuser:</strong> Στο πίσω μέρος του δάπεδου, το σχήμα του diffuser έχει βελτιωθεί με κλίσεις πλευρικών τοιχωμάτων (sidewalls) και ελαφρώς ανασχεδιασμένο gurney/flap, ώστε να αυξηθεί η ροή και το κράτημα σε υψηλές ταχύτητες.<br /></li></ul><p>🌀 <em>Tech Tip:</em> Η επίτευξη σταθερού ride-height («ύψος πλεύσης») είναι κρίσιμη, αφού η αποτελεσματικότητα του ground-effect επηρεάζεται δραματικά από μικρές διακυμάνσεις.</p><h2><a id="_ivm4vxudqen"></a><strong>5. Πίσω Φτερό &amp; DRS 🎯</strong></h2><ul><li><strong>Single-pillar στήριξη:</strong> Το πίσω φτερό κουμπώνει σε μία κεντρική κολώνα, απλοποιώντας την αεροδυναμική πίσω.<br /></li><li><strong>Κυρτό mainplane &amp; ένθετα endplates:</strong> Η καμπυλότητα (spoon) στο κύριο επίπεδο αυξάνει την πίεση στο κέντρο, ενώ τα louvres στις φτερούγες των endplates απελευθερώνουν την αέρα για πιο σταθερό wake.<br /></li><li><strong>Διακόπτης DRS:</strong> Όταν ανοίγει, το ανώτερο flap «πέφτει», μειώνοντας το drag κατά ≈10–12%. H Alpine επένδυσε σε στιβαρή υδραυλική διάταξη και ελάχιστη ευκαμψία, αποφεύγοντας τα «ταλαντευόμενα» flaps που κάποια ρύθμιση αφέθηκε φέτος σε άλλες ομάδες.<br /></li><li><strong>Ροή από τον κινητήρα:</strong> Το «A»-bulge στην εξαγωγή βοηθά το ρεύμα να ρέει στο πίσω φτερό, βελτιώνοντας το κράτημα στα ανοιχτά κομμάτια.<br /></li></ul><p>💨 <em>Tech Tip:</em> Ένα στιβαρό, προβλέψιμο DRS είναι ζωτικής σημασίας για εξαντλητική μάχη στις ευθείες του Spa ή της Monza.</p><h2><a id="_4d8ve0qrmv8o"></a><strong>6. Συμπέρασμα &amp; Τι Έπεται</strong></h2><p>Το αεροδυναμικό πακέτο του Alpine A525 δικαιολογεί τον τίτλο «evolution, not revolution». Με γνώμονα την αξιοπιστία και την ευρύτητα λειτουργίας, η Alpine επικεντρώθηκε σε:</p><ul><li>Τον «εκτοξευτήρα» αέρα κάτω από τη μύτη<br /></li><li>Τη διακριτική αλλά αποτελεσματική διαχείριση ψύξης<br /></li><li>Το σταθερό ground-effect δάπεδο<br /></li><li>Τον αξιόπιστο και ισχυρό DRS<br /></li></ul><p>Στο <strong>Μέρος 3</strong> θα περάσουμε στην <strong>Ανάρτηση &amp; Υλικά</strong> (“Chassis, Suspension &amp; Materials”), όπου θα δούμε πώς το πλαίσιο, η γεωμετρία και τα σύνθετα υλικά συνεργάζονται για μηχανική πρόσφυση και μικρό βάρος. Μην το χάσετε! 😉🏁</p><p><em>Διάρκεια ανάγνωσης: ~9 λεπτά</em></p>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

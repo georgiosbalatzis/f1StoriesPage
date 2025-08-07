@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p></p><p><a id="_jt3rja7t3pd4"></a>🏁 <strong>F1 2025 - Imola GP<br /></strong> 💨 <strong>Η Mercedes και η "βρωμιά" στον αέρα: Τεχνική ματιά στις αναβαθμίσεις της W16</strong> </p><p>Κατά τη διάρκεια του Grand Prix της Εμίλια-Ρομάνια 2025 στην Ίμολα, η Mercedes AMG F1 βρέθηκε στο επίκεντρο των paddock συζητήσεων. Aντίπαλες ομάδες, κυρίως από το στρατόπεδο της McLaren και της Ferrari, υπαινίχθηκαν πως οι πρόσφατες αεροδυναμικές αναβαθμίσεις της W16 έχουν προκαλέσει «ανώμαλες» ροές αέρα που επηρεάζουν δυσμενώς τα μονοθέσια που ακολουθούν — μια τακτική που πολλοί χαρακτήρισαν ειρωνικά ως "βρώμικο αέρα" by design.</p><h3><a id="_5mkan52nfbgn"></a><strong>🔧 Τι άλλαξε στην W16;</strong></h3><p>Η Mercedes εισήγαγε ένα εκτενές πακέτο αναβαθμίσεων στην Ίμολα που περιλαμβάνει:</p><ul><li>Νέο δάπεδο με reprofiled κανάλια Venturi<br /></li><li>Ανασχεδιασμένο diffuser με πιο έντονα side kick-outs<br /></li><li>Πίσω αεροτομή με τροποποιημένα endplates και μεγαλύτερη εξαγωγή ροής προς τα πάνω (upwash)<br /></li><li>Τροποποιήσεις στους εξωτερικούς καθρέφτες και στο sidepod inlet για καλύτερο channeling του airflow<br /></li></ul><p>Αυτές οι αλλαγές στοχεύουν στην αύξηση της κάθετης δύναμης χωρίς αύξηση του drag, ενώ φαίνεται πως παράλληλα δημιουργούν πιο «ακανόνιστο» wake (απορροή) για τα πίσω μονοθέσια.</p><h3><a id="_4g49ausgfpnf"></a><strong>🌪️ Ο ρόλος του "βρώμικου αέρα"</strong></h3><p>Η αεροδυναμική στη F1 είναι εξαιρετικά ευαίσθητη στην καθαρότητα του αέρα που φτάνει σε κάθε στοιχείο. Όταν ένα μονοθέσιο προκαλεί wake (απορροή), ο αέρας γίνεται αναταραγμένος, λιγότερο ενεργητικός και με μειωμένη δυνατότητα να δημιουργήσει κάθετη δύναμη στο επόμενο μονοθέσιο. Οι αλλαγές στην W16 φαίνεται πως ενισχύουν αυτό το wake μέσω:</p><ul><li>Ισχυρότερης upwash ροής στο πίσω μέρος<br /></li><li>Διασποράς αέρα από τα sidepods που προκαλεί "διπλό στρώμα" ανατάραξης<br /></li><li>Χαμηλότερης εσωτερικής πίεσης πίσω από το μονοθέσιο (increased suction zone)<br /></li></ul><h3><a id="_j79rm2zfwajn"></a><strong>🧪 Πώς ακριβώς οι αναβαθμίσεις "βρωμίζουν" τον αέρα;</strong></h3><p>Οι τεχνικοί αναλυτές υποψιάζονται πως η Mercedes εφάρμοσε ένα εξελιγμένο μοντέλο wake διασποράς μέσω συγκεκριμένων στοιχείων:</p><ol><li><strong>Diffuser με προσανατολισμένο Vortexing:<br /></strong> Οι πλάγιες εξόδοι του diffuser κατευθύνουν τη ροή σε σπειροειδή μονοπάτια. Αυτό ενισχύει το πλάτος και το ύψος του wake και το καθιστά ασύμμετρο – πιο δύσκολο για τον πίσω οδηγό να το προβλέψει.<br /></li><li><strong>Upwash με μεγαλύτερο yaw angle:<br /></strong> Η πίσω πτέρυγα ωθεί τον αέρα πιο ψηλά αλλά και υπό γωνία, κάτι που σημαίνει πως η αναταραχή εξαπλώνεται όχι μόνο κατακόρυφα αλλά και πλευρικά, κατακλύζοντας τους εισαγωγείς των πίσω μονοθεσίων.<br /></li><li><strong>Εσωτερικές επιφάνειες Venturi &amp; τρύπες στο πάτωμα:<br /></strong> Κάποιοι παρατήρησαν τροποποιήσεις σε εσωτερικά κανάλια που ίσως χρησιμοποιούνται για "air staging" – σταδιακή απελευθέρωση αναταραγμένου αέρα από το πάτωμα προς τα πίσω, διατηρώντας το wake ενεργό για μεγαλύτερη απόσταση.<br /></li><li><strong>Κατευθυνόμενη ροή από τα sidepods:<br /></strong> Τα νέα κανάλια φαίνεται πως διοχετεύουν ροή που «χτυπά» τη ροή του diffuser υπό γωνία, δημιουργώντας το φαινόμενο counter-vortex – ένα ακόμη εμπόδιο για τον πίσω οδηγό.<br /></li></ol><p>Αν και η FIA δεν έχει διαπιστώσει κάποια παρατυπία, όλα αυτά θεωρούνται νόμιμες εφαρμογές του ground effect, με σκοπό την αυτοπροστασία στο grid.</p><p>Αν οι θεωρίες ισχύουν, τότε πρόκειται για ένα masterclass στην εκμετάλλευση ρευστοδυναμικών ορίων.</p><h3><a id="_8y5pcxavhwdv"></a><strong>🧠 Είναι αυτό σκόπιμο;</strong></h3><p>Οι κανονισμοί της FIA από το 2022 προσπαθούν να μειώσουν τον βρώμικο αέρα και να διευκολύνουν τα προσπεράσματα. Ωστόσο, όσο έξυπνοι κι αν είναι οι κανονισμοί, η μηχανική της ρευστοδυναμικής επιτρέπει "γκρίζες ζώνες".</p><p>Η Mercedes πιθανότατα εκμεταλλεύτηκε αυτές τις ζώνες ώστε να μεγιστοποιήσει την απόδοση του μονοθεσίου της, χωρίς να παραβιάζει κανόνες. Εάν όντως το wake τους δυσκολεύει τα προσπεράσματα, πρόκειται για παρενέργεια, όχι άμεσο στόχο — τουλάχιστον όχι επίσημα.</p><h3><a id="_qomgv41p7zt6"></a><strong>🗣️ Αντιδράσεις στο paddock</strong></h3><ul><li><strong>Andrea Stella (McLaren):</strong> «Δεν είναι σύμπτωση που μετά τις αναβαθμίσεις της Mercedes, το slipstreaming έγινε σχεδόν ανύπαρκτο πίσω τους.»<br /></li><li><strong>Carlos Sainz (Williams):</strong> «Όταν βρέθηκα πίσω από τον Russel, η υποστροφή ήταν απίστευτη. Δεν μπορούσα να μείνω κοντά ούτε για DRS.»<br /></li><li><strong>Toto Wolff (Mercedes):</strong> «Όλα είναι εντός κανονισμών. Στοχεύουμε στην καλύτερη απόδοση για εμάς, όχι στο να εμποδίσουμε τους άλλους.»<br /></li></ul><h3><a id="_swuc2cclbh2k"></a><strong>📊 Συμπεράσματα</strong></h3><p>Η W16 δείχνει να είναι ένα πολύ διαφορετικό μονοθέσιο σε σχέση με τις πρώτες εμφανίσεις της σεζόν. Οι αναβαθμίσεις στην Ίμολα όχι μόνο βελτίωσαν την απόδοση, αλλά άλλαξαν και τον τρόπο με τον οποίο επηρεάζουν τον αγώνα οι υπόλοιποι. Παρά τις διαμαρτυρίες, η Mercedes βρίσκεται εντός κανονιστικού πλαισίου.</p><p>Αυτό ανοίγει μια νέα συζήτηση: Πού σταματά η καινοτομία και πού αρχίζει η εκμετάλλευση των ατελειών των κανονισμών;</p><p>Θα δούμε πως οι αλλαγές αυτες μπορεί σκόπιμα να επηρρεάσουν τα προκριματικά του Monacο GP σε λίγες μέρες.</p><p>🧩 Στον κόσμο της Formula 1, η λεπτομέρεια κάνει τη διαφορά — και η Mercedes το ξέρει καλά αυτό.</p>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

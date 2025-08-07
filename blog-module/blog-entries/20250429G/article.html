@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p></p><h2><a id="_a1gku4h3obo0"></a><strong>Μέρος 5: «Η Καρδιά της FW47 – Κινητήρας, Υβριδικά Συστήματα και Ψύξη»</strong></h2><p><em>Mercedes PU, ERS, MGU-K/H, ενσωμάτωση ψύξης και αεροδυναμική συσκευασία</em></p><p>Η απόδοση ενός μονοθεσίου της Formula 1 δεν εξαρτάται μόνο από την αεροδυναμική ή την ανάρτηση. Στο κέντρο όλων βρίσκεται το <strong>Power Unit (PU)</strong> — μια σύνθετη μονάδα που συνδυάζει <strong>εσωτερική καύση, υβριδικά υποσυστήματα και διαχείριση θερμικής ενέργειας</strong>.</p><p>Η <strong>FW47</strong> συνεχίζει τη συνεργασία της Williams με τη <strong>Mercedes High Performance Powertrains</strong> στο Brixworth, αλλά με πολύ πιο εξελιγμένο τρόπο ενσωμάτωσης του PU από τις προηγούμενες χρονιές.</p><h3><a id="_xfql3o559ekf"></a><strong>🔧 Mercedes PU: Σταθερή βάση, νέα ενσωμάτωση</strong></h3><p>Η Williams χρησιμοποιεί την <strong>6η γενιά κινητήρα Mercedes V6 Turbo-Hybrid</strong>, με τις παρακάτω κύριες μονάδες:</p><ul><li><strong>1.6L V6 εσωτερικής καύσης</strong> με μονού τούρμπο<br /></li><li><strong>MGU-H</strong>: ανάκτηση ενέργειας από τα καυσαέρια<br /></li><li><strong>MGU-K</strong>: ανάκτηση ενέργειας από την επιβράδυνση<br /></li><li><strong>ES (Energy Store)</strong>: μπαταρία 400V<br /></li><li><strong>CE (Control Electronics)</strong>: διαχείριση ενέργειας και κατανάλωσης<br /></li></ul><p>Παρότι η μονάδα δεν αλλάζει σημαντικά σε ισχύ από το 2024 (εκτιμώμενη μέγιστη ισχύς ~1000 ίπποι με ERS), η Williams άλλαξε <strong>δραματικά τον τρόπο που ενσωματώνεται στο πλαίσιο</strong>.</p><h3><a id="_3snnde2ekpbv"></a><strong>🧠 Ενσωμάτωση PU και “σφιχτή” συσκευασία</strong></h3><p>Η FW47 είναι το πρώτο μονοθέσιο της ομάδας που:</p><ul><li>Έχει <strong>ανασχεδιασμένο υποπλαίσιο κιβωτίου</strong> αποκλειστικά με βάση τις απαιτήσεις του PU.<br /></li><li>Ενσωματώνει το ψυκτικό και ηλεκτρικό κύκλωμα <strong>μέσα στο monocoque και τα sidepods</strong> με ελάχιστες απώλειες χώρου.<br /></li><li>Τοποθετεί το turbo <strong>πιο χαμηλά και πιο κοντά στο κέντρο βάρους</strong>, μειώνοντας ροπές αδράνειας.<br /></li></ul><p>Το αποτέλεσμα είναι <strong>καλύτερη αεροδυναμική συσκευασία</strong>, πιο ελαφριά καλύμματα, και φυσικά μεγαλύτερη ευελιξία στον σχεδιασμό των sidepods και του ψυκτικού δικτύου.</p><h3><a id="_pm6y4f6iyc1r"></a><strong>🌬️ Σύστημα Ψύξης – Ισορροπία απόδοσης &amp; αξιοπιστίας</strong></h3><p>Η ψύξη στη FW47 οργανώνεται σε <strong>τρία κύρια κυκλώματα</strong>:</p><ol><li><strong>Ψύξη PU</strong> (ψυγείο νερού και intercooler)<br /></li><li><strong>Ψύξη ERS</strong> (ηλεκτρικά συστήματα)<br /></li><li><strong>Ψύξη κιβωτίου / υδραυλικών<br /></strong></li></ol><p>Οι είσοδοι ψύξης είναι:</p><ul><li><strong>Πλαϊνές εισαγωγές</strong> με έντονο σχήμα downwash<br /></li><li><strong>Επανασχεδιασμένη εισαγωγή airbox</strong> πάνω από το κεφάλι του οδηγού<br /></li><li><strong>Louvers</strong> στα sidepods, που ανοίγουν κατά περίπτωση (σε πίστες με υψηλή θερμική καταπόνηση)<br /></li></ul><p>Στόχος: <strong>η μέγιστη δυνατή απόδοση ψύξης με το ελάχιστο δυνατό aerodynamic penalty</strong>. Οι εσωτερικές ροές έχουν μοντελοποιηθεί με CFD ώστε να αποφεύγονται τα θερμικά “νεκρά σημεία”.</p><h3><a id="_dhh7l4k7nxzn"></a><strong>⚡ Υβριδικά Συστήματα &amp; Απόδοση ERS</strong></h3><p>Η Williams, με την τεχνική υποστήριξη της Mercedes, πέτυχε σημαντικές βελτιώσεις:</p><ul><li>Η <strong>MGU-K</strong> λειτουργεί πλέον με μεγαλύτερη σταθερότητα σε πίστες με πολλά φρεναρίσματα.<br /></li><li>Το <strong>σύστημα ES (μπαταρία)</strong> είναι καλύτερα τοποθετημένο εντός του monocoque, χαμηλώνοντας το CoG (κέντρο βάρους).<br /></li><li>Η <strong>ανάκτηση ενέργειας</strong> φτάνει τα 4 MJ ανά γύρο (όριο FIA), αλλά με <strong>πιο γραμμική απόδοση</strong>.<br /></li></ul><p>Συνδυαστικά, αυτά προσφέρουν στον οδηγό <strong>πιο άμεση ισχύ</strong> από το ERS, ειδικά στην έξοδο στροφών.</p><h3><a id="_4p6j0qhcr3bs"></a><strong>🔍 Λεπτομέρειες βελτιστοποίησης</strong></h3><ul><li>Η Williams αξιοποίησε <strong>flexi-couplings</strong> στα εξαρτήματα του PU για μείωση κραδασμών και θερμικής καταπόνησης.<br /></li><li>Χρησιμοποιήθηκαν <strong>ελαφρύτερα heat shields</strong> με νανοκεραμική επίστρωση.<br /></li><li>Το σύστημα CE (Control Electronics) διαθέτει βελτιωμένους αλγορίθμους mapping για καλύτερη διαχείριση καυσίμου σε stint race mode.<br /></li></ul><h3><a id="_x3xqyk3yk87a"></a><strong>🏁 Συμπέρασμα</strong></h3><p>Η FW47 δεν κερδίζει ιπποδύναμη από τον κινητήρα – δεν της χρειάζεται. <strong>Αυτό που αλλάζει είναι ο τρόπος που τον ενσωματώνει</strong>, και το πώς συνεργάζεται με τα αεροδυναμικά και θερμικά της συστήματα.</p><p>Η “καρδιά” του μονοθεσίου χτυπάει δυνατότερα όχι επειδή είναι πιο ισχυρή – αλλά επειδή <strong>δουλεύει πιο έξυπνα, πιο ψυχρά και πιο συντονισμένα</strong>.</p>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

@@ -258,20 +258,60 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p></p><p><a id="_boqyucobf2ay"></a>Δυναμική της Ferrari στο Silverstone το 2021</p><p>Η <strong>Ferrari SF21</strong> ήταν γενικά ένα μονοθέσιο <strong>μεγάλης αεροδυναμικής απόδοσης</strong> στις στροφές, αλλά υστερούσε πολύ <strong>στην τελική ταχύτητα</strong> λόγω έλλειψης ισχύος του κινητήρα (μετά το σκάνδαλο του 2019).<br />Όμως στο <strong>Silverstone</strong>, το συγκεκριμένο <strong>layout της πίστας</strong> την ευνόησε για τους εξής λόγους:</p><p><strong>1. Πολλές γρήγορες στροφές (όχι πολλές μεγάλες ευθείες)</strong></p><ul><li>Το Silverstone έχει διαδοχικές γρήγορες καμπές (Maggots, Becketts, Copse κτλ.).</li><li>Η SF21 ήταν πολύ καλή στην παρατεταμένη αεροδυναμική φόρτιση – άρα μπορούσε να κρατήσει υψηλή ταχύτητα στις στροφές, όπου οι πιο δυνατοί κινητήρες δεν έδιναν τόσο μεγάλο πλεονέκτημα.</li></ul><p><strong>2. Βελτιώσεις στα "floor" και "diffuser"</strong></p><ul><li>Εκείνο το διάστημα η Ferrari είχε φέρει αναβαθμίσεις στο πάτωμα (floor) για να διαχειρίζεται καλύτερα τη ροή του αέρα μετά τους νέους κανονισμούς του 2021 (κομμένο πάτωμα στο πίσω μέρος).</li><li>Αυτό βοήθησε στο Silverstone να έχουν σταθερότητα στις γρήγορες αλλαγές κατεύθυνσης.</li></ul><p><strong>3. Διαχείριση ελαστικών</strong></p><ul><li>Η SF21 δεν ήταν πολύ καλή γενικά στην προστασία των ελαστικών, αλλά στο συγκεκριμένο αγώνα λόγω θερμοκρασιών και λόγω σωστού set-up, κατάφερε να κρατήσει πολύ καλά τα ελαστικά της, ειδικά ο Λεκλέρκ που έκανε εξαιρετική διαχείριση.</li></ul><p>
-            <figure class="article-figure">
-                <!-- Primary image with multiple fallbacks -->
-                <img id="img-3"
-                     src="/blog-module/blog-entries/20250510W/3.webp" 
-                     alt="Image 3" 
-                     class="article-content-img"
-                     onerror="if(this.src !== '3.webp') { this.src='3.webp'; } 
-                             else if(this.src !== '/blog-module/blog/images/20250510W/3.webp') { this.src='/blog-module/blog/images/20250510W/3.webp'; }
-                             else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
-                <figcaption>Image 3</figcaption>
-            </figure></p><p><strong>4. Λιγότερη εξάρτηση από ωμή δύναμη κινητήρα</strong></p><ul><li>Σε πίστες με πολύ μεγάλες ευθείες (όπως Μπακού, Μόντσα), η Ferrari "πνιγόταν".</li><li>Στο Silverstone, το πιο κρίσιμο ήταν η αεροδυναμική ισορροπία και όχι μόνο η τελική ταχύτητα.</li></ul><p><strong>Άρα:<br /></strong>Ο συνδυασμός <strong>στροφών υψηλής ταχύτητας</strong>, <strong>καλών αεροδυναμικών χαρακτηριστικών</strong>, <strong>έξυπνου set-up</strong> και <strong>καλής διαχείρισης ελαστικών</strong> επέτρεψε στη Ferrari να έχει έναν από τους καλύτερους αγώνες της το 2021.</p>
+                <figure class="article-figure">
+                    <img id="img-3"
+                         src="/blog-module/blog-entries/20250510W/3.webp" 
+                         alt="Image 3" 
+                         class="article-content-img"
+                         onerror="if(this.src !== '3.webp') { this.src='3.webp'; } 
+                                 else if(this.src !== '/blog-module/blog/images/20250510W/3.webp') { this.src='/blog-module/blog/images/20250510W/3.webp'; }
+                                 else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                    <figcaption>Image 3</figcaption>
+                </figure></p><p><strong>4. Λιγότερη εξάρτηση από ωμή δύναμη κινητήρα</strong></p><ul><li>Σε πίστες με πολύ μεγάλες ευθείες (όπως Μπακού, Μόντσα), η Ferrari "πνιγόταν".</li><li>Στο Silverstone, το πιο κρίσιμο ήταν η αεροδυναμική ισορροπία και όχι μόνο η τελική ταχύτητα.</li></ul><p><strong>Άρα:<br /></strong>Ο συνδυασμός <strong>στροφών υψηλής ταχύτητας</strong>, <strong>καλών αεροδυναμικών χαρακτηριστικών</strong>, <strong>έξυπνου set-up</strong> και <strong>καλής διαχείρισης ελαστικών</strong> επέτρεψε στη Ferrari να έχει έναν από τους καλύτερους αγώνες της το 2021.</p>
       </div>
 
       <!-- Add this author section here -->
@@ -373,7 +413,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -396,7 +435,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -419,7 +457,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1173,23 +1210,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p></p><p><a id="_wfuprl3h9l0r"></a>Jenson Button η άγνωστη νύχτα στην Ιαπωνία</p><h3><a id="_8yrmua72dfhy"></a><strong>Το 2003, όταν ο Jenson Button οδηγούσε για τη BAR-Honda, είχε ήδη αρχίσει να γίνεται γνωστός για την ταχύτητά του, αλλά όχι ακόμα για τη σταθερότητα και την ωριμότητα που θα του έφερναν το πρωτάθλημα έξι χρόνια αργότερα.</strong></h3><p>Κατά τη διάρκεια του Grand Prix της Ιαπωνίας εκείνης της χρονιάς, η ομάδα του είχε προσκληθεί σε μια εκδήλωση σε ένα απομακρυσμένο παραδοσιακό χωριό κοντά στο Φούτζι, ως ένδειξη σεβασμού στους Ιάπωνες συνεργάτες της Honda. Ήταν μια ιδιωτική, σχεδόν τελετουργική βραδιά – μακριά από τα φώτα της δημοσιότητας και την πίεση του paddock.</p><p>Εκείνο το βράδυ, μετά από ένα παραδοσιακό δείπνο, προσφέρθηκε στους καλεσμένους η ευκαιρία να κάνουν μπάνιο σε φυσικές θερμές πηγές (onsen), μέσα στο δάσος, υπό το φως των φαναριών. Ο Button, που φημιζόταν για την περιέργειά του για τις διαφορετικές κουλτούρες, δέχτηκε με ενθουσιασμό.</p><p>Καθώς βυθιζόταν στα ζεστά νερά, ο Button βρέθηκε να συνομιλεί με έναν ηλικιωμένο Ιάπωνα, πρώην μηχανικό της Honda, ο οποίος του είπε μια φράση που εκείνη την εποχή φάνηκε ακατανόητη, αλλά αργότερα την κράτησε για όλη του τη ζωή:</p><p>«Ο οδηγός που κοιτά μόνο μπροστά, χάνει τον δρόμο όταν δεν υπάρχει ευθεία.»</p><p>Ο Button δεν κατάλαβε ακριβώς τι εννοούσε τότε, αλλά τα επόμενα χρόνια, με τις πολλές στροφές της καριέρας του – αποτυχίες, μεταγραφές, προκλήσεις, θριάμβους – άρχισε να αντιλαμβάνεται το βάθος αυτής της φράσης. Δεν ήταν μόνο θέμα ταχύτητας. Ήταν θέμα προσαρμοστικότητας, εσωτερικής ηρεμίας και κατανόησης του πλαισίου.</p><p>Αυτή η νύχτα, παρόλο που δεν αναφέρθηκε ποτέ στα media και δεν συνδέθηκε με κάποιο αγωνιστικό γεγονός, αποτέλεσε μια στιγμή σιωπηλής ωρίμανσης για τον Jenson Button. Συχνά αργότερα, όταν μιλούσε για το 2009 και το πώς άντεξε την πίεση και την ανατροπή, έκανε νύξη στην «ιαπωνική σοφία» που τον βοήθησε να βρει ισορροπία μέσα του.</p>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

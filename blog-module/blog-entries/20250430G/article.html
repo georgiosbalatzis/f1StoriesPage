@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p><br /><br /></p><h2><a id="_gpx7cw7nvazy"></a><strong>Μέρος 6: «Από τη μηχανή στους τροχούς – Μετάδοση, Υβριδικά Συστήματα &amp; Brake-by-Wire»</strong></h2><p><em>Κιβώτιο ταχυτήτων, ERS, ανάκτηση ενέργειας και σύστημα πέδησης</em></p><p>Η ισχύς από έναν υπερσύγχρονο κινητήρα δεν έχει αξία, αν δεν <strong>μεταφέρεται άμεσα, γραμμικά και αξιόπιστα στους πίσω τροχούς</strong>. Σε αυτό το σημείο, η <strong>FW47</strong> παρουσιάζει ένα εξαιρετικά ενσωματωμένο σύστημα μετάδοσης και ενέργειας, εναρμονισμένο πλήρως με τις απαιτήσεις ενός μονοθεσίου ground effect εποχής.</p><h3><a id="_jzot8hdd7nmg"></a><strong>⚙️ Κιβώτιο ταχυτήτων – Εξοικονόμηση βάρους και αδράνειας</strong></h3><p>Η Williams χρησιμοποιεί ένα <strong>8τάχυτο ημιαυτόματο κιβώτιο με σύστημα τύπου seamless shift</strong>, βασισμένο σε λύση της Mercedes:</p><ul><li>Το κιβώτιο είναι <strong>ενσωματωμένο με τη δομή του διαχύτη</strong>, λειτουργώντας και ως αεροδυναμικό εξάρτημα.<br /></li><li>Επανασχεδιασμένο <strong>κέλυφος από ανθρακονήματα και τιτάνιο</strong>, με σημαντική εξοικονόμηση βάρους.<br /></li><li>Η εσωτερική διάταξη μειώνει τις ροπές αδράνειας, βελτιώνοντας την απόκριση στις αλλαγές ρυθμού και την ισορροπία του μονοθεσίου.<br /></li></ul><p>Η εσωτερική μηχανική αντοχή έχει βελτιωθεί, με στόχο τις <strong>άνετες 4000 χιλιομετρικές χρήσεις χωρίς ανάγκη αλλαγής</strong>, εντός κανονισμών.</p><h3><a id="_asqn4348uwzb"></a><strong>⚡ ERS: Χαμηλές απώλειες, υψηλή αποδοτικότητα</strong></h3><p>Το <strong>Energy Recovery System</strong> της FW47 έχει φτάσει πλέον σε επίπεδο ωριμότητας:</p><ul><li>Η <strong>MGU-K</strong> είναι ενσωματωμένη πιο χαμηλά, για χαμηλό CoG και άμεση μετάδοση ισχύος.<br /></li><li>Η <strong>MGU-H</strong>, συνδεδεμένη στο τούρμπο, διαχειρίζεται πιο έξυπνα τις μεταβολές πίεσης για να αποφευχθεί το <em>turbo lag</em>.<br /></li><li>Το <strong>control software</strong> της Williams επιτρέπει ρυθμιζόμενο deployment ανάλογα με το stint, την πίστα και την κατάσταση του αυτοκινήτου.<br /></li></ul><p>Η ενεργειακή ανάκτηση (μέγιστο 2 MJ από MGU-K) και η ανάκτηση μέσω MGU-H βοηθούν τη στρατηγική – π.χ. “harvest mode” στις ζώνες DRS για φόρτιση χωρίς κόστος.</p><h3><a id="_t4c1sb9dz4rf"></a><strong>🔋 Μπαταρία (Energy Store)</strong></h3><p>Η <strong>μπαταρία ιόντων λιθίου</strong> της FW47 βρίσκεται <strong>εντός του monocoque</strong>, πίσω από το ρεζερβουάρ καυσίμου:</p><ul><li>Βελτιωμένη θερμική προστασία<br /></li><li>Ενισχυμένη καλωδίωση για απώλειες χαμηλότερες του 3%<br /></li><li>Βελτιστοποίηση διαχείρισης θερμοκρασίας μέσω εσωτερικού mini-κυκλώματος ψύξης<br /></li></ul><p>Επιπλέον, η <strong>διαχείριση καμπύλης φόρτισης/εκφόρτισης</strong> είναι πλήρως παραμετροποιήσιμη ανά οδηγό και session (π.χ. διαφορετικά ρυθμιστικά σε προκριματικά vs. αγώνα).</p><h3><a id="_4yh90v3yhbzd"></a><strong>🛑 Brake-by-Wire – Εξελιγμένη πέδηση με ακρίβεια</strong></h3><p>Η Williams διαθέτει πλέον <strong>ένα από τα πιο σταθερά brake-by-wire συστήματα στο grid</strong>:</p><ul><li>Το πίσω σύστημα πέδησης είναι <strong>εντελώς ανεξάρτητο από το εμπρός</strong>, και ελέγχεται από λογισμικό που συνεργάζεται με το ERS.<br /></li><li>Υπάρχει <strong>αλγόριθμος υποβοήθησης ανάκτησης ενέργειας</strong> που αποφασίζει πότε το φρενάρισμα θα γίνει περισσότερο με MGU-K και πότε με δίσκους.<br /></li><li>Οι <strong>carbon-κεραμικοί δίσκοι</strong> (Brembo) έχουν βελτιωμένο φαινόμενο θερμικής σταθερότητας για σταθερότερο feedback στον οδηγό.<br /></li></ul><p>Το brake-by-wire επιτρέπει επίσης <strong>adjustable brake migration</strong> — δηλαδή αλλαγή στην κατανομή πέδησης κατά το φρενάρισμα, βοηθώντας στην είσοδο στροφών.</p><h3><a id="_m7yh1357ufqz"></a><strong>🧠 Όλα σε συντονισμό</strong></h3><p>Αυτό που ξεχωρίζει στη FW47 δεν είναι απλώς τα επιμέρους συστήματα, αλλά η <strong>ολιστική προσέγγιση στον συντονισμό τους</strong>:</p><ul><li>Το κιβώτιο λειτουργεί σε συγχρονισμό με τις ροές ERS.<br /></li><li>Το φρενάρισμα δίνει προτεραιότητα στην ανάκτηση ενέργειας όταν δεν χρειάζεται καθαρή ισχύς.<br /></li><li>Η απώλεια ενέργειας σε μετάδοση και πέδηση <strong>έχει ελαχιστοποιηθεί</strong> σε ποσοστά κάτω του 6% για όλο το γύρο.<br /></li></ul><h3><a id="_ak0bmzvg52pa"></a><strong>🏁 Συμπέρασμα</strong></h3><p>Η Williams, για πρώτη φορά εδώ και χρόνια, <strong>δεν παλεύει απλώς να ενσωματώσει ένα έτοιμο powertrain</strong> – το έχει κάνει μέρος του συνολικού σχεδιασμού. Από την μετάδοση ως το brake-by-wire, η FW47 μετατρέπει την ενέργεια σε απόδοση με <strong>προβλεψιμότητα, αποδοτικότητα και ακρίβεια</strong>.</p><p>Το μονοθέσιο αντιδρά, φρενάρει, μεταδίδει και ανακτά — σαν ένα ζωντανό, διασυνδεδεμένο σύστημα.</p>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

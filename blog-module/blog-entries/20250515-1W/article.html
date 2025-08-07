@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p></p><p><a id="_5wo3sgm758eg"></a>Η Ιστορία του Gabriel</p><p>Το 1993, λίγο πριν από το Grand Prix στη Βραζιλία, ο Senna ενημερώθηκε για την περίπτωση ενός μικρού παιδιού, του Gabriel, που έπασχε από μια σπάνια και ανίατη μορφή λευχαιμίας.</p><p>Η οικογένεια του παιδιού ήλπιζε πως ίσως μια συνάντηση με τον εθνικό τους ήρωα θα μπορούσε να του δώσει κουράγιο.</p><p>Ο Senna, παρ’ όλο που βρισκόταν εν μέσω πίεσης και προετοιμασίας για τον αγώνα, πήρε χρόνο να επισκεφθεί το νοσοκομείο όπου νοσηλευόταν ο Gabriel. </p><p>Δεν το ανακοίνωσε ποτέ στα μέσα. </p><p>Πήγε με διακριτικότητα, κρατώντας στα χέρια του ένα μικρό δώρο, ένα καπέλο με το λογότυπο της ομάδας του και μια αφίσα με την υπογραφή του.</p><p>Οι δύο τους μίλησαν για περίπου μία ώρα. </p><p>Ο Senna υποσχέθηκε στον Gabriel πως, αν κατάφερε να κερδίσει τον αγώνα, η νίκη θα ήταν αφιερωμένη σε αυτόν.</p><p>Την Κυριακή εκείνη, ο Senna κατάφερε να κερδίσει,  ίσως την πιο δύσκολη και συναισθηματική νίκη της καριέρας του. </p><p>Δεν είπε ποτέ δημόσια σε ποιον την αφιέρωσε. Όμως, όπως αργότερα αποκάλυψε η οικογένεια του Gabriel, ο ίδιος ο Senna επικοινώνησε ξανά την επομένη για να πει: </p><p><em>«Αυτό ήταν για σένα».</em></p><p>Ο Gabriel πέθανε λίγες εβδομάδες αργότερα, αλλά η πράξη αυτή έμεινε βαθιά χαραγμένη στην οικογένειά του,  και σιωπηλά στην καρδιά του Senna, ο οποίος πάντα πίστευε ότι η δόξα δεν έχει καμία αξία αν δεν συνοδεύεται από προσφορά.</p><p>Αυτή είναι μία από τις πολλές «κρυφές» πτυχές ενός ανθρώπου που δεν ήταν μόνο οδηγός, αλλά σύμβολο ανθρωπιάς.</p>
@@ -326,10 +367,10 @@
 
     <!-- Article navigation -->
     <div class="article-navigation">
-      <a href="/blog-module/blog-entries/20250515GF/article.html" id="prev-article-link" class="article-nav-link prev">
+      <a href="/blog-module/blog-entries/20250514-1G/article.html" id="prev-article-link" class="article-nav-link prev">
         <i class="fas fa-arrow-left"></i> Previous Article
       </a>
-      <a href="/blog-module/blog-entries/20250516G/article.html" id="next-article-link" class="article-nav-link next">
+      <a href="/blog-module/blog-entries/20250515GF/article.html" id="next-article-link" class="article-nav-link next">
         Next Article <i class="fas fa-arrow-right"></i>
       </a>
     </div>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

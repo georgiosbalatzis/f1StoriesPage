@@ -258,6 +258,47 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p><br /><br /></p><h2><a id="_yr684szettbr"></a><strong>Μέρος 4: «Η Μηχανική Πλατφόρμα της FW47 – Η τέχνη της απόκρισης»</strong></h2><p><em>Ανάρτηση, γεωμετρία, έλεγχος κλίσης, απορρόφηση φορτίων</em></p><p>Στη Formula 1, η ανάρτηση ενός μονοθεσίου δεν είναι απλώς ζήτημα “άνεσης”. Είναι το θεμέλιο της <strong>μηχανικής πρόσφυσης, της απόκρισης στις αλλαγές φορτίου, και της αεροδυναμικής σταθερότητας</strong>.</p><p>Η <strong>FW47</strong> αποτελεί το πρώτο μονοθέσιο της Williams που διαθέτει <strong>πλήρως σχεδιασμένη ανάρτηση με βάση τις απαιτήσεις του νέου κανονιστικού πλαισίου</strong> για ground effect, και όχι αναγκαστική προσαρμογή προηγούμενων λύσεων.</p><h3><a id="_mleqh03oum2u"></a><strong>🧩 Γεωμετρία εμπρός ανάρτησης</strong></h3><p>Η Williams διατήρησε το <strong>pushrod σύστημα</strong> μπροστά, αλλά με <strong>τροποποιημένη γεωμετρία</strong>:</p><ul><li>Οι άνω και κάτω βραχίονες (wishbones) έχουν μικρότερη διαμήκη απόσταση μεταξύ τους, βελτιώνοντας την αντίδραση σε αλλαγές camber και pitch.<br /></li><li>Οι συνδέσεις (rockers και damper mounts) είναι τοποθετημένες εσωτερικά σε σφιχτό σασί, για καλύτερη αεροδυναμική καθαρότητα και <strong>χαμηλό κέντρο βάρους</strong>.<br /></li><li>Το pivot των βραχιόνων επιτρέπει <strong>προοδευτική απόκριση υπό πίεση</strong>, διατηρώντας τον έλεγχο στο τιμόνι κατά τη διάρκεια έντονων φρεναρισμάτων ή στροφών.<br /></li></ul><p>Σκοπός ήταν η FW47 να έχει καλύτερη <strong>αρχική πρόσφυση κατά την είσοδο στη στροφή</strong> – ένα από τα βασικά αδύναμα σημεία της FW46.</p><h3><a id="_l7hxp7zbkx0x"></a><strong>🛞 Πίσω ανάρτηση – έλεγχος της αποφόρτισης</strong></h3><p>Στο πίσω μέρος, το σύστημα παραμένει <strong>pullrod</strong> με πλήρως νέες γεωμετρίες:</p><ul><li>Η ανάρτηση τοποθετείται χαμηλότερα στο κιβώτιο, με στόχο τον καθαρό αεροδυναμικό διάδρομο προς τον διαχύτη.<br /></li><li>Οι βραχίονες είναι σχεδιασμένοι ώστε να μην παρεμβαίνουν στη ροή από τα sidepods και το πάτωμα – προτεραιότητα δίνεται στο ground effect.<br /></li><li>Η γεωμετρία εξασφαλίζει <strong>αντίσταση στην αποφόρτιση</strong> του πίσω άξονα κατά την επιτάχυνση, μειώνοντας την απώλεια πρόσφυσης.<br /></li></ul><p>Η FW47 <strong>δεν “κάθεται” υπερβολικά πίσω κατά την έξοδο της στροφής</strong> όπως ο προκάτοχός της – κρατά την πίσω πτέρυγα ενεργή και τη μετάδοση σταθερή.</p><h3><a id="_b3vakag5rzxu"></a><strong>⚙️ Αντι-dive &amp; anti-squat: Καθορίζοντας τη συμπεριφορά στο φρενάρισμα</strong></h3><p>Η Williams βελτίωσε τις παραμέτρους <strong>anti-dive (αντι-βύθιση)</strong> και <strong>anti-squat (αντι-βύθιση πίσω)</strong> ώστε να πετύχει:</p><ul><li>Πιο σταθερό ύψος πλαισίου σε ακραία φορτία<br /></li><li>Λιγότερη μεταφορά βάρους εμπρός/πίσω<br /></li><li>Σταθερή λειτουργία του ground effect υπό φρενάρισμα και επιτάχυνση<br /></li></ul><p>Σε απλά λόγια; Το μονοθέσιο <strong>δεν αλλάζει στάση τόσο βίαια</strong>, και η ροή κάτω από αυτό παραμένει ενεργή – γεγονός καθοριστικό για αεροδυναμική απόδοση.</p><h3><a id="_adj9po8uxj29"></a><strong>🛏️ Heave Springs &amp; Torsion Bars – Ο έλεγχος της κατακόρυφης κίνησης</strong></h3><p>Ένα κρίσιμο στοιχείο της FW47 είναι το <strong>σύστημα ελέγχου κάθετης ταλάντωσης (heave)</strong>:</p><ul><li>Η Williams σχεδίασε έναν νέο <strong>ενεργό μηχανισμό ελατηρίου heave</strong>, συνδεδεμένο με τους δύο τροχούς του κάθε άξονα.<br /></li><li>Το heave spring απορροφά τα κάθετα φορτία χωρίς να επηρεάζει την πλευρική στήριξη (roll).<br /></li><li>Η παρουσία <strong>anti-roll bars</strong> ρυθμιζόμενης δυσκαμψίας επιτρέπει προσαρμογή σε διαφορετικούς τύπους πίστας.<br /></li></ul><p>Το αποτέλεσμα είναι ένα μονοθέσιο που <strong>δεν “χοροπηδάει”</strong>, ακόμα και σε απαιτητικές επιφάνειες όπως στο Austin ή στην Suzuka.</p><h3><a id="_sxm54n30xxip"></a><strong>🔍 Η πλατφόρμα ως αεροδυναμική βάση</strong></h3><p>Η <strong>μηχανική πλατφόρμα</strong> της FW47 (το ύψος, η σκληρότητα, το “στήσιμο”) είναι πλέον <strong>συντονισμένη με το πάτωμα και τα αεροδυναμικά μέρη</strong>. Η ανάρτηση δεν είναι πια εμπόδιο για το αεροδυναμικό performance – είναι το υπόβαθρό του.</p><p>Αυτό επιτρέπει:</p><ul><li><strong>Μικρότερες διαφορές ride height<br /></strong></li><li><strong>Προβλεψιμότητα στην είσοδο και έξοδο στροφής<br /></strong></li><li><strong>Βελτιωμένη διαχείριση ελαστικών</strong>, αφού η επαφή με το οδόστρωμα παραμένει πιο σταθερή<br /></li></ul><h3><a id="_96d5kyh4u672"></a><strong>🏁 Συμπέρασμα</strong></h3><p>Η ανάρτηση της FW47 δείχνει την αλλαγή νοοτροπίας: <strong>όχι πια “patchwork” πάνω σε ένα concept τρίτων</strong>, αλλά μία <strong>μηχανική λύση από το μηδέν</strong>, σχεδιασμένη να συνεργάζεται με το σασί και την αεροδυναμική φιλοσοφία.</p><p>Είναι αυτή η πλατφόρμα που επιτρέπει στη Williams να αρχίσει ξανά να “στέκεται στα πόδια της” – κυριολεκτικά και μεταφορικά.</p>
@@ -362,7 +403,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -385,7 +425,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -408,7 +447,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1162,23 +1200,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>

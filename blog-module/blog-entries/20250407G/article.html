@@ -258,42 +258,80 @@
         </div>
       </div>
 
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <div class="tts-header">
+          <i class="fas fa-volume-up"></i>
+          <span>Listen to Article</span>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Voice:</label>
+            <select id="tts-voice">
+              <option value="">Default</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Ready to read</div>
+        </div>
+      </div>
+
+
       <div class="article-content">
         <!-- Article content goes here -->
         <p></p><h2><a id="_8uaq9mp84fe0"></a><strong>🧪 Case Study: Το DAM (Dirty Air Matters) – Και στη Σουζούκα, Όπως Πάντα</strong></h2><p>Έχουμε και λέμε: κάθε Grand Prix του 2025 έχει κριθεί από την pole position. Και η Σουζούκα; Καμία έκπληξη. Νικητής ξανά εκείνος που ξεκίνησε μπροστά. 🎯<br /> Προσπεράσεις; 🤷‍♂️ Χμ… σπάνιο είδος.</p><h2><a id="_tec5trw9gao1"></a><strong>🏁 Αγώνας… με Κανάλια</strong></h2><p>Ο φετινός αγώνας στην Ιαπωνία δεν έδωσε πολλές συγκινήσεις. Η χαμηλή φθορά στα ελαστικά κράτησε τους περισσότερους οδηγούς... εκεί που τους είχαμε αφήσει στις κατατακτήριες. Η δυνατότητα για προσπέρασμα; σχεδόν <strong>ανύπαρκτη</strong>.</p><p>
-            <figure class="article-figure">
-                <!-- Primary image with multiple fallbacks -->
-                <img id="img-3"
-                     src="/blog-module/blog-entries/20250407G/3.webp" 
-                     alt="Image 3" 
-                     class="article-content-img"
-                     onerror="if(this.src !== '3.webp') { this.src='3.webp'; } 
-                             else if(this.src !== '/blog-module/blog/images/20250407G/3.webp') { this.src='/blog-module/blog/images/20250407G/3.webp'; }
-                             else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
-                <figcaption>Image 3</figcaption>
-            </figure></p><p>Η Σουζούκα παραδοσιακά <strong>δεν είναι “φιλική” στις μάχες</strong>, αλλά φέτος το πρόβλημα ήταν πιο ξεκάθαρο. Η χάραξη, και κυρίως η <strong>Στροφή 1</strong>, μειώνει σημαντικά την απόδοση του DRS. Οι ευθείες με έντονο φρενάρισμα, που ευνοούν slipstreaming, είναι λίγες – και όσο για το να “κολλήσεις” πίσω από άλλον; Μάλλον θα κολλήσεις και θα... μείνεις εκεί. 🫠</p><h2><a id="_hpm8g6gnz103"></a><strong>🌪️ Βρώμικος Αέρας – Ο Πραγματικός Εχθρός</strong></h2><p>Ένα από τα μεγαλύτερα εμπόδια είναι το <strong>γνωστό πρόβλημα του dirty air</strong>.<br /> Τα φετινά μονοθέσια σχεδιάστηκαν με σκοπό να <strong>διευκολύνουν τις μάχες</strong> – λιγότερη εξάρτηση από τα πάνω αεροδυναμικά στοιχεία, λιγότερος στροβιλισμός στον αέρα που αφήνουν πίσω τους. 🎈</p><p>Παλιά, τα εμπρός πτερύγια δημιουργούσαν τόσο έντονες αναταράξεις που <strong>το να ακολουθείς άλλο μονοθέσιο ήταν εφιάλτης</strong>. Τα μονοθέσια χρειάζονται καθαρή, στρωτή ροή αέρα για να λειτουργούν σωστά — και το turbulent flow απλώς τα διαλύει.</p><h2><a id="_jlnd3lsisr2e"></a><strong>📉 Απόδοση Όταν Ακολουθείς: Τι Λένε τα Νούμερα</strong></h2><p>Με βάση τις αναλύσεις πριν τους νέους κανονισμούς, ένα μονοθέσιο του 2021 <strong>έχανε έως και 47% της κάθετης δύναμής του</strong> όταν ήταν 10 μέτρα πίσω από άλλο, και 35% στα 20 μέτρα. Οι κανονισμοί του 2022 ήθελαν να μειώσουν αυτές τις απώλειες στο 18% και 4% αντίστοιχα.</p><p>Στην πράξη όμως; Η Σουζούκα έδειξε ότι <strong>τα πράγματα έχουν γυρίσει πίσω</strong>. Η απόσταση κάτω από 1 δευτερόλεπτο από τον προπορευόμενο ήταν σχεδόν αδύνατη. Παρόλο που η χαμηλή φθορά στα ελαστικά επέτρεπε συνεχές push, η <strong>έλλειψη διαφοράς απόδοσης</strong> έκανε την προσπέραση… mission impossible. 🫤</p><h2><a id="_63apydkseyyo"></a><strong>🛠️ Εξέλιξη Μονοθεσίων vs Μάχες στην Πίστα</strong></h2><p>Καθώς οι ομάδες μαθαίνουν καλύτερα το τεχνικό πλαίσιο, βρίσκουν τρόπους να τραβούν περισσότερη απόδοση — αλλά αυτό <strong>συχνά κοστίζει στην ικανότητα καταδίωξης</strong>.</p><p>
-            <figure class="article-figure">
-                <!-- Primary image with multiple fallbacks -->
-                <img id="img-4"
-                     src="/blog-module/blog-entries/20250407G/4.webp" 
-                     alt="Image 4" 
-                     class="article-content-img"
-                     onerror="if(this.src !== '4.webp') { this.src='4.webp'; } 
-                             else if(this.src !== '/blog-module/blog/images/20250407G/4.webp') { this.src='/blog-module/blog/images/20250407G/4.webp'; }
-                             else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
-                <figcaption>Image 4</figcaption>
-            </figure></p><p>Τα <strong>νέα εμπρός φτερά</strong> σχεδιάζονται ώστε να εκτρέπουν περισσότερο αέρα από τα ελαστικά για να αυξήσουν την αποδοτικότητα. Οι άκρες του πατώματος και τα πίσω φτερά έχουν γίνει πιο περίπλοκα, με επιπλέον επιφάνειες και "κενά" στο άνω επίπεδο του πτερυγίου. Όλα αυτά παράγουν... <strong>κακό αέρα για τον πίσω οδηγό</strong>. 💨</p><h2><a id="_ku6xg5wg55xv"></a><strong>🗣️ Stella Talks Dirty Air</strong></h2><p>Ο Andrea Stella (McLaren) το είπε ξεκάθαρα:</p><p>«Συνεχίζουμε να προσθέτουμε κάθετη δύναμη, άρα αυξάνονται οι απώλειες όταν είσαι πίσω από άλλον».</p><p>Και έφερε παράδειγμα από την Κίνα:<br /> Ακόμα και με πιο φθαρμένα ελαστικά, ο Hamilton μπορούσε να διαχειρίζεται τον ρυθμό <strong>όπως ήθελε</strong>, όταν ήταν πρώτος.</p><p>Ο Stella άφησε να εννοηθεί πως οι <strong>κανονισμοί του 2026</strong> ίσως ξαναβάλουν στο στόχαστρο το πρόβλημα του dirty air, γιατί όσα μονοθέσια και να σχεδιάσεις “για μάχες”, αν το performance drop όταν είσαι πίσω είναι τεράστιο… τι να το κάνεις; 🧩</p><h2><a id="_906uz4jo7dxa"></a><strong>🎯 Οι Ομάδες Δεν Φταίνε – Αλλά Είναι Παγιδευμένες</strong></h2><p>Δεν μπορείς να κατηγορήσεις τις ομάδες. Σκοπός τους είναι να φτιάξουν το <strong>γρηγορότερο δυνατό μονοθέσιο</strong>, όχι να αυξήσουν το action. Αν με ένα πιο πολύπλοκο φτερό πάρουν 2 δέκατα στο γύρο, θα το κάνουν – ακόμα κι αν αυτό κάνει την καταδίωξη δυσκολότερη.</p><p>
-            <figure class="article-figure">
-                <!-- Primary image with multiple fallbacks -->
-                <img id="img-5"
-                     src="/blog-module/blog-entries/20250407G/5.avif" 
-                     alt="Image 5" 
-                     class="article-content-img"
-                     onerror="if(this.src !== '5.avif') { this.src='5.avif'; } 
-                             else if(this.src !== '/blog-module/blog/images/20250407G/5.avif') { this.src='/blog-module/blog/images/20250407G/5.avif'; }
-                             else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
-                <figcaption>Image 5</figcaption>
-            </figure></p><p>Και αυτό <strong>δεν πρόκειται να αλλάξει φέτος</strong>. Μέχρι να έρθουν <strong>νέοι τεχνικοί κανονισμοί</strong> ή <strong>ενεργά aero στοιχεία</strong> που θα προσαρμόζονται σε real-time (βλέπε 2026), οι πίστες με λίγες ζώνες φρεναρίσματος θα παραμένουν εχθρικές στις προσπεράσεις. ⛔</p><h2><a id="_ll5ha540zpk"></a><strong>📌 Συμπέρασμα: Το DAM (Dirty Air Matters) Είναι Ακόμα Μαζί μας</strong></h2><p>Μπορεί οι τεχνικοί στόχοι των κανονισμών να ήταν σωστοί, αλλά η <strong>εξέλιξη των ομάδων έχει ξεπεράσει τον σχεδιασμό</strong>.<br /> Το dirty air συνεχίζει να <strong>παίζει σημαντικό ρόλο</strong> στο πώς (και αν) βλέπουμε μάχες στην πίστα. Και αν δεν αλλάξει κάτι, θα συνεχίσουμε να βλέπουμε νίκες από την pole και… <strong>παράπονα από τον δεύτερο</strong>.</p><p>Μέχρι τότε, ένα είναι σίγουρο: <strong>Dirty Air Still Matters.</strong> 🌀</p>
+                <figure class="article-figure">
+                    <img id="img-3"
+                         src="/blog-module/blog-entries/20250407G/3.webp" 
+                         alt="Image 3" 
+                         class="article-content-img"
+                         onerror="if(this.src !== '3.webp') { this.src='3.webp'; } 
+                                 else if(this.src !== '/blog-module/blog/images/20250407G/3.webp') { this.src='/blog-module/blog/images/20250407G/3.webp'; }
+                                 else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                    <figcaption>Image 3</figcaption>
+                </figure></p><p>Η Σουζούκα παραδοσιακά <strong>δεν είναι “φιλική” στις μάχες</strong>, αλλά φέτος το πρόβλημα ήταν πιο ξεκάθαρο. Η χάραξη, και κυρίως η <strong>Στροφή 1</strong>, μειώνει σημαντικά την απόδοση του DRS. Οι ευθείες με έντονο φρενάρισμα, που ευνοούν slipstreaming, είναι λίγες – και όσο για το να “κολλήσεις” πίσω από άλλον; Μάλλον θα κολλήσεις και θα... μείνεις εκεί. 🫠</p><h2><a id="_hpm8g6gnz103"></a><strong>🌪️ Βρώμικος Αέρας – Ο Πραγματικός Εχθρός</strong></h2><p>Ένα από τα μεγαλύτερα εμπόδια είναι το <strong>γνωστό πρόβλημα του dirty air</strong>.<br /> Τα φετινά μονοθέσια σχεδιάστηκαν με σκοπό να <strong>διευκολύνουν τις μάχες</strong> – λιγότερη εξάρτηση από τα πάνω αεροδυναμικά στοιχεία, λιγότερος στροβιλισμός στον αέρα που αφήνουν πίσω τους. 🎈</p><p>Παλιά, τα εμπρός πτερύγια δημιουργούσαν τόσο έντονες αναταράξεις που <strong>το να ακολουθείς άλλο μονοθέσιο ήταν εφιάλτης</strong>. Τα μονοθέσια χρειάζονται καθαρή, στρωτή ροή αέρα για να λειτουργούν σωστά — και το turbulent flow απλώς τα διαλύει.</p><h2><a id="_jlnd3lsisr2e"></a><strong>📉 Απόδοση Όταν Ακολουθείς: Τι Λένε τα Νούμερα</strong></h2><p>Με βάση τις αναλύσεις πριν τους νέους κανονισμούς, ένα μονοθέσιο του 2021 <strong>έχανε έως και 47% της κάθετης δύναμής του</strong> όταν ήταν 10 μέτρα πίσω από άλλο, και 35% στα 20 μέτρα. Οι κανονισμοί του 2022 ήθελαν να μειώσουν αυτές τις απώλειες στο 18% και 4% αντίστοιχα.</p><p>Στην πράξη όμως; Η Σουζούκα έδειξε ότι <strong>τα πράγματα έχουν γυρίσει πίσω</strong>. Η απόσταση κάτω από 1 δευτερόλεπτο από τον προπορευόμενο ήταν σχεδόν αδύνατη. Παρόλο που η χαμηλή φθορά στα ελαστικά επέτρεπε συνεχές push, η <strong>έλλειψη διαφοράς απόδοσης</strong> έκανε την προσπέραση… mission impossible. 🫤</p><h2><a id="_63apydkseyyo"></a><strong>🛠️ Εξέλιξη Μονοθεσίων vs Μάχες στην Πίστα</strong></h2><p>Καθώς οι ομάδες μαθαίνουν καλύτερα το τεχνικό πλαίσιο, βρίσκουν τρόπους να τραβούν περισσότερη απόδοση — αλλά αυτό <strong>συχνά κοστίζει στην ικανότητα καταδίωξης</strong>.</p><p>
+                <figure class="article-figure">
+                    <img id="img-4"
+                         src="/blog-module/blog-entries/20250407G/4.webp" 
+                         alt="Image 4" 
+                         class="article-content-img"
+                         onerror="if(this.src !== '4.webp') { this.src='4.webp'; } 
+                                 else if(this.src !== '/blog-module/blog/images/20250407G/4.webp') { this.src='/blog-module/blog/images/20250407G/4.webp'; }
+                                 else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                    <figcaption>Image 4</figcaption>
+                </figure></p><p>Τα <strong>νέα εμπρός φτερά</strong> σχεδιάζονται ώστε να εκτρέπουν περισσότερο αέρα από τα ελαστικά για να αυξήσουν την αποδοτικότητα. Οι άκρες του πατώματος και τα πίσω φτερά έχουν γίνει πιο περίπλοκα, με επιπλέον επιφάνειες και "κενά" στο άνω επίπεδο του πτερυγίου. Όλα αυτά παράγουν... <strong>κακό αέρα για τον πίσω οδηγό</strong>. 💨</p><h2><a id="_ku6xg5wg55xv"></a><strong>🗣️ Stella Talks Dirty Air</strong></h2><p>Ο Andrea Stella (McLaren) το είπε ξεκάθαρα:</p><p>«Συνεχίζουμε να προσθέτουμε κάθετη δύναμη, άρα αυξάνονται οι απώλειες όταν είσαι πίσω από άλλον».</p><p>Και έφερε παράδειγμα από την Κίνα:<br /> Ακόμα και με πιο φθαρμένα ελαστικά, ο Hamilton μπορούσε να διαχειρίζεται τον ρυθμό <strong>όπως ήθελε</strong>, όταν ήταν πρώτος.</p><p>Ο Stella άφησε να εννοηθεί πως οι <strong>κανονισμοί του 2026</strong> ίσως ξαναβάλουν στο στόχαστρο το πρόβλημα του dirty air, γιατί όσα μονοθέσια και να σχεδιάσεις “για μάχες”, αν το performance drop όταν είσαι πίσω είναι τεράστιο… τι να το κάνεις; 🧩</p><h2><a id="_906uz4jo7dxa"></a><strong>🎯 Οι Ομάδες Δεν Φταίνε – Αλλά Είναι Παγιδευμένες</strong></h2><p>Δεν μπορείς να κατηγορήσεις τις ομάδες. Σκοπός τους είναι να φτιάξουν το <strong>γρηγορότερο δυνατό μονοθέσιο</strong>, όχι να αυξήσουν το action. Αν με ένα πιο πολύπλοκο φτερό πάρουν 2 δέκατα στο γύρο, θα το κάνουν – ακόμα κι αν αυτό κάνει την καταδίωξη δυσκολότερη.</p><p>
+                <figure class="article-figure">
+                    <img id="img-5"
+                         src="/blog-module/blog-entries/20250407G/5.avif" 
+                         alt="Image 5" 
+                         class="article-content-img"
+                         onerror="if(this.src !== '5.avif') { this.src='5.avif'; } 
+                                 else if(this.src !== '/blog-module/blog/images/20250407G/5.avif') { this.src='/blog-module/blog/images/20250407G/5.avif'; }
+                                 else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                    <figcaption>Image 5</figcaption>
+                </figure></p><p>Και αυτό <strong>δεν πρόκειται να αλλάξει φέτος</strong>. Μέχρι να έρθουν <strong>νέοι τεχνικοί κανονισμοί</strong> ή <strong>ενεργά aero στοιχεία</strong> που θα προσαρμόζονται σε real-time (βλέπε 2026), οι πίστες με λίγες ζώνες φρεναρίσματος θα παραμένουν εχθρικές στις προσπεράσεις. ⛔</p><h2><a id="_ll5ha540zpk"></a><strong>📌 Συμπέρασμα: Το DAM (Dirty Air Matters) Είναι Ακόμα Μαζί μας</strong></h2><p>Μπορεί οι τεχνικοί στόχοι των κανονισμών να ήταν σωστοί, αλλά η <strong>εξέλιξη των ομάδων έχει ξεπεράσει τον σχεδιασμό</strong>.<br /> Το dirty air συνεχίζει να <strong>παίζει σημαντικό ρόλο</strong> στο πώς (και αν) βλέπουμε μάχες στην πίστα. Και αν δεν αλλάξει κάτι, θα συνεχίσουμε να βλέπουμε νίκες από την pole και… <strong>παράπονα από τον δεύτερο</strong>.</p><p>Μέχρι τότε, ένα είναι σίγουρο: <strong>Dirty Air Still Matters.</strong> 🌀</p>
       </div>
 
       <!-- Add this author section here -->
@@ -395,7 +433,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -418,7 +455,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -441,7 +477,6 @@
                     </div>
                 </div>
             </div>
-        
     </div>
   </div>
 </section>
@@ -1195,23 +1230,20 @@
   });
 </script>
 
-    <script>
-    // Debug helper for images
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Article loaded, checking images...");
+                document.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        console.error("Image failed to load:", this.src);
+                        this.style.border = "2px dashed red";
+                        this.style.padding = "10px";
+                        this.setAttribute('data-failed', 'true');
+                    });
+                    img.addEventListener('load', function() {
+                        console.log("Image loaded successfully:", this.src);
+                    });
+                });
             });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>
-    </body>
+            </script></body>
 </html>
