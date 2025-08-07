@@ -343,28 +343,6 @@
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
-                        <img src="/blog-module/blog-entries/20250505-2GF/1.webp" 
-                             alt="🏁🇺🇸 Η Ferrari σε κρίση στρατηγικής – Όταν οι οδηγοί χάνουν την πίστη τους στο pit wall 🔴🧠" 
-                             class="blog-img"
-                             onerror="if(this.src !== '/blog-module/blog/images/20250505-2GF/1.webp') { this.src='/blog-module/blog/images/20250505-2GF/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
-                        <div class="blog-date">
-                            <span class="day">6,</span>
-                            <span class="month">AUG</span>
-                        </div>
-                    </div>
-                    <div class="blog-content">
-                        <h3 class="blog-title">🏁🇺🇸 Η Ferrari σε κρίση στρατηγικής – Όταν οι οδηγοί χάνουν την πίστη τους στο pit wall 🔴🧠</h3>
-                        <div class="blog-meta">
-                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
-                            <span><i class="fas fa-comments"></i> 0</span>
-                        </div>
-                        <a href="/blog-module/blog-entries/20250505-2GF/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
                         <img src="/blog-module/blog-entries/20250609W/1.webp" 
                              alt="Jenson Button η άγνωστη νύχτα στην Ιαπωνία" 
                              class="blog-img"
@@ -384,6 +362,7 @@
                     </div>
                 </div>
             </div>
+        
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -406,6 +385,30 @@
                     </div>
                 </div>
             </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250524W/1.webp" 
+                             alt="Θρίαμβος στο σπίτι του" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250524W/1.webp') { this.src='/blog-module/blog/images/20250524W/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">24,</span>
+                            <span class="month">MAY</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Θρίαμβος στο σπίτι του</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> 2Fast</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250524W/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
     </div>
   </div>
 </section>
@@ -1159,20 +1162,23 @@
   });
 </script>
 
-            <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                console.log("Article loaded, checking images...");
-                document.querySelectorAll('img').forEach(img => {
-                    img.addEventListener('error', function() {
-                        console.error("Image failed to load:", this.src);
-                        this.style.border = "2px dashed red";
-                        this.style.padding = "10px";
-                        this.setAttribute('data-failed', 'true');
-                    });
-                    img.addEventListener('load', function() {
-                        console.log("Image loaded successfully:", this.src);
-                    });
-                });
+    <script>
+    // Debug helper for images
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
             });
-            </script></body>
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script>
+    </body>
 </html>

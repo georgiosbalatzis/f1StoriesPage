@@ -50,33 +50,54 @@ class Utils {
     }
 
     static parseDate(folderName) {
-        const patterns = [
-            /^(\d{4})(\d{2})(\d{2})([A-Z]?)$/,
-            /^(\d{4})(\d{2})(\d{2})-\d+([A-Z]?)$/
-        ];
+        let year, month, day, fullDate, authorCode;
 
-        for (const pattern of patterns) {
-            const match = folderName.match(pattern);
+        // Check if folder name follows any of the expected formats with more flexible patterns
+        if (/^\d{8}[A-Z]?$/.test(folderName)) {
+            // Format: YYYYMMDD or YYYYMMDDA
+            const dateStr = folderName.substring(0, 8);
+            year = dateStr.substring(0, 4);
+            month = dateStr.substring(4, 6);
+            day = dateStr.substring(6, 8);
+            authorCode = folderName.length > 8 ? folderName.substring(8) : null;
+            fullDate = new Date(`${year}-${month}-${day}`);
+            console.log(`Parsed folder ${folderName}: Date=${year}-${month}-${day}, Author=${authorCode || 'none'}`);
+        } else if (/^\d{8}-\d+[A-Z]?$/.test(folderName)) {
+            // Format: YYYYMMDD-N or YYYYMMDD-NA
+            const baseName = folderName.split('-')[0];
+            year = baseName.substring(0, 4);
+            month = baseName.substring(4, 6);
+            day = baseName.substring(6, 8);
+            authorCode = /[A-Z]$/.test(folderName) ? folderName.charAt(folderName.length - 1) : null;
+            fullDate = new Date(`${year}-${month}-${day}`);
+            console.log(`Parsed folder ${folderName}: Date=${year}-${month}-${day}, Author=${authorCode || 'none'}`);
+        } else {
+            // More lenient fallback - try to extract at least a date if possible
+            const match = folderName.match(/(\d{4})(\d{2})(\d{2})/);
             if (match) {
-                const [, year, month, day, authorCode] = match;
-                return {
-                    year,
-                    month,
-                    day,
-                    fullDate: new Date(`${year}-${month}-${day}`),
-                    authorCode: authorCode || null
-                };
+                year = match[1];
+                month = match[2];
+                day = match[3];
+                fullDate = new Date(`${year}-${month}-${day}`);
+                authorCode = null;
+                console.log(`Fallback parse for folder ${folderName}: Date=${year}-${month}-${day}`);
+            } else {
+                // Last resort - use current date
+                fullDate = new Date();
+                year = fullDate.getFullYear().toString();
+                month = String(fullDate.getMonth() + 1).padStart(2, '0');
+                day = String(fullDate.getDate()).padStart(2, '0');
+                authorCode = null;
+                console.log(`Using default date for folder ${folderName}: ${year}-${month}-${day}`);
             }
         }
 
-        // Fallback to current date
-        const now = new Date();
         return {
-            year: now.getFullYear().toString(),
-            month: String(now.getMonth() + 1).padStart(2, '0'),
-            day: String(now.getDate()).padStart(2, '0'),
-            fullDate: now,
-            authorCode: null
+            year,
+            month,
+            day,
+            fullDate,
+            authorCode
         };
     }
 
