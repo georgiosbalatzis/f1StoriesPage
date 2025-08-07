@@ -1680,9 +1680,7 @@ function initTextToSpeech() {
     // Populate voice options
     function populateVoices() {
         voices = speechSynthesis.getVoices();
-        voiceSelect.innerHTML = '
-
-        ';
+        voiceSelect.innerHTML = '';
 
         // Group voices by language
         const voicesByLang = {};
