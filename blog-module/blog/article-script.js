@@ -1658,6 +1658,7 @@ function initTextToSpeech() {
     let articleText = '';
 
     // Get article text
+    // Get article text (SKIP TABLES)
     function getArticleText() {
         const articleContent = document.querySelector('.article-content');
         if (!articleContent) return '';
@@ -1665,58 +1666,99 @@ function initTextToSpeech() {
         // Clone the content to avoid modifying the original
         const clone = articleContent.cloneNode(true);
 
-        // Remove scripts and style elements
-        clone.querySelectorAll('script, style, noscript').forEach(el => el.remove());
+        // Remove scripts, styles, and TABLES
+        clone.querySelectorAll('script, style, noscript, table, .table-responsive-container, .responsive-table').forEach(el => el.remove());
+
+        // Also remove any CSV or data displays
+        clone.querySelectorAll('[class*="csv"], [class*="data-card"], [class*="table"]').forEach(el => el.remove());
 
         // Get text content
         let text = clone.textContent || clone.innerText || '';
 
-        // Clean up the text
+        // Clean up the text and add natural pauses
         text = text.replace(/\s+/g, ' ').trim();
+
+        // Add pauses after sentences for more natural speech
+        text = text.replace(/\. /g, '. ... ');
+        text = text.replace(/! /g, '! ... ');
+        text = text.replace(/\? /g, '? ... ');
+
+        // Add pauses for headings (assuming they're in caps or after newlines)
+        text = text.replace(/([.!?])\s*([A-Z])/g, '$1 ... ... $2');
 
         return text;
     }
 
-    // Populate voice options
+    // Populate voice options (Greek priority)
     function populateVoices() {
         voices = speechSynthesis.getVoices();
-        voiceSelect.innerHTML = '';
+        voiceSelect.innerHTML = '<option value="">Αυτόματη/Auto</option>';
 
         // Group voices by language
         const voicesByLang = {};
+        let greekVoices = [];
+        let preferredVoice = null;
+
         voices.forEach((voice, index) => {
             const lang = voice.lang.substring(0, 2);
+
+            // Collect Greek voices
+            if (voice.lang.startsWith('el')) {
+                greekVoices.push({ voice, index });
+                // Prefer Microsoft or Google voices for better quality
+                if (voice.name.includes('Microsoft') || voice.name.includes('Google')) {
+                    preferredVoice = index;
+                }
+            }
+
             if (!voicesByLang[lang]) voicesByLang[lang] = [];
             voicesByLang[lang].push({ voice, index });
         });
 
-        // Add English voices first, then others
-        if (voicesByLang['en']) {
+        // Add Greek voices FIRST
+        if (greekVoices.length > 0) {
             const optgroup = document.createElement('optgroup');
-            optgroup.label = 'English';
-            voicesByLang['en'].forEach(({ voice, index }) => {
+            optgroup.label = '🇬🇷 Ελληνικά';
+            greekVoices.forEach(({ voice, index }) => {
                 const option = document.createElement('option');
                 option.value = index;
-                option.textContent = voice.name + (voice.default ? ' (Default)' : '');
+                option.textContent = voice.name + (voice.default ? ' (Προεπιλογή)' : '');
+                if (preferredVoice === index) {
+                    option.selected = true;
+                }
                 optgroup.appendChild(option);
             });
             voiceSelect.appendChild(optgroup);
         }
 
-        // Add other languages
-        Object.keys(voicesByLang).forEach(lang => {
-            if (lang !== 'en') {
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = lang.toUpperCase();
-                voicesByLang[lang].forEach(({ voice, index }) => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = voice.name;
-                    optgroup.appendChild(option);
-                });
-                voiceSelect.appendChild(optgroup);
-            }
-        });
+        // Add English voices second
+        if (voicesByLang['en']) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = '🇬🇧 English';
+
+            // Sort to prioritize natural-sounding voices
+            const sortedEnVoices = voicesByLang['en'].sort((a, b) => {
+                // Prioritize Microsoft and Google voices
+                const aScore = (a.voice.name.includes('Microsoft') || a.voice.name.includes('Google')) ? 1 : 0;
+                const bScore = (b.voice.name.includes('Microsoft') || b.voice.name.includes('Google')) ? 1 : 0;
+                return bScore - aScore;
+            });
+
+            sortedEnVoices.forEach(({ voice, index }) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = voice.name;
+                optgroup.appendChild(option);
+            });
+            voiceSelect.appendChild(optgroup);
+        }
+
+        // Auto-select Greek voice if available
+        if (preferredVoice !== null) {
+            voiceSelect.value = preferredVoice;
+        } else if (greekVoices.length > 0) {
+            voiceSelect.value = greekVoices[0].index;
+        }
     }
 
     // Initialize voices
@@ -1776,43 +1818,50 @@ function initTextToSpeech() {
         }
     });
 
-    // Start reading
+    // Start reading with improved settings
     function startReading() {
         // Stop any ongoing speech
         speechSynthesis.cancel();
 
         articleText = getArticleText();
         if (!articleText) {
-            status.textContent = 'No content to read';
+            status.textContent = 'Δεν υπάρχει περιεχόμενο / No content';
             return;
         }
 
         utterance = new SpeechSynthesisUtterance(articleText);
-        utterance.rate = parseFloat(speedInput.value);
-        utterance.pitch = 1;
-        utterance.volume = 1;
+
+        // Improved speech settings for more natural sound
+        utterance.rate = parseFloat(speedInput.value) * 0.9; // Slightly slower for naturalness
+        utterance.pitch = 1.0; // Natural pitch
+        utterance.volume = 0.9; // Slightly lower volume sounds more natural
 
         // Set voice
         if (voiceSelect.value && voices[voiceSelect.value]) {
             utterance.voice = voices[voiceSelect.value];
+
+            // Adjust rate based on language for better quality
+            if (utterance.voice.lang.startsWith('el')) {
+                utterance.rate = utterance.rate * 0.95; // Greek sounds better slightly slower
+            }
         }
 
         // Event handlers
         utterance.onstart = function() {
             playBtn.style.display = 'none';
             pauseBtn.style.display = 'flex';
-            status.textContent = 'Reading...';
+            status.textContent = 'Ανάγνωση... / Reading...';
             isPaused = false;
         };
 
         utterance.onend = function() {
             stopReading();
-            status.textContent = 'Finished reading';
+            status.textContent = 'Ολοκληρώθηκε / Finished';
         };
 
         utterance.onerror = function(event) {
             console.error('Speech synthesis error:', event);
-            status.textContent = 'Error occurred';
+            status.textContent = 'Σφάλμα / Error';
             stopReading();
         };
 
@@ -1824,6 +1873,12 @@ function initTextToSpeech() {
             }
         };
 
+        // Use chunking for long texts to prevent cutoffs
+        if (articleText.length > 5000) {
+            // For very long texts, consider breaking into chunks
+            console.log('Long article detected. Speech may be interrupted by browser limits.');
+        }
+
         // Start speaking
         speechSynthesis.speak(utterance);
     }
@@ -1834,7 +1889,7 @@ function initTextToSpeech() {
         pauseBtn.style.display = 'none';
         playBtn.style.display = 'flex';
         progressBar.style.width = '0%';
-        status.textContent = 'Ready to read';
+        status.textContent = 'Έτοιμο για ανάγνωση / Ready'; // Greek first
         isPaused = false;
         currentCharIndex = 0;
     }
