@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red Bull Racing 2025: Ανατομία μιας Πτώσης - Πώς ο κόκκινος Ταύρος έχασε τα Φτερά του | F1 Stories Blog</title>
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="Red Bull Racing 2025: Ανατομία μιας Πτώσης - Πώς ο κόκκινος Ταύρος έχασε τα Φτερά του | F1 Stories Blog">
+  <meta property="og:description" content="🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈">
+  <meta property="og:image" content="2.webp">
+  <meta property="og:url" content="https://f1stories.gr/blog-module/blog-entries/20250808G/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
+  <style>
+    /* YouTube embed container for responsive videos */
+    .youtube-embed-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+      margin: 2rem 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .youtube-embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+    }
+
+    .video-caption {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/blog-module/blog-styles.css">
+  <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-X68J6MQKSM');
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the meta description tag
+      const metaDescription = document.querySelector('meta[property="og:description"]');
+
+      // Get the article content for calculating reading time
+      const articleContent = document.querySelector('.article-content');
+
+      if (metaDescription && articleContent) {
+        // Calculate reading time
+        const text = articleContent.textContent || articleContent.innerText;
+        const wordCount = text.trim().split(/\s+/).length;
+
+        // Average reading speed: 200 words per minute
+        const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
+        // Update meta description with reading time
+        metaDescription.setAttribute('content', `A ${readingTimeMinutes} minute read on F1 Stories Blog`);
+
+        // Also update the reading time element in the article if it exists
+        const readingTimeElement = document.getElementById('reading-time-value');
+        if (readingTimeElement) {
+          readingTimeElement.textContent = `${readingTimeMinutes} min read`;
+        }
+      } else {
+        // Fallback description if article content is not found
+        if (metaDescription) {
+          metaDescription.setAttribute('content', '🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈');
+        }
+      }
+    });
+  </script>
+
+</head>
+<body>
+<div class="background"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
+
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy">
+      </a>
+      <div class="race-countdown-container">
+        <div class="race-countdown">
+          <div class="race-flag">
+            <span id="race-flag-emoji">🏁</span>
+          </div>
+          <div class="race-info">
+            <span class="next-race-name" id="next-race-name">Loading...</span>
+            <div class="countdown-timer" id="race-countdown">--</div>
+          </div>
+        </div>
+        <!-- Mobile version - visible only on small screens -->
+        <div class="race-countdown-mobile">
+          <i class="fas fa-flag-checkered"></i>
+          <span id="race-countdown-mobile">--</span>
+        </div>
+      </div>
+      <button class="navbar-toggler" type="button" id="mobile-toggler">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <!-- Home -->
+          <li class="nav-item">
+            <a class="nav-link" href="/" id="home-link">Home</a>
+          </li>
+
+          <!-- Podcast dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">
+              Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+              <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
+              <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+            </ul>
+          </li>
+
+          <!-- Stories & Media dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
+              Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
+              <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+              <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+            </ul>
+          </li>
+
+          <!-- About dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
+              About <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/#about">About Us</a></li>
+              <li><a class="dropdown-item" href="/#guests">Guests</a></li>
+              <li><a class="dropdown-item" href="/#contact">Contact</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="py-5 mt-5">
+  <div class="container">
+    <!-- Back to Blog Button -->
+    <div class="text-start mb-4">
+      <a href="/blog-module/blog/index.html" class="btn btn-outline-light">
+        <i class="fas fa-arrow-left me-2"></i> Back to Blog
+      </a>
+    </div>
+
+    <div class="article-container">
+      <div class="article-header">
+        <!-- Images are local to the article folder -->
+        <img src="2.webp" alt="Red Bull Racing 2025: Ανατομία μιας Πτώσης - Πώς ο κόκκινος Ταύρος έχασε τα Φτερά του" class="article-header-img" loading="lazy" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <div class="article-header-overlay">
+          <h1 class="article-title">Red Bull Racing 2025: Ανατομία μιας Πτώσης - Πώς ο κόκκινος Ταύρος έχασε τα Φτερά του</h1>
+          <div class="article-meta">
+            <span><i class="fas fa-calendar"></i> August 8, 2025</span>
+            <span><i class="fas fa-tag"></i> RedBull</span>
+            <span><i class="fas fa-folder"></i> 2025</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add social sharing bar here -->
+      <!-- Updated Social Share Bar -->
+      <div class="social-share-bar">
+        <div class="share-label">
+          <i class="fas fa-share-alt"></i>
+          <span>Share this article:</span>
+        </div>
+        <div class="share-buttons">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://f1stories.gr/blog-module/blog-entries/20250808G/article.html" target="_blank" class="share-btn facebook" aria-label="Share on Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://www.addtoany.com/add_to/threads?linkurl=https://f1stories.gr/blog-module/blog-entries/20250808G/article.html&linkname=Red Bull Racing 2025: Ανατομία μιας Πτώσης - Πώς ο κόκκινος Ταύρος έχασε τα Φτερά του" target="_blank" class="share-btn threads" aria-label="Share on Threads">
+            <i class="fab fa-threads"></i>
+          </a>
+          <button id="instagram-dm-btn" class="share-btn instagram" aria-label="Share via Instagram DM">
+            <i class="fab fa-instagram"></i>
+          </button>
+          <a href="https://api.whatsapp.com/send?text=Red Bull Racing 2025: Ανατομία μιας Πτώσης - Πώς ο κόκκινος Ταύρος έχασε τα Φτερά του%20https://f1stories.gr/blog-module/blog-entries/20250808G/article.html" target="_blank" class="share-btn whatsapp" aria-label="Share on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+          <a href="https://t.me/share/url?url=https://f1stories.gr/blog-module/blog-entries/20250808G/article.html&text=Red Bull Racing 2025: Ανατομία μιας Πτώσης - Πώς ο κόκκινος Ταύρος έχασε τα Φτερά του" target="_blank" class="share-btn telegram" aria-label="Share on Telegram">
+            <i class="fab fa-telegram-plane"></i>
+          </a>
+          <button id="web-share-btn" class="share-btn web-share" aria-label="Share on installed apps">
+            <i class="fas fa-share-nodes"></i>
+          </button>
+          <button class="share-btn copy-link" id="copy-link-btn" aria-label="Copy link">
+            <i class="fas fa-link"></i>
+          </button>
+        </div>
+      </div>
+
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <!-- Add this for a more F1-style header -->
+        <div class="tts-header">
+          <i class="fas fa-headphones-alt"></i>
+          <span>🏁 RACE RADIO - Ακούστε το Άρθρο</span>
+          <div class="tts-live-indicator"></div>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Φωνή/Voice:</label>
+            <select id="tts-voice">
+              <option value="">Αυτόματη/Auto</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Έτοιμο για ανάγνωση</div>
+        </div>
+      </div>
+
+
+      <div class="article-content">
+        <!-- Article content goes here -->
+        <p></p><h1>Red Bull Racing 2025: Ανατομία μιας Πτώσης - Πώς ο κόκκινος Ταύρος έχασε τα Φτερά του </h1><h2>Η Αυτοκρατορία Αντεπιτίθεται... και Πέφτει</h2><p>Η σεζόν του 2025 στη Formula 1 ξεκίνησε με μια αίσθηση αναπόφευκτου. Η Oracle Red Bull Racing, μετά από μια περίοδο σχεδόν απόλυτης κυριαρχίας από το 2022 έως το 2024, φαινόταν έτοιμη να συνεχίσει την πορεία της προς τα βιβλία της ιστορίας. Οι δύο νίκες του Max Verstappen στην Ιαπωνία και την Imola στους πρώτους αγώνες της σεζόν έμοιαζαν να επιβεβαιώνουν ακριβώς αυτό. Ήταν μια ψεύτικη αυγή. Φτάνοντας στο καλοκαιρινό διάλειμμα μετά το Grand Prix της Ουγγαρίας, η εικόνα είναι σοκαριστική. Η Red Bull βρίσκεται στην τέταρτη θέση του Πρωταθλήματος Κατασκευαστών με μόλις 194 βαθμούς, την ώρα που η πρωτοπόρος McLaren έχει εκτοξευθεί στους 559. Αυτό δεν είναι απλώς μια κάμψη στην απόδοση· είναι μια κατάρρευση.</p><p>Πώς μια ομάδα που φαινόταν ανίκητη έπεσε τόσο μακριά, τόσο γρήγορα; Η απάντηση δεν βρίσκεται σε ένα μεμονωμένο πρόβλημα. Η σεζόν του 2025 για τη Red Bull Racing είναι το αποτέλεσμα μιας «τέλειας καταιγίδας» αλληλένδετων κρίσεων: ενός ελαττωματικού τεχνικού σχεδιασμού στην εποχή μετά τον Adrian Newey, μιας σύνθεσης οδηγών που ακρωτηριάζεται από τη διαβόητη «κατάρα της δεύτερης θέσης» και μιας βαθιάς οργανωτικής αναταραχής που κορυφώθηκε με τη σοκαριστική αποχώρηση του μακροβιότερου ηγέτη της. Αυτή είναι η ανατομία μιας πτώσης.</p><h2>Ένα Ελαττωματικό Άρμα για έναν Πρωταθλητή 🏎️</h2><p>Στην καρδιά των προβλημάτων της Red Bull βρίσκεται το μονοθέσιο. Το RB21, ο διάδοχος των κυρίαρχων προκατόχων του, αποδεικνύεται ένα άρμα γεμάτο ελαττώματα, ανίκανο να προσφέρει στον πρωταθλητή του τα όπλα που χρειάζεται για να παλέψει στην κορυφή. Η ανάλυση του μονοθεσίου αποκαλύπτει βαθιές ρωγμές στα θεμέλια της ομάδας.</p><h3>Η Γέννηση ενός Προβλήματος: Η Ζωή μετά τον Newey</h3><p>Το RB21 είναι ένα μονοθέσιο-ορόσημο για τη Red Bull, αλλά για όλους τους λάθος λόγους. Είναι το πρώτο που σχεδιάστηκε υπό την πλήρη τεχνική ηγεσία του Pierre Waché, μετά την ανακοινωμένη αποχώρηση της σχεδιαστικής ιδιοφυΐας, Adrian Newey. Η αποχώρηση του Newey, ο οποίος θα ενταχθεί στην Aston Martin τον Μάρτιο του 2025, ανακοινώθηκε ότι θα πραγματοποιηθεί το πρώτο τρίμηνο του 2025, πράγμα που σημαίνει ότι η επιρροή του στο RB21 ήταν ήδη μειωμένη κατά τη φάση της εξέλιξής του. Ο Newey δεν ήταν απλώς ένας σχεδιαστής· ήταν ο οραματιστής που καθόριζε την τεχνική κατεύθυνση της ομάδας για δύο δεκαετίες. Η απουσία του δημιούργησε ένα κενό ηγεσίας που είναι πλέον ορατό στην πίστα.</p><p>Ταυτόχρονα, το RB21 είναι το τελευταίο μονοθέσιο που θα χρησιμοποιήσει τη μονάδα ισχύος Honda RBPTH003, καθώς η ομάδα προετοιμάζεται για τη μετάβαση στους δικούς της κινητήρες Red Bull Powertrains-Ford το 2026. Αυτή η διπλή εστίαση – η διαχείριση του τρέχοντος μονοθεσίου και η ταυτόχρονη προετοιμασία για μια εντελώς νέα εποχή κινητήρων – ασκεί τεράστια πίεση στον Waché και το τεχνικό του τμήμα. Η πίεση αυτή φαίνεται να έχει οδηγήσει σε συμβιβασμούς, με το RB21 να είναι το πρώτο απτό θύμα αυτής της μεταβατικής περιόδου και του κενού που άφησε πίσω του ο Newey.</p><h3>Η Ανατομία της Αποτυχίας: Έλλειψη Πρόσφυσης και Εμπιστοσύνης</h3><p>Το θεμελιώδες πρόβλημα του RB21 είναι μια επίμονη και βαθιά έλλειψη μηχανικής πρόσφυσης, ιδιαίτερα στις στροφές χαμηλής και μεσαίας ταχύτητας. Αυτό το ελάττωμα καθιστά το μονοθέσιο απρόβλεπτο, δύσκολο στην οδήγηση και ανίκανο να εμπνεύσει εμπιστοσύνη στον οδηγό του. Ο Max Verstappen έχει υπάρξει αφοπλιστικά ειλικρινής για τις αδυναμίες του αυτοκινήτου, περιγράφοντάς το ως «αποσυνδεδεμένο» και λέγοντας ότι «γλιστράει παντού», παραδεχόμενος ότι δεν έχει «καμία εμπιστοσύνη» σε αυτό σε καμία στροφή.</p><p>Το Grand Prix της Ουγγαρίας αποτέλεσε το απόλυτο πεδίο δοκιμασίας που αποκάλυψε βάναυσα αυτή την αδυναμία. Στη στενή και γεμάτη στροφές πίστα του Hungaroring, η ομάδα απέτυχε να φέρει τα ελαστικά στο σωστό λειτουργικό παράθυρο, με κάθε αλλαγή στο στήσιμο να αποδεικνύεται μάταιη. Η όγδοη θέση του Verstappen στις κατατακτήριες δοκιμές και η ένατη στον αγώνα, όπου παραλίγο να δεχτεί γύρο από τον νικητή, ήταν το ναδίρ της σεζόν και η απόλυτη επιβεβαίωση ότι το πρόβλημα δεν είναι επιφανειακό, αλλά βρίσκεται στον πυρήνα του σχεδιασμού του μονοθεσίου. Ένα μονοθέσιο χωρίς μηχανική πρόσφυση δεν μπορεί να μεταφέρει ταχύτητα στις αργές στροφές, υπερθερμαίνει τα πίσω ελαστικά καθώς γλιστράει και στερεί από τον οδηγό την αυτοπεποίθηση να πιέσει στα όρια. Αυτό εξηγεί γιατί η Red Bull μπορεί να είναι ανταγωνιστική σε πίστες υψηλής ταχύτητας που εξαρτώνται από την αεροδυναμική (όπως το Spa, όπου χρησιμοποίησαν μια πίσω αεροτομή χαμηλής κάθετης δύναμης για να καλύψουν τις αδυναμίες τους), αλλά υποφέρει δραματικά σε τεχνικές πίστες όπως η Ουγγαρία.</p><h3>Το Αδιέξοδο της Εξέλιξης: Όταν οι Αναβαθμίσεις δεν Αρκούν</h3><p>Η κατάσταση επιδεινώνεται από το γεγονός ότι η ομάδα φαίνεται να έχει εγκλωβιστεί σε ένα αναπτυξιακό αδιέξοδο. Πληροφορίες αναφέρουν ότι η Red Bull γνώριζε από τα τέλη του 2024 ότι ακολουθούσε ένα «λάθος μονοπάτι εξέλιξης», αλλά ο σχεδιασμός του RB21 ήταν ήδη σε πολύ προχωρημένο στάδιο για να αλλάξει πορεία. Αυτό σημαίνει ότι ξεκίνησαν τη σεζόν του 2025 με ένα προϋπάρχον, γνωστό μειονέκτημα.</p><p>Παρόλο που η ομάδα έχει φέρει αναβαθμίσεις κατά τη διάρκεια της σεζόν, συμπεριλαμβανομένης μιας νέας εμπρός αεροτομής, πλευρικών αεραγωγών (sidepods) και τροποποιήσεων στο πάτωμα, αυτές δεν έχουν καταφέρει να λύσουν τα θεμελιώδη προβλήματα ισορροπίας και πρόσφυσης. Ο ίδιος ο Verstappen εμφανίστηκε δύσπιστος για την αποτελεσματικότητά τους. Το πρόβλημα είναι ότι οι αντίπαλοι, και κυρίως η McLaren, συνεχίζουν να «ανεβάζουν τον πήχη» με τη δική τους επιτυχημένη εξέλιξη, κάνοντας το χάσμα να μεγαλώνει. Επιπλέον, η προηγούμενη επιτυχία της Red Bull λειτουργεί πλέον εναντίον της, μέσω των κανονισμών αεροδυναμικών δοκιμών (sliding scale), που της παραχωρούν σημαντικά λιγότερο χρόνο στην αεροσήραγγα σε σύγκριση με τους ανταγωνιστές της. Όταν ξεκινάς με ένα ελαττωματικό concept, έχεις λιγότερο χρόνο για να το διορθώσεις και οι αναβαθμίσεις σου δεν αποδίδουν τα αναμενόμενα, παγιδεύεσαι σε έναν φαύλο κύκλο. Ξοδεύεις πόρους προσπαθώντας να λύσεις θεμελιώδη προβλήματα, ενώ οι αντίπαλοί σου προσθέτουν απόδοση σε μια ήδη σταθερή βάση.</p><h4>Πίνακας 1: Στιγμιότυπο Απόδοσης 2025 - Red Bull RB21 vs. McLaren MCL39 (Μέσα Σεζόν)</h4><table><thead><tr><th><p>Μετρική Απόδοσης</p></th><th><p>Red Bull RB21 (1-10)</p></th><th><p>McLaren MCL39 (1-10)</p></th><th><p>Σημειώσεις</p></th></tr><tr><th><p>Αεροδυναμική Απόδοση Υψηλής Ταχύτητας</p></th><th><p>8</p></th><th><p>9</p></th><th><p>Η RBR παραμένει ανταγωνιστική, βοηθούμενη από set-ups χαμηλής οπισθέλκουσας, αλλά η McLaren είναι κορυφαία.</p></th></tr><tr><th><p>Πρόσφυση Χαμηλής/Μεσαίας Ταχύτητας</p></th><th><p>4</p></th><th><p>10</p></th><th><p>Το βασικό έλλειμμα. Η RBR είναι ασταθής, ενώ η McLaren υπερέχει.</p></th></tr><tr><th><p>Διαχείριση Ελαστικών</p></th><th><p>5</p></th><th><p>10</p></th><th><p>Η κακή πρόσφυση οδηγεί σε γλίστρημα και υπερθέρμανση. Το μονοθέσιο της McLaren είναι εξαιρετικά ήπιο με τα ελαστικά του.</p></th></tr><tr><th><p>Οδηγησιμότητα/Λειτουργικό Παράθυρο</p></th><th><p>3</p></th><th><p>9</p></th><th><p>Το RB21 είναι ένα μονοθέσιο "στην κόψη του ξυραφιού". Η McLaren φαίνεται σταθερή και συγχωρεί τα λάθη και για τους δύο οδηγούς της.</p></th></tr><tr><th><p>Μονάδα Ισχύος (Honda vs. Mercedes)</p></th><th><p>9</p></th><th><p>9</p></th><th><p>Και οι δύο μονάδες ισχύος είναι ισχυρές. Το πλαίσιο του μονοθεσίου είναι ο κύριος παράγοντας διαφοροποίησης.</p></th></tr></thead></table><h2>Η Ιστορία των Δύο Θέσεων - Ο Μαέστρος και ο Καταραμένος 🎭</h2><p>Το δράμα της Red Bull δεν περιορίζεται στα μηχανικά μέρη. Εκτυλίσσεται εξίσου έντονα μέσα στο cockpit, όπου οι αδυναμίες του μονοθεσίου και η δομή της ομάδας δημιουργούν μια ιστορία με δύο εκ διαμέτρου αντίθετους πρωταγωνιστές: έναν μαέστρο που παλεύει ενάντια στη μηχανή του και μια διαδοχή οδηγών που πέφτουν θύματα της πιο «καταραμένης» θέσης στο grid.</p><h3>Max Verstappen Ενάντια στη Μηχανή</h3><p>Αν υπάρχει ένας λόγος που η Red Bull δεν έχει καταρρεύσει πλήρως, αυτός είναι ο Max Verstappen. Τα στατιστικά είναι αποκαλυπτικά: ο Ολλανδός έχει σκοράρει τους 187 από τους 194 βαθμούς της ομάδας. Αυτό από μόνο του αποδεικνύει ότι η Red Bull το 2025 είναι ουσιαστικά μια ομάδα ενός μονοθεσίου. Οι δύο νίκες του σε Ιαπωνία και Imola δεν ήταν απλώς νίκες· ήταν masterclasses στην τέχνη της εξαγωγής του απόλυτου μέγιστου από ένα υποδεέστερο μηχάνημα.</p><p>Ωστόσο, πίσω από το τιμόνι, ο ήχος της απογοήτευσης είναι εκκωφαντικός. Οι δημόσιες δηλώσεις του αποκαλύπτουν έναν οδηγό στα όριά του. Μετά την Ουγγαρία, δήλωσε ωμά ότι δεν πιστεύει πως η ομάδα μπορεί να κερδίσει άλλον αγώνα φέτος. Αυτή η δήλωση, αν και δυνητικά αποθαρρυντική για το ηθικό της ομάδας, μπορεί να ερμηνευτεί και διαφορετικά. Ο ρόλος του Verstappen έχει εξελιχθεί. Στα χρόνια της κυριαρχίας, η δουλειά του ήταν η εκτέλεση. Το 2025, ο ρόλος του είναι αυτός του διαγνώστη και του παρακινητή. Η δημόσια απογοήτευσή του είναι ένα στρατηγικό εργαλείο. που χρησιμοποιεί γνωρίζοντας ότι η ομάδα τον ακούει. Δηλώνοντας δημοσίως το πρωτάθλημα «αδύνατο»  και το μονοθέσιο ανίκανο για νίκες, ασκεί τη μέγιστη πίεση στη νέα ηγεσία του Laurent Mekies για να επιφέρει αλλαγές. Η μάχη του δεν είναι πλέον μόνο με τους άλλους οδηγούς, αλλά και με τα όρια της ίδιας του της ομάδας.</p><h3>Η Κατάρα της Δεύτερης Θέσης: Μια Εξήγηση</h3><p>Η δεύτερη θέση στη Red Bull έχει χαρακτηριστεί ως «καταραμένη» εδώ και χρόνια, αλλά η σεζόν του 2025 αποτελεί το πιο ακραίο παράδειγμα μέχρι σήμερα.</p><p>Η χρονιά ξεκίνησε με τον Liam Lawson, ο οποίος υποβιβάστηκε άδοξα πίσω στην Racing Bulls μετά από μόλις δύο καταστροφικούς αγώνες, συμπεριλαμβανομένης μιας εξόδου στον γύρο σχηματισμού στο ντεμπούτο του. Αυτή η γρήγορη, σχεδόν βάναυση απόφαση, αποτελεί την τέλεια απεικόνιση της αδίστακτης κουλτούρας και της τεράστιας πίεσης που ασκείται στον δεύτερο οδηγό.</p><p>Τον αντικατέστησε από τον τρίτο αγώνα ο Yuki Tsunoda, ο οποίος προήχθη από την αδελφή ομάδα. Τα στατιστικά της εσωτερικής μονομαχίας είναι συντριπτικά: ο Verstappen προηγείται με 12-0 στις κατατακτήριες και 11-1 στους αγώνες, με τον Tsunoda να έχει συγκεντρώσει μόλις 10 βαθμούς έναντι των 187 του Max. Ο ίδιος ο Tsunoda παραδέχεται ότι παλεύει να προσαρμοστεί στο μονοθέσιο, ειδικά στον ρυθμό αγώνα, και ότι κανένας οδηγός δεν έχει καταφέρει να το συνηθίσει αμέσως. Παρόλα αυτά, υπάρχουν και κάποιες αχτίδες φωτός. Τόσο ο Tsunoda όσο και η ομάδα βλέπουν σημάδια προόδου. Πλησιάζει τον ρυθμό του Verstappen σε έναν γύρο (ήταν μόλις 0.163 δευτερόλεπτα πίσω στο Q1 της Ουγγαρίας) και ένιωσε μια ώθηση αυτοπεποίθησης όταν έλαβε ένα αναβαθμισμένο πάτωμα στο Spa – μια αναβάθμιση που ο Verstappen είχε ήδη λάβει σε προηγούμενους αγώνες.</p><p>Η λεγόμενη «κατάρα», ωστόσο, δεν είναι κάποια μεταφυσική δύναμη. Είναι το άθροισμα συγκεκριμένων, απτών παραγόντων. Πρώτον, η φιλοσοφία του μονοθεσίου. Το RB21 είναι χτισμένο γύρω από τη μοναδική ικανότητα του Verstappen να διαχειρίζεται ένα «εξωφρενικά αιχμηρό» μπροστινό μέρος και ένα νευρικό πίσω μέρος. Είναι ένα μονοθέσιο σχεδιασμένο για ένα συγκεκριμένο, σπάνιο ταλέντο. Δεύτερον, το ψυχολογικό βαρόμετρο. Κάθε οδηγός που έρχεται στην ομάδα συγκρίνεται αμέσως με τον Verstappen, ένα αδύνατο πρότυπο που διαβρώνει την αυτοπεποίθηση. Τρίτον, και ίσως το πιο αποκαλυπτικό, είναι η κατανομή των πόρων. Το γεγονός ότι ο Tsunoda έπρεπε να περιμένει για κρίσιμες αναβαθμίσεις απόδοσης, όπως το νέο πάτωμα, τις οποίες ο Verstappen είχε ήδη, είναι η αδιάψευστη απόδειξη. Αποδεικνύει ότι η αναπτυξιακή πορεία της ομάδας είναι πλήρως επικεντρωμένη στον Νο 1 οδηγό της. Ο δεύτερος οδηγός δεν βρίσκεται απλώς σε ένα δύσκολο μονοθέσιο· συχνά βρίσκεται σε μια ελαφρώς παλαιότερη, λιγότερο εξελιγμένη έκδοση αυτού του δύσκολου μονοθεσίου. Η «κατάρα» δεν είναι ένα σφάλμα στο σύστημα της Red Bull· είναι ένα χαρακτηριστικό του, ένα αναπόσπαστο κομμάτι του απόλυτα Verstappen-κεντρικού λειτουργικού της μοντέλου.</p><h2>Αναταραχή στο Pit Wall - Στρατηγική, Ανακατατάξεις και Σοκ 🤯</h2><p>Η κρίση της Red Bull στην πίστα δεν είναι παρά η αντανάκλαση μιας βαθύτερης κρίσης στα παρασκήνια. Η αστάθεια στο pit wall, οι αμφιλεγόμενες στρατηγικές αποφάσεις και οι σεισμικές αλλαγές στην ηγεσία αποδεικνύουν ότι τα προβλήματα της ομάδας είναι συστημικά, συνδέοντας άρρηκτα την απόδοση του μονοθεσίου με το χάος που επικρατεί εντός των τειχών του Milton Keynes.</p><h3>Το Τέλος μιας Εποχής: Η Αποχώρηση του Horner και το Κενό Εξουσίας</h3><p>Τον Ιούλιο του 2025, σε μια κίνηση που σόκαρε τον κόσμο της Formula 1, ο Christian Horner απολύθηκε από τη θέση του Επικεφαλής της Ομάδας μετά από 20 χρόνια στο τιμόνι. Η επίσημη αιτιολογία δεν δόθηκε ποτέ , αλλά η αποχώρησή του αποδίδεται σε μια σύγκλιση καταστροφικών παραγόντων: την ανησυχητική πτώση της απόδοσης της ομάδας , τις παρατεταμένες επιπτώσεις από τις κατηγορίες για ανάρμοστη συμπεριφορά το 2024 , μια σημαντική «διαρροή εγκεφάλων» με αποχωρήσεις-κλειδιά όπως αυτή του Adrian Newey , και μια σκληρή εσωτερική μάχη για την εξουσία που περιλάμβανε τη μητρική εταιρεία Red Bull GmbH και τον Jos Verstappen.</p><p>Ο Laurent Mekies διορίστηκε ως αντικαταστάτης του, κληρονομώντας μια ομάδα σε βαθιά κρίση. Μια ομάδα της Formula 1 είναι ένας πολύπλοκος οργανισμός που ευδοκιμεί στη σταθερότητα, τη σαφή ηγεσία και την ενιαία κουλτούρα. Οι δημόσιες διαμάχες για την εξουσία, οι αποχωρήσεις σημαντικών στελεχών και η τελική απόλυση του μακροβιότερου ηγέτη της ομάδας διέλυσαν αυτή τη σταθερότητα. Τα ελαττώματα του RB21 και τα λειτουργικά λάθη της ομάδας δεν συμβαίνουν σε κενό αέρος· είναι τα άμεσα, προβλέψιμα συμπτώματα ενός οργανισμού σε αναταραχή. Η κρίση εντός πίστας είναι απλώς η εικόνα της κρίσης εκτός πίστας στον καθρέφτη.</p><h3>Από την Κορυφή στον Πάτο: Στρατηγική και Pit Stops υπό Αμφισβήτηση</h3><p>Η κάποτε αλάνθαστη στρατηγική μηχανή της Red Bull έχει αρχίσει να τρίζει. Το Grand Prix της Ουγγαρίας είναι το χαρακτηριστικότερο παράδειγμα, όπου η ομάδα επέλεξε για τον Verstappen μια στρατηγική δύο pit stops που απέτυχε παταγωδώς. Ο σύμβουλος της ομάδας, Helmut Marko, παραδέχτηκε αργότερα ότι μια στρατηγική ενός pit stop «θα ήταν καλύτερη» και θα μπορούσε να είχε διασώσει μια πέμπτη ή έκτη θέση. Αυτό το λάθος υπογραμμίζει την αδυναμία της ομάδας να «διαβάσει» σωστά τον αγώνα υπό πίεση.</p><p>Παράλληλα, οι βασιλιάδες των pit stops έχουν εκθρονιστεί. Η Red Bull, που κάποτε έθετε τα πρότυπα με αλλαγές ελαστικών κάτω από 2 δευτερόλεπτα, έχει μείνει πίσω. Δεδομένα από το 2025 δείχνουν ότι η Ferrari διαθέτει πλέον το ταχύτερο πλήρωμα, με τη Red Bull να βρίσκεται στην τρίτη θέση, ισόβαθμη με τη McLaren. Προβλήματα στην αρχή της σεζόν αποδόθηκαν σε μια βλάβη στην καλωδίωση του εξοπλισμού , αλλά η συνεχιζόμενη τάση υποδηλώνει μια ευρύτερη παρακμή σε έναν τομέα που αποτελούσε θεμέλιο της δύναμής τους. Στα χρόνια της κυριαρχίας τους, η Red Bull κέρδιζε όχι μόνο λόγω ενός γρήγορου μονοθεσίου, αλλά και λόγω της λειτουργικής της αρτιότητας. Οι επιθετικές, άψογες στρατηγικές και τα αστραπιαία pit stops ήταν ένα «αθέμιτο πλεονέκτημα». Η φετινή παρακμή και στους δύο αυτούς τομείς σηματοδοτεί κάτι περισσότερο από μερικά χαμένα δευτερόλεπτα· σηματοδοτεί τη διάβρωση της ίδιας της νικητήριας ταυτότητας και κουλτούρας της ομάδας.</p><h3>Η Άρρητη Εντολή Ομάδας: Το Αυτοκίνητο Αποφασίζει</h3><p>Σε μια σεζόν με τόσο τεράστιο χάσμα απόδοσης μεταξύ των δύο οδηγών, οι παραδοσιακές εντολές ομάδας μέσω ασυρμάτου για αλλαγή θέσεων είναι σε μεγάλο βαθμό άνευ αντικειμένου. Η πραγματική, η πιο ισχυρή εντολή ομάδας στη Red Bull του 2025 δόθηκε μήνες πριν την έναρξη της σεζόν, στο σχεδιαστήριο.</p><p>Όταν η τεχνική ηγεσία ενέκρινε μια φιλοσοφία μονοθεσίου με «εξωφρενικά αιχμηρά» χαρακτηριστικά χειρισμού που μόνο ένας φαινόμενο όπως ο Verstappen μπορεί να τιθασεύσει, έδωσε σιωπηρά την εντολή ότι αυτός θα είναι η απόλυτη προτεραιότητα. Κάθε άλλος οδηγός είναι, εξ ορισμού, καταδικασμένος να παλεύει. Αυτή η σιωπηρή εντολή ενισχύεται από την κατανομή των πόρων. Όταν ο Tsunoda πρέπει να περιμένει για κρίσιμες αναβαθμίσεις απόδοσης που ο Verstappen έχει ήδη στο μονοθέσιό του, το μήνυμα είναι ξεκάθαρο. Η ομάδα δεν προσπαθεί να κάνει το μονοθέσιο οδηγήσιμο για δύο οδηγούς· προσπαθεί να κάνει ένα μη οδηγήσιμο μονοθέσιο ταχύτερο για έναν. Αυτή η προσέγγιση επαναπροσδιορίζει την έννοια των «εντολών ομάδας», μεταφέροντάς την από τις ραδιοεπικοινωνίες στον πυρήνα της μηχανολογικής και στρατηγικής φιλοσοφίας. Η «εντολή ομάδας» της Red Bull είναι ολόκληρο το λειτουργικό της μοντέλο.</p><h2>Ένα Σταυροδρόμι για το 2026 🏁</h2><p>Η σεζόν του 2025 για τη Red Bull Racing είναι η ιστορία μιας αυτοκρατορίας που παραπαίει. Η κρίση είναι πολυεπίπεδη: ένα ελαττωματικό μονοθέσιο, γεννημένο μέσα από οργανωτικό χάος, δημιουργεί μια αδύνατη κατάσταση για τους οδηγούς του και επιδεινώνεται από λειτουργικά λάθη. Το RB21 είναι το σύμπτωμα, αλλά η ασθένεια βρίσκεται βαθιά μέσα στην ίδια την ομάδα.</p><p>Το υπόλοιπο της σεζόν δεν είναι πλέον μια μάχη για πρωταθλήματα, αλλά μια κρίσιμη δοκιμασία για τη νέα ηγεσία του Laurent Mekies. Μπορεί να σταματήσει τη «διαρροή εγκεφάλων»; Μπορεί να σταθεροποιήσει την ομάδα και να θέσει μια νέα, πιο βιώσιμη τεχνική κατεύθυνση; Όλα αυτά συμβαίνουν με φόντο τις μνημειώδεις αλλαγές κανονισμών του 2026 και την αυγή της νέας εποχής Red Bull-Ford. Οι αποφάσεις που λαμβάνονται τώρα, μέσα στην κρίση, θα καθορίσουν την επιτυχία ή την αποτυχία αυτού του νέου, φιλόδοξου εγχειρήματος.</p><p>Το ερώτημα που μένει να απαντηθεί είναι καίριο. Είναι η σεζόν του 2025 μια αναγκαία, επώδυνη, αλλά τελικά προσωρινή «επανεκκίνηση» για μια ομάδα που ξεκαθαρίζει το τοπίο πριν από μια νέα εποχή; Ή μήπως γινόμαστε μάρτυρες του πρώτου κεφαλαίου της συστημικής παρακμής μιας κάποτε μεγάλης δυναστείας της Formula 1; Η απάντηση βρίσκεται στον μακρύ δρόμο προς το 2026.</p>
+      </div>
+
+      <!-- Add this author section here -->
+      <div class="article-author-footer">
+        <div class="reading-time-badge">
+          <i class="fas fa-clock"></i>
+          <span id="reading-time-value">5 min read</span>
+        </div>
+
+        <div class="author-box">
+          <div class="author-header">
+            <div class="author-avatar">
+              <img id="author-image" src="/f1stories.github.io/images/avatars/FA.webp" alt="Georgios Balatzis"
+                   onerror="
+         const paths = [
+           '/f1stories.github.io/images/authors/default.webp',
+           '/images/authors/default.webp',
+           '../../../images/authors/default.webp',
+           '../../images/authors/default.webp'
+         ];
+         let currentPath = 0;
+         const tryNextPath = () => {
+           if (currentPath < paths.length) {
+             this.src = paths[currentPath++];
+           } else {
+             this.style.display='none';
+             document.getElementById('author-initial').style.display='flex';
+           }
+         };
+         tryNextPath();">
+              <span class="avatar-text" id="author-initial">A</span>
+            </div>
+            <div class="author-info">
+              <h4 class="author-name" id="author-name">Georgios Balatzis</h4>
+              <div class="author-title" id="author-title">F1 Stories Contributor</div>
+            </div>
+          </div>
+          <div class="author-bio" id="author-bio">
+            Regular contributor to F1 Stories, passionate about motorsport and sharing insight about Formula 1 racing.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="article-comments">
+      <h3>Comments</h3>
+      <div id="disqus_thread"></div>
+      <script>
+        var disqus_config = function () {
+          this.page.url = window.location.href;  // Gets the current page URL
+          this.page.identifier = '20250808G';   // Will be replaced with your article ID
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+          var d = document, s = d.createElement('script');
+          s.src = 'https://f1stories-gr.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20250807WF/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="NEXT_ARTICLE_URL" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250806G/1.webp" 
+                             alt="Williams 2025: Ανάσταση και Αίνιγμα" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250806G/1.webp') { this.src='/blog-module/blog/images/20250806G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">6,</span>
+                            <span class="month">AUG</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Williams 2025: Ανάσταση και Αίνιγμα</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250806G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250805G/1.webp" 
+                             alt="Ferrari 2025: Η Ανατομία μιας Σεζόν Γεμάτης Υποσχέσεις και Δυσκολίες" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250805G/1.webp') { this.src='/blog-module/blog/images/20250805G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">5,</span>
+                            <span class="month">AUG</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Ferrari 2025: Η Ανατομία μιας Σεζόν Γεμάτης Υποσχέσεις και Δυσκολίες</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250805G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250804G/1.webp" 
+                             alt="Grand Prix Ουγγαρίας 2025: Η Στρατηγική της McLaren, η Κατάρρευση της Ferrari και ο Θρίαμβος του Norris! 🏁🏆🇭🇺" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250804G/1.webp') { this.src='/blog-module/blog/images/20250804G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">4,</span>
+                            <span class="month">AUG</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Grand Prix Ουγγαρίας 2025: Η Στρατηγική της McLaren, η Κατάρρευση της Ferrari και ο Θρίαμβος του Norris! 🏁🏆🇭🇺</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250804G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
+  </div>
+</section>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<footer class="py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center">
+        <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+        <div class="social-media">
+          <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+          <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Background Randomizer Script -->
+<script defer src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script defer src="/scripts/script.js"></script>
+<script defer src="/blog-module/blog/article-script.js"></script>
+
+<!-- Script to fix navbar functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the navbar toggle works
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+
+    if (navbarToggler && navbarCollapse) {
+      navbarToggler.addEventListener('click', function() {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+
+    // Close mobile menu after clicking a link
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        // If mobile menu is open, close it
+        if (navbarCollapse.classList.contains('show')) {
+          navbarCollapse.classList.remove('show');
+        }
+      });
+    });
+  });
+</script>
+
+<!-- Social Sharing Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Replace placeholder URLs with actual URL
+    const currentUrl = window.location.href;
+    const articleTitle = document.querySelector('.article-title').textContent;
+    const encodedTitle = encodeURIComponent(articleTitle);
+
+    // Update sharing links
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      if (btn.href) {
+        btn.href = btn.href
+                .replace('https://f1stories.gr/blog-module/blog-entries/20250808G/article.html', encodeURIComponent(currentUrl))
+                .replace('Red Bull Racing 2025: Ανατομία μιας Πτώσης - Πώς ο κόκκινος Ταύρος έχασε τα Φτερά του', encodedTitle);
+      }
+    });
+
+    // Handle copy link button
+    const copyLinkBtn = document.getElementById('copy-link-btn');
+    if (copyLinkBtn) {
+      copyLinkBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(currentUrl)
+                .then(() => {
+                  copyLinkBtn.classList.add('copy-success');
+
+                  // Change icon temporarily to checkmark
+                  const icon = copyLinkBtn.querySelector('i');
+                  icon.classList.remove('fa-link');
+                  icon.classList.add('fa-check');
+
+                  // Reset after 2 seconds
+                  setTimeout(() => {
+                    copyLinkBtn.classList.remove('copy-success');
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-link');
+                  }, 2000);
+                })
+                .catch(err => {
+                  console.error('Failed to copy: ', err);
+                });
+      });
+    }
+  });
+</script>
+<!-- Theme Toggle Button and Functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Create style element for Catppuccin theme CSS variables
+    const catppuccinVariables = document.createElement('style');
+    catppuccinVariables.id = 'catppuccin-variables';
+    catppuccinVariables.textContent = `
+        /* Catppuccin Frappé */
+        .catppuccin-frappe {
+          /* Base colors */
+          --ctp-base: #303446;
+          --ctp-mantle: #292c3c;
+          --ctp-crust: #232634;
+
+          /* Text colors */
+          --ctp-text: #c6d0f5;
+          --ctp-subtext1: #b5bfe2;
+          --ctp-subtext0: #a5adce;
+
+          /* Overlay colors */
+          --ctp-overlay2: #949cbb;
+          --ctp-overlay1: #838ba7;
+          --ctp-overlay0: #737994;
+
+          /* Surface colors */
+          --ctp-surface2: #626880;
+          --ctp-surface1: #51576d;
+          --ctp-surface0: #414559;
+
+          /* Accent colors */
+          --ctp-rosewater: #f2d5cf;
+          --ctp-flamingo: #eebebe;
+          --ctp-pink: #f4b8e4;
+          --ctp-mauve: #ca9ee6;
+          --ctp-red: #e78284;
+          --ctp-maroon: #ea999c;
+          --ctp-peach: #ef9f76;
+          --ctp-yellow: #e5c890;
+          --ctp-green: #a6d189;
+          --ctp-teal: #81c8be;
+          --ctp-sky: #99d1db;
+          --ctp-sapphire: #85c1dc;
+          --ctp-blue: #8caaee;
+          --ctp-lavender: #babbf1;
+        }
+
+        /* Catppuccin Macchiato */
+        .catppuccin-macchiato {
+          /* Base colors */
+          --ctp-base: #24273a;
+          --ctp-mantle: #1e2030;
+          --ctp-crust: #181926;
+
+          /* Text colors */
+          --ctp-text: #cad3f5;
+          --ctp-subtext1: #b8c0e0;
+          --ctp-subtext0: #a5adcb;
+
+          /* Overlay colors */
+          --ctp-overlay2: #939ab7;
+          --ctp-overlay1: #8087a2;
+          --ctp-overlay0: #6e738d;
+
+          /* Surface colors */
+          --ctp-surface2: #5b6078;
+          --ctp-surface1: #494d64;
+          --ctp-surface0: #363a4f;
+
+          /* Accent colors */
+          --ctp-rosewater: #f4dbd6;
+          --ctp-flamingo: #f0c6c6;
+          --ctp-pink: #f5bde6;
+          --ctp-mauve: #c6a0f6;
+          --ctp-red: #ed8796;
+          --ctp-maroon: #ee99a0;
+          --ctp-peach: #f5a97f;
+          --ctp-yellow: #eed49f;
+          --ctp-green: #a6da95;
+          --ctp-teal: #8bd5ca;
+          --ctp-sky: #91d7e3;
+          --ctp-sapphire: #7dc4e4;
+          --ctp-blue: #8aadf4;
+          --ctp-lavender: #b7bdf8;
+        }
+
+        /* Catppuccin Mocha */
+        .catppuccin-mocha {
+          /* Base colors */
+          --ctp-base: #1e1e2e;
+          --ctp-mantle: #181825;
+          --ctp-crust: #11111b;
+
+          /* Text colors */
+          --ctp-text: #cdd6f4;
+          --ctp-subtext1: #bac2de;
+          --ctp-subtext0: #a6adc8;
+
+          /* Overlay colors */
+          --ctp-overlay2: #9399b2;
+          --ctp-overlay1: #7f849c;
+          --ctp-overlay0: #6c7086;
+
+          /* Surface colors */
+          --ctp-surface2: #585b70;
+          --ctp-surface1: #45475a;
+          --ctp-surface0: #313244;
+
+          /* Accent colors */
+          --ctp-rosewater: #f5e0dc;
+          --ctp-flamingo: #f2cdcd;
+          --ctp-pink: #f5c2e7;
+          --ctp-mauve: #cba6f7;
+          --ctp-red: #f38ba8;
+          --ctp-maroon: #eba0ac;
+          --ctp-peach: #fab387;
+          --ctp-yellow: #f9e2af;
+          --ctp-green: #a6e3a1;
+          --ctp-teal: #94e2d5;
+          --ctp-sky: #89dceb;
+          --ctp-sapphire: #74c7ec;
+          --ctp-blue: #89b4fa;
+          --ctp-lavender: #b4befe;
+        }
+        `;
+    document.head.appendChild(catppuccinVariables);
+
+    // Create style element for Dark Theme
+    const darkThemeStyles = document.createElement('style');
+    darkThemeStyles.id = 'dark-theme-styles';
+    darkThemeStyles.textContent = `
+        /* F1 Stories Dark Mode Styles */
+        body.dark-theme {
+          background-color: var(--ctp-base);
+          color: var(--ctp-text);
+          transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .dark-theme .navbar,
+        .dark-theme .contact-container,
+        .dark-theme .blog-card,
+        .dark-theme .episode-card,
+        .dark-theme .persona,
+        .dark-theme .cookie-banner,
+        .dark-theme .modal-content {
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          background: rgba(var(--ctp-base-rgb, 30, 30, 46), 0.85);
+          border: 1px solid rgba(var(--ctp-surface2-rgb, 88, 91, 112), 0.08);
+          box-shadow: 0 4px 16px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.3);
+          transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dark-theme .background {
+          background: linear-gradient(-45deg, var(--ctp-mantle), var(--ctp-base), var(--ctp-surface0), var(--ctp-mantle));
+          background-size: 400% 400%;
+          animation: gradientAnimation 18s ease infinite;
+          opacity: 0.9;
+        }
+
+        .dark-theme .streak {
+          background: linear-gradient(90deg, transparent, rgba(var(--ctp-lavender-rgb, 180, 190, 254), 0.2), transparent);
+        }
+
+        .dark-theme .blog-card:hover,
+        .dark-theme .episode-card:hover,
+        .dark-theme .persona:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 8px 28px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.4);
+          border-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.9);
+        }
+
+        .dark-theme h1,
+        .dark-theme h2 {
+          background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sky));
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0 2px 4px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.3));
+        }
+
+        .dark-theme .cta-button {
+          background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sapphire));
+          box-shadow: 0 4px 15px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.3);
+        }
+
+        .dark-theme .cta-button:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.4);
+          background: linear-gradient(135deg, var(--ctp-sapphire), var(--ctp-sky));
+        }
+
+        /* Navbar customization */
+        .dark-theme .navbar-dark .navbar-nav .nav-link {
+          color: var(--ctp-subtext1);
+        }
+
+        .dark-theme .navbar-dark .navbar-nav .nav-link:hover {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .navbar-dark .navbar-nav .nav-link.active {
+          color: var(--ctp-blue) !important;
+        }
+
+        /* Dropdown styling */
+        .dark-theme .custom-dropdown-menu {
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.95);
+          border-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+        }
+
+        .dark-theme .dropdown-item:hover {
+          background-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.1);
+          color: var(--ctp-sky);
+        }
+
+        /* Form controls */
+        .dark-theme input,
+        .dark-theme textarea {
+          background-color: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.9);
+          border-color: var(--ctp-surface1);
+          color: var(--ctp-text);
+        }
+
+        .dark-theme input:focus,
+        .dark-theme textarea:focus {
+          border-color: var(--ctp-blue);
+          box-shadow: 0 0 0 3px rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.3);
+        }
+
+        /* Social media icons */
+        .dark-theme .social-media a:hover::before {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        /* Theme toggle button customization */
+        .dark-theme #theme-toggle-container {
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.85);
+          border-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+        }
+
+        .dark-theme #toggle-icon {
+          background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        /* Cookie banner customization */
+        .dark-theme .cookie-banner {
+          background: rgba(var(--ctp-base-rgb, 30, 30, 46), 0.95);
+          border-top-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.3);
+        }
+
+        .dark-theme .cookie-header h3 {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .badge-essential {
+          background: linear-gradient(90deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        .dark-theme input:checked + .toggle-slider {
+          background: linear-gradient(90deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        .dark-theme .cookie-btn.accept-btn {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-sapphire));
+        }
+
+        .dark-theme .cookie-btn.accept-btn:hover {
+          background: linear-gradient(45deg, var(--ctp-sapphire), var(--ctp-sky));
+        }
+
+        /* Scroll to top button */
+        .dark-theme .scroll-to-top-btn {
+          background: linear-gradient(45deg, var(--ctp-surface0), var(--ctp-blue));
+        }
+
+        .dark-theme .scroll-to-top-btn:hover::before {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        /* Hero section */
+        .dark-theme #hero::before {
+          background: linear-gradient(to right, rgba(var(--ctp-crust-rgb, 17, 17, 27), 0.7), rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.7));
+        }
+
+        /* Other text elements */
+        .dark-theme .blog-title:hover {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .blog-card:hover .blog-read-more {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .persona:hover h3 {
+          color: var(--ctp-sky);
+        }
+
+        .dark-theme .footer-link:hover {
+          color: var(--ctp-sky);
+        }
+
+        /* Status colors - using appropriate Catppuccin colors */
+        .dark-theme .text-success {
+          color: var(--ctp-green) !important;
+        }
+
+        .dark-theme .text-danger {
+          color: var(--ctp-red) !important;
+        }
+
+        .dark-theme .text-warning {
+          color: var(--ctp-yellow) !important;
+        }
+
+        .dark-theme .text-info {
+          color: var(--ctp-sky) !important;
+        }
+
+        /* Theme toggle button */
+        .dark-active #toggle-icon {
+          background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        /* Additional styling for dark theme elements */
+        .dark-theme section::before {
+          background: radial-gradient(ellipse at center, rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.05) 0%, transparent 70%);
+        }
+
+        .dark-theme h2::after {
+          background: linear-gradient(90deg, var(--ctp-blue), var(--ctp-sapphire));
+        }
+
+        .dark-theme .persona::before {
+          background: radial-gradient(ellipse at top, rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.1), transparent 70%);
+        }
+
+        .dark-theme .persona .avatar {
+          border-color: var(--ctp-blue);
+        }
+
+        .dark-theme .persona:hover .avatar {
+          border-color: var(--ctp-sky);
+        }
+
+        .dark-theme .contact-container::before {
+          background: linear-gradient(90deg, var(--ctp-blue), var(--ctp-sky), var(--ctp-blue));
+        }
+
+        .dark-theme .blog-date {
+          border-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.3);
+        }
+
+        .dark-theme .blog-date .day {
+          color: var(--ctp-sky);
+        }
+
+        /* Modal customizations */
+        .dark-theme .modal-header {
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.8);
+          border-bottom-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+        }
+
+        .dark-theme .modal-header::after {
+          background: linear-gradient(to right, transparent, rgba(var(--ctp-sky-rgb, 137, 220, 235), 0.5), transparent);
+        }
+
+        .dark-theme .modal-content::before {
+          background: radial-gradient(ellipse at top right, rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2), transparent 70%);
+        }
+
+        .dark-theme .social-link-item:hover {
+          background-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.1);
+        }
+
+        .dark-theme .social-link-item .btn {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-surface0));
+        }
+
+        .dark-theme .social-link-item:hover .btn {
+          background: linear-gradient(45deg, var(--ctp-blue), var(--ctp-sky));
+        }
+
+        .dark-theme .modal-footer {
+          border-top-color: rgba(var(--ctp-blue-rgb, 137, 180, 250), 0.2);
+          background: rgba(var(--ctp-surface0-rgb, 49, 50, 68), 0.5);
+        }
+
+        /* Theme transition animation */
+        @keyframes themeTransition {
+          0% { opacity: 0.8; }
+          100% { opacity: 1; }
+        }
+
+        .theme-transition {
+          animation: themeTransition 0.5s ease forwards;
+        }
+
+        /* Specific animation for card hover states in dark theme */
+        .dark-theme .blog-card,
+        .dark-theme .episode-card,
+        .dark-theme .persona {
+          transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                    box-shadow 0.5s ease,
+                    border-color 0.3s ease,
+                    background 0.3s ease;
+        }
+
+        /* CSS RGB helper variables to use rgba */
+        .catppuccin-frappe, .catppuccin-macchiato, .catppuccin-mocha {
+          --ctp-base-rgb: 30, 30, 46;
+          --ctp-crust-rgb: 17, 17, 27;
+          --ctp-surface0-rgb: 49, 50, 68;
+          --ctp-surface2-rgb: 88, 91, 112;
+          --ctp-blue-rgb: 137, 180, 250;
+          --ctp-sky-rgb: 137, 220, 235;
+          --ctp-lavender-rgb: 180, 190, 254;
+        }
+
+        .catppuccin-frappe {
+          --ctp-base-rgb: 48, 52, 70;
+          --ctp-crust-rgb: 35, 38, 52;
+          --ctp-surface0-rgb: 65, 69, 89;
+          --ctp-surface2-rgb: 98, 104, 128;
+          --ctp-blue-rgb: 140, 170, 238;
+          --ctp-sky-rgb: 153, 209, 219;
+          --ctp-lavender-rgb: 186, 187, 241;
+        }
+
+        .catppuccin-macchiato {
+          --ctp-base-rgb: 36, 39, 58;
+          --ctp-crust-rgb: 24, 25, 38;
+          --ctp-surface0-rgb: 54, 58, 79;
+          --ctp-surface2-rgb: 91, 96, 120;
+          --ctp-blue-rgb: 138, 173, 244;
+          --ctp-sky-rgb: 145, 215, 227;
+          --ctp-lavender-rgb: 183, 189, 248;
+        }
+        `;
+    document.head.appendChild(darkThemeStyles);
+
+    // Create style element for toggle button
+    const toggleStyles = document.createElement('style');
+    toggleStyles.id = 'theme-toggle-styles';
+    toggleStyles.textContent = `
+        #theme-toggle-container {
+          position: fixed;
+          top: 90px;
+          right: 20px;
+          z-index: 2000;
+          display: flex;
+          align-items: center;
+          background: rgba(10, 14, 23, 0.85);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 50px;
+          padding: 6px 16px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #theme-toggle-btn {
+          background: rgba(255, 255, 255, 0.1);
+          border: none;
+          width: 48px;
+          height: 28px;
+          border-radius: 14px;
+          position: relative;
+          cursor: pointer;
+          padding: 0;
+          outline: none;
+        }
+
+        #toggle-icon {
+          position: absolute;
+          top: 2px;
+          left: 2px;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #0073e6;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+        }
+
+        .dark-active #toggle-icon {
+          left: calc(100% - 26px);
+        }
+
+        #toggle-icon .fa-sun {
+          color: white;
+          font-size: 14px;
+          opacity: 1;
+          transition: opacity 0.3s ease;
+        }
+
+        #toggle-icon .fa-moon {
+          color: white;
+          font-size: 14px;
+          opacity: 0;
+          position: absolute;
+          transition: opacity 0.3s ease;
+        }
+
+        .dark-active #toggle-icon .fa-sun {
+          opacity: 0;
+        }
+
+        .dark-active #toggle-icon .fa-moon {
+          opacity: 1;
+        }
+
+        #theme-label {
+          margin-left: 12px;
+          font-size: 14px;
+          font-weight: 500;
+          color: #e0e0e0;
+          white-space: nowrap;
+        }
+
+        @media (max-width: 767.98px) {
+          #theme-toggle-container {
+            top: auto;
+            bottom: 20px;
+            right: auto;
+            left: 20px;
+            padding: 8px;
+            border-radius: 50%;
+          }
+
+          #theme-label {
+            display: none;
+          }
+
+          #theme-toggle-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+          }
+
+          #toggle-icon {
+            top: 8px;
+            left: 8px;
+          }
+
+          .dark-active #toggle-icon {
+            left: 8px;
+          }
+        }
+        `;
+    document.head.appendChild(toggleStyles);
+
+    // Create toggle button HTML
+    const toggleContainer = document.createElement('div');
+    toggleContainer.id = 'theme-toggle-container';
+    toggleContainer.innerHTML = `
+        <button id="theme-toggle-btn">
+          <div id="toggle-icon">
+            <i class="fas fa-sun"></i>
+            <i class="fas fa-moon"></i>
+          </div>
+        </button>
+        <span id="theme-label">Light Mode</span>
+        `;
+    document.body.appendChild(toggleContainer);
+
+    // Initialize from saved preferences
+    const savedTheme = localStorage.getItem('f1stories-theme');
+    if (savedTheme === 'dark') {
+      // Get saved flavor if available
+      let savedFlavor = localStorage.getItem('f1stories-catppuccin-flavor');
+
+      // Add dark theme class
+      document.body.classList.add('dark-theme');
+      document.getElementById('theme-toggle-container').classList.add('dark-active');
+
+      // If no saved flavor, randomly select one
+      if (!savedFlavor || !['frappe', 'macchiato', 'mocha'].includes(savedFlavor)) {
+        const flavors = ['frappe', 'macchiato', 'mocha'];
+        savedFlavor = flavors[Math.floor(Math.random() * flavors.length)];
+        localStorage.setItem('f1stories-catppuccin-flavor', savedFlavor);
+      }
+
+      // Add the flavor class
+      document.body.classList.add(`catppuccin-${savedFlavor}`);
+
+      // Update the theme label
+      document.getElementById('theme-label').textContent = `Dark Mode (${savedFlavor})`;
+    }
+
+    // Add click event
+    document.getElementById('theme-toggle-btn').addEventListener('click', function() {
+      if (document.body.classList.contains('dark-theme')) {
+        disableDarkMode();
+        localStorage.setItem('f1stories-theme', 'light');
+      } else {
+        enableDarkMode();
+        localStorage.setItem('f1stories-theme', 'dark');
+      }
+    });
+
+    // Enable Dark Mode with random Catppuccin palette
+    function enableDarkMode() {
+      // Remove any existing Catppuccin flavor classes
+      document.body.classList.remove('catppuccin-frappe', 'catppuccin-macchiato', 'catppuccin-mocha');
+
+      // Add dark theme class
+      document.body.classList.add('dark-theme');
+      document.getElementById('theme-toggle-container').classList.add('dark-active');
+
+      // Randomly select a Catppuccin flavor - latte removed
+      const flavors = ['frappe', 'macchiato', 'mocha'];
+      const randomFlavor = flavors[Math.floor(Math.random() * flavors.length)];
+
+      // Add the flavor class
+      document.body.classList.add(`catppuccin-${randomFlavor}`);
+
+      // Set the theme label
+      document.getElementById('theme-label').textContent = `Dark Mode (${randomFlavor})`;
+
+      // Save the selected flavor
+      localStorage.setItem('f1stories-catppuccin-flavor', randomFlavor);
+
+      // Add a subtle transition effect when changing themes
+      document.body.classList.add('theme-transition');
+      setTimeout(() => {
+        document.body.classList.remove('theme-transition');
+      }, 500);
+    }
+
+    // Disable Dark Mode
+    function disableDarkMode() {
+      document.body.classList.remove('dark-theme');
+      document.body.classList.remove('catppuccin-frappe', 'catppuccin-macchiato', 'catppuccin-mocha');
+      document.getElementById('theme-toggle-container').classList.remove('dark-active');
+      document.getElementById('theme-label').textContent = 'Light Mode';
+
+      // Add a subtle transition effect when changing themes
+      document.body.classList.add('theme-transition');
+      setTimeout(() => {
+        document.body.classList.remove('theme-transition');
+      }, 500);
+    }
+  });
+</script>
+
+    <script>
+    // Debug helper for images
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script>
+    </body>
+</html>
