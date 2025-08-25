@@ -1,4 +1,4 @@
-/* F1 Stories Modern Dark Mode 2025 - Optimized */
+/* F1 Stories Modern Dark Mode 2025 */
 
 :root {
   /* Base Colors */
@@ -45,8 +45,14 @@ body {
   animation: streakAnimation 12s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-/* Glass Effect Base */
-.glass-effect {
+/* Enhanced Glass Effect */
+.navbar,
+.contact-container,
+.blog-card,
+.episode-card,
+.persona,
+.cookie-banner,
+.modal-content {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   background: rgba(10, 14, 23, 0.85);
@@ -55,29 +61,18 @@ body {
   border-radius: 12px;
 }
 
-.navbar, .contact-container, .blog-card, .episode-card, .persona, .cookie-banner, .modal-content {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  background: rgba(10, 14, 23, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: var(--shadow-md);
-  border-radius: 12px;
-}
-
-/* Card Hover Effects */
-.card-hover {
+/* Modern Card Hover Effects */
+.blog-card,
+.episode-card,
+.persona {
   transition: all var(--transition-slow);
   position: relative;
   overflow: hidden;
 }
 
-.blog-card, .episode-card, .persona {
-  transition: all var(--transition-slow);
-  position: relative;
-  overflow: hidden;
-}
-
-.blog-card:hover, .episode-card:hover, .persona:hover {
+.blog-card:hover,
+.episode-card:hover,
+.persona:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-lg);
   border-color: rgba(0, 136, 255, 0.2);
@@ -85,7 +80,9 @@ body {
 }
 
 /* Enhanced hover light effect */
-.hover-light::after {
+.blog-card::after,
+.episode-card::after,
+.persona::after {
   content: '';
   position: absolute;
   top: 0;
@@ -97,23 +94,13 @@ body {
   transition: opacity var(--transition-medium);
 }
 
-.blog-card::after, .episode-card::after, .persona::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--gradient-primary);
-  opacity: 0;
-  transition: opacity var(--transition-medium);
-}
-
-.blog-card:hover::after, .episode-card:hover::after, .persona:hover::after {
+.blog-card:hover::after,
+.episode-card:hover::after,
+.persona:hover::after {
   opacity: 1;
 }
 
-/* Typography */
+/* Enhanced Typography */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -473,7 +460,8 @@ footer {
   transition: width var(--transition-medium);
 }
 
-.blog-card:hover .blog-title::after, .episode-card:hover .video-title::after {
+.blog-card:hover .blog-title::after,
+.episode-card:hover .video-title::after {
   width: 100%;
 }
 
@@ -503,17 +491,11 @@ footer {
   transform: translateY(0);
 }
 
-/* Add support for system dark mode preference */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --dark-bg: #0a0e17;
-    --dark-surface: #111927;
-  }
-}
-
 /* Media queries adjustments */
 @media (max-width: 991.98px) {
-  h1 { font-size: 2.75rem; }
+  h1 {
+    font-size: 2.75rem;
+  }
   
   .navbar-collapse {
     background: rgba(10, 14, 23, 0.95);
@@ -528,10 +510,99 @@ footer {
     transition: transform var(--transition-fast);
   }
   
-  .navbar-toggler:focus { box-shadow: none; }
-  .navbar-toggler:active { transform: scale(0.95); }
+  .navbar-toggler:focus {
+    box-shadow: none;
+  }
   
-  .dropdown-item { padding: 0.75rem 1rem; }
+  .navbar-toggler:active {
+    transform: scale(0.95);
+  }
+}
+
+@media (max-width: 767.98px) {
+  h1 {
+    font-size: 2.25rem;
+  }
+  
+  h2 {
+    font-size: 1.75rem;
+  }
+  
+  #hero {
+    min-height: 60vh;
+    padding: 6rem 0;
+  }
+  
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero-content p {
+    font-size: 1.25rem;
+  }
+  
+  .cta-button {
+    padding: 0.6rem 1.5rem;
+  }
+  
+  .social-media a {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+  
+  .hero-content p {
+    font-size: 1rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  .cookie-banner {
+    max-height: 85vh;
+  }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .social-media a {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+/* Add a subtle floating animation for cards */
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.blog-card:hover,
+.episode-card:hover,
+.persona:hover {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Enhancing the mobile menu for better touch interactions */
+@media (max-width: 991.98px) {
+  .dropdown-item {
+    padding: 0.75rem 1rem;
+  }
   
   .navbar-nav .nav-link {
     padding: 0.75rem 1rem;
@@ -549,118 +620,10 @@ footer {
   }
 }
 
-@media (max-width: 767.98px) {
-  h1 { font-size: 2.25rem; }
-  h2 { font-size: 1.75rem; }
-  
-  #hero {
-    min-height: 60vh;
-    padding: 6rem 0;
+/* Add support for system dark mode preference */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --dark-bg: #0a0e17;
+    --dark-surface: #111927;
   }
-  
-  .hero-content h1 { font-size: 2.5rem; }
-  .hero-content p { font-size: 1.25rem; }
-  
-  .cta-button { padding: 0.6rem 1.5rem; }
-  
-  .social-media a {
-    width: 38px;
-    height: 38px;
-  }
-  
-  .blog-card:hover, .episode-card:hover, .persona:hover {
-    animation: float 3s ease-in-out infinite;
-  }
-  
-  .social-media a {
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    font-size: 1.3rem;
-  }
-  
-  .scroll-to-top-btn {
-    width: 45px;
-    height: 45px;
-    bottom: 15px;
-    right: 15px;
-  }
-  
-  .blog-read-more {
-    padding: 0.5rem 0;
-    display: inline-block;
-  }
-  
-  .container { overflow-x: hidden; }
-  
-  h1, h2, h3, p, .blog-title {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-  }
-  
-  pre, code {
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-  
-  body { padding-bottom: 60px; }
-  
-  .fixed-top { position: absolute; }
-  
-  .modal-dialog {
-    margin: 0.5rem;
-    max-width: calc(100% - 1rem);
-  }
-  
-  .spinner-border {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
-  
-  body {
-    font-size: 15px;
-    line-height: 1.6;
-  }
-  
-  .blog-excerpt {
-    font-size: 0.85rem;
-    line-height: 1.5;
-    -webkit-line-clamp: 2;
-  }
-}
-
-@media (max-width: 575.98px) {
-  .hero-content h1 { font-size: 2rem; }
-  .hero-content p { font-size: 1rem; }
-  
-  h2 { font-size: 1.5rem; }
-  
-  .cookie-banner { max-height: 85vh; }
-  
-  .footer-links {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  
-  .social-media a {
-    width: 35px;
-    height: 35px;
-  }
-}
-
-/* Add a subtle floating animation for cards */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-
-/* Better image loading on mobile */
-.blog-img, .avatar {
-  will-change: transform;
-  transform: translateZ(0);
-}
-
-/* Add fast-tap for mobile - removes 300ms delay */
-a, button, .cta-button, .nav-link {
-  touch-action: manipulation;
 }
