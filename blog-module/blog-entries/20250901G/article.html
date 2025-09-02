@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ο Piastri Κατακτά το Zandvoort, η McLaren Θριαμβεύει στο Πορτοκαλί Χάος 🇳🇱🏆 | F1 Stories Blog</title>
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="Ο Piastri Κατακτά το Zandvoort, η McLaren Θριαμβεύει στο Πορτοκαλί Χάος 🇳🇱🏆 | F1 Stories Blog">
+  <meta property="og:description" content="🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈">
+  <meta property="og:image" content="2.webp">
+  <meta property="og:url" content="https://f1stories.gr/blog-module/blog-entries/20250901G/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
+  <style>
+    /* YouTube embed container for responsive videos */
+    .youtube-embed-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+      margin: 2rem 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .youtube-embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+    }
+
+    .video-caption {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/blog-module/blog-styles.css">
+  <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-X68J6MQKSM');
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the meta description tag
+      const metaDescription = document.querySelector('meta[property="og:description"]');
+
+      // Get the article content for calculating reading time
+      const articleContent = document.querySelector('.article-content');
+
+      if (metaDescription && articleContent) {
+        // Calculate reading time
+        const text = articleContent.textContent || articleContent.innerText;
+        const wordCount = text.trim().split(/\s+/).length;
+
+        // Average reading speed: 200 words per minute
+        const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
+        // Update meta description with reading time
+        metaDescription.setAttribute('content', `A ${readingTimeMinutes} minute read on F1 Stories Blog`);
+
+        // Also update the reading time element in the article if it exists
+        const readingTimeElement = document.getElementById('reading-time-value');
+        if (readingTimeElement) {
+          readingTimeElement.textContent = `${readingTimeMinutes} min read`;
+        }
+      } else {
+        // Fallback description if article content is not found
+        if (metaDescription) {
+          metaDescription.setAttribute('content', '🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈');
+        }
+      }
+    });
+  </script>
+
+</head>
+<body>
+<div class="background"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
+
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy">
+      </a>
+      <div class="race-countdown-container">
+        <div class="race-countdown">
+          <div class="race-flag">
+            <span id="race-flag-emoji">🏁</span>
+          </div>
+          <div class="race-info">
+            <span class="next-race-name" id="next-race-name">Loading...</span>
+            <div class="countdown-timer" id="race-countdown">--</div>
+          </div>
+        </div>
+        <!-- Mobile version - visible only on small screens -->
+        <div class="race-countdown-mobile">
+          <i class="fas fa-flag-checkered"></i>
+          <span id="race-countdown-mobile">--</span>
+        </div>
+      </div>
+      <button class="navbar-toggler" type="button" id="mobile-toggler">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <!-- Home -->
+          <li class="nav-item">
+            <a class="nav-link" href="/" id="home-link">Home</a>
+          </li>
+
+          <!-- Podcast dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">
+              Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+              <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
+              <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+            </ul>
+          </li>
+
+          <!-- Stories & Media dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
+              Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
+              <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+              <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+            </ul>
+          </li>
+
+          <!-- About dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
+              About <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/#about">About Us</a></li>
+              <li><a class="dropdown-item" href="/#guests">Guests</a></li>
+              <li><a class="dropdown-item" href="/#contact">Contact</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="py-5 mt-5">
+  <div class="container">
+    <!-- Back to Blog Button -->
+    <div class="text-start mb-4">
+      <a href="/blog-module/blog/index.html" class="btn btn-outline-light">
+        <i class="fas fa-arrow-left me-2"></i> Back to Blog
+      </a>
+    </div>
+
+    <div class="article-container">
+      <div class="article-header">
+        <!-- Images are local to the article folder -->
+        <img src="2.webp" alt="Ο Piastri Κατακτά το Zandvoort, η McLaren Θριαμβεύει στο Πορτοκαλί Χάος 🇳🇱🏆" class="article-header-img" loading="lazy" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <div class="article-header-overlay">
+          <h1 class="article-title">Ο Piastri Κατακτά το Zandvoort, η McLaren Θριαμβεύει στο Πορτοκαλί Χάος 🇳🇱🏆</h1>
+          <div class="article-meta">
+            <span><i class="fas fa-calendar"></i> September 1, 2025</span>
+            <span><i class="fas fa-tag"></i> GP</span>
+            <span><i class="fas fa-folder"></i> 2025</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add social sharing bar here -->
+      <!-- Updated Social Share Bar -->
+      <div class="social-share-bar">
+        <div class="share-label">
+          <i class="fas fa-share-alt"></i>
+          <span>Share this article:</span>
+        </div>
+        <div class="share-buttons">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://f1stories.gr/blog-module/blog-entries/20250901G/article.html" target="_blank" class="share-btn facebook" aria-label="Share on Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://www.addtoany.com/add_to/threads?linkurl=https://f1stories.gr/blog-module/blog-entries/20250901G/article.html&linkname=Ο Piastri Κατακτά το Zandvoort, η McLaren Θριαμβεύει στο Πορτοκαλί Χάος 🇳🇱🏆" target="_blank" class="share-btn threads" aria-label="Share on Threads">
+            <i class="fab fa-threads"></i>
+          </a>
+          <button id="instagram-dm-btn" class="share-btn instagram" aria-label="Share via Instagram DM">
+            <i class="fab fa-instagram"></i>
+          </button>
+          <a href="https://api.whatsapp.com/send?text=Ο Piastri Κατακτά το Zandvoort, η McLaren Θριαμβεύει στο Πορτοκαλί Χάος 🇳🇱🏆%20https://f1stories.gr/blog-module/blog-entries/20250901G/article.html" target="_blank" class="share-btn whatsapp" aria-label="Share on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+          <a href="https://t.me/share/url?url=https://f1stories.gr/blog-module/blog-entries/20250901G/article.html&text=Ο Piastri Κατακτά το Zandvoort, η McLaren Θριαμβεύει στο Πορτοκαλί Χάος 🇳🇱🏆" target="_blank" class="share-btn telegram" aria-label="Share on Telegram">
+            <i class="fab fa-telegram-plane"></i>
+          </a>
+          <button id="web-share-btn" class="share-btn web-share" aria-label="Share on installed apps">
+            <i class="fas fa-share-nodes"></i>
+          </button>
+          <button class="share-btn copy-link" id="copy-link-btn" aria-label="Copy link">
+            <i class="fas fa-link"></i>
+          </button>
+        </div>
+      </div>
+
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <!-- Add this for a more F1-style header -->
+        <div class="tts-header">
+          <i class="fas fa-headphones-alt"></i>
+          <span>🏁 RACE RADIO - Ακούστε το Άρθρο</span>
+          <div class="tts-live-indicator"></div>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Φωνή/Voice:</label>
+            <select id="tts-voice">
+              <option value="">Αυτόματη/Auto</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Έτοιμο για ανάγνωση</div>
+        </div>
+      </div>
+
+
+      <div class="article-content">
+        <!-- Article content goes here -->
+        <p></p><h1>Ο Piastri Κατακτά το Zandvoort, η McLaren Θριαμβεύει στο Πορτοκαλί Χάος 🇳🇱🏆</h1><p>Από τον Ειδικό Αναλυτή F1 του f1stories.gr</p><h2>Η Πορτοκαλί Πλημμύρα</h2><p>Υπάρχουν Grand Prix, και υπάρχει το Zandvoort. Δεν είναι απλώς ένας αγώνας, είναι ένα πολιτισμικό φαινόμενο, μια εθνική γιορτή βαμμένη στο πορτοκαλί, όπου ο ήχος των κινητήρων αναμειγνύεται με τους ρυθμούς των DJ και ο αέρας μυρίζει αλάτι από τη Βόρεια Θάλασσα και καπνό από τα βεγγαλικά της «Πορτοκαλιάς Στρατιάς». Με 105.000 παθιασμένους οπαδούς να μετατρέπουν τις κερκίδες σε ένα ζωντανό, παλλόμενο ηφαίστειο, η ατμόσφαιρα θυμίζει περισσότερο ένα τεράστιο υπαίθριο φεστιβάλ παρά έναν αγώνα της Formula 1.</p><p>Όμως, κάτω από αυτή την εκκωφαντική γιορτή, κρύβεται μια από τις πιο αδυσώπητες και απαιτητικές προκλήσεις του πρωταθλήματος. Η πίστα του Zandvoort είναι ένας πραγματικός δαίμονας της «παλιάς σχολής» (“old-school”). Μια ασφάλτινη κορδέλα 4.259 χιλιομέτρων που ελίσσεται σαν τρενάκι του λούνα παρκ μέσα στους αμμόλοφους της ολλανδικής ακτής, με δραματικές υψομετρικές διαφορές και 14 στροφές που δεν συγχωρούν το παραμικρό λάθος. Εδώ δεν υπάρχουν ατελείωτες ασφάλτινες ζώνες διαφυγής. Υπάρχουν μόνο αμμοπαγίδες που περιμένουν να καταπιούν όποιον ξεπεράσει τα όρια, μετατρέποντας μια μικρή αβλεψία σε άμεση καταστροφή.<sup> </sup>Αυτή η αντίθεση, ανάμεσα στο καρναβαλικό πνεύμα των κερκίδων και τη βίαιη πραγματικότητα της πίστας, είναι που κάνει το Ολλανδικό Grand Prix μοναδικό.</p><p>Σε αυτό το θέατρο των αντιθέσεων, το Παγκόσμιο Πρωτάθλημα του 2025 έφτασε σε ένα από τα πιο κρίσιμα σταυροδρόμια του. Η «μάχη της παπάγιας», ο εμφύλιος πόλεμος εντός των τειχών της McLaren, είχε φτάσει σε οριακό σημείο. Μετά την επική του νίκη στο χάος της βροχής στο Spa, ο Oscar Piastri έφτασε στην Ολλανδία με ένα διευρυμένο, αλλά ακόμα εύθραυστο, προβάδισμα 16 βαθμών από τον teammate του, Lando Norris. Το Zandvoort δεν ήταν απλώς ο επόμενος σταθμός, αλλά το πεδίο μάχης όπου η ψυχολογική ορμή του πρωταθλήματος θα άλλαζε χέρια ή θα εδραιωνόταν οριστικά.</p><p>Και ο μεγάλος ρυθμιστής αυτής της μάχης δεν θα ήταν άλλος από τον ίδιο τον χαρακτήρα της πίστας. Οι δύο εμβληματικές κεκλιμένες στροφές της, η Hugenholtzbocht (Στροφή 3) και η Arie Luyendykbocht (Στροφή 14), είναι κάτι περισσότερο από αρχιτεκτονικά θαύματα. Είναι τσιμεντένιες δίνες με κλίση που φτάνει τις 18 μοίρες, σχεδόν διπλάσια από αυτή της Ινδιανάπολης, οι οποίες υποβάλλουν τα μονοθέσια και τους οδηγούς σε τεράστιες, παρατεταμένες πλευρικές επιταχύνσεις που πλησιάζουν τα 6G. Αυτές οι στροφές αναγκάζουν τις ομάδες σε έναν τεχνικό γρίφο, απαιτώντας ένα στήσιμο-συμβιβασμό που θα αντέξει τις ακραίες μηχανικές καταπονήσεις, δοκιμάζοντας την αντοχή των αναρτήσεων και των ελαστικών στα απόλυτα όριά τους. Η πίστα του Zandvoort δεν είναι απλώς ένας παθητικός χώρος διεξαγωγής του αγώνα· είναι ένας ενεργός πρωταγωνιστής, ένας αρχαίος θεός της ταχύτητας που απαιτεί σεβασμό και τιμωρεί την ύβρη.</p><h2>Η Μάχη του Απόλυτου Γύρου: Ο Piastri Γράφει Ιστορία</h2><p>Ένας γρήγορος γύρος στο Zandvoort είναι σαν μια χορογραφία ακριβείας. Είναι ένας συνεχής, αδιάκοπος ρυθμός, μια ροή από τη μία στροφή στην άλλη που απαιτεί απόλυτη δέσμευση και αυτοπεποίθηση. Ο οδηγός πρέπει να είναι γενναίος στις γρήγορες καμπές όπως η Scheivlak, χειρουργικός στα τεχνικά κομμάτια και, πάνω απ' όλα, ατρόμητος στις κεκλιμένες στροφές, όπου «ολόκληρος ο ορίζοντας γέρνει» και η αντίληψη του χώρου διαστρεβλώνεται. Σε μια τόσο στενή και απαιτητική πίστα, όπου οι ευκαιρίες για προσπέραση είναι ελάχιστες και πολύτιμες, η pole position δεν είναι απλώς ένα πλεονέκτημα· είναι ένας στρατηγικός πνιγμός για τους αντιπάλους. Το να ξεκινάς πρώτος εδώ ισοδυναμεί με το να ελέγχεις το 80% της μοίρας σου στον αγώνα.</p><p>Το απόγευμα του Σαββάτου, ο Oscar Piastri δεν κατέκτησε απλώς την pole position. Έγραψε ιστορία. Με έναν γύρο που άγγιξε την τελειότητα, ο Αυστραλός σταμάτησε το χρονόμετρο στο 1:08.662, καταρρίπτοντας το προηγούμενο ρεκόρ πίστας και σημειώνοντας τον ταχύτερο γύρο που έχει γίνει ποτέ στο Zandvoort. Ήταν μια εκκωφαντική απάντηση στην πίεση του πρωταθλήματος και μια σαφής δήλωση κυριαρχίας προς τον teammate και βασικό του αντίπαλο, Lando Norris. Κάθε χιλιοστό της πίστας χρησιμοποιήθηκε στο έπακρο, κάθε σημείο φρεναρίσματος ήταν τέλειο, κάθε έξοδος από στροφή ήταν βελτιστοποιημένη. Ήταν η πέμπτη pole position της καριέρας του, αλλά ίσως η πιο σημαντική.</p><p>Η επίδειξη δύναμης του Piastri έθεσε τον τόνο για την Κυριακή. Πίσω του, το grid πήρε σχήμα για μια εκρηκτική εκκίνηση. Ο Lando Norris εξασφάλισε τη δεύτερη θέση, δημιουργώντας μια πρώτη σειρά βαμμένη εξ ολοκλήρου στα χρώματα της παπάγιας. Ο τοπικός ήρωας, Max Verstappen, έφερε τη Red Bull του στην τρίτη θέση, έτοιμος να εκμεταλλευτεί την παραμικρή ευκαιρία μπροστά στο παθιασμένο κοινό του. Οι Charles Leclerc (Ferrari) και George Russell (Mercedes) συμπλήρωσαν την πρώτη πεντάδα, ενώ ο Lewis Hamilton, σε ένα δύσκολο Σαββατοκύριακο για τη Ferrari, βρέθηκε πιο πίσω, προετοιμάζοντας το έδαφος για έναν αγώνα γεμάτο στρατηγικές προκλήσεις και μάχες σώμα με σώμα.</p><h2>Grand Prix Κυριακής: Θρίαμβος, Καρδιοχτύπι και Δράμα στην Ολλανδική Άμμο</h2><h3>Η Εκκίνηση και η Μάχη της Tarzanbocht</h3><p>Η Κυριακή ξημέρωσε με τον ουρανό να είναι καλυμμένος από πορτοκαλί καπνό και τις κερκίδες να δονούνται από την προσμονή. Όταν τα πέντε κόκκινα φώτα έσβησαν, ο Max Verstappen, με την υποστήριξη 105.000 συμπατριωτών του, εξαπέλυσε μια αστραπιαία επίθεση. Ξεκινώντας με την πιο μαλακή γόμα ελαστικών, μια επιθετική στρατηγική επιλογή, βούτηξε στην εσωτερική του Lando Norris καθώς τα μονοθέσια όρμησαν προς την πρώτη στροφή, την θρυλική Tarzanbocht. Με μια κίνηση που απαιτούσε απόλυτη ακρίβεια και τόλμη, ο Ολλανδός φρέναρε αργότερα, ανάγκασε τον Norris να ανοίξει τη γραμμή του και άρπαξε τη δεύτερη θέση πίσω από τον Piastri, στέλνοντας το πλήθος σε παραλήρημα. </p><h3>Χάος στο Μεσοδιάστημα: Επαφές και Εγκαταλείψεις</h3><p>Καθώς ο αγώνας εξελισσόταν, η πίστα του Zandvoort άρχισε να αποκαλύπτει τον πραγματικό, βίαιο χαρακτήρα της, μετατρεπόμενη σε έναν ενεργό παράγοντα χάους. Η στενή της φύση και οι ελάχιστες ευκαιρίες για προσπέραση οδήγησαν σε μια σειρά από δραματικά και αμφιλεγόμενα περιστατικά.</p><p>Η πιο έντονη στιγμή ήρθε στη μάχη μεταξύ του Charles Leclerc και του George Russell. Ο οδηγός της Ferrari, σε μια επίδειξη απόλυτης επιθετικότητας, επιχείρησε μια προσπέραση από την εξωτερική. Η μονομαχία τους κορυφώθηκε όταν ο Leclerc, αρνούμενος να υποχωρήσει, πέρασε μέσα από την αμμοπαγίδα, ήρθε σε επαφή με τη Mercedes του Russell και πήρε τη θέση. Ο Russell εξερράγη στον ασύρματο, δηλώνοντας ότι η κίνηση του Μονεγάσκου «κατέστρεψε» τον αγώνα του, καθώς η επαφή του προκάλεσε σημαντική αεροδυναμική ζημιά. Παρά τις διαμαρτυρίες, οι αγωνοδίκες έκριναν το περιστατικό ως αγωνιστικό συμβάν, μια απόφαση που προκάλεσε έντονες συζητήσεις.</p><p>Λίγο αργότερα, το δράμα χτύπησε ξανά, αυτή τη φορά με πρωταγωνιστή έναν επτά φορές παγκόσμιο πρωταθλητή. Ο Lewis Hamilton, στην προσπάθειά του να ανακάμψει από μια δύσκολη θέση εκκίνησης, έκανε ένα σπάνιο, ασυνήθιστο λάθος. Έχασε τον έλεγχο της Ferrari του και κατέληξε στις μπαριέρες, σηματοδοτώντας την πρώτη του εγκατάλειψη ως οδηγός της Scuderia και ένα σοκαριστικό τέλος στον αγώνα του. Η εικόνα της κόκκινης Ferrari ακινητοποιημένης στις μπαριέρες ήταν μια ισχυρή υπενθύμιση του πόσο εύκολα το Zandvoort τιμωρεί ακόμα και τους σπουδαιότερους. Το χάος συνεχίστηκε και πιο πίσω, με τον Carlos Sainz να δέχεται ποινή 10 δευτερολέπτων για μια επαφή με τον Liam Lawson, σε μια ακόμα απόδειξη της έντασης που επικρατούσε σε κάθε γωνιά της πίστας.</p><h3>Η Τραγωδία του Norris</h3><p>Ενώ ο Piastri οδηγούσε με ψυχραιμία και έλεγχο στην κορυφή, ο Lando Norris είχε ανακάμψει από τη δύσκολη εκκίνηση και πίεζε ασφυκτικά τον Max Verstappen για τη δεύτερη θέση. Ο Βρετανός έδειχνε ταχύτερος και η κατάκτησή του φαινόταν θέμα χρόνου, κάτι που θα περιόριζε τη ζημιά στο πρωτάθλημα και θα τον κρατούσε ζωντανό στη μάχη του τίτλου. Και τότε, η καταστροφή.</p><p>Ξαφνικά, λευκός καπνός άρχισε να βγαίνει από το πίσω μέρος της McLaren του. Ο κινητήρας της Mercedes είχε παραδώσει το πνεύμα. Ο Norris αναγκάστηκε να παρκάρει το μονοθέσιό του στην άκρη της πίστας, παρακολουθώντας ανήμπορος τους αντιπάλους του να περνούν. Ήταν μια εικόνα απόλυτης απογοήτευσης και το σημείο καμπής, όχι μόνο του αγώνα, αλλά ίσως και ολόκληρου του πρωταθλήματος. Οι 18 βαθμοί της δεύτερης θέσης έγιναν μηδέν. Η ελπίδα μετατράπηκε σε απόγνωση. Ήταν η στιγμή που η «μάχη της παπάγιας» έγειρε αποφασιστικά προς μία πλευρά.</p><h3>Η Καθαίρεση και η Έκπληξη του Βάθρου</h3><p>Μέσα σε αυτό το σκηνικό χάους, λαθών και μηχανικών αστοχιών, η εμφάνιση του Oscar Piastri ήταν μια όαση ψυχραιμίας και τελειότητας. Ο Αυστραλός οδήγησε έναν αλάνθαστο αγώνα από την αρχή μέχρι το τέλος, διαχειριζόμενος τα ελαστικά του, τον ρυθμό του και την πίεση με ωριμότητα βετεράνου. Πέρασε τη γραμμή του τερματισμού για να κατακτήσει την έβδομη νίκη του στη σεζόν, ολοκληρώνοντας ένα τέλειο Σαββατοκύριακο. Η νίκη του δεν ήταν απλώς αποτέλεσμα της ταχύτητάς του, αλλά και της ικανότητάς του να παραμείνει ανεπηρέαστος από το δράμα που εκτυλισσόταν γύρω του.</p><p>Πίσω του, η μεγαλύτερη έκπληξη της ημέρας ερχόταν από τον rookie της Racing Bulls, Isack Hadjar. Ο νεαρός Γάλλος, εκμεταλλευόμενος τις εγκαταλείψεις και οδηγώντας με αξιοσημείωτη ωριμότητα, κατάφερε να φέρει το μονοθέσιό του στην τρίτη θέση, εξασφαλίζοντας το πρώτο του βάθρο στην καριέρα του στη Formula 1. Σε ηλικία μόλις 20 ετών, έγινε ένας από τους νεότερους οδηγούς στην ιστορία του αθλήματος που ανεβαίνει στο βάθρο, σε μια εμφάνιση που υποσχόταν πολλά για το μέλλον. Η αντίθεση ήταν εντυπωσιακή: την ίδια μέρα που έμπειρος πρωταθλητής Hamilton όπως και ο Leclerc (ο οποίος επίσης εγκατέλειψε αργότερα μετά από επαφή) έκαναν λάθη, οι νέοι αστέρες, Piastri και Hadjar, έλαμψαν, ίσως σηματοδοτώντας μια συμβολική αλλαγή φρουράς.</p><h2>Η Επόμενη Μέρα: Ανάλυση και Νέα Τάξη Πραγμάτων</h2><p>Η εμφάνιση του Oscar Piastri στο Zandvoort δεν ήταν απλώς μια νίκη. Ήταν μια απόλυτη καθαίρεση, μια εμφάνιση που στη Formula 1 ονομάζεται "Grand Chelem" (ή Grand Slam): pole position, ταχύτερος γύρος, νίκη και πρωτοπορία σε κάθε γύρο του αγώνα. Είναι η απόλυτη δήλωση κυριαρχίας, ένα κατόρθωμα που δείχνει όχι μόνο ταχύτητα, αλλά και αψεγάδιαστο έλεγχο και στρατηγική τελειότητα. Σε ένα Σαββατοκύριακο όπου ο βασικός του αντίπαλος, Lando Norris, υπέστη μια συντριπτική μηχανική βλάβη, η ψυχρή και μεθοδική επικράτηση του Piastri ήταν ένα διπλό χτύπημα: ένα πλήγμα βαθμολογικό και κυρίως ψυχολογικό.</p><p>Η βαθμολογική εικόνα του πρωταθλήματος μεταμορφώθηκε δραματικά μετά την καρό σημαία. Το προβάδισμα των 16 βαθμών του Piastri εκτοξεύτηκε σε μια κυριαρχική διαφορά 42 βαθμών. Αυτή δεν είναι απλώς μια αύξηση· είναι μια μετατόπιση που αλλάζει ριζικά τη δυναμική της μάχης για τον τίτλο. Ο Piastri δεν είναι πλέον απλώς ο πρωτοπόρος, αλλά το αδιαφιλονίκητο φαβορί. Για τον Norris, η πρόκληση είναι πλέον τεράστια. Πρέπει όχι μόνο να καλύψει ένα σημαντικό βαθμολογικό χάντικαπ, αλλά και να ανακάμψει από την ψυχολογική συντριβή μιας σχεδόν σίγουρης δεύτερης θέσης που χάθηκε από καθαρή ατυχία.</p><p>Για τις υπόλοιπες ομάδες, το Ολλανδικό Grand Prix ήταν μια ιστορία χαμένων ευκαιριών και καταστροφής. Η Ferrari έζησε τον απόλυτο εφιάλτη με μια διπλή εγκατάλειψη, χάνοντας πολύτιμο έδαφος στη μάχη των κατασκευαστών. Η Mercedes, παρά την τέταρτη θέση του Russell, δεν κατάφερε να κεφαλαιοποιήσει το χάος, με τον Βρετανό να παλεύει με ένα χτυπημένο μονοθέσιο. Αντίθετα, ομάδες όπως η Williams, με την εξαιρετική πέμπτη θέση του Alex Albon, και η Racing Bulls, με το ιστορικό βάθρο του Hadjar, έφυγαν από την Ολλανδία ως οι μεγάλοι κερδισμένοι της ημέρας.</p><h3>Τελικά Αποτελέσματα - Grand Prix Ολλανδίας 2025</h3><table><thead><tr><th><p>Θέση</p></th><th><p>Οδηγός</p></th><th><p>Ομάδα</p></th><th><p>Βαθμοί</p></th></tr><tr><th><p>1</p></th><th><p>Oscar Piastri</p></th><th><p>McLaren</p></th><th><p>26</p></th></tr><tr><th><p>2</p></th><th><p>Max Verstappen</p></th><th><p>Red Bull Racing</p></th><th><p>18</p></th></tr><tr><th><p>3</p></th><th><p>Isack Hadjar</p></th><th><p>Racing Bulls</p></th><th><p>15</p></th></tr><tr><th><p>4</p></th><th><p>George Russell</p></th><th><p>Mercedes</p></th><th><p>12</p></th></tr><tr><th><p>5</p></th><th><p>Alexander Albon</p></th><th><p>Williams</p></th><th><p>10</p></th></tr><tr><th><p>6</p></th><th><p>Pierre Gasly</p></th><th><p>Alpine</p></th><th><p>8</p></th></tr><tr><th><p>7</p></th><th><p>Yuki Tsunoda</p></th><th><p>Red Bull Racing</p></th><th><p>6</p></th></tr><tr><th><p>8</p></th><th><p>Gabriel Bortoleto</p></th><th><p>Kick Sauber</p></th><th><p>4</p></th></tr><tr><th><p>9</p></th><th><p>Lance Stroll</p></th><th><p>Aston Martin</p></th><th><p>2</p></th></tr><tr><th><p>10</p></th><th><p>Esteban Ocon</p></th><th><p>Haas</p></th><th><p>1</p></th></tr></thead></table><h3>Ενημερωμένη Βαθμολογία Οδηγών</h3><table><thead><tr><th><p>Θέση</p></th><th><p>Οδηγός</p></th><th><p>Βαθμοί</p></th><th><p>Διαφορά από Πρωτοπόρο</p></th></tr><tr><th><p>1</p></th><th><p>Oscar Piastri</p></th><th><p>292</p></th><th><p>-</p></th></tr><tr><th><p>2</p></th><th><p>Lando Norris</p></th><th><p>250</p></th><th><p>-42</p></th></tr><tr><th><p>3</p></th><th><p>Max Verstappen</p></th><th><p>203</p></th><th><p>-89</p></th></tr><tr><th><p>4</p></th><th><p>George Russell</p></th><th><p>169</p></th><th><p>-123</p></th></tr><tr><th><p>5</p></th><th><p>Charles Leclerc</p></th><th><p>139</p></th><th><p>-153</p></th></tr><tr><th><p>6</p></th><th><p>Lewis Hamilton</p></th><th><p>109</p></th><th><p>-183</p></th></tr><tr><th><p>7</p></th><th><p>Alexander Albon</p></th><th><p>64</p></th><th><p>-228</p></th></tr><tr><th><p>8</p></th><th><p>Kimi Antonelli</p></th><th><p>63</p></th><th><p>-229</p></th></tr><tr><th><p>9</p></th><th><p>Isack Hadjar</p></th><th><p>56</p></th><th><p>-236</p></th></tr><tr><th><p>10</p></th><th><p>Nico Hulkenberg</p></th><th><p>37</p></th><th><p>-255</p></th></tr></thead></table><h3>Ενημερωμένη Βαθμολογία Κατασκευαστών</h3><table><thead><tr><th><p>Θέση</p></th><th><p>Ομάδα</p></th><th><p>Βαθμοί</p></th></tr><tr><th><p>1</p></th><th><p>McLaren</p></th><th><p>542</p></th></tr><tr><th><p>2</p></th><th><p>Ferrari</p></th><th><p>248</p></th></tr><tr><th><p>3</p></th><th><p>Mercedes</p></th><th><p>232</p></th></tr><tr><th><p>4</p></th><th><p>Red Bull Racing</p></th><th><p>209</p></th></tr><tr><th><p>5</p></th><th><p>Williams</p></th><th><p>80</p></th></tr><tr><th><p>6</p></th><th><p>Racing Bulls</p></th><th><p>56</p></th></tr><tr><th><p>7</p></th><th><p>Kick Sauber</p></th><th><p>47</p></th></tr><tr><th><p>8</p></th><th><p>Aston Martin</p></th><th><p>38</p></th></tr><tr><th><p>9</p></th><th><p>Haas</p></th><th><p>36</p></th></tr><tr><th><p>10</p></th><th><p>Alpine</p></th><th><p>28</p></th></tr></thead></table><h2>Συμπέρασμα: Μια σημαντική Νίκη</h2><p>Το Grand Prix της Ολλανδίας του 2025 θα μείνει στην ιστορία ως κάτι περισσότερο από έναν απλό αγώνα. Ήταν ένα Σαββατοκύριακο-ορόσημο, ένα σημείο καμπής που επαναπροσδιόρισε την αφήγηση του πρωταθλήματος. Η νίκη του Oscar Piastri δεν ήταν απλώς μια συλλογή βαθμών· ήταν μια δήλωση προθέσεων, μια επίδειξη δύναμης στην πιο εχθρική ατμόσφαιρα, μια απόδειξη ότι διαθέτει όχι μόνο την ταχύτητα ενός πρωταθλητή, αλλά και την ατσάλινη ψυχραιμία που απαιτείται για να κατακτήσει τον τίτλο.</p><p>Στην καρδιά της «Πορτοκαλιάς Αυτοκρατορίας», σε μια πίστα που σχεδιάστηκε για να προκαλεί χάος και να τιμωρεί τα λάθη, ο Piastri ήταν άψογος. Αντιμετώπισε την αφόρητη πίεση, την ένταση της μάχης του τίτλου και έναν αντίπαλο που βρισκόταν σε απόσταση αναπνοής, και όχι απλώς επιβίωσε, αλλά κυριάρχησε απόλυτα. Την ίδια στιγμή, η μοίρα έδειξε το σκληρό της πρόσωπο στον Lando Norris, του οποίου η προσπάθεια προδόθηκε από τη μηχανική του ατυχία.</p><p>Η αυλαία πέφτει στο Zandvoort, αφήνοντας πίσω της μια νέα πραγματικότητα. Η «μάχη της παπάγιας», που μέχρι πρότινος ήταν μια αμφίρροπη μονομαχία, έχει πλέον ένα ξεκάθαρο φαβορί και έναν διώκτη που καλείται να κάνει μια ηρωική υπέρβαση. Το ερώτημα που πλανάται πλέον πάνω από το paddock δεν είναι ποιος από τους δύο είναι ταχύτερος, αλλά αν ο Lando Norris έχει την ψυχική και αγωνιστική αντοχή να ανακάμψει από ένα τόσο συντριπτικό πλήγμα. Το Ολλανδικό Grand Prix δεν έδωσε απλώς έναν νικητή· ίσως να έστεψε, ανεπίσημα, τον επόμενο παγκόσμιο πρωταθλητή. Η παράσταση συνεχίζεται, αλλά το σενάριο έχει πλέον αλλάξει δραματικά.</p>
+      </div>
+
+      <!-- Add this author section here -->
+      <div class="article-author-footer">
+        <div class="reading-time-badge">
+          <i class="fas fa-clock"></i>
+          <span id="reading-time-value">5 min read</span>
+        </div>
+
+        <div class="author-box">
+          <div class="author-header">
+            <div class="author-avatar">
+              <img id="author-image" src="/f1stories.github.io/images/avatars/FA.webp" alt="Georgios Balatzis"
+                   onerror="
+         const paths = [
+           '/f1stories.github.io/images/authors/default.webp',
+           '/images/authors/default.webp',
+           '../../../images/authors/default.webp',
+           '../../images/authors/default.webp'
+         ];
+         let currentPath = 0;
+         const tryNextPath = () => {
+           if (currentPath < paths.length) {
+             this.src = paths[currentPath++];
+           } else {
+             this.style.display='none';
+             document.getElementById('author-initial').style.display='flex';
+           }
+         };
+         tryNextPath();">
+              <span class="avatar-text" id="author-initial">A</span>
+            </div>
+            <div class="author-info">
+              <h4 class="author-name" id="author-name">Georgios Balatzis</h4>
+              <div class="author-title" id="author-title">F1 Stories Contributor</div>
+            </div>
+          </div>
+          <div class="author-bio" id="author-bio">
+            Regular contributor to F1 Stories, passionate about motorsport and sharing insight about Formula 1 racing.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="article-comments">
+      <h3>Comments</h3>
+      <div id="disqus_thread"></div>
+      <script>
+        var disqus_config = function () {
+          this.page.url = window.location.href;  // Gets the current page URL
+          this.page.identifier = '20250901G';   // Will be replaced with your article ID
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+          var d = document, s = d.createElement('script');
+          s.src = 'https://f1stories-gr.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20250823G/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="NEXT_ARTICLE_URL" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250823G/1.webp" 
+                             alt="Mercedes W16: Η Παράδοξη Σεζόν 2025" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250823G/1.webp') { this.src='/blog-module/blog/images/20250823G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">23,</span>
+                            <span class="month">AUG</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Mercedes W16: Η Παράδοξη Σεζόν 2025</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250823G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250821G/1.webp" 
+                             alt="Η Αυτοκρατορία της McLaren: Ανάλυση της Κυριαρχίας του 2025 και ο Εμφύλιος Πόλεμος για το Στέμμα" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250821G/1.webp') { this.src='/blog-module/blog/images/20250821G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">21,</span>
+                            <span class="month">AUG</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Η Αυτοκρατορία της McLaren: Ανάλυση της Κυριαρχίας του 2025 και ο Εμφύλιος Πόλεμος για το Στέμμα</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250821G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250820G/1.webp" 
+                             alt="Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250820G/1.webp') { this.src='/blog-module/blog/images/20250820G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">20,</span>
+                            <span class="month">AUG</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250820G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+    </div>
+  </div>
+</section>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<footer class="py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center">
+        <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+        <div class="social-media">
+          <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+          <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Background Randomizer Script -->
+<script defer src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script defer src="/scripts/script.js"></script>
+<script defer src="/blog-module/blog/article-script.js"></script>
+<!-- Social Sharing Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Replace placeholder URLs with actual URL
+    const currentUrl = window.location.href;
+    const articleTitle = document.querySelector('.article-title').textContent;
+    const encodedTitle = encodeURIComponent(articleTitle);
+
+    // Update sharing links
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      if (btn.href) {
+        btn.href = btn.href
+                .replace('https://f1stories.gr/blog-module/blog-entries/20250901G/article.html', encodeURIComponent(currentUrl))
+                .replace('Ο Piastri Κατακτά το Zandvoort, η McLaren Θριαμβεύει στο Πορτοκαλί Χάος 🇳🇱🏆', encodedTitle);
+      }
+    });
+
+    // Handle copy link button
+    const copyLinkBtn = document.getElementById('copy-link-btn');
+    if (copyLinkBtn) {
+      copyLinkBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(currentUrl)
+                .then(() => {
+                  copyLinkBtn.classList.add('copy-success');
+
+                  // Change icon temporarily to checkmark
+                  const icon = copyLinkBtn.querySelector('i');
+                  icon.classList.remove('fa-link');
+                  icon.classList.add('fa-check');
+
+                  // Reset after 2 seconds
+                  setTimeout(() => {
+                    copyLinkBtn.classList.remove('copy-success');
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-link');
+                  }, 2000);
+                })
+                .catch(err => {
+                  console.error('Failed to copy: ', err);
+                });
+      });
+    }
+  });
+</script>
+<script defer src="/scripts/theme-toggle.js"></script>
+<script defer src="/scripts/navbar.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script></body>
+</html>
