@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grand Prix Αζερμπαϊτζάν 2025: Πλήρης Ανάλυση – Τεχνικές Αναβαθμίσεις, Στρατηγικές & Προβλέψεις! 🏁 🇦🇿🏎️ | F1 Stories Blog</title>
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="Grand Prix Αζερμπαϊτζάν 2025: Πλήρης Ανάλυση – Τεχνικές Αναβαθμίσεις, Στρατηγικές & Προβλέψεις! 🏁 🇦🇿🏎️ | F1 Stories Blog">
+  <meta property="og:description" content="🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈">
+  <meta property="og:image" content="2.webp">
+  <meta property="og:url" content="https://f1stories.gr/blog-module/blog-entries/20250919G/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
+  <style>
+    /* YouTube embed container for responsive videos */
+    .youtube-embed-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+      margin: 2rem 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .youtube-embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+    }
+
+    .video-caption {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/blog-module/blog-styles.css">
+  <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-X68J6MQKSM');
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the meta description tag
+      const metaDescription = document.querySelector('meta[property="og:description"]');
+
+      // Get the article content for calculating reading time
+      const articleContent = document.querySelector('.article-content');
+
+      if (metaDescription && articleContent) {
+        // Calculate reading time
+        const text = articleContent.textContent || articleContent.innerText;
+        const wordCount = text.trim().split(/\s+/).length;
+
+        // Average reading speed: 200 words per minute
+        const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
+        // Update meta description with reading time
+        metaDescription.setAttribute('content', `A ${readingTimeMinutes} minute read on F1 Stories Blog`);
+
+        // Also update the reading time element in the article if it exists
+        const readingTimeElement = document.getElementById('reading-time-value');
+        if (readingTimeElement) {
+          readingTimeElement.textContent = `${readingTimeMinutes} min read`;
+        }
+      } else {
+        // Fallback description if article content is not found
+        if (metaDescription) {
+          metaDescription.setAttribute('content', '🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈');
+        }
+      }
+    });
+  </script>
+
+</head>
+<body>
+<div class="background"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
+
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy">
+      </a>
+      <div class="race-countdown-container">
+        <div class="race-countdown">
+          <div class="race-flag">
+            <span id="race-flag-emoji">🏁</span>
+          </div>
+          <div class="race-info">
+            <span class="next-race-name" id="next-race-name">Loading...</span>
+            <div class="countdown-timer" id="race-countdown">--</div>
+          </div>
+        </div>
+        <!-- Mobile version - visible only on small screens -->
+        <div class="race-countdown-mobile">
+          <i class="fas fa-flag-checkered"></i>
+          <span id="race-countdown-mobile">--</span>
+        </div>
+      </div>
+      <button class="navbar-toggler" type="button" id="mobile-toggler">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <!-- Home -->
+          <li class="nav-item">
+            <a class="nav-link" href="/" id="home-link">Home</a>
+          </li>
+
+          <!-- Podcast dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">
+              Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+              <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
+              <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+            </ul>
+          </li>
+
+          <!-- Stories & Media dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
+              Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
+              <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+              <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+            </ul>
+          </li>
+
+          <!-- About dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
+              About <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/#about">About Us</a></li>
+              <li><a class="dropdown-item" href="/#guests">Guests</a></li>
+              <li><a class="dropdown-item" href="/#contact">Contact</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="py-5 mt-5">
+  <div class="container">
+    <!-- Back to Blog Button -->
+    <div class="text-start mb-4">
+      <a href="/blog-module/blog/index.html" class="btn btn-outline-light">
+        <i class="fas fa-arrow-left me-2"></i> Back to Blog
+      </a>
+    </div>
+
+    <div class="article-container">
+      <div class="article-header">
+        <!-- Images are local to the article folder -->
+        <img src="2.webp" alt="Grand Prix Αζερμπαϊτζάν 2025: Πλήρης Ανάλυση – Τεχνικές Αναβαθμίσεις, Στρατηγικές & Προβλέψεις! 🏁 🇦🇿🏎️" class="article-header-img" loading="lazy" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <div class="article-header-overlay">
+          <h1 class="article-title">Grand Prix Αζερμπαϊτζάν 2025: Πλήρης Ανάλυση – Τεχνικές Αναβαθμίσεις, Στρατηγικές & Προβλέψεις! 🏁 🇦🇿🏎️</h1>
+          <div class="article-meta">
+            <span><i class="fas fa-calendar"></i> September 19, 2025</span>
+            <span><i class="fas fa-tag"></i> GP</span>
+            <span><i class="fas fa-folder"></i> 2025</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add social sharing bar here -->
+      <!-- Updated Social Share Bar -->
+      <div class="social-share-bar">
+        <div class="share-label">
+          <i class="fas fa-share-alt"></i>
+          <span>Share this article:</span>
+        </div>
+        <div class="share-buttons">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://f1stories.gr/blog-module/blog-entries/20250919G/article.html" target="_blank" class="share-btn facebook" aria-label="Share on Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://www.addtoany.com/add_to/threads?linkurl=https://f1stories.gr/blog-module/blog-entries/20250919G/article.html&linkname=Grand Prix Αζερμπαϊτζάν 2025: Πλήρης Ανάλυση – Τεχνικές Αναβαθμίσεις, Στρατηγικές & Προβλέψεις! 🏁 🇦🇿🏎️" target="_blank" class="share-btn threads" aria-label="Share on Threads">
+            <i class="fab fa-threads"></i>
+          </a>
+          <button id="instagram-dm-btn" class="share-btn instagram" aria-label="Share via Instagram DM">
+            <i class="fab fa-instagram"></i>
+          </button>
+          <a href="https://api.whatsapp.com/send?text=Grand Prix Αζερμπαϊτζάν 2025: Πλήρης Ανάλυση – Τεχνικές Αναβαθμίσεις, Στρατηγικές & Προβλέψεις! 🏁 🇦🇿🏎️%20https://f1stories.gr/blog-module/blog-entries/20250919G/article.html" target="_blank" class="share-btn whatsapp" aria-label="Share on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+          <a href="https://t.me/share/url?url=https://f1stories.gr/blog-module/blog-entries/20250919G/article.html&text=Grand Prix Αζερμπαϊτζάν 2025: Πλήρης Ανάλυση – Τεχνικές Αναβαθμίσεις, Στρατηγικές & Προβλέψεις! 🏁 🇦🇿🏎️" target="_blank" class="share-btn telegram" aria-label="Share on Telegram">
+            <i class="fab fa-telegram-plane"></i>
+          </a>
+          <button id="web-share-btn" class="share-btn web-share" aria-label="Share on installed apps">
+            <i class="fas fa-share-nodes"></i>
+          </button>
+          <button class="share-btn copy-link" id="copy-link-btn" aria-label="Copy link">
+            <i class="fas fa-link"></i>
+          </button>
+        </div>
+      </div>
+
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <!-- Add this for a more F1-style header -->
+        <div class="tts-header">
+          <i class="fas fa-headphones-alt"></i>
+          <span>🏁 RACE RADIO - Ακούστε το Άρθρο</span>
+          <div class="tts-live-indicator"></div>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Φωνή/Voice:</label>
+            <select id="tts-voice">
+              <option value="">Αυτόματη/Auto</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Έτοιμο για ανάγνωση</div>
+        </div>
+      </div>
+
+
+      <div class="article-content">
+        <!-- Article content goes here -->
+        <p></p><h1>Grand Prix Αζερμπαϊτζάν 2025: Πλήρης Ανάλυση – Τεχνικές Αναβαθμίσεις, Στρατηγικές &amp; Προβλέψεις! 🏁 🇦🇿🏎️</h1><h2>Εισαγωγή: Καλώς ήρθατε στην "Πόλη των Ανέμων"</h2><p>Καθώς η Formula 1 αφήνει πίσω της την ευρωπαϊκή σεζόν, το ταξίδι της συνεχίζεται στην πρωτεύουσα του Αζερμπαϊτζάν για τον 17ο γύρο του πρωταθλήματος. Το Μπακού, η «Πόλη των Ανέμων» , υποδέχεται τις ομάδες σε μια πίστα που έχει καθιερωθεί ως συνώνυμο του απρόβλεπτου, του δράματος και της αδρεναλίνης. Το Grand Prix του Αζερμπαϊτζάν δεν είναι απλώς ένας αγώνας· είναι μια δοκιμασία επιβίωσης σε έναν αστικό λαβύρινθο που συνδυάζει την ωμή ταχύτητα με την απόλυτη ακρίβεια, καθιστώντας τον έναν από τους πιο χαοτικούς και συναρπαστικούς αγώνες του ημερολογίου.</p><p>Το φετινό Σαββατοκύριακο φέρει πολλαπλά και κρίσιμα αφηγήματα. Στην κορυφή όλων, η McLaren έχει την ιστορική ευκαιρία να εξασφαλίσει μαθηματικά το Πρωτάθλημα Κατασκευαστών, νωρίτερα από οποιαδήποτε άλλη ομάδα στην ιστορία του αθλήματος. Αυτή η πιθανή στέψη, ωστόσο, λαμβάνει χώρα εν μέσω μιας έντονης εσωτερικής μονομαχίας μεταξύ του πρωτοπόρου της βαθμολογίας και περσινού νικητή Oscar Piastri και του ομολόγου του Lando Norris, με την αμφιλεγόμενη διαχείριση των team orders στη Monza να προσθέτει επιπλέον πίεση.</p><p>Ταυτόχρονα, οι μηχανικοί αντιμετωπίζουν το «Παράδοξο του Μπακού»: μια πίστα που απαιτεί τελικές ταχύτητες επιπέδου Monza στην ατελείωτη ευθεία των 2.2 χιλιομέτρων  και ταυτόχρονα χειρουργική ακρίβεια επιπέδου Μονακό στα εξαιρετικά στενά περάσματα της παλιάς πόλης. Παράλληλα, ο Charles Leclerc, ο αδιαμφισβήτητος βασιλιάς των κατατακτήριων δοκιμών στο Μπακού με τέσσερις συνεχόμενες pole positions, καλείται να σπάσει την «κατάρα» που τον θέλει να μην έχει μετατρέψει καμία από αυτές σε νίκη. Τέλος, το στρατηγικό ναρκοπέδιο που δημιουργεί η επιθετική επιλογή ελαστικών της Pirelli σε συνδυασμό με την σχεδόν βέβαιη εμφάνιση του Αυτοκινήτου Ασφαλείας, υπόσχεται να κρατήσει οδηγούς, ομάδες και θεατές σε αγωνία μέχρι τον τελευταίο γύρο.</p><h2>TL;DR (Σύνοψη 3 λεπτών) ⏱️</h2><ul><li><strong>Εκδήλωση:</strong> Grand Prix Αζερμπαϊτζάν 2025, 17ος γύρος του πρωταθλήματος, που θα διεξαχθεί 19-21 Σεπτεμβρίου στην πίστα Baku City Circuit.</li><li><strong>Κύριο Σενάριο:</strong> Η McLaren μπορεί να εξασφαλίσει μαθηματικά το Πρωτάθλημα Κατασκευαστών αυτό το Σαββατοκύριακο. Ο Oscar Piastri, νικητής του 2024, προηγείται στη βαθμολογία των οδηγών.</li><li><strong>Τεχνικό Μέτωπο:</strong> Λίγες ομάδες έφεραν αναβαθμίσεις, εστιάζοντας κυρίως στην ψύξη και σε μικρές αεροδυναμικές προσαρμογές για τις απαιτήσεις της πίστας. Οι πρωτοπόροι της McLaren δεν παρουσίασαν καμία αναβάθμιση.</li><li><strong>Στρατηγική Ελαστικών:</strong> Η Pirelli έφερε τις πιο μαλακές γόμες της γκάμας της (C4, C5, C6) με στόχο να προωθήσει στρατηγικές δύο pit-stop και να αυξήσει την αβεβαιότητα.</li><li><strong>Βασική Πρόκληση:</strong> Η εξισορρόπηση του set-up του μονοθεσίου μεταξύ της τεράστιας ευθείας των 2.2 χλμ και του εξαιρετικά στενού "castle section" (πλάτους μόλις 7.6 μέτρων).</li><li><strong>Ο Απρόβλεπτος Παράγοντας:</strong> Η υψηλή πιθανότητα εμφάνισης Αυτοκινήτου Ασφαλείας (57%)  μπορεί να ανατρέψει πλήρως τις στρατηγικές και την έκβαση του αγώνα.</li></ul><h2>Τεχνικές Αναβαθμίσεις Ομάδων 🛠️</h2><p>Σε πλήρη αντίθεση με αγώνες όπως το Silverstone, όπου οι περισσότερες ομάδες παρουσιάζουν εκτεταμένα πακέτα αεροδυναμικών αναβαθμίσεων , η προσέγγιση για το Μπακού είναι πολύ πιο στοχευμένη και συντηρητική. Η μοναδική φύση της πίστας οδηγεί τις ομάδες σε εξειδικευμένες λύσεις αντί για γενικές βελτιώσεις απόδοσης. Η ανάλυση των επίσημων εγγράφων που υποβλήθηκαν στη FIA (Car Presentation Submissions) αποκαλύπτει μια σαφή στρατηγική διάκριση μεταξύ των ομάδων.</p><h3>Λεπτομερής Ανάλυση Αναβαθμίσεων</h3><ul><li><strong>Scuderia Ferrari HP 🐎:</strong><ul><li><strong>Εξάρτημα:</strong> Μπροστινή Γωνία (Front Corner).</li><li><strong>Λόγος:</strong> Ειδικά για την πίστα - Εύρος Ψύξης.</li><li><strong>Περιγραφή:</strong> Η Ferrari διεύρυνε την έξοδο του αεραγωγού των μπροστινών φρένων. Πρόκειται για μια απαραίτητη προσαρμογή για την αντιμετώπιση των τεράστιων θερμικών φορτίων που δημιουργούνται από τα αλλεπάλληλα και δυνατά φρεναρίσματα στις κλειστές, 90-μοιρών στροφές της πίστας.</li></ul></li><li><strong>Red Bull Racing 🐂:</strong><ul><li><strong>Εξάρτημα:</strong> Πίσω Γωνία (Rear Corner).</li><li><strong>Λόγος:</strong> Απόδοση - Τοπικό Φορτίο.</li><li><strong>Περιγραφή:</strong> Η ομάδα προχώρησε σε μια ήπια αναθεώρηση της εσωτερικής διάταξης της πίσω πτέρυγας για να αυξήσει την καμπύλη της (camber). Αυτή η μικρο-προσαρμογή στοχεύει στην παραγωγή περισσότερου τοπικού αεροδυναμικού φορτίου, βελτιώνοντας την πρόσφυση στις αργές στροφές χωρίς να διαταράσσει τη σταθερότητα της ροής του αέρα, κάτι κρίσιμο για την απόδοση στις ευθείες.</li></ul></li><li><strong>Mercedes-AMG PETRONAS F1 Team 🌟:</strong><ul><li><strong>Εξάρτημα:</strong> Μπροστινή Πτέρυγα (Front Wing).</li><li><strong>Λόγος:</strong> Απόδοση - Τοπικό Φορτίο.</li><li><strong>Περιγραφή:</strong> Η Mercedes εισήγαγε ένα πτερύγιο (flap) μειωμένης χορδής στην μπροστινή πτέρυγα. Αυτή η αλλαγή μειώνει το αεροδυναμικό φορτίο που παράγεται στο μπροστινό μέρος, επιτρέποντας στην ομάδα να επιτύχει την κατάλληλη αεροδυναμική ισορροπία όταν χρησιμοποιεί μια πίσω πτέρυγα πολύ χαμηλής κάθετης δύναμης, η οποία είναι απαραίτητη για την επίτευξη υψηλών τελικών ταχυτήτων στο Μπακού.</li></ul></li><li><strong>Visa Cash App Racing Bulls 🩷💙:</strong><ul><li><strong>Εξάρτημα:</strong> Μπροστινή &amp; Πίσω Γωνία (Front &amp; Rear Corners).</li><li><strong>Λόγος:</strong> Ειδικά για την πίστα - Εύρος Ψύξης.</li><li><strong>Περιγραφή:</strong> Παρόμοια με τη Ferrari, η ομάδα τροποποίησε τόσο τους μπροστινούς όσο και τους πίσω αεραγωγούς των φρένων για να αυξήσει τη ροή του αέρα ψύξης, προετοιμάζοντας τα μονοθέσια για τις ακραίες απαιτήσεις της πίστας.</li></ul></li></ul><h3>Το "Club των Μη-Αναβαθμίσεων"</h3><p>Οι ομάδες McLaren, Aston Martin, Alpine, Haas, Williams και Stake F1 Team KICK Sauber επέλεξαν να μην παρουσιάσουν καμία νέα αναβάθμιση για αυτό το Grand Prix. Αυτή η απόφαση είναι εξίσου στρατηγική. Για την κυρίαρχη McLaren, σηματοδοτεί απόλυτη εμπιστοσύνη στο βασικό της πακέτο και στην ικανότητά του να προσαρμόζεται σε ένα ευρύ φάσμα πιστών μέσω του set-up. Για άλλες ομάδες, μπορεί να αντικατοπτρίζει μια συνειδητή απόφαση κατανομής πόρων, φυλάσσοντας σημαντικές αναβαθμίσεις για πιο συμβατικές πίστες όπου τα κέρδη από την εξέλιξη είναι πιο εύκολα μεταφέρσιμα.</p><p>Οι αναβαθμίσεις που παρουσιάστηκαν αποκαλύπτουν μια στρατηγική διχοτόμηση. Από τη μία πλευρά, ομάδες όπως η Ferrari και η Racing Bulls προβαίνουν σε «αντιδραστικές» προσαρμογές, απαντώντας στις γνωστές και σκληρές απαιτήσεις της πίστας (ψύξη) για να διασφαλίσουν την αξιοπιστία. Από την άλλη, η Red Bull και η Mercedes ακολουθούν μια «προληπτική» προσέγγιση, κυνηγώντας μια πιο λεπτή αεροδυναμική ισορροπία για να ξεκλειδώσουν απόδοση. Η απουσία αναβαθμίσεων από τη McLaren αποτελεί την απόλυτη δήλωση αυτοπεποίθησης: πιστεύουν ότι το μονοθέσιό τους είναι ήδη βελτιστοποιημένο και αρκετά ευέλικτο για να αντιμετωπίσει τις ακραίες προκλήσεις του Μπακού μόνο με αλλαγές στο στήσιμο. Το αποτέλεσμα του Σαββατοκύριακου θα αποκαλύψει ποια φιλοσοφία είναι ανώτερη για μια τόσο μοναδική πίστα.</p><table><thead><tr><th><p>Ομάδα</p></th><th><p>Εξάρτημα</p></th><th><p>Κύριος Λόγος</p></th><th><p>Περιγραφή</p></th></tr><tr><th><p><strong>Scuderia Ferrari HP</strong></p></th><th><p>Μπροστινή Γωνία</p></th><th><p>Ειδικά για την πίστα - Ψύξη</p></th><th><p>Διευρυμένη έξοδος αεραγωγού μπροστινών φρένων για καλύτερη διαχείριση θερμοκρασίας.</p></th></tr><tr><th><p><strong>Red Bull Racing</strong></p></th><th><p>Πίσω Γωνία</p></th><th><p>Απόδοση - Τοπικό Φορτίο</p></th><th><p>Αναδιαμορφωμένη εσωτερική διάταξη πτέρυγας για αύξηση τοπικού φορτίου και σταθερότητας.</p></th></tr><tr><th><p><strong>Mercedes-AMG F1 Team</strong></p></th><th><p>Μπροστινή Πτέρυγα</p></th><th><p>Απόδοση - Τοπικό Φορτίο</p></th><th><p>Πτερύγιο μειωμένης χορδής για εξισορρόπηση του μονοθεσίου με πίσω πτέρυγα χαμηλού φορτίου.</p></th></tr><tr><th><p><strong>Visa Cash App RB</strong></p></th><th><p>Μπροστινή &amp; Πίσω Γωνία</p></th><th><p>Ειδικά για την πίστα - Ψύξη</p></th><th><p>Τροποποιημένοι αεραγωγοί φρένων (εμπρός &amp; πίσω) για αυξημένη ροή ψύξης.</p></th></tr><tr><th><p><strong>McLaren F1 Team</strong></p></th><th><p><em>Καμία Αναβάθμιση</em></p></th><th><p>-</p></th><th><p>-</p></th></tr><tr><th><p><strong>Aston Martin Aramco</strong></p></th><th><p><em>Καμία Αναβάθμιση</em></p></th><th><p>-</p></th><th><p>-</p></th></tr><tr><th><p><strong>BWT Alpine F1 Team</strong></p></th><th><p><em>Καμία Αναβάθμιση</em></p></th><th><p>-</p></th><th><p>-</p></th></tr><tr><th><p><strong>MoneyGram Haas F1</strong></p></th><th><p><em>Καμία Αναβάθμιση</em></p></th><th><p>-</p></th><th><p>-</p></th></tr><tr><th><p><strong>ATLASSIAN Williams</strong></p></th><th><p><em>Καμία Αναβάθμιση</em></p></th><th><p>-</p></th><th><p>-</p></th></tr><tr><th><p><strong>Stake F1 Team KICK Sauber</strong></p></th><th><p><em>Καμία Αναβάθμιση</em></p></th><th><p>-</p></th><th><p>-</p></th></tr></thead></table><h2>Η Πίστα του Μπακού – Χαρακτηριστικά &amp; Προκλήσεις 🗺️💨</h2><p>Η πίστα της πόλης του Μπακού, σχεδιασμένη από τον Hermann Tilke, είναι ένα σύγχρονο θαύμα της μηχανικής και μια από τις μεγαλύτερες προκλήσεις στο ημερολόγιο. Με μήκος 6.003 χιλιόμετρα και αριστερόστροφη φορά, είναι η τέταρτη μεγαλύτερη πίστα της σεζόν και θεωρείται η ταχύτερη πίστα δρόμου στον κόσμο.</p><h3>Μια Πίστα με Δύο Πρόσωπα</h3><p>Η ουσία της πρόκλησης του Μπακού έγκειται στη διττή του φύση. Είναι ουσιαστικά δύο διαφορετικές πίστες ενωμένες σε μία.</p><ul><li><strong>Τομέας 1 &amp; 3 - Η Ανάγκη για Ταχύτητα:</strong> Η πίστα κυριαρχείται από την τεράστια ευθεία των 2.2 χιλιομέτρων κατά μήκος της λεωφόρου Neftchilar, από τη στροφή 16 έως τη στροφή 1. Εδώ, οι οδηγοί κινούνται με τέρμα γκάζι για πάνω από δύο χιλιόμετρα, φτάνοντας ταχύτητες που πλησιάζουν τα 360 km/h. Οι δύο ζώνες DRS και το πανίσχυρο φαινόμενο του slipstream καθιστούν τις προσπεράσεις σε αυτό το σημείο σχετικά εύκολες, απαιτώντας ένα στήσιμο χαμηλής αεροδυναμικής αντίστασης, παρόμοιο με αυτό της Monza.</li><li><strong>Τομέας 2 - Το Μάτι της Βελόνας:</strong> Σε πλήρη αντίθεση, ο δεύτερος τομέας βυθίζεται στο ιστορικό κέντρο της πόλης. Το αποκορύφωμα είναι το περίφημο «τμήμα του κάστρου» (Στροφές 8-11). Σε αυτό το σημείο, η πίστα στενεύει δραματικά, φτάνοντας μόλις τα 7.6 μέτρα πλάτος, καθιστώντας το ένα από τα πιο στενά περάσματα σε ολόκληρη τη Formula 1. Το τμήμα αυτό είναι ανηφορικό, με τυφλά σημεία (όπως η κορυφή της στροφής 11) και απαιτεί μέγιστη κάθετη δύναμη και απόλυτη ακρίβεια από τον οδηγό, θυμίζοντας έντονα το Μονακό. Το παραμικρό λάθος εδώ οδηγεί αναπόφευκτα σε επαφή με τον τοίχο.</li></ul><h3>Κρίσιμα Σημεία της Πίστας</h3><ul><li><strong>Στροφή 1:</strong> Μια ζώνη ισχυρού φρεναρίσματος μετά την ατελείωτη ευθεία. Είναι βασικό σημείο προσπέρασης, αλλά και συχνό θέατρο μπλοκαρισμάτων και ατυχημάτων στον πρώτο γύρο.</li><li><strong>Στροφή 8 (Είσοδος Κάστρου):</strong> Η είσοδος στο στενότερο σημείο οποιασδήποτε πίστας της F1. Το φρενάρισμα ακριβώς δίπλα στον εξωτερικό τοίχο απαιτεί τεράστια γενναιότητα και ακρίβεια.</li><li><strong>Στροφή 15:</strong> Μια δύσκολη, κατηφορική και τυφλή αριστερή στροφή, όπου οι οδηγοί φρενάρουν ενώ στρίβουν. Ο τοίχος στην έξοδο είναι διαβόητος για το πώς «παγιδεύει» τους οδηγούς, έχοντας καταστρέψει πολλούς αγώνες.</li><li><strong>Στροφή 16:</strong> Περιγράφεται ως η πιο κρίσιμη στροφή της πίστας, καθώς μια καλή έξοδος είναι ζωτικής σημασίας για τη μεγιστοποίηση της ταχύτητας στην ευθεία των 2.2 χιλιομέτρων που ακολουθεί.</li></ul><p>Ο σχεδιασμός της πίστας δημιουργεί θεμελιώδεις συμβιβασμούς στο στήσιμο των μονοθεσίων, οι οποίοι αναδεικνύουν την ικανότητα του οδηγού και την ευφυΐα των μηχανικών. Το ζητούμενο δεν είναι να βρεθεί το <em>τέλειο</em> στήσιμο, αλλά ο <em>λιγότερο κακός</em> συμβιβασμός. Μια ομάδα δεν μπορεί να έχει ταυτόχρονα χαμηλή αεροδυναμική αντίσταση για την ευθεία και υψηλή κάθετη δύναμη για τις στροφές. Πρέπει να επιλέξει. Θα θυσιάσει την ταχύτητα στις στροφές για υψηλότερη τελική, καθιστώντας το μονοθέσιο δυνατό στην επίθεση και την άμυνα στην ευθεία; Ή θα θυσιάσει την τελική ταχύτητα για καλύτερη πρόσφυση στον Τομέα 2, ελπίζοντας να χτίσει εκεί μια διαφορά; Αυτός ο αναγκαίος συμβιβασμός σημαίνει ότι κανένα μονοθέσιο δεν θα είναι ιδανικό για ολόκληρο τον γύρο, δημιουργώντας εγγενώς διακυμάνσεις στην απόδοση και αυξάνοντας την απρόβλεπτη φύση του αγώνα.</p><table><thead><tr><th><p>Στατιστικό</p></th><th><p>Τιμή</p></th></tr><tr><th><p>Μήκος Πίστας</p></th><th><p>6.003 χλμ</p></th></tr><tr><th><p>Γύροι Αγώνα</p></th><th><p>51</p></th></tr><tr><th><p>Απόσταση Αγώνα</p></th><th><p>306.051 χλμ</p></th></tr><tr><th><p>Στροφές</p></th><th><p>20</p></th></tr><tr><th><p>Ζώνες DRS</p></th><th><p>2</p></th></tr><tr><th><p>Ρεκόρ Γύρου (Αγώνας)</p></th><th><p>1:43.009 (Charles Leclerc, 2019)</p></th></tr><tr><th><p>Χρόνος Απώλειας στα Pit</p></th><th><p>~19.7 δευτερόλεπτα</p></th></tr><tr><th><p>Πιθανότητα Αυτοκινήτου Ασφαλείας</p></th><th><p>57%</p></th></tr></thead></table><h2>Στρατηγικές Προβλέψεις &amp; Ανάλυση Ελαστικών 📊💡</h2><h3>Το Στοίχημα της Pirelli</h3><p>Για το Grand Prix του Αζερμπαϊτζάν, η Pirelli πήρε μια συνειδητή απόφαση να αυξήσει το στρατηγικό ενδιαφέρον, φέρνοντας την πιο μαλακή γκάμα ελαστικών της: τη C4 ως Σκληρή γόμα, τη C5 ως Μέση και την εξαιρετικά μαλακή C6 ως Μαλακή γόμα. Ο λόγος πίσω από αυτή την επιλογή είναι σαφής και δηλωμένος από την ίδια την εταιρεία: η χρήση των ίδιων, πιο σκληρών ελαστικών με το 2024 θα οδηγούσε αναπόφευκτα σε έναν προβλέψιμο αγώνα μιας στάσης. Η πιο μαλακή επιλογή στοχεύει στην αύξηση της φθοράς και στο να ανοίξει το παράθυρο για στρατηγικές δύο pit-stop, προσθέτοντας ένα στοιχείο αβεβαιότητας.</p><p>Η γόμα C6, που έχει χρησιμοποιηθεί φέτος μόνο σε Ίμολα, Μονακό και Μόντρεαλ, θα προσφέρει μέγιστη πρόσφυση στις κατατακτήριες, αλλά η διάρκεια ζωής της στον αγώνα αναμένεται να είναι πολύ μικρή. Αυτό καθιστά τις C4 και C5 τα κύρια ελαστικά για την Κυριακή, με τις ομάδες να καλούνται να διαχειριστούν προσεκτικά τη φθορά τους σε μια «πράσινη» και χαμηλής πρόσφυσης επιφάνεια ασφάλτου.</p><h3>Ο Παράγοντας "X": Το Αυτοκίνητο Ασφαλείας</h3><p>Η στρατηγική των ελαστικών δεν μπορεί να αναλυθεί μεμονωμένα στο Μπακού. Πρέπει να συνδυαστεί με τον πιο καθοριστικό παράγοντα του αγώνα: την εξαιρετικά υψηλή πιθανότητα εμφάνισης Αυτοκινήτου Ασφαλείας (57%) ή Εικονικού Αυτοκινήτου Ασφαλείας (43%).<sup>10</sup> Οι προηγούμενοι αγώνες έχουν δει πολλαπλές περιόδους εξουδετέρωσης, λόγω της στενής φύσης της πίστας και των ανύπαρκτων περιθωρίων λάθους.</p><p>Η αλληλεπίδραση αυτών των δύο παραγόντων είναι εκρηκτική. Η επιλογή μαλακών ελαστικών από την Pirelli δεν είναι απλώς μια πρόταση για στρατηγική δύο στάσεων· είναι ένας καταλύτης που ενισχύει δραματικά τη στρατηγική δύναμη του σχεδόν αναπόφευκτου Αυτοκινήτου Ασφαλείας. Τα μαλακότερα ελαστικά δημιουργούν μεγαλύτερες διαφορές απόδοσης μεταξύ φρέσκων και φθαρμένων σετ. Ένα Αυτοκίνητο Ασφαλείας εξουδετερώνει τον αγώνα, εξαλείφοντας οποιαδήποτε χρονική διαφορά έχει χτίσει ο πρωτοπόρος με τα παλιά του ελαστικά. Με τον χρόνο απώλειας στα pit να είναι μόλις 19.7 δευτερόλεπτα , η είσοδος για αλλαγή ελαστικών υπό καθεστώς SC γίνεται μια εξαιρετικά ελκυστική επιλογή. </p><p>Ένας οδηγός στην 5η θέση μπορεί να μπει στα pit για φρέσκα μαλακά ελαστικά και να κάνει επανεκκίνηση ακριβώς πίσω από τον πρωτοπόρο, αλλά με ένα τεράστιο πλεονέκτημα πρόσφυσης. Επομένως, η επιλογή της Pirelli έχει μετατρέψει το Αυτοκίνητο Ασφαλείας από έναν απλό εξουδετερωτή του αγώνα σε ένα στρατηγικό «τζόκερ». Η νίκη ή η ήττα θα κριθεί από τη στρατηγική ευελιξία και την ταχύτητα λήψης αποφάσεων στο pit wall, και όχι μόνο από την ωμή ταχύτητα στην πίστα.</p><h2>Καιρικές Συνθήκες ☀️🌡️</h2><p>Ο καιρός στο Μπακού αναμένεται να είναι άστατος, προσθέτοντας ένα επιπλέον επίπεδο αβεβαιότητας στο αγωνιστικό τριήμερο.<sup>13</sup></p><ul><li><strong>Παρασκευή (Ελεύθερες Δοκιμές):</strong> Ο καιρός θα είναι νεφελώδης με 40% πιθανότητα για ελαφρά βροχή το απόγευμα, κατά τη διάρκεια του FP2. Οι θερμοκρασίες θα κυμανθούν μεταξύ 19-25°C. Μια βρεγμένη ή νωπή πίστα στο FP2 θα μπορούσε να περιορίσει σημαντικά τη συλλογή δεδομένων, κάτι κρίσιμο για μια πίστα όπου το στήσιμο είναι το παν.</li><li><strong>Σάββατο (Κατατακτήριες):</strong> Υπάρχει και πάλι 40% πιθανότητα για ελαφρά βροχή το πρωί (FP3). Οι κατατακτήριες το απόγευμα αναμένεται να είναι στεγνές, αλλά με τις θερμοκρασίες να πέφτουν στους 18-21°C. Μια «πράσινη» πίστα από την πρωινή βροχή θα μπορούσε να κάνει τις συνθήκες δύσκολες.</li><li><strong>Κυριακή (Αγώνας):</strong> Ο αγώνας αναμένεται να είναι στεγνός, αν και παραμένει μια πιθανότητα 20% για πρωινή βροχή. Οι θερμοκρασίες θα είναι πιο ψυχρές, μεταξύ 17-21°C.</li></ul><p>Ακόμη και μια ελαφριά βροχή σε μια πίστα δρόμου με χαμηλή πρόσφυση και τοίχους παντού μπορεί να προκαλέσει χάος. Μια νωπή επιφάνεια ασφάλτου δεν συγχωρεί το παραμικρό λάθος και θα μπορούσε να οδηγήσει σε περισσότερα συμβάντα, αυξάνοντας περαιτέρω την ήδη υψηλή πιθανότητα εμφάνισης του Αυτοκινήτου Ασφαλείας.</p><h2>Προσδοκίες &amp; Πιθανοί Πρωταγωνιστές 🤩🏎️</h2><p>Το Grand Prix του Αζερμπαϊτζάν διαμορφώνεται ως μια μάχη αντίρροπων δυνάμεων: η σταθερή κυριαρχία της McLaren ενάντια στο εγγενές χάος του Μπακού. Ο νικητής θα είναι αυτός που θα καταφέρει να πλοηγηθεί καλύτερα στη διασταύρωση της προβλέψιμης απόδοσης και των απρόβλεπτων γεγονότων.</p><h3>Τα Φαβορί - McLaren 🧡</h3><p>Η ομάδα του Woking φτάνει στο Μπακού ως το απόλυτο φαβορί, στα πρόθυρα της κατάκτησης του Πρωταθλήματος Κατασκευαστών.<sup> </sup>Ο Oscar Piastri, περσινός νικητής και πρωτοπόρος της βαθμολογίας, και ο Lando Norris, ο πλησιέστερος αντίπαλός του, έχουν κυριαρχήσει στη σεζόν. Ωστόσο, η μεγαλύτερη πρόκλησή τους μπορεί να είναι εσωτερική. Η διαχείριση του ανταγωνισμού Piastri-Norris σε μια χαοτική πίστα θα είναι μια άσκηση υψηλής ισορροπίας για το pit wall. Η απουσία αναβαθμίσεων αποτελεί μια τολμηρή δήλωση αυτοπεποίθησης. Σύμφωνα με τις στοιχηματικές αποδόσεις, οι Piastri και Norris είναι τα ξεκάθαρα φαβορί για τη νίκη.</p><h3>Οι Διεκδικητές</h3><ul><li><strong>Red Bull &amp; Verstappen 🐂:</strong> Μετά από μια κυριαρχική νίκη στη Monza που έσπασε το μονοπώλιο της McLaren, ο Max Verstappen έρχεται με φόρα. Η αεροδυναμική αποδοτικότητα της RB21 στις ευθείες θα της ταιριάξει, αλλά το ερώτημα είναι αν θα βρουν το σωστό στήσιμο και για τον τεχνικό δεύτερο τομέα. Ο Verstappen, νικητής εδώ το 2022, είναι ο τρίτος στις στοιχηματικές αποδόσεις.</li><li><strong>Ferrari &amp; Leclerc 🐎:</strong> Το «Παράδοξο του Leclerc» θα είναι το κεντρικό θέμα για τη Scuderia. Ο Μονεγάσκος έχει ένα απίστευτο ρεκόρ με τέσσερις συνεχόμενες pole positions, αλλά καμία νίκη. Η τεράστια ευθεία καθιστά την υπεράσπιση της πρώτης θέσης εξαιρετικά δύσκολη. Οι αποδόσεις του για τον ταχύτερο γύρο στις κατατακτήριες είναι χαρακτηριστικά χαμηλότερες από του Verstappen, αντικατοπτρίζοντας την ιστορική του δύναμη εδώ.</li></ul><h3>Οι Αουτσάιντερ</h3><ul><li><strong>Mercedes 🌟:</strong> Ο Kimi Antonelli βρίσκεται υπό πίεση μετά την κριτική από τον Toto Wolff για την απόδοσή του στη Monza και χρειάζεται ένα «καθαρό» Σαββατοκύριακο για να ανακτήσει τη δυναμική του. Η μικρή αναβάθμιση στην μπροστινή πτέρυγα μπορεί να βοηθήσει στην ισορροπία του μονοθεσίου.</li><li><strong>Williams &amp; Albon 🔵:</strong> Ο Alex Albon έχει απειλήσει σταθερά την πρώτη εξάδα φέτος και είχε ένα δυνατό αποτέλεσμα εδώ πέρυσι.</li><li><strong>Aston Martin &amp; Alonso 🟢:</strong> Ο Fernando Alonso θα προσπαθήσει να ανακάμψει μετά από μια εγκατάλειψη στη Monza ενώ βρισκόταν σε καλή θέση.</li></ul><h2>Προετοιμαστείτε για Πρόσκρουση</h2><p>Το Grand Prix του Αζερμπαϊτζάν συγκεντρώνει όλα τα συστατικά για έναν αξέχαστο αγώνα. Η μάχη της McLaren για τον τίτλο, το αίνιγμα του Leclerc στις κατατακτήριες, το στρατηγικό ναρκοπέδιο των μαλακών ελαστικών και των Αυτοκινήτων Ασφαλείας, και η αδυσώπητη φύση των τοίχων της πόλης συνθέτουν ένα σκηνικό υψηλής έντασης. Σε μια πίστα όπου η ιστορία έχει αποδείξει ότι το απρόβλεπτο είναι το μόνο αναμενόμενο, τίποτα δεν είναι εγγυημένο μέχρι να πέσει η καρό σημαία.</p>
+      </div>
+
+      <!-- Add this author section here -->
+      <div class="article-author-footer">
+        <div class="reading-time-badge">
+          <i class="fas fa-clock"></i>
+          <span id="reading-time-value">5 min read</span>
+        </div>
+
+        <div class="author-box">
+          <div class="author-header">
+            <div class="author-avatar">
+              <img id="author-image" src="/f1stories.github.io/images/avatars/FA.webp" alt="Georgios Balatzis"
+                   onerror="
+         const paths = [
+           '/f1stories.github.io/images/authors/default.webp',
+           '/images/authors/default.webp',
+           '../../../images/authors/default.webp',
+           '../../images/authors/default.webp'
+         ];
+         let currentPath = 0;
+         const tryNextPath = () => {
+           if (currentPath < paths.length) {
+             this.src = paths[currentPath++];
+           } else {
+             this.style.display='none';
+             document.getElementById('author-initial').style.display='flex';
+           }
+         };
+         tryNextPath();">
+              <span class="avatar-text" id="author-initial">A</span>
+            </div>
+            <div class="author-info">
+              <h4 class="author-name" id="author-name">Georgios Balatzis</h4>
+              <div class="author-title" id="author-title">F1 Stories Contributor</div>
+            </div>
+          </div>
+          <div class="author-bio" id="author-bio">
+            Regular contributor to F1 Stories, passionate about motorsport and sharing insight about Formula 1 racing.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="article-comments">
+      <h3>Comments</h3>
+      <div id="disqus_thread"></div>
+      <script>
+        var disqus_config = function () {
+          this.page.url = window.location.href;  // Gets the current page URL
+          this.page.identifier = '20250919G';   // Will be replaced with your article ID
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+          var d = document, s = d.createElement('script');
+          s.src = 'https://f1stories-gr.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20250919W/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="NEXT_ARTICLE_URL" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250901G/1.webp" 
+                             alt="Ο Piastri Κατακτά το Zandvoort, η McLaren Θριαμβεύει στο Πορτοκαλί Χάος 🇳🇱🏆" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250901G/1.webp') { this.src='/blog-module/blog/images/20250901G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">1,</span>
+                            <span class="month">SEP</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Ο Piastri Κατακτά το Zandvoort, η McLaren Θριαμβεύει στο Πορτοκαλί Χάος 🇳🇱🏆</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250901G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250823G/1.webp" 
+                             alt="Mercedes W16: Η Παράδοξη Σεζόν 2025" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250823G/1.webp') { this.src='/blog-module/blog/images/20250823G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">23,</span>
+                            <span class="month">AUG</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Mercedes W16: Η Παράδοξη Σεζόν 2025</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250823G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20250821G/1.webp" 
+                             alt="Η Αυτοκρατορία της McLaren: Ανάλυση της Κυριαρχίας του 2025 και ο Εμφύλιος Πόλεμος για το Στέμμα" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20250821G/1.webp') { this.src='/blog-module/blog/images/20250821G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">21,</span>
+                            <span class="month">AUG</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Η Αυτοκρατορία της McLaren: Ανάλυση της Κυριαρχίας του 2025 και ο Εμφύλιος Πόλεμος για το Στέμμα</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Georgios Balatzis</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20250821G/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+    </div>
+  </div>
+</section>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<footer class="py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center">
+        <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+        <div class="social-media">
+          <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+          <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Background Randomizer Script -->
+<script defer src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script defer src="/scripts/script.js"></script>
+<script defer src="/blog-module/blog/article-script.js"></script>
+<!-- Social Sharing Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Replace placeholder URLs with actual URL
+    const currentUrl = window.location.href;
+    const articleTitle = document.querySelector('.article-title').textContent;
+    const encodedTitle = encodeURIComponent(articleTitle);
+
+    // Update sharing links
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      if (btn.href) {
+        btn.href = btn.href
+                .replace('https://f1stories.gr/blog-module/blog-entries/20250919G/article.html', encodeURIComponent(currentUrl))
+                .replace('Grand Prix Αζερμπαϊτζάν 2025: Πλήρης Ανάλυση – Τεχνικές Αναβαθμίσεις, Στρατηγικές & Προβλέψεις! 🏁 🇦🇿🏎️', encodedTitle);
+      }
+    });
+
+    // Handle copy link button
+    const copyLinkBtn = document.getElementById('copy-link-btn');
+    if (copyLinkBtn) {
+      copyLinkBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(currentUrl)
+                .then(() => {
+                  copyLinkBtn.classList.add('copy-success');
+
+                  // Change icon temporarily to checkmark
+                  const icon = copyLinkBtn.querySelector('i');
+                  icon.classList.remove('fa-link');
+                  icon.classList.add('fa-check');
+
+                  // Reset after 2 seconds
+                  setTimeout(() => {
+                    copyLinkBtn.classList.remove('copy-success');
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-link');
+                  }, 2000);
+                })
+                .catch(err => {
+                  console.error('Failed to copy: ', err);
+                });
+      });
+    }
+  });
+</script>
+<script defer src="/scripts/theme-toggle.js"></script>
+<script defer src="/scripts/navbar.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script></body>
+</html>
