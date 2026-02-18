@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Η Χρυσή εποχή των V8 και του blown diffuser | F1 Stories Blog</title>
+  <!-- Open Graph Tags for Link Previews -->
+  <meta property="og:title" content="Η Χρυσή εποχή των V8 και του blown diffuser | F1 Stories Blog">
+  <meta property="og:description" content="🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈">
+  <meta property="og:image" content="2.webp">
+  <meta property="og:url" content="https://f1stories.gr/blog-module/blog-entries/20260218W/article.html">
+  <meta property="og:type" content="article">
+
+  <!-- Image Fallback Script -->
+  <script>
+    // Check if .webp file exists, otherwise use .avif as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      const ogImageMeta = document.querySelector('meta[property="og:image"]');
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+
+      // Function to check if image exists
+      function checkImage(url, success, failure) {
+        const img = new Image();
+        img.onload = success;
+        img.onerror = failure;
+        img.src = url;
+      }
+
+      const webpUrl = ogImageMeta.getAttribute('content');
+      const avifUrl = webpUrl.replace('.webp', '.avif');
+
+      checkImage(webpUrl, function() {
+        // WebP exists, do nothing
+      }, function() {
+        // WebP doesn't exist, try AVIF
+        ogImageMeta.setAttribute('content', avifUrl);
+        twitterImageMeta.setAttribute('content', avifUrl);
+      });
+    });
+  </script>
+
+  <style>
+    /* YouTube embed container for responsive videos */
+    .youtube-embed-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+      margin: 2rem 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .youtube-embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+    }
+
+    .video-caption {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/blog-module/blog-styles.css">
+  <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-X68J6MQKSM');
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the meta description tag
+      const metaDescription = document.querySelector('meta[property="og:description"]');
+
+      // Get the article content for calculating reading time
+      const articleContent = document.querySelector('.article-content');
+
+      if (metaDescription && articleContent) {
+        // Calculate reading time
+        const text = articleContent.textContent || articleContent.innerText;
+        const wordCount = text.trim().split(/\s+/).length;
+
+        // Average reading speed: 200 words per minute
+        const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
+        // Update meta description with reading time
+        metaDescription.setAttribute('content', `A ${readingTimeMinutes} minute read on F1 Stories Blog`);
+
+        // Also update the reading time element in the article if it exists
+        const readingTimeElement = document.getElementById('reading-time-value');
+        if (readingTimeElement) {
+          readingTimeElement.textContent = `${readingTimeMinutes} min read`;
+        }
+      } else {
+        // Fallback description if article content is not found
+        if (metaDescription) {
+          metaDescription.setAttribute('content', '🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈');
+        }
+      }
+    });
+  </script>
+
+</head>
+<body>
+<div class="background"></div>
+<div class="streak streak-1"></div>
+<div class="streak streak-2"></div>
+<div class="streak streak-3"></div>
+<div class="streak streak-4"></div>
+
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy">
+      </a>
+      <div class="race-countdown-container">
+        <div class="race-countdown">
+          <div class="race-flag">
+            <span id="race-flag-emoji">🏁</span>
+          </div>
+          <div class="race-info">
+            <span class="next-race-name" id="next-race-name">Loading...</span>
+            <div class="countdown-timer" id="race-countdown">--</div>
+          </div>
+        </div>
+        <!-- Mobile version - visible only on small screens -->
+        <div class="race-countdown-mobile">
+          <i class="fas fa-flag-checkered"></i>
+          <span id="race-countdown-mobile">--</span>
+        </div>
+      </div>
+      <button class="navbar-toggler" type="button" id="mobile-toggler">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <!-- Home -->
+          <li class="nav-item">
+            <a class="nav-link" href="/" id="home-link">Home</a>
+          </li>
+
+          <!-- Podcast dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">
+              Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+              <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
+              <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+            </ul>
+          </li>
+
+          <!-- Stories & Media dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
+              Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
+              <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+              <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+            </ul>
+          </li>
+
+          <!-- About dropdown -->
+          <li class="nav-item custom-dropdown">
+            <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
+              About <i class="fas fa-chevron-down dropdown-icon"></i>
+            </a>
+            <ul class="custom-dropdown-menu">
+              <li><a class="dropdown-item" href="/#about">About Us</a></li>
+              <li><a class="dropdown-item" href="/#guests">Guests</a></li>
+              <li><a class="dropdown-item" href="/#contact">Contact</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="py-5 mt-5">
+  <div class="container">
+    <!-- Back to Blog Button -->
+    <div class="text-start mb-4">
+      <a href="/blog-module/blog/index.html" class="btn btn-outline-light">
+        <i class="fas fa-arrow-left me-2"></i> Back to Blog
+      </a>
+    </div>
+
+    <div class="article-container">
+      <div class="article-header">
+        <!-- Images are local to the article folder -->
+        <img src="2.webp" alt="Η Χρυσή εποχή των V8 και του blown diffuser" class="article-header-img" loading="lazy" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
+        <div class="article-header-overlay">
+          <h1 class="article-title">Η Χρυσή εποχή των V8 και του blown diffuser</h1>
+          <div class="article-meta">
+            <span><i class="fas fa-calendar"></i> February 18, 2026</span>
+            <span><i class="fas fa-tag"></i> Random</span>
+            <span><i class="fas fa-folder"></i> Misc</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add social sharing bar here -->
+      <!-- Updated Social Share Bar -->
+      <div class="social-share-bar">
+        <div class="share-label">
+          <i class="fas fa-share-alt"></i>
+          <span>Share this article:</span>
+        </div>
+        <div class="share-buttons">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://f1stories.gr/blog-module/blog-entries/20260218W/article.html" target="_blank" class="share-btn facebook" aria-label="Share on Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://www.addtoany.com/add_to/threads?linkurl=https://f1stories.gr/blog-module/blog-entries/20260218W/article.html&linkname=Η Χρυσή εποχή των V8 και του blown diffuser" target="_blank" class="share-btn threads" aria-label="Share on Threads">
+            <i class="fab fa-threads"></i>
+          </a>
+          <button id="instagram-dm-btn" class="share-btn instagram" aria-label="Share via Instagram DM">
+            <i class="fab fa-instagram"></i>
+          </button>
+          <a href="https://api.whatsapp.com/send?text=Η Χρυσή εποχή των V8 και του blown diffuser%20https://f1stories.gr/blog-module/blog-entries/20260218W/article.html" target="_blank" class="share-btn whatsapp" aria-label="Share on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+          <a href="https://t.me/share/url?url=https://f1stories.gr/blog-module/blog-entries/20260218W/article.html&text=Η Χρυσή εποχή των V8 και του blown diffuser" target="_blank" class="share-btn telegram" aria-label="Share on Telegram">
+            <i class="fab fa-telegram-plane"></i>
+          </a>
+          <button id="web-share-btn" class="share-btn web-share" aria-label="Share on installed apps">
+            <i class="fas fa-share-nodes"></i>
+          </button>
+          <button class="share-btn copy-link" id="copy-link-btn" aria-label="Copy link">
+            <i class="fas fa-link"></i>
+          </button>
+        </div>
+      </div>
+
+
+      <!-- Text-to-Speech Widget -->
+      <div class="tts-widget" id="tts-widget">
+        <!-- Add this for a more F1-style header -->
+        <div class="tts-header">
+          <i class="fas fa-headphones-alt"></i>
+          <span>🏁 RACE RADIO - Ακούστε το Άρθρο</span>
+          <div class="tts-live-indicator"></div>
+          <button class="tts-toggle" id="tts-toggle">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="tts-body" id="tts-body">
+          <div class="tts-controls">
+            <button class="tts-btn" id="tts-play" title="Play">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button class="tts-btn" id="tts-stop" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <div class="tts-speed-control">
+              <label>Speed:</label>
+              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+              <span id="tts-speed-value">1x</span>
+            </div>
+          </div>
+          <div class="tts-voice-selector">
+            <label>Φωνή/Voice:</label>
+            <select id="tts-voice">
+              <option value="">Αυτόματη/Auto</option>
+            </select>
+          </div>
+          <div class="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+          </div>
+          <div class="tts-status" id="tts-status">Έτοιμο για ανάγνωση</div>
+        </div>
+      </div>
+
+
+      <div class="article-content">
+        <!-- Article content goes here -->
+        <p></p><p>Η Χρυσή εποχή των V8 και του blown diffuser</p><p>Οι χρονιές  μεταξύ 2009-2013 χαρακτηρίστηκαν, από το θέαμα τα αμφίρροπα πρωταθλήματα, ακόμη και αν κυριάρχησε ο Vettel και η Red bull, είχαμε πολλούς νικητες σε Grand prix, και φυσικά τον υπέροχο ήχο των V8.</p><p>Φυσικά είχαμε και το σύστημα που κυριάρχησε δίνοντας έναν ξεχωριστό χαρακτήρα στα μονοθέσια, το blown deffuser.</p><p>Τι ήταν όμως το Blown Diffuser;</p><p>Ο διαχύτης (diffuser) στο πίσω μέρος του μονοθεσίου αυξάνει την κάθετη δύναμη (downforce) επιταχύνοντας τη ροή του αέρα κάτω από το πάτωμα και ενισχύοντας το φαινόμενο Venturi.</p><p>Το blown diffuser εξέλιξε αυτή την ιδέα, οι μηχανικοί κατεύθυναν τα καυσαέρια της εξάτμισης προς τον διαχύτη, ώστε να “σφραγίζουν” και να επιταχύνουν ακόμη περισσότερο τη ροή αέρα.</p><p>Το εντυπωσιακό στοιχείο ήταν ότι, μέσω ειδικών χαρτογραφήσεων κινητήρα, τα καυσαέρια συνέχιζαν να ρέουν ακόμη και όταν ο οδηγός δεν πατούσε το γκάζι (off-throttle).</p><p>Αποτέλεσμα; Σταθερό downforce σχεδόν σε κάθε φάση της στροφής.</p><p>Η επίδραση στην πίστα ήταν άμεση, υψηλότερες ταχύτητες στις στροφές, μεγαλύτερη σταθερότητα στο πίσω μέρος και πιο επιθετικές γραμμές.</p><p>Είχαμε την βελτίωση χρόνων γύρου κατά μερικά δέκατα, διαφορά τεράστια σε επίπεδο κορυφής.</p><p>Η ομάδα που εκμεταλλεύτηκε ιδανικά αυτή την τεχνολογία ήταν η Red Bull Racing σε συνεργασία με τη Renault, με τα μονοθέσιά της να κυριαρχούν στις αρχές της δεκαετίας του 2010.</p><p>Μηχανική συνεργασία σε νέο επίπεδο</p><p>Το blown diffuser δεν ήταν απλώς αεροδυναμική καινοτομία.</p><p>Ήταν αποτέλεσμα στενής συνεργασίας μεταξύ των</p><p>αεροδυναμιστών, των μηχανικών κινητήρα και των ειδικών λογισμικού χαρτογράφησης.</p><p>Οι πολύπλοκες ρυθμίσεις κρατούσαν τις πεταλούδες του γκαζιού ελαφρώς ανοιχτές ή τροποποιούσαν τον χρονισμό ανάφλεξης, ώστε να συνεχίζεται η ροή καυσαερίων ακόμη και στο φρενάρισμα.</p><p>Αυτή η τεχνική απαιτούσε όμως τεράστιο κόστος εξέλιξης και αμέτρητες ώρες προσομοιώσεων και φυσικά απόλυτη αξιοπιστία.</p><p>Δεν ήταν εύκολα προσβάσιμη σε όλες τις ομάδες.</p><p>Η αυξανόμενη εξάρτηση από τις χαρτογραφήσεις κινητήρα προκάλεσε ανησυχία στη FIA.</p><p>Οι κανονισμοί περιορίστηκαν σταδιακά το 2011 και ουσιαστικά τερμάτισαν την πλήρη αξιοποίηση της τεχνολογίας το 2012, θεωρώντας ότι το σύστημα αλλοίωνε το πνεύμα των τεχνικών περιορισμών.</p><p>Παρά την απαγόρευση, η περίοδος αυτή έμεινε ως παράδειγμα του πόσο δημιουργικά μπορούν να ερμηνευτούν οι κανονισμοί στη Formula 1.</p><p>Η εποχή συνέπεσε με τους ατμοσφαιρικούς V8 κινητήρες (2006–2013), που θεωρούνται από πολλούς οι πιο “καθαροί” ηχητικά στην ιστορία της Formula 1.</p><p>Με τις off-throttle ρυθμίσεις, τα μονοθέσια παρήγαγαν έντονα “σκασίματα” και εκρήξεις κατά την είσοδο στις στροφές.</p><p>Σε σύγκριση με την υβριδική εποχή των V6 turbo από το 2014 και μετά, εκείνη η περίοδος συχνά περιγράφεται ως η τελευταία πραγματικά “μελωδική” φάση του σπορ.</p><p>Το blown diffuser δεν διήρκεσε πολύ, αλλά απέδειξε, την ευφυΐα των μηχανικών, τη σημασία της διεπιστημονικής συνεργασίας, το πόσο λεπτή είναι η γραμμή μεταξύ καινοτομίας και κανονιστικής παρέμβασης.</p><p>Ήταν μια σύντομη, αλλά εμβληματική εποχή όπου η αεροδυναμική, η θερμοδυναμική και ο ήχος συνδυάστηκαν σε ένα σχεδόν ποιητικό σύνολο, ένα ακόμη παράδειγμα γιατί η Formula 1 είναι κάτι πολύ περισσότερο από ένα απλό μηχανοκίνητο σπορ.</p>
+      </div>
+
+      <!-- Add this author section here -->
+      <div class="article-author-footer">
+        <div class="reading-time-badge">
+          <i class="fas fa-clock"></i>
+          <span id="reading-time-value">5 min read</span>
+        </div>
+
+        <div class="author-box">
+          <div class="author-header">
+            <div class="author-avatar">
+              <img id="author-image" src="/f1stories.github.io/images/avatars/AS.webp" alt="2Fast"
+                   onerror="
+         const paths = [
+           '/f1stories.github.io/images/authors/default.webp',
+           '/images/authors/default.webp',
+           '../../../images/authors/default.webp',
+           '../../images/authors/default.webp'
+         ];
+         let currentPath = 0;
+         const tryNextPath = () => {
+           if (currentPath < paths.length) {
+             this.src = paths[currentPath++];
+           } else {
+             this.style.display='none';
+             document.getElementById('author-initial').style.display='flex';
+           }
+         };
+         tryNextPath();">
+              <span class="avatar-text" id="author-initial">A</span>
+            </div>
+            <div class="author-info">
+              <h4 class="author-name" id="author-name">2Fast</h4>
+              <div class="author-title" id="author-title">F1 Stories Contributor</div>
+            </div>
+          </div>
+          <div class="author-bio" id="author-bio">
+            Regular contributor to F1 Stories, passionate about motorsport and sharing insight about Formula 1 racing.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="article-comments">
+      <h3>Comments</h3>
+      <div id="disqus_thread"></div>
+      <script>
+        var disqus_config = function () {
+          this.page.url = window.location.href;  // Gets the current page URL
+          this.page.identifier = '20260218W';   // Will be replaced with your article ID
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+          var d = document, s = d.createElement('script');
+          s.src = 'https://f1stories-gr.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    <!-- Article navigation -->
+    <div class="article-navigation">
+      <a href="/blog-module/blog-entries/20260217T/article.html" id="prev-article-link" class="article-nav-link prev">
+        <i class="fas fa-arrow-left"></i> Previous Article
+      </a>
+      <a href="NEXT_ARTICLE_URL" id="next-article-link" class="article-nav-link next">
+        Next Article <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Related Articles -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2 class="mb-4">Related Articles</h2>
+      </div>
+      
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20260217T/1.webp" 
+                             alt="Στο F1 Καφενειο του Θαναση!" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20260217T/1.webp') { this.src='/blog-module/blog/images/20260217T/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">17,</span>
+                            <span class="month">FEB</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Στο F1 Καφενειο του Θαναση!</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> Thanasis Batalas</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20260217T/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20260211W/1.webp" 
+                             alt="Eντυπωσιακές πρεμιέρες της Formula 1" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20260211W/1.webp') { this.src='/blog-module/blog/images/20260211W/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">11,</span>
+                            <span class="month">FEB</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Eντυπωσιακές πρεμιέρες της Formula 1</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> 2Fast</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20260211W/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-img-container">
+                        <img src="/blog-module/blog-entries/20251011W/1.webp" 
+                             alt="Από το “GP2 Engine” στη Δόξα: Πώς η Honda Απέτυχε με τη McLaren αλλά Θριάμβευσε με τη Red Bull" 
+                             class="blog-img"
+                             onerror="if(this.src !== '/blog-module/blog/images/20251011W/1.webp') { this.src='/blog-module/blog/images/20251011W/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        <div class="blog-date">
+                            <span class="day">11,</span>
+                            <span class="month">OCT</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Από το “GP2 Engine” στη Δόξα: Πώς η Honda Απέτυχε με τη McLaren αλλά Θριάμβευσε με τη Red Bull</h3>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-user"></i> 2Fast</span>
+                            <span><i class="fas fa-comments"></i> 0</span>
+                        </div>
+                        <a href="/blog-module/blog-entries/20251011W/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+    </div>
+  </div>
+</section>
+
+<!-- Scroll To Top Button -->
+<button id="scroll-to-top" class="scroll-to-top-btn">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<footer class="py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center">
+        <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+        <div class="social-media">
+          <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+          <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JavaScript - Make sure this loads properly -->
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Background Randomizer Script -->
+<script defer src="/scripts/background-randomizer.js"></script>
+<!-- Main Scripts -->
+<script defer src="/scripts/script.js"></script>
+<script defer src="/blog-module/blog/article-script.js"></script>
+<!-- Social Sharing Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Replace placeholder URLs with actual URL
+    const currentUrl = window.location.href;
+    const articleTitle = document.querySelector('.article-title').textContent;
+    const encodedTitle = encodeURIComponent(articleTitle);
+
+    // Update sharing links
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      if (btn.href) {
+        btn.href = btn.href
+                .replace('https://f1stories.gr/blog-module/blog-entries/20260218W/article.html', encodeURIComponent(currentUrl))
+                .replace('Η Χρυσή εποχή των V8 και του blown diffuser', encodedTitle);
+      }
+    });
+
+    // Handle copy link button
+    const copyLinkBtn = document.getElementById('copy-link-btn');
+    if (copyLinkBtn) {
+      copyLinkBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(currentUrl)
+                .then(() => {
+                  copyLinkBtn.classList.add('copy-success');
+
+                  // Change icon temporarily to checkmark
+                  const icon = copyLinkBtn.querySelector('i');
+                  icon.classList.remove('fa-link');
+                  icon.classList.add('fa-check');
+
+                  // Reset after 2 seconds
+                  setTimeout(() => {
+                    copyLinkBtn.classList.remove('copy-success');
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-link');
+                  }, 2000);
+                })
+                .catch(err => {
+                  console.error('Failed to copy: ', err);
+                });
+      });
+    }
+  });
+</script>
+<script defer src="/scripts/theme-toggle.js"></script>
+<script defer src="/scripts/navbar.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Article loaded, checking images...");
+        document.querySelectorAll('img').forEach(img => {
+            console.log("Image found:", img.src);
+            img.addEventListener('error', function() {
+                console.error("Image failed to load:", this.src);
+                this.style.border = "2px dashed red";
+                this.style.padding = "10px";
+                this.setAttribute('data-failed', 'true');
+            });
+            img.addEventListener('load', function() {
+                console.log("Image loaded successfully:", this.src);
+            });
+        });
+    });
+    </script></body>
+</html>
