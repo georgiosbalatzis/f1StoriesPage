@@ -1,0 +1,575 @@
+/* ============================================================
+   F1 STORIES — DESIGN FOUNDATION v2.0
+   Phase 2: Clean Minimal Visual System
+   ============================================================
+   This file replaces the scattered variable definitions across
+   styles.css and modern-dark-mode.css with a single, cohesive
+   design-token layer + one unified Card component.
+   ============================================================ */
+
+/* ────────────────────────────────────────────────────────────
+   2.1  PALETTE — One accent, strict hierarchy
+   ──────────────────────────────────────────────────────────── */
+:root {
+  /* Background scale (dark → light) */
+  --bg-base:        #0b1120;          /* page background              */
+  --bg-surface:     #111b2e;          /* cards, panels, nav            */
+  --bg-surface-alt: #162236;          /* hover states, nested panels   */
+  --bg-overlay:     rgba(11,17,32,.92); /* modals, dropdowns, cookie   */
+
+  /* Text scale (light → dark) */
+  --text-primary:   #eaf0f6;          /* headings, body                */
+  --text-secondary: #8b9cb6;          /* meta, captions, muted         */
+  --text-tertiary:  #586a85;          /* disabled, placeholders        */
+
+  /* Accent — cyan only */
+  --accent:         #00d4ff;          /* links, buttons, active rings  */
+  --accent-hover:   #33dfff;          /* lighter on hover              */
+  --accent-muted:   rgba(0,212,255,.12); /* subtle tints, backgrounds */
+  --accent-glow:    rgba(0,212,255,.25); /* box-shadow highlights      */
+
+  /* Semantic — red is reserved */
+  --danger:         #e2302a;          /* errors, alerts, "red flag"    */
+  --danger-muted:   rgba(226,48,42,.12);
+  --success:        #1aa34a;
+  --success-muted:  rgba(26,163,74,.12);
+
+  /* Borders */
+  --border:         rgba(255,255,255,.06);
+  --border-accent:  rgba(0,212,255,.18);
+
+  /* ──────────────────────────────────────────────────────────
+     2.2  TYPOGRAPHY SCALE
+     ────────────────────────────────────────────────────────── */
+
+  /* Font stack — a single refined sans-serif.
+     Swap 'Roboto' for a more distinctive choice if you load
+     one via Google Fonts; the rest of the system stays the same. */
+  --font-body:      'Roboto', system-ui, -apple-system, sans-serif;
+  --font-display:   'Roboto', system-ui, -apple-system, sans-serif;
+
+  /* Modular scale (1.25 ratio, base 1rem = 16 px) */
+  --text-xs:   0.75rem;   /* 12 px  — badges, fine print          */
+  --text-sm:   0.875rem;  /* 14 px  — meta, captions               */
+  --text-base: 1rem;      /* 16 px  — body                         */
+  --text-lg:   1.125rem;  /* 18 px  — card titles                  */
+  --text-xl:   1.5rem;    /* 24 px  — section titles (h2)          */
+  --text-2xl:  2rem;      /* 32 px  — large section titles          */
+  --text-3xl:  2.75rem;   /* 44 px  — hero title (h1)              */
+
+  --leading-tight:  1.2;
+  --leading-normal: 1.6;
+  --max-prose:      68ch;  /* max readable line width */
+
+  /* ──────────────────────────────────────────────────────────
+     2.3  SPACING & RADIUS
+     ────────────────────────────────────────────────────────── */
+  --space-xs:  0.25rem;
+  --space-sm:  0.5rem;
+  --space-md:  1rem;
+  --space-lg:  1.5rem;
+  --space-xl:  2.5rem;
+  --space-2xl: 4rem;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* ──────────────────────────────────────────────────────────
+     SHADOWS
+     ────────────────────────────────────────────────────────── */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.25);
+  --shadow-md:  0 4px 12px rgba(0,0,0,.30);
+  --shadow-lg:  0 8px 24px rgba(0,0,0,.35);
+  --shadow-glow: 0 0 18px var(--accent-glow);
+
+  /* ──────────────────────────────────────────────────────────
+     TRANSITIONS
+     ────────────────────────────────────────────────────────── */
+  --ease-out:   cubic-bezier(.2, .8, .3, 1);
+  --ease-bounce: cubic-bezier(.175, .885, .32, 1.275);
+  --dur-fast:   .15s;
+  --dur-base:   .25s;
+  --dur-slow:   .4s;
+}
+
+
+/* ============================================================
+   GLOBAL RESETS & BASE
+   ============================================================ */
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+}
+
+/* Readable prose containers */
+.prose {
+  max-width: var(--max-prose);
+}
+
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+h1, .h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+h2, .h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  /* Replaces old border-bottom + ::after gradient bar.
+     Now: a thin accent underline only, via a simple border. */
+  border-bottom: 2px solid var(--accent);
+  display: inline-block;
+  padding-bottom: var(--space-xs);
+  margin-bottom: var(--space-xl);
+}
+/* Remove the old animated gradient ::after on h2 */
+h2::after { display: none; }
+
+h3, .h3 {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  color: var(--text-primary);
+}
+
+/* Card titles specifically */
+.card-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: var(--leading-tight);
+}
+
+/* Small / meta text */
+.text-meta {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-normal);
+}
+.text-xs {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+/* Responsive type */
+@media (max-width: 767.98px) {
+  :root {
+    --text-3xl: 2.125rem;
+    --text-2xl: 1.5rem;
+    --text-xl:  1.25rem;
+  }
+}
+@media (max-width: 575.98px) {
+  :root {
+    --text-3xl: 1.75rem;
+    --text-2xl: 1.375rem;
+  }
+}
+
+
+/* ============================================================
+   2.3  THE CARD — One component, many variants
+   ============================================================
+
+   Usage:
+     <div class="card">…</div>                  — base
+     <div class="card card--media">…</div>       — has image top
+     <div class="card card--compact">…</div>     — less padding
+     <div class="card card--stat">…</div>        — BetCast numbers
+
+   Structure (media variant):
+     .card
+       .card__media          — image / video wrapper
+         img.card__img
+       .card__body
+         .card__title
+         .card__text
+         .card__meta
+         .card__action
+   ============================================================ */
+
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-accent);
+}
+
+/* Top-edge accent line on hover */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+  z-index: 1;
+}
+.card:hover::before {
+  opacity: 1;
+}
+
+/* ── Card internals ───────────────────────────────────────── */
+
+.card__media {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-base);
+}
+.card__media img,
+.card__media iframe,
+.card__media video {
+  width: 100%;
+  display: block;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.card:hover .card__media img {
+  transform: scale(1.04);
+}
+
+.card__body {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card__title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm);
+  line-height: var(--leading-tight);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.card:hover .card__title {
+  color: var(--accent);
+}
+
+.card__text {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-normal);
+  margin: 0 0 var(--space-md);
+  /* Clamp to 3 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card__meta {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-top: auto;
+  padding-top: var(--space-sm);
+}
+
+.card__action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  margin-top: auto;
+  padding-top: var(--space-sm);
+  transition: gap var(--dur-fast) var(--ease-out);
+}
+.card:hover .card__action {
+  gap: var(--space-sm);
+}
+.card__action i {
+  font-size: 0.75em;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.card:hover .card__action i {
+  transform: translateX(3px);
+}
+
+
+/* ── Card variant: --media ────────────────────────────────── */
+/* Has an image/video at top. Identical base, just ensures
+   the media container has a fixed aspect ratio. */
+
+.card--media .card__media {
+  aspect-ratio: 16 / 9;
+}
+.card--media .card__media img {
+  height: 100%;
+  object-fit: cover;
+}
+
+
+/* ── Card variant: --compact ──────────────────────────────── */
+.card--compact .card__body {
+  padding: var(--space-md);
+}
+.card--compact .card__title {
+  font-size: var(--text-base);
+}
+.card--compact .card__text {
+  -webkit-line-clamp: 2;
+}
+
+
+/* ── Card variant: --stat  (BetCast-style numbers) ────────── */
+.card--stat {
+  text-align: center;
+  padding: var(--space-lg);
+}
+.card--stat .stat__value {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: var(--space-xs);
+}
+.card--stat .stat__label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.card--stat .stat__delta {
+  font-size: var(--text-xs);
+  margin-top: var(--space-xs);
+}
+.card--stat .stat__delta--up   { color: var(--success); }
+.card--stat .stat__delta--down { color: var(--danger); }
+
+
+/* ── Card variant: --person (driver/host cards) ───────────── */
+.card--person {
+  text-align: center;
+  padding: var(--space-xl) var(--space-lg);
+}
+.card--person .card__avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 2px solid var(--border-accent);
+  margin: 0 auto var(--space-md);
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+.card--person:hover .card__avatar {
+  transform: scale(1.06);
+  box-shadow: var(--shadow-glow);
+}
+.card--person .card__title {
+  margin-bottom: var(--space-xs);
+}
+.card--person .card__role {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+
+/* ============================================================
+   MAPPING — old class → new tokens
+   ============================================================
+   These aliases let existing HTML work without renaming every
+   class. Over time, migrate markup to the .card BEM classes.
+   ============================================================ */
+
+/* Blog cards */
+.blog-card  { composes: card card--media; }
+.blog-card  { background: var(--bg-surface); border-color: var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.blog-title { font-size: var(--text-lg); font-weight: 600; color: var(--text-primary); }
+.blog-excerpt { font-size: var(--text-sm); color: var(--text-secondary); line-height: var(--leading-normal); }
+.blog-read-more { color: var(--accent); font-weight: 600; font-size: var(--text-sm); }
+
+/* Episode cards */
+.episode-card { background: var(--bg-surface); border-color: var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.video-title  { font-size: var(--text-lg); font-weight: 600; color: var(--text-primary); }
+.video-description { font-size: var(--text-sm); color: var(--text-secondary); }
+
+/* Persona cards (about / guests) */
+.persona { background: var(--bg-surface); border-color: var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.persona .avatar { border-color: var(--border-accent); }
+.persona:hover .avatar { box-shadow: var(--shadow-glow); }
+
+/* Navbar */
+.navbar { background: var(--bg-overlay); border-color: var(--border); }
+.navbar.scrolled { box-shadow: var(--shadow-md); }
+.navbar-dark .navbar-nav .nav-link { color: var(--text-primary); }
+.navbar-dark .navbar-nav .nav-link:hover { color: var(--accent); }
+
+/* Buttons */
+.cta-button {
+  background: var(--accent);
+  color: var(--bg-base);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 1.5rem;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+  box-shadow: var(--shadow-sm);
+}
+.cta-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+  color: var(--bg-base);
+}
+
+/* Links default to accent */
+a { color: var(--accent); }
+a:hover { color: var(--accent-hover); }
+
+/* Cookie banner */
+.cookie-banner { background: var(--bg-overlay); border-color: var(--border); }
+.cookie-header h3 { color: var(--accent); }
+.accept-btn { background: var(--accent); color: var(--bg-base); }
+
+/* Footer */
+footer { background: var(--bg-base); border-top-color: var(--border); }
+.footer-link { color: var(--text-secondary); }
+.footer-link:hover { color: var(--accent); }
+
+/* Scroll-to-top */
+.scroll-to-top-btn { background: var(--accent); color: var(--bg-base); }
+.scroll-to-top-btn:hover { box-shadow: var(--shadow-glow); }
+
+/* Form inputs */
+.form-control {
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+}
+.form-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-muted);
+  background: var(--bg-surface);
+}
+.form-control::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Contact container */
+.contact-container {
+  background: var(--bg-surface);
+  border-color: var(--border);
+  border-radius: var(--radius-md);
+}
+.contact-container::before {
+  background: var(--accent);
+  height: 2px;
+}
+
+/* Social media */
+.social-media a {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+.social-media a:hover {
+  color: var(--accent);
+  border-color: var(--border-accent);
+  background: var(--accent-muted);
+}
+
+/* Dropdowns */
+.custom-dropdown-menu {
+  background: var(--bg-overlay);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+.dropdown-item { color: var(--text-primary); }
+.dropdown-item:hover {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+/* Blog date badge */
+.blog-date {
+  background: var(--bg-overlay);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.blog-date .day { color: var(--accent); }
+.blog-date .month { color: var(--text-secondary); }
+
+/* Alerts / status */
+#form-success { background: var(--success-muted); border-left: 3px solid var(--success); color: var(--text-primary); }
+#form-error   { background: var(--danger-muted);  border-left: 3px solid var(--danger);  color: var(--text-primary); }
+
+/* Background */
+.background {
+  background: linear-gradient(-45deg, #061025, #0b1a3a, #0d2040, #061025);
+  background-size: 400% 400%;
+}
+
+/* Streaks — single accent color */
+.streak {
+  background: linear-gradient(90deg, transparent, rgba(0,212,255,.35), transparent);
+}
+
+/* Hero */
+#hero::before {
+  background: linear-gradient(to right, rgba(11,17,32,.85), rgba(11,17,32,.65));
+}
+.hero-content h1 {
+  color: var(--text-primary);
+  text-shadow: none;
+  /* Remove gradient text fill from modern-dark-mode */
+  -webkit-text-fill-color: unset;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+}
+.hero-content p {
+  color: var(--text-secondary);
+}
+
+/* Section background normalisation */
+section {
+  background: transparent;
+  border-top-color: var(--border);
+}
+section::before {
+  display: none; /* remove the old radial glow overlay */
+}
