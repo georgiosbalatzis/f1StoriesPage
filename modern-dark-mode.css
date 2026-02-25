@@ -1,111 +1,666 @@
-/* ============================================================
-   F1 STORIES — Modern Dark Mode Enhancement v2.0
-   ============================================================
-   This is a THIN layer on top of styles.css.
-   It inherits all design tokens and only adds:
-   - Glass/blur refinements
-   - Subtle motion enhancements
-   - A few cosmetic upgrades
-   
-   All colours, spacing, radii, and card styles come from
-   the base tokens in styles.css. No variable redefinitions.
-   ============================================================ */
+/* F1 Stories Modern Dark Mode 2025 - Optimized */
 
-/* Enhanced glass blur on key surfaces */
-.navbar,
-.contact-container,
-.cookie-banner,
-.modal-content,
-.custom-dropdown-menu {
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+:root {
+  /* Base Colors */
+  --dark-bg: #0a0e17;
+  --dark-surface: #111927;
+  --primary: #0088ff;
+  --accent: #00ddff;
+  --text-primary: #f0f0f0;
+  --text-secondary: #b0b8c1;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, var(--primary), var(--accent));
+  --gradient-surface: linear-gradient(135deg, rgba(17, 25, 39, 0.8), rgba(10, 14, 23, 0.8));
+  
+  /* Effects */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.4);
+  
+  /* Animation */
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-medium: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Slightly rounded navbar bottom edge */
+/* Modern Background */
+body {
+  background-color: var(--dark-bg);
+  color: var(--text-primary);
+  font-family: 'Roboto', system-ui, -apple-system, sans-serif;
+}
+
+.background {
+  background: linear-gradient(-45deg, #001a33, #003366, #004080, #001a33);
+  background-size: 400% 400%;
+  animation: gradientAnimation 18s ease infinite;
+  opacity: 0.8;
+}
+
+/* Enhanced Streaks */
+.streak {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 136, 255, 0.7), rgba(0, 221, 255, 0.7), transparent);
+  animation: streakAnimation 12s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Glass Effect Base */
+.glass-effect {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(10, 14, 23, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-md);
+  border-radius: 12px;
+}
+
+.navbar, .contact-container, .blog-card, .episode-card, .persona, .cookie-banner, .modal-content {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(10, 14, 23, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-md);
+  border-radius: 12px;
+}
+
+/* Card Hover Effects */
+.card-hover {
+  transition: all var(--transition-slow);
+  position: relative;
+  overflow: hidden;
+}
+
+.blog-card, .episode-card, .persona {
+  transition: all var(--transition-slow);
+  position: relative;
+  overflow: hidden;
+}
+
+.blog-card:hover, .episode-card:hover, .persona:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(0, 136, 255, 0.2);
+  background: rgba(17, 25, 39, 0.9);
+}
+
+/* Enhanced hover light effect */
+.hover-light::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity var(--transition-medium);
+}
+
+.blog-card::after, .episode-card::after, .persona::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity var(--transition-medium);
+}
+
+.blog-card:hover::after, .episode-card:hover::after, .persona:hover::after {
+  opacity: 1;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: 3.5rem;
+  line-height: 1.1;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+h2 {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+}
+
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--gradient-primary);
+  border-radius: 3px;
+}
+
+/* Enhanced Navbar */
 .navbar {
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    border-top: none;
+  padding: 0.75rem 1rem;
+  background: rgba(10, 14, 23, 0.9);
+  border-radius: 0 0 16px 16px;
+  border-top: none;
 }
 
-/* Enhanced card hover — adds a soft glow ring */
-.blog-card:hover,
-.episode-card:hover,
-.persona:hover,
-.card:hover {
-    box-shadow: var(--shadow-md), 0 0 0 1px var(--border-accent);
+.navbar.scrolled {
+  background: rgba(10, 14, 23, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* Social media icon rounded-square shape */
-.social-media a {
-    border-radius: var(--radius-md);
+.navbar-brand img {
+  transition: filter var(--transition-medium);
 }
 
-/* Scroll-to-top icon bounce on hover */
-.scroll-to-top-btn:hover i {
-    transform: translateY(-3px);
+.navbar-brand:hover img {
+  filter: drop-shadow(0 0 8px rgba(0, 221, 255, 0.5));
 }
 
-/* Podcast player subtle lift */
-.podcast-player:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+.navbar-dark .navbar-nav .nav-link {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  position: relative;
+  padding: 0.5rem 1rem;
 }
 
-/* Avatar gradient border trick */
-.persona .avatar {
-    border: 3px solid transparent;
-    background-origin: border-box;
-    background-clip: content-box, border-box;
-    background-image:
-        linear-gradient(var(--bg-surface), var(--bg-surface)),
-        linear-gradient(135deg, var(--accent), rgba(0,212,255,.4));
+.navbar-dark .navbar-nav .nav-link::after {
+  height: 2px;
+  background: var(--gradient-primary);
 }
 
-/* Hero clip-path with slightly more dramatic angle */
+/* Custom dropdown enhancements */
+.custom-dropdown-menu {
+  border-radius: 12px;
+  padding: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 14, 23, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-md);
+}
+
+.dropdown-item {
+  border-radius: 6px;
+  margin: 2px 0;
+  transition: all var(--transition-fast);
+}
+
+.dropdown-item:hover {
+  background: rgba(0, 136, 255, 0.1);
+}
+
+.dropdown-item.betcast-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.dropdown-item.betcast-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-primary);
+  opacity: 0.05;
+  z-index: -1;
+}
+
+/* Modern Button Styles */
+.cta-button {
+  background: var(--gradient-primary);
+  border-radius: 8px;
+  padding: 0.75rem 1.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-medium);
+}
+
+.cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+  transform: translateX(-100%);
+  transition: transform 0.7s ease;
+  z-index: -1;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.cta-button:hover::before {
+  transform: translateX(100%);
+}
+
+/* Hero Section Enhancement */
 #hero {
-    clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%);
+  position: relative;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%);
 }
 
-/* Blog/episode title underline animation */
-.blog-title::after,
-.video-title::after {
-    transition: width var(--dur-slow) var(--ease-out);
+#hero::before {
+  background: linear-gradient(to right, rgba(0, 10, 30, 0.8), rgba(0, 25, 60, 0.7));
 }
 
-/* Cookie banner rounded top */
+.hero-content h1 {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero-content p {
+  font-size: 1.5rem;
+  line-height: 1.4;
+  margin-bottom: 2rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Enhanced Forms */
+.form-control {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--text-primary);
+  transition: all var(--transition-medium);
+  padding: 0.75rem 1rem;
+}
+
+.form-control:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 136, 255, 0.2);
+}
+
+.form-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+/* Contact Form Enhancement */
+.contact-container {
+  background: rgba(17, 25, 39, 0.7);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  position: relative;
+}
+
+.contact-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--gradient-primary);
+}
+
+/* Social Media Icons */
+.social-media a {
+  transition: all var(--transition-slow);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.social-media a:hover {
+  transform: translateY(-5px) scale(1.1);
+  color: var(--accent);
+  background: rgba(0, 136, 255, 0.1);
+  border-color: rgba(0, 136, 255, 0.2);
+}
+
+/* Avatar Enhancement */
+.persona .avatar {
+  border: 3px solid transparent;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  background-image: linear-gradient(var(--dark-surface), var(--dark-surface)), var(--gradient-primary);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-slow);
+}
+
+.persona:hover .avatar {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 136, 255, 0.3);
+}
+
+/* Modern Footer */
+footer {
+  background: linear-gradient(to bottom, transparent, rgba(0, 10, 20, 0.8));
+  padding: 2rem 0;
+  position: relative;
+}
+
+.footer-links {
+  margin-top: 1.5rem;
+}
+
+.footer-link {
+  color: var(--text-secondary);
+  position: relative;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all var(--transition-medium);
+}
+
+.footer-link:hover {
+  color: var(--accent);
+  background: rgba(0, 136, 255, 0.1);
+}
+
+/* Scroll to Top Button */
+.scroll-to-top-btn {
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  box-shadow: var(--shadow-md);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-slow);
+}
+
+.scroll-to-top-btn:hover {
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.scroll-to-top-btn i {
+  transition: transform var(--transition-medium);
+}
+
+.scroll-to-top-btn:hover i {
+  transform: translateY(-3px);
+}
+
+/* Cookie Banner Enhancement */
 .cookie-banner {
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.5);
 }
 
-/* Fade-in with a slightly more polished ease */
+.cookie-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.cookie-header h3 {
+  color: var(--accent);
+}
+
+.cookie-actions button {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all var(--transition-medium);
+}
+
+.accept-btn {
+  background: var(--gradient-primary);
+}
+
+/* Podcast Player Enhancement */
+.podcast-player {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+}
+
+.podcast-player:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Blog and Episode Cards Enhancement */
+.blog-img-container, .video-container {
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+}
+
+.blog-date {
+  background: rgba(10, 14, 23, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.blog-title, .video-title {
+  position: relative;
+  display: inline-block;
+  transition: color var(--transition-medium);
+}
+
+.blog-title::after, .video-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transition: width var(--transition-medium);
+}
+
+.blog-card:hover .blog-title::after, .episode-card:hover .video-title::after {
+  width: 100%;
+}
+
+.blog-read-more {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  color: var(--primary);
+  font-weight: 500;
+  padding: 0.25rem 0;
+}
+
+.blog-read-more::after {
+  background: var(--gradient-primary);
+  height: 2px;
+}
+
+/* Fade-in animation enhancement */
 .fade-in {
-    transition: opacity 0.8s ease, transform 0.8s ease;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
-/* Float animation for mobile card interaction */
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(-4px); }
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Add support for system dark mode preference */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --dark-bg: #0a0e17;
+    --dark-surface: #111927;
+  }
+}
+
+/* Media queries adjustments */
+@media (max-width: 991.98px) {
+  h1 { font-size: 2.75rem; }
+  
+  .navbar-collapse {
+    background: rgba(10, 14, 23, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 0 0 16px 16px;
+  }
+  
+  .navbar-toggler {
+    border: none;
+    padding: 0.5rem;
+    transition: transform var(--transition-fast);
+  }
+  
+  .navbar-toggler:focus { box-shadow: none; }
+  .navbar-toggler:active { transform: scale(0.95); }
+  
+  .dropdown-item { padding: 0.75rem 1rem; }
+  
+  .navbar-nav .nav-link {
+    padding: 0.75rem 1rem;
+    margin: 0.25rem 0;
+    border-radius: 8px;
+  }
+  
+  .navbar-nav .nav-link:active {
+    background: rgba(0, 136, 255, 0.1);
+  }
+  
+  .custom-dropdown-menu {
+    margin-left: 1rem;
+    border-left: 2px solid var(--primary);
+  }
 }
 
 @media (max-width: 767.98px) {
-    .blog-card:hover,
-    .episode-card:hover,
-    .persona:hover {
-        animation: float 3s ease-in-out infinite;
-    }
+  h1 { font-size: 2.25rem; }
+  h2 { font-size: 1.75rem; }
+  
+  #hero {
+    min-height: 60vh;
+    padding: 6rem 0;
+  }
+  
+  .hero-content h1 { font-size: 2.5rem; }
+  .hero-content p { font-size: 1.25rem; }
+  
+  .cta-button { padding: 0.6rem 1.5rem; }
+  
+  .social-media a {
+    width: 38px;
+    height: 38px;
+  }
+  
+  .blog-card:hover, .episode-card:hover, .persona:hover {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .social-media a {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 1.3rem;
+  }
+  
+  .scroll-to-top-btn {
+    width: 45px;
+    height: 45px;
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  .blog-read-more {
+    padding: 0.5rem 0;
+    display: inline-block;
+  }
+  
+  .container { overflow-x: hidden; }
+  
+  h1, h2, h3, p, .blog-title {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  pre, code {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  
+  body { padding-bottom: 60px; }
+  
+  .fixed-top { position: absolute; }
+  
+  .modal-dialog {
+    margin: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+  
+  .spinner-border {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  body {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  
+  .blog-excerpt {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    -webkit-line-clamp: 2;
+  }
 }
 
-/* Mobile nav collapse styling */
-@media (max-width: 991.98px) {
-    .navbar-collapse {
-        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    }
-    .navbar-toggler {
-        border: none;
-        padding: 0.5rem;
-        transition: transform var(--dur-fast) var(--ease-out);
-    }
-    .navbar-toggler:focus { box-shadow: none; }
-    .navbar-toggler:active { transform: scale(0.95); }
+@media (max-width: 575.98px) {
+  .hero-content h1 { font-size: 2rem; }
+  .hero-content p { font-size: 1rem; }
+  
+  h2 { font-size: 1.5rem; }
+  
+  .cookie-banner { max-height: 85vh; }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .social-media a {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+/* Add a subtle floating animation for cards */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Better image loading on mobile */
+.blog-img, .avatar {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Add fast-tap for mobile - removes 300ms delay */
+a, button, .cta-button, .nav-link {
+  touch-action: manipulation;
 }
