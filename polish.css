@@ -1,0 +1,366 @@
+/* ============================================================
+   F1 STORIES — polish.css (Phase 9)
+   Final polish layer — loaded LAST after all other CSS.
+   
+   9.1 Consistency fixes
+   9.2 Accessibility (focus rings, contrast, keyboard nav)
+   9.3 Performance hints
+   ============================================================ */
+
+
+/* ============================================================
+   9.1  CONSISTENCY PASS
+   ============================================================ */
+
+/* ── Buttons: normalise margin, ensure consistent sizing ── */
+.cta-button {
+    margin: 0;                  /* Remove legacy 0.5rem margin — let layout handle gaps */
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+}
+
+/* ── Button variants: single source (no duplication across pages) ── */
+.cta-primary {
+    background: var(--accent);
+    color: var(--bg-base);
+    border: 1px solid transparent;
+    box-shadow: var(--shadow-sm);
+}
+.cta-primary:hover {
+    background: var(--accent-hover);
+    color: var(--bg-base);
+    box-shadow: var(--shadow-glow);
+}
+.cta-primary i { margin-right: 0.35rem; }
+
+.cta-secondary {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    box-shadow: none;
+}
+.cta-secondary:hover {
+    background: var(--accent-muted);
+    color: var(--accent);
+    box-shadow: none;
+}
+
+.cta-sm {
+    padding: 0.5rem 1.25rem;
+    font-size: var(--text-sm);
+}
+.cta-sm i {
+    margin-left: 0.3rem;
+    font-size: 0.75em;
+    transition: transform var(--dur-fast) var(--ease-out);
+}
+.cta-sm:hover i {
+    transform: translateX(3px);
+}
+
+/* ── Cards: ensure ALL card types share identical hover behaviour ── */
+.card:hover,
+.blog-card:hover,
+.episode-card:hover,
+.ep-card:hover,
+.persona:hover,
+.listen-block:hover,
+.contact-block:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-accent);
+}
+
+/* ── Cards: consistent border-radius everywhere ── */
+.card,
+.blog-card,
+.episode-card,
+.ep-card,
+.persona,
+.skeleton-card,
+.contact-block,
+.listen-block {
+    border-radius: var(--radius-md);
+}
+
+/* ── Accent colour: ensure no stray blue/teal from legacy ── */
+.blog-meta i,
+.blog-read-more,
+.blog-card:hover .blog-title,
+.episode-card:hover .video-title,
+.ep-card:hover .ep-card__title,
+.card:hover .card__title,
+.persona:hover h3,
+.nav-link:hover,
+.dropdown-item:hover,
+.footer-link:hover,
+.footer-links-list a:hover,
+.footer-social a:hover,
+.social-media a:hover,
+.cookie-header h3,
+.badge-essential {
+    color: var(--accent);
+}
+
+/* ── Spacing: normalise section padding ── */
+section {
+    padding: var(--space-2xl) 0;
+}
+
+/* ── Typography: ensure h2 border is always accent ── */
+h2, .h2 {
+    border-bottom-color: var(--accent);
+}
+
+/* ── Form inputs: consistent dark background ── */
+.contact-form input,
+.contact-form textarea,
+.form-control {
+    background-color: var(--bg-surface-alt);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+.contact-form input::placeholder,
+.contact-form textarea::placeholder,
+.form-control::placeholder {
+    color: var(--text-tertiary);
+}
+
+
+/* ============================================================
+   9.2  ACCESSIBILITY PASS
+   ============================================================ */
+
+/* ── Global focus-visible ring ── 
+   Uses a 2px offset ring in accent colour. 
+   Visible on keyboard nav, hidden on mouse click. */
+*:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ── Remove default outline for mouse users ── */
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* ── Buttons: explicit focus ring ── */
+.cta-button:focus-visible,
+.cta-primary:focus-visible,
+.cta-secondary:focus-visible,
+.cookie-btn:focus-visible,
+.filter-chip:focus-visible,
+.latest-tab:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px var(--accent-muted);
+}
+
+/* ── Nav links: focus ring ── */
+.nav-link:focus-visible,
+.dropdown-item:focus-visible,
+.custom-dropdown-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    background: var(--accent-muted);
+    border-radius: var(--radius-sm);
+}
+
+/* ── Cards: focus ring on linked cards ── */
+a.ep-card:focus-visible,
+.card:focus-visible,
+.blog-card a:focus-visible,
+.episode-card a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ── Social icons: focus ring ── */
+.social-media a:focus-visible,
+.footer-social a:focus-visible,
+.platform-icon:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px var(--accent-muted);
+}
+
+/* ── Form inputs: focus state (already set, but reinforce) ── */
+.form-control:focus-visible,
+.contact-form input:focus-visible,
+.contact-form textarea:focus-visible {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-muted);
+    outline: none;  /* Use border/shadow instead of outline for inputs */
+}
+
+/* ── Toggle switch: focus ring on the checkbox ── */
+.toggle-switch input:focus-visible + .toggle-slider {
+    box-shadow: 0 0 0 3px var(--accent-muted);
+}
+
+/* ── Scroll-to-top: focus ring ── */
+.scroll-to-top-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ── Close button: focus ring ── */
+.close-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ── Navbar toggler: restore focus ring (overrides modern-dark-mode removal) ── */
+.navbar-toggler:focus-visible {
+    box-shadow: 0 0 0 3px var(--accent-muted) !important;
+    outline: none;
+}
+
+/* ── Contrast fixes ──
+   --text-tertiary (#586a85) on --bg-base (#0b1120):
+   Ratio ≈ 3.4:1 — below 4.5:1 for normal text.
+   Bump to #6e829c for better readability. */
+:root {
+    --text-tertiary: #6e829c;
+}
+
+/* ── Skip to content link (screen reader + keyboard users) ── */
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: var(--bg-base);
+    padding: 0.5rem 1.5rem;
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    z-index: 10000;
+    text-decoration: none;
+    transition: top var(--dur-fast) var(--ease-out);
+}
+.skip-link:focus {
+    top: 0;
+}
+
+/* ── Reduced motion preference ── */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .background {
+        animation: none !important;
+    }
+    .streak {
+        animation: none !important;
+        display: none;
+    }
+    .fade-in {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    .skeleton-pulse {
+        animation: none !important;
+        opacity: 0.35;
+    }
+}
+
+/* ── ARIA hidden elements should not be focusable ── */
+[aria-hidden="true"] *:focus {
+    outline: none;
+}
+
+
+/* ============================================================
+   9.3  PERFORMANCE PASS
+   ============================================================ */
+
+/* ── GPU-accelerated elements ── */
+.card,
+.blog-card,
+.episode-card,
+.ep-card,
+.persona,
+.cta-button,
+.scroll-to-top-btn,
+.navbar,
+.cookie-banner {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* ── Images: contain paint ── */
+img {
+    content-visibility: auto;
+}
+
+.blog-img,
+.avatar,
+.team-member__avatar,
+.team-guest__avatar,
+.ep-card__thumb img,
+.card__media img {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* ── Reduce paint area for fixed elements ── */
+.navbar,
+.cookie-banner,
+.scroll-to-top-btn {
+    contain: layout style;
+}
+
+/* ── Font display optimization ── */
+@font-face {
+    font-display: swap;
+}
+
+/* ── Touch optimization ── */
+a,
+button,
+.cta-button,
+.nav-link,
+.filter-chip,
+.latest-tab,
+.dropdown-item,
+.toggle-switch,
+.scroll-to-top-btn,
+.close-btn {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Ensure lazy-loaded images don't cause layout shift ── */
+.ep-card__thumb,
+.card__media,
+.blog-img-container {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+}
+
+.team-member__avatar,
+.team-guest__avatar,
+.persona .avatar {
+    aspect-ratio: 1;
+}
+
+/* ── Skeleton cards: lightweight rendering ── */
+.skeleton-card {
+    contain: content;
+}
+
+/* ── Reduce complexity during scroll ── */
+@media (prefers-reduced-motion: no-preference) {
+    .streak {
+        contain: strict;
+    }
+}
