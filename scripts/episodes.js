@@ -1,318 +1,242 @@
-/* ============================================================
-   F1 STORIES — episodes.js (Phase 4)
-   
-   Handles:
-   - Skeleton → real card transition
-   - Filter bar logic
-   - Standardized episode card rendering
-   - Load more pagination
-   
-   Integration:
-   - This expects your YouTube API to provide episode data.
-   - If window.f1Episodes is set before this script runs, it
-     will use that data. Otherwise, it hooks into your existing
-     f1-optimized.js episode loading via MutationObserver.
-   
-   Data shape expected per episode:
-   {
-     id: 'youtube-video-id',
-     title: 'Episode title',
-     date: '2025-01-15',           // ISO date string
-     duration: '58:32',            // or seconds
-     description: 'Short desc...',
-     thumbnail: 'https://img.youtube.com/vi/.../hqdefault.jpg',
-     category: 'betcast|live|boxbox|podcast|shorts|general',
-     url: 'https://youtube.com/watch?v=...'
-   }
-   ============================================================ */
+// episodes.js - Clean YouTube API integration for main page
+document.addEventListener('DOMContentLoaded', function() {
+    // YouTube channel details
+    const channelId = 'UCTSK8lbEiHJ10KVFrhNaL4g'; // F1 Stories channel ID
+    const maxResults = 3; // Number of videos to display on main page
 
-(function() {
-    'use strict';
+    // YouTube API Key
+    const apiKey = 'AIzaSyCE0vy99ror_w6PJtVGSnahyCz8n4Fq0P8';
 
-    /* ── Config ── */
-    var CARDS_PER_PAGE = 9;
-    var currentFilter = 'all';
-    var allEpisodes = [];
-    var visibleCount = 0;
+    // Function to fetch videos using YouTube's RSS feed
+    async function fetchChannelVideos() {
+        try {
+            // Use YouTube's RSS feed which doesn't require an API key
+            const proxyUrl = 'https://api.allorigins.win/raw?url=';
+            const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+            const response = await fetch(proxyUrl + encodeURIComponent(feedUrl));
 
-    /* ── DOM refs ── */
-    var grid = document.getElementById('episodes-grid');
-    var emptyState = document.getElementById('episodes-empty');
-    var loadMoreBtn = document.getElementById('load-more-btn');
-    var filterChips = document.querySelectorAll('.filter-chip');
-    var filterCount = document.querySelector('.filter-status__count');
-    var filterClear = document.querySelector('.filter-status__clear');
+            if (!response.ok) {
+                throw new Error(`RSS feed request failed: ${response.status}`);
+            }
 
-    /* ── Utilities ── */
-    function formatDate(dateStr) {
-        if (!dateStr) return '';
-        var d = new Date(dateStr);
-        if (isNaN(d.getTime())) return dateStr;
-        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+            const xmlText = await response.text();
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlText, "application/xml");
+
+            // Extract video information from the feed
+            const entries = xmlDoc.getElementsByTagName('entry');
+
+            if (!entries || entries.length === 0) {
+                throw new Error('No entries found in RSS feed');
+            }
+
+            // Collect video IDs
+            const videoIds = [];
+            for (let i = 0; i < Math.min(entries.length, maxResults); i++) {
+                const videoId = entries[i].getElementsByTagName('yt:videoId')[0].textContent;
+                videoIds.push(videoId);
+            }
+
+            // Get additional details about these videos
+            if (videoIds.length === 0) {
+                throw new Error('No video IDs extracted from RSS feed');
+            }
+
+            const detailsEndpoint = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${videoIds.join(',')}&part=snippet,contentDetails,statistics`;
+            const detailsResponse = await fetch(detailsEndpoint);
+
+            if (!detailsResponse.ok) {
+                throw new Error(`Video details API failed: ${detailsResponse.status}`);
+            }
+
+            const detailsData = await detailsResponse.json();
+
+            if (!detailsData.items || detailsData.items.length === 0) {
+                throw new Error('No video details found in API response');
+            }
+
+            // Process the video details
+            return detailsData.items.map(item => ({
+                id: item.id,
+                title: item.snippet.title,
+                description: item.snippet.description.substring(0, 100) +
+                    (item.snippet.description.length > 100 ? '...' : ''),
+                date: new Date(item.snippet.publishedAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                duration: formatDuration(item.contentDetails.duration),
+                viewCount: formatViewCount(item.statistics.viewCount)
+            }));
+
+        } catch (error) {
+            console.error('Error fetching channel videos:', error);
+
+            // Try the YouTube Search API as alternative
+            try {
+                console.log('Using YouTube Search API as alternative method...');
+                const searchEndpoint = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&order=date&maxResults=${maxResults}&type=video`;
+                const searchResponse = await fetch(searchEndpoint);
+
+                if (!searchResponse.ok) {
+                    throw new Error(`Search API failed: ${searchResponse.status}`);
+                }
+
+                const searchData = await searchResponse.json();
+
+                if (!searchData.items || searchData.items.length === 0) {
+                    throw new Error('No videos found in search API response');
+                }
+
+                // Get the video IDs from search results
+                const videoIds = searchData.items.map(item => item.id.videoId);
+
+                // Get additional details
+                const detailsEndpoint = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${videoIds.join(',')}&part=snippet,contentDetails,statistics`;
+                const detailsResponse = await fetch(detailsEndpoint);
+
+                if (!detailsResponse.ok) {
+                    throw new Error(`Video details API failed: ${detailsResponse.status}`);
+                }
+
+                const detailsData = await detailsResponse.json();
+
+                if (!detailsData.items || detailsData.items.length === 0) {
+                    throw new Error('No video details found in API response');
+                }
+
+                // Process the video details
+                return detailsData.items.map(item => ({
+                    id: item.id,
+                    title: item.snippet.title,
+                    description: item.snippet.description.substring(0, 100) +
+                        (item.snippet.description.length > 100 ? '...' : ''),
+                    date: new Date(item.snippet.publishedAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    }),
+                    duration: formatDuration(item.contentDetails.duration),
+                    viewCount: formatViewCount(item.statistics.viewCount)
+                }));
+
+            } catch (searchError) {
+                console.error('Alternative method also failed:', searchError);
+                throw new Error('Could not retrieve videos after multiple attempts');
+            }
+        }
     }
 
-    function truncate(str, maxLen) {
-        if (!str) return '';
-        str = str.trim();
-        if (str.length <= maxLen) return str;
-        return str.substring(0, maxLen).trim() + '…';
-    }
+    // Format ISO 8601 duration to readable format
+    function formatDuration(isoDuration) {
+        if (!isoDuration) return '0:00';
 
-    function detectCategory(title) {
-        var t = (title || '').toLowerCase();
-        if (t.includes('betcast') || t.includes('bet cast')) return 'betcast';
-        if (t.includes('live') || t.includes('ζωντανά')) return 'live';
-        if (t.includes('box box') || t.includes('boxbox')) return 'boxbox';
-        if (t.includes('#shorts') || t.includes('short')) return 'shorts';
-        if (t.includes('podcast') || t.includes('ep.') || t.includes('episode')) return 'podcast';
-        return 'general';
-    }
+        const match = isoDuration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+        if (!match) return '0:00';
 
-    /* ── 4.2: Standardized card HTML ── */
-    function createCardHTML(ep) {
-        var cat = ep.category || detectCategory(ep.title);
-        var tagHTML = '';
-        
-        if (cat === 'live') {
-            tagHTML = '<span class="ep-card__tag ep-card__tag--live">LIVE</span>';
-        } else if (cat === 'shorts') {
-            tagHTML = '<span class="ep-card__tag ep-card__tag--shorts">Short</span>';
-        } else if (cat === 'betcast') {
-            tagHTML = '<span class="ep-card__tag">BetCast</span>';
-        } else if (cat === 'boxbox') {
-            tagHTML = '<span class="ep-card__tag">BoxBox</span>';
+        const hours = (match[1] && match[1].replace('H', '')) || 0;
+        const minutes = (match[2] && match[2].replace('M', '')) || 0;
+        const seconds = (match[3] && match[3].replace('S', '')) || 0;
+
+        let result = '';
+
+        if (hours > 0) {
+            result += hours + ':';
+            result += minutes.toString().padStart(2, '0') + ':';
+        } else {
+            result += minutes + ':';
         }
 
-        var durationHTML = ep.duration 
-            ? '<span class="ep-card__duration">' + ep.duration + '</span>' 
-            : '';
+        result += seconds.toString().padStart(2, '0');
 
-        var url = ep.url || ('https://www.youtube.com/watch?v=' + ep.id);
-        var thumb = ep.thumbnail || ('https://img.youtube.com/vi/' + ep.id + '/hqdefault.jpg');
-        var excerpt = truncate(ep.description || '', 80);
-        var metaDate = formatDate(ep.date);
-        var metaDuration = ep.duration ? '<i class="fas fa-clock"></i> ' + ep.duration : '';
-        var metaSep = (metaDate && metaDuration) ? ' <span style="opacity:.4">·</span> ' : '';
-
-        return '<div class="col-md-6 col-lg-4 ep-card-wrapper" data-category="' + cat + '">' +
-            '<a href="' + url + '" target="_blank" class="ep-card" title="' + (ep.title || '').replace(/"/g, '&quot;') + '">' +
-                '<div class="ep-card__thumb">' +
-                    '<img src="' + thumb + '" alt="' + (ep.title || '').replace(/"/g, '&quot;') + '" loading="lazy">' +
-                    tagHTML +
-                    durationHTML +
-                    '<div class="ep-card__play"><i class="fas fa-play"></i></div>' +
-                '</div>' +
-                '<div class="ep-card__body">' +
-                    '<h3 class="ep-card__title">' + (ep.title || 'Untitled') + '</h3>' +
-                    '<div class="ep-card__meta">' + metaDate + metaSep + metaDuration + '</div>' +
-                    (excerpt ? '<p class="ep-card__excerpt">' + excerpt + '</p>' : '') +
-                    '<span class="ep-card__cta">Play <i class="fas fa-play"></i></span>' +
-                '</div>' +
-            '</a>' +
-        '</div>';
+        return result;
     }
 
-    /* ── Remove skeletons ── */
-    function removeSkeletons(callback) {
-        var skeletons = grid.querySelectorAll('.skeleton-card-wrapper');
-        if (skeletons.length === 0) {
-            if (callback) callback();
+    // Format view count
+    function formatViewCount(count) {
+        if (!count) return '0 views';
+
+        if (count >= 1000000) {
+            return (count / 1000000).toFixed(1) + 'M views';
+        } else if (count >= 1000) {
+            return (count / 1000).toFixed(1) + 'K views';
+        } else {
+            return count + ' views';
+        }
+    }
+
+    // Create video card HTML
+    function createVideoCardHTML(video) {
+        return `
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="episode-card h-100">
+                    <div class="video-container position-relative">
+                        <div class="ratio ratio-16x9">
+                            <iframe 
+                                src="https://www.youtube.com/embed/${video.id}?rel=0" 
+                                title="${video.title}"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen
+                            ></iframe>
+                        </div>
+                        <div class="video-duration position-absolute bottom-0 end-0 bg-dark px-2 py-1 m-2 rounded-pill">${video.duration}</div>
+                    </div>
+                    <div class="p-3 d-flex flex-column">
+                        <h3 class="text-info mb-2 fs-5">${video.title}</h3>
+                        <p class="text-light mb-2 flex-grow-1 video-description">${video.description}</p>
+                        <div class="d-flex justify-content-between align-items-center text-muted small">
+                            <span>${video.date}</span>
+                            <span>${video.viewCount}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Display videos on the main page
+    async function displayVideos() {
+        const episodesGrid = document.querySelector('.episode-grid');
+        if (!episodesGrid) {
+            console.error('Episode grid element not found!');
             return;
         }
 
-        skeletons.forEach(function(sk) {
-            sk.classList.add('removing');
-        });
+        // Show loading state
+        episodesGrid.innerHTML = '<div class="col-12 text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Loading...</span></div></div>';
 
-        setTimeout(function() {
-            skeletons.forEach(function(sk) {
-                sk.remove();
-            });
-            if (callback) callback();
-        }, 300);
-    }
+        try {
+            // Fetch videos from the channel
+            const videos = await fetchChannelVideos();
 
-    /* ── Render episodes ── */
-    function renderEpisodes() {
-        var filtered = currentFilter === 'all' 
-            ? allEpisodes 
-            : allEpisodes.filter(function(ep) {
-                return (ep.category || detectCategory(ep.title)) === currentFilter;
-            });
-
-        // Update count
-        if (filterCount) {
-            filterCount.textContent = filtered.length + ' episode' + (filtered.length !== 1 ? 's' : '');
-        }
-
-        // Show/hide clear button
-        if (filterClear) {
-            filterClear.style.display = currentFilter === 'all' ? 'none' : 'inline-flex';
-        }
-
-        // Clear grid (keep only non-skeleton content)
-        var existingCards = grid.querySelectorAll('.ep-card-wrapper');
-        existingCards.forEach(function(c) { c.remove(); });
-
-        if (filtered.length === 0) {
-            emptyState.style.display = 'block';
-            loadMoreBtn.style.display = 'none';
-            return;
-        }
-
-        emptyState.style.display = 'none';
-
-        // Show first page
-        visibleCount = Math.min(CARDS_PER_PAGE, filtered.length);
-        var html = '';
-        for (var i = 0; i < visibleCount; i++) {
-            html += createCardHTML(filtered[i]);
-        }
-        grid.insertAdjacentHTML('beforeend', html);
-
-        // Load more button
-        loadMoreBtn.style.display = filtered.length > visibleCount ? 'inline-block' : 'none';
-    }
-
-    /* ── Load more ── */
-    function loadMore() {
-        var filtered = currentFilter === 'all'
-            ? allEpisodes
-            : allEpisodes.filter(function(ep) {
-                return (ep.category || detectCategory(ep.title)) === currentFilter;
-            });
-
-        var nextBatch = filtered.slice(visibleCount, visibleCount + CARDS_PER_PAGE);
-        var html = '';
-        nextBatch.forEach(function(ep) {
-            html += createCardHTML(ep);
-        });
-        grid.insertAdjacentHTML('beforeend', html);
-        visibleCount += nextBatch.length;
-
-        loadMoreBtn.style.display = filtered.length > visibleCount ? 'inline-block' : 'none';
-    }
-
-    /* ── Filter logic ── */
-    filterChips.forEach(function(chip) {
-        chip.addEventListener('click', function() {
-            currentFilter = chip.dataset.filter;
-
-            filterChips.forEach(function(c) {
-                c.classList.remove('active');
-                c.setAttribute('aria-selected', 'false');
-            });
-            chip.classList.add('active');
-            chip.setAttribute('aria-selected', 'true');
-
-            renderEpisodes();
-        });
-    });
-
-    if (filterClear) {
-        filterClear.addEventListener('click', function() {
-            document.querySelector('[data-filter="all"]').click();
-        });
-    }
-
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', loadMore);
-    }
-
-    /* ── Initialize ── */
-    function init(episodes) {
-        allEpisodes = episodes || [];
-        
-        // Auto-detect categories if not provided
-        allEpisodes.forEach(function(ep) {
-            if (!ep.category) {
-                ep.category = detectCategory(ep.title);
+            if (!videos || videos.length === 0) {
+                throw new Error('No videos found');
             }
-        });
 
-        removeSkeletons(function() {
-            renderEpisodes();
-        });
+            // Clear the loading indicator
+            episodesGrid.innerHTML = '';
+
+            // Add video cards to the grid
+            videos.forEach(video => {
+                const videoCardHTML = createVideoCardHTML(video);
+                episodesGrid.insertAdjacentHTML('beforeend', videoCardHTML);
+            });
+
+        } catch (error) {
+            console.error('Error displaying videos:', error);
+            episodesGrid.innerHTML = '<div class="col-12 text-center"><p>No videos available. Please check back later.</p></div>';
+        }
     }
 
-    /* ── Integration points ── */
-
-    // Option 1: Data already available
-    if (window.f1Episodes && window.f1Episodes.length) {
-        init(window.f1Episodes);
-        return;
+    // If the API key is not set, display a message
+    if (!apiKey || apiKey === 'YOUR_API_KEY') {
+        const episodesGrid = document.querySelector('.episode-grid');
+        if (episodesGrid) {
+            episodesGrid.innerHTML = '<div class="col-12 text-center"><p>YouTube API key not configured. Please check back later.</p></div>';
+        }
+    } else {
+        // Initialize display
+        displayVideos();
     }
-
-    // Option 2: Hook into existing episode loading via MutationObserver
-    // Watches for the old .episode-card elements being added by f1-optimized.js
-    // and converts them to the new format
-    var observer = new MutationObserver(function(mutations) {
-        var hasNewCards = false;
-        mutations.forEach(function(m) {
-            m.addedNodes.forEach(function(node) {
-                if (node.nodeType === 1 && (
-                    node.classList.contains('episode-card') || 
-                    node.querySelector && node.querySelector('.episode-card')
-                )) {
-                    hasNewCards = true;
-                }
-            });
-        });
-
-        if (hasNewCards) {
-            observer.disconnect();
-            
-            // Parse existing cards into our data format
-            var cards = document.querySelectorAll('.episode-card');
-            var parsed = [];
-            cards.forEach(function(card) {
-                var titleEl = card.querySelector('.video-title');
-                var descEl = card.querySelector('.video-description');
-                var durationEl = card.querySelector('.video-duration');
-                var imgEl = card.querySelector('img');
-                var linkEl = card.querySelector('a[href*="youtube"]') || card.querySelector('a');
-                var dateEl = card.querySelector('.video-date');
-
-                parsed.push({
-                    id: '',
-                    title: titleEl ? titleEl.textContent.trim() : '',
-                    description: descEl ? descEl.textContent.trim() : '',
-                    duration: durationEl ? durationEl.textContent.trim() : '',
-                    thumbnail: imgEl ? imgEl.src : '',
-                    url: linkEl ? linkEl.href : '#',
-                    date: dateEl ? dateEl.textContent.trim() : '',
-                    category: null  // will be auto-detected
-                });
-
-                // Remove old card
-                var wrapper = card.closest('.col-md-6, .col-lg-4, [class*="col-"]');
-                if (wrapper) wrapper.remove();
-                else card.remove();
-            });
-
-            if (parsed.length) {
-                init(parsed);
-            }
-        }
-    });
-
-    observer.observe(grid, { childList: true, subtree: true });
-
-    // Option 3: Timeout fallback — if nothing loads in 8s, remove skeletons
-    setTimeout(function() {
-        if (allEpisodes.length === 0) {
-            observer.disconnect();
-            removeSkeletons(function() {
-                // Show empty or whatever f1-optimized.js rendered
-                if (grid.children.length === 0) {
-                    emptyState.style.display = 'block';
-                }
-            });
-        }
-    }, 8000);
-
-    // Expose for external use
-    window.f1EpisodesInit = init;
-
-})();
+});
