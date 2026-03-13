@@ -883,11 +883,16 @@ async function processBlogEntry(entryPath) {
     }
     
     // Generate post data
+    const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    const wordCount = plainText.split(/\s+/).length;
+    const readingTime = Math.max(1, Math.ceil(wordCount / 200)) + ' min';
+
     const postData = {
         id: folderName,
         title: metadata.title,
         author: metadata.author || 'F1 Stories Team',
         date: `${year}-${month}-${day}`,
+        dateISO: `${year}-${month}-${day}`,
         displayDate: fullDate.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -900,6 +905,8 @@ async function processBlogEntry(entryPath) {
         url: `/blog-module/blog-entries/${folderName}/article.html`,
         tag: metadata.tag || 'F1',
         category: metadata.category || 'Racing',
+        wordCount: wordCount,
+        readingTime: readingTime,
         content: content
     };
     
@@ -911,10 +918,20 @@ async function processBlogEntry(entryPath) {
     const authorImagePath = CONFIG.AUTHOR_AVATARS[postData.author] || CONFIG.AUTHOR_AVATARS.default;
     
     const templateHtml = fs.readFileSync(CONFIG.TEMPLATE_PATH, 'utf8');
+
+    // Escape excerpt for safe HTML attribute embedding
+    const safeExcerpt = postData.excerpt
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
     const blogHtml = templateHtml
         .replace(/ARTICLE_TITLE/g, postData.title)
         .replace(/ARTICLE_AUTHOR/g, postData.author)
+        .replace(/ARTICLE_DATE_ISO/g, postData.dateISO)
         .replace(/ARTICLE_DATE/g, postData.displayDate)
+        .replace(/ARTICLE_EXCERPT/g, safeExcerpt)
         .replace(/ARTICLE_COMMENTS/g, postData.comments)
         .replace(/ARTICLE_IMAGE/g, bgImageFilename)
         .replace(/ARTICLE_ID/g, folderName)
@@ -931,27 +948,7 @@ async function processBlogEntry(entryPath) {
         utils.ensureDirectory(CONFIG.OUTPUT_HTML_DIR);
     }
     
-    const debugScript = `
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
-            });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
-        });
-    });
-    </script>`;
-    
-    const enhancedBlogHtml = blogHtml.replace('</body>', debugScript + '</body>');
-    fs.writeFileSync(path.join(entryPath, 'article.html'), enhancedBlogHtml);
+    fs.writeFileSync(path.join(entryPath, 'article.html'), blogHtml);
     
     return postData;
 }

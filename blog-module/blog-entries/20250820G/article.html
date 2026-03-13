@@ -1,388 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025 | F1 Stories Blog</title>
-  <!-- Open Graph Tags for Link Previews -->
-  <meta property="og:title" content="Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025 | F1 Stories Blog">
-  <meta property="og:description" content="🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈">
-  <meta property="og:image" content="2.webp">
-  <meta property="og:url" content="https://f1stories.gr/blog-module/blog-entries/20250820G/article.html">
-  <meta property="og:type" content="article">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025 | F1 Stories Blog</title>
+    <meta property="og:title" content="Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025 | F1 Stories Blog">
+    <meta property="og:description" content="Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025Ο Αθέατος Πόλεμος για τους ΒαθμούςΣτον εκτυφλωτικό κόσμο της Formula 1, όπου οι κάμερες εστιάζου...">
+    <meta property="og:image" content="https://f1stories.gr/blog-module/blog-entries/20250820G/2.webp">
+    <meta property="og:url" content="https://f1stories.gr/blog-module/blog-entries/20250820G/article.html">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025 | F1 Stories Blog">
+    <meta name="twitter:description" content="Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025Ο Αθέατος Πόλεμος για τους ΒαθμούςΣτον εκτυφλωτικό κόσμο της Formula 1, όπου οι κάμερες εστιάζου...">
+    <meta name="twitter:image" content="https://f1stories.gr/blog-module/blog-entries/20250820G/2.webp">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
 
-  <!-- Image Fallback Script -->
-  <script>
-    // Check if .webp file exists, otherwise use .avif as fallback
-    document.addEventListener('DOMContentLoaded', function() {
-      const ogImageMeta = document.querySelector('meta[property="og:image"]');
-      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
-
-      // Function to check if image exists
-      function checkImage(url, success, failure) {
-        const img = new Image();
-        img.onload = success;
-        img.onerror = failure;
-        img.src = url;
-      }
-
-      const webpUrl = ogImageMeta.getAttribute('content');
-      const avifUrl = webpUrl.replace('.webp', '.avif');
-
-      checkImage(webpUrl, function() {
-        // WebP exists, do nothing
-      }, function() {
-        // WebP doesn't exist, try AVIF
-        ogImageMeta.setAttribute('content', avifUrl);
-        twitterImageMeta.setAttribute('content', avifUrl);
-      });
-    });
-  </script>
-
-  <style>
-    /* YouTube embed container for responsive videos */
-    .youtube-embed-container {
-      position: relative;
-      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-      height: 0;
-      overflow: hidden;
-      max-width: 100%;
-      margin: 2rem 0;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .youtube-embed-container iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border-radius: 8px;
-    }
-
-    .video-caption {
-      text-align: center;
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
-      color: #666;
-      font-style: italic;
-    }
-  </style>
-
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/blog-module/blog-styles.css">
-  <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <!-- Font Awesome for Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-X68J6MQKSM');
-  </script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Get the meta description tag
-      const metaDescription = document.querySelector('meta[property="og:description"]');
-
-      // Get the article content for calculating reading time
-      const articleContent = document.querySelector('.article-content');
-
-      if (metaDescription && articleContent) {
-        // Calculate reading time
-        const text = articleContent.textContent || articleContent.innerText;
-        const wordCount = text.trim().split(/\s+/).length;
-
-        // Average reading speed: 200 words per minute
-        const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
-
-        // Update meta description with reading time
-        metaDescription.setAttribute('content', `A ${readingTimeMinutes} minute read on F1 Stories Blog`);
-
-        // Also update the reading time element in the article if it exists
-        const readingTimeElement = document.getElementById('reading-time-value');
-        if (readingTimeElement) {
-          readingTimeElement.textContent = `${readingTimeMinutes} min read`;
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025",
+        "description": "Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025Ο Αθέατος Πόλεμος για τους ΒαθμούςΣτον εκτυφλωτικό κόσμο της Formula 1, όπου οι κάμερες εστιάζου...",
+        "image": "https://f1stories.gr/blog-module/blog-entries/20250820G/2.webp",
+        "datePublished": "2025-08-20",
+        "dateModified": "2025-08-20",
+        "author": {
+            "@type": "Person",
+            "name": "Georgios Balatzis"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "F1 Stories",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://f1stories.gr/images/logo.png"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://f1stories.gr/blog-module/blog-entries/20250820G/article.html"
         }
-      } else {
-        // Fallback description if article content is not found
-        if (metaDescription) {
-          metaDescription.setAttribute('content', '🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈');
-        }
-      }
-    });
-  </script>
+    }
+    </script>
 
+    <!-- Fonts — Outfit (display) + DM Sans (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/blog-module/blog-styles.css">
+    <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-X68J6MQKSM');
+    </script>
+
+    <!-- Prevent FOUC -->
+    <script>
+        (function() {
+            var saved = localStorage.getItem('f1stories-theme');
+            if (saved === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            } else if (saved === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                // No saved preference: default to dark
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('f1stories-theme', 'dark');
+            }
+        })();
+    </script>
 </head>
 <body>
 <div class="background"></div>
-<div class="streak streak-1"></div>
-<div class="streak streak-2"></div>
-<div class="streak streak-3"></div>
-<div class="streak streak-4"></div>
+<div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
 
+<!-- Reading Progress Bar -->
+<div class="reading-progress-track" aria-hidden="true">
+    <div class="reading-progress-fill" id="reading-progress"></div>
+</div>
+
+<!-- Theme Toggle -->
+<button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle light/dark theme">
+    <i class="fas fa-sun icon-sun"></i>
+    <i class="fas fa-moon icon-moon"></i>
+</button>
+
+<!-- Navbar -->
 <header>
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-    <div class="container">
-      <a class="navbar-brand" href="/">
-        <img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy">
-      </a>
-      <div class="race-countdown-container">
-        <div class="race-countdown">
-          <div class="race-flag">
-            <span id="race-flag-emoji">🏁</span>
-          </div>
-          <div class="race-info">
-            <span class="next-race-name" id="next-race-name">Loading...</span>
-            <div class="countdown-timer" id="race-countdown">--</div>
-          </div>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/"><img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy"></a>
+            <div class="race-countdown-container">
+                <div class="race-countdown">
+                    <div class="race-flag"><span id="race-flag-emoji">🏁</span></div>
+                    <div class="race-info">
+                        <span class="next-race-name" id="next-race-name">Loading...</span>
+                        <div class="countdown-timer" id="race-countdown">--</div>
+                    </div>
+                </div>
+                <div class="race-countdown-mobile">
+                    <i class="fas fa-flag-checkered"></i>
+                    <span id="race-countdown-mobile">--</span>
+                </div>
+            </div>
+            <button class="navbar-toggler" type="button" id="mobile-toggler"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/" id="home-link">Home</a></li>
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">Podcast <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+                            <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
+                            <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle active" href="#" id="mediaDropdown">Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item active-item" href="/blog-module/blog/index.html">Blog</a></li>
+                            <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+                            <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">About <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="/#about">About Us</a></li>
+                            <li><a class="dropdown-item" href="/#guests">Guests</a></li>
+                            <li><a class="dropdown-item" href="/#contact">Contact</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <!-- Mobile version - visible only on small screens -->
-        <div class="race-countdown-mobile">
-          <i class="fas fa-flag-checkered"></i>
-          <span id="race-countdown-mobile">--</span>
-        </div>
-      </div>
-      <button class="navbar-toggler" type="button" id="mobile-toggler">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <!-- Home -->
-          <li class="nav-item">
-            <a class="nav-link" href="/" id="home-link">Home</a>
-          </li>
-
-          <!-- Podcast dropdown -->
-          <li class="nav-item custom-dropdown">
-            <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">
-              Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
-            </a>
-            <ul class="custom-dropdown-menu">
-              <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
-              <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
-              <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
-            </ul>
-          </li>
-
-          <!-- Stories & Media dropdown -->
-          <li class="nav-item custom-dropdown">
-            <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
-              Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
-            </a>
-            <ul class="custom-dropdown-menu">
-              <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
-              <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
-              <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
-            </ul>
-          </li>
-
-          <!-- About dropdown -->
-          <li class="nav-item custom-dropdown">
-            <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
-              About <i class="fas fa-chevron-down dropdown-icon"></i>
-            </a>
-            <ul class="custom-dropdown-menu">
-              <li><a class="dropdown-item" href="/#about">About Us</a></li>
-              <li><a class="dropdown-item" href="/#guests">Guests</a></li>
-              <li><a class="dropdown-item" href="/#contact">Contact</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+    </nav>
 </header>
 
-<section class="py-5 mt-5">
-  <div class="container">
-    <!-- Back to Blog Button -->
-    <div class="text-start mb-4">
-      <a href="/blog-module/blog/index.html" class="btn btn-outline-light">
-        <i class="fas fa-arrow-left me-2"></i> Back to Blog
-      </a>
-    </div>
-
-    <div class="article-container">
-      <div class="article-header">
-        <!-- Images are local to the article folder -->
-        <img src="2.webp" alt="Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025" class="article-header-img" loading="lazy" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
-        <div class="article-header-overlay">
-          <h1 class="article-title">Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025</h1>
-          <div class="article-meta">
-            <span><i class="fas fa-calendar"></i> August 20, 2025</span>
-            <span><i class="fas fa-tag"></i> Haas</span>
-            <span><i class="fas fa-folder"></i> 2025</span>
-          </div>
+<!-- Article -->
+<section class="article-page-wrapper py-5 mt-5">
+    <div class="container">
+        <div class="text-start mb-3">
+            <a href="/blog-module/blog/index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Blog</a>
         </div>
-      </div>
 
-      <!-- Add social sharing bar here -->
-      <!-- Updated Social Share Bar -->
-      <div class="social-share-bar">
-        <div class="share-label">
-          <i class="fas fa-share-alt"></i>
-          <span>Share this article:</span>
-        </div>
-        <div class="share-buttons">
-          <a href="https://www.facebook.com/sharer/sharer.php?u=https://f1stories.gr/blog-module/blog-entries/20250820G/article.html" target="_blank" class="share-btn facebook" aria-label="Share on Facebook">
-            <i class="fab fa-facebook-f"></i>
-          </a>
-          <a href="https://www.addtoany.com/add_to/threads?linkurl=https://f1stories.gr/blog-module/blog-entries/20250820G/article.html&linkname=Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025" target="_blank" class="share-btn threads" aria-label="Share on Threads">
-            <i class="fab fa-threads"></i>
-          </a>
-          <button id="instagram-dm-btn" class="share-btn instagram" aria-label="Share via Instagram DM">
-            <i class="fab fa-instagram"></i>
-          </button>
-          <a href="https://api.whatsapp.com/send?text=Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025%20https://f1stories.gr/blog-module/blog-entries/20250820G/article.html" target="_blank" class="share-btn whatsapp" aria-label="Share on WhatsApp">
-            <i class="fab fa-whatsapp"></i>
-          </a>
-          <a href="https://t.me/share/url?url=https://f1stories.gr/blog-module/blog-entries/20250820G/article.html&text=Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025" target="_blank" class="share-btn telegram" aria-label="Share on Telegram">
-            <i class="fab fa-telegram-plane"></i>
-          </a>
-          <button id="web-share-btn" class="share-btn web-share" aria-label="Share on installed apps">
-            <i class="fas fa-share-nodes"></i>
-          </button>
-          <button class="share-btn copy-link" id="copy-link-btn" aria-label="Copy link">
-            <i class="fas fa-link"></i>
-          </button>
-        </div>
-      </div>
-
-
-      <!-- Text-to-Speech Widget -->
-      <div class="tts-widget" id="tts-widget">
-        <!-- Add this for a more F1-style header -->
-        <div class="tts-header">
-          <i class="fas fa-headphones-alt"></i>
-          <span>🏁 RACE RADIO - Ακούστε το Άρθρο</span>
-          <div class="tts-live-indicator"></div>
-          <button class="tts-toggle" id="tts-toggle">
-            <i class="fas fa-chevron-down"></i>
-          </button>
-        </div>
-        <div class="tts-body" id="tts-body">
-          <div class="tts-controls">
-            <button class="tts-btn" id="tts-play" title="Play">
-              <i class="fas fa-play"></i>
-            </button>
-            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
-              <i class="fas fa-pause"></i>
-            </button>
-            <button class="tts-btn" id="tts-stop" title="Stop">
-              <i class="fas fa-stop"></i>
-            </button>
-            <div class="tts-speed-control">
-              <label>Speed:</label>
-              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
-              <span id="tts-speed-value">1x</span>
+        <article class="article-container">
+            <div class="article-header">
+                <img src="2.webp" alt="Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025" class="article-header-img" loading="lazy"
+                     onerror="this.src='/images/default-blog.jpg';this.onerror=null;">
+                <div class="article-header-overlay">
+                    <h1 class="article-title">Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025</h1>
+                    <div class="article-meta">
+                        <span><i class="fas fa-calendar-alt"></i> August 20, 2025</span>
+                        <span><i class="fas fa-tag"></i> Haas</span>
+                        <span><i class="fas fa-folder-open"></i> 2025</span>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="tts-voice-selector">
-            <label>Φωνή/Voice:</label>
-            <select id="tts-voice">
-              <option value="">Αυτόματη/Auto</option>
-            </select>
-          </div>
-          <div class="tts-progress">
-            <div class="tts-progress-bar" id="tts-progress-bar"></div>
-          </div>
-          <div class="tts-status" id="tts-status">Έτοιμο για ανάγνωση</div>
-        </div>
-      </div>
 
-
-      <div class="article-content">
-        <!-- Article content goes here -->
-        <p></p><h1>Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025</h1><h2>Ο Αθέατος Πόλεμος για τους Βαθμούς</h2><p>Στον εκτυφλωτικό κόσμο της Formula 1, όπου οι κάμερες εστιάζουν σχεδόν αποκλειστικά στη μάχη για το παγκόσμιο πρωτάθλημα, εκτυλίσσεται ένας εξίσου έντονος, αν και πιο σιωπηλός, πόλεμος. Είναι ο πόλεμος για έναν βαθμό, για μια θέση στην πρώτη δεκάδα, για την επιβίωση και την πρόοδο. Στην καρδιά αυτής της μάχης για τη σεζόν του 2025 βρίσκονται τρεις ομάδες με διακριτές ιστορίες και φιλοδοξίες: η Stake Kick Sauber, η Visa Cash App Racing Bulls και η MoneyGram Haas F1. Η θέση τους στο κάτω μισό της κατάταξης δεν είναι απλώς μια ένδειξη αποτυχίας, αλλά το σύνθετο αποτέλεσμα μιας σειράς αλληλένδετων παραγόντων — από τη φιλοσοφία του αεροδυναμικού σχεδιασμού και την επιχειρησιακή εκτέλεση μέχρι τη δυναμική των οδηγών και το μακροπρόθεσμο στρατηγικό όραμα.</p><p>Καθώς η σεζόν φτάνει στο καλοκαιρινό της διάλειμμα, η κατάταξη των κατασκευαστών προσφέρει το αρχικό πλαίσιο για την ανάλυσή μας: η Sauber βρίσκεται στην 7η θέση με 51 βαθμούς, ακολουθούμενη από τη Racing Bulls στην 8η με 45 βαθμούς και τη Haas στην 9η με 35 βαθμούς. Αυτοί οι αριθμοί, ωστόσο, λένε μόνο ένα μέρος της ιστορίας. Αυτό το άρθρο θα βουτήξει βαθιά στα δεδομένα, τις στρατηγικές και τις εσωτερικές προκλήσεις κάθε ομάδας, αποκαλύπτοντας πώς η καθεμία πλοηγείται στα ταραγμένα νερά του midfield, με το βλέμμα στραμμένο όχι μόνο στον επόμενο αγώνα, αλλά και στη ριζική αλλαγή κανονισμών του 2026.</p><h2>Stake Kick Sauber - Η Αυγή της Εποχής Audi</h2><p>Η πορεία της Sauber στη σεζόν του 2025 είναι μια ιστορία μεταμόρφωσης. Από την τελευταία θέση του 2024, η ομάδα του Hinwil έχει αναδειχθεί σε έναν υπολογίσιμο αντίπαλο στο midfield, προσφέροντας την πρώτη απτή απόδειξη ότι η επερχόμενη μετατροπή της σε εργοστασιακή ομάδα της Audi δεν είναι απλώς ένα μακρινό όνειρο, αλλά μια πραγματικότητα που ήδη διαμορφώνει το παρόν της.</p><h3>1.1 Από την Τελευταία Θέση στο Βάθρο: Μια Σεζόν Μεταμόρφωσης</h3><p>Η αντίθεση με την προηγούμενη χρονιά είναι εκκωφαντική. Το 2024, η ομάδα τερμάτισε στην 10η και τελευταία θέση της κατάταξης, συγκεντρώνοντας μόλις τέσσερις βαθμούς σε ολόκληρη τη σεζόν. Φέτος, στα μισά του πρωταθλήματος, έχει ήδη συγκεντρώσει 51 βαθμούς και κατέχει την 7η θέση. Η κορυφαία στιγμή αυτής της αναγέννησης ήρθε στο Βρετανικό Grand Prix, όπου ο Nico Hülkenberg, σε συνθήκες βροχής, κατέκτησε ένα παραμυθένιο βάθρο. Ήταν το πρώτο του σε 239 εκκινήσεις και το πρώτο της ομάδας από το 2012, ένα αποτέλεσμα που δεν ήταν απλώς προϊόν τύχης, αλλά η κορύφωση μιας γνήσιας αλλαγής στην απόδοση.</p><p>Ωστόσο, η πορεία δεν ήταν ανέφελη. Η σεζόν ξεκίνησε με δυσκολίες, συμπεριλαμβανομένης μιας περιόδου επτά αγώνων χωρίς βαθμούς (από τον 2ο έως τον 8ο γύρο) και ενός απογοητευτικού αποκλεισμού του Hülkenberg στο Μπαχρέιν λόγω υπερβολικής φθοράς του skid block, ένα γεγονός που υπογράμμισε τις αρχικές προκλήσεις που έπρεπε να ξεπεραστούν.</p><h3>1.2 Η Μεταμόρφωση της C45: Μια Τεχνική Βουτιά</h3><p>Η επιτυχία της Sauber βασίζεται στη δραματική βελτίωση του μονοθεσίου της, της C45. Η πορεία της από ένα προβληματικό όχημα σε έναν ανταγωνιστικό παίκτη του midfield είναι μια μελέτη περίπτωσης αποτελεσματικής μηχανικής εξέλιξης.</p><h4>Αρχικά Ελαττώματα</h4><p>Στην αρχή της σεζόν, η C45 ήταν, κατά μέσο όρο, το πιο αργό μονοθέσιο του grid. Τα κύρια μειονεκτήματά της ήταν η θεμελιώδης έλλειψη αεροδυναμικής πίεσης (downforce) και η έντονη υποστροφή, χαρακτηριστικά που την καθιστούσαν «νευρική» (peaky) και εξαιρετικά ευαίσθητη στις αναταράξεις του αέρα από τα προπορευόμενα μονοθέσια. Αυτό σήμαινε ότι οι οδηγοί δυσκολεύονταν να εκμεταλλευτούν το πλήρες δυναμικό του μονοθεσίου, ειδικά σε συνθήκες αγώνα.</p><h4>Η Αναβάθμιση της Ισπανίας</h4><p>Το σημείο καμπής ήρθε στο Ισπανικό Grand Prix, όπου η ομάδα εισήγαγε ένα ολοκληρωμένο πακέτο αναβαθμίσεων. Αυτό περιλάμβανε ένα νέο πάτωμα, ανασχεδιασμένο κάλυμμα κινητήρα και νέα εμπρός αεροτομή. Ο στόχος δεν ήταν απλώς η προσθήκη κάθετης δύναμης, αλλά η αντιμετώπιση βασικών αδυναμιών: η σταθεροποίηση της αεροδυναμικής πλατφόρμας και η μείωση της ευαισθησίας της στον «βρώμικο αέρα». Αυτό θα διεύρυνε το λειτουργικό παράθυρο του μονοθεσίου, καθιστώντας το πιο προβλέψιμο και οδηγήσιμο.</p><h4>Απόδοση μετά την Αναβάθμιση</h4><p>Τα αποτελέσματα ήταν άμεσα και εντυπωσιακά. Στην Ισπανία, ο Hülkenberg ανέβηκε από την 15η θέση στην 5η, προσπερνώντας μάλιστα μια Ferrari στους τελευταίους γύρους. Στους αγώνες που ακολούθησαν τη Βαρκελώνη, η Sauber αναδείχθηκε τέταρτη πιο παραγωγική ομάδα σε συγκομιδή βαθμών, αποδεικνύοντας μια άμεση αιτιώδη σχέση μεταξύ μιας συγκεκριμένης μηχανολογικής εξέλιξης και μιας δραματικής αλλαγής στην ανταγωνιστική της θέση.</p><p>Η επιτυχία και η πολυπλοκότητα αυτής της αναβάθμισης δεν είναι απλώς έργο της υπάρχουσας δομής της Sauber. Αντιθέτως, αποτελεί την πρώτη σαφή απόδειξη της «επίδρασης Audi» — του αντίκτυπου της νέας, υψηλού επιπέδου διοίκησης και της αυξημένης επένδυσης στο πλαίσιο της προετοιμασίας για την εξαγορά του 2026. Το 2024, η ομάδα βρισκόταν σε «κατάσταση επιβίωσης» με περιορισμένους πόρους. Η φετινή ομάδα, ωστόσο, διοικείται από πρόσωπα όπως ο Mattia Binotto (πρώην επικεφαλής της Ferrari) και ο Jonathan Wheatley (πρώην Αθλητικός Διευθυντής της Red Bull), οι οποίοι διαθέτουν την εμπειρία για τον εντοπισμό θεμελιωδών αδυναμιών και τη διαχείριση εξελιγμένων προγραμμάτων ανάπτυξης. Η εστίαση της αναβάθμισης σε ένα σύνθετο αεροδυναμικό πρόβλημα, αντί για την απλή προσθήκη downforce, υποδηλώνει μια πιο ώριμη διαγνωστική και εξελικτική διαδικασία. Επομένως, η C45 του 2025 δεν είναι απλώς ένα βελτιωμένο μονοθέσιο· είναι το πρώτο πρωτότυπο της μεθοδολογίας της εργοστασιακής ομάδας της Audi.</p><h3>1.3 Σύγκρουση Στυλ: Η Εμπειρία του Hülkenberg εναντίον της Φλόγας του Bortoleto</h3><p>Η εσωτερική μάχη μεταξύ του βετεράνου Nico Hülkenberg και του πολλά υποσχόμενου rookie Gabriel Bortoleto είναι συναρπαστική.</p><h4>Hülkenberg</h4><p>Ο Hülkenberg διανύει μια σεζόν εξιλέωσης. Παρά το γεγονός ότι συχνά υστερεί του teammate του στις κατατακτήριες δοκιμές, η εξαιρετική του αγωνιστική οξυδέρκεια, η διαχείριση των ελαστικών και η ικανότητά του να εκμεταλλεύεται χαοτικές συνθήκες τον έχουν καταστήσει τον κύριο πάροχο βαθμών της ομάδας. Οι εμφανίσεις του στην Αυστραλία (7ος από 17ος), την Ισπανία (5ος από 15ος) και τη Βρετανία (3ος από 19ος) αποτελούν παραδείγματα της κλάσης ενός έμπειρου οδηγού.</p><h4>Η Πρώτη Χρονιά του Bortoleto</h4><p>Η σεζόν του Bortoleto χαρακτηρίζεται από την εκπληκτική του ταχύτητα σε έναν γύρο, που τον έχει δει να κερδίζει συχνά τον Hülkenberg το Σάββατο. Η 7η θέση του στις κατατακτήριες της Ουγγαρίας ήταν ένα από τα highlights του.<sup>3</sup> Ωστόσο, αυτή η ταχύτητα έχει μετριαστεί από λάθη ενός πρωτοεμφανιζόμενου, όπως το ατύχημά του στην Αυστραλία και το στρατηγικό του λάθος που οδήγησε σε εγκατάλειψη στο Silverstone. Η άνοδός του προς το τέλος του πρώτου μισού της σεζόν, με βαθμούς στην Αυστρία, το Βέλγιο και μια εντυπωσιακή 6η θέση στην Ουγγαρία, δείχνει μια απότομη και ελπιδοφόρα καμπύλη μάθησης.</p><h4>Δυναμική Ομάδας</h4><p>Η δυναμική μεταξύ των δύο οδηγών είναι συμβιωτική. Η ταχύτητα του Bortoleto ωθεί την εξέλιξη του set-up και αποκαλύπτει το απόλυτο δυναμικό του μονοθεσίου, ενώ η συνέπεια του Hülkenberg φέρνει τους κρίσιμους βαθμούς. Δεν υπάρχουν ενδείξεις σύγκρουσης· αντίθετα, ο Bortoleto έσπευσε να συγχαρεί τον Hülkenberg μετά το βάθρο του, μια εικόνα που υποδηλώνει υγιή συνεργασία.</p><table><thead><tr><th></th><th><p>Nico Hülkenberg</p></th><th><p>Gabriel Bortoleto</p></th></tr><tr><th><p>Κατατακτήριες H2H</p></th><th><p>6</p></th><th><p>8</p></th></tr><tr><th><p>Αγώνας H2H (και οι δύο τερμάτισαν)</p></th><th><p>8</p></th><th><p>5</p></th></tr><tr><th><p>Βαθμοί</p></th><th><p>37</p></th><th><p>14</p></th></tr><tr><th><p>Καλύτερη Θέση στις Κατατακτήριες</p></th><th><p>P11</p></th><th><p>P7</p></th></tr><tr><th><p>Καλύτερος Τερματισμός</p></th><th><p>P3</p></th><th><p>P6</p></th></tr></thead></table><h2>Visa Cash App Racing Bulls - Κρίση Ταυτότητας</h2><p>Η Visa Cash App Racing Bulls ενσαρκώνει ένα παράδοξο. Διαθέτει ένα στιβαρό και αξιόπιστο μονοθέσιο, αλλά παρεμποδίζεται από στρατηγική αναποφασιστικότητα και την τεράστια βαρυτική έλξη της μητρικής ομάδας Red Bull, οδηγώντας σε μια σεζόν χαμένων ευκαιριών.</p><h3>2.1 Η VCARB 02: Στιβαρή αλλά Όχι Εντυπωσιακή</h3><p>Η VCARB 02 είναι ένα ικανό και «υπάκουο» μονοθέσιο. Το βασικό της πλεονέκτημα είναι η προβλέψιμη συμπεριφορά της, που επιτρέπει στους οδηγούς να νιώθουν άνετα και να πιέζουν. Κινείται από τον κινητήρα Honda RBPTH003 και χρησιμοποιεί σημαντικό αριθμό εξαρτημάτων από την Red Bull Technology, συμπεριλαμβανομένων των αναρτήσεων και του κιβωτίου ταχυτήτων.</p><p>Η κύρια αδυναμία του μονοθεσίου είναι η έλλειψη συνολικής αεροδυναμικής πίεσης, ιδιαίτερα στις στροφές υψηλής ταχύτητας.<sup> </sup>Αυτό δημιουργεί ένα «ταβάνι» στην απόδοσή του, εμποδίζοντάς το να ανταγωνίζεται σταθερά στην κορυφή του midfield, ακόμη και όταν οι κατατακτήριες είναι καλές. Η ομάδα έφερε αναβαθμίσεις στην Imola για να αντιμετωπίσει αυτό το ζήτημα, αλλά η μετατροπή των ευκαιριών σε βαθμούς παραμένει μια πρόκληση.</p><h3>2.2 Το Αίνιγμα των Οδηγών της Red Bull</h3><p>Η ταραχώδης κατάσταση με τους οδηγούς έχει καθορίσει τη σεζόν της ομάδας. Ο αιφνιδιαστικός υποβιβασμός του Liam Lawson από τη Red Bull Racing πίσω στη Racing Bulls μετά από μόλις δύο αγώνες (Αυστραλία και Κίνα) προκάλεσε σοκ. Ο ίδιος ο Lawson εξέφρασε την άποψη ότι ήταν απροετοίμαστος, δεν είχε αρκετό χρόνο δοκιμών και ότι ένα πειραματικό set-up στην Κίνα χρησιμοποιήθηκε ως δικαιολογία για την απομάκρυνσή του.</p><p>Ο rookie Isack Hadjar, από την πλευρά του, έδειξε εντυπωσιακή ταχύτητα από την αρχή, συχνά ξεπερνώντας τον Lawson και σκοράροντας τους πρώτους βαθμούς της ομάδας στην Ιαπωνία.<sup>20</sup> Η 6η θέση του στο Μονακό ήταν ένα εξαιρετικό αποτέλεσμα. Η μεταξύ τους μάχη δείχνει τον Hadjar να έχει ένα αρχικό πλεονέκτημα, αλλά ο Lawson έχει σταθεροποιηθεί και δείχνει πρόσφατα ισχυρή φόρμα, υποδηλώνοντας ότι έχει ανακάμψει από το αρχικό σοκ.</p><p>Η ασυνεπής απόδοση και η στρατηγική αστάθεια της Racing Bulls δεν είναι απλώς εσωτερικές αποτυχίες, αλλά άμεσες συνέπειες του ρόλου της ως θυγατρική μιας μητρικής ομάδας Red Bull που βρίσκεται σε κρίση. Η μητρική ομάδα διανύει τη «χειρότερη σεζόν της από το 2020», με ένα δύσκολο μονοθέσιο και τον Yuki Tsunoda να δυσκολεύεται μετά την προαγωγή του. Η ξαφνική ανταλλαγή Lawson-Tsunoda ήταν μια αντιδραστική κίνηση της Red Bull για να λύσει το δικό της πρόβλημα, χωρίς να λαμβάνει υπόψη τη σταθερότητα της θυγατρικής ομάδας.<sup> </sup>Αυτή η κίνηση έφερε τον Lawson σε μια δύσκολη θέση και έθεσε τον rookie Hadjar υπό τεράστια πίεση. Μια ομάδα που αντιμετωπίζει τέτοια αναταραχή είναι λιγότερο πιθανό να έχει την εστίαση που απαιτείται για άψογη επιχειρησιακή εκτέλεση, κάτι που θα μπορούσε να εξηγήσει τα στρατηγικά λάθη στην αρχή της σεζόν και την καταστροφική διπλή εγκατάλειψη στο Silverstone. Οι δυσκολίες της Racing Bulls είναι, επομένως, ένας καθρέφτης των προβλημάτων της Red Bull Racing.</p><h3>2.3 Πίεση στο Pit Wall</h3><p>Η επιχειρησιακή εκτέλεση αποτελεί βασική αδυναμία. Η αποτυχία μετατροπής των ισχυρών θέσεων στις κατατακτήριες της Αυστραλίας (Tsunoda 5ος) και της Κίνας (και τα δύο μονοθέσια στο Q3) σε βαθμούς, λόγω «στρατηγικών λαθών και συμβάντων», είναι ένα χαρακτηριστικό παράδειγμα.</p><p>Ως αντίστιξη, το Grand Prix του Μονακό ήταν μια στιγμή στρατηγικής ευφυΐας. Ο Lawson χρησιμοποιήθηκε για να καθυστερήσει το υπόλοιπο γκρουπ, δημιουργώντας χώρο για τον Hadjar να εξασφαλίσει την 6η θέση, με αποτέλεσμα μια κρίσιμη διπλή βαθμολόγηση. Αυτό αποδεικνύει ότι η ομάδα είναι ικανή για υψηλού επιπέδου εκτέλεση, αλλά δυσκολεύεται να το πετύχει με συνέπεια. Η διπλή εγκατάλειψη στο Silverstone, όπου αντίπαλοι όπως η Sauber σκόραραν σημαντικά, αποτελεί το απόλυτο παράδειγμα χαμένης ευκαιρίας.</p><table><thead><tr><th></th><th><p>Isack Hadjar</p></th><th><p>Liam Lawson</p></th></tr><tr><th><p>Κατατακτήριες H2H</p></th><th><p>9</p></th><th><p>3</p></th></tr><tr><th><p>Αγώνας H2H (και οι δύο τερμάτισαν)</p></th><th><p>8</p></th><th><p>3</p></th></tr><tr><th><p>Βαθμοί</p></th><th><p>22</p></th><th><p>20</p></th></tr><tr><th><p>Καλύτερη Θέση στις Κατατακτήριες</p></th><th><p>P5</p></th><th><p>P9</p></th></tr><tr><th><p>Καλύτερος Τερματισμός</p></th><th><p>P6</p></th><th><p>P6</p></th></tr></thead></table><h2>MoneyGram Haas F1 - Η Αναζήτηση της Συνέπειας</h2><p>Η σεζόν της Haas είναι η ιστορία μιας μάχης ενάντια στους εγγενείς της περιορισμούς. Ένα νέο, πιο πραγματιστικό στυλ ηγεσίας παλεύει ενάντια σε ένα θεμελιωδώς προβληματικό μονοθέσιο και την ασταθή δυναμική ενός νέου οδηγικού διδύμου.</p><h3>3.1 Ασταθής VF-25</h3><p>Η σεζόν ξεκίνησε καταστροφικά στην Αυστραλία. Η VF-25 υπέφερε από ένα θεμελιώδες αεροδυναμικό ελάττωμα που προκαλούσε σοβαρή αστάθεια στις υψηλές ταχύτητες και αναπηδήσεις (bouncing), ένα πρόβλημα που επιδεινώθηκε από την ανώμαλη πίστα του Albert Park. Ο επικεφαλής της ομάδας, Ayao Komatsu, παραδέχτηκε ότι «αισθάνθηκε άρρωστος» με την έλλειψη ρυθμού.</p><p>Η ομάδα αναγκάστηκε να ακολουθήσει μια ταχεία, αντιδραστική πορεία εξέλιξης. Μια αναβάθμιση στο κεντρικό τμήμα του πατώματος επισπεύσθηκε για το Ιαπωνικό Grand Prix για την αντιμετώπιση της αστάθειας. Περαιτέρω αναβαθμίσεις στο πάτωμα, τον διαχύτη και το πίσω μέρος ακολούθησαν στην Imola. Η VF-25, που χρησιμοποιεί κινητήρα και πολλά εξαρτήματα της Ferrari , έχει μια αξιοπρεπή υποκείμενη ισορροπία  αλλά ένα πολύ στενό λειτουργικό παράθυρο, οδηγώντας σε άκρως ασυνεπή απόδοση από πίστα σε πίστα.</p><h3>3.2 Ένα Εκρηκτικό Δίδυμο: Η Τέχνη του Ocon εναντίον της Ταχύτητας του Bearman</h3><p>Το ολοκαίνουργιο οδηγικό δίδυμο του νικητή Grand Prix Esteban Ocon και του rookie Oliver Bearman είναι ένα κεντρικό θέμα.</p><h4>Ocon, ο Ηγέτης</h4><p>Ο Ocon έχει καθιερωθεί ως ο ηγέτης της ομάδας, υπεύθυνος για τους 27 από τους 35 βαθμούς της. Η δύναμή του έγκειται στην αγωνιστική του ικανότητα, κερδίζοντας σταθερά θέσεις την Κυριακή για να ξεπεράσει τις αδυναμίες του μονοθεσίου στις κατατακτήριες. Η 5η θέση του στην Κίνα ήταν το highlight της σεζόν.</p><h4>Bearman, ο Πρωτοεμφανιζόμενος</h4><p>Ο Bearman έχει δείξει εκλάμψεις ακατέργαστης ταχύτητας, ιδιαίτερα στις κατατακτήριες, αλλά η σεζόν του έχει αμαυρωθεί από λάθη και δαπανηρές ποινές. Δέχθηκε ποινές 10 θέσεων στο grid τόσο στο Μονακό όσο και στο Silverstone για παραβιάσεις κόκκινης σημαίας. Έχει επίσης υποστεί δύο μηχανικές εγκαταλείψεις, σε σύγκριση με τη μία του Ocon.</p><h4>Το Σημείο Αντιπαράθεσης στο Silverstone</h4><p>Η σύγκρουσή τους στο Βρετανικό Grand Prix ήταν μια κρίσιμη στιγμή. Και οι δύο οδηγοί ήταν απογοητευμένοι, νιώθοντας ότι οι βαθμοί ήταν εφικτοί. Ο Komatsu χαρακτήρισε επίσημα το συμβάν ως «αγωνιστικό ατύχημα», αλλά τόνισε ότι ήταν ένα απαράδεκτο αποτέλεσμα που προήλθε από το γεγονός ότι βρίσκονταν εκτός θέσης μετά από ένα προηγούμενο λάθος του Bearman.</p><p>Το δίδυμο Ocon-Bearman αποτελεί μια τέλεια μικρογραφία της συνολικής κατάστασης της Haas. Το δυναμικό της ομάδας αποδεικνύεται από το ένα στοιχείο (η αγωνιστική ικανότητα του Ocon, η ακατέργαστη ταχύτητα του Bearman), ενώ οι θεμελιώδεις περιορισμοί της εκτίθενται από το άλλο (οι μέτριες κατατακτήριες του Ocon, τα λάθη του Bearman). Η VF-25 είναι ένα ασυνεπές μονοθέσιο. Ο Ocon, με την τεράστια εμπειρία του, έχει την ικανότητα να διαχειρίζεται τα ελαττώματα του μονοθεσίου κατά τη διάρκεια του αγώνα, διασώζοντας βαθμούς από κακές θέσεις εκκίνησης. Ο Bearman, από την άλλη, έχει το ταλέντο να εξάγει μερικές φορές εκπληκτική ταχύτητα στις κατατακτήριες, αλλά του λείπει η εμπειρία για να διαχειριστεί με συνέπεια το δύσκολο μονοθέσιο, οδηγώντας σε ποινές και συμβάντα. Οι οδηγοί δεν είναι απλώς δύο άτομα· είναι οι δύο όψεις του νομίσματος, απεικονίζοντας τέλεια το παράδοξο της Haas. Μια ομάδα με το σθένος και τις εκλάμψεις δυναμικού για να σκοράρει, αλλά που συγκρατείται από θεμελιώδεις ατέλειες που εμποδίζουν τα σταθερά, «καθαρά» Σαββατοκύριακα.</p><h3>3.3 Το Δόγμα Komatsu: Πραγματισμός εναντίον Δομικών Ελλείψεων</h3><p>Υπό την ηγεσία του Ayao Komatsu, ο οποίος αντικατέστησε τον Guenther Steiner, η ομάδα έχει επιτύχει οικονομική σταθερότητα για πρώτη φορά, λειτουργώντας πλέον στο όριο του προϋπολογισμού χωρίς την ανάγκη προσωπικών κεφαλαίων από τον ιδιοκτήτη Gene Haas. Ο Komatsu έχει επίσης επικεντρωθεί στην οικοδόμηση μιας βάσης εμπιστοσύνης και διαφάνειας, η οποία βοήθησε στην αποκλιμάκωση της σύγκρουσης του Silverstone.</p><p>Παρόλα αυτά, η Haas εξακολουθεί να λειτουργεί με «τεράστιο μειονέκτημα». Η εξάρτησή της από τον προσομοιωτή της Ferrari και η έλλειψη δικού της αποτελεί σημαντικό εμπόδιο, το οποίο πιθανότατα συνέβαλε στο αρχικό σχεδιαστικό ελάττωμα της VF-25. Αυτή η δομική αδυναμία είναι η βασική πρόκληση που πρέπει να αντιμετωπίσει ο Komatsu.</p><table><thead><tr><th></th><th><p>Esteban Ocon</p></th><th><p>Oliver Bearman</p></th></tr><tr><th><p>Κατατακτήριες H2H</p></th><th><p>8</p></th><th><p>6</p></th></tr><tr><th><p>Αγώνας H2H (και οι δύο τερμάτισαν)</p></th><th><p>9</p></th><th><p>5</p></th></tr><tr><th><p>Βαθμοί</p></th><th><p>27</p></th><th><p>8</p></th></tr><tr><th><p>Καλύτερη Θέση στις Κατατακτήριες</p></th><th><p>P8</p></th><th><p>P8</p></th></tr><tr><th><p>Καλύτερος Τερματισμός</p></th><th><p>P5</p></th><th><p>P8</p></th></tr></thead></table><h2>Συμπέρασμα: Διαφορετικές Πορείες προς το 2026</h2><p>Η ανάλυση των τριών ομάδων αποκαλύπτει τρεις διακριτές στρατηγικές και προοπτικές καθώς η Formula 1 οδεύει προς τη νέα εποχή του 2026.</p><p><strong>Sauber:</strong> Βρίσκεται σε μια σαφή ανοδική πορεία, θέτοντας ισχυρά θεμέλια για την εργοστασιακή ομάδα της Audi. Η πρόοδός της είναι πραγματική, στρατηγική και καλά χρηματοδοτούμενη. Είναι η ομάδα με το πιο λαμπρό μακροπρόθεσμο μέλλον από τις τρεις.</p><p><strong>Racing Bulls:</strong> Παγιδευμένη σε έναν κύκλο εξάρτησης από τη μητρική ομάδα Red Bull. Το μέλλον της είναι αβέβαιο και η απόδοσή της πιθανότατα θα παραμείνει ασυνεπής για όσο διάστημα η ταυτότητα και οι στρατηγικές της προτεραιότητες υπαγορεύονται από αλλού.</p><p><strong>Haas:</strong> Μια ομάδα που αξιοποιεί στο έπακρο ένα περιορισμένο μοντέλο. Επιχειρησιακά ισχυρότερη και πιο σταθερή υπό τον Komatsu, αλλά θεμελιωδώς περιορισμένη από δομικά μειονεκτήματα που θα καταστήσουν την αλλαγή κανονισμών του 2026 μια μνημειώδη πρόκληση.</p><p>Η μάχη στο πίσω μέρος του grid δεν είναι απλώς μια μάχη για τους τελευταίους βαθμούς. Είναι μια συναρπαστική ιστορία διαφορετικών φιλοσοφιών, αντικρουόμενων πεπρωμένων και της αδιάκοπης προσπάθειας για πρόοδο. Οι σπόροι της ιεραρχίας του 2026 σπέρνονται σήμερα, στη μάχη για την όγδοη θέση.</p>
-      </div>
-
-      <!-- Add this author section here -->
-      <div class="article-author-footer">
-        <div class="reading-time-badge">
-          <i class="fas fa-clock"></i>
-          <span id="reading-time-value">5 min read</span>
-        </div>
-
-        <div class="author-box">
-          <div class="author-header">
-            <div class="author-avatar">
-              <img id="author-image" src="/f1stories.github.io/images/avatars/FA.webp" alt="Georgios Balatzis"
-                   onerror="
-         const paths = [
-           '/f1stories.github.io/images/authors/default.webp',
-           '/images/authors/default.webp',
-           '../../../images/authors/default.webp',
-           '../../images/authors/default.webp'
-         ];
-         let currentPath = 0;
-         const tryNextPath = () => {
-           if (currentPath < paths.length) {
-             this.src = paths[currentPath++];
-           } else {
-             this.style.display='none';
-             document.getElementById('author-initial').style.display='flex';
-           }
-         };
-         tryNextPath();">
-              <span class="avatar-text" id="author-initial">A</span>
+            <div class="social-share-bar">
+                <div class="share-label"><i class="fas fa-share-alt"></i> <span>Share</span></div>
+                <div class="share-buttons">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=https://f1stories.gr/blog-module/blog-entries/20250820G/article.html" target="_blank" rel="noopener" class="share-btn facebook" aria-label="Share on Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.addtoany.com/add_to/threads?linkurl=https://f1stories.gr/blog-module/blog-entries/20250820G/article.html&linkname=Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025" target="_blank" rel="noopener" class="share-btn threads" aria-label="Share on Threads"><i class="fab fa-threads"></i></a>
+                    <button id="instagram-dm-btn" class="share-btn instagram" aria-label="Share via Instagram DM"><i class="fab fa-instagram"></i></button>
+                    <a href="https://api.whatsapp.com/send?text=Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025%20https://f1stories.gr/blog-module/blog-entries/20250820G/article.html" target="_blank" rel="noopener" class="share-btn whatsapp" aria-label="Share on WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://t.me/share/url?url=https://f1stories.gr/blog-module/blog-entries/20250820G/article.html&text=Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025" target="_blank" rel="noopener" class="share-btn telegram" aria-label="Share on Telegram"><i class="fab fa-telegram-plane"></i></a>
+                    <button id="web-share-btn" class="share-btn web-share" aria-label="Share"><i class="fas fa-share-nodes"></i></button>
+                    <button class="share-btn copy-link" id="copy-link-btn" aria-label="Copy link"><i class="fas fa-link"></i></button>
+                </div>
             </div>
-            <div class="author-info">
-              <h4 class="author-name" id="author-name">Georgios Balatzis</h4>
-              <div class="author-title" id="author-title">F1 Stories Contributor</div>
+
+            <div class="tts-widget" id="tts-widget">
+                <div class="tts-header">
+                    <i class="fas fa-headphones-alt"></i>
+                    <span>RACE RADIO — Ακούστε το Άρθρο</span>
+                    <button class="tts-toggle" id="tts-toggle" aria-label="Toggle TTS panel"><i class="fas fa-chevron-down"></i></button>
+                </div>
+                <div class="tts-body" id="tts-body">
+                    <div class="tts-controls">
+                        <button class="tts-btn" id="tts-play" title="Play"><i class="fas fa-play"></i></button>
+                        <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;"><i class="fas fa-pause"></i></button>
+                        <button class="tts-btn" id="tts-stop" title="Stop"><i class="fas fa-stop"></i></button>
+                        <div class="tts-speed-control">
+                            <label for="tts-speed">Speed:</label>
+                            <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+                            <span id="tts-speed-value">1x</span>
+                        </div>
+                    </div>
+                    <div class="tts-voice-selector">
+                        <label for="tts-voice">Φωνή / Voice:</label>
+                        <select id="tts-voice"><option value="">Αυτόματη / Auto</option></select>
+                    </div>
+                    <div class="tts-progress"><div class="tts-progress-bar" id="tts-progress-bar"></div></div>
+                    <div class="tts-status" id="tts-status">Έτοιμο για ανάγνωση</div>
+                </div>
             </div>
-          </div>
-          <div class="author-bio" id="author-bio">
-            Regular contributor to F1 Stories, passionate about motorsport and sharing insight about Formula 1 racing.
-          </div>
+
+            <div class="article-content"><p></p><h1>Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025</h1><h2>Ο Αθέατος Πόλεμος για τους Βαθμούς</h2><p>Στον εκτυφλωτικό κόσμο της Formula 1, όπου οι κάμερες εστιάζουν σχεδόν αποκλειστικά στη μάχη για το παγκόσμιο πρωτάθλημα, εκτυλίσσεται ένας εξίσου έντονος, αν και πιο σιωπηλός, πόλεμος. Είναι ο πόλεμος για έναν βαθμό, για μια θέση στην πρώτη δεκάδα, για την επιβίωση και την πρόοδο. Στην καρδιά αυτής της μάχης για τη σεζόν του 2025 βρίσκονται τρεις ομάδες με διακριτές ιστορίες και φιλοδοξίες: η Stake Kick Sauber, η Visa Cash App Racing Bulls και η MoneyGram Haas F1. Η θέση τους στο κάτω μισό της κατάταξης δεν είναι απλώς μια ένδειξη αποτυχίας, αλλά το σύνθετο αποτέλεσμα μιας σειράς αλληλένδετων παραγόντων — από τη φιλοσοφία του αεροδυναμικού σχεδιασμού και την επιχειρησιακή εκτέλεση μέχρι τη δυναμική των οδηγών και το μακροπρόθεσμο στρατηγικό όραμα.</p><p>Καθώς η σεζόν φτάνει στο καλοκαιρινό της διάλειμμα, η κατάταξη των κατασκευαστών προσφέρει το αρχικό πλαίσιο για την ανάλυσή μας: η Sauber βρίσκεται στην 7η θέση με 51 βαθμούς, ακολουθούμενη από τη Racing Bulls στην 8η με 45 βαθμούς και τη Haas στην 9η με 35 βαθμούς. Αυτοί οι αριθμοί, ωστόσο, λένε μόνο ένα μέρος της ιστορίας. Αυτό το άρθρο θα βουτήξει βαθιά στα δεδομένα, τις στρατηγικές και τις εσωτερικές προκλήσεις κάθε ομάδας, αποκαλύπτοντας πώς η καθεμία πλοηγείται στα ταραγμένα νερά του midfield, με το βλέμμα στραμμένο όχι μόνο στον επόμενο αγώνα, αλλά και στη ριζική αλλαγή κανονισμών του 2026.</p><h2>Stake Kick Sauber - Η Αυγή της Εποχής Audi</h2><p>Η πορεία της Sauber στη σεζόν του 2025 είναι μια ιστορία μεταμόρφωσης. Από την τελευταία θέση του 2024, η ομάδα του Hinwil έχει αναδειχθεί σε έναν υπολογίσιμο αντίπαλο στο midfield, προσφέροντας την πρώτη απτή απόδειξη ότι η επερχόμενη μετατροπή της σε εργοστασιακή ομάδα της Audi δεν είναι απλώς ένα μακρινό όνειρο, αλλά μια πραγματικότητα που ήδη διαμορφώνει το παρόν της.</p><h3>1.1 Από την Τελευταία Θέση στο Βάθρο: Μια Σεζόν Μεταμόρφωσης</h3><p>Η αντίθεση με την προηγούμενη χρονιά είναι εκκωφαντική. Το 2024, η ομάδα τερμάτισε στην 10η και τελευταία θέση της κατάταξης, συγκεντρώνοντας μόλις τέσσερις βαθμούς σε ολόκληρη τη σεζόν. Φέτος, στα μισά του πρωταθλήματος, έχει ήδη συγκεντρώσει 51 βαθμούς και κατέχει την 7η θέση. Η κορυφαία στιγμή αυτής της αναγέννησης ήρθε στο Βρετανικό Grand Prix, όπου ο Nico Hülkenberg, σε συνθήκες βροχής, κατέκτησε ένα παραμυθένιο βάθρο. Ήταν το πρώτο του σε 239 εκκινήσεις και το πρώτο της ομάδας από το 2012, ένα αποτέλεσμα που δεν ήταν απλώς προϊόν τύχης, αλλά η κορύφωση μιας γνήσιας αλλαγής στην απόδοση.</p><p>Ωστόσο, η πορεία δεν ήταν ανέφελη. Η σεζόν ξεκίνησε με δυσκολίες, συμπεριλαμβανομένης μιας περιόδου επτά αγώνων χωρίς βαθμούς (από τον 2ο έως τον 8ο γύρο) και ενός απογοητευτικού αποκλεισμού του Hülkenberg στο Μπαχρέιν λόγω υπερβολικής φθοράς του skid block, ένα γεγονός που υπογράμμισε τις αρχικές προκλήσεις που έπρεπε να ξεπεραστούν.</p><h3>1.2 Η Μεταμόρφωση της C45: Μια Τεχνική Βουτιά</h3><p>Η επιτυχία της Sauber βασίζεται στη δραματική βελτίωση του μονοθεσίου της, της C45. Η πορεία της από ένα προβληματικό όχημα σε έναν ανταγωνιστικό παίκτη του midfield είναι μια μελέτη περίπτωσης αποτελεσματικής μηχανικής εξέλιξης.</p><h4>Αρχικά Ελαττώματα</h4><p>Στην αρχή της σεζόν, η C45 ήταν, κατά μέσο όρο, το πιο αργό μονοθέσιο του grid. Τα κύρια μειονεκτήματά της ήταν η θεμελιώδης έλλειψη αεροδυναμικής πίεσης (downforce) και η έντονη υποστροφή, χαρακτηριστικά που την καθιστούσαν «νευρική» (peaky) και εξαιρετικά ευαίσθητη στις αναταράξεις του αέρα από τα προπορευόμενα μονοθέσια. Αυτό σήμαινε ότι οι οδηγοί δυσκολεύονταν να εκμεταλλευτούν το πλήρες δυναμικό του μονοθεσίου, ειδικά σε συνθήκες αγώνα.</p><h4>Η Αναβάθμιση της Ισπανίας</h4><p>Το σημείο καμπής ήρθε στο Ισπανικό Grand Prix, όπου η ομάδα εισήγαγε ένα ολοκληρωμένο πακέτο αναβαθμίσεων. Αυτό περιλάμβανε ένα νέο πάτωμα, ανασχεδιασμένο κάλυμμα κινητήρα και νέα εμπρός αεροτομή. Ο στόχος δεν ήταν απλώς η προσθήκη κάθετης δύναμης, αλλά η αντιμετώπιση βασικών αδυναμιών: η σταθεροποίηση της αεροδυναμικής πλατφόρμας και η μείωση της ευαισθησίας της στον «βρώμικο αέρα». Αυτό θα διεύρυνε το λειτουργικό παράθυρο του μονοθεσίου, καθιστώντας το πιο προβλέψιμο και οδηγήσιμο.</p><h4>Απόδοση μετά την Αναβάθμιση</h4><p>Τα αποτελέσματα ήταν άμεσα και εντυπωσιακά. Στην Ισπανία, ο Hülkenberg ανέβηκε από την 15η θέση στην 5η, προσπερνώντας μάλιστα μια Ferrari στους τελευταίους γύρους. Στους αγώνες που ακολούθησαν τη Βαρκελώνη, η Sauber αναδείχθηκε τέταρτη πιο παραγωγική ομάδα σε συγκομιδή βαθμών, αποδεικνύοντας μια άμεση αιτιώδη σχέση μεταξύ μιας συγκεκριμένης μηχανολογικής εξέλιξης και μιας δραματικής αλλαγής στην ανταγωνιστική της θέση.</p><p>Η επιτυχία και η πολυπλοκότητα αυτής της αναβάθμισης δεν είναι απλώς έργο της υπάρχουσας δομής της Sauber. Αντιθέτως, αποτελεί την πρώτη σαφή απόδειξη της «επίδρασης Audi» — του αντίκτυπου της νέας, υψηλού επιπέδου διοίκησης και της αυξημένης επένδυσης στο πλαίσιο της προετοιμασίας για την εξαγορά του 2026. Το 2024, η ομάδα βρισκόταν σε «κατάσταση επιβίωσης» με περιορισμένους πόρους. Η φετινή ομάδα, ωστόσο, διοικείται από πρόσωπα όπως ο Mattia Binotto (πρώην επικεφαλής της Ferrari) και ο Jonathan Wheatley (πρώην Αθλητικός Διευθυντής της Red Bull), οι οποίοι διαθέτουν την εμπειρία για τον εντοπισμό θεμελιωδών αδυναμιών και τη διαχείριση εξελιγμένων προγραμμάτων ανάπτυξης. Η εστίαση της αναβάθμισης σε ένα σύνθετο αεροδυναμικό πρόβλημα, αντί για την απλή προσθήκη downforce, υποδηλώνει μια πιο ώριμη διαγνωστική και εξελικτική διαδικασία. Επομένως, η C45 του 2025 δεν είναι απλώς ένα βελτιωμένο μονοθέσιο· είναι το πρώτο πρωτότυπο της μεθοδολογίας της εργοστασιακής ομάδας της Audi.</p><h3>1.3 Σύγκρουση Στυλ: Η Εμπειρία του Hülkenberg εναντίον της Φλόγας του Bortoleto</h3><p>Η εσωτερική μάχη μεταξύ του βετεράνου Nico Hülkenberg και του πολλά υποσχόμενου rookie Gabriel Bortoleto είναι συναρπαστική.</p><h4>Hülkenberg</h4><p>Ο Hülkenberg διανύει μια σεζόν εξιλέωσης. Παρά το γεγονός ότι συχνά υστερεί του teammate του στις κατατακτήριες δοκιμές, η εξαιρετική του αγωνιστική οξυδέρκεια, η διαχείριση των ελαστικών και η ικανότητά του να εκμεταλλεύεται χαοτικές συνθήκες τον έχουν καταστήσει τον κύριο πάροχο βαθμών της ομάδας. Οι εμφανίσεις του στην Αυστραλία (7ος από 17ος), την Ισπανία (5ος από 15ος) και τη Βρετανία (3ος από 19ος) αποτελούν παραδείγματα της κλάσης ενός έμπειρου οδηγού.</p><h4>Η Πρώτη Χρονιά του Bortoleto</h4><p>Η σεζόν του Bortoleto χαρακτηρίζεται από την εκπληκτική του ταχύτητα σε έναν γύρο, που τον έχει δει να κερδίζει συχνά τον Hülkenberg το Σάββατο. Η 7η θέση του στις κατατακτήριες της Ουγγαρίας ήταν ένα από τα highlights του.<sup>3</sup> Ωστόσο, αυτή η ταχύτητα έχει μετριαστεί από λάθη ενός πρωτοεμφανιζόμενου, όπως το ατύχημά του στην Αυστραλία και το στρατηγικό του λάθος που οδήγησε σε εγκατάλειψη στο Silverstone. Η άνοδός του προς το τέλος του πρώτου μισού της σεζόν, με βαθμούς στην Αυστρία, το Βέλγιο και μια εντυπωσιακή 6η θέση στην Ουγγαρία, δείχνει μια απότομη και ελπιδοφόρα καμπύλη μάθησης.</p><h4>Δυναμική Ομάδας</h4><p>Η δυναμική μεταξύ των δύο οδηγών είναι συμβιωτική. Η ταχύτητα του Bortoleto ωθεί την εξέλιξη του set-up και αποκαλύπτει το απόλυτο δυναμικό του μονοθεσίου, ενώ η συνέπεια του Hülkenberg φέρνει τους κρίσιμους βαθμούς. Δεν υπάρχουν ενδείξεις σύγκρουσης· αντίθετα, ο Bortoleto έσπευσε να συγχαρεί τον Hülkenberg μετά το βάθρο του, μια εικόνα που υποδηλώνει υγιή συνεργασία.</p><table><thead><tr><th></th><th><p>Nico Hülkenberg</p></th><th><p>Gabriel Bortoleto</p></th></tr><tr><th><p>Κατατακτήριες H2H</p></th><th><p>6</p></th><th><p>8</p></th></tr><tr><th><p>Αγώνας H2H (και οι δύο τερμάτισαν)</p></th><th><p>8</p></th><th><p>5</p></th></tr><tr><th><p>Βαθμοί</p></th><th><p>37</p></th><th><p>14</p></th></tr><tr><th><p>Καλύτερη Θέση στις Κατατακτήριες</p></th><th><p>P11</p></th><th><p>P7</p></th></tr><tr><th><p>Καλύτερος Τερματισμός</p></th><th><p>P3</p></th><th><p>P6</p></th></tr></thead></table><h2>Visa Cash App Racing Bulls - Κρίση Ταυτότητας</h2><p>Η Visa Cash App Racing Bulls ενσαρκώνει ένα παράδοξο. Διαθέτει ένα στιβαρό και αξιόπιστο μονοθέσιο, αλλά παρεμποδίζεται από στρατηγική αναποφασιστικότητα και την τεράστια βαρυτική έλξη της μητρικής ομάδας Red Bull, οδηγώντας σε μια σεζόν χαμένων ευκαιριών.</p><h3>2.1 Η VCARB 02: Στιβαρή αλλά Όχι Εντυπωσιακή</h3><p>Η VCARB 02 είναι ένα ικανό και «υπάκουο» μονοθέσιο. Το βασικό της πλεονέκτημα είναι η προβλέψιμη συμπεριφορά της, που επιτρέπει στους οδηγούς να νιώθουν άνετα και να πιέζουν. Κινείται από τον κινητήρα Honda RBPTH003 και χρησιμοποιεί σημαντικό αριθμό εξαρτημάτων από την Red Bull Technology, συμπεριλαμβανομένων των αναρτήσεων και του κιβωτίου ταχυτήτων.</p><p>Η κύρια αδυναμία του μονοθεσίου είναι η έλλειψη συνολικής αεροδυναμικής πίεσης, ιδιαίτερα στις στροφές υψηλής ταχύτητας.<sup> </sup>Αυτό δημιουργεί ένα «ταβάνι» στην απόδοσή του, εμποδίζοντάς το να ανταγωνίζεται σταθερά στην κορυφή του midfield, ακόμη και όταν οι κατατακτήριες είναι καλές. Η ομάδα έφερε αναβαθμίσεις στην Imola για να αντιμετωπίσει αυτό το ζήτημα, αλλά η μετατροπή των ευκαιριών σε βαθμούς παραμένει μια πρόκληση.</p><h3>2.2 Το Αίνιγμα των Οδηγών της Red Bull</h3><p>Η ταραχώδης κατάσταση με τους οδηγούς έχει καθορίσει τη σεζόν της ομάδας. Ο αιφνιδιαστικός υποβιβασμός του Liam Lawson από τη Red Bull Racing πίσω στη Racing Bulls μετά από μόλις δύο αγώνες (Αυστραλία και Κίνα) προκάλεσε σοκ. Ο ίδιος ο Lawson εξέφρασε την άποψη ότι ήταν απροετοίμαστος, δεν είχε αρκετό χρόνο δοκιμών και ότι ένα πειραματικό set-up στην Κίνα χρησιμοποιήθηκε ως δικαιολογία για την απομάκρυνσή του.</p><p>Ο rookie Isack Hadjar, από την πλευρά του, έδειξε εντυπωσιακή ταχύτητα από την αρχή, συχνά ξεπερνώντας τον Lawson και σκοράροντας τους πρώτους βαθμούς της ομάδας στην Ιαπωνία.<sup>20</sup> Η 6η θέση του στο Μονακό ήταν ένα εξαιρετικό αποτέλεσμα. Η μεταξύ τους μάχη δείχνει τον Hadjar να έχει ένα αρχικό πλεονέκτημα, αλλά ο Lawson έχει σταθεροποιηθεί και δείχνει πρόσφατα ισχυρή φόρμα, υποδηλώνοντας ότι έχει ανακάμψει από το αρχικό σοκ.</p><p>Η ασυνεπής απόδοση και η στρατηγική αστάθεια της Racing Bulls δεν είναι απλώς εσωτερικές αποτυχίες, αλλά άμεσες συνέπειες του ρόλου της ως θυγατρική μιας μητρικής ομάδας Red Bull που βρίσκεται σε κρίση. Η μητρική ομάδα διανύει τη «χειρότερη σεζόν της από το 2020», με ένα δύσκολο μονοθέσιο και τον Yuki Tsunoda να δυσκολεύεται μετά την προαγωγή του. Η ξαφνική ανταλλαγή Lawson-Tsunoda ήταν μια αντιδραστική κίνηση της Red Bull για να λύσει το δικό της πρόβλημα, χωρίς να λαμβάνει υπόψη τη σταθερότητα της θυγατρικής ομάδας.<sup> </sup>Αυτή η κίνηση έφερε τον Lawson σε μια δύσκολη θέση και έθεσε τον rookie Hadjar υπό τεράστια πίεση. Μια ομάδα που αντιμετωπίζει τέτοια αναταραχή είναι λιγότερο πιθανό να έχει την εστίαση που απαιτείται για άψογη επιχειρησιακή εκτέλεση, κάτι που θα μπορούσε να εξηγήσει τα στρατηγικά λάθη στην αρχή της σεζόν και την καταστροφική διπλή εγκατάλειψη στο Silverstone. Οι δυσκολίες της Racing Bulls είναι, επομένως, ένας καθρέφτης των προβλημάτων της Red Bull Racing.</p><h3>2.3 Πίεση στο Pit Wall</h3><p>Η επιχειρησιακή εκτέλεση αποτελεί βασική αδυναμία. Η αποτυχία μετατροπής των ισχυρών θέσεων στις κατατακτήριες της Αυστραλίας (Tsunoda 5ος) και της Κίνας (και τα δύο μονοθέσια στο Q3) σε βαθμούς, λόγω «στρατηγικών λαθών και συμβάντων», είναι ένα χαρακτηριστικό παράδειγμα.</p><p>Ως αντίστιξη, το Grand Prix του Μονακό ήταν μια στιγμή στρατηγικής ευφυΐας. Ο Lawson χρησιμοποιήθηκε για να καθυστερήσει το υπόλοιπο γκρουπ, δημιουργώντας χώρο για τον Hadjar να εξασφαλίσει την 6η θέση, με αποτέλεσμα μια κρίσιμη διπλή βαθμολόγηση. Αυτό αποδεικνύει ότι η ομάδα είναι ικανή για υψηλού επιπέδου εκτέλεση, αλλά δυσκολεύεται να το πετύχει με συνέπεια. Η διπλή εγκατάλειψη στο Silverstone, όπου αντίπαλοι όπως η Sauber σκόραραν σημαντικά, αποτελεί το απόλυτο παράδειγμα χαμένης ευκαιρίας.</p><table><thead><tr><th></th><th><p>Isack Hadjar</p></th><th><p>Liam Lawson</p></th></tr><tr><th><p>Κατατακτήριες H2H</p></th><th><p>9</p></th><th><p>3</p></th></tr><tr><th><p>Αγώνας H2H (και οι δύο τερμάτισαν)</p></th><th><p>8</p></th><th><p>3</p></th></tr><tr><th><p>Βαθμοί</p></th><th><p>22</p></th><th><p>20</p></th></tr><tr><th><p>Καλύτερη Θέση στις Κατατακτήριες</p></th><th><p>P5</p></th><th><p>P9</p></th></tr><tr><th><p>Καλύτερος Τερματισμός</p></th><th><p>P6</p></th><th><p>P6</p></th></tr></thead></table><h2>MoneyGram Haas F1 - Η Αναζήτηση της Συνέπειας</h2><p>Η σεζόν της Haas είναι η ιστορία μιας μάχης ενάντια στους εγγενείς της περιορισμούς. Ένα νέο, πιο πραγματιστικό στυλ ηγεσίας παλεύει ενάντια σε ένα θεμελιωδώς προβληματικό μονοθέσιο και την ασταθή δυναμική ενός νέου οδηγικού διδύμου.</p><h3>3.1 Ασταθής VF-25</h3><p>Η σεζόν ξεκίνησε καταστροφικά στην Αυστραλία. Η VF-25 υπέφερε από ένα θεμελιώδες αεροδυναμικό ελάττωμα που προκαλούσε σοβαρή αστάθεια στις υψηλές ταχύτητες και αναπηδήσεις (bouncing), ένα πρόβλημα που επιδεινώθηκε από την ανώμαλη πίστα του Albert Park. Ο επικεφαλής της ομάδας, Ayao Komatsu, παραδέχτηκε ότι «αισθάνθηκε άρρωστος» με την έλλειψη ρυθμού.</p><p>Η ομάδα αναγκάστηκε να ακολουθήσει μια ταχεία, αντιδραστική πορεία εξέλιξης. Μια αναβάθμιση στο κεντρικό τμήμα του πατώματος επισπεύσθηκε για το Ιαπωνικό Grand Prix για την αντιμετώπιση της αστάθειας. Περαιτέρω αναβαθμίσεις στο πάτωμα, τον διαχύτη και το πίσω μέρος ακολούθησαν στην Imola. Η VF-25, που χρησιμοποιεί κινητήρα και πολλά εξαρτήματα της Ferrari , έχει μια αξιοπρεπή υποκείμενη ισορροπία  αλλά ένα πολύ στενό λειτουργικό παράθυρο, οδηγώντας σε άκρως ασυνεπή απόδοση από πίστα σε πίστα.</p><h3>3.2 Ένα Εκρηκτικό Δίδυμο: Η Τέχνη του Ocon εναντίον της Ταχύτητας του Bearman</h3><p>Το ολοκαίνουργιο οδηγικό δίδυμο του νικητή Grand Prix Esteban Ocon και του rookie Oliver Bearman είναι ένα κεντρικό θέμα.</p><h4>Ocon, ο Ηγέτης</h4><p>Ο Ocon έχει καθιερωθεί ως ο ηγέτης της ομάδας, υπεύθυνος για τους 27 από τους 35 βαθμούς της. Η δύναμή του έγκειται στην αγωνιστική του ικανότητα, κερδίζοντας σταθερά θέσεις την Κυριακή για να ξεπεράσει τις αδυναμίες του μονοθεσίου στις κατατακτήριες. Η 5η θέση του στην Κίνα ήταν το highlight της σεζόν.</p><h4>Bearman, ο Πρωτοεμφανιζόμενος</h4><p>Ο Bearman έχει δείξει εκλάμψεις ακατέργαστης ταχύτητας, ιδιαίτερα στις κατατακτήριες, αλλά η σεζόν του έχει αμαυρωθεί από λάθη και δαπανηρές ποινές. Δέχθηκε ποινές 10 θέσεων στο grid τόσο στο Μονακό όσο και στο Silverstone για παραβιάσεις κόκκινης σημαίας. Έχει επίσης υποστεί δύο μηχανικές εγκαταλείψεις, σε σύγκριση με τη μία του Ocon.</p><h4>Το Σημείο Αντιπαράθεσης στο Silverstone</h4><p>Η σύγκρουσή τους στο Βρετανικό Grand Prix ήταν μια κρίσιμη στιγμή. Και οι δύο οδηγοί ήταν απογοητευμένοι, νιώθοντας ότι οι βαθμοί ήταν εφικτοί. Ο Komatsu χαρακτήρισε επίσημα το συμβάν ως «αγωνιστικό ατύχημα», αλλά τόνισε ότι ήταν ένα απαράδεκτο αποτέλεσμα που προήλθε από το γεγονός ότι βρίσκονταν εκτός θέσης μετά από ένα προηγούμενο λάθος του Bearman.</p><p>Το δίδυμο Ocon-Bearman αποτελεί μια τέλεια μικρογραφία της συνολικής κατάστασης της Haas. Το δυναμικό της ομάδας αποδεικνύεται από το ένα στοιχείο (η αγωνιστική ικανότητα του Ocon, η ακατέργαστη ταχύτητα του Bearman), ενώ οι θεμελιώδεις περιορισμοί της εκτίθενται από το άλλο (οι μέτριες κατατακτήριες του Ocon, τα λάθη του Bearman). Η VF-25 είναι ένα ασυνεπές μονοθέσιο. Ο Ocon, με την τεράστια εμπειρία του, έχει την ικανότητα να διαχειρίζεται τα ελαττώματα του μονοθεσίου κατά τη διάρκεια του αγώνα, διασώζοντας βαθμούς από κακές θέσεις εκκίνησης. Ο Bearman, από την άλλη, έχει το ταλέντο να εξάγει μερικές φορές εκπληκτική ταχύτητα στις κατατακτήριες, αλλά του λείπει η εμπειρία για να διαχειριστεί με συνέπεια το δύσκολο μονοθέσιο, οδηγώντας σε ποινές και συμβάντα. Οι οδηγοί δεν είναι απλώς δύο άτομα· είναι οι δύο όψεις του νομίσματος, απεικονίζοντας τέλεια το παράδοξο της Haas. Μια ομάδα με το σθένος και τις εκλάμψεις δυναμικού για να σκοράρει, αλλά που συγκρατείται από θεμελιώδεις ατέλειες που εμποδίζουν τα σταθερά, «καθαρά» Σαββατοκύριακα.</p><h3>3.3 Το Δόγμα Komatsu: Πραγματισμός εναντίον Δομικών Ελλείψεων</h3><p>Υπό την ηγεσία του Ayao Komatsu, ο οποίος αντικατέστησε τον Guenther Steiner, η ομάδα έχει επιτύχει οικονομική σταθερότητα για πρώτη φορά, λειτουργώντας πλέον στο όριο του προϋπολογισμού χωρίς την ανάγκη προσωπικών κεφαλαίων από τον ιδιοκτήτη Gene Haas. Ο Komatsu έχει επίσης επικεντρωθεί στην οικοδόμηση μιας βάσης εμπιστοσύνης και διαφάνειας, η οποία βοήθησε στην αποκλιμάκωση της σύγκρουσης του Silverstone.</p><p>Παρόλα αυτά, η Haas εξακολουθεί να λειτουργεί με «τεράστιο μειονέκτημα». Η εξάρτησή της από τον προσομοιωτή της Ferrari και η έλλειψη δικού της αποτελεί σημαντικό εμπόδιο, το οποίο πιθανότατα συνέβαλε στο αρχικό σχεδιαστικό ελάττωμα της VF-25. Αυτή η δομική αδυναμία είναι η βασική πρόκληση που πρέπει να αντιμετωπίσει ο Komatsu.</p><table><thead><tr><th></th><th><p>Esteban Ocon</p></th><th><p>Oliver Bearman</p></th></tr><tr><th><p>Κατατακτήριες H2H</p></th><th><p>8</p></th><th><p>6</p></th></tr><tr><th><p>Αγώνας H2H (και οι δύο τερμάτισαν)</p></th><th><p>9</p></th><th><p>5</p></th></tr><tr><th><p>Βαθμοί</p></th><th><p>27</p></th><th><p>8</p></th></tr><tr><th><p>Καλύτερη Θέση στις Κατατακτήριες</p></th><th><p>P8</p></th><th><p>P8</p></th></tr><tr><th><p>Καλύτερος Τερματισμός</p></th><th><p>P5</p></th><th><p>P8</p></th></tr></thead></table><h2>Συμπέρασμα: Διαφορετικές Πορείες προς το 2026</h2><p>Η ανάλυση των τριών ομάδων αποκαλύπτει τρεις διακριτές στρατηγικές και προοπτικές καθώς η Formula 1 οδεύει προς τη νέα εποχή του 2026.</p><p><strong>Sauber:</strong> Βρίσκεται σε μια σαφή ανοδική πορεία, θέτοντας ισχυρά θεμέλια για την εργοστασιακή ομάδα της Audi. Η πρόοδός της είναι πραγματική, στρατηγική και καλά χρηματοδοτούμενη. Είναι η ομάδα με το πιο λαμπρό μακροπρόθεσμο μέλλον από τις τρεις.</p><p><strong>Racing Bulls:</strong> Παγιδευμένη σε έναν κύκλο εξάρτησης από τη μητρική ομάδα Red Bull. Το μέλλον της είναι αβέβαιο και η απόδοσή της πιθανότατα θα παραμείνει ασυνεπής για όσο διάστημα η ταυτότητα και οι στρατηγικές της προτεραιότητες υπαγορεύονται από αλλού.</p><p><strong>Haas:</strong> Μια ομάδα που αξιοποιεί στο έπακρο ένα περιορισμένο μοντέλο. Επιχειρησιακά ισχυρότερη και πιο σταθερή υπό τον Komatsu, αλλά θεμελιωδώς περιορισμένη από δομικά μειονεκτήματα που θα καταστήσουν την αλλαγή κανονισμών του 2026 μια μνημειώδη πρόκληση.</p><p>Η μάχη στο πίσω μέρος του grid δεν είναι απλώς μια μάχη για τους τελευταίους βαθμούς. Είναι μια συναρπαστική ιστορία διαφορετικών φιλοσοφιών, αντικρουόμενων πεπρωμένων και της αδιάκοπης προσπάθειας για πρόοδο. Οι σπόροι της ιεραρχίας του 2026 σπέρνονται σήμερα, στη μάχη για την όγδοη θέση.</p></div>
+
+            <div class="article-author-footer">
+                <div class="reading-time-badge"><i class="fas fa-clock"></i> <span id="reading-time-value">5 min read</span></div>
+                <div class="author-box">
+                    <div class="author-header">
+                        <div class="author-avatar">
+                            <img id="author-image" src="/f1stories.github.io/images/avatars/FA.webp" alt="Georgios Balatzis"
+                                 onerror="this.style.display='none';document.getElementById('author-initial').style.display='flex';">
+                            <span class="avatar-text" id="author-initial">A</span>
+                        </div>
+                        <div class="author-info">
+                            <h4 class="author-name" id="author-name">Georgios Balatzis</h4>
+                            <div class="author-title" id="author-title">F1 Stories Contributor</div>
+                        </div>
+                    </div>
+                    <div class="author-bio" id="author-bio">Regular contributor to F1 Stories, passionate about motorsport and sharing insight about Formula 1 racing.</div>
+                </div>
+            </div>
+        </article>
+
+        <div class="article-comments">
+            <h3><i class="fas fa-comments" style="margin-right:0.5rem;font-size:0.95em;"></i>Comments</h3>
+            <div id="disqus_thread"></div>
+            <script>
+                var disqus_config = function () {
+                    this.page.url = window.location.href;
+                    this.page.identifier = '20250820G';
+                };
+                (function() {
+                    var d = document, s = d.createElement('script');
+                    s.src = 'https://f1stories-gr.disqus.com/embed.js';
+                    s.setAttribute('data-timestamp', +new Date());
+                    (d.head || d.body).appendChild(s);
+                })();
+            </script>
         </div>
-      </div>
-    </div>
 
-    <div class="article-comments">
-      <h3>Comments</h3>
-      <div id="disqus_thread"></div>
-      <script>
-        var disqus_config = function () {
-          this.page.url = window.location.href;  // Gets the current page URL
-          this.page.identifier = '20250820G';   // Will be replaced with your article ID
-        };
+        <div class="article-navigation">
+            <a href="/blog-module/blog-entries/20250819W/article.html" id="prev-article-link" class="article-nav-link prev"><i class="fas fa-arrow-left"></i> Previous</a>
+            <a href="/blog-module/blog-entries/20250821G/article.html" id="next-article-link" class="article-nav-link next">Next <i class="fas fa-arrow-right"></i></a>
+        </div>
 
-        (function() { // DON'T EDIT BELOW THIS LINE
-          var d = document, s = d.createElement('script');
-          s.src = 'https://f1stories-gr.disqus.com/embed.js';
-          s.setAttribute('data-timestamp', +new Date());
-          (d.head || d.body).appendChild(s);
-        })();
-      </script>
-      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    </div>
-
-    <!-- Article navigation -->
-    <div class="article-navigation">
-      <a href="/blog-module/blog-entries/20250819W/article.html" id="prev-article-link" class="article-nav-link prev">
-        <i class="fas fa-arrow-left"></i> Previous Article
-      </a>
-      <a href="/blog-module/blog-entries/20250821G/article.html" id="next-article-link" class="article-nav-link next">
-        Next Article <i class="fas fa-arrow-right"></i>
-      </a>
-    </div>
-
-    <!-- Related Articles -->
-    <div class="row mt-5">
-      <div class="col-12">
-        <h2 class="mb-4">Related Articles</h2>
-      </div>
-      
+        <div class="row mt-5">
+            <div class="col-12"><h2 class="mb-4 related-section-title">Related Articles</h2></div>
+            
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -449,102 +319,161 @@
                     </div>
                 </div>
             </div>
+        </div>
     </div>
-  </div>
 </section>
 
-<!-- Scroll To Top Button -->
-<button id="scroll-to-top" class="scroll-to-top-btn">
-  <i class="fas fa-chevron-up"></i>
-</button>
+<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
+
+<div id="cookie-consent" class="cookie-consent" style="display:none;">
+    <div class="cookie-content">
+        <p>Χρησιμοποιούμε cookies για την βελτίωση της εμπειρίας σας. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <div class="cookie-actions">
+            <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
+            <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
+        </div>
+    </div>
+</div>
 
 <footer class="py-4">
-  <div class="container">
-    <div class="row">
-      <div class="col-12 text-center">
-        <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
-        <div class="social-media">
-          <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
-          <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
-          <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
-          <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
-          <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
-          <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+                <div class="social-media">
+                    <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+                    <a href="/cdn-cgi/l/email-protection#6904100f581a1d061b000c1a290e04080005470a0604"><i class="fas fa-envelope"></i></a>
+                    <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" rel="noopener"><i class="fab fa-spotify"></i></a>
+                </div>
+                <div class="footer-links mt-3">
+                    <a href="/privacy/privacy.html" class="footer-link">Privacy Policy</a>
+                    <span class="footer-separator">|</span>
+                    <a href="/privacy/terms.html" class="footer-link">Terms of Use</a>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </footer>
 
-<!-- Bootstrap JavaScript - Make sure this loads properly -->
-<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Background Randomizer Script -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script defer src="/scripts/background-randomizer.js"></script>
-<!-- Main Scripts -->
 <script defer src="/scripts/script.js"></script>
 <script defer src="/blog-module/blog/article-script.js"></script>
-<!-- Social Sharing Script -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Replace placeholder URLs with actual URL
-    const currentUrl = window.location.href;
-    const articleTitle = document.querySelector('.article-title').textContent;
-    const encodedTitle = encodeURIComponent(articleTitle);
-
-    // Update sharing links
-    document.querySelectorAll('.share-btn').forEach(btn => {
-      if (btn.href) {
-        btn.href = btn.href
-                .replace('https://f1stories.gr/blog-module/blog-entries/20250820G/article.html', encodeURIComponent(currentUrl))
-                .replace('Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025', encodedTitle);
-      }
-    });
-
-    // Handle copy link button
-    const copyLinkBtn = document.getElementById('copy-link-btn');
-    if (copyLinkBtn) {
-      copyLinkBtn.addEventListener('click', function() {
-        navigator.clipboard.writeText(currentUrl)
-                .then(() => {
-                  copyLinkBtn.classList.add('copy-success');
-
-                  // Change icon temporarily to checkmark
-                  const icon = copyLinkBtn.querySelector('i');
-                  icon.classList.remove('fa-link');
-                  icon.classList.add('fa-check');
-
-                  // Reset after 2 seconds
-                  setTimeout(() => {
-                    copyLinkBtn.classList.remove('copy-success');
-                    icon.classList.remove('fa-check');
-                    icon.classList.add('fa-link');
-                  }, 2000);
-                })
-                .catch(err => {
-                  console.error('Failed to copy: ', err);
-                });
-      });
-    }
-  });
-</script>
-<script defer src="/scripts/theme-toggle.js"></script>
 <script defer src="/scripts/navbar.js"></script>
+<script defer src="/scripts/cookie-consent.js"></script>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
-            });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    /* ── Theme Toggle ─────────────────────────── */
+    var themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', function() {
+            var html = document.documentElement;
+            var isLight = html.getAttribute('data-theme') === 'light';
+            if (isLight) { html.removeAttribute('data-theme'); localStorage.setItem('f1stories-theme','dark'); }
+            else { html.setAttribute('data-theme','light'); localStorage.setItem('f1stories-theme','light'); }
         });
-    });
-    </script></body>
+    }
+
+    /* ── Reading Progress Bar ─────────────────── */
+    var progressBar = document.getElementById('reading-progress');
+    if (progressBar) {
+        var progTicking = false;
+        function updateProgress() {
+            var article = document.querySelector('.article-content');
+            if (!article) return;
+            var rect = article.getBoundingClientRect();
+            var articleTop = rect.top + window.pageYOffset;
+            var articleHeight = rect.height;
+            var scrolled = window.pageYOffset - articleTop + window.innerHeight * 0.3;
+            var pct = Math.max(0, Math.min(100, (scrolled / articleHeight) * 100));
+            progressBar.style.width = pct + '%';
+        }
+        window.addEventListener('scroll', function() {
+            if (progTicking) return;
+            progTicking = true;
+            requestAnimationFrame(function() { updateProgress(); progTicking = false; });
+        });
+        updateProgress();
+    }
+
+    /* ── Next Race Countdown (2026) ───────────── */
+    var RACES = [
+        { name: 'Australian GP',    flag: '\u{1F1E6}\u{1F1FA}', date: '2026-03-08T05:00:00Z' },
+        { name: 'Chinese GP',       flag: '\u{1F1E8}\u{1F1F3}', date: '2026-03-15T07:00:00Z' },
+        { name: 'Japanese GP',      flag: '\u{1F1EF}\u{1F1F5}', date: '2026-03-29T05:00:00Z' },
+        { name: 'Bahrain GP',       flag: '\u{1F1E7}\u{1F1ED}', date: '2026-04-12T15:00:00Z' },
+        { name: 'Saudi Arabian GP', flag: '\u{1F1F8}\u{1F1E6}', date: '2026-04-19T17:00:00Z' },
+        { name: 'Miami GP',         flag: '\u{1F1FA}\u{1F1F8}', date: '2026-05-03T20:00:00Z' },
+        { name: 'Canadian GP',      flag: '\u{1F1E8}\u{1F1E6}', date: '2026-05-24T18:00:00Z' },
+        { name: 'Monaco GP',        flag: '\u{1F1F2}\u{1F1E8}', date: '2026-06-07T13:00:00Z' },
+        { name: 'Catalunya GP',     flag: '\u{1F1EA}\u{1F1F8}', date: '2026-06-14T13:00:00Z' },
+        { name: 'Austrian GP',      flag: '\u{1F1E6}\u{1F1F9}', date: '2026-06-28T13:00:00Z' },
+        { name: 'British GP',       flag: '\u{1F1EC}\u{1F1E7}', date: '2026-07-05T14:00:00Z' },
+        { name: 'Belgian GP',       flag: '\u{1F1E7}\u{1F1EA}', date: '2026-07-19T13:00:00Z' },
+        { name: 'Hungarian GP',     flag: '\u{1F1ED}\u{1F1FA}', date: '2026-07-26T13:00:00Z' },
+        { name: 'Dutch GP',         flag: '\u{1F1F3}\u{1F1F1}', date: '2026-08-23T13:00:00Z' },
+        { name: 'Italian GP',       flag: '\u{1F1EE}\u{1F1F9}', date: '2026-09-06T13:00:00Z' },
+        { name: 'Spanish GP',       flag: '\u{1F1EA}\u{1F1F8}', date: '2026-09-13T13:00:00Z' },
+        { name: 'Azerbaijan GP',    flag: '\u{1F1E6}\u{1F1FF}', date: '2026-09-26T11:00:00Z' },
+        { name: 'Singapore GP',     flag: '\u{1F1F8}\u{1F1EC}', date: '2026-10-11T12:00:00Z' },
+        { name: 'US GP',            flag: '\u{1F1FA}\u{1F1F8}', date: '2026-10-25T19:00:00Z' },
+        { name: 'Mexico City GP',   flag: '\u{1F1F2}\u{1F1FD}', date: '2026-11-01T20:00:00Z' },
+        { name: 'S\u00e3o Paulo GP',flag: '\u{1F1E7}\u{1F1F7}', date: '2026-11-08T17:00:00Z' },
+        { name: 'Las Vegas GP',     flag: '\u{1F1FA}\u{1F1F8}', date: '2026-11-21T06:00:00Z' },
+        { name: 'Qatar GP',         flag: '\u{1F1F6}\u{1F1E6}', date: '2026-11-29T14:00:00Z' },
+        { name: 'Abu Dhabi GP',     flag: '\u{1F1E6}\u{1F1EA}', date: '2026-12-06T13:00:00Z' }
+    ];
+
+    function getNextRace() {
+        var now = Date.now();
+        for (var i = 0; i < RACES.length; i++) {
+            if (new Date(RACES[i].date).getTime() > now) return RACES[i];
+        }
+        return null;
+    }
+    function fmtCountdown(ms) {
+        if (ms <= 0) return 'LIGHTS OUT!';
+        var s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60),sec=s%60;
+        if (d>0) return d+'d '+h+'h '+m+'m';
+        if (h>0) return h+'h '+m+'m '+sec+'s';
+        return m+'m '+sec+'s';
+    }
+    function fmtShort(ms) {
+        if (ms <= 0) return 'RACE ON!';
+        var s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60);
+        if (d>0) return d+'d '+h+'h';
+        if (h>0) return h+'h '+m+'m';
+        return m+'m';
+    }
+    function tickCountdown() {
+        var race = getNextRace();
+        var ne = document.getElementById('next-race-name');
+        var ce = document.getElementById('race-countdown');
+        var me = document.getElementById('race-countdown-mobile');
+        var fe = document.getElementById('race-flag-emoji');
+        if (!race) {
+            if (ne) ne.textContent = 'Season Complete';
+            if (ce) ce.textContent = '2027 TBA';
+            if (me) me.textContent = 'Done';
+            return;
+        }
+        var ms = new Date(race.date).getTime() - Date.now();
+        if (ne) ne.textContent = race.flag + ' ' + race.name;
+        if (ce) ce.textContent = fmtCountdown(ms);
+        if (me) me.textContent = fmtShort(ms);
+        if (fe) fe.textContent = race.flag;
+    }
+
+    tickCountdown();
+    setInterval(tickCountdown, 1000);
+
+});
+</script>
+
+</body>
 </html>
