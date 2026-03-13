@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Stories — Blog</title>
+    <meta property="og:title" content="F1 Stories Blog">
+    <meta property="og:description" content="Αναλύσεις, ιστορίες και insights από τον κόσμο της Formula 1">
+    <meta property="og:image" content="https://f1stories.gr/images/og-blog.webp">
+    <meta property="og:url" content="https://f1stories.gr/blog-module/blog/index.html">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/blog-module/blog-styles.css">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-X68J6MQKSM');
+    </script>
+
+    <!-- Theme FOUC prevention -->
+    <script>
+        (function(){
+            var t = localStorage.getItem('f1stories-theme');
+            if (t === 'light') document.documentElement.setAttribute('data-theme','light');
+            else if (!t && window.matchMedia('(prefers-color-scheme: light)').matches)
+                document.documentElement.setAttribute('data-theme','light');
+        })();
+    </script>
+
+    <style>
+        :root {
+            --bi-bg: #0a0a0f;
+            --bi-surface: rgba(255,255,255,0.04);
+            --bi-surface-raised: rgba(255,255,255,0.06);
+            --bi-border: rgba(255,255,255,0.08);
+            --bi-border-strong: rgba(255,255,255,0.14);
+            --bi-text-primary: #f0f0f2;
+            --bi-text-secondary: rgba(255,255,255,0.6);
+            --bi-text-tertiary: rgba(255,255,255,0.38);
+            --bi-accent: #3b82f6;
+            --bi-accent-soft: rgba(59,130,246,0.10);
+            --bi-accent-hover: #60a5fa;
+            --bi-shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+            --bi-shadow-md: 0 4px 16px rgba(0,0,0,0.45);
+            --bi-shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+            --bi-radius: 14px;
+            --bi-radius-sm: 10px;
+            --bi-transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+        [data-theme="light"] {
+            --bi-bg: #f8f8fa;
+            --bi-surface: rgba(0,0,0,0.025);
+            --bi-surface-raised: #ffffff;
+            --bi-border: rgba(0,0,0,0.07);
+            --bi-border-strong: rgba(0,0,0,0.13);
+            --bi-text-primary: #111118;
+            --bi-text-secondary: rgba(0,0,0,0.58);
+            --bi-text-tertiary: rgba(0,0,0,0.36);
+            --bi-accent: #2563eb;
+            --bi-accent-soft: rgba(37,99,235,0.07);
+            --bi-accent-hover: #1d4ed8;
+            --bi-shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --bi-shadow-md: 0 4px 16px rgba(0,0,0,0.07);
+            --bi-shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+        }
+        .blog-index-wrapper { font-family: 'DM Sans','Helvetica Neue',sans-serif; color: var(--bi-text-primary); -webkit-font-smoothing: antialiased; }
+
+        /* Theme toggle */
+        .theme-toggle-btn { position: fixed; top: 5rem; right: 1.5rem; z-index: 1050; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--bi-border-strong); background: var(--bi-surface-raised); color: var(--bi-text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: var(--bi-shadow-sm); transition: all var(--bi-transition); }
+        .theme-toggle-btn:hover { color: var(--bi-accent); border-color: var(--bi-accent); transform: scale(1.08); }
+        .theme-toggle-btn .icon-sun { display: inline; }
+        .theme-toggle-btn .icon-moon { display: none; }
+        [data-theme="light"] .theme-toggle-btn .icon-sun { display: none; }
+        [data-theme="light"] .theme-toggle-btn .icon-moon { display: inline; }
+
+        /* Page header */
+        .blog-page-header { padding: 2rem 0 1rem; }
+        .blog-page-title { font-family: 'Outfit',sans-serif; font-size: 2.4rem; font-weight: 800; letter-spacing: -0.03em; color: var(--bi-text-primary); margin: 0; line-height: 1.1; }
+        .blog-page-sub { color: var(--bi-text-tertiary); font-size: 0.92rem; margin-top: 0.4rem; font-weight: 400; }
+
+        /* Author chips */
+        .author-strip { display: flex; gap: 0.5rem; padding: 1rem 0 1.5rem; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+        .author-strip::-webkit-scrollbar { display: none; }
+        .author-chip { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem 0.4rem 0.4rem; border-radius: 100px; border: 1px solid var(--bi-border); background: var(--bi-surface); color: var(--bi-text-secondary); font-size: 0.82rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: all var(--bi-transition); flex-shrink: 0; }
+        .author-chip:hover { border-color: var(--bi-border-strong); background: var(--bi-surface-raised); color: var(--bi-text-primary); }
+        .author-chip.active { border-color: var(--bi-accent); background: var(--bi-accent-soft); color: var(--bi-accent); }
+        .author-chip-avatar { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: var(--bi-accent-soft); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: var(--bi-accent); }
+        .author-chip-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .post-count { color: var(--bi-text-tertiary); font-size: 0.8rem; padding-bottom: 1rem; font-weight: 400; }
+
+        /* Card grid */
+        .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .article-card { background: var(--bi-surface-raised); border-radius: var(--bi-radius); overflow: hidden; border: 1px solid var(--bi-border); transition: all var(--bi-transition); display: flex; flex-direction: column; text-decoration: none; color: inherit; animation: cardIn 0.4s ease-out both; }
+        .article-card:hover { transform: translateY(-5px); box-shadow: var(--bi-shadow-lg); border-color: var(--bi-border-strong); }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .article-card-img-wrap { position: relative; overflow: hidden; height: 190px; background: var(--bi-surface); }
+        .article-card-img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.4s ease, transform 0.5s ease; }
+        .article-card-img[data-src] { opacity: 0; }
+        .article-card-img.loaded { opacity: 1; }
+        .article-card:hover .article-card-img.loaded { transform: scale(1.06); }
+        .article-card-body { padding: 1.2rem 1.3rem 1rem; flex: 1; display: flex; flex-direction: column; }
+        .article-card-meta { display: flex; align-items: center; gap: 0.6rem; font-size: 0.75rem; color: var(--bi-text-tertiary); margin-bottom: 0.6rem; font-weight: 400; flex-wrap: wrap; }
+        .article-card-meta .author-tag { color: var(--bi-accent); font-weight: 600; }
+        .article-card-title { font-family: 'Outfit',sans-serif; font-size: 1.08rem; font-weight: 700; color: var(--bi-text-primary); line-height: 1.35; margin-bottom: 0.5rem; letter-spacing: -0.01em; }
+        .article-card-excerpt { font-size: 0.88rem; color: var(--bi-text-secondary); line-height: 1.55; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .article-card-footer { padding: 0.8rem 1.3rem; border-top: 1px solid var(--bi-border); display: flex; align-items: center; justify-content: space-between; }
+        .article-card-read { font-size: 0.8rem; font-weight: 600; color: var(--bi-accent); text-decoration: none; display: flex; align-items: center; gap: 0.3rem; transition: gap var(--bi-transition); }
+        .article-card:hover .article-card-read { gap: 0.55rem; }
+        .article-card-read i { font-size: 0.65rem; }
+        .article-card-cats { display: flex; gap: 0.3rem; flex-wrap: wrap; justify-content: flex-end; }
+        .article-card-cat { font-size: 0.65rem; font-weight: 500; padding: 0.15rem 0.5rem; border-radius: 100px; background: var(--bi-accent-soft); color: var(--bi-accent); white-space: nowrap; }
+        .article-card-reading-time { font-size: 0.72rem; font-weight: 500; color: var(--bi-text-tertiary); display: flex; align-items: center; gap: 0.3rem; }
+        .article-card-reading-time i { font-size: 0.6rem; }
+
+        .empty-state { text-align: center; padding: 4rem 1rem; color: var(--bi-text-tertiary); }
+        .empty-state i { font-size: 2.5rem; margin-bottom: 1rem; display: block; opacity: 0.4; }
+        .empty-state p { font-size: 0.95rem; }
+
+        .skeleton-card { background: var(--bi-surface-raised); border-radius: var(--bi-radius); border: 1px solid var(--bi-border); overflow: hidden; }
+        .skeleton-img { height: 190px; background: var(--bi-surface); animation: shimmer 1.5s infinite; }
+        .skeleton-body { padding: 1.2rem 1.3rem; }
+        .skeleton-line { height: 12px; border-radius: 6px; background: var(--bi-surface); margin-bottom: 0.6rem; animation: shimmer 1.5s infinite; }
+        .skeleton-line.w60 { width: 60%; } .skeleton-line.w80 { width: 80%; } .skeleton-line.w40 { width: 40%; }
+        @keyframes shimmer { 0%{opacity:0.5} 50%{opacity:0.8} 100%{opacity:0.5} }
+
+        .scroll-to-top-btn { position: fixed; bottom: 2rem; right: 1.5rem; width: 42px; height: 42px; border-radius: 50%; background: var(--bi-accent); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity 0.3s, visibility 0.3s, transform 0.3s; box-shadow: var(--bi-shadow-md); z-index: 1000; }
+        .scroll-to-top-btn.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+        .scroll-to-top-btn:hover { transform: translateY(-3px); box-shadow: var(--bi-shadow-lg); }
+
+        @media (max-width: 767px) {
+            .blog-page-title { font-size: 1.8rem; }
+            .articles-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+            .theme-toggle-btn { top: auto; bottom: 5rem; right: 1.2rem; width: 38px; height: 38px; }
+        }
+        @media (max-width: 480px) {
+            .blog-page-title { font-size: 1.5rem; }
+            .article-card-img-wrap { height: 170px; }
+        }
+    </style>
+</head>
+<body>
+<div class="background"></div>
+<div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
+
+<button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle light/dark theme">
+    <i class="fas fa-sun icon-sun"></i>
+    <i class="fas fa-moon icon-moon"></i>
+</button>
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/"><img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy"></a>
+            <div class="race-countdown-container">
+                <div class="race-countdown">
+                    <div class="race-flag"><span id="race-flag-emoji">🏁</span></div>
+                    <div class="race-info">
+                        <span class="next-race-name" id="next-race-name">Loading...</span>
+                        <div class="countdown-timer" id="race-countdown">--</div>
+                    </div>
+                </div>
+                <div class="race-countdown-mobile">
+                    <i class="fas fa-flag-checkered"></i>
+                    <span id="race-countdown-mobile">--</span>
+                </div>
+            </div>
+            <button class="navbar-toggler" type="button" id="mobile-toggler"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/" id="home-link">Home</a></li>
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">Podcast <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+                            <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
+                            <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle active" href="#" id="mediaDropdown">Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item active-item" href="/blog-module/blog/index.html">Blog</a></li>
+                            <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+                            <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">About <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="/#about">About Us</a></li>
+                            <li><a class="dropdown-item" href="/#guests">Guests</a></li>
+                            <li><a class="dropdown-item" href="/#contact">Contact</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<section class="blog-index-wrapper py-5 mt-5">
+    <div class="container">
+        <div class="blog-page-header">
+            <h1 class="blog-page-title">Blog</h1>
+            <p class="blog-page-sub">Stories, analysis &amp; insights from the F1 Stories team</p>
+        </div>
+
+        <div class="author-strip" id="author-strip">
+            <button class="author-chip active" data-author="all"><span class="author-chip-avatar">All</span> All</button>
+            <button class="author-chip" data-author="Georgios Balatzis"><span class="author-chip-avatar"><img src="/images/authors/georgios.webp" alt="" onerror="this.remove();this.parentElement.textContent='GB';"></span> Georgios</button>
+            <button class="author-chip" data-author="Giannis Poulikidis"><span class="author-chip-avatar"><img src="/images/authors/giannis.webp" alt="" onerror="this.remove();this.parentElement.textContent='GP';"></span> Giannis</button>
+            <button class="author-chip" data-author="Thanasis Batalas"><span class="author-chip-avatar"><img src="/images/authors/thanasis.webp" alt="" onerror="this.remove();this.parentElement.textContent='TB';"></span> Thanasis</button>
+            <button class="author-chip" data-author="2Fast"><span class="author-chip-avatar">2F</span> 2Fast</button>
+            <button class="author-chip" data-author="Dimitris Keramidiotis"><span class="author-chip-avatar"><img src="/images/authors/dimitris.webp" alt="" onerror="this.remove();this.parentElement.textContent='DK';"></span> Dimitris</button>
+        </div>
+
+        <div class="post-count" id="post-count"></div>
+
+        <div class="articles-grid" id="articles-grid">
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div></div>
+        </div>
+    </div>
+</section>
+
+<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
+
+<div id="cookie-consent" class="cookie-consent" style="display:none;">
+    <div class="cookie-content">
+        <p>Χρησιμοποιούμε cookies για την βελτίωση της εμπειρίας σας. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <div class="cookie-actions">
+            <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
+            <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
+        </div>
+    </div>
+</div>
+
+<footer class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+                <div class="social-media">
+                    <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+                    <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" rel="noopener"><i class="fab fa-spotify"></i></a>
+                </div>
+                <div class="footer-links mt-3">
+                    <a href="/privacy/privacy.html" class="footer-link">Privacy Policy</a>
+                    <span class="footer-separator">|</span>
+                    <a href="/privacy/terms.html" class="footer-link">Terms of Use</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script defer src="/scripts/background-randomizer.js"></script>
+<script defer src="/scripts/script.js"></script>
+<script defer src="/scripts/navbar.js"></script>
+<script defer src="/scripts/cookie-consent.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    /* ── Theme Toggle ─────────────────────────── */
+    var themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', function() {
+            var html = document.documentElement;
+            var isLight = html.getAttribute('data-theme') === 'light';
+            if (isLight) {
+                html.removeAttribute('data-theme');
+                localStorage.setItem('f1stories-theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                localStorage.setItem('f1stories-theme', 'light');
+            }
+        });
+    }
+
+    /* ── Scroll to top ────────────────────────── */
+    var scrollBtn = document.getElementById('scroll-to-top');
+    if (scrollBtn) {
+        var scrollTicking = false;
+        window.addEventListener('scroll', function() {
+            if (scrollTicking) return;
+            scrollTicking = true;
+            requestAnimationFrame(function() {
+                scrollBtn.classList.toggle('visible', window.pageYOffset > 400);
+                scrollTicking = false;
+            });
+        });
+        scrollBtn.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    /* ── Blog Loader ──────────────────────────── */
+    var allPosts = [];
+    var activeAuthor = 'all';
+    var grid = document.getElementById('articles-grid');
+    var countEl = document.getElementById('post-count');
+
+    function escHtml(s) {
+        var d = document.createElement('div');
+        d.textContent = s || '';
+        return d.innerHTML;
+    }
+
+    function renderCard(post, idx) {
+        var cats = (post.categories || []).slice(0, 2).map(function(c) {
+            return '<span class="article-card-cat">' + escHtml(c) + '</span>';
+        }).join('');
+
+        var url = post.url || ('/blog-module/blog-entries/' + post.id + '/article.html');
+        var img = post.image || '/blog-module/images/default-blog.jpg';
+        var date = post.displayDate || post.date || '';
+        var author = post.author || 'F1 Stories';
+        var excerpt = post.excerpt || '';
+
+        // Reading time estimate
+        var readMins = post.readingTime || post.readTime || '';
+        if (!readMins && post.wordCount) {
+            readMins = Math.max(1, Math.ceil(post.wordCount / 200)) + ' min';
+        }
+        if (!readMins && excerpt) {
+            var excWords = excerpt.split(/\s+/).length;
+            var estTotal = Math.round(excWords * 10);
+            readMins = Math.max(2, Math.ceil(estTotal / 200)) + ' min';
+        }
+        var readBadge = readMins
+            ? '<span>\u00b7</span><span class="article-card-reading-time"><i class="fas fa-clock"></i> ' + escHtml(readMins) + '</span>'
+            : '';
+
+        return '<a href="' + escHtml(url) + '" class="article-card" style="animation-delay:' + (idx * 0.06) + 's">'
+            + '<div class="article-card-img-wrap">'
+            +   '<img class="article-card-img" data-src="' + escHtml(img) + '" alt="' + escHtml(post.title) + '" onerror="this.src=\'/blog-module/images/default-blog.jpg\';this.onerror=null;">'
+            + '</div>'
+            + '<div class="article-card-body">'
+            +   '<div class="article-card-meta">'
+            +     '<span class="author-tag">' + escHtml(author) + '</span>'
+            +     '<span>\u00b7</span>'
+            +     '<span>' + escHtml(date) + '</span>'
+            +     readBadge
+            +   '</div>'
+            +   '<h3 class="article-card-title">' + escHtml(post.title) + '</h3>'
+            +   '<p class="article-card-excerpt">' + escHtml(excerpt) + '</p>'
+            + '</div>'
+            + '<div class="article-card-footer">'
+            +   '<span class="article-card-read">Read more <i class="fas fa-arrow-right"></i></span>'
+            +   '<div class="article-card-cats">' + cats + '</div>'
+            + '</div>'
+            + '</a>';
+    }
+
+    function lazyLoadImages() {
+        if (!grid) return;
+        var imgs = grid.querySelectorAll('img[data-src]');
+        if (!imgs.length) return;
+
+        if ('IntersectionObserver' in window) {
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        var img = entry.target;
+                        img.src = img.getAttribute('data-src');
+                        img.removeAttribute('data-src');
+                        img.addEventListener('load', function() { img.classList.add('loaded'); });
+                        if (img.complete) img.classList.add('loaded');
+                        observer.unobserve(img);
+                    }
+                });
+            }, { rootMargin: '200px 0px' });
+            imgs.forEach(function(img) { observer.observe(img); });
+        } else {
+            imgs.forEach(function(img) {
+                img.src = img.getAttribute('data-src');
+                img.removeAttribute('data-src');
+                img.classList.add('loaded');
+            });
+        }
+    }
+
+    function renderPosts() {
+        if (!grid) return;
+        var filtered = activeAuthor === 'all'
+            ? allPosts
+            : allPosts.filter(function(p) { return p.author === activeAuthor; });
+
+        if (countEl) {
+            countEl.textContent = filtered.length + ' post' + (filtered.length !== 1 ? 's' : '')
+                + (activeAuthor !== 'all' ? ' by ' + activeAuthor : '');
+        }
+
+        if (!filtered.length) {
+            grid.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper"></i><p>No posts found'
+                + (activeAuthor !== 'all' ? ' by this author' : '') + '.</p></div>';
+            return;
+        }
+
+        grid.innerHTML = filtered.map(function(p, i) { return renderCard(p, i); }).join('');
+        lazyLoadImages();
+    }
+
+    function tryFetch(paths, idx) {
+        if (idx >= paths.length) {
+            if (grid) grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load blog posts.</p></div>';
+            return;
+        }
+        fetch(paths[idx]).then(function(r) {
+            if (!r.ok) throw new Error('not ok');
+            return r.json();
+        }).then(function(data) {
+            allPosts = (data.posts || data || []).sort(function(a, b) {
+                return new Date(b.date) - new Date(a.date);
+            });
+            renderPosts();
+        }).catch(function() {
+            tryFetch(paths, idx + 1);
+        });
+    }
+
+    // Load posts
+    tryFetch(['/blog-module/blog-data.json', '../blog-data.json', '../../blog-data.json'], 0);
+
+    // Author chip clicks
+    var strip = document.getElementById('author-strip');
+    if (strip) {
+        strip.addEventListener('click', function(e) {
+            var chip = e.target.closest('.author-chip');
+            if (!chip) return;
+            strip.querySelectorAll('.author-chip').forEach(function(c) { c.classList.remove('active'); });
+            chip.classList.add('active');
+            activeAuthor = chip.getAttribute('data-author');
+            renderPosts();
+            if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    }
+
+    /* ── Next Race Countdown (2026) ───────────── */
+    var RACES = [
+        { name: 'Australian GP',    flag: '\u{1F1E6}\u{1F1FA}', date: '2026-03-08T05:00:00Z' },
+        { name: 'Chinese GP',       flag: '\u{1F1E8}\u{1F1F3}', date: '2026-03-15T07:00:00Z' },
+        { name: 'Japanese GP',      flag: '\u{1F1EF}\u{1F1F5}', date: '2026-03-29T05:00:00Z' },
+        { name: 'Bahrain GP',       flag: '\u{1F1E7}\u{1F1ED}', date: '2026-04-12T15:00:00Z' },
+        { name: 'Saudi Arabian GP', flag: '\u{1F1F8}\u{1F1E6}', date: '2026-04-19T17:00:00Z' },
+        { name: 'Miami GP',         flag: '\u{1F1FA}\u{1F1F8}', date: '2026-05-03T20:00:00Z' },
+        { name: 'Canadian GP',      flag: '\u{1F1E8}\u{1F1E6}', date: '2026-05-24T18:00:00Z' },
+        { name: 'Monaco GP',        flag: '\u{1F1F2}\u{1F1E8}', date: '2026-06-07T13:00:00Z' },
+        { name: 'Catalunya GP',     flag: '\u{1F1EA}\u{1F1F8}', date: '2026-06-14T13:00:00Z' },
+        { name: 'Austrian GP',      flag: '\u{1F1E6}\u{1F1F9}', date: '2026-06-28T13:00:00Z' },
+        { name: 'British GP',       flag: '\u{1F1EC}\u{1F1E7}', date: '2026-07-05T14:00:00Z' },
+        { name: 'Belgian GP',       flag: '\u{1F1E7}\u{1F1EA}', date: '2026-07-19T13:00:00Z' },
+        { name: 'Hungarian GP',     flag: '\u{1F1ED}\u{1F1FA}', date: '2026-07-26T13:00:00Z' },
+        { name: 'Dutch GP',         flag: '\u{1F1F3}\u{1F1F1}', date: '2026-08-23T13:00:00Z' },
+        { name: 'Italian GP',       flag: '\u{1F1EE}\u{1F1F9}', date: '2026-09-06T13:00:00Z' },
+        { name: 'Spanish GP',       flag: '\u{1F1EA}\u{1F1F8}', date: '2026-09-13T13:00:00Z' },
+        { name: 'Azerbaijan GP',    flag: '\u{1F1E6}\u{1F1FF}', date: '2026-09-26T11:00:00Z' },
+        { name: 'Singapore GP',     flag: '\u{1F1F8}\u{1F1EC}', date: '2026-10-11T12:00:00Z' },
+        { name: 'US GP',            flag: '\u{1F1FA}\u{1F1F8}', date: '2026-10-25T19:00:00Z' },
+        { name: 'Mexico City GP',   flag: '\u{1F1F2}\u{1F1FD}', date: '2026-11-01T20:00:00Z' },
+        { name: 'S\u00e3o Paulo GP',flag: '\u{1F1E7}\u{1F1F7}', date: '2026-11-08T17:00:00Z' },
+        { name: 'Las Vegas GP',     flag: '\u{1F1FA}\u{1F1F8}', date: '2026-11-21T06:00:00Z' },
+        { name: 'Qatar GP',         flag: '\u{1F1F6}\u{1F1E6}', date: '2026-11-29T14:00:00Z' },
+        { name: 'Abu Dhabi GP',     flag: '\u{1F1E6}\u{1F1EA}', date: '2026-12-06T13:00:00Z' }
+    ];
+
+    function getNextRace() {
+        var now = Date.now();
+        for (var i = 0; i < RACES.length; i++) {
+            if (new Date(RACES[i].date).getTime() > now) return RACES[i];
+        }
+        return null;
+    }
+
+    function fmtCountdown(ms) {
+        if (ms <= 0) return 'LIGHTS OUT!';
+        var s = Math.floor(ms / 1000);
+        var d = Math.floor(s / 86400);
+        var h = Math.floor((s % 86400) / 3600);
+        var m = Math.floor((s % 3600) / 60);
+        var sec = s % 60;
+        if (d > 0) return d + 'd ' + h + 'h ' + m + 'm';
+        if (h > 0) return h + 'h ' + m + 'm ' + sec + 's';
+        return m + 'm ' + sec + 's';
+    }
+
+    function fmtShort(ms) {
+        if (ms <= 0) return 'RACE ON!';
+        var s = Math.floor(ms / 1000);
+        var d = Math.floor(s / 86400);
+        var h = Math.floor((s % 86400) / 3600);
+        var m = Math.floor((s % 3600) / 60);
+        if (d > 0) return d + 'd ' + h + 'h';
+        if (h > 0) return h + 'h ' + m + 'm';
+        return m + 'm';
+    }
+
+    function tickCountdown() {
+        var race = getNextRace();
+        var nameEl   = document.getElementById('next-race-name');
+        var countEl2 = document.getElementById('race-countdown');
+        var mobileEl = document.getElementById('race-countdown-mobile');
+        var flagEl   = document.getElementById('race-flag-emoji');
+
+        if (!race) {
+            if (nameEl)   nameEl.textContent   = 'Season Complete';
+            if (countEl2) countEl2.textContent  = '2027 TBA';
+            if (mobileEl) mobileEl.textContent  = 'Done';
+            return;
+        }
+
+        var ms = new Date(race.date).getTime() - Date.now();
+        if (nameEl)   nameEl.textContent   = race.flag + ' ' + race.name;
+        if (countEl2) countEl2.textContent  = fmtCountdown(ms);
+        if (mobileEl) mobileEl.textContent  = fmtShort(ms);
+        if (flagEl)   flagEl.textContent    = race.flag;
+    }
+
+    tickCountdown();
+    setInterval(tickCountdown, 1000);
+
+}); // end DOMContentLoaded
+</script>
+</body>
+</html>

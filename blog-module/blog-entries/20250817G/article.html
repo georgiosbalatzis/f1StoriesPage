@@ -1,388 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025; | F1 Stories Blog</title>
-  <!-- Open Graph Tags for Link Previews -->
-  <meta property="og:title" content="Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025; | F1 Stories Blog">
-  <meta property="og:description" content="🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈">
-  <meta property="og:image" content="2.webp">
-  <meta property="og:url" content="https://f1stories.gr/blog-module/blog-entries/20250817G/article.html">
-  <meta property="og:type" content="article">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025; | F1 Stories Blog</title>
+    <meta property="og:title" content="Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025; | F1 Stories Blog">
+    <meta property="og:description" content="Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;Εισαγωγή: Η Αγωνιώδης Πτώση της Ομάδας του EnstoneΟι τοίχοι του εργοστασίου στο Enstone της Αγγλίας είναι εμποτισμένοι με την ιστορία της ...">
+    <meta property="og:image" content="https://f1stories.gr/blog-module/blog-entries/20250817G/2.webp">
+    <meta property="og:url" content="https://f1stories.gr/blog-module/blog-entries/20250817G/article.html">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025; | F1 Stories Blog">
+    <meta name="twitter:description" content="Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;Εισαγωγή: Η Αγωνιώδης Πτώση της Ομάδας του EnstoneΟι τοίχοι του εργοστασίου στο Enstone της Αγγλίας είναι εμποτισμένοι με την ιστορία της ...">
+    <meta name="twitter:image" content="https://f1stories.gr/blog-module/blog-entries/20250817G/2.webp">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
 
-  <!-- Image Fallback Script -->
-  <script>
-    // Check if .webp file exists, otherwise use .avif as fallback
-    document.addEventListener('DOMContentLoaded', function() {
-      const ogImageMeta = document.querySelector('meta[property="og:image"]');
-      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
-
-      // Function to check if image exists
-      function checkImage(url, success, failure) {
-        const img = new Image();
-        img.onload = success;
-        img.onerror = failure;
-        img.src = url;
-      }
-
-      const webpUrl = ogImageMeta.getAttribute('content');
-      const avifUrl = webpUrl.replace('.webp', '.avif');
-
-      checkImage(webpUrl, function() {
-        // WebP exists, do nothing
-      }, function() {
-        // WebP doesn't exist, try AVIF
-        ogImageMeta.setAttribute('content', avifUrl);
-        twitterImageMeta.setAttribute('content', avifUrl);
-      });
-    });
-  </script>
-
-  <style>
-    /* YouTube embed container for responsive videos */
-    .youtube-embed-container {
-      position: relative;
-      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-      height: 0;
-      overflow: hidden;
-      max-width: 100%;
-      margin: 2rem 0;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .youtube-embed-container iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border-radius: 8px;
-    }
-
-    .video-caption {
-      text-align: center;
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
-      color: #666;
-      font-style: italic;
-    }
-  </style>
-
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/blog-module/blog-styles.css">
-  <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <!-- Font Awesome for Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-X68J6MQKSM');
-  </script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Get the meta description tag
-      const metaDescription = document.querySelector('meta[property="og:description"]');
-
-      // Get the article content for calculating reading time
-      const articleContent = document.querySelector('.article-content');
-
-      if (metaDescription && articleContent) {
-        // Calculate reading time
-        const text = articleContent.textContent || articleContent.innerText;
-        const wordCount = text.trim().split(/\s+/).length;
-
-        // Average reading speed: 200 words per minute
-        const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
-
-        // Update meta description with reading time
-        metaDescription.setAttribute('content', `A ${readingTimeMinutes} minute read on F1 Stories Blog`);
-
-        // Also update the reading time element in the article if it exists
-        const readingTimeElement = document.getElementById('reading-time-value');
-        if (readingTimeElement) {
-          readingTimeElement.textContent = `${readingTimeMinutes} min read`;
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;",
+        "description": "Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;Εισαγωγή: Η Αγωνιώδης Πτώση της Ομάδας του EnstoneΟι τοίχοι του εργοστασίου στο Enstone της Αγγλίας είναι εμποτισμένοι με την ιστορία της ...",
+        "image": "https://f1stories.gr/blog-module/blog-entries/20250817G/2.webp",
+        "datePublished": "2025-08-17",
+        "dateModified": "2025-08-17",
+        "author": {
+            "@type": "Person",
+            "name": "Georgios Balatzis"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "F1 Stories",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://f1stories.gr/images/logo.png"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://f1stories.gr/blog-module/blog-entries/20250817G/article.html"
         }
-      } else {
-        // Fallback description if article content is not found
-        if (metaDescription) {
-          metaDescription.setAttribute('content', '🏎️💨 Τελευταια νεα για την Formula 1 απο το F1 Stories Blog 🏁📈');
-        }
-      }
-    });
-  </script>
+    }
+    </script>
 
+    <!-- Fonts — Outfit (display) + DM Sans (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/blog-module/blog-styles.css">
+    <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-X68J6MQKSM');
+    </script>
+
+    <!-- Prevent FOUC -->
+    <script>
+        (function() {
+            var saved = localStorage.getItem('f1stories-theme');
+            if (saved === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            } else if (saved === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                // No saved preference: default to dark
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('f1stories-theme', 'dark');
+            }
+        })();
+    </script>
 </head>
 <body>
 <div class="background"></div>
-<div class="streak streak-1"></div>
-<div class="streak streak-2"></div>
-<div class="streak streak-3"></div>
-<div class="streak streak-4"></div>
+<div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
 
+<!-- Reading Progress Bar -->
+<div class="reading-progress-track" aria-hidden="true">
+    <div class="reading-progress-fill" id="reading-progress"></div>
+</div>
+
+<!-- Theme Toggle -->
+<button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle light/dark theme">
+    <i class="fas fa-sun icon-sun"></i>
+    <i class="fas fa-moon icon-moon"></i>
+</button>
+
+<!-- Navbar -->
 <header>
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-    <div class="container">
-      <a class="navbar-brand" href="/">
-        <img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy">
-      </a>
-      <div class="race-countdown-container">
-        <div class="race-countdown">
-          <div class="race-flag">
-            <span id="race-flag-emoji">🏁</span>
-          </div>
-          <div class="race-info">
-            <span class="next-race-name" id="next-race-name">Loading...</span>
-            <div class="countdown-timer" id="race-countdown">--</div>
-          </div>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/"><img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy"></a>
+            <div class="race-countdown-container">
+                <div class="race-countdown">
+                    <div class="race-flag"><span id="race-flag-emoji">🏁</span></div>
+                    <div class="race-info">
+                        <span class="next-race-name" id="next-race-name">Loading...</span>
+                        <div class="countdown-timer" id="race-countdown">--</div>
+                    </div>
+                </div>
+                <div class="race-countdown-mobile">
+                    <i class="fas fa-flag-checkered"></i>
+                    <span id="race-countdown-mobile">--</span>
+                </div>
+            </div>
+            <button class="navbar-toggler" type="button" id="mobile-toggler"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/" id="home-link">Home</a></li>
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">Podcast <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
+                            <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
+                            <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle active" href="#" id="mediaDropdown">Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item active-item" href="/blog-module/blog/index.html">Blog</a></li>
+                            <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
+                            <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item custom-dropdown">
+                        <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">About <i class="fas fa-chevron-down dropdown-icon"></i></a>
+                        <ul class="custom-dropdown-menu">
+                            <li><a class="dropdown-item" href="/#about">About Us</a></li>
+                            <li><a class="dropdown-item" href="/#guests">Guests</a></li>
+                            <li><a class="dropdown-item" href="/#contact">Contact</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <!-- Mobile version - visible only on small screens -->
-        <div class="race-countdown-mobile">
-          <i class="fas fa-flag-checkered"></i>
-          <span id="race-countdown-mobile">--</span>
-        </div>
-      </div>
-      <button class="navbar-toggler" type="button" id="mobile-toggler">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <!-- Home -->
-          <li class="nav-item">
-            <a class="nav-link" href="/" id="home-link">Home</a>
-          </li>
-
-          <!-- Podcast dropdown -->
-          <li class="nav-item custom-dropdown">
-            <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">
-              Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
-            </a>
-            <ul class="custom-dropdown-menu">
-              <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
-              <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
-              <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
-            </ul>
-          </li>
-
-          <!-- Stories & Media dropdown -->
-          <li class="nav-item custom-dropdown">
-            <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
-              Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
-            </a>
-            <ul class="custom-dropdown-menu">
-              <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
-              <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
-              <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
-            </ul>
-          </li>
-
-          <!-- About dropdown -->
-          <li class="nav-item custom-dropdown">
-            <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
-              About <i class="fas fa-chevron-down dropdown-icon"></i>
-            </a>
-            <ul class="custom-dropdown-menu">
-              <li><a class="dropdown-item" href="/#about">About Us</a></li>
-              <li><a class="dropdown-item" href="/#guests">Guests</a></li>
-              <li><a class="dropdown-item" href="/#contact">Contact</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+    </nav>
 </header>
 
-<section class="py-5 mt-5">
-  <div class="container">
-    <!-- Back to Blog Button -->
-    <div class="text-start mb-4">
-      <a href="/blog-module/blog/index.html" class="btn btn-outline-light">
-        <i class="fas fa-arrow-left me-2"></i> Back to Blog
-      </a>
-    </div>
-
-    <div class="article-container">
-      <div class="article-header">
-        <!-- Images are local to the article folder -->
-        <img src="2.webp" alt="Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;" class="article-header-img" loading="lazy" onerror="this.src='/images/default-blog.jpg'; this.onerror=null;">
-        <div class="article-header-overlay">
-          <h1 class="article-title">Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;</h1>
-          <div class="article-meta">
-            <span><i class="fas fa-calendar"></i> August 17, 2025</span>
-            <span><i class="fas fa-tag"></i> Alpine</span>
-            <span><i class="fas fa-folder"></i> 2025</span>
-          </div>
+<!-- Article -->
+<section class="article-page-wrapper py-5 mt-5">
+    <div class="container">
+        <div class="text-start mb-3">
+            <a href="/blog-module/blog/index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Blog</a>
         </div>
-      </div>
 
-      <!-- Add social sharing bar here -->
-      <!-- Updated Social Share Bar -->
-      <div class="social-share-bar">
-        <div class="share-label">
-          <i class="fas fa-share-alt"></i>
-          <span>Share this article:</span>
-        </div>
-        <div class="share-buttons">
-          <a href="https://www.facebook.com/sharer/sharer.php?u=https://f1stories.gr/blog-module/blog-entries/20250817G/article.html" target="_blank" class="share-btn facebook" aria-label="Share on Facebook">
-            <i class="fab fa-facebook-f"></i>
-          </a>
-          <a href="https://www.addtoany.com/add_to/threads?linkurl=https://f1stories.gr/blog-module/blog-entries/20250817G/article.html&linkname=Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;" target="_blank" class="share-btn threads" aria-label="Share on Threads">
-            <i class="fab fa-threads"></i>
-          </a>
-          <button id="instagram-dm-btn" class="share-btn instagram" aria-label="Share via Instagram DM">
-            <i class="fab fa-instagram"></i>
-          </button>
-          <a href="https://api.whatsapp.com/send?text=Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;%20https://f1stories.gr/blog-module/blog-entries/20250817G/article.html" target="_blank" class="share-btn whatsapp" aria-label="Share on WhatsApp">
-            <i class="fab fa-whatsapp"></i>
-          </a>
-          <a href="https://t.me/share/url?url=https://f1stories.gr/blog-module/blog-entries/20250817G/article.html&text=Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;" target="_blank" class="share-btn telegram" aria-label="Share on Telegram">
-            <i class="fab fa-telegram-plane"></i>
-          </a>
-          <button id="web-share-btn" class="share-btn web-share" aria-label="Share on installed apps">
-            <i class="fas fa-share-nodes"></i>
-          </button>
-          <button class="share-btn copy-link" id="copy-link-btn" aria-label="Copy link">
-            <i class="fas fa-link"></i>
-          </button>
-        </div>
-      </div>
-
-
-      <!-- Text-to-Speech Widget -->
-      <div class="tts-widget" id="tts-widget">
-        <!-- Add this for a more F1-style header -->
-        <div class="tts-header">
-          <i class="fas fa-headphones-alt"></i>
-          <span>🏁 RACE RADIO - Ακούστε το Άρθρο</span>
-          <div class="tts-live-indicator"></div>
-          <button class="tts-toggle" id="tts-toggle">
-            <i class="fas fa-chevron-down"></i>
-          </button>
-        </div>
-        <div class="tts-body" id="tts-body">
-          <div class="tts-controls">
-            <button class="tts-btn" id="tts-play" title="Play">
-              <i class="fas fa-play"></i>
-            </button>
-            <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;">
-              <i class="fas fa-pause"></i>
-            </button>
-            <button class="tts-btn" id="tts-stop" title="Stop">
-              <i class="fas fa-stop"></i>
-            </button>
-            <div class="tts-speed-control">
-              <label>Speed:</label>
-              <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
-              <span id="tts-speed-value">1x</span>
+        <article class="article-container">
+            <div class="article-header">
+                <img src="2.webp" alt="Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;" class="article-header-img" loading="lazy"
+                     onerror="this.src='/images/default-blog.jpg';this.onerror=null;">
+                <div class="article-header-overlay">
+                    <h1 class="article-title">Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;</h1>
+                    <div class="article-meta">
+                        <span><i class="fas fa-calendar-alt"></i> August 17, 2025</span>
+                        <span><i class="fas fa-tag"></i> Alpine</span>
+                        <span><i class="fas fa-folder-open"></i> 2025</span>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="tts-voice-selector">
-            <label>Φωνή/Voice:</label>
-            <select id="tts-voice">
-              <option value="">Αυτόματη/Auto</option>
-            </select>
-          </div>
-          <div class="tts-progress">
-            <div class="tts-progress-bar" id="tts-progress-bar"></div>
-          </div>
-          <div class="tts-status" id="tts-status">Έτοιμο για ανάγνωση</div>
-        </div>
-      </div>
 
-
-      <div class="article-content">
-        <!-- Article content goes here -->
-        <p></p><h1>Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;</h1><h2>Εισαγωγή: Η Αγωνιώδης Πτώση της Ομάδας του Enstone</h2><p>Οι τοίχοι του εργοστασίου στο Enstone της Αγγλίας είναι εμποτισμένοι με την ιστορία της Formula 1. Εδώ, σε αυτό το τεχνολογικό λίκνο, σφυρηλατήθηκαν μονοθέσια που κατέκτησαν τον κόσμο. Εδώ, ο Michael Schumacher και η Benetton αψήφησαν τις καθιερωμένες δυνάμεις για να κερδίσουν δύο παγκόσμια πρωταθλήματα. Εδώ, ο Fernando Alonso και η Renault, με το χαρακτηριστικό μπλε και κίτρινο χρώμα, έβαλαν τέλος στην παντοκρατορία της Ferrari, κατακτώντας δύο συνεχόμενους τίτλους οδηγών και κατασκευαστών. Οι ήχοι των κινητήρων V10 και V8 που πανηγύριζαν νίκες έχουν πλέον σιγήσει, και στη θέση τους αντηχεί η σκληρή, απογοητευτική πραγματικότητα της σεζόν του 2025.</p><p>Σε πίστες όπως το Hungaroring, τα άλλοτε περήφανα γαλλικά μονοθέσια, βαμμένα τώρα σε ένα μείγμα μπλε και ροζ, δεν μάχονται για το βάθρο, αλλά για να αποφύγουν την τελευταία θέση. Δέχονται γύρους, παλεύουν με την πρόσφυση και την ταχύτητα, αποτελώντας μια σκιά του ένδοξου παρελθόντος τους. Η εικόνα είναι οδυνηρή για οποιονδήποτε θυμάται την κληρονομιά αυτής της ομάδας. Η Alpine F1 Team, η εργοστασιακή εκπροσώπηση ενός γίγαντα της αυτοκινητοβιομηχανίας όπως η Renault, βρίσκεται σε ελεύθερη πτώση.</p><p>Πώς έφτασε όμως μια ομάδα με τέτοια ιστορία, πόρους και φιλοδοξίες να καταρρεύσει, μετατρεπόμενη από διεκδικήτρια της τέταρτης θέσης σε ουραγό του grid; Η απάντηση δεν είναι απλή. Δεν πρόκειται για ένα μεμονωμένο λάθος, ένα ελαττωματικό εξάρτημα ή μια κακή στρατηγική σε έναν αγώνα. Είναι το αποτέλεσμα μιας αλυσιδωτής αντίδρασης αποτυχιών που διαπερνά κάθε πτυχή της ομάδας: από τον σχεδιασμό του μονοθεσίου και τη διαχείριση στην κορυφή, μέχρι τις επιλογές των οδηγών και τη μακροπρόθεσμη στρατηγική. Το παρόν άρθρο αποτελεί μια ενδελεχή έρευνα, μια ανατομία της κρίσης που μαστίζει την Alpine. Θα αναλύσουμε τα δεδομένα, θα αποκωδικοποιήσουμε τις τεχνικές αδυναμίες, θα εξετάσουμε το χάος στη διοίκηση και θα προσπαθήσουμε να απαντήσουμε στο βασανιστικό ερώτημα: τι πήγε τόσο στραβά για την Alpine το 2025;</p><h2>Η Πραγματικότητα - Η Απόδοση της Alpine το 2025 μέσα από Αριθμούς</h2><p>Πριν αναζητήσουμε τα αίτια της κρίσης, είναι επιτακτικό να κατανοήσουμε το μέγεθός της. Οι αριθμοί για την Alpine στη σεζόν του 2025 είναι αμείλικτοι και ζωγραφίζουν μια εικόνα απόλυτης αποτυχίας. Δεν πρόκειται απλώς για μια κακή χρονιά· πρόκειται για μια κατάρρευση που τοποθετεί την ομάδα στο χαμηλότερο σημείο της σύγχρονης ιστορίας της.</p><h3>Η Στατιστική Ελεύθερη Πτώση</h3><p>Στο μέσο της σεζόν, μετά το Grand Prix της Ουγγαρίας, η BWT Alpine F1 Team βρίσκεται στην 10η και τελευταία θέση της βαθμολογίας των κατασκευαστών. Έχοντας συγκεντρώσει μόλις 20 βαθμούς, η ομάδα όχι μόνο είναι ουραγός, αλλά απέχει και μια σημαντική απόσταση 15 βαθμών από την 9η Haas. Αυτό το χάσμα από την προτελευταία ομάδα είναι ενδεικτικό του πόσο πίσω έχει μείνει η Alpine σε σχέση με τον ανταγωνισμό του midfield.</p><p>Η εικόνα γίνεται ακόμα πιο ζοφερή όταν εξετάζουμε τη βαθμολογία των οδηγών. Ο Pierre Gasly, με μια σειρά από ηρωικές προσπάθειες, έχει συγκεντρώσει και τους 20 βαθμούς της ομάδας, καταλαμβάνοντας την 14η θέση. Οι δύο οδηγοί που μοιράστηκαν το δεύτερο μονοθέσιο, ο Jack Doohan και ο Franco Colapinto, βρίσκονται στις δύο τελευταίες θέσεις της κατάταξης (20ή και 21η αντίστοιχα), χωρίς να έχουν καταφέρει να σκοράρουν ούτε έναν βαθμό. Αυτό το στατιστικό στοιχείο από μόνο του αποκαλύπτει ένα από τα θεμελιώδη προβλήματα: η Alpine λειτουργεί ουσιαστικά ως ομάδα του ενός μονοθεσίου.</p><p>Η συγκομιδή των βαθμών είναι σποραδική και αναιμική. Η ομάδα κατάφερε να βαθμολογηθεί μόλις σε πέντε από τους 14 πρώτους αγώνες της σεζόν: 6 βαθμοί στο Μπαχρέιν, 1 στο Μαϊάμι, 4 στην Ισπανία, 8 στη Μεγάλη Βρετανία και 1 στο Βέλγιο. Στους υπόλοιπους εννέα αγώνες, το αποτέλεσμα ήταν μηδενικό. Επιπλέον, η ομάδα έχει καταγράψει τέσσερις εγκαταλείψεις (DNF) σε αυτούς τους 14 αγώνες, υπογραμμίζοντας προβλήματα όχι μόνο ταχύτητας αλλά και αξιοπιστίας.</p><h3>Η Καθοδική Πορεία</h3><p>Η καταστροφική σεζόν του 2025 δεν αποτελεί ένα μεμονωμένο γεγονός, αλλά το αποκορύφωμα μιας σταθερής καθοδικής πορείας τα τελευταία χρόνια. Η σύγκριση με τις προηγούμενες σεζόν είναι αποκαλυπτική για μια ομάδα που όχι απλώς στάθηκε στάσιμη, αλλά οπισθοχώρησε δραματικά.</p><table><tr><td><p>Έτος</p></td><td><p>Θέση Κατασκευαστών</p></td><td><p>Σύνολο Βαθμών</p></td><td><p>Βάθρα (Podiums)</p></td><td><p>Νίκες</p></td></tr><tr><td><p>2022</p></td><td><p>4η</p></td><td><p>173</p></td><td><p>0</p></td><td><p>0</p></td></tr><tr><td><p>2023</p></td><td><p>6η</p></td><td><p>120</p></td><td><p>2</p></td><td><p>0</p></td></tr><tr><td><p>2024</p></td><td><p>6η</p></td><td><p>65</p></td><td><p>2</p></td><td><p>0</p></td></tr><tr><td><p>2025*</p></td><td><p>10η</p></td><td><p>20</p></td><td><p>0</p></td><td><p>0</p></td></tr></table><p>Ο παραπάνω πίνακας καταδεικνύει μια ανησυχητική τάση. Από την ισχυρή 4η θέση το 2022, η ομάδα έπεσε στην 6η το 2023 και παρέμεινε εκεί το 2024, αλλά με σχεδόν τους μισούς βαθμούς. Η πτώση από τους 173 βαθμούς στους 120 και στη συνέχεια στους 65 είναι από μόνη της ανησυχητική. Το 2025, η ομάδα έχει συγκεντρώσει μόλις 20 βαθμούς στο μέσο της σεζόν, καθιστώντας σχεδόν αδύνατο να πλησιάσει έστω και το χαμηλό σύνολο του 2024.</p><p>Αυτή η πτώση δεν είναι γραμμική· επιταχύνεται. Η διαφορά βαθμών μεταξύ 2022 και 2023 ήταν 53 βαθμοί. Μεταξύ 2023 και 2024 ήταν 55 βαθμοί. Το γεγονός ότι στο μέσο της σεζόν του 2025 η ομάδα βρίσκεται ήδη 45 βαθμούς πίσω από το σύνολο ολόκληρης της προηγούμενης χρονιάς υποδηλώνει ότι τα θεμελιώδη προβλήματα δεν επιλύονται, αλλά αντίθετα επιδεινώνονται, οδηγώντας σε μια όλο και πιο απότομη πτώση. Αυτό το μοτίβο δείχνει ότι οι αιτίες είναι βαθιές και συστημικές, υπερβαίνοντας τα όρια ενός απλού σχεδιαστικού λάθους στο μονοθέσιο.</p><table><tr><td><p><strong>Βαθμολογία Κατασκευαστών 2025 (μετά το GP Ουγγαρίας)</strong></p></td><td></td><td><p><strong>Βαθμολογία Οδηγών 2025 (Κορυφαίοι &amp; Alpine)</strong></p></td></tr><tr><td><p><strong>Θέση</strong></p></td><td><p><strong>Ομάδα</strong></p></td><td><p><strong>Βαθμοί</strong></p></td></tr><tr><td><p>1</p></td><td><p>McLaren</p></td><td><p>559</p></td></tr><tr><td><p>2</p></td><td><p>Ferrari</p></td><td><p>260</p></td></tr><tr><td><p>3</p></td><td><p>Mercedes</p></td><td><p>236</p></td></tr><tr><td><p>4</p></td><td><p>Red Bull Racing</p></td><td><p>194</p></td></tr><tr><td><p>5</p></td><td><p>Williams</p></td><td><p>70</p></td></tr><tr><td><p>6</p></td><td><p>Aston Martin</p></td><td><p>52</p></td></tr><tr><td><p>7</p></td><td><p>Kick Sauber</p></td><td><p>51</p></td></tr><tr><td><p>8</p></td><td><p>Racing Bulls</p></td><td><p>45</p></td></tr><tr><td><p>9</p></td><td><p>Haas</p></td><td><p>35</p></td></tr><tr><td><p>10</p></td><td><p><strong>Alpine</strong></p></td><td><p><strong>20</strong></p></td></tr></table><p>Η πλήρης εικόνα της κατάταξης του 2025 αποκαλύπτει το βάθος της κρίσης. Η Alpine δεν είναι απλώς πίσω από τις κορυφαίες ομάδες· έχει ξεπεραστεί από ολόκληρο το midfield. Ομάδες όπως η Williams, η Sauber και η Haas, που τα προηγούμενα χρόνια βρίσκονταν σταθερά πίσω από την Alpine, τώρα την ξεπερνούν με άνεση. Η απόδοση της ομάδας εξαρτάται απόλυτα από τον έναν οδηγό της. Χωρίς τις μεμονωμένες, εξαιρετικές προσπάθειες του Gasly, η Alpine θα είχε μηδέν βαθμούς, μια στατιστική καταστροφή για μια εργοστασιακή ομάδα. Αυτό θέτει ένα κρίσιμο ερώτημα που θα εξετάσουμε στη συνέχεια: είναι το μονοθέσιο τόσο δύσκολο που μόνο ένας έμπειρος οδηγός κορυφαίου επιπέδου μπορεί να αποσπάσει κάτι από αυτό, ή η επιλογή οδηγών για το δεύτερο μονοθέσιο αποτελεί από μόνη της μέρος του προβλήματος; Η απάντηση, όπως θα δούμε, βρίσκεται κάπου στη μέση.</p><h2>Ένα Ελαττωματικό Όπλο - Αποδομώντας την A525</h2><p>Στην καρδιά της αποτυχίας της Alpine για το 2025 βρίσκεται το μονοθέσιό της, η A525. Ένα μονοθέσιο που, αντί να αποτελέσει ένα βήμα προόδου, αποδείχθηκε ένα όπλο γεμάτο ελαττώματα. Η ανάλυση των τεχνικών του χαρακτηριστικών αποκαλύπτει μια σειρά από θεμελιώδεις αδυναμίες που το καθιστούν αργό, απρόβλεπτο και, το κυριότερο, ανίκανο να διαχειριστεί τα ελαστικά του κατά τη διάρκεια ενός αγώνα.</p><h3>Εξέλιξη της Αποτυχίας</h3><p>Ένα από τα πιο ανησυχητικά στοιχεία της A525 είναι ότι δεν αποτελεί μια ριζοσπαστική νέα φιλοσοφία, αλλά μια "εξέλιξη" της προκατόχου της, της A524.<sup>17</sup> Αυτό είναι ένα κρίσιμο σημείο. Η ομάδα επέλεξε να εξελίξει ένα μονοθέσιο που, παρά την 6η θέση στο πρωτάθλημα του 2024, την εξασφάλισε κυρίως χάρη σε ένα "θαύμα" σε έναν βροχερό αγώνα στη Βραζιλία, όπου κατέκτησε ένα διπλό βάθρο. Αυτό το μεμονωμένο αποτέλεσμα φαίνεται πως παραπλάνησε την ομάδα, καλύπτοντας τις βαθύτερες αδυναμίες του μονοθεσίου.</p><p>Ο έμπειρος τεχνικός αναλυτής Gary Anderson, στην αξιολόγησή του για την A525, σημείωσε με νόημα ότι "μοιάζει στην πραγματικότητα με το ίδιο αυτοκίνητο" με το 2024, με ελάχιστες μόνο αλλαγές στα sidepods και τις άκρες του πατώματος. Αυτή η προσέγγιση υποδηλώνει είτε μια λανθασμένη διάγνωση των προβλημάτων του 2024, είτε έλλειψη φιλοδοξίας και πόρων για την εφαρμογή ουσιαστικών λύσεων. Η Alpine ουσιαστικά "μετέφερε" τα ελαττώματα της A524 στην A525, καταδικάζοντας τη σεζόν της πριν καν αρχίσει.</p><h3>Οι Βασικές Τεχνικές Ανεπάρκειες</h3><p>Η A525 πάσχει από τρία θεμελιώδη και αλληλένδετα προβλήματα:</p><h4>Ένα Στενό Λειτουργικό Παράθυρο</h4><p>Η λέξη που χαρακτηρίζει την A525 είναι η "ασυνέπεια". Το μονοθέσιο έχει δείξει στιγμές εκρηκτικής ταχύτητας στις κατατακτήριες δοκιμές, όπως αποδεικνύουν οι έξι συμμετοχές του Pierre Gasly στο Q3, συμπεριλαμβανομένης μιας εντυπωσιακής 5ης θέσης στη σχάρα εκκίνησης του Μπαχρέιν.<sup>23</sup> Ωστόσο, αυτές οι στιγμές λάμψης αντισταθμίζονται από τις τέσσερις φορές που ο Γάλλος οδηγός αποκλείστηκε από το Q1. Αυτή η τεράστια διακύμανση στην απόδοση υποδηλώνει ένα μονοθέσιο που είναι υπερβολικά ευαίσθητο στις ρυθμίσεις (setup) και τις συνθήκες της πίστας. Διαθέτει ένα πολύ "στενό λειτουργικό παράθυρο", που σημαίνει ότι αποδίδει καλά μόνο κάτω από ένα πολύ συγκεκριμένο σύνολο συνθηκών. Αυτό είναι ένα κλασικό σύμπτωμα μιας προβληματικής αεροδυναμικής πλατφόρμας, που καθιστά το μονοθέσιο απρόβλεπτο και δύσκολο στη διαχείριση.</p><h4>Ο "Καταβροχθιστής" Ελαστικών</h4><p>Αυτή είναι η "αχίλλειος πτέρνα" της A525 και ο κύριος λόγος για την τεράστια διαφορά απόδοσης μεταξύ κατατακτηρίων και αγώνα. Το μονοθέσιο κυριολεκτικά "καταστρέφει τα ελαστικά του" ("shreds its tyres"). Ο ίδιος ο Pierre Gasly το περιέγραψε με τον πιο εύγλωττο τρόπο: "Τελικά, είμαστε απλά πολύ αργοί". Σε τεχνική ανάλυσή του, εξήγησε ότι το βασικό πρόβλημα είναι ότι το μονοθέσιο γλιστράει υπερβολικά ("slide a lot"), γεγονός που οδηγεί σε υψηλή φθορά των ελαστικών.</p><p>Αυτό το πρόβλημα φάνηκε ξεκάθαρα στην Αυστρία. Ο Gasly, ξεκινώντας με τη μαλακή γόμα C5, ανέβηκε στην 6η θέση στον πρώτο γύρο, αλλά τα ελαστικά του έχασαν γρήγορα την απόδοσή τους, με αποτέλεσμα να πέσει κατακόρυφα στην κατάταξη. Το μονοθέσιο δεν μπορεί να διατηρήσει τα ελαστικά του στη σωστή θερμοκρασία κατά τη διάρκεια ενός stint, οδηγώντας σε υπερθέρμανση και δραματική πτώση της απόδοσης.</p><h4>Αεροδυναμικές Αδυναμίες</h4><p>Η αεροδυναμική της A525 είναι γεμάτη συμβιβασμούς. Ενώ φαίνεται να διαθέτει αξιοπρεπή κάθετη δύναμη στις υψηλής ταχύτητας στροφές, πάσχει από έντονη υποστροφή (understeer) στις αργές στροφές και κακή ποιότητα κύλισης (ride quality) πάνω από τα kerbs.<sup> </sup>Αυτό φάνηκε στο Μονακό, όπου η Alpine ήταν η μόνη ομάδα που ήταν πιο αργή από ό,τι το 2024. Αυτή η έλλειψη ισορροπίας καθιστά το μονοθέσιο απρόβλεπτο και δύσκολο στην οδήγηση, στερώντας την εμπιστοσύνη από τους οδηγούς. Τα λόγια του Franco Colapinto για "έλλειψη εμπιστοσύνης" με το μονοθέσιο, ειδικά στην είσοδο των στροφών, είναι αποκαλυπτικά.</p><h3>Το Τελευταίο Άσθμα του Κινητήρα Renault</h3><p>Σαν να μην έφταναν τα προβλήματα του πλαισίου, η Alpine κουβαλάει και το βαρίδι μιας μονάδας ισχύος που υστερεί σημαντικά έναντι του ανταγωνισμού. Τα προβλήματα με τον κινητήρα της Renault δεν είναι καινούργια, αλλά το 2025 είναι πιο εμφανή από ποτέ. Η μονάδα ισχύος είναι υποδεέστερη σε ιπποδύναμη και, το πιο κρίσιμο, έχει κακή ανάκτηση ενέργειας (energy recovery) από τα υβριδικά συστήματα.</p><p>Αυτό το έλλειμμα δεν επηρεάζει μόνο την ταχύτητα στις ευθείες. Δημιουργεί έναν φαύλο κύκλο τεχνικών συμβιβασμών. Η ομάδα αναγκάζεται συχνά να χρησιμοποιεί ρυθμίσεις χαμηλής αεροδυναμικής αντίστασης (low drag/downforce) για να αντισταθμίσει την έλλειψη ισχύος στις ευθείες. Ωστόσο, αυτές οι ρυθμίσεις μειώνουν την κάθετη δύναμη που παράγεται στις στροφές. Λιγότερη κάθετη δύναμη σημαίνει λιγότερη πρόσφυση, που με τη σειρά της κάνει το μονοθέσιο να γλιστράει περισσότερο, επιδεινώνοντας το ήδη τεράστιο πρόβλημα της φθοράς των ελαστικών. Έτσι, η αδυναμία του κινητήρα γίνεται η ρίζα του κακού για την κακή αγωνιστική απόδοση. Τα δεδομένα από την Ιαπωνία, που έδειξαν απώλεια 0.6 δευτερολέπτων σε έναν μόνο τομέα της πίστας λόγω του ελλείμματος ισχύος, είναι ένα αδιάψευστο στοιχείο ενός προβλήματος που είναι αδύνατο να διορθωθεί μέσα στη σεζόν.</p><p>Το 2025 σηματοδοτεί το τέλος εποχής για τη Renault ως κατασκευαστή κινητήρων στη Formula 1, ένα θλιβερό τέλος για μια εταιρεία με τεράστια ιστορία και επιτυχίες στο άθλημα. Η A525 και ο κινητήρας της αποτελούν το κύκνειο άσμα αυτής της μακράς πορείας.</p><h2>Χάος στο Pit Wall, Αναταραχή στο Cockpit</h2><p>Αν το μονοθέσιο A525 είναι το σύμπτωμα, η ασθένεια της Alpine βρίσκεται βαθιά ριζωμένη στην οργανωτική της δομή. Η απόδοση στην πίστα είναι απλώς ο καθρέφτης του χάους που επικρατεί στα υψηλότερα κλιμάκια της διοίκησης και της αναταραχής που έχει προκληθεί στις επιλογές των οδηγών. Καμία ομάδα στη σύγχρονη Formula 1 δεν μπορεί να πετύχει χωρίς σταθερότητα, και η σταθερότητα είναι μια λέξη άγνωστη για την Alpine τα τελευταία χρόνια.</p><h3>Το Διοικητικό "Καρουζέλ"</h3><p>Η κατάσταση στη διοίκηση της Alpine μπορεί να περιγραφεί μόνο ως ένα ατέλειωτο "καρουζέλ". Από το 2023, η ομάδα έχει δει μια άνευ προηγουμένου έξοδο κορυφαίων στελεχών. Ο CEO Laurent Rossi, ο Διευθυντής της Ομάδας (Team Principal) Otmar Szafnauer, ο Αθλητικός Διευθυντής Alan Permane και ο Τεχνικός Διευθυντής Pat Fry αποχώρησαν όλοι μέσα σε σύντομο χρονικό διάστημα.<sup>3</sup> Ο Bruno Famin ανέλαβε προσωρινά τα ηνία, για να αντικατασταθεί από τον Oliver Oakes το 2024 <sup>7</sup>, ο οποίος με τη σειρά του παραιτήθηκε αιφνιδιαστικά μετά από λίγους μήνες, τον Μάιο του 2025.</p><p>Αυτή η διαρκής αλλαγή προσώπων στην κορυφή έχει καταστροφικές συνέπειες. Ο Pierre Gasly, για παράδειγμα, έχει οδηγήσει υπό τις οδηγίες τριών διαφορετικών team principals σε λιγότερο από δύο χρόνια.<sup>23</sup> Μια τέτοια αστάθεια καθιστά αδύνατη τη χάραξη και την εκτέλεση ενός συνεκτικού, μακροπρόθεσμου σχεδίου. Αντί για όραμα και στρατηγική, επικρατεί η αντίδραση και η βραχυπρόθεσμη διαχείριση κρίσεων. Αυτό το κλίμα έχει δημιουργήσει μια "ατονία" και μια έλλειψη σαφούς κατεύθυνσης μέσα στην ομάδα, όπως αναφέρουν αναλυτές. Η αποτυχία του μονοθεσίου A525 δεν είναι απλώς μια τεχνική αποτυχία· είναι το φυσικό αποτέλεσμα μιας οργανωτικής κατάρρευσης. Χωρίς έναν σταθερό τεχνικό ηγέτη, όπως ο Pat Fry που έφυγε για τη Williams, δεν υπάρχει κανείς να "κρατήσει το τιμόνι" και να πάρει τις δύσκολες αλλά αναγκαίες αποφάσεις, όπως η εγκατάλειψη μιας ελαττωματικής φιλοσοφίας μονοθεσίου.</p><h3>Το Δόγμα Briatore</h3><p>Η επιστροφή του Flavio Briatore, μιας από τις πιο εμβληματικές αλλά και αμφιλεγόμενες φιγούρες στην ιστορία της F1, ως Εκτελεστικός Σύμβουλος και de facto επικεφαλής της ομάδας, είναι η πιο τρανή απόδειξη της απόγνωσης της Renault. Ο ρόλος του είναι σαφής: να επιβάλει τάξη στο χάος. Είναι ο "fixer" που καλείται να κάνει αυτό που η προηγούμενη διοίκηση απέτυχε: να εντοπίσει ταλέντα, να αμφισβητήσει τις υπάρχουσες δομές και να δώσει στρατηγική κατεύθυνση.</p><p>Οι δημόσιες δηλώσεις του είναι αποκαλυπτικές της κατάστασης. Έχει εκφράσει ανοιχτά τη δυσαρέσκειά του ("not at all happy") για την απόδοση του Franco Colapinto , έχει χαρακτηρίσει την απόδοση της ομάδας "ολοένα και πιο ανησυχητική" ("increasingly concerning") , και έχει θέσει έναν ξεκάθαρο οδικό χάρτη: το 2025 είναι μια χρονιά ανασυγκρότησης, με στόχο την ανταγωνιστικότητα και τα βάθρα το 2026, και τις νίκες από το 2027 και μετά. Η παρουσία του Briatore σηματοδοτεί την παραδοχή της αποτυχίας του προηγούμενου μοντέλου διοίκησης και μια στροφή προς έναν πιο αυταρχικό και συγκεντρωτικό τρόπο λήψης αποφάσεων.</p><h3>Η Περιστρεφόμενη Δεύτερη Θέση</h3><p>Το χάος στη διοίκηση αντικατοπτρίζεται πλήρως στην κατάσταση του δεύτερου μονοθεσίου. Ο Αυστραλός rookie Jack Doohan, προϊόν της ακαδημίας της Alpine, ξεκίνησε τη σεζόν αλλά απομακρύνθηκε μετά από μόλις έξι αγώνες, έχοντας μηδέν βαθμούς και δύο εγκαταλείψεις. Ήταν μια κίνηση πανικού που αποκάλυψε την έλλειψη υπομονής της ομάδας.</p><p>Στη θέση του ήρθε ο Αργεντινός Franco Colapinto, ο οποίος είχε εντυπωσιάσει με τις εμφανίσεις του ως αντικαταστάτης στη Williams το 2024. Ωστόσο, στην Alpine η εικόνα είναι εντελώς διαφορετική. Ο Colapinto παλεύει εμφανώς με το μονοθέσιο, έχοντας ήδη ένα ατύχημα στις κατατακτήριες, καμία βαθμολογική συγκομιδή και δηλώνοντας ανοιχτά την έλλειψη εμπιστοσύνης του στο αυτοκίνητο. Το πρόσφατο ατύχημά του κατά τη διάρκεια δοκιμών για την Pirelli απλώς αυξάνει την πίεση.</p><table><tr><td><p><strong>Αγώνας</strong></p></td><td><p><strong>Gasly Κατατ.</strong></p></td><td><p><strong>Gasly Τερμ.</strong></p></td><td><p><strong>Doohan/Colapinto Κατατ.</strong></p></td><td><p><strong>Doohan/Colapinto Τερμ.</strong></p></td><td><p><strong>Βαθμοί</strong></p></td></tr><tr><td><p>Μπαχρέιν</p></td><td><p>4</p></td><td><p>7</p></td><td><p>11 (Doohan)</p></td><td><p>14</p></td><td><p>6</p></td></tr><tr><td><p>Σ. Αραβία</p></td><td><p>9</p></td><td><p>ΕΓΚ</p></td><td><p>17 (Doohan)</p></td><td><p>17</p></td><td><p>0</p></td></tr><tr><td><p>Μαϊάμι</p></td><td><p>18</p></td><td><p>13</p></td><td><p>14 (Doohan)</p></td><td><p>ΕΓΚ</p></td><td><p>1 (Sprint)</p></td></tr><tr><td><p>E. Romagna</p></td><td><p>10</p></td><td><p>13</p></td><td><p>16 (Colapinto)</p></td><td><p>16</p></td><td><p>0</p></td></tr><tr><td><p>Μονακό</p></td><td><p>17</p></td><td><p>ΕΓΚ</p></td><td><p>18 (Colapinto)</p></td><td><p>13</p></td><td><p>0</p></td></tr><tr><td><p>Ισπανία</p></td><td><p>7</p></td><td><p>9</p></td><td><p>15 (Colapinto)</p></td><td><p>15</p></td><td><p>4</p></td></tr><tr><td><p>Μ. Βρετανία</p></td><td><p>8</p></td><td><p>6</p></td><td><p>20 (Colapinto)</p></td><td><p>ΕΓΚ</p></td><td><p>8</p></td></tr><tr><td><p>Βέλγιο</p></td><td><p>13</p></td><td><p>10</p></td><td><p>15 (Colapinto)</p></td><td><p>19</p></td><td><p>1</p></td></tr><tr><td><p>Ουγγαρία</p></td><td><p>16</p></td><td><p>19</p></td><td><p>14 (Colapinto)</p></td><td><p>18</p></td><td><p>0</p></td></tr></table><p>Ο παραπάνω πίνακας είναι αδιάψευστος μάρτυρας. Ο Gasly, παρά τις δυσκολίες, καταφέρνει τακτικά να μπαίνει στο Q3 και να διεκδικεί βαθμούς, όπως η 6η θέση στη Μεγάλη Βρετανία. Αντίθετα, το δεύτερο μονοθέσιο, ανεξαρτήτως οδηγού, βρίσκεται σταθερά στις πίσω θέσεις. Αυτή η αστάθεια σημαίνει ότι η Alpine λειτουργεί ως "ομάδα του ενός μονοθεσίου" , κάτι που είναι καταστροφικό για τη θέση της στο πρωτάθλημα κατασκευαστών.</p><p>Η αντικατάσταση του Doohan με τον Colapinto αποδείχθηκε μια κίνηση που όχι μόνο δεν έλυσε το πρόβλημα, αλλά το ανέδειξε. Το γεγονός ότι δύο διαφορετικοί οδηγοί, ο ένας "γαλουχημένος" στην ομάδα και ο άλλος με αποδεδειγμένη ικανότητα να σκοράρει βαθμούς στην F1, αποτυγχάνουν εξίσου, δείχνει ότι το πρόβλημα δεν είναι πρωτίστως οι οδηγοί, αλλά το ίδιο το μονοθέσιο. Η δήλωση του Colapinto ότι "δεν είχε αυτό το πρόβλημα πέρυσι" και ότι τώρα "παλεύει" με την είσοδο στις στροφές  είναι η πιο ηχηρή καταδίκη της προβληματικής οδικής συμπεριφοράς της A525. Το μονοθέσιο είναι θεμελιωδώς δύσκολο και απρόβλεπτο, μη φιλικό προς τους rookies, γεγονός που έχει ωθήσει την ομάδα να εξετάζει έμπειρους οδηγούς όπως ο Valtteri Bottas ή ο Sergio Pérez για το 2026, παραδεχόμενη εμμέσως την αποτυχία της.</p><h2>Μια Υπολογισμένη Θυσία - Το Στοίχημα του 2026</h2><p>Αντιμέτωπη με μια καταστροφική σεζόν και ένα μονοθέσιο χωρίς ελπίδα, η διοίκηση της Alpine πήρε μια δραστική και αμφιλεγόμενη απόφαση: να θυσιάσει το παρόν για ένα αβέβαιο μέλλον. Η ομάδα έχει ουσιαστικά πατήσει το κουμπί "pause" για το 2025, στρέφοντας όλους τους πόρους και τις ελπίδες της στη μεγάλη αλλαγή κανονισμών του 2026. Αυτή η στρατηγική δεν είναι απλώς μια τεχνική επιλογή· είναι ένα τεράστιο στοίχημα που θα καθορίσει το μέλλον της ομάδας στη Formula 1.</p><h3>Εγκαταλείποντας το Καράβι του 2025</h3><p>Η παραδοχή της ήττας για το 2025 είναι πλέον δημόσια. Ο Εκτελεστικός Τεχνικός Διευθυντής, David Sanchez, δήλωσε με σαφήνεια ότι η ομάδα είναι "πολύ προχωρημένη με το μονοθέσιο του 2026" και ότι η εστίαση μετατοπίστηκε εκεί από νωρίς. Αυτό σημαίνει ότι δεν πρόκειται να υπάρξουν σημαντικά πακέτα αναβάθμισης για την A525 στο υπόλοιπο της σεζόν. Η ομάδα θα αγωνιστεί με αυτό που έχει, γνωρίζοντας ότι είναι καταδικασμένη στις πίσω θέσεις.</p><p>Αυτή η απόφαση υποστηρίζεται και από τον κορυφαίο οδηγό της ομάδας, Pierre Gasly. Ο Γάλλος έχει δηλώσει ότι αποδέχεται τον πόνο του 2025, καθώς έχει στηρίξει την επιλογή της ομάδας να επικεντρωθεί πλήρως στο 2026, ελπίζοντας σε "καλύτερα μερίσματα" στο μέλλον. Είναι μια κλασική στρατηγική θυσίας: αποδέξου την τελευταία θέση τώρα, με την ελπίδα να έχεις ένα ανταγωνιστικό πακέτο όταν οι κανόνες αλλάξουν και όλοι ξεκινήσουν από το μηδέν.</p><h3>Η Συμμαχία με τη Mercedes: Νέα Ελπίδα ή Λευκή Σημαία;</h3><p>Το πιο σημαντικό κομμάτι αυτού του στοιχήματος είναι η ιστορική απόφαση της Alpine να πάψει να είναι μια πλήρως εργοστασιακή ομάδα. Από το 2026, η Alpine θα γίνει πελάτης της Mercedes, χρησιμοποιώντας τις μονάδες ισχύος και τα κιβώτια ταχυτήτων της γερμανικής εταιρείας τουλάχιστον μέχρι το 2030.</p><p>Η σημασία αυτής της κίνησης είναι τεράστια. Σηματοδοτεί το τέλος μιας ιστορίας 50 ετών της Renault ως κατασκευαστή κινητήρων στη Formula 1  και τον τερματισμό του status της Alpine ως "works team". Η αιτιολόγηση ήταν ωμή: ο CEO του Ομίλου Renault δήλωσε ότι το project "θα κατέρρεε εντελώς" χωρίς αυτή την απόφαση, επικαλούμενος την εξοικονόμηση κόστους και την αδυναμία να ανταγωνιστεί τους άλλους κατασκευαστές μονάδων ισχύος. Πρόκειται για μια τεράστια παραδοχή αποτυχίας σε έναν από τους πιο κρίσιμους τομείς της F1.</p><h3>Το Γενικό Σχέδιο "Renaulution"</h3><p>Αυτή η στρατηγική απόφαση στην F1 πρέπει να εξεταστεί στο ευρύτερο πλαίσιο του εταιρικού σχεδίου "Renaulution" του Ομίλου Renault. Ο στόχος αυτού του σχεδίου είναι η μετατροπή της Alpine σε μια παγκόσμια, premium, αμιγώς ηλεκτρική μάρκα σπορ αυτοκινήτων, με στόχο εσόδων άνω των 8 δισεκατομμυρίων ευρώ έως το 2030.</p><p>Σε αυτό το πλαίσιο, η Formula 1 λειτουργεί ως ο κεντρικός πυλώνας μάρκετινγκ. Μια αποτυχημένη εργοστασιακή ομάδα αποτελεί κάκιστο μάρκετινγκ. Ωστόσο, μια ανταγωνιστική <em>πελατειακή</em> ομάδα μπορεί ακόμα να προσφέρει την προβολή και το κύρος που απαιτείται για την προώθηση της μάρκας. Η πώληση του 24% των μετοχών της ομάδας σε ένα κονσόρτσιουμ επενδυτών που περιλαμβάνει και τον ηθοποιό Ryan Reynolds για περίπου 218 εκατομμύρια δολάρια, δείχνει ότι η στρατηγική εστιάζει στην οικοδόμηση της αξίας της μάρκας και την προσέλκυση κεφαλαίων, όχι απαραίτητα στην κατάκτηση τίτλων με ίδια μέσα.</p><p>Ωστόσο, εδώ εντοπίζεται μια θεμελιώδης στρατηγική αντίφαση. Η Renault θέλει να χρησιμοποιήσει την F1 για να χτίσει μια premium μάρκα που θα ανταγωνίζεται την Porsche ή τη Ferrari, αλλά ταυτόχρονα εγκαταλείπει το βασικό συστατικό της ταυτότητας ενός κορυφαίου κατασκευαστή στην F1: την κατασκευή του δικού του κινητήρα. Είναι δύσκολο να προωθείς τον εαυτό σου ως κορυφαία μάρκα υψηλών επιδόσεων, όταν παραδέχεσαι ότι η τεχνολογία του κινητήρα σου δεν είναι αρκετά καλή για την F1 και αναγκάζεσαι να αγοράσεις από έναν άμεσο ανταγωνιστή σου, τη Mercedes. Αυτή η απόφαση, αν και ίσως οικονομικά και πρακτικά αναγκαία, υπονομεύει θεμελιωδώς τον μακροπρόθεσμο στόχο μάρκετινγκ της στρατηγικής "Renaulution". Τοποθετεί την Alpine ως μια οντότητα δεύτερης κατηγορίας στην F1, μια εικόνα που θα είναι δύσκολο να αποτινάξει.</p><p>Τελικά, οι κανονισμοί του 2026 αντιμετωπίζονται από τη διοίκηση της Alpine ως ένα πλήρες "κουμπί επανεκκίνησης" (reset button), με την ελπίδα ότι θα σβήσει τις αποτυχίες της περιόδου 2021-2025. Η εστίαση στο 2026 δεν είναι μόνο μια τεχνική στρατηγική, αλλά και μια πολιτική και εταιρική κίνηση. Καρφιτσώνοντας όλες τις ελπίδες στο 2026, η τρέχουσα διοίκηση (Briatore, Provost, Sanchez) μπορεί να αποστασιοποιηθεί από τις αποτυχίες των προκατόχων της. Μπορούν να πλαισιώσουν την αφήγηση ως "Παραλάβαμε ένα χάος, αλλά το σχέδιό μας για τη νέα εποχή θα το διορθώσει". Αυτό αγοράζει χρόνο στη νέα διοίκηση, δικαιολογεί την τρέχουσα κακή απόδοση στο διοικητικό συμβούλιο της Renault και μηδενίζει τις προσδοκίες. Ωστόσο, ασκεί επίσης τεράστια πίεση στην ομάδα να αποδώσει άμεσα το 2026, χωρίς περιθώρια για δικαιολογίες.</p><h2>Συμπέρασμα: Ένας Μακρύς και Αβέβαιος Δρόμος προς τη Λύτρωση</h2><p>Η ανάλυση της σεζόν του 2025 για την Alpine αποκαλύπτει μια οδυνηρή αλήθεια: η κρίση της ομάδας δεν είναι ένα μεμονωμένο, ατυχές γεγονός, αλλά το λογικό συμπέρασμα μιας πολυετούς συστημικής αποτυχίας. Είναι η κορύφωση μιας ελαττωματικής τεχνικής φιλοσοφίας που γεννήθηκε μέσα από το οργανωτικό χάος, μιας σύνθεσης οδηγών σε συνεχή αναταραχή και ενός εργοστασιακού προγράμματος κινητήρων που ηττήθηκε κατά κράτος από τον ανταγωνισμό. Η 10η θέση στην κατάταξη δεν είναι απλώς ένας αριθμός· είναι η αντανάκλαση μιας ομάδας που έχασε τον δρόμο της.</p><p>Η στρατηγική για το 2026, που περιλαμβάνει τη θυσία του 2025, την εγκατάλειψη του προγράμματος κινητήρων και τη μετατροπή σε πελατειακή ομάδα της Mercedes, αποτελεί ένα τεράστιο, υψηλού ρίσκου στοίχημα. Είναι μια κίνηση "όλα ή τίποτα". Με την πρόσληψη μιας αμφιλεγόμενης αλλά αποφασιστικής φιγούρας όπως ο Flavio Briatore, η Renault ποντάρει τα πάντα σε μια πλήρη πολιτισμική και τεχνική επανεκκίνηση.</p><p>Θα αποδώσει αυτή η οδυνηρή θυσία; Είναι πιθανό. Η απόκτηση μιας κορυφαίας μονάδας ισχύος από τη Mercedes θα εξαλείψει μια σημαντική μεταβλητή και θα επιτρέψει στην ομάδα του πλαισίου στο Enstone να επικεντρωθεί σε αυτό που ξέρει να κάνει καλύτερα. Η απομάκρυνση από την εσωτερική διαμάχη μεταξύ των τμημάτων πλαισίου και κινητήρα μπορεί να απελευθερώσει δημιουργικότητα και να βελτιώσει την αποδοτικότητα.</p><p>Ωστόσο, τα βαθύτερα, πολιτισμικά ζητήματα της αστάθειας, της έλλειψης μακροπρόθεσμου οράματος και της απουσίας μιας "κουλτούρας νίκης"  δεν επιλύονται τόσο εύκολα. Η αγορά ενός καλού κινητήρα δεν διορθώνει αυτόματα μια "σπασμένη" ομάδα. Το φάντασμα της McLaren, που πέρασε χρόνια στην αφάνεια κατηγορώντας τη Honda για τις αποτυχίες της, μόνο για να ανακαλύψει αργότερα ότι και το δικό της πλαίσιο υστερούσε, πρέπει να χρησιμεύσει ως προειδοποιητική ιστορία για την Alpine.</p><p>Ο δρόμος προς τη λύτρωση για την ομάδα του Enstone είναι μακρύς και γεμάτος αβεβαιότητα. Η επιτυχία δεν είναι καθόλου εγγυημένη. Πριν διεκδικήσει ξανά βάθρα και νίκες, η Alpine πρέπει πρώτα να αποδείξει ότι έχει συμμαζέψει το ίδιο της το σπίτι, και όχι απλώς ότι αγόρασε έναν καλύτερο κινητήρα.</p>
-      </div>
-
-      <!-- Add this author section here -->
-      <div class="article-author-footer">
-        <div class="reading-time-badge">
-          <i class="fas fa-clock"></i>
-          <span id="reading-time-value">5 min read</span>
-        </div>
-
-        <div class="author-box">
-          <div class="author-header">
-            <div class="author-avatar">
-              <img id="author-image" src="/f1stories.github.io/images/avatars/FA.webp" alt="Georgios Balatzis"
-                   onerror="
-         const paths = [
-           '/f1stories.github.io/images/authors/default.webp',
-           '/images/authors/default.webp',
-           '../../../images/authors/default.webp',
-           '../../images/authors/default.webp'
-         ];
-         let currentPath = 0;
-         const tryNextPath = () => {
-           if (currentPath < paths.length) {
-             this.src = paths[currentPath++];
-           } else {
-             this.style.display='none';
-             document.getElementById('author-initial').style.display='flex';
-           }
-         };
-         tryNextPath();">
-              <span class="avatar-text" id="author-initial">A</span>
+            <div class="social-share-bar">
+                <div class="share-label"><i class="fas fa-share-alt"></i> <span>Share</span></div>
+                <div class="share-buttons">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=https://f1stories.gr/blog-module/blog-entries/20250817G/article.html" target="_blank" rel="noopener" class="share-btn facebook" aria-label="Share on Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.addtoany.com/add_to/threads?linkurl=https://f1stories.gr/blog-module/blog-entries/20250817G/article.html&linkname=Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;" target="_blank" rel="noopener" class="share-btn threads" aria-label="Share on Threads"><i class="fab fa-threads"></i></a>
+                    <button id="instagram-dm-btn" class="share-btn instagram" aria-label="Share via Instagram DM"><i class="fab fa-instagram"></i></button>
+                    <a href="https://api.whatsapp.com/send?text=Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;%20https://f1stories.gr/blog-module/blog-entries/20250817G/article.html" target="_blank" rel="noopener" class="share-btn whatsapp" aria-label="Share on WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://t.me/share/url?url=https://f1stories.gr/blog-module/blog-entries/20250817G/article.html&text=Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;" target="_blank" rel="noopener" class="share-btn telegram" aria-label="Share on Telegram"><i class="fab fa-telegram-plane"></i></a>
+                    <button id="web-share-btn" class="share-btn web-share" aria-label="Share"><i class="fas fa-share-nodes"></i></button>
+                    <button class="share-btn copy-link" id="copy-link-btn" aria-label="Copy link"><i class="fas fa-link"></i></button>
+                </div>
             </div>
-            <div class="author-info">
-              <h4 class="author-name" id="author-name">Georgios Balatzis</h4>
-              <div class="author-title" id="author-title">F1 Stories Contributor</div>
+
+            <div class="tts-widget" id="tts-widget">
+                <div class="tts-header">
+                    <i class="fas fa-headphones-alt"></i>
+                    <span>RACE RADIO — Ακούστε το Άρθρο</span>
+                    <button class="tts-toggle" id="tts-toggle" aria-label="Toggle TTS panel"><i class="fas fa-chevron-down"></i></button>
+                </div>
+                <div class="tts-body" id="tts-body">
+                    <div class="tts-controls">
+                        <button class="tts-btn" id="tts-play" title="Play"><i class="fas fa-play"></i></button>
+                        <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;"><i class="fas fa-pause"></i></button>
+                        <button class="tts-btn" id="tts-stop" title="Stop"><i class="fas fa-stop"></i></button>
+                        <div class="tts-speed-control">
+                            <label for="tts-speed">Speed:</label>
+                            <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+                            <span id="tts-speed-value">1x</span>
+                        </div>
+                    </div>
+                    <div class="tts-voice-selector">
+                        <label for="tts-voice">Φωνή / Voice:</label>
+                        <select id="tts-voice"><option value="">Αυτόματη / Auto</option></select>
+                    </div>
+                    <div class="tts-progress"><div class="tts-progress-bar" id="tts-progress-bar"></div></div>
+                    <div class="tts-status" id="tts-status">Έτοιμο για ανάγνωση</div>
+                </div>
             </div>
-          </div>
-          <div class="author-bio" id="author-bio">
-            Regular contributor to F1 Stories, passionate about motorsport and sharing insight about Formula 1 racing.
-          </div>
+
+            <div class="article-content"><p></p><h1>Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;</h1><h2>Εισαγωγή: Η Αγωνιώδης Πτώση της Ομάδας του Enstone</h2><p>Οι τοίχοι του εργοστασίου στο Enstone της Αγγλίας είναι εμποτισμένοι με την ιστορία της Formula 1. Εδώ, σε αυτό το τεχνολογικό λίκνο, σφυρηλατήθηκαν μονοθέσια που κατέκτησαν τον κόσμο. Εδώ, ο Michael Schumacher και η Benetton αψήφησαν τις καθιερωμένες δυνάμεις για να κερδίσουν δύο παγκόσμια πρωταθλήματα. Εδώ, ο Fernando Alonso και η Renault, με το χαρακτηριστικό μπλε και κίτρινο χρώμα, έβαλαν τέλος στην παντοκρατορία της Ferrari, κατακτώντας δύο συνεχόμενους τίτλους οδηγών και κατασκευαστών. Οι ήχοι των κινητήρων V10 και V8 που πανηγύριζαν νίκες έχουν πλέον σιγήσει, και στη θέση τους αντηχεί η σκληρή, απογοητευτική πραγματικότητα της σεζόν του 2025.</p><p>Σε πίστες όπως το Hungaroring, τα άλλοτε περήφανα γαλλικά μονοθέσια, βαμμένα τώρα σε ένα μείγμα μπλε και ροζ, δεν μάχονται για το βάθρο, αλλά για να αποφύγουν την τελευταία θέση. Δέχονται γύρους, παλεύουν με την πρόσφυση και την ταχύτητα, αποτελώντας μια σκιά του ένδοξου παρελθόντος τους. Η εικόνα είναι οδυνηρή για οποιονδήποτε θυμάται την κληρονομιά αυτής της ομάδας. Η Alpine F1 Team, η εργοστασιακή εκπροσώπηση ενός γίγαντα της αυτοκινητοβιομηχανίας όπως η Renault, βρίσκεται σε ελεύθερη πτώση.</p><p>Πώς έφτασε όμως μια ομάδα με τέτοια ιστορία, πόρους και φιλοδοξίες να καταρρεύσει, μετατρεπόμενη από διεκδικήτρια της τέταρτης θέσης σε ουραγό του grid; Η απάντηση δεν είναι απλή. Δεν πρόκειται για ένα μεμονωμένο λάθος, ένα ελαττωματικό εξάρτημα ή μια κακή στρατηγική σε έναν αγώνα. Είναι το αποτέλεσμα μιας αλυσιδωτής αντίδρασης αποτυχιών που διαπερνά κάθε πτυχή της ομάδας: από τον σχεδιασμό του μονοθεσίου και τη διαχείριση στην κορυφή, μέχρι τις επιλογές των οδηγών και τη μακροπρόθεσμη στρατηγική. Το παρόν άρθρο αποτελεί μια ενδελεχή έρευνα, μια ανατομία της κρίσης που μαστίζει την Alpine. Θα αναλύσουμε τα δεδομένα, θα αποκωδικοποιήσουμε τις τεχνικές αδυναμίες, θα εξετάσουμε το χάος στη διοίκηση και θα προσπαθήσουμε να απαντήσουμε στο βασανιστικό ερώτημα: τι πήγε τόσο στραβά για την Alpine το 2025;</p><h2>Η Πραγματικότητα - Η Απόδοση της Alpine το 2025 μέσα από Αριθμούς</h2><p>Πριν αναζητήσουμε τα αίτια της κρίσης, είναι επιτακτικό να κατανοήσουμε το μέγεθός της. Οι αριθμοί για την Alpine στη σεζόν του 2025 είναι αμείλικτοι και ζωγραφίζουν μια εικόνα απόλυτης αποτυχίας. Δεν πρόκειται απλώς για μια κακή χρονιά· πρόκειται για μια κατάρρευση που τοποθετεί την ομάδα στο χαμηλότερο σημείο της σύγχρονης ιστορίας της.</p><h3>Η Στατιστική Ελεύθερη Πτώση</h3><p>Στο μέσο της σεζόν, μετά το Grand Prix της Ουγγαρίας, η BWT Alpine F1 Team βρίσκεται στην 10η και τελευταία θέση της βαθμολογίας των κατασκευαστών. Έχοντας συγκεντρώσει μόλις 20 βαθμούς, η ομάδα όχι μόνο είναι ουραγός, αλλά απέχει και μια σημαντική απόσταση 15 βαθμών από την 9η Haas. Αυτό το χάσμα από την προτελευταία ομάδα είναι ενδεικτικό του πόσο πίσω έχει μείνει η Alpine σε σχέση με τον ανταγωνισμό του midfield.</p><p>Η εικόνα γίνεται ακόμα πιο ζοφερή όταν εξετάζουμε τη βαθμολογία των οδηγών. Ο Pierre Gasly, με μια σειρά από ηρωικές προσπάθειες, έχει συγκεντρώσει και τους 20 βαθμούς της ομάδας, καταλαμβάνοντας την 14η θέση. Οι δύο οδηγοί που μοιράστηκαν το δεύτερο μονοθέσιο, ο Jack Doohan και ο Franco Colapinto, βρίσκονται στις δύο τελευταίες θέσεις της κατάταξης (20ή και 21η αντίστοιχα), χωρίς να έχουν καταφέρει να σκοράρουν ούτε έναν βαθμό. Αυτό το στατιστικό στοιχείο από μόνο του αποκαλύπτει ένα από τα θεμελιώδη προβλήματα: η Alpine λειτουργεί ουσιαστικά ως ομάδα του ενός μονοθεσίου.</p><p>Η συγκομιδή των βαθμών είναι σποραδική και αναιμική. Η ομάδα κατάφερε να βαθμολογηθεί μόλις σε πέντε από τους 14 πρώτους αγώνες της σεζόν: 6 βαθμοί στο Μπαχρέιν, 1 στο Μαϊάμι, 4 στην Ισπανία, 8 στη Μεγάλη Βρετανία και 1 στο Βέλγιο. Στους υπόλοιπους εννέα αγώνες, το αποτέλεσμα ήταν μηδενικό. Επιπλέον, η ομάδα έχει καταγράψει τέσσερις εγκαταλείψεις (DNF) σε αυτούς τους 14 αγώνες, υπογραμμίζοντας προβλήματα όχι μόνο ταχύτητας αλλά και αξιοπιστίας.</p><h3>Η Καθοδική Πορεία</h3><p>Η καταστροφική σεζόν του 2025 δεν αποτελεί ένα μεμονωμένο γεγονός, αλλά το αποκορύφωμα μιας σταθερής καθοδικής πορείας τα τελευταία χρόνια. Η σύγκριση με τις προηγούμενες σεζόν είναι αποκαλυπτική για μια ομάδα που όχι απλώς στάθηκε στάσιμη, αλλά οπισθοχώρησε δραματικά.</p><table><tr><td><p>Έτος</p></td><td><p>Θέση Κατασκευαστών</p></td><td><p>Σύνολο Βαθμών</p></td><td><p>Βάθρα (Podiums)</p></td><td><p>Νίκες</p></td></tr><tr><td><p>2022</p></td><td><p>4η</p></td><td><p>173</p></td><td><p>0</p></td><td><p>0</p></td></tr><tr><td><p>2023</p></td><td><p>6η</p></td><td><p>120</p></td><td><p>2</p></td><td><p>0</p></td></tr><tr><td><p>2024</p></td><td><p>6η</p></td><td><p>65</p></td><td><p>2</p></td><td><p>0</p></td></tr><tr><td><p>2025*</p></td><td><p>10η</p></td><td><p>20</p></td><td><p>0</p></td><td><p>0</p></td></tr></table><p>Ο παραπάνω πίνακας καταδεικνύει μια ανησυχητική τάση. Από την ισχυρή 4η θέση το 2022, η ομάδα έπεσε στην 6η το 2023 και παρέμεινε εκεί το 2024, αλλά με σχεδόν τους μισούς βαθμούς. Η πτώση από τους 173 βαθμούς στους 120 και στη συνέχεια στους 65 είναι από μόνη της ανησυχητική. Το 2025, η ομάδα έχει συγκεντρώσει μόλις 20 βαθμούς στο μέσο της σεζόν, καθιστώντας σχεδόν αδύνατο να πλησιάσει έστω και το χαμηλό σύνολο του 2024.</p><p>Αυτή η πτώση δεν είναι γραμμική· επιταχύνεται. Η διαφορά βαθμών μεταξύ 2022 και 2023 ήταν 53 βαθμοί. Μεταξύ 2023 και 2024 ήταν 55 βαθμοί. Το γεγονός ότι στο μέσο της σεζόν του 2025 η ομάδα βρίσκεται ήδη 45 βαθμούς πίσω από το σύνολο ολόκληρης της προηγούμενης χρονιάς υποδηλώνει ότι τα θεμελιώδη προβλήματα δεν επιλύονται, αλλά αντίθετα επιδεινώνονται, οδηγώντας σε μια όλο και πιο απότομη πτώση. Αυτό το μοτίβο δείχνει ότι οι αιτίες είναι βαθιές και συστημικές, υπερβαίνοντας τα όρια ενός απλού σχεδιαστικού λάθους στο μονοθέσιο.</p><table><tr><td><p><strong>Βαθμολογία Κατασκευαστών 2025 (μετά το GP Ουγγαρίας)</strong></p></td><td></td><td><p><strong>Βαθμολογία Οδηγών 2025 (Κορυφαίοι &amp; Alpine)</strong></p></td></tr><tr><td><p><strong>Θέση</strong></p></td><td><p><strong>Ομάδα</strong></p></td><td><p><strong>Βαθμοί</strong></p></td></tr><tr><td><p>1</p></td><td><p>McLaren</p></td><td><p>559</p></td></tr><tr><td><p>2</p></td><td><p>Ferrari</p></td><td><p>260</p></td></tr><tr><td><p>3</p></td><td><p>Mercedes</p></td><td><p>236</p></td></tr><tr><td><p>4</p></td><td><p>Red Bull Racing</p></td><td><p>194</p></td></tr><tr><td><p>5</p></td><td><p>Williams</p></td><td><p>70</p></td></tr><tr><td><p>6</p></td><td><p>Aston Martin</p></td><td><p>52</p></td></tr><tr><td><p>7</p></td><td><p>Kick Sauber</p></td><td><p>51</p></td></tr><tr><td><p>8</p></td><td><p>Racing Bulls</p></td><td><p>45</p></td></tr><tr><td><p>9</p></td><td><p>Haas</p></td><td><p>35</p></td></tr><tr><td><p>10</p></td><td><p><strong>Alpine</strong></p></td><td><p><strong>20</strong></p></td></tr></table><p>Η πλήρης εικόνα της κατάταξης του 2025 αποκαλύπτει το βάθος της κρίσης. Η Alpine δεν είναι απλώς πίσω από τις κορυφαίες ομάδες· έχει ξεπεραστεί από ολόκληρο το midfield. Ομάδες όπως η Williams, η Sauber και η Haas, που τα προηγούμενα χρόνια βρίσκονταν σταθερά πίσω από την Alpine, τώρα την ξεπερνούν με άνεση. Η απόδοση της ομάδας εξαρτάται απόλυτα από τον έναν οδηγό της. Χωρίς τις μεμονωμένες, εξαιρετικές προσπάθειες του Gasly, η Alpine θα είχε μηδέν βαθμούς, μια στατιστική καταστροφή για μια εργοστασιακή ομάδα. Αυτό θέτει ένα κρίσιμο ερώτημα που θα εξετάσουμε στη συνέχεια: είναι το μονοθέσιο τόσο δύσκολο που μόνο ένας έμπειρος οδηγός κορυφαίου επιπέδου μπορεί να αποσπάσει κάτι από αυτό, ή η επιλογή οδηγών για το δεύτερο μονοθέσιο αποτελεί από μόνη της μέρος του προβλήματος; Η απάντηση, όπως θα δούμε, βρίσκεται κάπου στη μέση.</p><h2>Ένα Ελαττωματικό Όπλο - Αποδομώντας την A525</h2><p>Στην καρδιά της αποτυχίας της Alpine για το 2025 βρίσκεται το μονοθέσιό της, η A525. Ένα μονοθέσιο που, αντί να αποτελέσει ένα βήμα προόδου, αποδείχθηκε ένα όπλο γεμάτο ελαττώματα. Η ανάλυση των τεχνικών του χαρακτηριστικών αποκαλύπτει μια σειρά από θεμελιώδεις αδυναμίες που το καθιστούν αργό, απρόβλεπτο και, το κυριότερο, ανίκανο να διαχειριστεί τα ελαστικά του κατά τη διάρκεια ενός αγώνα.</p><h3>Εξέλιξη της Αποτυχίας</h3><p>Ένα από τα πιο ανησυχητικά στοιχεία της A525 είναι ότι δεν αποτελεί μια ριζοσπαστική νέα φιλοσοφία, αλλά μια "εξέλιξη" της προκατόχου της, της A524.<sup>17</sup> Αυτό είναι ένα κρίσιμο σημείο. Η ομάδα επέλεξε να εξελίξει ένα μονοθέσιο που, παρά την 6η θέση στο πρωτάθλημα του 2024, την εξασφάλισε κυρίως χάρη σε ένα "θαύμα" σε έναν βροχερό αγώνα στη Βραζιλία, όπου κατέκτησε ένα διπλό βάθρο. Αυτό το μεμονωμένο αποτέλεσμα φαίνεται πως παραπλάνησε την ομάδα, καλύπτοντας τις βαθύτερες αδυναμίες του μονοθεσίου.</p><p>Ο έμπειρος τεχνικός αναλυτής Gary Anderson, στην αξιολόγησή του για την A525, σημείωσε με νόημα ότι "μοιάζει στην πραγματικότητα με το ίδιο αυτοκίνητο" με το 2024, με ελάχιστες μόνο αλλαγές στα sidepods και τις άκρες του πατώματος. Αυτή η προσέγγιση υποδηλώνει είτε μια λανθασμένη διάγνωση των προβλημάτων του 2024, είτε έλλειψη φιλοδοξίας και πόρων για την εφαρμογή ουσιαστικών λύσεων. Η Alpine ουσιαστικά "μετέφερε" τα ελαττώματα της A524 στην A525, καταδικάζοντας τη σεζόν της πριν καν αρχίσει.</p><h3>Οι Βασικές Τεχνικές Ανεπάρκειες</h3><p>Η A525 πάσχει από τρία θεμελιώδη και αλληλένδετα προβλήματα:</p><h4>Ένα Στενό Λειτουργικό Παράθυρο</h4><p>Η λέξη που χαρακτηρίζει την A525 είναι η "ασυνέπεια". Το μονοθέσιο έχει δείξει στιγμές εκρηκτικής ταχύτητας στις κατατακτήριες δοκιμές, όπως αποδεικνύουν οι έξι συμμετοχές του Pierre Gasly στο Q3, συμπεριλαμβανομένης μιας εντυπωσιακής 5ης θέσης στη σχάρα εκκίνησης του Μπαχρέιν.<sup>23</sup> Ωστόσο, αυτές οι στιγμές λάμψης αντισταθμίζονται από τις τέσσερις φορές που ο Γάλλος οδηγός αποκλείστηκε από το Q1. Αυτή η τεράστια διακύμανση στην απόδοση υποδηλώνει ένα μονοθέσιο που είναι υπερβολικά ευαίσθητο στις ρυθμίσεις (setup) και τις συνθήκες της πίστας. Διαθέτει ένα πολύ "στενό λειτουργικό παράθυρο", που σημαίνει ότι αποδίδει καλά μόνο κάτω από ένα πολύ συγκεκριμένο σύνολο συνθηκών. Αυτό είναι ένα κλασικό σύμπτωμα μιας προβληματικής αεροδυναμικής πλατφόρμας, που καθιστά το μονοθέσιο απρόβλεπτο και δύσκολο στη διαχείριση.</p><h4>Ο "Καταβροχθιστής" Ελαστικών</h4><p>Αυτή είναι η "αχίλλειος πτέρνα" της A525 και ο κύριος λόγος για την τεράστια διαφορά απόδοσης μεταξύ κατατακτηρίων και αγώνα. Το μονοθέσιο κυριολεκτικά "καταστρέφει τα ελαστικά του" ("shreds its tyres"). Ο ίδιος ο Pierre Gasly το περιέγραψε με τον πιο εύγλωττο τρόπο: "Τελικά, είμαστε απλά πολύ αργοί". Σε τεχνική ανάλυσή του, εξήγησε ότι το βασικό πρόβλημα είναι ότι το μονοθέσιο γλιστράει υπερβολικά ("slide a lot"), γεγονός που οδηγεί σε υψηλή φθορά των ελαστικών.</p><p>Αυτό το πρόβλημα φάνηκε ξεκάθαρα στην Αυστρία. Ο Gasly, ξεκινώντας με τη μαλακή γόμα C5, ανέβηκε στην 6η θέση στον πρώτο γύρο, αλλά τα ελαστικά του έχασαν γρήγορα την απόδοσή τους, με αποτέλεσμα να πέσει κατακόρυφα στην κατάταξη. Το μονοθέσιο δεν μπορεί να διατηρήσει τα ελαστικά του στη σωστή θερμοκρασία κατά τη διάρκεια ενός stint, οδηγώντας σε υπερθέρμανση και δραματική πτώση της απόδοσης.</p><h4>Αεροδυναμικές Αδυναμίες</h4><p>Η αεροδυναμική της A525 είναι γεμάτη συμβιβασμούς. Ενώ φαίνεται να διαθέτει αξιοπρεπή κάθετη δύναμη στις υψηλής ταχύτητας στροφές, πάσχει από έντονη υποστροφή (understeer) στις αργές στροφές και κακή ποιότητα κύλισης (ride quality) πάνω από τα kerbs.<sup> </sup>Αυτό φάνηκε στο Μονακό, όπου η Alpine ήταν η μόνη ομάδα που ήταν πιο αργή από ό,τι το 2024. Αυτή η έλλειψη ισορροπίας καθιστά το μονοθέσιο απρόβλεπτο και δύσκολο στην οδήγηση, στερώντας την εμπιστοσύνη από τους οδηγούς. Τα λόγια του Franco Colapinto για "έλλειψη εμπιστοσύνης" με το μονοθέσιο, ειδικά στην είσοδο των στροφών, είναι αποκαλυπτικά.</p><h3>Το Τελευταίο Άσθμα του Κινητήρα Renault</h3><p>Σαν να μην έφταναν τα προβλήματα του πλαισίου, η Alpine κουβαλάει και το βαρίδι μιας μονάδας ισχύος που υστερεί σημαντικά έναντι του ανταγωνισμού. Τα προβλήματα με τον κινητήρα της Renault δεν είναι καινούργια, αλλά το 2025 είναι πιο εμφανή από ποτέ. Η μονάδα ισχύος είναι υποδεέστερη σε ιπποδύναμη και, το πιο κρίσιμο, έχει κακή ανάκτηση ενέργειας (energy recovery) από τα υβριδικά συστήματα.</p><p>Αυτό το έλλειμμα δεν επηρεάζει μόνο την ταχύτητα στις ευθείες. Δημιουργεί έναν φαύλο κύκλο τεχνικών συμβιβασμών. Η ομάδα αναγκάζεται συχνά να χρησιμοποιεί ρυθμίσεις χαμηλής αεροδυναμικής αντίστασης (low drag/downforce) για να αντισταθμίσει την έλλειψη ισχύος στις ευθείες. Ωστόσο, αυτές οι ρυθμίσεις μειώνουν την κάθετη δύναμη που παράγεται στις στροφές. Λιγότερη κάθετη δύναμη σημαίνει λιγότερη πρόσφυση, που με τη σειρά της κάνει το μονοθέσιο να γλιστράει περισσότερο, επιδεινώνοντας το ήδη τεράστιο πρόβλημα της φθοράς των ελαστικών. Έτσι, η αδυναμία του κινητήρα γίνεται η ρίζα του κακού για την κακή αγωνιστική απόδοση. Τα δεδομένα από την Ιαπωνία, που έδειξαν απώλεια 0.6 δευτερολέπτων σε έναν μόνο τομέα της πίστας λόγω του ελλείμματος ισχύος, είναι ένα αδιάψευστο στοιχείο ενός προβλήματος που είναι αδύνατο να διορθωθεί μέσα στη σεζόν.</p><p>Το 2025 σηματοδοτεί το τέλος εποχής για τη Renault ως κατασκευαστή κινητήρων στη Formula 1, ένα θλιβερό τέλος για μια εταιρεία με τεράστια ιστορία και επιτυχίες στο άθλημα. Η A525 και ο κινητήρας της αποτελούν το κύκνειο άσμα αυτής της μακράς πορείας.</p><h2>Χάος στο Pit Wall, Αναταραχή στο Cockpit</h2><p>Αν το μονοθέσιο A525 είναι το σύμπτωμα, η ασθένεια της Alpine βρίσκεται βαθιά ριζωμένη στην οργανωτική της δομή. Η απόδοση στην πίστα είναι απλώς ο καθρέφτης του χάους που επικρατεί στα υψηλότερα κλιμάκια της διοίκησης και της αναταραχής που έχει προκληθεί στις επιλογές των οδηγών. Καμία ομάδα στη σύγχρονη Formula 1 δεν μπορεί να πετύχει χωρίς σταθερότητα, και η σταθερότητα είναι μια λέξη άγνωστη για την Alpine τα τελευταία χρόνια.</p><h3>Το Διοικητικό "Καρουζέλ"</h3><p>Η κατάσταση στη διοίκηση της Alpine μπορεί να περιγραφεί μόνο ως ένα ατέλειωτο "καρουζέλ". Από το 2023, η ομάδα έχει δει μια άνευ προηγουμένου έξοδο κορυφαίων στελεχών. Ο CEO Laurent Rossi, ο Διευθυντής της Ομάδας (Team Principal) Otmar Szafnauer, ο Αθλητικός Διευθυντής Alan Permane και ο Τεχνικός Διευθυντής Pat Fry αποχώρησαν όλοι μέσα σε σύντομο χρονικό διάστημα.<sup>3</sup> Ο Bruno Famin ανέλαβε προσωρινά τα ηνία, για να αντικατασταθεί από τον Oliver Oakes το 2024 <sup>7</sup>, ο οποίος με τη σειρά του παραιτήθηκε αιφνιδιαστικά μετά από λίγους μήνες, τον Μάιο του 2025.</p><p>Αυτή η διαρκής αλλαγή προσώπων στην κορυφή έχει καταστροφικές συνέπειες. Ο Pierre Gasly, για παράδειγμα, έχει οδηγήσει υπό τις οδηγίες τριών διαφορετικών team principals σε λιγότερο από δύο χρόνια.<sup>23</sup> Μια τέτοια αστάθεια καθιστά αδύνατη τη χάραξη και την εκτέλεση ενός συνεκτικού, μακροπρόθεσμου σχεδίου. Αντί για όραμα και στρατηγική, επικρατεί η αντίδραση και η βραχυπρόθεσμη διαχείριση κρίσεων. Αυτό το κλίμα έχει δημιουργήσει μια "ατονία" και μια έλλειψη σαφούς κατεύθυνσης μέσα στην ομάδα, όπως αναφέρουν αναλυτές. Η αποτυχία του μονοθεσίου A525 δεν είναι απλώς μια τεχνική αποτυχία· είναι το φυσικό αποτέλεσμα μιας οργανωτικής κατάρρευσης. Χωρίς έναν σταθερό τεχνικό ηγέτη, όπως ο Pat Fry που έφυγε για τη Williams, δεν υπάρχει κανείς να "κρατήσει το τιμόνι" και να πάρει τις δύσκολες αλλά αναγκαίες αποφάσεις, όπως η εγκατάλειψη μιας ελαττωματικής φιλοσοφίας μονοθεσίου.</p><h3>Το Δόγμα Briatore</h3><p>Η επιστροφή του Flavio Briatore, μιας από τις πιο εμβληματικές αλλά και αμφιλεγόμενες φιγούρες στην ιστορία της F1, ως Εκτελεστικός Σύμβουλος και de facto επικεφαλής της ομάδας, είναι η πιο τρανή απόδειξη της απόγνωσης της Renault. Ο ρόλος του είναι σαφής: να επιβάλει τάξη στο χάος. Είναι ο "fixer" που καλείται να κάνει αυτό που η προηγούμενη διοίκηση απέτυχε: να εντοπίσει ταλέντα, να αμφισβητήσει τις υπάρχουσες δομές και να δώσει στρατηγική κατεύθυνση.</p><p>Οι δημόσιες δηλώσεις του είναι αποκαλυπτικές της κατάστασης. Έχει εκφράσει ανοιχτά τη δυσαρέσκειά του ("not at all happy") για την απόδοση του Franco Colapinto , έχει χαρακτηρίσει την απόδοση της ομάδας "ολοένα και πιο ανησυχητική" ("increasingly concerning") , και έχει θέσει έναν ξεκάθαρο οδικό χάρτη: το 2025 είναι μια χρονιά ανασυγκρότησης, με στόχο την ανταγωνιστικότητα και τα βάθρα το 2026, και τις νίκες από το 2027 και μετά. Η παρουσία του Briatore σηματοδοτεί την παραδοχή της αποτυχίας του προηγούμενου μοντέλου διοίκησης και μια στροφή προς έναν πιο αυταρχικό και συγκεντρωτικό τρόπο λήψης αποφάσεων.</p><h3>Η Περιστρεφόμενη Δεύτερη Θέση</h3><p>Το χάος στη διοίκηση αντικατοπτρίζεται πλήρως στην κατάσταση του δεύτερου μονοθεσίου. Ο Αυστραλός rookie Jack Doohan, προϊόν της ακαδημίας της Alpine, ξεκίνησε τη σεζόν αλλά απομακρύνθηκε μετά από μόλις έξι αγώνες, έχοντας μηδέν βαθμούς και δύο εγκαταλείψεις. Ήταν μια κίνηση πανικού που αποκάλυψε την έλλειψη υπομονής της ομάδας.</p><p>Στη θέση του ήρθε ο Αργεντινός Franco Colapinto, ο οποίος είχε εντυπωσιάσει με τις εμφανίσεις του ως αντικαταστάτης στη Williams το 2024. Ωστόσο, στην Alpine η εικόνα είναι εντελώς διαφορετική. Ο Colapinto παλεύει εμφανώς με το μονοθέσιο, έχοντας ήδη ένα ατύχημα στις κατατακτήριες, καμία βαθμολογική συγκομιδή και δηλώνοντας ανοιχτά την έλλειψη εμπιστοσύνης του στο αυτοκίνητο. Το πρόσφατο ατύχημά του κατά τη διάρκεια δοκιμών για την Pirelli απλώς αυξάνει την πίεση.</p><table><tr><td><p><strong>Αγώνας</strong></p></td><td><p><strong>Gasly Κατατ.</strong></p></td><td><p><strong>Gasly Τερμ.</strong></p></td><td><p><strong>Doohan/Colapinto Κατατ.</strong></p></td><td><p><strong>Doohan/Colapinto Τερμ.</strong></p></td><td><p><strong>Βαθμοί</strong></p></td></tr><tr><td><p>Μπαχρέιν</p></td><td><p>4</p></td><td><p>7</p></td><td><p>11 (Doohan)</p></td><td><p>14</p></td><td><p>6</p></td></tr><tr><td><p>Σ. Αραβία</p></td><td><p>9</p></td><td><p>ΕΓΚ</p></td><td><p>17 (Doohan)</p></td><td><p>17</p></td><td><p>0</p></td></tr><tr><td><p>Μαϊάμι</p></td><td><p>18</p></td><td><p>13</p></td><td><p>14 (Doohan)</p></td><td><p>ΕΓΚ</p></td><td><p>1 (Sprint)</p></td></tr><tr><td><p>E. Romagna</p></td><td><p>10</p></td><td><p>13</p></td><td><p>16 (Colapinto)</p></td><td><p>16</p></td><td><p>0</p></td></tr><tr><td><p>Μονακό</p></td><td><p>17</p></td><td><p>ΕΓΚ</p></td><td><p>18 (Colapinto)</p></td><td><p>13</p></td><td><p>0</p></td></tr><tr><td><p>Ισπανία</p></td><td><p>7</p></td><td><p>9</p></td><td><p>15 (Colapinto)</p></td><td><p>15</p></td><td><p>4</p></td></tr><tr><td><p>Μ. Βρετανία</p></td><td><p>8</p></td><td><p>6</p></td><td><p>20 (Colapinto)</p></td><td><p>ΕΓΚ</p></td><td><p>8</p></td></tr><tr><td><p>Βέλγιο</p></td><td><p>13</p></td><td><p>10</p></td><td><p>15 (Colapinto)</p></td><td><p>19</p></td><td><p>1</p></td></tr><tr><td><p>Ουγγαρία</p></td><td><p>16</p></td><td><p>19</p></td><td><p>14 (Colapinto)</p></td><td><p>18</p></td><td><p>0</p></td></tr></table><p>Ο παραπάνω πίνακας είναι αδιάψευστος μάρτυρας. Ο Gasly, παρά τις δυσκολίες, καταφέρνει τακτικά να μπαίνει στο Q3 και να διεκδικεί βαθμούς, όπως η 6η θέση στη Μεγάλη Βρετανία. Αντίθετα, το δεύτερο μονοθέσιο, ανεξαρτήτως οδηγού, βρίσκεται σταθερά στις πίσω θέσεις. Αυτή η αστάθεια σημαίνει ότι η Alpine λειτουργεί ως "ομάδα του ενός μονοθεσίου" , κάτι που είναι καταστροφικό για τη θέση της στο πρωτάθλημα κατασκευαστών.</p><p>Η αντικατάσταση του Doohan με τον Colapinto αποδείχθηκε μια κίνηση που όχι μόνο δεν έλυσε το πρόβλημα, αλλά το ανέδειξε. Το γεγονός ότι δύο διαφορετικοί οδηγοί, ο ένας "γαλουχημένος" στην ομάδα και ο άλλος με αποδεδειγμένη ικανότητα να σκοράρει βαθμούς στην F1, αποτυγχάνουν εξίσου, δείχνει ότι το πρόβλημα δεν είναι πρωτίστως οι οδηγοί, αλλά το ίδιο το μονοθέσιο. Η δήλωση του Colapinto ότι "δεν είχε αυτό το πρόβλημα πέρυσι" και ότι τώρα "παλεύει" με την είσοδο στις στροφές  είναι η πιο ηχηρή καταδίκη της προβληματικής οδικής συμπεριφοράς της A525. Το μονοθέσιο είναι θεμελιωδώς δύσκολο και απρόβλεπτο, μη φιλικό προς τους rookies, γεγονός που έχει ωθήσει την ομάδα να εξετάζει έμπειρους οδηγούς όπως ο Valtteri Bottas ή ο Sergio Pérez για το 2026, παραδεχόμενη εμμέσως την αποτυχία της.</p><h2>Μια Υπολογισμένη Θυσία - Το Στοίχημα του 2026</h2><p>Αντιμέτωπη με μια καταστροφική σεζόν και ένα μονοθέσιο χωρίς ελπίδα, η διοίκηση της Alpine πήρε μια δραστική και αμφιλεγόμενη απόφαση: να θυσιάσει το παρόν για ένα αβέβαιο μέλλον. Η ομάδα έχει ουσιαστικά πατήσει το κουμπί "pause" για το 2025, στρέφοντας όλους τους πόρους και τις ελπίδες της στη μεγάλη αλλαγή κανονισμών του 2026. Αυτή η στρατηγική δεν είναι απλώς μια τεχνική επιλογή· είναι ένα τεράστιο στοίχημα που θα καθορίσει το μέλλον της ομάδας στη Formula 1.</p><h3>Εγκαταλείποντας το Καράβι του 2025</h3><p>Η παραδοχή της ήττας για το 2025 είναι πλέον δημόσια. Ο Εκτελεστικός Τεχνικός Διευθυντής, David Sanchez, δήλωσε με σαφήνεια ότι η ομάδα είναι "πολύ προχωρημένη με το μονοθέσιο του 2026" και ότι η εστίαση μετατοπίστηκε εκεί από νωρίς. Αυτό σημαίνει ότι δεν πρόκειται να υπάρξουν σημαντικά πακέτα αναβάθμισης για την A525 στο υπόλοιπο της σεζόν. Η ομάδα θα αγωνιστεί με αυτό που έχει, γνωρίζοντας ότι είναι καταδικασμένη στις πίσω θέσεις.</p><p>Αυτή η απόφαση υποστηρίζεται και από τον κορυφαίο οδηγό της ομάδας, Pierre Gasly. Ο Γάλλος έχει δηλώσει ότι αποδέχεται τον πόνο του 2025, καθώς έχει στηρίξει την επιλογή της ομάδας να επικεντρωθεί πλήρως στο 2026, ελπίζοντας σε "καλύτερα μερίσματα" στο μέλλον. Είναι μια κλασική στρατηγική θυσίας: αποδέξου την τελευταία θέση τώρα, με την ελπίδα να έχεις ένα ανταγωνιστικό πακέτο όταν οι κανόνες αλλάξουν και όλοι ξεκινήσουν από το μηδέν.</p><h3>Η Συμμαχία με τη Mercedes: Νέα Ελπίδα ή Λευκή Σημαία;</h3><p>Το πιο σημαντικό κομμάτι αυτού του στοιχήματος είναι η ιστορική απόφαση της Alpine να πάψει να είναι μια πλήρως εργοστασιακή ομάδα. Από το 2026, η Alpine θα γίνει πελάτης της Mercedes, χρησιμοποιώντας τις μονάδες ισχύος και τα κιβώτια ταχυτήτων της γερμανικής εταιρείας τουλάχιστον μέχρι το 2030.</p><p>Η σημασία αυτής της κίνησης είναι τεράστια. Σηματοδοτεί το τέλος μιας ιστορίας 50 ετών της Renault ως κατασκευαστή κινητήρων στη Formula 1  και τον τερματισμό του status της Alpine ως "works team". Η αιτιολόγηση ήταν ωμή: ο CEO του Ομίλου Renault δήλωσε ότι το project "θα κατέρρεε εντελώς" χωρίς αυτή την απόφαση, επικαλούμενος την εξοικονόμηση κόστους και την αδυναμία να ανταγωνιστεί τους άλλους κατασκευαστές μονάδων ισχύος. Πρόκειται για μια τεράστια παραδοχή αποτυχίας σε έναν από τους πιο κρίσιμους τομείς της F1.</p><h3>Το Γενικό Σχέδιο "Renaulution"</h3><p>Αυτή η στρατηγική απόφαση στην F1 πρέπει να εξεταστεί στο ευρύτερο πλαίσιο του εταιρικού σχεδίου "Renaulution" του Ομίλου Renault. Ο στόχος αυτού του σχεδίου είναι η μετατροπή της Alpine σε μια παγκόσμια, premium, αμιγώς ηλεκτρική μάρκα σπορ αυτοκινήτων, με στόχο εσόδων άνω των 8 δισεκατομμυρίων ευρώ έως το 2030.</p><p>Σε αυτό το πλαίσιο, η Formula 1 λειτουργεί ως ο κεντρικός πυλώνας μάρκετινγκ. Μια αποτυχημένη εργοστασιακή ομάδα αποτελεί κάκιστο μάρκετινγκ. Ωστόσο, μια ανταγωνιστική <em>πελατειακή</em> ομάδα μπορεί ακόμα να προσφέρει την προβολή και το κύρος που απαιτείται για την προώθηση της μάρκας. Η πώληση του 24% των μετοχών της ομάδας σε ένα κονσόρτσιουμ επενδυτών που περιλαμβάνει και τον ηθοποιό Ryan Reynolds για περίπου 218 εκατομμύρια δολάρια, δείχνει ότι η στρατηγική εστιάζει στην οικοδόμηση της αξίας της μάρκας και την προσέλκυση κεφαλαίων, όχι απαραίτητα στην κατάκτηση τίτλων με ίδια μέσα.</p><p>Ωστόσο, εδώ εντοπίζεται μια θεμελιώδης στρατηγική αντίφαση. Η Renault θέλει να χρησιμοποιήσει την F1 για να χτίσει μια premium μάρκα που θα ανταγωνίζεται την Porsche ή τη Ferrari, αλλά ταυτόχρονα εγκαταλείπει το βασικό συστατικό της ταυτότητας ενός κορυφαίου κατασκευαστή στην F1: την κατασκευή του δικού του κινητήρα. Είναι δύσκολο να προωθείς τον εαυτό σου ως κορυφαία μάρκα υψηλών επιδόσεων, όταν παραδέχεσαι ότι η τεχνολογία του κινητήρα σου δεν είναι αρκετά καλή για την F1 και αναγκάζεσαι να αγοράσεις από έναν άμεσο ανταγωνιστή σου, τη Mercedes. Αυτή η απόφαση, αν και ίσως οικονομικά και πρακτικά αναγκαία, υπονομεύει θεμελιωδώς τον μακροπρόθεσμο στόχο μάρκετινγκ της στρατηγικής "Renaulution". Τοποθετεί την Alpine ως μια οντότητα δεύτερης κατηγορίας στην F1, μια εικόνα που θα είναι δύσκολο να αποτινάξει.</p><p>Τελικά, οι κανονισμοί του 2026 αντιμετωπίζονται από τη διοίκηση της Alpine ως ένα πλήρες "κουμπί επανεκκίνησης" (reset button), με την ελπίδα ότι θα σβήσει τις αποτυχίες της περιόδου 2021-2025. Η εστίαση στο 2026 δεν είναι μόνο μια τεχνική στρατηγική, αλλά και μια πολιτική και εταιρική κίνηση. Καρφιτσώνοντας όλες τις ελπίδες στο 2026, η τρέχουσα διοίκηση (Briatore, Provost, Sanchez) μπορεί να αποστασιοποιηθεί από τις αποτυχίες των προκατόχων της. Μπορούν να πλαισιώσουν την αφήγηση ως "Παραλάβαμε ένα χάος, αλλά το σχέδιό μας για τη νέα εποχή θα το διορθώσει". Αυτό αγοράζει χρόνο στη νέα διοίκηση, δικαιολογεί την τρέχουσα κακή απόδοση στο διοικητικό συμβούλιο της Renault και μηδενίζει τις προσδοκίες. Ωστόσο, ασκεί επίσης τεράστια πίεση στην ομάδα να αποδώσει άμεσα το 2026, χωρίς περιθώρια για δικαιολογίες.</p><h2>Συμπέρασμα: Ένας Μακρύς και Αβέβαιος Δρόμος προς τη Λύτρωση</h2><p>Η ανάλυση της σεζόν του 2025 για την Alpine αποκαλύπτει μια οδυνηρή αλήθεια: η κρίση της ομάδας δεν είναι ένα μεμονωμένο, ατυχές γεγονός, αλλά το λογικό συμπέρασμα μιας πολυετούς συστημικής αποτυχίας. Είναι η κορύφωση μιας ελαττωματικής τεχνικής φιλοσοφίας που γεννήθηκε μέσα από το οργανωτικό χάος, μιας σύνθεσης οδηγών σε συνεχή αναταραχή και ενός εργοστασιακού προγράμματος κινητήρων που ηττήθηκε κατά κράτος από τον ανταγωνισμό. Η 10η θέση στην κατάταξη δεν είναι απλώς ένας αριθμός· είναι η αντανάκλαση μιας ομάδας που έχασε τον δρόμο της.</p><p>Η στρατηγική για το 2026, που περιλαμβάνει τη θυσία του 2025, την εγκατάλειψη του προγράμματος κινητήρων και τη μετατροπή σε πελατειακή ομάδα της Mercedes, αποτελεί ένα τεράστιο, υψηλού ρίσκου στοίχημα. Είναι μια κίνηση "όλα ή τίποτα". Με την πρόσληψη μιας αμφιλεγόμενης αλλά αποφασιστικής φιγούρας όπως ο Flavio Briatore, η Renault ποντάρει τα πάντα σε μια πλήρη πολιτισμική και τεχνική επανεκκίνηση.</p><p>Θα αποδώσει αυτή η οδυνηρή θυσία; Είναι πιθανό. Η απόκτηση μιας κορυφαίας μονάδας ισχύος από τη Mercedes θα εξαλείψει μια σημαντική μεταβλητή και θα επιτρέψει στην ομάδα του πλαισίου στο Enstone να επικεντρωθεί σε αυτό που ξέρει να κάνει καλύτερα. Η απομάκρυνση από την εσωτερική διαμάχη μεταξύ των τμημάτων πλαισίου και κινητήρα μπορεί να απελευθερώσει δημιουργικότητα και να βελτιώσει την αποδοτικότητα.</p><p>Ωστόσο, τα βαθύτερα, πολιτισμικά ζητήματα της αστάθειας, της έλλειψης μακροπρόθεσμου οράματος και της απουσίας μιας "κουλτούρας νίκης"  δεν επιλύονται τόσο εύκολα. Η αγορά ενός καλού κινητήρα δεν διορθώνει αυτόματα μια "σπασμένη" ομάδα. Το φάντασμα της McLaren, που πέρασε χρόνια στην αφάνεια κατηγορώντας τη Honda για τις αποτυχίες της, μόνο για να ανακαλύψει αργότερα ότι και το δικό της πλαίσιο υστερούσε, πρέπει να χρησιμεύσει ως προειδοποιητική ιστορία για την Alpine.</p><p>Ο δρόμος προς τη λύτρωση για την ομάδα του Enstone είναι μακρύς και γεμάτος αβεβαιότητα. Η επιτυχία δεν είναι καθόλου εγγυημένη. Πριν διεκδικήσει ξανά βάθρα και νίκες, η Alpine πρέπει πρώτα να αποδείξει ότι έχει συμμαζέψει το ίδιο της το σπίτι, και όχι απλώς ότι αγόρασε έναν καλύτερο κινητήρα.</p></div>
+
+            <div class="article-author-footer">
+                <div class="reading-time-badge"><i class="fas fa-clock"></i> <span id="reading-time-value">5 min read</span></div>
+                <div class="author-box">
+                    <div class="author-header">
+                        <div class="author-avatar">
+                            <img id="author-image" src="/f1stories.github.io/images/avatars/FA.webp" alt="Georgios Balatzis"
+                                 onerror="this.style.display='none';document.getElementById('author-initial').style.display='flex';">
+                            <span class="avatar-text" id="author-initial">A</span>
+                        </div>
+                        <div class="author-info">
+                            <h4 class="author-name" id="author-name">Georgios Balatzis</h4>
+                            <div class="author-title" id="author-title">F1 Stories Contributor</div>
+                        </div>
+                    </div>
+                    <div class="author-bio" id="author-bio">Regular contributor to F1 Stories, passionate about motorsport and sharing insight about Formula 1 racing.</div>
+                </div>
+            </div>
+        </article>
+
+        <div class="article-comments">
+            <h3><i class="fas fa-comments" style="margin-right:0.5rem;font-size:0.95em;"></i>Comments</h3>
+            <div id="disqus_thread"></div>
+            <script>
+                var disqus_config = function () {
+                    this.page.url = window.location.href;
+                    this.page.identifier = '20250817G';
+                };
+                (function() {
+                    var d = document, s = d.createElement('script');
+                    s.src = 'https://f1stories-gr.disqus.com/embed.js';
+                    s.setAttribute('data-timestamp', +new Date());
+                    (d.head || d.body).appendChild(s);
+                })();
+            </script>
         </div>
-      </div>
-    </div>
 
-    <div class="article-comments">
-      <h3>Comments</h3>
-      <div id="disqus_thread"></div>
-      <script>
-        var disqus_config = function () {
-          this.page.url = window.location.href;  // Gets the current page URL
-          this.page.identifier = '20250817G';   // Will be replaced with your article ID
-        };
+        <div class="article-navigation">
+            <a href="/blog-module/blog-entries/20250816W/article.html" id="prev-article-link" class="article-nav-link prev"><i class="fas fa-arrow-left"></i> Previous</a>
+            <a href="/blog-module/blog-entries/20250819W/article.html" id="next-article-link" class="article-nav-link next">Next <i class="fas fa-arrow-right"></i></a>
+        </div>
 
-        (function() { // DON'T EDIT BELOW THIS LINE
-          var d = document, s = d.createElement('script');
-          s.src = 'https://f1stories-gr.disqus.com/embed.js';
-          s.setAttribute('data-timestamp', +new Date());
-          (d.head || d.body).appendChild(s);
-        })();
-      </script>
-      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    </div>
-
-    <!-- Article navigation -->
-    <div class="article-navigation">
-      <a href="/blog-module/blog-entries/20250816W/article.html" id="prev-article-link" class="article-nav-link prev">
-        <i class="fas fa-arrow-left"></i> Previous Article
-      </a>
-      <a href="/blog-module/blog-entries/20250819W/article.html" id="next-article-link" class="article-nav-link next">
-        Next Article <i class="fas fa-arrow-right"></i>
-      </a>
-    </div>
-
-    <!-- Related Articles -->
-    <div class="row mt-5">
-      <div class="col-12">
-        <h2 class="mb-4">Related Articles</h2>
-      </div>
-      
+        <div class="row mt-5">
+            <div class="col-12"><h2 class="mb-4 related-section-title">Related Articles</h2></div>
+            
             <div class="col-md-4">
                 <div class="blog-card">
                     <div class="blog-img-container">
@@ -449,102 +319,161 @@
                     </div>
                 </div>
             </div>
+        </div>
     </div>
-  </div>
 </section>
 
-<!-- Scroll To Top Button -->
-<button id="scroll-to-top" class="scroll-to-top-btn">
-  <i class="fas fa-chevron-up"></i>
-</button>
+<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
+
+<div id="cookie-consent" class="cookie-consent" style="display:none;">
+    <div class="cookie-content">
+        <p>Χρησιμοποιούμε cookies για την βελτίωση της εμπειρίας σας. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <div class="cookie-actions">
+            <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
+            <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
+        </div>
+    </div>
+</div>
 
 <footer class="py-4">
-  <div class="container">
-    <div class="row">
-      <div class="col-12 text-center">
-        <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
-        <div class="social-media">
-          <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank"><i class="fab fa-youtube"></i></a>
-          <a href="https://www.facebook.com/f1storiess" target="_blank"><i class="fab fa-facebook-f"></i></a>
-          <a href="https://www.instagram.com/myf1stories/" target="_blank"><i class="fab fa-instagram"></i></a>
-          <a href="https://www.tiktok.com/@f1stories6" target="_blank"><i class="fab fa-tiktok"></i></a>
-          <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
-          <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank"><i class="fab fa-spotify"></i></a>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+                <div class="social-media">
+                    <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+                    <a href="/cdn-cgi/l/email-protection#6904100f581a1d061b000c1a290e04080005470a0604"><i class="fas fa-envelope"></i></a>
+                    <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" rel="noopener"><i class="fab fa-spotify"></i></a>
+                </div>
+                <div class="footer-links mt-3">
+                    <a href="/privacy/privacy.html" class="footer-link">Privacy Policy</a>
+                    <span class="footer-separator">|</span>
+                    <a href="/privacy/terms.html" class="footer-link">Terms of Use</a>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </footer>
 
-<!-- Bootstrap JavaScript - Make sure this loads properly -->
-<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Background Randomizer Script -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script defer src="/scripts/background-randomizer.js"></script>
-<!-- Main Scripts -->
 <script defer src="/scripts/script.js"></script>
 <script defer src="/blog-module/blog/article-script.js"></script>
-<!-- Social Sharing Script -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Replace placeholder URLs with actual URL
-    const currentUrl = window.location.href;
-    const articleTitle = document.querySelector('.article-title').textContent;
-    const encodedTitle = encodeURIComponent(articleTitle);
-
-    // Update sharing links
-    document.querySelectorAll('.share-btn').forEach(btn => {
-      if (btn.href) {
-        btn.href = btn.href
-                .replace('https://f1stories.gr/blog-module/blog-entries/20250817G/article.html', encodeURIComponent(currentUrl))
-                .replace('Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;', encodedTitle);
-      }
-    });
-
-    // Handle copy link button
-    const copyLinkBtn = document.getElementById('copy-link-btn');
-    if (copyLinkBtn) {
-      copyLinkBtn.addEventListener('click', function() {
-        navigator.clipboard.writeText(currentUrl)
-                .then(() => {
-                  copyLinkBtn.classList.add('copy-success');
-
-                  // Change icon temporarily to checkmark
-                  const icon = copyLinkBtn.querySelector('i');
-                  icon.classList.remove('fa-link');
-                  icon.classList.add('fa-check');
-
-                  // Reset after 2 seconds
-                  setTimeout(() => {
-                    copyLinkBtn.classList.remove('copy-success');
-                    icon.classList.remove('fa-check');
-                    icon.classList.add('fa-link');
-                  }, 2000);
-                })
-                .catch(err => {
-                  console.error('Failed to copy: ', err);
-                });
-      });
-    }
-  });
-</script>
-<script defer src="/scripts/theme-toggle.js"></script>
 <script defer src="/scripts/navbar.js"></script>
+<script defer src="/scripts/cookie-consent.js"></script>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Article loaded, checking images...");
-        document.querySelectorAll('img').forEach(img => {
-            console.log("Image found:", img.src);
-            img.addEventListener('error', function() {
-                console.error("Image failed to load:", this.src);
-                this.style.border = "2px dashed red";
-                this.style.padding = "10px";
-                this.setAttribute('data-failed', 'true');
-            });
-            img.addEventListener('load', function() {
-                console.log("Image loaded successfully:", this.src);
-            });
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    /* ── Theme Toggle ─────────────────────────── */
+    var themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', function() {
+            var html = document.documentElement;
+            var isLight = html.getAttribute('data-theme') === 'light';
+            if (isLight) { html.removeAttribute('data-theme'); localStorage.setItem('f1stories-theme','dark'); }
+            else { html.setAttribute('data-theme','light'); localStorage.setItem('f1stories-theme','light'); }
         });
-    });
-    </script></body>
+    }
+
+    /* ── Reading Progress Bar ─────────────────── */
+    var progressBar = document.getElementById('reading-progress');
+    if (progressBar) {
+        var progTicking = false;
+        function updateProgress() {
+            var article = document.querySelector('.article-content');
+            if (!article) return;
+            var rect = article.getBoundingClientRect();
+            var articleTop = rect.top + window.pageYOffset;
+            var articleHeight = rect.height;
+            var scrolled = window.pageYOffset - articleTop + window.innerHeight * 0.3;
+            var pct = Math.max(0, Math.min(100, (scrolled / articleHeight) * 100));
+            progressBar.style.width = pct + '%';
+        }
+        window.addEventListener('scroll', function() {
+            if (progTicking) return;
+            progTicking = true;
+            requestAnimationFrame(function() { updateProgress(); progTicking = false; });
+        });
+        updateProgress();
+    }
+
+    /* ── Next Race Countdown (2026) ───────────── */
+    var RACES = [
+        { name: 'Australian GP',    flag: '\u{1F1E6}\u{1F1FA}', date: '2026-03-08T05:00:00Z' },
+        { name: 'Chinese GP',       flag: '\u{1F1E8}\u{1F1F3}', date: '2026-03-15T07:00:00Z' },
+        { name: 'Japanese GP',      flag: '\u{1F1EF}\u{1F1F5}', date: '2026-03-29T05:00:00Z' },
+        { name: 'Bahrain GP',       flag: '\u{1F1E7}\u{1F1ED}', date: '2026-04-12T15:00:00Z' },
+        { name: 'Saudi Arabian GP', flag: '\u{1F1F8}\u{1F1E6}', date: '2026-04-19T17:00:00Z' },
+        { name: 'Miami GP',         flag: '\u{1F1FA}\u{1F1F8}', date: '2026-05-03T20:00:00Z' },
+        { name: 'Canadian GP',      flag: '\u{1F1E8}\u{1F1E6}', date: '2026-05-24T18:00:00Z' },
+        { name: 'Monaco GP',        flag: '\u{1F1F2}\u{1F1E8}', date: '2026-06-07T13:00:00Z' },
+        { name: 'Catalunya GP',     flag: '\u{1F1EA}\u{1F1F8}', date: '2026-06-14T13:00:00Z' },
+        { name: 'Austrian GP',      flag: '\u{1F1E6}\u{1F1F9}', date: '2026-06-28T13:00:00Z' },
+        { name: 'British GP',       flag: '\u{1F1EC}\u{1F1E7}', date: '2026-07-05T14:00:00Z' },
+        { name: 'Belgian GP',       flag: '\u{1F1E7}\u{1F1EA}', date: '2026-07-19T13:00:00Z' },
+        { name: 'Hungarian GP',     flag: '\u{1F1ED}\u{1F1FA}', date: '2026-07-26T13:00:00Z' },
+        { name: 'Dutch GP',         flag: '\u{1F1F3}\u{1F1F1}', date: '2026-08-23T13:00:00Z' },
+        { name: 'Italian GP',       flag: '\u{1F1EE}\u{1F1F9}', date: '2026-09-06T13:00:00Z' },
+        { name: 'Spanish GP',       flag: '\u{1F1EA}\u{1F1F8}', date: '2026-09-13T13:00:00Z' },
+        { name: 'Azerbaijan GP',    flag: '\u{1F1E6}\u{1F1FF}', date: '2026-09-26T11:00:00Z' },
+        { name: 'Singapore GP',     flag: '\u{1F1F8}\u{1F1EC}', date: '2026-10-11T12:00:00Z' },
+        { name: 'US GP',            flag: '\u{1F1FA}\u{1F1F8}', date: '2026-10-25T19:00:00Z' },
+        { name: 'Mexico City GP',   flag: '\u{1F1F2}\u{1F1FD}', date: '2026-11-01T20:00:00Z' },
+        { name: 'S\u00e3o Paulo GP',flag: '\u{1F1E7}\u{1F1F7}', date: '2026-11-08T17:00:00Z' },
+        { name: 'Las Vegas GP',     flag: '\u{1F1FA}\u{1F1F8}', date: '2026-11-21T06:00:00Z' },
+        { name: 'Qatar GP',         flag: '\u{1F1F6}\u{1F1E6}', date: '2026-11-29T14:00:00Z' },
+        { name: 'Abu Dhabi GP',     flag: '\u{1F1E6}\u{1F1EA}', date: '2026-12-06T13:00:00Z' }
+    ];
+
+    function getNextRace() {
+        var now = Date.now();
+        for (var i = 0; i < RACES.length; i++) {
+            if (new Date(RACES[i].date).getTime() > now) return RACES[i];
+        }
+        return null;
+    }
+    function fmtCountdown(ms) {
+        if (ms <= 0) return 'LIGHTS OUT!';
+        var s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60),sec=s%60;
+        if (d>0) return d+'d '+h+'h '+m+'m';
+        if (h>0) return h+'h '+m+'m '+sec+'s';
+        return m+'m '+sec+'s';
+    }
+    function fmtShort(ms) {
+        if (ms <= 0) return 'RACE ON!';
+        var s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60);
+        if (d>0) return d+'d '+h+'h';
+        if (h>0) return h+'h '+m+'m';
+        return m+'m';
+    }
+    function tickCountdown() {
+        var race = getNextRace();
+        var ne = document.getElementById('next-race-name');
+        var ce = document.getElementById('race-countdown');
+        var me = document.getElementById('race-countdown-mobile');
+        var fe = document.getElementById('race-flag-emoji');
+        if (!race) {
+            if (ne) ne.textContent = 'Season Complete';
+            if (ce) ce.textContent = '2027 TBA';
+            if (me) me.textContent = 'Done';
+            return;
+        }
+        var ms = new Date(race.date).getTime() - Date.now();
+        if (ne) ne.textContent = race.flag + ' ' + race.name;
+        if (ce) ce.textContent = fmtCountdown(ms);
+        if (me) me.textContent = fmtShort(ms);
+        if (fe) fe.textContent = race.flag;
+    }
+
+    tickCountdown();
+    setInterval(tickCountdown, 1000);
+
+});
+</script>
+
+</body>
 </html>
