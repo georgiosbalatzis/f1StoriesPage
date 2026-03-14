@@ -143,127 +143,6 @@ const F1Utils = (function() {
 })();
 
 // ============================================
-// CONSOLIDATED NAVBAR HANDLER
-// ============================================
-(function() {
-    'use strict';
-
-    function initNavbar() {
-        const navbar = F1Utils.getElement('.navbar');
-        const mobileToggler = F1Utils.getElement('#mobile-toggler');
-        const navbarCollapse = F1Utils.getElement('#navbarNav');
-        const dropdownToggles = F1Utils.getAllElements('.custom-dropdown-toggle');
-        const navLinks = F1Utils.getAllElements('.navbar-nav .nav-link');
-
-        // Navbar scroll effect
-        const handleScroll = F1Utils.throttle(() => {
-            navbar?.classList.toggle('scrolled', window.scrollY > 50);
-        }, 100);
-
-        window.addEventListener('scroll', handleScroll);
-
-        // Mobile menu toggle
-        mobileToggler?.addEventListener('click', () => {
-            navbarCollapse?.classList.toggle('show');
-        });
-
-        // Dropdown toggles
-        dropdownToggles.forEach(toggle => {
-            toggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                const parent = this.parentElement;
-
-                if (window.innerWidth < 992) {
-                    parent.classList.toggle('open');
-                } else {
-                    F1Utils.getAllElements('.custom-dropdown.open').forEach(dropdown => {
-                        if (dropdown !== parent) dropdown.classList.remove('open');
-                    });
-                    parent.classList.toggle('open');
-                }
-            });
-        });
-
-        // Close dropdowns on outside click
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.custom-dropdown')) {
-                F1Utils.getAllElements('.custom-dropdown.open').forEach(dropdown => {
-                    dropdown.classList.remove('open');
-                });
-            }
-
-            if (window.innerWidth < 992 && !e.target.closest('.navbar') &&
-                navbarCollapse?.classList.contains('show')) {
-                navbarCollapse.classList.remove('show');
-            }
-        });
-
-        // Navigation with smooth scroll
-        navLinks.forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                if (this.id === 'home-link') {
-                    e.preventDefault();
-                    F1Utils.smoothScrollTo(0, 1000);
-                    F1Utils.closeNavbarCollapse();
-                    return;
-                }
-
-                const targetId = this.getAttribute('href');
-                if (targetId?.startsWith('#')) {
-                    e.preventDefault();
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        F1Utils.smoothScrollTo(targetElement.offsetTop - 70, 1000);
-                        F1Utils.closeNavbarCollapse();
-                    }
-                }
-            });
-        });
-
-        // Set active nav item
-        setActiveNavItem();
-        window.addEventListener('hashchange', setActiveNavItem);
-    }
-
-    function setActiveNavItem() {
-        const currentPath = window.location.pathname;
-        const currentHash = window.location.hash;
-
-        F1Utils.getAllElements('.navbar-nav .nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
-
-        const elements = {
-            home: F1Utils.getElement('#home-link'),
-            podcast: F1Utils.getElement('#podcastDropdown'),
-            media: F1Utils.getElement('#mediaDropdown'),
-            about: F1Utils.getElement('#aboutDropdown')
-        };
-
-        if (currentPath === '/' || currentPath === '/index.html') {
-            elements.home?.classList.add('active');
-
-            if (currentHash) {
-                if (currentHash.match(/about|guests|contact/)) {
-                    elements.about?.classList.add('active');
-                } else if (currentHash.match(/podcasts|episodes/)) {
-                    elements.podcast?.classList.add('active');
-                }
-            }
-        } else if (currentPath.match(/spotify|episodes|BetCast/)) {
-            elements.podcast?.classList.add('active');
-        } else if (currentPath.match(/blog|memes|garage/)) {
-            elements.media?.classList.add('active');
-        } else if (currentPath.includes('/privacy/')) {
-            elements.about?.classList.add('active');
-        }
-    }
-
-    document.readyState === 'loading' ?
-        document.addEventListener('DOMContentLoaded', initNavbar) : initNavbar();
-})();
-
-// ============================================
 // OPTIMIZED YOUTUBE API HANDLER
 // ============================================
 const YouTubeAPI = (function() {
@@ -590,26 +469,18 @@ const F1Calendar = (function() {
 document.addEventListener('DOMContentLoaded', F1Calendar.initialize);
 
 // ============================================
-// OPTIMIZED MAIN SCRIPT FUNCTIONS
+// MAIN SCRIPT FUNCTIONS
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
-    // Initialize core functionality
     initializeCore();
     initializeAnimations();
     initializeContactForm();
     initializeSocialOverlay();
     initializeRouteHandlers();
-    initializeCookieConsent();
 
     function initializeCore() {
-        // Hero background
-        const heroOverlay = F1Utils.getElement('.hero-overlay');
-        if (heroOverlay) {
-            heroOverlay.style.backgroundImage = 'url("images/bg.jpg")';
-        }
-
         // Scroll to top button
         const scrollToTopBtn = F1Utils.getElement('#scroll-to-top');
         if (scrollToTopBtn) {
@@ -804,119 +675,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
-
-    function initializeCookieConsent() {
-        const consent = localStorage.getItem('cookieConsent');
-
-        if (!consent) {
-            setTimeout(showCookieBanner, 1000);
-        } else {
-            applyConsentPreferences(JSON.parse(consent));
-        }
-
-        F1Utils.getElement('#close-cookie')?.addEventListener('click', hideCookieBanner);
-
-        F1Utils.getElement('#accept-all')?.addEventListener('click', () => {
-            saveAndApplyConsent({ essential: true, analytics: true, marketing: true }, 'All cookies accepted');
-        });
-
-        F1Utils.getElement('#accept-selected')?.addEventListener('click', () => {
-            const analytics = F1Utils.getElement('#analytics-cookies')?.checked;
-            const marketing = F1Utils.getElement('#marketing-cookies')?.checked;
-            saveAndApplyConsent({ essential: true, analytics, marketing }, 'Selected preferences saved');
-        });
-
-        F1Utils.getElement('#reject-all')?.addEventListener('click', () => {
-            saveAndApplyConsent({ essential: true, analytics: false, marketing: false }, 'Non-essential cookies rejected');
-        });
-
-        F1Utils.getAllElements('.manage-cookies-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                showCookieBanner();
-            });
-        });
-    }
-
-    function saveAndApplyConsent(preferences, message) {
-        localStorage.setItem('cookieConsent', JSON.stringify(preferences));
-        applyConsentPreferences(preferences);
-        hideCookieBanner();
-        showConsentToast(message);
-    }
 });
 
-// Cookie consent functions (global scope required)
-function showCookieBanner() {
-    const banner = F1Utils.getElement('#cookie-consent');
-    banner?.classList.add('show');
-
-    if (window.innerWidth < 768) {
-        document.body.style.overflow = 'hidden';
-    }
-
-    const consent = localStorage.getItem('cookieConsent');
-    if (consent) {
-        const prefs = JSON.parse(consent);
-        const analyticsEl = F1Utils.getElement('#analytics-cookies');
-        const marketingEl = F1Utils.getElement('#marketing-cookies');
-        if (analyticsEl) analyticsEl.checked = prefs.analytics;
-        if (marketingEl) marketingEl.checked = prefs.marketing;
-    }
-}
-
-function hideCookieBanner() {
-    F1Utils.getElement('#cookie-consent')?.classList.remove('show');
-    if (window.innerWidth < 768) {
-        document.body.style.overflow = '';
-    }
-}
-
-function applyConsentPreferences(preferences) {
-    window['ga-disable-G-X68J6MQKSM'] = !preferences.analytics;
-
-    if (typeof gtag === 'function') {
-        gtag('consent', 'update', {
-            'analytics_storage': preferences.analytics ? 'granted' : 'denied',
-            'ad_storage': preferences.marketing ? 'granted' : 'denied',
-            'ad_user_data': preferences.marketing ? 'granted' : 'denied',
-            'ad_personalization': preferences.marketing ? 'granted' : 'denied'
-        });
-    }
-
-    if (!preferences.analytics) removeCookiesByPrefix('_ga');
-    if (!preferences.marketing) {
-        removeCookiesByPrefix('_gcl');
-        removeCookiesByPrefix('_gads');
-    }
-}
-
-function removeCookiesByPrefix(prefix) {
-    document.cookie.split(';').forEach(cookie => {
-        const name = cookie.split('=')[0].trim();
-        if (name.startsWith(prefix)) {
-            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`;
-            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
-        }
-    });
-}
-
-function showConsentToast(message) {
-    let toast = F1Utils.getElement('#consent-toast');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'consent-toast';
-        toast.className = 'consent-toast';
-        document.body.appendChild(toast);
-    }
-
-    toast.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-}
-
 // ============================================
-// OPTIMIZED EPISODES DISPLAY
+// EPISODES DISPLAY
 // ============================================
 document.addEventListener('DOMContentLoaded', async function() {
     const episodesGrid = F1Utils.getElement('.episode-grid');
@@ -959,7 +721,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 // ============================================
-// OPTIMIZED LIVE STREAM CHECKER
+// LIVE STREAM CHECKER
 // ============================================
 async function checkAndDisplayLiveStream() {
     const existingSection = F1Utils.getElement('#live-stream');
@@ -1012,53 +774,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================
-// OPTIMIZED BACKGROUND RANDOMIZER
-// ============================================
-document.addEventListener('DOMContentLoaded', function() {
-    const heroOverlay = F1Utils.getElement('.hero-overlay');
-    if (!heroOverlay) return;
-
-    heroOverlay.classList.add('image-bg');
-    heroOverlay.style.backgroundImage = 'url("images/bg.jpg")';
-
-    try {
-        const bgImages = ['bg1', 'bg2', 'bg3', 'bg4', 'bg5', 'bg6', 'bg7'];
-        const selectedBg = bgImages[Math.floor(Math.random() * bgImages.length)];
-
-        const testAvifSupport = () => {
-            try {
-                return CSS.supports('background-image', 'url("data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgANogQEAwgMg8f8D///8WfhwB8+ErK42A=")');
-            } catch (e) {
-                return false;
-            }
-        };
-
-        const imageFormat = testAvifSupport() ? 'avif' : 'webp';
-        const imagePath = `images/bg/${selectedBg}.${imageFormat}`;
-
-        const testImage = new Image();
-        testImage.onload = () => {
-            heroOverlay.style.backgroundImage = `url('${imagePath}')`;
-        };
-
-        testImage.onerror = () => {
-            const fallbackFormat = imageFormat === 'avif' ? 'webp' : 'jpg';
-            const fallbackPath = `images/bg/${selectedBg}.${fallbackFormat}`;
-
-            const fallbackImage = new Image();
-            fallbackImage.onload = () => {
-                heroOverlay.style.backgroundImage = `url('${fallbackPath}')`;
-            };
-            fallbackImage.src = fallbackPath;
-        };
-
-        testImage.src = imagePath;
-    } catch (e) {
-        console.error('Error in background setup:', e);
-    }
-});
-
-// ============================================
 // FLAG FALLBACK SYSTEM
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
@@ -1083,7 +798,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const flagFallbacks = {
                 "🇧🇭": '<span class="flag-fallback" title="Bahrain">BHR</span>',
                 "🇸🇦": '<span class="flag-fallback" title="Saudi Arabia">SAU</span>',
-                // ... add all other flags as needed
             };
 
             const nextRaceFlag = F1Utils.getElement('#next-race-flag');
@@ -1103,7 +817,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================================
-// F1 HISTORY WIDGET (Optimized)
+// F1 HISTORY WIDGET
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
     const widgetContainer = F1Utils.getElement('.f1-this-day-widget');
@@ -1204,300 +918,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================================
-// OPTIMIZED THEME TOGGLE SYSTEM
-// ============================================
-(function() {
-    'use strict';
-
-    const THEME_CONFIG = {
-        storageKeys: {
-            theme: 'f1stories-theme',
-            flavor: 'f1stories-catppuccin-flavor'
-        },
-        flavors: ['frappe', 'macchiato', 'mocha'],
-        classes: {
-            dark: 'dark-theme',
-            transition: 'theme-transition'
-        }
-    };
-
-    const CATPPUCCIN_VARS = {
-        frappe: {
-            base: '#303446', mantle: '#292c3c', crust: '#232634',
-            text: '#c6d0f5', surface0: '#414559', surface2: '#626880',
-            blue: '#8caaee', sky: '#99d1db', lavender: '#babbf1',
-            baseRgb: '48, 52, 70', crustRgb: '35, 38, 52',
-            surface0Rgb: '65, 69, 89', surface2Rgb: '98, 104, 128',
-            blueRgb: '140, 170, 238', skyRgb: '153, 209, 219',
-            lavenderRgb: '186, 187, 241'
-        },
-        macchiato: {
-            base: '#24273a', mantle: '#1e2030', crust: '#181926',
-            text: '#cad3f5', surface0: '#363a4f', surface2: '#5b6078',
-            blue: '#8aadf4', sky: '#91d7e3', lavender: '#b7bdf8',
-            baseRgb: '36, 39, 58', crustRgb: '24, 25, 38',
-            surface0Rgb: '54, 58, 79', surface2Rgb: '91, 96, 120',
-            blueRgb: '138, 173, 244', skyRgb: '145, 215, 227',
-            lavenderRgb: '183, 189, 248'
-        },
-        mocha: {
-            base: '#1e1e2e', mantle: '#181825', crust: '#11111b',
-            text: '#cdd6f4', surface0: '#313244', surface2: '#585b70',
-            blue: '#89b4fa', sky: '#89dceb', lavender: '#b4befe',
-            baseRgb: '30, 30, 46', crustRgb: '17, 17, 27',
-            surface0Rgb: '49, 50, 68', surface2Rgb: '88, 91, 112',
-            blueRgb: '137, 180, 250', skyRgb: '137, 220, 235',
-            lavenderRgb: '180, 190, 254'
-        }
-    };
-
-    function initThemeSystem() {
-        injectStyles();
-        createToggleButton();
-        initializeTheme();
-        setupEventListeners();
-    }
-
-    function injectStyles() {
-        if (document.getElementById('theme-styles')) return;
-
-        const styles = `
-            /* Catppuccin Variables */
-            ${Object.entries(CATPPUCCIN_VARS).map(([flavor, vars]) => `
-                .catppuccin-${flavor} {
-                    ${Object.entries(vars).map(([key, val]) => {
-            if (key.endsWith('Rgb')) {
-                return `--ctp-${key.replace('Rgb', '-rgb')}: ${val};`;
-            }
-            return `--ctp-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${val};`;
-        }).join(' ')}
-                }
-            `).join('')}
-            
-            /* Dark Theme Styles */
-            body.dark-theme {
-                background-color: var(--ctp-base);
-                color: var(--ctp-text);
-                transition: background-color 0.3s ease, color 0.3s ease;
-            }
-            
-            .dark-theme .navbar, .dark-theme .contact-container, .dark-theme .blog-card,
-            .dark-theme .episode-card, .dark-theme .persona, .dark-theme .cookie-banner,
-            .dark-theme .modal-content {
-                backdrop-filter: blur(12px);
-                background: rgba(var(--ctp-base-rgb), 0.85);
-                border: 1px solid rgba(var(--ctp-surface2-rgb), 0.08);
-                box-shadow: 0 4px 16px rgba(var(--ctp-crust-rgb), 0.3);
-                transition: all 0.3s ease;
-            }
-            
-            .dark-theme h1, .dark-theme h2 {
-                background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sky));
-                -webkit-background-clip: text;
-                background-clip: text;
-                -webkit-text-fill-color: transparent;
-            }
-            
-            .dark-theme .cta-button {
-                background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sky));
-                box-shadow: 0 4px 15px rgba(var(--ctp-crust-rgb), 0.3);
-            }
-            
-            .dark-theme .cta-button:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 25px rgba(var(--ctp-crust-rgb), 0.4);
-            }
-            
-            /* Theme Toggle Button */
-            #theme-toggle-container {
-                position: fixed;
-                top: 90px;
-                right: 20px;
-                z-index: 2000;
-                display: flex;
-                align-items: center;
-                background: rgba(10, 14, 23, 0.85);
-                backdrop-filter: blur(12px);
-                border-radius: 50px;
-                padding: 6px 16px;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-                border: 1px solid rgba(255, 255, 255, 0.1);
-            }
-            
-            #theme-toggle-btn {
-                background: rgba(255, 255, 255, 0.1);
-                border: none;
-                width: 48px;
-                height: 28px;
-                border-radius: 14px;
-                position: relative;
-                cursor: pointer;
-                padding: 0;
-                outline: none;
-            }
-            
-            #toggle-icon {
-                position: absolute;
-                top: 2px;
-                left: 2px;
-                width: 24px;
-                height: 24px;
-                border-radius: 50%;
-                background: #0073e6;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.3s ease;
-            }
-            
-            .dark-active #toggle-icon {
-                left: calc(100% - 26px);
-                background: linear-gradient(135deg, var(--ctp-blue), var(--ctp-sky));
-            }
-            
-            #toggle-icon .fa-sun, #toggle-icon .fa-moon {
-                color: white;
-                font-size: 14px;
-                position: absolute;
-                transition: opacity 0.3s ease;
-            }
-            
-            #toggle-icon .fa-sun { opacity: 1; }
-            #toggle-icon .fa-moon { opacity: 0; }
-            .dark-active #toggle-icon .fa-sun { opacity: 0; }
-            .dark-active #toggle-icon .fa-moon { opacity: 1; }
-            
-            #theme-label {
-                margin-left: 12px;
-                font-size: 14px;
-                font-weight: 500;
-                color: #e0e0e0;
-                white-space: nowrap;
-            }
-            
-            @media (max-width: 767.98px) {
-                #theme-toggle-container {
-                    top: auto;
-                    bottom: 20px;
-                    left: 20px;
-                    right: auto;
-                    padding: 8px;
-                    border-radius: 50%;
-                }
-                
-                #theme-label { display: none; }
-                
-                #theme-toggle-btn {
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                }
-                
-                #toggle-icon, .dark-active #toggle-icon {
-                    top: 8px;
-                    left: 8px;
-                }
-            }
-            
-            .theme-transition {
-                animation: themeTransition 0.5s ease forwards;
-            }
-            
-            @keyframes themeTransition {
-                0% { opacity: 0.8; }
-                100% { opacity: 1; }
-            }`;
-
-        const styleElement = document.createElement('style');
-        styleElement.id = 'theme-styles';
-        styleElement.textContent = styles;
-        document.head.appendChild(styleElement);
-    }
-
-    function createToggleButton() {
-        if (document.getElementById('theme-toggle-container')) return;
-
-        const toggleContainer = document.createElement('div');
-        toggleContainer.id = 'theme-toggle-container';
-        toggleContainer.innerHTML = `
-            <button id="theme-toggle-btn">
-                <div id="toggle-icon">
-                    <i class="fas fa-sun"></i>
-                    <i class="fas fa-moon"></i>
-                </div>
-            </button>
-            <span id="theme-label">Light Mode</span>`;
-        document.body.appendChild(toggleContainer);
-    }
-
-    function initializeTheme() {
-        const savedTheme = localStorage.getItem(THEME_CONFIG.storageKeys.theme);
-
-        if (savedTheme === 'dark') {
-            let savedFlavor = localStorage.getItem(THEME_CONFIG.storageKeys.flavor);
-
-            if (!savedFlavor || !THEME_CONFIG.flavors.includes(savedFlavor)) {
-                savedFlavor = THEME_CONFIG.flavors[Math.floor(Math.random() * THEME_CONFIG.flavors.length)];
-                localStorage.setItem(THEME_CONFIG.storageKeys.flavor, savedFlavor);
-            }
-
-            document.body.classList.add(THEME_CONFIG.classes.dark);
-            document.body.classList.add(`catppuccin-${savedFlavor}`);
-            document.getElementById('theme-toggle-container').classList.add('dark-active');
-            document.getElementById('theme-label').textContent = `Dark Mode (${savedFlavor})`;
-        }
-    }
-
-    function setupEventListeners() {
-        document.getElementById('theme-toggle-btn')?.addEventListener('click', toggleTheme);
-    }
-
-    function toggleTheme() {
-        if (document.body.classList.contains(THEME_CONFIG.classes.dark)) {
-            disableDarkMode();
-            localStorage.setItem(THEME_CONFIG.storageKeys.theme, 'light');
-        } else {
-            enableDarkMode();
-            localStorage.setItem(THEME_CONFIG.storageKeys.theme, 'dark');
-        }
-    }
-
-    function enableDarkMode() {
-        THEME_CONFIG.flavors.forEach(flavor => {
-            document.body.classList.remove(`catppuccin-${flavor}`);
-        });
-
-        document.body.classList.add(THEME_CONFIG.classes.dark);
-        document.getElementById('theme-toggle-container').classList.add('dark-active');
-
-        const randomFlavor = THEME_CONFIG.flavors[Math.floor(Math.random() * THEME_CONFIG.flavors.length)];
-        document.body.classList.add(`catppuccin-${randomFlavor}`);
-        document.getElementById('theme-label').textContent = `Dark Mode (${randomFlavor})`;
-
-        localStorage.setItem(THEME_CONFIG.storageKeys.flavor, randomFlavor);
-
-        document.body.classList.add(THEME_CONFIG.classes.transition);
-        setTimeout(() => document.body.classList.remove(THEME_CONFIG.classes.transition), 500);
-    }
-
-    function disableDarkMode() {
-        document.body.classList.remove(THEME_CONFIG.classes.dark);
-        THEME_CONFIG.flavors.forEach(flavor => {
-            document.body.classList.remove(`catppuccin-${flavor}`);
-        });
-        document.getElementById('theme-toggle-container').classList.remove('dark-active');
-        document.getElementById('theme-label').textContent = 'Light Mode';
-
-        document.body.classList.add(THEME_CONFIG.classes.transition);
-        setTimeout(() => document.body.classList.remove(THEME_CONFIG.classes.transition), 500);
-    }
-
-    document.readyState === 'loading' ?
-        document.addEventListener('DOMContentLoaded', initThemeSystem) : initThemeSystem();
-})();
-
-// ============================================
-// OPTIMIZED PERSISTENT SPOTIFY PLAYER
+// PERSISTENT SPOTIFY PLAYER
 // ============================================
 class PersistentSpotifyPlayer {
     constructor() {
@@ -1563,122 +984,30 @@ class PersistentSpotifyPlayer {
                 width: 350px;
                 height: 200px;
             }
-            
             @media (max-width: 768px) {
                 #persistent-spotify-player {
-                    left: 10px;
-                    right: 10px;
-                    bottom: 10px;
-                    width: calc(100vw - 20px);
-                    height: 180px;
+                    left: 10px; right: 10px; bottom: 10px;
+                    width: calc(100vw - 20px); height: 180px;
                 }
-                
                 #persistent-spotify-player.minimized { height: 45px; }
                 body.player-active { padding-bottom: 200px; }
                 body.player-active.player-minimized { padding-bottom: 60px; }
             }
-            
-            #persistent-spotify-player.active {
-                display: block;
-                animation: slideInUp 0.4s ease-out;
-            }
-            
+            #persistent-spotify-player.active { display: block; animation: slideInUp 0.4s ease-out; }
             #persistent-spotify-player.minimized .player-content { display: none; }
-            
-            @keyframes slideInUp {
-                from { transform: translateY(100%); opacity: 0; }
-                to { transform: translateY(0); opacity: 1; }
-            }
-            
-            .player-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 8px 12px;
-                background: rgba(29, 185, 84, 0.1);
-                border-bottom: 1px solid rgba(29, 185, 84, 0.2);
-                cursor: move;
-                min-height: 34px;
-            }
-            
-            @media (max-width: 768px) {
-                .player-header { cursor: default; }
-            }
-            
-            .player-info {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: #1db954;
-                font-weight: 500;
-                font-size: 14px;
-                flex: 1;
-                min-width: 0;
-            }
-            
-            .player-info .player-title {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            
-            .player-controls {
-                display: flex;
-                gap: 5px;
-                flex-shrink: 0;
-            }
-            
-            .player-controls button {
-                background: none;
-                border: none;
-                color: #fff;
-                cursor: pointer;
-                padding: 6px 8px;
-                border-radius: 4px;
-                transition: background-color 0.2s;
-                font-size: 12px;
-                min-width: 32px;
-                min-height: 32px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
+            @keyframes slideInUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            .player-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(29, 185, 84, 0.1); border-bottom: 1px solid rgba(29, 185, 84, 0.2); cursor: move; min-height: 34px; }
+            @media (max-width: 768px) { .player-header { cursor: default; } }
+            .player-info { display: flex; align-items: center; gap: 8px; color: #1db954; font-weight: 500; font-size: 14px; flex: 1; min-width: 0; }
+            .player-info .player-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .player-controls { display: flex; gap: 5px; flex-shrink: 0; }
+            .player-controls button { background: none; border: none; color: #fff; cursor: pointer; padding: 6px 8px; border-radius: 4px; transition: background-color 0.2s; font-size: 12px; min-width: 32px; min-height: 32px; display: flex; align-items: center; justify-content: center; }
             .player-controls button:hover { background: rgba(255, 255, 255, 0.1); }
-            .player-controls button:active { background: rgba(255, 255, 255, 0.2); transform: scale(0.95); }
-            
-            .player-content {
-                padding: 10px;
-                height: calc(100% - 50px);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            .player-content iframe {
-                width: 100%;
-                height: 100%;
-                border: none;
-                border-radius: 8px;
-            }
-            
-            .placeholder-content {
-                text-align: center;
-                color: #888;
-                padding: 10px;
-            }
-            
-            .placeholder-content i {
-                font-size: 32px;
-                margin-bottom: 10px;
-                color: #1db954;
-            }
-            
-            .placeholder-content p {
-                margin: 0;
-                font-size: 14px;
-                line-height: 1.4;
-            }`;
+            .player-content { padding: 10px; height: calc(100% - 50px); display: flex; align-items: center; justify-content: center; }
+            .player-content iframe { width: 100%; height: 100%; border: none; border-radius: 8px; }
+            .placeholder-content { text-align: center; color: #888; padding: 10px; }
+            .placeholder-content i { font-size: 32px; margin-bottom: 10px; color: #1db954; }
+            .placeholder-content p { margin: 0; font-size: 14px; }`;
 
         const styleElement = document.createElement('style');
         styleElement.id = 'spotify-player-styles';
@@ -1716,19 +1045,13 @@ class PersistentSpotifyPlayer {
 
         header.addEventListener('touchend', (e) => {
             if (!startY) return;
-
             const endY = e.changedTouches[0].clientY;
             const timeDiff = Date.now() - startTime;
             const distance = Math.abs(endY - startY);
-
             if (timeDiff < 300 && distance > 30) {
-                if (endY > startY && !this.isMinimized) {
-                    this.toggleMinimize();
-                } else if (endY < startY && this.isMinimized) {
-                    this.toggleMinimize();
-                }
+                if (endY > startY && !this.isMinimized) this.toggleMinimize();
+                else if (endY < startY && this.isMinimized) this.toggleMinimize();
             }
-
             startY = null;
         }, { passive: true });
     }
@@ -1739,26 +1062,17 @@ class PersistentSpotifyPlayer {
 
         element.addEventListener('mousedown', (e) => {
             isDragging = true;
-            this.playerContainer.classList.add('dragging');
-
-            startX = e.clientX;
-            startY = e.clientY;
+            startX = e.clientX; startY = e.clientY;
             initialX = this.playerContainer.offsetLeft;
             initialY = this.playerContainer.offsetTop;
-
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
         });
 
         const handleMouseMove = (e) => {
             if (!isDragging) return;
-
-            const deltaX = e.clientX - startX;
-            const deltaY = e.clientY - startY;
-
-            const newX = Math.max(0, Math.min(window.innerWidth - this.playerContainer.offsetWidth, initialX + deltaX));
-            const newY = Math.max(0, Math.min(window.innerHeight - this.playerContainer.offsetHeight, initialY + deltaY));
-
+            const newX = Math.max(0, Math.min(window.innerWidth - this.playerContainer.offsetWidth, initialX + (e.clientX - startX)));
+            const newY = Math.max(0, Math.min(window.innerHeight - this.playerContainer.offsetHeight, initialY + (e.clientY - startY)));
             this.playerContainer.style.left = newX + 'px';
             this.playerContainer.style.top = newY + 'px';
             this.playerContainer.style.right = 'auto';
@@ -1767,7 +1081,6 @@ class PersistentSpotifyPlayer {
 
         const handleMouseUp = () => {
             isDragging = false;
-            this.playerContainer.classList.remove('dragging');
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
         };
@@ -1776,7 +1089,6 @@ class PersistentSpotifyPlayer {
     handleResize() {
         const wasMobile = this.isMobile;
         this.isMobile = window.innerWidth <= 768;
-
         if (wasMobile !== this.isMobile) {
             this.playerContainer.style.left = '';
             this.playerContainer.style.top = '';
@@ -1796,9 +1108,7 @@ class PersistentSpotifyPlayer {
     }
 
     detectAndCapture() {
-        const spotifyIframes = document.querySelectorAll('iframe[src*="spotify.com/embed"]');
-
-        spotifyIframes.forEach(iframe => {
+        document.querySelectorAll('iframe[src*="spotify.com/embed"]').forEach(iframe => {
             const src = iframe.src;
             if (src.match(/episode\/([a-zA-Z0-9]+)/) || src.match(/show\/([a-zA-Z0-9]+)/)) {
                 this.loadInPersistentPlayer(src);
@@ -1808,19 +1118,14 @@ class PersistentSpotifyPlayer {
 
     loadInPersistentPlayer(spotifyUrl) {
         const playerContent = this.playerContainer.querySelector('.player-content');
-
         const iframe = document.createElement('iframe');
         iframe.src = spotifyUrl;
-        iframe.width = '100%';
-        iframe.height = '100%';
-        iframe.frameBorder = '0';
-        iframe.allowTransparency = 'true';
+        iframe.width = '100%'; iframe.height = '100%';
+        iframe.frameBorder = '0'; iframe.allowTransparency = 'true';
         iframe.allow = 'encrypted-media';
         iframe.style.borderRadius = this.isMobile ? '4px' : '8px';
-
         playerContent.innerHTML = '';
         playerContent.appendChild(iframe);
-
         this.showPlayer();
 
         const episodeMatch = spotifyUrl.match(/episode\/([a-zA-Z0-9]+)/);
@@ -1843,9 +1148,7 @@ class PersistentSpotifyPlayer {
         this.playerContainer.classList.remove('active');
         this.currentEpisodeId = null;
         document.body.classList.remove('player-active', 'player-minimized');
-
-        const playerContent = this.playerContainer.querySelector('.player-content');
-        playerContent.innerHTML = `
+        this.playerContainer.querySelector('.player-content').innerHTML = `
             <div class="placeholder-content">
                 <i class="fab fa-spotify"></i>
                 <p>Select an episode to start playing</p>
@@ -1856,9 +1159,7 @@ class PersistentSpotifyPlayer {
         this.isMinimized = !this.isMinimized;
         this.playerContainer.classList.toggle('minimized', this.isMinimized);
         this.updateBodyPadding();
-
-        const icon = this.playerContainer.querySelector('.minimize-btn i');
-        icon.className = this.isMinimized ? 'fas fa-plus' : 'fas fa-minus';
+        this.playerContainer.querySelector('.minimize-btn i').className = this.isMinimized ? 'fas fa-plus' : 'fas fa-minus';
     }
 
     updatePlayerTitle(title) {
