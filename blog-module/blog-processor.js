@@ -1096,14 +1096,40 @@ async function processBlogEntries() {
     fs.writeFileSync(CONFIG.OUTPUT_JSON, JSON.stringify(blogData, null, 2));
     console.log(`Blog data saved to ${CONFIG.OUTPUT_JSON}`);
     
-    // Generate related articles
+    // Generate related articles with weighted scoring
     blogPosts.forEach((post, index) => {
-        const relatedPosts = blogPosts
+        const scored = blogPosts
             .filter((_, i) => i !== index)
-            .filter(relatedPost =>
-                relatedPost.tag === post.tag || relatedPost.category === post.category
-            )
-            .slice(0, 3);
+            .map(candidate => {
+                let score = 0;
+                // Same tag: strongest signal
+                if (candidate.tag && candidate.tag === post.tag) score += 3;
+                // Same category
+                if (candidate.category && candidate.category === post.category) score += 2;
+                // Same author: mild boost
+                if (candidate.author && candidate.author === post.author) score += 1;
+                // Overlapping categories array
+                if (post.categories && candidate.categories) {
+                    const shared = post.categories.filter(c => candidate.categories.includes(c));
+                    score += shared.length;
+                }
+                // Recency bonus: posts within 30 days get +1
+                const daysDiff = Math.abs(new Date(post.date) - new Date(candidate.date)) / (1000 * 60 * 60 * 24);
+                if (daysDiff <= 30) score += 1;
+                return { post: candidate, score };
+            })
+            .filter(s => s.score > 0)
+            .sort((a, b) => b.score - a.score || new Date(b.post.date) - new Date(a.post.date));
+        
+        // Take top 3, or fall back to most recent if no matches
+        let relatedPosts = scored.slice(0, 3).map(s => s.post);
+        if (relatedPosts.length < 3) {
+            const ids = new Set(relatedPosts.map(p => p.id));
+            const fallbacks = blogPosts
+                .filter((p, i) => i !== index && !ids.has(p.id))
+                .slice(0, 3 - relatedPosts.length);
+            relatedPosts = relatedPosts.concat(fallbacks);
+        }
         
         const postHtmlPath = path.join(CONFIG.BLOG_DIR, post.id, 'article.html');
         
@@ -1117,28 +1143,30 @@ async function processBlogEntries() {
         const relatedPostsHtml = relatedPosts.map(related => {
             const relatedImagePath = related.image.substring(related.image.lastIndexOf('/') + 1);
             
+            // Format date nicely
+            const relDate = new Date(related.date);
+            const relDateStr = relDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            
             return `
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}" 
-                             alt="${related.title}" 
-                             class="blog-img"
-                             onerror="if(this.src !== '${related.image}') { this.src='${related.image}'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
-                        <div class="blog-date">
-                            <span class="day">${related.displayDate.split(' ')[1]}</span>
-                            <span class="month">${related.displayDate.split(' ')[0].substring(0,3).toUpperCase()}</span>
+            <div class="col-md-4 mb-4">
+                <a href="${related.url}" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
+                    <div class="related-article-card">
+                        <div style="position:relative;overflow:hidden;">
+                            <img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}" 
+                                 alt="${related.title}" 
+                                 loading="lazy"
+                                 onerror="if(this.src !== '${related.image}') { this.src='${related.image}'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        </div>
+                        <div class="card-body">
+                            <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> ${relDateStr}</div>
+                            <h5>${related.title}</h5>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+                                <span style="font-size:0.78rem;font-weight:500;color:var(--blog-accent,#3b82f6);">Read More <i class="fas fa-arrow-right" style="font-size:0.6rem;margin-left:0.2rem;"></i></span>
+                                <span style="font-size:0.7rem;color:var(--blog-text-tertiary,rgba(255,255,255,0.4));">${related.author}</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="blog-content">
-                        <h3 class="blog-title">${related.title}</h3>
-                        <div class="blog-meta">
-                            <span><i class="fas fa-user"></i> ${related.author}</span>
-                            <span><i class="fas fa-comments"></i> ${related.comments}</span>
-                        </div>
-                        <a href="${related.url}" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
+                </a>
             </div>`;
         }).join('');
         
