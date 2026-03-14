@@ -82,10 +82,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Load homepage blog posts ────────────────────
     function loadHomepagePosts() {
-        // Look for the blog section on the homepage
-        const section = $('#blog');
-        if (!section) return;
-        const container = section.querySelector('.blog-posts');
+        // Look for blog posts container on the homepage
+        // Try multiple selectors: the old #blog section, or the new #panel-articles
+        var container = null;
+
+        // Try #blog section first (legacy layout)
+        var section = $('#blog');
+        if (section) {
+            container = section.querySelector('.blog-posts');
+        }
+
+        // Try #panel-articles (new tabbed layout in Latest section)
+        if (!container) {
+            var panel = $('#panel-articles');
+            if (panel) {
+                container = panel.querySelector('.blog-posts');
+            }
+        }
+
+        // Fallback: any .blog-posts on the page
+        if (!container) {
+            container = $('.blog-posts');
+        }
+
         if (!container) return;
 
         // Show loading state
