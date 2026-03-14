@@ -4,547 +4,237 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>F1 Stories Podcast</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Design Foundation (Phase 2 tokens + card system) -->
     <link rel="stylesheet" href="styles.css">
-    <!-- Modern Dark Mode enhancement layer -->
     <link id="theme-stylesheet" rel="stylesheet" href="modern-dark-mode.css">
-    <!-- Phase 3: Home page specific styles -->
     <link rel="stylesheet" href="home.css">
-    <!-- Phase 9: Final polish (consistency, accessibility, performance) — loaded LAST -->
     <link rel="stylesheet" href="polish.css">
+    <link rel="stylesheet" href="theme-overrides.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-X68J6MQKSM');
-    </script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
+    <script>(function(){var s=localStorage.getItem('f1stories-theme');if(s==='light'){document.documentElement.setAttribute('data-theme','light');}else{document.documentElement.removeAttribute('data-theme');if(!s)localStorage.setItem('f1stories-theme','dark');}})();</script>
+    <style>
+        .theme-toggle-container{display:none!important}
+        header>.navbar{display:none!important}
+        .blog-nav{position:fixed;top:0;left:0;right:0;z-index:1050;background:rgba(10,10,15,.85);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.08);transition:background .25s,box-shadow .25s}
+        .blog-nav.scrolled{background:rgba(10,10,15,.95);box-shadow:0 4px 16px rgba(0,0,0,.45)}
+        [data-theme=light] .blog-nav{background:rgba(245,243,239,.9)!important;border-bottom-color:rgba(0,0,0,.06)!important}
+        [data-theme=light] .blog-nav.scrolled{background:rgba(245,243,239,.97)!important;box-shadow:0 2px 12px rgba(0,0,0,.06)!important}
+        .blog-nav-inner{display:flex;align-items:center;gap:1.5rem;padding:.6rem 0;min-height:58px}
+        .blog-nav-brand img{height:38px;width:auto;display:block;transition:opacity .25s}
+        .blog-nav-brand:hover img{opacity:.8}
+        .blog-nav-links{display:flex;align-items:center;gap:.25rem;margin-left:.5rem}
+        .blog-nav-link{display:flex;align-items:center;gap:.4rem;padding:.45rem .85rem;border-radius:8px;color:rgba(255,255,255,.6);text-decoration:none;font-size:.82rem;font-weight:500;transition:all .25s;white-space:nowrap}
+        .blog-nav-link i{font-size:.72rem;opacity:.7}
+        .blog-nav-link:hover{color:#f0f0f2;background:rgba(255,255,255,.06)}
+        .blog-nav-link.active{color:#3b82f6;background:rgba(59,130,246,.1);font-weight:600}
+        [data-theme=light] .blog-nav-link{color:rgba(0,0,0,.55)}
+        [data-theme=light] .blog-nav-link:hover{color:#1a1a1f;background:rgba(0,0,0,.04)}
+        [data-theme=light] .blog-nav-link.active{color:#2563eb;background:rgba(37,99,235,.08)}
+        .blog-nav-right{display:flex;align-items:center;gap:.75rem;margin-left:auto}
+        .blog-nav-countdown{display:flex;align-items:center;gap:.5rem;padding:.35rem .75rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px}
+        [data-theme=light] .blog-nav-countdown{background:rgba(0,0,0,.025);border-color:rgba(0,0,0,.06)}
+        .countdown-flag{font-size:1.1rem;line-height:1}
+        .countdown-info{display:flex;flex-direction:column;line-height:1.2}
+        .countdown-race{font-size:.68rem;color:rgba(255,255,255,.38);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+        [data-theme=light] .countdown-race{color:rgba(0,0,0,.34)}
+        .countdown-timer{font-size:.78rem;color:#3b82f6;font-weight:700;font-variant-numeric:tabular-nums}
+        [data-theme=light] .countdown-timer{color:#2563eb}
+        .blog-nav-countdown-mobile{display:none;align-items:center;gap:.35rem;font-size:.78rem;color:#3b82f6;font-weight:600}
+        .blog-nav-countdown-mobile i{font-size:.65rem;color:rgba(255,255,255,.38)}
+        [data-theme=light] .blog-nav-countdown-mobile i{color:rgba(0,0,0,.34)}
+        .blog-nav-hamburger{display:none;width:44px;height:44px;border:none;background:none;cursor:pointer;padding:8px;flex-direction:column;justify-content:center;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+        .blog-nav-hamburger span{display:block;height:2px;width:22px;background:rgba(255,255,255,.6);border-radius:2px;transition:all .3s;transform-origin:center}
+        [data-theme=light] .blog-nav-hamburger span{background:rgba(0,0,0,.4)}
+        .blog-nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+        .blog-nav-hamburger.open span:nth-child(2){opacity:0}
+        .blog-nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+        .blog-nav-mobile{display:none;overflow:hidden;max-height:0;transition:max-height .35s,padding .35s;padding:0 1rem;border-top:1px solid transparent;background:rgba(10,10,15,.95)}
+        .blog-nav-mobile.open{max-height:320px;padding:.5rem 1rem .75rem;border-top-color:rgba(255,255,255,.08)}
+        [data-theme=light] .blog-nav-mobile{background:rgba(245,243,239,.98)}
+        [data-theme=light] .blog-nav-mobile.open{border-top-color:rgba(0,0,0,.06)}
+        .blog-nav-mobile-link{display:flex;align-items:center;gap:.6rem;padding:.75rem .85rem;border-radius:8px;color:rgba(255,255,255,.6);text-decoration:none;font-size:.92rem;font-weight:500;transition:all .25s;min-height:44px}
+        .blog-nav-mobile-link i{width:18px;text-align:center;font-size:.82rem;opacity:.7}
+        .blog-nav-mobile-link:hover{color:#f0f0f2;background:rgba(255,255,255,.06)}
+        .blog-nav-mobile-link.active{color:#3b82f6;background:rgba(59,130,246,.1);font-weight:600}
+        [data-theme=light] .blog-nav-mobile-link{color:rgba(0,0,0,.55)}
+        [data-theme=light] .blog-nav-mobile-link:hover{color:#1a1a1f;background:rgba(0,0,0,.04)}
+        [data-theme=light] .blog-nav-mobile-link.active{color:#2563eb;background:rgba(37,99,235,.08)}
+        @media(max-width:991px){.blog-nav-links{display:none}.blog-nav-hamburger{display:flex}.blog-nav-mobile{display:block}}
+        @media(max-width:767px){.blog-nav-countdown{display:none}.blog-nav-countdown-mobile{display:flex}}
+        .theme-toggle-btn{position:fixed;bottom:2rem;left:1.5rem;z-index:1050;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 1px 3px rgba(0,0,0,.4);transition:all .25s}
+        .theme-toggle-btn:hover{color:#3b82f6;border-color:#3b82f6;transform:scale(1.08)}
+        .theme-toggle-btn .icon-sun{display:inline}.theme-toggle-btn .icon-moon{display:none}
+        [data-theme=light] .theme-toggle-btn{background:#FDFCFA;border-color:rgba(0,0,0,.1);color:rgba(0,0,0,.5);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+        [data-theme=light] .theme-toggle-btn:hover{color:#2563eb;border-color:#2563eb}
+        [data-theme=light] .theme-toggle-btn .icon-sun{display:none}[data-theme=light] .theme-toggle-btn .icon-moon{display:inline}
+        .scroll-to-top-btn{position:fixed!important;bottom:calc(2rem + 44px)!important;left:1.5rem!important;right:auto!important;width:40px!important;height:40px!important;border-radius:50%!important;border:1px solid rgba(255,255,255,.14)!important;background:rgba(255,255,255,.06)!important;background-image:none!important;color:rgba(255,255,255,.6)!important;font-size:.85rem!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;box-shadow:0 1px 3px rgba(0,0,0,.4)!important;margin-bottom:0!important}
+        .scroll-to-top-btn.visible{opacity:1!important;visibility:visible!important;transform:translateY(0) scale(1)!important}
+        .scroll-to-top-btn:hover{color:#3b82f6!important;border-color:#3b82f6!important;transform:scale(1.08)!important}
+        .scroll-to-top-btn::before{display:none!important}
+        .scroll-to-top-btn i{transform:none!important;font-size:.85rem!important}
+        .scroll-to-top-btn:hover i{transform:none!important}
+        [data-theme=light] .scroll-to-top-btn{background:#FDFCFA!important;border-color:rgba(0,0,0,.1)!important;color:rgba(0,0,0,.5)!important;box-shadow:0 1px 3px rgba(0,0,0,.04)!important}
+        [data-theme=light] .scroll-to-top-btn:hover{color:#2563eb!important;border-color:#2563eb!important}
+        @media(max-width:767px){.theme-toggle-btn{width:38px;height:38px}.scroll-to-top-btn{width:38px!important;height:38px!important;bottom:calc(2rem + 42px)!important}}
+    </style>
 </head>
 <body>
-<!-- Skip to content (accessibility) -->
 <a href="#latest" class="skip-link">Skip to content</a>
-
 <div class="background"></div>
-<div class="streak"></div>
-<div class="streak"></div>
-<div class="streak"></div>
-<div class="streak"></div>
+<div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
 
-<!-- ============================================================
-     HEADER
-     ============================================================ -->
-<header>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <img src="images/logo.png" alt="F1 Stories Logo" height="50">
-            </a>
-            <button class="navbar-toggler" type="button" id="mobile-toggler">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/" id="home-link">Home</a>
-                    </li>
-                    <li class="nav-item custom-dropdown">
-                        <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">
-                            Podcast <i class="fas fa-chevron-down dropdown-icon"></i>
-                        </a>
-                        <ul class="custom-dropdown-menu">
-                            <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
-                            <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
-                            <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item custom-dropdown">
-                        <a class="nav-link custom-dropdown-toggle" href="#" id="mediaDropdown">
-                            Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i>
-                        </a>
-                        <ul class="custom-dropdown-menu">
-                            <li><a class="dropdown-item" href="/blog-module/blog/index.html">Blog</a></li>
-                            <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
-                            <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item custom-dropdown">
-                        <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">
-                            About <i class="fas fa-chevron-down dropdown-icon"></i>
-                        </a>
-                        <ul class="custom-dropdown-menu">
-                            <li><a class="dropdown-item" href="/#about">About Us</a></li>
-                            <li><a class="dropdown-item" href="/#guests">Guests</a></li>
-                            <li><a class="dropdown-item" href="/#contact">Contact</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+<nav class="blog-nav" id="blog-nav">
+    <div class="container blog-nav-inner">
+        <a class="blog-nav-brand" href="/"><img src="/images/logo.png" alt="F1 Stories Logo" loading="lazy"></a>
+        <div class="blog-nav-links" id="nav-links">
+            <a href="/" class="blog-nav-link active"><i class="fas fa-home"></i> Home</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-link"><i class="fas fa-newspaper"></i> Blog</a>
+            <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener" class="blog-nav-link"><i class="fab fa-youtube"></i> YouTube</a>
         </div>
-    </nav>
-</header>
-
-
-<!-- ============================================================
-     3.1  HERO — Clean & decisive
-     ============================================================ -->
-<section id="hero">
-    <div class="hero-overlay"></div>
-    <div class="container">
-        <div class="row justify-content-center text-center">
-            <div class="col-lg-8">
-                <div class="hero-content">
-                    <h1>F1 Stories Podcast</h1>
-                    <p class="hero-subtitle">Race analysis, insider stories &amp; bold opinions — straight from the paddock to your ears.</p>
-                    <div class="hero-ctas">
-                        <a href="/episodes/" class="cta-button cta-primary">
-                            <i class="fas fa-play"></i> Watch Episodes
-                        </a>
-                        <a href="/blog-module/blog/index.html" class="cta-button cta-secondary">
-                            Read the Blog
-                        </a>
-                    </div>
-                    <div class="hero-platforms">
-                        <span class="hero-platforms__label">Listen on</span>
-                        <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" title="Spotify" class="platform-icon"><i class="fab fa-spotify"></i></a>
-                        <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" title="YouTube" class="platform-icon"><i class="fab fa-youtube"></i></a>
-                        <a href="https://podcasts.apple.com" target="_blank" title="Apple Podcasts" class="platform-icon"><i class="fas fa-podcast"></i></a>
-                    </div>
+        <div class="blog-nav-right">
+            <div class="blog-nav-countdown" id="nav-countdown">
+                <span class="countdown-flag" id="race-flag-emoji">🏁</span>
+                <div class="countdown-info">
+                    <span class="countdown-race" id="next-race-name">Loading...</span>
+                    <span class="countdown-timer" id="race-countdown">--</span>
                 </div>
             </div>
+            <div class="blog-nav-countdown-mobile" id="nav-countdown-mobile">
+                <i class="fas fa-flag-checkered"></i>
+                <span id="race-countdown-mobile">--</span>
+            </div>
+            <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
         </div>
     </div>
+    <div class="blog-nav-mobile" id="nav-mobile">
+        <a href="/" class="blog-nav-mobile-link active"><i class="fas fa-home"></i> Home</a>
+        <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><i class="fas fa-newspaper"></i> Blog</a>
+        <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><i class="fab fa-youtube"></i> YouTube</a>
+    </div>
+</nav>
+
+<header style="display:none"><nav class="navbar navbar-expand-lg navbar-dark fixed-top"><div class="container"><a class="navbar-brand" href="/"><img src="images/logo.png" alt="F1 Stories Logo" height="50"></a></div></nav></header>
+
+<section id="hero">
+    <div class="hero-overlay"></div>
+    <div class="container"><div class="row justify-content-center text-center"><div class="col-lg-8"><div class="hero-content">
+        <h1>F1 Stories Podcast</h1>
+        <p class="hero-subtitle">Race analysis, insider stories &amp; bold opinions — straight from the paddock to your ears.</p>
+        <div class="hero-ctas">
+            <a href="/episodes/" class="cta-button cta-primary"><i class="fas fa-play"></i> Watch Episodes</a>
+            <a href="/blog-module/blog/index.html" class="cta-button cta-secondary">Read the Blog</a>
+        </div>
+        <div class="hero-platforms">
+            <span class="hero-platforms__label">Listen on</span>
+            <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" title="Spotify" class="platform-icon"><i class="fab fa-spotify"></i></a>
+            <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" title="YouTube" class="platform-icon"><i class="fab fa-youtube"></i></a>
+            <a href="https://podcasts.apple.com" target="_blank" title="Apple Podcasts" class="platform-icon"><i class="fas fa-podcast"></i></a>
+        </div>
+    </div></div></div></div>
 </section>
 
-
-<!-- ============================================================
-     3.2  LATEST FROM F1 STORIES — Tabbed: Videos | Articles
-     ============================================================ -->
 <section id="latest" class="fade-in">
     <div class="container">
         <h2 class="text-center">Latest from F1 Stories</h2>
-
         <div class="latest-tabs" role="tablist">
-            <button class="latest-tab active" data-tab="videos" role="tab" aria-selected="true">
-                <i class="fas fa-video"></i> Videos
-            </button>
-            <button class="latest-tab" data-tab="articles" role="tab" aria-selected="false">
-                <i class="fas fa-pen-nib"></i> Articles
-            </button>
+            <button class="latest-tab active" data-tab="videos" role="tab" aria-selected="true"><i class="fas fa-video"></i> Videos</button>
+            <button class="latest-tab" data-tab="articles" role="tab" aria-selected="false"><i class="fas fa-pen-nib"></i> Articles</button>
         </div>
-
-        <!-- Videos panel -->
         <div class="latest-panel active" id="panel-videos" role="tabpanel">
-            <div class="row g-4 episode-grid">
-                <div class="col-12 text-center">
-                    <div class="spinner-border text-light" role="status">
-                        <span class="visually-hidden">Loading episodes...</span>
-                    </div>
-                </div>
-            </div>
-            <div class="text-center mt-4">
-                <a href="/episodes/" class="cta-button cta-secondary cta-sm">View all episodes <i class="fas fa-arrow-right"></i></a>
-            </div>
+            <div class="row g-4 episode-grid"><div class="col-12 text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Loading...</span></div></div></div>
+            <div class="text-center mt-4"><a href="/episodes/" class="cta-button cta-secondary cta-sm">View all episodes <i class="fas fa-arrow-right"></i></a></div>
         </div>
-
-        <!-- Articles panel -->
         <div class="latest-panel" id="panel-articles" role="tabpanel">
-            <div class="row g-4 blog-posts">
-                <div class="col-12 text-center">
-                    <div class="spinner-border text-light" role="status">
-                        <span class="visually-hidden">Loading articles...</span>
-                    </div>
-                </div>
-            </div>
-            <div class="text-center mt-4">
-                <a href="/blog-module/blog/index.html" class="cta-button cta-secondary cta-sm">View all articles <i class="fas fa-arrow-right"></i></a>
-            </div>
+            <div class="row g-4 blog-posts"><div class="col-12 text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Loading...</span></div></div></div>
+            <div class="text-center mt-4"><a href="/blog-module/blog/index.html" class="cta-button cta-secondary cta-sm">View all articles <i class="fas fa-arrow-right"></i></a></div>
         </div>
     </div>
 </section>
 
-
-<!-- ============================================================
-     3.3  TEAM — Minimal avatar row
-     ============================================================ -->
 <section id="about" class="fade-in">
     <div class="container">
         <h2 class="text-center">The Team</h2>
         <div class="team-row">
-            <div class="team-member">
-                <a href="https://www.instagram.com/thanasismpatalas/" target="_blank">
-                    <img src="images/avatars/LN.webp" alt="Thanasis Batalas" class="team-member__avatar" loading="lazy">
-                </a>
-                <h3 class="team-member__name">Thanasis Batalas</h3>
-                <span class="team-member__role">Host · Schumacher Superfan</span>
-            </div>
-            <div class="team-member">
-                <a href="https://www.instagram.com/john_pouliks/" target="_blank">
-                    <img src="images/avatars/SV.webp" alt="Giannis Poulikidis" class="team-member__avatar" loading="lazy">
-                </a>
-                <h3 class="team-member__name">Giannis Poulikidis</h3>
-                <span class="team-member__role">Host · Betting Expert</span>
-            </div>
-            <div class="team-member">
-                <a href="https://www.instagram.com/borgos_gialatzis/" target="_blank">
-                    <img src="images/avatars/CSW.webp" alt="Giorgos Balatzis" class="team-member__avatar" loading="lazy">
-                </a>
-                <h3 class="team-member__name">Giorgos Balatzis</h3>
-                <span class="team-member__role">Host · Technical Analyst</span>
-            </div>
+            <div class="team-member"><a href="https://www.instagram.com/thanasismpatalas/" target="_blank"><img src="images/avatars/LN.webp" alt="Thanasis Batalas" class="team-member__avatar" loading="lazy"></a><h3 class="team-member__name">Thanasis Batalas</h3><span class="team-member__role">Host · Schumacher Superfan</span></div>
+            <div class="team-member"><a href="https://www.instagram.com/john_pouliks/" target="_blank"><img src="images/avatars/SV.webp" alt="Giannis Poulikidis" class="team-member__avatar" loading="lazy"></a><h3 class="team-member__name">Giannis Poulikidis</h3><span class="team-member__role">Host · Betting Expert</span></div>
+            <div class="team-member"><a href="https://www.instagram.com/borgos_gialatzis/" target="_blank"><img src="images/avatars/CSW.webp" alt="Giorgos Balatzis" class="team-member__avatar" loading="lazy"></a><h3 class="team-member__name">Giorgos Balatzis</h3><span class="team-member__role">Host · Technical Analyst</span></div>
         </div>
-
         <div class="team-guests">
             <span class="team-guests__label">Featuring guests</span>
             <div class="team-guests__avatars">
-                <a href="https://www.instagram.com/dimkeram/" target="_blank" title="Dimitris Keramidiotis">
-                    <img src="images/avatars/dr3R.webp" alt="Dimitris Keramidiotis" class="team-guest__avatar" loading="lazy">
-                </a>
-                <a href="https://www.instagram.com/myf1stories/" target="_blank" title="2 Fast">
-                    <img src="images/avatars/AS.webp" alt="2 Fast" class="team-guest__avatar" loading="lazy">
-                </a>
+                <a href="https://www.instagram.com/dimkeram/" target="_blank" title="Dimitris Keramidiotis"><img src="images/avatars/dr3R.webp" alt="Dimitris Keramidiotis" class="team-guest__avatar" loading="lazy"></a>
+                <a href="https://www.instagram.com/myf1stories/" target="_blank" title="2 Fast"><img src="images/avatars/AS.webp" alt="2 Fast" class="team-guest__avatar" loading="lazy"></a>
             </div>
-        </div>
-
-        <div class="text-center mt-4">
-            <a href="/#guests" class="cta-button cta-secondary cta-sm">Meet the full team <i class="fas fa-arrow-right"></i></a>
         </div>
     </div>
 </section>
 
-
-<!-- ============================================================
-     3.4  CONTACT — Trustworthy form with states
-     ============================================================ -->
 <section id="contact" class="fade-in">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <div class="contact-block">
-                    <h2>Get in Touch</h2>
-                    <p class="contact-block__intro">Got a hot take? Podcast idea? Business inquiry? Drop us a line.</p>
-
-                    <form id="contact-form" action="https://formspree.io/f/xjkyeazq" method="POST" class="contact-form">
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" id="name" name="name" class="form-control" placeholder="Your name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="_replyto" class="form-control" placeholder="you@example.com" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" name="message" class="form-control" placeholder="What's on your mind?" rows="4" required></textarea>
-                        </div>
-
-                        <!-- Status messages -->
-                        <div id="form-status" style="display: none;">
-                            <div id="form-success" class="form-alert form-alert--success" style="display: none;">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Message sent! We'll get back to you soon.</span>
-                            </div>
-                            <div id="form-error" class="form-alert form-alert--error" style="display: none;">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <span>Something went wrong. Try again or email us at <a href="mailto:myf1stories@gmail.com">myf1stories@gmail.com</a></span>
-                            </div>
-                        </div>
-
-                        <!-- Honeypot -->
-                        <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
-                        <input type="hidden" name="_next" value="https://f1stories.gr/thanks.html">
-
-                        <button type="submit" class="cta-button cta-primary contact-submit">
-                            <span class="submit-text">Send Message</span>
-                            <span class="submit-spinner" style="display:none;"><i class="fas fa-circle-notch fa-spin"></i></span>
-                        </button>
-                        <p class="contact-block__micro">We typically reply within 48 hours.</p>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="container"><div class="row justify-content-center"><div class="col-lg-6"><div class="contact-block">
+        <h2>Get in Touch</h2>
+        <p class="contact-block__intro">Got a hot take? Podcast idea? Business inquiry? Drop us a line.</p>
+        <form id="contact-form" action="https://formspree.io/f/xjkyeazq" method="POST" class="contact-form">
+            <div class="form-group"><label for="name">Name</label><input type="text" id="name" name="name" class="form-control" placeholder="Your name" required></div>
+            <div class="form-group"><label for="email">Email</label><input type="email" id="email" name="_replyto" class="form-control" placeholder="you@example.com" required></div>
+            <div class="form-group"><label for="message">Message</label><textarea id="message" name="message" class="form-control" placeholder="What's on your mind?" rows="4" required></textarea></div>
+            <div id="form-status" style="display:none"><div id="form-success" class="form-alert form-alert--success" style="display:none"><i class="fas fa-check-circle"></i><span>Message sent! We'll get back to you soon.</span></div><div id="form-error" class="form-alert form-alert--error" style="display:none"><i class="fas fa-exclamation-triangle"></i><span>Something went wrong. Try again or email us at <a href="mailto:myf1stories@gmail.com">myf1stories@gmail.com</a></span></div></div>
+            <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
+            <input type="hidden" name="_next" value="https://f1stories.gr/thanks.html">
+            <button type="submit" class="cta-button cta-primary contact-submit"><span class="submit-text">Send Message</span><span class="submit-spinner" style="display:none"><i class="fas fa-circle-notch fa-spin"></i></span></button>
+            <p class="contact-block__micro">We typically reply within 48 hours.</p>
+        </form>
+    </div></div></div></div>
 </section>
 
-
-<!-- ============================================================
-     3.5  FOOTER — Minimal, 3-column, consistent
-     ============================================================ -->
 <footer>
-    <div class="container">
-        <div class="footer-grid">
-            <div class="footer-col">
-                <h4 class="footer-col__title">Platforms</h4>
-                <div class="footer-social">
-                    <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" title="Spotify"><i class="fab fa-spotify"></i></a>
-                    <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
-                    <a href="https://www.instagram.com/myf1stories/" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.facebook.com/f1storiess" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
-                </div>
-            </div>
-            <div class="footer-col">
-                <h4 class="footer-col__title">Content</h4>
-                <ul class="footer-links-list">
-                    <li><a href="/episodes/">Episodes</a></li>
-                    <li><a href="/blog-module/blog/index.html">Blog</a></li>
-                    <li><a href="/spotify/index.html">All Podcasts</a></li>
-                    <li><a href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4 class="footer-col__title">Legal</h4>
-                <ul class="footer-links-list">
-                    <li><a href="/privacy/privacy.html">Privacy Policy</a></li>
-                    <li><a href="/privacy/terms.html">Terms of Use</a></li>
-                    <li><a href="#" class="manage-cookies-link">Manage Cookies</a></li>
-                    <li><a href="mailto:myf1stories@gmail.com">Contact</a></li>
-                </ul>
-            </div>
+    <div class="container text-center">
+        <div class="footer-social" style="display:flex;justify-content:center;gap:.75rem;margin-bottom:1rem">
+            <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/myf1stories/" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.facebook.com/f1storiess" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.tiktok.com/@f1stories6" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+            <a href="mailto:myf1stories@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+        <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-bottom:.75rem">
+            <a href="/privacy/privacy.html" class="footer-link">Privacy Policy</a>
+            <span class="footer-separator">|</span>
+            <a href="/privacy/terms.html" class="footer-link">Terms of Use</a>
         </div>
+        <p style="font-size:.82rem;opacity:.5;margin:0">&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. All rights reserved.</p>
     </div>
 </footer>
 
+<div id="cookie-consent" class="cookie-banner"><div class="cookie-content"><div class="cookie-header"><h3>Cookie Consent</h3><button id="close-cookie" class="close-btn"><i class="fas fa-times"></i></button></div><p class="cookie-intro">F1 Stories uses cookies to enhance your experience and analyze traffic.</p><div class="cookie-details"><div class="cookie-section"><h4>Essential Cookies <span class="badge-essential">Always Active</span></h4><p>Required for core site functionality.</p></div><div class="cookie-section"><div class="cookie-toggle"><h4>Analytics Cookies</h4><label class="toggle-switch"><input type="checkbox" id="analytics-cookies"><span class="toggle-slider"></span></label></div><p>Help us understand how visitors use our site.</p></div><div class="cookie-section"><div class="cookie-toggle"><h4>Marketing Cookies</h4><label class="toggle-switch"><input type="checkbox" id="marketing-cookies"><span class="toggle-slider"></span></label></div><p>Enable personalized content and ads.</p></div></div><div class="cookie-actions"><button id="reject-all" class="cookie-btn reject-btn">Reject All</button><button id="accept-selected" class="cookie-btn accept-selected-btn">Accept Selected</button><button id="accept-all" class="cookie-btn accept-btn">Accept All</button></div><div class="cookie-footer"><a href="/privacy/privacy.html" target="_blank">Privacy Policy</a><a href="/privacy/terms.html" target="_blank">Terms of Use</a></div></div></div>
 
-<!-- ============================================================
-     COOKIE CONSENT BANNER
-     ============================================================ -->
-<div id="cookie-consent" class="cookie-banner">
-    <div class="cookie-content">
-        <div class="cookie-header">
-            <h3>Cookie Consent</h3>
-            <button id="close-cookie" class="close-btn"><i class="fas fa-times"></i></button>
-        </div>
-        <p class="cookie-intro">F1 Stories uses cookies to enhance your experience and analyze traffic.</p>
-        <div class="cookie-details">
-            <div class="cookie-section">
-                <h4>Essential Cookies <span class="badge-essential">Always Active</span></h4>
-                <p>Required for core site functionality.</p>
-            </div>
-            <div class="cookie-section">
-                <div class="cookie-toggle">
-                    <h4>Analytics Cookies</h4>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="analytics-cookies">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-                <p>Help us understand how visitors use our site.</p>
-            </div>
-            <div class="cookie-section">
-                <div class="cookie-toggle">
-                    <h4>Marketing Cookies</h4>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="marketing-cookies">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-                <p>Enable personalized content and ads.</p>
-            </div>
-        </div>
-        <div class="cookie-actions">
-            <button id="reject-all" class="cookie-btn reject-btn">Reject All</button>
-            <button id="accept-selected" class="cookie-btn accept-selected-btn">Accept Selected</button>
-            <button id="accept-all" class="cookie-btn accept-btn">Accept All</button>
-        </div>
-        <div class="cookie-footer">
-            <a href="/privacy/privacy.html" target="_blank">Privacy Policy</a>
-            <a href="/privacy/terms.html" target="_blank">Terms of Use</a>
-        </div>
-    </div>
-</div>
+<button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle light/dark theme"><i class="fas fa-sun icon-sun"></i><i class="fas fa-moon icon-moon"></i></button>
+<button id="scroll-to-top" class="scroll-to-top-btn"><i class="fas fa-chevron-up"></i></button>
 
-<!-- Scroll To Top -->
-<button id="scroll-to-top" class="scroll-to-top-btn">
-    <i class="fas fa-chevron-up"></i>
-</button>
-
-<!-- Scripts (deferred for performance) -->
 <script src="/blog-module/blog-loader.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+<script src="scripts/background-randomizer.js" defer></script>
 <script src="scripts/f1-optimized.js" defer></script>
-
-<!-- Phase 3 + Phase 9: Tab switching, form handling, keyboard navigation -->
+<script src="scripts/cookie-consent.js" defer></script>
 <script>
-(function() {
-    'use strict';
-
-    /* ── 9.2: Dropdown keyboard navigation ── */
-    document.querySelectorAll('.custom-dropdown').forEach(function(dropdown) {
-        var toggle = dropdown.querySelector('.custom-dropdown-toggle');
-        var menu = dropdown.querySelector('.custom-dropdown-menu');
-        var items = menu ? menu.querySelectorAll('.dropdown-item') : [];
-
-        // Enter/Space opens dropdown
-        if (toggle) {
-            toggle.setAttribute('aria-haspopup', 'true');
-            toggle.setAttribute('aria-expanded', 'false');
-
-            toggle.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    dropdown.classList.toggle('open');
-                    toggle.setAttribute('aria-expanded', dropdown.classList.contains('open'));
-                    if (dropdown.classList.contains('open') && items.length) {
-                        items[0].focus();
-                    }
-                }
-                if (e.key === 'Escape') {
-                    dropdown.classList.remove('open');
-                    toggle.setAttribute('aria-expanded', 'false');
-                    toggle.focus();
-                }
-            });
-        }
-
-        // Arrow key navigation within dropdown
-        items.forEach(function(item, index) {
-            item.addEventListener('keydown', function(e) {
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    if (index < items.length - 1) items[index + 1].focus();
-                }
-                if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    if (index > 0) items[index - 1].focus();
-                    else if (toggle) toggle.focus();
-                }
-                if (e.key === 'Escape') {
-                    dropdown.classList.remove('open');
-                    if (toggle) {
-                        toggle.setAttribute('aria-expanded', 'false');
-                        toggle.focus();
-                    }
-                }
-                if (e.key === 'Tab') {
-                    dropdown.classList.remove('open');
-                    if (toggle) toggle.setAttribute('aria-expanded', 'false');
-                }
-            });
-        });
-    });
-
-    /* ── 9.2: Tab keyboard navigation (arrow keys) ── */
-    var tabLists = document.querySelectorAll('[role="tablist"]');
-    tabLists.forEach(function(tabList) {
-        var tabButtons = tabList.querySelectorAll('[role="tab"]');
-        tabButtons.forEach(function(tab, index) {
-            tab.addEventListener('keydown', function(e) {
-                var nextIndex;
-                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    nextIndex = (index + 1) % tabButtons.length;
-                    tabButtons[nextIndex].focus();
-                    tabButtons[nextIndex].click();
-                }
-                if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    nextIndex = (index - 1 + tabButtons.length) % tabButtons.length;
-                    tabButtons[nextIndex].focus();
-                    tabButtons[nextIndex].click();
-                }
-                if (e.key === 'Home') {
-                    e.preventDefault();
-                    tabButtons[0].focus();
-                    tabButtons[0].click();
-                }
-                if (e.key === 'End') {
-                    e.preventDefault();
-                    tabButtons[tabButtons.length - 1].focus();
-                    tabButtons[tabButtons.length - 1].click();
-                }
-            });
-        });
-    });
-
-    /* ── Tab switching ── */
-    var tabs = document.querySelectorAll('.latest-tab');
-    var panels = document.querySelectorAll('.latest-panel');
-
-    tabs.forEach(function(tab) {
-        tab.addEventListener('click', function() {
-            var target = tab.dataset.tab;
-
-            tabs.forEach(function(t) {
-                t.classList.remove('active');
-                t.setAttribute('aria-selected', 'false');
-                t.setAttribute('tabindex', '-1');
-            });
-            tab.classList.add('active');
-            tab.setAttribute('aria-selected', 'true');
-            tab.setAttribute('tabindex', '0');
-
-            panels.forEach(function(p) { p.classList.remove('active'); });
-            document.getElementById('panel-' + target).classList.add('active');
-        });
-    });
-    // Set initial tabindex
-    tabs.forEach(function(tab, i) {
-        tab.setAttribute('tabindex', i === 0 ? '0' : '-1');
-    });
-
-    /* ── Contact form AJAX submission ── */
-    var form = document.getElementById('contact-form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            var submitBtn = form.querySelector('.contact-submit');
-            var submitText = form.querySelector('.submit-text');
-            var submitSpinner = form.querySelector('.submit-spinner');
-            var statusDiv = document.getElementById('form-status');
-            var successDiv = document.getElementById('form-success');
-            var errorDiv = document.getElementById('form-error');
-
-            // Show loading
-            submitBtn.disabled = true;
-            submitBtn.setAttribute('aria-busy', 'true');
-            submitText.style.display = 'none';
-            submitSpinner.style.display = 'inline';
-
-            // Hide previous status
-            statusDiv.style.display = 'none';
-            successDiv.style.display = 'none';
-            errorDiv.style.display = 'none';
-
-            fetch(form.action, {
-                method: 'POST',
-                body: new FormData(form),
-                headers: { 'Accept': 'application/json' }
-            })
-            .then(function(response) {
-                statusDiv.style.display = 'block';
-                if (response.ok) {
-                    successDiv.style.display = 'flex';
-                    successDiv.setAttribute('role', 'status');
-                    form.reset();
-                } else {
-                    errorDiv.style.display = 'flex';
-                    errorDiv.setAttribute('role', 'alert');
-                }
-            })
-            .catch(function() {
-                statusDiv.style.display = 'block';
-                errorDiv.style.display = 'flex';
-                errorDiv.setAttribute('role', 'alert');
-            })
-            .finally(function() {
-                submitBtn.disabled = false;
-                submitBtn.setAttribute('aria-busy', 'false');
-                submitText.style.display = 'inline';
-                submitSpinner.style.display = 'none';
-            });
-        });
-    }
+(function(){'use strict';
+var themeBtn=document.getElementById('theme-toggle');
+if(themeBtn){themeBtn.addEventListener('click',function(){var h=document.documentElement;var l=h.getAttribute('data-theme')==='light';if(l){h.removeAttribute('data-theme');localStorage.setItem('f1stories-theme','dark')}else{h.setAttribute('data-theme','light');localStorage.setItem('f1stories-theme','light')}});}
+var hamburger=document.getElementById('nav-hamburger'),mobileMenu=document.getElementById('nav-mobile'),blogNav=document.getElementById('blog-nav');
+if(hamburger&&mobileMenu){hamburger.addEventListener('click',function(){hamburger.classList.toggle('open');mobileMenu.classList.toggle('open')});mobileMenu.querySelectorAll('a').forEach(function(l){l.addEventListener('click',function(){hamburger.classList.remove('open');mobileMenu.classList.remove('open')})})}
+if(blogNav){var nt=false;window.addEventListener('scroll',function(){if(nt)return;nt=true;requestAnimationFrame(function(){blogNav.classList.toggle('scrolled',(window.pageYOffset||document.documentElement.scrollTop)>20);nt=false})},{passive:true})}
+var tabs=document.querySelectorAll('.latest-tab'),panels=document.querySelectorAll('.latest-panel');
+tabs.forEach(function(tab){tab.addEventListener('click',function(){var t=tab.dataset.tab;tabs.forEach(function(x){x.classList.remove('active');x.setAttribute('aria-selected','false');x.setAttribute('tabindex','-1')});tab.classList.add('active');tab.setAttribute('aria-selected','true');tab.setAttribute('tabindex','0');panels.forEach(function(p){p.classList.remove('active')});document.getElementById('panel-'+t).classList.add('active')})});
+tabs.forEach(function(t,i){t.setAttribute('tabindex',i===0?'0':'-1')});
+var form=document.getElementById('contact-form');
+if(form){form.addEventListener('submit',function(e){e.preventDefault();var sb=form.querySelector('.contact-submit'),st=form.querySelector('.submit-text'),ss=form.querySelector('.submit-spinner'),sd=document.getElementById('form-status'),su=document.getElementById('form-success'),se=document.getElementById('form-error');sb.disabled=true;st.style.display='none';ss.style.display='inline';sd.style.display='none';su.style.display='none';se.style.display='none';fetch(form.action,{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}}).then(function(r){sd.style.display='block';if(r.ok){su.style.display='flex';form.reset()}else{se.style.display='flex'}}).catch(function(){sd.style.display='block';se.style.display='flex'}).finally(function(){sb.disabled=false;st.style.display='inline';ss.style.display='none'})})}
+var RACES=[{name:'Australian GP',flag:'\u{1F1E6}\u{1F1FA}',date:'2026-03-08T05:00:00Z'},{name:'Chinese GP',flag:'\u{1F1E8}\u{1F1F3}',date:'2026-03-15T07:00:00Z'},{name:'Japanese GP',flag:'\u{1F1EF}\u{1F1F5}',date:'2026-03-29T05:00:00Z'},{name:'Bahrain GP',flag:'\u{1F1E7}\u{1F1ED}',date:'2026-04-12T15:00:00Z'},{name:'Saudi Arabian GP',flag:'\u{1F1F8}\u{1F1E6}',date:'2026-04-19T17:00:00Z'},{name:'Miami GP',flag:'\u{1F1FA}\u{1F1F8}',date:'2026-05-03T20:00:00Z'},{name:'Canadian GP',flag:'\u{1F1E8}\u{1F1E6}',date:'2026-05-24T18:00:00Z'},{name:'Monaco GP',flag:'\u{1F1F2}\u{1F1E8}',date:'2026-06-07T13:00:00Z'},{name:'Catalunya GP',flag:'\u{1F1EA}\u{1F1F8}',date:'2026-06-14T13:00:00Z'},{name:'Austrian GP',flag:'\u{1F1E6}\u{1F1F9}',date:'2026-06-28T13:00:00Z'},{name:'British GP',flag:'\u{1F1EC}\u{1F1E7}',date:'2026-07-05T14:00:00Z'},{name:'Belgian GP',flag:'\u{1F1E7}\u{1F1EA}',date:'2026-07-19T13:00:00Z'},{name:'Hungarian GP',flag:'\u{1F1ED}\u{1F1FA}',date:'2026-07-26T13:00:00Z'},{name:'Dutch GP',flag:'\u{1F1F3}\u{1F1F1}',date:'2026-08-23T13:00:00Z'},{name:'Italian GP',flag:'\u{1F1EE}\u{1F1F9}',date:'2026-09-06T13:00:00Z'},{name:'Spanish GP',flag:'\u{1F1EA}\u{1F1F8}',date:'2026-09-13T13:00:00Z'},{name:'Azerbaijan GP',flag:'\u{1F1E6}\u{1F1FF}',date:'2026-09-26T11:00:00Z'},{name:'Singapore GP',flag:'\u{1F1F8}\u{1F1EC}',date:'2026-10-11T12:00:00Z'},{name:'US GP',flag:'\u{1F1FA}\u{1F1F8}',date:'2026-10-25T19:00:00Z'},{name:'Mexico City GP',flag:'\u{1F1F2}\u{1F1FD}',date:'2026-11-01T20:00:00Z'},{name:'S\u00e3o Paulo GP',flag:'\u{1F1E7}\u{1F1F7}',date:'2026-11-08T17:00:00Z'},{name:'Las Vegas GP',flag:'\u{1F1FA}\u{1F1F8}',date:'2026-11-21T06:00:00Z'},{name:'Qatar GP',flag:'\u{1F1F6}\u{1F1E6}',date:'2026-11-29T14:00:00Z'},{name:'Abu Dhabi GP',flag:'\u{1F1E6}\u{1F1EA}',date:'2026-12-06T13:00:00Z'}];
+function getNextRace(){var n=Date.now();for(var i=0;i<RACES.length;i++){if(new Date(RACES[i].date).getTime()>n)return RACES[i]}return null}
+function fmtCountdown(ms){if(ms<=0)return'LIGHTS OUT!';var s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60),sc=s%60;if(d>0)return d+'d '+h+'h '+m+'m';if(h>0)return h+'h '+m+'m '+sc+'s';return m+'m '+sc+'s'}
+function fmtShort(ms){if(ms<=0)return'RACE ON!';var s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60);if(d>0)return d+'d '+h+'h';if(h>0)return h+'h '+m+'m';return m+'m'}
+function tickCountdown(){var r=getNextRace(),ne=document.getElementById('next-race-name'),ce=document.getElementById('race-countdown'),me=document.getElementById('race-countdown-mobile'),fe=document.getElementById('race-flag-emoji');if(!r){if(ne)ne.textContent='Season Complete';if(ce)ce.textContent='2027 TBA';if(me)me.textContent='Done';return}var ms=new Date(r.date).getTime()-Date.now();if(ne)ne.textContent=r.flag+' '+r.name;if(ce)ce.textContent=fmtCountdown(ms);if(me)me.textContent=fmtShort(ms);if(fe)fe.textContent=r.flag}
+tickCountdown();setInterval(tickCountdown,1000);
 })();
 </script>
 </body>
