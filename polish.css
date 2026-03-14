@@ -14,13 +14,13 @@
 
 /* ── Buttons: normalise margin, ensure consistent sizing ── */
 .cta-button {
-    margin: 0;                  /* Remove legacy 0.5rem margin — let layout handle gaps */
+    margin: 0;
     font-size: var(--text-sm);
     line-height: 1.4;
     letter-spacing: 0.01em;
 }
 
-/* ── Button variants: single source (no duplication across pages) ── */
+/* ── Button variants: single source ── */
 .cta-primary {
     background: var(--accent);
     color: var(--bg-base);
@@ -59,7 +59,7 @@
     transform: translateX(3px);
 }
 
-/* ── Cards: ensure ALL card types share identical hover behaviour ── */
+/* ── Cards: identical hover behaviour ── */
 .card:hover,
 .blog-card:hover,
 .episode-card:hover,
@@ -72,7 +72,7 @@
     border-color: var(--border-accent);
 }
 
-/* ── Cards: consistent border-radius everywhere ── */
+/* ── Cards: consistent border-radius ── */
 .card,
 .blog-card,
 .episode-card,
@@ -84,7 +84,7 @@
     border-radius: var(--radius-md);
 }
 
-/* ── Accent colour: ensure no stray blue/teal from legacy ── */
+/* ── Accent colour consistency ── */
 .blog-meta i,
 .blog-read-more,
 .blog-card:hover .blog-title,
@@ -108,12 +108,12 @@ section {
     padding: var(--space-2xl) 0;
 }
 
-/* ── Typography: ensure h2 border is always accent ── */
+/* ── Typography: h2 border ── */
 h2, .h2 {
     border-bottom-color: var(--accent);
 }
 
-/* ── Form inputs: consistent dark background ── */
+/* ── Form inputs ── */
 .contact-form input,
 .contact-form textarea,
 .form-control {
@@ -132,20 +132,17 @@ h2, .h2 {
    9.2  ACCESSIBILITY PASS
    ============================================================ */
 
-/* ── Global focus-visible ring ── 
-   Uses a 2px offset ring in accent colour. 
-   Visible on keyboard nav, hidden on mouse click. */
+/* ── Global focus-visible ring ── */
 *:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
 }
 
-/* ── Remove default outline for mouse users ── */
 *:focus:not(:focus-visible) {
     outline: none;
 }
 
-/* ── Buttons: explicit focus ring ── */
+/* ── Buttons: focus ring ── */
 .cta-button:focus-visible,
 .cta-primary:focus-visible,
 .cta-secondary:focus-visible,
@@ -167,7 +164,7 @@ h2, .h2 {
     border-radius: var(--radius-sm);
 }
 
-/* ── Cards: focus ring on linked cards ── */
+/* ── Cards: focus ring ── */
 a.ep-card:focus-visible,
 .card:focus-visible,
 .blog-card a:focus-visible,
@@ -185,16 +182,16 @@ a.ep-card:focus-visible,
     box-shadow: 0 0 0 4px var(--accent-muted);
 }
 
-/* ── Form inputs: focus state (already set, but reinforce) ── */
+/* ── Form inputs: focus state ── */
 .form-control:focus-visible,
 .contact-form input:focus-visible,
 .contact-form textarea:focus-visible {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-muted);
-    outline: none;  /* Use border/shadow instead of outline for inputs */
+    outline: none;
 }
 
-/* ── Toggle switch: focus ring on the checkbox ── */
+/* ── Toggle switch: focus ring ── */
 .toggle-switch input:focus-visible + .toggle-slider {
     box-shadow: 0 0 0 3px var(--accent-muted);
 }
@@ -211,21 +208,18 @@ a.ep-card:focus-visible,
     outline-offset: 2px;
 }
 
-/* ── Navbar toggler: restore focus ring (overrides modern-dark-mode removal) ── */
+/* ── Navbar toggler ── */
 .navbar-toggler:focus-visible {
     box-shadow: 0 0 0 3px var(--accent-muted) !important;
     outline: none;
 }
 
-/* ── Contrast fixes ──
-   --text-tertiary (#586a85) on --bg-base (#0b1120):
-   Ratio ≈ 3.4:1 — below 4.5:1 for normal text.
-   Bump to #6e829c for better readability. */
+/* ── Contrast fix — text-tertiary now matches neutral charcoal palette ── */
 :root {
-    --text-tertiary: #6e829c;
+    --text-tertiary: #6e6e73;
 }
 
-/* ── Skip to content link (screen reader + keyboard users) ── */
+/* ── Skip to content link ── */
 .skip-link {
     position: absolute;
     top: -100%;
@@ -273,7 +267,7 @@ a.ep-card:focus-visible,
     }
 }
 
-/* ── ARIA hidden elements should not be focusable ── */
+/* ── ARIA hidden elements ── */
 [aria-hidden="true"] *:focus {
     outline: none;
 }
@@ -339,7 +333,7 @@ button,
     -webkit-tap-highlight-color: transparent;
 }
 
-/* ── Ensure lazy-loaded images don't cause layout shift ── */
+/* ── Lazy-loaded images layout shift ── */
 .ep-card__thumb,
 .card__media,
 .blog-img-container {
@@ -353,7 +347,7 @@ button,
     aspect-ratio: 1;
 }
 
-/* ── Skeleton cards: lightweight rendering ── */
+/* ── Skeleton cards ── */
 .skeleton-card {
     contain: content;
 }

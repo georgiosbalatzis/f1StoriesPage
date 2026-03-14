@@ -9,44 +9,44 @@ html, body { -webkit-overflow-scrolling: touch; overflow-x: hidden; }
 
 /* ── Theme variables (blog-shared) ───────────── */
 :root {
-    --bs-bg: #0a0a0f;
-    --bs-surface: rgba(255,255,255,0.04);
-    --bs-surface-raised: rgba(255,255,255,0.06);
+    --bs-bg: #111113;
+    --bs-surface: #161618;
+    --bs-surface-raised: #1e1e20;
     --bs-border: rgba(255,255,255,0.08);
     --bs-border-strong: rgba(255,255,255,0.14);
-    --bs-text: #f0f0f2;
-    --bs-text-secondary: rgba(255,255,255,0.6);
-    --bs-text-muted: rgba(255,255,255,0.38);
+    --bs-text: #e5e5e7;
+    --bs-text-secondary: #a1a1a6;
+    --bs-text-muted: #6e6e73;
     --bs-accent: #3b82f6;
     --bs-accent-soft: rgba(59,130,246,0.10);
-    --bs-accent-hover: #60a5fa;
-    --bs-shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
-    --bs-shadow-md: 0 4px 16px rgba(0,0,0,0.45);
+    --bs-accent-hover: #5b9cf5;
+    --bs-shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
+    --bs-shadow-md: 0 4px 16px rgba(0,0,0,0.6);
     --bs-radius: 14px;
     --bs-radius-sm: 10px;
     --bs-transition: 0.25s cubic-bezier(0.4,0,0.2,1);
 }
 
 [data-theme="light"] {
-    --bs-bg: #F5F3EF;
-    --bs-surface: rgba(0,0,0,0.025);
-    --bs-surface-raised: #FDFCFA;
+    --bs-bg: #FFFFFF;
+    --bs-surface: #f5f5f7;
+    --bs-surface-raised: #FFFFFF;
     --bs-border: rgba(0,0,0,0.06);
-    --bs-border-strong: rgba(0,0,0,0.11);
-    --bs-text: #1a1a1f;
-    --bs-text-secondary: rgba(0,0,0,0.55);
-    --bs-text-muted: rgba(0,0,0,0.34);
-    --bs-accent: #2563eb;
-    --bs-accent-soft: rgba(37,99,235,0.08);
-    --bs-accent-hover: #1d4ed8;
-    --bs-shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
-    --bs-shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --bs-border-strong: rgba(0,0,0,0.1);
+    --bs-text: #1d1d1f;
+    --bs-text-secondary: #6e6e73;
+    --bs-text-muted: #86868b;
+    --bs-accent: #0e4ca6;
+    --bs-accent-soft: rgba(14,76,166,0.06);
+    --bs-accent-hover: #0a3d8f;
+    --bs-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+    --bs-shadow-md: 0 12px 28px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.04);
 }
 
-/* ── Light mode: force page background over main site styles ── */
+/* ── Light mode: force page background ── */
 [data-theme="light"] body,
-[data-theme="light"] { background-color: #F5F3EF !important; }
-[data-theme="light"] .background { background: #F5F3EF !important; opacity: 1 !important; }
+[data-theme="light"] { background-color: #FFFFFF !important; }
+[data-theme="light"] .background { background: #FFFFFF !important; opacity: 1 !important; }
 [data-theme="light"] .streak { display: none !important; }
 
 /* ═══════════════════════════════════════════════
@@ -69,6 +69,10 @@ html, body { -webkit-overflow-scrolling: touch; overflow-x: hidden; }
     height: 100%;
     display: flex;
     flex-direction: column;
+}
+
+[data-theme="light"] .blog-card {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
 }
 
 .blog-card:hover {
@@ -113,6 +117,10 @@ html, body { -webkit-overflow-scrolling: touch; overflow-x: hidden; }
     font-size: 1.1rem;
     font-weight: 700;
     line-height: 1;
+}
+
+[data-theme="light"] .blog-date .day {
+    color: #fff;
 }
 
 .blog-date .month {
@@ -201,7 +209,6 @@ html, body { -webkit-overflow-scrolling: touch; overflow-x: hidden; }
 
 /* ═══════════════════════════════════════════════
    CSV TABLE STYLES
-   Used in articles with embedded CSV data
    ═══════════════════════════════════════════════ */
 .table-responsive-container {
     background: var(--bs-surface-raised);
@@ -210,6 +217,10 @@ html, body { -webkit-overflow-scrolling: touch; overflow-x: hidden; }
     overflow: hidden;
     border: 1px solid var(--bs-border);
     box-shadow: var(--bs-shadow-sm);
+}
+
+[data-theme="light"] .table-responsive-container {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
 }
 
 .table-controls {
@@ -339,9 +350,9 @@ html, body { -webkit-overflow-scrolling: touch; overflow-x: hidden; }
 }
 
 [data-theme="light"] .csv-error {
-    background: rgba(220,38,38,0.05);
-    color: #dc2626;
-    border-color: rgba(220,38,38,0.15);
+    background: rgba(214,48,49,0.05);
+    color: #d63031;
+    border-color: rgba(214,48,49,0.15);
 }
 
 /* ═══════════════════════════════════════════════
@@ -441,7 +452,7 @@ html, body { -webkit-overflow-scrolling: touch; overflow-x: hidden; }
 }
 
 [data-theme="light"] .loading-placeholder {
-    background: linear-gradient(90deg, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.03) 100%);
+    background: linear-gradient(90deg, #f5f5f7 0%, #ebebed 50%, #f5f5f7 100%);
     background-size: 200% 100%;
 }
 
