@@ -15,7 +15,6 @@
     <meta name="twitter:image" content="https://f1stories.gr/blog-module/blog-entries/20251011W/2.webp">
     <link rel="icon" type="image/png" href="/images/favicon.png">
 
-    <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -25,58 +24,31 @@
         "image": "https://f1stories.gr/blog-module/blog-entries/20251011W/2.webp",
         "datePublished": "2025-10-11",
         "dateModified": "2025-10-11",
-        "author": {
-            "@type": "Person",
-            "name": "2Fast"
-        },
-        "publisher": {
-            "@type": "Organization",
-            "name": "F1 Stories",
-            "logo": {
-                "@type": "ImageObject",
-                "url": "https://f1stories.gr/images/logo.png"
-            }
-        },
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "https://f1stories.gr/blog-module/blog-entries/20251011W/article.html"
-        }
+        "author": { "@type": "Person", "name": "2Fast" },
+        "publisher": { "@type": "Organization", "name": "F1 Stories", "logo": { "@type": "ImageObject", "url": "https://f1stories.gr/images/logo.png" } },
+        "mainEntityOfPage": { "@type": "WebPage", "@id": "https://f1stories.gr/blog-module/blog-entries/20251011W/article.html" }
     }
     </script>
 
-    <!-- Fonts — Outfit (display) + DM Sans (body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
     <link rel="stylesheet" href="/styles.css">
     <link rel="stylesheet" href="/blog-module/blog-styles.css">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+    <link rel="stylesheet" href="/styles/shared-nav.css">
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-X68J6MQKSM');
-    </script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
     <!-- Prevent FOUC -->
     <script>
         (function() {
             var saved = localStorage.getItem('f1stories-theme');
-            if (saved === 'light') {
-                document.documentElement.setAttribute('data-theme', 'light');
-            } else if (saved === 'dark') {
-                document.documentElement.removeAttribute('data-theme');
-            } else {
-                // No saved preference: default to dark
-                document.documentElement.removeAttribute('data-theme');
-                localStorage.setItem('f1stories-theme', 'dark');
-            }
+            if (saved === 'light') { document.documentElement.setAttribute('data-theme', 'light'); }
+            else { document.documentElement.removeAttribute('data-theme'); if (!saved) localStorage.setItem('f1stories-theme', 'dark'); }
         })();
     </script>
 </head>
@@ -100,13 +72,11 @@
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo.png" alt="F1 Stories Logo" loading="lazy"></a>
-
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><i class="fas fa-home"></i> Home</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link active"><i class="fas fa-newspaper"></i> Blog</a>
                 <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener" class="blog-nav-link"><i class="fab fa-youtube"></i> YouTube</a>
             </div>
-
             <div class="blog-nav-right">
                 <div class="blog-nav-countdown" id="nav-countdown">
                     <span class="countdown-flag" id="race-flag-emoji">🏁</span>
@@ -119,12 +89,9 @@
                     <i class="fas fa-flag-checkered"></i>
                     <span id="race-countdown-mobile">--</span>
                 </div>
-                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Toggle menu">
-                    <span></span><span></span><span></span>
-                </button>
+                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
             </div>
         </div>
-
         <div class="blog-nav-mobile" id="nav-mobile">
             <a href="/" class="blog-nav-mobile-link"><i class="fas fa-home"></i> Home</a>
             <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><i class="fas fa-newspaper"></i> Blog</a>
@@ -337,152 +304,16 @@
     </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script defer src="/scripts/background-randomizer.js"></script>
 <script defer src="/scripts/script.js"></script>
 <script defer src="/blog-module/blog/article-script.js"></script>
 <script defer src="/scripts/navbar.js"></script>
 <script defer src="/scripts/cookie-consent.js"></script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-
-    /* ── Navbar Hamburger & Scroll ────────────── */
-    var hamburger = document.getElementById('nav-hamburger');
-    var mobileMenu = document.getElementById('nav-mobile');
-    var blogNav = document.getElementById('blog-nav');
-
-    if (hamburger && mobileMenu) {
-        hamburger.addEventListener('click', function() {
-            hamburger.classList.toggle('open');
-            mobileMenu.classList.toggle('open');
-        });
-        mobileMenu.querySelectorAll('a').forEach(function(link) {
-            link.addEventListener('click', function() {
-                hamburger.classList.remove('open');
-                mobileMenu.classList.remove('open');
-            });
-        });
-    }
-    if (blogNav) {
-        var navScrollTicking = false;
-        window.addEventListener('scroll', function() {
-            if (navScrollTicking) return;
-            navScrollTicking = true;
-            requestAnimationFrame(function() {
-                blogNav.classList.toggle('scrolled', (window.pageYOffset || document.documentElement.scrollTop) > 20);
-                navScrollTicking = false;
-            });
-        }, { passive: true });
-    }
-
-    /* ── Theme Toggle ─────────────────────────── */
-    var themeBtn = document.getElementById('theme-toggle');
-    if (themeBtn) {
-        themeBtn.addEventListener('click', function() {
-            var html = document.documentElement;
-            var isLight = html.getAttribute('data-theme') === 'light';
-            if (isLight) { html.removeAttribute('data-theme'); localStorage.setItem('f1stories-theme','dark'); }
-            else { html.setAttribute('data-theme','light'); localStorage.setItem('f1stories-theme','light'); }
-        });
-    }
-
-    /* ── Reading Progress Bar ─────────────────── */
-    var progressBar = document.getElementById('reading-progress');
-    if (progressBar) {
-        var progTicking = false;
-        function updateProgress() {
-            var article = document.querySelector('.article-content');
-            if (!article) return;
-            var rect = article.getBoundingClientRect();
-            var scrollY = window.pageYOffset || document.documentElement.scrollTop;
-            var articleTop = rect.top + scrollY;
-            var articleHeight = rect.height;
-            var scrolled = scrollY - articleTop + window.innerHeight * 0.3;
-            var pct = Math.max(0, Math.min(100, (scrolled / articleHeight) * 100));
-            progressBar.style.width = pct + '%';
-        }
-        window.addEventListener('scroll', function() {
-            if (progTicking) return;
-            progTicking = true;
-            requestAnimationFrame(function() { try { updateProgress(); } catch(e){} progTicking = false; });
-        }, { passive: true });
-        updateProgress();
-    }
-
-    /* ── Next Race Countdown (2026) ───────────── */
-    var RACES = [
-        { name: 'Australian GP',    flag: '\u{1F1E6}\u{1F1FA}', date: '2026-03-08T05:00:00Z' },
-        { name: 'Chinese GP',       flag: '\u{1F1E8}\u{1F1F3}', date: '2026-03-15T07:00:00Z' },
-        { name: 'Japanese GP',      flag: '\u{1F1EF}\u{1F1F5}', date: '2026-03-29T05:00:00Z' },
-        { name: 'Bahrain GP',       flag: '\u{1F1E7}\u{1F1ED}', date: '2026-04-12T15:00:00Z' },
-        { name: 'Saudi Arabian GP', flag: '\u{1F1F8}\u{1F1E6}', date: '2026-04-19T17:00:00Z' },
-        { name: 'Miami GP',         flag: '\u{1F1FA}\u{1F1F8}', date: '2026-05-03T20:00:00Z' },
-        { name: 'Canadian GP',      flag: '\u{1F1E8}\u{1F1E6}', date: '2026-05-24T18:00:00Z' },
-        { name: 'Monaco GP',        flag: '\u{1F1F2}\u{1F1E8}', date: '2026-06-07T13:00:00Z' },
-        { name: 'Catalunya GP',     flag: '\u{1F1EA}\u{1F1F8}', date: '2026-06-14T13:00:00Z' },
-        { name: 'Austrian GP',      flag: '\u{1F1E6}\u{1F1F9}', date: '2026-06-28T13:00:00Z' },
-        { name: 'British GP',       flag: '\u{1F1EC}\u{1F1E7}', date: '2026-07-05T14:00:00Z' },
-        { name: 'Belgian GP',       flag: '\u{1F1E7}\u{1F1EA}', date: '2026-07-19T13:00:00Z' },
-        { name: 'Hungarian GP',     flag: '\u{1F1ED}\u{1F1FA}', date: '2026-07-26T13:00:00Z' },
-        { name: 'Dutch GP',         flag: '\u{1F1F3}\u{1F1F1}', date: '2026-08-23T13:00:00Z' },
-        { name: 'Italian GP',       flag: '\u{1F1EE}\u{1F1F9}', date: '2026-09-06T13:00:00Z' },
-        { name: 'Spanish GP',       flag: '\u{1F1EA}\u{1F1F8}', date: '2026-09-13T13:00:00Z' },
-        { name: 'Azerbaijan GP',    flag: '\u{1F1E6}\u{1F1FF}', date: '2026-09-26T11:00:00Z' },
-        { name: 'Singapore GP',     flag: '\u{1F1F8}\u{1F1EC}', date: '2026-10-11T12:00:00Z' },
-        { name: 'US GP',            flag: '\u{1F1FA}\u{1F1F8}', date: '2026-10-25T19:00:00Z' },
-        { name: 'Mexico City GP',   flag: '\u{1F1F2}\u{1F1FD}', date: '2026-11-01T20:00:00Z' },
-        { name: 'S\u00e3o Paulo GP',flag: '\u{1F1E7}\u{1F1F7}', date: '2026-11-08T17:00:00Z' },
-        { name: 'Las Vegas GP',     flag: '\u{1F1FA}\u{1F1F8}', date: '2026-11-21T06:00:00Z' },
-        { name: 'Qatar GP',         flag: '\u{1F1F6}\u{1F1E6}', date: '2026-11-29T14:00:00Z' },
-        { name: 'Abu Dhabi GP',     flag: '\u{1F1E6}\u{1F1EA}', date: '2026-12-06T13:00:00Z' }
-    ];
-
-    function getNextRace() {
-        var now = Date.now();
-        for (var i = 0; i < RACES.length; i++) {
-            if (new Date(RACES[i].date).getTime() > now) return RACES[i];
-        }
-        return null;
-    }
-    function fmtCountdown(ms) {
-        if (ms <= 0) return 'LIGHTS OUT!';
-        var s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60),sec=s%60;
-        if (d>0) return d+'d '+h+'h '+m+'m';
-        if (h>0) return h+'h '+m+'m '+sec+'s';
-        return m+'m '+sec+'s';
-    }
-    function fmtShort(ms) {
-        if (ms <= 0) return 'RACE ON!';
-        var s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60);
-        if (d>0) return d+'d '+h+'h';
-        if (h>0) return h+'h '+m+'m';
-        return m+'m';
-    }
-    function tickCountdown() {
-        var race = getNextRace();
-        var ne = document.getElementById('next-race-name');
-        var ce = document.getElementById('race-countdown');
-        var me = document.getElementById('race-countdown-mobile');
-        var fe = document.getElementById('race-flag-emoji');
-        if (!race) {
-            if (ne) ne.textContent = 'Season Complete';
-            if (ce) ce.textContent = '2027 TBA';
-            if (me) me.textContent = 'Done';
-            return;
-        }
-        var ms = new Date(race.date).getTime() - Date.now();
-        if (ne) ne.textContent = race.flag + ' ' + race.name;
-        if (ce) ce.textContent = fmtCountdown(ms);
-        if (me) me.textContent = fmtShort(ms);
-        if (fe) fe.textContent = race.flag;
-    }
-
-    tickCountdown();
-    setInterval(tickCountdown, 1000);
-
-});
-</script>
+<script defer src="/scripts/shared-nav.js"></script>
+<!-- All inline JS for hamburger, theme toggle, progress bar, and countdown
+     has been moved to shared-nav.js -->
 
 </body>
 </html>
