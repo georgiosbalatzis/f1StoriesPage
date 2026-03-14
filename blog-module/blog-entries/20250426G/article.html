@@ -97,52 +97,38 @@
 
 <!-- Navbar -->
 <header>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="/"><img src="/images/logo.png" alt="F1 Stories Logo" height="50" width="auto" loading="lazy"></a>
-            <div class="race-countdown-container">
-                <div class="race-countdown">
-                    <div class="race-flag"><span id="race-flag-emoji">🏁</span></div>
-                    <div class="race-info">
-                        <span class="next-race-name" id="next-race-name">Loading...</span>
-                        <div class="countdown-timer" id="race-countdown">--</div>
+    <nav class="blog-nav" id="blog-nav">
+        <div class="container blog-nav-inner">
+            <a class="blog-nav-brand" href="/"><img src="/images/logo.png" alt="F1 Stories Logo" loading="lazy"></a>
+
+            <div class="blog-nav-links" id="nav-links">
+                <a href="/" class="blog-nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><i class="fas fa-newspaper"></i> Blog</a>
+                <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener" class="blog-nav-link"><i class="fab fa-youtube"></i> YouTube</a>
+            </div>
+
+            <div class="blog-nav-right">
+                <div class="blog-nav-countdown" id="nav-countdown">
+                    <span class="countdown-flag" id="race-flag-emoji">🏁</span>
+                    <div class="countdown-info">
+                        <span class="countdown-race" id="next-race-name">Loading...</span>
+                        <span class="countdown-timer" id="race-countdown">--</span>
                     </div>
                 </div>
-                <div class="race-countdown-mobile">
+                <div class="blog-nav-countdown-mobile" id="nav-countdown-mobile">
                     <i class="fas fa-flag-checkered"></i>
                     <span id="race-countdown-mobile">--</span>
                 </div>
+                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
-            <button class="navbar-toggler" type="button" id="mobile-toggler"><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/" id="home-link">Home</a></li>
-                    <li class="nav-item custom-dropdown">
-                        <a class="nav-link custom-dropdown-toggle" href="#" id="podcastDropdown">Podcast <i class="fas fa-chevron-down dropdown-icon"></i></a>
-                        <ul class="custom-dropdown-menu">
-                            <li><a class="dropdown-item" href="/spotify/index.html">All Podcasts</a></li>
-                            <li><a class="dropdown-item" href="/episodes/">Episodes</a></li>
-                            <li><a class="dropdown-item betcast-item" href="https://georgiosbalatzis.github.io/BetCastVisualisation/">BetCast</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item custom-dropdown">
-                        <a class="nav-link custom-dropdown-toggle active" href="#" id="mediaDropdown">Stories &amp; Media <i class="fas fa-chevron-down dropdown-icon"></i></a>
-                        <ul class="custom-dropdown-menu">
-                            <li><a class="dropdown-item active-item" href="/blog-module/blog/index.html">Blog</a></li>
-                            <li><a class="dropdown-item" href="/memes/index.html">Memes</a></li>
-                            <li><a class="dropdown-item" href="https://f1stories.gr/garage/garage.html">Garage</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item custom-dropdown">
-                        <a class="nav-link custom-dropdown-toggle" href="#" id="aboutDropdown">About <i class="fas fa-chevron-down dropdown-icon"></i></a>
-                        <ul class="custom-dropdown-menu">
-                            <li><a class="dropdown-item" href="/#about">About Us</a></li>
-                            <li><a class="dropdown-item" href="/#guests">Guests</a></li>
-                            <li><a class="dropdown-item" href="/#contact">Contact</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+        </div>
+
+        <div class="blog-nav-mobile" id="nav-mobile">
+            <a href="/" class="blog-nav-mobile-link"><i class="fas fa-home"></i> Home</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><i class="fas fa-newspaper"></i> Blog</a>
+            <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><i class="fab fa-youtube"></i> YouTube</a>
         </div>
     </nav>
 </header>
@@ -253,71 +239,65 @@
         <div class="row mt-5">
             <div class="col-12"><h2 class="mb-4 related-section-title">Related Articles</h2></div>
             
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="/blog-module/blog-entries/20250714WF/1.webp" 
-                             alt="Ο Πρίγκιπας των Τροχών" 
-                             class="blog-img"
-                             onerror="if(this.src !== '/blog-module/blog/images/20250714WF/1.webp') { this.src='/blog-module/blog/images/20250714WF/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
-                        <div class="blog-date">
-                            <span class="day">14,</span>
-                            <span class="month">JUL</span>
+            <div class="col-md-4 mb-4">
+                <a href="/blog-module/blog-entries/20250409G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
+                    <div class="related-article-card">
+                        <div style="position:relative;overflow:hidden;">
+                            <img src="/blog-module/blog-entries/20250409G/1.webp" 
+                                 alt="🐢 Το Αργό Ξεκίνημα του Carlos Sainz στη Williams: Μήπως το έχουμε ξαναδεί;" 
+                                 loading="lazy"
+                                 onerror="if(this.src !== '/blog-module/blog/images/20250409G/1.webp') { this.src='/blog-module/blog/images/20250409G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        </div>
+                        <div class="card-body">
+                            <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 9 Apr 2025</div>
+                            <h5>🐢 Το Αργό Ξεκίνημα του Carlos Sainz στη Williams: Μήπως το έχουμε ξαναδεί;</h5>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+                                <span style="font-size:0.78rem;font-weight:500;color:var(--blog-accent,#3b82f6);">Read More <i class="fas fa-arrow-right" style="font-size:0.6rem;margin-left:0.2rem;"></i></span>
+                                <span style="font-size:0.7rem;color:var(--blog-text-tertiary,rgba(255,255,255,0.4));">Georgios Balatzis</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="blog-content">
-                        <h3 class="blog-title">Ο Πρίγκιπας των Τροχών</h3>
-                        <div class="blog-meta">
-                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
-                            <span><i class="fas fa-comments"></i> 0</span>
-                        </div>
-                        <a href="/blog-module/blog-entries/20250714WF/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
+                </a>
             </div>
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="/blog-module/blog-entries/20250713WF/1.webp" 
-                             alt="Jules Bianchi: Το Φως που δεν Έσβησε Ποτέ" 
-                             class="blog-img"
-                             onerror="if(this.src !== '/blog-module/blog/images/20250713WF/1.webp') { this.src='/blog-module/blog/images/20250713WF/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
-                        <div class="blog-date">
-                            <span class="day">13,</span>
-                            <span class="month">JUL</span>
+            <div class="col-md-4 mb-4">
+                <a href="/blog-module/blog-entries/20250408G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
+                    <div class="related-article-card">
+                        <div style="position:relative;overflow:hidden;">
+                            <img src="/blog-module/blog-entries/20250408G/1.webp" 
+                                 alt="🟢 Η Σεζόν του Fernando Alonso το 2025: Νέα Αρχή στην Aston Martin" 
+                                 loading="lazy"
+                                 onerror="if(this.src !== '/blog-module/blog/images/20250408G/1.webp') { this.src='/blog-module/blog/images/20250408G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        </div>
+                        <div class="card-body">
+                            <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 8 Apr 2025</div>
+                            <h5>🟢 Η Σεζόν του Fernando Alonso το 2025: Νέα Αρχή στην Aston Martin</h5>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+                                <span style="font-size:0.78rem;font-weight:500;color:var(--blog-accent,#3b82f6);">Read More <i class="fas fa-arrow-right" style="font-size:0.6rem;margin-left:0.2rem;"></i></span>
+                                <span style="font-size:0.7rem;color:var(--blog-text-tertiary,rgba(255,255,255,0.4));">Georgios Balatzis</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="blog-content">
-                        <h3 class="blog-title">Jules Bianchi: Το Φως που δεν Έσβησε Ποτέ</h3>
-                        <div class="blog-meta">
-                            <span><i class="fas fa-user"></i> F1 Stories Team</span>
-                            <span><i class="fas fa-comments"></i> 0</span>
-                        </div>
-                        <a href="/blog-module/blog-entries/20250713WF/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
+                </a>
             </div>
-            <div class="col-md-4">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="/blog-module/blog-entries/20250711W/1.webp" 
-                             alt="Φέτελ και Αλόνσο: Δύο Μοίρες στην Ίδια Πίστα" 
-                             class="blog-img"
-                             onerror="if(this.src !== '/blog-module/blog/images/20250711W/1.webp') { this.src='/blog-module/blog/images/20250711W/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
-                        <div class="blog-date">
-                            <span class="day">11,</span>
-                            <span class="month">JUL</span>
+            <div class="col-md-4 mb-4">
+                <a href="/blog-module/blog-entries/20250402G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
+                    <div class="related-article-card">
+                        <div style="position:relative;overflow:hidden;">
+                            <img src="/blog-module/blog-entries/20250402G/1.webp" 
+                                 alt="🧨 Max Verstappen: Ο Ορισμός της Απόλυτης Κυριαρχίας στην F1" 
+                                 loading="lazy"
+                                 onerror="if(this.src !== '/blog-module/blog/images/20250402G/1.webp') { this.src='/blog-module/blog/images/20250402G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                        </div>
+                        <div class="card-body">
+                            <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 2 Apr 2025</div>
+                            <h5>🧨 Max Verstappen: Ο Ορισμός της Απόλυτης Κυριαρχίας στην F1</h5>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
+                                <span style="font-size:0.78rem;font-weight:500;color:var(--blog-accent,#3b82f6);">Read More <i class="fas fa-arrow-right" style="font-size:0.6rem;margin-left:0.2rem;"></i></span>
+                                <span style="font-size:0.7rem;color:var(--blog-text-tertiary,rgba(255,255,255,0.4));">Georgios Balatzis</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="blog-content">
-                        <h3 class="blog-title">Φέτελ και Αλόνσο: Δύο Μοίρες στην Ίδια Πίστα</h3>
-                        <div class="blog-meta">
-                            <span><i class="fas fa-user"></i> 2Fast</span>
-                            <span><i class="fas fa-comments"></i> 0</span>
-                        </div>
-                        <a href="/blog-module/blog-entries/20250711W/article.html" class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>
@@ -339,14 +319,13 @@
     <div class="container">
         <div class="row">
             <div class="col-12 text-center">
-                <p>&copy; 2025 F1 Stories Podcast. All rights reserved.</p>
+                <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. All rights reserved.</p>
                 <div class="social-media">
                     <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
                     <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
                     <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
                     <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
                     <a href="/cdn-cgi/l/email-protection#6904100f581a1d061b000c1a290e04080005470a0604"><i class="fas fa-envelope"></i></a>
-                    <a href="https://open.spotify.com/show/0qC80ahDY824BME9FtxryS?si=bae4f48cf1ee4ded" target="_blank" rel="noopener"><i class="fab fa-spotify"></i></a>
                 </div>
                 <div class="footer-links mt-3">
                     <a href="/privacy/privacy.html" class="footer-link">Privacy Policy</a>
@@ -368,6 +347,35 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
+    /* ── Navbar Hamburger & Scroll ────────────── */
+    var hamburger = document.getElementById('nav-hamburger');
+    var mobileMenu = document.getElementById('nav-mobile');
+    var blogNav = document.getElementById('blog-nav');
+
+    if (hamburger && mobileMenu) {
+        hamburger.addEventListener('click', function() {
+            hamburger.classList.toggle('open');
+            mobileMenu.classList.toggle('open');
+        });
+        mobileMenu.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                hamburger.classList.remove('open');
+                mobileMenu.classList.remove('open');
+            });
+        });
+    }
+    if (blogNav) {
+        var navScrollTicking = false;
+        window.addEventListener('scroll', function() {
+            if (navScrollTicking) return;
+            navScrollTicking = true;
+            requestAnimationFrame(function() {
+                blogNav.classList.toggle('scrolled', (window.pageYOffset || document.documentElement.scrollTop) > 20);
+                navScrollTicking = false;
+            });
+        }, { passive: true });
+    }
+
     /* ── Theme Toggle ─────────────────────────── */
     var themeBtn = document.getElementById('theme-toggle');
     if (themeBtn) {
@@ -387,17 +395,18 @@ document.addEventListener('DOMContentLoaded', function() {
             var article = document.querySelector('.article-content');
             if (!article) return;
             var rect = article.getBoundingClientRect();
-            var articleTop = rect.top + window.pageYOffset;
+            var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+            var articleTop = rect.top + scrollY;
             var articleHeight = rect.height;
-            var scrolled = window.pageYOffset - articleTop + window.innerHeight * 0.3;
+            var scrolled = scrollY - articleTop + window.innerHeight * 0.3;
             var pct = Math.max(0, Math.min(100, (scrolled / articleHeight) * 100));
             progressBar.style.width = pct + '%';
         }
         window.addEventListener('scroll', function() {
             if (progTicking) return;
             progTicking = true;
-            requestAnimationFrame(function() { updateProgress(); progTicking = false; });
-        });
+            requestAnimationFrame(function() { try { updateProgress(); } catch(e){} progTicking = false; });
+        }, { passive: true });
         updateProgress();
     }
 

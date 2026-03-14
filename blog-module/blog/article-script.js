@@ -216,11 +216,89 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function buildTableOfContents() {
+        const content = $('.article-content');
+        if (!content) return;
+        const headings = content.querySelectorAll('h2, h3');
+        if (headings.length < 3) return; // Only show TOC for substantial articles
+
+        // Assign IDs to headings
+        headings.forEach((h, i) => {
+            if (!h.id) {
+                h.id = 'section-' + (i + 1);
+            }
+        });
+
+        // Build TOC HTML
+        let tocItems = '';
+        headings.forEach(h => {
+            const level = h.tagName === 'H3' ? 'toc-sub' : '';
+            tocItems += `<a href="#${h.id}" class="toc-item ${level}">${h.textContent.trim()}</a>`;
+        });
+
+        const tocEl = document.createElement('nav');
+        tocEl.className = 'article-toc';
+        tocEl.innerHTML = `
+            <button class="toc-toggle" id="toc-toggle" aria-label="Toggle table of contents">
+                <i class="fas fa-list-ul"></i>
+                <span>Περιεχόμενα / Contents</span>
+                <i class="fas fa-chevron-down toc-chevron"></i>
+            </button>
+            <div class="toc-body" id="toc-body">${tocItems}</div>
+        `;
+
+        // Insert before article content
+        content.parentNode.insertBefore(tocEl, content);
+
+        // Toggle
+        const toggle = tocEl.querySelector('#toc-toggle');
+        const body = tocEl.querySelector('#toc-body');
+        if (toggle && body) {
+            toggle.addEventListener('click', () => {
+                body.classList.toggle('open');
+                toggle.classList.toggle('open');
+            });
+        }
+
+        // Smooth scroll + active tracking
+        tocEl.querySelectorAll('.toc-item').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) {
+                    const offset = 80; // navbar height
+                    const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                    window.scrollTo({ top, behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Highlight active section on scroll
+        let tocTicking = false;
+        const tocLinks = tocEl.querySelectorAll('.toc-item');
+        window.addEventListener('scroll', () => {
+            if (tocTicking) return;
+            tocTicking = true;
+            requestAnimationFrame(() => {
+                let current = '';
+                headings.forEach(h => {
+                    const rect = h.getBoundingClientRect();
+                    if (rect.top <= 120) current = h.id;
+                });
+                tocLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+                });
+                tocTicking = false;
+            });
+        }, { passive: true });
+    }
+
     calcReadingTime();
     populateAuthor();
     setupSharing();
     updateShareLinks();
     setupTTS();
+    buildTableOfContents();
     setupNavigation();
     setupScrollToTop();
 });

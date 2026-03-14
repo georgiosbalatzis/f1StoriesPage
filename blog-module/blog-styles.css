@@ -4,6 +4,9 @@
    Supports dark/light theme via data-theme="light"
    ═══════════════════════════════════════════════ */
 
+/* ── Mobile scroll fix (global) ──────────────── */
+html, body { -webkit-overflow-scrolling: touch; overflow-x: hidden; }
+
 /* ── Theme variables (blog-shared) ───────────── */
 :root {
     --bs-bg: #0a0a0f;
@@ -25,20 +28,26 @@
 }
 
 [data-theme="light"] {
-    --bs-bg: #f8f8fa;
+    --bs-bg: #F5F3EF;
     --bs-surface: rgba(0,0,0,0.025);
-    --bs-surface-raised: #ffffff;
-    --bs-border: rgba(0,0,0,0.07);
-    --bs-border-strong: rgba(0,0,0,0.13);
-    --bs-text: #111118;
-    --bs-text-secondary: rgba(0,0,0,0.58);
-    --bs-text-muted: rgba(0,0,0,0.36);
+    --bs-surface-raised: #FDFCFA;
+    --bs-border: rgba(0,0,0,0.06);
+    --bs-border-strong: rgba(0,0,0,0.11);
+    --bs-text: #1a1a1f;
+    --bs-text-secondary: rgba(0,0,0,0.55);
+    --bs-text-muted: rgba(0,0,0,0.34);
     --bs-accent: #2563eb;
-    --bs-accent-soft: rgba(37,99,235,0.07);
+    --bs-accent-soft: rgba(37,99,235,0.08);
     --bs-accent-hover: #1d4ed8;
-    --bs-shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-    --bs-shadow-md: 0 4px 16px rgba(0,0,0,0.07);
+    --bs-shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+    --bs-shadow-md: 0 4px 16px rgba(0,0,0,0.06);
 }
+
+/* ── Light mode: force page background over main site styles ── */
+[data-theme="light"] body,
+[data-theme="light"] { background-color: #F5F3EF !important; }
+[data-theme="light"] .background { background: #F5F3EF !important; opacity: 1 !important; }
+[data-theme="light"] .streak { display: none !important; }
 
 /* ═══════════════════════════════════════════════
    HOMEPAGE BLOG CARDS
