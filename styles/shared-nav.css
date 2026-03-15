@@ -74,6 +74,37 @@
 [data-theme="light"] .blog-nav-link:hover { color: #1d1d1f; background: rgba(0,0,0,0.04); }
 [data-theme="light"] .blog-nav-link.active { color: #0e4ca6; background: rgba(14,76,166,0.06); }
 
+/* ── BetCast Nav Link — accent pill style ──── */
+.blog-nav-link.betcast-link {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff !important;
+    border-radius: 100px;
+    padding: 0.4rem 0.95rem;
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    box-shadow: 0 1px 4px rgba(59,130,246,0.25);
+    transition: all 0.25s;
+    gap: 0.35rem;
+}
+.blog-nav-link.betcast-link i { opacity: 1; font-size: 0.68rem; }
+.blog-nav-link.betcast-link:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff !important;
+    box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+    transform: translateY(-1px);
+}
+[data-theme="light"] .blog-nav-link.betcast-link {
+    background: linear-gradient(135deg, #0e4ca6, #0a3d8f);
+    color: #fff !important;
+    box-shadow: 0 1px 4px rgba(14,76,166,0.2);
+}
+[data-theme="light"] .blog-nav-link.betcast-link:hover {
+    background: linear-gradient(135deg, #0a3d8f, #083070) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 14px rgba(14,76,166,0.3);
+}
+
 /* ── Right Section ────────────────────────────── */
 .blog-nav-right {
     display: flex;
@@ -194,6 +225,30 @@
 [data-theme="light"] .blog-nav-mobile-link { color: #6e6e73; }
 [data-theme="light"] .blog-nav-mobile-link:hover { color: #1d1d1f; background: rgba(0,0,0,0.04); }
 [data-theme="light"] .blog-nav-mobile-link.active { color: #0e4ca6; background: rgba(14,76,166,0.06); }
+
+/* Mobile BetCast link */
+.blog-nav-mobile-link.betcast-link {
+    background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(37,99,235,0.08));
+    color: #3b82f6 !important;
+    border-left: 3px solid #3b82f6;
+    border-radius: 0 8px 8px 0;
+    font-weight: 600;
+    margin-top: 0.25rem;
+}
+.blog-nav-mobile-link.betcast-link:hover,
+.blog-nav-mobile-link.betcast-link:active {
+    background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(37,99,235,0.12));
+    color: #2563eb !important;
+}
+[data-theme="light"] .blog-nav-mobile-link.betcast-link {
+    background: linear-gradient(135deg, rgba(14,76,166,0.06), rgba(10,61,143,0.04));
+    color: #0e4ca6 !important;
+    border-left-color: #0e4ca6;
+}
+[data-theme="light"] .blog-nav-mobile-link.betcast-link:hover {
+    background: linear-gradient(135deg, rgba(14,76,166,0.1), rgba(10,61,143,0.06));
+    color: #0a3d8f !important;
+}
 
 @media (max-width: 991px) {
     .blog-nav-links { display: none; }
