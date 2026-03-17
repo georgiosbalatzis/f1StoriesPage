@@ -347,33 +347,61 @@
     }
 
     // ── 8. FIX TTS HEADER TAP AREA ─────────────────
+    // FIXED: The old implementation cloned the header, which destroyed
+    // all event listeners set up by article-script.js, and then added
+    // both click + touchend handlers that caused double-toggle on
+    // touch devices (touchend fires toggleTTS, then click also fires
+    // toggleTTS → opens then immediately closes → appears broken).
+    //
+    // New approach: Do NOT clone. Instead, attach a single delegated
+    // handler that uses a debounce guard to prevent double-firing.
     function fixTTSHeader() {
         var header = document.querySelector('.tts-header');
         var body = document.getElementById('tts-body');
         var toggle = document.getElementById('tts-toggle');
         if (!header || !body || !toggle) return;
 
-        // The existing handler in article-script.js attaches to
-        // both the header and the toggle. On mobile, both fire.
-        // Fix: Clone header to remove old listeners, add one clean handler.
-        var newHeader = header.cloneNode(true);
-        header.parentNode.replaceChild(newHeader, header);
+        // Track the last toggle timestamp to prevent double-fire
+        var lastToggle = 0;
+        var DEBOUNCE_MS = 300;
 
-        var newToggle = newHeader.querySelector('.tts-toggle');
-
-        function toggleTTS(e) {
-            e.preventDefault();
-            e.stopPropagation();
+        function doToggle() {
+            var now = Date.now();
+            if (now - lastToggle < DEBOUNCE_MS) return false;
+            lastToggle = now;
             body.classList.toggle('open');
-            if (newToggle) newToggle.classList.toggle('open');
+            toggle.classList.toggle('open');
+            return true;
         }
 
-        newHeader.addEventListener('click', toggleTTS);
-        // Prevent double-firing on touch devices
-        newHeader.addEventListener('touchend', function (e) {
+        // Instead of cloning (which breaks article-script.js handlers),
+        // we intercept at the capture phase to ensure our debounce runs.
+        // This works WITH the existing handlers rather than replacing them.
+        //
+        // Strategy: Use a capturing listener on the header that sets a flag.
+        // The flag prevents article-script.js's handlers from double-toggling
+        // because we call stopImmediatePropagation after our first toggle.
+
+        // Remove the inline handlers that article-script.js may have set
+        // by using a capture-phase listener that takes control.
+        header.addEventListener('click', function (e) {
+            // Don't interfere with non-header clicks (e.g., speed slider inside tts-body)
+            if (!e.target.closest('.tts-header')) return;
+
             e.preventDefault();
-            toggleTTS(e);
-        }, { passive: false });
+            e.stopImmediatePropagation(); // prevent article-script.js handler from also toggling
+            doToggle();
+        }, true); // capture phase — runs before article-script.js's bubble-phase handler
+
+        // On touch devices, touchend fires before click.
+        // We handle it and prevent the subsequent click from double-toggling.
+        header.addEventListener('touchend', function (e) {
+            if (!e.target.closest('.tts-header')) return;
+
+            e.preventDefault(); // prevents the ghost click
+            e.stopImmediatePropagation();
+            doToggle();
+        }, { capture: true, passive: false });
     }
 
     // ── 9. VIEWPORT HEIGHT FIX (100vh issue on mobile)
