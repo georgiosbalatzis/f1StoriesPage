@@ -1,4 +1,6 @@
 // article-script.js — Revamped article page functionality
+// TTS: Now uses pre-generated MP3 narration (via tts-generator.js)
+// Falls back to browser SpeechSynthesis only if no MP3 exists.
 document.addEventListener('DOMContentLoaded', function () {
     const $ = sel => document.querySelector(sel);
     const $$ = sel => document.querySelectorAll(sel);
@@ -84,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // ── TTS: Audio Player (MP3) with SpeechSynthesis fallback ──
     function setupTTS() {
         const toggle = $('#tts-toggle');
         const body = $('#tts-body');
@@ -92,16 +95,38 @@ document.addEventListener('DOMContentLoaded', function () {
         const stopBtn = $('#tts-stop');
         const speedSlider = $('#tts-speed');
         const speedValue = $('#tts-speed-value');
-        const voiceSelect = $('#tts-voice');
         const progressBar = $('#tts-progress-bar');
+        const progressTrack = $('#tts-progress-track');
         const statusEl = $('#tts-status');
+        const currentTimeEl = $('#tts-current-time');
+        const durationEl = $('#tts-duration');
         const content = $('.article-content');
+        const ttsWidget = $('#tts-widget');
         if (!toggle || !body || !content) return;
 
-        let utterance = null, isPaused = false, progressInterval = null;
-        let estimatedDuration = 0, startTime = 0, pausedElapsed = 0;
+        // Determine narration MP3 path from current article URL
+        const pathParts = window.location.pathname.split('/');
+        const entryIdx = pathParts.indexOf('blog-entries');
+        let mp3Url = null;
+        if (entryIdx !== -1 && pathParts[entryIdx + 1]) {
+            const basePath = pathParts.slice(0, entryIdx + 2).join('/');
+            mp3Url = basePath + '/narration.mp3';
+        }
 
-        // Make entire header row clickable
+        let audioEl = null;
+        let mode = null; // 'mp3' or 'speech'
+        let speechUtterance = null;
+        let isPaused = false;
+
+        // ── Format time helper ──
+        function formatTime(seconds) {
+            if (!seconds || !isFinite(seconds)) return '0:00';
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return m + ':' + (s < 10 ? '0' : '') + s;
+        }
+
+        // ── Toggle panel ──
         const ttsHeader = $('.tts-header');
         if (ttsHeader) {
             ttsHeader.addEventListener('click', (e) => {
@@ -110,73 +135,276 @@ document.addEventListener('DOMContentLoaded', function () {
                 toggle.classList.toggle('open');
             });
         }
-        toggle.addEventListener('click', () => { body.classList.toggle('open'); toggle.classList.toggle('open'); });
+        toggle.addEventListener('click', () => {
+            body.classList.toggle('open');
+            toggle.classList.toggle('open');
+        });
 
-        function loadVoices() {
-            const voices = speechSynthesis.getVoices();
-            if (!voices.length) return;
-            voiceSelect.innerHTML = '<option value="">Αυτόματη / Auto</option>';
-            const addGroup = (label, list) => {
-                if (!list.length) return;
-                const group = document.createElement('optgroup');
-                group.label = label;
-                list.forEach(v => { const opt = document.createElement('option'); opt.value = v.name; opt.textContent = `${v.name} (${v.lang})`; group.appendChild(opt); });
-                voiceSelect.appendChild(group);
-            };
-            addGroup('Ελληνικά', voices.filter(v => v.lang.startsWith('el')));
-            addGroup('English', voices.filter(v => v.lang.startsWith('en')));
-            addGroup('Other', voices.filter(v => !v.lang.startsWith('el') && !v.lang.startsWith('en')).slice(0, 20));
+        // ── Check if MP3 narration exists ──
+        function checkMP3() {
+            return new Promise((resolve) => {
+                if (!mp3Url) { resolve(false); return; }
+                const xhr = new XMLHttpRequest();
+                xhr.open('HEAD', mp3Url, true);
+                xhr.onload = () => resolve(xhr.status >= 200 && xhr.status < 400);
+                xhr.onerror = () => resolve(false);
+                xhr.send();
+            });
         }
-        speechSynthesis.onvoiceschanged = loadVoices;
-        loadVoices();
 
-        function getArticleText() {
-            const clone = content.cloneNode(true);
-            clone.querySelectorAll('script, style, .tts-widget, .social-share-bar').forEach(el => el.remove());
-            return clone.textContent.replace(/\s+/g, ' ').trim();
+        // ── Initialize: detect mode ──
+        checkMP3().then((hasMP3) => {
+            if (hasMP3) {
+                mode = 'mp3';
+                initAudioPlayer();
+                if (statusEl) statusEl.textContent = 'Έτοιμο — Ακούστε το άρθρο';
+                if (ttsWidget) ttsWidget.classList.add('has-audio');
+            } else {
+                mode = 'speech';
+                initSpeechFallback();
+                if (statusEl) statusEl.textContent = 'Έτοιμο (browser voice)';
+            }
+        });
+
+        // ══════════════════════════════════════════════
+        // MODE 1: MP3 Audio Player
+        // ══════════════════════════════════════════════
+        function initAudioPlayer() {
+            audioEl = new Audio(mp3Url);
+            audioEl.preload = 'metadata';
+
+            // Hide voice selector (not needed for MP3)
+            const voiceRow = $('.tts-voice-selector');
+            if (voiceRow) voiceRow.style.display = 'none';
+
+            // Duration loaded
+            audioEl.addEventListener('loadedmetadata', () => {
+                if (durationEl) durationEl.textContent = formatTime(audioEl.duration);
+            });
+
+            // Progress update
+            audioEl.addEventListener('timeupdate', () => {
+                if (!audioEl.duration) return;
+                const pct = (audioEl.currentTime / audioEl.duration) * 100;
+                if (progressBar) progressBar.style.width = pct + '%';
+                if (currentTimeEl) currentTimeEl.textContent = formatTime(audioEl.currentTime);
+            });
+
+            // Ended
+            audioEl.addEventListener('ended', () => {
+                resetUI();
+                if (statusEl) statusEl.textContent = 'Ολοκληρώθηκε';
+                if (progressBar) progressBar.style.width = '100%';
+            });
+
+            // Error
+            audioEl.addEventListener('error', () => {
+                resetUI();
+                if (statusEl) statusEl.textContent = 'Σφάλμα φόρτωσης audio';
+                // Fall back to speech synthesis
+                mode = 'speech';
+                initSpeechFallback();
+            });
+
+            // Seek on progress bar click
+            if (progressTrack) {
+                progressTrack.style.cursor = 'pointer';
+                progressTrack.addEventListener('click', (e) => {
+                    if (!audioEl || !audioEl.duration) return;
+                    const rect = progressTrack.getBoundingClientRect();
+                    const pct = (e.clientX - rect.left) / rect.width;
+                    audioEl.currentTime = pct * audioEl.duration;
+                });
+            }
+
+            // Play
+            if (playBtn) playBtn.addEventListener('click', () => {
+                if (!audioEl) return;
+                audioEl.play().then(() => {
+                    playBtn.style.display = 'none';
+                    if (pauseBtn) pauseBtn.style.display = '';
+                    if (statusEl) statusEl.textContent = 'Αναπαραγωγή...';
+                }).catch(() => {
+                    if (statusEl) statusEl.textContent = 'Σφάλμα αναπαραγωγής';
+                });
+            });
+
+            // Pause
+            if (pauseBtn) pauseBtn.addEventListener('click', () => {
+                if (!audioEl) return;
+                audioEl.pause();
+                pauseBtn.style.display = 'none';
+                if (playBtn) playBtn.style.display = '';
+                if (statusEl) statusEl.textContent = 'Παύση';
+            });
+
+            // Stop
+            if (stopBtn) stopBtn.addEventListener('click', () => {
+                if (!audioEl) return;
+                audioEl.pause();
+                audioEl.currentTime = 0;
+                resetUI();
+                if (statusEl) statusEl.textContent = 'Έτοιμο — Ακούστε το άρθρο';
+            });
+
+            // Speed
+            if (speedSlider) speedSlider.addEventListener('input', () => {
+                const val = parseFloat(speedSlider.value);
+                if (speedValue) speedValue.textContent = val + 'x';
+                if (audioEl) audioEl.playbackRate = val;
+            });
         }
-        function updateProgress() {
-            if (!estimatedDuration) return;
-            const elapsed = (Date.now() - startTime) / 1000 + pausedElapsed;
-            if (progressBar) progressBar.style.width = Math.min(100, (elapsed / estimatedDuration) * 100) + '%';
+
+        // ══════════════════════════════════════════════
+        // MODE 2: SpeechSynthesis Fallback
+        // ══════════════════════════════════════════════
+        function initSpeechFallback() {
+            if (!('speechSynthesis' in window)) {
+                if (ttsWidget) ttsWidget.style.display = 'none';
+                return;
+            }
+
+            const voiceSelect = $('#tts-voice');
+            let progressInterval = null;
+            let estimatedDuration = 0, startTime = 0, pausedElapsed = 0;
+
+            // Hide time display (not accurate for speech)
+            if (currentTimeEl) currentTimeEl.style.display = 'none';
+            if (durationEl) durationEl.style.display = 'none';
+            const timeSep = $('.tts-time-sep');
+            if (timeSep) timeSep.style.display = 'none';
+
+            function loadVoices() {
+                const voices = speechSynthesis.getVoices();
+                if (!voices.length || !voiceSelect) return;
+                voiceSelect.innerHTML = '<option value="">Αυτόματη / Auto</option>';
+                const addGroup = (label, list) => {
+                    if (!list.length) return;
+                    const group = document.createElement('optgroup');
+                    group.label = label;
+                    list.forEach(v => {
+                        const opt = document.createElement('option');
+                        opt.value = v.name;
+                        opt.textContent = `${v.name} (${v.lang})`;
+                        group.appendChild(opt);
+                    });
+                    voiceSelect.appendChild(group);
+                };
+                addGroup('Ελληνικά', voices.filter(v => v.lang.startsWith('el')));
+                addGroup('English', voices.filter(v => v.lang.startsWith('en')));
+                addGroup('Other', voices.filter(v => !v.lang.startsWith('el') && !v.lang.startsWith('en')).slice(0, 20));
+            }
+            speechSynthesis.onvoiceschanged = loadVoices;
+            loadVoices();
+
+            function getArticleText() {
+                const clone = content.cloneNode(true);
+                clone.querySelectorAll('script, style, .tts-widget, .social-share-bar').forEach(el => el.remove());
+                return clone.textContent.replace(/\s+/g, ' ').trim();
+            }
+
+            function updateProgress() {
+                if (!estimatedDuration) return;
+                const elapsed = (Date.now() - startTime) / 1000 + pausedElapsed;
+                if (progressBar) progressBar.style.width = Math.min(100, (elapsed / estimatedDuration) * 100) + '%';
+            }
+            function startProgressTracker() { stopProgressTracker(); progressInterval = setInterval(updateProgress, 200); }
+            function stopProgressTracker() { if (progressInterval) { clearInterval(progressInterval); progressInterval = null; } }
+
+            function resetSpeechUI() {
+                stopProgressTracker();
+                isPaused = false;
+                speechUtterance = null;
+                pausedElapsed = 0;
+                if (playBtn) playBtn.style.display = '';
+                if (pauseBtn) pauseBtn.style.display = 'none';
+                if (progressBar) progressBar.style.width = '0%';
+            }
+
+            if (playBtn) playBtn.addEventListener('click', () => {
+                if (mode !== 'speech') return;
+
+                if (isPaused && speechUtterance) {
+                    speechSynthesis.resume();
+                    isPaused = false;
+                    startTime = Date.now();
+                    startProgressTracker();
+                    playBtn.style.display = 'none';
+                    if (pauseBtn) pauseBtn.style.display = '';
+                    if (statusEl) statusEl.textContent = 'Αναπαραγωγή...';
+                    return;
+                }
+
+                speechSynthesis.cancel();
+                const text = getArticleText();
+                if (!text) return;
+
+                speechUtterance = new SpeechSynthesisUtterance(text);
+                speechUtterance.rate = parseFloat(speedSlider?.value || 1);
+
+                const sv = voiceSelect?.value;
+                if (sv) {
+                    const v = speechSynthesis.getVoices().find(v => v.name === sv);
+                    if (v) speechUtterance.voice = v;
+                }
+
+                estimatedDuration = (text.split(/\s+/).length / 150) * 60 / speechUtterance.rate;
+                startTime = Date.now();
+                pausedElapsed = 0;
+
+                speechUtterance.onstart = () => {
+                    playBtn.style.display = 'none';
+                    if (pauseBtn) pauseBtn.style.display = '';
+                    if (statusEl) statusEl.textContent = 'Αναπαραγωγή...';
+                    startProgressTracker();
+                };
+                speechUtterance.onend = () => {
+                    resetSpeechUI();
+                    if (statusEl) statusEl.textContent = 'Ολοκληρώθηκε';
+                    if (progressBar) progressBar.style.width = '100%';
+                };
+                speechUtterance.onerror = () => {
+                    resetSpeechUI();
+                    if (statusEl) statusEl.textContent = 'Σφάλμα αναπαραγωγής';
+                };
+
+                speechSynthesis.speak(speechUtterance);
+            });
+
+            if (pauseBtn) pauseBtn.addEventListener('click', () => {
+                if (mode !== 'speech') return;
+                if (speechSynthesis.speaking && !isPaused) {
+                    pausedElapsed += (Date.now() - startTime) / 1000;
+                    speechSynthesis.pause();
+                    isPaused = true;
+                    stopProgressTracker();
+                    pauseBtn.style.display = 'none';
+                    if (playBtn) playBtn.style.display = '';
+                    if (statusEl) statusEl.textContent = 'Παύση';
+                }
+            });
+
+            if (stopBtn) stopBtn.addEventListener('click', () => {
+                if (mode !== 'speech') return;
+                speechSynthesis.cancel();
+                resetSpeechUI();
+                if (statusEl) statusEl.textContent = 'Έτοιμο (browser voice)';
+            });
+
+            if (speedSlider) speedSlider.addEventListener('input', () => {
+                const val = parseFloat(speedSlider.value);
+                if (speedValue) speedValue.textContent = val + 'x';
+                if (speechUtterance) speechUtterance.rate = val;
+            });
         }
-        function startProgressTracker() { stopProgressTracker(); progressInterval = setInterval(updateProgress, 200); }
-        function stopProgressTracker() { if (progressInterval) { clearInterval(progressInterval); progressInterval = null; } }
-        function resetTTSUI() {
-            stopProgressTracker(); isPaused = false; utterance = null; pausedElapsed = 0;
+
+        // ── Shared reset ──
+        function resetUI() {
             if (playBtn) playBtn.style.display = '';
             if (pauseBtn) pauseBtn.style.display = 'none';
             if (progressBar) progressBar.style.width = '0%';
+            if (currentTimeEl) currentTimeEl.textContent = '0:00';
         }
-
-        if (playBtn) playBtn.addEventListener('click', () => {
-            if (isPaused && utterance) {
-                speechSynthesis.resume(); isPaused = false; startTime = Date.now(); startProgressTracker();
-                playBtn.style.display = 'none'; if (pauseBtn) pauseBtn.style.display = '';
-                if (statusEl) statusEl.textContent = 'Αναπαραγωγή...'; return;
-            }
-            speechSynthesis.cancel();
-            const text = getArticleText(); if (!text) return;
-            utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = parseFloat(speedSlider?.value || 1);
-            const sv = voiceSelect?.value;
-            if (sv) { const v = speechSynthesis.getVoices().find(v => v.name === sv); if (v) utterance.voice = v; }
-            estimatedDuration = (text.split(/\s+/).length / 150) * 60 / utterance.rate;
-            startTime = Date.now(); pausedElapsed = 0;
-            utterance.onstart = () => { playBtn.style.display = 'none'; if (pauseBtn) pauseBtn.style.display = ''; if (statusEl) statusEl.textContent = 'Αναπαραγωγή...'; startProgressTracker(); };
-            utterance.onend = () => { resetTTSUI(); if (statusEl) statusEl.textContent = 'Ολοκληρώθηκε'; if (progressBar) progressBar.style.width = '100%'; };
-            utterance.onerror = () => { resetTTSUI(); if (statusEl) statusEl.textContent = 'Σφάλμα αναπαραγωγής'; };
-            speechSynthesis.speak(utterance);
-        });
-        if (pauseBtn) pauseBtn.addEventListener('click', () => {
-            if (speechSynthesis.speaking && !isPaused) {
-                pausedElapsed += (Date.now() - startTime) / 1000; speechSynthesis.pause(); isPaused = true; stopProgressTracker();
-                pauseBtn.style.display = 'none'; if (playBtn) playBtn.style.display = '';
-                if (statusEl) statusEl.textContent = 'Παύση';
-            }
-        });
-        if (stopBtn) stopBtn.addEventListener('click', () => { speechSynthesis.cancel(); resetTTSUI(); if (statusEl) statusEl.textContent = 'Έτοιμο για ανάγνωση'; });
-        if (speedSlider) speedSlider.addEventListener('input', () => { const val = parseFloat(speedSlider.value); if (speedValue) speedValue.textContent = val + 'x'; if (utterance) utterance.rate = val; });
     }
 
     async function setupNavigation() {
@@ -220,16 +448,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const content = $('.article-content');
         if (!content) return;
         const headings = content.querySelectorAll('h2, h3');
-        if (headings.length < 3) return; // Only show TOC for substantial articles
+        if (headings.length < 3) return;
 
-        // Assign IDs to headings
-        headings.forEach((h, i) => {
-            if (!h.id) {
-                h.id = 'section-' + (i + 1);
-            }
-        });
+        headings.forEach((h, i) => { if (!h.id) h.id = 'section-' + (i + 1); });
 
-        // Build TOC HTML
         let tocItems = '';
         headings.forEach(h => {
             const level = h.tagName === 'H3' ? 'toc-sub' : '';
@@ -247,33 +469,29 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="toc-body" id="toc-body">${tocItems}</div>
         `;
 
-        // Insert before article content
         content.parentNode.insertBefore(tocEl, content);
 
-        // Toggle
-        const toggle = tocEl.querySelector('#toc-toggle');
-        const body = tocEl.querySelector('#toc-body');
-        if (toggle && body) {
-            toggle.addEventListener('click', () => {
-                body.classList.toggle('open');
-                toggle.classList.toggle('open');
+        const tocToggle = tocEl.querySelector('#toc-toggle');
+        const tocBody = tocEl.querySelector('#toc-body');
+        if (tocToggle && tocBody) {
+            tocToggle.addEventListener('click', () => {
+                tocBody.classList.toggle('open');
+                tocToggle.classList.toggle('open');
             });
         }
 
-        // Smooth scroll + active tracking
         tocEl.querySelectorAll('.toc-item').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const target = document.querySelector(link.getAttribute('href'));
                 if (target) {
-                    const offset = 80; // navbar height
+                    const offset = 80;
                     const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
                     window.scrollTo({ top, behavior: 'smooth' });
                 }
             });
         });
 
-        // Highlight active section on scroll
         let tocTicking = false;
         const tocLinks = tocEl.querySelectorAll('.toc-item');
         window.addEventListener('scroll', () => {

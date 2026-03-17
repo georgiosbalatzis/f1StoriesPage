@@ -38,7 +38,9 @@
     <link rel="stylesheet" href="/styles.css">
     <link rel="stylesheet" href="/blog-module/blog-styles.css">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.css">
+    <link rel="stylesheet" href="/blog-module/blog-mobile-fixes.css">
     <link rel="stylesheet" href="/styles/shared-nav.css">
+    <link rel="stylesheet" href="/blog-module/blog-visual-fixes.css">
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
@@ -136,6 +138,7 @@
                 </div>
             </div>
 
+            <!-- TTS Widget — MP3 narration with SpeechSynthesis fallback -->
             <div class="tts-widget" id="tts-widget">
                 <div class="tts-header">
                     <i class="fas fa-headphones-alt"></i>
@@ -147,6 +150,11 @@
                         <button class="tts-btn" id="tts-play" title="Play"><i class="fas fa-play"></i></button>
                         <button class="tts-btn" id="tts-pause" title="Pause" style="display:none;"><i class="fas fa-pause"></i></button>
                         <button class="tts-btn" id="tts-stop" title="Stop"><i class="fas fa-stop"></i></button>
+                        <div class="tts-time-display">
+                            <span id="tts-current-time">0:00</span>
+                            <span class="tts-time-sep">/</span>
+                            <span id="tts-duration">0:00</span>
+                        </div>
                         <div class="tts-speed-control">
                             <label for="tts-speed">Speed:</label>
                             <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
@@ -157,8 +165,10 @@
                         <label for="tts-voice">Φωνή / Voice:</label>
                         <select id="tts-voice"><option value="">Αυτόματη / Auto</option></select>
                     </div>
-                    <div class="tts-progress"><div class="tts-progress-bar" id="tts-progress-bar"></div></div>
-                    <div class="tts-status" id="tts-status">Έτοιμο για ανάγνωση</div>
+                    <div class="tts-progress" id="tts-progress-track">
+                        <div class="tts-progress-bar" id="tts-progress-bar"></div>
+                    </div>
+                    <div class="tts-status" id="tts-status">Φόρτωση...</div>
                 </div>
             </div>
 
@@ -437,8 +447,7 @@
 <script defer src="/scripts/navbar.js"></script>
 <script defer src="/scripts/cookie-consent.js"></script>
 <script defer src="/scripts/shared-nav.js"></script>
-<!-- All inline JS for hamburger, theme toggle, progress bar, and countdown
-     has been moved to shared-nav.js -->
-
+<script defer src="/blog-module/blog-mobile-fixes.js"></script>
+<script defer src="/blog-module/blog-perf-fixes.js"></script>
 </body>
 </html>

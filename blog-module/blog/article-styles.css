@@ -2,6 +2,7 @@
    F1 Stories Blog — Article Styles (Revamped)
    Modern minimal with dark/light theming
    + Reading progress bar
+   + MP3 narration player with seek
    
    NOTE: .blog-nav, .theme-toggle-btn, .scroll-to-top-btn
    have been moved to /styles/shared-nav.css
@@ -30,7 +31,7 @@
     --blog-transition: 0.25s cubic-bezier(0.4,0,0.2,1);
 }
 
-/* ── Light Theme (Option A: Clean White) ─────── */
+/* ── Light Theme ─────────────────────────────── */
 [data-theme="light"] {
     --blog-bg: #FFFFFF;
     --blog-surface: #f5f5f7;
@@ -126,25 +127,177 @@
 .share-btn.copied { background: #10b981 !important; animation: copyPulse 0.35s ease; }
 @keyframes copyPulse { 0%{transform:scale(1)} 50%{transform:scale(1.15)} 100%{transform:scale(1)} }
 
-/* ── TTS Widget ──────────────────────────────── */
-.tts-widget { margin: 0; border-bottom: 1px solid var(--blog-border); background: var(--blog-surface); overflow: hidden; }
-.tts-header { display: flex; align-items: center; gap: 0.6rem; padding: 0.7rem 2rem; cursor: pointer; color: var(--blog-accent); font-weight: 600; font-size: 0.85rem; transition: background var(--blog-transition); letter-spacing: 0.01em; }
+/* ═══════════════════════════════════════════════
+   TTS WIDGET — MP3 narration player + fallback
+   ═══════════════════════════════════════════════ */
+.tts-widget {
+    margin: 0;
+    border-bottom: 1px solid var(--blog-border);
+    background: var(--blog-surface);
+    overflow: hidden;
+}
+
+/* MP3 mode indicator badge */
+.tts-widget.has-audio .tts-header span::after {
+    content: ' — MP3';
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: var(--blog-text-tertiary);
+    letter-spacing: 0.03em;
+}
+
+.tts-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 2rem;
+    cursor: pointer;
+    color: var(--blog-accent);
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: background var(--blog-transition);
+    letter-spacing: 0.01em;
+}
 .tts-header:hover { background: var(--blog-accent-soft); }
 .tts-header i:first-child { font-size: 0.95rem; }
-.tts-toggle { margin-left: auto; background: none; border: none; color: var(--blog-accent); cursor: pointer; font-size: 0.8rem; transition: transform 0.3s ease; padding: 0.2rem; }
+
+.tts-toggle {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--blog-accent);
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+    padding: 0.2rem;
+}
 .tts-toggle.open { transform: rotate(180deg); }
-.tts-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; padding: 0 2rem; }
+
+.tts-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    padding: 0 2rem;
+}
 .tts-body.open { max-height: 300px; padding: 0.75rem 2rem 1rem; }
-.tts-controls { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-.tts-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--blog-accent); border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.75rem; transition: all var(--blog-transition); }
-.tts-btn:hover { transform: scale(1.1); box-shadow: 0 0 12px var(--blog-accent-soft); }
-.tts-speed-control { display: flex; align-items: center; gap: 0.4rem; margin-left: auto; font-size: 0.78rem; color: var(--blog-text-secondary); }
-.tts-speed-control input[type="range"] { width: 80px; accent-color: var(--blog-accent); }
-.tts-voice-selector { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.5rem; font-size: 0.78rem; color: var(--blog-text-secondary); }
-.tts-voice-selector select { background: var(--blog-surface); border: 1px solid var(--blog-border-strong); color: var(--blog-text-primary); border-radius: 6px; padding: 0.3rem 0.5rem; font-size: 0.78rem; max-width: 200px; }
-.tts-progress { height: 3px; background: var(--blog-border); border-radius: 2px; margin-top: 0.7rem; overflow: hidden; }
-.tts-progress-bar { height: 100%; width: 0%; background: var(--blog-accent); border-radius: 2px; transition: width 0.3s linear; }
-.tts-status { font-size: 0.72rem; color: var(--blog-text-tertiary); margin-top: 0.35rem; text-align: center; }
+
+.tts-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tts-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--blog-accent);
+    border: none;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all var(--blog-transition);
+}
+.tts-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 12px var(--blog-accent-soft);
+}
+
+/* ── Time display (MP3 mode) ───────────────── */
+.tts-time-display {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--blog-text-secondary);
+    font-variant-numeric: tabular-nums;
+    min-width: 70px;
+}
+.tts-time-sep {
+    color: var(--blog-text-tertiary);
+    font-size: 0.72rem;
+}
+
+/* ── Speed control ─────────────────────────── */
+.tts-speed-control {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-left: auto;
+    font-size: 0.78rem;
+    color: var(--blog-text-secondary);
+}
+.tts-speed-control input[type="range"] {
+    width: 80px;
+    accent-color: var(--blog-accent);
+}
+
+/* ── Voice selector (speech fallback only) ─── */
+.tts-voice-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--blog-text-secondary);
+}
+.tts-voice-selector select {
+    background: var(--blog-surface);
+    border: 1px solid var(--blog-border-strong);
+    color: var(--blog-text-primary);
+    border-radius: 6px;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.78rem;
+    max-width: 200px;
+}
+
+/* ── Seekable progress bar ─────────────────── */
+.tts-progress {
+    height: 5px;
+    background: var(--blog-border);
+    border-radius: 3px;
+    margin-top: 0.7rem;
+    overflow: visible;
+    position: relative;
+    cursor: pointer;
+    transition: height 0.15s ease;
+}
+.tts-progress:hover { height: 7px; }
+
+.tts-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--blog-accent);
+    border-radius: 3px;
+    transition: width 80ms linear;
+    position: relative;
+}
+
+/* Seek handle — appears on hover */
+.tts-progress:hover .tts-progress-bar::after {
+    content: '';
+    position: absolute;
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background: var(--blog-accent);
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(0,0,0,0.3);
+}
+
+.tts-status {
+    font-size: 0.72rem;
+    color: var(--blog-text-tertiary);
+    margin-top: 0.35rem;
+    text-align: center;
+}
 
 /* ── Table of Contents ───────────────────────── */
 .article-toc { margin: 0; border-bottom: 1px solid var(--blog-border); background: var(--blog-surface); }
@@ -248,7 +401,9 @@
 .related-date-badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; color: var(--blog-text-tertiary); font-weight: 500; padding: 0.2rem 0; }
 .related-date-badge i { font-size: 0.62rem; color: var(--blog-accent); }
 
-/* ── Responsive ──────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════ */
 @media (max-width: 767px) {
     .article-header { min-height: 260px; }
     .article-header-img { height: 300px; }
@@ -265,6 +420,7 @@
     .tts-header { padding: 0.6rem 1.2rem; font-size: 0.82rem; }
     .tts-body.open { padding: 0.6rem 1.2rem 0.8rem; }
     .tts-speed-control input[type="range"] { width: 60px; }
+    .tts-time-display { font-size: 0.72rem; min-width: 60px; }
     .article-navigation { flex-direction: column; }
     .article-nav-link.prev, .article-nav-link.next { margin: 0; width: 100%; justify-content: center; }
     .article-comments { padding: 1rem 1.2rem; }

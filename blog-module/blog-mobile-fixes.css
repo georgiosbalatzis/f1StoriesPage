@@ -1,0 +1,380 @@
+/* ═══════════════════════════════════════════════
+   F1 Stories Blog — Mobile QoL Fixes
+   Fixes: scroll, touch targets, share buttons,
+   reading progress, TTS, lazy images
+   ═══════════════════════════════════════════════ */
+
+/* ── 1. SCROLL FIX ───────────────────────────────
+   Problem: overflow-x:hidden on html+body kills
+   iOS elastic scroll & can block touch events.
+   Fix: only clip overflow-x on the wrapper, not
+   on html/body which iOS needs for momentum scroll.
+   ──────────────────────────────────────────────── */
+html {
+    overflow-x: clip;          /* modern replacement — doesn't break scroll */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: none;
+}
+body {
+    overflow-x: clip;
+    overflow-y: auto !important;
+    position: relative;
+    /* Remove the old overflow-x:hidden which kills iOS momentum */
+}
+
+/* Prevent horizontal overflow at the wrapper level */
+.blog-index-wrapper,
+.article-page-wrapper,
+.article-container {
+    overflow-x: clip;
+    max-width: 100vw;
+}
+
+/* ── 2. TOUCH TARGET SIZING ──────────────────────
+   Problem: Many interactive elements are < 44px,
+   failing WCAG touch-target guidelines.
+   Fix: Ensure 44×44px minimum on all tappables.
+   ──────────────────────────────────────────────── */
+@media (pointer: coarse) {
+    /* Share buttons */
+    .share-btn {
+        min-width: 44px;
+        min-height: 44px;
+        width: 44px;
+        height: 44px;
+        font-size: 0.9rem;
+        border-radius: 10px;
+    }
+
+    /* Author chips */
+    .author-chip {
+        min-height: 48px;
+        padding: 0.5rem 1rem 0.5rem 0.5rem;
+    }
+
+    /* Navigation links */
+    .article-nav-link {
+        min-height: 48px;
+        padding: 0.75rem 1.2rem;
+    }
+
+    /* TTS buttons */
+    .tts-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 0.85rem;
+    }
+
+    /* TOC items */
+    .toc-item {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0.6rem;
+    }
+
+    /* Back link */
+    .back-link {
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 0.5rem 0.5rem 0;
+    }
+
+    /* Blog card footer read-more */
+    .article-card-footer {
+        min-height: 48px;
+    }
+
+    /* Copy link / web share */
+    .share-btn.copy-link,
+    .share-btn.web-share {
+        position: relative;
+    }
+
+    /* Scroll-to-top */
+    .scroll-to-top-btn {
+        width: 48px;
+        height: 48px;
+        bottom: 1.5rem;
+        right: 1.5rem;
+    }
+
+    /* TTS header — full width tap target */
+    .tts-header {
+        min-height: 48px;
+        padding: 0.75rem 1.5rem;
+    }
+
+    /* TOC toggle */
+    .toc-toggle {
+        min-height: 48px;
+        padding: 0.75rem 1.5rem;
+    }
+
+    /* Theme toggle */
+    .theme-toggle-btn {
+        width: 48px;
+        height: 48px;
+    }
+
+    /* Hamburger */
+    .blog-nav-hamburger {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+/* ── 3. SHARE BUTTON FIXES ───────────────────────
+   Problem: Instagram DM, copy-link, web-share
+   don't respond to taps; clipboard API fails
+   silently in some mobile browsers.
+   Fix: Visual feedback + fallback handled in JS.
+   ──────────────────────────────────────────────── */
+
+/* Tap feedback for all share buttons */
+.share-btn:active {
+    transform: scale(0.9);
+    opacity: 0.7;
+}
+
+/* Copied state — green flash */
+.share-btn.copy-link.copied {
+    background: #10b981 !important;
+}
+
+/* Tooltip for copy confirmation on mobile */
+.share-btn.copy-link.copied::after {
+    content: 'Copied!';
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #10b981;
+    color: #fff;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    animation: tooltipFade 1.5s ease forwards;
+    z-index: 10;
+}
+
+@keyframes tooltipFade {
+    0%, 70% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Position share-btn for tooltip */
+.share-btn.copy-link {
+    position: relative;
+}
+
+/* ── 4. ARTICLE CARD TAP FIX ────────────────────
+   Problem: Cards don't respond to taps because
+   img-wrap has pointer-events:none and the card
+   link structure conflicts with touch.
+   Fix: Ensure the <a> card captures all taps.
+   ──────────────────────────────────────────────── */
+.article-card {
+    -webkit-tap-highlight-color: rgba(59, 130, 246, 0.08);
+    touch-action: manipulation;
+    cursor: pointer;
+    /* Remove any user-select that blocks tap */
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Let images be visible but don't block parent link taps */
+.article-card-img-wrap,
+.article-card-img-wrap * {
+    pointer-events: none;
+}
+
+/* Re-enable pointer events on the card body for text selection if needed */
+.article-card-body {
+    pointer-events: none;
+}
+
+/* Active state feedback */
+.article-card:active {
+    transform: scale(0.985);
+    transition: transform 0.1s ease;
+}
+
+/* ── 5. READING PROGRESS BAR FIX ────────────────
+   Problem: No JS drives the progress bar width.
+   The bar markup exists in template.html but
+   article-script.js never updates it.
+   Fix: Handled in the JS patch file.
+   ──────────────────────────────────────────────── */
+
+/* Ensure progress bar is visible and performant */
+.reading-progress-track {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    z-index: 1060;
+    pointer-events: none;
+    will-change: auto; /* avoid layer promotion until needed */
+}
+
+.reading-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--blog-accent, #3b82f6);
+    border-radius: 0 2px 2px 0;
+    will-change: width;
+    transition: none; /* JS drives this via rAF — no CSS transition lag */
+}
+
+/* ── 6. LAZY IMAGE LOADING FIX ──────────────────
+   Problem: Images with data-src stay invisible on
+   slow mobile connections because the .loaded
+   class sometimes doesn't get added.
+   Fix: Timeout fallback + better transition.
+   ──────────────────────────────────────────────── */
+
+/* Smooth fade-in when loaded */
+.article-card-img {
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.article-card-img[src]:not([data-src]),
+.article-card-img.loaded {
+    opacity: 1;
+}
+
+/* Fallback: if image takes > 3s, show it anyway */
+.article-card-img.force-show {
+    opacity: 1 !important;
+}
+
+/* ── 7. MOBILE SOCIAL SHARE BAR LAYOUT ──────────
+   Problem: Share bar overflows or wraps badly
+   on narrow screens.
+   Fix: Horizontal scroll with hidden scrollbar.
+   ──────────────────────────────────────────────── */
+@media (max-width: 576px) {
+    .social-share-bar {
+        padding: 0.6rem 1rem;
+        gap: 0.5rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+    }
+
+    .social-share-bar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .share-buttons {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: nowrap;
+        flex-shrink: 0;
+    }
+
+    .share-label {
+        flex-shrink: 0;
+    }
+
+    .share-label span {
+        display: none;
+    }
+}
+
+/* ── 8. TTS WIDGET MOBILE FIX ───────────────────
+   Problem: TTS body doesn't open on tap because
+   the click handler is on tts-toggle button only,
+   but the header row should be tappable.
+   Fix: Make entire header row the tap target.
+   ──────────────────────────────────────────────── */
+.tts-header {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* ── 9. AUTHOR STRIP SCROLL FIX ────────────────
+   Problem: Author chips strip doesn't scroll
+   smoothly on iOS due to missing properties.
+   ──────────────────────────────────────────────── */
+.author-strip {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+    /* Fade edges to hint at scrollability */
+    mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+}
+
+/* ── 10. PREVENT ZOOM ON INPUT FOCUS (iOS) ──────
+   Problem: iOS Safari zooms in when focusing on
+   inputs/selects with font-size < 16px.
+   Fix: Ensure all form controls are >= 16px.
+   ──────────────────────────────────────────────── */
+@media (max-width: 767px) {
+    .tts-voice-selector select,
+    .tts-speed-control input[type="range"] {
+        font-size: 16px;
+    }
+}
+
+/* ── 11. SAFE AREA INSETS (notch devices) ───────
+   Problem: Content can be obscured by notch/
+   home indicator on modern iPhones.
+   ──────────────────────────────────────────────── */
+@supports (padding: env(safe-area-inset-bottom)) {
+    .scroll-to-top-btn {
+        bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    }
+
+    footer {
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom)) !important;
+    }
+
+    .blog-nav-mobile {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .cookie-consent {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+/* ── 12. REDUCE MOTION (accessibility) ──────────
+   For users who prefer reduced motion.
+   ──────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .article-card,
+    .blog-card,
+    .related-article-card,
+    .share-btn,
+    .article-card-img,
+    .blog-img,
+    .article-header-img {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    .reading-progress-fill {
+        transition: none !important;
+    }
+
+    .article-card:hover,
+    .blog-card:hover,
+    .related-article-card:hover {
+        transform: none !important;
+    }
+}
