@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Stories — Championship Standings</title>
+    <meta property="og:title" content="F1 Stories — Championship Standings">
+    <meta property="og:description" content="Live F1 Drivers &amp; Constructors Championship standings, powered by OpenF1">
+    <meta property="og:url" content="https://f1stories.gr/standings/">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles/shared-nav.css">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
+
+    <script>
+        (function(){
+            var saved = localStorage.getItem('f1stories-theme');
+            if (saved === 'light') { document.documentElement.setAttribute('data-theme','light'); }
+            else { document.documentElement.removeAttribute('data-theme'); if (!saved) localStorage.setItem('f1stories-theme','dark'); }
+        })();
+    </script>
+
+    <style>
+        :root {
+            --st-bg: #111113; --st-surface: #161618; --st-surface-raised: #1e1e20;
+            --st-border: rgba(255,255,255,0.08); --st-border-strong: rgba(255,255,255,0.14);
+            --st-text: #e5e5e7; --st-text-secondary: #a1a1a6; --st-text-muted: #6e6e73;
+            --st-accent: #3b82f6; --st-accent-soft: rgba(59,130,246,0.10);
+            --st-radius: 14px; --st-radius-sm: 10px;
+            --st-transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+            --st-shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        [data-theme="light"] {
+            --st-bg: #FFFFFF; --st-surface: #f5f5f7; --st-surface-raised: #FFFFFF;
+            --st-border: rgba(0,0,0,0.06); --st-border-strong: rgba(0,0,0,0.1);
+            --st-text: #1d1d1f; --st-text-secondary: #6e6e73; --st-text-muted: #86868b;
+            --st-accent: #0e4ca6; --st-accent-soft: rgba(14,76,166,0.06);
+            --st-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+        }
+
+        html, body { -webkit-overflow-scrolling: touch; overflow-x: hidden; }
+        body { overflow-y: auto !important; }
+        [data-theme="light"] body { background-color: #FFFFFF !important; }
+        [data-theme="light"] .background { background: #FFFFFF !important; opacity: 1 !important; }
+        [data-theme="light"] .streak { display: none !important; }
+        [data-theme="light"] footer { background-color: #f5f5f7 !important; }
+        [data-theme="light"] footer p, [data-theme="light"] footer a, [data-theme="light"] footer .footer-link, [data-theme="light"] footer .footer-separator { color: #86868b !important; }
+        [data-theme="light"] footer a:hover, [data-theme="light"] footer .footer-link:hover { color: #0e4ca6 !important; }
+        [data-theme="light"] .social-media a, [data-theme="light"] .social-media a i { color: #86868b !important; }
+        [data-theme="light"] .social-media a:hover, [data-theme="light"] .social-media a:hover i { color: #0e4ca6 !important; }
+
+        .standings-wrapper { font-family: 'DM Sans','Helvetica Neue',sans-serif; color: var(--st-text); -webkit-font-smoothing: antialiased; padding-top: 1rem; }
+
+        .standings-header { padding: 2rem 0 0.5rem; }
+        .standings-title { font-family: 'Outfit',sans-serif; font-size: 2.4rem; font-weight: 800; letter-spacing: -0.03em; color: var(--st-text); margin: 0; line-height: 1.1; }
+        .standings-sub { color: var(--st-text-muted); font-size: 0.88rem; margin-top: 0.35rem; }
+        .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #10b981; margin-right: 0.4rem; animation: livePulse 1.8s ease-in-out infinite; vertical-align: middle; }
+        @keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+        .standings-tabs { display: flex; justify-content: center; gap: 0.25rem; margin: 1.5rem auto 1.8rem; background: var(--st-surface); border-radius: var(--st-radius-sm); padding: 4px; max-width: 380px; border: 1px solid var(--st-border); }
+        .standings-tab { flex: 1; background: transparent; border: none; color: var(--st-text-secondary); font-size: 0.88rem; font-weight: 600; padding: 0.55rem 1rem; border-radius: 8px; cursor: pointer; transition: all var(--st-transition); display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; }
+        .standings-tab:hover { color: var(--st-text); }
+        .standings-tab.active { background: var(--st-accent); color: #fff; box-shadow: var(--st-shadow-sm); }
+        .standings-tab i { font-size: 0.78em; }
+
+        .standings-panel { display: none; }
+        .standings-panel.active { display: block; animation: panelIn 0.35s ease-out; }
+        @keyframes panelIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+        .standings-table-wrap { background: var(--st-surface-raised); border: 1px solid var(--st-border); border-radius: var(--st-radius); overflow: hidden; box-shadow: var(--st-shadow-sm); }
+        [data-theme="light"] .standings-table-wrap { box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06); }
+
+        .st-row { display: grid; grid-template-columns: 48px 1fr auto; align-items: center; padding: 0.65rem 1.2rem; border-bottom: 1px solid var(--st-border); transition: background var(--st-transition); position: relative; min-height: 62px; }
+        .st-row:last-child { border-bottom: none; }
+        .st-row:hover { background: var(--st-accent-soft); }
+        .st-row::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--team-color, var(--st-accent)); border-radius: 0 2px 2px 0; }
+
+        .st-pos { font-family: 'Outfit',sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--st-text); text-align: center; }
+        .st-row:nth-child(1) .st-pos { color: #fbbf24; }
+        .st-row:nth-child(2) .st-pos { color: #94a3b8; }
+        .st-row:nth-child(3) .st-pos { color: #d97706; }
+
+        .st-info { display: flex; align-items: center; gap: 0.7rem; min-width: 0; }
+        .st-headshot { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--team-color, var(--st-border)); flex-shrink: 0; background: var(--st-surface); }
+        .st-avatar-fallback { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.72rem; flex-shrink: 0; border: 2px solid var(--team-color, var(--st-border)); background: var(--st-surface); }
+        .st-name-block { min-width: 0; }
+        .st-name { font-size: 0.92rem; font-weight: 600; color: var(--st-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25; }
+        .st-team-label { font-size: 0.7rem; color: var(--st-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .st-points-area { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.12rem; }
+        .st-points { font-family: 'Outfit',sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--st-text); line-height: 1; }
+        .st-delta { font-size: 0.68rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.15rem; padding: 0.08rem 0.35rem; border-radius: 100px; }
+        .st-delta.up { color: #10b981; background: rgba(16,185,129,0.1); }
+        .st-delta.down { color: #ef4444; background: rgba(239,68,68,0.1); }
+        .st-delta.same { color: var(--st-text-muted); }
+
+        .st-bar-wrap { position: absolute; bottom: 0; left: 48px; right: 0; height: 2px; }
+        .st-bar { height: 100%; opacity: 0.2; border-radius: 0 1px 1px 0; transition: width 0.6s ease-out; }
+
+        .st-team-swatch { width: 40px; height: 40px; border-radius: var(--st-radius-sm); display: flex; align-items: center; justify-content: center; font-family: 'Outfit',sans-serif; font-size: 0.65rem; font-weight: 700; color: #fff; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.04em; }
+        .st-drivers-list { font-size: 0.68rem; color: var(--st-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .chart-section { margin-top: 2rem; background: var(--st-surface-raised); border: 1px solid var(--st-border); border-radius: var(--st-radius); padding: 1.5rem; box-shadow: var(--st-shadow-sm); }
+        [data-theme="light"] .chart-section { box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06); }
+        .chart-title { font-family: 'Outfit',sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--st-text); margin-bottom: 1.2rem; }
+        .chart-bar-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+        .chart-label { width: 42px; font-size: 0.7rem; font-weight: 600; color: var(--st-text-secondary); text-align: right; flex-shrink: 0; }
+        .chart-track { flex: 1; height: 22px; background: var(--st-surface); border-radius: 4px; overflow: hidden; }
+        .chart-fill { height: 100%; border-radius: 4px; transition: width 0.8s cubic-bezier(.4,0,.2,1); display: flex; align-items: center; justify-content: flex-end; padding-right: 0.5rem; min-width: 30px; }
+        .chart-pts-label { font-size: 0.62rem; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+
+        .skeleton-row { display: grid; grid-template-columns: 48px 1fr auto; align-items: center; padding: 0.75rem 1.2rem; border-bottom: 1px solid var(--st-border); gap: 0.7rem; }
+        .skel { background: var(--st-surface); border-radius: 6px; animation: skelPulse 1.5s ease-in-out infinite; }
+        .skel-circle { width: 40px; height: 40px; border-radius: 50%; }
+        @keyframes skelPulse { 0%,100%{opacity:.4} 50%{opacity:.7} }
+
+        .standings-error, .standings-empty { text-align: center; padding: 3rem 1rem; color: var(--st-text-muted); }
+        .standings-error i, .standings-empty i { font-size: 2rem; margin-bottom: 0.75rem; display: block; opacity: 0.4; }
+        .retry-btn { margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1.1rem; background: var(--st-accent-soft); color: var(--st-accent); border: none; border-radius: var(--st-radius-sm); font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all var(--st-transition); }
+        .retry-btn:hover { background: var(--st-accent); color: #fff; }
+
+        .data-source { text-align: center; margin-top: 1.2rem; font-size: 0.7rem; color: var(--st-text-muted); }
+        .data-source a { color: var(--st-accent); text-decoration: none; }
+
+        @media (max-width: 767px) {
+            .standings-title { font-size: 1.8rem; }
+            .st-row { padding: 0.55rem 0.8rem; grid-template-columns: 38px 1fr auto; }
+            .st-headshot, .st-avatar-fallback, .st-team-swatch { width: 34px; height: 34px; }
+            .st-name { font-size: 0.85rem; }
+            .st-points { font-size: 1rem; }
+            .chart-section { padding: 1rem; }
+        }
+        @media (max-width: 480px) { .standings-title { font-size: 1.5rem; } }
+    </style>
+</head>
+<body>
+<div class="background"></div>
+<div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
+
+<button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle light/dark theme">
+    <i class="fas fa-sun icon-sun"></i>
+    <i class="fas fa-moon icon-moon"></i>
+</button>
+
+<header>
+    <nav class="blog-nav" id="blog-nav">
+        <div class="container blog-nav-inner">
+            <a class="blog-nav-brand" href="/"><img src="/images/logo.png" alt="F1 Stories Logo" loading="lazy"></a>
+            <div class="blog-nav-links" id="nav-links">
+                <a href="/" class="blog-nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link"><i class="fas fa-newspaper"></i> Blog</a>
+                <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener" class="blog-nav-link"><i class="fab fa-youtube"></i> YouTube</a>
+                <a href="/standings/" class="blog-nav-link active"><i class="fas fa-trophy"></i> Standings</a>
+                <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><i class="fas fa-chart-line"></i> BetCast</a>
+            </div>
+            <div class="blog-nav-right">
+                <div class="blog-nav-countdown" id="nav-countdown">
+                    <span class="countdown-flag" id="race-flag-emoji">🏁</span>
+                    <div class="countdown-info">
+                        <span class="countdown-race" id="next-race-name">Loading...</span>
+                        <span class="countdown-timer" id="race-countdown">--</span>
+                    </div>
+                </div>
+                <div class="blog-nav-countdown-mobile" id="nav-countdown-mobile">
+                    <i class="fas fa-flag-checkered"></i>
+                    <span id="race-countdown-mobile">--</span>
+                </div>
+                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+        <div class="blog-nav-mobile" id="nav-mobile">
+            <a href="/" class="blog-nav-mobile-link"><i class="fas fa-home"></i> Home</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><i class="fas fa-newspaper"></i> Blog</a>
+            <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><i class="fab fa-youtube"></i> YouTube</a>
+            <a href="/standings/" class="blog-nav-mobile-link active"><i class="fas fa-trophy"></i> Standings</a>
+            <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><i class="fas fa-chart-line"></i> BetCast</a>
+        </div>
+    </nav>
+</header>
+
+<section class="standings-wrapper py-5 mt-5">
+    <div class="container">
+        <div class="standings-header text-center">
+            <h1 class="standings-title">Championship Standings</h1>
+            <p class="standings-sub"><span class="live-dot"></span>Live data from OpenF1 — <span id="season-year">2026</span> Season</p>
+        </div>
+
+        <div class="standings-tabs" role="tablist">
+            <button class="standings-tab active" data-tab="drivers" role="tab" aria-selected="true"><i class="fas fa-helmet-safety"></i> Drivers</button>
+            <button class="standings-tab" data-tab="constructors" role="tab" aria-selected="false"><i class="fas fa-flag-checkered"></i> Constructors</button>
+        </div>
+
+        <div class="standings-panel active" id="panel-drivers" role="tabpanel">
+            <div class="standings-table-wrap" id="drivers-table"></div>
+            <div class="chart-section" id="drivers-chart" style="display:none">
+                <h3 class="chart-title"><i class="fas fa-chart-bar" style="margin-right:0.4rem;opacity:0.6;font-size:0.9em;"></i>Points Distribution — Top 10</h3>
+                <div id="drivers-chart-bars"></div>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-constructors" role="tabpanel">
+            <div class="standings-table-wrap" id="constructors-table"></div>
+            <div class="chart-section" id="constructors-chart" style="display:none">
+                <h3 class="chart-title"><i class="fas fa-chart-bar" style="margin-right:0.4rem;opacity:0.6;font-size:0.9em;"></i>Points Distribution</h3>
+                <div id="constructors-chart-bars"></div>
+            </div>
+        </div>
+
+        <div class="data-source">
+            Data provided by <a href="https://openf1.org" target="_blank" rel="noopener">OpenF1</a> · Updates after each race session
+        </div>
+    </div>
+</section>
+
+<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
+
+<footer class="py-4">
+    <div class="container"><div class="row"><div class="col-12 text-center">
+        <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. All rights reserved.</p>
+        <div class="social-media">
+            <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+            <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+        </div>
+        <div class="footer-links mt-3">
+            <a href="/privacy/privacy.html" class="footer-link">Privacy Policy</a>
+            <span class="footer-separator">|</span>
+            <a href="/privacy/terms.html" class="footer-link">Terms of Use</a>
+        </div>
+    </div></div></div>
+</footer>
+
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script defer src="/scripts/background-randomizer.js"></script>
+<script defer src="/scripts/shared-nav.js"></script>
+<script defer src="/scripts/cookie-consent.js"></script>
+
+<script>
+(function() {
+    'use strict';
+
+    var API = 'https://api.openf1.org/v1';
+    var driversTable = document.getElementById('drivers-table');
+    var constructorsTable = document.getElementById('constructors-table');
+
+    // Skeleton
+    function skelRows(n) {
+        var h = '';
+        for (var i = 0; i < n; i++) {
+            h += '<div class="skeleton-row">'
+                + '<div class="skel" style="width:22px;height:18px;margin:0 auto;"></div>'
+                + '<div style="display:flex;align-items:center;gap:0.7rem;">'
+                + '<div class="skel skel-circle"></div>'
+                + '<div><div class="skel" style="width:110px;height:11px;"></div><div class="skel" style="width:70px;height:9px;margin-top:5px;"></div></div>'
+                + '</div>'
+                + '<div class="skel" style="width:44px;height:20px;margin-left:auto;"></div>'
+                + '</div>';
+        }
+        return h;
+    }
+    driversTable.innerHTML = skelRows(10);
+    constructorsTable.innerHTML = skelRows(10);
+
+    // Tabs
+    document.querySelectorAll('.standings-tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            var t = tab.dataset.tab;
+            document.querySelectorAll('.standings-tab').forEach(function(x) { x.classList.remove('active'); x.setAttribute('aria-selected','false'); });
+            tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+            document.querySelectorAll('.standings-panel').forEach(function(p) { p.classList.remove('active'); });
+            document.getElementById('panel-' + t).classList.add('active');
+        });
+    });
+
+    function fetchJSON(url) {
+        return fetch(url).then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+    }
+
+    function esc(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+    function deltaHTML(cur, start) {
+        if (cur == null || start == null) return '';
+        var diff = start - cur;
+        if (diff > 0) return '<span class="st-delta up"><i class="fas fa-caret-up"></i>' + diff + '</span>';
+        if (diff < 0) return '<span class="st-delta down"><i class="fas fa-caret-down"></i>' + Math.abs(diff) + '</span>';
+        return '<span class="st-delta same">—</span>';
+    }
+
+    function showError(el) {
+        el.innerHTML = '<div class="standings-error">'
+            + '<i class="fas fa-exclamation-triangle"></i>'
+            + '<p>Could not load standings data.</p>'
+            + '<p style="font-size:0.8rem;">The season may not have started yet, or the API is temporarily unavailable.</p>'
+            + '<button class="retry-btn" onclick="location.reload()"><i class="fas fa-redo"></i> Retry</button>'
+            + '</div>';
+    }
+
+    function getLatestRaceSession() {
+        var yr = new Date().getFullYear();
+        return fetchJSON(API + '/sessions?session_type=Race&year=' + yr).then(function(sessions) {
+            if (!sessions || !sessions.length) throw new Error('No race sessions');
+            sessions.sort(function(a, b) { return new Date(b.date_start || b.date) - new Date(a.date_start || a.date); });
+            var now = new Date();
+            for (var i = 0; i < sessions.length; i++) {
+                if (new Date(sessions[i].date_start || sessions[i].date) <= now) return sessions[i].session_key;
+            }
+            return sessions[0].session_key;
+        });
+    }
+
+    function loadStandings() {
+        getLatestRaceSession().then(function(sk) {
+            return Promise.all([
+                fetchJSON(API + '/championship_drivers?session_key=' + sk),
+                fetchJSON(API + '/championship_teams?session_key=' + sk),
+                fetchJSON(API + '/drivers?session_key=' + sk)
+            ]).then(function(r) { return { drivers: r[0], teams: r[1], driverInfo: r[2] }; });
+        }).then(function(data) {
+            renderDrivers(data.drivers, data.driverInfo);
+            renderConstructors(data.teams, data.driverInfo);
+        }).catch(function(err) {
+            console.error('Standings error:', err);
+            showError(driversTable);
+            showError(constructorsTable);
+        });
+    }
+
+    function renderDrivers(standings, driverInfo) {
+        if (!standings || !standings.length) {
+            driversTable.innerHTML = '<div class="standings-empty"><i class="fas fa-flag-checkered"></i><p>No driver standings available yet.</p></div>';
+            return;
+        }
+        var dMap = {};
+        (driverInfo || []).forEach(function(d) { dMap[d.driver_number] = d; });
+        standings.sort(function(a, b) { return a.position_current - b.position_current; });
+        var maxPts = standings[0].points_current || 1;
+        var html = '';
+
+        standings.forEach(function(s) {
+            var d = dMap[s.driver_number] || {};
+            var tc = d.team_colour || '3b82f6';
+            var hs = d.headshot_url || '';
+            var name = d.full_name || d.broadcast_name || ('Driver #' + s.driver_number);
+            var team = d.team_name || '';
+            var acr = d.name_acronym || '';
+            var barPct = Math.max(2, (s.points_current / maxPts) * 100);
+
+            html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
+                + '<div class="st-pos">' + s.position_current + '</div>'
+                + '<div class="st-info">'
+                + (hs ? '<img class="st-headshot" src="' + esc(hs) + '" alt="' + esc(name) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+                       + '<div class="st-avatar-fallback" style="display:none;color:#' + esc(tc) + ';">' + esc(acr) + '</div>'
+                      : '<div class="st-avatar-fallback" style="color:#' + esc(tc) + ';">' + esc(acr) + '</div>')
+                + '<div class="st-name-block"><div class="st-name">' + esc(name) + '</div><div class="st-team-label">' + esc(team) + '</div></div></div>'
+                + '<div class="st-points-area"><div class="st-points">' + s.points_current + '</div>' + deltaHTML(s.position_current, s.position_start) + '</div>'
+                + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
+                + '</div>';
+        });
+        driversTable.innerHTML = html;
+
+        // Chart top 10
+        var top10 = standings.slice(0, 10);
+        var chartHTML = '';
+        top10.forEach(function(s) {
+            var d = dMap[s.driver_number] || {};
+            var tc = d.team_colour || '3b82f6';
+            var label = d.name_acronym || ('P' + s.position_current);
+            var pct = Math.max(4, (s.points_current / maxPts) * 100);
+            chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
+                + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + s.points_current + '</span></div></div></div>';
+        });
+        document.getElementById('drivers-chart-bars').innerHTML = chartHTML;
+        document.getElementById('drivers-chart').style.display = 'block';
+    }
+
+    function renderConstructors(standings, driverInfo) {
+        if (!standings || !standings.length) {
+            constructorsTable.innerHTML = '<div class="standings-empty"><i class="fas fa-flag-checkered"></i><p>No constructor standings available yet.</p></div>';
+            return;
+        }
+        var teamDrivers = {}, teamColors = {};
+        (driverInfo || []).forEach(function(d) {
+            if (!d.team_name) return;
+            if (!teamDrivers[d.team_name]) teamDrivers[d.team_name] = [];
+            teamDrivers[d.team_name].push(d.name_acronym || d.last_name || ('#' + d.driver_number));
+            if (d.team_colour) teamColors[d.team_name] = d.team_colour;
+        });
+        standings.sort(function(a, b) { return a.position_current - b.position_current; });
+        var maxPts = standings[0].points_current || 1;
+        var html = '';
+
+        standings.forEach(function(s) {
+            var tc = teamColors[s.team_name] || '3b82f6';
+            var drivers = teamDrivers[s.team_name] || [];
+            var shortName = (s.team_name || '').substring(0, 3).toUpperCase();
+            var barPct = Math.max(2, (s.points_current / maxPts) * 100);
+
+            html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
+                + '<div class="st-pos">' + s.position_current + '</div>'
+                + '<div class="st-info">'
+                + '<div class="st-team-swatch" style="background:#' + esc(tc) + ';">' + esc(shortName) + '</div>'
+                + '<div class="st-name-block"><div class="st-name">' + esc(s.team_name) + '</div><div class="st-drivers-list">' + drivers.map(esc).join(' · ') + '</div></div></div>'
+                + '<div class="st-points-area"><div class="st-points">' + s.points_current + '</div>' + deltaHTML(s.position_current, s.position_start) + '</div>'
+                + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
+                + '</div>';
+        });
+        constructorsTable.innerHTML = html;
+
+        var chartHTML = '';
+        standings.forEach(function(s) {
+            var tc = teamColors[s.team_name] || '3b82f6';
+            var label = (s.team_name || '').substring(0, 3).toUpperCase();
+            var pct = Math.max(4, (s.points_current / maxPts) * 100);
+            chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
+                + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + s.points_current + '</span></div></div></div>';
+        });
+        document.getElementById('constructors-chart-bars').innerHTML = chartHTML;
+        document.getElementById('constructors-chart').style.display = 'block';
+    }
+
+    document.getElementById('season-year').textContent = new Date().getFullYear();
+    loadStandings();
+})();
+</script>
+</body>
+</html>
