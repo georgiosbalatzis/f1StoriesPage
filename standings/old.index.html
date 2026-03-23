@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>F1 Stories — Championship Standings</title>
     <meta property="og:title" content="F1 Stories — Championship Standings">
-    <meta property="og:description" content="Live F1 Drivers &amp; Constructors Championship standings">
+    <meta property="og:description" content="Live F1 Drivers &amp; Constructors Championship standings, powered by OpenF1">
     <meta property="og:url" content="https://f1stories.gr/standings/">
     <meta property="og:type" content="website">
     <link rel="icon" type="image/png" href="/images/favicon.png">
@@ -98,15 +98,15 @@
 
         .st-points-area { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.12rem; }
         .st-points { font-family: 'Outfit',sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--st-text); line-height: 1; }
-        .st-wins { font-size: 0.68rem; color: var(--st-text-muted); }
+        .st-delta { font-size: 0.68rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.15rem; padding: 0.08rem 0.35rem; border-radius: 100px; }
+        .st-delta.up { color: #10b981; background: rgba(16,185,129,0.1); }
+        .st-delta.down { color: #ef4444; background: rgba(239,68,68,0.1); }
+        .st-delta.same { color: var(--st-text-muted); }
 
         .st-bar-wrap { position: absolute; bottom: 0; left: 48px; right: 0; height: 2px; }
         .st-bar { height: 100%; opacity: 0.2; border-radius: 0 1px 1px 0; transition: width 0.6s ease-out; }
 
-        /* Team badge in constructors view */
-        .st-team-swatch { width: 40px; height: 40px; border-radius: var(--st-radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; background: var(--st-surface); border: 1px solid var(--st-border); }
-        .st-team-swatch img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
-        .st-team-swatch .swatch-text { font-family: 'Outfit',sans-serif; font-size: 0.65rem; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.04em; }
+        .st-team-swatch { width: 40px; height: 40px; border-radius: var(--st-radius-sm); display: flex; align-items: center; justify-content: center; font-family: 'Outfit',sans-serif; font-size: 0.65rem; font-weight: 700; color: #fff; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.04em; }
         .st-drivers-list { font-size: 0.68rem; color: var(--st-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .chart-section { margin-top: 2rem; background: var(--st-surface-raised); border: 1px solid var(--st-border); border-radius: var(--st-radius); padding: 1.5rem; box-shadow: var(--st-shadow-sm); }
@@ -130,8 +130,6 @@
 
         .data-source { text-align: center; margin-top: 1.2rem; font-size: 0.7rem; color: var(--st-text-muted); }
         .data-source a { color: var(--st-accent); text-decoration: none; }
-
-        .round-badge { display: inline-flex; align-items: center; gap: 0.3rem; background: var(--st-accent-soft); color: var(--st-accent); padding: 0.2rem 0.6rem; border-radius: 100px; font-size: 0.72rem; font-weight: 600; margin-left: 0.5rem; }
 
         @media (max-width: 767px) {
             .standings-title { font-size: 1.8rem; }
@@ -193,7 +191,7 @@
     <div class="container">
         <div class="standings-header text-center">
             <h1 class="standings-title">Championship Standings</h1>
-            <p class="standings-sub"><span class="live-dot"></span>Live data — <span id="season-year">2026</span> Season <span class="round-badge" id="round-badge" style="display:none">After Round <span id="round-num"></span></span></p>
+            <p class="standings-sub"><span class="live-dot"></span>Live data from OpenF1 — <span id="season-year">2026</span> Season</p>
         </div>
 
         <div class="standings-tabs" role="tablist">
@@ -218,7 +216,7 @@
         </div>
 
         <div class="data-source">
-            Data provided by <a href="https://github.com/jolpica/jolpica-f1" target="_blank" rel="noopener">Jolpica F1</a> &amp; <a href="https://openf1.org" target="_blank" rel="noopener">OpenF1</a> · Updates after each race
+            Data provided by <a href="https://openf1.org" target="_blank" rel="noopener">OpenF1</a> · Updates after each race session
         </div>
     </div>
 </section>
@@ -252,60 +250,11 @@
 (function() {
     'use strict';
 
-    // ── API endpoints ──
-    var JOLPICA = 'https://api.jolpi.ca/ergast/f1';
-    var OPENF1  = 'https://api.openf1.org/v1';
-    var YEAR    = new Date().getFullYear();
-
+    var API = 'https://api.openf1.org/v1';
     var driversTable = document.getElementById('drivers-table');
     var constructorsTable = document.getElementById('constructors-table');
 
-    // ── 2026 Team metadata: colours + logo URLs from formula1.com ──
-    // Logo URLs use the official F1 media CDN pattern
-    var TEAMS = {
-        'mercedes':      { color: '27F4D2', name: 'Mercedes',         logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/mercedes' },
-        'red_bull':      { color: '3671C6', name: 'Red Bull Racing',  logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/red%20bull' },
-        'ferrari':       { color: 'E8002D', name: 'Ferrari',          logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/ferrari' },
-        'mclaren':       { color: 'FF8000', name: 'McLaren',          logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/mclaren' },
-        'aston_martin':  { color: '229971', name: 'Aston Martin',     logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/aston%20martin' },
-        'alpine':        { color: 'FF87BC', name: 'Alpine',           logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/alpine' },
-        'haas':          { color: 'B6BABD', name: 'Haas F1 Team',     logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/haas' },
-        'rb':            { color: '6692FF', name: 'Racing Bulls',     logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/rb' },
-        'williams':      { color: '64C4FF', name: 'Williams',         logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/williams' },
-        'sauber':        { color: '52E252', name: 'Audi',             logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/kick%20sauber' },
-        'audi':          { color: '52E252', name: 'Audi',             logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/kick%20sauber' },
-        'cadillac':      { color: '1E4168', name: 'Cadillac',         logo: '' }
-    };
-
-    // Driver headshot URL pattern from formula1.com
-    // Key = Jolpica driverId, value = headshot URL
-    var DRIVER_HEADSHOTS = {
-        'max_verstappen':  'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png.transform/1col/image.png',
-        'hamilton':        'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LEWHAM01_Lewis_Hamilton/lewham01.png.transform/1col/image.png',
-        'leclerc':         'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/C/CHALEC01_Charles_Leclerc/chalec01.png.transform/1col/image.png',
-        'norris':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LANNOR01_Lando_Norris/lannor01.png.transform/1col/image.png',
-        'russell':         'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/G/GEORUS01_George_Russell/georus01.png.transform/1col/image.png',
-        'piastri':         'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/O/OSCPIA01_Oscar_Piastri/oscpia01.png.transform/1col/image.png',
-        'sainz':           'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/C/CARSAI01_Carlos_Sainz/carsai01.png.transform/1col/image.png',
-        'alonso':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/F/FERALO01_Fernando_Alonso/feralo01.png.transform/1col/image.png',
-        'stroll':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LANSTR01_Lance_Stroll/lanstr01.png.transform/1col/image.png',
-        'gasly':           'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/P/PIEGAS01_Pierre_Gasly/piegas01.png.transform/1col/image.png',
-        'ocon':            'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/E/ESTOCO01_Esteban_Ocon/estoco01.png.transform/1col/image.png',
-        'hulkenberg':      'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/N/NICHUL01_Nico_Hulkenberg/nichul01.png.transform/1col/image.png',
-        'tsunoda':         'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/Y/YUKTSU01_Yuki_Tsunoda/yuktsu01.png.transform/1col/image.png',
-        'albon':           'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ALEALB01_Alexander_Albon/alealb01.png.transform/1col/image.png',
-        'bearman':         'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/O/OLIBEA01_Oliver_Bearman/olibea01.png.transform/1col/image.png',
-        'hadjar':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/I/ISAHAD01_Isack_Hadjar/isahad01.png.transform/1col/image.png',
-        'antonelli':       'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ANDANT01_Andrea_Kimi_Antonelli/andant01.png.transform/1col/image.png',
-        'bortoleto':       'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/G/GABBO01_Gabriel_Bortoleto/gabbo01.png.transform/1col/image.png',
-        'lawson':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LIALAW01_Liam_Lawson/lialaw01.png.transform/1col/image.png',
-        'doohan':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/J/JACDOO01_Jack_Doohan/jacdoo01.png.transform/1col/image.png',
-        'colapinto':       'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/F/FRACOL01_Franco_Colapinto/fracol01.png.transform/1col/image.png',
-        'bottas':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/V/VALBOT01_Valtteri_Bottas/valbot01.png.transform/1col/image.png',
-        'lindblad':        'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ARVLIN01_Arvid_Lindblad/arvlin01.png.transform/1col/image.png'
-    };
-
-    // ── Skeleton loader ──
+    // Skeleton
     function skelRows(n) {
         var h = '';
         for (var i = 0; i < n; i++) {
@@ -323,7 +272,7 @@
     driversTable.innerHTML = skelRows(10);
     constructorsTable.innerHTML = skelRows(10);
 
-    // ── Tab switching ──
+    // Tabs
     document.querySelectorAll('.standings-tab').forEach(function(tab) {
         tab.addEventListener('click', function() {
             var t = tab.dataset.tab;
@@ -334,28 +283,18 @@
         });
     });
 
-    // ── Helpers ──
+    function fetchJSON(url) {
+        return fetch(url).then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+    }
+
     function esc(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
 
-    function fetchJSON(url) {
-        return fetch(url).then(function(r) {
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            return r.json();
-        });
-    }
-
-    function getTeamColor(constructorId) {
-        var t = TEAMS[constructorId];
-        return t ? t.color : '3b82f6';
-    }
-
-    function getTeamLogo(constructorId) {
-        var t = TEAMS[constructorId];
-        return t ? t.logo : '';
-    }
-
-    function getHeadshot(driverId) {
-        return DRIVER_HEADSHOTS[driverId] || '';
+    function deltaHTML(cur, start) {
+        if (cur == null || start == null) return '';
+        var diff = start - cur;
+        if (diff > 0) return '<span class="st-delta up"><i class="fas fa-caret-up"></i>' + diff + '</span>';
+        if (diff < 0) return '<span class="st-delta down"><i class="fas fa-caret-down"></i>' + Math.abs(diff) + '</span>';
+        return '<span class="st-delta same">—</span>';
     }
 
     function showError(el) {
@@ -367,263 +306,41 @@
             + '</div>';
     }
 
-    // ── Fetch standings from Jolpica (primary) with OpenF1 fallback ──
-    function loadStandings() {
-        // Try current year first, fall back to 'current'
-        var driverUrl = JOLPICA + '/' + YEAR + '/driverstandings.json?limit=30';
-        var constructorUrl = JOLPICA + '/' + YEAR + '/constructorstandings.json?limit=30';
-
-        Promise.all([
-            fetchJSON(driverUrl).catch(function() {
-                return fetchJSON(JOLPICA + '/current/driverstandings.json?limit=30');
-            }),
-            fetchJSON(constructorUrl).catch(function() {
-                return fetchJSON(JOLPICA + '/current/constructorstandings.json?limit=30');
-            })
-        ]).then(function(results) {
-            var dData = results[0];
-            var cData = results[1];
-
-            // Parse Jolpica response structure
-            var dList = dData.MRData.StandingsTable.StandingsLists;
-            var cList = cData.MRData.StandingsTable.StandingsLists;
-
-            if (!dList || !dList.length) throw new Error('No driver standings data');
-
-            var dStandings = dList[0].DriverStandings;
-            var cStandings = cList && cList.length ? cList[0].ConstructorStandings : [];
-            var round = dList[0].round;
-            var season = dList[0].season;
-
-            // Update UI metadata
-            document.getElementById('season-year').textContent = season;
-            if (round) {
-                document.getElementById('round-badge').style.display = '';
-                document.getElementById('round-num').textContent = round;
+    function getLatestRaceSession() {
+        var yr = new Date().getFullYear();
+        return fetchJSON(API + '/sessions?session_type=Race&year=' + yr).then(function(sessions) {
+            if (!sessions || !sessions.length) throw new Error('No race sessions');
+            sessions.sort(function(a, b) { return new Date(b.date_start || b.date) - new Date(a.date_start || a.date); });
+            var now = new Date();
+            for (var i = 0; i < sessions.length; i++) {
+                if (new Date(sessions[i].date_start || sessions[i].date) <= now) return sessions[i].session_key;
             }
-
-            // Now try to enrich with OpenF1 driver data (headshots, team colours)
-            // This is best-effort — we render even if it fails
-            enrichWithOpenF1().then(function(openf1Map) {
-                renderDrivers(dStandings, openf1Map);
-                renderConstructors(cStandings, dStandings, openf1Map);
-            }).catch(function() {
-                // Render without OpenF1 enrichment
-                renderDrivers(dStandings, {});
-                renderConstructors(cStandings, dStandings, {});
-            });
-
-        }).catch(function(err) {
-            console.error('Standings error:', err);
-
-            // Final fallback: try OpenF1 championship endpoints directly
-            loadFromOpenF1Fallback();
+            return sessions[0].session_key;
         });
     }
 
-    // ── OpenF1 enrichment: get headshots and team colours ──
-    function enrichWithOpenF1() {
-        // Get the latest session's driver data for headshots & team colours
-        return fetchJSON(OPENF1 + '/sessions?year=' + YEAR + '&session_type=Race')
-            .then(function(sessions) {
-                if (!sessions || !sessions.length) return {};
-                // Sort by date, pick the latest completed race
-                sessions.sort(function(a, b) {
-                    return new Date(b.date_start || b.date) - new Date(a.date_start || a.date);
-                });
-                var now = new Date();
-                var sk = null;
-                for (var i = 0; i < sessions.length; i++) {
-                    if (new Date(sessions[i].date_start || sessions[i].date) <= now) {
-                        sk = sessions[i].session_key;
-                        break;
-                    }
-                }
-                if (!sk) return {};
-                return fetchJSON(OPENF1 + '/drivers?session_key=' + sk);
-            })
-            .then(function(drivers) {
-                if (!drivers || !Array.isArray(drivers)) return {};
-                var map = {};
-                drivers.forEach(function(d) {
-                    // Key by last name lowercase for matching
-                    var key = (d.last_name || '').toLowerCase();
-                    map[key] = {
-                        headshot: d.headshot_url || '',
-                        teamColor: d.team_colour || '',
-                        acronym: d.name_acronym || '',
-                        teamName: d.team_name || '',
-                        number: d.driver_number
-                    };
-                });
-                return map;
-            })
-            .catch(function() { return {}; });
+    function loadStandings() {
+        getLatestRaceSession().then(function(sk) {
+            return Promise.all([
+                fetchJSON(API + '/championship_drivers?session_key=' + sk),
+                fetchJSON(API + '/championship_teams?session_key=' + sk),
+                fetchJSON(API + '/drivers?session_key=' + sk)
+            ]).then(function(r) { return { drivers: r[0], teams: r[1], driverInfo: r[2] }; });
+        }).then(function(data) {
+            renderDrivers(data.drivers, data.driverInfo);
+            renderConstructors(data.teams, data.driverInfo);
+        }).catch(function(err) {
+            console.error('Standings error:', err);
+            showError(driversTable);
+            showError(constructorsTable);
+        });
     }
 
-    // ── OpenF1-only fallback (same as original page logic) ──
-    function loadFromOpenF1Fallback() {
-        fetchJSON(OPENF1 + '/sessions?session_type=Race&year=' + YEAR)
-            .then(function(sessions) {
-                if (!sessions || !sessions.length) throw new Error('No sessions');
-                sessions.sort(function(a, b) { return new Date(b.date_start || b.date) - new Date(a.date_start || a.date); });
-                var now = new Date();
-                var sk = null;
-                for (var i = 0; i < sessions.length; i++) {
-                    if (new Date(sessions[i].date_start || sessions[i].date) <= now) { sk = sessions[i].session_key; break; }
-                }
-                if (!sk) throw new Error('No completed race');
-                return Promise.all([
-                    fetchJSON(OPENF1 + '/championship_drivers?session_key=' + sk),
-                    fetchJSON(OPENF1 + '/championship_teams?session_key=' + sk),
-                    fetchJSON(OPENF1 + '/drivers?session_key=' + sk)
-                ]);
-            })
-            .then(function(r) {
-                renderDriversFromOpenF1(r[0], r[2]);
-                renderConstructorsFromOpenF1(r[1], r[2]);
-            })
-            .catch(function(err) {
-                console.error('OpenF1 fallback failed:', err);
-                showError(driversTable);
-                showError(constructorsTable);
-            });
-    }
-
-    // ── Render drivers from Jolpica data ──
-    function renderDrivers(standings, openf1Map) {
+    function renderDrivers(standings, driverInfo) {
         if (!standings || !standings.length) {
             driversTable.innerHTML = '<div class="standings-empty"><i class="fas fa-flag-checkered"></i><p>No driver standings available yet.</p></div>';
             return;
         }
-
-        var maxPts = parseFloat(standings[0].points) || 1;
-        var html = '';
-
-        standings.forEach(function(s) {
-            var driver = s.Driver;
-            var constructor = s.Constructors && s.Constructors[0];
-            var cId = constructor ? constructor.constructorId : '';
-            var tc = getTeamColor(cId);
-            var driverId = driver.driverId || '';
-            var lastName = (driver.familyName || '').toLowerCase();
-            var name = (driver.givenName || '') + ' ' + (driver.familyName || '');
-            var teamName = constructor ? constructor.name : '';
-            var pts = parseFloat(s.points) || 0;
-            var wins = parseInt(s.wins) || 0;
-            var pos = s.position;
-            var barPct = Math.max(2, (pts / maxPts) * 100);
-
-            // Try OpenF1 enrichment for headshot & team colour
-            var of1 = openf1Map[lastName] || {};
-            var hs = of1.headshot || getHeadshot(driverId);
-            if (of1.teamColor) tc = of1.teamColor;
-            var acr = of1.acronym || (driver.code || driverId.substring(0,3)).toUpperCase();
-
-            html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
-                + '<div class="st-pos">' + pos + '</div>'
-                + '<div class="st-info">'
-                + (hs ? '<img class="st-headshot" src="' + esc(hs) + '" alt="' + esc(name) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
-                       + '<div class="st-avatar-fallback" style="display:none;color:#' + esc(tc) + ';">' + esc(acr) + '</div>'
-                      : '<div class="st-avatar-fallback" style="color:#' + esc(tc) + ';">' + esc(acr) + '</div>')
-                + '<div class="st-name-block"><div class="st-name">' + esc(name) + '</div><div class="st-team-label">' + esc(teamName) + '</div></div></div>'
-                + '<div class="st-points-area"><div class="st-points">' + pts + '</div>'
-                + (wins > 0 ? '<div class="st-wins">' + wins + ' win' + (wins > 1 ? 's' : '') + '</div>' : '')
-                + '</div>'
-                + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
-                + '</div>';
-        });
-        driversTable.innerHTML = html;
-
-        // Chart — top 10
-        var top10 = standings.slice(0, 10);
-        var chartHTML = '';
-        top10.forEach(function(s) {
-            var driver = s.Driver;
-            var constructor = s.Constructors && s.Constructors[0];
-            var cId = constructor ? constructor.constructorId : '';
-            var tc = getTeamColor(cId);
-            var of1 = openf1Map[(driver.familyName || '').toLowerCase()] || {};
-            if (of1.teamColor) tc = of1.teamColor;
-            var label = (driver.code || driver.driverId.substring(0,3)).toUpperCase();
-            var pts = parseFloat(s.points) || 0;
-            var pct = Math.max(4, (pts / maxPts) * 100);
-            chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
-                + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
-        });
-        document.getElementById('drivers-chart-bars').innerHTML = chartHTML;
-        document.getElementById('drivers-chart').style.display = 'block';
-    }
-
-    // ── Render constructors from Jolpica data ──
-    function renderConstructors(standings, driverStandings, openf1Map) {
-        if (!standings || !standings.length) {
-            constructorsTable.innerHTML = '<div class="standings-empty"><i class="fas fa-flag-checkered"></i><p>No constructor standings available yet.</p></div>';
-            return;
-        }
-
-        // Build team→drivers mapping from driver standings
-        var teamDrivers = {};
-        (driverStandings || []).forEach(function(ds) {
-            var c = ds.Constructors && ds.Constructors[0];
-            if (!c) return;
-            var cId = c.constructorId;
-            if (!teamDrivers[cId]) teamDrivers[cId] = [];
-            var code = (ds.Driver.code || ds.Driver.driverId.substring(0,3)).toUpperCase();
-            teamDrivers[cId].push(code);
-        });
-
-        var maxPts = parseFloat(standings[0].points) || 1;
-        var html = '';
-
-        standings.forEach(function(s) {
-            var c = s.Constructor;
-            var cId = c.constructorId;
-            var tc = getTeamColor(cId);
-            var logo = getTeamLogo(cId);
-            var teamName = c.name || '';
-            var drivers = teamDrivers[cId] || [];
-            var pts = parseFloat(s.points) || 0;
-            var wins = parseInt(s.wins) || 0;
-            var pos = s.position;
-            var barPct = Math.max(2, (pts / maxPts) * 100);
-            var shortName = teamName.substring(0, 3).toUpperCase();
-
-            html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
-                + '<div class="st-pos">' + pos + '</div>'
-                + '<div class="st-info">'
-                + '<div class="st-team-swatch" style="background:#' + esc(tc) + '20;">'
-                + (logo ? '<img src="' + esc(logo) + '" alt="' + esc(teamName) + '" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<span class=swatch-text>' + esc(shortName) + '</span>\';">'
-                        : '<span class="swatch-text">' + esc(shortName) + '</span>')
-                + '</div>'
-                + '<div class="st-name-block"><div class="st-name">' + esc(teamName) + '</div><div class="st-drivers-list">' + drivers.map(esc).join(' · ') + '</div></div></div>'
-                + '<div class="st-points-area"><div class="st-points">' + pts + '</div>'
-                + (wins > 0 ? '<div class="st-wins">' + wins + ' win' + (wins > 1 ? 's' : '') + '</div>' : '')
-                + '</div>'
-                + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
-                + '</div>';
-        });
-        constructorsTable.innerHTML = html;
-
-        // Chart
-        var chartHTML = '';
-        standings.forEach(function(s) {
-            var c = s.Constructor;
-            var cId = c.constructorId;
-            var tc = getTeamColor(cId);
-            var label = (c.name || '').substring(0, 3).toUpperCase();
-            var pts = parseFloat(s.points) || 0;
-            var pct = Math.max(4, (pts / maxPts) * 100);
-            chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
-                + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
-        });
-        document.getElementById('constructors-chart-bars').innerHTML = chartHTML;
-        document.getElementById('constructors-chart').style.display = 'block';
-    }
-
-    // ── OpenF1-only render functions (fallback path) ──
-    function renderDriversFromOpenF1(standings, driverInfo) {
-        if (!standings || !standings.length) { showError(driversTable); return; }
         var dMap = {};
         (driverInfo || []).forEach(function(d) { dMap[d.driver_number] = d; });
         standings.sort(function(a, b) { return a.position_current - b.position_current; });
@@ -634,7 +351,7 @@
             var d = dMap[s.driver_number] || {};
             var tc = d.team_colour || '3b82f6';
             var hs = d.headshot_url || '';
-            var name = d.full_name || ('Driver #' + s.driver_number);
+            var name = d.full_name || d.broadcast_name || ('Driver #' + s.driver_number);
             var team = d.team_name || '';
             var acr = d.name_acronym || '';
             var barPct = Math.max(2, (s.points_current / maxPts) * 100);
@@ -646,12 +363,13 @@
                        + '<div class="st-avatar-fallback" style="display:none;color:#' + esc(tc) + ';">' + esc(acr) + '</div>'
                       : '<div class="st-avatar-fallback" style="color:#' + esc(tc) + ';">' + esc(acr) + '</div>')
                 + '<div class="st-name-block"><div class="st-name">' + esc(name) + '</div><div class="st-team-label">' + esc(team) + '</div></div></div>'
-                + '<div class="st-points-area"><div class="st-points">' + s.points_current + '</div></div>'
+                + '<div class="st-points-area"><div class="st-points">' + s.points_current + '</div>' + deltaHTML(s.position_current, s.position_start) + '</div>'
                 + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
                 + '</div>';
         });
         driversTable.innerHTML = html;
 
+        // Chart top 10
         var top10 = standings.slice(0, 10);
         var chartHTML = '';
         top10.forEach(function(s) {
@@ -666,13 +384,16 @@
         document.getElementById('drivers-chart').style.display = 'block';
     }
 
-    function renderConstructorsFromOpenF1(standings, driverInfo) {
-        if (!standings || !standings.length) { showError(constructorsTable); return; }
+    function renderConstructors(standings, driverInfo) {
+        if (!standings || !standings.length) {
+            constructorsTable.innerHTML = '<div class="standings-empty"><i class="fas fa-flag-checkered"></i><p>No constructor standings available yet.</p></div>';
+            return;
+        }
         var teamDrivers = {}, teamColors = {};
         (driverInfo || []).forEach(function(d) {
             if (!d.team_name) return;
             if (!teamDrivers[d.team_name]) teamDrivers[d.team_name] = [];
-            teamDrivers[d.team_name].push(d.name_acronym || ('#' + d.driver_number));
+            teamDrivers[d.team_name].push(d.name_acronym || d.last_name || ('#' + d.driver_number));
             if (d.team_colour) teamColors[d.team_name] = d.team_colour;
         });
         standings.sort(function(a, b) { return a.position_current - b.position_current; });
@@ -688,9 +409,9 @@
             html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
                 + '<div class="st-pos">' + s.position_current + '</div>'
                 + '<div class="st-info">'
-                + '<div class="st-team-swatch" style="background:#' + esc(tc) + ';"><span class="swatch-text">' + esc(shortName) + '</span></div>'
+                + '<div class="st-team-swatch" style="background:#' + esc(tc) + ';">' + esc(shortName) + '</div>'
                 + '<div class="st-name-block"><div class="st-name">' + esc(s.team_name) + '</div><div class="st-drivers-list">' + drivers.map(esc).join(' · ') + '</div></div></div>'
-                + '<div class="st-points-area"><div class="st-points">' + s.points_current + '</div></div>'
+                + '<div class="st-points-area"><div class="st-points">' + s.points_current + '</div>' + deltaHTML(s.position_current, s.position_start) + '</div>'
                 + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
                 + '</div>';
         });
@@ -708,8 +429,7 @@
         document.getElementById('constructors-chart').style.display = 'block';
     }
 
-    // ── Init ──
-    document.getElementById('season-year').textContent = YEAR;
+    document.getElementById('season-year').textContent = new Date().getFullYear();
     loadStandings();
 })();
 </script>
