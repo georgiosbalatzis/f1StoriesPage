@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="el">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,10 +17,11 @@
     <script>(function(){var s=localStorage.getItem('f1stories-theme');if(s==='light'){document.documentElement.setAttribute('data-theme','light');}else{document.documentElement.removeAttribute('data-theme');if(!s)localStorage.setItem('f1stories-theme','dark');}})();</script>
 </head>
 <body>
-<a href="#latest" class="skip-link">Skip to content</a>
+<a href="#latest" class="skip-link">Μετάβαση στο περιεχόμενο</a>
 <div class="background"></div>
 <div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
 
+<!-- ═══ NAVBAR — stays in English ═══ -->
 <nav class="blog-nav" id="blog-nav">
     <div class="container blog-nav-inner">
         <a class="blog-nav-brand" href="/"><img src="/images/logo.png" alt="F1 Stories Logo" loading="lazy"></a>
@@ -57,76 +58,155 @@
 
 <header style="display:none"><nav class="navbar navbar-expand-lg navbar-dark fixed-top"><div class="container"><a class="navbar-brand" href="/"><img src="images/logo.png" alt="F1 Stories Logo" height="50"></a></div></nav></header>
 
+<!-- ═══ HERO — no buttons, Greek text ═══ -->
 <section id="hero">
     <div class="hero-overlay"></div>
     <div class="container"><div class="row justify-content-center text-center"><div class="col-lg-8"><div class="hero-content">
         <h1>F1 Stories Podcast</h1>
-        <p class="hero-subtitle">Race analysis, insider stories &amp; bold opinions — straight from the paddock to your ears.</p>
-        <div class="hero-ctas">
-            <a href="/episodes/" class="cta-button cta-primary"><i class="fas fa-play"></i> Watch Episodes</a>
-            <a href="/blog-module/blog/index.html" class="cta-button cta-secondary">Read the Blog</a>
-        </div>
+        <p class="hero-subtitle">Ανάλυση αγώνων, εσωτερικές ιστορίες &amp; τολμηρές απόψεις — κατευθείαν από το paddock στα αυτιά σου.</p>
     </div></div></div></div>
 </section>
 
+<!-- ═══ LATEST SECTION — Greek ═══ -->
 <section id="latest" class="fade-in">
     <div class="container">
-        <h2 class="text-center">Latest from F1 Stories</h2>
+        <h2 class="text-center">Τελευταία από τα F1 Stories</h2>
         <div class="latest-tabs" role="tablist">
-            <button class="latest-tab active" data-tab="videos" role="tab" aria-selected="true"><i class="fas fa-video"></i> Videos</button>
-            <button class="latest-tab" data-tab="articles" role="tab" aria-selected="false"><i class="fas fa-pen-nib"></i> Articles</button>
+            <button class="latest-tab active" data-tab="videos" role="tab" aria-selected="true"><i class="fas fa-video"></i> Βίντεο</button>
+            <button class="latest-tab" data-tab="articles" role="tab" aria-selected="false"><i class="fas fa-pen-nib"></i> Άρθρα</button>
         </div>
+
+        <!-- Videos panel -->
         <div class="latest-panel active" id="panel-videos" role="tabpanel">
-            <div class="row g-4 episode-grid"><div class="col-12 text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Loading...</span></div></div></div>
-            <div class="text-center mt-4"><a href="/episodes/" class="cta-button cta-secondary cta-sm">View all episodes <i class="fas fa-arrow-right"></i></a></div>
+            <div class="row g-4 episode-grid" id="video-cards-row">
+                <!-- Skeleton placeholders while loading -->
+                <div class="col-md-4 video-skeleton">
+                    <div class="ep-card" style="pointer-events:none;animation:skeletonPulse 1.6s ease-in-out infinite;">
+                        <div style="aspect-ratio:16/9;background:var(--bg-surface-alt);"></div>
+                        <div class="ep-card__body" style="gap:.6rem;display:flex;flex-direction:column;">
+                            <div style="height:14px;border-radius:4px;background:var(--bg-surface-alt);width:80%;"></div>
+                            <div style="height:10px;border-radius:4px;background:var(--bg-surface-alt);width:50%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 video-skeleton">
+                    <div class="ep-card" style="pointer-events:none;animation:skeletonPulse 1.6s ease-in-out infinite .2s;">
+                        <div style="aspect-ratio:16/9;background:var(--bg-surface-alt);"></div>
+                        <div class="ep-card__body" style="gap:.6rem;display:flex;flex-direction:column;">
+                            <div style="height:14px;border-radius:4px;background:var(--bg-surface-alt);width:75%;"></div>
+                            <div style="height:10px;border-radius:4px;background:var(--bg-surface-alt);width:45%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 video-skeleton">
+                    <div class="ep-card" style="pointer-events:none;animation:skeletonPulse 1.6s ease-in-out infinite .4s;">
+                        <div style="aspect-ratio:16/9;background:var(--bg-surface-alt);"></div>
+                        <div class="ep-card__body" style="gap:.6rem;display:flex;flex-direction:column;">
+                            <div style="height:14px;border-radius:4px;background:var(--bg-surface-alt);width:70%;"></div>
+                            <div style="height:10px;border-radius:4px;background:var(--bg-surface-alt);width:40%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="/episodes/" class="cta-button cta-secondary cta-sm">Όλα τα επεισόδια <i class="fas fa-arrow-right"></i></a>
+            </div>
         </div>
+
+        <!-- Articles panel -->
         <div class="latest-panel" id="panel-articles" role="tabpanel">
-            <div class="row g-4 blog-posts"><div class="col-12 text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Loading...</span></div></div></div>
-            <div class="text-center mt-4"><a href="/blog-module/blog/index.html" class="cta-button cta-secondary cta-sm">View all articles <i class="fas fa-arrow-right"></i></a></div>
+            <div class="row g-4 blog-posts"><div class="col-12 text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Φόρτωση...</span></div></div></div>
+            <div class="text-center mt-4"><a href="/blog-module/blog/index.html" class="cta-button cta-secondary cta-sm">Όλα τα άρθρα <i class="fas fa-arrow-right"></i></a></div>
         </div>
     </div>
 </section>
 
+<!-- ═══ TEAM SECTION — Greek ═══ -->
 <section id="about" class="fade-in">
     <div class="container">
-        <h2 class="text-center">The Team</h2>
+        <h2 class="text-center">Η Ομάδα</h2>
         <div class="team-row">
-            <div class="team-member"><a href="https://www.instagram.com/thanasismpatalas/" target="_blank"><img src="images/avatars/LN.webp" alt="Thanasis Batalas" class="team-member__avatar" loading="lazy"></a><h3 class="team-member__name">Thanasis Batalas</h3><span class="team-member__role">Host · Schumacher Superfan</span></div>
-            <div class="team-member"><a href="https://www.instagram.com/john_pouliks/" target="_blank"><img src="images/avatars/SV.webp" alt="Giannis Poulikidis" class="team-member__avatar" loading="lazy"></a><h3 class="team-member__name">Giannis Poulikidis</h3><span class="team-member__role">Host · Betting Expert</span></div>
-            <div class="team-member"><a href="https://www.instagram.com/borgos_gialatzis/" target="_blank"><img src="images/avatars/CSW.webp" alt="Giorgos Balatzis" class="team-member__avatar" loading="lazy"></a><h3 class="team-member__name">Giorgos Balatzis</h3><span class="team-member__role">Host · Technical Analyst</span></div>
+            <div class="team-member">
+                <a href="https://www.instagram.com/thanasismpatalas/" target="_blank">
+                    <img src="images/avatars/LN.webp" alt="Θανάσης Μπαταλάς" class="team-member__avatar" loading="lazy">
+                </a>
+                <h3 class="team-member__name">Θανάσης Μπαταλάς</h3>
+                <span class="team-member__role">Παρουσιαστής · Superfan του Schumacher</span>
+            </div>
+            <div class="team-member">
+                <a href="https://www.instagram.com/john_pouliks/" target="_blank">
+                    <img src="images/avatars/SV.webp" alt="Γιάννης Πουλικίδης" class="team-member__avatar" loading="lazy">
+                </a>
+                <h3 class="team-member__name">Γιάννης Πουλικίδης</h3>
+                <span class="team-member__role">Παρουσιαστής · Ειδικός Στοιχήματος</span>
+            </div>
+            <div class="team-member">
+                <a href="https://www.instagram.com/borgos_gialatzis/" target="_blank">
+                    <img src="images/avatars/CSW.webp" alt="Γιώργος Μπαλατζής" class="team-member__avatar" loading="lazy">
+                </a>
+                <h3 class="team-member__name">Γιώργος Μπαλατζής</h3>
+                <span class="team-member__role">Παρουσιαστής · Τεχνικός Αναλυτής</span>
+            </div>
         </div>
         <div class="team-guests">
-            <span class="team-guests__label">Featuring guests</span>
+            <span class="team-guests__label">Με καλεσμένους</span>
             <div class="team-guests__avatars">
-                <a href="https://www.instagram.com/dimkeram/" target="_blank" title="Dimitris Keramidiotis"><img src="images/avatars/dr3R.webp" alt="Dimitris Keramidiotis" class="team-guest__avatar" loading="lazy"></a>
-                <a href="https://www.instagram.com/myf1stories/" target="_blank" title="2 Fast"><img src="images/avatars/AS.webp" alt="2 Fast" class="team-guest__avatar" loading="lazy"></a>
+                <a href="https://www.instagram.com/dimkeram/" target="_blank" title="Δημήτρης Κεραμιδιώτης">
+                    <img src="images/avatars/dr3R.webp" alt="Δημήτρης Κεραμιδιώτης" class="team-guest__avatar" loading="lazy">
+                </a>
+                <a href="https://www.instagram.com/myf1stories/" target="_blank" title="2 Fast">
+                    <img src="images/avatars/AS.webp" alt="2 Fast" class="team-guest__avatar" loading="lazy">
+                </a>
             </div>
         </div>
     </div>
 </section>
 
+<!-- ═══ CONTACT SECTION — Greek ═══ -->
 <section id="contact" class="fade-in">
     <div class="container"><div class="row justify-content-center"><div class="col-lg-6"><div class="contact-block">
-        <h2>Get in Touch</h2>
-        <p class="contact-block__intro">Got a hot take? Podcast idea? Business inquiry? Drop us a line.</p>
+        <h2>Επικοινωνήστε μαζί μας</h2>
+        <p class="contact-block__intro">Έχεις άποψη; Ιδέα για podcast; Επαγγελματική πρόταση; Στείλε μας μήνυμα.</p>
         <form id="contact-form" action="https://formspree.io/f/xjkyeazq" method="POST" class="contact-form">
-            <div class="form-group"><label for="name">Name</label><input type="text" id="name" name="name" class="form-control" placeholder="Your name" required></div>
-            <div class="form-group"><label for="email">Email</label><input type="email" id="email" name="_replyto" class="form-control" placeholder="you@example.com" required></div>
-            <div class="form-group"><label for="message">Message</label><textarea id="message" name="message" class="form-control" placeholder="What's on your mind?" rows="4" required></textarea></div>
-            <div id="form-status" style="display:none"><div id="form-success" class="form-alert form-alert--success" style="display:none"><i class="fas fa-check-circle"></i><span>Message sent! We'll get back to you soon.</span></div><div id="form-error" class="form-alert form-alert--error" style="display:none"><i class="fas fa-exclamation-triangle"></i><span>Something went wrong. Try again or email us at <a href="mailto:myf1stories@gmail.com">myf1stories@gmail.com</a></span></div></div>
+            <div class="form-group">
+                <label for="name">Όνομα</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="Το όνομά σου" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="_replyto" class="form-control" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Μήνυμα</label>
+                <textarea id="message" name="message" class="form-control" placeholder="Τι έχεις στο μυαλό σου;" rows="4" required></textarea>
+            </div>
+            <div id="form-status" style="display:none">
+                <div id="form-success" class="form-alert form-alert--success" style="display:none">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Το μήνυμα στάλθηκε! Θα επικοινωνήσουμε σύντομα μαζί σου.</span>
+                </div>
+                <div id="form-error" class="form-alert form-alert--error" style="display:none">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Κάτι πήγε στραβά. Δοκίμασε ξανά ή στείλε email στο <a href="mailto:myf1stories@gmail.com">myf1stories@gmail.com</a></span>
+                </div>
+            </div>
             <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
             <input type="hidden" name="_next" value="https://f1stories.gr/thanks.html">
-            <button type="submit" class="cta-button cta-primary contact-submit"><span class="submit-text">Send Message</span><span class="submit-spinner" style="display:none"><i class="fas fa-circle-notch fa-spin"></i></span></button>
-            <p class="contact-block__micro">We typically reply within 48 hours.</p>
+            <button type="submit" class="cta-button cta-primary contact-submit">
+                <span class="submit-text">Αποστολή Μηνύματος</span>
+                <span class="submit-spinner" style="display:none"><i class="fas fa-circle-notch fa-spin"></i></span>
+            </button>
+            <p class="contact-block__micro">Συνήθως απαντάμε εντός 48 ωρών.</p>
         </form>
     </div></div></div></div>
 </section>
 
+<!-- ═══ FOOTER — Greek ═══ -->
 <footer class="py-4">
     <div class="container">
         <div class="row">
             <div class="col-12 text-center">
-                <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. All rights reserved.</p>
+                <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
                 <div class="social-media">
                     <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
                     <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
@@ -135,18 +215,56 @@
                     <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
                 </div>
                 <div class="footer-links mt-3">
-                    <a href="/privacy/privacy.html" class="footer-link">Privacy Policy</a>
+                    <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
-                    <a href="/privacy/terms.html" class="footer-link">Terms of Use</a>
+                    <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
                 </div>
             </div>
         </div>
     </div>
 </footer>
 
-<div id="cookie-consent" class="cookie-banner"><div class="cookie-content"><div class="cookie-header"><h3>Cookie Consent</h3><button id="close-cookie" class="close-btn"><i class="fas fa-times"></i></button></div><p class="cookie-intro">F1 Stories uses cookies to enhance your experience and analyze traffic.</p><div class="cookie-details"><div class="cookie-section"><h4>Essential Cookies <span class="badge-essential">Always Active</span></h4><p>Required for core site functionality.</p></div><div class="cookie-section"><div class="cookie-toggle"><h4>Analytics Cookies</h4><label class="toggle-switch"><input type="checkbox" id="analytics-cookies"><span class="toggle-slider"></span></label></div><p>Help us understand how visitors use our site.</p></div><div class="cookie-section"><div class="cookie-toggle"><h4>Marketing Cookies</h4><label class="toggle-switch"><input type="checkbox" id="marketing-cookies"><span class="toggle-slider"></span></label></div><p>Enable personalized content and ads.</p></div></div><div class="cookie-actions"><button id="reject-all" class="cookie-btn reject-btn">Reject All</button><button id="accept-selected" class="cookie-btn accept-selected-btn">Accept Selected</button><button id="accept-all" class="cookie-btn accept-btn">Accept All</button></div><div class="cookie-footer"><a href="/privacy/privacy.html" target="_blank">Privacy Policy</a><a href="/privacy/terms.html" target="_blank">Terms of Use</a></div></div></div>
+<!-- ═══ COOKIE BANNER — Greek ═══ -->
+<div id="cookie-consent" class="cookie-banner">
+    <div class="cookie-content">
+        <div class="cookie-header">
+            <h3>Συγκατάθεση Cookies</h3>
+            <button id="close-cookie" class="close-btn"><i class="fas fa-times"></i></button>
+        </div>
+        <p class="cookie-intro">Τα F1 Stories χρησιμοποιούν cookies για να βελτιώσουν την εμπειρία σου και να αναλύσουν την επισκεψιμότητα.</p>
+        <div class="cookie-details">
+            <div class="cookie-section">
+                <h4>Απαραίτητα Cookies <span class="badge-essential">Πάντα Ενεργά</span></h4>
+                <p>Απαραίτητα για τη βασική λειτουργία του ιστότοπου.</p>
+            </div>
+            <div class="cookie-section">
+                <div class="cookie-toggle">
+                    <h4>Cookies Ανάλυσης</h4>
+                    <label class="toggle-switch"><input type="checkbox" id="analytics-cookies"><span class="toggle-slider"></span></label>
+                </div>
+                <p>Μας βοηθούν να κατανοήσουμε πώς χρησιμοποιείτε τον ιστότοπο.</p>
+            </div>
+            <div class="cookie-section">
+                <div class="cookie-toggle">
+                    <h4>Cookies Μάρκετινγκ</h4>
+                    <label class="toggle-switch"><input type="checkbox" id="marketing-cookies"><span class="toggle-slider"></span></label>
+                </div>
+                <p>Επιτρέπουν εξατομικευμένο περιεχόμενο και διαφημίσεις.</p>
+            </div>
+        </div>
+        <div class="cookie-actions">
+            <button id="reject-all" class="cookie-btn reject-btn">Απόρριψη Όλων</button>
+            <button id="accept-selected" class="cookie-btn accept-selected-btn">Αποδοχή Επιλεγμένων</button>
+            <button id="accept-all" class="cookie-btn accept-btn">Αποδοχή Όλων</button>
+        </div>
+        <div class="cookie-footer">
+            <a href="/privacy/privacy.html" target="_blank">Πολιτική Απορρήτου</a>
+            <a href="/privacy/terms.html" target="_blank">Όροι Χρήσης</a>
+        </div>
+    </div>
+</div>
 
-<button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle light/dark theme"><i class="fas fa-sun icon-sun"></i><i class="fas fa-moon icon-moon"></i></button>
+<button class="theme-toggle-btn" id="theme-toggle" aria-label="Εναλλαγή φωτεινού/σκοτεινού θέματος"><i class="fas fa-sun icon-sun"></i><i class="fas fa-moon icon-moon"></i></button>
 <button id="scroll-to-top" class="scroll-to-top-btn"><i class="fas fa-chevron-up"></i></button>
 
 <script src="/blog-module/blog-loader.js" defer></script>
@@ -156,14 +274,195 @@
 <script src="scripts/cookie-consent.js" defer></script>
 <script src="scripts/shared-nav.js" defer></script>
 
-<!-- Page-specific: tabs + contact form -->
+<!-- ═══════════════════════════════════════════════════════════
+     FIXED VIDEO LOADER
+     Uses YouTube RSS feed (no API key needed) with two fallback
+     proxies, then falls back to direct YouTube links.
+     Works on mobile because we use thumbnail card links
+     instead of iframes (which are blocked by many mobile browsers).
+     ═══════════════════════════════════════════════════════════ -->
 <script>
-(function(){'use strict';
-var tabs=document.querySelectorAll('.latest-tab'),panels=document.querySelectorAll('.latest-panel');
-tabs.forEach(function(tab){tab.addEventListener('click',function(){var t=tab.dataset.tab;tabs.forEach(function(x){x.classList.remove('active');x.setAttribute('aria-selected','false');x.setAttribute('tabindex','-1')});tab.classList.add('active');tab.setAttribute('aria-selected','true');tab.setAttribute('tabindex','0');panels.forEach(function(p){p.classList.remove('active')});document.getElementById('panel-'+t).classList.add('active')})});
-tabs.forEach(function(t,i){t.setAttribute('tabindex',i===0?'0':'-1')});
-var form=document.getElementById('contact-form');
-if(form){form.addEventListener('submit',function(e){e.preventDefault();var sb=form.querySelector('.contact-submit'),st=form.querySelector('.submit-text'),ss=form.querySelector('.submit-spinner'),sd=document.getElementById('form-status'),su=document.getElementById('form-success'),se=document.getElementById('form-error');sb.disabled=true;st.style.display='none';ss.style.display='inline';sd.style.display='none';su.style.display='none';se.style.display='none';fetch(form.action,{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}}).then(function(r){sd.style.display='block';if(r.ok){su.style.display='flex';form.reset()}else{se.style.display='flex'}}).catch(function(){sd.style.display='block';se.style.display='flex'}).finally(function(){sb.disabled=false;st.style.display='inline';ss.style.display='none'})})}
+(function () {
+    'use strict';
+
+    /* ── Tab switcher ── */
+    var tabs = document.querySelectorAll('.latest-tab');
+    var panels = document.querySelectorAll('.latest-panel');
+    tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+            var t = tab.dataset.tab;
+            tabs.forEach(function (x) { x.classList.remove('active'); x.setAttribute('aria-selected', 'false'); x.setAttribute('tabindex', '-1'); });
+            tab.classList.add('active'); tab.setAttribute('aria-selected', 'true'); tab.setAttribute('tabindex', '0');
+            panels.forEach(function (p) { p.classList.remove('active'); });
+            document.getElementById('panel-' + t).classList.add('active');
+        });
+    });
+    tabs.forEach(function (t, i) { t.setAttribute('tabindex', i === 0 ? '0' : '-1'); });
+
+    /* ── Contact form ── */
+    var form = document.getElementById('contact-form');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var sb = form.querySelector('.contact-submit'),
+                st = form.querySelector('.submit-text'),
+                ss = form.querySelector('.submit-spinner'),
+                sd = document.getElementById('form-status'),
+                su = document.getElementById('form-success'),
+                se = document.getElementById('form-error');
+            sb.disabled = true; st.style.display = 'none'; ss.style.display = 'inline';
+            sd.style.display = 'none'; su.style.display = 'none'; se.style.display = 'none';
+            fetch(form.action, { method: 'POST', body: new FormData(form), headers: { 'Accept': 'application/json' } })
+                .then(function (r) { sd.style.display = 'block'; if (r.ok) { su.style.display = 'flex'; form.reset(); } else { se.style.display = 'flex'; } })
+                .catch(function () { sd.style.display = 'block'; se.style.display = 'flex'; })
+                .finally(function () { sb.disabled = false; st.style.display = 'inline'; ss.style.display = 'none'; });
+        });
+    }
+
+    /* ═══════════════════════════════════════════
+       VIDEO LOADER — thumbnail card approach
+       No iframes → works on all devices/browsers
+       ═══════════════════════════════════════════ */
+    var CHANNEL_ID = 'UCTSK8lbEiHJ10KVFrhNaL4g';
+    var API_KEY    = 'AIzaSyCE0vy99ror_w6PJtVGSnahyCz8n4Fq0P8';
+    var MAX        = 3;
+    var grid       = document.getElementById('video-cards-row');
+
+    /* Greek month names for display */
+    var GR_MONTHS = ['Ιαν','Φεβ','Μαρ','Απρ','Μαΐ','Ιουν','Ιουλ','Αυγ','Σεπ','Οκτ','Νοε','Δεκ'];
+
+    function fmtDate(iso) {
+        var d = new Date(iso);
+        return isNaN(d) ? '' : d.getDate() + ' ' + GR_MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+    }
+
+    function fmtDuration(iso) {
+        if (!iso) return '';
+        var m = iso.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+        if (!m) return '';
+        var h = parseInt(m[1]) || 0, min = parseInt(m[2]) || 0, sec = parseInt(m[3]) || 0;
+        var r = h > 0 ? h + ':' + String(min).padStart(2,'0') + ':' : min + ':';
+        return r + String(sec).padStart(2,'0');
+    }
+
+    /* Build a clickable thumbnail card (no iframes!) */
+    function buildCard(v) {
+        var url   = 'https://www.youtube.com/watch?v=' + v.id;
+        var thumb = 'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg';
+        var dur   = v.duration ? '<span class="ep-card__duration">' + v.duration + '</span>' : '';
+        var date  = v.date ? fmtDate(v.date) : '';
+        var meta  = (date ? '<i class="fas fa-calendar-alt"></i> ' + date : '') +
+                    (date && v.duration ? ' <span style="opacity:.4">·</span> ' : '') +
+                    (v.duration ? '<i class="fas fa-clock"></i> ' + v.duration : '');
+        return '<div class="col-md-6 col-lg-4">' +
+            '<a href="' + url + '" target="_blank" rel="noopener" class="ep-card" title="' + (v.title||'').replace(/"/g,'&quot;') + '">' +
+                '<div class="ep-card__thumb">' +
+                    '<img src="' + thumb + '" alt="' + (v.title||'').replace(/"/g,'&quot;') + '" loading="lazy">' +
+                    dur +
+                    '<div class="ep-card__play"><i class="fas fa-play"></i></div>' +
+                '</div>' +
+                '<div class="ep-card__body">' +
+                    '<h3 class="ep-card__title">' + (v.title || 'Χωρίς τίτλο') + '</h3>' +
+                    (meta ? '<div class="ep-card__meta">' + meta + '</div>' : '') +
+                    '<span class="ep-card__cta">Παρακολούθηση <i class="fas fa-play"></i></span>' +
+                '</div>' +
+            '</a>' +
+        '</div>';
+    }
+
+    function removeSkeleton() {
+        document.querySelectorAll('.video-skeleton').forEach(function(el){ el.remove(); });
+    }
+
+    function renderCards(videos) {
+        removeSkeleton();
+        if (!videos || !videos.length) {
+            grid.innerHTML = '<div class="col-12 text-center"><p style="color:var(--text-secondary)">Δεν βρέθηκαν βίντεο. Δοκίμασε αργότερα.</p></div>';
+            return;
+        }
+        var html = '';
+        videos.forEach(function(v){ html += buildCard(v); });
+        grid.innerHTML = html;
+    }
+
+    /* Step 1: Get video IDs from RSS via proxy */
+    function loadViaRSS(proxyUrl) {
+        return fetch(proxyUrl, { signal: AbortSignal.timeout(8000) })
+            .then(function(r){ if (!r.ok) throw new Error('rss ' + r.status); return r.text(); })
+            .then(function(xml){
+                var doc  = new DOMParser().parseFromString(xml, 'application/xml');
+                var entries = Array.from(doc.getElementsByTagName('entry')).slice(0, MAX);
+                if (!entries.length) throw new Error('no entries');
+                return entries.map(function(e){
+                    var id = e.getElementsByTagName('yt:videoId')[0];
+                    return id ? id.textContent.trim() : null;
+                }).filter(Boolean);
+            });
+    }
+
+    /* Step 2: Enrich with details from YouTube Data API */
+    function enrichDetails(ids) {
+        return fetch(
+            'https://www.googleapis.com/youtube/v3/videos?key=' + API_KEY +
+            '&id=' + ids.join(',') +
+            '&part=snippet,contentDetails',
+            { signal: AbortSignal.timeout(8000) }
+        ).then(function(r){ return r.json(); })
+         .then(function(data){
+            return (data.items || []).map(function(item){
+                return {
+                    id:       item.id,
+                    title:    item.snippet.title,
+                    date:     item.snippet.publishedAt,
+                    duration: fmtDuration(item.contentDetails.duration)
+                };
+            });
+         });
+    }
+
+    /* Step 3: Fallback — search API (still no iframes) */
+    function loadViaSearchAPI() {
+        return fetch(
+            'https://www.googleapis.com/youtube/v3/search?key=' + API_KEY +
+            '&channelId=' + CHANNEL_ID +
+            '&part=snippet&order=date&maxResults=' + MAX + '&type=video',
+            { signal: AbortSignal.timeout(8000) }
+        ).then(function(r){ return r.json(); })
+         .then(function(data){
+            return (data.items || []).map(function(item){
+                return {
+                    id:    item.id.videoId,
+                    title: item.snippet.title,
+                    date:  item.snippet.publishedAt
+                };
+            });
+         });
+    }
+
+    /* Orchestrate: try RSS → enrich → fallback Search API */
+    var PROXIES = [
+        'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://www.youtube.com/feeds/videos.xml?channel_id=' + CHANNEL_ID),
+        'https://corsproxy.io/?url='           + encodeURIComponent('https://www.youtube.com/feeds/videos.xml?channel_id=' + CHANNEL_ID)
+    ];
+
+    function tryProxy(index) {
+        if (index >= PROXIES.length) return Promise.reject(new Error('all proxies failed'));
+        return loadViaRSS(PROXIES[index]).catch(function(){ return tryProxy(index + 1); });
+    }
+
+    tryProxy(0)
+        .then(function(ids){ return enrichDetails(ids); })
+        .catch(function(){
+            /* RSS fully failed → try Search API */
+            return loadViaSearchAPI();
+        })
+        .then(renderCards)
+        .catch(function(err){
+            console.error('Video load error:', err);
+            removeSkeleton();
+            grid.innerHTML = '<div class="col-12 text-center"><p style="color:var(--text-secondary)">Δεν ήταν δυνατή η φόρτωση βίντεο. <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener" style="color:var(--accent)">Δες το κανάλι μας στο YouTube</a>.</p></div>';
+        });
+
 })();
 </script>
 </body>
