@@ -238,36 +238,46 @@ async function extractImagesFromDocx(docPath, entryPath) {
 function processContentImages(content, folderName, extractedImages = []) {
     console.log(`Processing content images for: ${folderName}`);
     console.log(`Number of extracted images: ${extractedImages.length}`);
-    
+
     if (!extractedImages.length) return content;
-    
+
     let processedContent = content;
     const imagePattern = /<img[^>]*?>/g;
-    const images = content.match(imagePattern) || [];
-    console.log(`Found ${images.length} image tags to replace`);
-    
-    let imageHtml = '';
-    extractedImages.forEach((_, i) => {
+    const imgMatches = [...processedContent.matchAll(imagePattern)];
+    console.log(`Found ${imgMatches.length} image tags to replace`);
+
+    // Replace each <img> tag one-by-one with its corresponding numbered image.
+    // We iterate in reverse so string indices stay valid after each replacement.
+    const matches = [...processedContent.matchAll(/<img[^>]*?>/g)];
+
+    // Build replacement HTML for each extracted image
+    const replacements = extractedImages.map((_, i) => {
         const imageNumber = i + 3;
-        imageHtml += `<img src="${imageNumber}.webp" 
-                alt="Racing Bulls Miami Special Livery ${i+1}" 
-                class="article-content-img" 
-                onerror="if(this.src !== '${imageNumber}.avif') { this.src='${imageNumber}.avif'; } else { this.src='/images/default-blog.jpg'; this.onerror=null; }">`;
+        return `<figure class="article-figure">
+            <img src="${imageNumber}.webp"
+                 alt="Image ${i + 1}"
+                 class="article-content-img"
+                 onerror="if(this.src.indexOf('${imageNumber}.avif')===-1){this.src='${imageNumber}.avif';}else{this.src='/images/default-blog.jpg';this.onerror=null;}">
+        </figure>`;
     });
-    
-    const imgParagraphPattern = /<p>(<img[^>]*?>)+<\/p>/;
-    
-    if (imgParagraphPattern.test(processedContent)) {
-        processedContent = processedContent.replace(imgParagraphPattern, `<p>${imageHtml}</p>`);
-    } else {
-        const h1Pattern = /<\/h1>/;
-        if (h1Pattern.test(processedContent)) {
-            processedContent = processedContent.replace(h1Pattern, '</h1><p>' + imageHtml + '</p>');
-        } else {
-            processedContent = '<p>' + imageHtml + '</p>' + processedContent;
-        }
+
+    // Replace each matched <img> with its corresponding figure, one at a time
+    // Work backwards through matches to preserve earlier indices
+    for (let i = matches.length - 1; i >= 0; i--) {
+        const match = matches[i];
+        const replacement = replacements[i] ?? ''; // drop extra img tags if more than extracted
+        processedContent =
+            processedContent.slice(0, match.index) +
+            replacement +
+            processedContent.slice(match.index + match[0].length);
     }
-    
+
+    // Unwrap any <p> tags that now only contain a <figure> (mammoth wraps imgs in <p>)
+    processedContent = processedContent.replace(
+        /<p>\s*(<figure class="article-figure">[\s\S]*?<\/figure>)\s*<\/p>/g,
+        '$1'
+    );
+
     return processedContent;
 }
 
