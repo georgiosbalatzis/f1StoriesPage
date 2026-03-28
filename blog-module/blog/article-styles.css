@@ -236,10 +236,9 @@
 
 /* Page-level, footer, social icons, cookie consent:
    All handled by theme-overrides.css (loaded on every page). */
-
 /* ── Sponsor Strip ───────────────────────────── */
 .sponsor-strip {
-    padding: 0.75rem 2rem;
+    padding: 1rem 2rem;                /* was 0.75rem */
     background: var(--blog-surface);
     border-bottom: 1px solid var(--blog-border);
 }
@@ -250,7 +249,7 @@
     text-transform: uppercase;
     color: var(--blog-text-tertiary);
     text-align: center;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.75rem;           /* was 0.6rem */
 }
 .sponsor-logos {
     display: flex;
@@ -260,14 +259,14 @@
 }
 .sponsor-logo {
     flex: 1;
-    height: 36px;
+    height: 64px;                     /* was 36px */
     border-radius: var(--blog-radius-sm);
     border: 1px solid var(--blog-border);
     background: var(--blog-surface-raised);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.3rem 0.5rem;
+    padding: 0.5rem 0.75rem;          /* was 0.3rem 0.5rem */
     transition: all var(--blog-transition);
     overflow: hidden;
 }
@@ -278,7 +277,7 @@
     box-shadow: var(--blog-shadow-sm);
 }
 .sponsor-logo img {
-    max-height: 22px;
+    max-height: 44px;                 /* was 22px */
     max-width: 100%;
     width: auto;
     object-fit: contain;
@@ -289,7 +288,6 @@
     filter: grayscale(0) brightness(1);
 }
 
-/* light mode: logos look better with slight contrast boost */
 [data-theme="light"] .sponsor-logo img {
     filter: grayscale(0.2) brightness(0.85);
 }
@@ -298,12 +296,13 @@
 }
 
 @media (max-width: 767px) {
-    .sponsor-strip { padding: 0.65rem 1.2rem; }
-    .sponsor-logos { gap: 0.4rem; }
-    .sponsor-logo { height: 30px; padding: 0.25rem 0.3rem; }
-    .sponsor-logo img { max-height: 18px; }
+    .sponsor-strip { padding: 0.75rem 1.2rem; }
+    .sponsor-logos { gap: 0.5rem; }
+    .sponsor-logo { height: 52px; padding: 0.4rem 0.5rem; }
+    .sponsor-logo img { max-height: 34px; }
 }
 @media (max-width: 480px) {
     .sponsor-logos { flex-wrap: wrap; }
-    .sponsor-logo { flex: 1 1 calc(33% - 0.4rem); }
+    .sponsor-logo { flex: 1 1 calc(33% - 0.5rem); height: 48px; }
+    .sponsor-logo img { max-height: 30px; }
 }
