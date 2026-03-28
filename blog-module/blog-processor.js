@@ -20,11 +20,11 @@ const CONFIG = {
         'D': 'Dimitris Keramidiotis'
     },
     AUTHOR_AVATARS: {
-        'Georgios Balatzis': 'FA.webp',
-        'Giannis Poulikidis': 'SV.webp',
-        'Thanasis Batalas': 'LN.webp',
-        '2Fast': 'AS.webp',
-        'Dimitris Keramidiotis': 'dr3R.webp',
+        'Georgios Balatzis': 'georgios.webp',
+        'Giannis Poulikidis': 'giannis.webp',
+        'Thanasis Batalas': 'thanasis.webp',
+        '2Fast': '2fast.webp',
+        'Dimitris Keramidiotis': 'dimitris.webp',
         'default': 'default.webp'
     }
 };
@@ -951,7 +951,7 @@ async function processBlogEntry(entryPath) {
         .replace(/CURRENT_URL/g, `https://f1stories.gr/blog-module/blog-entries/${folderName}/article.html`)
         .replace(
             /src="\/images\/authors\/default\.webp"/,
-            `src="/f1stories.github.io/images/avatars/${authorImagePath}"`
+            `src="/images/authors/${authorImagePath}"`
         );
     
     if (!fs.existsSync(CONFIG.OUTPUT_HTML_DIR)) {
