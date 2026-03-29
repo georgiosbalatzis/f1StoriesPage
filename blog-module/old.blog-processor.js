@@ -3,15 +3,6 @@ const path = require('path');
 const mammoth = require('mammoth');
 const sharp = require('sharp');
 const AdmZip = require('adm-zip');
-const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
-const os = require('os');
-
-// ─── CLI flags ───────────────────────────────────────────────────────────────
-const FORCE_REBUILD = process.argv.includes('--force') || process.argv.includes('-f');
-const MAX_WORKERS = Math.min(
-    parseInt(process.env.BLOG_WORKERS || '0', 10) || os.cpus().length,
-    os.cpus().length
-);
 
 // Configuration
 const CONFIG = {
@@ -38,7 +29,7 @@ const CONFIG = {
     }
 };
 
-// ─── Utility functions ───────────────────────────────────────────────────────
+// Utility functions
 const utils = {
     findImageByBaseName(entryPath, baseName) {
         const entryFiles = fs.readdirSync(entryPath);
@@ -93,48 +84,16 @@ const utils = {
         }
         
         fullDate = fullDate || new Date(`${year}-${month}-${day}`);
+        console.log(`Parsed folder ${folderName}: Date=${year}-${month}-${day}, Author=${authorCode || 'none'}`);
         
         return { year, month, day, fullDate, authorCode };
-    },
-
-    /**
-     * Check whether an entry can be skipped.
-     * Skip when article.html exists AND is newer than the source doc.
-     */
-    shouldSkip(entryPath) {
-        if (FORCE_REBUILD) return false;
-
-        const folderFiles = fs.readdirSync(entryPath);
-        const docFile = folderFiles.find(f => {
-            const ext = path.extname(f).toLowerCase();
-            return ext === '.docx' || ext === '.txt';
-        });
-        if (!docFile) return true; // no source → nothing to do
-
-        const articlePath = path.join(entryPath, 'article.html');
-        if (!fs.existsSync(articlePath)) return false; // no output → must build
-
-        const docMtime = fs.statSync(path.join(entryPath, docFile)).mtimeMs;
-        const htmlMtime = fs.statSync(articlePath).mtimeMs;
-
-        // Also check if any image is newer than the article
-        const anyImageNewer = folderFiles.some(f => {
-            if (!CONFIG.IMAGE_EXTENSIONS.some(ext => f.toLowerCase().endsWith(ext))) return false;
-            return fs.statSync(path.join(entryPath, f)).mtimeMs > htmlMtime;
-        });
-
-        // Also check if any CSV is newer
-        const anyCsvNewer = folderFiles.some(f => {
-            if (!f.toLowerCase().endsWith('.csv')) return false;
-            return fs.statSync(path.join(entryPath, f)).mtimeMs > htmlMtime;
-        });
-
-        return docMtime <= htmlMtime && !anyImageNewer && !anyCsvNewer;
     }
 };
 
-// ─── YouTube link processor ──────────────────────────────────────────────────
+// YouTube link processor
 function processYouTubeLinks(htmlContent) {
+    console.log("Processing YouTube links in content");
+    
     const patterns = [
         [/<p>(https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})(&[^<]*)?)(<\/p>|<br>)/g, 3],
         [/<p>(https?:\/\/(www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})(&[^<]*)?)(<\/p>|<br>)/g, 3],
@@ -143,10 +102,14 @@ function processYouTubeLinks(htmlContent) {
     ];
     
     let modifiedContent = htmlContent;
+    let replaceCount = 0;
     
     patterns.forEach(([pattern, videoIdIndex]) => {
         modifiedContent = modifiedContent.replace(pattern, (...args) => {
             const videoId = args[videoIdIndex];
+            console.log(`Found YouTube video: ${videoId}`);
+            replaceCount++;
+            
             return `
       <div class="youtube-embed-container">
         <iframe 
@@ -161,10 +124,11 @@ function processYouTubeLinks(htmlContent) {
         });
     });
     
+    console.log(`Replaced ${replaceCount} YouTube links with embeds`);
     return modifiedContent;
 }
 
-// ─── Image processing functions ──────────────────────────────────────────────
+// Image processing functions
 function processImages(entryPath, folderName) {
     const entryFiles = fs.readdirSync(entryPath);
     const imageFiles = entryFiles.filter(file =>
@@ -176,6 +140,7 @@ function processImages(entryPath, folderName) {
     
     const processedImages = {};
     
+    // Process special images (thumbnail and background)
     const specialImages = [
         { name: 'thumbnail', number: '1' },
         { name: 'background', number: '2' }
@@ -192,6 +157,7 @@ function processImages(entryPath, folderName) {
         }
     });
     
+    // Process numbered images (3+)
     let imageNumber = 3;
     while (true) {
         const imageFile = utils.findImageByBaseName(entryPath, imageNumber.toString());
@@ -212,6 +178,7 @@ function processImages(entryPath, folderName) {
         imageNumber++;
     }
     
+    // Copy remaining non-numbered images
     imageFiles.forEach(imageName => {
         const baseName = path.parse(imageName).name;
         if (isNaN(parseInt(baseName))) {
@@ -222,12 +189,14 @@ function processImages(entryPath, folderName) {
         }
     });
     
+    console.log("Processed images:", processedImages);
     return processedImages;
 }
 
 async function convertImage(inputPath, outputPath, format = 'webp', quality = 80) {
     try {
         await sharp(inputPath)[format]({ quality }).toFile(outputPath);
+        console.log(`Converted image to ${format.toUpperCase()}: ${outputPath}`);
         return true;
     } catch (error) {
         console.error(`Error converting image to ${format.toUpperCase()}: ${error.message}`);
@@ -236,6 +205,7 @@ async function convertImage(inputPath, outputPath, format = 'webp', quality = 80
 }
 
 async function extractImagesFromDocx(docPath, entryPath) {
+    console.log(`Extracting images from: ${docPath}`);
     const extractDir = path.join(entryPath, 'extracted');
     utils.ensureDirectory(extractDir);
     
@@ -257,6 +227,7 @@ async function extractImagesFromDocx(docPath, entryPath) {
             }
         });
         
+        console.log(`Extracted ${mediaFiles.length} images from DOCX`);
         return mediaFiles;
     } catch (error) {
         console.error(`Error extracting images from DOCX: ${error.message}`);
@@ -265,11 +236,21 @@ async function extractImagesFromDocx(docPath, entryPath) {
 }
 
 function processContentImages(content, folderName, extractedImages = []) {
+    console.log(`Processing content images for: ${folderName}`);
+    console.log(`Number of extracted images: ${extractedImages.length}`);
+
     if (!extractedImages.length) return content;
 
     let processedContent = content;
+    const imagePattern = /<img[^>]*?>/g;
+    const imgMatches = [...processedContent.matchAll(imagePattern)];
+    console.log(`Found ${imgMatches.length} image tags to replace`);
+
+    // Replace each <img> tag one-by-one with its corresponding numbered image.
+    // We iterate in reverse so string indices stay valid after each replacement.
     const matches = [...processedContent.matchAll(/<img[^>]*?>/g)];
 
+    // Build replacement HTML for each extracted image
     const replacements = extractedImages.map((_, i) => {
         const imageNumber = i + 3;
         return `<figure class="article-figure">
@@ -280,15 +261,18 @@ function processContentImages(content, folderName, extractedImages = []) {
         </figure>`;
     });
 
+    // Replace each matched <img> with its corresponding figure, one at a time
+    // Work backwards through matches to preserve earlier indices
     for (let i = matches.length - 1; i >= 0; i--) {
         const match = matches[i];
-        const replacement = replacements[i] ?? '';
+        const replacement = replacements[i] ?? ''; // drop extra img tags if more than extracted
         processedContent =
             processedContent.slice(0, match.index) +
             replacement +
             processedContent.slice(match.index + match[0].length);
     }
 
+    // Unwrap any <p> tags that now only contain a <figure> (mammoth wraps imgs in <p>)
     processedContent = processedContent.replace(
         /<p>\s*(<figure class="article-figure">[\s\S]*?<\/figure>)\s*<\/p>/g,
         '$1'
@@ -297,7 +281,7 @@ function processContentImages(content, folderName, extractedImages = []) {
     return processedContent;
 }
 
-// ─── Metadata extraction ─────────────────────────────────────────────────────
+// Metadata extraction
 function extractMetadata(filename, content) {
     let metadata = {};
     const metadataMatch = content.match(/^---\n([\s\S]*?)\n---/);
@@ -344,7 +328,7 @@ function extractMetadata(filename, content) {
     };
 }
 
-// ─── CSV Processing functions ────────────────────────────────────────────────
+// CSV Processing functions
 function parseCSVRow(row) {
     const cells = [];
     let currentCell = '';
@@ -399,8 +383,12 @@ function createCSVErrorMessage(csvFileName) {
 }
 
 function findCSVFile(csvFileName, entryPath) {
+    console.log(`Αναζήτηση CSV αρχείου: ${csvFileName} στο φάκελο: ${entryPath || "μη ορισμένο"}`);
+    
     if (!entryPath || typeof entryPath !== 'string') {
+        console.error(`Σφάλμα: Το entryPath δεν είναι έγκυρο: ${entryPath}`);
         entryPath = CONFIG.BLOG_DIR;
+        console.log(`Χρήση εναλλακτικής διαδρομής: ${entryPath}`);
     }
     
     const possiblePaths = [
@@ -410,17 +398,20 @@ function findCSVFile(csvFileName, entryPath) {
     ];
     
     for (const filePath of possiblePaths) {
+        console.log(`Έλεγχος διαδρομής: ${filePath}`);
         if (fs.existsSync(filePath)) {
+            console.log(`Το CSV αρχείο βρέθηκε: ${filePath}`);
             try {
                 const content = fs.readFileSync(filePath, 'utf8');
                 return { filePath, content };
             } catch (error) {
-                console.error(`Error reading ${filePath}: ${error.message}`);
+                console.error(`Σφάλμα ανάγνωσης αρχείου ${filePath}: ${error.message}`);
             }
         }
     }
     
     // Case-insensitive search
+    console.log("Αναζήτηση με διαφορετική πεζότητα...");
     try {
         const entryDir = fs.readdirSync(entryPath);
         const lowercaseFileName = csvFileName.toLowerCase();
@@ -431,13 +422,15 @@ function findCSVFile(csvFileName, entryPath) {
         
         if (matchingFile) {
             const filePath = path.join(entryPath, matchingFile);
+            console.log(`Το CSV αρχείο βρέθηκε με διαφορετική πεζότητα: ${matchingFile}`);
             const content = fs.readFileSync(filePath, 'utf8');
             return { filePath, content };
         }
     } catch (error) {
-        console.error(`Error reading directory ${entryPath}: ${error.message}`);
+        console.error(`Σφάλμα ανάγνωσης φακέλου ${entryPath}: ${error.message}`);
     }
     
+    console.warn(`Το CSV αρχείο δεν βρέθηκε: ${csvFileName}`);
     return { filePath: null, content: null };
 }
 
@@ -446,12 +439,14 @@ function createResponsiveTableFromCSV(csvContent, csvFileName) {
         const rows = csvContent.split(/\r?\n/).filter(row => row.trim() !== '');
         
         if (rows.length === 0) {
+            console.warn('Το CSV δεν περιέχει γραμμές δεδομένων');
             return '<div class="csv-error">Κενό CSV αρχείο</div>';
         }
         
         const headers = parseCSVRow(rows[0]);
         
         if (headers.length === 0) {
+            console.warn('Δεν ήταν δυνατή η εξαγωγή επικεφαλίδων από το CSV');
             return '<div class="csv-error">Αδυναμία ανάλυσης επικεφαλίδων CSV</div>';
         }
         
@@ -489,6 +484,7 @@ function createResponsiveTableFromCSV(csvContent, csvFileName) {
                     </thead>
                     <tbody>`;
         
+        // Process data rows
         for (let i = 1; i < rows.length; i++) {
             const cells = parseCSVRow(rows[i]);
             if (cells.length === 0 || (cells.length === 1 && cells[0] === '')) continue;
@@ -508,6 +504,7 @@ function createResponsiveTableFromCSV(csvContent, csvFileName) {
             <div class="table-container card-view" id="${tableId}-card">
                 <div class="card-container">`;
         
+        // Card view for mobile
         for (let i = 1; i < rows.length; i++) {
             const cells = parseCSVRow(rows[i]);
             if (cells.length === 0 || (cells.length === 1 && cells[0] === '')) continue;
@@ -563,12 +560,15 @@ function createResponsiveTableFromCSV(csvContent, csvFileName) {
         
         return html;
     } catch (error) {
-        console.error(`Error creating table from CSV: ${error.message}`);
+        console.error(`Σφάλμα δημιουργίας πίνακα από CSV: ${error.message}`);
         return `<div class="csv-error">Σφάλμα δημιουργίας πίνακα: ${error.message}</div>`;
     }
 }
 
 function enhancedExtractCSVTags(htmlContent) {
+    console.log("Εκτέλεση βελτιωμένου εντοπισμού ετικετών CSV_TABLE");
+    console.log(`Αρχικό HTML περιεχόμενο (πρώτοι 200 χαρακτήρες): ${htmlContent.substring(0, 200)}...`);
+    
     const patterns = [
         /<p>CSV_TABLE:([^<]+)<\/p>/g,
         /<p[^>]*>CSV_TABLE:([^<]+)<\/p>/g,
@@ -578,33 +578,50 @@ function enhancedExtractCSVTags(htmlContent) {
     ];
     
     const allMatches = [];
+    let matchCount = 0;
     
-    patterns.forEach((pattern) => {
+    patterns.forEach((pattern, index) => {
         pattern.lastIndex = 0;
         let match;
+        
         while ((match = pattern.exec(htmlContent)) !== null) {
+            matchCount++;
+            console.log(`Βρέθηκε ετικέτα CSV με pattern #${index + 1}: ${match[0]} -> ${match[1]}`);
+            
             allMatches.push({
                 fullMatch: match[0],
                 fileName: match[1].trim(),
+                pattern: index
             });
         }
     });
     
+    console.log(`Συνολικά βρέθηκαν ${matchCount} ετικέτες CSV_TABLE`);
     return allMatches;
 }
 
 function processEmbeddedCSV(htmlContent, entryPath) {
-    if (!entryPath) entryPath = CONFIG.BLOG_DIR;
+    if (!entryPath) {
+        console.error("Σφάλμα: Λείπει το entryPath στην processEmbeddedCSV");
+        entryPath = CONFIG.BLOG_DIR;
+    }
     
+    console.log(`Επεξεργασία CSV με entryPath: ${entryPath}`);
     const csvTags = enhancedExtractCSVTags(htmlContent);
-    if (csvTags.length === 0) return htmlContent;
+    
+    if (csvTags.length === 0) {
+        console.log("Δεν βρέθηκαν ετικέτες CSV_TABLE");
+        return htmlContent;
+    }
     
     let processedContent = htmlContent;
     
     for (const tag of csvTags) {
         try {
             const csvFileName = tag.fileName;
-            const { content } = findCSVFile(csvFileName, entryPath);
+            console.log(`Επεξεργασία ετικέτας CSV για το αρχείο: ${csvFileName}`);
+            
+            const { filePath, content } = findCSVFile(csvFileName, entryPath);
             
             const replacement = content 
                 ? createResponsiveTableFromCSV(content, csvFileName)
@@ -613,17 +630,26 @@ function processEmbeddedCSV(htmlContent, entryPath) {
             const escapedMatch = tag.fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             processedContent = processedContent.replace(new RegExp(escapedMatch, 'g'), replacement);
         } catch (error) {
-            console.error(`Error processing CSV tag: ${error.message}`);
+            console.error(`Σφάλμα επεξεργασίας ετικέτας CSV: ${error.message}`);
+            
             const escapedMatch = tag.fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            processedContent = processedContent.replace(new RegExp(escapedMatch, 'g'),
-                `<div class="csv-error"><strong>Σφάλμα επεξεργασίας CSV:</strong> ${error.message}</div>`);
+            const errorMessage = `
+            <div class="csv-error">
+                <strong>Σφάλμα επεξεργασίας CSV:</strong> ${error.message}
+                <div class="csv-error-details">
+                    <p>Λεπτομέρειες σφάλματος:</p>
+                    <pre>${error.stack}</pre>
+                </div>
+            </div>`;
+            
+            processedContent = processedContent.replace(new RegExp(escapedMatch, 'g'), errorMessage);
         }
     }
     
     return processedContent;
 }
 
-// ─── Main document conversion ────────────────────────────────────────────────
+// Main document conversion
 async function convertToHtml(filePath) {
     const ext = path.extname(filePath);
     
@@ -660,11 +686,13 @@ async function convertToHtml(filePath) {
             const result = await mammoth.convertToHtml(options);
             htmlContent = result.value;
             
+            // Process markdown-style headers
             htmlContent = htmlContent.replace(/<p>(#+)\s+(.*?)<\/p>/g, (match, hashes, content) => {
                 const level = hashes.length;
                 return (level >= 1 && level <= 6) ? `<h${level}>${content}</h${level}>` : match;
             });
             
+            // Remove first two words (tag and category)
             if (firstTwoWords.length === 2) {
                 const firstWordPattern = new RegExp(`<p>${firstTwoWords[0]}\\s+${firstTwoWords[1]}`);
                 if (htmlContent.match(firstWordPattern)) {
@@ -672,6 +700,10 @@ async function convertToHtml(filePath) {
                 } else {
                     htmlContent = htmlContent.replace(/<p>[^<]{1,50}<\/p>/, '');
                 }
+            }
+            
+            if (result.messages && result.messages.length > 0) {
+                console.log("Προειδοποιήσεις Mammoth:", result.messages);
             }
         } else if (ext === '.txt') {
             let content = fs.readFileSync(filePath, 'utf8');
@@ -749,18 +781,23 @@ async function convertToHtml(filePath) {
         
         return htmlContent;
     } catch (error) {
-        console.error(`Error converting document: ${filePath}`, error);
+        console.error(`Σφάλμα μετατροπής εγγράφου: ${filePath}`, error);
         return '';
     }
 }
 
-// ─── Process single blog entry ───────────────────────────────────────────────
+// Process single blog entry
 async function processBlogEntry(entryPath) {
+    console.log(`\n===================================================`);
+    console.log(`Processing blog entry: ${entryPath}`);
+    
     const folderName = path.basename(entryPath);
+    console.log(`Folder name: ${folderName}`);
     
     let entryFiles;
     try {
         entryFiles = fs.readdirSync(entryPath);
+        console.log(`Found files: ${entryFiles.join(', ')}`);
     } catch (error) {
         console.error(`Error reading directory ${entryPath}:`, error);
         return null;
@@ -776,10 +813,12 @@ async function processBlogEntry(entryPath) {
         return null;
     }
     
+    console.log(`Using document file: ${docFile}`);
     const docPath = path.join(entryPath, docFile);
     
     try {
         fs.accessSync(docPath, fs.constants.R_OK);
+        console.log(`File ${docPath} is readable`);
     } catch (error) {
         console.error(`File ${docPath} is not readable:`, error);
         return null;
@@ -788,13 +827,14 @@ async function processBlogEntry(entryPath) {
     // Process DOCX images if needed
     let extractedImages = [];
     if (docFile.endsWith('.docx')) {
+        console.log(`Extracting images from DOCX: ${docPath}`);
         const mediaFiles = await extractImagesFromDocx(docPath, entryPath);
         
         const outputImageDir = path.join(CONFIG.OUTPUT_HTML_DIR, 'images', folderName);
         utils.ensureDirectory(outputImageDir);
         
         for (let i = 0; i < mediaFiles.length; i++) {
-            const imageNumber = i + 3;
+            const imageNumber = i + 3; // Start from 3
             const webpPath = path.join(outputImageDir, `${imageNumber}.webp`);
             const avifPath = path.join(outputImageDir, `${imageNumber}.avif`);
             
@@ -808,6 +848,8 @@ async function processBlogEntry(entryPath) {
                 fileName: `${imageNumber}.webp`,
                 avifName: `${imageNumber}.avif`
             });
+            
+            console.log(`Processed image: ${imageNumber}.webp and ${imageNumber}.avif`);
         }
     }
     
@@ -819,6 +861,7 @@ async function processBlogEntry(entryPath) {
         try {
             const textResult = await mammoth.extractRawText({path: docPath});
             rawContent = textResult.value;
+            console.log('First 100 characters of DOCX content:', rawContent.substring(0, 100));
         } catch (error) {
             console.error(`Error extracting text from docx: ${docPath}`, error);
             rawContent = 'Error extracting text';
@@ -832,12 +875,15 @@ async function processBlogEntry(entryPath) {
         }
     }
     
+    // Parse date and author
     const { year, month, day, fullDate, authorCode } = utils.parseDate(folderName);
     const authorName = authorCode ? CONFIG.AUTHOR_MAP[authorCode] : null;
     
+    // Extract metadata
     const metadata = extractMetadata(docFile, rawContent);
     if (authorName) metadata.author = authorName;
     
+    // Convert to HTML
     let content = await convertToHtml(docPath);
     content = processContentImages(content, folderName, extractedImages);
     content = processImageInsertTags(content, images, folderName);
@@ -846,6 +892,7 @@ async function processBlogEntry(entryPath) {
         content = createImageGallery(images, folderName);
     }
     
+    // Generate post data
     const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
     const wordCount = plainText.split(/\s+/).length;
     const readingTime = Math.max(1, Math.ceil(wordCount / 200)) + ' min';
@@ -873,6 +920,7 @@ async function processBlogEntry(entryPath) {
         content: content
     };
     
+    // Generate HTML
     const bgImageFilename = postData.backgroundImage.includes("/")
         ? postData.backgroundImage.substring(postData.backgroundImage.lastIndexOf('/') + 1)
         : postData.backgroundImage;
@@ -881,6 +929,7 @@ async function processBlogEntry(entryPath) {
     
     const templateHtml = fs.readFileSync(CONFIG.TEMPLATE_PATH, 'utf8');
 
+    // Escape excerpt for safe HTML attribute embedding
     const safeExcerpt = postData.excerpt
         .replace(/&/g, '&amp;')
         .replace(/"/g, '&quot;')
@@ -988,218 +1037,127 @@ function createImageGallery(images, folderName) {
     return galleryHtml;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// WORKER THREAD LOGIC
-// ═══════════════════════════════════════════════════════════════════════════════
-
-if (!isMainThread) {
-    // ── Worker: process a single entry and send postData back ──
-    const { entryPath } = workerData;
+// Main processing function
+async function processBlogEntries() {
+    if (!fs.existsSync(CONFIG.BLOG_DIR)) {
+        console.error(`Blog entries directory not found: ${CONFIG.BLOG_DIR}`);
+        return;
+    }
     
-    (async () => {
+    console.log(`Looking for blog entries in: ${CONFIG.BLOG_DIR}`);
+    
+    let entryFolders;
+    try {
+        entryFolders = fs.readdirSync(CONFIG.BLOG_DIR)
+            .filter(folder => {
+                try {
+                    const folderPath = path.join(CONFIG.BLOG_DIR, folder);
+                    return fs.statSync(folderPath).isDirectory();
+                } catch (error) {
+                    console.error(`Error checking directory ${folder}:`, error);
+                    return false;
+                }
+            })
+            .map(folder => path.join(CONFIG.BLOG_DIR, folder));
+    } catch (error) {
+        console.error(`Error reading blog directories:`, error);
+        entryFolders = [];
+    }
+    
+    console.log(`Found ${entryFolders.length} potential blog entry folders`);
+    entryFolders.forEach(folder => console.log(` - ${path.basename(folder)}`));
+    
+    const blogPosts = [];
+    for (const entryPath of entryFolders) {
         try {
             const postData = await processBlogEntry(entryPath);
-            parentPort.postMessage({ ok: true, postData, entryPath });
-        } catch (error) {
-            parentPort.postMessage({ ok: false, error: error.message, entryPath });
-        }
-    })();
-} else {
-    // ── Main thread ──────────────────────────────────────────────────────────
-
-    /**
-     * Run a single entry inside a worker thread.
-     * Returns a Promise that resolves with { ok, postData?, error? }.
-     */
-    function runWorker(entryPath) {
-        return new Promise((resolve, reject) => {
-            const worker = new Worker(__filename, {
-                workerData: { entryPath }
-            });
-            worker.on('message', resolve);
-            worker.on('error', reject);
-            worker.on('exit', code => {
-                if (code !== 0) reject(new Error(`Worker exited with code ${code}`));
-            });
-        });
-    }
-
-    /**
-     * Process an array of paths through a bounded worker pool.
-     */
-    async function runWorkerPool(entryPaths, concurrency) {
-        const results = [];
-        let index = 0;
-
-        async function next() {
-            if (index >= entryPaths.length) return;
-            const i = index++;
-            const entryPath = entryPaths[i];
-            const folderName = path.basename(entryPath);
-
-            try {
-                const result = await runWorker(entryPath);
-                if (result.ok && result.postData) {
-                    results.push(result.postData);
-                    console.log(`✅ [worker] ${folderName}`);
-                } else {
-                    console.warn(`❌ [worker] ${folderName}: ${result.error || 'no data'}`);
-                }
-            } catch (err) {
-                console.error(`❌ [worker] ${folderName}: ${err.message}`);
-            }
-
-            await next(); // pick up the next item
-        }
-
-        // Launch `concurrency` parallel chains
-        await Promise.all(Array.from({ length: concurrency }, () => next()));
-        return results;
-    }
-
-    // ── Main processing function ─────────────────────────────────────────────
-    async function processBlogEntries() {
-        if (!fs.existsSync(CONFIG.BLOG_DIR)) {
-            console.error(`Blog entries directory not found: ${CONFIG.BLOG_DIR}`);
-            return;
-        }
-        
-        let entryFolders;
-        try {
-            entryFolders = fs.readdirSync(CONFIG.BLOG_DIR)
-                .filter(folder => {
-                    try {
-                        return fs.statSync(path.join(CONFIG.BLOG_DIR, folder)).isDirectory();
-                    } catch { return false; }
-                })
-                .map(folder => path.join(CONFIG.BLOG_DIR, folder));
-        } catch (error) {
-            console.error(`Error reading blog directories:`, error);
-            entryFolders = [];
-        }
-        
-        console.log(`Found ${entryFolders.length} potential blog entry folders`);
-
-        // ── Skip-check pass ──────────────────────────────────────────────────
-        const toBuild = [];
-        const skipped = [];
-        for (const ep of entryFolders) {
-            if (utils.shouldSkip(ep)) {
-                skipped.push(path.basename(ep));
-            } else {
-                toBuild.push(ep);
-            }
-        }
-
-        if (skipped.length > 0) {
-            console.log(`⏭️  Skipping ${skipped.length} up-to-date entries${FORCE_REBUILD ? '' : ' (use --force to rebuild all)'}:`);
-            skipped.forEach(f => console.log(`   ⏭️  ${f}`));
-        }
-
-        if (toBuild.length === 0) {
-            console.log('Nothing to build — all entries are up to date.');
-            // Still need to regenerate blog-data.json from existing articles
-        }
-
-        console.log(`\n🔨 Building ${toBuild.length} entries with ${Math.min(MAX_WORKERS, toBuild.length || 1)} workers...\n`);
-
-        // ── Parallel build ───────────────────────────────────────────────────
-        const concurrency = Math.min(MAX_WORKERS, toBuild.length || 1);
-        const freshPosts = toBuild.length > 0
-            ? await runWorkerPool(toBuild, concurrency)
-            : [];
-
-        // ── Collect postData for skipped entries from their existing HTML ────
-        // We still need them in blog-data.json. Re-read the existing
-        // blog-data.json (if any) to grab cached entries, or re-process
-        // them quickly for metadata only.
-        let cachedPosts = [];
-        if (skipped.length > 0 && fs.existsSync(CONFIG.OUTPUT_JSON)) {
-            try {
-                const existing = JSON.parse(fs.readFileSync(CONFIG.OUTPUT_JSON, 'utf8'));
-                const skippedSet = new Set(skipped);
-                cachedPosts = (existing.posts || []).filter(p => skippedSet.has(p.id));
-                console.log(`📦 Loaded ${cachedPosts.length} cached entries from blog-data.json`);
-            } catch {
-                console.warn('⚠️  Could not read cached blog-data.json, will rebuild all metadata');
-            }
-        }
-
-        // Merge: fresh builds + cached skipped
-        const freshIds = new Set(freshPosts.map(p => p.id));
-        const blogPosts = [
-            ...freshPosts,
-            ...cachedPosts.filter(p => !freshIds.has(p.id))
-        ];
-
-        // Fix missing authors
-        blogPosts.forEach(post => {
-            if (!post.author || post.author === 'F1 Stories Team') {
-                const lastChar = post.id.charAt(post.id.length - 1);
-                if (Object.keys(CONFIG.AUTHOR_MAP).includes(lastChar)) {
-                    post.author = CONFIG.AUTHOR_MAP[lastChar];
-                }
-            }
-        });
-        
-        console.log(`\n✅ Total: ${blogPosts.length} posts (${freshPosts.length} built, ${cachedPosts.length} cached)`);
-        
-        if (blogPosts.length === 0) {
-            console.error("No blog posts were successfully processed!");
-            return;
-        }
-        
-        blogPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
-        
-        const blogData = {
-            posts: blogPosts,
-            lastUpdated: new Date().toISOString()
-        };
-        
-        fs.writeFileSync(CONFIG.OUTPUT_JSON, JSON.stringify(blogData, null, 2));
-        console.log(`Blog data saved to ${CONFIG.OUTPUT_JSON}`);
-        
-        // ── Generate related articles (runs on main thread, fast) ────────────
-        blogPosts.forEach((post, index) => {
-            const scored = blogPosts
-                .filter((_, i) => i !== index)
-                .map(candidate => {
-                    let score = 0;
-                    if (candidate.tag && candidate.tag === post.tag) score += 3;
-                    if (candidate.category && candidate.category === post.category) score += 2;
-                    if (candidate.author && candidate.author === post.author) score += 1;
-                    if (post.categories && candidate.categories) {
-                        const shared = post.categories.filter(c => candidate.categories.includes(c));
-                        score += shared.length;
+            if (postData) {
+                if (!postData.author || postData.author === 'F1 Stories Team') {
+                    const folderName = path.basename(entryPath);
+                    const lastChar = folderName.charAt(folderName.length - 1);
+                    if (Object.keys(CONFIG.AUTHOR_MAP).includes(lastChar)) {
+                        postData.author = CONFIG.AUTHOR_MAP[lastChar];
                     }
-                    const daysDiff = Math.abs(new Date(post.date) - new Date(candidate.date)) / (1000 * 60 * 60 * 24);
-                    if (daysDiff <= 30) score += 1;
-                    return { post: candidate, score };
-                })
-                .filter(s => s.score > 0)
-                .sort((a, b) => b.score - a.score || new Date(b.post.date) - new Date(a.post.date));
-            
-            let relatedPosts = scored.slice(0, 3).map(s => s.post);
-            if (relatedPosts.length < 3) {
-                const ids = new Set(relatedPosts.map(p => p.id));
-                const fallbacks = blogPosts
-                    .filter((p, i) => i !== index && !ids.has(p.id))
-                    .slice(0, 3 - relatedPosts.length);
-                relatedPosts = relatedPosts.concat(fallbacks);
+                }
+                blogPosts.push(postData);
+                console.log(`✅ Successfully processed: ${path.basename(entryPath)}`);
+            } else {
+                console.warn(`❌ Failed to process: ${path.basename(entryPath)}`);
             }
+        } catch (error) {
+            console.error(`❌ Error processing blog entry ${entryPath}:`, error);
+        }
+    }
+    
+    console.log(`\nProcessed ${blogPosts.length} out of ${entryFolders.length} blog entries`);
+    
+    if (blogPosts.length === 0) {
+        console.error("No blog posts were successfully processed!");
+        return;
+    }
+    
+    blogPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    const blogData = {
+        posts: blogPosts,
+        lastUpdated: new Date().toISOString()
+    };
+    
+    fs.writeFileSync(CONFIG.OUTPUT_JSON, JSON.stringify(blogData, null, 2));
+    console.log(`Blog data saved to ${CONFIG.OUTPUT_JSON}`);
+    
+    // Generate related articles with weighted scoring
+    blogPosts.forEach((post, index) => {
+        const scored = blogPosts
+            .filter((_, i) => i !== index)
+            .map(candidate => {
+                let score = 0;
+                // Same tag: strongest signal
+                if (candidate.tag && candidate.tag === post.tag) score += 3;
+                // Same category
+                if (candidate.category && candidate.category === post.category) score += 2;
+                // Same author: mild boost
+                if (candidate.author && candidate.author === post.author) score += 1;
+                // Overlapping categories array
+                if (post.categories && candidate.categories) {
+                    const shared = post.categories.filter(c => candidate.categories.includes(c));
+                    score += shared.length;
+                }
+                // Recency bonus: posts within 30 days get +1
+                const daysDiff = Math.abs(new Date(post.date) - new Date(candidate.date)) / (1000 * 60 * 60 * 24);
+                if (daysDiff <= 30) score += 1;
+                return { post: candidate, score };
+            })
+            .filter(s => s.score > 0)
+            .sort((a, b) => b.score - a.score || new Date(b.post.date) - new Date(a.post.date));
+        
+        // Take top 3, or fall back to most recent if no matches
+        let relatedPosts = scored.slice(0, 3).map(s => s.post);
+        if (relatedPosts.length < 3) {
+            const ids = new Set(relatedPosts.map(p => p.id));
+            const fallbacks = blogPosts
+                .filter((p, i) => i !== index && !ids.has(p.id))
+                .slice(0, 3 - relatedPosts.length);
+            relatedPosts = relatedPosts.concat(fallbacks);
+        }
+        
+        const postHtmlPath = path.join(CONFIG.BLOG_DIR, post.id, 'article.html');
+        
+        if (!fs.existsSync(postHtmlPath)) {
+            console.warn(`Article HTML not found at ${postHtmlPath}`);
+            return;
+        }
+        
+        let postHtml = fs.readFileSync(postHtmlPath, 'utf8');
+        
+        const relatedPostsHtml = relatedPosts.map(related => {
+            const relatedImagePath = related.image.substring(related.image.lastIndexOf('/') + 1);
             
-            const postHtmlPath = path.join(CONFIG.BLOG_DIR, post.id, 'article.html');
+            // Format date nicely
+            const relDate = new Date(related.date);
+            const relDateStr = relDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
             
-            if (!fs.existsSync(postHtmlPath)) return;
-            
-            let postHtml = fs.readFileSync(postHtmlPath, 'utf8');
-            
-            const relatedPostsHtml = relatedPosts.map(related => {
-                const relatedImagePath = related.image.substring(related.image.lastIndexOf('/') + 1);
-                const relDate = new Date(related.date);
-                const relDateStr = relDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-                
-                return `
+            return `
             <div class="col-md-4 mb-4">
                 <a href="${related.url}" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
@@ -1220,38 +1178,38 @@ if (!isMainThread) {
                     </div>
                 </a>
             </div>`;
-            }).join('');
-            
-            postHtml = postHtml.replace(/RELATED_ARTICLES/g, relatedPostsHtml || '');
-            
-            const currentIndex = blogPosts.indexOf(post);
-            const prevPost = currentIndex < blogPosts.length - 1 ? blogPosts[currentIndex + 1] : null;
-            const nextPost = currentIndex > 0 ? blogPosts[currentIndex - 1] : null;
-            
-            if (prevPost) {
-                postHtml = postHtml.replace(/PREV_ARTICLE_URL/g,
-                    `/blog-module/blog-entries/${prevPost.id}/article.html`);
-            } else {
-                postHtml = postHtml.replace(/<a href="PREV_ARTICLE_URL"[^>]*>[^<]*<\/a>/g, '');
-            }
-            
-            if (nextPost) {
-                postHtml = postHtml.replace(/NEXT_ARTICLE_URL/g,
-                    `/blog-module/blog-entries/${nextPost.id}/article.html`);
-            } else {
-                postHtml = postHtml.replace(/<a href="NEXT_ARTICLE_URL"[^>]*>[^<]*<\/a>/g, '');
-            }
-            
-            fs.writeFileSync(path.join(CONFIG.BLOG_DIR, post.id, 'article.html'), postHtml);
-        });
+        }).join('');
         
-        console.log('Blog processing complete');
-    }
-
-    // Run
-    processBlogEntries().catch(error => {
-        console.error('Blog processing failed:', error);
+        postHtml = postHtml.replace(/RELATED_ARTICLES/g, relatedPostsHtml || '');
+        
+        // Handle navigation
+        const currentIndex = blogPosts.indexOf(post);
+        const prevPost = currentIndex < blogPosts.length - 1 ? blogPosts[currentIndex + 1] : null;
+        const nextPost = currentIndex > 0 ? blogPosts[currentIndex - 1] : null;
+        
+        if (prevPost) {
+            postHtml = postHtml.replace(/PREV_ARTICLE_URL/g,
+                `/blog-module/blog-entries/${prevPost.id}/article.html`);
+        } else {
+            postHtml = postHtml.replace(/<a href="PREV_ARTICLE_URL"[^>]*>[^<]*<\/a>/g, '');
+        }
+        
+        if (nextPost) {
+            postHtml = postHtml.replace(/NEXT_ARTICLE_URL/g,
+                `/blog-module/blog-entries/${nextPost.id}/article.html`);
+        } else {
+            postHtml = postHtml.replace(/<a href="NEXT_ARTICLE_URL"[^>]*>[^<]*<\/a>/g, '');
+        }
+        
+        fs.writeFileSync(path.join(CONFIG.BLOG_DIR, post.id, 'article.html'), postHtml);
     });
-
-    module.exports = { processBlogEntries };
+    
+    console.log('Blog processing complete');
 }
+
+// Run the processor
+processBlogEntries().catch(error => {
+    console.error('Blog processing failed:', error);
+});
+
+module.exports = { processBlogEntries };
