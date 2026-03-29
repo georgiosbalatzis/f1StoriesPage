@@ -662,157 +662,439 @@ function isUrlWhitelisted(urlStr) {
 }
 
 /**
- * Process IFRAME:url tags.
+ * Scan raw text for embed markers.
  *
- * In the DOCX the author writes on its own line:
- *   IFRAME:https://georgiosbalatzis.github.io/ghostcar/?y=2024&...
+ * Detects THREE kinds of embeds:
+ *   1. Tag-based:    IFRAME:url  /  EMBED:file  /  WIDGET:file
+ *   2. Raw iframe:   <iframe src="..." ...></iframe>   (pasted HTML)
+ *   3. Raw widget:   <div style="..." ...>...</div>    (pasted HTML block)
  *
- * Optional attributes after a pipe:
- *   IFRAME:https://example.com|height=650&style=border-radius:12px
+ * For .txt files  → replaces the lines with placeholder tokens (insertTokens=true)
+ * For .docx files → collects info keyed by original raw text (insertTokens=false)
  *
- * Mammoth will output it as  <p>IFRAME:https://…</p>
- * We match that and replace with a responsive iframe container.
+ * @param {string}  rawText      - plain text content
+ * @param {string}  entryPath    - folder containing the entry
+ * @param {boolean} insertTokens - true for .txt, false for .docx
  */
-function processIframeTags(htmlContent) {
-    const patterns = [
-        /<p>\s*IFRAME:((?:https?:\/\/)[^\s<|]+)(?:\|([^<]*?))?\s*<\/p>/gi,
-        /<p[^>]*>\s*IFRAME:((?:https?:\/\/)[^\s<|]+)(?:\|([^<]*?))?\s*<\/p>/gi,
-    ];
+function extractEmbedPlaceholders(rawText, entryPath, insertTokens = false) {
+    const placeholders = {};   // key → { type, value, entryPath }
+    let counter = 0;
 
-    let result = htmlContent;
+    // ── Helper: generate key ──
+    function makeKey(originalText) {
+        if (insertTokens) return `__EMBED_PLACEHOLDER_${counter++}__`;
+        return originalText;
+    }
 
-    patterns.forEach(pattern => {
-        result = result.replace(pattern, (_match, url, attrStr) => {
-            const trimmedUrl = url.trim();
+    // ── 1. Single-line tag-based markers  (IFRAME:url / EMBED:file / WIDGET:file)
+    const lines = rawText.split('\n');
+    const processedLines = [];
 
-            if (!isUrlWhitelisted(trimmedUrl)) {
-                console.warn(`⚠️  IFRAME blocked (not whitelisted): ${trimmedUrl}`);
-                return `<div class="embed-error">
-                    <strong>Iframe blocked:</strong> ${trimmedUrl} is not in the allowed domain list.
-                </div>`;
-            }
+    for (const line of lines) {
+        const trimmed = line.trim();
 
-            // Parse optional attributes  (height=650&style=border-radius:12px&loading=lazy)
-            const attrs = { height: '650', loading: 'lazy' };
-            if (attrStr) {
-                attrStr.split('&').forEach(pair => {
-                    const [k, ...vParts] = pair.split('=');
-                    if (k && vParts.length) attrs[k.trim()] = vParts.join('=').trim();
-                });
-            }
+        const iframeTagMatch = trimmed.match(/^IFRAME:(https?:\/\/.+)$/i);
+        if (iframeTagMatch) {
+            const key = makeKey(trimmed);
+            placeholders[key] = { type: 'iframe', value: iframeTagMatch[1].trim() };
+            processedLines.push(insertTokens ? key : line);
+            continue;
+        }
 
-            const height = attrs.height || '650';
-            const style = attrs.style || 'border-radius:12px;border:1px solid #E1060033;background:#15151e';
-            const loading = attrs.loading || 'lazy';
+        const embedTagMatch = trimmed.match(/^(?:EMBED|WIDGET):(\S+)$/i);
+        if (embedTagMatch) {
+            const key = makeKey(trimmed);
+            placeholders[key] = { type: 'embed', value: embedTagMatch[1].trim(), entryPath };
+            processedLines.push(insertTokens ? key : line);
+            continue;
+        }
 
-            console.log(`  📺 IFRAME embed: ${trimmedUrl} (h=${height})`);
+        processedLines.push(line);
+    }
 
-            return `
-            <div class="embed-container embed-iframe">
-                <iframe
-                    src="${trimmedUrl}"
-                    width="100%"
-                    height="${height}"
-                    frameborder="0"
-                    style="${style}"
-                    allowfullscreen
-                    loading="${loading}">
-                </iframe>
-            </div>`;
-        });
-    });
+    let cleanedText = processedLines.join('\n');
 
-    return result;
+    // ── 2. Raw <iframe ...></iframe> blocks (possibly multi-line)
+    //    Mammoth's raw text preserves the literal angle brackets.
+    const iframeRegex = /<iframe\s[^>]*src=["']([^"']+)["'][^>]*>[\s\S]*?<\/iframe>/gi;
+    let iframeMatch;
+    while ((iframeMatch = iframeRegex.exec(cleanedText)) !== null) {
+        const fullBlock = iframeMatch[0];
+        const src = iframeMatch[1];
+        const key = makeKey(fullBlock);
+        placeholders[key] = { type: 'raw-iframe', value: fullBlock, src };
+        if (insertTokens) {
+            cleanedText = cleanedText.replace(fullBlock, key);
+            iframeRegex.lastIndex = 0; // reset after mutation
+        }
+    }
+
+    // ── 3. Raw <div ...>...</div> widget blocks (multi-line)
+    //    Only match top-level <div> blocks that look like styled widgets
+    //    (contain style= attribute — avoids matching random divs)
+    const widgetRegex = /<div\s+style="[^"]*"[^>]*>[\s\S]*?<\/div>\s*(?:<\/div>)*/gi;
+    // Better approach: match balanced top-level <div> with style attr
+    const rawText2 = insertTokens ? cleanedText : rawText;
+    const widgetBlocks = extractTopLevelStyledDivs(rawText2);
+    for (const block of widgetBlocks) {
+        // Skip if already captured by iframe match
+        if (block.includes('<iframe')) continue;
+        const key = makeKey(block);
+        placeholders[key] = { type: 'raw-widget', value: block };
+        if (insertTokens) {
+            cleanedText = cleanedText.replace(block, key);
+        }
+    }
+
+    return { cleanedText, placeholders };
 }
 
 /**
- * Process EMBED:filename tags.
- *
- * In the DOCX the author writes on its own line:
- *   EMBED:ghost-card.html
- *
- * The .html file must live in the same entry folder.
- * Its entire content is injected into the article as-is,
- * wrapped in a container div.
+ * Extract top-level <div style="...">...</div> blocks with balanced tags.
+ * Only matches divs that start with a style attribute (widget pattern).
+ * Skips nested divs that are already inside a captured outer block.
  */
-function processEmbedFileTags(htmlContent, entryPath) {
-    const patterns = [
-        /<p>\s*EMBED:([^\s<]+)\s*<\/p>/gi,
-        /<p[^>]*>\s*EMBED:([^\s<]+)\s*<\/p>/gi,
-    ];
+function extractTopLevelStyledDivs(text) {
+    const results = [];
+    const openPattern = /<div\s+style="[^"]*"/g;
+    let match;
+    let lastCapturedEnd = -1;
+
+    while ((match = openPattern.exec(text)) !== null) {
+        const startIdx = match.index;
+
+        // Skip if this div starts inside an already-captured block
+        if (startIdx < lastCapturedEnd) continue;
+
+        // Count nested <div> and </div> to find the balanced close
+        let depth = 0;
+        let i = startIdx;
+        let endIdx = -1;
+
+        while (i < text.length) {
+            if (text.substring(i, i + 4) === '<div') {
+                depth++;
+                i += 4;
+            } else if (text.substring(i, i + 6) === '</div>') {
+                depth--;
+                if (depth === 0) {
+                    endIdx = i + 6;
+                    break;
+                }
+                i += 6;
+            } else {
+                i++;
+            }
+        }
+
+        if (endIdx > startIdx) {
+            results.push(text.substring(startIdx, endIdx));
+            lastCapturedEnd = endIdx;
+        }
+    }
+
+    return results;
+}
+
+/**
+ * After conversion, find embed placeholders/markers in the HTML
+ * and replace them with the actual embed HTML.
+ *
+ * Token mode (.txt):  keys are __EMBED_PLACEHOLDER_N__
+ * Raw-text mode (.docx): keys are original raw text.
+ *   Mammoth entity-encodes angle brackets (&lt; &gt;) and wraps in <p>.
+ *   A single raw HTML block may span MULTIPLE <p> tags.
+ *   We decode the full HTML, find contiguous <p> runs that form a raw block,
+ *   and replace the whole run.
+ */
+function resolveEmbedPlaceholders(htmlContent, placeholders) {
+    if (!Object.keys(placeholders).length) return htmlContent;
 
     let result = htmlContent;
 
-    patterns.forEach(pattern => {
-        result = result.replace(pattern, (_match, fileName) => {
-            const trimmed = fileName.trim();
-            const ext = path.extname(trimmed).toLowerCase();
+    // Check if we're in token mode or raw-text mode
+    const firstKey = Object.keys(placeholders)[0];
+    const isTokenMode = firstKey.startsWith('__EMBED_PLACEHOLDER_');
 
-            // Only allow safe extensions
-            if (!CONFIG.EMBED_EXTENSIONS.includes(ext)) {
-                console.warn(`⚠️  EMBED blocked (extension not allowed): ${trimmed}`);
-                return `<div class="embed-error">
-                    <strong>Embed blocked:</strong> .${ext} files are not allowed. Use ${CONFIG.EMBED_EXTENSIONS.join(', ')}.
-                </div>`;
+    if (isTokenMode) {
+        for (const [token, info] of Object.entries(placeholders)) {
+            const replacement = buildEmbedHtml(info);
+            const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const pWrapped = new RegExp(`<p[^>]*>\\s*${escaped}\\s*<\\/p>`, 'g');
+            if (pWrapped.test(result)) {
+                result = result.replace(pWrapped, replacement);
+            } else {
+                result = result.replace(new RegExp(escaped, 'g'), replacement);
             }
+        }
+        return result;
+    }
 
-            // Resolve file — same folder as the DOCX, or a subfolder called "embeds/"
-            const candidates = [
-                path.join(entryPath, trimmed),
-                path.join(entryPath, 'embeds', trimmed),
-            ];
+    // ── Raw-text mode (DOCX) ─────────────────────────────────────────────────
+    //
+    // Mammoth output for pasted HTML looks like:
+    //   <p>&lt;iframe src=&quot;...&quot; ...&gt;&lt;/iframe&gt;</p>
+    // or for a widget (multi-line div):
+    //   <p>&lt;div style=&quot;...&quot;&gt; &lt;div ...&gt; ... &lt;/div&gt;</p>
+    //   <p>Italian Grand Prix 2024&lt;/div&gt; ...</p>
+    //   ...multiple <p> tags...
+    //
+    // Strategy:
+    //   1. First handle simple single-line tag markers (IFRAME:, EMBED:, WIDGET:)
+    //   2. Then decode the full HTML to find raw HTML blocks
 
-            let fileContent = null;
-            for (const fp of candidates) {
-                if (fs.existsSync(fp)) {
-                    try {
-                        fileContent = fs.readFileSync(fp, 'utf8');
-                        console.log(`  🧩 EMBED file loaded: ${fp} (${fileContent.length} chars)`);
-                        break;
-                    } catch (err) {
-                        console.error(`  Error reading embed file ${fp}: ${err.message}`);
-                    }
+    // Step 1: Single-line markers (same as before)
+    const markerMap = {};
+    const rawBlockMap = {};
+    for (const [key, info] of Object.entries(placeholders)) {
+        if (info.type === 'iframe' || info.type === 'embed') {
+            markerMap[key] = buildEmbedHtml(info);
+        } else {
+            rawBlockMap[key] = info;
+        }
+    }
+
+    // Replace single-line markers by matching stripped <p> text
+    if (Object.keys(markerMap).length) {
+        result = result.replace(/<p[^>]*>([\s\S]*?)<\/p>/g, (fullMatch, inner) => {
+            let plain = inner.replace(/<[^>]*>/g, '');
+            plain = decodeHtmlEntities(plain).trim();
+
+            if (markerMap[plain] !== undefined) {
+                console.log(`  ✅ Matched marker: ${plain.substring(0, 80)}...`);
+                return markerMap[plain];
+            }
+            const lowerPlain = plain.toLowerCase();
+            for (const [key, replacement] of Object.entries(markerMap)) {
+                if (key.toLowerCase() === lowerPlain) {
+                    console.log(`  ✅ Matched marker (ci): ${plain.substring(0, 80)}...`);
+                    return replacement;
                 }
             }
-
-            if (fileContent === null) {
-                console.warn(`⚠️  EMBED file not found: ${trimmed} in ${entryPath}`);
-                return `<div class="embed-error">
-                    <strong>Embed file not found:</strong> ${trimmed}
-                    <div class="embed-error-details">
-                        Place the file in the same folder as the DOCX, or in an <code>embeds/</code> subfolder.
-                    </div>
-                </div>`;
-            }
-
-            return `<div class="embed-container embed-widget">\n${fileContent}\n</div>`;
+            return fullMatch;
         });
-    });
+    }
+
+    // Step 2: Raw HTML blocks — decode the whole output and search for them
+    if (Object.keys(rawBlockMap).length) {
+        result = processRawHtmlEmbeds(result, rawBlockMap);
+    }
 
     return result;
 }
 
 /**
- * Process WIDGET:filename tags — alias for EMBED, kept for readability.
- * Authors can use either EMBED: or WIDGET: in their DOCX.
+ * Decode common HTML entities.
  */
-function processWidgetTags(htmlContent, entryPath) {
-    // Rewrite WIDGET: → EMBED: then run the embed processor
-    let rewritten = htmlContent
-        .replace(/(WIDGET:)/gi, 'EMBED:');
-    return processEmbedFileTags(rewritten, entryPath);
+function decodeHtmlEntities(str) {
+    return str
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&nbsp;/g, ' ');
 }
+
+/**
+ * Find raw HTML blocks (iframes and widgets) that mammoth entity-encoded
+ * and scattered across one or more <p> tags. Replace them with actual HTML.
+ */
+function processRawHtmlEmbeds(htmlContent, rawBlockMap) {
+    let result = htmlContent;
+
+    for (const [key, info] of Object.entries(rawBlockMap)) {
+        const replacement = buildEmbedHtml(info);
+        const rawHtml = info.value; // the original raw HTML block
+
+        // The raw HTML appears entity-encoded in mammoth output.
+        // It may be inside one <p> or split across multiple <p> tags.
+        // Approach: entity-decode all <p> content, concatenate adjacent <p> blocks,
+        // and see if the raw block appears in the decoded stream.
+
+        // Build a decoded version of the full HTML to locate the encoded range
+        // We'll search for a simplified/normalized version of the raw block
+
+        // Normalize the raw block for matching: collapse whitespace
+        const normalizedRaw = rawHtml.replace(/\s+/g, ' ').trim();
+
+        // Find all <p> tags and their positions
+        const pTags = [];
+        const pRegex = /<p[^>]*>([\s\S]*?)<\/p>/g;
+        let pMatch;
+        while ((pMatch = pRegex.exec(result)) !== null) {
+            const decoded = decodeHtmlEntities(pMatch[1].replace(/<[^>]*>/g, ''));
+            pTags.push({
+                start: pMatch.index,
+                end: pMatch.index + pMatch[0].length,
+                full: pMatch[0],
+                decoded: decoded
+            });
+        }
+
+        // Try to find contiguous <p> runs whose concatenated decoded text
+        // contains the normalized raw block
+        let found = false;
+        for (let i = 0; i < pTags.length && !found; i++) {
+            let concat = '';
+            for (let j = i; j < pTags.length; j++) {
+                concat += (j > i ? ' ' : '') + pTags[j].decoded;
+                const normalizedConcat = concat.replace(/\s+/g, ' ').trim();
+
+                if (normalizedConcat.includes(normalizedRaw) ||
+                    normalizedRaw.includes(normalizedConcat)) {
+                    // Check if the concatenated text IS the raw block (not just contains it
+                    // as a substring of normal text). Verify by checking it starts with < 
+                    // and the first <p> decoded text starts with <
+                    const firstDecoded = pTags[i].decoded.trim();
+                    if (!firstDecoded.startsWith('<')) continue;
+
+                    // Found the range — replace from pTags[i].start to pTags[j].end
+                    const before = result.substring(0, pTags[i].start);
+                    const after = result.substring(pTags[j].end);
+                    result = before + replacement + after;
+                    console.log(`  ✅ Replaced raw HTML block (${j - i + 1} <p> tags): ${normalizedRaw.substring(0, 60)}...`);
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found) {
+            console.warn(`  ⚠️  Could not locate raw HTML block in mammoth output: ${normalizedRaw.substring(0, 80)}...`);
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Build the actual HTML for an embed entry.
+ */
+function buildEmbedHtml(info) {
+    if (info.type === 'iframe') {
+        const pipeIdx = info.value.indexOf('|');
+        const url = pipeIdx > -1 ? info.value.substring(0, pipeIdx).trim() : info.value;
+        const attrStr = pipeIdx > -1 ? info.value.substring(pipeIdx + 1).trim() : '';
+
+        if (!isUrlWhitelisted(url)) {
+            console.warn(`⚠️  IFRAME blocked (not whitelisted): ${url}`);
+            return `<div class="embed-error">
+                <strong>Iframe blocked:</strong> ${url} is not in the allowed domain list.
+            </div>`;
+        }
+
+        const attrs = { height: '650', loading: 'lazy' };
+        if (attrStr) {
+            attrStr.split('&').forEach(pair => {
+                const [k, ...vParts] = pair.split('=');
+                if (k && vParts.length) attrs[k.trim()] = vParts.join('=').trim();
+            });
+        }
+        const height = attrs.height || '650';
+        const style = attrs.style || 'border-radius:12px;border:1px solid #E1060033;background:#15151e';
+        const loading = attrs.loading || 'lazy';
+
+        console.log(`  📺 IFRAME embed: ${url} (h=${height})`);
+
+        return `
+        <div class="embed-container embed-iframe">
+            <iframe
+                src="${url}"
+                width="100%"
+                height="${height}"
+                frameborder="0"
+                style="${style}"
+                allowfullscreen
+                loading="${loading}">
+            </iframe>
+        </div>`;
+    }
+
+    if (info.type === 'embed') {
+        const fileName = info.value;
+        const ext = path.extname(fileName).toLowerCase();
+        const entryPath = info.entryPath;
+
+        if (!CONFIG.EMBED_EXTENSIONS.includes(ext)) {
+            console.warn(`⚠️  EMBED blocked (extension not allowed): ${fileName}`);
+            return `<div class="embed-error">
+                <strong>Embed blocked:</strong> ${ext} files are not allowed. Use ${CONFIG.EMBED_EXTENSIONS.join(', ')}.
+            </div>`;
+        }
+
+        const candidates = [
+            path.join(entryPath, fileName),
+            path.join(entryPath, 'embeds', fileName),
+        ];
+
+        let fileContent = null;
+        for (const fp of candidates) {
+            if (fs.existsSync(fp)) {
+                try {
+                    fileContent = fs.readFileSync(fp, 'utf8');
+                    console.log(`  🧩 EMBED file loaded: ${fp} (${fileContent.length} chars)`);
+                    break;
+                } catch (err) {
+                    console.error(`  Error reading embed file ${fp}: ${err.message}`);
+                }
+            }
+        }
+
+        if (fileContent === null) {
+            console.warn(`⚠️  EMBED file not found: ${fileName} in ${entryPath}`);
+            return `<div class="embed-error">
+                <strong>Embed file not found:</strong> ${fileName}
+                <div class="embed-error-details">
+                    Place the file in the same folder as the DOCX, or in an <code>embeds/</code> subfolder.
+                </div>
+            </div>`;
+        }
+
+        return `<div class="embed-container embed-widget">\n${fileContent}\n</div>`;
+    }
+
+    // Raw iframe pasted directly into DOCX
+    if (info.type === 'raw-iframe') {
+        const src = info.src;
+        if (!isUrlWhitelisted(src)) {
+            console.warn(`⚠️  Raw IFRAME blocked (not whitelisted): ${src}`);
+            return `<div class="embed-error">
+                <strong>Iframe blocked:</strong> ${src} is not in the allowed domain list.
+            </div>`;
+        }
+        console.log(`  📺 Raw IFRAME embed: ${src}`);
+        return `<div class="embed-container embed-iframe">\n${info.value}\n</div>`;
+    }
+
+    // Raw widget div pasted directly into DOCX
+    if (info.type === 'raw-widget') {
+        console.log(`  🧩 Raw WIDGET embed (${info.value.length} chars)`);
+        return `<div class="embed-container embed-widget">\n${info.value}\n</div>`;
+    }
+
+    return '';
+}
+// ─── Main document conversion ────────────────────────────────────────────────
 async function convertToHtml(filePath) {
     const ext = path.extname(filePath);
     
     try {
         const entryPath = path.dirname(filePath);
         let htmlContent = '';
+        let embedPlaceholders = {};
         
         if (ext === '.docx') {
+            // 1. Extract raw text first
             const textResult = await mammoth.extractRawText({path: filePath});
             const rawText = textResult.value;
             const firstTwoWords = rawText.trim().split(/\s+/).slice(0, 2);
+
+            // 2. Pre-scan raw text for IFRAME:/EMBED:/WIDGET: lines
+            //    For DOCX we can't modify the binary, so just collect the info
+            //    keyed by original line text (insertTokens=false).
+            const { placeholders } = extractEmbedPlaceholders(rawText, entryPath, false);
+            embedPlaceholders = placeholders;
             
             const options = {
                 path: filePath,
@@ -859,6 +1141,11 @@ async function convertToHtml(filePath) {
             if (!content.startsWith('---')) {
                 content = content.replace(/^\s*(\S+)\s+(\S+)/, '');
             }
+
+            // Pre-scan for embeds in .txt — insert tokens since we control the text
+            const { cleanedText, placeholders } = extractEmbedPlaceholders(content, entryPath, true);
+            embedPlaceholders = placeholders;
+            content = cleanedText;
             
             const lines = content.split('\n');
             let currentParagraph = '';
@@ -922,10 +1209,14 @@ async function convertToHtml(filePath) {
             }
         }
         
+        // Post-processing pipeline
         htmlContent = processYouTubeLinks(htmlContent);
         htmlContent = processEmbeddedCSV(htmlContent, entryPath);
-        htmlContent = processIframeTags(htmlContent);
-        htmlContent = processWidgetTags(htmlContent, entryPath);  // handles both WIDGET: and EMBED:
+
+        // Resolve IFRAME:/EMBED:/WIDGET: placeholders
+        // DOCX mode: strips tags from each <p>, matches against raw line text
+        // TXT mode: finds __EMBED_PLACEHOLDER_N__ tokens
+        htmlContent = resolveEmbedPlaceholders(htmlContent, embedPlaceholders);
         
         return htmlContent;
     } catch (error) {
