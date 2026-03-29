@@ -35,7 +35,21 @@ const CONFIG = {
         '2Fast': '2fast.webp',
         'Dimitris Keramidiotis': 'dimitris.webp',
         'default': 'default.webp'
-    }
+    },
+    // Allowed domains for IFRAME: tags (exact hostname match)
+    IFRAME_WHITELIST: [
+        'georgiosbalatzis.github.io',
+        'f1stories.gr',
+        'www.f1stories.gr',
+        'www.youtube.com',
+        'youtube.com',
+        'open.spotify.com',
+        'player.vimeo.com',
+        'codepen.io',
+        'datawrapper.dwcdn.net'
+    ],
+    // Allowed extensions for EMBED: file references
+    EMBED_EXTENSIONS: ['.html', '.htm', '.svg']
 };
 
 // ─── Utility functions ───────────────────────────────────────────────────────
@@ -129,7 +143,15 @@ const utils = {
             return fs.statSync(path.join(entryPath, f)).mtimeMs > htmlMtime;
         });
 
-        return docMtime <= htmlMtime && !anyImageNewer && !anyCsvNewer;
+        // Also check if any embed/widget HTML file is newer
+        const anyEmbedNewer = folderFiles.some(f => {
+            const ext = path.extname(f).toLowerCase();
+            if (!CONFIG.EMBED_EXTENSIONS.includes(ext)) return false;
+            if (f === 'article.html') return false; // skip our own output
+            return fs.statSync(path.join(entryPath, f)).mtimeMs > htmlMtime;
+        });
+
+        return docMtime <= htmlMtime && !anyImageNewer && !anyCsvNewer && !anyEmbedNewer;
     }
 };
 
@@ -623,7 +645,163 @@ function processEmbeddedCSV(htmlContent, entryPath) {
     return processedContent;
 }
 
-// ─── Main document conversion ────────────────────────────────────────────────
+// ─── Embed / iframe processing ───────────────────────────────────────────────
+
+/**
+ * Check whether a URL's hostname is in the iframe whitelist.
+ */
+function isUrlWhitelisted(urlStr) {
+    try {
+        const parsed = new URL(urlStr);
+        return CONFIG.IFRAME_WHITELIST.some(domain =>
+            parsed.hostname === domain || parsed.hostname.endsWith('.' + domain)
+        );
+    } catch {
+        return false;
+    }
+}
+
+/**
+ * Process IFRAME:url tags.
+ *
+ * In the DOCX the author writes on its own line:
+ *   IFRAME:https://georgiosbalatzis.github.io/ghostcar/?y=2024&...
+ *
+ * Optional attributes after a pipe:
+ *   IFRAME:https://example.com|height=650&style=border-radius:12px
+ *
+ * Mammoth will output it as  <p>IFRAME:https://…</p>
+ * We match that and replace with a responsive iframe container.
+ */
+function processIframeTags(htmlContent) {
+    const patterns = [
+        /<p>\s*IFRAME:((?:https?:\/\/)[^\s<|]+)(?:\|([^<]*?))?\s*<\/p>/gi,
+        /<p[^>]*>\s*IFRAME:((?:https?:\/\/)[^\s<|]+)(?:\|([^<]*?))?\s*<\/p>/gi,
+    ];
+
+    let result = htmlContent;
+
+    patterns.forEach(pattern => {
+        result = result.replace(pattern, (_match, url, attrStr) => {
+            const trimmedUrl = url.trim();
+
+            if (!isUrlWhitelisted(trimmedUrl)) {
+                console.warn(`⚠️  IFRAME blocked (not whitelisted): ${trimmedUrl}`);
+                return `<div class="embed-error">
+                    <strong>Iframe blocked:</strong> ${trimmedUrl} is not in the allowed domain list.
+                </div>`;
+            }
+
+            // Parse optional attributes  (height=650&style=border-radius:12px&loading=lazy)
+            const attrs = { height: '650', loading: 'lazy' };
+            if (attrStr) {
+                attrStr.split('&').forEach(pair => {
+                    const [k, ...vParts] = pair.split('=');
+                    if (k && vParts.length) attrs[k.trim()] = vParts.join('=').trim();
+                });
+            }
+
+            const height = attrs.height || '650';
+            const style = attrs.style || 'border-radius:12px;border:1px solid #E1060033;background:#15151e';
+            const loading = attrs.loading || 'lazy';
+
+            console.log(`  📺 IFRAME embed: ${trimmedUrl} (h=${height})`);
+
+            return `
+            <div class="embed-container embed-iframe">
+                <iframe
+                    src="${trimmedUrl}"
+                    width="100%"
+                    height="${height}"
+                    frameborder="0"
+                    style="${style}"
+                    allowfullscreen
+                    loading="${loading}">
+                </iframe>
+            </div>`;
+        });
+    });
+
+    return result;
+}
+
+/**
+ * Process EMBED:filename tags.
+ *
+ * In the DOCX the author writes on its own line:
+ *   EMBED:ghost-card.html
+ *
+ * The .html file must live in the same entry folder.
+ * Its entire content is injected into the article as-is,
+ * wrapped in a container div.
+ */
+function processEmbedFileTags(htmlContent, entryPath) {
+    const patterns = [
+        /<p>\s*EMBED:([^\s<]+)\s*<\/p>/gi,
+        /<p[^>]*>\s*EMBED:([^\s<]+)\s*<\/p>/gi,
+    ];
+
+    let result = htmlContent;
+
+    patterns.forEach(pattern => {
+        result = result.replace(pattern, (_match, fileName) => {
+            const trimmed = fileName.trim();
+            const ext = path.extname(trimmed).toLowerCase();
+
+            // Only allow safe extensions
+            if (!CONFIG.EMBED_EXTENSIONS.includes(ext)) {
+                console.warn(`⚠️  EMBED blocked (extension not allowed): ${trimmed}`);
+                return `<div class="embed-error">
+                    <strong>Embed blocked:</strong> .${ext} files are not allowed. Use ${CONFIG.EMBED_EXTENSIONS.join(', ')}.
+                </div>`;
+            }
+
+            // Resolve file — same folder as the DOCX, or a subfolder called "embeds/"
+            const candidates = [
+                path.join(entryPath, trimmed),
+                path.join(entryPath, 'embeds', trimmed),
+            ];
+
+            let fileContent = null;
+            for (const fp of candidates) {
+                if (fs.existsSync(fp)) {
+                    try {
+                        fileContent = fs.readFileSync(fp, 'utf8');
+                        console.log(`  🧩 EMBED file loaded: ${fp} (${fileContent.length} chars)`);
+                        break;
+                    } catch (err) {
+                        console.error(`  Error reading embed file ${fp}: ${err.message}`);
+                    }
+                }
+            }
+
+            if (fileContent === null) {
+                console.warn(`⚠️  EMBED file not found: ${trimmed} in ${entryPath}`);
+                return `<div class="embed-error">
+                    <strong>Embed file not found:</strong> ${trimmed}
+                    <div class="embed-error-details">
+                        Place the file in the same folder as the DOCX, or in an <code>embeds/</code> subfolder.
+                    </div>
+                </div>`;
+            }
+
+            return `<div class="embed-container embed-widget">\n${fileContent}\n</div>`;
+        });
+    });
+
+    return result;
+}
+
+/**
+ * Process WIDGET:filename tags — alias for EMBED, kept for readability.
+ * Authors can use either EMBED: or WIDGET: in their DOCX.
+ */
+function processWidgetTags(htmlContent, entryPath) {
+    // Rewrite WIDGET: → EMBED: then run the embed processor
+    let rewritten = htmlContent
+        .replace(/(WIDGET:)/gi, 'EMBED:');
+    return processEmbedFileTags(rewritten, entryPath);
+}
 async function convertToHtml(filePath) {
     const ext = path.extname(filePath);
     
@@ -746,6 +924,8 @@ async function convertToHtml(filePath) {
         
         htmlContent = processYouTubeLinks(htmlContent);
         htmlContent = processEmbeddedCSV(htmlContent, entryPath);
+        htmlContent = processIframeTags(htmlContent);
+        htmlContent = processWidgetTags(htmlContent, entryPath);  // handles both WIDGET: and EMBED:
         
         return htmlContent;
     } catch (error) {
