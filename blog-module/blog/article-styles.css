@@ -238,9 +238,11 @@
    All handled by theme-overrides.css (loaded on every page). */
 /* ── Sponsor Strip ───────────────────────────── */
 .sponsor-strip {
-    padding: 1rem 2rem;                /* was 0.75rem */
+    padding: 1rem 2rem;
     background: var(--blog-surface);
     border-bottom: 1px solid var(--blog-border);
+    /* Hidden by default (dark mode) — shown via theme-overrides.css */
+    display: none;
 }
 .sponsor-strip-label {
     font-size: 0.7rem;
@@ -249,7 +251,7 @@
     text-transform: uppercase;
     color: var(--blog-text-tertiary);
     text-align: center;
-    margin-bottom: 0.75rem;           /* was 0.6rem */
+    margin-bottom: 0.75rem;
 }
 .sponsor-logos {
     display: flex;
@@ -259,14 +261,14 @@
 }
 .sponsor-logo {
     flex: 1;
-    height: 64px;                     /* was 36px */
+    height: 64px;
     border-radius: var(--blog-radius-sm);
     border: 1px solid var(--blog-border);
     background: var(--blog-surface-raised);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem 0.75rem;          /* was 0.3rem 0.5rem */
+    padding: 0.5rem 0.75rem;
     transition: all var(--blog-transition);
     overflow: hidden;
 }
@@ -277,7 +279,7 @@
     box-shadow: var(--blog-shadow-sm);
 }
 .sponsor-logo img {
-    max-height: 44px;                 /* was 22px */
+    max-height: 44px;
     max-width: 100%;
     width: auto;
     object-fit: contain;
