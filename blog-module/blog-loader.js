@@ -29,12 +29,12 @@ document.addEventListener('DOMContentLoaded', function () {
         return src.startsWith('/') ? src : '/' + src;
     }
 
-    // ── Fetch blog-data.json with fallback paths ────
+    // ── Fetch blog-index-data.json with fallback paths ────
     async function fetchBlogData() {
         const paths = [
-            '/blog-module/blog-data.json',
-            'blog-module/blog-data.json',
-            '../blog-module/blog-data.json'
+            '/blog-module/blog-index-data.json',
+            'blog-module/blog-index-data.json',
+            '../blog-module/blog-index-data.json'
         ];
         for (const p of paths) {
             try {

@@ -53,14 +53,24 @@ document.addEventListener('DOMContentLoaded', function () {
         return probe();
     }
 
-    discoverImages().then(function (images) {
-        if (!images.length) {
-            console.warn('No bg images found in images/bg/');
-            return;
-        }
+    function applyBackground(images) {
+        if (!images.length) return;
         var pick = images[Math.floor(Math.random() * images.length)];
         heroOverlay.style.backgroundImage = "url('" + pick + "')";
-        console.log('Background set:', pick, '(pool of', images.length, ')');
-    });
+    }
+
+    var CACHE_KEY = 'f1s-bg-v1';
+    var cached = null;
+    try { cached = JSON.parse(sessionStorage.getItem(CACHE_KEY)); } catch (e) {}
+
+    if (cached && cached.length) {
+        applyBackground(cached);
+    } else {
+        discoverImages().then(function (images) {
+            if (!images.length) return;
+            try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(images)); } catch (e) {}
+            applyBackground(images);
+        });
+    }
 
 });

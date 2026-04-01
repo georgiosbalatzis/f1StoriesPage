@@ -188,36 +188,52 @@ const YouTubeAPI = (function() {
     }
 
     async function fetchChannelVideos(maxResults = 3) {
-        // Try RSS feed first
+        // Return cached videos if fresh (< 1 hour)
+        const CACHE_KEY = 'f1s-yt-v1';
+        const CACHE_TTL = 3600 * 1000;
         try {
-            const proxyUrl = 'https://api.allorigins.win/raw?url=';
-            const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-            const response = await fetch(proxyUrl + encodeURIComponent(feedUrl));
-
-            if (response.ok) {
-                const xmlText = await response.text();
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText, "application/xml");
-                const entries = xmlDoc.getElementsByTagName('entry');
-
-                if (entries.length > 0) {
-                    const videoIds = Array.from(entries)
-                        .slice(0, maxResults)
-                        .map(entry => entry.getElementsByTagName('yt:videoId')[0].textContent);
-
-                    return await getVideoDetails(videoIds);
-                }
+            const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY));
+            if (cached && cached.ts && Date.now() - cached.ts < CACHE_TTL && cached.videos?.length) {
+                return cached.videos;
             }
-        } catch (error) {
-            console.error('RSS feed error:', error);
+        } catch (_) {}
+
+        async function fetchAndCache() {
+            // Try RSS feed first
+            try {
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+                const response = await fetch(proxyUrl + encodeURIComponent(feedUrl));
+
+                if (response.ok) {
+                    const xmlText = await response.text();
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlText, "application/xml");
+                    const entries = xmlDoc.getElementsByTagName('entry');
+
+                    if (entries.length > 0) {
+                        const videoIds = Array.from(entries)
+                            .slice(0, maxResults)
+                            .map(entry => entry.getElementsByTagName('yt:videoId')[0].textContent);
+
+                        return await getVideoDetails(videoIds);
+                    }
+                }
+            } catch (error) {
+                console.error('RSS feed error:', error);
+            }
+
+            // Fallback to Search API
+            const searchUrl = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&order=date&maxResults=${maxResults}&type=video`;
+            const searchData = await fetchWithFallback(searchUrl);
+
+            const videoIds = searchData.items?.map(item => item.id.videoId) || [];
+            return await getVideoDetails(videoIds);
         }
 
-        // Fallback to Search API
-        const searchUrl = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&order=date&maxResults=${maxResults}&type=video`;
-        const searchData = await fetchWithFallback(searchUrl);
-
-        const videoIds = searchData.items?.map(item => item.id.videoId) || [];
-        return await getVideoDetails(videoIds);
+        const videos = await fetchAndCache();
+        try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), videos })); } catch (_) {}
+        return videos;
     }
 
     async function checkLiveStreams() {
@@ -488,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 scrollToTopBtn.classList.toggle('visible', window.pageYOffset > 300);
             }, 100);
 
-            window.addEventListener('scroll', handleScroll);
+            window.addEventListener('scroll', handleScroll, { passive: true });
             scrollToTopBtn.addEventListener('click', () => F1Utils.smoothScrollTo(0, 800));
         }
 
@@ -519,26 +535,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
         F1Utils.getAllElements('.fade-in').forEach(section => observer.observe(section));
 
-        // Parallax effect
+        // Parallax effect — batch reads outside RAF, write inside RAF
         const heroSection = F1Utils.getElement('#hero');
-        window.addEventListener('scroll', F1Utils.throttle(() => {
-            const scrollPosition = window.pageYOffset;
+        const sections = Array.from(F1Utils.getAllElements('section'));
 
-            if (heroSection) {
-                heroSection.style.backgroundPositionY = scrollPosition * 0.5 + 'px';
-            }
+        // Cache offsets once; recalculate on resize
+        let sectionRects = [];
+        function cacheSectionRects() {
+            sectionRects = sections.map(s => ({ el: s, top: s.offsetTop, h: s.offsetHeight }));
+        }
+        cacheSectionRects();
+        window.addEventListener('resize', F1Utils.throttle(cacheSectionRects, 300), { passive: true });
 
-            F1Utils.getAllElements('section').forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.offsetHeight;
-
-                if (scrollPosition > sectionTop - window.innerHeight &&
-                    scrollPosition < sectionTop + sectionHeight) {
-                    const parallaxValue = (scrollPosition - sectionTop) * 0.05;
-                    section.style.backgroundPositionY = parallaxValue + 'px';
+        let parallaxTicking = false;
+        window.addEventListener('scroll', () => {
+            if (parallaxTicking) return;
+            parallaxTicking = true;
+            requestAnimationFrame(() => {
+                const scrollY = window.pageYOffset;
+                const vh = window.innerHeight;
+                if (heroSection) {
+                    heroSection.style.backgroundPositionY = scrollY * 0.5 + 'px';
                 }
+                sectionRects.forEach(({ el, top, h }) => {
+                    if (scrollY > top - vh && scrollY < top + h) {
+                        el.style.backgroundPositionY = (scrollY - top) * 0.05 + 'px';
+                    }
+                });
+                parallaxTicking = false;
             });
-        }, 50));
+        }, { passive: true });
     }
 
     function initializeContactForm() {
@@ -639,7 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>`;
 
             document.body.insertAdjacentHTML('beforeend', modalHTML);
-            const socialModal = new bootstrap.Modal(F1Utils.getElement('#socialSubscribeModal'));
+            const socialModal = new bootstrap.Modal(document.getElementById('socialSubscribeModal'));
             socialModal.show();
 
             setTimeout(() => {
@@ -767,10 +793,19 @@ async function checkAndDisplayLiveStream() {
     }
 }
 
-// Check for live streams on load and every 5 minutes
+// Check for live streams on load and every 5 minutes; pause when tab is hidden
 document.addEventListener('DOMContentLoaded', () => {
     checkAndDisplayLiveStream();
-    setInterval(checkAndDisplayLiveStream, 5 * 60 * 1000);
+    let liveStreamInterval = setInterval(checkAndDisplayLiveStream, 5 * 60 * 1000);
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            clearInterval(liveStreamInterval);
+            liveStreamInterval = null;
+        } else if (!liveStreamInterval) {
+            checkAndDisplayLiveStream();
+            liveStreamInterval = setInterval(checkAndDisplayLiveStream, 5 * 60 * 1000);
+        }
+    });
 });
 
 // ============================================
@@ -1031,7 +1066,7 @@ class PersistentSpotifyPlayer {
             }
         });
 
-        window.addEventListener('resize', () => this.handleResize());
+        window.addEventListener('resize', () => this.handleResize(), { passive: true });
     }
 
     setupMobileTouchEvents() {

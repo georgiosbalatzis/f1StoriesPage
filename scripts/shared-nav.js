@@ -21,16 +21,12 @@
         });
     }
 
-    if (blogNav) {
-        var navTicking = false;
-        window.addEventListener('scroll', function () {
-            if (navTicking) return;
-            navTicking = true;
-            requestAnimationFrame(function () {
-                blogNav.classList.toggle('scrolled', (window.pageYOffset || document.documentElement.scrollTop) > 20);
-                navTicking = false;
-            });
-        }, { passive: true });
+    // ── Scroll to Top ────────────────────────────
+    var scrollBtn = document.getElementById('scroll-to-top');
+    if (scrollBtn) {
+        scrollBtn.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     }
 
     // ── Theme Toggle ─────────────────────────────
@@ -49,49 +45,42 @@
         });
     }
 
-    // ── Scroll to Top ────────────────────────────
-    var scrollBtn = document.getElementById('scroll-to-top');
-    if (scrollBtn) {
+    // ── Reading Progress Bar (article pages only) ─
+    var progressBar = document.getElementById('reading-progress');
+    var articleEl = progressBar ? document.querySelector('.article-content') : null;
+    var articleHeight = articleEl ? articleEl.offsetHeight : 0;
+
+    // ── Single consolidated scroll handler ───────
+    if (blogNav || scrollBtn || progressBar) {
         var scrollTicking = false;
         window.addEventListener('scroll', function () {
             if (scrollTicking) return;
             scrollTicking = true;
             requestAnimationFrame(function () {
-                try {
-                    scrollBtn.classList.toggle('visible', (window.pageYOffset || document.documentElement.scrollTop) > 400);
-                } catch (e) { /* ignore */ }
+                var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+                if (blogNav) {
+                    blogNav.classList.toggle('scrolled', scrollY > 20);
+                }
+                if (scrollBtn) {
+                    scrollBtn.classList.toggle('visible', scrollY > 400);
+                }
+                if (progressBar && articleEl) {
+                    var articleTop = articleEl.getBoundingClientRect().top + scrollY;
+                    var scrolled = scrollY - articleTop + window.innerHeight * 0.3;
+                    var pct = Math.max(0, Math.min(100, (scrolled / articleHeight) * 100));
+                    progressBar.style.width = pct + '%';
+                }
                 scrollTicking = false;
             });
         }, { passive: true });
-        scrollBtn.addEventListener('click', function () {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    }
 
-    // ── Reading Progress Bar (article pages only) ─
-    var progressBar = document.getElementById('reading-progress');
-    if (progressBar) {
-        var progTicking = false;
-        function updateProgress() {
-            var article = document.querySelector('.article-content');
-            if (!article) return;
-            var rect = article.getBoundingClientRect();
-            var scrollY = window.pageYOffset || document.documentElement.scrollTop;
-            var articleTop = rect.top + scrollY;
-            var articleHeight = rect.height;
-            var scrolled = scrollY - articleTop + window.innerHeight * 0.3;
-            var pct = Math.max(0, Math.min(100, (scrolled / articleHeight) * 100));
-            progressBar.style.width = pct + '%';
+        if (progressBar && articleEl) {
+            // Initialise progress on load
+            var initScrollY = window.pageYOffset || document.documentElement.scrollTop;
+            var initTop = articleEl.getBoundingClientRect().top + initScrollY;
+            var initScrolled = initScrollY - initTop + window.innerHeight * 0.3;
+            progressBar.style.width = Math.max(0, Math.min(100, (initScrolled / articleHeight) * 100)) + '%';
         }
-        window.addEventListener('scroll', function () {
-            if (progTicking) return;
-            progTicking = true;
-            requestAnimationFrame(function () {
-                try { updateProgress(); } catch (e) { /* ignore */ }
-                progTicking = false;
-            });
-        }, { passive: true });
-        updateProgress();
     }
 
     // ── Next Race Countdown (2026 Season) ────────

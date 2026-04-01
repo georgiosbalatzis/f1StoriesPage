@@ -1629,6 +1629,24 @@ if (!isMainThread) {
         
         fs.writeFileSync(CONFIG.OUTPUT_JSON, JSON.stringify(blogData, null, 2));
         console.log(`Blog data saved to ${CONFIG.OUTPUT_JSON}`);
+
+        // ── Generate slim index-only JSON (no content field) ─────────────────
+        const indexPosts = blogPosts.map(p => {
+            const cats = [];
+            if (p.tag) cats.push(p.tag);
+            if (p.category && String(p.category) !== p.tag) cats.push(String(p.category));
+            return {
+                id: p.id, title: p.title, author: p.author,
+                date: p.date, displayDate: p.displayDate,
+                image: p.image, backgroundImage: p.backgroundImage,
+                excerpt: p.excerpt, url: p.url,
+                wordCount: p.wordCount, readingTime: p.readingTime,
+                categories: cats
+            };
+        });
+        const indexPath = path.join(__dirname, 'blog-index-data.json');
+        fs.writeFileSync(indexPath, JSON.stringify({ posts: indexPosts }, null, 0));
+        console.log(`Blog index data saved to ${indexPath} (${Math.round(JSON.stringify({ posts: indexPosts }).length / 1024)} KB)`);
         
         // ── Generate related articles (runs on main thread, fast) ────────────
         blogPosts.forEach((post, index) => {
