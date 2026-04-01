@@ -368,3 +368,32 @@ header > .navbar { display: none !important; }
         -webkit-backdrop-filter: blur(6px) !important;
     }
 }
+
+/* ── Safe area — shift fixed buttons above home indicator (iPhone notch/island) ── */
+@supports (bottom: env(safe-area-inset-bottom)) {
+    .theme-toggle-btn {
+        bottom: calc(2rem + env(safe-area-inset-bottom));
+    }
+    .scroll-to-top-btn {
+        bottom: calc(2rem + 44px + env(safe-area-inset-bottom)) !important;
+    }
+}
+
+/* ── Reduce blur for users who prefer reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+    .blog-nav,
+    [data-theme="light"] .blog-nav,
+    .theme-toggle-btn,
+    .scroll-to-top-btn {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(17,17,19,0.97) !important;
+    }
+    [data-theme="light"] .blog-nav {
+        background: rgba(255,255,255,0.98) !important;
+    }
+    [data-theme="light"] .theme-toggle-btn,
+    [data-theme="light"] .scroll-to-top-btn {
+        background: #fff !important;
+    }
+}

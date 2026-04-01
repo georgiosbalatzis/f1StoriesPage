@@ -170,6 +170,20 @@
 .related-date-badge i { font-size: 0.62rem; color: var(--blog-accent); }
 
 /* ── Responsive ──────────────────────────────── */
+@media (max-width: 991px) {
+    /* Tablet: reduce hero image height (420px → 360px) */
+    .article-header { min-height: 300px; }
+    .article-header-img { height: 360px; }
+    .article-title { font-size: 1.9rem; }
+    /* Tablet: tighten side padding slightly */
+    .article-content { padding: 2rem 2rem 1.75rem; }
+    .article-author-footer { padding: 1.5rem 2rem 1.75rem; }
+    .tts-body.open { padding: 0.75rem 1.75rem 0.9rem; }
+    .tts-header { padding: 0.7rem 1.75rem; }
+    .toc-toggle { padding: 0.7rem 1.75rem; }
+    .toc-body.open { padding: 0.5rem 1.75rem 1rem; }
+    .social-share-bar { padding: 0.75rem 1.75rem; }
+}
 @media (max-width: 767px) {
     .article-header { min-height: 260px; }
     .article-header-img { height: 300px; }
