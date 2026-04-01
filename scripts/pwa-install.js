@@ -100,7 +100,16 @@
         'touch-action:manipulation;-webkit-tap-highlight-color:transparent;',
         'border-radius:4px;',
       '}',
-      '.pwa-banner__close:active{background:rgba(255,255,255,.08);}'
+      '.pwa-banner__close:active{background:rgba(255,255,255,.08);}',
+      /* Push fixed bottom-left buttons (theme toggle + scroll-to-top) above the banner */
+      'body.pwa-banner-open .theme-toggle-btn{',
+        'bottom:calc(var(--pwa-h,72px) + 1rem) !important;',
+        'transition:bottom .35s cubic-bezier(.2,.8,.3,1),transform .25s,color .25s,border-color .25s !important;',
+      '}',
+      'body.pwa-banner-open .scroll-to-top-btn{',
+        'bottom:calc(var(--pwa-h,72px) + 1rem + 44px) !important;',
+        'transition:bottom .35s cubic-bezier(.2,.8,.3,1),opacity .4s,visibility .4s,transform .4s cubic-bezier(.34,1.56,.64,1) !important;',
+      '}'
     ].join('');
     document.head.appendChild(s);
   }
@@ -114,10 +123,13 @@
     var banner = createBanner(isIOS);
     document.body.appendChild(banner);
 
-    // Animate in after paint
+    // Animate in after paint, then measure height and push buttons up
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         banner.classList.add('visible');
+        var h = banner.offsetHeight;
+        document.documentElement.style.setProperty('--pwa-h', h + 'px');
+        document.body.classList.add('pwa-banner-open');
       });
     });
 
@@ -149,6 +161,8 @@
 
   function dismissBanner(banner) {
     banner.classList.remove('visible');
+    document.body.classList.remove('pwa-banner-open');
+    document.documentElement.style.removeProperty('--pwa-h');
     setTimeout(function () { if (banner.parentNode) banner.parentNode.removeChild(banner); }, 400);
   }
 
