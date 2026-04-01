@@ -6,12 +6,6 @@ if ! command -v trash &> /dev/null; then
     brew install trash
 fi
 
-if ! command -v avifenc &> /dev/null; then
-    echo "avifenc not found. Please install libavif."
-    echo "brew install libavif"
-    exit 1
-fi
-
 if ! command -v cwebp &> /dev/null; then
     echo "cwebp not found. Installing webp..."
     brew install webp
@@ -55,12 +49,10 @@ find "$FOLDER" -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" \)
     EXT="${BASENAME##*.}"
     DIR=$(dirname "$FILE")
 
-    # Output files
-    AVIF_OUTPUT="$DIR/$FILENAME.avif"
     WEBP_OUTPUT="$DIR/$FILENAME.webp"
 
-    # Skip if both AVIF and WebP versions already exist
-    if [ -f "$AVIF_OUTPUT" ] && [ -f "$WEBP_OUTPUT" ]; then
+    # Skip if the WebP version already exists
+    if [ -f "$WEBP_OUTPUT" ]; then
         echo "⏩ Skipping already converted: $FILE"
         ((SKIPPED++))
         continue
@@ -68,25 +60,19 @@ find "$FOLDER" -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" \)
 
     echo "Converting: $FILE"
 
-    # Convert to AVIF with quality 20-40 (lower number = higher quality)
-    echo "→ Creating AVIF: $AVIF_OUTPUT"
-    avifenc --min 20 --max 40 "$FILE" "$AVIF_OUTPUT"
-    AVIF_SUCCESS=$?
-
-    # Convert to WebP with 80% quality (as fallback format)
+    # Convert to WebP with 80% quality
     echo "→ Creating WebP: $WEBP_OUTPUT"
     cwebp -q 80 "$FILE" -o "$WEBP_OUTPUT"
     WEBP_SUCCESS=$?
 
-    # Check if both conversions were successful
-    if [ $AVIF_SUCCESS -eq 0 ] && [ $WEBP_SUCCESS -eq 0 ]; then
+    # Check if conversion was successful
+    if [ $WEBP_SUCCESS -eq 0 ]; then
         # Print file size comparison
         ORIGINAL_SIZE=$(du -h "$FILE" | cut -f1)
-        AVIF_SIZE=$(du -h "$AVIF_OUTPUT" | cut -f1)
         WEBP_SIZE=$(du -h "$WEBP_OUTPUT" | cut -f1)
 
         echo "✓ Conversion successful! File sizes:"
-        echo "   Original: $ORIGINAL_SIZE | AVIF: $AVIF_SIZE | WebP: $WEBP_SIZE"
+        echo "   Original: $ORIGINAL_SIZE | WebP: $WEBP_SIZE"
 
         # Move original file to Trash
         echo "→ Moving original $EXT to Trash..."
@@ -95,12 +81,9 @@ find "$FOLDER" -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" \)
         ((COUNT++))
     else
         echo "❌ Error during conversion of $FILE:"
-        [ $AVIF_SUCCESS -ne 0 ] && echo "   AVIF conversion failed"
         [ $WEBP_SUCCESS -ne 0 ] && echo "   WebP conversion failed"
         echo "   Original file kept."
 
-        # Clean up any partial conversion files
-        [ $AVIF_SUCCESS -ne 0 ] && [ -f "$AVIF_OUTPUT" ] && rm "$AVIF_OUTPUT"
         [ $WEBP_SUCCESS -ne 0 ] && [ -f "$WEBP_OUTPUT" ] && rm "$WEBP_OUTPUT"
     fi
 
