@@ -120,7 +120,7 @@
         <article class="article-container">
             <div class="article-header">
                 <img src="2.webp" alt="Η Μάχη στην Καρδιά των Αρδεννών" class="article-header-img" loading="lazy"
-                     onerror="this.src='/images/default-blog.jpg';this.onerror=null;">
+                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                 <div class="article-header-overlay">
                     <h1 class="article-title">Η Μάχη στην Καρδιά των Αρδεννών</h1>
                     <div class="article-meta">
@@ -210,9 +210,8 @@
                      src="/blog-module/blog-entries/20250514W/3.webp" 
                      alt="Image 3" 
                      class="article-content-img"
-                     onerror="if(this.src !== '3.webp') { this.src='3.webp'; } 
-                             else if(this.src !== '/blog-module/blog/images/20250514W/3.webp') { this.src='/blog-module/blog/images/20250514W/3.webp'; }
-                             else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250514W/3.webp';}
+                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
                 <figcaption>Image 3</figcaption>
             </figure></h3><h3><a id="_95mmcqdz202q"></a></h3><h3><a id="_fwvgl2cvwuza"></a><strong>2018: Η απόλυτη επίδειξη δύναμης της Ferrari</strong></h3><p>Το 2018 σηματοδότησε την πιο κυριαρχική εμφάνιση της Ferrari στο Σπα μέσα στη δεκαετία. Ο Σεμπάστιαν Φέτελ κατάφερε να προσπεράσει τον Χάμιλτον στην ευθεία Kemmel στον πρώτο γύρο, αξιοποιώντας στο έπακρο την ισχύ του κινητήρα της Scuderia.</p><p>Ο Γερμανός οδήγησε έναν άψογο αγώνα, χωρίς λάθη, και η Ferrari απέδειξε πως διέθετε το ταχύτερο μονοθέσιο σε πίστες με χαμηλή κάθετη δύναμη.</p><p> Ήταν μια νίκη που ενίσχυσε την πίστη της ομάδας πως μπορούσε να διεκδικήσει τον τίτλο – αν και τελικά δεν τα κατάφερε.</p><p><strong>Αποτέλεσμα:</strong></p><ul><li>1ος: Φέτελ (Ferrari)</li><li>2ος: Χάμιλτον (Mercedes)</li></ul><h3><a id="_rpqd2v97vptv"></a><strong>2019: Η πρώτη νίκη του Λεκλέρ, η τακτική του Φέτελ</strong></h3><p>Το 2019 γράφτηκε ιστορία,</p><p> Ο Σαρλ Λεκλέρ κατέκτησε την πρώτη του νίκη στη Formula 1, δίνοντας στη Ferrari ακόμη έναν θρίαμβο στο βελγικό σιρκουί.</p><p>Ο νεαρός Μονεγάσκος ξεκίνησε από την pole και οδήγησε με ωριμότητα ενάντια σε έναν ταχύτερο στο τέλος Χάμιλτον.</p><p>Ιδιαίτερη σημασία είχε ο ρόλος του Σεμπάστιαν Φέτελ, ο οποίος, αν και εκτός μάχης νίκης, κράτησε πίσω του τους Hamilton και Bottas για αρκετούς γύρους, προσφέροντας στρατηγική κάλυψη στον teammate του. </p><p>Ήταν μια έξυπνη ομαδική στρατηγική της Ferrari.</p><p>Η νίκη του Λεκλέρ ήρθε μέσα σε βαρύ κλίμα, μία μέρα μετά τον θάνατο του φίλου και συναθλητή του, Anthoine Hubert, στον αγώνα της Formula 2 με τον Μονεγασκο να αφιερώνει την νίκη στον Hubert.</p><p><strong>Αποτέλεσμα:</strong></p><ul><li>1ος: Λεκλέρ (Ferrari)</li><li>2ος: Χάμιλτον (Mercedes)</li></ul><p>Αν και η Mercedes κυριάρχησε  στα πρωτάθληματα κατά τη διάρκεια της υβριδικής εποχής, η Ferrari έδειξε τη δύναμή της σε συγκεκριμένες πίστες όπως το Σπα. </p><p>Από το 2017 έως το 2019, η Scuderia πέτυχε δύο νίκες έναντι μίας της Mercedes, σε μια από τις πιο απαιτητικές διαδρομές του καλενταριού.</p><p>Το Σπα αναδείχθηκε σε έδαφος όπου η ισχύς και η καθαρή ταχύτητα μπορούσαν να επισκιάσουν την τεχνική υπεροχή. </p><p>Και σε αυτόν τον τομέα, η Ferrari της εποχής, αν και όχι τέλεια, ήταν ικανή να κοιτάξει κατάματα τον κυρίαρχο αντίπαλό της.</p></div>
 
@@ -253,8 +252,8 @@
         </div>
 
         <div class="article-navigation">
-            <a href="/blog-module/blog-entries/20250514-1G/article.html" id="prev-article-link" class="article-nav-link prev"><i class="fas fa-arrow-left"></i> Previous</a>
-            <a href="/blog-module/blog-entries/20250514-2GF/article.html" id="next-article-link" class="article-nav-link next">Next <i class="fas fa-arrow-right"></i></a>
+            <a href="/blog-module/blog-entries/20250514-2GF/article.html" id="prev-article-link" class="article-nav-link prev"><i class="fas fa-arrow-left"></i> Previous</a>
+            <a href="/blog-module/blog-entries/20250515GF/article.html" id="next-article-link" class="article-nav-link next">Next <i class="fas fa-arrow-right"></i></a>
         </div>
 
         <div class="row mt-5">
@@ -267,7 +266,7 @@
                             <img src="/blog-module/blog-entries/20250508W/1.webp" 
                                  alt="Τζάκι Ιξ επιστρέφοντας από την κόλαση" 
                                  loading="lazy"
-                                 onerror="if(this.src !== '/blog-module/blog/images/20250508W/1.webp') { this.src='/blog-module/blog/images/20250508W/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250508W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 8 May 2025</div>
@@ -287,7 +286,7 @@
                             <img src="/blog-module/blog-entries/20260225W/1.webp" 
                                  alt="Lewis and Anthony Hamilton story" 
                                  loading="lazy"
-                                 onerror="if(this.src !== '/blog-module/blog/images/20260225W/1.webp') { this.src='/blog-module/blog/images/20260225W/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260225W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 25 Feb 2026</div>
@@ -307,7 +306,7 @@
                             <img src="/blog-module/blog-entries/20250610G/1.webp" 
                                  alt="Ελαστικά Formula 1: Οδηγός Επιβίωσης για τον Ενθουσιώδη Θεατή 🏎️💨" 
                                  loading="lazy"
-                                 onerror="if(this.src !== '/blog-module/blog/images/20250610G/1.webp') { this.src='/blog-module/blog/images/20250610G/1.webp'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250610G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 10 Jun 2025</div>

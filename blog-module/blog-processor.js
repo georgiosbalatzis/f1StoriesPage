@@ -19,8 +19,9 @@ const CONFIG = {
     OUTPUT_JSON: path.join(__dirname, 'blog-data.json'),
     OUTPUT_HTML_DIR: path.join(__dirname, 'blog'),
     TEMPLATE_PATH: path.join(__dirname, 'blog', 'template.html'),
-    IMAGE_FORMATS: ['webp', 'avif', 'jpg', 'jpeg', 'png', 'gif'],
-    IMAGE_EXTENSIONS: ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif'],
+    DEFAULT_BLOG_IMAGE: '/blog-module/images/default-blog.jpg',
+    IMAGE_FORMATS: ['webp', 'jpg', 'jpeg', 'png', 'gif'],
+    IMAGE_EXTENSIONS: ['.jpg', '.jpeg', '.png', '.webp', '.gif'],
     AUTHOR_MAP: {
         'G': 'Georgios Balatzis',
         'J': 'Giannis Poulikidis',
@@ -187,7 +188,13 @@ function processYouTubeLinks(htmlContent) {
 }
 
 // ─── Image processing functions ──────────────────────────────────────────────
-function processImages(entryPath, folderName) {
+async function publishImageAsset(entryPath, outputImageDir, fileName) {
+    const sourcePath = path.join(entryPath, fileName);
+    fs.copyFileSync(sourcePath, path.join(outputImageDir, fileName));
+    return fileName;
+}
+
+async function processImages(entryPath, folderName) {
     const entryFiles = fs.readdirSync(entryPath);
     const imageFiles = entryFiles.filter(file =>
         CONFIG.IMAGE_EXTENSIONS.some(ext => file.toLowerCase().endsWith(ext))
@@ -203,32 +210,26 @@ function processImages(entryPath, folderName) {
         { name: 'background', number: '2' }
     ];
     
-    specialImages.forEach(({ name, number }) => {
+    for (const { name, number } of specialImages) {
         const file = utils.findImageByBaseName(entryPath, number);
         if (file) {
-            fs.copyFileSync(
-                path.join(entryPath, file),
-                path.join(outputImageDir, file)
-            );
-            processedImages[name] = utils.createImagePath(folderName, file, 'output');
+            const publishedFile = await publishImageAsset(entryPath, outputImageDir, file);
+            processedImages[name] = utils.createImagePath(folderName, publishedFile, 'output');
         }
-    });
+    }
     
     let imageNumber = 3;
     while (true) {
         const imageFile = utils.findImageByBaseName(entryPath, imageNumber.toString());
         if (!imageFile) break;
         
-        fs.copyFileSync(
-            path.join(entryPath, imageFile),
-            path.join(outputImageDir, imageFile)
-        );
+        const publishedFile = await publishImageAsset(entryPath, outputImageDir, imageFile);
         
         processedImages[`image${imageNumber}`] = {
-            filename: imageFile,
-            relativePath: imageFile,
-            absolutePath: utils.createImagePath(folderName, imageFile),
-            outputPath: utils.createImagePath(folderName, imageFile, 'output')
+            filename: publishedFile,
+            relativePath: publishedFile,
+            absolutePath: utils.createImagePath(folderName, publishedFile),
+            outputPath: utils.createImagePath(folderName, publishedFile, 'output')
         };
         
         imageNumber++;
@@ -294,11 +295,13 @@ function processContentImages(content, folderName, extractedImages = []) {
 
     const replacements = extractedImages.map((_, i) => {
         const imageNumber = i + 3;
+        const imageFileName = `${imageNumber}.webp`;
+        const outputPath = utils.createImagePath(folderName, imageFileName, 'output');
         return `<figure class="article-figure">
-            <img src="${imageNumber}.webp"
+            <img src="${imageFileName}"
                  alt="Image ${i + 1}"
                  class="article-content-img"
-                 onerror="if(this.src.indexOf('${imageNumber}.avif')===-1){this.src='${imageNumber}.avif';}else{this.src='/images/default-blog.jpg';this.onerror=null;}">
+                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='${outputPath}';}else{this.src='${CONFIG.DEFAULT_BLOG_IMAGE}';this.onerror=null;}">
         </figure>`;
     });
 
@@ -1267,22 +1270,17 @@ async function processBlogEntry(entryPath) {
         for (let i = 0; i < mediaFiles.length; i++) {
             const imageNumber = i + 3;
             const webpPath = path.join(outputImageDir, `${imageNumber}.webp`);
-            const avifPath = path.join(outputImageDir, `${imageNumber}.avif`);
             
             await convertImage(mediaFiles[i].extracted, webpPath, 'webp');
             fs.copyFileSync(webpPath, path.join(entryPath, `${imageNumber}.webp`));
-            
-            await convertImage(mediaFiles[i].extracted, avifPath, 'avif');
-            fs.copyFileSync(avifPath, path.join(entryPath, `${imageNumber}.avif`));
-            
+
             extractedImages.push({
-                fileName: `${imageNumber}.webp`,
-                avifName: `${imageNumber}.avif`
+                fileName: `${imageNumber}.webp`
             });
         }
     }
     
-    const images = processImages(entryPath, folderName);
+    const images = await processImages(entryPath, folderName);
     
     // Get raw content for metadata
     let rawContent = '';
@@ -1321,6 +1319,9 @@ async function processBlogEntry(entryPath) {
     const wordCount = plainText.split(/\s+/).length;
     const readingTime = Math.max(1, Math.ceil(wordCount / 200)) + ' min';
 
+    const primaryImage = images.thumbnail || images.background || CONFIG.DEFAULT_BLOG_IMAGE;
+    const headerImage = images.background || images.thumbnail || CONFIG.DEFAULT_BLOG_IMAGE;
+
     const postData = {
         id: folderName,
         title: metadata.title,
@@ -1332,8 +1333,8 @@ async function processBlogEntry(entryPath) {
             month: 'long',
             day: 'numeric'
         }),
-        image: images.thumbnail || '/blog-module/images/default-blog.jpg',
-        backgroundImage: images.background || '/blog-module/images/default-blog-bg.jpg',
+        image: primaryImage,
+        backgroundImage: headerImage,
         excerpt: metadata.excerpt || content.replace(/<[^>]*>/g, '').substring(0, 200) + '...',
         comments: 0,
         url: `/blog-module/blog-entries/${folderName}/article.html`,
@@ -1405,9 +1406,8 @@ function processImageInsertTags(content, images, folderName) {
                      src="${imageData.absolutePath}" 
                      alt="Image ${imageCounter}" 
                      class="article-content-img"
-                     onerror="if(this.src !== '${imageData.relativePath}') { this.src='${imageData.relativePath}'; } 
-                             else if(this.src !== '${imageData.outputPath}') { this.src='${imageData.outputPath}'; }
-                             else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='${imageData.outputPath}';}
+                             else { this.src='${CONFIG.DEFAULT_BLOG_IMAGE}'; this.onerror=null; }">
                 <figcaption>Image ${imageCounter}</figcaption>
             </figure>`;
             
@@ -1415,7 +1415,7 @@ function processImageInsertTags(content, images, folderName) {
             imageCounter++;
         } else {
             content = content.replace('[img-instert-tag]', '');
-            console.warn(`No image file found for ${imageCounter}.avif in folder ${folderName}`);
+            console.warn(`No image file found for image slot ${imageCounter} in folder ${folderName}`);
         }
     }
     
@@ -1449,7 +1449,7 @@ function createImageGallery(images, folderName) {
                 <img src="${imageFilename}" 
                     alt="Gallery Image ${imageNumber}" 
                     class="gallery-img"
-                    onerror="if(this.src !== '${displayPath}') { this.src='${displayPath}'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                    onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='${displayPath}';} else { this.src='${CONFIG.DEFAULT_BLOG_IMAGE}'; this.onerror=null; }">
                 <figcaption>Image ${imageNumber}</figcaption>
             </figure>`;
         }
@@ -1696,7 +1696,7 @@ if (!isMainThread) {
                             <img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}" 
                                  alt="${related.title}" 
                                  loading="lazy"
-                                 onerror="if(this.src !== '${related.image}') { this.src='${related.image}'; } else { this.src='/images/blog-default.jpg'; this.onerror=null; }">
+                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='${related.image}'; } else { this.src='${CONFIG.DEFAULT_BLOG_IMAGE}'; this.onerror=null; }">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> ${relDateStr}</div>
