@@ -792,11 +792,14 @@ body {
 
 /* ═══════════════════════════════════════════════
    § 16  iOS ZOOM PREVENTION
+   Applies on all touch devices (phones + tablets)
    ═══════════════════════════════════════════════ */
 
-@media (max-width: 767px) {
+@media (pointer: coarse) {
     .tts-voice-selector select,
-    .tts-speed-control input[type="range"] { font-size: 16px; }
+    .tts-speed-control input[type="range"],
+    input[type="text"], input[type="email"],
+    input[type="search"], textarea, select { font-size: max(1rem, 16px); }
 }
 
 

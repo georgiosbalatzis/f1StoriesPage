@@ -304,6 +304,10 @@
 /* ── Responsive — Hero ───────────────────────── */
 @media (max-width: 991.98px) {
     #hero { margin-top: 76px; padding: 5rem 0 4rem; }
+    /* Tablet: team row gap — 4×160px + 3×gap must stay < ~696px */
+    .team-row { gap: 1rem; }
+    /* Tablet: listen block is already flex-row — tighten side padding */
+    .listen-block { padding: var(--space-lg) var(--space-xl); }
 }
 @media (max-width: 767.98px) {
     #hero { padding: 4.5rem 0 3.5rem; clip-path: polygon(0 0, 100% 0, 100% 96%, 0 100%); }

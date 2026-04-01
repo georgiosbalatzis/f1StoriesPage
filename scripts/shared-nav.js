@@ -12,11 +12,13 @@
         hamburger.addEventListener('click', function () {
             hamburger.classList.toggle('open');
             mobileMenu.classList.toggle('open');
+            hamburger.setAttribute('aria-expanded', mobileMenu.classList.contains('open') ? 'true' : 'false');
         });
         mobileMenu.querySelectorAll('a').forEach(function (link) {
             link.addEventListener('click', function () {
                 hamburger.classList.remove('open');
                 mobileMenu.classList.remove('open');
+                hamburger.setAttribute('aria-expanded', 'false');
             });
         });
     }
