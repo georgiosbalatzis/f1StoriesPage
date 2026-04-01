@@ -1,40 +1,57 @@
 // background-randomizer.js
-// Dynamically picks any bg image from images/bg/ by probing bg1, bg2, bg3...
-// Works regardless of format (avif/webp/jpg) or how many files exist.
+// Homepage-only background discovery with persistent caching.
+(function () {
+    'use strict';
 
-document.addEventListener('DOMContentLoaded', function () {
+    var FORMATS = ['avif', 'webp', 'jpg', 'jpeg', 'png'];
+    var MAX_PROBE = 50;
+    var CACHE_KEY = 'f1s-bg-v2';
+    var CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
 
-    const heroOverlay = document.querySelector('.hero-overlay');
-    if (!heroOverlay) return;
+    function readCache() {
+        try {
+            var cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+            if (cached && cached.ts && Date.now() - cached.ts < CACHE_TTL && Array.isArray(cached.images) && cached.images.length) {
+                return cached.images;
+            }
+        } catch (_) {}
+        return null;
+    }
 
-    // Apply a safe default immediately
-    heroOverlay.classList.add('image-bg');
-    heroOverlay.style.backgroundImage = 'url("images/bg.jpg")';
+    function writeCache(images) {
+        try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+                ts: Date.now(),
+                images: images
+            }));
+        } catch (_) {}
+    }
 
-    const FORMATS = ['avif', 'webp', 'jpg', 'jpeg', 'png'];
-    const MAX_PROBE = 50; // probe bg1 up to bg50, stop on first miss
+    function shouldSkipDiscovery() {
+        if (!navigator.connection) return false;
+        return navigator.connection.saveData ||
+            navigator.connection.effectiveType === 'slow-2g' ||
+            navigator.connection.effectiveType === '2g';
+    }
 
-    // Try to load a single path, returns a Promise<string|null>
     function tryPath(path) {
         return new Promise(function (resolve) {
             var img = new Image();
-            img.onload  = function () { resolve(path); };
+            img.onload = function () { resolve(path); };
             img.onerror = function () { resolve(null); };
             img.src = path;
         });
     }
 
-    // Find the first working format for a given bg name
     function findFormat(name) {
-        return FORMATS.reduce(function (chain, fmt) {
+        return FORMATS.reduce(function (chain, format) {
             return chain.then(function (found) {
                 if (found) return found;
-                return tryPath('images/bg/' + name + '.' + fmt);
+                return tryPath('images/bg/' + name + '.' + format);
             });
         }, Promise.resolve(null));
     }
 
-    // Probe bg1, bg2, bg3... until one fails — collect all that exist
     function discoverImages() {
         var found = [];
         var index = 1;
@@ -43,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return findFormat('bg' + index).then(function (path) {
                 if (path) {
                     found.push(path);
-                    index++;
+                    index += 1;
                     if (index <= MAX_PROBE) return probe();
                 }
                 return found;
@@ -53,24 +70,51 @@ document.addEventListener('DOMContentLoaded', function () {
         return probe();
     }
 
-    function applyBackground(images) {
-        if (!images.length) return;
+    function applyBackground(heroOverlay, images) {
+        if (!images || !images.length) return;
         var pick = images[Math.floor(Math.random() * images.length)];
-        heroOverlay.style.backgroundImage = "url('" + pick + "')";
+        heroOverlay.style.backgroundImage = 'url("' + pick + '")';
     }
 
-    var CACHE_KEY = 'f1s-bg-v1';
-    var cached = null;
-    try { cached = JSON.parse(sessionStorage.getItem(CACHE_KEY)); } catch (e) {}
+    function queueDiscovery(heroOverlay) {
+        var runDiscovery = function () {
+            discoverImages().then(function (images) {
+                if (!images.length) return;
+                writeCache(images);
+                applyBackground(heroOverlay, images);
+            });
+        };
 
-    if (cached && cached.length) {
-        applyBackground(cached);
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(runDiscovery, { timeout: 2000 });
+            return;
+        }
+
+        window.addEventListener('load', function () {
+            window.setTimeout(runDiscovery, 0);
+        }, { once: true });
+    }
+
+    function initBackground() {
+        var heroOverlay = document.querySelector('.hero-overlay');
+        if (!heroOverlay) return;
+
+        heroOverlay.classList.add('image-bg');
+        heroOverlay.style.backgroundImage = 'url("images/bg.jpg")';
+
+        var cachedImages = readCache();
+        if (cachedImages) {
+            applyBackground(heroOverlay, cachedImages);
+            return;
+        }
+
+        if (shouldSkipDiscovery()) return;
+        queueDiscovery(heroOverlay);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initBackground);
     } else {
-        discoverImages().then(function (images) {
-            if (!images.length) return;
-            try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(images)); } catch (e) {}
-            applyBackground(images);
-        });
+        initBackground();
     }
-
-});
+})();
