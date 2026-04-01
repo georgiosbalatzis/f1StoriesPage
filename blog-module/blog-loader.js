@@ -10,8 +10,11 @@ document.addEventListener('DOMContentLoaded', function () {
         W: '2Fast',
         D: 'Dimitris Keramidiotis'
     };
+    const CACHE_KEY = 'f1s-home-blog-v1';
+    const CACHE_TTL = 15 * 60 * 1000;
 
     const $ = sel => document.querySelector(sel);
+    let started = false;
 
     // ── Determine author from folder ID if not set ──
     function resolveAuthor(post) {
@@ -30,7 +33,29 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ── Fetch blog-index-data.json with fallback paths ────
+    function readCachedBlogData() {
+        try {
+            const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY));
+            if (cached && cached.ts && Date.now() - cached.ts < CACHE_TTL && cached.data) {
+                return cached.data;
+            }
+        } catch (_) {}
+        return null;
+    }
+
+    function writeCachedBlogData(data) {
+        try {
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+                ts: Date.now(),
+                data: data
+            }));
+        } catch (_) {}
+    }
+
     async function fetchBlogData() {
+        const cached = readCachedBlogData();
+        if (cached) return cached;
+
         const paths = [
             '/blog-module/blog-index-data.json',
             'blog-module/blog-index-data.json',
@@ -39,7 +64,11 @@ document.addEventListener('DOMContentLoaded', function () {
         for (const p of paths) {
             try {
                 const r = await fetch(p);
-                if (r.ok) return r.json();
+                if (r.ok) {
+                    const data = await r.json();
+                    writeCachedBlogData(data);
+                    return data;
+                }
             } catch (_) { /* next */ }
         }
         throw new Error('Failed to fetch blog data');
@@ -60,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="blog-card">
                     <div class="blog-img-container">
                         <img src="${img}" alt="${post.title}" class="blog-img" loading="lazy"
+                             decoding="async"
                              onerror="this.src='${fallback}';this.onerror=null;">
                         <div class="blog-date">
                             <span class="day">${day}</span>
@@ -82,6 +112,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Load homepage blog posts ────────────────────
     function loadHomepagePosts() {
+        if (started) return;
+        started = true;
+
         // Look for blog posts container on the homepage
         // Try multiple selectors: the old #blog section, or the new #panel-articles
         var container = null;
@@ -133,10 +166,51 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    function canWarmHiddenPanel() {
+        if (!navigator.connection) return true;
+        return !navigator.connection.saveData &&
+            navigator.connection.effectiveType !== 'slow-2g' &&
+            navigator.connection.effectiveType !== '2g';
+    }
+
+    function scheduleLoad() {
+        if (started) return;
+        if ('requestIdleCallback' in window && canWarmHiddenPanel()) {
+            requestIdleCallback(loadHomepagePosts, { timeout: 1500 });
+            return;
+        }
+        setTimeout(loadHomepagePosts, 0);
+    }
+
     // Only run on the homepage, not on the blog index
     var path = window.location.pathname;
     var isBlogIndex = path.includes('/blog/index.html') || path.includes('/blog-module/blog/') || path.endsWith('/blog/');
     if (!isBlogIndex) {
-        loadHomepagePosts();
+        var articlesPanel = $('#panel-articles');
+        var latestSection = $('#latest');
+        var articlesTab = $('.latest-tab[data-tab="articles"]');
+
+        if (!articlesPanel) {
+            loadHomepagePosts();
+            return;
+        }
+
+        document.addEventListener('homepage:articles-tab-open', loadHomepagePosts);
+        if (articlesTab) {
+            articlesTab.addEventListener('click', loadHomepagePosts, { once: true });
+        }
+
+        if (articlesPanel.classList.contains('active')) {
+            scheduleLoad();
+        } else if (latestSection && 'IntersectionObserver' in window && canWarmHiddenPanel()) {
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) return;
+                    observer.disconnect();
+                    scheduleLoad();
+                });
+            }, { rootMargin: '320px 0px' });
+            observer.observe(latestSection);
+        }
     }
 });

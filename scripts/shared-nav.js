@@ -48,7 +48,21 @@
     // ── Reading Progress Bar (article pages only) ─
     var progressBar = document.getElementById('reading-progress');
     var articleEl = progressBar ? document.querySelector('.article-content') : null;
-    var articleHeight = articleEl ? articleEl.offsetHeight : 0;
+    var articleHeight = 0;
+    var articleTop = 0;
+
+    function measureArticle() {
+        if (!articleEl) return;
+        var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        articleHeight = articleEl.offsetHeight || 1;
+        articleTop = articleEl.getBoundingClientRect().top + scrollY;
+    }
+
+    if (articleEl) {
+        measureArticle();
+        window.addEventListener('resize', measureArticle, { passive: true });
+        window.addEventListener('load', measureArticle, { once: true });
+    }
 
     // ── Single consolidated scroll handler ───────
     if (blogNav || scrollBtn || progressBar) {
@@ -65,7 +79,6 @@
                     scrollBtn.classList.toggle('visible', scrollY > 400);
                 }
                 if (progressBar && articleEl) {
-                    var articleTop = articleEl.getBoundingClientRect().top + scrollY;
                     var scrolled = scrollY - articleTop + window.innerHeight * 0.3;
                     var pct = Math.max(0, Math.min(100, (scrolled / articleHeight) * 100));
                     progressBar.style.width = pct + '%';
@@ -77,8 +90,7 @@
         if (progressBar && articleEl) {
             // Initialise progress on load
             var initScrollY = window.pageYOffset || document.documentElement.scrollTop;
-            var initTop = articleEl.getBoundingClientRect().top + initScrollY;
-            var initScrolled = initScrollY - initTop + window.innerHeight * 0.3;
+            var initScrolled = initScrollY - articleTop + window.innerHeight * 0.3;
             progressBar.style.width = Math.max(0, Math.min(100, (initScrolled / articleHeight) * 100)) + '%';
         }
     }
@@ -111,10 +123,19 @@
         { name: 'Abu Dhabi GP',     flag: '\u{1F1E6}\u{1F1EA}', date: '2026-12-06T13:00:00Z' }
     ];
 
-    function getNextRace() {
-        var now = Date.now();
+    var countdownNameEl = document.getElementById('next-race-name');
+    var countdownEl = document.getElementById('race-countdown');
+    var countdownMobileEl = document.getElementById('race-countdown-mobile');
+    var countdownFlagEl = document.getElementById('race-flag-emoji');
+    var countdownTimer = null;
+
+    RACES.forEach(function (race) {
+        race.ts = new Date(race.date).getTime();
+    });
+
+    function getNextRace(now) {
         for (var i = 0; i < RACES.length; i++) {
-            if (new Date(RACES[i].date).getTime() > now) return RACES[i];
+            if (RACES[i].ts > now) return RACES[i];
         }
         return null;
     }
@@ -142,27 +163,50 @@
         return m + 'm';
     }
 
+    function getNextTickDelay(ms) {
+        if (document.hidden) return 60000;
+        if (ms > 86400000) return 60000;
+        if (ms > 3600000) return 15000;
+        return 1000;
+    }
+
+    function scheduleCountdown(ms) {
+        if (countdownTimer) {
+            window.clearTimeout(countdownTimer);
+        }
+        countdownTimer = window.setTimeout(tickCountdown, getNextTickDelay(ms));
+    }
+
     function tickCountdown() {
-        var race = getNextRace();
-        var ne = document.getElementById('next-race-name');
-        var ce = document.getElementById('race-countdown');
-        var me = document.getElementById('race-countdown-mobile');
-        var fe = document.getElementById('race-flag-emoji');
+        var now = Date.now();
+        var race = getNextRace(now);
 
         if (!race) {
-            if (ne) ne.textContent = 'Season Complete';
-            if (ce) ce.textContent = '2027 TBA';
-            if (me) me.textContent = 'Done';
+            if (countdownNameEl) countdownNameEl.textContent = 'Season Complete';
+            if (countdownEl) countdownEl.textContent = '2027 TBA';
+            if (countdownMobileEl) countdownMobileEl.textContent = 'Done';
             return;
         }
 
-        var ms = new Date(race.date).getTime() - Date.now();
-        if (ne) ne.textContent = race.flag + ' ' + race.name;
-        if (ce) ce.textContent = fmtCountdown(ms);
-        if (me) me.textContent = fmtShort(ms);
-        if (fe) fe.textContent = race.flag;
+        var ms = race.ts - now;
+        if (countdownNameEl) countdownNameEl.textContent = race.flag + ' ' + race.name;
+        if (countdownEl) countdownEl.textContent = fmtCountdown(ms);
+        if (countdownMobileEl) countdownMobileEl.textContent = fmtShort(ms);
+        if (countdownFlagEl) countdownFlagEl.textContent = race.flag;
+        scheduleCountdown(ms);
     }
 
-    tickCountdown();
-    setInterval(tickCountdown, 1000);
+    if (countdownNameEl || countdownEl || countdownMobileEl || countdownFlagEl) {
+        tickCountdown();
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) {
+                if (countdownTimer) {
+                    window.clearTimeout(countdownTimer);
+                    countdownTimer = null;
+                }
+                return;
+            }
+            tickCountdown();
+        });
+    }
 })();

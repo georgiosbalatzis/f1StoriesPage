@@ -8,9 +8,7 @@
    - blog-module/blog-mobile-fixes.css
    - blog-module/blog-mobile-fixes.js
    - blog-module/blog-perf-fixes.js
-   - scripts/script.js
    - scripts/flag-fallback.js
-   - scripts/navbar.js
 3. Run: node blog-module/blog-processor.js
    (rebuilds article.html files with new template)
 
