@@ -126,7 +126,7 @@ body {
 .navbar-dark .navbar-nav .nav-link:hover::after, .nav-link.active::after, .custom-dropdown-toggle.active::after { width: 80%; }
 
 /* ── Hero ── */
-#hero { position: relative; color: white; text-align: center; padding: 10rem 0; margin-top: 70px; min-height: 80vh; display: flex; align-items: center; justify-content: center; overflow: hidden; clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%); }
+#hero { position: relative; color: white; text-align: center; padding: 10rem 0; margin-top: 70px; min-height: 80vh; display: flex; align-items: center; justify-content: center; overflow: hidden; clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%); will-change: background-position; }
 .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.7; }
 .hero-overlay.image-bg { background-size: cover; background-position: center; filter: blur(8px); }
 .hero-overlay video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(8px); }
@@ -376,13 +376,14 @@ a.ep-card:focus-visible, .card:focus-visible { outline: 2px solid var(--accent);
    ============================================================ */
 
 .blog-img, .avatar, .team-member__avatar, .team-guest__avatar, .ep-card__thumb img { will-change: transform; transform: translateZ(0); }
-img { content-visibility: auto; }
 a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .toggle-switch, .scroll-to-top-btn, .close-btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 .ep-card__thumb, .card__media { aspect-ratio: 16 / 9; overflow: hidden; }
 .team-member__avatar, .team-guest__avatar, .persona .avatar { aspect-ratio: 1; }
 .skeleton-card { contain: content; }
 .navbar, .cookie-banner, .scroll-to-top-btn { contain: layout style; }
 @media (prefers-reduced-motion: no-preference) { .streak { contain: strict; } }
+/* Skip off-screen section rendering on mobile — speeds up initial paint */
+#about, #contact { content-visibility: auto; contain-intrinsic-size: 0 600px; }
 
 
 /* ============================================================

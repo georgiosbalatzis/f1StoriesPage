@@ -42,15 +42,9 @@
     }
 
     // ── 2. SHARE BUTTON ENHANCEMENTS ────────────
-    // Adds robust clipboard + visual feedback on top of
-    // article-script.js's basic handlers.
     function enhanceShareButtons() {
         var copyBtn = document.getElementById('copy-link-btn');
         if (copyBtn) {
-            var newBtn = copyBtn.cloneNode(true);
-            copyBtn.parentNode.replaceChild(newBtn, copyBtn);
-            copyBtn = newBtn;
-
             copyBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -70,9 +64,6 @@
 
         var webBtn = document.getElementById('web-share-btn');
         if (webBtn) {
-            var newWebBtn = webBtn.cloneNode(true);
-            webBtn.parentNode.replaceChild(newWebBtn, webBtn);
-            webBtn = newWebBtn;
             if (navigator.share) {
                 webBtn.style.display = '';
                 webBtn.addEventListener('click', function (e) {
@@ -90,21 +81,16 @@
 
         var igBtn = document.getElementById('instagram-dm-btn');
         if (igBtn) {
-            var newIgBtn = igBtn.cloneNode(true);
-            igBtn.parentNode.replaceChild(newIgBtn, igBtn);
-            igBtn = newIgBtn;
             igBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 copyToClipboard(window.location.href).then(function () {
                     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
                     igBtn.classList.add('copied');
                     setTimeout(function () { igBtn.classList.remove('copied'); }, 1500);
-                    setTimeout(function () {
-                        window.open(
-                            isMobile ? 'instagram://direct-inbox' : 'https://www.instagram.com/direct/inbox/',
-                            '_blank'
-                        );
-                    }, 300);
+                    window.open(
+                        isMobile ? 'instagram://direct-inbox' : 'https://www.instagram.com/direct/inbox/',
+                        '_blank'
+                    );
                 });
             });
         }
@@ -114,9 +100,11 @@
     function fixLazyImages() {
         var grid = document.getElementById('articles-grid');
         if (!grid) return;
+        var scheduled = new WeakSet();
         var observer = new MutationObserver(function () {
-            var imgs = grid.querySelectorAll('img[data-src]');
-            imgs.forEach(function (img) {
+            grid.querySelectorAll('img[data-src]').forEach(function (img) {
+                if (scheduled.has(img)) return;
+                scheduled.add(img);
                 setTimeout(function () {
                     if (!img.classList.contains('loaded')) img.classList.add('force-show');
                 }, 3000);
@@ -174,9 +162,7 @@
             var touch = e.changedTouches[0];
             if (!touch) return;
             var href = card.getAttribute('href');
-            if (href) {
-                setTimeout(function () { window.location.href = href; }, 300);
-            }
+            if (href) window.location.href = href;
         }, { passive: true });
     }
 
@@ -339,37 +325,24 @@
     }
 
     // ── 14. BLOG GRID MUTATION WATCHER ──────────
-    // Re-run image fixes when blog cards are dynamically injected
+    // Re-run image fixes when blog cards are dynamically injected.
+    // Debounced so rapid mutations (many cards injected at once) only trigger once.
     function watchBlogGrid() {
         var targets = document.querySelectorAll('.blog-posts, #articles-grid');
         if (!targets.length) return;
 
+        var debounceTimer = null;
         var mo = new MutationObserver(function () {
-            watchImageLoads();
-            upgradeNativeLazy();
-            asyncDecodeImages();
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function () {
+                watchImageLoads();
+                upgradeNativeLazy();
+                asyncDecodeImages();
+            }, 100);
         });
 
         targets.forEach(function (target) {
             mo.observe(target, { childList: true, subtree: true });
-        });
-    }
-
-    // ── 15. RESOURCE HINTS ──────────────────────
-    function addResourceHints() {
-        var origins = [
-            'https://fonts.googleapis.com',
-            'https://fonts.gstatic.com',
-            'https://cdn.jsdelivr.net',
-            'https://cdnjs.cloudflare.com'
-        ];
-        origins.forEach(function (origin) {
-            if (document.querySelector('link[rel="preconnect"][href="' + origin + '"]')) return;
-            var link = document.createElement('link');
-            link.rel = 'preconnect';
-            link.href = origin;
-            link.crossOrigin = 'anonymous';
-            document.head.appendChild(link);
         });
     }
 
@@ -394,7 +367,6 @@
         }
 
         // Performance fixes
-        addResourceHints();
         watchImageLoads();
         upgradeNativeLazy();
         asyncDecodeImages();

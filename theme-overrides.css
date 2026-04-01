@@ -274,7 +274,7 @@
 [data-theme="light"] .episode-card {
     background: #FFFFFF !important;
     border: 1px solid rgba(0,0,0,0.06) !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06) !important;
+    box-shadow: var(--shadow-sm) !important;
 }
 
 [data-theme="light"] .blog-card:hover,
@@ -361,7 +361,7 @@
 [data-theme="light"] .persona {
     background: #FFFFFF !important;
     border: 1px solid rgba(0,0,0,0.06) !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06) !important;
+    box-shadow: var(--shadow-sm) !important;
 }
 
 [data-theme="light"] .persona:hover {
@@ -428,7 +428,7 @@
 [data-theme="light"] .contact-block {
     background: #FFFFFF !important;
     border: 1px solid rgba(0,0,0,0.06) !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06) !important;
+    box-shadow: var(--shadow-sm) !important;
 }
 
 [data-theme="light"] .contact-block::before {
@@ -764,7 +764,7 @@ h1, h2, h3, h4, p, a, span {
 [data-theme="light"] .sponsor-strip-home .sponsor-logo {
     background: #FFFFFF;
     border-color: rgba(0,0,0,0.06);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+    box-shadow: var(--shadow-sm);
 }
 
 [data-theme="light"] .sponsor-strip-home .sponsor-logo:hover {
@@ -779,7 +779,7 @@ h1, h2, h3, h4, p, a, span {
 [data-theme="light"] .sponsor-logo {
     background: #FFFFFF;
     border-color: rgba(0,0,0,0.06);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+    box-shadow: var(--shadow-sm);
 }
 
 [data-theme="light"] .sponsor-logo:hover {

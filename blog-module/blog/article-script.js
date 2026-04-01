@@ -1,9 +1,12 @@
-// article-script.js — Revamped article page functionality
-// TTS: Now uses pre-generated MP3 narration (via tts-generator.js)
-// Falls back to browser SpeechSynthesis only if no MP3 exists.
+// article-script.js — Article page functionality
+// TTS: pre-generated MP3 narration, falls back to SpeechSynthesis.
+// Share + scroll-to-top handled by blog-fixes.js / shared-nav.js.
 document.addEventListener('DOMContentLoaded', function () {
     const $ = sel => document.querySelector(sel);
     const $$ = sel => document.querySelectorAll(sel);
+
+    // Cache article content element — queried by multiple functions
+    const articleContent = $('.article-content');
 
     // ── Author data ─────────────────────────────────────────
     const AUTHORS = {
@@ -15,10 +18,9 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     function calcReadingTime() {
-        const content = $('.article-content');
         const el = $('#reading-time-value');
-        if (!content || !el) return;
-        const words = content.textContent.trim().split(/\s+/).length;
+        if (!articleContent || !el) return;
+        const words = articleContent.textContent.trim().split(/\s+/).length;
         const mins = Math.max(1, Math.ceil(words / 200));
         el.textContent = `${mins} min read`;
     }
@@ -40,52 +42,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (initialEl) initialEl.textContent = name.charAt(0).toUpperCase();
     }
 
-    function setupSharing() {
-        const copyBtn = $('#copy-link-btn');
-        if (copyBtn) {
-            copyBtn.addEventListener('click', () => {
-                navigator.clipboard.writeText(window.location.href).then(() => {
-                    copyBtn.classList.add('copied');
-                    const icon = copyBtn.querySelector('i');
-                    if (icon) icon.className = 'fas fa-check';
-                    setTimeout(() => {
-                        copyBtn.classList.remove('copied');
-                        if (icon) icon.className = 'fas fa-link';
-                    }, 2000);
-                }).catch(() => {
-                    const ta = document.createElement('textarea');
-                    ta.value = window.location.href;
-                    ta.style.cssText = 'position:fixed;opacity:0';
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(ta);
-                });
-            });
-        }
-
-        const webBtn = $('#web-share-btn');
-        if (webBtn) {
-            if (navigator.share) {
-                webBtn.addEventListener('click', () => {
-                    navigator.share({ title: document.title, url: window.location.href }).catch(() => {});
-                });
-            } else {
-                webBtn.style.display = 'none';
-            }
-        }
-
-        const igBtn = $('#instagram-dm-btn');
-        if (igBtn) {
-            igBtn.addEventListener('click', () => {
-                navigator.clipboard.writeText(window.location.href).then(() => {
-                    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                    window.open(isMobile ? 'instagram://direct-inbox' : 'https://www.instagram.com/direct/inbox/', '_blank');
-                }).catch(() => {});
-            });
-        }
-    }
-
     // ── TTS: Audio Player (MP3) with SpeechSynthesis fallback ──
     function setupTTS() {
         const toggle = $('#tts-toggle');
@@ -100,9 +56,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const statusEl = $('#tts-status');
         const currentTimeEl = $('#tts-current-time');
         const durationEl = $('#tts-duration');
-        const content = $('.article-content');
         const ttsWidget = $('#tts-widget');
-        if (!toggle || !body || !content) return;
+        if (!toggle || !body || !articleContent) return;
 
         // Determine narration MP3 path from current article URL
         const pathParts = window.location.pathname.split('/');
@@ -142,14 +97,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // ── Check if MP3 narration exists ──
         function checkMP3() {
-            return new Promise((resolve) => {
-                if (!mp3Url) { resolve(false); return; }
-                const xhr = new XMLHttpRequest();
-                xhr.open('HEAD', mp3Url, true);
-                xhr.onload = () => resolve(xhr.status >= 200 && xhr.status < 400);
-                xhr.onerror = () => resolve(false);
-                xhr.send();
-            });
+            if (!mp3Url) return Promise.resolve(false);
+            return fetch(mp3Url, { method: 'HEAD' })
+                .then(r => r.ok)
+                .catch(() => false);
         }
 
         // ── Initialize: detect mode ──
@@ -298,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
             loadVoices();
 
             function getArticleText() {
-                const clone = content.cloneNode(true);
+                const clone = articleContent.cloneNode(true);
                 clone.querySelectorAll('script, style, .tts-widget, .social-share-bar').forEach(el => el.remove());
                 return clone.textContent.replace(/\s+/g, ' ').trim();
             }
@@ -308,8 +259,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 const elapsed = (Date.now() - startTime) / 1000 + pausedElapsed;
                 if (progressBar) progressBar.style.width = Math.min(100, (elapsed / estimatedDuration) * 100) + '%';
             }
-            function startProgressTracker() { stopProgressTracker(); progressInterval = setInterval(updateProgress, 200); }
+            function startProgressTracker() {
+                if (document.hidden) return;
+                stopProgressTracker();
+                progressInterval = setInterval(updateProgress, 200);
+            }
             function stopProgressTracker() { if (progressInterval) { clearInterval(progressInterval); progressInterval = null; } }
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) { stopProgressTracker(); }
+                else if (!isPaused && speechSynthesis.speaking) { startTime = Date.now() - pausedElapsed * 1000; startProgressTracker(); }
+            }, { once: false });
 
             function resetSpeechUI() {
                 stopProgressTracker();
@@ -414,7 +373,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const currentId = window.location.pathname.split('/blog-entries/')[1]?.split('/')[0];
         if (!currentId) return;
         try {
-            const paths = ['/blog-module/blog-data.json', '../../blog-data.json', '../../../blog-module/blog-data.json'];
+            const paths = ['/blog-module/blog-index-data.json', '../../blog-index-data.json', '../../../blog-module/blog-index-data.json'];
             let data = null;
             for (const p of paths) { try { const r = await fetch(p); if (r.ok) { data = await r.json(); break; } } catch (_) {} }
             if (!data) return;
@@ -427,14 +386,6 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (err) { console.error('Error loading article navigation:', err); }
     }
 
-    function setupScrollToTop() {
-        const btn = $('#scroll-to-top');
-        if (!btn) return;
-        let ticking = false;
-        window.addEventListener('scroll', () => { if (ticking) return; ticking = true; requestAnimationFrame(() => { btn.classList.toggle('visible', window.pageYOffset > 300); ticking = false; }); });
-        btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-    }
-
     function updateShareLinks() {
         const url = encodeURIComponent(window.location.href);
         const title = encodeURIComponent(document.title);
@@ -445,9 +396,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function buildTableOfContents() {
-        const content = $('.article-content');
-        if (!content) return;
-        const headings = content.querySelectorAll('h2, h3');
+        if (!articleContent) return;
+        const headings = articleContent.querySelectorAll('h2, h3');
         if (headings.length < 3) return;
 
         headings.forEach((h, i) => { if (!h.id) h.id = 'section-' + (i + 1); });
@@ -469,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="toc-body" id="toc-body">${tocItems}</div>
         `;
 
-        content.parentNode.insertBefore(tocEl, content);
+        articleContent.parentNode.insertBefore(tocEl, articleContent);
 
         const tocToggle = tocEl.querySelector('#toc-toggle');
         const tocBody = tocEl.querySelector('#toc-body');
@@ -492,31 +442,25 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
-        let tocTicking = false;
         const tocLinks = tocEl.querySelectorAll('.toc-item');
-        window.addEventListener('scroll', () => {
-            if (tocTicking) return;
-            tocTicking = true;
-            requestAnimationFrame(() => {
-                let current = '';
-                headings.forEach(h => {
-                    const rect = h.getBoundingClientRect();
-                    if (rect.top <= 120) current = h.id;
-                });
-                tocLinks.forEach(link => {
-                    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
-                });
-                tocTicking = false;
+        let activeHeadingId = '';
+
+        const headingObserver = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) activeHeadingId = entry.target.id;
             });
-        }, { passive: true });
+            tocLinks.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === '#' + activeHeadingId);
+            });
+        }, { rootMargin: '-10% 0px -80% 0px', threshold: 0 });
+
+        headings.forEach(h => headingObserver.observe(h));
     }
 
     calcReadingTime();
     populateAuthor();
-    setupSharing();
     updateShareLinks();
     setupTTS();
     buildTableOfContents();
     setupNavigation();
-    setupScrollToTop();
 });
