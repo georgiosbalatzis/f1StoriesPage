@@ -6,6 +6,14 @@
     <title>F1 Stories Podcast</title>
     <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/icons/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/icons/favicon-16.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="F1 Stories">
+    <meta name="mobile-web-app-capable" content="yes">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -52,7 +60,7 @@
                 <i class="fas fa-flag-checkered"></i>
                 <span id="race-countdown-mobile">--</span>
             </div>
-            <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-mobile" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
+            <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
         </div>
     </div>
     <div class="blog-nav-mobile" id="nav-mobile">
@@ -305,5 +313,6 @@
 <script src="scripts/f1-optimized.js" defer></script>
 <script src="scripts/cookie-consent.js" defer></script>
 <script src="scripts/shared-nav.js" defer></script>
+<script src="scripts/pwa-install.js" defer></script>
 </body>
 </html>
