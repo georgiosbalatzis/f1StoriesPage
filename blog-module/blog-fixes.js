@@ -146,25 +146,10 @@
     }
 
     // ── 5. ARTICLE CARD TAP FIX ─────────────────
-    function fixCardTaps() {
-        var grid = document.getElementById('articles-grid');
-        if (!grid) return;
-
-        grid.addEventListener('click', function (e) {
-            var card = e.target.closest('.article-card');
-            if (!card) return;
-            if (card.tagName === 'A' && card.href) return; // browser handles it
-        });
-
-        grid.addEventListener('touchend', function (e) {
-            var card = e.target.closest('.article-card');
-            if (!card || card.tagName !== 'A') return;
-            var touch = e.changedTouches[0];
-            if (!touch) return;
-            var href = card.getAttribute('href');
-            if (href) window.location.href = href;
-        }, { passive: true });
-    }
+    // Cards are <a> tags — native click handles navigation.
+    // touch-action: manipulation (CSS) removes the 300ms iOS delay.
+    // No custom touchend handler needed; it would fire on scroll-end too.
+    function fixCardTaps() {}
 
     // ── 6. PREVENT OVERSCROLL ON MOBILE NAV ─────
     function preventOverscroll() {
