@@ -129,6 +129,8 @@
 .article-content a { color: var(--blog-accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color var(--blog-transition); }
 .article-content a:hover { border-bottom-color: var(--blog-accent); }
 .article-content img { max-width: 100%; height: auto; border-radius: var(--blog-radius-sm); margin: 1.8rem 0; box-shadow: var(--blog-shadow-md); }
+.article-figure,
+.article-figure picture { cursor: zoom-in; }
 .article-content-img { cursor: zoom-in; transition: opacity 0.2s ease, transform 0.25s ease; }
 .article-content-img:hover { opacity: 0.9; transform: scale(1.01); }
 .article-figure { margin: 1.8rem 0; position: relative; }

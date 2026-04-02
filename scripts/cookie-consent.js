@@ -30,12 +30,16 @@
     }
 
     function saveConsent(consent) {
-        writeConsent({
+        var nextConsent = {
             ts: Date.now(),
             essential: true,
             analytics: !!consent.analytics,
             marketing: !!consent.marketing
-        });
+        };
+        writeConsent(nextConsent);
+        window.dispatchEvent(new CustomEvent('f1stories:cookie-consent-changed', {
+            detail: nextConsent
+        }));
         hideBanner();
     }
 

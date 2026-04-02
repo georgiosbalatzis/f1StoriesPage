@@ -53,8 +53,37 @@ const CONFIG = {
     EMBED_EXTENSIONS: ['.html', '.htm', '.svg']
 };
 
+function hasInlineDataImageTag(html) {
+    return /<img\b[^>]*src="data:image\/[^"]+"[^>]*>/i.test(String(html || ''));
+}
+
+function assertNoInlineDataImages(html, contextLabel) {
+    const match = String(html || '').match(/<img\b[^>]*src="data:image\/[^"]+"[^>]*>/i);
+    if (!match) return;
+
+    const snippet = match[0].replace(/\s+/g, ' ').slice(0, 180);
+    throw new Error(`Inline data:image article image detected in ${contextLabel}: ${snippet}`);
+}
+
 // ─── Utility functions ───────────────────────────────────────────────────────
 const utils = {
+    isSourceDocument(fileName) {
+        if (!fileName || fileName.startsWith('~$') || fileName.startsWith('.')) return false;
+        const ext = path.extname(fileName).toLowerCase();
+        return ext === '.docx' || ext === '.txt';
+    },
+
+    findSourceDocument(entryFiles) {
+        return entryFiles
+            .filter(fileName => utils.isSourceDocument(fileName))
+            .sort((a, b) => {
+                const extA = path.extname(a).toLowerCase();
+                const extB = path.extname(b).toLowerCase();
+                if (extA !== extB) return extA === '.docx' ? -1 : 1;
+                return a.localeCompare(b);
+            })[0] || null;
+    },
+
     findImageByBaseName(entryPath, baseName) {
         const entryFiles = fs.readdirSync(entryPath);
         for (const format of CONFIG.IMAGE_FORMATS) {
@@ -115,14 +144,18 @@ const utils = {
         if (FORCE_REBUILD) return false;
 
         const folderFiles = fs.readdirSync(entryPath);
-        const docFile = folderFiles.find(f => {
-            const ext = path.extname(f).toLowerCase();
-            return ext === '.docx' || ext === '.txt';
-        });
+        const docFile = utils.findSourceDocument(folderFiles);
         if (!docFile) return true; // no source → nothing to do
 
         const articlePath = path.join(entryPath, 'article.html');
         if (!fs.existsSync(articlePath)) return false; // no output → must build
+
+        try {
+            const articleHtml = fs.readFileSync(articlePath, 'utf8');
+            if (hasInlineDataImageTag(articleHtml)) return false;
+        } catch {
+            return false;
+        }
 
         const docMtime = fs.statSync(path.join(entryPath, docFile)).mtimeMs;
         const htmlMtime = fs.statSync(articlePath).mtimeMs;
@@ -396,9 +429,6 @@ async function extractImagesFromDocx(docPath, entryPath) {
 async function processContentImages(content, folderName, extractedImages = []) {
     if (!extractedImages.length) return content;
 
-    let processedContent = content;
-    const matches = [...processedContent.matchAll(/<img[^>]*?>/g)];
-
     const replacements = await Promise.all(extractedImages.map(async (_, i) => {
         const imageNumber = i + 3;
         return `<figure class="article-figure">
@@ -406,14 +436,11 @@ async function processContentImages(content, folderName, extractedImages = []) {
         </figure>`;
     }));
 
-    for (let i = matches.length - 1; i >= 0; i--) {
-        const match = matches[i];
-        const replacement = replacements[i] ?? '';
-        processedContent =
-            processedContent.slice(0, match.index) +
-            replacement +
-            processedContent.slice(match.index + match[0].length);
-    }
+    let replacementIndex = 0;
+    let processedContent = content.replace(
+        /<img\b(?=[^>]*(?:data-original-src="[^"]*"|src="data:image\/[^"]+"))[^>]*>/gi,
+        match => replacements[replacementIndex++] || match
+    );
 
     processedContent = processedContent.replace(
         /<p>\s*(<figure class="article-figure">[\s\S]*?<\/figure>)\s*<\/p>/g,
@@ -1477,10 +1504,7 @@ async function processBlogEntry(entryPath) {
         return null;
     }
     
-    const docFile = entryFiles.find(file => {
-        const ext = path.extname(file).toLowerCase();
-        return ext === '.docx' || ext === '.txt';
-    });
+    const docFile = utils.findSourceDocument(entryFiles);
     
     if (!docFile) {
         console.warn(`⚠️ No document found in ${entryPath}`);
@@ -1555,6 +1579,8 @@ async function processBlogEntry(entryPath) {
     if ((!content || content.trim() === '') && Object.keys(images).length > 0) {
         content = createImageGallery(images, folderName);
     }
+
+    assertNoInlineDataImages(content, folderName);
     
     const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
     const wordCount = plainText.split(/\s+/).length;
@@ -1735,6 +1761,7 @@ if (!isMainThread) {
      */
     async function runWorkerPool(entryPaths, concurrency) {
         const results = [];
+        const failures = [];
         let index = 0;
 
         async function next() {
@@ -1749,9 +1776,11 @@ if (!isMainThread) {
                     results.push(result.postData);
                     console.log(`✅ [worker] ${folderName}`);
                 } else {
+                    failures.push({ entryPath, error: result.error || 'no data' });
                     console.warn(`❌ [worker] ${folderName}: ${result.error || 'no data'}`);
                 }
             } catch (err) {
+                failures.push({ entryPath, error: err.message });
                 console.error(`❌ [worker] ${folderName}: ${err.message}`);
             }
 
@@ -1760,7 +1789,7 @@ if (!isMainThread) {
 
         // Launch `concurrency` parallel chains
         await Promise.all(Array.from({ length: concurrency }, () => next()));
-        return results;
+        return { results, failures };
     }
 
     // ── Main processing function ─────────────────────────────────────────────
@@ -1811,9 +1840,11 @@ if (!isMainThread) {
 
         // ── Parallel build ───────────────────────────────────────────────────
         const concurrency = Math.min(MAX_WORKERS, toBuild.length || 1);
-        const freshPosts = toBuild.length > 0
+        const freshBuild = toBuild.length > 0
             ? await runWorkerPool(toBuild, concurrency)
-            : [];
+            : { results: [], failures: [] };
+        const freshPosts = freshBuild.results;
+        const buildFailures = freshBuild.failures.slice();
 
         // ── Collect postData for skipped entries from their existing HTML ────
         // We still need them in blog-data.json. Re-read the existing
@@ -1831,10 +1862,30 @@ if (!isMainThread) {
             }
         }
 
+        let rebuiltSkippedPosts = [];
+        const cachedIds = new Set(cachedPosts.map(p => p.id));
+        const missingSkippedPaths = entryFolders.filter(entryPath => {
+            const folderName = path.basename(entryPath);
+            return skipped.includes(folderName) && !cachedIds.has(folderName);
+        });
+
+        if (missingSkippedPaths.length > 0) {
+            console.log(`♻️  Rebuilding ${missingSkippedPaths.length} skipped entries because cached metadata was missing...`);
+            const rebuiltSkippedBuild = await runWorkerPool(
+                missingSkippedPaths,
+                Math.min(MAX_WORKERS, missingSkippedPaths.length)
+            );
+            rebuiltSkippedPosts = rebuiltSkippedBuild.results;
+            buildFailures.push(...rebuiltSkippedBuild.failures);
+        }
+
         // Merge: fresh builds + cached skipped
-        const freshIds = new Set(freshPosts.map(p => p.id));
+        const freshIds = new Set(
+            freshPosts.concat(rebuiltSkippedPosts).map(p => p.id)
+        );
         const blogPosts = [
             ...freshPosts,
+            ...rebuiltSkippedPosts,
             ...cachedPosts.filter(p => !freshIds.has(p.id))
         ];
 
@@ -1848,11 +1899,19 @@ if (!isMainThread) {
             }
         });
         
-        console.log(`\n✅ Total: ${blogPosts.length} posts (${freshPosts.length} built, ${cachedPosts.length} cached)`);
+        console.log(`\n✅ Total: ${blogPosts.length} posts (${freshPosts.length} built, ${rebuiltSkippedPosts.length} rebuilt from skipped, ${cachedPosts.length} cached)`);
         
         if (blogPosts.length === 0) {
             console.error("No blog posts were successfully processed!");
             return;
+        }
+
+        if (buildFailures.length > 0) {
+            const firstFailure = buildFailures[0];
+            throw new Error(
+                `Blog build failed for ${buildFailures.length} entr${buildFailures.length === 1 ? 'y' : 'ies'}. ` +
+                `First failure: ${path.basename(firstFailure.entryPath)}: ${firstFailure.error}`
+            );
         }
         
         blogPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -1956,14 +2015,14 @@ if (!isMainThread) {
                 postHtml = postHtml.replace(/PREV_ARTICLE_URL/g,
                     `/blog-module/blog-entries/${prevPost.id}/article.html`);
             } else {
-                postHtml = postHtml.replace(/<a href="PREV_ARTICLE_URL"[^>]*>[^<]*<\/a>/g, '');
+                postHtml = postHtml.replace(/<a href="PREV_ARTICLE_URL"[^>]*>[\s\S]*?<\/a>/g, '');
             }
             
             if (nextPost) {
                 postHtml = postHtml.replace(/NEXT_ARTICLE_URL/g,
                     `/blog-module/blog-entries/${nextPost.id}/article.html`);
             } else {
-                postHtml = postHtml.replace(/<a href="NEXT_ARTICLE_URL"[^>]*>[^<]*<\/a>/g, '');
+                postHtml = postHtml.replace(/<a href="NEXT_ARTICLE_URL"[^>]*>[\s\S]*?<\/a>/g, '');
             }
             
             fs.writeFileSync(path.join(CONFIG.BLOG_DIR, post.id, 'article.html'), postHtml);

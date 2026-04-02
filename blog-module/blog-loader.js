@@ -32,6 +32,15 @@ document.addEventListener('DOMContentLoaded', function () {
         return src.startsWith('/') ? src : '/' + src;
     }
 
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     // ── Fetch blog-index-data.json with fallback paths ────
     function readCachedBlogData() {
         try {
@@ -76,19 +85,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Render a single card ────────────────────────
     function cardHTML(post) {
-        const img = imgSrc(post.image);
+        const href = '/blog-module/blog-entries/' + encodeURIComponent(post.id || '') + '/article.html';
+        const img = escapeHtml(imgSrc(post.image));
         const fallback = '/blog-module/images/default-blog.jpg';
         const dm = (post.displayDate || '').match(/([A-Za-z]+)\s+(\d+)/);
         const month = dm ? dm[1].substring(0, 3).toUpperCase() : '';
         const day = dm ? dm[2] : '';
-        const readTime = post.readingTime || '';
+        const title = escapeHtml(post.title || '');
+        const author = escapeHtml(post.author || 'F1 Stories Team');
+        const excerpt = escapeHtml(post.excerpt || '');
+        const readTime = escapeHtml(post.readingTime || '');
 
         return `
         <div class="col-md-4">
-            <a href="/blog-module/blog-entries/${post.id}/article.html" class="blog-card-link">
+            <a href="${href}" class="blog-card-link">
                 <div class="blog-card">
                     <div class="blog-img-container">
-                        <img src="${img}" alt="${post.title}" class="blog-img" loading="lazy"
+                        <img src="${img}" alt="${title}" class="blog-img" loading="lazy"
                              decoding="async"
                              onerror="this.src='${fallback}';this.onerror=null;">
                         <div class="blog-date">
@@ -97,12 +110,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                     </div>
                     <div class="blog-content">
-                        <h3 class="blog-title">${post.title}</h3>
+                        <h3 class="blog-title">${title}</h3>
                         <div class="blog-meta">
-                            <span><i class="fas fa-user"></i> ${post.author}</span>
+                            <span><i class="fas fa-user"></i> ${author}</span>
                             ${readTime ? '<span><i class="fas fa-clock"></i> ' + readTime + '</span>' : ''}
                         </div>
-                        <p class="blog-excerpt">${post.excerpt || ''}</p>
+                        <p class="blog-excerpt">${excerpt}</p>
                         <span class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></span>
                     </div>
                 </div>

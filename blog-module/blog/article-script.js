@@ -459,8 +459,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Image Lightbox ───────────────────────────────────────
     function setupLightbox() {
-        const imgs = document.querySelectorAll('.article-content-img');
-        if (!imgs.length) return;
+        function getImages() {
+            return Array.from(document.querySelectorAll('.article-content-img'));
+        }
+
+        if (!getImages().length) return;
 
         // Build overlay DOM once
         const overlay = document.createElement('div');
@@ -489,6 +492,8 @@ document.addEventListener('DOMContentLoaded', function () {
         let touchStartY = 0;
 
         function open(index) {
+            const imgs = getImages();
+            if (!imgs.length) return;
             current = index;
             update();
             overlay.classList.add('open');
@@ -505,6 +510,8 @@ document.addEventListener('DOMContentLoaded', function () {
         function fullSrc(img) { return img.dataset.fullSrc || img.src; }
 
         function update() {
+            const imgs = getImages();
+            if (!imgs.length) return;
             const img = imgs[current];
             lbImg.src = fullSrc(img);
             lbImg.alt = img.alt || '';
@@ -514,10 +521,26 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function prev() { if (current > 0) { current--; update(); } }
-        function next() { if (current < imgs.length - 1) { current++; update(); } }
+        function next() {
+            const imgs = getImages();
+            if (current < imgs.length - 1) { current++; update(); }
+        }
 
-        imgs.forEach((img, i) => {
-            img.addEventListener('click', () => open(i));
+        articleContent.addEventListener('click', (e) => {
+            const trigger = e.target.closest('.article-content-img, .article-figure picture, .article-figure');
+            if (!trigger) return;
+
+            const img = trigger.classList && trigger.classList.contains('article-content-img')
+                ? trigger
+                : trigger.querySelector('.article-content-img');
+            if (!img) return;
+
+            const imgs = getImages();
+            const index = imgs.indexOf(img);
+            if (index === -1) return;
+
+            e.preventDefault();
+            open(index);
         });
 
         lbClose.addEventListener('click', close);
