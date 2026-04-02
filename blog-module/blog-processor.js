@@ -1467,13 +1467,19 @@ async function processBlogEntry(entryPath) {
         for (let i = 0; i < mediaFiles.length; i++) {
             const imageNumber = i + 3;
             const webpPath = path.join(outputImageDir, `${imageNumber}.webp`);
-            
+
             await convertImage(mediaFiles[i].extracted, webpPath, 'webp');
             fs.copyFileSync(webpPath, path.join(entryPath, `${imageNumber}.webp`));
 
             extractedImages.push({
                 fileName: `${imageNumber}.webp`
             });
+        }
+
+        // Clean up the extracted/ temp folder — images are now in entry root + output dir
+        const extractDir = path.join(entryPath, 'extracted');
+        if (fs.existsSync(extractDir)) {
+            fs.rmSync(extractDir, { recursive: true, force: true });
         }
     }
     
