@@ -457,10 +457,103 @@ document.addEventListener('DOMContentLoaded', function () {
         headings.forEach(h => headingObserver.observe(h));
     }
 
+    // ── Image Lightbox ───────────────────────────────────────
+    function setupLightbox() {
+        const imgs = document.querySelectorAll('.article-content-img');
+        if (!imgs.length) return;
+
+        // Build overlay DOM once
+        const overlay = document.createElement('div');
+        overlay.className = 'lb-overlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-label', 'Image viewer');
+        overlay.innerHTML = `
+            <button class="lb-close" aria-label="Close"><i class="fas fa-times"></i></button>
+            <div class="lb-img-wrap">
+                <img class="lb-img" src="" alt="">
+            </div>
+            <button class="lb-prev" aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
+            <button class="lb-next" aria-label="Next image"><i class="fas fa-chevron-right"></i></button>
+            <div class="lb-counter"></div>`;
+        document.body.appendChild(overlay);
+
+        const lbImg = overlay.querySelector('.lb-img');
+        const lbClose = overlay.querySelector('.lb-close');
+        const lbPrev = overlay.querySelector('.lb-prev');
+        const lbNext = overlay.querySelector('.lb-next');
+        const lbCounter = overlay.querySelector('.lb-counter');
+
+        let current = 0;
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        function open(index) {
+            current = index;
+            update();
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            lbClose.focus();
+        }
+
+        function close() {
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function update() {
+            const img = imgs[current];
+            lbImg.src = img.src;
+            lbImg.alt = img.alt || '';
+            lbCounter.textContent = imgs.length > 1 ? `${current + 1} / ${imgs.length}` : '';
+            lbPrev.disabled = current === 0;
+            lbNext.disabled = current === imgs.length - 1;
+        }
+
+        function prev() { if (current > 0) { current--; update(); } }
+        function next() { if (current < imgs.length - 1) { current++; update(); } }
+
+        imgs.forEach((img, i) => {
+            img.addEventListener('click', () => open(i));
+        });
+
+        lbClose.addEventListener('click', close);
+
+        // Close on backdrop click (not on image)
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) close();
+        });
+
+        lbPrev.addEventListener('click', (e) => { e.stopPropagation(); prev(); });
+        lbNext.addEventListener('click', (e) => { e.stopPropagation(); next(); });
+
+        // Keyboard
+        document.addEventListener('keydown', (e) => {
+            if (!overlay.classList.contains('open')) return;
+            if (e.key === 'Escape') close();
+            if (e.key === 'ArrowLeft') prev();
+            if (e.key === 'ArrowRight') next();
+        });
+
+        // Touch swipe
+        overlay.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+        overlay.addEventListener('touchend', (e) => {
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            const dy = e.changedTouches[0].clientY - touchStartY;
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+                if (dx < 0) next(); else prev();
+            }
+        }, { passive: true });
+    }
+
     calcReadingTime();
     populateAuthor();
     updateShareLinks();
     setupTTS();
     buildTableOfContents();
     setupNavigation();
+    setupLightbox();
 });
