@@ -157,20 +157,8 @@ const utils = {
 };
 
 // ─── YouTube link processor ──────────────────────────────────────────────────
-function processYouTubeLinks(htmlContent) {
-    const patterns = [
-        [/<p>(https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})(&[^<]*)?)(<\/p>|<br>)/g, 3],
-        [/<p>(https?:\/\/(www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})(&[^<]*)?)(<\/p>|<br>)/g, 3],
-        [/<a[^>]*href="(https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})(&[^"]*)?)"[^>]*>[^<]*<\/a>/g, 3],
-        [/<a[^>]*href="(https?:\/\/(www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})(&[^"]*)?)"[^>]*>[^<]*<\/a>/g, 3]
-    ];
-    
-    let modifiedContent = htmlContent;
-    
-    patterns.forEach(([pattern, videoIdIndex]) => {
-        modifiedContent = modifiedContent.replace(pattern, (...args) => {
-            const videoId = args[videoIdIndex];
-            return `
+function buildYouTubeEmbed(videoId) {
+    return `
       <div class="youtube-embed-container">
         <iframe 
           src="https://www.youtube.com/embed/${videoId}" 
@@ -181,9 +169,82 @@ function processYouTubeLinks(htmlContent) {
         </iframe>
         <div class="video-caption">Video: YouTube</div>
       </div>`;
-        });
+}
+
+function isYouTubeUrl(text) {
+    return /^https?:\/\/(?:www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9_-]{11}(?:[^\s<]*)?$/i.test(text) ||
+        /^https?:\/\/(?:www\.)?youtu\.be\/[a-zA-Z0-9_-]{11}(?:[^\s<]*)?$/i.test(text);
+}
+
+function isYouTubeAnchorHtml(html) {
+    return /^<a\b[^>]*href="https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=[a-zA-Z0-9_-]{11}(?:[^"]*)?|youtu\.be\/[a-zA-Z0-9_-]{11}(?:[^"]*)?)"[^>]*>[\s\S]*<\/a>$/i.test(html);
+}
+
+function isEmbedPlaceholderToken(text) {
+    return /^__EMBED_PLACEHOLDER_\d+__$/.test(text);
+}
+
+function isStandaloneEmbedLine(text) {
+    const trimmed = text.trim();
+    return isEmbedPlaceholderToken(trimmed) || isYouTubeUrl(trimmed) || isYouTubeAnchorHtml(trimmed);
+}
+
+function splitParagraphsAroundStandaloneEmbeds(htmlContent) {
+    return htmlContent.replace(/<p([^>]*)>([\s\S]*?)<\/p>/gi, (fullMatch, attrs = '', inner) => {
+        if (!/<br\s*\/?>/i.test(inner)) return fullMatch;
+
+        const parts = inner.split(/<br\s*\/?>/i);
+        if (!parts.some(part => isStandaloneEmbedLine(part))) return fullMatch;
+
+        const rebuilt = [];
+        let currentParts = [];
+
+        function flushParagraph() {
+            if (currentParts.length === 0) return;
+            const combined = currentParts.join('<br />');
+            if (combined.replace(/<[^>]*>/g, '').trim() === '') {
+                currentParts = [];
+                return;
+            }
+            rebuilt.push(`<p${attrs}>${combined}</p>`);
+            currentParts = [];
+        }
+
+        for (const part of parts) {
+            if (isStandaloneEmbedLine(part)) {
+                flushParagraph();
+                rebuilt.push(`<p${attrs}>${part.trim()}</p>`);
+                continue;
+            }
+            currentParts.push(part);
+        }
+
+        flushParagraph();
+        return rebuilt.length ? rebuilt.join('') : fullMatch;
     });
-    
+}
+
+function processYouTubeLinks(htmlContent) {
+    let modifiedContent = htmlContent;
+
+    const urlPatterns = [
+        /<p[^>]*>\s*(https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})(?:&[^<\s]*)?)\s*(?:<br\s*\/?>\s*)?<\/p>/gi,
+        /<p[^>]*>\s*(https?:\/\/(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})(?:[?&][^<\s]*)?)\s*(?:<br\s*\/?>\s*)?<\/p>/gi
+    ];
+
+    const anchorPatterns = [
+        /<p[^>]*>\s*<a[^>]*href="(https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})(?:[^"]*)?)"[^>]*>[\s\S]*?<\/a>\s*(?:<br\s*\/?>\s*)?<\/p>/gi,
+        /<p[^>]*>\s*<a[^>]*href="(https?:\/\/(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})(?:[^"]*)?)"[^>]*>[\s\S]*?<\/a>\s*(?:<br\s*\/?>\s*)?<\/p>/gi
+    ];
+
+    urlPatterns.forEach(pattern => {
+        modifiedContent = modifiedContent.replace(pattern, (match, url, videoId) => buildYouTubeEmbed(videoId));
+    });
+
+    anchorPatterns.forEach(pattern => {
+        modifiedContent = modifiedContent.replace(pattern, (match, url, videoId) => buildYouTubeEmbed(videoId));
+    });
+
     return modifiedContent;
 }
 
@@ -899,6 +960,17 @@ function decodeHtmlEntities(str) {
         .replace(/&nbsp;/g, ' ');
 }
 
+function normalizeWhitespace(str) {
+    return str.replace(/\s+/g, ' ').trim();
+}
+
+function normalizeHtmlFragmentForMatching(fragment) {
+    const textWithBreaks = fragment
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<[^>]*>/g, ' ');
+    return normalizeWhitespace(decodeHtmlEntities(textWithBreaks));
+}
+
 /**
  * Find raw HTML blocks (iframes and widgets) that mammoth entity-encoded
  * and scattered across one or more <p> tags. Replace them with actual HTML.
@@ -919,14 +991,14 @@ function processRawHtmlEmbeds(htmlContent, rawBlockMap) {
         // We'll search for a simplified/normalized version of the raw block
 
         // Normalize the raw block for matching: collapse whitespace
-        const normalizedRaw = rawHtml.replace(/\s+/g, ' ').trim();
+        const normalizedRaw = normalizeWhitespace(rawHtml);
 
         // Find all <p> tags and their positions
         const pTags = [];
         const pRegex = /<p[^>]*>([\s\S]*?)<\/p>/g;
         let pMatch;
         while ((pMatch = pRegex.exec(result)) !== null) {
-            const decoded = decodeHtmlEntities(pMatch[1].replace(/<[^>]*>/g, ''));
+            const decoded = normalizeHtmlFragmentForMatching(pMatch[1]);
             pTags.push({
                 start: pMatch.index,
                 end: pMatch.index + pMatch[0].length,
@@ -942,7 +1014,7 @@ function processRawHtmlEmbeds(htmlContent, rawBlockMap) {
             let concat = '';
             for (let j = i; j < pTags.length; j++) {
                 concat += (j > i ? ' ' : '') + pTags[j].decoded;
-                const normalizedConcat = concat.replace(/\s+/g, ' ').trim();
+                const normalizedConcat = normalizeWhitespace(concat);
 
                 if (normalizedConcat.includes(normalizedRaw) ||
                     normalizedRaw.includes(normalizedConcat)) {
@@ -1203,6 +1275,16 @@ async function convertToHtml(filePath) {
                     }
                     continue;
                 }
+
+                if (isStandaloneEmbedLine(line)) {
+                    if (currentParagraph !== '') {
+                        htmlContent += `<p>${currentParagraph}</p>\n`;
+                        currentParagraph = '';
+                    }
+
+                    htmlContent += `<p>${line}</p>\n`;
+                    continue;
+                }
                 
                 currentParagraph = currentParagraph === '' ? line : currentParagraph + ' ' + line;
             }
@@ -1213,6 +1295,7 @@ async function convertToHtml(filePath) {
         }
         
         // Post-processing pipeline
+        htmlContent = splitParagraphsAroundStandaloneEmbeds(htmlContent);
         htmlContent = processYouTubeLinks(htmlContent);
         htmlContent = processEmbeddedCSV(htmlContent, entryPath);
 
