@@ -15,8 +15,5 @@ blog-module/blog-entries/*/extracted/
 # Source documents — not needed on the web server
 blog-module/blog-entries/**/*.docx
 
-# Generated responsive image variants (produced by generate-image-variants.js)
-# Excluded from git — regenerated from the tracked WebP source files
-blog-module/blog-entries/*/*.avif
-blog-module/blog-entries/*/*-sm.webp
-blog-module/blog-entries/*/*-sm.avif
+# Note: .avif and -sm.* variants ARE tracked in git (required for deployment on GitHub Pages)
+# Regenerate missing ones with: node blog-module/generate-image-variants.js --run
