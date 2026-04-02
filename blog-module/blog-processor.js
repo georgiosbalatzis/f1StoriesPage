@@ -468,6 +468,119 @@ function getTableName(csvFileName) {
     return tableName.charAt(0).toUpperCase() + tableName.slice(1);
 }
 
+function stripCellParagraphs(html) {
+    return String(html || '')
+        .trim()
+        .replace(/<p[^>]*>\s*<\/p>/gi, '')
+        .replace(/<\/p>\s*<p[^>]*>/gi, '<br />')
+        .replace(/^<p[^>]*>/i, '')
+        .replace(/<\/p>$/i, '')
+        .trim();
+}
+
+function escapeHtmlAttribute(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+function htmlToPlainText(html) {
+    return decodeHtmlEntities(
+        String(html || '')
+            .replace(/<br\s*\/?>/gi, ' ')
+            .replace(/<[^>]*>/g, ' ')
+    ).replace(/\s+/g, ' ').trim();
+}
+
+function extractTableRowsFromHtml(tableHtml) {
+    const rows = [];
+    const rowRegex = /<tr\b[^>]*>([\s\S]*?)<\/tr>/gi;
+    let rowMatch;
+
+    while ((rowMatch = rowRegex.exec(tableHtml)) !== null) {
+        const cells = [];
+        const cellRegex = /<(td|th)\b[^>]*>([\s\S]*?)<\/\1>/gi;
+        let cellMatch;
+
+        while ((cellMatch = cellRegex.exec(rowMatch[1])) !== null) {
+            cells.push(stripCellParagraphs(cellMatch[2]));
+        }
+
+        if (cells.length) {
+            rows.push(cells);
+        }
+    }
+
+    return rows;
+}
+
+function buildResponsiveDocTable(headers, rows, tableId) {
+    const safeHeaders = headers.map((header, index) => {
+        const cleaned = stripCellParagraphs(header);
+        return {
+            html: cleaned || `Column ${index + 1}`,
+            label: htmlToPlainText(cleaned) || `Column ${index + 1}`
+        };
+    });
+
+    const normalizedRows = rows.map(row => safeHeaders.map((_, index) => stripCellParagraphs(row[index] || '')));
+
+    let html = `
+        <div class="table-responsive-container docx-table-container">
+            <div class="table-container scroll-view active" id="${tableId}-scroll">
+                <div class="table-scroll-indicator">
+                    <span>Σύρετε για περισσότερα</span>
+                    <i class="fas fa-arrows-left-right"></i>
+                </div>
+                <table class="responsive-table docx-table">
+                    <thead>
+                        <tr>`;
+
+    safeHeaders.forEach(header => {
+        html += `<th>${header.html}</th>`;
+    });
+
+    html += `
+                        </tr>
+                    </thead>`;
+
+    if (normalizedRows.length) {
+        html += `<tbody>`;
+        normalizedRows.forEach(row => {
+            html += '<tr>';
+            row.forEach((cell, index) => {
+                html += `<td data-label="${escapeHtmlAttribute(safeHeaders[index].label)}">${cell}</td>`;
+            });
+            html += '</tr>';
+        });
+        html += `</tbody>`;
+    }
+
+    html += `
+                </table>
+            </div>
+        </div>`;
+
+    return html;
+}
+
+function processDocumentTables(htmlContent) {
+    let tableIndex = 0;
+
+    return htmlContent.replace(/<table\b[^>]*>[\s\S]*?<\/table>/gi, (tableHtml) => {
+        const rows = extractTableRowsFromHtml(tableHtml);
+        if (!rows.length) return tableHtml;
+
+        const [headers, ...bodyRows] = rows;
+        if (!headers || !headers.length) return tableHtml;
+
+        const tableId = `docx-table-${tableIndex++}`;
+        return buildResponsiveDocTable(headers, bodyRows, tableId);
+    });
+}
+
 function createCSVErrorMessage(csvFileName) {
     return `
     <div class="csv-error">
@@ -1296,6 +1409,7 @@ async function convertToHtml(filePath) {
         
         // Post-processing pipeline
         htmlContent = splitParagraphsAroundStandaloneEmbeds(htmlContent);
+        htmlContent = processDocumentTables(htmlContent);
         htmlContent = processYouTubeLinks(htmlContent);
         htmlContent = processEmbeddedCSV(htmlContent, entryPath);
 
