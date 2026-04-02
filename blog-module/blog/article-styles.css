@@ -134,6 +134,27 @@
 .article-content-img { cursor: zoom-in; transition: opacity 0.2s ease, transform 0.25s ease; }
 .article-content-img:hover { opacity: 0.9; transform: scale(1.01); }
 .article-figure { margin: 1.8rem 0; position: relative; }
+.social-embed { margin: 1.8rem 0; display: flex; justify-content: center; }
+.social-embed > * { width: 100%; }
+.article-content blockquote.twitter-tweet,
+.article-content blockquote.instagram-media,
+.article-content blockquote.text-post-media {
+    margin: 0 auto !important;
+    padding: 0 !important;
+    border-left: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    font-style: normal !important;
+    color: inherit !important;
+    max-width: 540px;
+    min-width: 280px;
+}
+.article-content .fb-post,
+.article-content .fb-video {
+    margin: 0 auto !important;
+    max-width: 540px;
+}
+.social-embed a { border-bottom: none; }
 .article-content blockquote { border-left: 3px solid var(--blog-accent); margin: 2rem 0; padding: 1.2rem 1.8rem; background: var(--blog-accent-soft); border-radius: 0 var(--blog-radius-sm) var(--blog-radius-sm) 0; font-style: italic; color: var(--blog-text-secondary); }
 .article-content ul, .article-content ol { margin: 1rem 0 1.5rem; padding-left: 1.5rem; }
 .article-content li { margin-bottom: 0.5rem; color: var(--blog-text-secondary); }

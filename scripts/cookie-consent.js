@@ -22,11 +22,18 @@
     }
 
     function hideBanner() {
+        banner.classList.remove('show');
         banner.style.display = 'none';
+        banner.setAttribute('aria-hidden', 'true');
     }
 
     function showBanner() {
-        banner.style.display = '';
+        banner.classList.add('cookie-banner');
+        banner.style.display = 'block';
+        banner.setAttribute('aria-hidden', 'false');
+        requestAnimationFrame(function () {
+            banner.classList.add('show');
+        });
     }
 
     function saveConsent(consent) {
