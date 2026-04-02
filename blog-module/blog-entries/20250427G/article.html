@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="🛠️ ΜΕΡΟΣ 4: Το Μονοθέσιο – Πιο περίπλοκο κι από τις σχέσεις σου" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="🛠️ ΜΕΡΟΣ 4: Το Μονοθέσιο – Πιο περίπλοκο κι από τις σχέσεις σου" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">🛠️ ΜΕΡΟΣ 4: Το Μονοθέσιο – Πιο περίπλοκο κι από τις σχέσεις σου</h1>
                     <div class="article-meta">
@@ -277,7 +284,7 @@
 
         <div class="article-navigation">
             <a href="/blog-module/blog-entries/20250426-2G/article.html" id="prev-article-link" class="article-nav-link prev"><i class="fas fa-arrow-left"></i> Previous</a>
-            <a href="/blog-module/blog-entries/20250428-2G/article.html" id="next-article-link" class="article-nav-link next">Next <i class="fas fa-arrow-right"></i></a>
+            <a href="/blog-module/blog-entries/20250428G/article.html" id="next-article-link" class="article-nav-link next">Next <i class="fas fa-arrow-right"></i></a>
         </div>
 
         <div class="row mt-5">
@@ -287,10 +294,10 @@
                 <a href="/blog-module/blog-entries/20250502G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250502G/1.webp" 
-                                 alt="🏁 ΜΕΡΟΣ 8: Τώρα που τα έμαθες όλα… ποια είναι η ομάδα σου;" 
+                            <img src="/blog-module/blog-entries/20250502G/1.webp"
+                                 alt="🏁 ΜΕΡΟΣ 8: Τώρα που τα έμαθες όλα… ποια είναι η ομάδα σου;"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250502G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 2 May 2025</div>
@@ -307,10 +314,10 @@
                 <a href="/blog-module/blog-entries/20250429-2G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250429-2G/1.webp" 
-                                 alt="🧼 ΜΕΡΟΣ 6: Το δράμα εκτός πίστας – Politics, rivalries και… memes" 
+                            <img src="/blog-module/blog-entries/20250429-2G/1.webp"
+                                 alt="🧼 ΜΕΡΟΣ 6: Το δράμα εκτός πίστας – Politics, rivalries και… memes"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250429-2G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 29 Apr 2025</div>
@@ -327,10 +334,10 @@
                 <a href="/blog-module/blog-entries/20250428-2G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250428-2G/1.webp" 
-                                 alt="📺 ΜΕΡΟΣ 5: Πώς να δεις Grand Prix και να φαίνεσαι ότι ξέρεις τι βλέπεις" 
+                            <img src="/blog-module/blog-entries/20250428-2G/1.webp"
+                                 alt="📺 ΜΕΡΟΣ 5: Πώς να δεις Grand Prix και να φαίνεσαι ότι ξέρεις τι βλέπεις"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250428-2G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 28 Apr 2025</div>

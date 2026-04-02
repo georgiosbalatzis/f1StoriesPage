@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="Δυναμική της Ferrari στο Silverstone το 2021" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="Δυναμική της Ferrari στο Silverstone το 2021" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">Δυναμική της Ferrari στο Silverstone το 2021</h1>
                     <div class="article-meta">
@@ -213,12 +220,18 @@
 
             <div class="article-content"><p></p><p><a id="_boqyucobf2ay"></a>Δυναμική της Ferrari στο Silverstone το 2021</p><p>Η <strong>Ferrari SF21</strong> ήταν γενικά ένα μονοθέσιο <strong>μεγάλης αεροδυναμικής απόδοσης</strong> στις στροφές, αλλά υστερούσε πολύ <strong>στην τελική ταχύτητα</strong> λόγω έλλειψης ισχύος του κινητήρα (μετά το σκάνδαλο του 2019).<br />Όμως στο <strong>Silverstone</strong>, το συγκεκριμένο <strong>layout της πίστας</strong> την ευνόησε για τους εξής λόγους:</p><p><strong>1. Πολλές γρήγορες στροφές (όχι πολλές μεγάλες ευθείες)</strong></p><ul><li>Το Silverstone έχει διαδοχικές γρήγορες καμπές (Maggots, Becketts, Copse κτλ.).</li><li>Η SF21 ήταν πολύ καλή στην παρατεταμένη αεροδυναμική φόρτιση – άρα μπορούσε να κρατήσει υψηλή ταχύτητα στις στροφές, όπου οι πιο δυνατοί κινητήρες δεν έδιναν τόσο μεγάλο πλεονέκτημα.</li></ul><p><strong>2. Βελτιώσεις στα "floor" και "diffuser"</strong></p><ul><li>Εκείνο το διάστημα η Ferrari είχε φέρει αναβαθμίσεις στο πάτωμα (floor) για να διαχειρίζεται καλύτερα τη ροή του αέρα μετά τους νέους κανονισμούς του 2021 (κομμένο πάτωμα στο πίσω μέρος).</li><li>Αυτό βοήθησε στο Silverstone να έχουν σταθερότητα στις γρήγορες αλλαγές κατεύθυνσης.</li></ul><p><strong>3. Διαχείριση ελαστικών</strong></p><ul><li>Η SF21 δεν ήταν πολύ καλή γενικά στην προστασία των ελαστικών, αλλά στο συγκεκριμένο αγώνα λόγω θερμοκρασιών και λόγω σωστού set-up, κατάφερε να κρατήσει πολύ καλά τα ελαστικά της, ειδικά ο Λεκλέρκ που έκανε εξαιρετική διαχείριση.</li></ul><p>
             <figure class="article-figure">
-                <img id="img-3"
-                     src="/blog-module/blog-entries/20250510W/3.webp" 
-                     alt="Image 3" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250510W/3.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="3-sm.avif 800w, 3.avif 800w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="3-sm.webp 800w, 3.webp 800w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="3.webp"
+                 srcset="3-sm.webp 800w, 3.webp 800w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 3"
+                 class="article-content-img"
+                 loading="lazy" width="800" height="450"
+                 data-full-src="3.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 3</figcaption>
             </figure></p><p><strong>4. Λιγότερη εξάρτηση από ωμή δύναμη κινητήρα</strong></p><ul><li>Σε πίστες με πολύ μεγάλες ευθείες (όπως Μπακού, Μόντσα), η Ferrari "πνιγόταν".</li><li>Στο Silverstone, το πιο κρίσιμο ήταν η αεροδυναμική ισορροπία και όχι μόνο η τελική ταχύτητα.</li></ul><p><strong>Άρα:<br /></strong>Ο συνδυασμός <strong>στροφών υψηλής ταχύτητας</strong>, <strong>καλών αεροδυναμικών χαρακτηριστικών</strong>, <strong>έξυπνου set-up</strong> και <strong>καλής διαχείρισης ελαστικών</strong> επέτρεψε στη Ferrari να έχει έναν από τους καλύτερους αγώνες της το 2021.</p></div>
 
@@ -296,10 +309,10 @@
                 <a href="/blog-module/blog-entries/20250523W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250523W/1.webp" 
-                                 alt="Το μοναδικό Grand Chelem της καριέρας του στο Ζόλντερ" 
+                            <img src="/blog-module/blog-entries/20250523W/1.webp"
+                                 alt="Το μοναδικό Grand Chelem της καριέρας του στο Ζόλντερ"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250523W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 23 May 2025</div>
@@ -316,10 +329,10 @@
                 <a href="/blog-module/blog-entries/20250517W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250517W/1.webp" 
-                                 alt="1 πρωτάθλημα χαμένο στις λεπτομέρειες" 
+                            <img src="/blog-module/blog-entries/20250517W/1.webp"
+                                 alt="1 πρωτάθλημα χαμένο στις λεπτομέρειες"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250517W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 17 May 2025</div>
@@ -336,10 +349,10 @@
                 <a href="/blog-module/blog-entries/20250513W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250513W/1.webp" 
-                                 alt="Η Επιστροφή του Πρωταθλητή 3" 
+                            <img src="/blog-module/blog-entries/20250513W/1.webp"
+                                 alt="Η Επιστροφή του Πρωταθλητή 3"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250513W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 13 May 2025</div>

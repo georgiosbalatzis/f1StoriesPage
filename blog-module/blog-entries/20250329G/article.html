@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="🌟 Rookies 2025: Η Νέα Φουρνιά που Αλλάζει το Grid" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="🌟 Rookies 2025: Η Νέα Φουρνιά που Αλλάζει το Grid" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">🌟 Rookies 2025: Η Νέα Φουρνιά που Αλλάζει το Grid</h1>
                     <div class="article-meta">
@@ -287,10 +294,10 @@
                 <a href="/blog-module/blog-entries/20250426G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250426G/1.webp" 
-                                 alt="Lewis Hamilton: Το νέο ταξίδι με τη Ferrari" 
+                            <img src="/blog-module/blog-entries/20250426G/1.webp"
+                                 alt="Lewis Hamilton: Το νέο ταξίδι με τη Ferrari"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250426G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 26 Apr 2025</div>
@@ -307,10 +314,10 @@
                 <a href="/blog-module/blog-entries/20250409G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250409G/1.webp" 
-                                 alt="🐢 Το Αργό Ξεκίνημα του Carlos Sainz στη Williams: Μήπως το έχουμε ξαναδεί;" 
+                            <img src="/blog-module/blog-entries/20250409G/1.webp"
+                                 alt="🐢 Το Αργό Ξεκίνημα του Carlos Sainz στη Williams: Μήπως το έχουμε ξαναδεί;"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250409G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 9 Apr 2025</div>
@@ -327,10 +334,10 @@
                 <a href="/blog-module/blog-entries/20250408G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250408G/1.webp" 
-                                 alt="🟢 Η Σεζόν του Fernando Alonso το 2025: Νέα Αρχή στην Aston Martin" 
+                            <img src="/blog-module/blog-entries/20250408G/1.webp"
+                                 alt="🟢 Η Σεζόν του Fernando Alonso το 2025: Νέα Αρχή στην Aston Martin"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250408G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 8 Apr 2025</div>

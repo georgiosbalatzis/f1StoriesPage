@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="🏁 GP Ιαπωνίας 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="🏁 GP Ιαπωνίας 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">🏁 GP Ιαπωνίας 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση</h1>
                     <div class="article-meta">
@@ -227,12 +234,18 @@
             </div>
         </div><p>Η Red Bull είχε το προβάδισμα σε mid-corner grip, ενώ η McLaren έδειξε εντυπωσιακή συνέπεια σε high-load τομείς. Η Ferrari είχε ευελιξία αλλά αστάθεια, και η Mercedes συνέχισε να χάνει χρόνο σε μηχανικό κράτημα.</p><p>
             <figure class="article-figure">
-                <img id="img-3"
-                     src="/blog-module/blog-entries/20250406G/3.webp" 
-                     alt="Image 3" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250406G/3.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="3-sm.avif 800w, 3.avif 2379w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="3-sm.webp 800w, 3.webp 2379w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="3.webp"
+                 srcset="3-sm.webp 800w, 3.webp 2379w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 3"
+                 class="article-content-img"
+                 loading="lazy" width="2379" height="1180"
+                 data-full-src="3.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 3</figcaption>
             </figure></p><h3><a id="_3szmccs4ig8z"></a><strong>6. 📈 Βαθμολογική Εικόνα</strong></h3><p><strong>Top 10 Τερματισμός:</strong></p><ol><li>Verstappen<br /></li><li>Norris<br /></li><li>Piastri<br /></li><li>Leclerc<br /></li><li>Russell<br /></li><li>Antonelli<br /></li><li>Hamilton<br /></li><li>Hadjar<br /></li><li>Albon<br /></li><li>Bearman<br /></li></ol><p><strong>Driver Standings – Μετά από 3 Αγώνες:</strong></p>
         <div class="table-responsive-container docx-table-container">
@@ -264,21 +277,33 @@
             </div>
         </div><p>Η McLaren διατηρεί το προβάδισμα χάρη στην ισορροπία και των δύο οδηγών, ενώ η Red Bull μειώνει τη διαφορά μετά τη νίκη.</p><h3><a id="_e3jpjhqtycgc"></a><strong>7. 📊 Αγωνιστικά Διαγράμματα &amp; Ανάλυση</strong></h3><p>📉 <strong>Race Pace (Lap-by-Lap)</strong> – Ο Verstappen έδειξε σταθερότητα, με τη McLaren να χάνει ρυθμό στο δεύτερο stint<br /> 
             <figure class="article-figure">
-                <img id="img-4"
-                     src="/blog-module/blog-entries/20250406G/4.webp" 
-                     alt="Image 4" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250406G/4.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="4-sm.avif 800w, 4.avif 1580w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="4-sm.webp 800w, 4.webp 1580w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="4.webp"
+                 srcset="4-sm.webp 800w, 4.webp 1580w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 4"
+                 class="article-content-img"
+                 loading="lazy" width="1580" height="980"
+                 data-full-src="4.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 4</figcaption>
             </figure></p><p>📦 <strong>Pit Stop Comparison</strong> – Ο Norris είχε το γρηγορότερο stop (22.2s), ενώ η Mercedes παρουσίασε μεγαλύτερη διακύμανση<br /> 
             <figure class="article-figure">
-                <img id="img-5"
-                     src="/blog-module/blog-entries/20250406G/5.webp" 
-                     alt="Image 5" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250406G/5.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="5-sm.avif 800w, 5.avif 1286w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="5-sm.webp 800w, 5.webp 1286w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="5.webp"
+                 srcset="5-sm.webp 800w, 5.webp 1286w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 5"
+                 class="article-content-img"
+                 loading="lazy" width="1286" height="980"
+                 data-full-src="5.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 5</figcaption>
             </figure></p><p>🔥 <strong>Sector Heatmap (Q3)</strong> – Η Red Bull κυριάρχησε σε S1 και S2, με τη McLaren να ανταγωνίζεται κυρίως στο S3<br /> </p><h3><a id="_hztruukgdzh"></a><strong>8. 📌 Συμπεράσματα</strong></h3><p>Η Suzuka επιβεβαίωσε ότι η Red Bull <strong>ανεβάζει ξανά ρυθμούς</strong>, αλλά η <strong>McLaren δεν αφήνει περιθώρια για χαλάρωση</strong>.<br /> Ο Verstappen έδειξε την απόλυτη ωριμότητα και στρατηγική διαχείριση, ενώ ο Norris συνεχίζει να "γράφει" βαθμούς με χειρουργική συνέπεια. Ο Piastri εξελίσσεται ταχύτατα σε contender.</p><p>Η Ferrari ακόμα ψάχνει το peak performance και η Mercedes χρειάζεται λύσεις στη μηχανική ισορροπία.</p><p>🧠 Η σεζόν έχει πάρει φωτιά, και κάθε λεπτομέρεια μπορεί να κάνει τη διαφορά στη μάχη τίτλου.</p></div>
 
@@ -356,10 +381,10 @@
                 <a href="/blog-module/blog-entries/20250501G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250501G/1.webp" 
-                                 alt="Miami GP 2025 - Τεχνικό Report Αναβαθμίσεων Όλων των Ομάδων! 🔧🌴🏎️" 
+                            <img src="/blog-module/blog-entries/20250501G/1.webp"
+                                 alt="Miami GP 2025 - Τεχνικό Report Αναβαθμίσεων Όλων των Ομάδων! 🔧🌴🏎️"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250501G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 1 May 2025</div>
@@ -376,10 +401,10 @@
                 <a href="/blog-module/blog-entries/20250420G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250420G/1.webp" 
-                                 alt="🏁 GP Σαουδικής Αραβίας 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση" 
+                            <img src="/blog-module/blog-entries/20250420G/1.webp"
+                                 alt="🏁 GP Σαουδικής Αραβίας 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250420G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 20 Apr 2025</div>
@@ -396,10 +421,10 @@
                 <a href="/blog-module/blog-entries/20250414-1G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250414-1G/1.webp" 
-                                 alt="🏁 GP Μπαχρέιν 2025 – Ανάλυση Απόδοσης & Τεχνικό Παρασκήνιο" 
+                            <img src="/blog-module/blog-entries/20250414-1G/1.webp"
+                                 alt="🏁 GP Μπαχρέιν 2025 – Ανάλυση Απόδοσης & Τεχνικό Παρασκήνιο"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250414-1G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 14 Apr 2025</div>

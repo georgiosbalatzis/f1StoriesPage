@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="Μονακό 2025: Η Ονειρεμένη Νίκη του Νόρις Εν μέσω Στρατηγικού Χάους και Ένος Κανονιστικού Πυρός" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="Μονακό 2025: Η Ονειρεμένη Νίκη του Νόρις Εν μέσω Στρατηγικού Χάους και Ένος Κανονιστικού Πυρός" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">Μονακό 2025: Η Ονειρεμένη Νίκη του Νόρις Εν μέσω Στρατηγικού Χάους και Ένος Κανονιστικού Πυρός</h1>
                     <div class="article-meta">
@@ -318,7 +325,7 @@
         </div>
 
         <div class="article-navigation">
-            <a href="/blog-module/blog-entries/20250529-1J/article.html" id="prev-article-link" class="article-nav-link prev"><i class="fas fa-arrow-left"></i> Previous</a>
+            <a href="/blog-module/blog-entries/20250529W/article.html" id="prev-article-link" class="article-nav-link prev"><i class="fas fa-arrow-left"></i> Previous</a>
             <a href="/blog-module/blog-entries/20250530-1G/article.html" id="next-article-link" class="article-nav-link next">Next <i class="fas fa-arrow-right"></i></a>
         </div>
 
@@ -329,10 +336,10 @@
                 <a href="/blog-module/blog-entries/20250627G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250627G/1.webp" 
-                                 alt="🛠️ Grand Prix Αυστρίας 2025 – Τεχνικό Report Αναβαθμίσεων Όλων των Ομάδων! 🏁🇦🇹" 
+                            <img src="/blog-module/blog-entries/20250627G/1.webp"
+                                 alt="🛠️ Grand Prix Αυστρίας 2025 – Τεχνικό Report Αναβαθμίσεων Όλων των Ομάδων! 🏁🇦🇹"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250627G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 27 Jun 2025</div>
@@ -349,10 +356,10 @@
                 <a href="/blog-module/blog-entries/20250615G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250615G/1.webp" 
-                                 alt="GP Καναδά 2025: Η Ανάσταση της Mercedes , ο Εμφύλιος της McLaren ⚔️ και το Δράμα μέχρι το Τέλος! 🏁" 
+                            <img src="/blog-module/blog-entries/20250615G/1.webp"
+                                 alt="GP Καναδά 2025: Η Ανάσταση της Mercedes , ο Εμφύλιος της McLaren ⚔️ και το Δράμα μέχρι το Τέλος! 🏁"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250615G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 15 Jun 2025</div>
@@ -369,10 +376,10 @@
                 <a href="/blog-module/blog-entries/20250613G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250613G/1.webp" 
-                                 alt="Grand Prix Καναδα 2025: - Τεχνικό Report Αναβαθμίσεων Όλων των Ομάδων! 🏁🇨🇦🏎️" 
+                            <img src="/blog-module/blog-entries/20250613G/1.webp"
+                                 alt="Grand Prix Καναδα 2025: - Τεχνικό Report Αναβαθμίσεων Όλων των Ομάδων! 🏁🇨🇦🏎️"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250613G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 13 Jun 2025</div>

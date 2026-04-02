@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="🧩 Το “Mini-DRS” της McLaren" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="🧩 Το “Mini-DRS” της McLaren" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">🧩 Το “Mini-DRS” της McLaren</h1>
                     <div class="article-meta">
@@ -213,66 +220,108 @@
 
             <div class="article-content"><p></p><h2><a id="_gjk4xxk5aon3"></a><strong>🧩 Το “Mini-DRS” της McLaren</strong></h2><p><strong>Καινοτομία, Αντιδράσεις και Ρυθμιστικές Ανακατατάξεις στη Formula 1</strong></p><p>Κατά τη διάρκεια της σεζόν 2024, η McLaren τάραξε τα νερά παρουσιάζοντας μια <strong>επαναστατική λύση στην πίσω πτέρυγα</strong> του μονοθεσίου της — ένα σύστημα που γρήγορα έγινε γνωστό ως “<strong>mini-DRS</strong>”. Ήταν μια προσέγγιση που δεν άλλαξε μόνο τα δεδομένα στην πίστα, αλλά και... το manual της FIA. 📘</p><h3><a id="_7x4ympz4qzj4"></a><strong>🛠️ Τι ήταν το “Mini-DRS” τελικά;</strong></h3><p>Η ιδέα στηριζόταν <strong>σε παθητική ενεργοποίηση</strong> του άνω flap της πίσω πτέρυγας. Σε υψηλές ταχύτητες και κάτω από συγκεκριμένες συνθήκες πίεσης, το στοιχείο αυτό μπορούσε να <strong>παραμορφώνεται ελεγχόμενα</strong>, αυξάνοντας το διάκενο μεταξύ των αεροδυναμικών επιφανειών — δημιουργώντας <strong>ένα εφέ αντίστοιχο του DRS</strong>, χωρίς όμως να ενεργοποιείται από τον οδηγό.</p><p>
             <figure class="article-figure">
-                <img id="img-3"
-                     src="/blog-module/blog-entries/20250328G/3.webp" 
-                     alt="Image 3" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250328G/3.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="3-sm.avif 800w, 3.avif 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="3-sm.webp 800w, 3.webp 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="3.webp"
+                 srcset="3-sm.webp 800w, 3.webp 1600w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 3"
+                 class="article-content-img"
+                 loading="lazy" width="1600" height="869"
+                 data-full-src="3.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 3</figcaption>
             </figure></p><p>Η λειτουργία βασιζόταν αποκλειστικά σε <strong>αλληλεπίδραση πίεσης και ευκαμψίας υλικού</strong>. Το αποτέλεσμα ήταν ξεκάθαρο:<br /> 🔺 μειωμένος αεροδυναμικός drag<br /> 🔺 αυξημένη τελική ταχύτητα<br /> 🔺 χωρίς εξάρτηση από DRS ζώνες</p><h3><a id="_oy0sexrnvla5"></a><strong>🕵️‍♂️ Το Μικροσκόπιο της FIA: Πότε Ξεκίνησαν οι Ενστάσεις;</strong></h3><p>Το ζήτημα “έσκασε” μετά το GP του Αζερμπαϊτζάν 2024, όταν αρκετές ομάδες — με πιο δυναμική τη Red Bull — <strong>αμφισβήτησαν τη νομιμότητα</strong> του συστήματος.</p><p>
             <figure class="article-figure">
-                <img id="img-4"
-                     src="/blog-module/blog-entries/20250328G/4.webp" 
-                     alt="Image 4" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250328G/4.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="4-sm.avif 800w, 4.avif 960w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="4-sm.webp 800w, 4.webp 960w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="4.webp"
+                 srcset="4-sm.webp 800w, 4.webp 960w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 4"
+                 class="article-content-img"
+                 loading="lazy" width="960" height="640"
+                 data-full-src="4.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 4</figcaption>
             </figure></p><p>Αν και το μονοθέσιο πέρασε τους <strong>κανονικούς ελέγχους ευκαμψίας</strong>, η FIA παραδέχθηκε ότι το “mini-DRS” λειτουργούσε <strong>στα όρια του κανονισμού</strong>, σε μια “γκρίζα ζώνη” που <strong>δεν παραβίαζε</strong> αλλά σίγουρα <strong>παρακάμπτει</strong> το πνεύμα των κανονισμών.</p><p>Για να αποφευχθεί ντόμινο τεχνολογικών αντιγραφών, η FIA παρενέβη ζητώντας <strong>άμεσες τροποποιήσεις</strong> από τη McLaren, επικαλούμενη τη διατήρηση της <strong>αγωνιστικής ισορροπίας</strong>.</p><h3><a id="_dzz3b2gt1hq0"></a><strong>⚖️ Κανονιστικές Αλλαγές για το 2025</strong></h3><p>Η υπόθεση McLaren είχε άμεσο αντίκτυπο. Η FIA ανακοίνωσε νέους περιορισμούς στο σχεδιασμό πίσω πτερύγων και DRS, με βασικά σημεία:</p><ul><li>🛑 <strong>Απαγόρευση κάθε παθητικής ή σταδιακής ενεργοποίησης</strong> — επιτρέπεται μόνο on/off DRS.<br /></li><li>🔩 <strong>Νέες δοκιμές ευκαμψίας</strong> με δυναμική φόρτιση, όχι μόνο στατικά τεστ.<br /></li><li>💨 <strong>Οποιοδήποτε flow-modifying στοιχείο χωρίς οδηγική ενεργοποίηση</strong> θεωρείται πλέον μη νόμιμο.<br /></li></ul><p>
             <figure class="article-figure">
-                <img id="img-5"
-                     src="/blog-module/blog-entries/20250328G/5.webp" 
-                     alt="Image 5" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250328G/5.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="5-sm.avif 800w, 5.avif 1200w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="5-sm.webp 800w, 5.webp 1200w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="5.webp"
+                 srcset="5-sm.webp 800w, 5.webp 1200w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 5"
+                 class="article-content-img"
+                 loading="lazy" width="1200" height="799"
+                 data-full-src="5.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 5</figcaption>
             </figure></p><p>Με άλλα λόγια: <strong>τέλος στα “έξυπνα παραθυράκια”</strong> για πίσω φτερά που "δουλεύουν μόνα τους".</p><h3><a id="_nvgpu2jwock5"></a><strong>🧠 Οι Ομάδες Αντιδρούν: Έξυπνη Σκέψη ή Κανονιστική Απείθεια;</strong></h3><p>Η McLaren υπερασπίστηκε τη λύση της ως <strong>δείγμα τεχνικής ευφυΐας</strong>. Ο τεχνικός διευθυντής Neil Houldey δήλωσε ότι η αντίδραση των αντιπάλων είναι <strong>“η καλύτερη απόδειξη ότι το σύστημα ήταν αποτελεσματικό”</strong>.</p><p>
             <figure class="article-figure">
-                <img id="img-6"
-                     src="/blog-module/blog-entries/20250328G/6.webp" 
-                     alt="Image 6" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250328G/6.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="6-sm.avif 800w, 6.avif 1280w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="6-sm.webp 800w, 6.webp 1280w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="6.webp"
+                 srcset="6-sm.webp 800w, 6.webp 1280w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 6"
+                 class="article-content-img"
+                 loading="lazy" width="1280" height="720"
+                 data-full-src="6.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 6</figcaption>
             </figure></p><p>Η υπόθεση όμως <strong>άνοιξε την πόρτα για ευρύτερο έλεγχο</strong> σε παρόμοιες τεχνικές. Η Ferrari μπήκε στο στόχαστρο μετά από <strong>έλεγχο στην πίσω πτέρυγα του Hamilton</strong>, λόγω φημολογούμενης υπερβολικής ευκαμψίας. Αν και δεν διαπιστώθηκε παράβαση, η FIA <strong>ενίσχυσε τους ελέγχους</strong> σε όλα τα παρόμοια συστήματα.</p><h3><a id="_vaohpv108koj"></a><strong>🎯 Συμπέρασμα: Η Τεχνολογική Λεπτή Γραμμή της F1</strong></h3><p>Το “mini-DRS” δεν ήταν απλώς άλλο ένα έξυπνο aero trick. Ήταν <strong>το τέλειο παράδειγμα του πώς μια ιδέα μπορεί να αλλάξει όχι μόνο την απόδοση, αλλά και τον ίδιο τον κανονισμό</strong>.</p><p>
             <figure class="article-figure">
-                <img id="img-7"
-                     src="/blog-module/blog-entries/20250328G/7.webp" 
-                     alt="Image 7" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250328G/7.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="7-sm.avif 800w, 7.avif 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="7-sm.webp 800w, 7.webp 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="7.webp"
+                 srcset="7-sm.webp 800w, 7.webp 1600w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 7"
+                 class="article-content-img"
+                 loading="lazy" width="1600" height="900"
+                 data-full-src="7.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 7</figcaption>
             </figure></p><p>Σε ένα περιβάλλον όπου <strong>κάθε γραμμάριο drag και κάθε χιλιοστό πίεσης μετράει</strong>, η καινοτομία είναι θέμα επιβίωσης. Όμως η FIA οφείλει να <strong>κρατήσει τη γραμμή</strong> ανάμεσα στην τεχνική ευφυΐα και την κανονιστική “παράκαμψη”.</p><p>Το “mini-DRS” ήταν ίσως η πιο κομψή υπενθύμιση του γιατί η Formula 1 <strong>δεν είναι μόνο ταχύτητα — είναι και σκάκι ακριβείας με 320 χλμ/ώρα</strong>. ♟️</p><p>
             <figure class="article-figure">
-                <img id="img-8"
-                     src="/blog-module/blog-entries/20250328G/8.webp" 
-                     alt="Image 8" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250328G/8.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="8-sm.avif 800w, 8.avif 1200w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="8-sm.webp 800w, 8.webp 1200w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="8.webp"
+                 srcset="8-sm.webp 800w, 8.webp 1200w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 8"
+                 class="article-content-img"
+                 loading="lazy" width="1200" height="799"
+                 data-full-src="8.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 8</figcaption>
             </figure></p><p>
             <figure class="article-figure">
-                <img id="img-9"
-                     src="/blog-module/blog-entries/20250328G/9.webp" 
-                     alt="Image 9" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250328G/9.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="9-sm.avif 800w, 9.avif 1024w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="9-sm.webp 800w, 9.webp 1024w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="9.webp"
+                 srcset="9-sm.webp 800w, 9.webp 1024w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 9"
+                 class="article-content-img"
+                 loading="lazy" width="1024" height="1024"
+                 data-full-src="9.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 9</figcaption>
             </figure></p></div>
 
@@ -350,10 +399,10 @@
                 <a href="/blog-module/blog-entries/20250424-2G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250424-2G/1.webp" 
-                                 alt="🧠 McLaren MCL39 – Τεχνική Ανάλυση Υψηλής Ακρίβειας (Μέρος 1/4)" 
+                            <img src="/blog-module/blog-entries/20250424-2G/1.webp"
+                                 alt="🧠 McLaren MCL39 – Τεχνική Ανάλυση Υψηλής Ακρίβειας (Μέρος 1/4)"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250424-2G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 24 Apr 2025</div>
@@ -370,10 +419,10 @@
                 <a href="/blog-module/blog-entries/20250412G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250412G/1.webp" 
-                                 alt="🔧 Case Study: Η Λύση της McLaren στα Προβλήματα Ψύξης των Φρένων το 2025" 
+                            <img src="/blog-module/blog-entries/20250412G/1.webp"
+                                 alt="🔧 Case Study: Η Λύση της McLaren στα Προβλήματα Ψύξης των Φρένων το 2025"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250412G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 12 Apr 2025</div>
@@ -390,10 +439,10 @@
                 <a href="/blog-module/blog-entries/20250407G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250407G/1.webp" 
-                                 alt="🧪 Case Study: Το DAM (Dirty Air Matters) – Και στη Σουζούκα, Όπως Πάντα" 
+                            <img src="/blog-module/blog-entries/20250407G/1.webp"
+                                 alt="🧪 Case Study: Το DAM (Dirty Air Matters) – Και στη Σουζούκα, Όπως Πάντα"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250407G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 7 Apr 2025</div>

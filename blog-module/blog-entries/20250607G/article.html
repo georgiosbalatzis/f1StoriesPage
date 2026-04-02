@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="Το Αίνιγμα της Πίσω Κίνησης: Γιατί τα Μονοθέσια της Formula 1 Επιμένουν στην Κίνηση στους Δύο Τροχούς! 🏎️💨" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="Το Αίνιγμα της Πίσω Κίνησης: Γιατί τα Μονοθέσια της Formula 1 Επιμένουν στην Κίνηση στους Δύο Τροχούς! 🏎️💨" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">Το Αίνιγμα της Πίσω Κίνησης: Γιατί τα Μονοθέσια της Formula 1 Επιμένουν στην Κίνηση στους Δύο Τροχούς! 🏎️💨</h1>
                     <div class="article-meta">
@@ -422,10 +429,10 @@
                 <a href="/blog-module/blog-entries/20250706G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250706G/1.webp" 
-                                 alt="Το Κρυφό Όπλο: Μια Βαθιά «Βουτιά» στο Πάτωμα των Μονοθεσίων της F1" 
+                            <img src="/blog-module/blog-entries/20250706G/1.webp"
+                                 alt="Το Κρυφό Όπλο: Μια Βαθιά «Βουτιά» στο Πάτωμα των Μονοθεσίων της F1"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250706G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 6 Jul 2025</div>
@@ -442,10 +449,10 @@
                 <a href="/blog-module/blog-entries/20250619G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250619G/1.webp" 
-                                 alt="Η Στρατηγική των Pit Stop στην F1: Ο Αγώνας Μέσα στον Αγώνα 🧠⏱️" 
+                            <img src="/blog-module/blog-entries/20250619G/1.webp"
+                                 alt="Η Στρατηγική των Pit Stop στην F1: Ο Αγώνας Μέσα στον Αγώνα 🧠⏱️"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250619G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 19 Jun 2025</div>
@@ -462,10 +469,10 @@
                 <a href="/blog-module/blog-entries/20250618G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250618G/1.webp" 
-                                 alt="Η Αθέατη Δύναμη της F1: Πώς Aramco, Petronas και άλλοι Γίγαντες Καυσίμων Καθορίζουν τον Αγώνα 🏎️💨" 
+                            <img src="/blog-module/blog-entries/20250618G/1.webp"
+                                 alt="Η Αθέατη Δύναμη της F1: Πώς Aramco, Petronas και άλλοι Γίγαντες Καυσίμων Καθορίζουν τον Αγώνα 🏎️💨"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250618G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 18 Jun 2025</div>

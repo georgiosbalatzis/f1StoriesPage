@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="🐢 Το Αργό Ξεκίνημα του Carlos Sainz στη Williams: Μήπως το έχουμε ξαναδεί;" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="🐢 Το Αργό Ξεκίνημα του Carlos Sainz στη Williams: Μήπως το έχουμε ξαναδεί;" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">🐢 Το Αργό Ξεκίνημα του Carlos Sainz στη Williams: Μήπως το έχουμε ξαναδεί;</h1>
                     <div class="article-meta">
@@ -213,21 +220,33 @@
 
             <div class="article-content"><p></p><h2><a id="_tiprtha151sr"></a><strong>🐢 Το Αργό Ξεκίνημα του Carlos Sainz στη Williams: Μήπως το έχουμε ξαναδεί;</strong></h2><p>Ο Carlos Sainz δεν έχει ξεκινήσει ιδανικά το νέο του κεφάλαιο στη Williams – αλλά είναι απλώς μια κακή φάση ή κάτι πιο ανησυχητικό; 🤔</p><p>Μέχρι τώρα, έχει πάρει μόλις έναν βαθμό σε τρεις αγώνες και δείχνει να δυσκολεύεται να συμβιβαστεί με το μονοθέσιο. Για να καταλάβουμε τι συμβαίνει, ας κάνουμε ένα μικρό rewind στην καριέρα του.</p><h2><a id="_kpbjwlpbtvvm"></a><strong>🔁 Τι Δείχνει το Παρελθόν του Sainz με Νέες Ομάδες</strong></h2><p>Η Williams είναι η <strong>πέμπτη διαφορετική ομάδα</strong> στην οποία οδηγεί ο Sainz στην καριέρα του στη Formula 1 – άρα έχουμε αρκετά παραδείγματα για να δούμε πώς συνήθως ξεκινάει.</p><p>Αν δούμε τις <strong>τρεις πρώτες του εμφανίσεις</strong> με κάθε νέα ομάδα, βλέπουμε ένα επαναλαμβανόμενο μοτίβο: σχεδόν πάντα ξεκινά πιο αργός από τον νέο teammate του. 🧩</p><p>Το περίεργο; Η διαφορά απόδοσης φέτος με τον Albon είναι <strong>η μεγαλύτερη</strong> που έχει αντιμετωπίσει – με εξαίρεση μόνο το πρώτο του διάστημα στη McLaren. Αλλά εκεί υπήρχαν και άλλοι παράγοντες: μηχανικά προβλήματα σε 2 από τους 3 πρώτους αγώνες του, ενώ στον τρίτο εγκατέλειψε ο Norris.</p><p>Αν βγάλουμε απ’ τη μέση τα τεχνικά προβλήματα, τότε είχε κρατήσει το ρυθμό απέναντι στον Norris. Το ίδιο όμως <strong>δεν ισχύει</strong> για την περίπτωση της Williams: και οι δύο οδηγοί έχουν τερματίσει σε όλους τους αγώνες, αλλά ο Sainz έχει βρεθεί συνολικά <strong>21 θέσεις πίσω από τον Albon</strong>. 😬</p><p>
             <figure class="article-figure">
-                <img id="img-3"
-                     src="/blog-module/blog-entries/20250409G/3.webp" 
-                     alt="Image 3" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250409G/3.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="3-sm.avif 800w, 3.avif 1240w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="3-sm.webp 800w, 3.webp 1240w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="3.webp"
+                 srcset="3-sm.webp 800w, 3.webp 1240w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 3"
+                 class="article-content-img"
+                 loading="lazy" width="1240" height="698"
+                 data-full-src="3.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 3</figcaption>
             </figure></p><h2><a id="_d2mwcga14bl8"></a><strong>📊 Sainz σε Σύγκριση με το Grid</strong></h2><p>Αν κοιτάξουμε τη βαθμολογική συγκομιδή, μόνο <strong>τρεις ομάδες</strong> έχουν μεγαλύτερη "ανισορροπία" από τη Williams: Red Bull, Aston Martin και Sauber, όπου <strong>ένας οδηγός έχει πάρει το 100% των βαθμών</strong>.</p><p>Στην περίπτωση της Williams, ο Albon έχει φέρει το 95% των βαθμών – ποσοστό που θα ήταν <strong>ακόμα χειρότερο</strong> αν δεν υπήρχαν οι ακυρώσεις οδηγών στον αγώνα της Κίνας. 🟨🟩</p><p>Ο Sainz <strong>ποτέ δεν έχει συνεισφέρει λιγότερο από το 25%</strong> των βαθμών στην ομάδα του. Ακόμα και δίπλα στον Verstappen το 2015, πήρε το 27%. Η χειρότερη του επίδοση πέρα από αυτό; 43% στην πρώτη του πλήρη χρονιά με τη Renault. Συνολικά, είναι οδηγός που <strong>παραδοσιακά “τραβάει βάρος”</strong> στην ομάδα του.</p><h2><a id="_uwsmhbmpyhp"></a><strong>🔍 Μήπως Είναι το Αυτοκίνητο;</strong></h2><p>Όταν ένας οδηγός τα βρίσκει σκούρα και ο teammate του κάνει εξαιρετικές εμφανίσεις, τα πράγματα φαίνονται χειρότερα. Ο Pablo Hidalgo, αναλυτής δεδομένων, εξέτασε τις επιδόσεις του Sainz μετά το GP της Κίνας – και οι διαφορές με τον Albon είναι ξεκάθαρες.</p><p>Το μεγαλύτερο πρόβλημα; <strong>Έλλειψη εμπιστοσύνης στο μονοθέσιο.</strong> Στις sprint κατατακτήριες της Κίνας, ο Albon είχε ταχύτητα σε σημεία που ο Sainz δίσταζε. Όταν ο Carlos προσπάθησε να ρισκάρει για να καλύψει χρόνο, το παράκανε στη Στροφή 16 και έχασε χρόνο. Η διαφορά στον ρυθμό: <strong>0.786 δευτερόλεπτα</strong> πιο γρήγορος ο Albon στο SQ2. 📉</p><p>Και στους αγώνες όμως, τα πράγματα δεν ήταν καλύτερα: ο Sainz είχε σοβαρό πρόβλημα με τη <strong>διατήρηση ελαστικών</strong>. Στο sprint έπεσε στον P17 μετά από μόλις 10 γύρους. Την ίδια ώρα, ο Albon έκανε τον ταχύτερό του γύρο και ήταν <strong>0.5 δευτερόλεπτο ταχύτερος</strong> ανά γύρο στο τέλος. 😵‍💫</p><h2><a id="_5319jqq8k0b1"></a><strong>⏳ Πότε Θα “Επανέλθει” ο Sainz;</strong></h2><p>Ο ίδιος ο Sainz μίλησε για το θέμα στο Grand Prix της Ιαπωνίας. Είπε ότι η <strong>προσαρμογή σε ένα νέο μονοθέσιο</strong> μπορεί να διαρκέσει <strong>έως και έναν χρόνο</strong>, ειδικά αν το στυλ οδήγησης που απαιτείται διαφέρει από το φυσικό του.</p><p>
             <figure class="article-figure">
-                <img id="img-4"
-                     src="/blog-module/blog-entries/20250409G/4.webp" 
-                     alt="Image 4" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250409G/4.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="4-sm.avif 800w, 4.avif 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="4-sm.webp 800w, 4.webp 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="4.webp"
+                 srcset="4-sm.webp 800w, 4.webp 1600w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 4"
+                 class="article-content-img"
+                 loading="lazy" width="1600" height="900"
+                 data-full-src="4.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 4</figcaption>
             </figure></p><p>Στόχος του πάντως είναι να βρει ρυθμό μέσα σε <strong>5–10 αγώνες</strong>, καθώς αποκτά εμπειρία σε διαφορετικές πίστες και συνθήκες. Ο ίδιος φαίνεται αισιόδοξος και δηλώνει ότι του αρέσουν οι προκλήσεις: όταν όλα "κουμπώσουν", θα επιστρέψει στον γνωστό ανταγωνιστικό του εαυτό. 💪</p><p>Μέχρι τότε; Υπομονή.</p></div>
 
@@ -305,10 +324,10 @@
                 <a href="/blog-module/blog-entries/20250426G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250426G/1.webp" 
-                                 alt="Lewis Hamilton: Το νέο ταξίδι με τη Ferrari" 
+                            <img src="/blog-module/blog-entries/20250426G/1.webp"
+                                 alt="Lewis Hamilton: Το νέο ταξίδι με τη Ferrari"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250426G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 26 Apr 2025</div>
@@ -325,10 +344,10 @@
                 <a href="/blog-module/blog-entries/20250408G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250408G/1.webp" 
-                                 alt="🟢 Η Σεζόν του Fernando Alonso το 2025: Νέα Αρχή στην Aston Martin" 
+                            <img src="/blog-module/blog-entries/20250408G/1.webp"
+                                 alt="🟢 Η Σεζόν του Fernando Alonso το 2025: Νέα Αρχή στην Aston Martin"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250408G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 8 Apr 2025</div>
@@ -345,10 +364,10 @@
                 <a href="/blog-module/blog-entries/20250402G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250402G/1.webp" 
-                                 alt="🧨 Max Verstappen: Ο Ορισμός της Απόλυτης Κυριαρχίας στην F1" 
+                            <img src="/blog-module/blog-entries/20250402G/1.webp"
+                                 alt="🧨 Max Verstappen: Ο Ορισμός της Απόλυτης Κυριαρχίας στην F1"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250402G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 2 Apr 2025</div>

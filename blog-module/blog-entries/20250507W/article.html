@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="Aston Martin AMR23 – Η αναγέννηση της Βρετανικής ομάδας" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="Aston Martin AMR23 – Η αναγέννηση της Βρετανικής ομάδας" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">Aston Martin AMR23 – Η αναγέννηση της Βρετανικής ομάδας</h1>
                     <div class="article-meta">
@@ -213,12 +220,18 @@
 
             <div class="article-content"><p></p><h2><a id="_j5jh3478txt2"></a><strong>Aston Martin AMR23 – Η αναγέννηση της Βρετανικής ομάδας</strong></h2><p>Η <strong>Aston Martin AMR23</strong> αποτέλεσε σημείο καμπής για την ομάδα της Aston Martin στη Formula 1. Παρουσιάστηκε επίσημα τον Φεβρουάριο του 2023 και σηματοδότησε μια σημαντική αναβάθμιση σε σχέση με την απογοητευτική AMR22 της προηγούμενης χρονιάς.</p><h3><a id="_sm71oov1zppb"></a><strong>Τεχνικά χαρακτηριστικά</strong></h3><p>Η AMR23 σχεδιάστηκε με βάση ένα εντελώς νέο αεροδυναμικό πακέτο που βασιζόταν στους νέους κανονισμούς του 2022 αλλά με πολλές εξελιγμένες λύσεις. Το σασί έγινε πιο άκαμπτο, η ανάρτηση ανασχεδιάστηκε και το πάτωμα επανασχεδιάστηκε πλήρως για μέγιστη αεροδυναμική απόδοση.</p><ul><li><strong>Κινητήρας</strong>: Mercedes-AMG F1 M14 E</li><li>Performance (υβριδικός V6 1.6L turbo)</li><li><strong>Σασί</strong>: Μονοκόκ από ανθρακονήματα</li><li><strong>Κιβώτιο ταχυτήτων</strong>: 8 σχέσεων, κατασκευασμένο από τη Mercedes</li><li><strong>ERS</strong>: Προηγμένο σύστημα ανάκτησης ενέργειας</li><li><strong>Καύσιμο</strong>: Συμβατό με βιώσιμο καύσιμο (E10)</li></ul><h3><a id="_cogtmmonqz77"></a></h3><p>
             <figure class="article-figure">
-                <img id="img-3"
-                     src="/blog-module/blog-entries/20250507W/3.webp" 
-                     alt="Image 3" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250507W/3.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="3-sm.avif 800w, 3.avif 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="3-sm.webp 800w, 3.webp 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="3.webp"
+                 srcset="3-sm.webp 800w, 3.webp 1600w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 3"
+                 class="article-content-img"
+                 loading="lazy" width="1600" height="900"
+                 data-full-src="3.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 3</figcaption>
             </figure></p><h3><a id="_vik8a9z1zirn"></a></h3><h3><a id="_q8h77q7k7y3o"></a><strong>Η σεζόν 2023: Εκτόξευση</strong></h3><p>Με την προσθήκη του <strong>Fernando Alonso</strong> δίπλα στον <strong>Lance Stroll</strong>, η ομάδα απέκτησε έναν οδηγό παγκόσμιας κλάσης και πολύτιμη εμπειρία. Το αποτέλεσμα; Η AMR23 ξεκίνησε εντυπωσιακά, με τον Alonso να ανεβαίνει στο βάθρο σε 6 από τους 8 πρώτους αγώνες. Η ταχύτητα και η σταθερότητα του μονοθεσίου εξέπληξαν πολλούς.</p><p>Ωστόσο, κατά το δεύτερο μισό της σεζόν, η ομάδα δυσκολεύτηκε να ακολουθήσει τον ρυθμό εξέλιξης των ανταγωνιστών (ιδίως Red Bull και McLaren). Παρόλα αυτά, η AMR23 εξασφάλισε την <strong>5η θέση στο Πρωτάθλημα Κατασκευαστών, </strong> ένα τεράστιο βήμα προόδου.</p><p>Η AMR23 έμεινε στην ιστορία ως το μονοθέσιο που έβαλε την Aston Martin στον "χάρτη" των κορυφαίων ομάδων. Ήταν η πρώτη ένδειξη ότι το project του Lawrence Stroll και η συνεργασία με τη Mercedes αποδίδουν καρπούς. Το μονοθέσιο έγινε σύμβολο της αναγέννησης της ομάδας και εδραίωσε τον Fernando Alonso ως έναν από τους πιο συνεπείς οδηγούς του grid.</p></div>
 
@@ -286,7 +299,7 @@
 
         <div class="article-navigation">
             <a href="/blog-module/blog-entries/20250507-1G/article.html" id="prev-article-link" class="article-nav-link prev"><i class="fas fa-arrow-left"></i> Previous</a>
-            <a href="/blog-module/blog-entries/20250508-2G/article.html" id="next-article-link" class="article-nav-link next">Next <i class="fas fa-arrow-right"></i></a>
+            <a href="/blog-module/blog-entries/20250508-3G/article.html" id="next-article-link" class="article-nav-link next">Next <i class="fas fa-arrow-right"></i></a>
         </div>
 
         <div class="row mt-5">
@@ -296,10 +309,10 @@
                 <a href="/blog-module/blog-entries/20250602G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250602G/1.webp" 
-                                 alt="Aston Martin F1: Γιατί οι Οδηγοί της «Δουλεύουν» Περισσότερο το Τιμόνι; 🤔🏎️" 
+                            <img src="/blog-module/blog-entries/20250602G/1.webp"
+                                 alt="Aston Martin F1: Γιατί οι Οδηγοί της «Δουλεύουν» Περισσότερο το Τιμόνι; 🤔🏎️"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250602G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 2 Jun 2025</div>
@@ -316,10 +329,10 @@
                 <a href="/blog-module/blog-entries/20250529W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250529W/1.webp" 
-                                 alt="Mika Hakkinen Rise like a phoenix" 
+                            <img src="/blog-module/blog-entries/20250529W/1.webp"
+                                 alt="Mika Hakkinen Rise like a phoenix"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250529W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 29 May 2025</div>
@@ -336,10 +349,10 @@
                 <a href="/blog-module/blog-entries/20250524W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250524W/1.webp" 
-                                 alt="Θρίαμβος στο σπίτι του" 
+                            <img src="/blog-module/blog-entries/20250524W/1.webp"
+                                 alt="Θρίαμβος στο σπίτι του"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250524W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 24 May 2025</div>

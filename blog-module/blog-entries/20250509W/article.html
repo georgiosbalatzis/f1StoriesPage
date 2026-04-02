@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="Η Στροφή της Φωτιάς" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="Η Στροφή της Φωτιάς" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">Η Στροφή της Φωτιάς</h1>
                     <div class="article-meta">
@@ -213,30 +220,48 @@
 
             <div class="article-content"><p></p><p><a id="_vndltfw3xwsj"></a>Η Στροφή της Φωτιάς</p><p>Η βροχή είχε αφήσει τα σημάδια της στο Νίρμπουργκρινγκ. </p><p>Ομίχλη, μουντός ουρανός και μυρωδιά από βρεγμένη άσφαλτο. </p><p>Ήταν 1η Αυγούστου 1976.</p><p>Ο Νίκι Λάουντα, με το παγωμένο βλέμμα του ανθρώπου που δεν φοβάται τίποτα, γνώριζε πως η πίστα ήταν παγίδα.</p><p>Είχε προσπαθήσει να πείσει τους άλλους οδηγούς να ακυρώσουν τον αγώνα. </p><p>Λίγοι συμφώνησαν. </p><p>Οι περισσότεροι όχι.</p><p>Ο χρόνος μετρούσε αντίστροφα. </p><p>Η εκκίνηση δόθηκε.</p><p>
             <figure class="article-figure">
-                <img id="img-3"
-                     src="/blog-module/blog-entries/20250509W/3.webp" 
-                     alt="Image 3" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250509W/3.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="3-sm.avif 800w, 3.avif 800w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="3-sm.webp 800w, 3.webp 800w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="3.webp"
+                 srcset="3-sm.webp 800w, 3.webp 800w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 3"
+                 class="article-content-img"
+                 loading="lazy" width="800" height="450"
+                 data-full-src="3.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 3</figcaption>
             </figure></p><p>Γύρος δεύτερος. </p><p>Η Ferrari του, κόκκινη και ταχύτατη, αγκάλιαζε τις στροφές με ακρίβεια χειρουργική.</p><p> Ώσπου… μια ανεπαίσθητη απώλεια πρόσφυσης.</p><p>Μια αστραπιαία ταλάντωση. Το μονοθέσιο ξεφεύγει. </p><p>Συντριβή στις μπαριέρες. </p><p>Εκρήξεις. </p><p>Φλόγες.</p><p>Και ξαφνικά, σιωπή.</p><p>Ο Νίκι παγιδευμένος, ανάμεσα στο τιμόνι και στις φλόγες. </p><p>Το κράνος του λιώνει, το δέρμα του καίγεται, οι πνεύμονες του γεμίζουν δηλητήριο.</p><p>Δεν ουρλιάζει.</p><p>Δεν κλαίει. </p><p>Μονάχα παλεύει. </p><p>Με κάθε κύτταρο.</p><p>Οι οδηγοί που σταμάτησαν για να τον βγάλουν δεν ξέχασαν ποτέ εκείνο το βλέμμα,ένα βλέμμα που έλεγε «δεν τελείωσα ακόμα».</p><p>Στο νοσοκομείο, οι γιατροί του δίνουν μερικές ώρες ζωής.</p><p>Ένας ιερές του διαβάζει τα τελευταία. </p><p>Μα ο Λάουντα δεν ήταν φτιαγμένος για να σβήσει έτσι. </p><p>Στο μυαλό του, μόνο μια σκέψη, να ξαναμπεί στο μονοθέσιο.</p><p>Σαράντα δύο μέρες μετά, η Μόντσα τον περιμένει. </p><p>
             <figure class="article-figure">
-                <img id="img-4"
-                     src="/blog-module/blog-entries/20250509W/4.webp" 
-                     alt="Image 4" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250509W/4.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="4-sm.avif 683w, 4.avif 683w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="4-sm.webp 683w, 4.webp 683w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="4.webp"
+                 srcset="4-sm.webp 683w, 4.webp 683w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 4"
+                 class="article-content-img"
+                 loading="lazy" width="683" height="419"
+                 data-full-src="4.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 4</figcaption>
             </figure></p><p>Με κεφάλι τυλιγμένο σε επιδέσμους και μάτια σκιερά από τον πόνο, στέκεται μπροστά στην Ferrari του. </p><p>Η στολή του τρίβεται πάνω στις πληγές. </p><p>Το κράνος πιέζει τις ραφές του προσώπου του. Κι όμως, εκείνος σφίγγει τα δόντια και μπαίνει μέσα.</p><p>Ο κόσμος σαστίζει. </p><p>Οι αντίπαλοι σωπαίνουν. </p><p>Ο Λάουντα δεν ζητά έλεος. </p><p>Ούτε λύπηση.</p><p>Μόνο να τρέξει.</p><p>
             <figure class="article-figure">
-                <img id="img-5"
-                     src="/blog-module/blog-entries/20250509W/5.webp" 
-                     alt="Image 5" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250509W/5.webp';}
-                             else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                <picture>
+                <source type="image/avif" srcset="5-sm.avif 800w, 5.avif 960w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="5-sm.webp 800w, 5.webp 960w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="5.webp"
+                 srcset="5-sm.webp 800w, 5.webp 960w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
+                 alt="Image 5"
+                 class="article-content-img"
+                 loading="lazy" width="960" height="960"
+                 data-full-src="5.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
                 <figcaption>Image 5</figcaption>
             </figure></p><p>Τερματίζει τέταρτος. </p><p>Δεν νικάει στο Grand prix. </p><p>Μα νικάει σε κάτι βαθύτερο, στο μεγαλείο της ανθρώπινης θέλησης. </p><p>Το 1976 μπορεί να μην του χάρισε το πρωτάθλημα,  αλλά του χάρισε κάτι ανώτερο. </p><p>Nα γίνει θρύλος.</p></div>
 
@@ -314,10 +339,10 @@
                 <a href="/blog-module/blog-entries/20250523W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250523W/1.webp" 
-                                 alt="Το μοναδικό Grand Chelem της καριέρας του στο Ζόλντερ" 
+                            <img src="/blog-module/blog-entries/20250523W/1.webp"
+                                 alt="Το μοναδικό Grand Chelem της καριέρας του στο Ζόλντερ"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250523W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 23 May 2025</div>
@@ -334,10 +359,10 @@
                 <a href="/blog-module/blog-entries/20250517W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250517W/1.webp" 
-                                 alt="1 πρωτάθλημα χαμένο στις λεπτομέρειες" 
+                            <img src="/blog-module/blog-entries/20250517W/1.webp"
+                                 alt="1 πρωτάθλημα χαμένο στις λεπτομέρειες"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250517W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 17 May 2025</div>
@@ -354,10 +379,10 @@
                 <a href="/blog-module/blog-entries/20250513W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250513W/1.webp" 
-                                 alt="Η Επιστροφή του Πρωταθλητή 3" 
+                            <img src="/blog-module/blog-entries/20250513W/1.webp"
+                                 alt="Η Επιστροφή του Πρωταθλητή 3"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250513W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 13 May 2025</div>

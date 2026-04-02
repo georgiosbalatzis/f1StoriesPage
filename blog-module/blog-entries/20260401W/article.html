@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="1.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="1.webp" alt="Κάποτε στην Βραζιλία" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="1.avif">
+                    <img src="1.webp" alt="Κάποτε στην Βραζιλία" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">Κάποτε στην Βραζιλία</h1>
                     <div class="article-meta">
@@ -212,10 +219,18 @@
             </div>
 
             <div class="article-content"><p></p><p> Κάποτε στην Βραζιλία</p><p> Ήταν άνοιξη του 2002, τότε που οι Κυριακές μύριζαν βενζίνη, καμένο λάστιχο και απόλυτη κυριαρχία της Ferrari.</p><p> O Michael Schumacher  έκανε τους υπόλοιπους να αναρωτιούνται αν είχαν έρθει σε αγώνα ή σε σεμινάριο αγωνιστικής οδήγησης.</p><p>Στην πίστα του Ιντερλάγκος, η ατμόσφαιρα ήταν τεταμένη. Οι Βραζιλιάνοι φίλαθλοι είχαν στραμμένο το βλέμμα τους στον δικό τους ήρωα, τον Rubens Barichello, ελπίζοντας σε μια νίκη που θα έκανε τις εξέδρες να… σειστούν περισσότερο κι από το Maracana.</p><p>Ομως, απέναντί τους στεκόταν η ίδια η ομάδα του Rubinio, με μπροστάρη τον Schumacher, ο οποίος είχε ήδη βάλει σκοπό να μετατρέψει το πρωτάθλημα σε προσωπική του υπόθεση κάτι σαν  σειρά με τίτλο «Michael and the Rest».</p><figure class="article-figure">
-            <img src="3.webp"
+            <picture>
+                <source type="image/avif" srcset="3-sm.avif 350w, 3.avif 350w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="3-sm.webp 350w, 3.webp 350w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="3.webp"
+                 srcset="3-sm.webp 350w, 3.webp 350w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
                  alt="Image 1"
                  class="article-content-img"
-                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260401W/3.webp';}else{this.src='/blog-module/images/default-blog.jpg';this.onerror=null;}">
+                 loading="lazy" width="350" height="210"
+                 data-full-src="3.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
         </figure><p>Από την εκκίνηση κιόλας, ο Σουμάχερ έδειξε ότι δεν είχε καμία διάθεση να παίξει τον ρόλο του «καλού καλεσμένου». Πέρασε ενώ ο ρυθμός του ήταν ασταμάτητος, σχεδόν ενοχλητικά σταθερός, σαν ξυπνητήρι  του πρωινού της Δευτέρας.</p><p>Ο Barichello πάλεψε γενναία, με το κοινό να τον σπρώχνει ψυχολογικά σε κάθε στροφή όμως τελικά θα εγκατέλειπε και έτσι οι Βραζιλιανοι θα έμεναν απογοητευμενοι. </p><p>Κάπου εκεί, οι υπόλοιποι οδηγοί είχαν ήδη αποδεχτεί τη μοίρα τους. Δεν κυνηγούσαν πια τη νίκη  κυνηγούσαν την «καλύτερη θέση μετά τον Μίκαελ», μια κατηγορία που θα μπορούσε άνετα να έχει δικό της βάθρο.</p><p>Όταν έπεσε η καρό σημαία, ο Schumacher πέρασε πρώτος, με την άνεση ανθρώπου που έχει βγει για κυριακάτικη βόλτα και απλώς… έτυχε να κερδίσει έναν αγώνα Formula 1. Ήταν η τρίτη συνεχόμενη νίκη του εκείνη τη σεζόν, επιβεβαιώνοντας ότι το 2002 ήταν χρονιά επίδειξης.</p><p>Και κάπως έτσι, στο Ιντερλάγκος, γράφτηκε ένα ακόμη κεφάλαιο της απόλυτης κυριαρχίας του Schumacher. Ένα κεφάλαιο που μας θυμίζει πως, καμιά φορά, η Ιστορία δεν γράφεται με μάχες… αλλά με έναν τύπο που απλώς αποφασίζει να είναι καλύτερος από όλους και το αποδεικνύει σε κάθε αγώνα.</p></div>
 
             <div class="article-author-footer">
@@ -292,10 +307,10 @@
                 <a href="/blog-module/blog-entries/20260324W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20260324W/1.webp" 
-                                 alt="Τι πήγε στραβά για τον Kimi το 2008" 
+                            <img src="/blog-module/blog-entries/20260324W/1.webp"
+                                 alt="Τι πήγε στραβά για τον Kimi το 2008"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260324W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 24 Mar 2026</div>
@@ -312,10 +327,10 @@
                 <a href="/blog-module/blog-entries/20260319W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20260319W/1.webp" 
-                                 alt="Ο Κινητήρας της Ferrari F2004 – Η Καρδιά μιας Θρυλικής Μηχανής" 
+                            <img src="/blog-module/blog-entries/20260319W/1.webp"
+                                 alt="Ο Κινητήρας της Ferrari F2004 – Η Καρδιά μιας Θρυλικής Μηχανής"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260319W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 19 Mar 2026</div>
@@ -332,10 +347,10 @@
                 <a href="/blog-module/blog-entries/20260328W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20260328W/1.webp" 
-                                 alt="Grand Prix Ιαπωνίας 2026: Κατατακτήριες στη Σουζούκα" 
+                            <img src="/blog-module/blog-entries/20260328W/1.webp"
+                                 alt="Grand Prix Ιαπωνίας 2026: Κατατακτήριες στη Σουζούκα"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260328W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 28 Mar 2026</div>

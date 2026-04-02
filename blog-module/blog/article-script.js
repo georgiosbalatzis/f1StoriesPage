@@ -501,9 +501,12 @@ document.addEventListener('DOMContentLoaded', function () {
             document.body.style.overflow = '';
         }
 
+        // Resolve full-res src: data-full-src is set by processor for srcset images
+        function fullSrc(img) { return img.dataset.fullSrc || img.src; }
+
         function update() {
             const img = imgs[current];
-            lbImg.src = img.src;
+            lbImg.src = fullSrc(img);
             lbImg.alt = img.alt || '';
             lbCounter.textContent = imgs.length > 1 ? `${current + 1} / ${imgs.length}` : '';
             lbPrev.disabled = current === 0;

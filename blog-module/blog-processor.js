@@ -64,13 +64,8 @@ const utils = {
         return null;
     },
 
-    createImagePath(folderName, fileName, type = 'absolute') {
-        const paths = {
-            absolute: `/blog-module/blog-entries/${folderName}/${fileName}`,
-            output: `/blog-module/blog/images/${folderName}/${fileName}`,
-            relative: fileName
-        };
-        return paths[type] || paths.absolute;
+    createImagePath(folderName, fileName) {
+        return `/blog-module/blog-entries/${folderName}/${fileName}`;
     },
 
     ensureDirectory(dirPath) {
@@ -249,69 +244,94 @@ function processYouTubeLinks(htmlContent) {
 }
 
 // ─── Image processing functions ──────────────────────────────────────────────
-async function publishImageAsset(entryPath, outputImageDir, fileName) {
-    const sourcePath = path.join(entryPath, fileName);
-    fs.copyFileSync(sourcePath, path.join(outputImageDir, fileName));
-    return fileName;
-}
-
-async function processImages(entryPath, folderName) {
+function processImages(entryPath, folderName) {
     const entryFiles = fs.readdirSync(entryPath);
-    const imageFiles = entryFiles.filter(file =>
-        CONFIG.IMAGE_EXTENSIONS.some(ext => file.toLowerCase().endsWith(ext))
-    );
-    
-    const outputImageDir = path.join(CONFIG.OUTPUT_HTML_DIR, 'images', folderName);
-    utils.ensureDirectory(outputImageDir);
-    
     const processedImages = {};
-    
+
     const specialImages = [
         { name: 'thumbnail', number: '1' },
         { name: 'background', number: '2' }
     ];
-    
+
     for (const { name, number } of specialImages) {
         const file = utils.findImageByBaseName(entryPath, number);
-        if (file) {
-            const publishedFile = await publishImageAsset(entryPath, outputImageDir, file);
-            processedImages[name] = utils.createImagePath(folderName, publishedFile, 'output');
-        }
+        if (file) processedImages[name] = utils.createImagePath(folderName, file);
     }
-    
+
     let imageNumber = 3;
     while (true) {
         const imageFile = utils.findImageByBaseName(entryPath, imageNumber.toString());
         if (!imageFile) break;
-        
-        const publishedFile = await publishImageAsset(entryPath, outputImageDir, imageFile);
-        
+        const avifFile = `${imageNumber}.avif`;
         processedImages[`image${imageNumber}`] = {
-            filename: publishedFile,
-            relativePath: publishedFile,
-            absolutePath: utils.createImagePath(folderName, publishedFile),
-            outputPath: utils.createImagePath(folderName, publishedFile, 'output')
+            filename: imageFile,
+            relativePath: imageFile,
+            absolutePath: utils.createImagePath(folderName, imageFile),
+            avifPath: entryFiles.includes(avifFile) ? utils.createImagePath(folderName, avifFile) : null
         };
-        
         imageNumber++;
     }
-    
-    imageFiles.forEach(imageName => {
-        const baseName = path.parse(imageName).name;
-        if (isNaN(parseInt(baseName))) {
-            fs.copyFileSync(
-                path.join(entryPath, imageName),
-                path.join(outputImageDir, imageName)
-            );
-        }
-    });
-    
+
     return processedImages;
 }
 
-async function convertImage(inputPath, outputPath, format = 'webp', quality = 80) {
+// Build a responsive <picture>/<img> for an article content image.
+// Serves AVIF to modern browsers, small variants (800px) to mobile, with CLS-preventing dimensions.
+async function buildPictureHtml(folderName, imageNumber, altText = '') {
+    const entryPath = path.join(CONFIG.BLOG_DIR, folderName);
+    const webpFile = `${imageNumber}.webp`;
+    const avifFile = `${imageNumber}.avif`;
+    const smWebp   = `${imageNumber}-sm.webp`;
+    const smAvif   = `${imageNumber}-sm.avif`;
+
+    const hasAvif   = fs.existsSync(path.join(entryPath, avifFile));
+    const hasSmWebp = fs.existsSync(path.join(entryPath, smWebp));
+    const hasSmAvif = hasAvif && fs.existsSync(path.join(entryPath, smAvif));
+
+    let widthAttr = '', heightAttr = '';
     try {
-        await sharp(inputPath)[format]({ quality }).toFile(outputPath);
+        const { width, height } = await sharp(path.join(entryPath, webpFile)).metadata();
+        if (width && height) { widthAttr = ` width="${width}"`; heightAttr = ` height="${height}"`; }
+    } catch (_) {}
+
+    const sizes = '(max-width: 820px) calc(100vw - 2rem), 770px';
+    let webpSrcset = webpFile;
+    let avifSrcset = avifFile;
+
+    if (hasSmWebp) {
+        try {
+            const { width: smW }   = await sharp(path.join(entryPath, smWebp)).metadata();
+            const { width: fullW } = await sharp(path.join(entryPath, webpFile)).metadata();
+            webpSrcset = `${smWebp} ${smW}w, ${webpFile} ${fullW}w`;
+            if (hasSmAvif) avifSrcset = `${smAvif} ${smW}w, ${avifFile} ${fullW}w`;
+        } catch (_) {}
+    }
+
+    const imgTag = `<img src="${webpFile}"
+                 srcset="${webpSrcset}"
+                 sizes="${sizes}"
+                 alt="${altText}"
+                 class="article-content-img"
+                 loading="lazy"${widthAttr}${heightAttr}
+                 data-full-src="${webpFile}"
+                 onerror="this.src='${CONFIG.DEFAULT_BLOG_IMAGE}';this.onerror=null;">`;
+
+    if (hasAvif || hasSmWebp) {
+        let sources = '';
+        if (hasAvif)   sources += `\n                <source type="image/avif" srcset="${avifSrcset}" sizes="${sizes}">`;
+        if (hasSmWebp) sources += `\n                <source type="image/webp" srcset="${webpSrcset}" sizes="${sizes}">`;
+        return `<picture>${sources}
+                ${imgTag}
+            </picture>`;
+    }
+    return imgTag;
+}
+
+async function convertImage(inputPath, outputPath, format = 'webp', quality = 80, maxWidth = null) {
+    try {
+        let pipeline = sharp(inputPath);
+        if (maxWidth) pipeline = pipeline.resize(maxWidth, null, { withoutEnlargement: true });
+        await pipeline[format]({ quality }).toFile(outputPath);
         return true;
     } catch (error) {
         console.error(`Error converting image to ${format.toUpperCase()}: ${error.message}`);
@@ -348,23 +368,18 @@ async function extractImagesFromDocx(docPath, entryPath) {
     }
 }
 
-function processContentImages(content, folderName, extractedImages = []) {
+async function processContentImages(content, folderName, extractedImages = []) {
     if (!extractedImages.length) return content;
 
     let processedContent = content;
     const matches = [...processedContent.matchAll(/<img[^>]*?>/g)];
 
-    const replacements = extractedImages.map((_, i) => {
+    const replacements = await Promise.all(extractedImages.map(async (_, i) => {
         const imageNumber = i + 3;
-        const imageFileName = `${imageNumber}.webp`;
-        const outputPath = utils.createImagePath(folderName, imageFileName, 'output');
         return `<figure class="article-figure">
-            <img src="${imageFileName}"
-                 alt="Image ${i + 1}"
-                 class="article-content-img"
-                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='${outputPath}';}else{this.src='${CONFIG.DEFAULT_BLOG_IMAGE}';this.onerror=null;}">
+            ${await buildPictureHtml(folderName, imageNumber, `Image ${i + 1}`)}
         </figure>`;
-    });
+    }));
 
     for (let i = matches.length - 1; i >= 0; i--) {
         const match = matches[i];
@@ -1460,30 +1475,27 @@ async function processBlogEntry(entryPath) {
     let extractedImages = [];
     if (docFile.endsWith('.docx')) {
         const mediaFiles = await extractImagesFromDocx(docPath, entryPath);
-        
-        const outputImageDir = path.join(CONFIG.OUTPUT_HTML_DIR, 'images', folderName);
-        utils.ensureDirectory(outputImageDir);
-        
+
         for (let i = 0; i < mediaFiles.length; i++) {
             const imageNumber = i + 3;
-            const webpPath = path.join(outputImageDir, `${imageNumber}.webp`);
-
-            await convertImage(mediaFiles[i].extracted, webpPath, 'webp');
-            fs.copyFileSync(webpPath, path.join(entryPath, `${imageNumber}.webp`));
-
-            extractedImages.push({
-                fileName: `${imageNumber}.webp`
-            });
+            const src = mediaFiles[i].extracted;
+            // Full-size variants (capped at 1600px — sufficient for 2× retina on any screen)
+            await convertImage(src, path.join(entryPath, `${imageNumber}.webp`),    'webp', 80, 1600);
+            await convertImage(src, path.join(entryPath, `${imageNumber}.avif`),    'avif', 60, 1600);
+            // Small variants (800px — serves mobile and the article's 770px content column)
+            await convertImage(src, path.join(entryPath, `${imageNumber}-sm.webp`), 'webp', 80, 800);
+            await convertImage(src, path.join(entryPath, `${imageNumber}-sm.avif`), 'avif', 60, 800);
+            extractedImages.push({ fileName: `${imageNumber}.webp` });
         }
 
-        // Clean up the extracted/ temp folder — images are now in entry root + output dir
+        // Clean up the extracted/ temp folder — converted images are now in entry root
         const extractDir = path.join(entryPath, 'extracted');
         if (fs.existsSync(extractDir)) {
             fs.rmSync(extractDir, { recursive: true, force: true });
         }
     }
-    
-    const images = await processImages(entryPath, folderName);
+
+    const images = processImages(entryPath, folderName);
     
     // Get raw content for metadata
     let rawContent = '';
@@ -1511,8 +1523,8 @@ async function processBlogEntry(entryPath) {
     if (authorName) metadata.author = authorName;
     
     let content = await convertToHtml(docPath);
-    content = processContentImages(content, folderName, extractedImages);
-    content = processImageInsertTags(content, images, folderName);
+    content = await processContentImages(content, folderName, extractedImages);
+    content = await processImageInsertTags(content, images, folderName);
     
     if ((!content || content.trim() === '') && Object.keys(images).length > 0) {
         content = createImageGallery(images, folderName);
@@ -1551,7 +1563,13 @@ async function processBlogEntry(entryPath) {
     const bgImageFilename = postData.backgroundImage.includes("/")
         ? postData.backgroundImage.substring(postData.backgroundImage.lastIndexOf('/') + 1)
         : postData.backgroundImage;
-    
+
+    // Hero AVIF: check for matching avif alongside the background/thumbnail webp
+    const heroAvifFile = `${path.parse(bgImageFilename).name}.avif`;
+    const heroAvifSource = fs.existsSync(path.join(entryPath, heroAvifFile))
+        ? `<source type="image/avif" srcset="${heroAvifFile}">`
+        : '';
+
     const authorImagePath = CONFIG.AUTHOR_AVATARS[postData.author] || CONFIG.AUTHOR_AVATARS.default;
     
     const templateHtml = fs.readFileSync(CONFIG.TEMPLATE_PATH, 'utf8');
@@ -1570,6 +1588,7 @@ async function processBlogEntry(entryPath) {
         .replace(/ARTICLE_EXCERPT/g, safeExcerpt)
         .replace(/ARTICLE_COMMENTS/g, postData.comments)
         .replace(/ARTICLE_IMAGE/g, bgImageFilename)
+        .replace(/ARTICLE_HERO_AVIF_SOURCE/g, heroAvifSource)
         .replace(/ARTICLE_ID/g, folderName)
         .replace(/ARTICLE_TAG/g, postData.tag)
         .replace(/ARTICLE_CATEGORY/g, postData.category)
@@ -1589,31 +1608,18 @@ async function processBlogEntry(entryPath) {
     return postData;
 }
 
-function processImageInsertTags(content, images, folderName) {
+async function processImageInsertTags(content, images, folderName) {
     let imageCounter = 3;
-    
+
     while (content.includes('[img-instert-tag]')) {
         const imageFile = utils.findImageByBaseName(path.join(CONFIG.BLOG_DIR, folderName), imageCounter.toString());
-        
+
         if (imageFile) {
-            const imageData = images[`image${imageCounter}`] || {
-                filename: imageFile,
-                relativePath: imageFile,
-                absolutePath: utils.createImagePath(folderName, imageFile),
-                outputPath: utils.createImagePath(folderName, imageFile, 'output')
-            };
-            
             const imageHtml = `
             <figure class="article-figure">
-                <img id="img-${imageCounter}"
-                     src="${imageData.absolutePath}" 
-                     alt="Image ${imageCounter}" 
-                     class="article-content-img"
-                     onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='${imageData.outputPath}';}
-                             else { this.src='${CONFIG.DEFAULT_BLOG_IMAGE}'; this.onerror=null; }">
+                ${await buildPictureHtml(folderName, imageCounter, `Image ${imageCounter}`)}
                 <figcaption>Image ${imageCounter}</figcaption>
             </figure>`;
-            
             content = content.replace('[img-instert-tag]', imageHtml);
             imageCounter++;
         } else {
@@ -1621,7 +1627,7 @@ function processImageInsertTags(content, images, folderName) {
             console.warn(`No image file found for image slot ${imageCounter} in folder ${folderName}`);
         }
     }
-    
+
     return content;
 }
 
@@ -1896,10 +1902,10 @@ if (!isMainThread) {
                 <a href="${related.url}" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}" 
-                                 alt="${related.title}" 
+                            <img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}"
+                                 alt="${related.title}"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='${related.image}'; } else { this.src='${CONFIG.DEFAULT_BLOG_IMAGE}'; this.onerror=null; }">
+                                 onerror="this.src='${CONFIG.DEFAULT_BLOG_IMAGE}';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> ${relDateStr}</div>

@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="Miami GP 2025 - Τεχνικό Report Αναβαθμίσεων Όλων των Ομάδων! 🔧🌴🏎️" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="Miami GP 2025 - Τεχνικό Report Αναβαθμίσεων Όλων των Ομάδων! 🔧🌴🏎️" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">Miami GP 2025 - Τεχνικό Report Αναβαθμίσεων Όλων των Ομάδων! 🔧🌴🏎️</h1>
                     <div class="article-meta">
@@ -747,10 +754,10 @@
                 <a href="/blog-module/blog-entries/20250530-1G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250530-1G/1.webp" 
-                                 alt="Grand Prix Ισπανίας 2025: - Τεχνικό Report Αναβαθμίσεων Όλων των Ομάδων!  🏁🇪🇸" 
+                            <img src="/blog-module/blog-entries/20250530-1G/1.webp"
+                                 alt="Grand Prix Ισπανίας 2025: - Τεχνικό Report Αναβαθμίσεων Όλων των Ομάδων!  🏁🇪🇸"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250530-1G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 30 May 2025</div>
@@ -767,10 +774,10 @@
                 <a href="/blog-module/blog-entries/20250530G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250530G/1.webp" 
-                                 alt="Μονακό 2025: Η Ονειρεμένη Νίκη του Νόρις Εν μέσω Στρατηγικού Χάους και Ένος Κανονιστικού Πυρός" 
+                            <img src="/blog-module/blog-entries/20250530G/1.webp"
+                                 alt="Μονακό 2025: Η Ονειρεμένη Νίκη του Νόρις Εν μέσω Στρατηγικού Χάους και Ένος Κανονιστικού Πυρός"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250530G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 30 May 2025</div>
@@ -787,10 +794,10 @@
                 <a href="/blog-module/blog-entries/20250525G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250525G/1.webp" 
-                                 alt="🏁 🇲🇨GP Monaco 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση 🇲🇨🏁" 
+                            <img src="/blog-module/blog-entries/20250525G/1.webp"
+                                 alt="🏁 🇲🇨GP Monaco 2025 – Τεχνική Ανασκόπηση & Αγωνιστική Ανάλυση 🇲🇨🏁"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250525G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 25 May 2025</div>

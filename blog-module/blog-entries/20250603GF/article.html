@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="Απογείωσε τις Γνώσεις σου στην F1: Κάθετη Δύναμη, Οπισθέλκουσα και τα Μυστικά του Αέρα! 🚀💨🏁" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="Απογείωσε τις Γνώσεις σου στην F1: Κάθετη Δύναμη, Οπισθέλκουσα και τα Μυστικά του Αέρα! 🚀💨🏁" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">Απογείωσε τις Γνώσεις σου στην F1: Κάθετη Δύναμη, Οπισθέλκουσα και τα Μυστικά του Αέρα! 🚀💨🏁</h1>
                     <div class="article-meta">
@@ -538,7 +545,7 @@
         </div>
 
         <div class="article-navigation">
-            <a href="/blog-module/blog-entries/20250602-1G/article.html" id="prev-article-link" class="article-nav-link prev"><i class="fas fa-arrow-left"></i> Previous</a>
+            <a href="/blog-module/blog-entries/20250602G/article.html" id="prev-article-link" class="article-nav-link prev"><i class="fas fa-arrow-left"></i> Previous</a>
             <a href="/blog-module/blog-entries/20250604WF/article.html" id="next-article-link" class="article-nav-link next">Next <i class="fas fa-arrow-right"></i></a>
         </div>
 
@@ -549,10 +556,10 @@
                 <a href="/blog-module/blog-entries/20250607-1WF/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250607-1WF/1.webp" 
-                                 alt="Η Νίκη της Σιωπής" 
+                            <img src="/blog-module/blog-entries/20250607-1WF/1.webp"
+                                 alt="Η Νίκη της Σιωπής"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250607-1WF/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 7 Jun 2025</div>
@@ -569,10 +576,10 @@
                 <a href="/blog-module/blog-entries/20250514-2GF/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250514-2GF/1.webp" 
-                                 alt="🎬 Brad Pitt, F1 και Εμείς: Γιατί πρέπει να πάμε να δούμε αυτή την ταινία (και πώς θα σου αλλάξει τη ζωή)" 
+                            <img src="/blog-module/blog-entries/20250514-2GF/1.webp"
+                                 alt="🎬 Brad Pitt, F1 και Εμείς: Γιατί πρέπει να πάμε να δούμε αυτή την ταινία (και πώς θα σου αλλάξει τη ζωή)"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250514-2GF/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 14 May 2025</div>
@@ -589,10 +596,10 @@
                 <a href="/blog-module/blog-entries/20260227Τ/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20260227Τ/1.webp" 
-                                 alt="Παλιά κοιμόμασταν με ανοιχτά παράθυρα" 
+                            <img src="/blog-module/blog-entries/20260227Τ/1.webp"
+                                 alt="Παλιά κοιμόμασταν με ανοιχτά παράθυρα"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260227Τ/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 27 Feb 2026</div>

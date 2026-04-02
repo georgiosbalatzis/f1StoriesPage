@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="Πόσο δυνατός ήταν ο Kimi Raikkonen το 2003" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="Πόσο δυνατός ήταν ο Kimi Raikkonen το 2003" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">Πόσο δυνατός ήταν ο Kimi Raikkonen το 2003</h1>
                     <div class="article-meta">
@@ -212,10 +219,18 @@
             </div>
 
             <div class="article-content"><p></p><p>Πόσο δυνατός ήταν ο Kimi Raikkonen το 2003</p><p>Το 2003 ήταν η χρονιά που ο **Kimi Raikkonen άρχισε να θεωρείται ως ένας από τους κορυφαίους οδηγούς της Formula 1, φτάνοντας μια ανάσα από την κατάκτηση του παγκόσμιου τίτλου. Παρόλο που οδηγούσε μια εξελιγμένη έκδοση του παλιού μονοθεσίου της McLaren (την **MP4-17D), κατάφερε να κοιτάξει στα μάτια τον Michael Schumacher και τη Ferrari. </p><p>Ο Raikkonen τερμάτισε στη 2η θέση της βαθμολογίας των οδηγών, χάνοντας το πρωτάθλημα για μόλις 2 βαθμούς από τον Schumacher (91 έναντι 93 βαθμών). </p><figure class="article-figure">
-            <img src="3.webp"
+            <picture>
+                <source type="image/avif" srcset="3-sm.avif 678w, 3.avif 678w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="3-sm.webp 678w, 3.webp 678w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="3.webp"
+                 srcset="3-sm.webp 678w, 3.webp 678w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
                  alt="Image 1"
                  class="article-content-img"
-                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260326W/3.webp';}else{this.src='/blog-module/images/default-blog.jpg';this.onerror=null;}">
+                 loading="lazy" width="678" height="452"
+                 data-full-src="3.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
         </figure><p>Πέτυχε την παρθενική του νίκη στην F1 στο Grand Prix της Μαλαισίας, κυριαρχώντας στον αγώνα και τερματίζοντας 39 δευτερόλεπτα μπροστά από τον Rubens Barrichello.</p><p> Η δύναμή του εκείνη τη σεζόν δεν βασίστηκε στις πολλές νίκες (είχε μόνο μία), αλλά στην εξαιρετική του σταθερότητα. Ανέβηκε στο βάθρο  10 φορές σε συνολικά 16 αγώνες.</p><p>Παρά την έλλειψη αξιοπιστίας που χαρακτήριζε τότε τη McLaren, ο Kimi εκμεταλλευόταν κάθε ευκαιρία, πιέζοντας το μονοθέσιο στα όριά του. </p><p>Ήταν η χρονιά που κέρδισε το προσωνύμιο  "The Iceman" για την ψυχραιμία του υπό πίεση, αποδεικνύοντας ότι ήταν ο μοναδικός οδηγός που μπορούσε να αμφισβητήσει σοβαρά την κυριαρχία της Ferrari εκείνη την εποχή</p></div>
 
             <div class="article-author-footer">
@@ -292,10 +307,10 @@
                 <a href="/blog-module/blog-entries/20260329G/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20260329G/1.webp" 
-                                 alt="Gasly vs Verstappen | Suzuka 2026: η Alpine μπροστά από τη Red Bull" 
+                            <img src="/blog-module/blog-entries/20260329G/1.webp"
+                                 alt="Gasly vs Verstappen | Suzuka 2026: η Alpine μπροστά από τη Red Bull"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260329G/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 29 Mar 2026</div>
@@ -312,10 +327,10 @@
                 <a href="/blog-module/blog-entries/20260324W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20260324W/1.webp" 
-                                 alt="Τι πήγε στραβά για τον Kimi το 2008" 
+                            <img src="/blog-module/blog-entries/20260324W/1.webp"
+                                 alt="Τι πήγε στραβά για τον Kimi το 2008"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260324W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 24 Mar 2026</div>
@@ -332,10 +347,10 @@
                 <a href="/blog-module/blog-entries/20260320J/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20260320J/1.webp" 
-                                 alt="Οι φήμες λένε και εμείς … ακούμε!" 
+                            <img src="/blog-module/blog-entries/20260320J/1.webp"
+                                 alt="Οι φήμες λένε και εμείς … ακούμε!"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260320J/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 20 Mar 2026</div>

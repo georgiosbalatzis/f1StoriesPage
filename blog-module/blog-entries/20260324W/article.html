@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="Τι πήγε στραβά για τον Kimi το 2008" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="Τι πήγε στραβά για τον Kimi το 2008" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">Τι πήγε στραβά για τον Kimi το 2008</h1>
                     <div class="article-meta">
@@ -212,10 +219,18 @@
             </div>
 
             <div class="article-content"><p></p><p>Τι πήγε στραβά για τον Kimi το 2008</p><p>Ο Kimi Raikkonen ξεκίνησε πολύ δυνατα τον2008, και όλοι πιστεύαμε πως θα μπορούσε να κρατήσει τον τίτλο του 2007.</p><p>Όμως τι πήγε στραβά;</p><p>Ο Kimi Raikkonen έχασε το πρωτάθλημα του 2008 κυρίως λόγω  που έγιναν στα μέσα της σεζόν και ευνόησαν το οδηγικό στυλ του Felipe Massa, σε συνδυασμό με μια σειρά από ατυχίες και μηχανικές βλάβες. </p><p>Μετά το μέσο της σεζόν, η Ferrari εισήγαγε αλλαγές στην μπροστινή ανάρτηση και το σύστημα διεύθυνσης για να βοηθήσει τον Massa να θερμαίνει ταχύτερα τα ελαστικά του. Αυτό έκανε το μονοθέσιο πιο "υποστροφικό", κάτι που ο Raikkonen μισούσε, καθώς προτιμούσε ένα πολύ άμεσο και ακριβές μπροστινό μέρος.</p><p>Ο Raikkonen δυσκολευόταν να φέρει τα ελαστικά στην ιδανική θερμοκρασία κατά τις κατατακτήριες δοκιμές. Αυτό τον ανάγκαζε να ξεκινά από χαμηλότερες θέσεις, παρόλο που στον αγώνα είχε συχνά τον ταχύτερο γύρο μόλις ζεσταινόταν το μονοθέσιο.</p><p>Υπήρξαν και κάποιοι κομβικοί αγωνες που απομάκρυναν τον Φινλανδοί από το πρωτάθλημα.</p><figure class="article-figure">
-            <img src="3.webp"
+            <picture>
+                <source type="image/avif" srcset="3-sm.avif 640w, 3.avif 640w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="3-sm.webp 640w, 3.webp 640w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="3.webp"
+                 srcset="3-sm.webp 640w, 3.webp 640w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
                  alt="Image 1"
                  class="article-content-img"
-                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260324W/3.webp';}else{this.src='/blog-module/images/default-blog.jpg';this.onerror=null;}">
+                 loading="lazy" width="640" height="426"
+                 data-full-src="3.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
         </figure><p>Καναδάς: Ο Hamilton έπεσε πάνω του στο pit lane ενώ ο Kimi περίμενε στο κόκκινο φανάρι, στερώντας του μια σίγουρη νίκη ή βάθρο.</p><p>Γαλλία: Ενώ προηγούνταν άνετα, έσπασε η εξάτμισή του, με αποτέλεσμα να χάσει ισχύ και να τερματίσει δεύτερος.</p><p> Βαλένθια: Εγκατέλειψε από σπασμένο κινητήρα, το ίδιο πρόβλημα που είχε αντιμετωπίσει και ο Massa στην Ουγγαρία.</p><p>Καθώς ο Massa άρχισε να κερδίζει πόντους και να προσαρμόζεται καλύτερα στο εξελιγμένο μονοθέσιο, η ομάδα άρχισε να επικεντρώνεται σε αυτόν για τη διεκδίκηση του τίτλου, αφήνοντας τον Raikkonen σε ρόλο υποστήριξης προς το τέλος της χρονιάς, με τον Kimi πάντως να δίνει πολύ σημαντικούς βαθμούς για το πρωτάθλημα κατασκευαστών.</p></div>
 
             <div class="article-author-footer">
@@ -292,10 +307,10 @@
                 <a href="/blog-module/blog-entries/20260319W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20260319W/1.webp" 
-                                 alt="Ο Κινητήρας της Ferrari F2004 – Η Καρδιά μιας Θρυλικής Μηχανής" 
+                            <img src="/blog-module/blog-entries/20260319W/1.webp"
+                                 alt="Ο Κινητήρας της Ferrari F2004 – Η Καρδιά μιας Θρυλικής Μηχανής"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260319W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 19 Mar 2026</div>
@@ -312,10 +327,10 @@
                 <a href="/blog-module/blog-entries/20250523W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250523W/1.webp" 
-                                 alt="Το μοναδικό Grand Chelem της καριέρας του στο Ζόλντερ" 
+                            <img src="/blog-module/blog-entries/20250523W/1.webp"
+                                 alt="Το μοναδικό Grand Chelem της καριέρας του στο Ζόλντερ"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250523W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 23 May 2025</div>
@@ -332,10 +347,10 @@
                 <a href="/blog-module/blog-entries/20250517W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20250517W/1.webp" 
-                                 alt="1 πρωτάθλημα χαμένο στις λεπτομέρειες" 
+                            <img src="/blog-module/blog-entries/20250517W/1.webp"
+                                 alt="1 πρωτάθλημα χαμένο στις λεπτομέρειες"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20250517W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 17 May 2025</div>

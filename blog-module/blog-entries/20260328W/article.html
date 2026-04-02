@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="/styles/shared-nav.css">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X68J6MQKSM"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-X68J6MQKSM');</script>
 
@@ -126,8 +129,12 @@
 
         <article class="article-container">
             <div class="article-header">
-                <img src="2.webp" alt="Grand Prix Ιαπωνίας 2026: Κατατακτήριες στη Σουζούκα" class="article-header-img" loading="lazy"
-                     onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                <picture>
+                    <source type="image/avif" srcset="2.avif">
+                    <img src="2.webp" alt="Grand Prix Ιαπωνίας 2026: Κατατακτήριες στη Σουζούκα" class="article-header-img"
+                         loading="eager" fetchpriority="high" decoding="sync"
+                         onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                </picture>
                 <div class="article-header-overlay">
                     <h1 class="article-title">Grand Prix Ιαπωνίας 2026: Κατατακτήριες στη Σουζούκα</h1>
                     <div class="article-meta">
@@ -212,20 +219,44 @@
             </div>
 
             <div class="article-content"><p></p><p>Grand Prix Ιαπωνίας 2026: Κατατακτήριες στη Σουζούκα<br /><br /></p><p>Η Σουζούκα, με τις θρυλικές της στροφές που δοκιμάζουν οδηγούς και μηχανές στα όριά τους, δεν απογοήτευσε ούτε αυτή τη φορά, ακόμη και σε αυτή την όχι τόσο ενθουσιώδη εποχή της F1. </p><p>Οι κατατακτήριες δοκιμές έφεραν δυνατές συγκινήσεις, με τη Mercedes και τη McLaren να κλέβουν την παράσταση.</p><p>Μετά από ένα εντυπωσιακό FP3, η Mercedes φάνηκε να έχει βρει το μαγικό συνδυασμό για τις γρήγορες καμπές της Σουζούκα. Ο Κίμι Αντονέλι συνέχισε να ανεβαίνει, παίρνοντας ψυχολογία με την νίκη στην Κίνα και δείχνοντας ότι είναι σε τροχιά για την pole, με το μονοθέσιό του να θυμιζει χορευτρια του Φωκά Ευαγγελινού με απόλυτη αρμονία στις στροφές.</p><figure class="article-figure">
-            <img src="3.webp"
+            <picture>
+                <source type="image/avif" srcset="3-sm.avif 800w, 3.avif 1320w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="3-sm.webp 800w, 3.webp 1320w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="3.webp"
+                 srcset="3-sm.webp 800w, 3.webp 1320w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
                  alt="Image 1"
                  class="article-content-img"
-                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260328W/3.webp';}else{this.src='/blog-module/images/default-blog.jpg';this.onerror=null;}">
+                 loading="lazy" width="1320" height="742"
+                 data-full-src="3.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
         </figure><p>Η McLaren δεν έμεινε πίσω, με τον Λάντο Νόρις και τον Όσκαρ Πιάστρι να δίνουν ρεσιτάλ στον πρώτο τομέα της πίστας. Η πρωταθλητές  δείχνουν ότι μποριυν να παίξουν μπάλα για την πρώτη σειρά, κανοντας γύρους γεμάτους ταχύτητα και ακρίβεια.</p><figure class="article-figure">
-            <img src="4.webp"
+            <picture>
+                <source type="image/avif" srcset="4-sm.avif 800w, 4.avif 1522w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="4-sm.webp 800w, 4.webp 1522w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="4.webp"
+                 srcset="4-sm.webp 800w, 4.webp 1522w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
                  alt="Image 2"
                  class="article-content-img"
-                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260328W/4.webp';}else{this.src='/blog-module/images/default-blog.jpg';this.onerror=null;}">
+                 loading="lazy" width="1522" height="1015"
+                 data-full-src="4.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
         </figure><p>Αυτό σημαίνει ότι μάλλον θα έχουμε μια πολύ ωραία μάχη για το βάθρο μεταξύ McLaren και Ferrari.</p><p>Η Red Bull Racing  πάλι αντιμετώπισε δυσκολίες στο να βρει το σωστό στήσιμο, κάτι που άφησε τον κόσμο να αναρωτιέται αν θα καταφέρει  κάτι στον αγώνα. Ελπίζουμε με την εμπειρία και την ταχύτητά του Max και του Hadjar να τους δούμε στο προσκήνιο.</p><p>Φέτος, η FIA μείωσε το όριο ανάκτησης ενέργειας, κάτι που ανάγκασε τους οδηγούς να γίνουν στρατηγικοί, σαν σκακιστές, διαχειριζόμενοι προσεκτικά κάθε κιλοβάτ ηλεκτρικής ισχύος στον γύρο τους. Ένα νέο κεφάλαιο στρατηγικής που μπορεί να κρίνει όχι μόνο τις κατατακτήριες αλλά και τον αγώνα.</p><figure class="article-figure">
-            <img src="5.webp"
+            <picture>
+                <source type="image/avif" srcset="5-sm.avif 800w, 5.avif 1525w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <source type="image/webp" srcset="5-sm.webp 800w, 5.webp 1525w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                <img src="5.webp"
+                 srcset="5-sm.webp 800w, 5.webp 1525w"
+                 sizes="(max-width: 820px) calc(100vw - 2rem), 770px"
                  alt="Image 3"
                  class="article-content-img"
-                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260328W/5.webp';}else{this.src='/blog-module/images/default-blog.jpg';this.onerror=null;}">
+                 loading="lazy" width="1525" height="858"
+                 data-full-src="5.webp"
+                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+            </picture>
         </figure><p>Συνολικά, οι κατατακτήριες έδωσαν μια πρώτη γεύση για το ποιοι θα παλέψουν για την κορυφή στο Grand Prix της Ιαπωνίας   και μακάρι να είναι η απαρχή αγωνιστικών συγκινήσεων.</p></div>
 
             <div class="article-author-footer">
@@ -302,10 +333,10 @@
                 <a href="/blog-module/blog-entries/20260313W/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20260313W/1.webp" 
-                                 alt="Ανάλυση sprint Qualifying" 
+                            <img src="/blog-module/blog-entries/20260313W/1.webp"
+                                 alt="Ανάλυση sprint Qualifying"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260313W/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 13 Mar 2026</div>
@@ -322,10 +353,10 @@
                 <a href="/blog-module/blog-entries/20260330D/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20260330D/1.webp" 
-                                 alt="Εμένα ρωτάς, εγώ σε λέω (Σουζούκα – Ιαπωνία)" 
+                            <img src="/blog-module/blog-entries/20260330D/1.webp"
+                                 alt="Εμένα ρωτάς, εγώ σε λέω (Σουζούκα – Ιαπωνία)"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260330D/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 30 Mar 2026</div>
@@ -342,10 +373,10 @@
                 <a href="/blog-module/blog-entries/20260316D/article.html" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
                     <div class="related-article-card">
                         <div style="position:relative;overflow:hidden;">
-                            <img src="/blog-module/blog-entries/20260316D/1.webp" 
-                                 alt="Εμένα ρωτάς, εγώ σε λέω (Σανγκάη – Κίνα)" 
+                            <img src="/blog-module/blog-entries/20260316D/1.webp"
+                                 alt="Εμένα ρωτάς, εγώ σε λέω (Σανγκάη – Κίνα)"
                                  loading="lazy"
-                                 onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='/blog-module/blog/images/20260316D/1.webp'; } else { this.src='/blog-module/images/default-blog.jpg'; this.onerror=null; }">
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 16 Mar 2026</div>
