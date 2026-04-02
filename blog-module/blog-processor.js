@@ -327,6 +327,31 @@ async function buildPictureHtml(folderName, imageNumber, altText = '') {
     return imgTag;
 }
 
+// Convert hero/background images (1, 2) from any format to WebP + AVIF if not already WebP.
+// Leaves the original file in place so nothing breaks if conversion fails.
+async function convertHeroImages(entryPath) {
+    const NON_WEBP = ['jpg', 'jpeg', 'png', 'gif'];
+    for (const num of ['1', '2']) {
+        // Skip if WebP already exists
+        if (fs.existsSync(path.join(entryPath, `${num}.webp`))) continue;
+
+        // Find a non-WebP source
+        let srcFile = null;
+        for (const ext of NON_WEBP) {
+            const candidate = path.join(entryPath, `${num}.${ext}`);
+            if (fs.existsSync(candidate)) { srcFile = candidate; break; }
+        }
+        if (!srcFile) continue;
+
+        const webpDest = path.join(entryPath, `${num}.webp`);
+        const avifDest = path.join(entryPath, `${num}.avif`);
+
+        console.log(`  Converting hero image: ${path.basename(srcFile)} → ${num}.webp / ${num}.avif`);
+        await convertImage(srcFile, webpDest, 'webp', 85, 1600);
+        await convertImage(srcFile, avifDest, 'avif', 60, 1600);
+    }
+}
+
 async function convertImage(inputPath, outputPath, format = 'webp', quality = 80, maxWidth = null) {
     try {
         let pipeline = sharp(inputPath);
@@ -1495,6 +1520,7 @@ async function processBlogEntry(entryPath) {
         }
     }
 
+    await convertHeroImages(entryPath);
     const images = processImages(entryPath, folderName);
     
     // Get raw content for metadata
