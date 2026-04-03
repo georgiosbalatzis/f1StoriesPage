@@ -4,12 +4,13 @@
    blog entries and API calls, offline fallback for HTML.
    ============================================================ */
 
-const CACHE_NAME = 'f1stories-v2';
+const CACHE_NAME = 'f1stories-v3';
 const OFFLINE_URL = '/offline.html';
 
 const SHELL_ASSETS = [
   '/',
   '/styles.css',
+  '/styles/legal.css',
   '/home.css',
   '/theme-overrides.css',
   '/styles/shared-nav.css',
@@ -19,6 +20,8 @@ const SHELL_ASSETS = [
   '/images/icons/icon-192.png',
   '/images/icons/icon-512.png',
   '/manifest.json',
+  '/privacy/privacy.html',
+  '/privacy/terms.html',
   OFFLINE_URL
 ];
 

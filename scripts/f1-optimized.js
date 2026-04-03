@@ -148,6 +148,8 @@
     function initContactForm() {
         if (!contactForm) return;
 
+        var nativeSubmit = HTMLFormElement.prototype.submit;
+
         var validationMessages = {
             name: {
                 valueMissing: 'Συμπλήρωσε το όνομά σου.'
@@ -166,6 +168,17 @@
             if (field.validity.valueMissing && messages.valueMissing) return messages.valueMissing;
             if (field.validity.typeMismatch && messages.typeMismatch) return messages.typeMismatch;
             return '';
+        }
+
+        function parseFormResponse(response) {
+            return response.text().then(function (text) {
+                if (!text) return null;
+                try {
+                    return JSON.parse(text);
+                } catch (_) {
+                    return { raw: text };
+                }
+            });
         }
 
         Array.prototype.forEach.call(contactForm.querySelectorAll('input, textarea'), function (field) {
@@ -188,15 +201,19 @@
             var submitSpinner = contactForm.querySelector('.submit-spinner');
             var status = document.getElementById('form-status');
             var success = document.getElementById('form-success');
+            var info = document.getElementById('form-info');
             var error = document.getElementById('form-error');
+            var submitLabel = submitText.textContent;
+            var redirectingForVerification = false;
 
-            if (!submitButton || !submitText || !submitSpinner || !status || !success || !error) return;
+            if (!submitButton || !submitText || !submitSpinner || !status || !success || !error || !info) return;
 
             submitButton.disabled = true;
             submitText.style.display = 'none';
             submitSpinner.style.display = 'inline';
             status.style.display = 'none';
             success.style.display = 'none';
+            info.style.display = 'none';
             error.style.display = 'none';
 
             fetch(contactForm.action, {
@@ -204,12 +221,27 @@
                 body: new FormData(contactForm),
                 headers: { Accept: 'application/json' }
             }).then(function (response) {
-                return response.json().then(function (data) {
+                return parseFormResponse(response).then(function (data) {
                     status.style.display = 'block';
                     if (response.ok) {
                         success.style.display = 'flex';
                         contactForm.reset();
                     } else {
+                        var apiError = data && (data.error || (data.errors && data.errors[0] && data.errors[0].message)) || '';
+                        var needsFormspreeVerification = response.status === 403 && /submit via ajax|custom key|recaptcha/i.test(apiError);
+
+                        if (needsFormspreeVerification) {
+                            redirectingForVerification = true;
+                            submitSpinner.style.display = 'none';
+                            submitText.style.display = 'inline';
+                            submitText.textContent = 'Μεταφορά...';
+                            info.style.display = 'flex';
+                            window.setTimeout(function () {
+                                nativeSubmit.call(contactForm);
+                            }, 350);
+                            return;
+                        }
+
                         var msg = (data && data.errors && data.errors.length)
                             ? 'Δεν ήταν δυνατή η αποστολή του μηνύματος.'
                             : 'Παρουσιάστηκε σφάλμα κατά την αποστολή.';
@@ -221,8 +253,10 @@
                 status.style.display = 'block';
                 error.style.display = 'flex';
             }).finally(function () {
+                if (redirectingForVerification) return;
                 submitButton.disabled = false;
                 submitText.style.display = 'inline';
+                submitText.textContent = submitLabel;
                 submitSpinner.style.display = 'none';
             });
         });
@@ -355,7 +389,7 @@
             .catch(function (error) {
                 console.error('Video load error:', error);
                 removeVideoSkeletons();
-                videoGrid.innerHTML = '<div class="col-12 text-center"><p style="color:var(--text-secondary)">Δεν ήταν δυνατή η φόρτωση βίντεο. <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener" style="color:var(--accent)">Δες το κανάλι μας στο YouTube</a>.</p></div>';
+                videoGrid.innerHTML = '<div class="col-12 text-center"><p style="color:var(--text-secondary)">Δεν ήταν δυνατή η φόρτωση βίντεο. <a href="https://www.youtube.com/@F1StoriesOriginal" target="_blank" rel="noopener" style="color:var(--accent)">Δες το κανάλι μας στο YouTube</a>.</p></div>';
             });
     }
 
