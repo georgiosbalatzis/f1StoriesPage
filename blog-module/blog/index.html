@@ -39,9 +39,12 @@
     <!-- Theme FOUC prevention -->
     <script>
         (function(){
-            var saved = localStorage.getItem('f1stories-theme');
-            if (saved === 'light') { document.documentElement.setAttribute('data-theme','light'); }
-            else { document.documentElement.removeAttribute('data-theme'); if (!saved) localStorage.setItem('f1stories-theme','dark'); }
+            var s = sessionStorage.getItem('f1stories-theme');
+            if (s) {
+                if (s === 'light') document.documentElement.setAttribute('data-theme', 'light');
+            } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
         })();
     </script>
 </head>
@@ -102,7 +105,7 @@
             <button class="author-chip" data-author="Georgios Balatzis"><span class="author-chip-avatar"><img src="/images/authors/georgios.webp" alt="" onerror="this.remove();this.parentElement.textContent='GB';"></span> Georgios</button>
             <button class="author-chip" data-author="Giannis Poulikidis"><span class="author-chip-avatar"><img src="/images/authors/giannis.webp" alt="" onerror="this.remove();this.parentElement.textContent='GP';"></span> Giannis</button>
             <button class="author-chip" data-author="Thanasis Batalas"><span class="author-chip-avatar"><img src="/images/authors/thanasis.webp" alt="" onerror="this.remove();this.parentElement.textContent='TB';"></span> Thanasis</button>
-            <button class="author-chip" data-author="2Fast"><span class="author-chip-avatar">2F</span> 2Fast</button>
+            <button class="author-chip" data-author="2Fast"><span class="author-chip-avatar"><img src="/images/authors/2fast.webp" alt="" onerror="this.remove();this.parentElement.textContent='2F';"></span> 2Fast</button>
             <button class="author-chip" data-author="Dimitris Keramidiotis"><span class="author-chip-avatar"><img src="/images/authors/dimitris.webp" alt="" onerror="this.remove();this.parentElement.textContent='DK';"></span> Dimitris</button>
         </div>
 

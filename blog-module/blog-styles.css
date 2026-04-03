@@ -737,6 +737,9 @@ body {
     /* Auto card view on mobile for CSV tables */
     .table-container.scroll-view { display: none !important; }
     .table-container.card-view { display: block !important; }
+
+    /* Docx tables have no card view — keep scroll-view visible and let it scroll horizontally */
+    .docx-table-container .table-container.scroll-view { display: block !important; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 }
 
 
@@ -762,7 +765,7 @@ body {
     left: 0;
     right: 0;
     height: 3px;
-    z-index: 1060;
+    z-index: 1061;
     pointer-events: none;
 }
 
@@ -997,14 +1000,14 @@ body {
 }
 
 .page-btn:hover:not(:disabled):not(.active) {
-    background: rgba(214,48,49,0.15);
-    border-color: rgba(214,48,49,0.4);
-    color: #e74c3c;
+    background: var(--accent-muted);
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
 .page-btn.active {
-    background: #d63031;
-    border-color: #d63031;
+    background: var(--accent);
+    border-color: var(--accent);
     color: #fff;
     font-weight: 600;
     cursor: default;
@@ -1041,14 +1044,14 @@ body {
 }
 
 [data-theme="light"] .page-btn:hover:not(:disabled):not(.active) {
-    background: rgba(214,48,49,0.08);
-    border-color: rgba(214,48,49,0.35);
-    color: #c0392b;
+    background: var(--accent-muted);
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
 [data-theme="light"] .page-btn.active {
-    background: #d63031;
-    border-color: #d63031;
+    background: var(--accent);
+    border-color: var(--accent);
     color: #fff;
 }
 

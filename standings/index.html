@@ -35,9 +35,12 @@
 
     <script>
         (function(){
-            var saved = localStorage.getItem('f1stories-theme');
-            if (saved === 'light') { document.documentElement.setAttribute('data-theme','light'); }
-            else { document.documentElement.removeAttribute('data-theme'); if (!saved) localStorage.setItem('f1stories-theme','dark'); }
+            var s = sessionStorage.getItem('f1stories-theme');
+            if (s) {
+                if (s === 'light') document.documentElement.setAttribute('data-theme', 'light');
+            } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
         })();
     </script>
 
