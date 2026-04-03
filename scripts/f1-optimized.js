@@ -148,6 +148,38 @@
     function initContactForm() {
         if (!contactForm) return;
 
+        var validationMessages = {
+            name: {
+                valueMissing: 'Συμπλήρωσε το όνομά σου.'
+            },
+            email: {
+                valueMissing: 'Συμπλήρωσε το email σου.',
+                typeMismatch: 'Συμπλήρωσε ένα έγκυρο email.'
+            },
+            message: {
+                valueMissing: 'Γράψε το μήνυμά σου.'
+            }
+        };
+
+        function getValidationMessage(field) {
+            var messages = validationMessages[field.name] || {};
+            if (field.validity.valueMissing && messages.valueMissing) return messages.valueMissing;
+            if (field.validity.typeMismatch && messages.typeMismatch) return messages.typeMismatch;
+            return '';
+        }
+
+        Array.prototype.forEach.call(contactForm.querySelectorAll('input, textarea'), function (field) {
+            field.addEventListener('invalid', function () {
+                field.setCustomValidity(getValidationMessage(field));
+            });
+            field.addEventListener('input', function () {
+                field.setCustomValidity('');
+            });
+            field.addEventListener('blur', function () {
+                if (field.validity.valid) field.setCustomValidity('');
+            });
+        });
+
         contactForm.addEventListener('submit', function (event) {
             event.preventDefault();
 
@@ -178,7 +210,9 @@
                         success.style.display = 'flex';
                         contactForm.reset();
                     } else {
-                        var msg = (data && data.errors && data.errors.map(function(e){ return e.message; }).join(', ')) || 'Σφάλμα αποστολής';
+                        var msg = (data && data.errors && data.errors.length)
+                            ? 'Δεν ήταν δυνατή η αποστολή του μηνύματος.'
+                            : 'Παρουσιάστηκε σφάλμα κατά την αποστολή.';
                         error.querySelector('span').innerHTML = msg + ' — ή στείλε email στο <a href="mailto:myf1stories@gmail.com">myf1stories@gmail.com</a>';
                         error.style.display = 'flex';
                     }

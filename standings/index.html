@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="el">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>F1 Stories — Championship Standings</title>
-    <meta property="og:title" content="F1 Stories — Championship Standings">
-    <meta property="og:description" content="Live F1 Drivers &amp; Constructors Championship standings">
+    <title>F1 Stories — Βαθμολογίες Πρωταθλήματος</title>
+    <meta property="og:title" content="F1 Stories — Βαθμολογίες Πρωταθλήματος">
+    <meta property="og:description" content="Live βαθμολογίες οδηγών και κατασκευαστών της Formula 1">
     <meta property="og:url" content="https://f1stories.gr/standings/">
     <meta property="og:type" content="website">
     <link rel="icon" type="image/png" href="/images/favicon.png">
@@ -82,10 +82,12 @@
         .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #10b981; margin-right: 0.4rem; animation: livePulse 1.8s ease-in-out infinite; vertical-align: middle; }
         @keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-        .standings-tabs { display: flex; justify-content: center; gap: 0.25rem; margin: 1.5rem auto 1.8rem; background: var(--st-surface); border-radius: var(--st-radius-sm); padding: 4px; max-width: 380px; border: 1px solid var(--st-border); }
-        .standings-tab { flex: 1; background: transparent; border: none; color: var(--st-text-secondary); font-size: 0.88rem; font-weight: 600; padding: 0.55rem 1rem; border-radius: 8px; cursor: pointer; transition: all var(--st-transition); display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; }
-        .standings-tab:hover { color: var(--st-text); }
-        .standings-tab.active { background: var(--st-accent); color: #fff; box-shadow: var(--st-shadow-sm); }
+        .standings-tabs { display: flex; justify-content: center; gap: 0.4rem; margin: 1.5rem auto 1.8rem; background: var(--st-surface); border-radius: 14px; padding: 6px; max-width: 420px; border: 1px solid var(--st-border); }
+        .standings-tab { flex: 1; background: transparent; border: 1px solid transparent; color: var(--st-text-secondary); font-size: 0.9rem; font-weight: 700; padding: 0.8rem 1.15rem; min-height: 52px; border-radius: 10px; cursor: pointer; transition: all var(--st-transition); display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; position: relative; }
+        .standings-tab:hover { color: var(--st-text); background: rgba(59,130,246,0.08); }
+        .standings-tab:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; box-shadow: 0 0 0 4px rgba(59,130,246,0.16); }
+        .standings-tab.active { background: linear-gradient(135deg, var(--st-accent), #4f8df3); border-color: rgba(255,255,255,0.08); color: #fff; box-shadow: 0 10px 24px rgba(59,130,246,0.28); transform: translateY(-1px); }
+        .standings-tab.active::after { content: ''; position: absolute; inset: 2px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18); pointer-events: none; }
         .standings-tab i { font-size: 0.78em; }
 
         .standings-panel { display: none; }
@@ -93,6 +95,8 @@
         @keyframes panelIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
         .standings-table-wrap { background: var(--st-surface-raised); border: 1px solid var(--st-border); border-radius: var(--st-radius); overflow: hidden; box-shadow: var(--st-shadow-sm); }
+        [data-theme="light"] .standings-tab:hover { background: rgba(14,76,166,0.06); }
+        [data-theme="light"] .standings-tab.active { box-shadow: 0 10px 24px rgba(14,76,166,0.18); }
         [data-theme="light"] .standings-table-wrap { box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06); }
 
         .st-row { display: grid; grid-template-columns: 48px 1fr auto; align-items: center; padding: 0.65rem 1.2rem; border-bottom: 1px solid var(--st-border); transition: background var(--st-transition); position: relative; min-height: 62px; }
@@ -151,6 +155,8 @@
 
         @media (max-width: 767px) {
             .standings-title { font-size: 1.8rem; }
+            .standings-tabs { max-width: 100%; }
+            .standings-tab { min-height: 50px; padding: 0.75rem 1rem; }
             .st-row { padding: 0.55rem 0.8rem; grid-template-columns: 38px 1fr auto; }
             .st-headshot, .st-avatar-fallback, .st-team-swatch { width: 34px; height: 34px; }
             .st-name { font-size: 0.85rem; }
@@ -164,7 +170,7 @@
 <div class="background"></div>
 <div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
 
-<button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle light/dark theme">
+<button class="theme-toggle-btn" id="theme-toggle" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
     <i class="fas fa-sun icon-sun"></i>
     <i class="fas fa-moon icon-moon"></i>
 </button>
@@ -184,7 +190,7 @@
                 <div class="blog-nav-countdown" id="nav-countdown">
                     <span class="countdown-flag" id="race-flag-emoji">🏁</span>
                     <div class="countdown-info">
-                        <span class="countdown-race" id="next-race-name">Loading...</span>
+                        <span class="countdown-race" id="next-race-name">Φόρτωση...</span>
                         <span class="countdown-timer" id="race-countdown">--</span>
                     </div>
                 </div>
@@ -192,7 +198,7 @@
                     <i class="fas fa-flag-checkered"></i>
                     <span id="race-countdown-mobile">--</span>
                 </div>
-                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
+                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
@@ -208,19 +214,19 @@
 <section class="standings-wrapper py-5 mt-5">
     <div class="container">
         <div class="standings-header text-center">
-            <h1 class="standings-title">Championship Standings</h1>
-            <p class="standings-sub"><span class="live-dot"></span>Live data — <span id="season-year">2026</span> Season <span class="round-badge" id="round-badge" style="display:none">After Round <span id="round-num"></span></span></p>
+            <h1 class="standings-title">Βαθμολογίες Πρωταθλήματος</h1>
+            <p class="standings-sub"><span class="live-dot"></span>Live δεδομένα · Σεζόν <span id="season-year">2026</span> <span class="round-badge" id="round-badge" style="display:none">Μετά τον γύρο <span id="round-num"></span></span></p>
         </div>
 
         <div class="standings-tabs" role="tablist">
-            <button class="standings-tab active" data-tab="drivers" role="tab" aria-selected="true"><i class="fas fa-helmet-safety"></i> Drivers</button>
-            <button class="standings-tab" data-tab="constructors" role="tab" aria-selected="false"><i class="fas fa-flag-checkered"></i> Constructors</button>
+            <button class="standings-tab active" data-tab="drivers" role="tab" aria-selected="true"><i class="fas fa-helmet-safety"></i> Οδηγοί</button>
+            <button class="standings-tab" data-tab="constructors" role="tab" aria-selected="false"><i class="fas fa-flag-checkered"></i> Κατασκευαστές</button>
         </div>
 
         <div class="standings-panel active" id="panel-drivers" role="tabpanel">
             <div class="standings-table-wrap" id="drivers-table"></div>
             <div class="chart-section" id="drivers-chart" style="display:none">
-                <h3 class="chart-title"><i class="fas fa-chart-bar" style="margin-right:0.4rem;opacity:0.6;font-size:0.9em;"></i>Points Distribution — Top 10</h3>
+                <h3 class="chart-title"><i class="fas fa-chart-bar" style="margin-right:0.4rem;opacity:0.6;font-size:0.9em;"></i>Κατανομή βαθμών — Top 10</h3>
                 <div id="drivers-chart-bars"></div>
             </div>
         </div>
@@ -228,13 +234,13 @@
         <div class="standings-panel" id="panel-constructors" role="tabpanel">
             <div class="standings-table-wrap" id="constructors-table"></div>
             <div class="chart-section" id="constructors-chart" style="display:none">
-                <h3 class="chart-title"><i class="fas fa-chart-bar" style="margin-right:0.4rem;opacity:0.6;font-size:0.9em;"></i>Points Distribution</h3>
+                <h3 class="chart-title"><i class="fas fa-chart-bar" style="margin-right:0.4rem;opacity:0.6;font-size:0.9em;"></i>Κατανομή βαθμών</h3>
                 <div id="constructors-chart-bars"></div>
             </div>
         </div>
 
         <div class="data-source">
-            Data provided by <a href="https://github.com/jolpica/jolpica-f1" target="_blank" rel="noopener">Jolpica F1</a> &amp; <a href="https://openf1.org" target="_blank" rel="noopener">OpenF1</a> · Updates after each race
+            Δεδομένα από <a href="https://github.com/jolpica/jolpica-f1" target="_blank" rel="noopener">Jolpica F1</a> &amp; <a href="https://openf1.org" target="_blank" rel="noopener">OpenF1</a> · Ενημέρωση μετά από κάθε αγώνα
         </div>
     </div>
 </section>
@@ -243,7 +249,7 @@
 
 <footer class="py-4">
     <div class="container"><div class="row"><div class="col-12 text-center">
-        <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. All rights reserved.</p>
+        <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
         <div class="social-media">
             <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
             <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
@@ -252,9 +258,9 @@
             <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
         </div>
         <div class="footer-links mt-3">
-            <a href="/privacy/privacy.html" class="footer-link">Privacy Policy</a>
+            <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
             <span class="footer-separator">|</span>
-            <a href="/privacy/terms.html" class="footer-link">Terms of Use</a>
+            <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
         </div>
     </div></div></div>
 </footer>
@@ -408,12 +414,16 @@
         return DRIVER_HEADSHOTS[driverId] || '';
     }
 
+    function formatWinsLabel(wins) {
+        return wins + ' ' + (wins === 1 ? 'νίκη' : 'νίκες');
+    }
+
     function showError(el) {
         el.innerHTML = '<div class="standings-error">'
             + '<i class="fas fa-exclamation-triangle"></i>'
-            + '<p>Could not load standings data.</p>'
-            + '<p style="font-size:0.8rem;">The season may not have started yet, or the API is temporarily unavailable.</p>'
-            + '<button class="retry-btn" onclick="location.reload()"><i class="fas fa-redo"></i> Retry</button>'
+            + '<p>Δεν ήταν δυνατή η φόρτωση των βαθμολογιών.</p>'
+            + '<p style="font-size:0.8rem;">Η σεζόν μπορεί να μην έχει ξεκινήσει ακόμη ή το API να είναι προσωρινά μη διαθέσιμο.</p>'
+            + '<button class="retry-btn" onclick="location.reload()"><i class="fas fa-redo"></i> Νέα προσπάθεια</button>'
             + '</div>';
     }
 
@@ -543,7 +553,7 @@
     // ── Render drivers from Jolpica data ──
     function renderDrivers(standings, openf1Map) {
         if (!standings || !standings.length) {
-            driversTable.innerHTML = '<div class="standings-empty"><i class="fas fa-flag-checkered"></i><p>No driver standings available yet.</p></div>';
+            driversTable.innerHTML = '<div class="standings-empty"><i class="fas fa-flag-checkered"></i><p>Δεν υπάρχουν ακόμη διαθέσιμες βαθμολογίες οδηγών.</p></div>';
             return;
         }
 
@@ -578,7 +588,7 @@
                       : '<div class="st-avatar-fallback" style="color:#' + esc(tc) + ';">' + esc(acr) + '</div>')
                 + '<div class="st-name-block"><div class="st-name">' + esc(name) + '</div><div class="st-team-label">' + esc(teamName) + '</div></div></div>'
                 + '<div class="st-points-area"><div class="st-points">' + pts + '</div>'
-                + (wins > 0 ? '<div class="st-wins">' + wins + ' win' + (wins > 1 ? 's' : '') + '</div>' : '')
+                + (wins > 0 ? '<div class="st-wins">' + formatWinsLabel(wins) + '</div>' : '')
                 + '</div>'
                 + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
                 + '</div>';
@@ -608,7 +618,7 @@
     // ── Render constructors from Jolpica data ──
     function renderConstructors(standings, driverStandings, openf1Map) {
         if (!standings || !standings.length) {
-            constructorsTable.innerHTML = '<div class="standings-empty"><i class="fas fa-flag-checkered"></i><p>No constructor standings available yet.</p></div>';
+            constructorsTable.innerHTML = '<div class="standings-empty"><i class="fas fa-flag-checkered"></i><p>Δεν υπάρχουν ακόμη διαθέσιμες βαθμολογίες κατασκευαστών.</p></div>';
             return;
         }
 
@@ -648,7 +658,7 @@
                 + '</div>'
                 + '<div class="st-name-block"><div class="st-name">' + esc(teamName) + '</div><div class="st-drivers-list">' + drivers.map(esc).join(' · ') + '</div></div></div>'
                 + '<div class="st-points-area"><div class="st-points">' + pts + '</div>'
-                + (wins > 0 ? '<div class="st-wins">' + wins + ' win' + (wins > 1 ? 's' : '') + '</div>' : '')
+                + (wins > 0 ? '<div class="st-wins">' + formatWinsLabel(wins) + '</div>' : '')
                 + '</div>'
                 + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
                 + '</div>';
@@ -684,7 +694,7 @@
             var d = dMap[s.driver_number] || {};
             var tc = d.team_colour || '3b82f6';
             var hs = d.headshot_url || '';
-            var name = d.full_name || ('Driver #' + s.driver_number);
+            var name = d.full_name || ('Οδηγός #' + s.driver_number);
             var team = d.team_name || '';
             var acr = d.name_acronym || '';
             var barPct = Math.max(2, (s.points_current / maxPts) * 100);
