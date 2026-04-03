@@ -1000,14 +1000,14 @@ body {
 }
 
 .page-btn:hover:not(:disabled):not(.active) {
-    background: rgba(214,48,49,0.15);
-    border-color: rgba(214,48,49,0.4);
-    color: #e74c3c;
+    background: var(--accent-muted);
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
 .page-btn.active {
-    background: #d63031;
-    border-color: #d63031;
+    background: var(--accent);
+    border-color: var(--accent);
     color: #fff;
     font-weight: 600;
     cursor: default;
@@ -1044,14 +1044,14 @@ body {
 }
 
 [data-theme="light"] .page-btn:hover:not(:disabled):not(.active) {
-    background: rgba(214,48,49,0.08);
-    border-color: rgba(214,48,49,0.35);
-    color: #c0392b;
+    background: var(--accent-muted);
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
 [data-theme="light"] .page-btn.active {
-    background: #d63031;
-    border-color: #d63031;
+    background: var(--accent);
+    border-color: var(--accent);
     color: #fff;
 }
 
