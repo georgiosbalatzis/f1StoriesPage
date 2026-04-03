@@ -100,7 +100,7 @@
         if (!heroOverlay) return;
 
         heroOverlay.classList.add('image-bg');
-        heroOverlay.style.backgroundImage = 'url("images/bg.jpg")';
+        heroOverlay.style.backgroundImage = 'url("images/bg/bg1.webp")';
 
         var cachedImages = readCache();
         if (cachedImages) {

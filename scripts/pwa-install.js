@@ -103,11 +103,11 @@
       '.pwa-banner__close:active{background:rgba(255,255,255,.08);}',
       /* Push fixed bottom-left buttons (theme toggle + scroll-to-top) above the banner */
       'body.pwa-banner-open .theme-toggle-btn{',
-        'bottom:calc(var(--pwa-h,72px) + 1rem) !important;',
+        'bottom:calc(var(--pwa-h,72px) + var(--floating-btn-bottom,1rem)) !important;',
         'transition:bottom .35s cubic-bezier(.2,.8,.3,1),transform .25s,color .25s,border-color .25s !important;',
       '}',
       'body.pwa-banner-open .scroll-to-top-btn{',
-        'bottom:calc(var(--pwa-h,72px) + 1rem + 44px) !important;',
+        'bottom:calc(var(--pwa-h,72px) + var(--floating-btn-bottom,1rem) + var(--floating-btn-size,44px) + var(--floating-btn-gap,12px)) !important;',
         'transition:bottom .35s cubic-bezier(.2,.8,.3,1),opacity .4s,visibility .4s,transform .4s cubic-bezier(.34,1.56,.64,1) !important;',
       '}'
     ].join('');

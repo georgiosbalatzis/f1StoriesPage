@@ -4,7 +4,7 @@
    blog entries and API calls, offline fallback for HTML.
    ============================================================ */
 
-const CACHE_NAME = 'f1stories-v1';
+const CACHE_NAME = 'f1stories-v2';
 const OFFLINE_URL = '/offline.html';
 
 const SHELL_ASSETS = [
@@ -57,14 +57,25 @@ self.addEventListener('fetch', function (e) {
   // Cache-first for static assets (css, js, images, fonts)
   if (/\.(css|js|png|jpg|jpeg|webp|avif|svg|woff2?|ttf|ico)$/.test(url.pathname)) {
     e.respondWith(
-      caches.match(e.request).then(function (cached) {
-        if (cached) return cached;
-        return fetch(e.request).then(function (response) {
-          if (response.ok) {
-            var clone = response.clone();
-            caches.open(CACHE_NAME).then(function (cache) { cache.put(e.request, clone); });
+      caches.open(CACHE_NAME).then(function (cache) {
+        return cache.match(e.request).then(function (cached) {
+          var networkFetch = fetch(e.request).then(function (response) {
+            if (response.ok) {
+              cache.put(e.request, response.clone());
+            }
+            return response;
+          }).catch(function () {
+            return null;
+          });
+
+          if (cached) {
+            e.waitUntil(networkFetch);
+            return cached;
           }
-          return response;
+
+          return networkFetch.then(function (response) {
+            return response || Response.error();
+          });
         });
       })
     );

@@ -550,7 +550,8 @@
 }
 
 /* ── Cookie Banner ───────────────────────────── */
-[data-theme="light"] .cookie-banner {
+[data-theme="light"] .cookie-banner,
+[data-theme="light"] .cookie-consent {
     background: rgba(255,255,255,0.98) !important;
     border-top: 1px solid rgba(0,0,0,0.08) !important;
     box-shadow: 0 -4px 12px rgba(0,0,0,0.06) !important;
@@ -740,6 +741,7 @@ footer,
 .contact-block,
 .listen-block,
 .cookie-banner,
+.cookie-consent,
 .form-control,
 .cta-button,
 .scroll-to-top-btn,

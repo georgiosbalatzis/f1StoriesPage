@@ -293,8 +293,10 @@ footer::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; 
 
 
 /* ── Cookie Banner ── */
-.cookie-banner { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(17,17,19,0.97); backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.08); z-index: 9999; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); transform: translateY(100%); transition: var(--transition-smooth); opacity: 0; visibility: hidden; max-height: 90vh; overflow-y: auto; border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
-.cookie-banner.show { transform: translateY(0); opacity: 1; visibility: visible; }
+.cookie-banner,
+.cookie-consent { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(17,17,19,0.97); backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.08); z-index: 9999; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); transform: translateY(100%); transition: var(--transition-smooth); opacity: 0; visibility: hidden; max-height: 90vh; overflow-y: auto; border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
+.cookie-banner.show,
+.cookie-consent.show { transform: translateY(0); opacity: 1; visibility: visible; }
 .cookie-content { max-width: 1200px; margin: 0 auto; padding: 1.5rem; color: var(--text-primary); }
 .cookie-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.5rem; position: sticky; top: 0; background: rgba(17,17,19,0.97); z-index: 5; }
 .cookie-header h3 { margin: 0; color: var(--accent); font-size: 1.5rem; }
@@ -385,7 +387,7 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
 .ep-card__thumb, .card__media { aspect-ratio: 16 / 9; overflow: hidden; }
 .team-member__avatar, .team-guest__avatar, .persona .avatar { aspect-ratio: 1; }
 .skeleton-card { contain: content; }
-.navbar, .cookie-banner, .scroll-to-top-btn { contain: layout style; }
+.navbar, .cookie-banner, .cookie-consent, .scroll-to-top-btn { contain: layout style; }
 @media (prefers-reduced-motion: no-preference) { .streak { contain: strict; } }
 /* Skip off-screen section rendering on mobile — speeds up initial paint */
 #about, #contact { content-visibility: auto; contain-intrinsic-size: 0 600px; }
@@ -397,7 +399,7 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
 
 @media (max-width: 991.98px) { section { padding: 3rem 0; } #hero { padding: 8rem 0; } .hero-content h1 { font-size: 2.5rem; } .persona { padding: 1.5rem; } .persona .avatar { width: 120px; height: 120px; } .social-media a { width: 35px; height: 35px; line-height: 35px; font-size: 1.3rem; } .navbar-nav { text-align: left; justify-content: flex-start; } .navbar-collapse { display: none; position: absolute; top: 100%; left: 0; right: 0; background: rgba(17,17,19,0.97); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 1rem; z-index: 1000; max-height: calc(100vh - 76px); overflow-y: auto; border-radius: 0 0 var(--radius-lg) var(--radius-lg); } .navbar-collapse.show { display: block; } .custom-dropdown-menu { position: static; transform: none; background: rgba(30,30,32,0.7); border: none; border-left: 2px solid var(--accent); border-radius: 0; box-shadow: none; padding-left: 1rem; margin: 0.5rem 0; width: 100%; min-width: unset; } .dropdown-item, .nav-link { padding: 0.5rem 1rem !important; text-align: left; } .navbar-nav .nav-item { margin: 0.25rem 0; width: 100%; } .custom-dropdown-toggle { width: 100%; display: flex; justify-content: space-between; } .nav-link.betcast-btn { margin: 0.5rem 1rem; text-align: center; } .navbar { position: fixed !important; width: 100%; top: 0; left: 0; z-index: 1050; background-color: rgba(17,17,19,0.95) !important; } #hero { margin-top: 76px !important; } }
 
-@media (max-width: 767.98px) { #hero { padding: 5rem 0; min-height: 50vh; clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%); } .hero-content h1 { font-size: 2.2rem; } .hero-content p { font-size: 1.2rem; } h2 { font-size: 1.8rem; } .blog-card, .episode-card, .persona { margin-bottom: 1.5rem; } .form-control { font-size: 16px; padding: 0.75rem; } .cta-button { padding: 0.75rem 1.75rem; min-width: 150px; } .persona .avatar { width: 120px; height: 120px; } .social-media a { width: 40px; height: 40px; line-height: 40px; font-size: 1.3rem; } .cookie-banner { max-height: 80vh; border-radius: 0; } .cookie-content { padding: 1rem; } .cookie-actions { flex-direction: column; gap: 0.5rem; margin: 1rem 0; } .cookie-btn { width: 100%; padding: 0.6rem 1rem; min-width: auto; } .cookie-footer { flex-direction: column; align-items: center; gap: 0.75rem; } .container { overflow-x: hidden; } h1, h2, h3, p { word-wrap: break-word; overflow-wrap: break-word; } }
+@media (max-width: 767.98px) { #hero { padding: 5rem 0; min-height: 50vh; clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%); } .hero-content h1 { font-size: 2.2rem; } .hero-content p { font-size: 1.2rem; } h2 { font-size: 1.8rem; } .blog-card, .episode-card, .persona { margin-bottom: 1.5rem; } .form-control { font-size: 16px; padding: 0.75rem; } .cta-button { padding: 0.75rem 1.75rem; min-width: 150px; } .persona .avatar { width: 120px; height: 120px; } .social-media a { width: 40px; height: 40px; line-height: 40px; font-size: 1.3rem; } .cookie-banner, .cookie-consent { max-height: 80vh; border-radius: 0; } .cookie-content { padding: 1rem; } .cookie-actions { flex-direction: column; gap: 0.5rem; margin: 1rem 0; } .cookie-btn { width: 100%; padding: 0.6rem 1rem; min-width: auto; } .cookie-footer { flex-direction: column; align-items: center; gap: 0.75rem; } .container { overflow-x: hidden; } h1, h2, h3, p { word-wrap: break-word; overflow-wrap: break-word; } }
 
 @media (max-width: 575.98px) { #hero { padding: 4rem 0; margin-top: 70px; min-height: 40vh; } .hero-content h1 { font-size: 1.8rem; } .hero-content p { font-size: 1rem; } h2 { font-size: 1.5rem; } .persona { padding: 1rem; } .persona .avatar { width: 100px; height: 100px; } .social-media { gap: 0.75rem; } .social-media a { width: 35px; height: 35px; } .footer-links { flex-direction: column; gap: 0.75rem; } .footer-separator { display: none; } .navbar-brand img { height: 40px; } }
 
@@ -405,7 +407,7 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
 
 /* ── Safe area (notched/Dynamic Island iPhones) ── */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
-    .cookie-banner { padding-bottom: env(safe-area-inset-bottom); }
+    .cookie-banner, .cookie-consent { padding-bottom: env(safe-area-inset-bottom); }
 }
 
 /* ── Landscape phone — shrink hero so it isn't mostly navbar ── */

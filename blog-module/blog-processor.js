@@ -42,6 +42,8 @@ const CONFIG = {
         'georgiosbalatzis.github.io',
         'f1stories.gr',
         'www.f1stories.gr',
+        'facebook.com',
+        'www.facebook.com',
         'www.youtube.com',
         'youtube.com',
         'open.spotify.com',
@@ -53,8 +55,45 @@ const CONFIG = {
     EMBED_EXTENSIONS: ['.html', '.htm', '.svg']
 };
 
+function hasInlineDataImageTag(html) {
+    return /<img\b[^>]*src="data:image\/[^"]+"[^>]*>/i.test(String(html || ''));
+}
+
+function assertNoInlineDataImages(html, contextLabel) {
+    const match = String(html || '').match(/<img\b[^>]*src="data:image\/[^"]+"[^>]*>/i);
+    if (!match) return;
+
+    const snippet = match[0].replace(/\s+/g, ' ').slice(0, 180);
+    throw new Error(`Inline data:image article image detected in ${contextLabel}: ${snippet}`);
+}
+
+function escapeHtmlAttribute(value) {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
 // ─── Utility functions ───────────────────────────────────────────────────────
 const utils = {
+    isSourceDocument(fileName) {
+        if (!fileName || fileName.startsWith('~$') || fileName.startsWith('.')) return false;
+        const ext = path.extname(fileName).toLowerCase();
+        return ext === '.docx' || ext === '.txt';
+    },
+
+    findSourceDocument(entryFiles) {
+        return entryFiles
+            .filter(fileName => utils.isSourceDocument(fileName))
+            .sort((a, b) => {
+                const extA = path.extname(a).toLowerCase();
+                const extB = path.extname(b).toLowerCase();
+                if (extA !== extB) return extA === '.docx' ? -1 : 1;
+                return a.localeCompare(b);
+            })[0] || null;
+    },
+
     findImageByBaseName(entryPath, baseName) {
         const entryFiles = fs.readdirSync(entryPath);
         for (const format of CONFIG.IMAGE_FORMATS) {
@@ -115,14 +154,18 @@ const utils = {
         if (FORCE_REBUILD) return false;
 
         const folderFiles = fs.readdirSync(entryPath);
-        const docFile = folderFiles.find(f => {
-            const ext = path.extname(f).toLowerCase();
-            return ext === '.docx' || ext === '.txt';
-        });
+        const docFile = utils.findSourceDocument(folderFiles);
         if (!docFile) return true; // no source → nothing to do
 
         const articlePath = path.join(entryPath, 'article.html');
         if (!fs.existsSync(articlePath)) return false; // no output → must build
+
+        try {
+            const articleHtml = fs.readFileSync(articlePath, 'utf8');
+            if (hasInlineDataImageTag(articleHtml)) return false;
+        } catch {
+            return false;
+        }
 
         const docMtime = fs.statSync(path.join(entryPath, docFile)).mtimeMs;
         const htmlMtime = fs.statSync(articlePath).mtimeMs;
@@ -166,13 +209,283 @@ function buildYouTubeEmbed(videoId) {
       </div>`;
 }
 
-function isYouTubeUrl(text) {
-    return /^https?:\/\/(?:www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9_-]{11}(?:[^\s<]*)?$/i.test(text) ||
-        /^https?:\/\/(?:www\.)?youtu\.be\/[a-zA-Z0-9_-]{11}(?:[^\s<]*)?$/i.test(text);
+function normalizeUrlCandidate(value) {
+    return decodeHtmlEntities(String(value || '').trim())
+        .replace(/^<+/, '')
+        .replace(/>+$/, '');
 }
 
-function isYouTubeAnchorHtml(html) {
-    return /^<a\b[^>]*href="https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=[a-zA-Z0-9_-]{11}(?:[^"]*)?|youtu\.be\/[a-zA-Z0-9_-]{11}(?:[^"]*)?)"[^>]*>[\s\S]*<\/a>$/i.test(html);
+function tryParseUrl(value) {
+    try {
+        return new URL(normalizeUrlCandidate(value));
+    } catch {
+        return null;
+    }
+}
+
+function extractAnchorHref(html) {
+    const trimmed = String(html || '').trim();
+    const match = trimmed.match(/^<a\b[^>]*href=(["'])(.*?)\1[^>]*>[\s\S]*<\/a>$/i);
+    return match ? normalizeUrlCandidate(match[2]) : null;
+}
+
+function extractStandaloneLinkUrl(textOrHtml) {
+    const trimmed = String(textOrHtml || '').trim();
+    if (!trimmed) return null;
+
+    if (/^https?:\/\/\S+$/i.test(trimmed)) {
+        return normalizeUrlCandidate(trimmed);
+    }
+
+    return extractAnchorHref(trimmed);
+}
+
+function getYouTubeVideoId(url) {
+    const parsed = tryParseUrl(url);
+    if (!parsed) return null;
+
+    const host = parsed.hostname.toLowerCase();
+    const parts = parsed.pathname.split('/').filter(Boolean);
+
+    if ((host === 'youtube.com' || host === 'www.youtube.com') && parsed.pathname === '/watch') {
+        const videoId = parsed.searchParams.get('v') || '';
+        return /^[a-zA-Z0-9_-]{11}$/.test(videoId) ? videoId : null;
+    }
+
+    if (host === 'youtu.be' || host === 'www.youtu.be') {
+        const videoId = parts[0] || '';
+        return /^[a-zA-Z0-9_-]{11}$/.test(videoId) ? videoId : null;
+    }
+
+    if ((host === 'youtube.com' || host === 'www.youtube.com') && parts[0] === 'shorts') {
+        const videoId = parts[1] || '';
+        return /^[a-zA-Z0-9_-]{11}$/.test(videoId) ? videoId : null;
+    }
+
+    return null;
+}
+
+function getYouTubeEmbedInfo(url) {
+    const videoId = getYouTubeVideoId(url);
+    return videoId ? { type: 'youtube', videoId } : null;
+}
+
+function getXEmbedInfo(url) {
+    const parsed = tryParseUrl(url);
+    if (!parsed) return null;
+
+    const host = parsed.hostname.toLowerCase();
+    if (!['x.com', 'www.x.com', 'twitter.com', 'www.twitter.com', 'mobile.twitter.com'].includes(host)) {
+        return null;
+    }
+
+    const parts = parsed.pathname.split('/').filter(Boolean);
+    const statusIdx = parts.findIndex(part => part.toLowerCase() === 'status');
+    const statusId = statusIdx > -1 ? parts[statusIdx + 1] : '';
+    if (!/^\d+$/.test(statusId)) return null;
+
+    let canonicalPath = `/i/status/${statusId}`;
+    if (statusIdx > 0) {
+        if (parts[0].toLowerCase() === 'i' && parts[1] && parts[1].toLowerCase() === 'web') {
+            canonicalPath = `/i/web/status/${statusId}`;
+        } else if (!['i', 'web'].includes(parts[0].toLowerCase())) {
+            canonicalPath = `/${parts[0]}/status/${statusId}`;
+        }
+    }
+
+    return {
+        type: 'social',
+        platform: 'x',
+        url: `https://x.com${canonicalPath}`
+    };
+}
+
+function getInstagramEmbedInfo(url) {
+    const parsed = tryParseUrl(url);
+    if (!parsed) return null;
+
+    const host = parsed.hostname.toLowerCase();
+    if (!['instagram.com', 'www.instagram.com'].includes(host)) return null;
+
+    const parts = parsed.pathname.split('/').filter(Boolean);
+    const entryType = (parts[0] || '').toLowerCase();
+    const shortcode = parts[1] || '';
+
+    if (!['p', 'reel', 'reels', 'tv'].includes(entryType) || !shortcode) return null;
+
+    return {
+        type: 'social',
+        platform: 'instagram',
+        url: `https://www.instagram.com/${entryType}/${shortcode}/`
+    };
+}
+
+function getThreadsEmbedInfo(url) {
+    const parsed = tryParseUrl(url);
+    if (!parsed) return null;
+
+    const host = parsed.hostname.toLowerCase();
+    if (!['threads.net', 'www.threads.net', 'threads.com', 'www.threads.com'].includes(host)) {
+        return null;
+    }
+
+    const parts = parsed.pathname.split('/').filter(Boolean);
+    if (parts[0] && parts[0].startsWith('@') && (parts[1] || '').toLowerCase() === 'post' && parts[2]) {
+        return {
+            type: 'social',
+            platform: 'threads',
+            url: `https://www.threads.net/${parts[0]}/post/${parts[2]}`
+        };
+    }
+
+    if ((parts[0] || '').toLowerCase() === 't' && parts[1]) {
+        return {
+            type: 'social',
+            platform: 'threads',
+            url: `https://www.threads.net/t/${parts[1]}`
+        };
+    }
+
+    return null;
+}
+
+function isFacebookHost(host) {
+    return ['facebook.com', 'www.facebook.com', 'm.facebook.com', 'mbasic.facebook.com', 'fb.watch', 'www.fb.watch'].includes(host);
+}
+
+function getFacebookEmbedInfo(url) {
+    const parsed = tryParseUrl(url);
+    if (!parsed) return null;
+
+    const host = parsed.hostname.toLowerCase();
+    if (!isFacebookHost(host)) return null;
+
+    const parts = parsed.pathname.split('/').filter(Boolean);
+    const lowerParts = parts.map(part => part.toLowerCase());
+
+    if (host === 'fb.watch' || host === 'www.fb.watch') {
+        const slug = parts[0] || '';
+        return slug ? {
+            type: 'social',
+            platform: 'facebook',
+            kind: 'video',
+            url: `https://fb.watch/${slug}/`
+        } : null;
+    }
+
+    let kind = 'post';
+    if (parsed.pathname.toLowerCase() === '/watch' || lowerParts.includes('videos') || lowerParts[0] === 'reel') {
+        kind = 'video';
+    }
+
+    const hasPostPattern =
+        parsed.pathname.toLowerCase() === '/permalink.php' ||
+        lowerParts.includes('posts') ||
+        lowerParts.includes('photos') ||
+        lowerParts[0] === 'photo' ||
+        lowerParts[0] === 'photo.php' ||
+        lowerParts[0] === 'story.php' ||
+        lowerParts[0] === 'share' ||
+        parsed.searchParams.has('story_fbid') ||
+        parsed.searchParams.has('fbid');
+
+    const hasVideoPattern = kind === 'video' || parsed.searchParams.has('v');
+
+    if (!hasPostPattern && !hasVideoPattern) return null;
+
+    const canonical = new URL(`https://www.facebook.com${parsed.pathname}`);
+    if (parsed.pathname.toLowerCase() === '/permalink.php') {
+        ['story_fbid', 'id', 'comment_id'].forEach(param => {
+            const value = parsed.searchParams.get(param);
+            if (value) canonical.searchParams.set(param, value);
+        });
+    } else if (parsed.pathname.toLowerCase() === '/watch') {
+        const videoId = parsed.searchParams.get('v');
+        if (videoId) canonical.searchParams.set('v', videoId);
+    } else {
+        canonical.search = parsed.search;
+    }
+
+    return {
+        type: 'social',
+        platform: 'facebook',
+        kind,
+        url: canonical.toString()
+    };
+}
+
+function getStandaloneEmbedInfo(textOrHtml) {
+    const url = extractStandaloneLinkUrl(textOrHtml);
+    if (!url) return null;
+
+    return getYouTubeEmbedInfo(url) ||
+        getXEmbedInfo(url) ||
+        getInstagramEmbedInfo(url) ||
+        getThreadsEmbedInfo(url) ||
+        getFacebookEmbedInfo(url);
+}
+
+function buildSocialEmbed(info) {
+    const url = escapeHtmlAttribute(info.url);
+
+    if (info.platform === 'x') {
+        return `
+      <div class="social-embed social-embed-x">
+        <blockquote class="twitter-tweet">
+          <a href="${url}">View this post on X</a>
+        </blockquote>
+      </div>`;
+    }
+
+    if (info.platform === 'instagram') {
+        return `
+      <div class="social-embed social-embed-instagram">
+        <blockquote class="instagram-media" data-instgrm-permalink="${url}" data-instgrm-version="14">
+          <a href="${url}" target="_blank" rel="noopener">View this post on Instagram</a>
+        </blockquote>
+      </div>`;
+    }
+
+    if (info.platform === 'threads') {
+        return `
+      <div class="social-embed social-embed-threads">
+        <blockquote class="text-post-media" data-text-post-permalink="${url}" data-text-post-version="0">
+          <a href="${url}" target="_blank" rel="noopener">View this post on Threads</a>
+        </blockquote>
+      </div>`;
+    }
+
+    if (info.platform === 'facebook') {
+        const widgetClass = info.kind === 'video' ? 'fb-video' : 'fb-post';
+        const textAttr = info.kind === 'video' ? '' : ' data-show-text="true"';
+        return `
+      <div class="social-embed social-embed-facebook">
+        <div class="${widgetClass}" data-href="${url}" data-width="500"${textAttr}></div>
+      </div>`;
+    }
+
+    return '';
+}
+
+function sanitizeRawSocialEmbedHtml(info) {
+    const sanitized = String(info.value || '')
+        .replace(/<div\b[^>]*id=["']fb-root["'][^>]*>\s*<\/div>/gi, '')
+        .replace(/<script\b[^>]*src=["'][^"']*(?:platform\.twitter\.com\/widgets\.js|(?:www\.)?instagram\.com\/embed\.js|(?:www\.)?threads\.(?:net|com)\/embed\.js|connect\.facebook\.net\/[^"']*sdk\.js)[^"']*["'][^>]*>\s*<\/script>/gi, '')
+        .trim();
+
+    if (info.platform === 'facebook') {
+        const facebookMatch = sanitized.match(/<div\b[^>]*class=["'][^"']*\bfb-(?:post|video)\b[^"']*["'][^>]*>[\s\S]*?<\/div>/i);
+        return facebookMatch ? facebookMatch[0].trim() : sanitized;
+    }
+
+    const blockquoteMatch = sanitized.match(/<blockquote\b[\s\S]*?<\/blockquote>/i);
+    return blockquoteMatch ? blockquoteMatch[0].trim() : sanitized;
+}
+
+function buildStandaloneEmbedHtml(info) {
+    if (info.type === 'youtube') return buildYouTubeEmbed(info.videoId);
+    if (info.type === 'social') return buildSocialEmbed(info);
+    return '';
 }
 
 function isEmbedPlaceholderToken(text) {
@@ -181,7 +494,7 @@ function isEmbedPlaceholderToken(text) {
 
 function isStandaloneEmbedLine(text) {
     const trimmed = text.trim();
-    return isEmbedPlaceholderToken(trimmed) || isYouTubeUrl(trimmed) || isYouTubeAnchorHtml(trimmed);
+    return isEmbedPlaceholderToken(trimmed) || Boolean(getStandaloneEmbedInfo(trimmed));
 }
 
 function splitParagraphsAroundStandaloneEmbeds(htmlContent) {
@@ -219,28 +532,12 @@ function splitParagraphsAroundStandaloneEmbeds(htmlContent) {
     });
 }
 
-function processYouTubeLinks(htmlContent) {
-    let modifiedContent = htmlContent;
-
-    const urlPatterns = [
-        /<p[^>]*>\s*(https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})(?:&[^<\s]*)?)\s*(?:<br\s*\/?>\s*)?<\/p>/gi,
-        /<p[^>]*>\s*(https?:\/\/(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})(?:[?&][^<\s]*)?)\s*(?:<br\s*\/?>\s*)?<\/p>/gi
-    ];
-
-    const anchorPatterns = [
-        /<p[^>]*>\s*<a[^>]*href="(https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})(?:[^"]*)?)"[^>]*>[\s\S]*?<\/a>\s*(?:<br\s*\/?>\s*)?<\/p>/gi,
-        /<p[^>]*>\s*<a[^>]*href="(https?:\/\/(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})(?:[^"]*)?)"[^>]*>[\s\S]*?<\/a>\s*(?:<br\s*\/?>\s*)?<\/p>/gi
-    ];
-
-    urlPatterns.forEach(pattern => {
-        modifiedContent = modifiedContent.replace(pattern, (match, url, videoId) => buildYouTubeEmbed(videoId));
+function processStandaloneLinkEmbeds(htmlContent) {
+    return htmlContent.replace(/<p([^>]*)>([\s\S]*?)<\/p>/gi, (fullMatch, attrs = '', inner = '') => {
+        const candidate = inner.replace(/(?:<br\s*\/?>\s*)+$/i, '').trim();
+        const embedInfo = getStandaloneEmbedInfo(candidate);
+        return embedInfo ? buildStandaloneEmbedHtml(embedInfo) : fullMatch;
     });
-
-    anchorPatterns.forEach(pattern => {
-        modifiedContent = modifiedContent.replace(pattern, (match, url, videoId) => buildYouTubeEmbed(videoId));
-    });
-
-    return modifiedContent;
 }
 
 // ─── Image processing functions ──────────────────────────────────────────────
@@ -327,6 +624,31 @@ async function buildPictureHtml(folderName, imageNumber, altText = '') {
     return imgTag;
 }
 
+// Convert hero/background images (1, 2) from any format to WebP + AVIF if not already WebP.
+// Leaves the original file in place so nothing breaks if conversion fails.
+async function convertHeroImages(entryPath) {
+    const NON_WEBP = ['jpg', 'jpeg', 'png', 'gif'];
+    for (const num of ['1', '2']) {
+        // Skip if WebP already exists
+        if (fs.existsSync(path.join(entryPath, `${num}.webp`))) continue;
+
+        // Find a non-WebP source
+        let srcFile = null;
+        for (const ext of NON_WEBP) {
+            const candidate = path.join(entryPath, `${num}.${ext}`);
+            if (fs.existsSync(candidate)) { srcFile = candidate; break; }
+        }
+        if (!srcFile) continue;
+
+        const webpDest = path.join(entryPath, `${num}.webp`);
+        const avifDest = path.join(entryPath, `${num}.avif`);
+
+        console.log(`  Converting hero image: ${path.basename(srcFile)} → ${num}.webp / ${num}.avif`);
+        await convertImage(srcFile, webpDest, 'webp', 85, 1600);
+        await convertImage(srcFile, avifDest, 'avif', 60, 1600);
+    }
+}
+
 async function convertImage(inputPath, outputPath, format = 'webp', quality = 80, maxWidth = null) {
     try {
         let pipeline = sharp(inputPath);
@@ -371,9 +693,6 @@ async function extractImagesFromDocx(docPath, entryPath) {
 async function processContentImages(content, folderName, extractedImages = []) {
     if (!extractedImages.length) return content;
 
-    let processedContent = content;
-    const matches = [...processedContent.matchAll(/<img[^>]*?>/g)];
-
     const replacements = await Promise.all(extractedImages.map(async (_, i) => {
         const imageNumber = i + 3;
         return `<figure class="article-figure">
@@ -381,14 +700,11 @@ async function processContentImages(content, folderName, extractedImages = []) {
         </figure>`;
     }));
 
-    for (let i = matches.length - 1; i >= 0; i--) {
-        const match = matches[i];
-        const replacement = replacements[i] ?? '';
-        processedContent =
-            processedContent.slice(0, match.index) +
-            replacement +
-            processedContent.slice(match.index + match[0].length);
-    }
+    let replacementIndex = 0;
+    let processedContent = content.replace(
+        /<img\b(?=[^>]*(?:data-original-src="[^"]*"|src="data:image\/[^"]+"))[^>]*>/gi,
+        match => replacements[replacementIndex++] || match
+    );
 
     processedContent = processedContent.replace(
         /<p>\s*(<figure class="article-figure">[\s\S]*?<\/figure>)\s*<\/p>/g,
@@ -856,10 +1172,11 @@ function isUrlWhitelisted(urlStr) {
 /**
  * Scan raw text for embed markers.
  *
- * Detects THREE kinds of embeds:
+ * Detects FOUR kinds of embeds:
  *   1. Tag-based:    IFRAME:url  /  EMBED:file  /  WIDGET:file
  *   2. Raw iframe:   <iframe src="..." ...></iframe>   (pasted HTML)
- *   3. Raw widget:   <div style="..." ...>...</div>    (pasted HTML block)
+ *   3. Raw social:   official X / Instagram / Threads / Facebook embed snippets
+ *   4. Raw widget:   <div style="..." ...>...</div>    (pasted HTML block)
  *
  * For .txt files  → replaces the lines with placeholder tokens (insertTokens=true)
  * For .docx files → collects info keyed by original raw text (insertTokens=false)
@@ -921,13 +1238,21 @@ function extractEmbedPlaceholders(rawText, entryPath, insertTokens = false) {
         }
     }
 
-    // ── 3. Raw <div ...>...</div> widget blocks (multi-line)
+    // ── 3. Official social embed snippets (multi-line)
+    const socialBlocks = extractRawSocialBlocks(cleanedText);
+    for (const block of socialBlocks) {
+        const key = makeKey(block.fullBlock);
+        placeholders[key] = block.info;
+        if (insertTokens) {
+            cleanedText = cleanedText.replace(block.fullBlock, key);
+        }
+    }
+
+    // ── 4. Raw <div ...>...</div> widget blocks (multi-line)
     //    Only match top-level <div> blocks that look like styled widgets
     //    (contain style= attribute — avoids matching random divs)
-    const widgetRegex = /<div\s+style="[^"]*"[^>]*>[\s\S]*?<\/div>\s*(?:<\/div>)*/gi;
-    // Better approach: match balanced top-level <div> with style attr
-    const rawText2 = insertTokens ? cleanedText : rawText;
-    const widgetBlocks = extractTopLevelStyledDivs(rawText2);
+    const widgetSourceText = insertTokens ? cleanedText : removeMatchedBlocks(cleanedText, socialBlocks);
+    const widgetBlocks = extractTopLevelStyledDivs(widgetSourceText);
     for (const block of widgetBlocks) {
         // Skip if already captured by iframe match
         if (block.includes('<iframe')) continue;
@@ -939,6 +1264,65 @@ function extractEmbedPlaceholders(rawText, entryPath, insertTokens = false) {
     }
 
     return { cleanedText, placeholders };
+}
+
+function extractRawSocialBlocks(text) {
+    const matches = [];
+    const patterns = [
+        {
+            regex: /<blockquote\b[^>]*class=["'][^"']*\btwitter-tweet\b[^"']*["'][^>]*>[\s\S]*?<\/blockquote>(?:\s*<script\b[^>]*src=["'][^"']*platform\.twitter\.com\/widgets\.js[^"']*["'][^>]*>\s*<\/script>)?/gi,
+            createInfo: match => ({ type: 'raw-social', platform: 'x', value: match[0] })
+        },
+        {
+            regex: /<blockquote\b[^>]*class=["'][^"']*\binstagram-media\b[^"']*["'][^>]*>[\s\S]*?<\/blockquote>(?:\s*<script\b[^>]*src=["'][^"']*(?:www\.)?instagram\.com\/embed\.js[^"']*["'][^>]*>\s*<\/script>)?/gi,
+            createInfo: match => ({ type: 'raw-social', platform: 'instagram', value: match[0] })
+        },
+        {
+            regex: /<blockquote\b[^>]*class=["'][^"']*\btext-post-media\b[^"']*["'][^>]*>[\s\S]*?<\/blockquote>(?:\s*<script\b[^>]*src=["'][^"']*(?:www\.)?threads\.(?:net|com)\/embed\.js[^"']*["'][^>]*>\s*<\/script>)?/gi,
+            createInfo: match => ({ type: 'raw-social', platform: 'threads', value: match[0] })
+        },
+        {
+            regex: /(?:<div\b[^>]*id=["']fb-root["'][^>]*>\s*<\/div>\s*)?(?:<script\b[^>]*src=["'][^"']*connect\.facebook\.net\/[^"']*sdk\.js[^"']*["'][^>]*>\s*<\/script>\s*)?(<div\b[^>]*class=["'][^"']*\bfb-(post|video)\b[^"']*["'][^>]*>[\s\S]*?<\/div>)/gi,
+            createInfo: match => ({ type: 'raw-social', platform: 'facebook', kind: (match[2] || 'post').toLowerCase(), value: match[0] })
+        }
+    ];
+
+    for (const pattern of patterns) {
+        let match;
+        while ((match = pattern.regex.exec(text)) !== null) {
+            matches.push({
+                start: match.index,
+                end: match.index + match[0].length,
+                fullBlock: match[0],
+                info: pattern.createInfo(match)
+            });
+        }
+    }
+
+    matches.sort((a, b) => a.start - b.start || b.end - a.end);
+
+    const deduped = [];
+    let lastEnd = -1;
+    for (const match of matches) {
+        if (match.start < lastEnd) continue;
+        deduped.push(match);
+        lastEnd = match.end;
+    }
+
+    return deduped;
+}
+
+function removeMatchedBlocks(text, matches) {
+    if (!matches.length) return text;
+
+    let result = '';
+    let cursor = 0;
+    for (const match of matches) {
+        result += text.slice(cursor, match.start);
+        cursor = match.end;
+    }
+    result += text.slice(cursor);
+    return result;
 }
 
 /**
@@ -1144,8 +1528,8 @@ function processRawHtmlEmbeds(htmlContent, rawBlockMap) {
                 concat += (j > i ? ' ' : '') + pTags[j].decoded;
                 const normalizedConcat = normalizeWhitespace(concat);
 
-                if (normalizedConcat.includes(normalizedRaw) ||
-                    normalizedRaw.includes(normalizedConcat)) {
+                if (normalizedConcat === normalizedRaw ||
+                    normalizedConcat.includes(normalizedRaw)) {
                     // Check if the concatenated text IS the raw block (not just contains it
                     // as a substring of normal text). Verify by checking it starts with < 
                     // and the first <p> decoded text starts with <
@@ -1255,6 +1639,12 @@ function buildEmbedHtml(info) {
         }
 
         return `<div class="embed-container embed-widget">\n${fileContent}\n</div>`;
+    }
+
+    if (info.type === 'raw-social') {
+        const sanitized = sanitizeRawSocialEmbedHtml(info);
+        console.log(`  💬 Raw ${info.platform.toUpperCase()} embed`);
+        return `<div class="social-embed social-embed-${info.platform}">\n${sanitized}\n</div>`;
     }
 
     // Raw iframe pasted directly into DOCX
@@ -1425,7 +1815,7 @@ async function convertToHtml(filePath) {
         // Post-processing pipeline
         htmlContent = splitParagraphsAroundStandaloneEmbeds(htmlContent);
         htmlContent = processDocumentTables(htmlContent);
-        htmlContent = processYouTubeLinks(htmlContent);
+        htmlContent = processStandaloneLinkEmbeds(htmlContent);
         htmlContent = processEmbeddedCSV(htmlContent, entryPath);
 
         // Resolve IFRAME:/EMBED:/WIDGET: placeholders
@@ -1452,10 +1842,7 @@ async function processBlogEntry(entryPath) {
         return null;
     }
     
-    const docFile = entryFiles.find(file => {
-        const ext = path.extname(file).toLowerCase();
-        return ext === '.docx' || ext === '.txt';
-    });
+    const docFile = utils.findSourceDocument(entryFiles);
     
     if (!docFile) {
         console.warn(`⚠️ No document found in ${entryPath}`);
@@ -1495,6 +1882,7 @@ async function processBlogEntry(entryPath) {
         }
     }
 
+    await convertHeroImages(entryPath);
     const images = processImages(entryPath, folderName);
     
     // Get raw content for metadata
@@ -1529,6 +1917,8 @@ async function processBlogEntry(entryPath) {
     if ((!content || content.trim() === '') && Object.keys(images).length > 0) {
         content = createImageGallery(images, folderName);
     }
+
+    assertNoInlineDataImages(content, folderName);
     
     const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
     const wordCount = plainText.split(/\s+/).length;
@@ -1709,6 +2099,7 @@ if (!isMainThread) {
      */
     async function runWorkerPool(entryPaths, concurrency) {
         const results = [];
+        const failures = [];
         let index = 0;
 
         async function next() {
@@ -1723,9 +2114,11 @@ if (!isMainThread) {
                     results.push(result.postData);
                     console.log(`✅ [worker] ${folderName}`);
                 } else {
+                    failures.push({ entryPath, error: result.error || 'no data' });
                     console.warn(`❌ [worker] ${folderName}: ${result.error || 'no data'}`);
                 }
             } catch (err) {
+                failures.push({ entryPath, error: err.message });
                 console.error(`❌ [worker] ${folderName}: ${err.message}`);
             }
 
@@ -1734,7 +2127,7 @@ if (!isMainThread) {
 
         // Launch `concurrency` parallel chains
         await Promise.all(Array.from({ length: concurrency }, () => next()));
-        return results;
+        return { results, failures };
     }
 
     // ── Main processing function ─────────────────────────────────────────────
@@ -1785,9 +2178,11 @@ if (!isMainThread) {
 
         // ── Parallel build ───────────────────────────────────────────────────
         const concurrency = Math.min(MAX_WORKERS, toBuild.length || 1);
-        const freshPosts = toBuild.length > 0
+        const freshBuild = toBuild.length > 0
             ? await runWorkerPool(toBuild, concurrency)
-            : [];
+            : { results: [], failures: [] };
+        const freshPosts = freshBuild.results;
+        const buildFailures = freshBuild.failures.slice();
 
         // ── Collect postData for skipped entries from their existing HTML ────
         // We still need them in blog-data.json. Re-read the existing
@@ -1805,10 +2200,30 @@ if (!isMainThread) {
             }
         }
 
+        let rebuiltSkippedPosts = [];
+        const cachedIds = new Set(cachedPosts.map(p => p.id));
+        const missingSkippedPaths = entryFolders.filter(entryPath => {
+            const folderName = path.basename(entryPath);
+            return skipped.includes(folderName) && !cachedIds.has(folderName);
+        });
+
+        if (missingSkippedPaths.length > 0) {
+            console.log(`♻️  Rebuilding ${missingSkippedPaths.length} skipped entries because cached metadata was missing...`);
+            const rebuiltSkippedBuild = await runWorkerPool(
+                missingSkippedPaths,
+                Math.min(MAX_WORKERS, missingSkippedPaths.length)
+            );
+            rebuiltSkippedPosts = rebuiltSkippedBuild.results;
+            buildFailures.push(...rebuiltSkippedBuild.failures);
+        }
+
         // Merge: fresh builds + cached skipped
-        const freshIds = new Set(freshPosts.map(p => p.id));
+        const freshIds = new Set(
+            freshPosts.concat(rebuiltSkippedPosts).map(p => p.id)
+        );
         const blogPosts = [
             ...freshPosts,
+            ...rebuiltSkippedPosts,
             ...cachedPosts.filter(p => !freshIds.has(p.id))
         ];
 
@@ -1822,11 +2237,19 @@ if (!isMainThread) {
             }
         });
         
-        console.log(`\n✅ Total: ${blogPosts.length} posts (${freshPosts.length} built, ${cachedPosts.length} cached)`);
+        console.log(`\n✅ Total: ${blogPosts.length} posts (${freshPosts.length} built, ${rebuiltSkippedPosts.length} rebuilt from skipped, ${cachedPosts.length} cached)`);
         
         if (blogPosts.length === 0) {
             console.error("No blog posts were successfully processed!");
             return;
+        }
+
+        if (buildFailures.length > 0) {
+            const firstFailure = buildFailures[0];
+            throw new Error(
+                `Blog build failed for ${buildFailures.length} entr${buildFailures.length === 1 ? 'y' : 'ies'}. ` +
+                `First failure: ${path.basename(firstFailure.entryPath)}: ${firstFailure.error}`
+            );
         }
         
         blogPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -1930,14 +2353,14 @@ if (!isMainThread) {
                 postHtml = postHtml.replace(/PREV_ARTICLE_URL/g,
                     `/blog-module/blog-entries/${prevPost.id}/article.html`);
             } else {
-                postHtml = postHtml.replace(/<a href="PREV_ARTICLE_URL"[^>]*>[^<]*<\/a>/g, '');
+                postHtml = postHtml.replace(/<a href="PREV_ARTICLE_URL"[^>]*>[\s\S]*?<\/a>/g, '');
             }
             
             if (nextPost) {
                 postHtml = postHtml.replace(/NEXT_ARTICLE_URL/g,
                     `/blog-module/blog-entries/${nextPost.id}/article.html`);
             } else {
-                postHtml = postHtml.replace(/<a href="NEXT_ARTICLE_URL"[^>]*>[^<]*<\/a>/g, '');
+                postHtml = postHtml.replace(/<a href="NEXT_ARTICLE_URL"[^>]*>[\s\S]*?<\/a>/g, '');
             }
             
             fs.writeFileSync(path.join(CONFIG.BLOG_DIR, post.id, 'article.html'), postHtml);

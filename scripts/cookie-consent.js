@@ -22,20 +22,31 @@
     }
 
     function hideBanner() {
+        banner.classList.remove('show');
         banner.style.display = 'none';
+        banner.setAttribute('aria-hidden', 'true');
     }
 
     function showBanner() {
-        banner.style.display = '';
+        banner.classList.add('cookie-banner');
+        banner.style.display = 'block';
+        banner.setAttribute('aria-hidden', 'false');
+        requestAnimationFrame(function () {
+            banner.classList.add('show');
+        });
     }
 
     function saveConsent(consent) {
-        writeConsent({
+        var nextConsent = {
             ts: Date.now(),
             essential: true,
             analytics: !!consent.analytics,
             marketing: !!consent.marketing
-        });
+        };
+        writeConsent(nextConsent);
+        window.dispatchEvent(new CustomEvent('f1stories:cookie-consent-changed', {
+            detail: nextConsent
+        }));
         hideBanner();
     }
 

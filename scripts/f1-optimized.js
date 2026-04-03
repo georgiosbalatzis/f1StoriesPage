@@ -14,7 +14,6 @@
     var VIDEO_CACHE_KEY = 'f1s-home-videos-v2';
     var VIDEO_CACHE_TTL = 30 * 60 * 1000;
     var CHANNEL_ID = 'UCTSK8lbEiHJ10KVFrhNaL4g';
-    var API_KEY = 'AIzaSyCE0vy99ror_w6PJtVGSnahyCz8n4Fq0P8';
     var MAX_RESULTS = 3;
     var RSS_URL = 'https://www.youtube.com/feeds/videos.xml?channel_id=' + CHANNEL_ID;
     var RSS_PROXIES = [
@@ -264,56 +263,18 @@
 
                 return entries.map(function (entry) {
                     var id = entry.getElementsByTagName('yt:videoId')[0];
-                    return id ? id.textContent.trim() : '';
+                    var title = entry.getElementsByTagName('title')[0];
+                    var published = entry.getElementsByTagName('published')[0];
+
+                    if (!id) return null;
+
+                    return {
+                        id: id.textContent.trim(),
+                        title: title ? title.textContent.trim() : '',
+                        date: published ? published.textContent.trim() : '',
+                        duration: ''
+                    };
                 }).filter(Boolean);
-            });
-    }
-
-    function enrichVideoDetails(ids) {
-        if (!ids.length) return Promise.resolve([]);
-
-        return fetchWithTimeout(
-            'https://www.googleapis.com/youtube/v3/videos?key=' + API_KEY
-            + '&id=' + ids.join(',')
-            + '&part=snippet,contentDetails',
-            null,
-            8000
-        ).then(function (response) {
-            if (!response.ok) throw new Error('video details ' + response.status);
-            return response.json();
-        }).then(function (data) {
-            return (data.items || []).map(function (item) {
-                return {
-                    id: item.id,
-                    title: item.snippet && item.snippet.title,
-                    date: item.snippet && item.snippet.publishedAt,
-                    duration: item.contentDetails ? fmtDuration(item.contentDetails.duration) : ''
-                };
-            });
-        });
-    }
-
-    function loadViaSearchAPI() {
-        return fetchWithTimeout(
-            'https://www.googleapis.com/youtube/v3/search?key=' + API_KEY
-            + '&channelId=' + CHANNEL_ID
-            + '&part=snippet&order=date&maxResults=' + MAX_RESULTS + '&type=video',
-            null,
-            8000
-        ).then(function (response) {
-            if (!response.ok) throw new Error('search ' + response.status);
-            return response.json();
-        }).then(function (data) {
-            return (data.items || []).map(function (item) {
-                return {
-                    id: item.id && item.id.videoId,
-                    title: item.snippet && item.snippet.title,
-                    date: item.snippet && item.snippet.publishedAt,
-                    duration: ''
-                };
-            }).filter(function (item) {
-                return item.id;
-            });
         });
     }
 
@@ -329,9 +290,7 @@
             return loadViaRSS(currentProxy).catch(tryNextProxy);
         }
 
-        return tryNextProxy()
-            .then(enrichVideoDetails)
-            .catch(loadViaSearchAPI);
+        return tryNextProxy();
     }
 
     function actuallyLoadVideos() {
