@@ -18,7 +18,9 @@
     var RSS_URL = 'https://www.youtube.com/feeds/videos.xml?channel_id=' + CHANNEL_ID;
     var RSS_PROXIES = [
         'https://api.allorigins.win/raw?url=' + encodeURIComponent(RSS_URL),
-        'https://corsproxy.io/?url=' + encodeURIComponent(RSS_URL)
+        'https://corsproxy.io/?url=' + encodeURIComponent(RSS_URL),
+        'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(RSS_URL),
+        'https://thingproxy.freeboard.io/fetch/' + encodeURIComponent(RSS_URL)
     ];
     var GR_MONTHS = ['Ιαν', 'Φεβ', 'Μαρ', 'Απρ', 'Μαΐ', 'Ιουν', 'Ιουλ', 'Αυγ', 'Σεπ', 'Οκτ', 'Νοε', 'Δεκ'];
 
