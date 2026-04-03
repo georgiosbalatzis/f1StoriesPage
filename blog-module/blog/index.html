@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="el">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -53,7 +53,7 @@
 <div class="background"></div>
 <div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
 
-<button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle light/dark theme">
+<button class="theme-toggle-btn" id="theme-toggle" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
     <i class="fas fa-sun icon-sun"></i>
     <i class="fas fa-moon icon-moon"></i>
 </button>
@@ -73,7 +73,7 @@
                 <div class="blog-nav-countdown" id="nav-countdown">
                     <span class="countdown-flag" id="race-flag-emoji">🏁</span>
                     <div class="countdown-info">
-                        <span class="countdown-race" id="next-race-name">Loading...</span>
+                        <span class="countdown-race" id="next-race-name">Φόρτωση...</span>
                         <span class="countdown-timer" id="race-countdown">--</span>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
                     <i class="fas fa-flag-checkered"></i>
                     <span id="race-countdown-mobile">--</span>
                 </div>
-                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
+                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
@@ -98,11 +98,11 @@
     <div class="container">
         <div class="blog-page-header">
             <h1 class="blog-page-title">Blog</h1>
-            <p class="blog-page-sub">Stories, analysis &amp; insights from the F1 Stories team</p>
+            <p class="blog-page-sub">Αναλύσεις, ιστορίες και insights από την ομάδα του F1 Stories</p>
         </div>
 
         <div class="author-strip" id="author-strip">
-            <button class="author-chip active" data-author="all"><span class="author-chip-avatar">All</span> All</button>
+            <button class="author-chip active" data-author="all" aria-pressed="true"><span class="author-chip-avatar">ΟΛ</span> Όλοι</button>
             <button class="author-chip" data-author="Georgios Balatzis"><span class="author-chip-avatar"><img src="/images/authors/georgios.webp" alt="" onerror="this.remove();this.parentElement.textContent='GB';"></span> Georgios</button>
             <button class="author-chip" data-author="Giannis Poulikidis"><span class="author-chip-avatar"><img src="/images/authors/giannis.webp" alt="" onerror="this.remove();this.parentElement.textContent='GP';"></span> Giannis</button>
             <button class="author-chip" data-author="Thanasis Batalas"><span class="author-chip-avatar"><img src="/images/authors/thanasis.webp" alt="" onerror="this.remove();this.parentElement.textContent='TB';"></span> Thanasis</button>
@@ -110,7 +110,29 @@
             <button class="author-chip" data-author="Dimitris Keramidiotis"><span class="author-chip-avatar"><img src="/images/authors/dimitris.webp" alt="" onerror="this.remove();this.parentElement.textContent='DK';"></span> Dimitris</button>
         </div>
 
-        <div class="post-count" id="post-count"></div>
+        <div class="blog-filter-toolbar" aria-label="Αναζήτηση και φιλτράρισμα άρθρων">
+            <div class="blog-search-row">
+                <label class="visually-hidden" for="blog-search">Αναζήτηση άρθρων</label>
+                <div class="blog-search-shell">
+                    <span class="blog-search-icon" aria-hidden="true"><i class="fas fa-search"></i></span>
+                    <input type="search" id="blog-search" class="blog-search-input" placeholder="Αναζήτηση με λέξεις-κλειδιά" autocomplete="off">
+                    <button type="button" class="blog-search-clear" id="blog-search-clear" aria-label="Καθαρισμός αναζήτησης" hidden>
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <button type="button" class="filter-reset-btn" id="blog-filter-reset" hidden>Καθαρισμός φίλτρων</button>
+            </div>
+
+            <div class="category-filter-block">
+                <div class="category-filter-head">
+                    <span class="category-filter-title">Κατηγορίες</span>
+                    <span class="category-filter-note">Συνδύασε κατηγορία, αρθρογράφο και αναζήτηση</span>
+                </div>
+                <div class="category-strip" id="category-strip" aria-label="Φίλτρο κατηγορίας"></div>
+            </div>
+        </div>
+
+        <div class="post-count" id="post-count" aria-live="polite"></div>
 
         <div class="articles-grid" id="articles-grid">
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div></div>
@@ -121,7 +143,7 @@
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w40"></div></div></div>
         </div>
 
-        <nav class="blog-pagination" id="blog-pagination" aria-label="Blog pages"></nav>
+        <nav class="blog-pagination" id="blog-pagination" aria-label="Σελίδες blog"></nav>
     </div>
 </section>
 
@@ -141,7 +163,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12 text-center">
-                <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. All rights reserved.</p>
+                <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
                 <div class="social-media">
                     <a href="https://www.youtube.com/@F1_Stories_Original" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
                     <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
@@ -150,9 +172,9 @@
                     <a href="/cdn-cgi/l/email-protection#caa7b3acfbb9bea5b8a3afb98aada7aba3a6e4a9a5a7"><i class="fas fa-envelope"></i></a>
                 </div>
                 <div class="footer-links mt-3">
-                    <a href="/privacy/privacy.html" class="footer-link">Privacy Policy</a>
+                    <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
-                    <a href="/privacy/terms.html" class="footer-link">Terms of Use</a>
+                    <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
                 </div>
             </div>
         </div>
@@ -172,11 +194,92 @@ document.addEventListener('DOMContentLoaded', function() {
     var activeAuthor = 'all';
     var grid = document.getElementById('articles-grid');
     var countEl = document.getElementById('post-count');
+    var searchInput = document.getElementById('blog-search');
+    var searchClearBtn = document.getElementById('blog-search-clear');
+    var filterResetBtn = document.getElementById('blog-filter-reset');
+    var categoryStrip = document.getElementById('category-strip');
     var imageObserver = null;
     var CACHE_KEY = 'f1s-blog-index-v1';
     var CACHE_TTL = 15 * 60 * 1000;
+    var activeCategory = 'all';
+    var activeQuery = '';
+    var DATE_FORMATTER = typeof Intl !== 'undefined'
+        ? new Intl.DateTimeFormat('el-GR', { day: 'numeric', month: 'long', year: 'numeric' })
+        : null;
 
     function escHtml(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+    function normalizeText(value) {
+        var text = String(value || '').toLowerCase();
+        if (text.normalize) {
+            text = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+        return text;
+    }
+    function parsePostDate(value) {
+        if (!value) return null;
+        var parsed = value.length === 10 ? new Date(value + 'T12:00:00') : new Date(value);
+        return isNaN(parsed.getTime()) ? null : parsed;
+    }
+    function formatPostDate(post) {
+        var parsed = parsePostDate(post.date || post.displayDate || '');
+        if (parsed && DATE_FORMATTER) return DATE_FORMATTER.format(parsed);
+        return post.displayDate || post.date || '';
+    }
+    function formatReadingTime(value) {
+        return String(value || '').replace(/\bmin\b/gi, 'λεπ');
+    }
+    function getSearchIndex(post) {
+        return normalizeText([
+            post.title,
+            post.excerpt,
+            post.author,
+            (post.categories || []).join(' '),
+            post.displayDate,
+            post.date
+        ].join(' '));
+    }
+    function getUniqueCategories(posts) {
+        var counts = {};
+        (posts || []).forEach(function(post) {
+            (post.categories || []).forEach(function(category) {
+                var key = String(category || '').trim();
+                if (!key) return;
+                counts[key] = (counts[key] || 0) + 1;
+            });
+        });
+        return Object.keys(counts).sort(function(a, b) {
+            var diff = counts[b] - counts[a];
+            return diff || a.localeCompare(b, 'el');
+        });
+    }
+    function syncChipState(container, selector, attribute, activeValue) {
+        if (!container) return;
+        Array.prototype.forEach.call(container.querySelectorAll(selector), function(chip) {
+            var isActive = chip.getAttribute(attribute) === activeValue;
+            chip.classList.toggle('active', isActive);
+            chip.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+    }
+    function updateSearchControls() {
+        if (searchClearBtn) searchClearBtn.hidden = !activeQuery;
+        if (filterResetBtn) filterResetBtn.hidden = !(activeAuthor !== 'all' || activeCategory !== 'all' || activeQuery);
+    }
+    function renderCategoryFilters() {
+        if (!categoryStrip) return;
+        var categories = getUniqueCategories(allPosts);
+        var html = '<button class="category-chip' + (activeCategory === 'all' ? ' active' : '') + '" data-category="all" aria-pressed="' + (activeCategory === 'all' ? 'true' : 'false') + '">Όλες</button>';
+        categories.forEach(function(category) {
+            html += '<button class="category-chip' + (category === activeCategory ? ' active' : '') + '" data-category="' + escHtml(category) + '" aria-pressed="' + (category === activeCategory ? 'true' : 'false') + '">' + escHtml(category) + '</button>';
+        });
+        categoryStrip.innerHTML = html;
+    }
+    function getResultsSummary(count) {
+        var parts = [];
+        if (activeAuthor !== 'all') parts.push('Αρθρογράφος: ' + activeAuthor);
+        if (activeCategory !== 'all') parts.push('Κατηγορία: ' + activeCategory);
+        if (activeQuery) parts.push('Αναζήτηση: "' + activeQuery + '"');
+        return count + ' ' + (count === 1 ? 'άρθρο' : 'άρθρα') + (parts.length ? ' · ' + parts.join(' · ') : '');
+    }
     function readCachedPosts() {
         try {
             var cached = JSON.parse(sessionStorage.getItem(CACHE_KEY));
@@ -195,7 +298,14 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (_) {}
     }
     function hydratePosts(posts) {
-        allPosts = posts.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+        allPosts = posts.sort(function(a, b) { return new Date(b.date) - new Date(a.date); }).map(function(post) {
+            post.__searchIndex = getSearchIndex(post);
+            return post;
+        });
+        if (activeCategory !== 'all' && getUniqueCategories(allPosts).indexOf(activeCategory) === -1) {
+            activeCategory = 'all';
+        }
+        renderCategoryFilters();
         renderPosts();
     }
 
@@ -203,12 +313,13 @@ document.addEventListener('DOMContentLoaded', function() {
         var cats = (post.categories || []).slice(0, 2).map(function(c) { return '<span class="article-card-cat">' + escHtml(c) + '</span>'; }).join('');
         var url = post.url || ('/blog-module/blog-entries/' + post.id + '/article.html');
         var img = post.image || '/blog-module/images/default-blog.jpg';
-        var date = post.displayDate || post.date || '';
+        var date = formatPostDate(post);
         var author = post.author || 'F1 Stories';
         var excerpt = post.excerpt || '';
         var readMins = post.readingTime || post.readTime || '';
         if (!readMins && post.wordCount) { readMins = Math.max(1, Math.ceil(post.wordCount / 200)) + ' min'; }
         if (!readMins && excerpt) { readMins = Math.max(2, Math.ceil(Math.round(excerpt.split(/\s+/).length * 10) / 200)) + ' min'; }
+        readMins = formatReadingTime(readMins);
         var readBadge = readMins ? '<span>\u00b7</span><span class="article-card-reading-time"><i class="fas fa-clock"></i> ' + escHtml(readMins) + '</span>' : '';
 
         var stagger = window.innerWidth < 768 ? 0.03 : 0.06;
@@ -219,7 +330,7 @@ document.addEventListener('DOMContentLoaded', function() {
             + '<h3 class="article-card-title">' + escHtml(post.title) + '</h3>'
             + '<p class="article-card-excerpt">' + escHtml(excerpt) + '</p>'
             + '</div>'
-            + '<div class="article-card-footer"><span class="article-card-read">Read more <i class="fas fa-arrow-right"></i></span><div class="article-card-cats">' + cats + '</div></div>'
+            + '<div class="article-card-footer"><span class="article-card-read">Διαβάστε περισσότερα <i class="fas fa-arrow-right"></i></span><div class="article-card-cats">' + cats + '</div></div>'
             + '</a>';
     }
 
@@ -270,15 +381,15 @@ document.addEventListener('DOMContentLoaded', function() {
         var totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
         if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
         var range = getPageRange(currentPage, totalPages);
-        var html = '<button class="page-btn page-prev" aria-label="Previous page"' + (currentPage === 1 ? ' disabled' : '') + '><i class="fas fa-chevron-left"></i></button>';
+        var html = '<button class="page-btn page-prev" aria-label="Προηγούμενη σελίδα"' + (currentPage === 1 ? ' disabled' : '') + '><i class="fas fa-chevron-left"></i></button>';
         range.forEach(function(item) {
             if (item === '…') {
                 html += '<span class="page-ellipsis">&hellip;</span>';
             } else {
-                html += '<button class="page-btn page-num' + (item === currentPage ? ' active' : '') + '" data-page="' + item + '" aria-label="Page ' + item + '"' + (item === currentPage ? ' aria-current="page"' : '') + '>' + item + '</button>';
+                html += '<button class="page-btn page-num' + (item === currentPage ? ' active' : '') + '" data-page="' + item + '" aria-label="Σελίδα ' + item + '"' + (item === currentPage ? ' aria-current="page"' : '') + '>' + item + '</button>';
             }
         });
-        html += '<button class="page-btn page-next" aria-label="Next page"' + (currentPage === totalPages ? ' disabled' : '') + '><i class="fas fa-chevron-right"></i></button>';
+        html += '<button class="page-btn page-next" aria-label="Επόμενη σελίδα"' + (currentPage === totalPages ? ' disabled' : '') + '><i class="fas fa-chevron-right"></i></button>';
         paginationEl.innerHTML = html;
     }
 
@@ -308,22 +419,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderPosts() {
         if (!grid) return;
-        filteredPosts = activeAuthor === 'all' ? allPosts : allPosts.filter(function(p) { return p.author === activeAuthor; });
-        if (countEl) { countEl.textContent = filteredPosts.length + ' post' + (filteredPosts.length !== 1 ? 's' : '') + (activeAuthor !== 'all' ? ' by ' + activeAuthor : ''); }
-        if (!filteredPosts.length) { grid.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper"></i><p>No posts found' + (activeAuthor !== 'all' ? ' by this author' : '') + '.</p></div>'; if (paginationEl) paginationEl.innerHTML = ''; return; }
+        filteredPosts = allPosts.filter(function(post) {
+            var matchesAuthor = activeAuthor === 'all' || post.author === activeAuthor;
+            var matchesCategory = activeCategory === 'all' || (post.categories || []).indexOf(activeCategory) !== -1;
+            var matchesQuery = !activeQuery || post.__searchIndex.indexOf(normalizeText(activeQuery)) !== -1;
+            return matchesAuthor && matchesCategory && matchesQuery;
+        });
+        if (countEl) { countEl.textContent = getResultsSummary(filteredPosts.length); }
+        updateSearchControls();
+        if (!filteredPosts.length) {
+            grid.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper"></i><p>Δεν βρέθηκαν άρθρα για τα επιλεγμένα φίλτρα.</p></div>';
+            if (paginationEl) paginationEl.innerHTML = '';
+            return;
+        }
         goToPage(1, { scroll: false });
     }
 
     window.__blogFilterByAuthor = function(author) {
         activeAuthor = author;
         currentPage = 1;
+        syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
         renderPosts();
     };
 
     function tryFetch(paths, idx) {
         var cached = idx === 0 ? readCachedPosts() : null;
         if (cached) { hydratePosts(cached); return; }
-        if (idx >= paths.length) { if (grid) grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load blog posts.</p></div>'; return; }
+        if (idx >= paths.length) { if (grid) grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Δεν ήταν δυνατή η φόρτωση των άρθρων.</p></div>'; return; }
         fetch(paths[idx]).then(function(r) { if (!r.ok) throw new Error('not ok'); return r.json(); }).then(function(data) {
             var posts = data.posts || data || [];
             writeCachedPosts(posts);
@@ -335,6 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var strip = document.getElementById('author-strip');
     if (strip) {
+        syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
         var lastChipTap = 0;
         function handleChipActivate(e) {
             var now = Date.now();
@@ -343,13 +466,52 @@ document.addEventListener('DOMContentLoaded', function() {
             var chip = e.target.closest('.author-chip');
             if (!chip) return;
             e.preventDefault();
-            strip.querySelectorAll('.author-chip').forEach(function(c) { c.classList.remove('active'); });
-            chip.classList.add('active');
             activeAuthor = chip.getAttribute('data-author');
+            syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
             renderPosts();
         }
         strip.addEventListener('touchend', handleChipActivate, { passive: false });
         strip.addEventListener('click', handleChipActivate);
+    }
+
+    if (categoryStrip) {
+        categoryStrip.addEventListener('click', function(e) {
+            var chip = e.target.closest('.category-chip');
+            if (!chip) return;
+            activeCategory = chip.getAttribute('data-category') || 'all';
+            syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
+            renderPosts();
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            activeQuery = searchInput.value.trim();
+            renderPosts();
+        });
+    }
+
+    if (searchClearBtn) {
+        searchClearBtn.addEventListener('click', function() {
+            activeQuery = '';
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.focus();
+            }
+            renderPosts();
+        });
+    }
+
+    if (filterResetBtn) {
+        filterResetBtn.addEventListener('click', function() {
+            activeAuthor = 'all';
+            activeCategory = 'all';
+            activeQuery = '';
+            if (searchInput) searchInput.value = '';
+            syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
+            syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
+            renderPosts();
+        });
     }
 });
 </script>

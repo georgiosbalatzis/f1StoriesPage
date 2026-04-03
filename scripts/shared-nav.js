@@ -155,7 +155,7 @@
     }
 
     function fmtCountdown(ms) {
-        if (ms <= 0) return 'LIGHTS OUT!';
+        if (ms <= 0) return 'ΕΚΚΙΝΗΣΗ!';
         var s = Math.floor(ms / 1000);
         var d = Math.floor(s / 86400);
         var h = Math.floor((s % 86400) / 3600);
@@ -167,7 +167,7 @@
     }
 
     function fmtShort(ms) {
-        if (ms <= 0) return 'RACE ON!';
+        if (ms <= 0) return 'Ξεκίνησε!';
         var s = Math.floor(ms / 1000);
         var d = Math.floor(s / 86400);
         var h = Math.floor((s % 86400) / 3600);
@@ -193,9 +193,9 @@
         var now = Date.now();
         var race = getNextRace(now);
         if (!race) {
-            if (countdownNameEl) countdownNameEl.textContent = 'Season Complete';
-            if (countdownEl) countdownEl.textContent = '2027 TBA';
-            if (countdownMobileEl) countdownMobileEl.textContent = 'Done';
+            if (countdownNameEl) countdownNameEl.textContent = 'Η σεζόν ολοκληρώθηκε';
+            if (countdownEl) countdownEl.textContent = '2027 προσεχώς';
+            if (countdownMobileEl) countdownMobileEl.textContent = 'Τέλος';
             return;
         }
         var ms = race.ts - now;

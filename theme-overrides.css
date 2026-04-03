@@ -261,12 +261,13 @@
 
 [data-theme="light"] .latest-tab:hover {
     color: #1d1d1f !important;
+    background: rgba(14,76,166,0.06) !important;
 }
 
 [data-theme="light"] .latest-tab.active {
     color: #fff !important;
-    background: #0e4ca6 !important;
-    box-shadow: 0 1px 3px rgba(14,76,166,0.2) !important;
+    background: linear-gradient(135deg, #0e4ca6, #2563eb) !important;
+    box-shadow: 0 10px 24px rgba(14,76,166,0.18) !important;
 }
 
 /* ── Cards (Blog + Episode) — shadow-based depth ── */
