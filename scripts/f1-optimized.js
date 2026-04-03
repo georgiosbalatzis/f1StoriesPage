@@ -170,10 +170,17 @@
                 body: new FormData(contactForm),
                 headers: { Accept: 'application/json' }
             }).then(function (response) {
-                status.style.display = 'block';
-                if (!response.ok) throw new Error('submit failed');
-                success.style.display = 'flex';
-                contactForm.reset();
+                return response.json().then(function (data) {
+                    status.style.display = 'block';
+                    if (response.ok) {
+                        success.style.display = 'flex';
+                        contactForm.reset();
+                    } else {
+                        var msg = (data && data.errors && data.errors.map(function(e){ return e.message; }).join(', ')) || 'Σφάλμα αποστολής';
+                        error.querySelector('span').innerHTML = msg + ' — ή στείλε email στο <a href="mailto:myf1stories@gmail.com">myf1stories@gmail.com</a>';
+                        error.style.display = 'flex';
+                    }
+                });
             }).catch(function () {
                 status.style.display = 'block';
                 error.style.display = 'flex';
