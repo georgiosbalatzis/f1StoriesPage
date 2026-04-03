@@ -39,8 +39,10 @@
             var isLight = html.getAttribute('data-theme') === 'light';
             if (isLight) {
                 html.removeAttribute('data-theme');
+                sessionStorage.setItem('f1stories-theme', 'dark');
             } else {
                 html.setAttribute('data-theme', 'light');
+                sessionStorage.setItem('f1stories-theme', 'light');
             }
         });
     }

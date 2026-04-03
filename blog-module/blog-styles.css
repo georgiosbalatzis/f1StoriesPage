@@ -737,6 +737,9 @@ body {
     /* Auto card view on mobile for CSV tables */
     .table-container.scroll-view { display: none !important; }
     .table-container.card-view { display: block !important; }
+
+    /* Docx tables have no card view — keep scroll-view visible and let it scroll horizontally */
+    .docx-table-container .table-container.scroll-view { display: block !important; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 }
 
 
