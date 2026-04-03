@@ -188,12 +188,87 @@
 .related-section-title { font-family: 'Outfit','DM Sans',sans-serif; color: var(--blog-text-primary); font-size: 1.3rem; font-weight: 700; }
 .related-article-card { background: var(--blog-surface-raised); border-radius: var(--blog-radius-sm); overflow: hidden; border: 1px solid var(--blog-border); transition: all var(--blog-transition); height: 100%; }
 .related-article-card:hover { transform: translateY(-4px); box-shadow: var(--blog-shadow-md); }
-.related-article-card img { transition: transform 0.4s ease; }
+.related-card-media { position: relative; overflow: hidden; aspect-ratio: 16 / 9; background: var(--blog-surface); }
+.related-article-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+.related-card-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(7,7,10,0.12) 0%, rgba(7,7,10,0.58) 100%);
+    opacity: 0;
+    transition: opacity var(--blog-transition);
+    pointer-events: none;
+}
+.related-card-hover {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    color: #fff;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity var(--blog-transition), transform var(--blog-transition);
+    pointer-events: none;
+    text-align: center;
+}
+.related-card-hover-label {
+    font-family: 'Outfit','DM Sans',sans-serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+}
+.related-card-hover-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.88);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.related-card-hover-meta i { font-size: 0.72rem; }
+.related-article-card:hover .related-card-media::after,
+.related-card-link:focus-visible .related-card-media::after { opacity: 1; }
+.related-article-card:hover .related-card-hover,
+.related-card-link:focus-visible .related-card-hover {
+    opacity: 1;
+    transform: translateY(0);
+}
 .related-article-card:hover img { transform: scale(1.04); }
 .related-article-card .card-body { padding: 1rem 1.1rem; }
 .related-article-card h5 { color: var(--blog-text-primary); font-size: 0.92rem; margin-bottom: 0.5rem; line-height: 1.35; font-weight: 600; }
 .related-date-badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; color: var(--blog-text-tertiary); font-weight: 500; }
 .related-date-badge i { font-size: 0.62rem; color: var(--blog-accent); }
+.related-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: auto;
+}
+.related-card-read {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--blog-accent);
+    transition: gap var(--blog-transition);
+}
+.related-card-read i { font-size: 0.62rem; }
+.related-article-card:hover .related-card-read { gap: 0.5rem; }
+.related-card-author {
+    font-size: 0.7rem;
+    color: var(--blog-text-tertiary);
+    text-align: right;
+}
 
 /* ── Responsive ──────────────────────────────── */
 @media (max-width: 991px) {

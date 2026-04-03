@@ -2319,23 +2319,33 @@ if (!isMainThread) {
                 const relatedImagePath = related.image.substring(related.image.lastIndexOf('/') + 1);
                 const relDate = new Date(related.date);
                 const relDateStr = relDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                const relatedTitle = escapeHtmlAttribute(related.title);
+                const relatedAuthor = escapeHtmlAttribute(related.author);
+                const relatedReadTime = escapeHtmlAttribute(related.readingTime || '');
+                const hoverMeta = relatedReadTime
+                    ? `<span class="related-card-hover-meta"><i class="far fa-clock"></i> ${relatedReadTime}</span>`
+                    : '';
                 
                 return `
             <div class="col-md-4 mb-4">
-                <a href="${related.url}" class="related-card-link" style="text-decoration:none;color:inherit;display:block;height:100%;">
+                <a href="${related.url}" class="related-card-link" style="display:block;height:100%;">
                     <div class="related-article-card">
-                        <div style="position:relative;overflow:hidden;">
+                        <div class="related-card-media">
                             <img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}"
-                                 alt="${related.title}"
+                                 alt="${relatedTitle}"
                                  loading="lazy"
                                  onerror="this.src='${CONFIG.DEFAULT_BLOG_IMAGE}';this.onerror=null;">
+                            <div class="related-card-hover">
+                                <span class="related-card-hover-label">Περισσότερα</span>
+                                ${hoverMeta}
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> ${relDateStr}</div>
-                            <h5>${related.title}</h5>
-                            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
-                                <span style="font-size:0.78rem;font-weight:500;color:var(--blog-accent,#3b82f6);">Read More <i class="fas fa-arrow-right" style="font-size:0.6rem;margin-left:0.2rem;"></i></span>
-                                <span style="font-size:0.7rem;color:var(--blog-text-tertiary,rgba(255,255,255,0.4));">${related.author}</span>
+                            <h5>${relatedTitle}</h5>
+                            <div class="related-card-footer">
+                                <span class="related-card-read">Read More <i class="fas fa-arrow-right"></i></span>
+                                <span class="related-card-author">${relatedAuthor}</span>
                             </div>
                         </div>
                     </div>
