@@ -27,6 +27,12 @@
   var deferredPrompt = null;
   var bannerShown = false;
 
+  // ── Detect page type ──────────────────────────
+  var path = window.location.pathname;
+  var isTopPage = path === '/' || path === '/index.html' ||
+                  path.indexOf('/standings') !== -1 ||
+                  (path.indexOf('/blog-module/blog/') !== -1 && path.indexOf('/blog-entries/') === -1);
+
   // ── Detect platform ───────────────────────────
   var ua = navigator.userAgent;
   var isIOS = /iphone|ipad|ipod/i.test(ua) && !window.MSStream;
@@ -62,22 +68,25 @@
   // ── Inject banner styles ──────────────────────
   function injectStyles() {
     var s = document.createElement('style');
+    var posStyles = isTopPage
+      ? 'top:58px;left:0;right:0;border-bottom:1px solid rgba(255,255,255,.1);box-shadow:0 4px 24px rgba(0,0,0,.5);transform:translateY(-110%);padding:.85rem 1rem;'
+      : 'bottom:0;left:0;right:0;border-top:1px solid rgba(255,255,255,.1);box-shadow:0 -4px 24px rgba(0,0,0,.5);transform:translateY(110%);padding:max(.85rem,env(safe-area-inset-bottom,.85rem)) 1rem .85rem;';
+    var lightBorder = isTopPage
+      ? 'border-bottom-color:rgba(0,0,0,.08);'
+      : 'border-top-color:rgba(0,0,0,.08);';
     s.textContent = [
       '#pwa-install-banner{',
-        'position:fixed;bottom:0;left:0;right:0;z-index:10000;',
+        'position:fixed;z-index:10000;',
         'display:flex;align-items:center;gap:.75rem;',
-        'padding:max(.85rem,env(safe-area-inset-bottom,.85rem)) 1rem .85rem;',
+        posStyles,
         'background:rgba(22,22,24,.97);',
         'backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);',
-        'border-top:1px solid rgba(255,255,255,.1);',
-        'box-shadow:0 -4px 24px rgba(0,0,0,.5);',
-        'transform:translateY(100%);',
         'transition:transform .35s cubic-bezier(.2,.8,.3,1);',
         'font-family:system-ui,-apple-system,sans-serif;',
       '}',
       '[data-theme="light"] #pwa-install-banner{',
         'background:rgba(255,255,255,.97);',
-        'border-top-color:rgba(0,0,0,.08);',
+        lightBorder,
       '}',
       '#pwa-install-banner.visible{transform:translateY(0);}',
       '.pwa-banner__icon img{width:40px;height:40px;border-radius:10px;flex-shrink:0;}',
@@ -101,15 +110,9 @@
         'border-radius:4px;',
       '}',
       '.pwa-banner__close:active{background:rgba(255,255,255,.08);}',
-      /* Push fixed bottom-left buttons (theme toggle + scroll-to-top) above the banner */
-      'body.pwa-banner-open .theme-toggle-btn{',
-        'bottom:calc(var(--pwa-h,72px) + var(--floating-btn-bottom,1rem)) !important;',
-        'transition:bottom .35s cubic-bezier(.2,.8,.3,1),transform .25s,color .25s,border-color .25s !important;',
-      '}',
-      'body.pwa-banner-open .scroll-to-top-btn{',
-        'bottom:calc(var(--pwa-h,72px) + var(--floating-btn-bottom,1rem) + var(--floating-btn-size,44px) + var(--floating-btn-gap,12px)) !important;',
-        'transition:bottom .35s cubic-bezier(.2,.8,.3,1),opacity .4s,visibility .4s,transform .4s cubic-bezier(.34,1.56,.64,1) !important;',
-      '}'
+      /* Push fixed bottom buttons above the banner (bottom-variant only) */
+      isTopPage ? '' : 'body.pwa-banner-open .theme-toggle-btn{bottom:calc(var(--pwa-h,72px) + var(--floating-btn-bottom,1rem)) !important;transition:bottom .35s cubic-bezier(.2,.8,.3,1),transform .25s,color .25s,border-color .25s !important;}',
+      isTopPage ? '' : 'body.pwa-banner-open .scroll-to-top-btn{bottom:calc(var(--pwa-h,72px) + var(--floating-btn-bottom,1rem) + var(--floating-btn-size,44px) + var(--floating-btn-gap,12px)) !important;transition:bottom .35s cubic-bezier(.2,.8,.3,1),opacity .4s,visibility .4s,transform .4s cubic-bezier(.34,1.56,.64,1) !important;}'
     ].join('');
     document.head.appendChild(s);
   }
@@ -166,20 +169,23 @@
     setTimeout(function () { if (banner.parentNode) banner.parentNode.removeChild(banner); }, 400);
   }
 
-  // ── Android: capture install prompt ──────────
+  // ── Android/Desktop: capture install prompt ──
   if (isAndroid || (!isIOS && !isIOSSafari)) {
-    window.addEventListener('beforeinstallprompt', function (e) {
-      e.preventDefault();
+    var visits = parseInt(localStorage.getItem('f1-visits') || '0', 10) + 1;
+    localStorage.setItem('f1-visits', visits);
+    var delay = visits >= 2 ? 3000 : 8000;
+
+    function onPromptReady(e) {
       deferredPrompt = e;
-      // Show after 30s or on second page load
-      var visits = parseInt(sessionStorage.getItem('f1-visits') || '0', 10) + 1;
-      sessionStorage.setItem('f1-visits', visits);
-      if (visits >= 2) {
-        setTimeout(function () { showBanner(false); }, 3000);
-      } else {
-        setTimeout(function () { showBanner(false); }, 30000);
-      }
-    });
+      setTimeout(function () { showBanner(false); }, delay);
+    }
+
+    // Use pre-captured event if already fired (before deferred script loaded)
+    if (window.__pwaPrompt) {
+      onPromptReady(window.__pwaPrompt);
+    } else {
+      window.addEventListener('beforeinstallprompt', onPromptReady);
+    }
   }
 
   // ── iOS Safari: show manual instructions ─────
