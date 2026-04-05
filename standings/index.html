@@ -226,6 +226,46 @@
         .quali-skeleton-grid { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(280px, 2.4fr) minmax(150px, 1fr); gap: 1rem; align-items: center; }
         .quali-skeleton-side { display: flex; align-items: center; gap: 0.7rem; }
         .quali-skeleton-track { height: 74px; border-radius: 14px; }
+        .quali-view-switch { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
+        .quali-view-tabs { display: inline-flex; gap: 0.32rem; padding: 5px; border-radius: 999px; background: var(--st-surface); border: 1px solid var(--st-border); }
+        .quali-view-tab { appearance: none; -webkit-appearance: none; border: none; background: transparent; color: var(--st-text-secondary); min-height: 40px; padding: 0.55rem 0.95rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all var(--st-transition); }
+        .quali-view-tab:hover { color: var(--st-text); background: rgba(59,130,246,0.08); }
+        .quali-view-tab:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; }
+        .quali-view-tab.active { color: #fff; background: linear-gradient(135deg, var(--st-accent), #4f8df3); box-shadow: 0 8px 18px rgba(59,130,246,0.24); }
+        [data-theme="light"] .quali-view-tab:hover { background: rgba(14,76,166,0.06); }
+        [data-theme="light"] .quali-view-tab.active { box-shadow: 0 8px 18px rgba(14,76,166,0.18); }
+        .quali-race-card { background: var(--st-surface-raised); border: 1px solid var(--st-border); border-radius: var(--st-radius); box-shadow: var(--st-shadow-sm); padding: 1rem; }
+        .quali-race-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+        .quali-race-head-copy { min-width: 0; }
+        .quali-race-head-title { font-family: 'Outfit',sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--st-text); margin: 0; }
+        .quali-race-head-note { font-size: 0.75rem; color: var(--st-text-muted); margin: 0.18rem 0 0; }
+        .quali-race-controls { display: flex; flex-direction: column; gap: 0.35rem; min-width: min(100%, 260px); }
+        .quali-race-controls-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--st-text-muted); }
+        .quali-race-select { width: 100%; min-height: 46px; padding: 0.72rem 0.9rem; border-radius: 12px; border: 1px solid var(--st-border); background: var(--st-surface); color: var(--st-text); font-size: 0.88rem; font-weight: 600; }
+        .quali-race-select:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; }
+        .quali-race-summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.9rem 1rem; border-radius: 16px; background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(59,130,246,0.03)); border: 1px solid rgba(59,130,246,0.12); margin-bottom: 1rem; }
+        .quali-race-summary-title { font-family: 'Outfit',sans-serif; font-size: 1rem; font-weight: 700; color: var(--st-text); line-height: 1.1; }
+        .quali-race-summary-sub { font-size: 0.74rem; color: var(--st-text-secondary); margin-top: 0.22rem; }
+        .quali-race-summary-stats { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 0.75rem; }
+        .quali-race-summary-stat { display: flex; flex-direction: column; align-items: flex-end; gap: 0.14rem; }
+        .quali-race-summary-label { font-size: 0.64rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--st-text-muted); }
+        .quali-race-summary-value { font-family: 'Outfit',sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--st-text); }
+        .quali-race-chart-scroll { overflow-x: auto; overflow-y: visible; padding-bottom: 0.3rem; }
+        .quali-race-chart { display: grid; grid-template-columns: repeat(var(--pair-count), minmax(96px, 1fr)); gap: 1rem; min-width: 980px; }
+        .quali-race-pair { position: relative; min-height: 400px; padding: 0 0.2rem; }
+        .quali-race-pair::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: var(--st-border); transform: translateX(-0.5px); }
+        .quali-race-driver-pin { position: absolute; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 0.38rem; z-index: 2; }
+        .quali-race-avatar { width: 58px; height: 58px; border-radius: 50%; overflow: hidden; background: rgba(var(--driver-color), 0.14); border: 2px solid rgba(var(--driver-color), 0.24); display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 24px rgba(0,0,0,0.16); }
+        .quali-race-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .quali-race-avatar-fallback { font-family: 'Outfit',sans-serif; font-size: 0.92rem; font-weight: 800; color: rgb(var(--driver-color)); }
+        .quali-race-code { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; padding: 0.18rem 0.55rem; border-radius: 999px; background: rgb(var(--driver-color)); color: #fff; font-family: 'Outfit',sans-serif; font-size: 0.72rem; font-weight: 800; line-height: 1; letter-spacing: 0.06em; text-transform: uppercase; box-shadow: var(--st-shadow-sm); }
+        .quali-race-name { max-width: 82px; font-size: 0.64rem; color: var(--st-text-muted); text-align: center; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .quali-race-gap-line { position: absolute; left: 50%; width: 3px; border-radius: 999px; background: linear-gradient(180deg, rgba(var(--top-color), 0.6), rgba(var(--bottom-color), 0.6)); transform: translateX(-50%); opacity: 0.95; }
+        .quali-race-gap-badge { position: absolute; left: 50%; transform: translate(-50%, -50%); display: inline-flex; flex-direction: column; align-items: center; gap: 0.16rem; padding: 0.42rem 0.55rem; border-radius: 12px; background: rgba(17,17,19,0.94); color: #fff; box-shadow: 0 14px 28px rgba(0,0,0,0.24); z-index: 3; min-width: 82px; }
+        [data-theme="light"] .quali-race-gap-badge { background: rgba(29,29,31,0.94); }
+        .quali-race-gap-value { font-family: 'Outfit',sans-serif; font-size: 0.82rem; font-weight: 800; line-height: 1; }
+        .quali-race-gap-stage { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.74); }
+        .quali-race-team { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; font-size: 0.68rem; font-weight: 700; color: var(--st-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .lap1-gains-wrap { display: flex; flex-direction: column; gap: 1rem; }
         .lap1-gains-intro, .lap1-overview-card, .lap1-gain-card, .lap1-skeleton-card {
@@ -416,6 +456,15 @@
             .quali-h2h-count { font-size: 1.35rem; }
             .quali-driver-code { font-size: 1rem; }
             .quali-headshot, .quali-avatar-fallback { width: 42px; height: 42px; }
+            .quali-view-switch { justify-content: flex-start; }
+            .quali-race-head { flex-direction: column; align-items: flex-start; }
+            .quali-race-controls { width: 100%; min-width: 0; }
+            .quali-race-summary { flex-direction: column; align-items: flex-start; }
+            .quali-race-summary-stats { justify-content: flex-start; }
+            .quali-race-summary-stat { align-items: flex-start; }
+            .quali-race-chart { min-width: 860px; gap: 0.85rem; }
+            .quali-race-pair { min-height: 372px; }
+            .quali-race-avatar { width: 52px; height: 52px; }
             .lap1-title { font-size: 1.38rem; }
             .lap1-gains-intro { padding: 0.95rem; }
             .lap1-overview-card { padding: 0.9rem; }
@@ -466,6 +515,15 @@
             .quali-dot { width: 10px; height: 10px; }
             .quali-dot-tooltip { min-width: 90px; max-width: 150px; padding: 0.42rem 0.5rem; }
             .quali-dot-tooltip-session { font-size: 0.6rem; }
+            .quali-view-tabs { width: 100%; }
+            .quali-view-tab { flex: 1; padding: 0.55rem 0.7rem; }
+            .quali-race-card { padding: 0.85rem; }
+            .quali-race-summary { padding: 0.8rem 0.85rem; }
+            .quali-race-chart { min-width: 720px; gap: 0.72rem; }
+            .quali-race-pair { min-height: 344px; }
+            .quali-race-avatar { width: 46px; height: 46px; }
+            .quali-race-code { min-width: 38px; font-size: 0.68rem; }
+            .quali-race-name { max-width: 74px; font-size: 0.6rem; }
             .lap1-sub { font-size: 0.84rem; }
             .lap1-overview-meta { font-size: 0.72rem; }
             .lap1-chart-shell { min-width: 500px; min-height: 292px; }
@@ -640,7 +698,7 @@
     var constructorsTable = document.getElementById('constructors-table');
     var qualifyingGapsTable = document.getElementById('qualifying-gaps-table');
     var qualifyingGapsYear = document.getElementById('qualifying-gaps-year');
-    var qualifyingGapsState = { loaded: false, loading: false };
+    var qualifyingGapsState = { loaded: false, loading: false, overviewRows: [], raceRows: [], activeView: 'overview', selectedSessionKey: '' };
     var lap1GainsTable = document.getElementById('lap1-gains-table');
     var lap1GainsYear = document.getElementById('lap1-gains-year');
     var lap1GainsState = { loaded: false, loading: false, rows: [], activeView: 'overview', selectedSessionKey: '' };
@@ -807,6 +865,11 @@
         return fallbackColor ? normalizeHexColor(fallbackColor) : '3b82f6';
     }
 
+    function getCanonicalTeamName(teamName) {
+        var teamId = resolveTeamId('', teamName);
+        return teamId && TEAMS[teamId] ? TEAMS[teamId].name : (teamName || '');
+    }
+
     function getTeamLogo(constructorId) {
         var t = TEAMS[constructorId];
         return t ? t.logo : '';
@@ -952,6 +1015,89 @@
         });
         var parsed = candidates.map(parseTimeSeconds).filter(isFiniteNumber);
         return parsed.length ? Math.min.apply(null, parsed) : NaN;
+    }
+
+    function getFirstQualifyingStageTime(result, keys) {
+        var parsed = (keys || []).map(function(key) {
+            return parseTimeSeconds(result && result[key]);
+        }).filter(isFiniteNumber);
+        return parsed.length ? Math.min.apply(null, parsed) : NaN;
+    }
+
+    function getQualifyingStageTimes(result) {
+        return {
+            q1: getFirstQualifyingStageTime(result, ['q1', 'q1_time', 'q1_lap_time', 'sq1', 'sq1_time', 'sq1_lap_time']),
+            q2: getFirstQualifyingStageTime(result, ['q2', 'q2_time', 'q2_lap_time', 'sq2', 'sq2_time', 'sq2_lap_time']),
+            q3: getFirstQualifyingStageTime(result, ['q3', 'q3_time', 'q3_lap_time', 'sq3', 'sq3_time', 'sq3_lap_time']),
+            bestTime: getBestQualifyingTime(result)
+        };
+    }
+
+    function isSprintShootoutSession(session) {
+        var text = [
+            session && session.session_type,
+            session && session.session_name,
+            session && session.meeting_name
+        ].join(' ').toLowerCase();
+        return text.indexOf('shootout') !== -1;
+    }
+
+    function getQualifyingStageLabel(stageKey, session) {
+        if (!stageKey || stageKey === 'best') return 'Best';
+        var prefix = isSprintShootoutSession(session) ? 'SQ' : 'Q';
+        return prefix + stageKey.slice(1);
+    }
+
+    function getSharedQualifyingComparison(entryA, entryB, session) {
+        if (!entryA || !entryB) return null;
+
+        var stages = ['q3', 'q2', 'q1'];
+        var stageKey = 'best';
+        var timeA = NaN;
+        var timeB = NaN;
+
+        for (var i = 0; i < stages.length; i++) {
+            var candidateStage = stages[i];
+            var candidateA = entryA.stageTimes ? entryA.stageTimes[candidateStage] : NaN;
+            var candidateB = entryB.stageTimes ? entryB.stageTimes[candidateStage] : NaN;
+            if (isFiniteNumber(candidateA) && isFiniteNumber(candidateB)) {
+                stageKey = candidateStage;
+                timeA = candidateA;
+                timeB = candidateB;
+                break;
+            }
+        }
+
+        if (!isFiniteNumber(timeA) || !isFiniteNumber(timeB)) {
+            timeA = entryA.bestTime;
+            timeB = entryB.bestTime;
+            stageKey = 'best';
+        }
+
+        if (!isFiniteNumber(timeA) || !isFiniteNumber(timeB)) return null;
+
+        var fasterEntry = entryA;
+        var slowerEntry = entryB;
+        var fasterTime = timeA;
+        var slowerTime = timeB;
+
+        if (timeB < timeA || (Math.abs(timeA - timeB) <= 0.000001 && deriveAcronym(entryB.driver).localeCompare(deriveAcronym(entryA.driver)) < 0)) {
+            fasterEntry = entryB;
+            slowerEntry = entryA;
+            fasterTime = timeB;
+            slowerTime = timeA;
+        }
+
+        var gap = slowerTime - fasterTime;
+        if (!isFiniteNumber(gap) || gap < 0) return null;
+
+        return {
+            fasterEntry: fasterEntry,
+            slowerEntry: slowerEntry,
+            gap: gap,
+            stageKey: stageKey,
+            stageLabel: getQualifyingStageLabel(stageKey, session)
+        };
     }
 
     function isQualifyingSession(session) {
@@ -1466,7 +1612,7 @@
         return pair;
     }
 
-    function buildQualifyingGapPairs(sessions, drivers, results) {
+    function buildQualifyingSessionTeams(sessions, drivers, results) {
         var sessionMap = {};
         var sessionTeams = {};
         var driverLookup = buildDriverLookup(drivers);
@@ -1480,25 +1626,53 @@
 
         (results || []).forEach(function(result) {
             var sessionKey = String(result.session_key);
+            if (!sessionMap[sessionKey]) return;
+
             var driverMap = driverLookup[sessionKey] || {};
-            var driver = driverMap[result.driver_number];
-            var bestTime = getBestQualifyingTime(result);
-            if (!driver || !driver.teamName || !isFiniteNumber(bestTime)) return;
+            var sourceDriver = driverMap[result.driver_number];
+            var stageTimes = getQualifyingStageTimes(result);
+            if (!sourceDriver || !sourceDriver.teamName || !isFiniteNumber(stageTimes.bestTime)) return;
 
             if (!sessionTeams[sessionKey]) sessionTeams[sessionKey] = {};
-            var teamKey = (driver.teamName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+            var resolvedTeamId = resolveTeamId('', sourceDriver.teamName || '');
+            var teamKey = resolvedTeamId || (sourceDriver.teamName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            var canonicalTeamColor = getCanonicalTeamColor(resolvedTeamId, sourceDriver.teamName || '', sourceDriver.teamColor || '');
+            var canonicalTeamName = getCanonicalTeamName(sourceDriver.teamName || '');
+            var driver = {
+                driverNumber: sourceDriver.driverNumber != null ? sourceDriver.driverNumber : result.driver_number,
+                fullName: sourceDriver.fullName || '',
+                firstName: sourceDriver.firstName || '',
+                lastName: sourceDriver.lastName || '',
+                acronym: sourceDriver.acronym || '',
+                headshot: sourceDriver.headshot || '',
+                teamName: canonicalTeamName || sourceDriver.teamName || '',
+                teamColor: canonicalTeamColor,
+                meetingKey: sourceDriver.meetingKey || ''
+            };
             var driverKey = safeDriverNumber(driver);
+
             if (!sessionTeams[sessionKey][teamKey]) sessionTeams[sessionKey][teamKey] = {};
+
             var existingEntry = sessionTeams[sessionKey][teamKey][driverKey];
-            if (!existingEntry || bestTime < existingEntry.bestTime) {
+            if (!existingEntry || stageTimes.bestTime < existingEntry.bestTime) {
                 sessionTeams[sessionKey][teamKey][driverKey] = {
                     driver: driver,
-                    bestTime: bestTime
+                    bestTime: stageTimes.bestTime,
+                    stageTimes: stageTimes
                 };
             }
         });
 
+        return {
+            sessionMap: sessionMap,
+            sessionTeams: sessionTeams
+        };
+    }
+
+    function buildQualifyingGapOverviewRows(sessionMap, sessionTeams) {
         var pairs = {};
+
         Object.keys(sessionTeams).forEach(function(sessionKey) {
             var teamGroups = sessionTeams[sessionKey];
             var sessionInfo = sessionMap[sessionKey] || {};
@@ -1511,12 +1685,13 @@
                 });
                 if (entries.length !== 2) return;
 
-                var faster = entries[0];
-                var slower = entries[1];
-                var gap = slower.bestTime - faster.bestTime;
-                if (!isFiniteNumber(gap) || gap < 0) return;
+                var comparison = getSharedQualifyingComparison(entries[0], entries[1], sessionInfo.session || {});
+                if (!comparison) return;
 
+                var faster = comparison.fasterEntry;
+                var slower = comparison.slowerEntry;
                 var pairKey = buildPairKey(faster.driver, slower.driver, teamKey);
+
                 if (!pairs[pairKey]) {
                     pairs[pairKey] = createPairRecord(
                         faster.driver.teamName || slower.driver.teamName,
@@ -1534,15 +1709,16 @@
                 pair.sessions.push({
                     sessionKey: sessionKey,
                     sessionIndex: sessionInfo.index || 0,
-                    label: getSessionLabel(sessionInfo.session || {}),
-                    gap: gap,
+                    label: getSessionLabel(sessionInfo.session || {}) + ' · ' + comparison.stageLabel,
+                    gap: comparison.gap,
                     fasterDriverNumber: fasterKey,
-                    slowerDriverNumber: slowerKey
+                    slowerDriverNumber: slowerKey,
+                    stageLabel: comparison.stageLabel
                 });
-                pair.totalGap += gap;
+                pair.totalGap += comparison.gap;
                 pair.drivers[fasterKey].wins += 1;
-                pair.drivers[fasterKey].signedTotal -= gap;
-                pair.drivers[slowerKey].signedTotal += gap;
+                pair.drivers[fasterKey].signedTotal -= comparison.gap;
+                pair.drivers[slowerKey].signedTotal += comparison.gap;
             });
         });
 
@@ -1591,16 +1767,82 @@
         });
     }
 
-    function renderQualifyingGaps(rows) {
-        if (!rows || !rows.length) {
-            qualifyingGapsTable.innerHTML = '<div class="quali-empty-card">'
-                + '<i class="fas fa-stopwatch"></i>'
-                + '<p>Δεν υπάρχουν ακόμη αρκετά qualifying δεδομένα για teammate gaps.</p>'
-                + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed qualifying ή sprint shootout sessions.</p>'
-                + '</div>';
-            return;
-        }
+    function buildQualifyingGapRaceRows(sessionMap, sessionTeams) {
+        return Object.keys(sessionMap).map(function(sessionKey) {
+            var sessionInfo = sessionMap[sessionKey] || {};
+            var session = sessionInfo.session || {};
+            var teamGroups = sessionTeams[sessionKey] || {};
+            var pairs = [];
 
+            Object.keys(teamGroups).forEach(function(teamKey) {
+                var entries = Object.keys(teamGroups[teamKey]).map(function(driverKey) {
+                    return teamGroups[teamKey][driverKey];
+                }).sort(function(a, b) {
+                    return a.bestTime - b.bestTime;
+                });
+                if (entries.length !== 2) return;
+
+                var comparison = getSharedQualifyingComparison(entries[0], entries[1], session);
+                if (!comparison) return;
+
+                var faster = comparison.fasterEntry.driver;
+                var slower = comparison.slowerEntry.driver;
+                var teamName = faster.teamName || slower.teamName || 'Team';
+                var teamColor = faster.teamColor || slower.teamColor || '3b82f6';
+
+                pairs.push({
+                    teamKey: teamKey,
+                    teamName: teamName,
+                    teamColor: teamColor,
+                    gap: comparison.gap,
+                    stageLabel: comparison.stageLabel,
+                    faster: {
+                        driverNumber: faster.driverNumber,
+                        acronym: deriveAcronym(faster),
+                        fullName: getDriverDisplayName(faster),
+                        headshot: faster.headshot || '',
+                        teamName: teamName
+                    },
+                    slower: {
+                        driverNumber: slower.driverNumber,
+                        acronym: deriveAcronym(slower),
+                        fullName: getDriverDisplayName(slower),
+                        headshot: slower.headshot || '',
+                        teamName: teamName
+                    }
+                });
+            });
+
+            pairs.sort(function(a, b) {
+                if (a.gap !== b.gap) return a.gap - b.gap;
+                return a.teamName.localeCompare(b.teamName);
+            });
+
+            if (!pairs.length) return null;
+
+            var totalGap = pairs.reduce(function(sum, pair) {
+                return sum + pair.gap;
+            }, 0);
+
+            return {
+                sessionKey: sessionKey,
+                index: sessionInfo.index || 0,
+                meetingName: session.meeting_name || session.circuit_short_name || session.country_name || session.location || 'Qualifying',
+                sessionName: session.session_name || session.session_type || 'Qualifying',
+                sessionLabel: getSessionLabel(session),
+                dateLabel: formatSessionDateShort(session),
+                pairCount: pairs.length,
+                avgGap: totalGap / pairs.length,
+                smallestGap: pairs[0].gap,
+                biggestGap: pairs[pairs.length - 1].gap,
+                pairs: pairs
+            };
+        }).filter(Boolean).sort(function(a, b) {
+            return a.index - b.index;
+        });
+    }
+
+    function renderQualifyingGapOverview(rows) {
         var maxSessionGap = rows.reduce(function(max, row) {
             var rowMax = row.dots.reduce(function(acc, dot) {
                 return Math.max(acc, Math.abs(dot.signedGap));
@@ -1609,12 +1851,13 @@
         }, 0);
         var scale = Math.max(0.2, roundUp(maxSessionGap || 0.2, 0.05));
         var laneOffsets = [28, 40, 52, 64, 34, 58];
-
         var html = '<div class="quali-gaps-list">';
+
         rows.forEach(function(row) {
             var leftColor = getDriverAccentColor(row.left, row.teamColor, 30);
             var rightColor = getDriverAccentColor(row.right, row.teamColor, -20);
             if (leftColor === rightColor) rightColor = adjustHexColor(row.teamColor, -42);
+
             var pairColor = hexToRgbChannels(row.teamColor);
             var leftChannels = hexToRgbChannels(leftColor);
             var rightChannels = hexToRgbChannels(rightColor);
@@ -1665,7 +1908,102 @@
                 + '</div>'
                 + '</div>';
         });
-        qualifyingGapsTable.innerHTML = html + '</div>';
+
+        return html + '</div>';
+    }
+
+    function renderQualifyingRaceDriverPin(driver, topPct, driverChannels) {
+        return '<div class="quali-race-driver-pin" style="top:' + topPct.toFixed(2) + '%;--driver-color:' + esc(driverChannels) + ';">'
+            + '<div class="quali-race-avatar">'
+            + (driver.headshot
+                ? '<img src="' + esc(driver.headshot) + '" alt="' + esc(driver.fullName) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+                    + '<div class="quali-race-avatar-fallback" style="display:none;">' + esc(driver.acronym) + '</div>'
+                : '<div class="quali-race-avatar-fallback">' + esc(driver.acronym) + '</div>')
+            + '</div>'
+            + '<span class="quali-race-code">' + esc(driver.acronym) + '</span>'
+            + '<span class="quali-race-name">' + esc(driver.fullName) + '</span>'
+            + '</div>';
+    }
+
+    function renderQualifyingGapRaceView(rows, selectedRow) {
+        var selectorOptions = rows.slice().reverse().map(function(row) {
+            return '<option value="' + esc(row.sessionKey) + '"' + (String(row.sessionKey) === String(selectedRow.sessionKey) ? ' selected' : '') + '>' + esc(row.meetingName + ' · ' + row.sessionName + (row.dateLabel ? ' · ' + row.dateLabel : '')) + '</option>';
+        }).join('');
+        var maxGap = selectedRow.pairs.reduce(function(max, pair) {
+            return Math.max(max, pair.gap);
+        }, 0);
+        var chartMinWidth = Math.max(980, selectedRow.pairs.length * 116);
+        var html = '<div class="quali-race-card">'
+            + '<div class="quali-race-head"><div class="quali-race-head-copy"><h3 class="quali-race-head-title">Teammate Gaps By Session</h3><p class="quali-race-head-note">Ο ταχύτερος teammate είναι επάνω, ο πιο αργός κάτω, και τα teams ταξινομούνται από το μικρότερο στο μεγαλύτερο gap.</p></div><label class="quali-race-controls"><span class="quali-race-controls-label">Available sessions</span><select class="quali-race-select" data-quali-race-select aria-label="Επιλογή qualifying session για teammate gaps">' + selectorOptions + '</select></label></div>'
+            + '<div class="quali-race-summary"><div><div class="quali-race-summary-title">' + esc(selectedRow.meetingName) + '</div><div class="quali-race-summary-sub">' + esc(selectedRow.sessionName + (selectedRow.dateLabel ? ' · ' + selectedRow.dateLabel : '')) + '</div></div><div class="quali-race-summary-stats"><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Teams</span><span class="quali-race-summary-value">' + esc(String(selectedRow.pairCount)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Smallest</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.smallestGap, true)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Biggest</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.biggestGap, true)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Average</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.avgGap, true)) + '</span></div></div></div>'
+            + '<div class="quali-race-chart-scroll"><div class="quali-race-chart" style="--pair-count:' + selectedRow.pairCount + ';min-width:' + chartMinWidth + 'px;">';
+
+        selectedRow.pairs.forEach(function(pair) {
+            var fasterColor = getDriverAccentColor(pair.faster, pair.teamColor, 24);
+            var slowerColor = getDriverAccentColor(pair.slower, pair.teamColor, -18);
+            var topColor = fasterColor;
+            var bottomColor = slowerColor === fasterColor ? adjustHexColor(pair.teamColor, -40) : slowerColor;
+            var topChannels = hexToRgbChannels(topColor);
+            var bottomChannels = hexToRgbChannels(bottomColor);
+            var spanPct = maxGap > 0 ? 18 + (pair.gap / maxGap) * 58 : 18;
+            var topPct = 12;
+            var bottomPct = clampNumber(topPct + spanPct, topPct + 18, 88);
+            var badgePct = (topPct + bottomPct) / 2;
+
+            html += '<article class="quali-race-pair" style="--top-color:' + esc(topChannels) + ';--bottom-color:' + esc(bottomChannels) + ';">'
+                + renderQualifyingRaceDriverPin(pair.faster, topPct, topChannels)
+                + '<div class="quali-race-gap-line" style="top:' + topPct.toFixed(2) + '%;height:' + (bottomPct - topPct).toFixed(2) + '%;"></div>'
+                + '<div class="quali-race-gap-badge" style="top:' + badgePct.toFixed(2) + '%;"><span class="quali-race-gap-value">' + esc(formatSignedGap(pair.gap, true)) + '</span><span class="quali-race-gap-stage">(' + esc(pair.stageLabel) + ')</span></div>'
+                + renderQualifyingRaceDriverPin(pair.slower, bottomPct, bottomChannels)
+                + '<div class="quali-race-team">' + esc(pair.teamName) + '</div>'
+                + '</article>';
+        });
+
+        return html + '</div></div></div>';
+    }
+
+    function renderQualifyingGaps(data) {
+        qualifyingGapsState.overviewRows = data && data.overviewRows ? data.overviewRows : [];
+        qualifyingGapsState.raceRows = data && data.raceRows ? data.raceRows : [];
+
+        var overviewRows = qualifyingGapsState.overviewRows;
+        var raceRows = qualifyingGapsState.raceRows;
+
+        if ((!overviewRows || !overviewRows.length) && (!raceRows || !raceRows.length)) {
+            qualifyingGapsTable.innerHTML = '<div class="quali-empty-card">'
+                + '<i class="fas fa-stopwatch"></i>'
+                + '<p>Δεν υπάρχουν ακόμη αρκετά qualifying δεδομένα για teammate gaps.</p>'
+                + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed qualifying ή sprint shootout sessions.</p>'
+                + '</div>';
+            return;
+        }
+
+        if (!qualifyingGapsState.activeView) qualifyingGapsState.activeView = 'overview';
+        if (!raceRows.length) qualifyingGapsState.activeView = 'overview';
+        if (raceRows.length && (!qualifyingGapsState.selectedSessionKey || !raceRows.some(function(row) { return String(row.sessionKey) === String(qualifyingGapsState.selectedSessionKey); }))) {
+            qualifyingGapsState.selectedSessionKey = raceRows[raceRows.length - 1].sessionKey;
+        }
+
+        var selectedRow = raceRows.filter(function(row) {
+            return String(row.sessionKey) === String(qualifyingGapsState.selectedSessionKey);
+        })[0] || raceRows[raceRows.length - 1];
+
+        if (!overviewRows.length && selectedRow) qualifyingGapsState.activeView = 'race-detail';
+
+        var activeView = qualifyingGapsState.activeView === 'race-detail' && selectedRow ? 'race-detail' : 'overview';
+        var viewContent = activeView === 'race-detail'
+            ? renderQualifyingGapRaceView(raceRows, selectedRow)
+            : renderQualifyingGapOverview(overviewRows);
+        var html = '';
+
+        if (raceRows.length) {
+            html = '<div class="quali-view-switch"><div class="quali-view-tabs" role="tablist" aria-label="Qualifying gaps views">'
+                + '<button class="quali-view-tab' + (activeView === 'overview' ? ' active' : '') + '" type="button" data-quali-view="overview" role="tab" aria-selected="' + (activeView === 'overview' ? 'true' : 'false') + '">Overview</button>'
+                + '<button class="quali-view-tab' + (activeView === 'race-detail' ? ' active' : '') + '" type="button" data-quali-view="race-detail" role="tab" aria-selected="' + (activeView === 'race-detail' ? 'true' : 'false') + '">By Race</button>'
+                + '</div></div>';
+        }
+
+        qualifyingGapsTable.innerHTML = html + viewContent;
     }
 
     function showQualifyingError() {
@@ -1685,7 +2023,12 @@
                 return new Date(a.date_start || a.date || 0) - new Date(b.date_start || b.date || 0);
             });
 
-            if (!qualifyingSessions.length) return [];
+            if (!qualifyingSessions.length) {
+                return {
+                    overviewRows: [],
+                    raceRows: []
+                };
+            }
 
             var sessionKeys = qualifyingSessions.map(function(session) {
                 return session.session_key;
@@ -1695,7 +2038,11 @@
                 fetchOpenF1BySessionKeys('drivers', sessionKeys),
                 fetchOpenF1BySessionKeys('session_result', sessionKeys)
             ]).then(function(payload) {
-                return buildQualifyingGapPairs(qualifyingSessions, payload[0], payload[1]);
+                var built = buildQualifyingSessionTeams(qualifyingSessions, payload[0], payload[1]);
+                return {
+                    overviewRows: buildQualifyingGapOverviewRows(built.sessionMap, built.sessionTeams),
+                    raceRows: buildQualifyingGapRaceRows(built.sessionMap, built.sessionTeams)
+                };
             });
         });
     }
@@ -1708,8 +2055,8 @@
         qualifyingGapsState.loading = true;
         qualifyingGapsTable.innerHTML = createQualifyingSkeletonRows(6);
 
-        loadQualifyingGapRows().then(function(rows) {
-            renderQualifyingGaps(rows);
+        loadQualifyingGapRows().then(function(data) {
+            renderQualifyingGaps(data);
             qualifyingGapsState.loaded = true;
         }).catch(function(error) {
             console.error('Qualifying gaps error:', error);
@@ -2147,6 +2494,19 @@
 
     if (qualifyingGapsTable) {
         qualifyingGapsTable.addEventListener('click', function(event) {
+            var viewTab = event.target.closest('[data-quali-view]');
+            if (viewTab) {
+                var nextView = viewTab.getAttribute('data-quali-view');
+                if (nextView && nextView !== qualifyingGapsState.activeView) {
+                    qualifyingGapsState.activeView = nextView;
+                    renderQualifyingGaps({
+                        overviewRows: qualifyingGapsState.overviewRows || [],
+                        raceRows: qualifyingGapsState.raceRows || []
+                    });
+                }
+                return;
+            }
+
             var dot = event.target.closest('.quali-dot');
             if (!dot) return;
             var isActive = dot.classList.contains('is-active');
@@ -2154,6 +2514,18 @@
             dot.classList.toggle('is-active', !isActive);
             dot.setAttribute('aria-expanded', !isActive ? 'true' : 'false');
             event.stopPropagation();
+        });
+
+        qualifyingGapsTable.addEventListener('change', function(event) {
+            var raceSelect = event.target.closest('[data-quali-race-select]');
+            if (!raceSelect) return;
+
+            qualifyingGapsState.selectedSessionKey = raceSelect.value;
+            if (qualifyingGapsState.activeView !== 'race-detail') qualifyingGapsState.activeView = 'race-detail';
+            renderQualifyingGaps({
+                overviewRows: qualifyingGapsState.overviewRows || [],
+                raceRows: qualifyingGapsState.raceRows || []
+            });
         });
 
         document.addEventListener('click', function(event) {
