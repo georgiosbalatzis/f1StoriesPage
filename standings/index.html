@@ -82,7 +82,7 @@
         .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #10b981; margin-right: 0.4rem; animation: livePulse 1.8s ease-in-out infinite; vertical-align: middle; }
         @keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-        .standings-tabs { display: flex; justify-content: center; gap: 0.4rem; margin: 1.5rem auto 1.8rem; background: var(--st-surface); border-radius: 14px; padding: 6px; max-width: 680px; border: 1px solid var(--st-border); }
+        .standings-tabs { display: flex; justify-content: center; gap: 0.4rem; margin: 1.5rem auto 1.8rem; background: var(--st-surface); border-radius: 14px; padding: 6px; max-width: 920px; border: 1px solid var(--st-border); }
         .standings-tab { flex: 1; background: transparent; border: 1px solid transparent; color: var(--st-text-secondary); font-size: 0.9rem; font-weight: 700; padding: 0.8rem 1.15rem; min-height: 52px; border-radius: 10px; cursor: pointer; transition: all var(--st-transition); display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; position: relative; }
         .standings-tab:hover { color: var(--st-text); background: rgba(59,130,246,0.08); }
         .standings-tab:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; box-shadow: 0 0 0 4px rgba(59,130,246,0.16); }
@@ -227,6 +227,71 @@
         .quali-skeleton-side { display: flex; align-items: center; gap: 0.7rem; }
         .quali-skeleton-track { height: 74px; border-radius: 14px; }
 
+        .lap1-gains-wrap { display: flex; flex-direction: column; gap: 1rem; }
+        .lap1-gains-intro, .lap1-overview-card, .lap1-gain-card, .lap1-skeleton-card {
+            background: var(--st-surface-raised);
+            border: 1px solid var(--st-border);
+            border-radius: var(--st-radius);
+            box-shadow: var(--st-shadow-sm);
+        }
+        .lap1-gains-intro { padding: 1.15rem 1.2rem; }
+        .lap1-kicker { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--st-text-muted); }
+        .lap1-kicker::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #ef4444); box-shadow: 0 0 0 5px rgba(245,158,11,0.12); }
+        .lap1-title { font-family: 'Outfit',sans-serif; font-size: 1.65rem; font-weight: 800; letter-spacing: -0.03em; margin: 0.3rem 0 0.2rem; color: var(--st-text); }
+        .lap1-sub { font-size: 0.9rem; color: var(--st-text-secondary); margin: 0; max-width: 720px; }
+        .lap1-overview-card { padding: 1rem 1rem 1.15rem; }
+        .lap1-overview-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+        .lap1-overview-title { font-family: 'Outfit',sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--st-text); margin: 0; }
+        .lap1-overview-note { font-size: 0.75rem; color: var(--st-text-muted); margin: 0.18rem 0 0; }
+        .lap1-overview-meta { font-size: 0.78rem; font-weight: 700; color: var(--st-accent); background: var(--st-accent-soft); padding: 0.32rem 0.7rem; border-radius: 999px; white-space: nowrap; }
+        .lap1-chart-scroll { overflow-x: auto; overflow-y: visible; padding-bottom: 0.25rem; }
+        .lap1-chart-shell { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 0.9rem; align-items: stretch; min-height: 336px; min-width: 620px; }
+        .lap1-axis { position: relative; min-height: 336px; }
+        .lap1-axis-label { position: absolute; right: 0; transform: translateY(50%); font-size: 0.7rem; font-weight: 700; color: var(--st-text-muted); }
+        .lap1-axis-title { position: absolute; top: 50%; left: 6px; transform: translate(-100%, -50%) rotate(-90deg); transform-origin: center; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--st-text-muted); white-space: nowrap; }
+        .lap1-chart-body { position: relative; min-height: 336px; padding: 0 0.2rem 0.5rem; }
+        .lap1-grid-line { position: absolute; left: 0; right: 0; border-top: 1px solid var(--st-border); }
+        .lap1-grid-line.zero { border-top-color: var(--st-border-strong); }
+        .lap1-chart-columns { position: absolute; inset: 0 0.2rem 0; display: grid; align-items: stretch; gap: 0.75rem; }
+        .lap1-session-col { position: relative; min-width: 72px; }
+        .lap1-session-plot { position: absolute; inset: 0 0 56px; }
+        .lap1-session-point { position: absolute; left: 50%; transform: translate(-50%, 50%); display: flex; flex-direction: column; align-items: center; gap: 0.42rem; }
+        .lap1-gain-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; padding: 0.18rem 0.5rem; border-radius: 999px; background: rgba(var(--winner-color), 0.14); color: rgb(var(--winner-color)); font-family: 'Outfit',sans-serif; font-size: 0.74rem; font-weight: 800; line-height: 1; }
+        .lap1-bubble { position: relative; width: 56px; height: 56px; border-radius: 50%; border: 2px solid rgba(var(--winner-color), 0.2); background: linear-gradient(180deg, rgba(var(--winner-color), 0.15), rgba(var(--winner-color), 0.05)); box-shadow: 0 14px 30px rgba(0,0,0,0.16); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .lap1-bubble img { width: 100%; height: 100%; object-fit: cover; }
+        .lap1-bubble-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: 'Outfit',sans-serif; font-size: 1rem; font-weight: 800; color: rgb(var(--winner-color)); }
+        .lap1-bubble-badge { position: absolute; right: -4px; bottom: -2px; min-width: 22px; height: 22px; padding: 0 0.3rem; border-radius: 999px; background: var(--st-surface-raised); border: 1px solid var(--st-border); display: inline-flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--st-text); box-shadow: var(--st-shadow-sm); }
+        .lap1-primary-code { font-family: 'Outfit',sans-serif; font-size: 0.76rem; font-weight: 800; color: var(--st-text); letter-spacing: 0.06em; text-transform: uppercase; }
+        .lap1-session-footer { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.22rem; }
+        .lap1-session-type { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 24px; padding: 0 0.45rem; border-radius: 999px; background: var(--st-accent-soft); color: var(--st-accent); font-size: 0.72rem; font-weight: 800; }
+        .lap1-session-name { font-size: 0.73rem; font-weight: 700; color: var(--st-text); line-height: 1.2; }
+        .lap1-session-date { font-size: 0.66rem; color: var(--st-text-muted); line-height: 1.2; }
+        .lap1-gains-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.9rem; }
+        .lap1-gain-card { padding: 1rem; }
+        .lap1-gain-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.85rem; margin-bottom: 0.9rem; }
+        .lap1-gain-card-session { min-width: 0; }
+        .lap1-gain-card-type { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 24px; padding: 0 0.45rem; border-radius: 999px; background: var(--st-accent-soft); color: var(--st-accent); font-size: 0.72rem; font-weight: 800; margin-bottom: 0.45rem; }
+        .lap1-gain-card-name { font-family: 'Outfit',sans-serif; font-size: 1rem; font-weight: 700; color: var(--st-text); line-height: 1.1; }
+        .lap1-gain-card-date { font-size: 0.72rem; color: var(--st-text-muted); margin-top: 0.22rem; }
+        .lap1-gain-card-value { font-family: 'Outfit',sans-serif; font-size: 1.65rem; font-weight: 800; line-height: 1; color: rgb(var(--winner-color)); white-space: nowrap; }
+        .lap1-gain-card-sub { font-size: 0.68rem; font-weight: 700; color: var(--st-text-muted); text-align: right; margin-top: 0.18rem; }
+        .lap1-driver-cluster { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+        .lap1-driver-chip { display: flex; align-items: center; gap: 0.55rem; min-width: 0; padding: 0.45rem 0.55rem; border-radius: 12px; background: rgba(var(--winner-color), 0.08); border: 1px solid rgba(var(--winner-color), 0.14); }
+        .lap1-driver-chip-avatar { width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0; overflow: hidden; background: rgba(var(--winner-color), 0.12); border: 2px solid rgba(var(--winner-color), 0.18); display: flex; align-items: center; justify-content: center; }
+        .lap1-driver-chip-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .lap1-driver-chip-avatar-fallback { font-family: 'Outfit',sans-serif; font-size: 0.82rem; font-weight: 800; color: rgb(var(--winner-color)); }
+        .lap1-driver-chip-meta { min-width: 0; }
+        .lap1-driver-chip-code { font-family: 'Outfit',sans-serif; font-size: 0.84rem; font-weight: 800; color: var(--st-text); line-height: 1; }
+        .lap1-driver-chip-name { font-size: 0.68rem; color: var(--st-text-muted); margin-top: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lap1-driver-chip-move { font-size: 0.66rem; font-weight: 700; color: rgb(var(--winner-color)); margin-top: 0.18rem; }
+        .lap1-card-meta { margin: 0.8rem 0 0; font-size: 0.74rem; color: var(--st-text-secondary); }
+        .lap1-empty-card { padding: 2.4rem 1rem; text-align: center; color: var(--st-text-muted); }
+        .lap1-empty-card i { display: block; font-size: 2rem; opacity: 0.4; margin-bottom: 0.8rem; }
+        .lap1-skeleton-card { padding: 1rem; }
+        .lap1-skeleton-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.9rem; margin-bottom: 1rem; }
+        .lap1-skeleton-chip-row { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+        .lap1-skeleton-driver { display: flex; align-items: center; gap: 0.55rem; min-width: 0; padding: 0.45rem 0.55rem; border-radius: 12px; border: 1px solid var(--st-border); }
+
         @media (max-width: 767px) {
             .standings-title { font-size: 1.8rem; }
             .standings-tabs { max-width: 100%; }
@@ -247,6 +312,15 @@
             .quali-h2h-count { font-size: 1.35rem; }
             .quali-driver-code { font-size: 1rem; }
             .quali-headshot, .quali-avatar-fallback { width: 42px; height: 42px; }
+            .lap1-title { font-size: 1.38rem; }
+            .lap1-gains-intro { padding: 0.95rem; }
+            .lap1-overview-card { padding: 0.9rem; }
+            .lap1-overview-head { flex-direction: column; align-items: flex-start; }
+            .lap1-chart-shell { min-height: 308px; min-width: 560px; grid-template-columns: 44px minmax(0, 1fr); gap: 0.7rem; }
+            .lap1-axis, .lap1-chart-body { min-height: 308px; }
+            .lap1-session-plot { inset: 0 0 52px; }
+            .lap1-bubble { width: 50px; height: 50px; }
+            .lap1-gains-cards { grid-template-columns: 1fr; }
         }
         @media (max-width: 480px) {
             .standings-title { font-size: 1.5rem; }
@@ -268,6 +342,14 @@
             .quali-dot { width: 10px; height: 10px; }
             .quali-dot-tooltip { min-width: 90px; max-width: 150px; padding: 0.42rem 0.5rem; }
             .quali-dot-tooltip-session { font-size: 0.6rem; }
+            .lap1-sub { font-size: 0.84rem; }
+            .lap1-overview-meta { font-size: 0.72rem; }
+            .lap1-chart-shell { min-width: 500px; min-height: 292px; }
+            .lap1-axis, .lap1-chart-body { min-height: 292px; }
+            .lap1-bubble { width: 46px; height: 46px; }
+            .lap1-gain-pill { min-width: 38px; font-size: 0.7rem; }
+            .lap1-gain-card { padding: 0.85rem; }
+            .lap1-driver-chip-avatar { width: 34px; height: 34px; }
         }
     </style>
 </head>
@@ -327,6 +409,7 @@
             <button class="standings-tab active" data-tab="drivers" role="tab" aria-selected="true"><i class="fas fa-helmet-safety"></i> Οδηγοί</button>
             <button class="standings-tab" data-tab="constructors" role="tab" aria-selected="false"><i class="fas fa-flag-checkered"></i> Κατασκευαστές</button>
             <button class="standings-tab" data-tab="quali-gaps" role="tab" aria-selected="false"><i class="fas fa-stopwatch"></i> Quali Gaps</button>
+            <button class="standings-tab" data-tab="lap1-gains" role="tab" aria-selected="false"><i class="fas fa-arrow-trend-up"></i> Lap 1 Gains</button>
         </div>
 
         <div class="standings-panel active" id="panel-drivers" role="tabpanel">
@@ -353,6 +436,17 @@
                     <p class="quali-sub">Q + Sprint Shootout. Ο συνολικά ταχύτερος teammate εμφανίζεται αριστερά και τα rows ταξινομούνται από το μικρότερο στο μεγαλύτερο average gap.</p>
                 </div>
                 <div id="qualifying-gaps-table"></div>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-lap1-gains" role="tabpanel">
+            <div class="lap1-gains-wrap">
+                <div class="lap1-gains-intro">
+                    <div class="lap1-kicker">Race Starts · <span id="lap1-gains-year">2026</span></div>
+                    <h3 class="lap1-title">Who Gains Most on Lap 1?</h3>
+                    <p class="lap1-sub">Για κάθε completed Grand Prix race, υπολογίζεται ποιος κέρδισε τις περισσότερες θέσεις μέχρι το τέλος του πρώτου γύρου.</p>
+                </div>
+                <div id="lap1-gains-table"></div>
             </div>
         </div>
 
@@ -400,6 +494,9 @@
     var qualifyingGapsTable = document.getElementById('qualifying-gaps-table');
     var qualifyingGapsYear = document.getElementById('qualifying-gaps-year');
     var qualifyingGapsState = { loaded: false, loading: false };
+    var lap1GainsTable = document.getElementById('lap1-gains-table');
+    var lap1GainsYear = document.getElementById('lap1-gains-year');
+    var lap1GainsState = { loaded: false, loading: false };
 
     // ── 2026 Team metadata: colours + logo URLs from formula1.com ──
     // Logo URLs use the official F1 media CDN pattern
@@ -464,6 +561,7 @@
     driversTable.innerHTML = skelRows(10);
     constructorsTable.innerHTML = skelRows(10);
     if (qualifyingGapsYear) qualifyingGapsYear.textContent = YEAR;
+    if (lap1GainsYear) lap1GainsYear.textContent = YEAR;
 
     // ── Tab switching ──
     document.querySelectorAll('.standings-tab').forEach(function(tab) {
@@ -474,6 +572,7 @@
             document.querySelectorAll('.standings-panel').forEach(function(p) { p.classList.remove('active'); });
             document.getElementById('panel-' + t).classList.add('active');
             if (t === 'quali-gaps') ensureQualifyingGapsLoaded();
+            if (t === 'lap1-gains') ensureLap1GainsLoaded();
         });
     });
 
@@ -642,6 +741,10 @@
         return Math.ceil(value / step) * step;
     }
 
+    function delay(ms) {
+        return new Promise(function(resolve) { window.setTimeout(resolve, ms); });
+    }
+
     function chunkArray(items, size) {
         var chunks = [];
         for (var i = 0; i < items.length; i += size) chunks.push(items.slice(i, i + size));
@@ -720,6 +823,41 @@
         return meeting + ' · ' + sessionName;
     }
 
+    function getRaceSessionTypeShort(session) {
+        var name = ((session && session.session_name) || '').toLowerCase();
+        return name.indexOf('sprint') !== -1 ? 'S' : 'R';
+    }
+
+    function formatGainValue(gain) {
+        if (!isFiniteNumber(gain)) return '0';
+        return gain > 0 ? '+' + gain : String(gain);
+    }
+
+    function formatPositionTag(position) {
+        return 'P' + position;
+    }
+
+    function formatSessionDateShort(session) {
+        var value = session && (session.date_start || session.date || session.date_end);
+        var date = value ? new Date(value) : null;
+        if (!date || isNaN(date.getTime())) return '';
+        return date.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'short'
+        }).replace(/\./g, '');
+    }
+
+    function groupRecordsBySession(records) {
+        var grouped = {};
+        (records || []).forEach(function(record) {
+            if (!record || record.session_key == null) return;
+            var key = String(record.session_key);
+            if (!grouped[key]) grouped[key] = [];
+            grouped[key].push(record);
+        });
+        return grouped;
+    }
+
     function createQualifyingSkeletonRows(count) {
         var html = '<div class="quali-gaps-list">';
         for (var i = 0; i < count; i++) {
@@ -732,17 +870,60 @@
         return html + '</div>';
     }
 
-    function fetchOpenF1BySessionKeys(endpoint, sessionKeys) {
+    function createLap1SkeletonRows(count) {
+        var html = '<div class="lap1-overview-card">'
+            + '<div class="lap1-overview-head"><div><div class="skel" style="width:180px;height:18px;"></div><div class="skel" style="width:220px;height:11px;margin-top:0.5rem;"></div></div><div class="skel" style="width:110px;height:30px;border-radius:999px;"></div></div>'
+            + '<div class="skel" style="width:100%;height:300px;border-radius:16px;"></div>'
+            + '</div>'
+            + '<div class="lap1-gains-cards">';
+
+        for (var i = 0; i < count; i++) {
+            html += '<div class="lap1-skeleton-card">'
+                + '<div class="lap1-skeleton-head"><div><div class="skel" style="width:28px;height:24px;border-radius:999px;"></div><div class="skel" style="width:110px;height:15px;margin-top:0.55rem;"></div><div class="skel" style="width:80px;height:10px;margin-top:0.45rem;"></div></div><div><div class="skel" style="width:52px;height:24px;margin-left:auto;"></div><div class="skel" style="width:58px;height:10px;margin-top:0.35rem;margin-left:auto;"></div></div></div>'
+                + '<div class="lap1-skeleton-chip-row">'
+                + '<div class="lap1-skeleton-driver"><div class="skel skel-circle" style="width:38px;height:38px;"></div><div><div class="skel" style="width:48px;height:11px;"></div><div class="skel" style="width:92px;height:10px;margin-top:0.32rem;"></div></div></div>'
+                + '<div class="lap1-skeleton-driver"><div class="skel skel-circle" style="width:38px;height:38px;"></div><div><div class="skel" style="width:48px;height:11px;"></div><div class="skel" style="width:82px;height:10px;margin-top:0.32rem;"></div></div></div>'
+                + '</div>'
+                + '<div class="skel" style="width:70%;height:10px;margin-top:0.8rem;"></div>'
+                + '</div>';
+        }
+
+        return html + '</div>';
+    }
+
+    function fetchJSONWithRetry(url, attempt) {
+        return fetchJSON(url).catch(function(error) {
+            var message = error && error.message ? error.message : String(error);
+            if ((message.indexOf('HTTP 429') !== -1 || message.indexOf('AbortError') !== -1) && attempt < 2) {
+                return delay(350 * (attempt + 1)).then(function() {
+                    return fetchJSONWithRetry(url, attempt + 1);
+                });
+            }
+            throw error;
+        });
+    }
+
+    function fetchOpenF1BySessionKeys(endpoint, sessionKeys, extraQuery) {
         if (!sessionKeys.length) return Promise.resolve([]);
-        return Promise.all(
-            chunkArray(sessionKeys, 12).map(function(keys) {
+
+        var chunks = chunkArray(sessionKeys, 8);
+        var results = [];
+
+        return chunks.reduce(function(chain, keys, index) {
+            return chain.then(function() {
                 var query = keys.map(function(sessionKey) {
                     return 'session_key=' + encodeURIComponent(sessionKey);
                 }).join('&');
-                return fetchJSON(OPENF1 + '/' + endpoint + '?' + query);
-            })
-        ).then(function(chunks) {
-            return [].concat.apply([], chunks);
+                if (extraQuery) query += '&' + extraQuery;
+
+                return fetchJSONWithRetry(OPENF1 + '/' + endpoint + '?' + query, 0).then(function(chunk) {
+                    results = results.concat(chunk || []);
+                });
+            }).then(function() {
+                if (index < chunks.length - 1) return delay(120);
+            });
+        }, Promise.resolve()).then(function() {
+            return results;
         });
     }
 
@@ -1047,6 +1228,269 @@
     window.__retryQualifyingGaps = function() {
         qualifyingGapsState.loaded = false;
         ensureQualifyingGapsLoaded(true);
+    };
+
+    function buildLap1GainRows(sessions, drivers, positions, lapOneLaps, lapTwoLaps) {
+        var driverLookup = buildDriverLookup(drivers);
+        var positionsBySession = groupRecordsBySession(positions);
+        var lapOneBySession = groupRecordsBySession(lapOneLaps);
+        var lapTwoBySession = groupRecordsBySession(lapTwoLaps);
+
+        return (sessions || []).map(function(session, index) {
+            var sessionKey = String(session.session_key);
+            var sessionPositions = (positionsBySession[sessionKey] || []).slice().sort(function(a, b) {
+                return new Date(a.date) - new Date(b.date) || a.position - b.position;
+            });
+            var lapOne = (lapOneBySession[sessionKey] || []).slice();
+            var lapTwo = (lapTwoBySession[sessionKey] || []).slice().sort(function(a, b) {
+                return new Date(a.date_start) - new Date(b.date_start) || a.driver_number - b.driver_number;
+            });
+
+            if (!sessionPositions.length || !lapOne.length || !lapTwo.length) return null;
+
+            var lapOneDrivers = {};
+            lapOne.forEach(function(record) {
+                if (record && record.driver_number != null) lapOneDrivers[record.driver_number] = true;
+            });
+
+            var firstSnapshotDate = sessionPositions[0].date;
+            var startingRows = sessionPositions.filter(function(record) {
+                return record.date === firstSnapshotDate && lapOneDrivers[record.driver_number];
+            }).sort(function(a, b) {
+                return a.position - b.position;
+            });
+
+            if (!startingRows.length) return null;
+
+            var normalizedStartMap = {};
+            startingRows.forEach(function(record, startIndex) {
+                normalizedStartMap[record.driver_number] = startIndex + 1;
+            });
+
+            var seenLapTwo = {};
+            var moves = [];
+            lapTwo.forEach(function(record) {
+                if (!record || record.driver_number == null) return;
+                if (seenLapTwo[record.driver_number]) return;
+                if (!normalizedStartMap[record.driver_number]) return;
+
+                seenLapTwo[record.driver_number] = true;
+
+                var driverMap = driverLookup[sessionKey] || {};
+                var driver = driverMap[record.driver_number] || {
+                    driverNumber: record.driver_number,
+                    acronym: '#' + record.driver_number,
+                    fullName: 'Οδηγός #' + record.driver_number,
+                    headshot: '',
+                    teamName: '',
+                    teamColor: '3b82f6'
+                };
+                var startPosition = normalizedStartMap[record.driver_number];
+                var afterPosition = moves.length + 1;
+                var teamColor = getCanonicalTeamColor('', driver.teamName || '', driver.teamColor || '');
+
+                moves.push({
+                    driverNumber: record.driver_number,
+                    acronym: deriveAcronym(driver),
+                    fullName: getDriverDisplayName(driver),
+                    headshot: driver.headshot || '',
+                    teamName: driver.teamName || '',
+                    teamColor: teamColor,
+                    startPosition: startPosition,
+                    afterPosition: afterPosition,
+                    gain: startPosition - afterPosition
+                });
+            });
+
+            if (!moves.length) return null;
+
+            moves.sort(function(a, b) {
+                if (b.gain !== a.gain) return b.gain - a.gain;
+                if (a.afterPosition !== b.afterPosition) return a.afterPosition - b.afterPosition;
+                return a.acronym.localeCompare(b.acronym);
+            });
+
+            var maxGain = moves[0].gain;
+            var winners = moves.filter(function(move) { return move.gain === maxGain; });
+
+            return {
+                sessionKey: sessionKey,
+                index: index,
+                meetingName: session.circuit_short_name || session.location || session.country_name || 'Session',
+                sessionName: session.session_name || 'Race',
+                sessionTypeShort: getRaceSessionTypeShort(session),
+                sessionLabel: getSessionLabel(session),
+                dateLabel: formatSessionDateShort(session),
+                maxGain: maxGain,
+                winnerCount: winners.length,
+                primaryWinner: winners[0],
+                winners: winners
+            };
+        }).filter(Boolean);
+    }
+
+    function buildLap1AxisValues(maxGain) {
+        if (maxGain <= 0) return [0];
+
+        var values = [0];
+        if (maxGain <= 4) {
+            for (var value = 1; value <= maxGain; value++) values.push(value);
+            return values;
+        }
+
+        var step = Math.max(1, Math.ceil(maxGain / 4));
+        for (var current = step; current < maxGain; current += step) values.push(current);
+        if (values[values.length - 1] !== maxGain) values.push(maxGain);
+        return values;
+    }
+
+    function renderLap1Bubble(driver, extraBadge) {
+        var winnerColor = hexToRgbChannels(driver.teamColor || '3b82f6');
+        return '<div class="lap1-bubble" style="--winner-color:' + esc(winnerColor) + ';">'
+            + (driver.headshot
+                ? '<img src="' + esc(driver.headshot) + '" alt="' + esc(driver.fullName) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+                    + '<div class="lap1-bubble-fallback" style="display:none;">' + esc(driver.acronym) + '</div>'
+                : '<div class="lap1-bubble-fallback">' + esc(driver.acronym) + '</div>')
+            + (extraBadge ? '<span class="lap1-bubble-badge">' + esc(extraBadge) + '</span>' : '')
+            + '</div>';
+    }
+
+    function renderLap1DriverChip(driver) {
+        var winnerColor = hexToRgbChannels(driver.teamColor || '3b82f6');
+        return '<div class="lap1-driver-chip" style="--winner-color:' + esc(winnerColor) + ';">'
+            + '<div class="lap1-driver-chip-avatar">'
+            + (driver.headshot
+                ? '<img src="' + esc(driver.headshot) + '" alt="' + esc(driver.fullName) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+                    + '<div class="lap1-driver-chip-avatar-fallback" style="display:none;">' + esc(driver.acronym) + '</div>'
+                : '<div class="lap1-driver-chip-avatar-fallback">' + esc(driver.acronym) + '</div>')
+            + '</div>'
+            + '<div class="lap1-driver-chip-meta"><div class="lap1-driver-chip-code">' + esc(driver.acronym) + '</div><div class="lap1-driver-chip-name">' + esc(driver.fullName) + '</div><div class="lap1-driver-chip-move">' + esc(formatPositionTag(driver.startPosition) + ' -> ' + formatPositionTag(driver.afterPosition)) + '</div></div>'
+            + '</div>';
+    }
+
+    function renderLap1Gains(rows) {
+        if (!rows || !rows.length) {
+            lap1GainsTable.innerHTML = '<div class="lap1-empty-card">'
+                + '<i class="fas fa-arrow-trend-up"></i>'
+                + '<p>Δεν υπάρχουν ακόμη διαθέσιμα δεδομένα για τα μεγαλύτερα gains μετά τον 1ο γύρο.</p>'
+                + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed race sessions με lap timing data.</p>'
+                + '</div>';
+            return;
+        }
+
+        var maxGain = rows.reduce(function(max, row) {
+            return Math.max(max, row.maxGain);
+        }, 0);
+        var axisValues = buildLap1AxisValues(maxGain);
+        var chartMinWidth = Math.max(620, rows.length * 96);
+        var html = '<div class="lap1-overview-card">'
+            + '<div class="lap1-overview-head"><div><h3 class="lap1-overview-title">Lap 1 Movers Overview</h3><p class="lap1-overview-note">Completed races, ταξινομημένα χρονολογικά.</p></div><div class="lap1-overview-meta">' + rows.length + ' races</div></div>'
+            + '<div class="lap1-chart-scroll"><div class="lap1-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
+            + '<div class="lap1-axis"><span class="lap1-axis-title">Lap 1 Gain (Pos)</span>';
+
+        axisValues.forEach(function(value) {
+            var bottom = maxGain > 0 ? (value / maxGain) * 100 : 0;
+            html += '<span class="lap1-axis-label" style="bottom:' + bottom.toFixed(2) + '%;">' + esc(formatGainValue(value)) + '</span>';
+        });
+
+        html += '</div><div class="lap1-chart-body">';
+
+        axisValues.forEach(function(value) {
+            var bottom = maxGain > 0 ? (value / maxGain) * 100 : 0;
+            html += '<div class="lap1-grid-line' + (value === 0 ? ' zero' : '') + '" style="bottom:' + bottom.toFixed(2) + '%;"></div>';
+        });
+
+        html += '<div class="lap1-chart-columns" style="grid-template-columns:repeat(' + rows.length + ', minmax(72px, 1fr));">';
+
+        rows.forEach(function(row) {
+            var primaryColor = hexToRgbChannels(row.primaryWinner.teamColor || '3b82f6');
+            var bottom = maxGain > 0 ? (row.maxGain / maxGain) * 100 : 0;
+            var tieBadge = row.winnerCount > 1 ? '+' + (row.winnerCount - 1) : '';
+
+            html += '<article class="lap1-session-col">'
+                + '<div class="lap1-session-plot"><div class="lap1-session-point" style="bottom:' + bottom.toFixed(2) + '%;--winner-color:' + esc(primaryColor) + ';">'
+                + '<span class="lap1-gain-pill">' + esc(formatGainValue(row.maxGain)) + '</span>'
+                + renderLap1Bubble(row.primaryWinner, tieBadge)
+                + '<span class="lap1-primary-code">' + esc(row.primaryWinner.acronym) + (row.winnerCount > 1 ? ' tie' : '') + '</span>'
+                + '</div></div>'
+                + '<div class="lap1-session-footer"><span class="lap1-session-type">' + esc(row.sessionTypeShort) + '</span><span class="lap1-session-name">' + esc(row.meetingName) + '</span><span class="lap1-session-date">' + esc(row.dateLabel) + '</span></div>'
+                + '</article>';
+        });
+
+        html += '</div></div></div></div><div class="lap1-gains-cards">';
+
+        rows.forEach(function(row) {
+            var primaryColor = hexToRgbChannels(row.primaryWinner.teamColor || '3b82f6');
+            html += '<article class="lap1-gain-card" style="--winner-color:' + esc(primaryColor) + ';">'
+                + '<div class="lap1-gain-card-head"><div class="lap1-gain-card-session"><span class="lap1-gain-card-type">' + esc(row.sessionTypeShort) + '</span><div class="lap1-gain-card-name">' + esc(row.meetingName) + '</div><div class="lap1-gain-card-date">' + esc(row.dateLabel + ' · ' + row.sessionName) + '</div></div><div><div class="lap1-gain-card-value">' + esc(formatGainValue(row.maxGain)) + '</div><div class="lap1-gain-card-sub">lap 1 gain</div></div></div>'
+                + '<div class="lap1-driver-cluster">' + row.winners.map(renderLap1DriverChip).join('') + '</div>'
+                + '<p class="lap1-card-meta">' + (row.winnerCount > 1
+                    ? esc('Ισοπαλία ' + row.winnerCount + ' οδηγών για το καλύτερο move μετά τον 1ο γύρο.')
+                    : esc(formatPositionTag(row.primaryWinner.startPosition) + ' -> ' + formatPositionTag(row.primaryWinner.afterPosition) + ' μέχρι το τέλος του 1ου γύρου.'))
+                + '</p>'
+                + '</article>';
+        });
+
+        lap1GainsTable.innerHTML = html + '</div>';
+    }
+
+    function showLap1GainsError() {
+        lap1GainsTable.innerHTML = '<div class="lap1-empty-card">'
+            + '<i class="fas fa-exclamation-triangle"></i>'
+            + '<p>Δεν ήταν δυνατή η φόρτωση των Lap 1 gains.</p>'
+            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
+            + '<button class="retry-btn" type="button" onclick="window.__retryLap1Gains && window.__retryLap1Gains()"><i class="fas fa-redo"></i> Νέα προσπάθεια</button>'
+            + '</div>';
+    }
+
+    function loadLap1GainRows() {
+        return fetchJSON(OPENF1 + '/sessions?year=' + YEAR + '&session_type=Race').then(function(sessions) {
+            var raceSessions = (sessions || []).filter(function(session) {
+                var sessionName = ((session && session.session_name) || '').toLowerCase();
+                return isCompletedSession(session) && sessionName.indexOf('sprint') === -1;
+            }).sort(function(a, b) {
+                return new Date(a.date_start || a.date || 0) - new Date(b.date_start || b.date || 0);
+            });
+
+            if (!raceSessions.length) return [];
+
+            var sessionKeys = raceSessions.map(function(session) {
+                return session.session_key;
+            });
+
+            return Promise.all([
+                fetchOpenF1BySessionKeys('drivers', sessionKeys),
+                fetchOpenF1BySessionKeys('position', sessionKeys),
+                fetchOpenF1BySessionKeys('laps', sessionKeys, 'lap_number=1'),
+                fetchOpenF1BySessionKeys('laps', sessionKeys, 'lap_number=2')
+            ]).then(function(payload) {
+                return buildLap1GainRows(raceSessions, payload[0], payload[1], payload[2], payload[3]);
+            });
+        });
+    }
+
+    function ensureLap1GainsLoaded(forceReload) {
+        if (!lap1GainsTable) return;
+        if (lap1GainsState.loading) return;
+        if (lap1GainsState.loaded && !forceReload) return;
+
+        lap1GainsState.loading = true;
+        lap1GainsTable.innerHTML = createLap1SkeletonRows(4);
+
+        loadLap1GainRows().then(function(rows) {
+            renderLap1Gains(rows);
+            lap1GainsState.loaded = true;
+        }).catch(function(error) {
+            console.error('Lap 1 gains error:', error);
+            showLap1GainsError();
+        }).finally(function() {
+            lap1GainsState.loading = false;
+        });
+    }
+
+    window.__retryLap1Gains = function() {
+        lap1GainsState.loaded = false;
+        ensureLap1GainsLoaded(true);
     };
 
     function closeActiveQualifyingDots(exceptDot) {
