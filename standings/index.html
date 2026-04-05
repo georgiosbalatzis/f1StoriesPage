@@ -191,7 +191,7 @@
                 rgba(255,255,255,0) 50%,
                 rgba(var(--right-color), 0.04) 56%,
                 rgba(var(--right-color), 0.11) 100%);
-            overflow: hidden; }
+            overflow: visible; }
         [data-theme="light"] .quali-track {
             background:
                 linear-gradient(90deg,
@@ -207,8 +207,17 @@
         [data-theme="light"] .quali-track::before, [data-theme="light"] .quali-track::after { background: rgba(0,0,0,0.06); }
         .quali-zero-line { position: absolute; top: 8px; bottom: 8px; left: 50%; width: 1px; background: rgba(var(--pair-color), 0.28); transform: translateX(-0.5px); }
         .quali-dots { position: absolute; inset: 0; }
-        .quali-dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; transform: translate(-50%, -50%); background: rgb(var(--dot-color)); border: 2px solid rgba(255,255,255,0.55); box-shadow: 0 0 0 4px rgba(var(--dot-color), 0.14); }
+        .quali-dot { position: absolute; width: 12px; height: 12px; padding: 0; border-radius: 50%; transform: translate(-50%, -50%); background: rgb(var(--dot-color)); border: 2px solid rgba(255,255,255,0.55); box-shadow: 0 0 0 4px rgba(var(--dot-color), 0.14); appearance: none; -webkit-appearance: none; cursor: pointer; z-index: 2; }
+        .quali-dot:hover, .quali-dot:focus-visible, .quali-dot.is-active { z-index: 5; box-shadow: 0 0 0 5px rgba(var(--dot-color), 0.2); }
+        .quali-dot:focus-visible { outline: 2px solid rgba(var(--dot-color), 0.42); outline-offset: 3px; }
         [data-theme="light"] .quali-dot { border-color: rgba(255,255,255,0.85); }
+        .quali-dot-tooltip { position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translate(-50%, 8px); min-width: 96px; max-width: 180px; padding: 0.5rem 0.6rem; border-radius: 10px; background: rgba(17,17,19,0.96); color: #fff; text-align: center; box-shadow: 0 14px 30px rgba(0,0,0,0.28); opacity: 0; pointer-events: none; transition: opacity 0.18s ease, transform 0.18s ease; }
+        [data-theme="light"] .quali-dot-tooltip { background: rgba(29,29,31,0.96); }
+        .quali-dot.tooltip-bottom .quali-dot-tooltip { top: calc(100% + 10px); bottom: auto; transform: translate(-50%, -8px); }
+        .quali-dot:hover .quali-dot-tooltip, .quali-dot:focus-visible .quali-dot-tooltip, .quali-dot.is-active .quali-dot-tooltip { opacity: 1; transform: translate(-50%, 0); }
+        .quali-dot.tooltip-bottom:hover .quali-dot-tooltip, .quali-dot.tooltip-bottom:focus-visible .quali-dot-tooltip, .quali-dot.tooltip-bottom.is-active .quali-dot-tooltip { transform: translate(-50%, 0); }
+        .quali-dot-tooltip-gap { display: block; font-family: 'Outfit',sans-serif; font-size: 0.86rem; font-weight: 700; line-height: 1; }
+        .quali-dot-tooltip-session { display: block; margin-top: 0.28rem; font-size: 0.64rem; line-height: 1.3; color: rgba(255,255,255,0.72); white-space: normal; }
         .quali-track-scale { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; font-size: 0.7rem; font-weight: 700; color: var(--st-text-muted); }
         .quali-track-scale span:nth-child(2) { color: var(--st-text-secondary); }
         .quali-empty-card { padding: 2.4rem 1rem; text-align: center; color: var(--st-text-muted); }
@@ -257,6 +266,8 @@
             .quali-track-note { text-align: left; }
             .quali-track { height: 62px; }
             .quali-dot { width: 10px; height: 10px; }
+            .quali-dot-tooltip { min-width: 90px; max-width: 150px; padding: 0.42rem 0.5rem; }
+            .quali-dot-tooltip-session { font-size: 0.6rem; }
         }
     </style>
 </head>
@@ -955,7 +966,11 @@
             row.dots.forEach(function(dot, dotIndex) {
                 var leftPct = 50 + (dot.signedGap / scale) * 50;
                 var top = laneOffsets[dotIndex % laneOffsets.length];
-                html += '<span class="quali-dot" title="' + esc(dot.label + ' · ' + formatSignedGap(dot.signedGap, true)) + '" style="left:' + clampNumber(leftPct, 2, 98).toFixed(2) + '%;top:' + top + '%;--dot-color:' + esc(dot.winner === 'left' ? leftChannels : rightChannels) + ';"></span>';
+                var gapLabel = formatSignedGap(dot.signedGap, true);
+                var tooltipSide = top <= 34 ? ' tooltip-bottom' : '';
+                html += '<button type="button" class="quali-dot' + tooltipSide + '" aria-label="' + esc(dot.label + ' · ' + gapLabel) + '" aria-expanded="false" style="left:' + clampNumber(leftPct, 2, 98).toFixed(2) + '%;top:' + top + '%;--dot-color:' + esc(dot.winner === 'left' ? leftChannels : rightChannels) + ';">'
+                    + '<span class="quali-dot-tooltip" role="tooltip"><span class="quali-dot-tooltip-gap">' + esc(gapLabel) + '</span><span class="quali-dot-tooltip-session">' + esc(dot.label) + '</span></span>'
+                    + '</button>';
             });
 
             html += '</div></div>'
@@ -1033,6 +1048,31 @@
         qualifyingGapsState.loaded = false;
         ensureQualifyingGapsLoaded(true);
     };
+
+    function closeActiveQualifyingDots(exceptDot) {
+        if (!qualifyingGapsTable) return;
+        qualifyingGapsTable.querySelectorAll('.quali-dot.is-active').forEach(function(dot) {
+            if (dot !== exceptDot) dot.classList.remove('is-active');
+            dot.setAttribute('aria-expanded', dot === exceptDot ? 'true' : 'false');
+        });
+    }
+
+    if (qualifyingGapsTable) {
+        qualifyingGapsTable.addEventListener('click', function(event) {
+            var dot = event.target.closest('.quali-dot');
+            if (!dot) return;
+            var isActive = dot.classList.contains('is-active');
+            closeActiveQualifyingDots();
+            dot.classList.toggle('is-active', !isActive);
+            dot.setAttribute('aria-expanded', !isActive ? 'true' : 'false');
+            event.stopPropagation();
+        });
+
+        document.addEventListener('click', function(event) {
+            if (event.target.closest('#qualifying-gaps-table .quali-dot')) return;
+            closeActiveQualifyingDots();
+        });
+    }
 
     function showError(el) {
         el.innerHTML = '<div class="standings-error">'
