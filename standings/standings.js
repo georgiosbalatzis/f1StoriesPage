@@ -17,10 +17,16 @@ var lap1GainsState = { loaded: false, loading: false, rows: [], activeView: 'ove
 var tyrePaceTable = document.getElementById('tyre-pace-table');
 var tyrePaceYear = document.getElementById('tyre-pace-year');
 var tyrePaceState = { loaded: false, loading: false, sessions: [], selectedSessionKey: '', cache: {} };
+var trackDominanceTable = document.getElementById('track-dominance-table');
+var trackDominanceYear = document.getElementById('track-dominance-year');
+var trackDominanceState = { loaded: false, loading: false, pendingReload: false, sessions: [], selectedSessionKey: '', leftTeamKey: '', rightTeamKey: '', sessionCache: {}, pairCache: {} };
+var pitStopsTable = document.getElementById('pit-stops-table');
+var pitStopsYear = document.getElementById('pit-stops-year');
+var pitStopsState = { loaded: false, loading: false, races: [], selectedRound: '', activeView: 'race', raceCache: {}, seasonCache: null };
 var standingsTabs = Array.prototype.slice.call(document.querySelectorAll('.standings-tab'));
 var standingsPanels = Array.prototype.slice.call(document.querySelectorAll('.standings-panel'));
 var shareFeedback = document.getElementById('share-feedback');
-var VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace'];
+var VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'track-dominance', 'pit-stops'];
 var SHARE_TARGETS = {
     'panel-drivers': { tab: 'drivers', title: 'Driver standings tab', height: 980 },
     'drivers-table': { tab: 'drivers', title: 'Driver standings table', height: 760 },
@@ -30,7 +36,9 @@ var SHARE_TARGETS = {
     'constructors-chart': { tab: 'constructors', title: 'Constructor points chart', height: 520 },
     'panel-quali-gaps': { tab: 'quali-gaps', title: 'Teammate qualifying gaps', height: 1120 },
     'panel-lap1-gains': { tab: 'lap1-gains', title: 'Lap 1 gains analysis', height: 1160 },
-    'panel-tyre-pace': { tab: 'tyre-pace', title: 'Tyre pace chart', height: 1080 }
+    'panel-tyre-pace': { tab: 'tyre-pace', title: 'Tyre pace chart', height: 1080 },
+    'panel-track-dominance': { tab: 'track-dominance', title: 'Track dominance analysis', height: 1320 },
+    'panel-pit-stops': { tab: 'pit-stops', title: 'Fastest pit stops', height: 1080 }
 };
 var activeStandingsTab = 'drivers';
 var currentFocusTarget = '';
@@ -103,6 +111,8 @@ constructorsTable.innerHTML = skelRows(10);
 if (qualifyingGapsYear) qualifyingGapsYear.textContent = YEAR;
 if (lap1GainsYear) lap1GainsYear.textContent = YEAR;
 if (tyrePaceYear) tyrePaceYear.textContent = YEAR;
+if (trackDominanceYear) trackDominanceYear.textContent = YEAR;
+if (pitStopsYear) pitStopsYear.textContent = YEAR;
 
 var initialURLState = readStandingsURLState();
 activeStandingsTab = initialURLState.tab;
@@ -114,6 +124,11 @@ qualifyingGapsState.selectedSessionKey = initialURLState.qualiSession;
 lap1GainsState.activeView = initialURLState.lap1View;
 lap1GainsState.selectedSessionKey = initialURLState.lap1Session;
 tyrePaceState.selectedSessionKey = initialURLState.tyreSession;
+trackDominanceState.selectedSessionKey = initialURLState.trackSession;
+trackDominanceState.leftTeamKey = initialURLState.trackTeamA;
+trackDominanceState.rightTeamKey = initialURLState.trackTeamB;
+pitStopsState.selectedRound = initialURLState.pitRound;
+pitStopsState.activeView = initialURLState.pitView;
 
 // ── Tab switching ──
 standingsTabs.forEach(function(tab) {
@@ -331,7 +346,12 @@ function readStandingsURLState() {
         qualiSession: params.get('qualiSession') || '',
         lap1View: sanitizeLap1View(params.get('lap1View')),
         lap1Session: params.get('lap1Session') || '',
-        tyreSession: params.get('tyreSession') || ''
+        tyreSession: params.get('tyreSession') || '',
+        trackSession: params.get('trackSession') || '',
+        trackTeamA: params.get('trackTeamA') || '',
+        trackTeamB: params.get('trackTeamB') || '',
+        pitView: (params.get('pitView') === 'season' ? 'season' : 'race'),
+        pitRound: params.get('pitRound') || ''
     };
 }
 
@@ -352,6 +372,19 @@ function appendShareStateParams(params, tabName) {
 
     if (tabName === 'tyre-pace' && tyrePaceState.selectedSessionKey) {
         params.set('tyreSession', String(tyrePaceState.selectedSessionKey));
+        return;
+    }
+
+    if (tabName === 'track-dominance') {
+        if (trackDominanceState.selectedSessionKey) params.set('trackSession', String(trackDominanceState.selectedSessionKey));
+        if (trackDominanceState.leftTeamKey) params.set('trackTeamA', String(trackDominanceState.leftTeamKey));
+        if (trackDominanceState.rightTeamKey) params.set('trackTeamB', String(trackDominanceState.rightTeamKey));
+        return;
+    }
+
+    if (tabName === 'pit-stops') {
+        if (pitStopsState.activeView !== 'race') params.set('pitView', pitStopsState.activeView);
+        if (pitStopsState.selectedRound) params.set('pitRound', String(pitStopsState.selectedRound));
     }
 }
 
@@ -517,6 +550,8 @@ function activateStandingsTab(tabName, options) {
     if (nextTab === 'quali-gaps') ensureQualifyingGapsLoaded();
     if (nextTab === 'lap1-gains') ensureLap1GainsLoaded();
     if (nextTab === 'tyre-pace') ensureTyrePaceLoaded();
+    if (nextTab === 'track-dominance') ensureTrackDominanceLoaded();
+    if (nextTab === 'pit-stops') ensurePitStopsLoaded();
 
     refreshEmbedVisibility();
     if (!options || !options.skipURL) writeStandingsURLState(true);
@@ -569,6 +604,13 @@ function parseTimeSeconds(value) {
     if (parts.length === 3) return parseInt(parts[0], 10) * 3600 + parseInt(parts[1], 10) * 60 + parseFloat(parts[2]);
 
     return NaN;
+}
+
+function parseNumberValue(value) {
+    if (value == null || value === '') return NaN;
+    if (typeof value === 'number') return isFinite(value) ? value : NaN;
+    var parsed = parseFloat(String(value).trim());
+    return isFinite(parsed) ? parsed : NaN;
 }
 
 function getBestQualifyingTime(result) {
@@ -1152,6 +1194,708 @@ function buildDriverLookup(drivers) {
         };
     });
     return lookup;
+}
+
+function getCompletedTrackDominanceSessions() {
+    return fetchJSON(OPENF1 + '/sessions?year=' + YEAR).then(function(sessions) {
+        return (sessions || []).filter(function(session) {
+            if (!isCompletedSession(session)) return false;
+            var name = [
+                session && session.session_name,
+                session && session.session_type,
+                session && session.meeting_name
+            ].join(' ').toLowerCase();
+            if (name.indexOf('test') !== -1) return false;
+            return name.indexOf('practice') !== -1
+                || name.indexOf('qualifying') !== -1
+                || name.indexOf('shootout') !== -1
+                || name.indexOf('sprint') !== -1
+                || name.indexOf('race') !== -1;
+        }).sort(function(a, b) {
+            return new Date(a.date_start || a.date || 0) - new Date(b.date_start || b.date || 0);
+        });
+    });
+}
+
+function getTrackDominanceShortName(teamName) {
+    var text = String(teamName || '').replace(/[^A-Za-z0-9]+/g, ' ').trim();
+    if (!text) return 'TEAM';
+    var parts = text.split(/\s+/);
+    if (parts.length > 1) return (parts[0].charAt(0) + parts[1].charAt(0) + (parts[1].charAt(1) || '')).toUpperCase().slice(0, 3);
+    return parts[0].substring(0, 3).toUpperCase();
+}
+
+function getTrackDominanceSectorDuration(lap, sectorIndex) {
+    return parseTimeSeconds(
+        lap && (lap['duration_sector_' + sectorIndex]
+            || lap['sector_' + sectorIndex + '_time']
+            || lap['sector' + sectorIndex + '_time'])
+    );
+}
+
+function getTrackDominanceSpeedMetric(lap, keys) {
+    for (var i = 0; i < keys.length; i++) {
+        var value = parseNumberValue(lap && lap[keys[i]]);
+        if (isFiniteNumber(value)) return value;
+    }
+    return NaN;
+}
+
+function buildTrackDominanceSessionData(session, drivers, laps) {
+    var sessionKey = String(session.session_key);
+    var driverLookup = buildDriverLookup(drivers)[sessionKey] || {};
+    var teamMap = {};
+
+    Object.keys(driverLookup).forEach(function(driverKey) {
+        var driver = driverLookup[driverKey];
+        if (!driver || !driver.teamName) return;
+
+        var teamId = resolveTeamId('', driver.teamName || '');
+        var teamKey = teamId || normalizeTeamName(driver.teamName || '').replace(/\s+/g, '-');
+        if (!teamKey) return;
+
+        if (!teamMap[teamKey]) {
+            var teamName = getCanonicalTeamName(driver.teamName || '') || driver.teamName || 'Team';
+            var teamColor = getCanonicalTeamColor(teamId, teamName, driver.teamColor || '');
+            teamMap[teamKey] = {
+                teamKey: teamKey,
+                teamId: teamId,
+                teamName: teamName,
+                teamColor: teamColor,
+                logo: teamId ? getTeamLogo(teamId) : '',
+                drivers: {},
+                bestLap: null
+            };
+        }
+
+        teamMap[teamKey].drivers[String(driver.driverNumber)] = {
+            driverNumber: driver.driverNumber,
+            acronym: deriveAcronym(driver),
+            fullName: getDriverDisplayName(driver),
+            headshot: driver.headshot || '',
+            teamName: teamMap[teamKey].teamName,
+            teamColor: teamMap[teamKey].teamColor
+        };
+    });
+
+    (laps || []).forEach(function(lap) {
+        if (!lap || lap.driver_number == null) return;
+        var driver = driverLookup[String(lap.driver_number)];
+        if (!driver || !driver.teamName) return;
+
+        var duration = parseTimeSeconds(lap.lap_duration);
+        if (!isFiniteNumber(duration) || duration <= 0 || duration > 240 || lap.is_pit_out_lap) return;
+
+        var teamId = resolveTeamId('', driver.teamName || '');
+        var teamKey = teamId || normalizeTeamName(driver.teamName || '').replace(/\s+/g, '-');
+        var team = teamMap[teamKey];
+        if (!team) return;
+
+        var candidate = {
+            driverNumber: driver.driverNumber,
+            acronym: deriveAcronym(driver),
+            fullName: getDriverDisplayName(driver),
+            headshot: driver.headshot || '',
+            teamName: team.teamName,
+            teamColor: team.teamColor,
+            lapNumber: lap.lap_number,
+            dateStart: lap.date_start || '',
+            duration: duration,
+            sector1: getTrackDominanceSectorDuration(lap, 1),
+            sector2: getTrackDominanceSectorDuration(lap, 2),
+            sector3: getTrackDominanceSectorDuration(lap, 3),
+            speedI1: getTrackDominanceSpeedMetric(lap, ['i1_speed']),
+            speedI2: getTrackDominanceSpeedMetric(lap, ['i2_speed']),
+            speedTrap: getTrackDominanceSpeedMetric(lap, ['st_speed', 'speed_trap']),
+            lap: lap
+        };
+
+        if (!team.bestLap || candidate.duration < team.bestLap.duration) {
+            team.bestLap = candidate;
+        }
+    });
+
+    var teams = Object.keys(teamMap).map(function(teamKey) {
+        return teamMap[teamKey];
+    }).filter(function(team) {
+        return team.bestLap && !!team.bestLap.dateStart;
+    }).sort(function(a, b) {
+        if (a.bestLap.duration !== b.bestLap.duration) return a.bestLap.duration - b.bestLap.duration;
+        return a.teamName.localeCompare(b.teamName);
+    });
+
+    return {
+        session: session,
+        teams: teams,
+        teamMap: teams.reduce(function(acc, team) {
+            acc[team.teamKey] = team;
+            return acc;
+        }, {})
+    };
+}
+
+function resolveTrackDominanceSelection(sessionData, preferredLeftKey, preferredRightKey, changedSide) {
+    var teams = sessionData && sessionData.teams ? sessionData.teams : [];
+    var keys = teams.map(function(team) { return team.teamKey; });
+    if (keys.length < 2) return { leftTeamKey: '', rightTeamKey: '' };
+
+    var leftTeamKey = keys.indexOf(preferredLeftKey) !== -1 ? preferredLeftKey : keys[0];
+    var rightTeamKey = keys.indexOf(preferredRightKey) !== -1 ? preferredRightKey : keys[1];
+
+    if (leftTeamKey === rightTeamKey) {
+        if (changedSide === 'left') {
+            rightTeamKey = keys.filter(function(key) { return key !== leftTeamKey; })[0] || '';
+        } else if (changedSide === 'right') {
+            leftTeamKey = keys.filter(function(key) { return key !== rightTeamKey; })[0] || '';
+        } else {
+            rightTeamKey = keys.filter(function(key) { return key !== leftTeamKey; })[0] || '';
+        }
+    }
+
+    return {
+        leftTeamKey: leftTeamKey,
+        rightTeamKey: rightTeamKey
+    };
+}
+
+function buildTrackDominanceTooltipText(delta, leftName, rightName) {
+    if (!isFiniteNumber(delta)) return 'Telemetry delta unavailable';
+    if (Math.abs(delta) < 0.004) return 'Teams are level at this point of the lap';
+    var leader = delta <= 0 ? leftName : rightName;
+    var trailer = delta <= 0 ? rightName : leftName;
+    return leader + ' -' + Math.abs(delta).toFixed(3) + 's on ' + trailer;
+}
+
+function getTrackDominanceLapWindow(lapInfo, extraMs) {
+    var start = new Date(lapInfo && lapInfo.dateStart);
+    if (!lapInfo || !isFiniteNumber(lapInfo.duration) || !start || isNaN(start.getTime())) return null;
+    var offset = typeof extraMs === 'number' ? extraMs : 260;
+    return {
+        start: new Date(start.getTime() - offset).toISOString(),
+        end: new Date(start.getTime() + Math.round(lapInfo.duration * 1000) + offset).toISOString()
+    };
+}
+
+function loadTrackDominanceLocationSamples(sessionKey, lapInfo) {
+    if (!lapInfo || !lapInfo.driverNumber) return Promise.resolve([]);
+
+    function buildURL(windowRange) {
+        return OPENF1 + '/location?session_key=' + encodeURIComponent(sessionKey)
+            + '&driver_number=' + encodeURIComponent(lapInfo.driverNumber)
+            + '&date>=' + encodeURIComponent(windowRange.start)
+            + '&date<=' + encodeURIComponent(windowRange.end);
+    }
+
+    var narrowWindow = getTrackDominanceLapWindow(lapInfo, 260);
+    if (!narrowWindow) return Promise.resolve([]);
+
+    return fetchJSONWithRetry(buildURL(narrowWindow), 0).then(function(records) {
+        if ((records || []).length >= 10) return records;
+        var wideWindow = getTrackDominanceLapWindow(lapInfo, 850);
+        return fetchJSONWithRetry(buildURL(wideWindow), 0);
+    });
+}
+
+function buildTrackDominanceSeries(samples, lapDuration) {
+    var filtered = (samples || []).map(function(sample) {
+        return {
+            x: parseNumberValue(sample && sample.x),
+            y: parseNumberValue(sample && sample.y),
+            date: sample && sample.date ? new Date(sample.date) : null
+        };
+    }).filter(function(sample) {
+        return isFiniteNumber(sample.x) && isFiniteNumber(sample.y) && sample.date && !isNaN(sample.date.getTime());
+    }).sort(function(a, b) {
+        return a.date - b.date;
+    });
+
+    if (filtered.length < 6 || !isFiniteNumber(lapDuration) || lapDuration <= 0) return null;
+
+    var baseTime = filtered[0].date.getTime();
+    var cumulative = 0;
+    var totalRawTime = Math.max((filtered[filtered.length - 1].date.getTime() - baseTime) / 1000, 0.001);
+    var series = [];
+
+    filtered.forEach(function(point, index) {
+        if (index > 0) {
+            var prev = filtered[index - 1];
+            cumulative += Math.hypot(point.x - prev.x, point.y - prev.y);
+        }
+
+        series.push({
+            x: point.x,
+            y: point.y,
+            progress: 0,
+            time: ((point.date.getTime() - baseTime) / 1000) / totalRawTime * lapDuration
+        });
+    });
+
+    if (cumulative <= 0.001) return null;
+
+    var distance = 0;
+    series.forEach(function(point, index) {
+        if (index > 0) distance += Math.hypot(point.x - series[index - 1].x, point.y - series[index - 1].y);
+        point.progress = distance / cumulative;
+    });
+
+    series[0].progress = 0;
+    series[0].time = 0;
+    series[series.length - 1].progress = 1;
+    series[series.length - 1].time = lapDuration;
+    return series;
+}
+
+function createTrackDominanceInterpolator(series) {
+    var index = 0;
+    return function(progress) {
+        if (!series || !series.length) return null;
+        if (progress <= 0) return series[0];
+        if (progress >= 1) return series[series.length - 1];
+
+        while (index < series.length - 2 && series[index + 1].progress < progress) index += 1;
+
+        var start = series[index];
+        var end = series[Math.min(index + 1, series.length - 1)];
+        var span = end.progress - start.progress;
+        var ratio = span > 0 ? (progress - start.progress) / span : 0;
+
+        return {
+            x: start.x + (end.x - start.x) * ratio,
+            y: start.y + (end.y - start.y) * ratio,
+            time: start.time + (end.time - start.time) * ratio
+        };
+    };
+}
+
+function orientTrackDominancePoints(points) {
+    var oriented = (points || []).map(function(point) {
+        return {
+            x: point.x,
+            y: point.y,
+            delta: point.delta,
+            progress: point.progress
+        };
+    });
+
+    function getBounds(localPoints) {
+        return localPoints.reduce(function(bounds, point) {
+            return {
+                minX: Math.min(bounds.minX, point.x),
+                maxX: Math.max(bounds.maxX, point.x),
+                minY: Math.min(bounds.minY, point.y),
+                maxY: Math.max(bounds.maxY, point.y)
+            };
+        }, { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity });
+    }
+
+    if (!oriented.length) {
+        return { points: [], viewWidth: 760, viewHeight: 580, pathD: '', startPoint: null };
+    }
+
+    var bounds = getBounds(oriented);
+    var width = Math.max(1, bounds.maxX - bounds.minX);
+    var height = Math.max(1, bounds.maxY - bounds.minY);
+
+    if (width > height) {
+        oriented = oriented.map(function(point) {
+            return { x: -point.y, y: point.x, delta: point.delta, progress: point.progress };
+        });
+        bounds = getBounds(oriented);
+        height = Math.max(1, bounds.maxY - bounds.minY);
+    }
+
+    var midY = bounds.minY + (bounds.maxY - bounds.minY) / 2;
+    if (oriented[0].y < midY) {
+        oriented = oriented.map(function(point) {
+            return { x: point.x, y: -point.y, delta: point.delta, progress: point.progress };
+        });
+        bounds = getBounds(oriented);
+    }
+
+    var viewWidth = 760;
+    var viewHeight = 580;
+    var padding = 48;
+    var sourceWidth = Math.max(1, bounds.maxX - bounds.minX);
+    var sourceHeight = Math.max(1, bounds.maxY - bounds.minY);
+    var scale = Math.min(
+        (viewWidth - padding * 2) / sourceWidth,
+        (viewHeight - padding * 2) / sourceHeight
+    );
+    var offsetX = (viewWidth - sourceWidth * scale) / 2;
+    var offsetY = (viewHeight - sourceHeight * scale) / 2;
+
+    var scaledPoints = oriented.map(function(point) {
+        return {
+            x: offsetX + (point.x - bounds.minX) * scale,
+            y: offsetY + (point.y - bounds.minY) * scale,
+            delta: point.delta,
+            progress: point.progress
+        };
+    });
+
+    var pathD = scaledPoints.map(function(point, index) {
+        return (index ? 'L' : 'M') + point.x.toFixed(2) + ' ' + point.y.toFixed(2);
+    }).join(' ');
+
+    return {
+        points: scaledPoints,
+        viewWidth: viewWidth,
+        viewHeight: viewHeight,
+        pathD: pathD,
+        startPoint: scaledPoints[0] || null
+    };
+}
+
+function buildTrackDominanceTrackMap(leftTeam, rightTeam, leftLocations, rightLocations) {
+    var leftSeries = buildTrackDominanceSeries(leftLocations, leftTeam.bestLap.duration);
+    var rightSeries = buildTrackDominanceSeries(rightLocations, rightTeam.bestLap.duration);
+    if (!leftSeries || !rightSeries) return null;
+
+    var sampleCount = 220;
+    var leftInterpolator = createTrackDominanceInterpolator(leftSeries);
+    var rightInterpolator = createTrackDominanceInterpolator(rightSeries);
+    var rawPoints = [];
+    var peakDelta = 0;
+
+    for (var index = 0; index < sampleCount; index++) {
+        var progress = index / (sampleCount - 1);
+        var leftPoint = leftInterpolator(progress);
+        var rightPoint = rightInterpolator(progress);
+        if (!leftPoint || !rightPoint) continue;
+
+        var delta = leftPoint.time - rightPoint.time;
+        rawPoints.push({
+            x: (leftPoint.x + rightPoint.x) / 2,
+            y: (leftPoint.y + rightPoint.y) / 2,
+            delta: delta,
+            progress: progress
+        });
+
+        if (!peakDelta || Math.abs(delta) > Math.abs(peakDelta)) peakDelta = delta;
+    }
+
+    var oriented = orientTrackDominancePoints(rawPoints);
+    var segments = [];
+    var leftLeadCount = 0;
+    var rightLeadCount = 0;
+    var leftChannels = hexToRgbChannels(leftTeam.teamColor);
+    var rightChannels = hexToRgbChannels(rightTeam.teamColor);
+
+    for (var segmentIndex = 0; segmentIndex < oriented.points.length - 1; segmentIndex++) {
+        var start = oriented.points[segmentIndex];
+        var end = oriented.points[segmentIndex + 1];
+        var deltaMid = (start.delta + end.delta) / 2;
+        var leader = deltaMid <= 0 ? 'left' : 'right';
+        if (leader === 'left') leftLeadCount += 1;
+        else rightLeadCount += 1;
+
+        segments.push({
+            x1: start.x,
+            y1: start.y,
+            x2: end.x,
+            y2: end.y,
+            colorChannels: leader === 'left' ? leftChannels : rightChannels,
+            tooltip: buildTrackDominanceTooltipText(deltaMid, leftTeam.teamName, rightTeam.teamName),
+            leader: leader
+        });
+    }
+
+    var totalSegments = Math.max(segments.length, 1);
+    return {
+        viewWidth: oriented.viewWidth,
+        viewHeight: oriented.viewHeight,
+        pathD: oriented.pathD,
+        startPoint: oriented.startPoint,
+        segments: segments,
+        leftLeadPct: (leftLeadCount / totalSegments) * 100,
+        rightLeadPct: (rightLeadCount / totalSegments) * 100,
+        finishDelta: leftTeam.bestLap.duration - rightTeam.bestLap.duration,
+        peakDelta: peakDelta
+    };
+}
+
+function createTrackDominanceSkeleton() {
+    return '<div class="track-dom-skeleton-card">'
+        + '<div class="track-dom-skeleton-head"><div><div class="skel" style="width:200px;height:18px;"></div><div class="skel" style="width:250px;height:11px;margin-top:0.48rem;"></div></div><div class="skel" style="width:220px;height:46px;border-radius:12px;"></div></div>'
+        + '<div class="track-dom-skeleton-selectors"><div class="skel" style="height:76px;border-radius:18px;"></div><div class="skel" style="height:76px;border-radius:18px;"></div></div>'
+        + '<div class="track-dom-skeleton-duel"><div class="skel" style="height:160px;border-radius:20px;"></div><div class="skel" style="height:160px;border-radius:20px;"></div></div>'
+        + '<div class="skel track-dom-skeleton-track"></div>'
+        + '<div class="skel" style="width:72%;height:10px;margin-top:0.9rem;"></div>'
+        + '</div>';
+}
+
+function buildTrackDominanceMetricComparison(leftLap, rightLap) {
+    var definitions = [
+        { key: 'speedTrap', label: 'TS', higherIsBetter: true, tolerance: 0.5, format: function(value) { return isFiniteNumber(value) ? String(Math.round(value)) : 'n/a'; } },
+        { key: 'sector1', label: 'S1', higherIsBetter: false, tolerance: 0.001, format: function(value) { return formatLapTime(value, false); } },
+        { key: 'sector2', label: 'S2', higherIsBetter: false, tolerance: 0.001, format: function(value) { return formatLapTime(value, false); } },
+        { key: 'sector3', label: 'S3', higherIsBetter: false, tolerance: 0.001, format: function(value) { return formatLapTime(value, false); } }
+    ];
+
+    return definitions.reduce(function(acc, definition) {
+        var leftValue = leftLap ? leftLap[definition.key] : NaN;
+        var rightValue = rightLap ? rightLap[definition.key] : NaN;
+        var leftState = 'na';
+        var rightState = 'na';
+
+        if (isFiniteNumber(leftValue) && isFiniteNumber(rightValue)) {
+            var diff = leftValue - rightValue;
+            if (Math.abs(diff) <= definition.tolerance) {
+                leftState = 'level';
+                rightState = 'level';
+            } else {
+                var leftIsBetter = definition.higherIsBetter ? diff > 0 : diff < 0;
+                leftState = leftIsBetter ? 'better' : 'worse';
+                rightState = leftIsBetter ? 'worse' : 'better';
+            }
+        } else if (isFiniteNumber(leftValue)) {
+            leftState = 'level';
+        } else if (isFiniteNumber(rightValue)) {
+            rightState = 'level';
+        }
+
+        acc[definition.key] = {
+            label: definition.label,
+            leftText: definition.format(leftValue),
+            rightText: definition.format(rightValue),
+            leftState: leftState,
+            rightState: rightState
+        };
+        return acc;
+    }, {});
+}
+
+function renderTrackDominanceMetricStrip(side, comparison) {
+    var order = side === 'right'
+        ? ['sector1', 'sector2', 'sector3', 'speedTrap']
+        : ['speedTrap', 'sector1', 'sector2', 'sector3'];
+    var textKey = side === 'right' ? 'rightText' : 'leftText';
+    var stateKey = side === 'right' ? 'rightState' : 'leftState';
+    var html = '<div class="track-dom-team-metrics ' + side + '">';
+
+    order.forEach(function(metricKey) {
+        var metric = comparison && comparison[metricKey] ? comparison[metricKey] : null;
+        var valueText = metric ? metric[textKey] : 'n/a';
+        var state = metric ? metric[stateKey] : 'na';
+
+        html += '<div class="track-dom-team-metric">'
+            + '<span class="track-dom-team-metric-label">' + esc(metric ? metric.label : metricKey.toUpperCase()) + '</span>'
+            + '<span class="track-dom-team-metric-value is-' + esc(state) + '">' + esc(valueText) + '</span>'
+            + '</div>';
+    });
+
+    return html + '</div>';
+}
+
+function renderTrackDominanceTeamCard(side, team, colorChannels, metricComparison) {
+    var lap = team.bestLap;
+    var logoMarkup = team.logo
+        ? '<img src="' + esc(team.logo) + '" alt="' + esc(team.teamName) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';"><div class="track-dom-team-logo-fallback" style="display:none;">' + esc(getTrackDominanceShortName(team.teamName)) + '</div>'
+        : '<div class="track-dom-team-logo-fallback">' + esc(getTrackDominanceShortName(team.teamName)) + '</div>';
+
+    return '<article class="track-dom-team-card ' + side + '" style="--team-color:' + esc(colorChannels) + ';">'
+        + '<div class="track-dom-team-top"><div class="track-dom-team-logo">' + logoMarkup + '</div><div class="track-dom-team-copy"><div class="track-dom-team-name">' + esc(team.teamName) + '</div><div class="track-dom-team-driver">' + esc(lap.acronym + ' · Lap ' + lap.lapNumber) + '</div></div></div>'
+        + '<div class="track-dom-team-time">' + esc(formatLapTime(lap.duration, true)) + '</div>'
+        + renderTrackDominanceMetricStrip(side, metricComparison)
+        + '</article>';
+}
+
+function renderTrackDominance(sessionData, pairData, session) {
+    if (!trackDominanceTable) return;
+
+    if (!sessionData || !session || !sessionData.teams || sessionData.teams.length < 2) {
+        trackDominanceTable.innerHTML = '<div class="track-dom-empty-card">'
+            + '<i class="fas fa-route"></i>'
+            + '<p>Δεν υπάρχουν ακόμη αρκετά telemetry laps για team comparison.</p>'
+            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed sessions με valid fastest laps για τουλάχιστον δύο ομάδες.</p>'
+            + '</div>';
+        finalizeRenderedPanel('track-dominance');
+        return;
+    }
+
+    var sessionOptions = trackDominanceState.sessions.slice().reverse().map(function(item) {
+        return '<option value="' + esc(item.session_key) + '"' + (String(item.session_key) === String(trackDominanceState.selectedSessionKey) ? ' selected' : '') + '>' + esc((item.meeting_name || item.circuit_short_name || item.location || 'Session') + ' · ' + (item.session_name || item.session_type || 'Session') + (formatSessionDateShort(item) ? ' · ' + formatSessionDateShort(item) : '')) + '</option>';
+    }).join('');
+
+    var leftTeamOptions = sessionData.teams.map(function(team) {
+        return '<option value="' + esc(team.teamKey) + '"' + (team.teamKey === trackDominanceState.leftTeamKey ? ' selected' : '') + '>' + esc(team.teamName + ' · ' + team.bestLap.acronym + ' · ' + formatLapTime(team.bestLap.duration, true)) + '</option>';
+    }).join('');
+    var rightTeamOptions = sessionData.teams.map(function(team) {
+        return '<option value="' + esc(team.teamKey) + '"' + (team.teamKey === trackDominanceState.rightTeamKey ? ' selected' : '') + '>' + esc(team.teamName + ' · ' + team.bestLap.acronym + ' · ' + formatLapTime(team.bestLap.duration, true)) + '</option>';
+    }).join('');
+
+    var leftTeam = sessionData.teamMap[trackDominanceState.leftTeamKey];
+    var rightTeam = sessionData.teamMap[trackDominanceState.rightTeamKey];
+    var leftChannels = hexToRgbChannels(leftTeam.teamColor);
+    var rightChannels = hexToRgbChannels(rightTeam.teamColor);
+    var metricComparison = buildTrackDominanceMetricComparison(leftTeam.bestLap, rightTeam.bestLap);
+    var finishDelta = pairData ? pairData.finishDelta : leftTeam.bestLap.duration - rightTeam.bestLap.duration;
+    var finishLeader = finishDelta <= 0 ? leftTeam.teamName : rightTeam.teamName;
+    var finishTrailer = finishDelta <= 0 ? rightTeam.teamName : leftTeam.teamName;
+
+    var html = '<div class="track-dom-card">'
+        + '<div class="track-dom-head"><div class="track-dom-head-copy"><h3 class="track-dom-head-title">Team Fastest-Lap Dominance</h3><p class="track-dom-head-note">Η γραμμή χρωματίζεται με βάση το ποια ομάδα είναι μπροστά στο ίδιο σημείο του γύρου, χρησιμοποιώντας το fastest lap κάθε ομάδας στο selected session.</p></div><label class="track-dom-controls"><span class="track-dom-controls-label">Available sessions</span><select class="track-dom-select" data-track-dom-session aria-label="Επιλογή session για track dominance">' + sessionOptions + '</select></label></div>'
+        + '<div class="track-dom-team-pickers">'
+        + '<label class="track-dom-controls"><span class="track-dom-controls-label">Team 1</span><select class="track-dom-select" data-track-dom-team="left" aria-label="Επιλογή πρώτης ομάδας για track dominance">' + leftTeamOptions + '</select></label>'
+        + '<label class="track-dom-controls"><span class="track-dom-controls-label">Team 2</span><select class="track-dom-select" data-track-dom-team="right" aria-label="Επιλογή δεύτερης ομάδας για track dominance">' + rightTeamOptions + '</select></label>'
+        + '</div>'
+        + '<div class="track-dom-duel">'
+        + renderTrackDominanceTeamCard('left', leftTeam, leftChannels, metricComparison)
+        + '<div class="track-dom-vs-card"><div class="track-dom-vs-label">Session</div><div class="track-dom-vs-title">' + esc(session.meeting_name || session.circuit_short_name || session.location || 'Track') + '</div><div class="track-dom-vs-sub">' + esc((session.session_name || session.session_type || 'Session') + (formatSessionDateShort(session) ? ' · ' + formatSessionDateShort(session) : '')) + '</div><div class="track-dom-vs-delta">' + esc(finishLeader + ' -' + Math.abs(finishDelta).toFixed(3) + 's') + '</div><div class="track-dom-vs-note">on ' + esc(finishTrailer) + '</div></div>'
+        + renderTrackDominanceTeamCard('right', rightTeam, rightChannels, metricComparison)
+        + '</div>';
+
+    if (!pairData || !pairData.pathD || !pairData.segments.length) {
+        html += '<div class="track-dom-map-empty"><i class="fas fa-location-crosshairs"></i><p>Υπάρχουν lap times αλλά όχι αρκετά location samples για να χτιστεί το track map αυτής της σύγκρισης.</p></div>';
+    } else {
+        var svg = '<svg class="track-dom-track-svg" viewBox="0 0 ' + pairData.viewWidth + ' ' + pairData.viewHeight + '" preserveAspectRatio="xMidYMid meet" aria-label="Track dominance comparison map">'
+            + '<path class="track-dom-track-base" d="' + esc(pairData.pathD) + '"></path>';
+
+        pairData.segments.forEach(function(segment) {
+            svg += '<line class="track-dom-segment" x1="' + segment.x1.toFixed(2) + '" y1="' + segment.y1.toFixed(2) + '" x2="' + segment.x2.toFixed(2) + '" y2="' + segment.y2.toFixed(2) + '" style="--team-color:' + esc(segment.colorChannels) + ';" data-tooltip="' + esc(segment.tooltip) + '"><title>' + esc(segment.tooltip) + '</title></line>';
+        });
+
+        if (pairData.startPoint) {
+            svg += '<circle class="track-dom-track-start" cx="' + pairData.startPoint.x.toFixed(2) + '" cy="' + pairData.startPoint.y.toFixed(2) + '" r="9"></circle>'
+                + '<circle class="track-dom-track-start-core" cx="' + pairData.startPoint.x.toFixed(2) + '" cy="' + pairData.startPoint.y.toFixed(2) + '" r="4.2"></circle>';
+        }
+
+        svg += '</svg>';
+
+        html += '<div class="track-dom-map-card">'
+            + '<div class="track-dom-map-meta"><div class="track-dom-map-title">Track Dominance Map</div><div class="track-dom-map-note">Hover το track για live delta tooltip.</div></div>'
+            + '<div class="track-dom-track-shell" data-track-dom-shell>' + svg + '<div class="track-dom-tooltip" data-track-dom-tooltip></div></div>'
+            + '<div class="track-dom-advantage">'
+            + '<div class="track-dom-advantage-head"><span class="track-dom-advantage-team left" style="--team-color:' + esc(leftChannels) + ';">' + esc(leftTeam.teamName) + ' ahead ' + esc(Math.round(pairData.leftLeadPct)) + '%</span><span class="track-dom-advantage-team right" style="--team-color:' + esc(rightChannels) + ';">' + esc(rightTeam.teamName) + ' ahead ' + esc(Math.round(pairData.rightLeadPct)) + '%</span></div>'
+            + '<div class="track-dom-advantage-bar"><span class="track-dom-advantage-fill left" style="--team-color:' + esc(leftChannels) + ';width:' + pairData.leftLeadPct.toFixed(2) + '%;"></span><span class="track-dom-advantage-fill right" style="--team-color:' + esc(rightChannels) + ';width:' + pairData.rightLeadPct.toFixed(2) + '%;"></span></div>'
+            + '<div class="track-dom-advantage-note">' + esc(finishLeader + ' -' + Math.abs(finishDelta).toFixed(3) + 's on ' + finishTrailer) + ' · peak swing ' + esc(Math.abs(pairData.peakDelta).toFixed(3)) + 's</div>'
+            + '</div>'
+            + '</div>';
+    }
+
+    html += '<p class="track-dom-footnote">Source: OpenF1 `laps` + `location`. Κάθε ομάδα εκπροσωπείται από το single fastest lap της στο selected session.</p></div>';
+
+    trackDominanceTable.innerHTML = html;
+    finalizeRenderedPanel('track-dominance');
+}
+
+function showTrackDominanceError() {
+    if (!trackDominanceTable) return;
+    trackDominanceTable.innerHTML = '<div class="track-dom-empty-card">'
+        + '<i class="fas fa-exclamation-triangle"></i>'
+        + '<p>Δεν ήταν δυνατή η φόρτωση του track dominance chart.</p>'
+        + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 telemetry endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
+        + '<button class="retry-btn" type="button" onclick="window.__retryTrackDominance && window.__retryTrackDominance()"><i class="fas fa-redo"></i> Νέα προσπάθεια</button>'
+        + '</div>';
+    finalizeRenderedPanel('track-dominance');
+}
+
+function loadTrackDominanceSessionData(sessionKey) {
+    var cacheKey = String(sessionKey);
+    var session = (trackDominanceState.sessions || []).filter(function(item) {
+        return String(item.session_key) === cacheKey;
+    })[0];
+    if (!session) return Promise.reject(new Error('Unknown track dominance session'));
+    if (trackDominanceState.sessionCache[cacheKey]) return Promise.resolve(trackDominanceState.sessionCache[cacheKey]);
+
+    return Promise.all([
+        fetchOpenF1BySessionKeys('drivers', [session.session_key]),
+        fetchOpenF1BySessionKeys('laps', [session.session_key])
+    ]).then(function(payload) {
+        var built = buildTrackDominanceSessionData(session, payload[0], payload[1]);
+        trackDominanceState.sessionCache[cacheKey] = built;
+        return built;
+    });
+}
+
+function loadTrackDominancePairData(session, sessionData, leftTeamKey, rightTeamKey) {
+    var cacheKey = [session.session_key, leftTeamKey, rightTeamKey].join('|');
+    if (trackDominanceState.pairCache[cacheKey]) return Promise.resolve(trackDominanceState.pairCache[cacheKey]);
+
+    var leftTeam = sessionData.teamMap[leftTeamKey];
+    var rightTeam = sessionData.teamMap[rightTeamKey];
+    if (!leftTeam || !rightTeam) return Promise.resolve(null);
+
+    return Promise.all([
+        loadTrackDominanceLocationSamples(session.session_key, leftTeam.bestLap),
+        loadTrackDominanceLocationSamples(session.session_key, rightTeam.bestLap)
+    ]).then(function(payload) {
+        var built = buildTrackDominanceTrackMap(leftTeam, rightTeam, payload[0], payload[1]);
+        trackDominanceState.pairCache[cacheKey] = built;
+        return built;
+    });
+}
+
+function loadAndRenderTrackDominance(useSkeleton) {
+    if (!trackDominanceTable) return;
+    if (trackDominanceState.loading) {
+        trackDominanceState.pendingReload = true;
+        return;
+    }
+
+    trackDominanceState.loading = true;
+    trackDominanceState.pendingReload = false;
+    if (useSkeleton) trackDominanceTable.innerHTML = createTrackDominanceSkeleton();
+
+    var sessionsPromise = trackDominanceState.sessions.length
+        ? Promise.resolve(trackDominanceState.sessions)
+        : getCompletedTrackDominanceSessions().then(function(sessions) {
+            trackDominanceState.sessions = sessions;
+            return sessions;
+        });
+
+    sessionsPromise.then(function(sessions) {
+        if (!sessions.length) return { session: null, sessionData: null };
+
+        if (!trackDominanceState.selectedSessionKey || !sessions.some(function(item) { return String(item.session_key) === String(trackDominanceState.selectedSessionKey); })) {
+            trackDominanceState.selectedSessionKey = String(sessions[sessions.length - 1].session_key);
+        }
+
+        var selectedSession = sessions.filter(function(item) {
+            return String(item.session_key) === String(trackDominanceState.selectedSessionKey);
+        })[0];
+
+        return loadTrackDominanceSessionData(trackDominanceState.selectedSessionKey).then(function(sessionData) {
+            var selection = resolveTrackDominanceSelection(sessionData, trackDominanceState.leftTeamKey, trackDominanceState.rightTeamKey);
+            trackDominanceState.leftTeamKey = selection.leftTeamKey;
+            trackDominanceState.rightTeamKey = selection.rightTeamKey;
+
+            if (!selection.leftTeamKey || !selection.rightTeamKey) {
+                return {
+                    session: selectedSession,
+                    sessionData: sessionData,
+                    pairData: null
+                };
+            }
+
+            return loadTrackDominancePairData(selectedSession, sessionData, selection.leftTeamKey, selection.rightTeamKey).then(function(pairData) {
+                return {
+                    session: selectedSession,
+                    sessionData: sessionData,
+                    pairData: pairData
+                };
+            });
+        });
+    }).then(function(payload) {
+        renderTrackDominance(payload.sessionData, payload.pairData, payload.session);
+        trackDominanceState.loaded = true;
+    }).catch(function(error) {
+        console.error('Track dominance error:', error);
+        showTrackDominanceError();
+    }).finally(function() {
+        trackDominanceState.loading = false;
+        if (trackDominanceState.pendingReload) {
+            trackDominanceState.pendingReload = false;
+            loadAndRenderTrackDominance(true);
+        }
+    });
+}
+
+function ensureTrackDominanceLoaded(forceReload) {
+    if (!trackDominanceTable) return;
+    if (trackDominanceState.loading) return;
+    if (trackDominanceState.loaded && !forceReload) return;
+    loadAndRenderTrackDominance(true);
 }
 
 function createPairRecord(teamName, teamKey, teamColor, driverA, driverB) {
@@ -2010,6 +2754,11 @@ window.__retryTyrePace = function() {
     ensureTyrePaceLoaded(true);
 };
 
+window.__retryTrackDominance = function() {
+    trackDominanceState.loaded = false;
+    ensureTrackDominanceLoaded(true);
+};
+
 if (lap1GainsTable) {
     lap1GainsTable.addEventListener('click', function(event) {
         var viewTab = event.target.closest('[data-lap1-view]');
@@ -2056,6 +2805,79 @@ if (tyrePaceTable) {
         }).finally(function() {
             tyrePaceState.loading = false;
         });
+    });
+}
+
+function hideTrackDominanceTooltip() {
+    if (!trackDominanceTable) return;
+    trackDominanceTable.querySelectorAll('[data-track-dom-tooltip]').forEach(function(tooltip) {
+        tooltip.classList.remove('is-active');
+    });
+}
+
+function updateTrackDominanceTooltip(segment, event) {
+    if (!segment) {
+        hideTrackDominanceTooltip();
+        return;
+    }
+
+    var shell = segment.closest('[data-track-dom-shell]');
+    var tooltip = shell ? shell.querySelector('[data-track-dom-tooltip]') : null;
+    if (!shell || !tooltip) return;
+
+    var rect = shell.getBoundingClientRect();
+    var x = clampNumber(event.clientX - rect.left, 72, rect.width - 72);
+    var y = clampNumber(event.clientY - rect.top, 56, rect.height - 28);
+
+    tooltip.textContent = segment.getAttribute('data-tooltip') || '';
+    tooltip.style.left = x.toFixed(1) + 'px';
+    tooltip.style.top = y.toFixed(1) + 'px';
+    tooltip.classList.add('is-active');
+}
+
+if (trackDominanceTable) {
+    trackDominanceTable.addEventListener('change', function(event) {
+        var sessionSelect = event.target.closest('[data-track-dom-session]');
+        if (sessionSelect) {
+            trackDominanceState.selectedSessionKey = sessionSelect.value;
+            trackDominanceState.leftTeamKey = '';
+            trackDominanceState.rightTeamKey = '';
+            trackDominanceState.loaded = false;
+            writeStandingsURLState(true);
+            loadAndRenderTrackDominance(true);
+            return;
+        }
+
+        var teamSelect = event.target.closest('[data-track-dom-team]');
+        if (!teamSelect) return;
+
+        if (teamSelect.getAttribute('data-track-dom-team') === 'left') {
+            trackDominanceState.leftTeamKey = teamSelect.value;
+            var cachedLeftSession = trackDominanceState.sessionCache[String(trackDominanceState.selectedSessionKey)];
+            if (cachedLeftSession) {
+                trackDominanceState.rightTeamKey = resolveTrackDominanceSelection(cachedLeftSession, trackDominanceState.leftTeamKey, trackDominanceState.rightTeamKey, 'left').rightTeamKey;
+            }
+        } else {
+            trackDominanceState.rightTeamKey = teamSelect.value;
+            var cachedRightSession = trackDominanceState.sessionCache[String(trackDominanceState.selectedSessionKey)];
+            if (cachedRightSession) {
+                trackDominanceState.leftTeamKey = resolveTrackDominanceSelection(cachedRightSession, trackDominanceState.leftTeamKey, trackDominanceState.rightTeamKey, 'right').leftTeamKey;
+            }
+        }
+
+        trackDominanceState.loaded = false;
+        writeStandingsURLState(true);
+        loadAndRenderTrackDominance(true);
+    });
+
+    trackDominanceTable.addEventListener('pointermove', function(event) {
+        var target = event.target;
+        var segment = target && target.classList && target.classList.contains('track-dom-segment') ? target : null;
+        updateTrackDominanceTooltip(segment, event);
+    });
+
+    trackDominanceTable.addEventListener('pointerleave', function() {
+        hideTrackDominanceTooltip();
     });
 }
 
@@ -2127,6 +2949,11 @@ window.addEventListener('popstate', function() {
     lap1GainsState.activeView = nextState.lap1View;
     lap1GainsState.selectedSessionKey = nextState.lap1Session;
     tyrePaceState.selectedSessionKey = nextState.tyreSession;
+    trackDominanceState.selectedSessionKey = nextState.trackSession;
+    trackDominanceState.leftTeamKey = nextState.trackTeamA;
+    trackDominanceState.rightTeamKey = nextState.trackTeamB;
+    pitStopsState.activeView = nextState.pitView;
+    pitStopsState.selectedRound = nextState.pitRound;
     activateStandingsTab(nextState.tab, { skipURL: true });
 });
 
@@ -2484,6 +3311,360 @@ function renderConstructorsFromOpenF1(standings, driverInfo) {
     document.getElementById('constructors-chart-bars').innerHTML = chartHTML;
     document.getElementById('constructors-chart').style.display = 'block';
     finalizeRenderedPanel('constructors');
+}
+
+// ── Pit Stops ──
+function createPitStopsSkeleton() {
+    var rowSkels = '';
+    for (var i = 0; i < 6; i++) {
+        rowSkels += '<div class="skel" style="width:100%;height:58px;border-radius:14px;margin-bottom:0.5rem;"></div>';
+    }
+    return '<div class="pit-stops-skeleton-card">'
+        + '<div class="pit-stops-skeleton-head"><div><div class="skel" style="width:200px;height:18px;"></div><div class="skel" style="width:240px;height:11px;margin-top:0.5rem;"></div></div><div class="skel" style="width:220px;height:46px;border-radius:12px;"></div></div>'
+        + '<div class="skel" style="width:260px;height:38px;border-radius:999px;margin-bottom:1rem;"></div>'
+        + '<div class="skel" style="width:100%;height:78px;border-radius:16px;margin-bottom:1rem;"></div>'
+        + rowSkels
+        + '</div>';
+}
+
+function formatRaceDate(race) {
+    var d = new Date(race.date);
+    return d.toLocaleDateString('el-GR', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function loadPitStopRaces() {
+    return fetchJSON(JOLPICA + '/' + YEAR + '.json?limit=30').then(function(data) {
+        var now = new Date();
+        return (data.MRData.RaceTable.Races || []).filter(function(r) {
+            return new Date(r.date + 'T' + (r.time || '23:59:59Z')) < now;
+        });
+    });
+}
+
+function loadPitStopRaceData(round) {
+    var key = String(round);
+    if (pitStopsState.raceCache[key]) return Promise.resolve(pitStopsState.raceCache[key]);
+
+    return Promise.all([
+        fetchJSONWithRetry(JOLPICA + '/' + YEAR + '/' + key + '/pitstops.json?limit=200', 0),
+        fetchJSONWithRetry(JOLPICA + '/' + YEAR + '/' + key + '/results.json?limit=30', 0)
+    ]).then(function(results) {
+        var stops = ((results[0].MRData.RaceTable.Races || [])[0] || {}).PitStops || [];
+        var raceResults = ((results[1].MRData.RaceTable.Races || [])[0] || {}).Results || [];
+
+        var driverMap = {};
+        raceResults.forEach(function(r) {
+            if (!r.Driver) return;
+            var code = r.Driver.code || (r.Driver.familyName || '').substring(0, 3).toUpperCase();
+            driverMap[r.Driver.driverId] = {
+                teamId: r.Constructor ? r.Constructor.constructorId : '',
+                teamName: r.Constructor ? r.Constructor.name : '',
+                code: code,
+                fullName: ((r.Driver.givenName || '') + ' ' + (r.Driver.familyName || '')).trim()
+            };
+        });
+
+        var cached = { stops: stops, driverMap: driverMap };
+        pitStopsState.raceCache[key] = cached;
+        return cached;
+    });
+}
+
+function buildPitStopFastestPerDriver(stops, driverMap) {
+    var driverBest = {};
+    (stops || []).forEach(function(stop) {
+        var duration = parseTimeSeconds(stop.duration);
+        if (!isFiniteNumber(duration) || duration < 5 || duration > 300) return;
+        if (!driverBest[stop.driverId] || duration < driverBest[stop.driverId].duration) {
+            driverBest[stop.driverId] = { duration: duration, lap: stop.lap, stop: stop.stop };
+        }
+    });
+    return Object.keys(driverBest).map(function(driverId) {
+        var info = driverMap[driverId] || {};
+        var teamColor = getCanonicalTeamColor(info.teamId, info.teamName, '');
+        return {
+            driverId: driverId,
+            duration: driverBest[driverId].duration,
+            lap: driverBest[driverId].lap,
+            stop: driverBest[driverId].stop,
+            teamId: resolveTeamId(info.teamId, info.teamName),
+            teamName: getCanonicalTeamName(info.teamName) || info.teamName || '',
+            teamColor: teamColor,
+            code: info.code || driverId.substring(0, 3).toUpperCase(),
+            fullName: info.fullName || driverId
+        };
+    }).sort(function(a, b) { return a.duration - b.duration; });
+}
+
+function buildPitStopsDriverRowHTML(entry, idx, fastestDuration) {
+    var rgb = hexToRgbChannels(entry.teamColor);
+    var headshot = getHeadshot(entry.driverId);
+    var barPct = Math.max(3, (fastestDuration / entry.duration) * 100);
+    var avatarContent = headshot
+        ? '<img src="' + esc(headshot) + '" alt="' + esc(entry.code) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+          + '<div class="pit-stops-avatar-fallback" style="display:none">' + esc(entry.code) + '</div>'
+        : '<div class="pit-stops-avatar-fallback">' + esc(entry.code) + '</div>';
+
+    return '<div class="pit-stops-row" style="--winner-color:' + rgb + ';">'
+        + '<div class="pit-stops-rank">' + (idx + 1) + '</div>'
+        + '<div class="pit-stops-driver"><div class="pit-stops-avatar">' + avatarContent + '</div>'
+        + '<div class="pit-stops-driver-meta"><div class="pit-stops-driver-top">'
+        + '<span class="pit-stops-driver-code">' + esc(entry.code) + '</span>'
+        + '<span class="pit-stops-driver-team-label">' + esc(entry.teamName) + '</span></div>'
+        + '<div class="pit-stops-driver-name">' + esc(entry.fullName) + '</div></div></div>'
+        + '<div class="pit-stops-time-area"><div class="pit-stops-time">' + entry.duration.toFixed(1) + 's</div>'
+        + '<div class="pit-stops-lap-info">Lap ' + esc(String(entry.lap)) + ' · Stop ' + esc(String(entry.stop)) + '</div></div>'
+        + '<div class="pit-stops-bar-wrap"><div class="pit-stops-bar" style="width:' + barPct + '%;background:#' + esc(entry.teamColor) + ';"></div></div>'
+        + '</div>';
+}
+
+function renderPitStopsSeasonContent(seasonCache) {
+    var teamBest = seasonCache.teamBest;
+    var driverBest = seasonCache.driverBest;
+
+    if (!teamBest.length && !driverBest.length) {
+        return '<div class="pit-stops-empty-card"><i class="fas fa-clock"></i><p>Δεν υπάρχουν ακόμη δεδομένα.</p></div>';
+    }
+    var disclaimer = '<div class="pit-stops-footnote" style="margin-bottom:1rem;"><i class="fas fa-circle-info" style="margin-right:0.3rem;opacity:0.6;"></i>Συνολική διέλευση pit lane (είσοδος–έξοδος) — όχι χρόνος ακινησίας.</div>';
+
+    var html = disclaimer;
+
+    if (teamBest.length) {
+        html += '<p class="pit-stops-section-title"><i class="fas fa-flag-checkered" style="margin-right:0.4rem;opacity:0.7;"></i>Team Season Best</p><div class="pit-stops-team-rows">';
+        var teamFastest = teamBest[0].duration;
+        teamBest.forEach(function(entry, idx) {
+            var rgb = hexToRgbChannels(entry.teamColor);
+            var logo = getTeamLogo(entry.teamId);
+            var shortName = (entry.teamName || '').substring(0, 3).toUpperCase();
+            var barPct = Math.max(3, (teamFastest / entry.duration) * 100);
+            var badgeHtml = logo
+                ? '<img src="' + esc(logo) + '" alt="' + esc(shortName) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+                  + '<span class="pit-stops-team-badge-text" style="display:none">' + esc(shortName) + '</span>'
+                : '<span class="pit-stops-team-badge-text">' + esc(shortName) + '</span>';
+
+            html += '<div class="pit-stops-team-row" style="--team-color-rgb:' + rgb + ';">'
+                + '<div class="pit-stops-rank">' + (idx + 1) + '</div>'
+                + '<div class="pit-stops-team-badge">' + badgeHtml + '</div>'
+                + '<div class="pit-stops-team-info"><div class="pit-stops-team-name-text">' + esc(entry.teamName) + '</div>'
+                + '<div class="pit-stops-team-meta-text">' + esc(entry.code) + ' · R' + esc(String(entry.round)) + ' ' + esc(entry.raceName) + '</div></div>'
+                + '<div class="pit-stops-time-area"><div class="pit-stops-time" style="color:rgb(' + rgb + ');">' + entry.duration.toFixed(1) + 's</div>'
+                + '<div class="pit-stops-lap-info">Lap ' + esc(String(entry.lap)) + '</div></div>'
+                + '<div class="pit-stops-bar-wrap"><div class="pit-stops-bar" style="width:' + barPct + '%;background:rgb(' + rgb + ');"></div></div>'
+                + '</div>';
+        });
+        html += '</div>';
+    }
+
+    if (driverBest.length) {
+        html += '<p class="pit-stops-section-title" style="margin-top:1.4rem;"><i class="fas fa-helmet-safety" style="margin-right:0.4rem;opacity:0.7;"></i>Driver Season Best</p><div class="pit-stops-rows">';
+        var driverFastest = driverBest[0].duration;
+        driverBest.forEach(function(entry, idx) {
+            var modifiedEntry = Object.assign({}, entry, {
+                fullName: 'R' + entry.round + ' · ' + entry.raceName
+            });
+            html += buildPitStopsDriverRowHTML(modifiedEntry, idx, driverFastest);
+        });
+        html += '</div>';
+    }
+
+    return html;
+}
+
+function buildSeasonBestCache(races) {
+    var teamBestMap = {};
+    var driverBestMap = {};
+
+    races.forEach(function(race) {
+        var cached = pitStopsState.raceCache[String(race.round)];
+        if (!cached) return;
+        var sorted = buildPitStopFastestPerDriver(cached.stops, cached.driverMap);
+        var shortName = (race.raceName || '').replace(/ Grand Prix$/, ' GP');
+
+        sorted.forEach(function(entry) {
+            if (!driverBestMap[entry.driverId] || entry.duration < driverBestMap[entry.driverId].duration) {
+                driverBestMap[entry.driverId] = Object.assign({}, entry, { round: race.round, raceName: shortName });
+            }
+            var teamKey = entry.teamId || entry.teamName;
+            if (teamKey && (!teamBestMap[teamKey] || entry.duration < teamBestMap[teamKey].duration)) {
+                teamBestMap[teamKey] = Object.assign({}, entry, { round: race.round, raceName: shortName });
+            }
+        });
+    });
+
+    return {
+        teamBest: Object.keys(teamBestMap).map(function(k) { return teamBestMap[k]; }).sort(function(a, b) { return a.duration - b.duration; }),
+        driverBest: Object.keys(driverBestMap).map(function(k) { return driverBestMap[k]; }).sort(function(a, b) { return a.duration - b.duration; })
+    };
+}
+
+function loadSeasonPitStops(races) {
+    return races.reduce(function(chain, race) {
+        return chain.then(function() {
+            return loadPitStopRaceData(race.round).catch(function() {});
+        }).then(function() { return delay(120); });
+    }, Promise.resolve());
+}
+
+function renderPitStops(raceData, race, races) {
+    if (!pitStopsTable) return;
+
+    var sorted = buildPitStopFastestPerDriver(raceData.stops, raceData.driverMap);
+    var totalStops = (raceData.stops || []).filter(function(s) {
+        var d = parseTimeSeconds(s.duration);
+        return isFiniteNumber(d) && d >= 5 && d <= 300;
+    }).length;
+
+    var selectOptions = races.map(function(r) {
+        return '<option value="' + esc(r.round) + '"' + (String(r.round) === String(pitStopsState.selectedRound) ? ' selected' : '') + '>R' + r.round + ' · ' + esc(r.raceName) + '</option>';
+    }).join('');
+
+    var html = '<div class="pit-stops-card">'
+        + '<div class="pit-stops-head">'
+        + '<div class="pit-stops-head-copy"><h4 class="pit-stops-head-title">' + esc(race.raceName) + '</h4>'
+        + '<p class="pit-stops-head-note">' + esc(formatRaceDate(race)) + ' · ' + totalStops + ' pit stops</p></div>'
+        + '<div class="pit-stops-controls"><div class="pit-stops-controls-label">Επιλογή Αγώνα</div>'
+        + '<select class="pit-stops-select" data-pitstop-select>' + selectOptions + '</select></div></div>';
+
+    html += '<div class="pit-stops-view-switch"><div class="pit-stops-view-tabs">'
+        + '<button class="pit-stops-view-tab' + (pitStopsState.activeView === 'race' ? ' active' : '') + '" data-pitstop-view="race"><i class="fas fa-flag-checkered"></i> Per Race</button>'
+        + '<button class="pit-stops-view-tab' + (pitStopsState.activeView === 'season' ? ' active' : '') + '" data-pitstop-view="season"><i class="fas fa-trophy"></i> Season Best</button>'
+        + '</div></div>';
+
+    // Per-race panel
+    html += '<div class="pit-stops-view-panel' + (pitStopsState.activeView === 'race' ? ' active' : '') + '" data-pitstop-panel="race">';
+    if (!sorted.length) {
+        html += '<div class="pit-stops-empty-card"><i class="fas fa-wrench"></i><p>Δεν βρέθηκαν δεδομένα pit stop για αυτόν τον αγώνα.</p></div>';
+    } else {
+        var p1 = sorted[0];
+        html += '<div class="pit-stops-summary">'
+            + '<div class="pit-stops-summary-main"><div class="pit-stops-summary-title">Ταχύτερη διέλευση pit lane: ' + esc(p1.code) + ' — ' + p1.duration.toFixed(1) + 's</div>'
+            + '<div class="pit-stops-summary-sub">' + esc(p1.fullName) + ' · ' + esc(p1.teamName) + ' · Lap ' + esc(String(p1.lap)) + '</div></div>'
+            + '<div class="pit-stops-summary-stats">'
+            + '<div class="pit-stops-summary-stat"><div class="pit-stops-summary-label">Drivers</div><div class="pit-stops-summary-value">' + sorted.length + '</div></div>'
+            + '<div class="pit-stops-summary-stat"><div class="pit-stops-summary-label">Total Stops</div><div class="pit-stops-summary-value">' + totalStops + '</div></div>'
+            + '</div></div>';
+
+        html += '<div class="pit-stops-rows">';
+        sorted.forEach(function(entry, idx) {
+            html += buildPitStopsDriverRowHTML(entry, idx, p1.duration);
+        });
+        html += '</div>';
+    }
+    html += '</div>';
+
+    // Season best panel
+    html += '<div class="pit-stops-view-panel' + (pitStopsState.activeView === 'season' ? ' active' : '') + '" data-pitstop-panel="season">';
+    if (pitStopsState.activeView === 'season') {
+        html += pitStopsState.seasonCache
+            ? renderPitStopsSeasonContent(pitStopsState.seasonCache)
+            : '<div class="pit-stops-season-loading"><i class="fas fa-circle-notch fa-spin"></i><p>Φόρτωση season data...</p></div>';
+    }
+    html += '</div>';
+
+    html += '<div class="pit-stops-footnote"><i class="fas fa-circle-info" style="margin-right:0.3rem;opacity:0.6;"></i>Οι χρόνοι αντικατοπτρίζουν τη <strong>συνολική διέλευση του pit lane</strong> (είσοδος–έξοδος), όχι τον χρόνο ακινησίας του αλλαγής ελαστικών. Δεδομένα: <a href="https://github.com/jolpica/jolpica-f1" target="_blank" rel="noopener">Jolpica F1</a></div>';
+    html += '</div>';
+
+    pitStopsTable.innerHTML = html;
+    finalizeRenderedPanel('pit-stops');
+}
+
+function showPitStopsError() {
+    if (!pitStopsTable) return;
+    pitStopsTable.innerHTML = '<div class="pit-stops-card"><div class="pit-stops-empty-card">'
+        + '<i class="fas fa-exclamation-triangle"></i><p>Αποτυχία φόρτωσης δεδομένων pit stop.</p>'
+        + '<button class="retry-btn" onclick="window.__retryPitStops&&window.__retryPitStops()"><i class="fas fa-redo"></i> Νέα προσπάθεια</button>'
+        + '</div></div>';
+    finalizeRenderedPanel('pit-stops');
+}
+
+function ensurePitStopsLoaded(forceReload) {
+    if (!pitStopsTable) return;
+    if (pitStopsState.loading) return;
+    if (pitStopsState.loaded && !forceReload) return;
+
+    pitStopsState.loading = true;
+    pitStopsTable.innerHTML = createPitStopsSkeleton();
+
+    loadPitStopRaces().then(function(races) {
+        pitStopsState.races = races;
+        if (!races.length) {
+            pitStopsTable.innerHTML = '<div class="pit-stops-card"><div class="pit-stops-empty-card"><i class="fas fa-clock"></i><p>Δεν έχουν ολοκληρωθεί αγώνες ακόμη για το ' + YEAR + '.</p></div></div>';
+            pitStopsState.loaded = true;
+            return;
+        }
+        if (!pitStopsState.selectedRound || !races.some(function(r) { return String(r.round) === String(pitStopsState.selectedRound); })) {
+            pitStopsState.selectedRound = String(races[races.length - 1].round);
+        }
+        return loadPitStopRaceData(pitStopsState.selectedRound).then(function(raceData) {
+            var race = races.filter(function(r) { return String(r.round) === String(pitStopsState.selectedRound); })[0];
+            renderPitStops(raceData, race, races);
+            pitStopsState.loaded = true;
+        });
+    }).catch(function(err) {
+        console.error('Pit stops error:', err);
+        showPitStopsError();
+    }).finally(function() {
+        pitStopsState.loading = false;
+    });
+}
+
+window.__retryPitStops = function() {
+    pitStopsState.loaded = false;
+    ensurePitStopsLoaded(true);
+};
+
+if (pitStopsTable) {
+    pitStopsTable.addEventListener('change', function(event) {
+        var sel = event.target.closest('[data-pitstop-select]');
+        if (!sel) return;
+        pitStopsState.selectedRound = sel.value;
+        pitStopsState.activeView = 'race';
+        pitStopsTable.innerHTML = createPitStopsSkeleton();
+        writeStandingsURLState(true);
+
+        loadPitStopRaceData(pitStopsState.selectedRound).then(function(raceData) {
+            var race = (pitStopsState.races || []).filter(function(r) { return String(r.round) === String(pitStopsState.selectedRound); })[0];
+            renderPitStops(raceData, race, pitStopsState.races);
+        }).catch(function() { showPitStopsError(); });
+    });
+
+    pitStopsTable.addEventListener('click', function(event) {
+        var viewTab = event.target.closest('[data-pitstop-view]');
+        if (!viewTab) return;
+        var nextView = viewTab.getAttribute('data-pitstop-view');
+        if (!nextView || nextView === pitStopsState.activeView) return;
+
+        pitStopsState.activeView = nextView;
+        writeStandingsURLState(true);
+
+        pitStopsTable.querySelectorAll('[data-pitstop-view]').forEach(function(btn) {
+            btn.classList.toggle('active', btn.getAttribute('data-pitstop-view') === nextView);
+        });
+        pitStopsTable.querySelectorAll('[data-pitstop-panel]').forEach(function(panel) {
+            panel.classList.toggle('active', panel.getAttribute('data-pitstop-panel') === nextView);
+        });
+
+        if (nextView === 'season') {
+            var seasonPanel = pitStopsTable.querySelector('[data-pitstop-panel="season"]');
+            if (!seasonPanel) return;
+            if (pitStopsState.seasonCache) {
+                seasonPanel.innerHTML = renderPitStopsSeasonContent(pitStopsState.seasonCache);
+            } else {
+                seasonPanel.innerHTML = '<div class="pit-stops-season-loading"><i class="fas fa-circle-notch fa-spin"></i><p>Φόρτωση season data...</p></div>';
+                loadSeasonPitStops(pitStopsState.races).then(function() {
+                    pitStopsState.seasonCache = buildSeasonBestCache(pitStopsState.races);
+                    var panel = pitStopsTable ? pitStopsTable.querySelector('[data-pitstop-panel="season"]') : null;
+                    if (panel && pitStopsState.activeView === 'season') {
+                        panel.innerHTML = renderPitStopsSeasonContent(pitStopsState.seasonCache);
+                    }
+                }).catch(function(e) {
+                    console.error('Season pit stops error:', e);
+                    var panel = pitStopsTable ? pitStopsTable.querySelector('[data-pitstop-panel="season"]') : null;
+                    if (panel) panel.innerHTML = '<div class="pit-stops-empty-card"><i class="fas fa-exclamation-triangle"></i><p>Αποτυχία φόρτωσης season data.</p></div>';
+                });
+            }
+        }
+    });
 }
 
 // ── Init ──
