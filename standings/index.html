@@ -111,6 +111,7 @@
             <button class="standings-tab" data-tab="quali-gaps" role="tab" aria-selected="false"><i class="fas fa-stopwatch"></i> Quali Gaps</button>
             <button class="standings-tab" data-tab="lap1-gains" role="tab" aria-selected="false"><i class="fas fa-arrow-trend-up"></i> Lap 1 Gains</button>
             <button class="standings-tab" data-tab="tyre-pace" role="tab" aria-selected="false"><i class="fas fa-wave-square"></i> Tyre Pace</button>
+            <button class="standings-tab" data-tab="dirty-air" role="tab" aria-selected="false"><i class="fas fa-wind"></i> Dirty Air</button>
             <button class="standings-tab" data-tab="track-dominance" role="tab" aria-selected="false"><i class="fas fa-route"></i> Track Dominance</button>
             <button class="standings-tab" data-tab="pit-stops" role="tab" aria-selected="false"><i class="fas fa-wrench"></i> Pit Stops</button>
         </div>
@@ -209,6 +210,27 @@
                     </div>
                 </div>
                 <div id="tyre-pace-table"></div>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-dirty-air" role="tabpanel">
+            <div class="dirty-air-wrap">
+                <div class="dirty-air-intro">
+                    <div class="dirty-air-kicker">Race Traffic · <span id="dirty-air-year">2026</span></div>
+                    <h3 class="dirty-air-title">Dirty Air Analysis</h3>
+                    <p class="dirty-air-sub">Κάθε race lap χωρίζεται σε 30 ίσα minisectors. Για κάθε minisector μετράμε πόσο κοντά ήταν το πλησιέστερο μονοθέσιο μπροστά στην πίστα, ακόμη κι αν επρόκειτο για backmarker που δεχόταν γύρο.</p>
+                </div>
+                <div class="panel-tools">
+                    <div class="panel-tools-copy">
+                        <div class="panel-tools-title">Dirty Air Tab</div>
+                        <div class="panel-tools-note">The shared link keeps the selected race and embeds both charts together.</div>
+                    </div>
+                    <div class="share-tools">
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-dirty-air"><i class="fas fa-share-nodes"></i> Share tab</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-dirty-air"><i class="fas fa-code"></i> Embed tab</button>
+                    </div>
+                </div>
+                <div id="dirty-air-table"></div>
             </div>
         </div>
 

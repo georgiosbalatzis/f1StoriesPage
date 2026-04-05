@@ -17,6 +17,9 @@ var lap1GainsState = { loaded: false, loading: false, rows: [], activeView: 'ove
 var tyrePaceTable = document.getElementById('tyre-pace-table');
 var tyrePaceYear = document.getElementById('tyre-pace-year');
 var tyrePaceState = { loaded: false, loading: false, sessions: [], selectedSessionKey: '', cache: {} };
+var dirtyAirTable = document.getElementById('dirty-air-table');
+var dirtyAirYear = document.getElementById('dirty-air-year');
+var dirtyAirState = { loaded: false, loading: false, pendingReload: false, sessions: [], selectedSessionKey: '', sessionCache: {}, cacheBundle: null, cachePromise: null, cacheAttempted: false };
 var trackDominanceTable = document.getElementById('track-dominance-table');
 var trackDominanceYear = document.getElementById('track-dominance-year');
 var trackDominanceState = { loaded: false, loading: false, pendingReload: false, sessions: [], selectedSessionKey: '', leftTeamKey: '', rightTeamKey: '', sessionCache: {}, pairCache: {} };
@@ -26,7 +29,7 @@ var pitStopsState = { loaded: false, loading: false, races: [], selectedRound: '
 var standingsTabs = Array.prototype.slice.call(document.querySelectorAll('.standings-tab'));
 var standingsPanels = Array.prototype.slice.call(document.querySelectorAll('.standings-panel'));
 var shareFeedback = document.getElementById('share-feedback');
-var VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'track-dominance', 'pit-stops'];
+var VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops'];
 var SHARE_TARGETS = {
     'panel-drivers': { tab: 'drivers', title: 'Driver standings tab', height: 980 },
     'drivers-table': { tab: 'drivers', title: 'Driver standings table', height: 760 },
@@ -37,6 +40,7 @@ var SHARE_TARGETS = {
     'panel-quali-gaps': { tab: 'quali-gaps', title: 'Teammate qualifying gaps', height: 1120 },
     'panel-lap1-gains': { tab: 'lap1-gains', title: 'Lap 1 gains analysis', height: 1160 },
     'panel-tyre-pace': { tab: 'tyre-pace', title: 'Tyre pace chart', height: 1080 },
+    'panel-dirty-air': { tab: 'dirty-air', title: 'Dirty air analysis', height: 1520 },
     'panel-track-dominance': { tab: 'track-dominance', title: 'Track dominance analysis', height: 1320 },
     'panel-pit-stops': { tab: 'pit-stops', title: 'Fastest pit stops', height: 1080 }
 };
@@ -45,6 +49,7 @@ var currentFocusTarget = '';
 var pendingRevealTarget = '';
 var isEmbedMode = false;
 var shareFeedbackTimer = 0;
+var DIRTY_AIR_CACHE_URL = 'dirty-air-cache.json';
 
 // ── 2026 Team metadata: colours + logo URLs from formula1.com ──
 // Logo URLs use the official F1 media CDN pattern
@@ -111,6 +116,7 @@ constructorsTable.innerHTML = skelRows(10);
 if (qualifyingGapsYear) qualifyingGapsYear.textContent = YEAR;
 if (lap1GainsYear) lap1GainsYear.textContent = YEAR;
 if (tyrePaceYear) tyrePaceYear.textContent = YEAR;
+if (dirtyAirYear) dirtyAirYear.textContent = YEAR;
 if (trackDominanceYear) trackDominanceYear.textContent = YEAR;
 if (pitStopsYear) pitStopsYear.textContent = YEAR;
 
@@ -124,6 +130,7 @@ qualifyingGapsState.selectedSessionKey = initialURLState.qualiSession;
 lap1GainsState.activeView = initialURLState.lap1View;
 lap1GainsState.selectedSessionKey = initialURLState.lap1Session;
 tyrePaceState.selectedSessionKey = initialURLState.tyreSession;
+dirtyAirState.selectedSessionKey = initialURLState.dirtyAirSession;
 trackDominanceState.selectedSessionKey = initialURLState.trackSession;
 trackDominanceState.leftTeamKey = initialURLState.trackTeamA;
 trackDominanceState.rightTeamKey = initialURLState.trackTeamB;
@@ -171,18 +178,24 @@ function fetchJSON(url) {
     var cached = readCachedResponse(url);
     if (cached) return Promise.resolve(cached);
 
-    var controller = typeof AbortController === 'function' ? new AbortController() : null;
-    var timer = null;
-    if (controller) {
-        timer = window.setTimeout(function() { controller.abort(); }, 8000);
-    }
-
-    return fetch(url, controller ? { signal: controller.signal } : undefined).then(function(r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
-    }).then(function(data) {
+    return fetchJSONNoCache(url).then(function(data) {
         writeCachedResponse(url, data);
         return data;
+    });
+}
+
+function fetchJSONNoCache(url, timeoutMs) {
+    var controller = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = null;
+    var options = { cache: 'no-store' };
+    if (controller) {
+        timer = window.setTimeout(function() { controller.abort(); }, typeof timeoutMs === 'number' ? timeoutMs : 8000);
+        options.signal = controller.signal;
+    }
+
+    return fetch(url, options).then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
     }).finally(function() {
         if (timer) window.clearTimeout(timer);
     });
@@ -353,6 +366,7 @@ function readStandingsURLState() {
         lap1View: sanitizeLap1View(params.get('lap1View')),
         lap1Session: params.get('lap1Session') || '',
         tyreSession: params.get('tyreSession') || '',
+        dirtyAirSession: params.get('dirtyAirSession') || '',
         trackSession: params.get('trackSession') || '',
         trackTeamA: params.get('trackTeamA') || '',
         trackTeamB: params.get('trackTeamB') || '',
@@ -378,6 +392,11 @@ function appendShareStateParams(params, tabName) {
 
     if (tabName === 'tyre-pace' && tyrePaceState.selectedSessionKey) {
         params.set('tyreSession', String(tyrePaceState.selectedSessionKey));
+        return;
+    }
+
+    if (tabName === 'dirty-air' && dirtyAirState.selectedSessionKey) {
+        params.set('dirtyAirSession', String(dirtyAirState.selectedSessionKey));
         return;
     }
 
@@ -556,6 +575,7 @@ function activateStandingsTab(tabName, options) {
     if (nextTab === 'quali-gaps') ensureQualifyingGapsLoaded();
     if (nextTab === 'lap1-gains') ensureLap1GainsLoaded();
     if (nextTab === 'tyre-pace') ensureTyrePaceLoaded();
+    if (nextTab === 'dirty-air') ensureDirtyAirLoaded();
     if (nextTab === 'track-dominance') ensureTrackDominanceLoaded();
     if (nextTab === 'pit-stops') ensurePitStopsLoaded();
 
@@ -866,6 +886,18 @@ function fetchJSONWithRetry(url, attempt) {
     });
 }
 
+function fetchJSONNoCacheWithRetry(url, attempt, timeoutMs) {
+    return fetchJSONNoCache(url, timeoutMs).catch(function(error) {
+        var message = error && error.message ? error.message : String(error);
+        if ((message.indexOf('HTTP 429') !== -1 || message.indexOf('AbortError') !== -1) && attempt < 2) {
+            return delay(350 * (attempt + 1)).then(function() {
+                return fetchJSONNoCacheWithRetry(url, attempt + 1, timeoutMs);
+            });
+        }
+        throw error;
+    });
+}
+
 function fetchOpenF1BySessionKeys(endpoint, sessionKeys, extraQuery) {
     if (!sessionKeys.length) return Promise.resolve([]);
 
@@ -884,6 +916,62 @@ function fetchOpenF1BySessionKeys(endpoint, sessionKeys, extraQuery) {
             });
         }).then(function() {
             if (index < chunks.length - 1) return delay(120);
+        });
+    }, Promise.resolve()).then(function() {
+        return results;
+    });
+}
+
+function fetchOpenF1ByDriverNumbers(endpoint, sessionKey, driverNumbers, extraQuery) {
+    if (!sessionKey || !driverNumbers || !driverNumbers.length) return Promise.resolve([]);
+
+    var chunks = chunkArray(driverNumbers.map(String), endpoint === 'location' ? 4 : 8);
+    var results = [];
+    var delayMs = endpoint === 'location' ? 180 : 120;
+    var loader = endpoint === 'location'
+        ? function(targetURL) { return fetchJSONNoCacheWithRetry(targetURL, 0, 18000); }
+        : function(targetURL) { return fetchJSONWithRetry(targetURL, 0); };
+
+    function fetchDriverChunk(numbers, singleRetryCount) {
+        var query = 'session_key=' + encodeURIComponent(sessionKey) + '&' + numbers.map(function(driverNumber) {
+            return 'driver_number=' + encodeURIComponent(driverNumber);
+        }).join('&');
+        if (extraQuery) query += '&' + extraQuery;
+
+        return loader(OPENF1 + '/' + endpoint + '?' + query).catch(function(error) {
+            var message = error && error.message ? error.message : String(error);
+            if (endpoint === 'location' && message.indexOf('HTTP 422') !== -1) {
+                if (numbers.length > 1) {
+                    var midpoint = Math.ceil(numbers.length / 2);
+                    return fetchDriverChunk(numbers.slice(0, midpoint)).then(function(left) {
+                        return delay(delayMs).then(function() {
+                            return fetchDriverChunk(numbers.slice(midpoint));
+                        }).then(function(right) {
+                            return (left || []).concat(right || []);
+                        });
+                    });
+                }
+
+                if ((singleRetryCount || 0) < 1) {
+                    return delay(450).then(function() {
+                        return fetchDriverChunk(numbers, (singleRetryCount || 0) + 1);
+                    });
+                }
+
+                console.warn('Skipping location data for driver ' + numbers[0] + ' in session ' + sessionKey + ': ' + message);
+                return [];
+            }
+            throw error;
+        });
+    }
+
+    return chunks.reduce(function(chain, numbers, index) {
+        return chain.then(function() {
+            return fetchDriverChunk(numbers).then(function(chunk) {
+                results = results.concat(chunk || []);
+            });
+        }).then(function() {
+            if (index < chunks.length - 1) return delay(delayMs);
         });
     }, Promise.resolve()).then(function() {
         return results;
@@ -1179,6 +1267,928 @@ function loadTyrePaceSessionData(sessionKey) {
         tyrePaceState.cache[String(sessionKey)] = built;
         return built;
     });
+}
+
+// ── Dirty Air ──
+var DIRTY_AIR_MINISECTORS = 30;
+var DIRTY_AIR_CATEGORIES = [
+    { key: 'drs', label: 'DRS', range: '<= 1.0s', color: 'ef4444' },
+    { key: 'heavy', label: 'Heavy', range: '1.0-2.0s', color: 'f97316' },
+    { key: 'low', label: 'Low', range: '2.0-4.0s', color: 'eab308' },
+    { key: 'clean', label: 'Clean Air', range: '> 4.0s', color: '22c55e' }
+];
+
+function getDirtyAirCategoryMeta(categoryKey) {
+    for (var index = 0; index < DIRTY_AIR_CATEGORIES.length; index++) {
+        if (DIRTY_AIR_CATEGORIES[index].key === categoryKey) return DIRTY_AIR_CATEGORIES[index];
+    }
+    return DIRTY_AIR_CATEGORIES[DIRTY_AIR_CATEGORIES.length - 1];
+}
+
+function getDirtyAirCategoryKey(gapSeconds) {
+    if (!isFiniteNumber(gapSeconds) || gapSeconds > 4) return 'clean';
+    if (gapSeconds <= 1) return 'drs';
+    if (gapSeconds <= 2) return 'heavy';
+    return 'low';
+}
+
+function getDirtyAirAxisStep(maxLaps) {
+    if (maxLaps <= 18) return 2;
+    if (maxLaps <= 40) return 4;
+    if (maxLaps <= 70) return 4;
+    return 5;
+}
+
+function buildDirtyAirSummarySegments(totalCells, counts) {
+    var safeCounts = counts || {};
+    var resolvedTotal = isFiniteNumber(totalCells) ? totalCells : DIRTY_AIR_CATEGORIES.reduce(function(sum, category) {
+        return sum + (parseInt(safeCounts[category.key], 10) || 0);
+    }, 0);
+    var offset = 0;
+
+    return DIRTY_AIR_CATEGORIES.map(function(category) {
+        var categoryCount = parseInt(safeCounts[category.key], 10) || 0;
+        var percentage = resolvedTotal ? (categoryCount / resolvedTotal) * 100 : 0;
+        var segment = {
+            key: category.key,
+            label: category.label,
+            color: category.color,
+            percentage: percentage,
+            offset: offset
+        };
+        offset += percentage;
+        return segment;
+    }).filter(function(segment) {
+        return segment.percentage > 0;
+    });
+}
+
+function normalizeDirtyAirSummaryData(summary, counts, totalCells) {
+    var safeCounts = {};
+
+    DIRTY_AIR_CATEGORIES.forEach(function(category) {
+        safeCounts[category.key] = parseInt(
+            summary && summary.counts ? summary.counts[category.key] : (counts && counts[category.key]),
+            10
+        ) || 0;
+    });
+
+    var resolvedTotal = isFiniteNumber(summary && summary.totalCells)
+        ? summary.totalCells
+        : (isFiniteNumber(totalCells) ? totalCells : DIRTY_AIR_CATEGORIES.reduce(function(sum, category) {
+            return sum + safeCounts[category.key];
+        }, 0));
+
+    return {
+        totalCells: resolvedTotal,
+        counts: safeCounts,
+        segments: buildDirtyAirSummarySegments(resolvedTotal, safeCounts)
+    };
+}
+
+function normalizeDirtyAirTimelineSegments(segments) {
+    return (segments || []).map(function(segment) {
+        var key = segment && segment.key ? segment.key : 'clean';
+        return {
+            key: key,
+            color: segment && segment.color ? segment.color : getDirtyAirCategoryMeta(key).color,
+            startIndex: parseInt(segment && segment.startIndex, 10) || 0,
+            endIndex: parseInt(segment && segment.endIndex, 10) || 0
+        };
+    }).filter(function(segment) {
+        return segment.endIndex > segment.startIndex;
+    });
+}
+
+function normalizeDirtyAirCacheSession(session) {
+    if (!session || session.session_key == null) return null;
+
+    var normalized = {
+        session_key: session.session_key,
+        meeting_name: session.meeting_name || '',
+        circuit_short_name: session.circuit_short_name || '',
+        location: session.location || '',
+        country_name: session.country_name || '',
+        session_name: session.session_name || '',
+        session_type: session.session_type || '',
+        date_start: session.date_start || session.date || '',
+        date_end: session.date_end || '',
+        maxLaps: parseInt(session.maxLaps, 10) || 0,
+        safetyCarSpans: (session.safetyCarSpans || []).map(function(span) {
+            return {
+                startLap: parseInt(span && span.startLap, 10) || 0,
+                endLap: parseInt(span && span.endLap, 10) || 0
+            };
+        }).filter(function(span) {
+            return span.startLap > 0 && span.endLap >= span.startLap;
+        }),
+        rows: []
+    };
+
+    normalized.rows = (session.rows || []).map(function(row) {
+        return {
+            driverNumber: row && row.driverNumber != null ? String(row.driverNumber) : '',
+            position: parseInt(row && row.position, 10) || 999,
+            acronym: row && row.acronym ? String(row.acronym).toUpperCase() : 'DRV',
+            fullName: row && row.fullName ? String(row.fullName) : '',
+            headshot: row && row.headshot ? String(row.headshot) : '',
+            teamName: row && row.teamName ? String(row.teamName) : 'Team',
+            teamColor: row && row.teamColor ? String(row.teamColor) : '3b82f6',
+            completedLaps: parseInt(row && row.completedLaps, 10) || 0,
+            summary: normalizeDirtyAirSummaryData(row && row.summary, row && row.counts, row && row.totalCells),
+            timelineSegments: normalizeDirtyAirTimelineSegments(row && row.timelineSegments)
+        };
+    }).sort(function(a, b) {
+        if (a.position !== b.position) return a.position - b.position;
+        if (a.completedLaps !== b.completedLaps) return b.completedLaps - a.completedLaps;
+        return a.acronym.localeCompare(b.acronym);
+    });
+
+    if (!normalized.maxLaps) {
+        normalized.maxLaps = normalized.rows.reduce(function(maxLap, row) {
+            return Math.max(maxLap, row.completedLaps || 0);
+        }, 0);
+    }
+
+    return normalized;
+}
+
+function hasRenderableDirtyAirRows(sessionData) {
+    return !!(sessionData && sessionData.rows || []).some(function(row) {
+        return row && row.summary && row.summary.totalCells > 0;
+    });
+}
+
+function loadDirtyAirCacheBundle() {
+    if (dirtyAirState.cacheBundle) return Promise.resolve(dirtyAirState.cacheBundle);
+    if (dirtyAirState.cacheAttempted) return Promise.resolve(null);
+    if (dirtyAirState.cachePromise) return dirtyAirState.cachePromise;
+
+    dirtyAirState.cacheAttempted = true;
+    dirtyAirState.cachePromise = fetchJSONNoCache(DIRTY_AIR_CACHE_URL, 12000).then(function(bundle) {
+        var sessions = (bundle && bundle.sessions || []).map(normalizeDirtyAirCacheSession).filter(Boolean);
+        dirtyAirState.cacheBundle = {
+            version: bundle && bundle.version,
+            year: bundle && bundle.year,
+            generatedAt: bundle && bundle.generatedAt,
+            minisectors: bundle && bundle.minisectors,
+            sessions: sessions
+        };
+
+        if (sessions.length) {
+            dirtyAirState.sessions = sessions;
+            sessions.forEach(function(session) {
+                dirtyAirState.sessionCache[String(session.session_key)] = session;
+            });
+        }
+
+        return dirtyAirState.cacheBundle;
+    }).catch(function(error) {
+        console.warn('Dirty air cache unavailable:', error);
+        return null;
+    });
+
+    return dirtyAirState.cachePromise;
+}
+
+function createDirtyAirSkeleton() {
+    var summaryRows = '';
+    var timelineRows = '';
+
+    for (var i = 0; i < 8; i++) {
+        summaryRows += '<div class="dirty-air-summary-row">'
+            + '<div class="skel" style="width:44px;height:16px;border-radius:999px;"></div>'
+            + '<div class="skel" style="width:100%;height:18px;border-radius:999px;"></div>'
+            + '</div>';
+    }
+
+    for (var j = 0; j < 8; j++) {
+        timelineRows += '<div class="dirty-air-timeline-row">'
+            + '<div class="skel" style="width:44px;height:16px;border-radius:999px;"></div>'
+            + '<div class="skel" style="width:100%;height:20px;border-radius:999px;"></div>'
+            + '</div>';
+    }
+
+    return '<div class="dirty-air-skeleton-card">'
+        + '<div class="dirty-air-skeleton-head"><div><div class="skel" style="width:220px;height:18px;"></div><div class="skel" style="width:280px;height:11px;margin-top:0.5rem;"></div></div><div class="skel" style="width:220px;height:46px;border-radius:12px;"></div></div>'
+        + '<div class="skel" style="width:100%;height:88px;border-radius:16px;margin-bottom:1rem;"></div>'
+        + '<div class="dirty-air-skeleton-block">' + summaryRows + '</div>'
+        + '<div class="dirty-air-skeleton-block">' + timelineRows + '</div>'
+        + '</div>';
+}
+
+function buildDirtyAirLapWindow(lap, extraMs) {
+    var start = lap && lap.date_start ? new Date(lap.date_start) : null;
+    var duration = parseTimeSeconds(lap && lap.lap_duration);
+    if (!start || isNaN(start.getTime()) || !isFiniteNumber(duration) || duration <= 0) return null;
+    var padding = typeof extraMs === 'number' ? extraMs : 900;
+    return {
+        start: start.getTime() - padding,
+        end: start.getTime() + Math.round(duration * 1000) + padding
+    };
+}
+
+function groupDirtyAirLocationSamples(records) {
+    var grouped = {};
+
+    (records || []).forEach(function(record) {
+        if (!record || record.driver_number == null || !record.date) return;
+
+        var time = new Date(record.date).getTime();
+        var x = parseNumberValue(record.x);
+        var y = parseNumberValue(record.y);
+        if (!isFiniteNumber(time) || !isFiniteNumber(x) || !isFiniteNumber(y)) return;
+
+        var driverKey = String(record.driver_number);
+        if (!grouped[driverKey]) grouped[driverKey] = [];
+        grouped[driverKey].push({ time: time, x: x, y: y });
+    });
+
+    Object.keys(grouped).forEach(function(driverKey) {
+        grouped[driverKey].sort(function(a, b) {
+            return a.time - b.time;
+        });
+    });
+
+    return grouped;
+}
+
+function buildDirtyAirReferenceTrack(laps, locationMap) {
+    var candidates = (laps || []).filter(function(lap) {
+        var duration = parseTimeSeconds(lap && lap.lap_duration);
+        return lap && lap.driver_number != null && lap.date_start && isFiniteNumber(duration) && duration > 45 && duration < 220 && !lap.is_pit_out_lap;
+    }).sort(function(a, b) {
+        return parseTimeSeconds(a.lap_duration) - parseTimeSeconds(b.lap_duration);
+    });
+
+    for (var index = 0; index < candidates.length; index++) {
+        var lap = candidates[index];
+        var window = buildDirtyAirLapWindow(lap, 1000);
+        var samples = (locationMap[String(lap.driver_number)] || []).filter(function(sample) {
+            return sample.time >= window.start && sample.time <= window.end;
+        });
+        var series = buildTrackDominanceSeries(samples, parseTimeSeconds(lap.lap_duration));
+        if (!series || series.length < 16) continue;
+
+        var bounds = series.reduce(function(acc, point) {
+            return {
+                minX: Math.min(acc.minX, point.x),
+                maxX: Math.max(acc.maxX, point.x),
+                minY: Math.min(acc.minY, point.y),
+                maxY: Math.max(acc.maxY, point.y)
+            };
+        }, { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity });
+        var width = Math.max(1, bounds.maxX - bounds.minX);
+        var height = Math.max(1, bounds.maxY - bounds.minY);
+
+        return {
+            points: series.map(function(point) {
+                return {
+                    x: point.x,
+                    y: point.y,
+                    progress: point.progress
+                };
+            }),
+            maxProjectionDistance: Math.max(width, height) * 0.18
+        };
+    }
+
+    return null;
+}
+
+function projectDirtyAirPointToReference(reference, x, y, hintIndex) {
+    if (!reference || !reference.points || reference.points.length < 2) return null;
+
+    var points = reference.points;
+    var segmentCount = points.length - 1;
+    var best = null;
+
+    function evaluateSegment(segmentIndex) {
+        if (segmentIndex < 0 || segmentIndex >= segmentCount) return;
+
+        var start = points[segmentIndex];
+        var end = points[segmentIndex + 1];
+        var dx = end.x - start.x;
+        var dy = end.y - start.y;
+        var segmentLengthSq = dx * dx + dy * dy;
+        if (segmentLengthSq <= 0.000001) return;
+
+        var ratio = clampNumber(((x - start.x) * dx + (y - start.y) * dy) / segmentLengthSq, 0, 1);
+        var projectedX = start.x + dx * ratio;
+        var projectedY = start.y + dy * ratio;
+        var distSq = Math.pow(x - projectedX, 2) + Math.pow(y - projectedY, 2);
+        if (best && distSq >= best.distSq) return;
+
+        best = {
+            distSq: distSq,
+            progress: start.progress + (end.progress - start.progress) * ratio,
+            index: segmentIndex
+        };
+    }
+
+    function scanRange(from, to) {
+        for (var segmentIndex = from; segmentIndex <= to; segmentIndex++) {
+            evaluateSegment(segmentIndex);
+        }
+    }
+
+    if (typeof hintIndex === 'number' && isFiniteNumber(hintIndex)) {
+        var windowStart = Math.max(0, Math.floor(hintIndex) - 14);
+        var windowEnd = Math.min(segmentCount - 1, Math.floor(hintIndex) + 14);
+        scanRange(windowStart, windowEnd);
+        if (!best || Math.sqrt(best.distSq) > reference.maxProjectionDistance) {
+            scanRange(0, segmentCount - 1);
+        }
+    } else {
+        scanRange(0, segmentCount - 1);
+    }
+
+    return best ? {
+        progress: best.progress,
+        index: best.index,
+        distance: Math.sqrt(best.distSq)
+    } : null;
+}
+
+function buildDirtyAirProjectedSamples(reference, samples) {
+    if (!reference || !samples || !samples.length) return [];
+
+    var projected = [];
+    var hintIndex = 0;
+
+    samples.forEach(function(sample) {
+        var projection = projectDirtyAirPointToReference(reference, sample.x, sample.y, hintIndex);
+        if (!projection || projection.distance > reference.maxProjectionDistance) return;
+        hintIndex = projection.index;
+
+        projected.push({
+            time: sample.time,
+            progress: projection.progress
+        });
+    });
+
+    return projected;
+}
+
+function buildDirtyAirLapCells(lap, lapSamples) {
+    if (!lap || !lapSamples || lapSamples.length < 6) {
+        return {
+            lapNumber: parseInt(lap && lap.lap_number, 10) || 0,
+            cells: []
+        };
+    }
+
+    var usable = lapSamples.slice().sort(function(a, b) {
+        return a.time - b.time;
+    });
+    var normalized = [];
+    var wrapOffset = 0;
+    var previousUnwrapped = usable[0].progress;
+
+    usable.forEach(function(sample, index) {
+        var progress = sample.progress;
+        if (index > 0 && progress + wrapOffset < previousUnwrapped - 0.45) {
+            wrapOffset += 1;
+        }
+
+        var unwrapped = progress + wrapOffset;
+        if (unwrapped < previousUnwrapped) unwrapped = previousUnwrapped;
+        previousUnwrapped = unwrapped;
+
+        normalized.push({
+            time: sample.time,
+            progress: unwrapped
+        });
+    });
+
+    var firstProgress = normalized[0].progress;
+    var lastProgress = normalized[normalized.length - 1].progress;
+    var span = lastProgress - firstProgress;
+    if (!isFiniteNumber(span) || span < 0.55) {
+        return {
+            lapNumber: parseInt(lap.lap_number, 10) || 0,
+            cells: []
+        };
+    }
+
+    normalized = normalized.map(function(sample) {
+        return {
+            time: sample.time,
+            progress: clampNumber((sample.progress - firstProgress) / span, 0, 1)
+        };
+    });
+
+    var boundaryTimes = [];
+    var cursor = 0;
+
+    for (var boundaryIndex = 0; boundaryIndex <= DIRTY_AIR_MINISECTORS; boundaryIndex++) {
+        var target = boundaryIndex / DIRTY_AIR_MINISECTORS;
+        if (boundaryIndex === 0) {
+            boundaryTimes.push(normalized[0].time);
+            continue;
+        }
+        if (boundaryIndex === DIRTY_AIR_MINISECTORS) {
+            boundaryTimes.push(normalized[normalized.length - 1].time);
+            continue;
+        }
+
+        while (cursor < normalized.length - 2 && normalized[cursor + 1].progress < target) cursor += 1;
+        var start = normalized[cursor];
+        var end = normalized[Math.min(cursor + 1, normalized.length - 1)];
+        var delta = end.progress - start.progress;
+        if (!isFiniteNumber(delta) || delta <= 0) {
+            return {
+                lapNumber: parseInt(lap.lap_number, 10) || 0,
+                cells: []
+            };
+        }
+
+        var ratio = clampNumber((target - start.progress) / delta, 0, 1);
+        boundaryTimes.push(start.time + (end.time - start.time) * ratio);
+    }
+
+    var cells = [];
+    for (var minisectorIndex = 0; minisectorIndex < DIRTY_AIR_MINISECTORS; minisectorIndex++) {
+        var startTime = boundaryTimes[minisectorIndex];
+        var endTime = boundaryTimes[minisectorIndex + 1];
+        if (!isFiniteNumber(startTime) || !isFiniteNumber(endTime) || endTime <= startTime) continue;
+
+        cells.push({
+            minisector: minisectorIndex,
+            time: (startTime + endTime) / 2,
+            startTime: startTime,
+            endTime: endTime,
+            gapSeconds: Infinity,
+            categoryKey: 'clean'
+        });
+    }
+
+    return {
+        lapNumber: parseInt(lap.lap_number, 10) || 0,
+        cells: cells
+    };
+}
+
+function buildDirtyAirDriverLapCells(laps, projectedSamples) {
+    var sortedLaps = (laps || []).filter(function(lap) {
+        return lap && lap.lap_number != null && lap.date_start && isFiniteNumber(parseTimeSeconds(lap.lap_duration));
+    }).sort(function(a, b) {
+        return (a.lap_number || 0) - (b.lap_number || 0);
+    });
+
+    var rows = [];
+    var sampleCursor = 0;
+
+    sortedLaps.forEach(function(lap) {
+        var window = buildDirtyAirLapWindow(lap, 450);
+        if (!window) return;
+
+        while (sampleCursor < projectedSamples.length && projectedSamples[sampleCursor].time < window.start) sampleCursor += 1;
+
+        var lapSamples = [];
+        var captureIndex = sampleCursor;
+        while (captureIndex < projectedSamples.length && projectedSamples[captureIndex].time <= window.end) {
+            lapSamples.push(projectedSamples[captureIndex]);
+            captureIndex += 1;
+        }
+
+        rows.push(buildDirtyAirLapCells(lap, lapSamples));
+    });
+
+    return rows;
+}
+
+function annotateDirtyAirLapCells(driverLapMap) {
+    var timelines = [];
+    for (var minisectorIndex = 0; minisectorIndex < DIRTY_AIR_MINISECTORS; minisectorIndex++) timelines.push([]);
+
+    Object.keys(driverLapMap || {}).forEach(function(driverNumber) {
+        (driverLapMap[driverNumber] || []).forEach(function(lap) {
+            (lap.cells || []).forEach(function(cell) {
+                timelines[cell.minisector].push({
+                    driverNumber: String(driverNumber),
+                    time: cell.time,
+                    cell: cell
+                });
+            });
+        });
+    });
+
+    timelines.forEach(function(events) {
+        events.sort(function(a, b) {
+            return a.time - b.time;
+        });
+
+        events.forEach(function(event, index) {
+            var gapSeconds = Infinity;
+            for (var back = index - 1; back >= 0; back--) {
+                if (events[back].driverNumber === event.driverNumber) continue;
+                gapSeconds = (event.time - events[back].time) / 1000;
+                break;
+            }
+
+            event.cell.gapSeconds = gapSeconds;
+            event.cell.categoryKey = getDirtyAirCategoryKey(gapSeconds);
+        });
+    });
+}
+
+function getDirtyAirResultPosition(result) {
+    var position = parseInt(result && (result.position || result.position_classified || result.classified_position || result.position_text), 10);
+    return isFiniteNumber(position) && position > 0 ? position : 999;
+}
+
+function buildDirtyAirSummary(row) {
+    var counts = {};
+    var totalCells = 0;
+    var offset = 0;
+
+    DIRTY_AIR_CATEGORIES.forEach(function(category) {
+        counts[category.key] = 0;
+    });
+
+    (row.laps || []).forEach(function(lap) {
+        (lap.cells || []).forEach(function(cell) {
+            if (!cell.categoryKey) return;
+            counts[cell.categoryKey] += 1;
+            totalCells += 1;
+        });
+    });
+
+    return {
+        totalCells: totalCells,
+        counts: counts,
+        segments: DIRTY_AIR_CATEGORIES.map(function(category) {
+            var percentage = totalCells ? (counts[category.key] / totalCells) * 100 : 0;
+            var segment = {
+                key: category.key,
+                label: category.label,
+                color: category.color,
+                percentage: percentage,
+                offset: offset
+            };
+            offset += percentage;
+            return segment;
+        }).filter(function(segment) {
+            return segment.percentage > 0;
+        })
+    };
+}
+
+function buildDirtyAirTimelineSegments(row) {
+    var segments = [];
+    var current = null;
+
+    (row.laps || []).forEach(function(lap) {
+        (lap.cells || []).forEach(function(cell) {
+            if (!cell.categoryKey) return;
+
+            var startIndex = ((lap.lapNumber || 1) - 1) * DIRTY_AIR_MINISECTORS + cell.minisector;
+            if (current && current.key === cell.categoryKey && current.endIndex === startIndex) {
+                current.endIndex += 1;
+                return;
+            }
+
+            current = {
+                key: cell.categoryKey,
+                color: getDirtyAirCategoryMeta(cell.categoryKey).color,
+                startIndex: startIndex,
+                endIndex: startIndex + 1
+            };
+            segments.push(current);
+        });
+    });
+
+    return segments;
+}
+
+function buildDirtyAirSafetyCarSpans(messages, maxLaps) {
+    var laps = [];
+
+    (messages || []).forEach(function(message) {
+        var lapNumber = parseInt(message && message.lap_number, 10);
+        var text = [message && message.category, message && message.message].join(' ').toUpperCase();
+        if (!isFiniteNumber(lapNumber) || lapNumber <= 0) return;
+        if (text.indexOf('SAFETY CAR') === -1 || text.indexOf('VIRTUAL') !== -1) return;
+        laps.push(lapNumber);
+    });
+
+    laps = Array.from(new Set(laps)).sort(function(a, b) { return a - b; });
+    if (!laps.length) return [];
+
+    var spans = [];
+    var current = { startLap: laps[0], endLap: laps[0] };
+
+    for (var index = 1; index < laps.length; index++) {
+        if (laps[index] <= current.endLap + 1) {
+            current.endLap = laps[index];
+            continue;
+        }
+        spans.push(current);
+        current = { startLap: laps[index], endLap: laps[index] };
+    }
+    spans.push(current);
+
+    return spans.map(function(span) {
+        return {
+            startLap: clampNumber(span.startLap, 1, Math.max(maxLaps, 1)),
+            endLap: clampNumber(span.endLap, 1, Math.max(maxLaps, 1))
+        };
+    }).filter(function(span) {
+        return span.endLap >= span.startLap;
+    });
+}
+
+function buildDirtyAirRows(sessionKey, drivers, results, driverLapMap) {
+    var driverLookup = buildDriverLookup(drivers)[sessionKey] || {};
+    var resultLookup = {};
+
+    (results || []).forEach(function(result) {
+        if (!result || result.driver_number == null) return;
+        resultLookup[String(result.driver_number)] = result;
+    });
+
+    return Object.keys(driverLapMap || {}).map(function(driverNumber) {
+        var driver = driverLookup[driverNumber] || {};
+        var result = resultLookup[driverNumber] || {};
+        var teamName = getCanonicalTeamName(driver.teamName || result.team_name || '') || driver.teamName || result.team_name || '';
+        var teamColor = getCanonicalTeamColor('', teamName, driver.teamColor || result.team_colour || '');
+        var laps = (driverLapMap[driverNumber] || []).sort(function(a, b) {
+            return a.lapNumber - b.lapNumber;
+        });
+        var completedLaps = laps.reduce(function(maxLap, lap) {
+            return Math.max(maxLap, lap.lapNumber || 0);
+        }, 0);
+
+        return {
+            driverNumber: driverNumber,
+            position: getDirtyAirResultPosition(result),
+            acronym: deriveAcronym(driver),
+            fullName: getDriverDisplayName(driver),
+            headshot: driver.headshot || '',
+            teamName: teamName || 'Team',
+            teamColor: teamColor,
+            laps: laps,
+            completedLaps: completedLaps,
+            summary: null,
+            timelineSegments: []
+        };
+    }).filter(function(row) {
+        return row.completedLaps > 0;
+    }).sort(function(a, b) {
+        if (a.position !== b.position) return a.position - b.position;
+        if (a.completedLaps !== b.completedLaps) return b.completedLaps - a.completedLaps;
+        return a.acronym.localeCompare(b.acronym);
+    });
+}
+
+function buildDirtyAirSessionData(session, drivers, laps, results, raceControl, locations) {
+    var sessionKey = String(session.session_key);
+    var locationMap = groupDirtyAirLocationSamples(locations);
+    var referenceTrack = buildDirtyAirReferenceTrack(laps, locationMap);
+    if (!referenceTrack) {
+        return {
+            session: session,
+            rows: [],
+            maxLaps: 0,
+            safetyCarSpans: []
+        };
+    }
+
+    var lapsByDriver = {};
+    (laps || []).forEach(function(lap) {
+        if (!lap || lap.driver_number == null || lap.lap_number == null || !lap.date_start) return;
+        var duration = parseTimeSeconds(lap.lap_duration);
+        if (!isFiniteNumber(duration) || duration <= 0 || duration > 400) return;
+
+        var driverKey = String(lap.driver_number);
+        if (!lapsByDriver[driverKey]) lapsByDriver[driverKey] = [];
+        lapsByDriver[driverKey].push(lap);
+    });
+
+    var driverLapMap = {};
+    Object.keys(lapsByDriver).forEach(function(driverKey) {
+        var projectedSamples = buildDirtyAirProjectedSamples(referenceTrack, locationMap[driverKey] || []);
+        driverLapMap[driverKey] = buildDirtyAirDriverLapCells(lapsByDriver[driverKey], projectedSamples);
+    });
+
+    annotateDirtyAirLapCells(driverLapMap);
+
+    var rows = buildDirtyAirRows(sessionKey, drivers, results, driverLapMap);
+    var maxLaps = rows.reduce(function(maxLap, row) {
+        return Math.max(maxLap, row.completedLaps);
+    }, 0);
+
+    rows.forEach(function(row) {
+        row.summary = buildDirtyAirSummary(row);
+        row.timelineSegments = buildDirtyAirTimelineSegments(row);
+    });
+
+    return {
+        session: session,
+        rows: rows,
+        maxLaps: maxLaps,
+        safetyCarSpans: buildDirtyAirSafetyCarSpans(raceControl, maxLaps)
+    };
+}
+
+function renderDirtyAir(sessionData, session) {
+    if (!dirtyAirTable) return;
+
+    var sessionOptions = dirtyAirState.sessions.slice().reverse().map(function(item) {
+        return '<option value="' + esc(item.session_key) + '"' + (String(item.session_key) === String(dirtyAirState.selectedSessionKey) ? ' selected' : '') + '>' + esc((item.meeting_name || item.circuit_short_name || item.location || 'Race') + ' · ' + (formatSessionDateShort(item) ? formatSessionDateShort(item) : getSessionLabel(item))) + '</option>';
+    }).join('');
+
+    if (!sessionData || !session) {
+        dirtyAirTable.innerHTML = '<div class="dirty-air-empty-card">'
+            + '<i class="fas fa-wind"></i>'
+            + '<p>Δεν υπάρχουν ακόμη completed races για dirty air analysis.</p>'
+            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρχουν διαθέσιμα race telemetry samples.</p>'
+            + '</div>';
+        finalizeRenderedPanel('dirty-air');
+        return;
+    }
+
+    if (!hasRenderableDirtyAirRows(sessionData)) {
+        dirtyAirTable.innerHTML = '<div class="dirty-air-card">'
+            + '<div class="dirty-air-head"><div class="dirty-air-head-copy"><h3 class="dirty-air-head-title">Dirty Air Proximity Breakdown</h3><p class="dirty-air-head-note">Clean air σημαίνει ότι δεν υπάρχει κανένα μονοθέσιο μπροστά μέσα σε 4.0s στο ίδιο minisector. Τα backmarkers που ετοιμάζονται να δεχτούν γύρο μετρούν κανονικά ως traffic.</p></div><label class="dirty-air-controls"><span class="dirty-air-controls-label">Available races</span><select class="dirty-air-select" data-dirty-air-select aria-label="Επιλογή αγώνα για dirty air analysis">' + sessionOptions + '</select></label></div>'
+            + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || 'Race')) + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Drivers</span><span class="dirty-air-summary-value">0</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">MiniSectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div></div></div>'
+            + '<div class="dirty-air-empty-card">'
+            + '<i class="fas fa-wind"></i>'
+            + '<p>Δεν υπάρχουν ακόμη αρκετά race telemetry samples για το συγκεκριμένο race.</p>'
+            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Διάλεξε άλλο completed Grand Prix ή δοκίμασε ξανά αργότερα όταν το OpenF1 έχει περισσότερα location samples.</p>'
+            + '</div>'
+            + '</div>';
+        finalizeRenderedPanel('dirty-air');
+        return;
+    }
+
+    var legendHTML = DIRTY_AIR_CATEGORIES.map(function(category) {
+        return '<span class="dirty-air-legend-item"><span class="dirty-air-legend-swatch" style="background:#' + esc(category.color) + ';"></span>' + esc(category.label) + ' <em>' + esc(category.range) + '</em></span>';
+    }).join('');
+
+    var summaryRowsHTML = sessionData.rows.map(function(row) {
+        var segmentsHTML = row.summary.segments.map(function(segment) {
+            return '<span class="dirty-air-summary-segment" style="left:' + segment.offset.toFixed(4) + '%;width:' + segment.percentage.toFixed(4) + '%;background:#' + esc(segment.color) + ';" title="' + esc(segment.label + ' · ' + segment.percentage.toFixed(1) + '%') + '"></span>';
+        }).join('');
+
+        return '<div class="dirty-air-summary-row">'
+            + '<div class="dirty-air-driver-tag"><span class="dirty-air-driver-dot" style="background:#' + esc(row.teamColor) + ';"></span><span class="dirty-air-driver-code">' + esc(row.acronym) + '</span></div>'
+            + '<div class="dirty-air-summary-bar">' + segmentsHTML + '</div>'
+            + '</div>';
+    }).join('');
+
+    var maxLaps = Math.max(sessionData.maxLaps, 1);
+    var chartWidth = Math.max(780, maxLaps * (maxLaps > 60 ? 24 : 28));
+    var chartUnits = maxLaps * DIRTY_AIR_MINISECTORS;
+    var lapGridHTML = '';
+    for (var lapGrid = 1; lapGrid < maxLaps; lapGrid++) {
+        lapGridHTML += '<span class="dirty-air-lap-line" style="left:' + ((lapGrid / maxLaps) * 100).toFixed(4) + '%;"></span>';
+    }
+
+    var scBandsHTML = (sessionData.safetyCarSpans || []).map(function(span) {
+        var startPct = (((span.startLap - 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
+        var widthPct = (((span.endLap - span.startLap + 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
+        return '<span class="dirty-air-sc-band" style="left:' + startPct.toFixed(4) + '%;width:' + widthPct.toFixed(4) + '%;"><em>SC</em></span>';
+    }).join('');
+
+    var timelineRowsHTML = sessionData.rows.map(function(row) {
+        var segmentsHTML = row.timelineSegments.map(function(segment) {
+            var startPct = (segment.startIndex / chartUnits) * 100;
+            var widthPct = ((segment.endIndex - segment.startIndex) / chartUnits) * 100;
+            return '<span class="dirty-air-timeline-segment" style="left:' + startPct.toFixed(4) + '%;width:' + widthPct.toFixed(4) + '%;background:#' + esc(segment.color) + ';"></span>';
+        }).join('');
+
+        return '<div class="dirty-air-timeline-row">'
+            + '<div class="dirty-air-driver-tag sticky"><span class="dirty-air-driver-dot" style="background:#' + esc(row.teamColor) + ';"></span><span class="dirty-air-driver-code">' + esc(row.acronym) + '</span></div>'
+            + '<div class="dirty-air-timeline-bar">' + lapGridHTML + scBandsHTML + segmentsHTML + '</div>'
+            + '</div>';
+    }).join('');
+
+    var axisStep = getDirtyAirAxisStep(maxLaps);
+    var axisLabels = '<span class="dirty-air-axis-label start" style="left:0%;">0</span>';
+    for (var lap = axisStep; lap <= maxLaps; lap += axisStep) {
+        axisLabels += '<span class="dirty-air-axis-label" style="left:' + ((lap / maxLaps) * 100).toFixed(4) + '%;">' + esc(String(lap)) + '</span>';
+    }
+    if (maxLaps % axisStep !== 0) {
+        axisLabels += '<span class="dirty-air-axis-label end" style="left:100%;">' + esc(String(maxLaps)) + '</span>';
+    }
+
+    var html = '<div class="dirty-air-card">'
+        + '<div class="dirty-air-head"><div class="dirty-air-head-copy"><h3 class="dirty-air-head-title">Dirty Air Proximity Breakdown</h3><p class="dirty-air-head-note">Clean air σημαίνει ότι δεν υπάρχει κανένα μονοθέσιο μπροστά μέσα σε 4.0s στο ίδιο minisector. Τα backmarkers που ετοιμάζονται να δεχτούν γύρο μετρούν κανονικά ως traffic.</p></div><label class="dirty-air-controls"><span class="dirty-air-controls-label">Available races</span><select class="dirty-air-select" data-dirty-air-select aria-label="Επιλογή αγώνα για dirty air analysis">' + sessionOptions + '</select></label></div>'
+        + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || 'Race') + ' · ' + sessionData.maxLaps + ' laps') + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Drivers</span><span class="dirty-air-summary-value">' + esc(String(sessionData.rows.length)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">MiniSectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">SC Periods</span><span class="dirty-air-summary-value">' + esc(String((sessionData.safetyCarSpans || []).length)) + '</span></div></div></div>'
+        + '<div class="dirty-air-legend">' + legendHTML + '</div>'
+        + '<section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">% Of Race By Proximity</h4><p class="dirty-air-section-note">Share of valid race minisectors spent in each traffic bucket.</p></div></div><div class="dirty-air-summary-list">' + summaryRowsHTML + '</div></section>'
+        + '<section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Per Lap Timeline</h4><p class="dirty-air-section-note">Every lap is split into 30 equal minisectors. Safety Car laps are highlighted across the chart.</p></div></div><div class="dirty-air-timeline-scroll"><div class="dirty-air-timeline-body" style="--dirty-air-chart-width:' + chartWidth + 'px;">' + timelineRowsHTML + '<div class="dirty-air-axis-row"><div class="dirty-air-axis-spacer"></div><div class="dirty-air-axis-track">' + axisLabels + '</div></div></div></div></section>'
+        + '<p class="dirty-air-footnote">Source: OpenF1 `location`, `laps`, `session_result` και `race_control`. Το nearest car ahead μετριέται ανά minisector χρησιμοποιώντας το πιο πρόσφατο crossing στο ίδιο κομμάτι της πίστας.</p>'
+        + '</div>';
+
+    dirtyAirTable.innerHTML = html;
+    finalizeRenderedPanel('dirty-air');
+}
+
+function showDirtyAirError() {
+    if (!dirtyAirTable) return;
+    dirtyAirTable.innerHTML = '<div class="dirty-air-empty-card">'
+        + '<i class="fas fa-exclamation-triangle"></i>'
+        + '<p>Δεν ήταν δυνατή η φόρτωση του dirty air analysis.</p>'
+        + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 telemetry endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
+        + '<button class="retry-btn" type="button" onclick="window.__retryDirtyAir && window.__retryDirtyAir()"><i class="fas fa-redo"></i> Νέα προσπάθεια</button>'
+        + '</div>';
+    finalizeRenderedPanel('dirty-air');
+}
+
+function loadDirtyAirSessionData(sessionKey) {
+    var cacheKey = String(sessionKey);
+    var session = (dirtyAirState.sessions || []).filter(function(item) {
+        return String(item.session_key) === cacheKey;
+    })[0];
+    if (!session) return Promise.reject(new Error('Unknown dirty air session'));
+    if (dirtyAirState.sessionCache[cacheKey]) return Promise.resolve(dirtyAirState.sessionCache[cacheKey]);
+
+    return Promise.all([
+        fetchOpenF1BySessionKeys('drivers', [session.session_key]),
+        fetchOpenF1BySessionKeys('laps', [session.session_key]),
+        fetchOpenF1BySessionKeys('session_result', [session.session_key]),
+        fetchOpenF1BySessionKeys('race_control', [session.session_key])
+    ]).then(function(payload) {
+        var driverNumbers = Array.from(new Set((payload[1] || []).map(function(lap) {
+            return lap && lap.driver_number != null ? String(lap.driver_number) : '';
+        }).filter(Boolean)));
+
+        return fetchOpenF1ByDriverNumbers('location', session.session_key, driverNumbers).then(function(locations) {
+            var built = buildDirtyAirSessionData(session, payload[0], payload[1], payload[2], payload[3], locations);
+            dirtyAirState.sessionCache[cacheKey] = built;
+            return built;
+        });
+    });
+}
+
+function loadAndRenderDirtyAir(useSkeleton) {
+    if (!dirtyAirTable) return;
+    if (dirtyAirState.loading) {
+        dirtyAirState.pendingReload = true;
+        return;
+    }
+
+    dirtyAirState.loading = true;
+    dirtyAirState.pendingReload = false;
+    if (useSkeleton) dirtyAirTable.innerHTML = createDirtyAirSkeleton();
+
+    var sessionsPromise = dirtyAirState.sessions.length
+        ? Promise.resolve(dirtyAirState.sessions)
+        : loadDirtyAirCacheBundle().then(function() {
+            if (dirtyAirState.sessions.length) return dirtyAirState.sessions;
+            return getCompletedRaceSessions().then(function(sessions) {
+                dirtyAirState.sessions = sessions;
+                return sessions;
+            });
+        });
+
+    sessionsPromise.then(function(sessions) {
+        if (!sessions.length) return { session: null, sessionData: null };
+
+        if (!dirtyAirState.selectedSessionKey || !sessions.some(function(item) { return String(item.session_key) === String(dirtyAirState.selectedSessionKey); })) {
+            dirtyAirState.selectedSessionKey = String(sessions[sessions.length - 1].session_key);
+        }
+
+        var selectedSession = sessions.filter(function(item) {
+            return String(item.session_key) === String(dirtyAirState.selectedSessionKey);
+        })[0];
+
+        return loadDirtyAirSessionData(dirtyAirState.selectedSessionKey).then(function(sessionData) {
+            return {
+                session: selectedSession,
+                sessionData: sessionData
+            };
+        });
+    }).then(function(payload) {
+        renderDirtyAir(payload.sessionData, payload.session);
+        dirtyAirState.loaded = true;
+    }).catch(function(error) {
+        console.error('Dirty air error:', error);
+        showDirtyAirError();
+    }).finally(function() {
+        dirtyAirState.loading = false;
+        if (dirtyAirState.pendingReload) {
+            dirtyAirState.pendingReload = false;
+            loadAndRenderDirtyAir(true);
+        }
+    });
+}
+
+function ensureDirtyAirLoaded(forceReload) {
+    if (!dirtyAirTable) return;
+    if (dirtyAirState.loading) return;
+    if (dirtyAirState.loaded && !forceReload) {
+        var cached = dirtyAirState.sessionCache[String(dirtyAirState.selectedSessionKey)];
+        var selectedSession = (dirtyAirState.sessions || []).filter(function(session) {
+            return String(session.session_key) === String(dirtyAirState.selectedSessionKey);
+        })[0];
+        if (cached && selectedSession) renderDirtyAir(cached, selectedSession);
+        return;
+    }
+    loadAndRenderDirtyAir(true);
 }
 
 function buildDriverLookup(drivers) {
@@ -2760,6 +3770,11 @@ window.__retryTyrePace = function() {
     ensureTyrePaceLoaded(true);
 };
 
+window.__retryDirtyAir = function() {
+    dirtyAirState.loaded = false;
+    ensureDirtyAirLoaded(true);
+};
+
 window.__retryTrackDominance = function() {
     trackDominanceState.loaded = false;
     ensureTrackDominanceLoaded(true);
@@ -2811,6 +3826,18 @@ if (tyrePaceTable) {
         }).finally(function() {
             tyrePaceState.loading = false;
         });
+    });
+}
+
+if (dirtyAirTable) {
+    dirtyAirTable.addEventListener('change', function(event) {
+        var raceSelect = event.target.closest('[data-dirty-air-select]');
+        if (!raceSelect) return;
+
+        dirtyAirState.selectedSessionKey = raceSelect.value;
+        dirtyAirState.loaded = false;
+        writeStandingsURLState(true);
+        loadAndRenderDirtyAir(true);
     });
 }
 
@@ -2955,6 +3982,7 @@ window.addEventListener('popstate', function() {
     lap1GainsState.activeView = nextState.lap1View;
     lap1GainsState.selectedSessionKey = nextState.lap1Session;
     tyrePaceState.selectedSessionKey = nextState.tyreSession;
+    dirtyAirState.selectedSessionKey = nextState.dirtyAirSession;
     trackDominanceState.selectedSessionKey = nextState.trackSession;
     trackDominanceState.leftTeamKey = nextState.trackTeamA;
     trackDominanceState.rightTeamKey = nextState.trackTeamB;

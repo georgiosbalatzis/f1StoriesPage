@@ -5,6 +5,7 @@ const sharp = require('sharp');
 const AdmZip = require('adm-zip');
 const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
 const os = require('os');
+const { updateDirtyAirCache } = require('./dirty-air-cache');
 
 // ─── CLI flags ───────────────────────────────────────────────────────────────
 const FORCE_REBUILD = process.argv.includes('--force') || process.argv.includes('-f');
@@ -2410,6 +2411,16 @@ if (!isMainThread) {
             fs.writeFileSync(path.join(CONFIG.BLOG_DIR, post.id, 'article.html'), postHtml);
         });
         
+        try {
+            const dirtyAirResult = await updateDirtyAirCache({ force: FORCE_REBUILD });
+            console.log(
+                `Dirty air cache saved to ${dirtyAirResult.outputPath} ` +
+                `(${dirtyAirResult.sessionCount} sessions, ${dirtyAirResult.rebuiltCount} rebuilt, ${dirtyAirResult.reusedCount} reused, ${dirtyAirResult.failedCount} failed)`
+            );
+        } catch (error) {
+            console.warn(`⚠️  Dirty air cache update skipped: ${error.message}`);
+        }
+
         console.log('Blog processing complete');
     }
 
