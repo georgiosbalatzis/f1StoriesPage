@@ -301,11 +301,13 @@
         .lap1-overview-note { font-size: 0.75rem; color: var(--st-text-muted); margin: 0.18rem 0 0; }
         .lap1-overview-meta { font-size: 0.78rem; font-weight: 700; color: var(--st-accent); background: var(--st-accent-soft); padding: 0.32rem 0.7rem; border-radius: 999px; white-space: nowrap; }
         .lap1-chart-scroll { overflow-x: auto; overflow-y: visible; padding-bottom: 0.25rem; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
-        .lap1-chart-shell { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 0.9rem; align-items: stretch; min-height: 336px; min-width: 620px; }
+        .lap1-chart-shell { --lap1-chart-headroom: 72px; display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 0.9rem; align-items: stretch; min-height: 336px; min-width: 620px; }
         .lap1-axis { position: relative; min-height: 336px; }
+        .lap1-axis-scale { position: absolute; inset: var(--lap1-chart-headroom) 0 0; }
         .lap1-axis-label { position: absolute; right: 0; transform: translateY(50%); font-size: 0.7rem; font-weight: 700; color: var(--st-text-muted); }
         .lap1-axis-title { position: absolute; top: 50%; left: 6px; transform: translate(-100%, -50%) rotate(-90deg); transform-origin: center; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--st-text-muted); white-space: nowrap; }
         .lap1-chart-body { position: relative; min-height: 336px; padding: 0 0.2rem 0.5rem; }
+        .lap1-chart-plot { position: absolute; inset: var(--lap1-chart-headroom) 0 0; }
         .lap1-grid-line { position: absolute; left: 0; right: 0; border-top: 1px solid var(--st-border); }
         .lap1-grid-line.zero { border-top-color: var(--st-border-strong); }
         .lap1-chart-columns { position: absolute; inset: 0 0.2rem 0; display: grid; align-items: stretch; gap: 0.75rem; }
@@ -521,7 +523,7 @@
             .lap1-gains-intro { padding: 0.95rem; }
             .lap1-overview-card { padding: 0.9rem; }
             .lap1-overview-head { flex-direction: column; align-items: flex-start; }
-            .lap1-chart-shell { min-height: 308px; min-width: 560px; grid-template-columns: 44px minmax(0, 1fr); gap: 0.7rem; }
+            .lap1-chart-shell { --lap1-chart-headroom: 64px; min-height: 308px; min-width: 560px; grid-template-columns: 44px minmax(0, 1fr); gap: 0.7rem; }
             .lap1-axis, .lap1-chart-body { min-height: 308px; }
             .lap1-session-plot { inset: 0 0 52px; }
             .lap1-bubble { width: 50px; height: 50px; }
@@ -580,7 +582,7 @@
             .quali-race-name { max-width: 74px; font-size: 0.6rem; }
             .lap1-sub { font-size: 0.84rem; }
             .lap1-overview-meta { font-size: 0.72rem; }
-            .lap1-chart-shell { min-width: 500px; min-height: 292px; }
+            .lap1-chart-shell { --lap1-chart-headroom: 58px; min-width: 500px; min-height: 292px; }
             .lap1-axis, .lap1-chart-body { min-height: 292px; }
             .lap1-bubble { width: 46px; height: 46px; }
             .lap1-gain-pill { min-width: 38px; font-size: 0.7rem; }
@@ -2623,14 +2625,14 @@
         var html = '<div class="lap1-overview-card">'
             + '<div class="lap1-overview-head"><div><h3 class="lap1-overview-title">Lap 1 Movers Overview</h3><p class="lap1-overview-note">Completed races, ταξινομημένα χρονολογικά.</p></div><div class="lap1-overview-meta">' + rows.length + ' races</div></div>'
             + '<div class="lap1-chart-scroll"><div class="lap1-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
-            + '<div class="lap1-axis"><span class="lap1-axis-title">Lap 1 Gain (Pos)</span>';
+            + '<div class="lap1-axis"><span class="lap1-axis-title">Lap 1 Gain (Pos)</span><div class="lap1-axis-scale">';
 
         axisValues.forEach(function(value) {
             var bottom = maxGain > 0 ? (value / maxGain) * 100 : 0;
             html += '<span class="lap1-axis-label" style="bottom:' + bottom.toFixed(2) + '%;">' + esc(formatGainValue(value)) + '</span>';
         });
 
-        html += '</div><div class="lap1-chart-body">';
+        html += '</div></div><div class="lap1-chart-body"><div class="lap1-chart-plot">';
 
         axisValues.forEach(function(value) {
             var bottom = maxGain > 0 ? (value / maxGain) * 100 : 0;
@@ -2654,7 +2656,7 @@
                 + '</article>';
         });
 
-        html += '</div></div></div></div><div class="lap1-gains-cards">';
+        html += '</div></div></div></div></div><div class="lap1-gains-cards">';
 
         rows.forEach(function(row) {
             var primaryColor = hexToRgbChannels(row.primaryWinner.teamColor || '3b82f6');
