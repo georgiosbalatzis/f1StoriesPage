@@ -673,16 +673,6 @@
                     <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-drivers"><i class="fas fa-code"></i> Embed tab</button>
                 </div>
             </div>
-            <div class="section-tools" id="drivers-table-tools">
-                <div class="section-tools-copy">
-                    <div class="section-tools-title">Driver Standings Table</div>
-                    <div class="section-tools-note">Live championship order, teams and points totals.</div>
-                </div>
-                <div class="share-tools">
-                    <button class="share-btn" type="button" data-share-kind="share" data-share-target="drivers-table"><i class="fas fa-link"></i> Share table</button>
-                    <button class="share-btn" type="button" data-share-kind="embed" data-share-target="drivers-table"><i class="fas fa-code"></i> Embed table</button>
-                </div>
-            </div>
             <div class="standings-table-wrap" id="drivers-table"></div>
             <div class="chart-section" id="drivers-chart" style="display:none">
                 <div class="chart-head">
@@ -708,16 +698,6 @@
                 <div class="share-tools">
                     <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-constructors"><i class="fas fa-share-nodes"></i> Share tab</button>
                     <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-constructors"><i class="fas fa-code"></i> Embed tab</button>
-                </div>
-            </div>
-            <div class="section-tools" id="constructors-table-tools">
-                <div class="section-tools-copy">
-                    <div class="section-tools-title">Constructors Standings Table</div>
-                    <div class="section-tools-note">Teams, points totals and current driver pairing snapshot.</div>
-                </div>
-                <div class="share-tools">
-                    <button class="share-btn" type="button" data-share-kind="share" data-share-target="constructors-table"><i class="fas fa-link"></i> Share table</button>
-                    <button class="share-btn" type="button" data-share-kind="embed" data-share-target="constructors-table"><i class="fas fa-code"></i> Embed table</button>
                 </div>
             </div>
             <div class="standings-table-wrap" id="constructors-table"></div>
@@ -1312,7 +1292,7 @@
     }
 
     function refreshEmbedVisibility() {
-        ['drivers-table', 'drivers-chart', 'drivers-table-tools', 'constructors-table', 'constructors-chart', 'constructors-table-tools'].forEach(function(id) {
+        ['drivers-table', 'drivers-chart', 'constructors-table', 'constructors-chart'].forEach(function(id) {
             var el = document.getElementById(id);
             if (el) el.removeAttribute('data-embed-hidden');
         });
@@ -1324,15 +1304,11 @@
             var driversChart = document.getElementById('drivers-chart');
             if (driversChart) driversChart.setAttribute('data-embed-hidden', 'true');
         } else if (currentFocusTarget === 'drivers-chart') {
-            var driversTableTools = document.getElementById('drivers-table-tools');
-            if (driversTableTools) driversTableTools.setAttribute('data-embed-hidden', 'true');
             if (driversTable) driversTable.setAttribute('data-embed-hidden', 'true');
         } else if (currentFocusTarget === 'constructors-table') {
             var constructorsChart = document.getElementById('constructors-chart');
             if (constructorsChart) constructorsChart.setAttribute('data-embed-hidden', 'true');
         } else if (currentFocusTarget === 'constructors-chart') {
-            var constructorsTableTools = document.getElementById('constructors-table-tools');
-            if (constructorsTableTools) constructorsTableTools.setAttribute('data-embed-hidden', 'true');
             if (constructorsTable) constructorsTable.setAttribute('data-embed-hidden', 'true');
         }
     }
