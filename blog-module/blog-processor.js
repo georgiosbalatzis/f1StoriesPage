@@ -825,6 +825,39 @@ function htmlToPlainText(html) {
     ).replace(/\s+/g, ' ').trim();
 }
 
+function normalizeComparisonText(value) {
+    return decodeHtmlEntities(String(value || ''))
+        .replace(/\s+/g, ' ')
+        .replace(/[“”«»"']/g, '')
+        .replace(/[–—-]/g, '-')
+        .trim()
+        .toLowerCase();
+}
+
+function stripLeadingArticleBoilerplate(html, metadata) {
+    let content = String(html || '').trim();
+    const candidates = [
+        `${metadata?.tag || ''} ${metadata?.category || ''}`.trim(),
+        metadata?.title || ''
+    ].map(normalizeComparisonText).filter(Boolean);
+    const leadingBlockRegex = /^\s*(<(p|h1|h2|h3|h4|h5|h6)\b[^>]*>[\s\S]*?<\/\2>)/i;
+
+    while (true) {
+        const match = content.match(leadingBlockRegex);
+        if (!match) break;
+
+        const blockHtml = match[1];
+        const blockText = normalizeComparisonText(htmlToPlainText(blockHtml));
+        const isEmptyBlock = !blockText;
+        const isBoilerplateBlock = candidates.includes(blockText);
+
+        if (!isEmptyBlock && !isBoilerplateBlock) break;
+        content = content.slice(match[0].length).trimStart();
+    }
+
+    return content;
+}
+
 function extractTableRowsFromHtml(tableHtml) {
     const rows = [];
     const rowRegex = /<tr\b[^>]*>([\s\S]*?)<\/tr>/gi;
@@ -1911,6 +1944,7 @@ async function processBlogEntry(entryPath) {
     if (authorName) metadata.author = authorName;
     
     let content = await convertToHtml(docPath);
+    content = stripLeadingArticleBoilerplate(content, metadata);
     content = await processContentImages(content, folderName, extractedImages);
     content = await processImageInsertTags(content, images, folderName);
     
