@@ -49,18 +49,18 @@ var shareFeedbackTimer = 0;
 // ── 2026 Team metadata: colours + logo URLs from formula1.com ──
 // Logo URLs use the official F1 media CDN pattern
 var TEAMS = {
-    'mercedes':      { color: '27F4D2', name: 'Mercedes',         logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/mercedes' },
-    'red_bull':      { color: '3671C6', name: 'Red Bull Racing',  logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/red%20bull' },
-    'ferrari':       { color: 'E8002D', name: 'Ferrari',          logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/ferrari' },
-    'mclaren':       { color: 'FF8000', name: 'McLaren',          logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/mclaren' },
-    'aston_martin':  { color: '229971', name: 'Aston Martin',     logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/aston%20martin' },
-    'alpine':        { color: 'FF87BC', name: 'Alpine',           logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/alpine' },
-    'haas':          { color: 'B6BABD', name: 'Haas F1 Team',     logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/haas' },
-    'rb':            { color: '6692FF', name: 'Racing Bulls',     logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/rb' },
-    'williams':      { color: '64C4FF', name: 'Williams',         logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/williams' },
-    'sauber':        { color: 'F50537', name: 'Audi',             logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/kick%20sauber' },
-    'audi':          { color: 'F50537', name: 'Audi',             logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/kick%20sauber' },
-    'cadillac':      { color: '1E4168', name: 'Cadillac',         logo: '' }
+    'mercedes':      { color: '27F4D2', name: 'Mercedes',         logo: 'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/mercedes/2026mercedeslogo.webp' },
+    'red_bull':      { color: '3671C6', name: 'Red Bull Racing',  logo: 'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/redbullracing/2026redbullracinglogo.webp' },
+    'ferrari':       { color: 'E8002D', name: 'Ferrari',          logo: 'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/ferrari/2026ferrarilogo.webp' },
+    'mclaren':       { color: 'FF8000', name: 'McLaren',          logo: 'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/mclaren/2026mclarenlogo.webp' },
+    'aston_martin':  { color: '229971', name: 'Aston Martin',     logo: 'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/astonmartin/2026astonmartinlogo.webp' },
+    'alpine':        { color: 'FF87BC', name: 'Alpine',           logo: 'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/alpine/2026alpinelogo.webp' },
+    'haas':          { color: 'B6BABD', name: 'Haas F1 Team',     logo: 'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/haasf1team/2026haasf1teamlogo.webp' },
+    'rb':            { color: '6692FF', name: 'Racing Bulls',     logo: 'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/racingbulls/2026racingbullslogo.webp' },
+    'williams':      { color: '64C4FF', name: 'Williams',         logo: 'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/williams/2026williamslogo.webp' },
+    'sauber':        { color: 'F50537', name: 'Audi',             logo: 'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/audi/2026audilogo.webp' },
+    'audi':          { color: 'F50537', name: 'Audi',             logo: 'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/audi/2026audilogo.webp' },
+    'cadillac':      { color: '1E4168', name: 'Cadillac',         logo: 'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/cadillac/2026cadillaclogo.webp' }
 };
 
 // Driver headshot URL pattern from formula1.com
@@ -82,7 +82,7 @@ var DRIVER_HEADSHOTS = {
     'albon':           'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ALEALB01_Alexander_Albon/alealb01.png.transform/1col/image.png',
     'bearman':         'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/O/OLIBEA01_Oliver_Bearman/olibea01.png.transform/1col/image.png',
     'hadjar':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/I/ISAHAD01_Isack_Hadjar/isahad01.png.transform/1col/image.png',
-    'antonelli':       'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ANDANT01_Andrea_Kimi_Antonelli/andant01.png.transform/1col/image.png',
+    'antonelli':       'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/mercedes/andant01/2026mercedesandant01right.webp',
     'bortoleto':       'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/G/GABBO01_Gabriel_Bortoleto/gabbo01.png.transform/1col/image.png',
     'lawson':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LIALAW01_Liam_Lawson/lialaw01.png.transform/1col/image.png',
     'doohan':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/J/JACDOO01_Jack_Doohan/jacdoo01.png.transform/1col/image.png',
@@ -1195,7 +1195,7 @@ function buildDriverLookup(drivers) {
             acronym: (driver.name_acronym || '').toUpperCase(),
             headshot: driver.headshot_url || '',
             teamName: driver.team_name || '',
-            teamColor: normalizeHexColor(driver.team_colour || ''),
+            teamColor: getCanonicalTeamColor('', driver.team_name || '', driver.team_colour || ''),
             meetingKey: driver.meeting_key || ''
         };
     });
@@ -3057,7 +3057,7 @@ function enrichWithOpenF1() {
                 var key = (d.last_name || '').toLowerCase();
                 map[key] = {
                     headshot: d.headshot_url || '',
-                    teamColor: d.team_colour || '',
+                    teamColor: getCanonicalTeamColor('', d.team_name || '', d.team_colour || ''),
                     acronym: d.name_acronym || '',
                     teamName: d.team_name || '',
                     number: d.driver_number
@@ -3200,7 +3200,7 @@ function renderConstructors(standings, driverStandings, openf1Map) {
         html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
             + '<div class="st-pos">' + pos + '</div>'
             + '<div class="st-info">'
-            + '<div class="st-team-swatch" style="background:#' + esc(tc) + '20;">'
+            + '<div class="st-team-swatch" style="border-color:#' + esc(tc) + '60;">'
             + (logo ? '<img src="' + esc(logo) + '" alt="' + esc(teamName) + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<span class=swatch-text>' + esc(shortName) + '</span>\';">'
                     : '<span class="swatch-text">' + esc(shortName) + '</span>')
             + '</div>'

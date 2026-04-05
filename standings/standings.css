@@ -87,13 +87,16 @@ body { overflow-y: auto !important; }
 .st-bar { height: 100%; opacity: 0.2; border-radius: 0 1px 1px 0; transition: width 0.6s ease-out; }
 
 /* Team badge in constructors view */
-.st-team-swatch { width: 40px; height: 40px; border-radius: var(--st-radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; background: var(--st-surface); border: 1px solid var(--st-border); }
-.st-team-swatch img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
-.st-team-swatch .swatch-text { font-family: 'Outfit',sans-serif; font-size: 0.65rem; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.04em; }
+.st-team-swatch { width: 40px; height: 40px; border-radius: var(--st-radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; background: #ffffff; border: 1px solid rgba(0,0,0,0.10); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+.st-team-swatch img { width: 100%; height: 100%; object-fit: contain; padding: 5px; }
+.st-team-swatch .swatch-text { font-family: 'Outfit',sans-serif; font-size: 0.65rem; font-weight: 700; color: #1d1d1f; text-transform: uppercase; letter-spacing: 0.04em; }
 .st-drivers-list { font-size: 0.68rem; color: var(--st-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .chart-section { margin-top: 2rem; background: var(--st-surface-raised); border: 1px solid var(--st-border); border-radius: var(--st-radius); padding: 1.5rem; box-shadow: var(--st-shadow-sm); }
 [data-theme="light"] .chart-section { box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06); }
+[data-theme="light"] .st-team-swatch,
+[data-theme="light"] .pit-stops-team-badge,
+[data-theme="light"] .track-dom-team-logo { border-color: rgba(0,0,0,0.14); box-shadow: 0 1px 2px rgba(0,0,0,0.07); }
 .chart-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.2rem; }
 .chart-title { font-family: 'Outfit',sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--st-text); margin: 0; }
 .chart-bar-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
@@ -432,10 +435,10 @@ body { overflow-y: auto !important; }
 .track-dom-duel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 0.72fr) minmax(0, 1fr); gap: 0.9rem; align-items: stretch; margin-bottom: 1rem; }
 .track-dom-team-card { padding: 0.95rem 1rem; border-radius: 20px; background: linear-gradient(135deg, rgba(var(--team-color), 0.16), rgba(var(--team-color), 0.05)); border: 1px solid rgba(var(--team-color), 0.16); min-width: 0; }
 .track-dom-team-top { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
-.track-dom-team-logo { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); flex-shrink: 0; }
-[data-theme="light"] .track-dom-team-logo { background: rgba(255,255,255,0.75); border-color: rgba(14,76,166,0.08); }
-.track-dom-team-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
-.track-dom-team-logo-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: 'Outfit',sans-serif; font-size: 0.84rem; font-weight: 800; color: rgb(var(--team-color)); }
+.track-dom-team-logo { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; border: 1px solid rgba(0,0,0,0.10); box-shadow: 0 1px 3px rgba(0,0,0,0.12); flex-shrink: 0; }
+[data-theme="light"] .track-dom-team-logo { box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.track-dom-team-logo img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+.track-dom-team-logo-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: 'Outfit',sans-serif; font-size: 0.75rem; font-weight: 800; color: #1d1d1f; }
 .track-dom-team-copy { min-width: 0; }
 .track-dom-team-name { font-family: 'Outfit',sans-serif; font-size: 1rem; font-weight: 700; color: var(--st-text); line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .track-dom-team-driver { font-size: 0.72rem; color: var(--st-text-secondary); margin-top: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -561,9 +564,9 @@ body { overflow-y: auto !important; }
 .pit-stops-team-rows .pit-stops-team-row:nth-child(1) .pit-stops-rank { color: #fbbf24; }
 .pit-stops-team-rows .pit-stops-team-row:nth-child(2) .pit-stops-rank { color: #94a3b8; }
 .pit-stops-team-rows .pit-stops-team-row:nth-child(3) .pit-stops-rank { color: #d97706; }
-.pit-stops-team-badge { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; background: var(--st-surface); border: 1px solid var(--st-border); }
-.pit-stops-team-badge img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
-.pit-stops-team-badge-text { font-family: 'Outfit',sans-serif; font-size: 0.65rem; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.04em; }
+.pit-stops-team-badge { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; background: #ffffff; border: 1px solid rgba(0,0,0,0.10); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+.pit-stops-team-badge img { width: 100%; height: 100%; object-fit: contain; padding: 5px; }
+.pit-stops-team-badge-text { font-family: 'Outfit',sans-serif; font-size: 0.65rem; font-weight: 700; color: #1d1d1f; text-transform: uppercase; letter-spacing: 0.04em; }
 .pit-stops-team-info { min-width: 0; }
 .pit-stops-team-name-text { font-size: 0.88rem; font-weight: 700; color: var(--st-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pit-stops-team-meta-text { font-size: 0.68rem; color: var(--st-text-muted); margin-top: 0.14rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
