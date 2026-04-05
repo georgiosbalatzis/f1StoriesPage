@@ -291,6 +291,52 @@
         .lap1-skeleton-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.9rem; margin-bottom: 1rem; }
         .lap1-skeleton-chip-row { display: flex; flex-wrap: wrap; gap: 0.6rem; }
         .lap1-skeleton-driver { display: flex; align-items: center; gap: 0.55rem; min-width: 0; padding: 0.45rem 0.55rem; border-radius: 12px; border: 1px solid var(--st-border); }
+        .lap1-view-switch { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
+        .lap1-view-tabs { display: inline-flex; gap: 0.32rem; padding: 5px; border-radius: 999px; background: var(--st-surface); border: 1px solid var(--st-border); }
+        .lap1-view-tab { appearance: none; -webkit-appearance: none; border: none; background: transparent; color: var(--st-text-secondary); min-height: 40px; padding: 0.55rem 0.95rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all var(--st-transition); }
+        .lap1-view-tab:hover { color: var(--st-text); background: rgba(59,130,246,0.08); }
+        .lap1-view-tab:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; }
+        .lap1-view-tab.active { color: #fff; background: linear-gradient(135deg, var(--st-accent), #4f8df3); box-shadow: 0 8px 18px rgba(59,130,246,0.24); }
+        [data-theme="light"] .lap1-view-tab:hover { background: rgba(14,76,166,0.06); }
+        [data-theme="light"] .lap1-view-tab.active { box-shadow: 0 8px 18px rgba(14,76,166,0.18); }
+        .lap1-view-panel { display: none; }
+        .lap1-view-panel.active { display: block; animation: panelIn 0.28s ease-out; }
+        .lap1-race-card { background: var(--st-surface-raised); border: 1px solid var(--st-border); border-radius: var(--st-radius); box-shadow: var(--st-shadow-sm); padding: 1rem; }
+        .lap1-race-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+        .lap1-race-controls { display: flex; flex-direction: column; gap: 0.35rem; min-width: min(100%, 260px); }
+        .lap1-race-controls-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--st-text-muted); }
+        .lap1-race-select { width: 100%; min-height: 46px; padding: 0.72rem 0.9rem; border-radius: 12px; border: 1px solid var(--st-border); background: var(--st-surface); color: var(--st-text); font-size: 0.88rem; font-weight: 600; }
+        .lap1-race-select:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; }
+        .lap1-race-summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.9rem 1rem; border-radius: 16px; background: linear-gradient(135deg, rgba(var(--winner-color), 0.16), rgba(var(--winner-color), 0.05)); border: 1px solid rgba(var(--winner-color), 0.16); margin-bottom: 0.95rem; }
+        .lap1-race-summary-main { display: flex; align-items: center; gap: 0.8rem; min-width: 0; }
+        .lap1-race-summary-copy { min-width: 0; }
+        .lap1-race-summary-title { font-family: 'Outfit',sans-serif; font-size: 1rem; font-weight: 700; color: var(--st-text); line-height: 1.1; }
+        .lap1-race-summary-sub { font-size: 0.74rem; color: var(--st-text-secondary); margin-top: 0.22rem; }
+        .lap1-race-summary-stats { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 0.75rem; }
+        .lap1-race-summary-stat { display: flex; flex-direction: column; align-items: flex-end; gap: 0.14rem; }
+        .lap1-race-summary-label { font-size: 0.64rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--st-text-muted); }
+        .lap1-race-summary-value { font-family: 'Outfit',sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--st-text); }
+        .lap1-race-rows { display: flex; flex-direction: column; gap: 0.55rem; }
+        .lap1-race-row { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 0.8rem; padding: 0.72rem 0.85rem; border-radius: 14px; border: 1px solid rgba(var(--winner-color), 0.12); background: rgba(var(--winner-color), 0.05); overflow: hidden; }
+        .lap1-race-row::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: rgba(var(--winner-color), 0.85); border-radius: 0 2px 2px 0; }
+        .lap1-race-rank { font-family: 'Outfit',sans-serif; font-size: 0.95rem; font-weight: 800; color: var(--st-text-secondary); text-align: center; }
+        .lap1-race-driver { display: flex; align-items: center; gap: 0.7rem; min-width: 0; }
+        .lap1-race-avatar { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 2px solid rgba(var(--winner-color), 0.18); background: rgba(var(--winner-color), 0.12); display: flex; align-items: center; justify-content: center; }
+        .lap1-race-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .lap1-race-avatar-fallback { font-family: 'Outfit',sans-serif; font-size: 0.84rem; font-weight: 800; color: rgb(var(--winner-color)); }
+        .lap1-race-driver-meta { min-width: 0; }
+        .lap1-race-driver-top { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; min-width: 0; }
+        .lap1-race-driver-code { font-family: 'Outfit',sans-serif; font-size: 0.88rem; font-weight: 800; color: var(--st-text); line-height: 1; }
+        .lap1-race-driver-team { display: inline-flex; align-items: center; min-height: 20px; padding: 0.12rem 0.45rem; border-radius: 999px; font-size: 0.62rem; font-weight: 700; color: var(--st-text-secondary); background: rgba(255,255,255,0.06); }
+        [data-theme="light"] .lap1-race-driver-team { background: rgba(0,0,0,0.05); }
+        .lap1-race-driver-name { font-size: 0.72rem; color: var(--st-text-muted); margin-top: 0.16rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lap1-race-change { display: flex; flex-direction: column; align-items: flex-end; gap: 0.18rem; text-align: right; }
+        .lap1-race-delta { display: inline-flex; align-items: center; justify-content: center; min-width: 46px; min-height: 28px; padding: 0.2rem 0.55rem; border-radius: 999px; font-family: 'Outfit',sans-serif; font-size: 0.78rem; font-weight: 800; line-height: 1; }
+        .lap1-race-delta.positive { color: #16a34a; background: rgba(34,197,94,0.12); }
+        .lap1-race-delta.negative { color: #ef4444; background: rgba(239,68,68,0.12); }
+        .lap1-race-delta.neutral { color: var(--st-text-secondary); background: rgba(255,255,255,0.08); }
+        [data-theme="light"] .lap1-race-delta.neutral { background: rgba(0,0,0,0.05); }
+        .lap1-race-move { font-size: 0.67rem; color: var(--st-text-muted); }
 
         @media (max-width: 767px) {
             .standings-title { font-size: 1.8rem; }
@@ -321,6 +367,14 @@
             .lap1-session-plot { inset: 0 0 52px; }
             .lap1-bubble { width: 50px; height: 50px; }
             .lap1-gains-cards { grid-template-columns: 1fr; }
+            .lap1-view-switch { justify-content: flex-start; }
+            .lap1-race-head { flex-direction: column; align-items: flex-start; }
+            .lap1-race-controls { width: 100%; min-width: 0; }
+            .lap1-race-summary { flex-direction: column; align-items: flex-start; }
+            .lap1-race-summary-stats { justify-content: flex-start; }
+            .lap1-race-summary-stat { align-items: flex-start; }
+            .lap1-race-row { grid-template-columns: 32px minmax(0, 1fr); }
+            .lap1-race-change { grid-column: 2; align-items: flex-start; text-align: left; }
         }
         @media (max-width: 480px) {
             .standings-title { font-size: 1.5rem; }
@@ -350,6 +404,12 @@
             .lap1-gain-pill { min-width: 38px; font-size: 0.7rem; }
             .lap1-gain-card { padding: 0.85rem; }
             .lap1-driver-chip-avatar { width: 34px; height: 34px; }
+            .lap1-view-tabs { width: 100%; }
+            .lap1-view-tab { flex: 1; padding: 0.55rem 0.7rem; }
+            .lap1-race-card { padding: 0.85rem; }
+            .lap1-race-summary { padding: 0.8rem 0.85rem; }
+            .lap1-race-row { padding: 0.68rem 0.72rem; gap: 0.65rem; }
+            .lap1-race-avatar { width: 38px; height: 38px; }
         }
     </style>
 </head>
@@ -496,7 +556,7 @@
     var qualifyingGapsState = { loaded: false, loading: false };
     var lap1GainsTable = document.getElementById('lap1-gains-table');
     var lap1GainsYear = document.getElementById('lap1-gains-year');
-    var lap1GainsState = { loaded: false, loading: false };
+    var lap1GainsState = { loaded: false, loading: false, rows: [], activeView: 'overview', selectedSessionKey: '' };
 
     // ── 2026 Team metadata: colours + logo URLs from formula1.com ──
     // Logo URLs use the official F1 media CDN pattern
@@ -867,7 +927,7 @@
                 + '<div class="quali-skeleton-side right" style="justify-content:flex-end;"><div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-end;"><div class="skel" style="width:40px;height:18px;"></div><div class="skel" style="width:70px;height:11px;margin-top:6px;"></div><div class="skel" style="width:90px;height:10px;margin-top:6px;"></div></div><div class="skel skel-circle"></div></div>'
                 + '</div></div>';
         }
-        return html + '</div>';
+        return html + '</div></div>';
     }
 
     function createLap1SkeletonRows(count) {
@@ -1324,7 +1384,8 @@
                 maxGain: maxGain,
                 winnerCount: winners.length,
                 primaryWinner: winners[0],
-                winners: winners
+                winners: winners,
+                moves: moves
             };
         }).filter(Boolean);
     }
@@ -1368,16 +1429,7 @@
             + '</div>';
     }
 
-    function renderLap1Gains(rows) {
-        if (!rows || !rows.length) {
-            lap1GainsTable.innerHTML = '<div class="lap1-empty-card">'
-                + '<i class="fas fa-arrow-trend-up"></i>'
-                + '<p>Δεν υπάρχουν ακόμη διαθέσιμα δεδομένα για τα μεγαλύτερα gains μετά τον 1ο γύρο.</p>'
-                + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed race sessions με lap timing data.</p>'
-                + '</div>';
-            return;
-        }
-
+    function renderLap1OverviewContent(rows) {
         var maxGain = rows.reduce(function(max, row) {
             return Math.max(max, row.maxGain);
         }, 0);
@@ -1431,7 +1483,79 @@
                 + '</article>';
         });
 
-        lap1GainsTable.innerHTML = html + '</div>';
+        return html + '</div>';
+    }
+
+    function renderLap1RaceDriverRow(move, index) {
+        var winnerColor = hexToRgbChannels(move.teamColor || '3b82f6');
+        var deltaTone = move.gain > 0 ? 'positive' : move.gain < 0 ? 'negative' : 'neutral';
+
+        return '<article class="lap1-race-row" style="--winner-color:' + esc(winnerColor) + ';">'
+            + '<div class="lap1-race-rank">' + (index + 1) + '</div>'
+            + '<div class="lap1-race-driver">'
+            + '<div class="lap1-race-avatar">'
+            + (move.headshot
+                ? '<img src="' + esc(move.headshot) + '" alt="' + esc(move.fullName) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+                    + '<div class="lap1-race-avatar-fallback" style="display:none;">' + esc(move.acronym) + '</div>'
+                : '<div class="lap1-race-avatar-fallback">' + esc(move.acronym) + '</div>')
+            + '</div>'
+            + '<div class="lap1-race-driver-meta"><div class="lap1-race-driver-top"><div class="lap1-race-driver-code">' + esc(move.acronym) + '</div><div class="lap1-race-driver-team">' + esc(move.teamName || 'F1') + '</div></div><div class="lap1-race-driver-name">' + esc(move.fullName) + '</div></div>'
+            + '</div>'
+            + '<div class="lap1-race-change"><span class="lap1-race-delta ' + deltaTone + '">' + esc(formatGainValue(move.gain)) + '</span><span class="lap1-race-move">' + esc(formatPositionTag(move.startPosition) + ' -> ' + formatPositionTag(move.afterPosition)) + '</span></div>'
+            + '</article>';
+    }
+
+    function renderLap1RaceDetailContent(rows, selectedRow) {
+        var summaryColor = hexToRgbChannels(selectedRow.primaryWinner.teamColor || '3b82f6');
+        var topMoverLabel = selectedRow.winnerCount > 1
+            ? selectedRow.winners.map(function(driver) { return driver.acronym; }).join(', ')
+            : selectedRow.primaryWinner.acronym;
+        var selectorOptions = rows.slice().reverse().map(function(row) {
+            return '<option value="' + esc(row.sessionKey) + '"' + (String(row.sessionKey) === String(selectedRow.sessionKey) ? ' selected' : '') + '>' + esc(row.meetingName + ' · ' + row.dateLabel) + '</option>';
+        }).join('');
+
+        return '<div class="lap1-race-card">'
+            + '<div class="lap1-race-head"><div><h3 class="lap1-overview-title">Driver Gains By Race</h3><p class="lap1-overview-note">Διάλεξε Grand Prix και δες όλο το grid ταξινομημένο από το μεγαλύτερο gain στο μεγαλύτερο loss μετά τον 1ο γύρο.</p></div><label class="lap1-race-controls"><span class="lap1-race-controls-label">Available races</span><select class="lap1-race-select" data-lap1-select aria-label="Επιλογή αγώνα για Lap 1 gains">' + selectorOptions + '</select></label></div>'
+            + '<div class="lap1-race-summary" style="--winner-color:' + esc(summaryColor) + ';">'
+            + '<div class="lap1-race-summary-main"><span class="lap1-session-type">' + esc(selectedRow.sessionTypeShort) + '</span><div class="lap1-race-summary-copy"><div class="lap1-race-summary-title">' + esc(selectedRow.meetingName) + '</div><div class="lap1-race-summary-sub">' + esc(selectedRow.dateLabel + ' · ' + selectedRow.sessionName) + '</div></div></div>'
+            + '<div class="lap1-race-summary-stats"><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Top mover</span><span class="lap1-race-summary-value">' + esc(topMoverLabel) + '</span></div><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Best gain</span><span class="lap1-race-summary-value">' + esc(formatGainValue(selectedRow.maxGain)) + '</span></div><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Drivers</span><span class="lap1-race-summary-value">' + esc(String(selectedRow.moves.length)) + '</span></div></div>'
+            + '</div>'
+            + '<div class="lap1-race-rows">' + selectedRow.moves.map(renderLap1RaceDriverRow).join('') + '</div>'
+            + '</div>';
+    }
+
+    function renderLap1Gains(rows) {
+        lap1GainsState.rows = rows || [];
+
+        if (!rows || !rows.length) {
+            lap1GainsTable.innerHTML = '<div class="lap1-empty-card">'
+                + '<i class="fas fa-arrow-trend-up"></i>'
+                + '<p>Δεν υπάρχουν ακόμη διαθέσιμα δεδομένα για τα μεγαλύτερα gains μετά τον 1ο γύρο.</p>'
+                + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed race sessions με lap timing data.</p>'
+                + '</div>';
+            return;
+        }
+
+        if (!lap1GainsState.activeView) lap1GainsState.activeView = 'overview';
+        if (!lap1GainsState.selectedSessionKey || !rows.some(function(row) { return String(row.sessionKey) === String(lap1GainsState.selectedSessionKey); })) {
+            lap1GainsState.selectedSessionKey = rows[rows.length - 1].sessionKey;
+        }
+
+        var selectedRow = rows.filter(function(row) {
+            return String(row.sessionKey) === String(lap1GainsState.selectedSessionKey);
+        })[0] || rows[rows.length - 1];
+        var activeView = lap1GainsState.activeView === 'race-detail' ? 'race-detail' : 'overview';
+        var viewContent = activeView === 'race-detail'
+            ? renderLap1RaceDetailContent(rows, selectedRow)
+            : renderLap1OverviewContent(rows);
+
+        var html = '<div class="lap1-view-switch"><div class="lap1-view-tabs" role="tablist" aria-label="Lap 1 Gains views">'
+            + '<button class="lap1-view-tab' + (activeView === 'overview' ? ' active' : '') + '" type="button" data-lap1-view="overview" role="tab" aria-selected="' + (activeView === 'overview' ? 'true' : 'false') + '">Overview</button>'
+            + '<button class="lap1-view-tab' + (activeView === 'race-detail' ? ' active' : '') + '" type="button" data-lap1-view="race-detail" role="tab" aria-selected="' + (activeView === 'race-detail' ? 'true' : 'false') + '">By Race</button>'
+            + '</div></div>'
+            + viewContent;
+
+        lap1GainsTable.innerHTML = html;
     }
 
     function showLap1GainsError() {
@@ -1492,6 +1616,28 @@
         lap1GainsState.loaded = false;
         ensureLap1GainsLoaded(true);
     };
+
+    if (lap1GainsTable) {
+        lap1GainsTable.addEventListener('click', function(event) {
+            var viewTab = event.target.closest('[data-lap1-view]');
+            if (!viewTab) return;
+
+            var nextView = viewTab.getAttribute('data-lap1-view');
+            if (!nextView || nextView === lap1GainsState.activeView) return;
+
+            lap1GainsState.activeView = nextView;
+            renderLap1Gains(lap1GainsState.rows || []);
+        });
+
+        lap1GainsTable.addEventListener('change', function(event) {
+            var raceSelect = event.target.closest('[data-lap1-select]');
+            if (!raceSelect) return;
+
+            lap1GainsState.selectedSessionKey = raceSelect.value;
+            if (lap1GainsState.activeView !== 'race-detail') lap1GainsState.activeView = 'race-detail';
+            renderLap1Gains(lap1GainsState.rows || []);
+        });
+    }
 
     function closeActiveQualifyingDots(exceptDot) {
         if (!qualifyingGapsTable) return;
