@@ -82,7 +82,7 @@
         .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #10b981; margin-right: 0.4rem; animation: livePulse 1.8s ease-in-out infinite; vertical-align: middle; }
         @keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-        .standings-tabs { display: flex; justify-content: center; gap: 0.4rem; margin: 1.5rem auto 1.8rem; background: var(--st-surface); border-radius: 14px; padding: 6px; max-width: 420px; border: 1px solid var(--st-border); }
+        .standings-tabs { display: flex; justify-content: center; gap: 0.4rem; margin: 1.5rem auto 1.8rem; background: var(--st-surface); border-radius: 14px; padding: 6px; max-width: 680px; border: 1px solid var(--st-border); }
         .standings-tab { flex: 1; background: transparent; border: 1px solid transparent; color: var(--st-text-secondary); font-size: 0.9rem; font-weight: 700; padding: 0.8rem 1.15rem; min-height: 52px; border-radius: 10px; cursor: pointer; transition: all var(--st-transition); display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; position: relative; }
         .standings-tab:hover { color: var(--st-text); background: rgba(59,130,246,0.08); }
         .standings-tab:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; box-shadow: 0 0 0 4px rgba(59,130,246,0.16); }
@@ -153,6 +153,71 @@
 
         .round-badge { display: inline-flex; align-items: center; gap: 0.3rem; background: var(--st-accent-soft); color: var(--st-accent); padding: 0.2rem 0.6rem; border-radius: 100px; font-size: 0.72rem; font-weight: 600; margin-left: 0.5rem; }
 
+        .quali-gaps-wrap { display: flex; flex-direction: column; gap: 0.95rem; }
+        .quali-gaps-intro, .quali-gap-card { background: var(--st-surface-raised); border: 1px solid var(--st-border); border-radius: var(--st-radius); box-shadow: var(--st-shadow-sm); }
+        .quali-gaps-intro { padding: 1.15rem 1.2rem; }
+        .quali-kicker { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--st-text-muted); }
+        .quali-kicker::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, #22c55e, #0ea5e9); box-shadow: 0 0 0 5px rgba(34,197,94,0.12); }
+        .quali-title { font-family: 'Outfit',sans-serif; font-size: 1.65rem; font-weight: 800; letter-spacing: -0.03em; margin: 0.3rem 0 0.2rem; color: var(--st-text); }
+        .quali-sub { font-size: 0.9rem; color: var(--st-text-secondary); margin: 0; max-width: 700px; }
+        .quali-gaps-list { display: flex; flex-direction: column; gap: 0.9rem; }
+        .quali-gap-card { padding: 1rem 1.05rem; }
+        .quali-gap-card-inner { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(280px, 2.4fr) minmax(150px, 1fr); gap: 1rem; align-items: center; }
+        .quali-side { display: flex; flex-direction: column; gap: 0.45rem; min-width: 0; }
+        .quali-side.left { align-items: flex-start; text-align: left; }
+        .quali-side.right { align-items: flex-end; text-align: right; }
+        .quali-side-top { display: flex; align-items: baseline; gap: 0.55rem; }
+        .quali-side.right .quali-side-top { justify-content: flex-end; }
+        .quali-h2h-count { font-family: 'Outfit',sans-serif; font-size: 1.55rem; font-weight: 800; line-height: 1; color: var(--st-text); }
+        .quali-h2h-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--st-text-muted); }
+        .quali-gap-avg { font-family: 'Outfit',sans-serif; font-size: 1rem; font-weight: 700; line-height: 1; }
+        .quali-gap-avg.fast { color: #16a34a; }
+        .quali-gap-avg.slow { color: #ef4444; }
+        .quali-driver { display: flex; align-items: center; gap: 0.7rem; min-width: 0; }
+        .quali-side.right .quali-driver { flex-direction: row-reverse; }
+        .quali-headshot { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(var(--pair-color), 0.35); background: var(--st-surface); flex-shrink: 0; }
+        .quali-avatar-fallback { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Outfit',sans-serif; font-size: 0.9rem; font-weight: 800; color: rgb(var(--driver-color)); background: rgba(var(--driver-color), 0.12); border: 2px solid rgba(var(--driver-color), 0.35); flex-shrink: 0; }
+        .quali-driver-meta { min-width: 0; }
+        .quali-driver-code { font-family: 'Outfit',sans-serif; font-size: 1.15rem; font-weight: 800; line-height: 1; color: var(--st-text); }
+        .quali-driver-name { font-size: 0.74rem; color: var(--st-text-muted); margin-top: 0.12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .quali-track-wrap { display: flex; flex-direction: column; gap: 0.55rem; min-width: 0; }
+        .quali-track-meta { display: flex; align-items: center; justify-content: space-between; gap: 0.65rem; font-size: 0.73rem; color: var(--st-text-secondary); }
+        .quali-track-team { font-weight: 700; color: var(--st-text); }
+        .quali-track-note { color: var(--st-text-muted); text-align: right; }
+        .quali-track { position: relative; height: 74px; border-radius: 14px; border: 1px solid rgba(var(--pair-color), 0.16); background:
+            linear-gradient(90deg,
+                rgba(var(--left-color), 0.11) 0%,
+                rgba(var(--left-color), 0.04) 44%,
+                rgba(255,255,255,0) 50%,
+                rgba(var(--right-color), 0.04) 56%,
+                rgba(var(--right-color), 0.11) 100%);
+            overflow: hidden; }
+        [data-theme="light"] .quali-track {
+            background:
+                linear-gradient(90deg,
+                    rgba(var(--left-color), 0.10) 0%,
+                    rgba(var(--left-color), 0.03) 44%,
+                    rgba(255,255,255,0) 50%,
+                    rgba(var(--right-color), 0.03) 56%,
+                    rgba(var(--right-color), 0.10) 100%);
+        }
+        .quali-track::before, .quali-track::after { content: ''; position: absolute; top: 10px; bottom: 10px; width: 1px; background: rgba(255,255,255,0.08); }
+        .quali-track::before { left: 25%; }
+        .quali-track::after { left: 75%; }
+        [data-theme="light"] .quali-track::before, [data-theme="light"] .quali-track::after { background: rgba(0,0,0,0.06); }
+        .quali-zero-line { position: absolute; top: 8px; bottom: 8px; left: 50%; width: 1px; background: rgba(var(--pair-color), 0.28); transform: translateX(-0.5px); }
+        .quali-dots { position: absolute; inset: 0; }
+        .quali-dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; transform: translate(-50%, -50%); background: rgb(var(--dot-color)); border: 2px solid rgba(255,255,255,0.55); box-shadow: 0 0 0 4px rgba(var(--dot-color), 0.14); }
+        [data-theme="light"] .quali-dot { border-color: rgba(255,255,255,0.85); }
+        .quali-track-scale { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; font-size: 0.7rem; font-weight: 700; color: var(--st-text-muted); }
+        .quali-track-scale span:nth-child(2) { color: var(--st-text-secondary); }
+        .quali-empty-card { padding: 2.4rem 1rem; text-align: center; color: var(--st-text-muted); }
+        .quali-empty-card i { display: block; font-size: 2rem; opacity: 0.4; margin-bottom: 0.8rem; }
+        .quali-skeleton-card { background: var(--st-surface-raised); border: 1px solid var(--st-border); border-radius: var(--st-radius); padding: 1rem 1.05rem; box-shadow: var(--st-shadow-sm); }
+        .quali-skeleton-grid { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(280px, 2.4fr) minmax(150px, 1fr); gap: 1rem; align-items: center; }
+        .quali-skeleton-side { display: flex; align-items: center; gap: 0.7rem; }
+        .quali-skeleton-track { height: 74px; border-radius: 14px; }
+
         @media (max-width: 767px) {
             .standings-title { font-size: 1.8rem; }
             .standings-tabs { max-width: 100%; }
@@ -162,8 +227,37 @@
             .st-name { font-size: 0.85rem; }
             .st-points { font-size: 1rem; }
             .chart-section { padding: 1rem; }
+            .quali-title { font-size: 1.38rem; }
+            .quali-gap-card, .quali-gaps-intro { padding: 0.95rem; }
+            .quali-gap-card-inner, .quali-skeleton-grid { grid-template-columns: 1fr 1fr; grid-template-areas: "left right" "track track"; gap: 0.85rem 0.9rem; }
+            .quali-side.left, .quali-skeleton-side.left { grid-area: left; }
+            .quali-side.right, .quali-skeleton-side.right { grid-area: right; }
+            .quali-track-wrap, .quali-skeleton-track-wrap { grid-area: track; }
+            .quali-track { height: 68px; }
+            .quali-track-meta { font-size: 0.7rem; }
+            .quali-h2h-count { font-size: 1.35rem; }
+            .quali-driver-code { font-size: 1rem; }
+            .quali-headshot, .quali-avatar-fallback { width: 42px; height: 42px; }
         }
-        @media (max-width: 480px) { .standings-title { font-size: 1.5rem; } }
+        @media (max-width: 480px) {
+            .standings-title { font-size: 1.5rem; }
+            .standings-tabs { gap: 0.25rem; padding: 4px; }
+            .standings-tab { font-size: 0.78rem; padding: 0.7rem 0.65rem; gap: 0.35rem; }
+            .quali-gaps-intro { padding: 0.85rem; }
+            .quali-sub { font-size: 0.84rem; }
+            .quali-gap-card, .quali-skeleton-card { padding: 0.8rem; }
+            .quali-gap-card-inner, .quali-skeleton-grid { gap: 0.75rem 0.7rem; }
+            .quali-side-top { gap: 0.4rem; }
+            .quali-h2h-count { font-size: 1.2rem; }
+            .quali-gap-avg { font-size: 0.9rem; }
+            .quali-driver { gap: 0.55rem; }
+            .quali-headshot, .quali-avatar-fallback { width: 38px; height: 38px; }
+            .quali-driver-name { font-size: 0.68rem; }
+            .quali-track-meta { flex-direction: column; align-items: flex-start; }
+            .quali-track-note { text-align: left; }
+            .quali-track { height: 62px; }
+            .quali-dot { width: 10px; height: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -221,6 +315,7 @@
         <div class="standings-tabs" role="tablist">
             <button class="standings-tab active" data-tab="drivers" role="tab" aria-selected="true"><i class="fas fa-helmet-safety"></i> Οδηγοί</button>
             <button class="standings-tab" data-tab="constructors" role="tab" aria-selected="false"><i class="fas fa-flag-checkered"></i> Κατασκευαστές</button>
+            <button class="standings-tab" data-tab="quali-gaps" role="tab" aria-selected="false"><i class="fas fa-stopwatch"></i> Quali Gaps</button>
         </div>
 
         <div class="standings-panel active" id="panel-drivers" role="tabpanel">
@@ -236,6 +331,17 @@
             <div class="chart-section" id="constructors-chart" style="display:none">
                 <h3 class="chart-title"><i class="fas fa-chart-bar" style="margin-right:0.4rem;opacity:0.6;font-size:0.9em;"></i>Κατανομή βαθμών</h3>
                 <div id="constructors-chart-bars"></div>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-quali-gaps" role="tabpanel">
+            <div class="quali-gaps-wrap">
+                <div class="quali-gaps-intro">
+                    <div class="quali-kicker">Teammate H2H · <span id="qualifying-gaps-year">2026</span></div>
+                    <h3 class="quali-title">Teammate Qualifying Gaps</h3>
+                    <p class="quali-sub">Q + Sprint Shootout. Ο συνολικά ταχύτερος teammate εμφανίζεται αριστερά και τα rows ταξινομούνται από το μικρότερο στο μεγαλύτερο average gap.</p>
+                </div>
+                <div id="qualifying-gaps-table"></div>
             </div>
         </div>
 
@@ -280,6 +386,9 @@
 
     var driversTable = document.getElementById('drivers-table');
     var constructorsTable = document.getElementById('constructors-table');
+    var qualifyingGapsTable = document.getElementById('qualifying-gaps-table');
+    var qualifyingGapsYear = document.getElementById('qualifying-gaps-year');
+    var qualifyingGapsState = { loaded: false, loading: false };
 
     // ── 2026 Team metadata: colours + logo URLs from formula1.com ──
     // Logo URLs use the official F1 media CDN pattern
@@ -293,8 +402,8 @@
         'haas':          { color: 'B6BABD', name: 'Haas F1 Team',     logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/haas' },
         'rb':            { color: '6692FF', name: 'Racing Bulls',     logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/rb' },
         'williams':      { color: '64C4FF', name: 'Williams',         logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/williams' },
-        'sauber':        { color: '52E252', name: 'Audi',             logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/kick%20sauber' },
-        'audi':          { color: '52E252', name: 'Audi',             logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/kick%20sauber' },
+        'sauber':        { color: 'F50537', name: 'Audi',             logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/kick%20sauber' },
+        'audi':          { color: 'F50537', name: 'Audi',             logo: 'https://media.formula1.com/image/upload/f_auto,c_limit,q_75,w_1320/content/dam/fom-website/2018-redesign-assets/team%20logos/kick%20sauber' },
         'cadillac':      { color: '1E4168', name: 'Cadillac',         logo: '' }
     };
 
@@ -343,6 +452,7 @@
     }
     driversTable.innerHTML = skelRows(10);
     constructorsTable.innerHTML = skelRows(10);
+    if (qualifyingGapsYear) qualifyingGapsYear.textContent = YEAR;
 
     // ── Tab switching ──
     document.querySelectorAll('.standings-tab').forEach(function(tab) {
@@ -352,6 +462,7 @@
             tab.classList.add('active'); tab.setAttribute('aria-selected','true');
             document.querySelectorAll('.standings-panel').forEach(function(p) { p.classList.remove('active'); });
             document.getElementById('panel-' + t).classList.add('active');
+            if (t === 'quali-gaps') ensureQualifyingGapsLoaded();
         });
     });
 
@@ -405,6 +516,35 @@
         return t ? t.color : '3b82f6';
     }
 
+    function normalizeTeamName(teamName) {
+        return (teamName || '').toString().toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    }
+
+    function resolveTeamId(constructorId, teamName) {
+        if (constructorId && TEAMS[constructorId]) return constructorId;
+
+        var normalized = normalizeTeamName(teamName);
+        if (!normalized) return constructorId || '';
+        if (normalized.indexOf('audi') !== -1 || normalized.indexOf('sauber') !== -1 || normalized.indexOf('stake') !== -1) return 'audi';
+        if (normalized.indexOf('mercedes') !== -1) return 'mercedes';
+        if (normalized.indexOf('red bull') !== -1) return 'red_bull';
+        if (normalized.indexOf('ferrari') !== -1) return 'ferrari';
+        if (normalized.indexOf('mclaren') !== -1) return 'mclaren';
+        if (normalized.indexOf('aston') !== -1) return 'aston_martin';
+        if (normalized.indexOf('alpine') !== -1) return 'alpine';
+        if (normalized.indexOf('haas') !== -1) return 'haas';
+        if (normalized.indexOf('racing bulls') !== -1 || normalized === 'rb' || normalized.indexOf('visa cash app') !== -1) return 'rb';
+        if (normalized.indexOf('williams') !== -1) return 'williams';
+        if (normalized.indexOf('cadillac') !== -1) return 'cadillac';
+        return constructorId || '';
+    }
+
+    function getCanonicalTeamColor(constructorId, teamName, fallbackColor) {
+        var teamId = resolveTeamId(constructorId, teamName);
+        if (teamId && TEAMS[teamId]) return TEAMS[teamId].color;
+        return fallbackColor ? normalizeHexColor(fallbackColor) : '3b82f6';
+    }
+
     function getTeamLogo(constructorId) {
         var t = TEAMS[constructorId];
         return t ? t.logo : '';
@@ -417,6 +557,482 @@
     function formatWinsLabel(wins) {
         return wins + ' ' + (wins === 1 ? 'νίκη' : 'νίκες');
     }
+
+    function formatSessionCount(count) {
+        return count + ' Q/SQ';
+    }
+
+    function isFiniteNumber(value) {
+        return typeof value === 'number' && isFinite(value);
+    }
+
+    function normalizeHexColor(hex) {
+        var value = (hex || '').toString().replace(/[^0-9a-f]/gi, '');
+        if (value.length === 3) value = value.replace(/(.)/g, '$1$1');
+        if (value.length !== 6) return '3b82f6';
+        return value.toLowerCase();
+    }
+
+    function hexToRgbChannels(hex) {
+        var value = normalizeHexColor(hex);
+        return [
+            parseInt(value.slice(0, 2), 16),
+            parseInt(value.slice(2, 4), 16),
+            parseInt(value.slice(4, 6), 16)
+        ].join(', ');
+    }
+
+    function clampNumber(value, min, max) {
+        return Math.min(max, Math.max(min, value));
+    }
+
+    function adjustHexColor(hex, delta) {
+        var value = normalizeHexColor(hex);
+        var rgb = [0, 2, 4].map(function(index) {
+            return clampNumber(parseInt(value.slice(index, index + 2), 16) + delta, 0, 255);
+        });
+        return rgb.map(function(channel) {
+            var str = channel.toString(16);
+            return str.length === 1 ? '0' + str : str;
+        }).join('');
+    }
+
+    function hashString(input) {
+        var value = (input || '').toString();
+        var hash = 0;
+        for (var i = 0; i < value.length; i++) {
+            hash = (hash << 5) - hash + value.charCodeAt(i);
+            hash |= 0;
+        }
+        return Math.abs(hash);
+    }
+
+    function getDriverAccentColor(driver, teamColor, fallbackShift) {
+        var shifts = [-38, -12, 22, 46];
+        var hash = hashString((driver.acronym || '') + ':' + (driver.driverNumber || '') + ':' + (driver.fullName || ''));
+        var shift = shifts[hash % shifts.length];
+        if (typeof fallbackShift === 'number') shift = fallbackShift;
+        return adjustHexColor(teamColor, shift);
+    }
+
+    function formatSignedGap(gap, withUnit) {
+        if (!isFiniteNumber(gap)) return 'n/a';
+        var sign = gap > 0 ? '+' : gap < 0 ? '-' : '±';
+        var value = Math.abs(gap).toFixed(3);
+        return sign + value + (withUnit ? 's' : '');
+    }
+
+    function formatScaleValue(value) {
+        if (!isFiniteNumber(value)) return '0';
+        return (value >= 1 ? value.toFixed(1) : value.toFixed(2)).replace(/\.?0+$/, '');
+    }
+
+    function roundUp(value, step) {
+        return Math.ceil(value / step) * step;
+    }
+
+    function chunkArray(items, size) {
+        var chunks = [];
+        for (var i = 0; i < items.length; i += size) chunks.push(items.slice(i, i + size));
+        return chunks;
+    }
+
+    function safeDriverNumber(driver) {
+        return driver && driver.driverNumber != null ? String(driver.driverNumber) : '';
+    }
+
+    function buildPairKey(driverA, driverB, teamKey) {
+        return [teamKey, safeDriverNumber(driverA), safeDriverNumber(driverB)].sort().join('|');
+    }
+
+    function getDriverDisplayName(driver) {
+        return driver.fullName || [driver.firstName, driver.lastName].filter(Boolean).join(' ') || ('Οδηγός #' + (driver.driverNumber || '?'));
+    }
+
+    function deriveAcronym(driver) {
+        if (driver.acronym) return driver.acronym;
+        var name = getDriverDisplayName(driver).split(/\s+/).filter(Boolean);
+        if (name.length >= 2) return (name[0].charAt(0) + name[name.length - 1].charAt(0) + name[name.length - 1].charAt(1)).toUpperCase().slice(0, 3);
+        return (name[0] || 'DRV').substring(0, 3).toUpperCase();
+    }
+
+    function parseTimeSeconds(value) {
+        if (value == null || value === '') return NaN;
+        if (typeof value === 'number') return isFinite(value) ? value : NaN;
+        if (Array.isArray(value)) {
+            var nested = value.map(parseTimeSeconds).filter(isFiniteNumber);
+            return nested.length ? Math.min.apply(null, nested) : NaN;
+        }
+        if (typeof value === 'object') {
+            var values = Object.keys(value).map(function(key) { return parseTimeSeconds(value[key]); }).filter(isFiniteNumber);
+            return values.length ? Math.min.apply(null, values) : NaN;
+        }
+
+        var str = String(value).trim();
+        if (!str) return NaN;
+        if (/^\d+(\.\d+)?$/.test(str)) return parseFloat(str);
+
+        var parts = str.split(':');
+        if (parts.length === 2) return parseInt(parts[0], 10) * 60 + parseFloat(parts[1]);
+        if (parts.length === 3) return parseInt(parts[0], 10) * 3600 + parseInt(parts[1], 10) * 60 + parseFloat(parts[2]);
+
+        return NaN;
+    }
+
+    function getBestQualifyingTime(result) {
+        var candidates = [result && result.duration];
+        ['q1', 'q2', 'q3', 'lap_duration', 'best_lap_time', 'best_lap_duration'].forEach(function(key) {
+            if (result && result[key] != null) candidates.push(result[key]);
+        });
+        var parsed = candidates.map(parseTimeSeconds).filter(isFiniteNumber);
+        return parsed.length ? Math.min.apply(null, parsed) : NaN;
+    }
+
+    function isQualifyingSession(session) {
+        var text = [
+            session && session.session_type,
+            session && session.session_name,
+            session && session.session_key,
+            session && session.meeting_name
+        ].join(' ').toLowerCase();
+        return text.indexOf('qualifying') !== -1 || text.indexOf('shootout') !== -1;
+    }
+
+    function isCompletedSession(session) {
+        var dateValue = session && (session.date_end || session.date_start || session.date);
+        return dateValue ? new Date(dateValue) <= new Date() : false;
+    }
+
+    function getSessionLabel(session) {
+        var meeting = session.meeting_name || session.country_name || session.location || 'Session';
+        var sessionName = session.session_name || session.session_type || 'Qualifying';
+        return meeting + ' · ' + sessionName;
+    }
+
+    function createQualifyingSkeletonRows(count) {
+        var html = '<div class="quali-gaps-list">';
+        for (var i = 0; i < count; i++) {
+            html += '<div class="quali-skeleton-card"><div class="quali-skeleton-grid">'
+                + '<div class="quali-skeleton-side left"><div class="skel skel-circle"></div><div style="flex:1;min-width:0;"><div class="skel" style="width:40px;height:18px;"></div><div class="skel" style="width:70px;height:11px;margin-top:6px;"></div><div class="skel" style="width:90px;height:10px;margin-top:6px;"></div></div></div>'
+                + '<div class="quali-skeleton-track-wrap"><div class="skel" style="width:120px;height:10px;margin-bottom:0.7rem;"></div><div class="skel quali-skeleton-track"></div><div class="skel" style="width:100%;height:10px;margin-top:0.7rem;"></div></div>'
+                + '<div class="quali-skeleton-side right" style="justify-content:flex-end;"><div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-end;"><div class="skel" style="width:40px;height:18px;"></div><div class="skel" style="width:70px;height:11px;margin-top:6px;"></div><div class="skel" style="width:90px;height:10px;margin-top:6px;"></div></div><div class="skel skel-circle"></div></div>'
+                + '</div></div>';
+        }
+        return html + '</div>';
+    }
+
+    function fetchOpenF1BySessionKeys(endpoint, sessionKeys) {
+        if (!sessionKeys.length) return Promise.resolve([]);
+        return Promise.all(
+            chunkArray(sessionKeys, 12).map(function(keys) {
+                var query = keys.map(function(sessionKey) {
+                    return 'session_key=' + encodeURIComponent(sessionKey);
+                }).join('&');
+                return fetchJSON(OPENF1 + '/' + endpoint + '?' + query);
+            })
+        ).then(function(chunks) {
+            return [].concat.apply([], chunks);
+        });
+    }
+
+    function buildDriverLookup(drivers) {
+        var lookup = {};
+        (drivers || []).forEach(function(driver) {
+            if (!driver || driver.session_key == null || driver.driver_number == null) return;
+            var sessionKey = String(driver.session_key);
+            if (!lookup[sessionKey]) lookup[sessionKey] = {};
+            lookup[sessionKey][driver.driver_number] = {
+                driverNumber: driver.driver_number,
+                fullName: driver.full_name || [driver.first_name, driver.last_name].filter(Boolean).join(' '),
+                firstName: driver.first_name || '',
+                lastName: driver.last_name || '',
+                acronym: (driver.name_acronym || '').toUpperCase(),
+                headshot: driver.headshot_url || '',
+                teamName: driver.team_name || '',
+                teamColor: normalizeHexColor(driver.team_colour || ''),
+                meetingKey: driver.meeting_key || ''
+            };
+        });
+        return lookup;
+    }
+
+    function createPairRecord(teamName, teamKey, teamColor, driverA, driverB) {
+        var pair = {
+            teamName: teamName,
+            teamKey: teamKey,
+            teamColor: normalizeHexColor(teamColor || '3b82f6'),
+            drivers: {},
+            sessions: [],
+            totalGap: 0
+        };
+        [driverA, driverB].forEach(function(driver) {
+            var key = safeDriverNumber(driver);
+            pair.drivers[key] = {
+                driverNumber: driver.driverNumber,
+                acronym: deriveAcronym(driver),
+                fullName: getDriverDisplayName(driver),
+                headshot: driver.headshot || '',
+                teamName: driver.teamName || teamName,
+                wins: 0,
+                signedTotal: 0
+            };
+        });
+        return pair;
+    }
+
+    function buildQualifyingGapPairs(sessions, drivers, results) {
+        var sessionMap = {};
+        var sessionTeams = {};
+        var driverLookup = buildDriverLookup(drivers);
+
+        (sessions || []).forEach(function(session, index) {
+            sessionMap[String(session.session_key)] = {
+                session: session,
+                index: index
+            };
+        });
+
+        (results || []).forEach(function(result) {
+            var sessionKey = String(result.session_key);
+            var driverMap = driverLookup[sessionKey] || {};
+            var driver = driverMap[result.driver_number];
+            var bestTime = getBestQualifyingTime(result);
+            if (!driver || !driver.teamName || !isFiniteNumber(bestTime)) return;
+
+            if (!sessionTeams[sessionKey]) sessionTeams[sessionKey] = {};
+            var teamKey = (driver.teamName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            var driverKey = safeDriverNumber(driver);
+            if (!sessionTeams[sessionKey][teamKey]) sessionTeams[sessionKey][teamKey] = {};
+            var existingEntry = sessionTeams[sessionKey][teamKey][driverKey];
+            if (!existingEntry || bestTime < existingEntry.bestTime) {
+                sessionTeams[sessionKey][teamKey][driverKey] = {
+                    driver: driver,
+                    bestTime: bestTime
+                };
+            }
+        });
+
+        var pairs = {};
+        Object.keys(sessionTeams).forEach(function(sessionKey) {
+            var teamGroups = sessionTeams[sessionKey];
+            var sessionInfo = sessionMap[sessionKey] || {};
+
+            Object.keys(teamGroups).forEach(function(teamKey) {
+                var entries = Object.keys(teamGroups[teamKey]).map(function(driverKey) {
+                    return teamGroups[teamKey][driverKey];
+                }).sort(function(a, b) {
+                    return a.bestTime - b.bestTime;
+                });
+                if (entries.length !== 2) return;
+
+                var faster = entries[0];
+                var slower = entries[1];
+                var gap = slower.bestTime - faster.bestTime;
+                if (!isFiniteNumber(gap) || gap < 0) return;
+
+                var pairKey = buildPairKey(faster.driver, slower.driver, teamKey);
+                if (!pairs[pairKey]) {
+                    pairs[pairKey] = createPairRecord(
+                        faster.driver.teamName || slower.driver.teamName,
+                        teamKey,
+                        faster.driver.teamColor || slower.driver.teamColor,
+                        faster.driver,
+                        slower.driver
+                    );
+                }
+
+                var pair = pairs[pairKey];
+                var fasterKey = safeDriverNumber(faster.driver);
+                var slowerKey = safeDriverNumber(slower.driver);
+
+                pair.sessions.push({
+                    sessionKey: sessionKey,
+                    sessionIndex: sessionInfo.index || 0,
+                    label: getSessionLabel(sessionInfo.session || {}),
+                    gap: gap,
+                    fasterDriverNumber: fasterKey,
+                    slowerDriverNumber: slowerKey
+                });
+                pair.totalGap += gap;
+                pair.drivers[fasterKey].wins += 1;
+                pair.drivers[fasterKey].signedTotal -= gap;
+                pair.drivers[slowerKey].signedTotal += gap;
+            });
+        });
+
+        return Object.keys(pairs).map(function(key) {
+            var pair = pairs[key];
+            var driverKeys = Object.keys(pair.drivers);
+            if (driverKeys.length !== 2 || !pair.sessions.length) return null;
+
+            var first = pair.drivers[driverKeys[0]];
+            var second = pair.drivers[driverKeys[1]];
+            var left = first;
+            var right = second;
+            var diff = first.signedTotal - second.signedTotal;
+
+            if (diff > 0.000001 || (Math.abs(diff) <= 0.000001 && first.wins < second.wins)) {
+                left = second;
+                right = first;
+            } else if (Math.abs(diff) <= 0.000001 && first.wins === second.wins && first.acronym > second.acronym) {
+                left = second;
+                right = first;
+            }
+
+            var avgGap = pair.totalGap / pair.sessions.length;
+
+            return {
+                teamName: pair.teamName,
+                teamColor: pair.teamColor,
+                avgGap: avgGap,
+                left: left,
+                right: right,
+                sessionCount: pair.sessions.length,
+                dots: pair.sessions.sort(function(a, b) {
+                    return a.sessionIndex - b.sessionIndex;
+                }).map(function(session, index) {
+                    return {
+                        signedGap: session.fasterDriverNumber === safeDriverNumber(left) ? -session.gap : session.gap,
+                        winner: session.fasterDriverNumber === safeDriverNumber(left) ? 'left' : 'right',
+                        label: session.label,
+                        index: index
+                    };
+                })
+            };
+        }).filter(Boolean).sort(function(a, b) {
+            if (a.avgGap !== b.avgGap) return a.avgGap - b.avgGap;
+            return a.teamName.localeCompare(b.teamName);
+        });
+    }
+
+    function renderQualifyingGaps(rows) {
+        if (!rows || !rows.length) {
+            qualifyingGapsTable.innerHTML = '<div class="quali-empty-card">'
+                + '<i class="fas fa-stopwatch"></i>'
+                + '<p>Δεν υπάρχουν ακόμη αρκετά qualifying δεδομένα για teammate gaps.</p>'
+                + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed qualifying ή sprint shootout sessions.</p>'
+                + '</div>';
+            return;
+        }
+
+        var maxSessionGap = rows.reduce(function(max, row) {
+            var rowMax = row.dots.reduce(function(acc, dot) {
+                return Math.max(acc, Math.abs(dot.signedGap));
+            }, 0);
+            return Math.max(max, rowMax);
+        }, 0);
+        var scale = Math.max(0.2, roundUp(maxSessionGap || 0.2, 0.05));
+        var laneOffsets = [28, 40, 52, 64, 34, 58];
+
+        var html = '<div class="quali-gaps-list">';
+        rows.forEach(function(row) {
+            var leftColor = getDriverAccentColor(row.left, row.teamColor, 30);
+            var rightColor = getDriverAccentColor(row.right, row.teamColor, -20);
+            if (leftColor === rightColor) rightColor = adjustHexColor(row.teamColor, -42);
+            var pairColor = hexToRgbChannels(row.teamColor);
+            var leftChannels = hexToRgbChannels(leftColor);
+            var rightChannels = hexToRgbChannels(rightColor);
+
+            html += '<div class="quali-gap-card">'
+                + '<div class="quali-gap-card-inner" style="--pair-color:' + esc(pairColor) + ';--left-color:' + esc(leftChannels) + ';--right-color:' + esc(rightChannels) + ';">'
+                + '<div class="quali-side left">'
+                + '<div class="quali-side-top"><span class="quali-h2h-count">' + row.left.wins + '</span><span class="quali-h2h-label">H2H</span></div>'
+                + '<div class="quali-gap-avg fast">' + esc(formatSignedGap(-row.avgGap, false)) + '</div>'
+                + '<div class="quali-driver">'
+                + (row.left.headshot
+                    ? '<img class="quali-headshot" src="' + esc(row.left.headshot) + '" alt="' + esc(row.left.fullName) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+                        + '<div class="quali-avatar-fallback" style="display:none;--driver-color:' + esc(leftChannels) + ';">' + esc(row.left.acronym) + '</div>'
+                    : '<div class="quali-avatar-fallback" style="--driver-color:' + esc(leftChannels) + ';">' + esc(row.left.acronym) + '</div>')
+                + '<div class="quali-driver-meta"><div class="quali-driver-code">' + esc(row.left.acronym) + '</div><div class="quali-driver-name">' + esc(row.left.fullName) + '</div></div>'
+                + '</div>'
+                + '</div>'
+                + '<div class="quali-track-wrap">'
+                + '<div class="quali-track-meta"><span class="quali-track-team">' + esc(row.teamName) + '</span><span class="quali-track-note">' + esc(formatSessionCount(row.sessionCount)) + ' · avg gap ' + esc(row.avgGap.toFixed(3)) + 's</span></div>'
+                + '<div class="quali-track">'
+                + '<div class="quali-zero-line" aria-hidden="true"></div>'
+                + '<div class="quali-dots">';
+
+            row.dots.forEach(function(dot, dotIndex) {
+                var leftPct = 50 + (dot.signedGap / scale) * 50;
+                var top = laneOffsets[dotIndex % laneOffsets.length];
+                html += '<span class="quali-dot" title="' + esc(dot.label + ' · ' + formatSignedGap(dot.signedGap, true)) + '" style="left:' + clampNumber(leftPct, 2, 98).toFixed(2) + '%;top:' + top + '%;--dot-color:' + esc(dot.winner === 'left' ? leftChannels : rightChannels) + ';"></span>';
+            });
+
+            html += '</div></div>'
+                + '<div class="quali-track-scale"><span>' + esc(formatScaleValue(scale)) + 's</span><span>0</span><span>' + esc(formatScaleValue(scale)) + 's</span></div>'
+                + '</div>'
+                + '<div class="quali-side right">'
+                + '<div class="quali-side-top"><span class="quali-h2h-count">' + row.right.wins + '</span><span class="quali-h2h-label">H2H</span></div>'
+                + '<div class="quali-gap-avg slow">' + esc(formatSignedGap(row.avgGap, false)) + '</div>'
+                + '<div class="quali-driver">'
+                + (row.right.headshot
+                    ? '<img class="quali-headshot" src="' + esc(row.right.headshot) + '" alt="' + esc(row.right.fullName) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+                        + '<div class="quali-avatar-fallback" style="display:none;--driver-color:' + esc(rightChannels) + ';">' + esc(row.right.acronym) + '</div>'
+                    : '<div class="quali-avatar-fallback" style="--driver-color:' + esc(rightChannels) + ';">' + esc(row.right.acronym) + '</div>')
+                + '<div class="quali-driver-meta"><div class="quali-driver-code">' + esc(row.right.acronym) + '</div><div class="quali-driver-name">' + esc(row.right.fullName) + '</div></div>'
+                + '</div>'
+                + '</div>'
+                + '</div>'
+                + '</div>';
+        });
+        qualifyingGapsTable.innerHTML = html + '</div>';
+    }
+
+    function showQualifyingError() {
+        qualifyingGapsTable.innerHTML = '<div class="quali-empty-card">'
+            + '<i class="fas fa-exclamation-triangle"></i>'
+            + '<p>Δεν ήταν δυνατή η φόρτωση των teammate qualifying gaps.</p>'
+            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
+            + '<button class="retry-btn" type="button" onclick="window.__retryQualifyingGaps && window.__retryQualifyingGaps()"><i class="fas fa-redo"></i> Νέα προσπάθεια</button>'
+            + '</div>';
+    }
+
+    function loadQualifyingGapRows() {
+        return fetchJSON(OPENF1 + '/sessions?year=' + YEAR).then(function(sessions) {
+            var qualifyingSessions = (sessions || []).filter(function(session) {
+                return isQualifyingSession(session) && isCompletedSession(session);
+            }).sort(function(a, b) {
+                return new Date(a.date_start || a.date || 0) - new Date(b.date_start || b.date || 0);
+            });
+
+            if (!qualifyingSessions.length) return [];
+
+            var sessionKeys = qualifyingSessions.map(function(session) {
+                return session.session_key;
+            });
+
+            return Promise.all([
+                fetchOpenF1BySessionKeys('drivers', sessionKeys),
+                fetchOpenF1BySessionKeys('session_result', sessionKeys)
+            ]).then(function(payload) {
+                return buildQualifyingGapPairs(qualifyingSessions, payload[0], payload[1]);
+            });
+        });
+    }
+
+    function ensureQualifyingGapsLoaded(forceReload) {
+        if (!qualifyingGapsTable) return;
+        if (qualifyingGapsState.loading) return;
+        if (qualifyingGapsState.loaded && !forceReload) return;
+
+        qualifyingGapsState.loading = true;
+        qualifyingGapsTable.innerHTML = createQualifyingSkeletonRows(6);
+
+        loadQualifyingGapRows().then(function(rows) {
+            renderQualifyingGaps(rows);
+            qualifyingGapsState.loaded = true;
+        }).catch(function(error) {
+            console.error('Qualifying gaps error:', error);
+            showQualifyingError();
+        }).finally(function() {
+            qualifyingGapsState.loading = false;
+        });
+    }
+
+    window.__retryQualifyingGaps = function() {
+        qualifyingGapsState.loaded = false;
+        ensureQualifyingGapsLoaded(true);
+    };
 
     function showError(el) {
         el.innerHTML = '<div class="standings-error">'
@@ -564,11 +1180,11 @@
             var driver = s.Driver;
             var constructor = s.Constructors && s.Constructors[0];
             var cId = constructor ? constructor.constructorId : '';
-            var tc = getTeamColor(cId);
             var driverId = driver.driverId || '';
             var lastName = (driver.familyName || '').toLowerCase();
             var name = (driver.givenName || '') + ' ' + (driver.familyName || '');
             var teamName = constructor ? constructor.name : '';
+            var tc = getCanonicalTeamColor(cId, teamName, '');
             var pts = parseFloat(s.points) || 0;
             var wins = parseInt(s.wins) || 0;
             var pos = s.position;
@@ -577,7 +1193,6 @@
             // Try OpenF1 enrichment for headshot & team colour
             var of1 = openf1Map[lastName] || {};
             var hs = of1.headshot || getHeadshot(driverId);
-            if (of1.teamColor) tc = of1.teamColor;
             var acr = of1.acronym || (driver.code || driverId.substring(0,3)).toUpperCase();
 
             html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
@@ -602,9 +1217,8 @@
             var driver = s.Driver;
             var constructor = s.Constructors && s.Constructors[0];
             var cId = constructor ? constructor.constructorId : '';
-            var tc = getTeamColor(cId);
             var of1 = openf1Map[(driver.familyName || '').toLowerCase()] || {};
-            if (of1.teamColor) tc = of1.teamColor;
+            var tc = getCanonicalTeamColor(cId, constructor ? constructor.name : '', of1.teamColor);
             var label = (driver.code || driver.driverId.substring(0,3)).toUpperCase();
             var pts = parseFloat(s.points) || 0;
             var pct = Math.max(4, (pts / maxPts) * 100);
@@ -639,9 +1253,9 @@
         standings.forEach(function(s) {
             var c = s.Constructor;
             var cId = c.constructorId;
-            var tc = getTeamColor(cId);
             var logo = getTeamLogo(cId);
             var teamName = c.name || '';
+            var tc = getCanonicalTeamColor(cId, teamName, '');
             var drivers = teamDrivers[cId] || [];
             var pts = parseFloat(s.points) || 0;
             var wins = parseInt(s.wins) || 0;
@@ -670,7 +1284,7 @@
         standings.forEach(function(s) {
             var c = s.Constructor;
             var cId = c.constructorId;
-            var tc = getTeamColor(cId);
+            var tc = getCanonicalTeamColor(cId, c.name || '', '');
             var label = (c.name || '').substring(0, 3).toUpperCase();
             var pts = parseFloat(s.points) || 0;
             var pct = Math.max(4, (pts / maxPts) * 100);
@@ -692,7 +1306,7 @@
 
         standings.forEach(function(s) {
             var d = dMap[s.driver_number] || {};
-            var tc = d.team_colour || '3b82f6';
+            var tc = getCanonicalTeamColor('', d.team_name || '', d.team_colour);
             var hs = d.headshot_url || '';
             var name = d.full_name || ('Οδηγός #' + s.driver_number);
             var team = d.team_name || '';
@@ -716,7 +1330,7 @@
         var chartHTML = '';
         top10.forEach(function(s) {
             var d = dMap[s.driver_number] || {};
-            var tc = d.team_colour || '3b82f6';
+            var tc = getCanonicalTeamColor('', d.team_name || '', d.team_colour);
             var label = d.name_acronym || ('P' + s.position_current);
             var pct = Math.max(4, (s.points_current / maxPts) * 100);
             chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
@@ -733,14 +1347,14 @@
             if (!d.team_name) return;
             if (!teamDrivers[d.team_name]) teamDrivers[d.team_name] = [];
             teamDrivers[d.team_name].push(d.name_acronym || ('#' + d.driver_number));
-            if (d.team_colour) teamColors[d.team_name] = d.team_colour;
+            teamColors[d.team_name] = getCanonicalTeamColor('', d.team_name, d.team_colour);
         });
         standings.sort(function(a, b) { return a.position_current - b.position_current; });
         var maxPts = standings[0].points_current || 1;
         var html = '';
 
         standings.forEach(function(s) {
-            var tc = teamColors[s.team_name] || '3b82f6';
+            var tc = teamColors[s.team_name] || getCanonicalTeamColor('', s.team_name, '');
             var drivers = teamDrivers[s.team_name] || [];
             var shortName = (s.team_name || '').substring(0, 3).toUpperCase();
             var barPct = Math.max(2, (s.points_current / maxPts) * 100);
@@ -758,7 +1372,7 @@
 
         var chartHTML = '';
         standings.forEach(function(s) {
-            var tc = teamColors[s.team_name] || '3b82f6';
+            var tc = teamColors[s.team_name] || getCanonicalTeamColor('', s.team_name, '');
             var label = (s.team_name || '').substring(0, 3).toUpperCase();
             var pct = Math.max(4, (s.points_current / maxPts) * 100);
             chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
