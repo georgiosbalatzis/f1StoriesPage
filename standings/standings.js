@@ -1323,21 +1323,86 @@ function buildDirtyAirSummarySegments(totalCells, counts) {
     });
 }
 
-function normalizeDirtyAirSummaryData(summary, counts, totalCells) {
+function parseDirtyAirInteger(value) {
+    var parsed = parseInt(value, 10);
+    return isFinite(parsed) ? parsed : 0;
+}
+
+function normalizeDirtyAirCachedLaps(laps) {
+    return (laps || []).map(function(lap) {
+        var lapNumber = parseDirtyAirInteger(lap && (lap.lapNumber != null ? lap.lapNumber : lap.lap_number));
+        var cells = (lap && lap.cells || []).map(function(cell) {
+            var rawCategoryKey = cell && (cell.categoryKey || cell.category_key || cell.bucket);
+            var gapSeconds = parseFloat(cell && (cell.gapSeconds != null ? cell.gapSeconds : cell.gap_seconds));
+
+            return {
+                minisector: parseDirtyAirInteger(cell && (cell.minisector != null ? cell.minisector : cell.minisector_index)),
+                categoryKey: rawCategoryKey ? getDirtyAirCategoryMeta(String(rawCategoryKey)).key : getDirtyAirCategoryKey(gapSeconds)
+            };
+        }).filter(function(cell) {
+            return cell.minisector >= 0 && cell.minisector < DIRTY_AIR_MINISECTORS;
+        }).sort(function(a, b) {
+            return a.minisector - b.minisector;
+        });
+
+        return {
+            lapNumber: lapNumber,
+            cells: cells
+        };
+    }).filter(function(lap) {
+        return lap.lapNumber > 0 && lap.cells.length;
+    }).sort(function(a, b) {
+        return a.lapNumber - b.lapNumber;
+    });
+}
+
+function normalizeDirtyAirSummaryData(summary, counts, totalCells, cachedLaps) {
     var safeCounts = {};
+    var derivedFromLaps = cachedLaps && cachedLaps.length ? buildDirtyAirSummary({ laps: cachedLaps }) : null;
+    var summarySegments = summary && summary.segments || [];
+    var resolvedTotal = parseDirtyAirInteger(summary && summary.totalCells) || parseDirtyAirInteger(totalCells);
 
     DIRTY_AIR_CATEGORIES.forEach(function(category) {
-        safeCounts[category.key] = parseInt(
+        var count = parseInt(
             summary && summary.counts ? summary.counts[category.key] : (counts && counts[category.key]),
             10
         ) || 0;
+
+        if (!count) {
+            summarySegments.some(function(segment) {
+                var segmentKey = segment && segment.key ? String(segment.key) : '';
+                if (segmentKey !== category.key) return false;
+                count = parseDirtyAirInteger(segment && (segment.count != null ? segment.count : segment.totalCells));
+                return count > 0;
+            });
+        }
+
+        if (!count && derivedFromLaps) count = derivedFromLaps.counts[category.key] || 0;
+        safeCounts[category.key] = count;
     });
 
-    var resolvedTotal = isFiniteNumber(summary && summary.totalCells)
-        ? summary.totalCells
-        : (isFiniteNumber(totalCells) ? totalCells : DIRTY_AIR_CATEGORIES.reduce(function(sum, category) {
+    if (!resolvedTotal && summarySegments.length) {
+        resolvedTotal = DIRTY_AIR_CATEGORIES.reduce(function(sum, category) {
             return sum + safeCounts[category.key];
-        }, 0));
+        }, 0);
+    }
+
+    if (!resolvedTotal && derivedFromLaps) resolvedTotal = derivedFromLaps.totalCells || 0;
+
+    if (!resolvedTotal) {
+        resolvedTotal = DIRTY_AIR_CATEGORIES.reduce(function(sum, category) {
+            return sum + safeCounts[category.key];
+        }, 0);
+    }
+
+    if (resolvedTotal && !DIRTY_AIR_CATEGORIES.some(function(category) { return safeCounts[category.key] > 0; })) {
+        summarySegments.forEach(function(segment) {
+            var segmentKey = segment && segment.key ? String(segment.key) : '';
+            var percentage = parseFloat(segment && (segment.percentage != null ? segment.percentage : segment.share));
+            if (!segmentKey || !isFinite(percentage) || percentage <= 0) return;
+            safeCounts[segmentKey] = Math.round((percentage / 100) * resolvedTotal);
+        });
+    }
 
     return {
         totalCells: resolvedTotal,
@@ -1346,8 +1411,8 @@ function normalizeDirtyAirSummaryData(summary, counts, totalCells) {
     };
 }
 
-function normalizeDirtyAirTimelineSegments(segments) {
-    return (segments || []).map(function(segment) {
+function normalizeDirtyAirTimelineSegments(segments, cachedLaps) {
+    var normalized = (segments || []).map(function(segment) {
         var key = segment && segment.key ? segment.key : 'clean';
         return {
             key: key,
@@ -1358,6 +1423,9 @@ function normalizeDirtyAirTimelineSegments(segments) {
     }).filter(function(segment) {
         return segment.endIndex > segment.startIndex;
     });
+
+    if (normalized.length || !cachedLaps || !cachedLaps.length) return normalized;
+    return buildDirtyAirTimelineSegments({ laps: cachedLaps });
 }
 
 function normalizeDirtyAirCacheSession(session) {
@@ -1386,6 +1454,16 @@ function normalizeDirtyAirCacheSession(session) {
     };
 
     normalized.rows = (session.rows || []).map(function(row) {
+        var cachedLaps = normalizeDirtyAirCachedLaps(row && row.laps);
+        var timelineSegments = normalizeDirtyAirTimelineSegments(row && row.timelineSegments, cachedLaps);
+        var completedLaps = parseDirtyAirInteger(row && row.completedLaps)
+            || cachedLaps.reduce(function(maxLap, lap) {
+                return Math.max(maxLap, lap.lapNumber || 0);
+            }, 0)
+            || timelineSegments.reduce(function(maxLap, segment) {
+                return Math.max(maxLap, Math.ceil((segment.endIndex || 0) / DIRTY_AIR_MINISECTORS));
+            }, 0);
+
         return {
             driverNumber: row && row.driverNumber != null ? String(row.driverNumber) : '',
             position: parseInt(row && row.position, 10) || 999,
@@ -1394,9 +1472,9 @@ function normalizeDirtyAirCacheSession(session) {
             headshot: row && row.headshot ? String(row.headshot) : '',
             teamName: row && row.teamName ? String(row.teamName) : 'Team',
             teamColor: row && row.teamColor ? String(row.teamColor) : '3b82f6',
-            completedLaps: parseInt(row && row.completedLaps, 10) || 0,
-            summary: normalizeDirtyAirSummaryData(row && row.summary, row && row.counts, row && row.totalCells),
-            timelineSegments: normalizeDirtyAirTimelineSegments(row && row.timelineSegments)
+            completedLaps: completedLaps,
+            summary: normalizeDirtyAirSummaryData(row && row.summary, row && row.counts, row && row.totalCells, cachedLaps),
+            timelineSegments: timelineSegments
         };
     }).sort(function(a, b) {
         if (a.position !== b.position) return a.position - b.position;
@@ -1415,7 +1493,26 @@ function normalizeDirtyAirCacheSession(session) {
 
 function hasRenderableDirtyAirRows(sessionData) {
     return !!(sessionData && sessionData.rows || []).some(function(row) {
-        return row && row.summary && row.summary.totalCells > 0;
+        return row && (
+            (row.summary && row.summary.totalCells > 0)
+            || (row.timelineSegments && row.timelineSegments.length > 0)
+        );
+    });
+}
+
+function shouldReuseDirtyAirSessionCache(sessionData) {
+    if (!sessionData) return false;
+    if (hasRenderableDirtyAirRows(sessionData)) return true;
+
+    var rows = sessionData.rows || [];
+    if (!rows.length) return false;
+
+    return rows.some(function(row) {
+        return row && (
+            (row.completedLaps || 0) > 0
+            || (row.summary && row.summary.totalCells > 0)
+            || (row.timelineSegments && row.timelineSegments.length > 0)
+        );
     });
 }
 
@@ -1426,6 +1523,9 @@ function loadDirtyAirCacheBundle() {
 
     dirtyAirState.cacheAttempted = true;
     dirtyAirState.cachePromise = fetchJSONNoCache(DIRTY_AIR_CACHE_URL, 12000).then(function(bundle) {
+        if (parseDirtyAirInteger(bundle && bundle.minisectors) > 0) {
+            DIRTY_AIR_MINISECTORS = parseDirtyAirInteger(bundle.minisectors);
+        }
         var sessions = (bundle && bundle.sessions || []).map(normalizeDirtyAirCacheSession).filter(Boolean);
         dirtyAirState.cacheBundle = {
             version: bundle && bundle.version,
@@ -2104,14 +2204,19 @@ function loadDirtyAirSessionData(sessionKey) {
         return String(item.session_key) === cacheKey;
     })[0];
     if (!session) return Promise.reject(new Error('Unknown dirty air session'));
-    if (dirtyAirState.sessionCache[cacheKey]) return Promise.resolve(dirtyAirState.sessionCache[cacheKey]);
+    if (shouldReuseDirtyAirSessionCache(dirtyAirState.sessionCache[cacheKey])) {
+        return Promise.resolve(dirtyAirState.sessionCache[cacheKey]);
+    }
 
-    return Promise.all([
-        fetchOpenF1BySessionKeys('drivers', [session.session_key]),
-        fetchOpenF1BySessionKeys('laps', [session.session_key]),
-        fetchOpenF1BySessionKeys('session_result', [session.session_key]),
-        fetchOpenF1BySessionKeys('race_control', [session.session_key])
-    ]).then(function(payload) {
+    return fetchOpenF1BySessionKeys('drivers', [session.session_key]).then(function(driversPayload) {
+        return fetchOpenF1BySessionKeys('laps', [session.session_key]).then(function(lapsPayload) {
+            return fetchOpenF1BySessionKeys('session_result', [session.session_key]).then(function(resultsPayload) {
+                return fetchOpenF1BySessionKeys('race_control', [session.session_key]).then(function(raceControlPayload) {
+                    return [driversPayload, lapsPayload, resultsPayload, raceControlPayload];
+                });
+            });
+        });
+    }).then(function(payload) {
         var driverNumbers = Array.from(new Set((payload[1] || []).map(function(lap) {
             return lap && lap.driver_number != null ? String(lap.driver_number) : '';
         }).filter(Boolean)));
@@ -2414,10 +2519,11 @@ function loadTrackDominanceLocationSamples(sessionKey, lapInfo) {
 
 function buildTrackDominanceSeries(samples, lapDuration) {
     var filtered = (samples || []).map(function(sample) {
+        var dateValue = sample && (sample.date || sample.time);
         return {
             x: parseNumberValue(sample && sample.x),
             y: parseNumberValue(sample && sample.y),
-            date: sample && sample.date ? new Date(sample.date) : null
+            date: dateValue ? new Date(dateValue) : null
         };
     }).filter(function(sample) {
         return isFiniteNumber(sample.x) && isFiniteNumber(sample.y) && sample.date && !isNaN(sample.date.getTime());

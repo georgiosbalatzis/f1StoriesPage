@@ -223,7 +223,7 @@ function buildTrackDominanceSeries(samples, lapDuration) {
     const filtered = (samples || []).map(sample => ({
         x: parseNumberValue(sample && sample.x),
         y: parseNumberValue(sample && sample.y),
-        date: sample && sample.date ? new Date(sample.date) : null
+        date: sample && (sample.date || sample.time) ? new Date(sample.date || sample.time) : null
     })).filter(sample => (
         isFiniteNumber(sample.x)
         && isFiniteNumber(sample.y)
@@ -775,12 +775,11 @@ function readExistingCache(expectedYear) {
 }
 
 async function buildDirtyAirSession(session) {
-    const basePayload = await Promise.all([
-        fetchOpenF1BySessionKeys('drivers', [session.session_key]),
-        fetchOpenF1BySessionKeys('laps', [session.session_key]),
-        fetchOpenF1BySessionKeys('session_result', [session.session_key]),
-        fetchOpenF1BySessionKeys('race_control', [session.session_key])
-    ]);
+    const basePayload = [];
+    basePayload[0] = await fetchOpenF1BySessionKeys('drivers', [session.session_key]);
+    basePayload[1] = await fetchOpenF1BySessionKeys('laps', [session.session_key]);
+    basePayload[2] = await fetchOpenF1BySessionKeys('session_result', [session.session_key]);
+    basePayload[3] = await fetchOpenF1BySessionKeys('race_control', [session.session_key]);
 
     const driverNumbers = Array.from(new Set((basePayload[1] || []).map(lap => (
         lap && lap.driver_number != null ? String(lap.driver_number) : ''
