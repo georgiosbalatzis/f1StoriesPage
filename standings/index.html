@@ -105,19 +105,11 @@
             <button class="standings-tab" data-tab="quali-gaps" role="tab" aria-selected="false"><i class="fas fa-stopwatch"></i> Quali Gaps</button>
             <button class="standings-tab" data-tab="lap1-gains" role="tab" aria-selected="false"><i class="fas fa-arrow-trend-up"></i> Lap 1 Gains</button>
             <button class="standings-tab" data-tab="tyre-pace" role="tab" aria-selected="false"><i class="fas fa-wave-square"></i> Tyre Pace</button>
+            <button class="standings-tab" data-tab="track-dominance" role="tab" aria-selected="false"><i class="fas fa-route"></i> Track Dominance</button>
+            <button class="standings-tab" data-tab="pit-stops" role="tab" aria-selected="false"><i class="fas fa-wrench"></i> Pit Stops</button>
         </div>
 
         <div class="standings-panel active" id="panel-drivers" role="tabpanel">
-            <div class="panel-tools">
-                <div class="panel-tools-copy">
-                    <div class="panel-tools-title">Drivers Tab</div>
-                    <div class="panel-tools-note">Share the current tab state or embed this live driver standings view.</div>
-                </div>
-                <div class="share-tools">
-                    <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-drivers"><i class="fas fa-share-nodes"></i> Share tab</button>
-                    <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-drivers"><i class="fas fa-code"></i> Embed tab</button>
-                </div>
-            </div>
             <div class="standings-table-wrap" id="drivers-table"></div>
             <div class="chart-section" id="drivers-chart" style="display:none">
                 <div class="chart-head">
@@ -135,16 +127,6 @@
         </div>
 
         <div class="standings-panel" id="panel-constructors" role="tabpanel">
-            <div class="panel-tools">
-                <div class="panel-tools-copy">
-                    <div class="panel-tools-title">Constructors Tab</div>
-                    <div class="panel-tools-note">Share the current constructors view or embed it directly in another page.</div>
-                </div>
-                <div class="share-tools">
-                    <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-constructors"><i class="fas fa-share-nodes"></i> Share tab</button>
-                    <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-constructors"><i class="fas fa-code"></i> Embed tab</button>
-                </div>
-            </div>
             <div class="standings-table-wrap" id="constructors-table"></div>
             <div class="chart-section" id="constructors-chart" style="display:none">
                 <div class="chart-head">
@@ -221,6 +203,48 @@
                     </div>
                 </div>
                 <div id="tyre-pace-table"></div>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-track-dominance" role="tabpanel">
+            <div class="track-dom-wrap">
+                <div class="track-dom-intro">
+                    <div class="track-dom-kicker">Telemetry · <span id="track-dominance-year">2026</span></div>
+                    <h3 class="track-dom-title">Track Dominance</h3>
+                    <p class="track-dom-sub">Σύγκρινε το fastest lap δύο ομάδων από το ίδιο completed session και δες πού κερδίζει χρόνο η κάθε μία πάνω στην πίστα.</p>
+                </div>
+                <div class="panel-tools">
+                    <div class="panel-tools-copy">
+                        <div class="panel-tools-title">Track Dominance Tab</div>
+                        <div class="panel-tools-note">The shared link keeps the selected session and both teams.</div>
+                    </div>
+                    <div class="share-tools">
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-track-dominance"><i class="fas fa-share-nodes"></i> Share tab</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-track-dominance"><i class="fas fa-code"></i> Embed tab</button>
+                    </div>
+                </div>
+                <div id="track-dominance-table"></div>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-pit-stops" role="tabpanel">
+            <div class="pit-stops-wrap">
+                <div class="pit-stops-intro">
+                    <div class="pit-stops-kicker">Pit Stops · <span id="pit-stops-year">2026</span></div>
+                    <h3 class="pit-stops-title">Fastest Pit Stops</h3>
+                    <p class="pit-stops-sub">Ταχύτερο pit stop ανά οδηγό και ομάδα — ανά αγώνα ή season-best ranking.</p>
+                </div>
+                <div class="panel-tools">
+                    <div class="panel-tools-copy">
+                        <div class="panel-tools-title">Pit Stops Tab</div>
+                        <div class="panel-tools-note">Share the fastest pit stop analysis or embed it in your page.</div>
+                    </div>
+                    <div class="share-tools">
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-pit-stops"><i class="fas fa-share-nodes"></i> Share tab</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-pit-stops"><i class="fas fa-code"></i> Embed tab</button>
+                    </div>
+                </div>
+                <div id="pit-stops-table"></div>
             </div>
         </div>
 
