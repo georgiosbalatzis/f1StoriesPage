@@ -2149,8 +2149,20 @@ function renderDirtyAir(sessionData, session) {
     var scBandsHTML = (sessionData.safetyCarSpans || []).map(function(span) {
         var startPct = (((span.startLap - 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
         var widthPct = (((span.endLap - span.startLap + 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
+        return '<span class="dirty-air-sc-band" style="left:' + startPct.toFixed(4) + '%;width:' + widthPct.toFixed(4) + '%;"></span>';
+    }).join('');
+    var scOverlayHTML = scBandsHTML ? '<div class="dirty-air-timeline-overlays">' + scBandsHTML + '</div>' : '';
+    var scMarkerBandsHTML = (sessionData.safetyCarSpans || []).map(function(span) {
+        var startPct = (((span.startLap - 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
+        var widthPct = (((span.endLap - span.startLap + 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
         return '<span class="dirty-air-sc-band" style="left:' + startPct.toFixed(4) + '%;width:' + widthPct.toFixed(4) + '%;"><em>SC</em></span>';
     }).join('');
+    var scMarkerRowHTML = scMarkerBandsHTML
+        ? '<div class="dirty-air-timeline-row dirty-air-sc-row">'
+            + '<div class="dirty-air-driver-tag sticky dirty-air-sc-marker"><span class="dirty-air-driver-code">SC</span></div>'
+            + '<div class="dirty-air-timeline-bar dirty-air-sc-marker-bar">' + scMarkerBandsHTML + '</div>'
+            + '</div>'
+        : '';
 
     var timelineRowsHTML = sessionData.rows.map(function(row) {
         var segmentsHTML = row.timelineSegments.map(function(segment) {
@@ -2161,7 +2173,7 @@ function renderDirtyAir(sessionData, session) {
 
         return '<div class="dirty-air-timeline-row">'
             + '<div class="dirty-air-driver-tag sticky"><span class="dirty-air-driver-dot" style="background:#' + esc(row.teamColor) + ';"></span><span class="dirty-air-driver-code">' + esc(row.acronym) + '</span></div>'
-            + '<div class="dirty-air-timeline-bar">' + lapGridHTML + scBandsHTML + segmentsHTML + '</div>'
+            + '<div class="dirty-air-timeline-bar">' + lapGridHTML + segmentsHTML + '</div>'
             + '</div>';
     }).join('');
 
@@ -2179,7 +2191,7 @@ function renderDirtyAir(sessionData, session) {
         + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || 'Race') + ' · ' + sessionData.maxLaps + ' laps') + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Drivers</span><span class="dirty-air-summary-value">' + esc(String(sessionData.rows.length)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">MiniSectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">SC Periods</span><span class="dirty-air-summary-value">' + esc(String((sessionData.safetyCarSpans || []).length)) + '</span></div></div></div>'
         + '<div class="dirty-air-legend">' + legendHTML + '</div>'
         + '<section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">% Of Race By Proximity</h4><p class="dirty-air-section-note">Share of valid race minisectors spent in each traffic bucket.</p></div></div><div class="dirty-air-summary-list">' + summaryRowsHTML + '</div></section>'
-        + '<section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Per Lap Timeline</h4><p class="dirty-air-section-note">Every lap is split into 30 equal minisectors. Safety Car laps are highlighted across the chart.</p></div></div><div class="dirty-air-timeline-scroll"><div class="dirty-air-timeline-body" style="--dirty-air-chart-width:' + chartWidth + 'px;">' + timelineRowsHTML + '<div class="dirty-air-axis-row"><div class="dirty-air-axis-spacer"></div><div class="dirty-air-axis-track">' + axisLabels + '</div></div></div></div></section>'
+        + '<section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Per Lap Timeline</h4><p class="dirty-air-section-note">Every lap is split into 30 equal minisectors. Safety Car laps are highlighted across the chart.</p></div></div><div class="dirty-air-timeline-scroll"><div class="dirty-air-timeline-body" style="--dirty-air-chart-width:' + chartWidth + 'px;"><div class="dirty-air-timeline-track">' + scOverlayHTML + scMarkerRowHTML + timelineRowsHTML + '</div><div class="dirty-air-axis-row"><div class="dirty-air-axis-spacer"></div><div class="dirty-air-axis-track">' + axisLabels + '</div></div></div></div></section>'
         + '<p class="dirty-air-footnote">Source: OpenF1 `location`, `laps`, `session_result` και `race_control`. Το nearest car ahead μετριέται ανά minisector χρησιμοποιώντας το πιο πρόσφατο crossing στο ίδιο κομμάτι της πίστας.</p>'
         + '</div>';
 
