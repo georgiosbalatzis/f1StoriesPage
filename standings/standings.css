@@ -34,15 +34,16 @@ body { overflow-y: auto !important; }
 .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #10b981; margin-right: 0.4rem; animation: livePulse 1.8s ease-in-out infinite; vertical-align: middle; will-change: opacity; }
 @keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-.standings-tabs { display: flex; justify-content: center; gap: 0.4rem; margin: 1.5rem auto 1.8rem; background: var(--st-surface); border-radius: 14px; padding: 6px; max-width: 1180px; border: 1px solid var(--st-border); }
-.standings-tab { flex: 1; background: transparent; border: 1px solid transparent; color: var(--st-text-secondary); font-size: 0.9rem; font-weight: 700; padding: 0.8rem 1.15rem; min-height: 52px; border-radius: 10px; cursor: pointer; transition: all var(--st-transition); display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; position: relative; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.standings-tabs { display: flex; justify-content: flex-start; flex-wrap: nowrap; gap: 0.4rem; margin: 1.5rem auto 1.8rem; background: var(--st-surface); border-radius: 14px; padding: 6px; width: 100%; max-width: none; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; border: 1px solid var(--st-border); }
+.standings-tabs::-webkit-scrollbar { display: none; }
+.standings-tab { flex: 1 1 140px; background: transparent; border: 1px solid transparent; color: var(--st-text-secondary); font-size: 0.88rem; font-weight: 700; padding: 0.8rem 0.95rem; min-height: 52px; border-radius: 10px; cursor: pointer; transition: all var(--st-transition); display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; position: relative; touch-action: manipulation; -webkit-tap-highlight-color: transparent; white-space: nowrap; }
 .standings-tab:hover { color: var(--st-text); background: rgba(59,130,246,0.08); }
 .standings-tab:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; box-shadow: 0 0 0 4px rgba(59,130,246,0.16); }
 .standings-tab.active { background: linear-gradient(135deg, var(--st-accent), #4f8df3); border-color: rgba(255,255,255,0.08); color: #fff; box-shadow: 0 10px 24px rgba(59,130,246,0.28); transform: translateY(-1px); }
 .standings-tab.active::after { content: ''; position: absolute; inset: 2px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18); pointer-events: none; }
 .standings-tab i { font-size: 0.78em; }
 
-.standings-panel { display: none; }
+.standings-panel { display: none; contain: layout; }
 .standings-panel.active { display: block; animation: panelIn 0.35s ease-out; }
 @keyframes panelIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 

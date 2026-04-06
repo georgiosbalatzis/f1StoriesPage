@@ -1,10 +1,11 @@
 {
+  "version": 1,
   "season": 2026,
-  "snapshotLabel": "After Chinese GP (March 15, 2026)",
+  "generatedAt": "2026-04-06T07:42:31.345Z",
+  "snapshotLabel": "Latest available on F1 Top App (April 6, 2026)",
   "source": {
     "upstreamHtml": "https://f1.top-app.eu/destructors-championship/2026/",
-    "referencePost": "https://www.reddit.com/r/formula1/comments/1ruk6er/2026_destructors_championship_after_chinese_gp/",
-    "note": "Snapshot matched to the attached Racing Statistics charts."
+    "note": "Auto-refreshed from the F1 Top App HTML standings. A local snapshot is still required because the upstream page does not expose a stable browser-safe API."
   },
   "drivers": [
     {
@@ -26,6 +27,12 @@
       "damage": 641000
     },
     {
+      "acronym": "HAD",
+      "fullName": "Isack Hadjar",
+      "teamKey": "red_bull",
+      "damage": 574000
+    },
+    {
       "acronym": "PER",
       "fullName": "Sergio Perez",
       "teamKey": "cadillac",
@@ -38,15 +45,15 @@
       "damage": 350000
     },
     {
-      "acronym": "OCO",
-      "fullName": "Esteban Ocon",
-      "teamKey": "haas",
-      "damage": 260000
-    },
-    {
       "acronym": "ALB",
       "fullName": "Alexander Albon",
       "teamKey": "williams",
+      "damage": 260000
+    },
+    {
+      "acronym": "OCO",
+      "fullName": "Esteban Ocon",
+      "teamKey": "haas",
       "damage": 260000
     },
     {
@@ -56,15 +63,15 @@
       "damage": 200000
     },
     {
-      "acronym": "RUS",
-      "fullName": "George Russell",
-      "teamKey": "mercedes",
-      "damage": 150000
-    },
-    {
       "acronym": "NOR",
       "fullName": "Lando Norris",
       "teamKey": "mclaren",
+      "damage": 150000
+    },
+    {
+      "acronym": "RUS",
+      "fullName": "George Russell",
+      "teamKey": "mercedes",
       "damage": 150000
     },
     {
@@ -84,12 +91,6 @@
       "fullName": "Gabriel Bortoleto",
       "teamKey": "audi",
       "damage": 100000
-    },
-    {
-      "acronym": "HAD",
-      "fullName": "Isack Hadjar",
-      "teamKey": "red_bull",
-      "damage": 60000
     }
   ],
   "zeroTeams": [

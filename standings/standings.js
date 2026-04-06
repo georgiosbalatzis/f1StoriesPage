@@ -205,13 +205,13 @@ function fetchJSON(url) {
     });
 }
 
-function fetchJSONNoCache(url, timeoutMs) {
+function fetchJSONWithTimeout(url, timeoutMs, fetchOptions) {
     var controller = typeof AbortController === 'function' ? new AbortController() : null;
     var timer = null;
-    var options = { cache: 'no-store' };
+    var options = fetchOptions ? Object.assign({}, fetchOptions) : {};
     if (controller) {
         timer = window.setTimeout(function() { controller.abort(); }, typeof timeoutMs === 'number' ? timeoutMs : 8000);
-        options.signal = controller.signal;
+        if (!options.signal) options.signal = controller.signal;
     }
 
     return fetch(url, options).then(function(r) {
@@ -220,6 +220,10 @@ function fetchJSONNoCache(url, timeoutMs) {
     }).finally(function() {
         if (timer) window.clearTimeout(timer);
     });
+}
+
+function fetchJSONNoCache(url, timeoutMs) {
+    return fetchJSONWithTimeout(url, timeoutMs, { cache: 'no-store' });
 }
 
 function getTeamColor(constructorId) {
@@ -1554,7 +1558,7 @@ function loadDirtyAirCacheBundle() {
     if (dirtyAirState.cachePromise) return dirtyAirState.cachePromise;
 
     dirtyAirState.cacheAttempted = true;
-    dirtyAirState.cachePromise = fetchJSONNoCache(DIRTY_AIR_CACHE_URL, 12000).then(function(bundle) {
+    dirtyAirState.cachePromise = fetchJSONWithTimeout(DIRTY_AIR_CACHE_URL, 12000).then(function(bundle) {
         if (parseDirtyAirInteger(bundle && bundle.minisectors) > 0) {
             DIRTY_AIR_MINISECTORS = parseDirtyAirInteger(bundle.minisectors);
         }
