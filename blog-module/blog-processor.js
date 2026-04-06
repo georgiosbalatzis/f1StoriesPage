@@ -6,6 +6,7 @@ const AdmZip = require('adm-zip');
 const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
 const os = require('os');
 const { updateDirtyAirCache } = require('./dirty-air-cache');
+const { updateDestructorsCache } = require('./destructors-cache');
 
 // ─── CLI flags ───────────────────────────────────────────────────────────────
 const FORCE_REBUILD = process.argv.includes('--force') || process.argv.includes('-f');
@@ -2419,6 +2420,16 @@ if (!isMainThread) {
             );
         } catch (error) {
             console.warn(`⚠️  Dirty air cache update skipped: ${error.message}`);
+        }
+
+        try {
+            const destructorsResult = await updateDestructorsCache({ force: FORCE_REBUILD });
+            console.log(
+                `Destructors cache saved to ${destructorsResult.outputPath} ` +
+                `(${destructorsResult.driverCount} drivers, ${destructorsResult.activeTeamCount} active teams${destructorsResult.unchanged ? ', unchanged' : ''})`
+            );
+        } catch (error) {
+            console.warn(`⚠️  Destructors cache update skipped: ${error.message}`);
         }
 
         console.log('Blog processing complete');
