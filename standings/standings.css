@@ -444,10 +444,20 @@ body { overflow-y: auto !important; }
 .dirty-air-legend-item em { font-style: normal; color: var(--st-text-muted); font-weight: 600; }
 .dirty-air-legend-swatch { width: 11px; height: 11px; border-radius: 50%; box-shadow: 0 0 0 4px rgba(255,255,255,0.05); }
 [data-theme="light"] .dirty-air-legend-swatch { box-shadow: 0 0 0 4px rgba(14,76,166,0.06); }
+.dirty-air-view-switch { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
+.dirty-air-view-tabs { display: inline-flex; gap: 0.32rem; padding: 5px; border-radius: 999px; background: var(--st-surface); border: 1px solid var(--st-border); }
+.dirty-air-view-tab { appearance: none; -webkit-appearance: none; border: none; background: transparent; color: var(--st-text-secondary); min-height: 40px; padding: 0.55rem 0.95rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all var(--st-transition); }
+.dirty-air-view-tab:hover { color: var(--st-text); background: rgba(59,130,246,0.08); }
+.dirty-air-view-tab:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; }
+.dirty-air-view-tab.active { color: #fff; background: linear-gradient(135deg, var(--st-accent), #4f8df3); box-shadow: 0 8px 18px rgba(59,130,246,0.24); }
+[data-theme="light"] .dirty-air-view-tab:hover { background: rgba(14,76,166,0.06); }
+[data-theme="light"] .dirty-air-view-tab.active { box-shadow: 0 8px 18px rgba(14,76,166,0.18); }
 .dirty-air-section + .dirty-air-section { margin-top: 1rem; }
 .dirty-air-section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; }
 .dirty-air-section-title { font-family: 'Outfit',sans-serif; font-size: 0.96rem; font-weight: 700; color: var(--st-text); margin: 0; }
 .dirty-air-section-note { font-size: 0.72rem; color: var(--st-text-muted); margin: 0.18rem 0 0; }
+.dirty-air-view-panel { display: none; }
+.dirty-air-view-panel.active { display: block; animation: panelIn 0.28s ease-out; }
 .dirty-air-summary-list { display: flex; flex-direction: column; gap: 0.45rem; }
 .dirty-air-card { --dirty-air-label-width: 60px; --dirty-air-row-gap: 0.72rem; }
 .dirty-air-summary-row, .dirty-air-timeline-row, .dirty-air-axis-row { display: grid; grid-template-columns: var(--dirty-air-label-width) minmax(0, 1fr); gap: var(--dirty-air-row-gap); align-items: center; }
@@ -768,6 +778,7 @@ body.standings-embed [data-embed-hidden="true"] { display: none !important; }
     .dirty-air-title { font-size: 1.38rem; }
     .dirty-air-intro, .dirty-air-card { padding: 0.95rem; }
     .dirty-air-legend { gap: 0.5rem 0.8rem; }
+    .dirty-air-view-switch { justify-content: flex-start; }
     .dirty-air-card { --dirty-air-label-width: 52px; --dirty-air-row-gap: 0.6rem; }
     .dirty-air-driver-tag { font-size: 0.8rem; }
     .dirty-air-driver-tag.sticky { padding-right: 0.2rem; }

@@ -19,7 +19,7 @@ var tyrePaceYear = document.getElementById('tyre-pace-year');
 var tyrePaceState = { loaded: false, loading: false, sessions: [], selectedSessionKey: '', cache: {} };
 var dirtyAirTable = document.getElementById('dirty-air-table');
 var dirtyAirYear = document.getElementById('dirty-air-year');
-var dirtyAirState = { loaded: false, loading: false, pendingReload: false, sessions: [], selectedSessionKey: '', sessionCache: {}, cacheBundle: null, cachePromise: null, cacheAttempted: false };
+var dirtyAirState = { loaded: false, loading: false, pendingReload: false, sessions: [], selectedSessionKey: '', activeView: 'summary', sessionCache: {}, cacheBundle: null, cachePromise: null, cacheAttempted: false };
 var trackDominanceTable = document.getElementById('track-dominance-table');
 var trackDominanceYear = document.getElementById('track-dominance-year');
 var trackDominanceState = { loaded: false, loading: false, pendingReload: false, sessions: [], selectedSessionKey: '', leftTeamKey: '', rightTeamKey: '', sessionCache: {}, pairCache: {} };
@@ -2186,12 +2186,19 @@ function renderDirtyAir(sessionData, session) {
         axisLabels += '<span class="dirty-air-axis-label end" style="left:100%;">' + esc(String(maxLaps)) + '</span>';
     }
 
+    var activeView = dirtyAirState.activeView === 'timeline' ? 'timeline' : 'summary';
+    var viewSwitchHTML = '<div class="dirty-air-view-switch"><div class="dirty-air-view-tabs" role="tablist" aria-label="Dirty air views">'
+        + '<button class="dirty-air-view-tab' + (activeView === 'summary' ? ' active' : '') + '" type="button" data-dirty-air-view="summary" role="tab" aria-selected="' + (activeView === 'summary' ? 'true' : 'false') + '">% By Proximity</button>'
+        + '<button class="dirty-air-view-tab' + (activeView === 'timeline' ? ' active' : '') + '" type="button" data-dirty-air-view="timeline" role="tab" aria-selected="' + (activeView === 'timeline' ? 'true' : 'false') + '">Per Lap Timeline</button>'
+        + '</div></div>';
+
     var html = '<div class="dirty-air-card">'
         + '<div class="dirty-air-head"><div class="dirty-air-head-copy"><h3 class="dirty-air-head-title">Dirty Air Proximity Breakdown</h3><p class="dirty-air-head-note">Clean air σημαίνει ότι δεν υπάρχει κανένα μονοθέσιο μπροστά μέσα σε 4.0s στο ίδιο minisector. Τα backmarkers που ετοιμάζονται να δεχτούν γύρο μετρούν κανονικά ως traffic.</p></div><label class="dirty-air-controls"><span class="dirty-air-controls-label">Available races</span><select class="dirty-air-select" data-dirty-air-select aria-label="Επιλογή αγώνα για dirty air analysis">' + sessionOptions + '</select></label></div>'
         + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || 'Race') + ' · ' + sessionData.maxLaps + ' laps') + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Drivers</span><span class="dirty-air-summary-value">' + esc(String(sessionData.rows.length)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">MiniSectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">SC Periods</span><span class="dirty-air-summary-value">' + esc(String((sessionData.safetyCarSpans || []).length)) + '</span></div></div></div>'
         + '<div class="dirty-air-legend">' + legendHTML + '</div>'
-        + '<section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">% Of Race By Proximity</h4><p class="dirty-air-section-note">Share of valid race minisectors spent in each traffic bucket.</p></div></div><div class="dirty-air-summary-list">' + summaryRowsHTML + '</div></section>'
-        + '<section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Per Lap Timeline</h4><p class="dirty-air-section-note">Every lap is split into 30 equal minisectors. Safety Car laps are highlighted across the chart.</p></div></div><div class="dirty-air-timeline-scroll"><div class="dirty-air-timeline-body" style="--dirty-air-chart-width:' + chartWidth + 'px;"><div class="dirty-air-timeline-track">' + scOverlayHTML + scMarkerRowHTML + timelineRowsHTML + '</div><div class="dirty-air-axis-row"><div class="dirty-air-axis-spacer"></div><div class="dirty-air-axis-track">' + axisLabels + '</div></div></div></div></section>'
+        + viewSwitchHTML
+        + '<div class="dirty-air-view-panel' + (activeView === 'summary' ? ' active' : '') + '" data-dirty-air-panel="summary"><section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">% Of Race By Proximity</h4><p class="dirty-air-section-note">Share of valid race minisectors spent in each traffic bucket.</p></div></div><div class="dirty-air-summary-list">' + summaryRowsHTML + '</div></section></div>'
+        + '<div class="dirty-air-view-panel' + (activeView === 'timeline' ? ' active' : '') + '" data-dirty-air-panel="timeline"><section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Per Lap Timeline</h4><p class="dirty-air-section-note">Every lap is split into 30 equal minisectors. Safety Car laps are highlighted across the chart.</p></div></div><div class="dirty-air-timeline-scroll"><div class="dirty-air-timeline-body" style="--dirty-air-chart-width:' + chartWidth + 'px;"><div class="dirty-air-timeline-track">' + scOverlayHTML + scMarkerRowHTML + timelineRowsHTML + '</div><div class="dirty-air-axis-row"><div class="dirty-air-axis-spacer"></div><div class="dirty-air-axis-track">' + axisLabels + '</div></div></div></div></section></div>'
         + '<p class="dirty-air-footnote">Source: OpenF1 `location`, `laps`, `session_result` και `race_control`. Το nearest car ahead μετριέται ανά minisector χρησιμοποιώντας το πιο πρόσφατο crossing στο ίδιο κομμάτι της πίστας.</p>'
         + '</div>';
 
@@ -3948,6 +3955,25 @@ if (tyrePaceTable) {
 }
 
 if (dirtyAirTable) {
+    dirtyAirTable.addEventListener('click', function(event) {
+        var viewTab = event.target.closest('[data-dirty-air-view]');
+        if (!viewTab) return;
+
+        var nextView = viewTab.getAttribute('data-dirty-air-view');
+        if (!nextView || nextView === dirtyAirState.activeView) return;
+
+        dirtyAirState.activeView = nextView === 'timeline' ? 'timeline' : 'summary';
+
+        dirtyAirTable.querySelectorAll('[data-dirty-air-view]').forEach(function(btn) {
+            var isActive = btn.getAttribute('data-dirty-air-view') === dirtyAirState.activeView;
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+        dirtyAirTable.querySelectorAll('[data-dirty-air-panel]').forEach(function(panel) {
+            panel.classList.toggle('active', panel.getAttribute('data-dirty-air-panel') === dirtyAirState.activeView);
+        });
+    });
+
     dirtyAirTable.addEventListener('change', function(event) {
         var raceSelect = event.target.closest('[data-dirty-air-select]');
         if (!raceSelect) return;
