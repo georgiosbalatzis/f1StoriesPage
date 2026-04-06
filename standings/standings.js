@@ -26,10 +26,13 @@ var trackDominanceState = { loaded: false, loading: false, pendingReload: false,
 var pitStopsTable = document.getElementById('pit-stops-table');
 var pitStopsYear = document.getElementById('pit-stops-year');
 var pitStopsState = { loaded: false, loading: false, races: [], selectedRound: '', activeView: 'race', raceCache: {}, seasonCache: null };
+var destructorsTable = document.getElementById('destructors-table');
+var destructorsYear = document.getElementById('destructors-year');
+var destructorsState = { loaded: false, loading: false, activeView: 'teams', snapshot: null };
 var standingsTabs = Array.prototype.slice.call(document.querySelectorAll('.standings-tab'));
 var standingsPanels = Array.prototype.slice.call(document.querySelectorAll('.standings-panel'));
 var shareFeedback = document.getElementById('share-feedback');
-var VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops'];
+var VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'destructors'];
 var SHARE_TARGETS = {
     'panel-drivers': { tab: 'drivers', title: 'Driver standings tab', height: 980 },
     'drivers-table': { tab: 'drivers', title: 'Driver standings table', height: 760 },
@@ -42,7 +45,8 @@ var SHARE_TARGETS = {
     'panel-tyre-pace': { tab: 'tyre-pace', title: 'Tyre pace chart', height: 1080 },
     'panel-dirty-air': { tab: 'dirty-air', title: 'Dirty air analysis', height: 1520 },
     'panel-track-dominance': { tab: 'track-dominance', title: 'Track dominance analysis', height: 1320 },
-    'panel-pit-stops': { tab: 'pit-stops', title: 'Fastest pit stops', height: 1080 }
+    'panel-pit-stops': { tab: 'pit-stops', title: 'Fastest pit stops', height: 1080 },
+    'panel-destructors': { tab: 'destructors', title: 'Destructors championship', height: 1260 }
 };
 var activeStandingsTab = 'drivers';
 var currentFocusTarget = '';
@@ -50,6 +54,21 @@ var pendingRevealTarget = '';
 var isEmbedMode = false;
 var shareFeedbackTimer = 0;
 var DIRTY_AIR_CACHE_URL = 'dirty-air-cache.json';
+var DESTRUCTORS_CACHE_URL = 'destructors-cache.json';
+var DESTRUCTORS_TEAM_ORDER = ['haas', 'mercedes', 'mclaren', 'red_bull', 'cadillac', 'williams', 'alpine', 'audi', 'ferrari', 'rb', 'aston_martin'];
+var DESTRUCTORS_TEAM_META = {
+    'haas': { name: 'Haas', chartLabel: 'HAAS', color: '8f99aa' },
+    'mercedes': { name: 'Mercedes', chartLabel: 'MERCEDES', color: '18c9b8' },
+    'mclaren': { name: 'McLaren', chartLabel: 'MCLAREN', color: 'ffc20f' },
+    'red_bull': { name: 'Red Bull', chartLabel: 'RED BULL', color: '4c86d8' },
+    'cadillac': { name: 'Cadillac', chartLabel: 'CADILLAC', color: 'ffe300' },
+    'williams': { name: 'Williams', chartLabel: 'WILLIAMS', color: '4851c9' },
+    'alpine': { name: 'Alpine', chartLabel: 'ALPINE', color: 'eb3ce8' },
+    'audi': { name: 'Audi', chartLabel: 'AUDI', color: 'f2837d' },
+    'ferrari': { name: 'Ferrari', chartLabel: 'FERRARI', color: 'd85466' },
+    'rb': { name: 'Racing Bulls', chartLabel: 'RACING BULLS', color: '7f8ca9' },
+    'aston_martin': { name: 'Aston Martin', chartLabel: 'ASTON MARTIN', color: '4a8f74' }
+};
 
 // ── 2026 Team metadata: colours + logo URLs from formula1.com ──
 // Logo URLs use the official F1 media CDN pattern
@@ -119,6 +138,7 @@ if (tyrePaceYear) tyrePaceYear.textContent = YEAR;
 if (dirtyAirYear) dirtyAirYear.textContent = YEAR;
 if (trackDominanceYear) trackDominanceYear.textContent = YEAR;
 if (pitStopsYear) pitStopsYear.textContent = YEAR;
+if (destructorsYear) destructorsYear.textContent = YEAR;
 
 var initialURLState = readStandingsURLState();
 activeStandingsTab = initialURLState.tab;
@@ -136,6 +156,7 @@ trackDominanceState.leftTeamKey = initialURLState.trackTeamA;
 trackDominanceState.rightTeamKey = initialURLState.trackTeamB;
 pitStopsState.selectedRound = initialURLState.pitRound;
 pitStopsState.activeView = initialURLState.pitView;
+destructorsState.activeView = initialURLState.destructorsView;
 
 // ── Tab switching ──
 standingsTabs.forEach(function(tab) {
@@ -352,6 +373,10 @@ function sanitizeLap1View(value) {
     return value === 'race-detail' ? 'race-detail' : 'overview';
 }
 
+function sanitizeDestructorsView(value) {
+    return value === 'flow' ? 'flow' : 'teams';
+}
+
 function readStandingsURLState() {
     var params = new URLSearchParams(window.location.search || '');
     var focus = sanitizeShareTarget(params.get('focus'));
@@ -371,7 +396,8 @@ function readStandingsURLState() {
         trackTeamA: params.get('trackTeamA') || '',
         trackTeamB: params.get('trackTeamB') || '',
         pitView: (params.get('pitView') === 'season' ? 'season' : 'race'),
-        pitRound: params.get('pitRound') || ''
+        pitRound: params.get('pitRound') || '',
+        destructorsView: sanitizeDestructorsView(params.get('destructorsView'))
     };
 }
 
@@ -410,6 +436,11 @@ function appendShareStateParams(params, tabName) {
     if (tabName === 'pit-stops') {
         if (pitStopsState.activeView !== 'race') params.set('pitView', pitStopsState.activeView);
         if (pitStopsState.selectedRound) params.set('pitRound', String(pitStopsState.selectedRound));
+        return;
+    }
+
+    if (tabName === 'destructors') {
+        if (destructorsState.activeView !== 'teams') params.set('destructorsView', destructorsState.activeView);
     }
 }
 
@@ -578,6 +609,7 @@ function activateStandingsTab(tabName, options) {
     if (nextTab === 'dirty-air') ensureDirtyAirLoaded();
     if (nextTab === 'track-dominance') ensureTrackDominanceLoaded();
     if (nextTab === 'pit-stops') ensurePitStopsLoaded();
+    if (nextTab === 'destructors') ensureDestructorsLoaded();
 
     refreshEmbedVisibility();
     if (!options || !options.skipURL) writeStandingsURLState(true);
@@ -4132,6 +4164,7 @@ window.addEventListener('popstate', function() {
     trackDominanceState.rightTeamKey = nextState.trackTeamB;
     pitStopsState.activeView = nextState.pitView;
     pitStopsState.selectedRound = nextState.pitRound;
+    destructorsState.activeView = nextState.destructorsView;
     activateStandingsTab(nextState.tab, { skipURL: true });
 });
 
@@ -4491,6 +4524,345 @@ function renderConstructorsFromOpenF1(standings, driverInfo) {
     finalizeRenderedPanel('constructors');
 }
 
+// ── Destructors ──
+function formatUsdAmount(value) {
+    var rounded = Math.max(0, Math.round(parseNumberValue(value) || 0));
+    return '$' + rounded.toLocaleString('en-US');
+}
+
+function formatUsdCompact(value) {
+    var amount = Math.max(0, parseNumberValue(value) || 0);
+    if (amount >= 1000000) return '$' + (amount / 1000000).toFixed(3).replace(/\.?0+$/, '') + 'M';
+    if (amount >= 1000) return '$' + (amount / 1000).toFixed(amount >= 100000 ? 0 : 1).replace(/\.?0+$/, '') + 'K';
+    return '$' + Math.round(amount);
+}
+
+function deriveSnapshotAcronym(fullName) {
+    var parts = String(fullName || '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return 'DRV';
+    if (parts.length === 1) return parts[0].substring(0, 3).toUpperCase();
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0) + parts[parts.length - 1].charAt(1)).toUpperCase().slice(0, 3);
+}
+
+function getDestructorsTeamMeta(teamKey) {
+    var key = resolveTeamId(teamKey, '');
+    var meta = DESTRUCTORS_TEAM_META[key];
+    if (meta) return {
+        key: key,
+        name: meta.name,
+        chartLabel: meta.chartLabel,
+        color: meta.color
+    };
+
+    return {
+        key: key || '',
+        name: getCanonicalTeamName(key) || 'Unknown',
+        chartLabel: (getCanonicalTeamName(key) || 'UNKNOWN').toUpperCase(),
+        color: '7f8ca9'
+    };
+}
+
+function normalizeDestructorsSnapshot(payload) {
+    if (!payload || !Array.isArray(payload.drivers) || !payload.drivers.length) {
+        throw new Error('No destructors snapshot available');
+    }
+
+    var drivers = [];
+    var teamsByKey = {};
+    var totalDamage = 0;
+
+    DESTRUCTORS_TEAM_ORDER.forEach(function(teamKey) {
+        var meta = getDestructorsTeamMeta(teamKey);
+        teamsByKey[teamKey] = {
+            key: teamKey,
+            name: meta.name,
+            chartLabel: meta.chartLabel,
+            color: meta.color,
+            total: 0,
+            drivers: []
+        };
+    });
+
+    payload.drivers.forEach(function(entry, index) {
+        var teamMeta = getDestructorsTeamMeta(entry.teamKey);
+        var damage = Math.max(0, Math.round(parseNumberValue(entry.damage) || 0));
+        var driver = {
+            order: index,
+            acronym: String(entry.acronym || deriveSnapshotAcronym(entry.fullName)).toUpperCase().slice(0, 3),
+            fullName: String(entry.fullName || entry.acronym || 'Unknown Driver'),
+            teamKey: teamMeta.key,
+            teamName: teamMeta.name,
+            color: teamMeta.color,
+            damage: damage
+        };
+        drivers.push(driver);
+        totalDamage += damage;
+
+        if (!teamsByKey[teamMeta.key]) {
+            teamsByKey[teamMeta.key] = {
+                key: teamMeta.key,
+                name: teamMeta.name,
+                chartLabel: teamMeta.chartLabel,
+                color: teamMeta.color,
+                total: 0,
+                drivers: []
+            };
+        }
+        teamsByKey[teamMeta.key].total += damage;
+        teamsByKey[teamMeta.key].drivers.push(driver);
+    });
+
+    (payload.zeroTeams || []).forEach(function(teamKey) {
+        if (teamsByKey[teamKey]) return;
+        var meta = getDestructorsTeamMeta(teamKey);
+        teamsByKey[teamKey] = {
+            key: meta.key,
+            name: meta.name,
+            chartLabel: meta.chartLabel,
+            color: meta.color,
+            total: 0,
+            drivers: []
+        };
+    });
+
+    var teams = DESTRUCTORS_TEAM_ORDER.map(function(teamKey) {
+        return teamsByKey[teamKey] || null;
+    }).filter(Boolean);
+    var nonZeroTeams = teams.filter(function(team) { return team.total > 0; });
+    var maxTeamTotal = teams.reduce(function(max, team) {
+        return Math.max(max, team.total || 0);
+    }, 0);
+
+    return {
+        season: parseInt(payload.season, 10) || YEAR,
+        snapshotLabel: String(payload.snapshotLabel || ''),
+        source: payload.source || {},
+        drivers: drivers,
+        teams: teams,
+        nonZeroTeams: nonZeroTeams,
+        totalDamage: totalDamage,
+        maxTeamTotal: maxTeamTotal || 1
+    };
+}
+
+function buildDestructorsSourceHTML(source) {
+    var parts = [];
+    if (source && source.upstreamHtml) {
+        parts.push('Live source verified at <a href="' + esc(source.upstreamHtml) + '" target="_blank" rel="noopener">F1 Top App</a>');
+    }
+    if (source && source.referencePost) {
+        parts.push('snapshot reference <a href="' + esc(source.referencePost) + '" target="_blank" rel="noopener">Reddit</a>');
+    }
+
+    return '<div class="destructors-source">'
+        + (parts.length ? parts.join(' · ') + '. ' : '')
+        + esc(source && source.note ? source.note : 'Local snapshot used because the upstream page does not expose a stable browser-safe API.')
+        + '</div>';
+}
+
+function buildDestructorsTeamChartHTML(data) {
+    var rowsHTML = data.teams.map(function(team) {
+        var pct = team.total > 0 ? (team.total / data.maxTeamTotal) * 100 : 0;
+        var segmentsHTML = team.drivers.map(function(driver) {
+            var share = team.total > 0 ? (driver.damage / team.total) * 100 : 0;
+            var showLabel = driver.damage >= 140000 || share >= 22;
+            return '<span class="destructors-team-segment" style="width:' + share.toFixed(4) + '%;background:#' + esc(team.color) + ';" title="' + esc(driver.acronym + ' - ' + formatUsdAmount(driver.damage)) + '">'
+                + (showLabel ? '<em>' + esc(driver.acronym) + '</em>' : '')
+                + '</span>';
+        }).join('');
+
+        return '<div class="destructors-team-row">'
+            + '<div class="destructors-team-label">' + esc(team.chartLabel) + '</div>'
+            + '<div class="destructors-team-visual" style="--team-pct:' + pct.toFixed(4) + '%;">'
+            + (team.total > 0 ? '<div class="destructors-team-bar" style="width:' + pct.toFixed(4) + '%;">' + segmentsHTML + '</div>' : '')
+            + '<div class="destructors-team-total">' + formatUsdAmount(team.total) + '</div>'
+            + '</div>'
+            + '</div>';
+    }).join('');
+
+    return '<div class="destructors-card">'
+        + '<div class="destructors-card-head"><div><div class="destructors-card-kicker">Stacked Team Damage</div><h4 class="destructors-card-title">F1 Destructors Championship ' + esc(String(data.season)) + '</h4></div></div>'
+        + '<div class="destructors-teams-chart">' + rowsHTML + '</div>'
+        + '</div>';
+}
+
+function buildDestructorsFlowChartHTML(data) {
+    var drivers = data.drivers.slice();
+    var teams = data.nonZeroTeams.slice();
+    if (!drivers.length || !teams.length) {
+        return '<div class="destructors-card"><div class="destructors-empty"><i class="fas fa-car-side"></i><p>No destructors data available for this snapshot.</p></div></div>';
+    }
+
+    var width = 920;
+    var height = 680;
+    var chartTop = 56;
+    var chartHeight = 560;
+    var leftX = 110;
+    var rightX = 720;
+    var nodeWidth = 18;
+    var curve = 180;
+    var driverGap = 10;
+    var teamGap = 22;
+    var totalDamage = Math.max(1, data.totalDamage);
+    var scale = (chartHeight - driverGap * (drivers.length - 1)) / totalDamage;
+    var leftNodes = [];
+    var rightNodes = [];
+    var teamMap = {};
+    var links = [];
+    var leftCursor = chartTop;
+    var rightUsedHeight = teams.reduce(function(sum, team) { return sum + team.total * scale; }, 0) + teamGap * (teams.length - 1);
+    var rightCursor = chartTop + Math.max(0, (chartHeight - rightUsedHeight) / 2);
+
+    drivers.forEach(function(driver) {
+        var heightPx = driver.damage * scale;
+        leftNodes.push({
+            key: driver.acronym,
+            label: driver.acronym,
+            fullName: driver.fullName,
+            color: driver.color,
+            damage: driver.damage,
+            x: leftX,
+            y: leftCursor,
+            height: heightPx
+        });
+        leftCursor += heightPx + driverGap;
+    });
+
+    teams.forEach(function(team) {
+        var heightPx = team.total * scale;
+        var node = {
+            key: team.key,
+            label: team.name,
+            color: team.color,
+            total: team.total,
+            x: rightX,
+            y: rightCursor,
+            height: heightPx,
+            offset: 0
+        };
+        rightNodes.push(node);
+        teamMap[team.key] = node;
+        rightCursor += heightPx + teamGap;
+    });
+
+    leftNodes.forEach(function(node, index) {
+        var driver = drivers[index];
+        var target = teamMap[driver.teamKey];
+        var targetY = target.y + target.offset;
+        target.offset += node.height;
+        links.push({
+            color: driver.color,
+            driverName: driver.fullName,
+            teamName: target.label,
+            damage: driver.damage,
+            x1: node.x + nodeWidth,
+            y1: node.y,
+            x2: target.x,
+            y2: targetY,
+            height: node.height
+        });
+    });
+
+    function buildFlowPath(link) {
+        var x1 = link.x1;
+        var y1 = link.y1;
+        var x2 = link.x2;
+        var y2 = link.y2;
+        var h = link.height;
+        return 'M' + x1 + ' ' + y1
+            + ' C' + (x1 + curve) + ' ' + y1 + ', ' + (x2 - curve) + ' ' + y2 + ', ' + x2 + ' ' + y2
+            + ' L' + x2 + ' ' + (y2 + h)
+            + ' C' + (x2 - curve) + ' ' + (y2 + h) + ', ' + (x1 + curve) + ' ' + (y1 + h) + ', ' + x1 + ' ' + (y1 + h)
+            + ' Z';
+    }
+
+    var linkHTML = links.map(function(link) {
+        return '<path class="destructors-flow-link" d="' + buildFlowPath(link) + '" fill="#' + esc(link.color) + '" fill-opacity="0.82">'
+            + '<title>' + esc(link.driverName + ' -> ' + link.teamName + ' - ' + formatUsdAmount(link.damage)) + '</title>'
+            + '</path>';
+    }).join('');
+
+    var leftNodesHTML = leftNodes.map(function(node) {
+        return '<g class="destructors-flow-node"><rect x="' + node.x + '" y="' + node.y + '" width="' + nodeWidth + '" height="' + node.height + '" rx="3" fill="#' + esc(node.color) + '"></rect>'
+            + '<text x="' + (node.x - 10) + '" y="' + (node.y + node.height / 2 + 4) + '" text-anchor="end">' + esc(node.label) + '</text>'
+            + '<title>' + esc(node.fullName + ' - ' + formatUsdAmount(node.damage)) + '</title></g>';
+    }).join('');
+
+    var rightNodesHTML = rightNodes.map(function(node) {
+        return '<g class="destructors-flow-node"><rect x="' + node.x + '" y="' + node.y + '" width="' + nodeWidth + '" height="' + node.height + '" rx="3" fill="#' + esc(node.color) + '"></rect>'
+            + '<text x="' + (node.x + nodeWidth + 10) + '" y="' + (node.y + node.height / 2 + 4) + '" text-anchor="start">' + esc(node.label) + '</text>'
+            + '<title>' + esc(node.label + ' - ' + formatUsdAmount(node.total)) + '</title></g>';
+    }).join('');
+
+    return '<div class="destructors-card">'
+        + '<div class="destructors-card-head"><div><div class="destructors-card-kicker">Driver To Constructor Flow</div><h4 class="destructors-card-title">F1 ' + esc(String(data.season)) + ' Destructors World Championship</h4></div></div>'
+        + '<div class="destructors-flow-scroll">'
+        + '<svg class="destructors-flow-svg" viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="Driver to team destructors flow chart">'
+        + '<rect x="0" y="0" width="' + width + '" height="' + height + '" fill="transparent"></rect>'
+        + linkHTML + leftNodesHTML + rightNodesHTML
+        + '</svg></div>'
+        + '</div>';
+}
+
+function renderDestructors(snapshot) {
+    if (!destructorsTable) return;
+    if (destructorsYear) destructorsYear.textContent = snapshot.season;
+
+    var leader = snapshot.teams.filter(function(team) { return team.total > 0; })[0];
+    var summaryHTML = '<div class="destructors-summary">'
+        + '<div class="destructors-summary-main"><div class="destructors-summary-title">' + esc(snapshot.snapshotLabel || ('Season ' + snapshot.season + ' snapshot')) + '</div>'
+        + '<div class="destructors-summary-sub">' + (leader ? esc(leader.name + ' lead the chart with ' + formatUsdAmount(leader.total) + '.') : 'No non-zero destructors entries yet.') + '</div></div>'
+        + '<div class="destructors-summary-stats">'
+        + '<div class="destructors-summary-stat"><div class="destructors-summary-label">Total Damage</div><div class="destructors-summary-value">' + formatUsdCompact(snapshot.totalDamage) + '</div></div>'
+        + '<div class="destructors-summary-stat"><div class="destructors-summary-label">Drivers</div><div class="destructors-summary-value">' + snapshot.drivers.length + '</div></div>'
+        + '<div class="destructors-summary-stat"><div class="destructors-summary-label">Teams Hit</div><div class="destructors-summary-value">' + snapshot.nonZeroTeams.length + '</div></div>'
+        + '</div></div>';
+
+    var switchHTML = '<div class="destructors-view-switch"><div class="destructors-view-tabs" role="tablist" aria-label="Destructors views">'
+        + '<button class="destructors-view-tab' + (destructorsState.activeView === 'teams' ? ' active' : '') + '" type="button" data-destructors-view="teams" role="tab" aria-selected="' + (destructorsState.activeView === 'teams' ? 'true' : 'false') + '"><i class="fas fa-chart-bar"></i> Team Damage</button>'
+        + '<button class="destructors-view-tab' + (destructorsState.activeView === 'flow' ? ' active' : '') + '" type="button" data-destructors-view="flow" role="tab" aria-selected="' + (destructorsState.activeView === 'flow' ? 'true' : 'false') + '"><i class="fas fa-diagram-project"></i> Driver Flow</button>'
+        + '</div></div>';
+
+    destructorsTable.innerHTML = summaryHTML
+        + switchHTML
+        + '<div class="destructors-view-panel' + (destructorsState.activeView === 'teams' ? ' active' : '') + '" data-destructors-panel="teams">' + buildDestructorsTeamChartHTML(snapshot) + '</div>'
+        + '<div class="destructors-view-panel' + (destructorsState.activeView === 'flow' ? ' active' : '') + '" data-destructors-panel="flow">' + buildDestructorsFlowChartHTML(snapshot) + '</div>'
+        + buildDestructorsSourceHTML(snapshot.source);
+
+    finalizeRenderedPanel('destructors');
+}
+
+function showDestructorsError() {
+    if (!destructorsTable) return;
+    destructorsTable.innerHTML = '<div class="destructors-card"><div class="destructors-empty">'
+        + '<i class="fas fa-exclamation-triangle"></i><p>Failed to load the destructors snapshot.</p>'
+        + '</div></div>';
+    finalizeRenderedPanel('destructors');
+}
+
+function ensureDestructorsLoaded(forceReload) {
+    if (!destructorsTable) return;
+    if (destructorsState.loading) return;
+    if (destructorsState.loaded && destructorsState.snapshot && !forceReload) {
+        renderDestructors(destructorsState.snapshot);
+        return;
+    }
+
+    destructorsState.loading = true;
+    destructorsTable.innerHTML = '<div class="destructors-card"><div class="destructors-loading"><i class="fas fa-circle-notch fa-spin"></i><p>Loading destructors snapshot...</p></div></div>';
+
+    fetchJSONNoCache(DESTRUCTORS_CACHE_URL, 8000).then(function(payload) {
+        destructorsState.snapshot = normalizeDestructorsSnapshot(payload);
+        destructorsState.loaded = true;
+        renderDestructors(destructorsState.snapshot);
+    }).catch(function(error) {
+        console.error('Destructors error:', error);
+        showDestructorsError();
+    }).finally(function() {
+        destructorsState.loading = false;
+    });
+}
+
 // ── Pit Stops ──
 function createPitStopsSkeleton() {
     var rowSkels = '';
@@ -4842,6 +5214,20 @@ if (pitStopsTable) {
                 });
             }
         }
+    });
+}
+
+if (destructorsTable) {
+    destructorsTable.addEventListener('click', function(event) {
+        var viewTab = event.target.closest('[data-destructors-view]');
+        if (!viewTab) return;
+
+        var nextView = sanitizeDestructorsView(viewTab.getAttribute('data-destructors-view'));
+        if (!destructorsState.snapshot || nextView === destructorsState.activeView) return;
+
+        destructorsState.activeView = nextView;
+        renderDestructors(destructorsState.snapshot);
+        writeStandingsURLState(true);
     });
 }
 

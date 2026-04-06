@@ -1,0 +1,100 @@
+{
+  "season": 2026,
+  "snapshotLabel": "After Chinese GP (March 15, 2026)",
+  "source": {
+    "upstreamHtml": "https://f1.top-app.eu/destructors-championship/2026/",
+    "referencePost": "https://www.reddit.com/r/formula1/comments/1ruk6er/2026_destructors_championship_after_chinese_gp/",
+    "note": "Snapshot matched to the attached Racing Statistics charts."
+  },
+  "drivers": [
+    {
+      "acronym": "ANT",
+      "fullName": "Andrea Kimi Antonelli",
+      "teamKey": "mercedes",
+      "damage": 907000
+    },
+    {
+      "acronym": "BEA",
+      "fullName": "Oliver Bearman",
+      "teamKey": "haas",
+      "damage": 807000
+    },
+    {
+      "acronym": "PIA",
+      "fullName": "Oscar Piastri",
+      "teamKey": "mclaren",
+      "damage": 641000
+    },
+    {
+      "acronym": "PER",
+      "fullName": "Sergio Perez",
+      "teamKey": "cadillac",
+      "damage": 410000
+    },
+    {
+      "acronym": "VER",
+      "fullName": "Max Verstappen",
+      "teamKey": "red_bull",
+      "damage": 350000
+    },
+    {
+      "acronym": "OCO",
+      "fullName": "Esteban Ocon",
+      "teamKey": "haas",
+      "damage": 260000
+    },
+    {
+      "acronym": "ALB",
+      "fullName": "Alexander Albon",
+      "teamKey": "williams",
+      "damage": 260000
+    },
+    {
+      "acronym": "COL",
+      "fullName": "Franco Colapinto",
+      "teamKey": "alpine",
+      "damage": 200000
+    },
+    {
+      "acronym": "RUS",
+      "fullName": "George Russell",
+      "teamKey": "mercedes",
+      "damage": 150000
+    },
+    {
+      "acronym": "NOR",
+      "fullName": "Lando Norris",
+      "teamKey": "mclaren",
+      "damage": 150000
+    },
+    {
+      "acronym": "GAS",
+      "fullName": "Pierre Gasly",
+      "teamKey": "alpine",
+      "damage": 150000
+    },
+    {
+      "acronym": "SAI",
+      "fullName": "Carlos Sainz",
+      "teamKey": "williams",
+      "damage": 150000
+    },
+    {
+      "acronym": "BOR",
+      "fullName": "Gabriel Bortoleto",
+      "teamKey": "audi",
+      "damage": 100000
+    },
+    {
+      "acronym": "HAD",
+      "fullName": "Isack Hadjar",
+      "teamKey": "red_bull",
+      "damage": 60000
+    }
+  ],
+  "zeroTeams": [
+    "ferrari",
+    "rb",
+    "aston_martin"
+  ]
+}
