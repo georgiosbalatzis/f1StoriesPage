@@ -112,7 +112,10 @@ var DRIVER_HEADSHOTS = {
     'doohan':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/J/JACDOO01_Jack_Doohan/jacdoo01.png.transform/1col/image.png',
     'colapinto':       'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/F/FRACOL01_Franco_Colapinto/fracol01.png.transform/1col/image.png',
     'bottas':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/V/VALBOT01_Valtteri_Bottas/valbot01.png.transform/1col/image.png',
-    'lindblad':        'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ARVLIN01_Arvid_Lindblad/arvlin01.png.transform/1col/image.png'
+    'perez':           'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/cadillac/serper01/2026cadillacserper01right.webp',
+    'sergio_perez':    'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/cadillac/serper01/2026cadillacserper01right.webp',
+    'lindblad':        'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp',
+    'arvid_lindblad':  'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp'
 };
 
 // ── Skeleton loader ──
@@ -286,8 +289,29 @@ function getTeamLogo(constructorId) {
     return t ? t.logo : '';
 }
 
-function getHeadshot(driverId) {
-    return DRIVER_HEADSHOTS[driverId] || '';
+function normalizeDriverLookupKey(value) {
+    return String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[\s-]+/g, '_');
+}
+
+function getHeadshot(driverId, fallbackName) {
+    var candidates = [];
+    var normalizedDriverId = normalizeDriverLookupKey(driverId);
+    if (normalizedDriverId) candidates.push(normalizedDriverId);
+
+    var normalizedName = normalizeDriverLookupKey(fallbackName);
+    if (normalizedName) {
+        candidates.push(normalizedName);
+        var nameParts = normalizedName.split('_').filter(Boolean);
+        if (nameParts.length) candidates.push(nameParts[nameParts.length - 1]);
+    }
+
+    for (var i = 0; i < candidates.length; i++) {
+        if (DRIVER_HEADSHOTS[candidates[i]]) return DRIVER_HEADSHOTS[candidates[i]];
+    }
+    return '';
 }
 
 function formatWinsLabel(wins) {
@@ -4494,7 +4518,7 @@ function renderDrivers(standings, openf1Map) {
 
         // Try OpenF1 enrichment for headshot & team colour
         var of1 = openf1Map[lastName] || {};
-        var hs = of1.headshot || getHeadshot(driverId);
+        var hs = of1.headshot || getHeadshot(driverId, name);
         var acr = of1.acronym || (driver.code || driverId.substring(0,3)).toUpperCase();
 
         html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
@@ -5113,7 +5137,7 @@ function buildPitStopFastestPerDriver(stops, driverMap) {
 
 function buildPitStopsDriverRowHTML(entry, idx, fastestDuration) {
     var rgb = hexToRgbChannels(entry.teamColor);
-    var headshot = getHeadshot(entry.driverId);
+    var headshot = getHeadshot(entry.driverId, entry.fullName);
     var barPct = Math.max(3, (fastestDuration / entry.duration) * 100);
     var avatarContent = headshot
         ? '<img src="' + esc(headshot) + '" alt="' + esc(entry.code) + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
