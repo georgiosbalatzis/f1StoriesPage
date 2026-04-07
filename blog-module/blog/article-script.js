@@ -4,6 +4,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const $ = sel => document.querySelector(sel);
     const $$ = sel => document.querySelectorAll(sel);
+    const DEFAULT_TTS_SPEED = 0.8;
 
     // Cache article content element — queried by multiple functions
     const articleContent = $('.article-content');
@@ -58,6 +59,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const durationEl = $('#tts-duration');
         const ttsWidget = $('#tts-widget');
         if (!toggle || !body || !articleContent) return;
+
+        if (speedSlider) speedSlider.value = String(DEFAULT_TTS_SPEED);
+        if (speedValue) speedValue.textContent = DEFAULT_TTS_SPEED + 'x';
 
         // Determine narration MP3 path from current article URL
         const pathParts = window.location.pathname.split('/');
@@ -123,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
         function initAudioPlayer() {
             audioEl = new Audio(mp3Url);
             audioEl.preload = 'metadata';
+            audioEl.playbackRate = parseFloat(speedSlider?.value || DEFAULT_TTS_SPEED);
 
             // Hide voice selector (not needed for MP3)
             const voiceRow = $('.tts-voice-selector');
@@ -299,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!text) return;
 
                 speechUtterance = new SpeechSynthesisUtterance(text);
-                speechUtterance.rate = parseFloat(speedSlider?.value || 1);
+                speechUtterance.rate = parseFloat(speedSlider?.value || DEFAULT_TTS_SPEED);
 
                 const sv = voiceSelect?.value;
                 if (sv) {

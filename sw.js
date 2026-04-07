@@ -18,6 +18,7 @@ const SHELL_ASSETS = [
   '/scripts/cookie-consent.js',
   '/scripts/f1-optimized.js',
   '/scripts/shared-nav.js',
+  '/scripts/sw-register.js',
   '/images/logo.png',
   '/images/icons/icon-192.png',
   '/images/icons/icon-512.png',
