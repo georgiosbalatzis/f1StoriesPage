@@ -626,6 +626,18 @@ function finalizeRenderedPanel(tabName) {
     window.setTimeout(revealRequestedTarget, 0);
 }
 
+function handleHorizontalChartWheel(event) {
+    var scrollShell = event.target.closest('[data-horizontal-chart-scroll]');
+    if (!scrollShell) return;
+    if (scrollShell.scrollWidth <= scrollShell.clientWidth + 4) return;
+
+    var delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+    if (!delta) return;
+
+    scrollShell.scrollLeft += delta;
+    event.preventDefault();
+}
+
 function safeDriverNumber(driver) {
     return driver && driver.driverNumber != null ? String(driver.driverNumber) : '';
 }
@@ -789,8 +801,20 @@ function getSessionLabel(session) {
 }
 
 function getRaceSessionTypeShort(session) {
-    var name = ((session && session.session_name) || '').toLowerCase();
+    var name = [
+        session && session.session_name,
+        session && session.session_type
+    ].join(' ').toLowerCase();
     return name.indexOf('sprint') !== -1 ? 'S' : 'R';
+}
+
+function isSprintRaceSession(session) {
+    var text = [
+        session && session.session_type,
+        session && session.session_name
+    ].join(' ').toLowerCase();
+    if (text.indexOf('shootout') !== -1 || text.indexOf('qualifying') !== -1 || text.indexOf('practice') !== -1) return false;
+    return text.indexOf('sprint') !== -1;
 }
 
 function formatGainValue(gain) {
@@ -862,6 +886,22 @@ function getCompletedRaceSessions() {
         return (sessions || []).filter(function(session) {
             var sessionName = ((session && session.session_name) || '').toLowerCase();
             return isCompletedSession(session) && sessionName.indexOf('sprint') === -1;
+        }).sort(function(a, b) {
+            return new Date(a.date_start || a.date || 0) - new Date(b.date_start || b.date || 0);
+        });
+    });
+}
+
+function getCompletedRaceAndSprintSessions() {
+    return fetchJSON(OPENF1 + '/sessions?year=' + YEAR).then(function(sessions) {
+        return (sessions || []).filter(function(session) {
+            var text = [
+                session && session.session_type,
+                session && session.session_name
+            ].join(' ').toLowerCase();
+            if (!isCompletedSession(session)) return false;
+            if (text.indexOf('shootout') !== -1 || text.indexOf('qualifying') !== -1 || text.indexOf('practice') !== -1 || text.indexOf('test') !== -1) return false;
+            return text.indexOf('race') !== -1 || isSprintRaceSession(session);
         }).sort(function(a, b) {
             return new Date(a.date_start || a.date || 0) - new Date(b.date_start || b.date || 0);
         });
@@ -1040,10 +1080,10 @@ function buildTyrePaceSvg(laps, minTime, maxTime, teamColor) {
     if (!laps || !laps.length) return '';
 
     var viewWidth = 84;
-    var viewHeight = 300;
+    var viewHeight = 252;
     var centerX = viewWidth / 2;
-    var topPad = 10;
-    var bottomPad = 10;
+    var topPad = 8;
+    var bottomPad = 8;
     var plotHeight = viewHeight - topPad - bottomPad;
     var range = Math.max(0.4, maxTime - minTime);
     var binSize = Math.max(0.18, range / 14);
@@ -1214,27 +1254,27 @@ function renderTyrePace(data, session) {
     if (!data || !session || !data.rows || !data.rows.length) {
         tyrePaceTable.innerHTML = '<div class="tyre-pace-empty-card">'
             + '<i class="fas fa-wave-square"></i>'
-            + '<p>Δεν υπάρχουν ακόμη διαθέσιμα race lap distributions για το επιλεγμένο Grand Prix.</p>'
-            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν race laps και stint data.</p>'
+            + '<p>Δεν υπάρχουν ακόμη διαθέσιμα lap distributions για το επιλεγμένο session.</p>'
+            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν race ή sprint laps μαζί με stint data.</p>'
             + '</div>';
         finalizeRenderedPanel('tyre-pace');
         return;
     }
 
     var axisValues = buildLapTimeAxisValues(data.minTime, data.maxTime);
-    var chartMinWidth = Math.max(1360, data.rows.length * 72);
+    var chartMinWidth = Math.max(1360, 96 + data.rows.length * 80);
     var compounds = data.compounds.length ? data.compounds.slice().sort(function(a, b) {
         var order = { SOFT: 0, MEDIUM: 1, HARD: 2, INTERMEDIATE: 3, WET: 4 };
         return (order[a] != null ? order[a] : 10) - (order[b] != null ? order[b] : 10);
     }) : ['SOFT', 'MEDIUM', 'HARD'];
 
     var selectOptions = tyrePaceState.sessions.slice().reverse().map(function(race) {
-        return '<option value="' + esc(race.session_key) + '"' + (String(race.session_key) === String(session.session_key) ? ' selected' : '') + '>' + esc((race.circuit_short_name || race.location || race.country_name || 'Race') + ' · ' + formatSessionDateShort(race)) + '</option>';
+        return '<option value="' + esc(race.session_key) + '"' + (String(race.session_key) === String(session.session_key) ? ' selected' : '') + '>' + esc((race.circuit_short_name || race.location || race.country_name || 'Session') + ' · ' + (race.session_name || race.session_type || 'Race') + (formatSessionDateShort(race) ? ' · ' + formatSessionDateShort(race) : '')) + '</option>';
     }).join('');
 
     var html = '<div class="tyre-pace-card">'
-        + '<div class="tyre-pace-head"><div class="tyre-pace-head-copy"><h3 class="tyre-pace-head-title">Tyre Compound Lap Time Distributions</h3><p class="tyre-pace-head-note">Dry-compound colours: hard white, medium yellow, soft red. Out laps, in laps και πολύ αργοί outlier laps αφαιρούνται για πιο καθαρό pace picture.</p></div><label class="tyre-pace-controls"><span class="tyre-pace-controls-label">Available races</span><select class="tyre-pace-select" data-tyre-pace-select aria-label="Επιλογή αγώνα για tyre pace">' + selectOptions + '</select></label></div>'
-        + '<div class="tyre-pace-summary"><div><div class="tyre-pace-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="tyre-pace-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || 'Race')) + '</div></div><div class="tyre-pace-summary-stats"><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Drivers</span><span class="tyre-pace-summary-value">' + esc(String(data.driverCount)) + '</span></div><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Valid laps</span><span class="tyre-pace-summary-value">' + esc(String(data.validLapCount)) + '</span></div><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Best lap</span><span class="tyre-pace-summary-value">' + esc(formatLapTime(data.rows[0] && data.rows[0].bestLap, true)) + '</span></div></div></div>'
+        + '<div class="tyre-pace-head"><div class="tyre-pace-head-copy"><h3 class="tyre-pace-head-title">Tyre Compound Lap Time Distributions</h3><p class="tyre-pace-head-note">Dry-compound colours: hard white, medium yellow, soft red. Out laps, in laps και πολύ αργοί outlier laps αφαιρούνται για πιο καθαρό pace picture.</p></div><label class="tyre-pace-controls"><span class="tyre-pace-controls-label">Available sessions</span><select class="tyre-pace-select" data-tyre-pace-select aria-label="Επιλογή session για tyre pace">' + selectOptions + '</select></label></div>'
+        + '<div class="tyre-pace-summary"><div><div class="tyre-pace-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="tyre-pace-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || session.session_type || 'Race')) + '</div></div><div class="tyre-pace-summary-stats"><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Drivers</span><span class="tyre-pace-summary-value">' + esc(String(data.driverCount)) + '</span></div><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Valid laps</span><span class="tyre-pace-summary-value">' + esc(String(data.validLapCount)) + '</span></div><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Best lap</span><span class="tyre-pace-summary-value">' + esc(formatLapTime(data.rows[0] && data.rows[0].bestLap, true)) + '</span></div></div></div>'
         + '<div class="tyre-pace-legend"><span class="tyre-pace-legend-title">Tyre Compound</span>';
 
     compounds.forEach(function(compound) {
@@ -1243,7 +1283,7 @@ function renderTyrePace(data, session) {
     });
 
     html += '</div>'
-        + '<div class="tyre-pace-chart-scroll"><div class="tyre-pace-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
+        + '<div class="tyre-pace-chart-scroll" data-horizontal-chart-scroll><div class="tyre-pace-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
         + '<div class="tyre-pace-axis"><span class="tyre-pace-axis-title">Lap Time (s)</span>';
 
     axisValues.forEach(function(value) {
@@ -3747,7 +3787,7 @@ function buildLap1GainRows(sessions, drivers, positions, lapOneLaps, lapTwoLaps)
             sessionKey: sessionKey,
             index: index,
             meetingName: session.circuit_short_name || session.location || session.country_name || 'Session',
-            sessionName: session.session_name || 'Race',
+            sessionName: session.session_name || session.session_type || 'Race',
             sessionTypeShort: getRaceSessionTypeShort(session),
             sessionLabel: getSessionLabel(session),
             dateLabel: formatSessionDateShort(session),
@@ -3804,10 +3844,10 @@ function renderLap1OverviewContent(rows) {
         return Math.max(max, row.maxGain);
     }, 0);
     var axisValues = buildLap1AxisValues(maxGain);
-    var chartMinWidth = Math.max(620, rows.length * 96);
+    var chartMinWidth = Math.max(620, 76 + rows.length * 84);
     var html = '<div class="lap1-overview-card">'
-        + '<div class="lap1-overview-head"><div><h3 class="lap1-overview-title">Lap 1 Movers Overview</h3><p class="lap1-overview-note">Completed races, ταξινομημένα χρονολογικά.</p></div><div class="lap1-overview-meta">' + rows.length + ' races</div></div>'
-        + '<div class="lap1-chart-scroll"><div class="lap1-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
+        + '<div class="lap1-overview-head"><div><h3 class="lap1-overview-title">Lap 1 Movers Overview</h3><p class="lap1-overview-note">Completed race και sprint sessions, ταξινομημένα χρονολογικά.</p></div><div class="lap1-overview-meta">' + rows.length + ' sessions</div></div>'
+        + '<div class="lap1-chart-scroll" data-horizontal-chart-scroll><div class="lap1-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
         + '<div class="lap1-axis"><span class="lap1-axis-title">Lap 1 Gain (Pos)</span><div class="lap1-axis-scale">';
 
     axisValues.forEach(function(value) {
@@ -3881,11 +3921,11 @@ function renderLap1RaceDetailContent(rows, selectedRow) {
         ? selectedRow.winners.map(function(driver) { return driver.acronym; }).join(', ')
         : selectedRow.primaryWinner.acronym;
     var selectorOptions = rows.slice().reverse().map(function(row) {
-        return '<option value="' + esc(row.sessionKey) + '"' + (String(row.sessionKey) === String(selectedRow.sessionKey) ? ' selected' : '') + '>' + esc(row.meetingName + ' · ' + row.dateLabel) + '</option>';
+        return '<option value="' + esc(row.sessionKey) + '"' + (String(row.sessionKey) === String(selectedRow.sessionKey) ? ' selected' : '') + '>' + esc(row.meetingName + ' · ' + row.sessionName + ' · ' + row.dateLabel) + '</option>';
     }).join('');
 
     return '<div class="lap1-race-card">'
-        + '<div class="lap1-race-head"><div><h3 class="lap1-overview-title">Driver Gains By Race</h3><p class="lap1-overview-note">Διάλεξε Grand Prix και δες όλο το grid ταξινομημένο από το μεγαλύτερο gain στο μεγαλύτερο loss μετά τον 1ο γύρο.</p></div><label class="lap1-race-controls"><span class="lap1-race-controls-label">Available races</span><select class="lap1-race-select" data-lap1-select aria-label="Επιλογή αγώνα για Lap 1 gains">' + selectorOptions + '</select></label></div>'
+        + '<div class="lap1-race-head"><div><h3 class="lap1-overview-title">Driver Gains By Session</h3><p class="lap1-overview-note">Διάλεξε race ή sprint και δες όλο το grid ταξινομημένο από το μεγαλύτερο gain στο μεγαλύτερο loss μετά τον 1ο γύρο.</p></div><label class="lap1-race-controls"><span class="lap1-race-controls-label">Available sessions</span><select class="lap1-race-select" data-lap1-select aria-label="Επιλογή session για Lap 1 gains">' + selectorOptions + '</select></label></div>'
         + '<div class="lap1-race-summary" style="--winner-color:' + esc(summaryColor) + ';">'
         + '<div class="lap1-race-summary-main"><span class="lap1-session-type">' + esc(selectedRow.sessionTypeShort) + '</span><div class="lap1-race-summary-copy"><div class="lap1-race-summary-title">' + esc(selectedRow.meetingName) + '</div><div class="lap1-race-summary-sub">' + esc(selectedRow.dateLabel + ' · ' + selectedRow.sessionName) + '</div></div></div>'
         + '<div class="lap1-race-summary-stats"><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Top mover</span><span class="lap1-race-summary-value">' + esc(topMoverLabel) + '</span></div><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Best gain</span><span class="lap1-race-summary-value">' + esc(formatGainValue(selectedRow.maxGain)) + '</span></div><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Drivers</span><span class="lap1-race-summary-value">' + esc(String(selectedRow.moves.length)) + '</span></div></div>'
@@ -3901,7 +3941,7 @@ function renderLap1Gains(rows) {
         lap1GainsTable.innerHTML = '<div class="lap1-empty-card">'
             + '<i class="fas fa-arrow-trend-up"></i>'
             + '<p>Δεν υπάρχουν ακόμη διαθέσιμα δεδομένα για τα μεγαλύτερα gains μετά τον 1ο γύρο.</p>'
-            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed race sessions με lap timing data.</p>'
+            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed race ή sprint sessions με lap timing data.</p>'
             + '</div>';
         finalizeRenderedPanel('lap1-gains');
         return;
@@ -3922,7 +3962,7 @@ function renderLap1Gains(rows) {
 
     var html = '<div class="lap1-view-switch"><div class="lap1-view-tabs" role="tablist" aria-label="Lap 1 Gains views">'
         + '<button class="lap1-view-tab' + (activeView === 'overview' ? ' active' : '') + '" type="button" data-lap1-view="overview" role="tab" aria-selected="' + (activeView === 'overview' ? 'true' : 'false') + '">Overview</button>'
-        + '<button class="lap1-view-tab' + (activeView === 'race-detail' ? ' active' : '') + '" type="button" data-lap1-view="race-detail" role="tab" aria-selected="' + (activeView === 'race-detail' ? 'true' : 'false') + '">By Race</button>'
+        + '<button class="lap1-view-tab' + (activeView === 'race-detail' ? ' active' : '') + '" type="button" data-lap1-view="race-detail" role="tab" aria-selected="' + (activeView === 'race-detail' ? 'true' : 'false') + '">By Session</button>'
         + '</div></div>'
         + viewContent;
 
@@ -3941,7 +3981,7 @@ function showLap1GainsError() {
 }
 
 function loadLap1GainRows() {
-    return getCompletedRaceSessions().then(function(raceSessions) {
+    return getCompletedRaceAndSprintSessions().then(function(raceSessions) {
         if (!raceSessions.length) return [];
 
         var sessionKeys = raceSessions.map(function(session) {
@@ -3974,7 +4014,7 @@ function ensureTyrePaceLoaded(forceReload) {
     tyrePaceState.loading = true;
     tyrePaceTable.innerHTML = createTyrePaceSkeleton();
 
-    getCompletedRaceSessions().then(function(sessions) {
+    getCompletedRaceAndSprintSessions().then(function(sessions) {
         tyrePaceState.sessions = sessions;
         if (!sessions.length) return null;
         if (!tyrePaceState.selectedSessionKey || !sessions.some(function(session) { return String(session.session_key) === String(tyrePaceState.selectedSessionKey); })) {
@@ -4087,6 +4127,12 @@ if (tyrePaceTable) {
             tyrePaceState.loading = false;
         });
     });
+
+    tyrePaceTable.addEventListener('wheel', handleHorizontalChartWheel, { passive: false });
+}
+
+if (lap1GainsTable) {
+    lap1GainsTable.addEventListener('wheel', handleHorizontalChartWheel, { passive: false });
 }
 
 if (dirtyAirTable) {
