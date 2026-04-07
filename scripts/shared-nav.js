@@ -128,9 +128,11 @@
         'Australia': '\u{1F1E6}\u{1F1FA}', 'China': '\u{1F1E8}\u{1F1F3}',
         'Japan': '\u{1F1EF}\u{1F1F5}',     'Bahrain': '\u{1F1E7}\u{1F1ED}',
         'Saudi Arabia': '\u{1F1F8}\u{1F1E6}', 'United States': '\u{1F1FA}\u{1F1F8}',
+        'USA': '\u{1F1FA}\u{1F1F8}',       'United States of America': '\u{1F1FA}\u{1F1F8}',
         'Canada': '\u{1F1E8}\u{1F1E6}',    'Monaco': '\u{1F1F2}\u{1F1E8}',
         'Spain': '\u{1F1EA}\u{1F1F8}',     'Austria': '\u{1F1E6}\u{1F1F9}',
-        'UK': '\u{1F1EC}\u{1F1E7}',        'Belgium': '\u{1F1E7}\u{1F1EA}',
+        'UK': '\u{1F1EC}\u{1F1E7}',        'United Kingdom': '\u{1F1EC}\u{1F1E7}',
+        'Great Britain': '\u{1F1EC}\u{1F1E7}', 'Belgium': '\u{1F1E7}\u{1F1EA}',
         'Hungary': '\u{1F1ED}\u{1F1FA}',   'Netherlands': '\u{1F1F3}\u{1F1F1}',
         'Italy': '\u{1F1EE}\u{1F1F9}',     'Azerbaijan': '\u{1F1E6}\u{1F1FF}',
         'Singapore': '\u{1F1F8}\u{1F1EC}', 'Mexico': '\u{1F1F2}\u{1F1FD}',
@@ -143,6 +145,7 @@
     var countdownEl = document.getElementById('race-countdown');
     var countdownMobileEl = document.getElementById('race-countdown-mobile');
     var countdownFlagEl = document.getElementById('race-flag-emoji');
+    var countdownMobileFlagEl = document.querySelector('#nav-countdown-mobile i');
     var countdownTimer = null;
 
     RACES.forEach(function (r) { r.ts = new Date(r.date).getTime(); });
@@ -189,6 +192,22 @@
         countdownTimer = window.setTimeout(tickCountdown, getNextTickDelay(ms));
     }
 
+    function getCountryFlag(country) {
+        var key = String(country || '').trim();
+        return COUNTRY_FLAGS[key] || '\u{1F3C1}';
+    }
+
+    function setMobileFlag(flag) {
+        if (!countdownMobileFlagEl) return;
+        if (flag) {
+            countdownMobileFlagEl.className = 'countdown-flag-mobile';
+            countdownMobileFlagEl.textContent = flag;
+            return;
+        }
+        countdownMobileFlagEl.className = 'fas fa-flag-checkered';
+        countdownMobileFlagEl.textContent = '';
+    }
+
     function tickCountdown() {
         var now = Date.now();
         var race = getNextRace(now);
@@ -196,13 +215,15 @@
             if (countdownNameEl) countdownNameEl.textContent = 'Η σεζόν ολοκληρώθηκε';
             if (countdownEl) countdownEl.textContent = '2027 προσεχώς';
             if (countdownMobileEl) countdownMobileEl.textContent = 'Τέλος';
+            setMobileFlag(null);
             return;
         }
         var ms = race.ts - now;
-        if (countdownNameEl) countdownNameEl.textContent = race.flag + ' ' + race.name;
+        if (countdownNameEl) countdownNameEl.textContent = race.name;
         if (countdownEl) countdownEl.textContent = fmtCountdown(ms);
         if (countdownMobileEl) countdownMobileEl.textContent = fmtShort(ms);
         if (countdownFlagEl) countdownFlagEl.textContent = race.flag;
+        setMobileFlag(race.flag);
         scheduleCountdown(ms);
     }
 
@@ -212,7 +233,7 @@
             var races = data.MRData.RaceTable.Races;
             return races.map(function (r) {
                 var country = r.Circuit.Location.country;
-                var flag = COUNTRY_FLAGS[country] || '\u{1F3C1}';
+                var flag = getCountryFlag(country);
                 var dateStr = r.date + 'T' + (r.time || '12:00:00Z');
                 return { name: r.raceName.replace('Grand Prix', 'GP'), flag: flag, ts: new Date(dateStr).getTime() };
             }).filter(function (r) { return !isNaN(r.ts); });
@@ -220,7 +241,7 @@
     }
 
     function loadLiveSchedule() {
-        var CACHE_KEY = 'f1s-schedule-v1';
+        var CACHE_KEY = 'f1s-schedule-v2';
         var CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
         try {
             var cached = JSON.parse(sessionStorage.getItem(CACHE_KEY));
