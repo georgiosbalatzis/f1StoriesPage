@@ -117,6 +117,13 @@ body {
 .streak:nth-child(3) { top: 65%; animation-delay: 7s; width: 220px; }
 .streak:nth-child(4) { top: 85%; animation-delay: 2s; width: 200px; }
 
+@media (max-width: 768px), (prefers-reduced-motion: reduce) {
+    .streak { display: none; animation: none; }
+    .hero-overlay.image-bg,
+    .hero-overlay video { filter: blur(4px); }
+    .hero-content h1 { animation: none; }
+}
+
 
 /* ── Legacy Navbar (episodes page) ── */
 .navbar { background: rgba(22,22,24,0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 0.5rem 1rem; transition: var(--transition-base); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }

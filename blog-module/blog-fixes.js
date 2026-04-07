@@ -255,7 +255,7 @@
     function prefetchNextPages() {
         if (navigator.connection) {
             var conn = navigator.connection;
-            if (conn.saveData || conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g') return;
+            if (conn.saveData || conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g' || conn.effectiveType === '3g') return;
         }
 
         var prefetched = new Set();
@@ -274,12 +274,6 @@
         for (var i = 0; i < Math.min(2, cards.length); i++) {
             addPrefetch(cards[i].getAttribute('href'));
         }
-
-        // Article page: prev/next
-        var prev = document.getElementById('prev-article-link');
-        var next = document.getElementById('next-article-link');
-        if (prev) addPrefetch(prev.getAttribute('href'));
-        if (next) addPrefetch(next.getAttribute('href'));
     }
 
     // ── 13. FADE-IN OBSERVER ────────────────────

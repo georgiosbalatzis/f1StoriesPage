@@ -130,8 +130,24 @@ function skelRows(n) {
     }
     return h;
 }
-driversTable.innerHTML = skelRows(10);
+
+function skelChartRows(n) {
+    var h = '';
+    for (var i = 0; i < n; i++) {
+        h += '<div class="chart-bar-row">'
+            + '<div class="skel" style="width:34px;height:12px;flex-shrink:0;"></div>'
+            + '<div class="chart-track"><div class="skel" style="width:' + Math.max(24, 100 - (i * 7)) + '%;height:100%;"></div></div>'
+            + '</div>';
+    }
+    return h;
+}
+
+driversTable.innerHTML = skelRows(20);
 constructorsTable.innerHTML = skelRows(10);
+var driversChart = document.getElementById('drivers-chart');
+var driversChartBars = document.getElementById('drivers-chart-bars');
+if (driversChart) driversChart.style.display = 'block';
+if (driversChartBars) driversChartBars.innerHTML = skelChartRows(10);
 if (qualifyingGapsYear) qualifyingGapsYear.textContent = YEAR;
 if (lap1GainsYear) lap1GainsYear.textContent = YEAR;
 if (tyrePaceYear) tyrePaceYear.textContent = YEAR;
@@ -4359,7 +4375,7 @@ function loadStandings() {
         // Update UI metadata
         document.getElementById('season-year').textContent = season;
         if (round) {
-            document.getElementById('round-badge').style.display = '';
+            document.getElementById('round-badge').classList.add('is-visible');
             document.getElementById('round-num').textContent = round;
         }
 

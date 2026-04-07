@@ -76,6 +76,12 @@ document.addEventListener('DOMContentLoaded', function () {
         let mode = null; // 'mp3' or 'speech'
         let speechUtterance = null;
         let isPaused = false;
+        let initPromise = null;
+        let playAfterInit = false;
+        let audioReady = false;
+        let speechReady = false;
+
+        if (statusEl) statusEl.textContent = 'Έτοιμο — Πατήστε play για ακρόαση';
 
         // ── Format time helper ──
         function formatTime(seconds) {
@@ -86,18 +92,21 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // ── Toggle panel ──
+        function togglePanel() {
+            const willOpen = !body.classList.contains('open');
+            body.classList.toggle('open');
+            toggle.classList.toggle('open');
+            if (willOpen) prepareMode();
+        }
+
         const ttsHeader = $('.tts-header');
         if (ttsHeader) {
             ttsHeader.addEventListener('click', (e) => {
                 if (e.target.closest('.tts-toggle')) return;
-                body.classList.toggle('open');
-                toggle.classList.toggle('open');
+                togglePanel();
             });
         }
-        toggle.addEventListener('click', () => {
-            body.classList.toggle('open');
-            toggle.classList.toggle('open');
-        });
+        toggle.addEventListener('click', togglePanel);
 
         // ── Check if MP3 narration exists ──
         function checkMP3() {
@@ -107,24 +116,54 @@ document.addEventListener('DOMContentLoaded', function () {
                 .catch(() => false);
         }
 
-        // ── Initialize: detect mode ──
-        checkMP3().then((hasMP3) => {
-            if (hasMP3) {
-                mode = 'mp3';
-                initAudioPlayer();
-                if (statusEl) statusEl.textContent = 'Έτοιμο — Ακούστε το άρθρο';
-                if (ttsWidget) ttsWidget.classList.add('has-audio');
-            } else {
+        function prepareMode() {
+            if (initPromise) return initPromise;
+            if (statusEl) statusEl.textContent = 'Προετοιμασία audio...';
+
+            initPromise = checkMP3().then((hasMP3) => {
+                if (hasMP3) {
+                    mode = 'mp3';
+                    initAudioPlayer();
+                    if (statusEl) statusEl.textContent = 'Έτοιμο — Ακούστε το άρθρο';
+                    if (ttsWidget) ttsWidget.classList.add('has-audio');
+                } else {
+                    mode = 'speech';
+                    initSpeechFallback();
+                    if (statusEl) statusEl.textContent = 'Έτοιμο (browser voice)';
+                }
+                return mode;
+            }).catch(() => {
                 mode = 'speech';
                 initSpeechFallback();
                 if (statusEl) statusEl.textContent = 'Έτοιμο (browser voice)';
-            }
-        });
+                return mode;
+            });
+
+            return initPromise;
+        }
+
+        if (playBtn) {
+            playBtn.addEventListener('click', (event) => {
+                if (mode) return;
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                if (playAfterInit) return;
+                playAfterInit = true;
+                prepareMode().finally(() => {
+                    playAfterInit = false;
+                    window.setTimeout(() => {
+                        if (playBtn && mode) playBtn.click();
+                    }, 0);
+                });
+            }, true);
+        }
 
         // ══════════════════════════════════════════════
         // MODE 1: MP3 Audio Player
         // ══════════════════════════════════════════════
         function initAudioPlayer() {
+            if (audioReady) return;
+            audioReady = true;
             audioEl = new Audio(mp3Url);
             audioEl.preload = 'metadata';
             audioEl.playbackRate = parseFloat(speedSlider?.value || DEFAULT_TTS_SPEED);
@@ -156,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Error
             audioEl.addEventListener('error', () => {
                 resetUI();
-                if (statusEl) statusEl.textContent = 'Σφάλμα φόρτωσης audio';
+                if (statusEl) statusEl.textContent = 'Έτοιμο (browser voice)';
                 // Fall back to speech synthesis
                 mode = 'speech';
                 initSpeechFallback();
@@ -215,6 +254,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // MODE 2: SpeechSynthesis Fallback
         // ══════════════════════════════════════════════
         function initSpeechFallback() {
+            if (speechReady) return;
+            speechReady = true;
             if (!('speechSynthesis' in window)) {
                 if (ttsWidget) ttsWidget.style.display = 'none';
                 return;
@@ -375,6 +416,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const prevLink = $('#prev-article-link');
         const nextLink = $('#next-article-link');
         if (!prevLink && !nextLink) return;
+        const hasResolvedLink = (link) => {
+            if (!link) return true;
+            const href = (link.getAttribute('href') || '').trim();
+            return href && href !== '#' && !href.includes('PREV_') && !href.includes('NEXT_');
+        };
+        if (hasResolvedLink(prevLink) && hasResolvedLink(nextLink)) return;
         const currentId = window.location.pathname.split('/blog-entries/')[1]?.split('/')[0];
         if (!currentId) return;
         try {
