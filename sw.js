@@ -4,7 +4,7 @@
    blog entries and API calls, offline fallback for HTML.
    ============================================================ */
 
-const CACHE_NAME = 'f1stories-v3';
+const CACHE_NAME = 'f1stories-v4';
 const OFFLINE_URL = '/offline.html';
 
 const SHELL_ASSETS = [
@@ -14,6 +14,8 @@ const SHELL_ASSETS = [
   '/home.css',
   '/theme-overrides.css',
   '/styles/shared-nav.css',
+  '/scripts/analytics.js',
+  '/scripts/cookie-consent.js',
   '/scripts/f1-optimized.js',
   '/scripts/shared-nav.js',
   '/images/logo.png',

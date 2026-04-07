@@ -7,6 +7,14 @@
 
     var STORAGE_KEY = 'f1stories-cookie-consent-v1';
 
+    function getDefaultConsent() {
+        return {
+            essential: true,
+            analytics: true,
+            marketing: false
+        };
+    }
+
     function readConsent() {
         try {
             return JSON.parse(localStorage.getItem(STORAGE_KEY));
@@ -40,7 +48,7 @@
         var nextConsent = {
             ts: Date.now(),
             essential: true,
-            analytics: !!consent.analytics,
+            analytics: consent.analytics !== false,
             marketing: !!consent.marketing
         };
         writeConsent(nextConsent);
@@ -48,6 +56,49 @@
             detail: nextConsent
         }));
         hideBanner();
+    }
+
+    function updateBannerCopy(existingConsent) {
+        var accept = document.getElementById('cookie-accept');
+        var decline = document.getElementById('cookie-decline');
+
+        // Simple banner used on article/legal pages.
+        if (accept && decline) {
+            var text = banner.querySelector('.cookie-content p');
+            if (text) {
+                text.innerHTML = 'Χρησιμοποιούμε μέτρηση επισκεψιμότητας από προεπιλογή. Αν επιλέξεις απενεργοποίηση, συνεχίζουμε μόνο με ανώνυμη μέτρηση χωρίς analytics cookies. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a>';
+            }
+            accept.textContent = 'Συνέχεια';
+            decline.textContent = 'Ανώνυμη μέτρηση';
+            return;
+        }
+
+        // Advanced banner used on the homepage.
+        var intro = banner.querySelector('.cookie-intro');
+        var analyticsTitle = banner.querySelector('.cookie-toggle h4');
+        var analyticsDescription = banner.querySelectorAll('.cookie-section p')[1];
+        var acceptSelected = document.getElementById('accept-selected');
+        var acceptAll = document.getElementById('accept-all');
+        var closeBtn = document.getElementById('close-cookie');
+
+        if (intro) {
+            intro.textContent = 'Η μέτρηση επισκεψιμότητας είναι ενεργή από προεπιλογή. Μπορείς να την απενεργοποιήσεις για ανώνυμη μέτρηση χωρίς analytics cookies.';
+        }
+        if (analyticsTitle) {
+            analyticsTitle.textContent = 'Cookies Ανάλυσης';
+        }
+        if (analyticsDescription) {
+            analyticsDescription.textContent = 'Ενεργά από προεπιλογή. Αν τα απενεργοποιήσεις, το site θα συνεχίσει μόνο με ανώνυμη μέτρηση χωρίς analytics cookies.';
+        }
+        if (acceptSelected) {
+            acceptSelected.textContent = existingConsent ? 'Αποθήκευση' : 'Αποθήκευση Επιλογής';
+        }
+        if (acceptAll) {
+            acceptAll.textContent = 'Πλήρης Μέτρηση';
+        }
+        if (closeBtn) {
+            closeBtn.setAttribute('aria-label', 'Κλείσιμο και αποθήκευση επιλογών');
+        }
     }
 
     function bindSimpleBanner() {
@@ -74,9 +125,10 @@
         var closeBtn = document.getElementById('close-cookie');
         var analytics = document.getElementById('analytics-cookies');
         var marketing = document.getElementById('marketing-cookies');
+        var defaults = getDefaultConsent();
 
-        if (analytics) analytics.checked = !!(existingConsent && existingConsent.analytics);
-        if (marketing) marketing.checked = !!(existingConsent && existingConsent.marketing);
+        if (analytics) analytics.checked = existingConsent ? existingConsent.analytics !== false : defaults.analytics;
+        if (marketing) marketing.checked = existingConsent ? !!existingConsent.marketing : defaults.marketing;
 
         if (acceptAll) {
             acceptAll.addEventListener('click', function () {
@@ -114,6 +166,7 @@
     }
 
     var existingConsent = readConsent();
+    updateBannerCopy(existingConsent);
     if (existingConsent) {
         hideBanner();
     } else {
