@@ -28,7 +28,8 @@
         if (!navigator.connection) return true;
         return !navigator.connection.saveData &&
             navigator.connection.effectiveType !== 'slow-2g' &&
-            navigator.connection.effectiveType !== '2g';
+            navigator.connection.effectiveType !== '2g' &&
+            navigator.connection.effectiveType !== '3g';
     }
 
     function escapeHtml(value) {
@@ -300,7 +301,7 @@
         return '<div class="col-md-6 col-lg-4">'
             + '<a href="' + url + '" target="_blank" rel="noopener" class="ep-card" title="' + title + '">'
             + '<div class="ep-card__thumb">'
-            + '<img src="' + thumb + '" alt="' + title + '" loading="lazy" decoding="async">'
+            + '<img src="' + thumb + '" alt="' + title + '" loading="lazy" decoding="async" width="480" height="360">'
             + (duration ? '<span class="ep-card__duration">' + duration + '</span>' : '')
             + '<div class="ep-card__play"><i class="fas fa-play"></i></div>'
             + '</div>'
@@ -428,7 +429,7 @@
                 maybeLoadVideos(false);
             });
         }, {
-            rootMargin: '320px 0px'
+            rootMargin: '120px 0px'
         });
 
         latestObserver.observe(latestSection);

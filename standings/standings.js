@@ -101,18 +101,62 @@ var DRIVER_HEADSHOTS = {
     'stroll':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LANSTR01_Lance_Stroll/lanstr01.png.transform/1col/image.png',
     'gasly':           'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/P/PIEGAS01_Pierre_Gasly/piegas01.png.transform/1col/image.png',
     'ocon':            'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/E/ESTOCO01_Esteban_Ocon/estoco01.png.transform/1col/image.png',
-    'hulkenberg':      'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/N/NICHUL01_Nico_Hulkenberg/nichul01.png.transform/1col/image.png',
+    'hulkenberg':      'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/audi/nichul01/2026audinichul01right.webp',
+    'nico_hulkenberg': 'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/audi/nichul01/2026audinichul01right.webp',
     'tsunoda':         'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/Y/YUKTSU01_Yuki_Tsunoda/yuktsu01.png.transform/1col/image.png',
     'albon':           'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ALEALB01_Alexander_Albon/alealb01.png.transform/1col/image.png',
     'bearman':         'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/O/OLIBEA01_Oliver_Bearman/olibea01.png.transform/1col/image.png',
     'hadjar':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/I/ISAHAD01_Isack_Hadjar/isahad01.png.transform/1col/image.png',
     'antonelli':       'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/mercedes/andant01/2026mercedesandant01right.webp',
-    'bortoleto':       'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/G/GABBO01_Gabriel_Bortoleto/gabbo01.png.transform/1col/image.png',
+    'bortoleto':       'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/audi/gabbor01/2026audigabbor01right.webp',
+    'gabriel_bortoleto': 'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/audi/gabbor01/2026audigabbor01right.webp',
     'lawson':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LIALAW01_Liam_Lawson/lialaw01.png.transform/1col/image.png',
     'doohan':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/J/JACDOO01_Jack_Doohan/jacdoo01.png.transform/1col/image.png',
     'colapinto':       'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/F/FRACOL01_Franco_Colapinto/fracol01.png.transform/1col/image.png',
-    'bottas':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/V/VALBOT01_Valtteri_Bottas/valbot01.png.transform/1col/image.png',
-    'lindblad':        'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ARVLIN01_Arvid_Lindblad/arvlin01.png.transform/1col/image.png'
+    'bottas':          'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/cadillac/valbot01/2026cadillacvalbot01right.webp',
+    'valtteri_bottas': 'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/cadillac/valbot01/2026cadillacvalbot01right.webp',
+    'perez':           'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/cadillac/serper01/2026cadillacserper01right.webp',
+    'sergio_perez':    'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/cadillac/serper01/2026cadillacserper01right.webp',
+    'lindblad':        'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp',
+    'arvid_lindblad':  'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp',
+    'lidblad':         'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp',
+    'arvid_lidblad':   'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp'
+};
+
+var DRIVER_HEADSHOT_POSITIONS = {
+    'antonelli':       'center top',
+    'andrea_kimi_antonelli': 'center top',
+    'kimi_antonelli':  'center top',
+    'perez':           'center top',
+    'sergio_perez':    'center top',
+    'bottas':          'center top',
+    'valtteri_bottas': 'center top',
+    'hulkenberg':      'center top',
+    'nico_hulkenberg': 'center top',
+    'bortoleto':       'center top',
+    'gabriel_bortoleto': 'center top',
+    'lindblad':        'center top',
+    'arvid_lindblad':  'center top',
+    'lidblad':         'center top',
+    'arvid_lidblad':   'center top'
+};
+
+var PREFER_LOCAL_HEADSHOT = {
+    'antonelli': true,
+    'andrea_kimi_antonelli': true,
+    'kimi_antonelli': true,
+    'perez': true,
+    'sergio_perez': true,
+    'bottas': true,
+    'valtteri_bottas': true,
+    'hulkenberg': true,
+    'nico_hulkenberg': true,
+    'bortoleto': true,
+    'gabriel_bortoleto': true,
+    'lindblad': true,
+    'arvid_lindblad': true,
+    'lidblad': true,
+    'arvid_lidblad': true
 };
 
 // ── Skeleton loader ──
@@ -130,8 +174,24 @@ function skelRows(n) {
     }
     return h;
 }
-driversTable.innerHTML = skelRows(10);
+
+function skelChartRows(n) {
+    var h = '';
+    for (var i = 0; i < n; i++) {
+        h += '<div class="chart-bar-row">'
+            + '<div class="skel" style="width:34px;height:12px;flex-shrink:0;"></div>'
+            + '<div class="chart-track"><div class="skel" style="width:' + Math.max(24, 100 - (i * 7)) + '%;height:100%;"></div></div>'
+            + '</div>';
+    }
+    return h;
+}
+
+driversTable.innerHTML = skelRows(20);
 constructorsTable.innerHTML = skelRows(10);
+var driversChart = document.getElementById('drivers-chart');
+var driversChartBars = document.getElementById('drivers-chart-bars');
+if (driversChart) driversChart.style.display = 'block';
+if (driversChartBars) driversChartBars.innerHTML = skelChartRows(10);
 if (qualifyingGapsYear) qualifyingGapsYear.textContent = YEAR;
 if (lap1GainsYear) lap1GainsYear.textContent = YEAR;
 if (tyrePaceYear) tyrePaceYear.textContent = YEAR;
@@ -270,8 +330,74 @@ function getTeamLogo(constructorId) {
     return t ? t.logo : '';
 }
 
-function getHeadshot(driverId) {
-    return DRIVER_HEADSHOTS[driverId] || '';
+function normalizeDriverLookupKey(value) {
+    var normalized = String(value || '').trim().toLowerCase();
+    if (normalized.normalize) {
+        normalized = normalized.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+    return normalized
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '');
+}
+
+function getDriverLookupCandidates(driverId, fallbackName) {
+    var candidates = [];
+    function pushCandidate(value) {
+        if (value && candidates.indexOf(value) === -1) candidates.push(value);
+    }
+
+    var normalizedDriverId = normalizeDriverLookupKey(driverId);
+    pushCandidate(normalizedDriverId);
+
+    var normalizedName = normalizeDriverLookupKey(fallbackName);
+    if (normalizedName) {
+        pushCandidate(normalizedName);
+        var nameParts = normalizedName.split('_').filter(Boolean);
+        if (nameParts.length) {
+            pushCandidate(nameParts[nameParts.length - 1]);
+            if (nameParts.length >= 2) pushCandidate(nameParts.slice(-2).join('_'));
+        }
+    }
+
+    return candidates;
+}
+
+function getHeadshot(driverId, fallbackName) {
+    var candidates = getDriverLookupCandidates(driverId, fallbackName);
+
+    for (var i = 0; i < candidates.length; i++) {
+        if (DRIVER_HEADSHOTS[candidates[i]]) return DRIVER_HEADSHOTS[candidates[i]];
+    }
+    return '';
+}
+
+function shouldPreferLocalHeadshot(driverId, fallbackName) {
+    var candidates = getDriverLookupCandidates(driverId, fallbackName);
+
+    for (var i = 0; i < candidates.length; i++) {
+        if (PREFER_LOCAL_HEADSHOT[candidates[i]]) return true;
+    }
+    return false;
+}
+
+function getPreferredHeadshot(driverId, fallbackName, sourceHeadshot) {
+    var localHeadshot = getHeadshot(driverId, fallbackName);
+    if (localHeadshot && shouldPreferLocalHeadshot(driverId, fallbackName)) return localHeadshot;
+    return String(sourceHeadshot || localHeadshot || '');
+}
+
+function getHeadshotObjectPosition(driverId, fallbackName) {
+    var candidates = getDriverLookupCandidates(driverId, fallbackName);
+
+    for (var i = 0; i < candidates.length; i++) {
+        if (DRIVER_HEADSHOT_POSITIONS[candidates[i]]) return DRIVER_HEADSHOT_POSITIONS[candidates[i]];
+    }
+    return '';
+}
+
+function getHeadshotImgStyle(driverId, fallbackName) {
+    var position = getHeadshotObjectPosition(driverId, fallbackName);
+    return position ? ' style="object-position:' + esc(position) + ';"' : '';
 }
 
 function formatWinsLabel(wins) {
@@ -2397,13 +2523,14 @@ function buildDriverLookup(drivers) {
         if (!driver || driver.session_key == null || driver.driver_number == null) return;
         var sessionKey = String(driver.session_key);
         if (!lookup[sessionKey]) lookup[sessionKey] = {};
+        var fullName = driver.full_name || [driver.first_name, driver.last_name].filter(Boolean).join(' ');
         lookup[sessionKey][driver.driver_number] = {
             driverNumber: driver.driver_number,
-            fullName: driver.full_name || [driver.first_name, driver.last_name].filter(Boolean).join(' '),
+            fullName: fullName,
             firstName: driver.first_name || '',
             lastName: driver.last_name || '',
             acronym: (driver.name_acronym || '').toUpperCase(),
-            headshot: driver.headshot_url || '',
+            headshot: getPreferredHeadshot('', fullName, driver.headshot_url || ''),
             teamName: driver.team_name || '',
             teamColor: getCanonicalTeamColor('', driver.team_name || '', driver.team_colour || ''),
             meetingKey: driver.meeting_key || ''
@@ -3495,7 +3622,7 @@ function renderQualifyingGapOverview(rows) {
             + '<div class="quali-gap-avg fast">' + esc(formatSignedGap(-row.avgGap, false)) + '</div>'
             + '<div class="quali-driver">'
             + (row.left.headshot
-                ? '<img class="quali-headshot" src="' + esc(row.left.headshot) + '" alt="' + esc(row.left.fullName) + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+                ? '<img class="quali-headshot" src="' + esc(row.left.headshot) + '" alt="' + esc(row.left.fullName) + '"' + getHeadshotImgStyle('', row.left.fullName) + ' loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
                     + '<div class="quali-avatar-fallback" style="display:none;--driver-color:' + esc(leftChannels) + ';">' + esc(row.left.acronym) + '</div>'
                 : '<div class="quali-avatar-fallback" style="--driver-color:' + esc(leftChannels) + ';">' + esc(row.left.acronym) + '</div>')
             + '<div class="quali-driver-meta"><div class="quali-driver-code">' + esc(row.left.acronym) + '</div><div class="quali-driver-name">' + esc(row.left.fullName) + '</div></div>'
@@ -3525,7 +3652,7 @@ function renderQualifyingGapOverview(rows) {
             + '<div class="quali-gap-avg slow">' + esc(formatSignedGap(row.avgGap, false)) + '</div>'
             + '<div class="quali-driver">'
             + (row.right.headshot
-                ? '<img class="quali-headshot" src="' + esc(row.right.headshot) + '" alt="' + esc(row.right.fullName) + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+                ? '<img class="quali-headshot" src="' + esc(row.right.headshot) + '" alt="' + esc(row.right.fullName) + '"' + getHeadshotImgStyle('', row.right.fullName) + ' loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
                     + '<div class="quali-avatar-fallback" style="display:none;--driver-color:' + esc(rightChannels) + ';">' + esc(row.right.acronym) + '</div>'
                 : '<div class="quali-avatar-fallback" style="--driver-color:' + esc(rightChannels) + ';">' + esc(row.right.acronym) + '</div>')
             + '<div class="quali-driver-meta"><div class="quali-driver-code">' + esc(row.right.acronym) + '</div><div class="quali-driver-name">' + esc(row.right.fullName) + '</div></div>'
@@ -3542,7 +3669,7 @@ function renderQualifyingRaceDriverPin(driver, topPct, driverChannels) {
     return '<div class="quali-race-driver-pin" style="top:' + topPct.toFixed(2) + '%;--driver-color:' + esc(driverChannels) + ';">'
         + '<div class="quali-race-avatar">'
         + (driver.headshot
-            ? '<img src="' + esc(driver.headshot) + '" alt="' + esc(driver.fullName) + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+            ? '<img src="' + esc(driver.headshot) + '" alt="' + esc(driver.fullName) + '"' + getHeadshotImgStyle('', driver.fullName) + ' loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
                 + '<div class="quali-race-avatar-fallback" style="display:none;">' + esc(driver.acronym) + '</div>'
             : '<div class="quali-race-avatar-fallback">' + esc(driver.acronym) + '</div>')
         + '</div>'
@@ -3819,7 +3946,7 @@ function renderLap1Bubble(driver, extraBadge) {
     var winnerColor = hexToRgbChannels(driver.teamColor || '3b82f6');
     return '<div class="lap1-bubble" style="--winner-color:' + esc(winnerColor) + ';">'
         + (driver.headshot
-            ? '<img src="' + esc(driver.headshot) + '" alt="' + esc(driver.fullName) + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+            ? '<img src="' + esc(driver.headshot) + '" alt="' + esc(driver.fullName) + '"' + getHeadshotImgStyle('', driver.fullName) + ' loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
                 + '<div class="lap1-bubble-fallback" style="display:none;">' + esc(driver.acronym) + '</div>'
             : '<div class="lap1-bubble-fallback">' + esc(driver.acronym) + '</div>')
         + (extraBadge ? '<span class="lap1-bubble-badge">' + esc(extraBadge) + '</span>' : '')
@@ -3831,7 +3958,7 @@ function renderLap1DriverChip(driver) {
     return '<div class="lap1-driver-chip" style="--winner-color:' + esc(winnerColor) + ';">'
         + '<div class="lap1-driver-chip-avatar">'
         + (driver.headshot
-            ? '<img src="' + esc(driver.headshot) + '" alt="' + esc(driver.fullName) + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+            ? '<img src="' + esc(driver.headshot) + '" alt="' + esc(driver.fullName) + '"' + getHeadshotImgStyle('', driver.fullName) + ' loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
                 + '<div class="lap1-driver-chip-avatar-fallback" style="display:none;">' + esc(driver.acronym) + '</div>'
             : '<div class="lap1-driver-chip-avatar-fallback">' + esc(driver.acronym) + '</div>')
         + '</div>'
@@ -3905,7 +4032,7 @@ function renderLap1RaceDriverRow(move, index) {
         + '<div class="lap1-race-driver">'
         + '<div class="lap1-race-avatar">'
         + (move.headshot
-            ? '<img src="' + esc(move.headshot) + '" alt="' + esc(move.fullName) + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+            ? '<img src="' + esc(move.headshot) + '" alt="' + esc(move.fullName) + '"' + getHeadshotImgStyle('', move.fullName) + ' loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
                 + '<div class="lap1-race-avatar-fallback" style="display:none;">' + esc(move.acronym) + '</div>'
             : '<div class="lap1-race-avatar-fallback">' + esc(move.acronym) + '</div>')
         + '</div>'
@@ -4359,7 +4486,7 @@ function loadStandings() {
         // Update UI metadata
         document.getElementById('season-year').textContent = season;
         if (round) {
-            document.getElementById('round-badge').style.display = '';
+            document.getElementById('round-badge').classList.add('is-visible');
             document.getElementById('round-num').textContent = round;
         }
 
@@ -4408,9 +4535,10 @@ function enrichWithOpenF1() {
             var map = {};
             drivers.forEach(function(d) {
                 // Key by last name lowercase for matching
-                var key = (d.last_name || '').toLowerCase();
+                var key = normalizeDriverLookupKey(d.last_name || '');
+                var fullName = d.full_name || [d.first_name, d.last_name].filter(Boolean).join(' ');
                 map[key] = {
-                    headshot: d.headshot_url || '',
+                    headshot: getPreferredHeadshot('', fullName, d.headshot_url || ''),
                     teamColor: getCanonicalTeamColor('', d.team_name || '', d.team_colour || ''),
                     acronym: d.name_acronym || '',
                     teamName: d.team_name || '',
@@ -4467,7 +4595,7 @@ function renderDrivers(standings, openf1Map) {
         var constructor = s.Constructors && s.Constructors[0];
         var cId = constructor ? constructor.constructorId : '';
         var driverId = driver.driverId || '';
-        var lastName = (driver.familyName || '').toLowerCase();
+        var lastName = normalizeDriverLookupKey(driver.familyName || '');
         var name = (driver.givenName || '') + ' ' + (driver.familyName || '');
         var teamName = constructor ? constructor.name : '';
         var tc = getCanonicalTeamColor(cId, teamName, '');
@@ -4478,13 +4606,13 @@ function renderDrivers(standings, openf1Map) {
 
         // Try OpenF1 enrichment for headshot & team colour
         var of1 = openf1Map[lastName] || {};
-        var hs = of1.headshot || getHeadshot(driverId);
+        var hs = getPreferredHeadshot(driverId, name, of1.headshot);
         var acr = of1.acronym || (driver.code || driverId.substring(0,3)).toUpperCase();
 
         html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
             + '<div class="st-pos">' + pos + '</div>'
             + '<div class="st-info">'
-            + (hs ? '<img class="st-headshot" src="' + esc(hs) + '" alt="' + esc(name) + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+            + (hs ? '<img class="st-headshot" src="' + esc(hs) + '" alt="' + esc(name) + '"' + getHeadshotImgStyle(driverId, name) + ' loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
                    + '<div class="st-avatar-fallback" style="display:none;color:#' + esc(tc) + ';">' + esc(acr) + '</div>'
                   : '<div class="st-avatar-fallback" style="color:#' + esc(tc) + ';">' + esc(acr) + '</div>')
             + '<div class="st-name-block"><div class="st-name">' + esc(name) + '</div><div class="st-team-label">' + esc(teamName) + '</div></div></div>'
@@ -4596,8 +4724,8 @@ function renderDriversFromOpenF1(standings, driverInfo) {
     standings.forEach(function(s) {
         var d = dMap[s.driver_number] || {};
         var tc = getCanonicalTeamColor('', d.team_name || '', d.team_colour);
-        var hs = d.headshot_url || '';
         var name = d.full_name || ('Οδηγός #' + s.driver_number);
+        var hs = getPreferredHeadshot('', name, d.headshot_url || '');
         var team = d.team_name || '';
         var acr = d.name_acronym || '';
         var barPct = Math.max(2, (s.points_current / maxPts) * 100);
@@ -4605,7 +4733,7 @@ function renderDriversFromOpenF1(standings, driverInfo) {
         html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
             + '<div class="st-pos">' + s.position_current + '</div>'
             + '<div class="st-info">'
-            + (hs ? '<img class="st-headshot" src="' + esc(hs) + '" alt="' + esc(name) + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+            + (hs ? '<img class="st-headshot" src="' + esc(hs) + '" alt="' + esc(name) + '"' + getHeadshotImgStyle('', name) + ' loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
                    + '<div class="st-avatar-fallback" style="display:none;color:#' + esc(tc) + ';">' + esc(acr) + '</div>'
                   : '<div class="st-avatar-fallback" style="color:#' + esc(tc) + ';">' + esc(acr) + '</div>')
             + '<div class="st-name-block"><div class="st-name">' + esc(name) + '</div><div class="st-team-label">' + esc(team) + '</div></div></div>'
@@ -5097,10 +5225,10 @@ function buildPitStopFastestPerDriver(stops, driverMap) {
 
 function buildPitStopsDriverRowHTML(entry, idx, fastestDuration) {
     var rgb = hexToRgbChannels(entry.teamColor);
-    var headshot = getHeadshot(entry.driverId);
+    var headshot = getHeadshot(entry.driverId, entry.fullName);
     var barPct = Math.max(3, (fastestDuration / entry.duration) * 100);
     var avatarContent = headshot
-        ? '<img src="' + esc(headshot) + '" alt="' + esc(entry.code) + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+        ? '<img src="' + esc(headshot) + '" alt="' + esc(entry.code) + '"' + getHeadshotImgStyle(entry.driverId, entry.fullName) + ' loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
           + '<div class="pit-stops-avatar-fallback" style="display:none">' + esc(entry.code) + '</div>'
         : '<div class="pit-stops-avatar-fallback">' + esc(entry.code) + '</div>';
 

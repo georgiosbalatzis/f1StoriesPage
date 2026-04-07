@@ -183,7 +183,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!navigator.connection) return true;
         return !navigator.connection.saveData &&
             navigator.connection.effectiveType !== 'slow-2g' &&
-            navigator.connection.effectiveType !== '2g';
+            navigator.connection.effectiveType !== '2g' &&
+            navigator.connection.effectiveType !== '3g';
     }
 
     function scheduleLoad() {
@@ -222,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     observer.disconnect();
                     scheduleLoad();
                 });
-            }, { rootMargin: '320px 0px' });
+            }, { rootMargin: '120px 0px' });
             observer.observe(latestSection);
         }
     }
