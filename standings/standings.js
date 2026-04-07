@@ -22,7 +22,7 @@ var dirtyAirYear = document.getElementById('dirty-air-year');
 var dirtyAirState = { loaded: false, loading: false, pendingReload: false, sessions: [], selectedSessionKey: '', activeView: 'summary', sessionCache: {}, cacheBundle: null, cachePromise: null, cacheAttempted: false };
 var trackDominanceTable = document.getElementById('track-dominance-table');
 var trackDominanceYear = document.getElementById('track-dominance-year');
-var trackDominanceState = { loaded: false, loading: false, pendingReload: false, sessions: [], selectedSessionKey: '', leftTeamKey: '', rightTeamKey: '', sessionCache: {}, pairCache: {} };
+var trackDominanceState = { loaded: false, loading: false, pendingReload: false, sessions: [], selectedSessionKey: '', leftDriverKey: '', rightDriverKey: '', sessionCache: {}, pairCache: {} };
 var pitStopsTable = document.getElementById('pit-stops-table');
 var pitStopsYear = document.getElementById('pit-stops-year');
 var pitStopsState = { loaded: false, loading: false, races: [], selectedRound: '', activeView: 'race', raceCache: {}, seasonCache: null };
@@ -152,8 +152,8 @@ lap1GainsState.selectedSessionKey = initialURLState.lap1Session;
 tyrePaceState.selectedSessionKey = initialURLState.tyreSession;
 dirtyAirState.selectedSessionKey = initialURLState.dirtyAirSession;
 trackDominanceState.selectedSessionKey = initialURLState.trackSession;
-trackDominanceState.leftTeamKey = initialURLState.trackTeamA;
-trackDominanceState.rightTeamKey = initialURLState.trackTeamB;
+trackDominanceState.leftDriverKey = initialURLState.trackTeamA;
+trackDominanceState.rightDriverKey = initialURLState.trackTeamB;
 pitStopsState.selectedRound = initialURLState.pitRound;
 pitStopsState.activeView = initialURLState.pitView;
 destructorsState.activeView = initialURLState.destructorsView;
@@ -432,8 +432,8 @@ function appendShareStateParams(params, tabName) {
 
     if (tabName === 'track-dominance') {
         if (trackDominanceState.selectedSessionKey) params.set('trackSession', String(trackDominanceState.selectedSessionKey));
-        if (trackDominanceState.leftTeamKey) params.set('trackTeamA', String(trackDominanceState.leftTeamKey));
-        if (trackDominanceState.rightTeamKey) params.set('trackTeamB', String(trackDominanceState.rightTeamKey));
+        if (trackDominanceState.leftDriverKey) params.set('trackTeamA', String(trackDominanceState.leftDriverKey));
+        if (trackDominanceState.rightDriverKey) params.set('trackTeamB', String(trackDominanceState.rightDriverKey));
         return;
     }
 
@@ -2421,6 +2421,7 @@ function buildTrackDominanceSessionData(session, drivers, laps) {
     var sessionKey = String(session.session_key);
     var driverLookup = buildDriverLookup(drivers)[sessionKey] || {};
     var teamMap = {};
+    var driverMap = {};
 
     Object.keys(driverLookup).forEach(function(driverKey) {
         var driver = driverLookup[driverKey];
@@ -2439,19 +2440,24 @@ function buildTrackDominanceSessionData(session, drivers, laps) {
                 teamName: teamName,
                 teamColor: teamColor,
                 logo: teamId ? getTeamLogo(teamId) : '',
-                drivers: {},
-                bestLap: null
+                drivers: []
             };
         }
 
-        teamMap[teamKey].drivers[String(driver.driverNumber)] = {
+        var driverEntry = {
+            driverKey: String(driver.driverNumber),
             driverNumber: driver.driverNumber,
             acronym: deriveAcronym(driver),
             fullName: getDriverDisplayName(driver),
             headshot: driver.headshot || '',
+            teamKey: teamKey,
             teamName: teamMap[teamKey].teamName,
-            teamColor: teamMap[teamKey].teamColor
+            teamColor: teamMap[teamKey].teamColor,
+            logo: teamMap[teamKey].logo,
+            bestLap: null
         };
+        driverMap[driverEntry.driverKey] = driverEntry;
+        teamMap[teamKey].drivers.push(driverEntry);
     });
 
     (laps || []).forEach(function(lap) {
@@ -2464,16 +2470,17 @@ function buildTrackDominanceSessionData(session, drivers, laps) {
 
         var teamId = resolveTeamId('', driver.teamName || '');
         var teamKey = teamId || normalizeTeamName(driver.teamName || '').replace(/\s+/g, '-');
-        var team = teamMap[teamKey];
-        if (!team) return;
+        var driverEntry = driverMap[String(driver.driverNumber)];
+        if (!driverEntry || !teamMap[teamKey]) return;
 
         var candidate = {
             driverNumber: driver.driverNumber,
             acronym: deriveAcronym(driver),
             fullName: getDriverDisplayName(driver),
             headshot: driver.headshot || '',
-            teamName: team.teamName,
-            teamColor: team.teamColor,
+            teamKey: teamKey,
+            teamName: driverEntry.teamName,
+            teamColor: driverEntry.teamColor,
             lapNumber: lap.lap_number,
             dateStart: lap.date_start || '',
             duration: duration,
@@ -2486,23 +2493,41 @@ function buildTrackDominanceSessionData(session, drivers, laps) {
             lap: lap
         };
 
-        if (!team.bestLap || candidate.duration < team.bestLap.duration) {
-            team.bestLap = candidate;
+        if (!driverEntry.bestLap || candidate.duration < driverEntry.bestLap.duration) {
+            driverEntry.bestLap = candidate;
         }
     });
 
     var teams = Object.keys(teamMap).map(function(teamKey) {
-        return teamMap[teamKey];
+        var team = teamMap[teamKey];
+        team.drivers = (team.drivers || []).filter(function(driver) {
+            return driver.bestLap && !!driver.bestLap.dateStart;
+        }).sort(function(a, b) {
+            if (a.bestLap.duration !== b.bestLap.duration) return a.bestLap.duration - b.bestLap.duration;
+            return a.fullName.localeCompare(b.fullName);
+        });
+        if (!team.drivers.length) return null;
+        team.bestLap = team.drivers[0].bestLap;
+        return team;
     }).filter(function(team) {
-        return team.bestLap && !!team.bestLap.dateStart;
+        return !!team;
     }).sort(function(a, b) {
         if (a.bestLap.duration !== b.bestLap.duration) return a.bestLap.duration - b.bestLap.duration;
         return a.teamName.localeCompare(b.teamName);
     });
 
+    var driverEntries = teams.reduce(function(acc, team) {
+        return acc.concat(team.drivers);
+    }, []);
+
     return {
         session: session,
         teams: teams,
+        drivers: driverEntries,
+        driverMap: driverEntries.reduce(function(acc, driver) {
+            acc[driver.driverKey] = driver;
+            return acc;
+        }, {}),
         teamMap: teams.reduce(function(acc, team) {
             acc[team.teamKey] = team;
             return acc;
@@ -2510,33 +2535,70 @@ function buildTrackDominanceSessionData(session, drivers, laps) {
     };
 }
 
+function findTrackDominanceAlternateDriverKey(sessionData, driverKey) {
+    var selected = sessionData && sessionData.driverMap ? sessionData.driverMap[driverKey] : null;
+    if (selected && selected.teamKey) {
+        var team = sessionData.teamMap ? sessionData.teamMap[selected.teamKey] : null;
+        var teammate = team && (team.drivers || []).filter(function(driver) {
+            return driver.driverKey !== driverKey;
+        })[0];
+        if (teammate) return teammate.driverKey;
+    }
+
+    var fallback = (sessionData && sessionData.drivers ? sessionData.drivers : []).filter(function(driver) {
+        return driver.driverKey !== driverKey;
+    })[0];
+    return fallback ? fallback.driverKey : '';
+}
+
+function getTrackDominanceDriverShortLabel(driver) {
+    if (!driver) return 'Driver';
+    if (driver.acronym) return driver.acronym;
+    if (driver.fullName) return driver.fullName;
+    return '#' + (driver.driverNumber || '?');
+}
+
+function buildTrackDominanceVisualPalette(leftDriver, rightDriver) {
+    var leftHex = normalizeHexColor(leftDriver && leftDriver.teamColor ? leftDriver.teamColor : '3b82f6');
+    var rightHex = normalizeHexColor(rightDriver && rightDriver.teamColor ? rightDriver.teamColor : '3b82f6');
+    var sameTeam = !!(leftDriver && rightDriver && leftDriver.teamKey && rightDriver.teamKey && leftDriver.teamKey === rightDriver.teamKey);
+    if (sameTeam || leftHex === rightHex) rightHex = adjustHexColor(rightHex, -34);
+    return {
+        sameTeam: sameTeam,
+        leftHex: leftHex,
+        rightHex: rightHex,
+        leftChannels: hexToRgbChannels(leftHex),
+        rightChannels: hexToRgbChannels(rightHex)
+    };
+}
+
 function resolveTrackDominanceSelection(sessionData, preferredLeftKey, preferredRightKey, changedSide) {
-    var teams = sessionData && sessionData.teams ? sessionData.teams : [];
-    var keys = teams.map(function(team) { return team.teamKey; });
-    if (keys.length < 2) return { leftTeamKey: '', rightTeamKey: '' };
+    var drivers = sessionData && sessionData.drivers ? sessionData.drivers : [];
+    var keys = drivers.map(function(driver) { return driver.driverKey; });
+    if (keys.length < 2) return { leftDriverKey: '', rightDriverKey: '' };
 
-    var leftTeamKey = keys.indexOf(preferredLeftKey) !== -1 ? preferredLeftKey : keys[0];
-    var rightTeamKey = keys.indexOf(preferredRightKey) !== -1 ? preferredRightKey : keys[1];
+    var leftDriverKey = keys.indexOf(preferredLeftKey) !== -1 ? preferredLeftKey : keys[0];
+    var rightDriverKey = keys.indexOf(preferredRightKey) !== -1 ? preferredRightKey : keys[1];
 
-    if (leftTeamKey === rightTeamKey) {
+    if (leftDriverKey === rightDriverKey) {
         if (changedSide === 'left') {
-            rightTeamKey = keys.filter(function(key) { return key !== leftTeamKey; })[0] || '';
+            rightDriverKey = findTrackDominanceAlternateDriverKey(sessionData, leftDriverKey);
         } else if (changedSide === 'right') {
-            leftTeamKey = keys.filter(function(key) { return key !== rightTeamKey; })[0] || '';
+            leftDriverKey = findTrackDominanceAlternateDriverKey(sessionData, rightDriverKey);
         } else {
-            rightTeamKey = keys.filter(function(key) { return key !== leftTeamKey; })[0] || '';
+            rightDriverKey = findTrackDominanceAlternateDriverKey(sessionData, leftDriverKey);
         }
     }
 
     return {
-        leftTeamKey: leftTeamKey,
-        rightTeamKey: rightTeamKey
+        leftDriverKey: leftDriverKey,
+        rightDriverKey: rightDriverKey
     };
 }
 
 function buildTrackDominanceTooltipText(delta, leftName, rightName) {
     if (!isFiniteNumber(delta)) return 'Telemetry delta unavailable';
-    if (Math.abs(delta) < 0.004) return 'Teams are level at this point of the lap';
+    if (Math.abs(delta) < 0.004) return 'Drivers are level at this point of the lap';
     var leader = delta <= 0 ? leftName : rightName;
     var trailer = delta <= 0 ? rightName : leftName;
     return leader + ' -' + Math.abs(delta).toFixed(3) + 's on ' + trailer;
@@ -2666,7 +2728,7 @@ function orientTrackDominancePoints(points) {
     }
 
     if (!oriented.length) {
-        return { points: [], viewWidth: 760, viewHeight: 580, pathD: '', startPoint: null };
+        return { points: [], viewWidth: 760, viewHeight: 580, pathD: '', startLine: null };
     }
 
     var bounds = getBounds(oriented);
@@ -2714,18 +2776,39 @@ function orientTrackDominancePoints(points) {
         return (index ? 'L' : 'M') + point.x.toFixed(2) + ' ' + point.y.toFixed(2);
     }).join(' ');
 
+    var startLine = null;
+    if (scaledPoints.length > 1) {
+        for (var index = 1; index < scaledPoints.length; index++) {
+            var dx = scaledPoints[index].x - scaledPoints[0].x;
+            var dy = scaledPoints[index].y - scaledPoints[0].y;
+            var length = Math.hypot(dx, dy);
+            if (length <= 0.001) continue;
+
+            var halfLength = 15;
+            var perpX = -dy / length;
+            var perpY = dx / length;
+            startLine = {
+                x1: scaledPoints[0].x - perpX * halfLength,
+                y1: scaledPoints[0].y - perpY * halfLength,
+                x2: scaledPoints[0].x + perpX * halfLength,
+                y2: scaledPoints[0].y + perpY * halfLength
+            };
+            break;
+        }
+    }
+
     return {
         points: scaledPoints,
         viewWidth: viewWidth,
         viewHeight: viewHeight,
         pathD: pathD,
-        startPoint: scaledPoints[0] || null
+        startLine: startLine
     };
 }
 
-function buildTrackDominanceTrackMap(leftTeam, rightTeam, leftLocations, rightLocations) {
-    var leftSeries = buildTrackDominanceSeries(leftLocations, leftTeam.bestLap.duration);
-    var rightSeries = buildTrackDominanceSeries(rightLocations, rightTeam.bestLap.duration);
+function buildTrackDominanceTrackMap(leftDriver, rightDriver, leftLocations, rightLocations) {
+    var leftSeries = buildTrackDominanceSeries(leftLocations, leftDriver.bestLap.duration);
+    var rightSeries = buildTrackDominanceSeries(rightLocations, rightDriver.bestLap.duration);
     if (!leftSeries || !rightSeries) return null;
 
     var sampleCount = 220;
@@ -2733,6 +2816,7 @@ function buildTrackDominanceTrackMap(leftTeam, rightTeam, leftLocations, rightLo
     var rightInterpolator = createTrackDominanceInterpolator(rightSeries);
     var rawPoints = [];
     var peakDelta = 0;
+    var visualPalette = buildTrackDominanceVisualPalette(leftDriver, rightDriver);
 
     for (var index = 0; index < sampleCount; index++) {
         var progress = index / (sampleCount - 1);
@@ -2755,8 +2839,8 @@ function buildTrackDominanceTrackMap(leftTeam, rightTeam, leftLocations, rightLo
     var segments = [];
     var leftLeadCount = 0;
     var rightLeadCount = 0;
-    var leftChannels = hexToRgbChannels(leftTeam.teamColor);
-    var rightChannels = hexToRgbChannels(rightTeam.teamColor);
+    var leftChannels = visualPalette.leftChannels;
+    var rightChannels = visualPalette.rightChannels;
 
     for (var segmentIndex = 0; segmentIndex < oriented.points.length - 1; segmentIndex++) {
         var start = oriented.points[segmentIndex];
@@ -2772,7 +2856,7 @@ function buildTrackDominanceTrackMap(leftTeam, rightTeam, leftLocations, rightLo
             x2: end.x,
             y2: end.y,
             colorChannels: leader === 'left' ? leftChannels : rightChannels,
-            tooltip: buildTrackDominanceTooltipText(deltaMid, leftTeam.teamName, rightTeam.teamName),
+            tooltip: buildTrackDominanceTooltipText(deltaMid, getTrackDominanceDriverShortLabel(leftDriver), getTrackDominanceDriverShortLabel(rightDriver)),
             leader: leader
         });
     }
@@ -2782,11 +2866,11 @@ function buildTrackDominanceTrackMap(leftTeam, rightTeam, leftLocations, rightLo
         viewWidth: oriented.viewWidth,
         viewHeight: oriented.viewHeight,
         pathD: oriented.pathD,
-        startPoint: oriented.startPoint,
+        startLine: oriented.startLine,
         segments: segments,
         leftLeadPct: (leftLeadCount / totalSegments) * 100,
         rightLeadPct: (rightLeadCount / totalSegments) * 100,
-        finishDelta: leftTeam.bestLap.duration - rightTeam.bestLap.duration,
+        finishDelta: leftDriver.bestLap.duration - rightDriver.bestLap.duration,
         peakDelta: peakDelta
     };
 }
@@ -2864,14 +2948,14 @@ function renderTrackDominanceMetricStrip(side, comparison) {
     return html + '</div>';
 }
 
-function renderTrackDominanceTeamCard(side, team, colorChannels, metricComparison) {
-    var lap = team.bestLap;
-    var logoMarkup = team.logo
-        ? '<img src="' + esc(team.logo) + '" alt="' + esc(team.teamName) + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';"><div class="track-dom-team-logo-fallback" style="display:none;">' + esc(getTrackDominanceShortName(team.teamName)) + '</div>'
-        : '<div class="track-dom-team-logo-fallback">' + esc(getTrackDominanceShortName(team.teamName)) + '</div>';
+function renderTrackDominanceDriverCard(side, driver, colorChannels, metricComparison) {
+    var lap = driver.bestLap;
+    var logoMarkup = driver.logo
+        ? '<img src="' + esc(driver.logo) + '" alt="' + esc(driver.teamName) + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';"><div class="track-dom-team-logo-fallback" style="display:none;">' + esc(getTrackDominanceShortName(driver.teamName)) + '</div>'
+        : '<div class="track-dom-team-logo-fallback">' + esc(getTrackDominanceShortName(driver.teamName)) + '</div>';
 
     return '<article class="track-dom-team-card ' + side + '" style="--team-color:' + esc(colorChannels) + ';">'
-        + '<div class="track-dom-team-top"><div class="track-dom-team-logo">' + logoMarkup + '</div><div class="track-dom-team-copy"><div class="track-dom-team-name">' + esc(team.teamName) + '</div><div class="track-dom-team-driver">' + esc(lap.acronym + ' · Lap ' + lap.lapNumber) + '</div></div></div>'
+        + '<div class="track-dom-team-top"><div class="track-dom-team-logo">' + logoMarkup + '</div><div class="track-dom-team-copy"><div class="track-dom-team-name">' + esc(driver.fullName || getTrackDominanceDriverShortLabel(driver)) + '</div><div class="track-dom-team-driver">' + esc(driver.teamName + ' · ' + getTrackDominanceDriverShortLabel(driver) + ' · Lap ' + lap.lapNumber) + '</div></div></div>'
         + '<div class="track-dom-team-time">' + esc(formatLapTime(lap.duration, true)) + '</div>'
         + renderTrackDominanceMetricStrip(side, metricComparison)
         + '</article>';
@@ -2880,11 +2964,11 @@ function renderTrackDominanceTeamCard(side, team, colorChannels, metricCompariso
 function renderTrackDominance(sessionData, pairData, session) {
     if (!trackDominanceTable) return;
 
-    if (!sessionData || !session || !sessionData.teams || sessionData.teams.length < 2) {
+    if (!sessionData || !session || !sessionData.drivers || sessionData.drivers.length < 2) {
         trackDominanceTable.innerHTML = '<div class="track-dom-empty-card">'
             + '<i class="fas fa-route"></i>'
-            + '<p>Δεν υπάρχουν ακόμη αρκετά telemetry laps για team comparison.</p>'
-            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed sessions με valid fastest laps για τουλάχιστον δύο ομάδες.</p>'
+            + '<p>Δεν υπάρχουν ακόμη αρκετά telemetry laps για driver comparison.</p>'
+            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed sessions με valid fastest laps για τουλάχιστον δύο οδηγούς.</p>'
             + '</div>';
         finalizeRenderedPanel('track-dominance');
         return;
@@ -2894,32 +2978,46 @@ function renderTrackDominance(sessionData, pairData, session) {
         return '<option value="' + esc(item.session_key) + '"' + (String(item.session_key) === String(trackDominanceState.selectedSessionKey) ? ' selected' : '') + '>' + esc((item.meeting_name || item.circuit_short_name || item.location || 'Session') + ' · ' + (item.session_name || item.session_type || 'Session') + (formatSessionDateShort(item) ? ' · ' + formatSessionDateShort(item) : '')) + '</option>';
     }).join('');
 
-    var leftTeamOptions = sessionData.teams.map(function(team) {
-        return '<option value="' + esc(team.teamKey) + '"' + (team.teamKey === trackDominanceState.leftTeamKey ? ' selected' : '') + '>' + esc(team.teamName + ' · ' + team.bestLap.acronym + ' · ' + formatLapTime(team.bestLap.duration, true)) + '</option>';
+    var leftDriverOptions = sessionData.teams.map(function(team) {
+        return '<optgroup label="' + esc(team.teamName) + '">' + team.drivers.map(function(driver) {
+            return '<option value="' + esc(driver.driverKey) + '"' + (driver.driverKey === trackDominanceState.leftDriverKey ? ' selected' : '') + '>' + esc(driver.fullName + ' · ' + getTrackDominanceDriverShortLabel(driver) + ' · ' + formatLapTime(driver.bestLap.duration, true)) + '</option>';
+        }).join('') + '</optgroup>';
     }).join('');
-    var rightTeamOptions = sessionData.teams.map(function(team) {
-        return '<option value="' + esc(team.teamKey) + '"' + (team.teamKey === trackDominanceState.rightTeamKey ? ' selected' : '') + '>' + esc(team.teamName + ' · ' + team.bestLap.acronym + ' · ' + formatLapTime(team.bestLap.duration, true)) + '</option>';
+    var rightDriverOptions = sessionData.teams.map(function(team) {
+        return '<optgroup label="' + esc(team.teamName) + '">' + team.drivers.map(function(driver) {
+            return '<option value="' + esc(driver.driverKey) + '"' + (driver.driverKey === trackDominanceState.rightDriverKey ? ' selected' : '') + '>' + esc(driver.fullName + ' · ' + getTrackDominanceDriverShortLabel(driver) + ' · ' + formatLapTime(driver.bestLap.duration, true)) + '</option>';
+        }).join('') + '</optgroup>';
     }).join('');
 
-    var leftTeam = sessionData.teamMap[trackDominanceState.leftTeamKey];
-    var rightTeam = sessionData.teamMap[trackDominanceState.rightTeamKey];
-    var leftChannels = hexToRgbChannels(leftTeam.teamColor);
-    var rightChannels = hexToRgbChannels(rightTeam.teamColor);
-    var metricComparison = buildTrackDominanceMetricComparison(leftTeam.bestLap, rightTeam.bestLap);
-    var finishDelta = pairData ? pairData.finishDelta : leftTeam.bestLap.duration - rightTeam.bestLap.duration;
-    var finishLeader = finishDelta <= 0 ? leftTeam.teamName : rightTeam.teamName;
-    var finishTrailer = finishDelta <= 0 ? rightTeam.teamName : leftTeam.teamName;
+    var leftDriver = sessionData.driverMap[trackDominanceState.leftDriverKey];
+    var rightDriver = sessionData.driverMap[trackDominanceState.rightDriverKey];
+    if (!leftDriver || !rightDriver) {
+        trackDominanceTable.innerHTML = '<div class="track-dom-empty-card">'
+            + '<i class="fas fa-route"></i>'
+            + '<p>Δεν ήταν δυνατή η φόρτωση των selected drivers για το session.</p>'
+            + '</div>';
+        finalizeRenderedPanel('track-dominance');
+        return;
+    }
+
+    var visualPalette = buildTrackDominanceVisualPalette(leftDriver, rightDriver);
+    var leftChannels = visualPalette.leftChannels;
+    var rightChannels = visualPalette.rightChannels;
+    var metricComparison = buildTrackDominanceMetricComparison(leftDriver.bestLap, rightDriver.bestLap);
+    var finishDelta = pairData ? pairData.finishDelta : leftDriver.bestLap.duration - rightDriver.bestLap.duration;
+    var finishLeader = finishDelta <= 0 ? getTrackDominanceDriverShortLabel(leftDriver) : getTrackDominanceDriverShortLabel(rightDriver);
+    var finishTrailer = finishDelta <= 0 ? getTrackDominanceDriverShortLabel(rightDriver) : getTrackDominanceDriverShortLabel(leftDriver);
 
     var html = '<div class="track-dom-card">'
-        + '<div class="track-dom-head"><div class="track-dom-head-copy"><h3 class="track-dom-head-title">Team Fastest-Lap Dominance</h3><p class="track-dom-head-note">Η γραμμή χρωματίζεται με βάση το ποια ομάδα είναι μπροστά στο ίδιο σημείο του γύρου, χρησιμοποιώντας το fastest lap κάθε ομάδας στο selected session.</p></div><label class="track-dom-controls"><span class="track-dom-controls-label">Available sessions</span><select class="track-dom-select" data-track-dom-session aria-label="Επιλογή session για track dominance">' + sessionOptions + '</select></label></div>'
+        + '<div class="track-dom-head"><div class="track-dom-head-copy"><h3 class="track-dom-head-title">Fastest-Lap Track Dominance</h3><p class="track-dom-head-note">Η γραμμή χρωματίζεται με βάση το ποιος οδηγός είναι μπροστά στο ίδιο σημείο του γύρου, χρησιμοποιώντας το fastest lap κάθε selected driver στο session.</p></div><label class="track-dom-controls"><span class="track-dom-controls-label">Available sessions</span><select class="track-dom-select" data-track-dom-session aria-label="Επιλογή session για track dominance">' + sessionOptions + '</select></label></div>'
         + '<div class="track-dom-team-pickers">'
-        + '<label class="track-dom-controls"><span class="track-dom-controls-label">Team 1</span><select class="track-dom-select" data-track-dom-team="left" aria-label="Επιλογή πρώτης ομάδας για track dominance">' + leftTeamOptions + '</select></label>'
-        + '<label class="track-dom-controls"><span class="track-dom-controls-label">Team 2</span><select class="track-dom-select" data-track-dom-team="right" aria-label="Επιλογή δεύτερης ομάδας για track dominance">' + rightTeamOptions + '</select></label>'
+        + '<label class="track-dom-controls"><span class="track-dom-controls-label">Driver 1</span><select class="track-dom-select" data-track-dom-driver="left" aria-label="Επιλογή πρώτου οδηγού για track dominance">' + leftDriverOptions + '</select></label>'
+        + '<label class="track-dom-controls"><span class="track-dom-controls-label">Driver 2</span><select class="track-dom-select" data-track-dom-driver="right" aria-label="Επιλογή δεύτερου οδηγού για track dominance">' + rightDriverOptions + '</select></label>'
         + '</div>'
         + '<div class="track-dom-duel">'
-        + renderTrackDominanceTeamCard('left', leftTeam, leftChannels, metricComparison)
+        + renderTrackDominanceDriverCard('left', leftDriver, leftChannels, metricComparison)
         + '<div class="track-dom-vs-card"><div class="track-dom-vs-label">Session</div><div class="track-dom-vs-title">' + esc(session.meeting_name || session.circuit_short_name || session.location || 'Track') + '</div><div class="track-dom-vs-sub">' + esc((session.session_name || session.session_type || 'Session') + (formatSessionDateShort(session) ? ' · ' + formatSessionDateShort(session) : '')) + '</div><div class="track-dom-vs-delta">' + esc(finishLeader + ' -' + Math.abs(finishDelta).toFixed(3) + 's') + '</div><div class="track-dom-vs-note">on ' + esc(finishTrailer) + '</div></div>'
-        + renderTrackDominanceTeamCard('right', rightTeam, rightChannels, metricComparison)
+        + renderTrackDominanceDriverCard('right', rightDriver, rightChannels, metricComparison)
         + '</div>';
 
     if (!pairData || !pairData.pathD || !pairData.segments.length) {
@@ -2932,25 +3030,26 @@ function renderTrackDominance(sessionData, pairData, session) {
             svg += '<line class="track-dom-segment" x1="' + segment.x1.toFixed(2) + '" y1="' + segment.y1.toFixed(2) + '" x2="' + segment.x2.toFixed(2) + '" y2="' + segment.y2.toFixed(2) + '" style="--team-color:' + esc(segment.colorChannels) + ';" data-tooltip="' + esc(segment.tooltip) + '"><title>' + esc(segment.tooltip) + '</title></line>';
         });
 
-        if (pairData.startPoint) {
-            svg += '<circle class="track-dom-track-start" cx="' + pairData.startPoint.x.toFixed(2) + '" cy="' + pairData.startPoint.y.toFixed(2) + '" r="9"></circle>'
-                + '<circle class="track-dom-track-start-core" cx="' + pairData.startPoint.x.toFixed(2) + '" cy="' + pairData.startPoint.y.toFixed(2) + '" r="4.2"></circle>';
+        if (pairData.startLine) {
+            svg += '<line class="track-dom-track-start-line-backdrop" x1="' + pairData.startLine.x1.toFixed(2) + '" y1="' + pairData.startLine.y1.toFixed(2) + '" x2="' + pairData.startLine.x2.toFixed(2) + '" y2="' + pairData.startLine.y2.toFixed(2) + '"></line>'
+                + '<line class="track-dom-track-start-line" x1="' + pairData.startLine.x1.toFixed(2) + '" y1="' + pairData.startLine.y1.toFixed(2) + '" x2="' + pairData.startLine.x2.toFixed(2) + '" y2="' + pairData.startLine.y2.toFixed(2) + '"></line>'
+                + '<line class="track-dom-track-start-line-checker" x1="' + pairData.startLine.x1.toFixed(2) + '" y1="' + pairData.startLine.y1.toFixed(2) + '" x2="' + pairData.startLine.x2.toFixed(2) + '" y2="' + pairData.startLine.y2.toFixed(2) + '"></line>';
         }
 
         svg += '</svg>';
 
         html += '<div class="track-dom-map-card">'
-            + '<div class="track-dom-map-meta"><div class="track-dom-map-title">Track Dominance Map</div><div class="track-dom-map-note">Hover το track για live delta tooltip.</div></div>'
+            + '<div class="track-dom-map-meta"><div class="track-dom-map-title">Track Dominance Map</div><div class="track-dom-map-note">Hover το track για live delta tooltip · η checkered γραμμή δείχνει το start/finish.</div></div>'
             + '<div class="track-dom-track-shell" data-track-dom-shell>' + svg + '<div class="track-dom-tooltip" data-track-dom-tooltip></div></div>'
             + '<div class="track-dom-advantage">'
-            + '<div class="track-dom-advantage-head"><span class="track-dom-advantage-team left" style="--team-color:' + esc(leftChannels) + ';">' + esc(leftTeam.teamName) + ' ahead ' + esc(Math.round(pairData.leftLeadPct)) + '%</span><span class="track-dom-advantage-team right" style="--team-color:' + esc(rightChannels) + ';">' + esc(rightTeam.teamName) + ' ahead ' + esc(Math.round(pairData.rightLeadPct)) + '%</span></div>'
+            + '<div class="track-dom-advantage-head"><span class="track-dom-advantage-team left" style="--team-color:' + esc(leftChannels) + ';">' + esc(getTrackDominanceDriverShortLabel(leftDriver)) + ' ahead ' + esc(Math.round(pairData.leftLeadPct)) + '%</span><span class="track-dom-advantage-team right" style="--team-color:' + esc(rightChannels) + ';">' + esc(getTrackDominanceDriverShortLabel(rightDriver)) + ' ahead ' + esc(Math.round(pairData.rightLeadPct)) + '%</span></div>'
             + '<div class="track-dom-advantage-bar"><span class="track-dom-advantage-fill left" style="--team-color:' + esc(leftChannels) + ';width:' + pairData.leftLeadPct.toFixed(2) + '%;"></span><span class="track-dom-advantage-fill right" style="--team-color:' + esc(rightChannels) + ';width:' + pairData.rightLeadPct.toFixed(2) + '%;"></span></div>'
             + '<div class="track-dom-advantage-note">' + esc(finishLeader + ' -' + Math.abs(finishDelta).toFixed(3) + 's on ' + finishTrailer) + ' · peak swing ' + esc(Math.abs(pairData.peakDelta).toFixed(3)) + 's</div>'
             + '</div>'
             + '</div>';
     }
 
-    html += '<p class="track-dom-footnote">Source: OpenF1 `laps` + `location`. Κάθε ομάδα εκπροσωπείται από το single fastest lap της στο selected session.</p></div>';
+    html += '<p class="track-dom-footnote">Source: OpenF1 `laps` + `location`. Κάθε selected driver εκπροσωπείται από το single fastest lap του στο session.</p></div>';
 
     trackDominanceTable.innerHTML = html;
     finalizeRenderedPanel('track-dominance');
@@ -2985,19 +3084,19 @@ function loadTrackDominanceSessionData(sessionKey) {
     });
 }
 
-function loadTrackDominancePairData(session, sessionData, leftTeamKey, rightTeamKey) {
-    var cacheKey = [session.session_key, leftTeamKey, rightTeamKey].join('|');
+function loadTrackDominancePairData(session, sessionData, leftDriverKey, rightDriverKey) {
+    var cacheKey = [session.session_key, leftDriverKey, rightDriverKey].join('|');
     if (trackDominanceState.pairCache[cacheKey]) return Promise.resolve(trackDominanceState.pairCache[cacheKey]);
 
-    var leftTeam = sessionData.teamMap[leftTeamKey];
-    var rightTeam = sessionData.teamMap[rightTeamKey];
-    if (!leftTeam || !rightTeam) return Promise.resolve(null);
+    var leftDriver = sessionData.driverMap[leftDriverKey];
+    var rightDriver = sessionData.driverMap[rightDriverKey];
+    if (!leftDriver || !rightDriver) return Promise.resolve(null);
 
     return Promise.all([
-        loadTrackDominanceLocationSamples(session.session_key, leftTeam.bestLap),
-        loadTrackDominanceLocationSamples(session.session_key, rightTeam.bestLap)
+        loadTrackDominanceLocationSamples(session.session_key, leftDriver.bestLap),
+        loadTrackDominanceLocationSamples(session.session_key, rightDriver.bestLap)
     ]).then(function(payload) {
-        var built = buildTrackDominanceTrackMap(leftTeam, rightTeam, payload[0], payload[1]);
+        var built = buildTrackDominanceTrackMap(leftDriver, rightDriver, payload[0], payload[1]);
         trackDominanceState.pairCache[cacheKey] = built;
         return built;
     });
@@ -3033,11 +3132,11 @@ function loadAndRenderTrackDominance(useSkeleton) {
         })[0];
 
         return loadTrackDominanceSessionData(trackDominanceState.selectedSessionKey).then(function(sessionData) {
-            var selection = resolveTrackDominanceSelection(sessionData, trackDominanceState.leftTeamKey, trackDominanceState.rightTeamKey);
-            trackDominanceState.leftTeamKey = selection.leftTeamKey;
-            trackDominanceState.rightTeamKey = selection.rightTeamKey;
+            var selection = resolveTrackDominanceSelection(sessionData, trackDominanceState.leftDriverKey, trackDominanceState.rightDriverKey);
+            trackDominanceState.leftDriverKey = selection.leftDriverKey;
+            trackDominanceState.rightDriverKey = selection.rightDriverKey;
 
-            if (!selection.leftTeamKey || !selection.rightTeamKey) {
+            if (!selection.leftDriverKey || !selection.rightDriverKey) {
                 return {
                     session: selectedSession,
                     sessionData: sessionData,
@@ -3045,7 +3144,7 @@ function loadAndRenderTrackDominance(useSkeleton) {
                 };
             }
 
-            return loadTrackDominancePairData(selectedSession, sessionData, selection.leftTeamKey, selection.rightTeamKey).then(function(pairData) {
+            return loadTrackDominancePairData(selectedSession, sessionData, selection.leftDriverKey, selection.rightDriverKey).then(function(pairData) {
                 return {
                     session: selectedSession,
                     sessionData: sessionData,
@@ -4053,28 +4152,28 @@ if (trackDominanceTable) {
         var sessionSelect = event.target.closest('[data-track-dom-session]');
         if (sessionSelect) {
             trackDominanceState.selectedSessionKey = sessionSelect.value;
-            trackDominanceState.leftTeamKey = '';
-            trackDominanceState.rightTeamKey = '';
+            trackDominanceState.leftDriverKey = '';
+            trackDominanceState.rightDriverKey = '';
             trackDominanceState.loaded = false;
             writeStandingsURLState(true);
             loadAndRenderTrackDominance(true);
             return;
         }
 
-        var teamSelect = event.target.closest('[data-track-dom-team]');
-        if (!teamSelect) return;
+        var driverSelect = event.target.closest('[data-track-dom-driver]');
+        if (!driverSelect) return;
 
-        if (teamSelect.getAttribute('data-track-dom-team') === 'left') {
-            trackDominanceState.leftTeamKey = teamSelect.value;
+        if (driverSelect.getAttribute('data-track-dom-driver') === 'left') {
+            trackDominanceState.leftDriverKey = driverSelect.value;
             var cachedLeftSession = trackDominanceState.sessionCache[String(trackDominanceState.selectedSessionKey)];
             if (cachedLeftSession) {
-                trackDominanceState.rightTeamKey = resolveTrackDominanceSelection(cachedLeftSession, trackDominanceState.leftTeamKey, trackDominanceState.rightTeamKey, 'left').rightTeamKey;
+                trackDominanceState.rightDriverKey = resolveTrackDominanceSelection(cachedLeftSession, trackDominanceState.leftDriverKey, trackDominanceState.rightDriverKey, 'left').rightDriverKey;
             }
         } else {
-            trackDominanceState.rightTeamKey = teamSelect.value;
+            trackDominanceState.rightDriverKey = driverSelect.value;
             var cachedRightSession = trackDominanceState.sessionCache[String(trackDominanceState.selectedSessionKey)];
             if (cachedRightSession) {
-                trackDominanceState.leftTeamKey = resolveTrackDominanceSelection(cachedRightSession, trackDominanceState.leftTeamKey, trackDominanceState.rightTeamKey, 'right').leftTeamKey;
+                trackDominanceState.leftDriverKey = resolveTrackDominanceSelection(cachedRightSession, trackDominanceState.leftDriverKey, trackDominanceState.rightDriverKey, 'right').leftDriverKey;
             }
         }
 
@@ -4164,8 +4263,8 @@ window.addEventListener('popstate', function() {
     tyrePaceState.selectedSessionKey = nextState.tyreSession;
     dirtyAirState.selectedSessionKey = nextState.dirtyAirSession;
     trackDominanceState.selectedSessionKey = nextState.trackSession;
-    trackDominanceState.leftTeamKey = nextState.trackTeamA;
-    trackDominanceState.rightTeamKey = nextState.trackTeamB;
+    trackDominanceState.leftDriverKey = nextState.trackTeamA;
+    trackDominanceState.rightDriverKey = nextState.trackTeamB;
     pitStopsState.activeView = nextState.pitView;
     pitStopsState.selectedRound = nextState.pitRound;
     destructorsState.activeView = nextState.destructorsView;

@@ -566,9 +566,12 @@ body { overflow-y: auto !important; }
 .track-dom-track-base { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 22; stroke-linecap: round; stroke-linejoin: round; }
 [data-theme="light"] .track-dom-track-base { stroke: rgba(14,76,166,0.10); }
 .track-dom-segment { stroke: rgb(var(--team-color)); stroke-width: 13; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.18)); }
-.track-dom-track-start { fill: rgba(17,17,19,0.92); stroke: rgba(255,255,255,0.9); stroke-width: 2; }
-[data-theme="light"] .track-dom-track-start { fill: rgba(255,255,255,0.95); stroke: rgba(29,29,31,0.7); }
-.track-dom-track-start-core { fill: var(--st-accent); }
+.track-dom-track-start-line-backdrop { stroke: rgba(17,17,19,0.78); stroke-width: 12; stroke-linecap: square; }
+[data-theme="light"] .track-dom-track-start-line-backdrop { stroke: rgba(255,255,255,0.92); }
+.track-dom-track-start-line { stroke: rgba(255,255,255,0.98); stroke-width: 8; stroke-linecap: square; }
+[data-theme="light"] .track-dom-track-start-line { stroke: rgba(29,29,31,0.98); }
+.track-dom-track-start-line-checker { stroke: rgba(17,17,19,0.98); stroke-width: 4; stroke-linecap: square; stroke-dasharray: 4 4; }
+[data-theme="light"] .track-dom-track-start-line-checker { stroke: rgba(255,255,255,0.98); }
 .track-dom-tooltip { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -120%); min-width: 170px; max-width: min(320px, calc(100% - 28px)); padding: 0.65rem 0.78rem; border-radius: 14px; background: rgba(17,17,19,0.94); color: #fff; font-size: 0.74rem; font-weight: 700; line-height: 1.35; box-shadow: 0 16px 30px rgba(0,0,0,0.26); opacity: 0; pointer-events: none; transition: opacity 0.16s ease, transform 0.16s ease; }
 .track-dom-tooltip.is-active { opacity: 1; transform: translate(-50%, -125%); }
 [data-theme="light"] .track-dom-tooltip { background: rgba(29,29,31,0.94); }
