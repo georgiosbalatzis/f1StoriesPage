@@ -1,0 +1,61 @@
+Το audit κομμάτι έχει ολοκληρωθεί. Κλείνω τον local server και περνάω σε σύνθεση των findings με σειρά impact, συνδέοντας κάθε εύρημα με metrics και συγκεκριμένα σημεία του κώδικα.
+Έτρεξα local audit με Lighthouse 13.1.0 σε headless Chrome πάνω σε localhost για /, /blog-module/blog/ και /standings/, και έκανα παράλληλα static code audit στα βασικά bundles.
+Κύρια ευρήματα
+1.
+Το service worker κάνει υπερβολικό precache στο πρώτο hit και φουσκώνει άσκοπα το initial load σε όλες τις σελίδες. Στο sw.js precache-άρονται /, /home.css, legal pages, icons και το /images/logo.png, ενώ η εγγραφή γίνεται σε κάθε page load από το scripts/sw-register.js. Στο audit του /standings/ φάνηκε να κατεβάζονται και home assets εξαιτίας του install step. Αυτό είναι το πιο καθαρό housekeeping target.
+2.
+Το homepage LCP καθυστερεί κυρίως από το hero background, γιατί το image μπαίνει με JavaScript μετά το DOMContentLoaded στο scripts/background-randomizer.js, αντί να είναι deterministic asset από το HTML/CSS. Το hero markup είναι στο index.html. Στο mobile audit το top image request ήταν το bg1.avif και το home LCP πήγε στα 8.69s.
+
+# home
+accessibility 88
+- color-contrast 0 Background and foreground colors do not have a sufficient contrast ratio.
+- label 0 Form elements do not have associated labels
+- link-name 0 Links do not have a discernible name
+seo 91
+- meta-description 0 Document does not have a meta description
+
+# standings
+accessibility 87
+- color-contrast 0 Background and foreground colors do not have a sufficient contrast ratio.
+- heading-order 0 Heading elements are not in a sequentially-descending order
+- link-in-text-block 0 Links rely on color to be distinguishable.
+- link-name 0 Links do not have a discernible name
+seo 91
+- meta-description 0 Document does not have a meta description
+
+3.
+Η home/blog ροή υπερφορτώνει metadata και oversized images. Η homepage κατεβάζει όλο το blog-index-data.json από το blog-module/blog-loader.js για να εμφανίσει μόνο 3 cards, ενώ το αρχείο είναι ~160 KB. Ο generator στο blog-module/blog-processor.js χρησιμοποιεί το full hero image ως card image. Επιπλέον, το blog index στο blog-module/blog/index.html eager-loadάρει author avatars 165-260 KB το καθένα.
+4.
+Το /standings/ φορτώνει ένα μονολιθικό bundle παρότι τα tabs είναι lazy στο data layer. Το standings/standings.js είναι ~269 KB raw και το standings/standings.css ~100 KB raw, φορτώνονται εξαρχής από το standings/index.html, ενώ το lazy tab activation είναι μόνο στο standings/standings.js. Στο mobile Lighthouse βγήκαν ~223 KB unused JS και ~89 KB unused CSS.
+5.
+Τα tiny avatar renders στο standings τραβάνε υπερβολικά μεγάλες official εικόνες. Στο standings/standings.js υπάρχουν w_720 headshots που μετά εμφανίζονται ως 40-50px circles. Αυτό φάνηκε άμεσα στο network: τα top image requests του standings ήταν 56-67 KB ανά avatar.
+6.
+Η CSS στρατηγική είναι ακριβή σε όλες τις σελίδες. Το homepage, blog και standings φορτώνουν μαζί Bootstrap, global styles, theme overrides, shared nav και Font Awesome από τα index.html, blog-module/blog/index.html και standings/index.html. Το Lighthouse έδειξε ~125-190 KB unused CSS σχεδόν παντού.
+7.
+Το blog index έχει μεγάλο inline controller script στο blog-module/blog/index.html, άρα δεν cache-άρεται σαν shared asset. Στην ίδια σελίδα φορτώνεται και Cloudflare-only script στο blog-module/blog/index.html, που στο local audit έσκασε 404 και είναι ο βασικός λόγος που το Best Practices έπεσε στο 96.
+8.
+Τα bottlenecks είναι κυρίως network/bytes, όχι CPU. Τα TBT ήταν χαμηλά σε όλες τις μετρήσεις, άρα δεν έχει νόημα να κυνηγήσεις πρώτα micro-optimizations σε loops όταν το πραγματικό κόστος είναι assets, CSS overlap, service worker install overhead και image policy.
+Lighthouse snapshot
+•
+Home: mobile 62, desktop 94. FCP 5.06s, LCP 8.69s, TBT 37.5ms.
+•
+Blog index: mobile 63. FCP 4.59s, LCP 10.68s, TBT 15ms.
+•
+Standings: mobile 85, desktop 100. FCP 2.25s, LCP 3.94s, TBT 8.5ms.
+Δευτερεύοντα Lighthouse θέματα
+•
+Λείπει meta description και στις 3 audited σελίδες στα head sections των index.html, blog-module/blog/index.html και standings/index.html.
+•
+Υπάρχουν accessibility gaps σε contrast, link naming, heading order και labels. Το home είχε και form-label issue.
+Προτεινόμενη σειρά housekeeping
+1.
+Κόψε δραστικά το SW install precache στο sw.js και κάνε register μετά το first idle ή μετά το δεύτερο navigation.
+2.
+Βγάλε το homepage hero από JS-injected background και πήγαινέ το σε deterministic <picture> ή CSS preload strategy με mobile-sized variants.
+3.
+Φτιάξε dedicated home-latest.json για τα 3 homepage cards και generated thumbnails για blog cards αντί για full hero images.
+4.
+Σπάσε το standings σε per-tab JS/CSS chunks και χαμήλωσε όλα τα avatar assets από w_720 σε w_80/w_120 ή local thumb cache.
+5.
+Βγάλε το inline blog index script σε versioned external file, αφαίρεσε το Cloudflare-only script όπου δεν χρειάζεται, και πρόσθεσε minify pipeline για CSS/JS.
+Αν θέλεις, επόμενο βήμα μπορώ να περάσω από analysis σε implementation και να κάνω το housekeeping σε P0/P1 σειρά: service worker, hero/media strategy, home/blog payload trimming, standings bundle split.
