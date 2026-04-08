@@ -77,6 +77,16 @@ function escapeHtmlAttribute(value) {
         .replace(/>/g, '&gt;');
 }
 
+function getCardThumbnailPath(imagePath) {
+    if (!imagePath) return CONFIG.DEFAULT_BLOG_IMAGE;
+    if (!imagePath.startsWith('/blog-module/blog-entries/')) return imagePath;
+    const imageDir = path.posix.dirname(imagePath);
+    const imageName = path.posix.basename(imagePath, path.posix.extname(imagePath));
+    const cardThumbnail = `${imageDir}/${imageName}-card.webp`;
+    const cardThumbnailFsPath = path.join(__dirname, cardThumbnail.replace(/^\/blog-module\//, ''));
+    return fs.existsSync(cardThumbnailFsPath) ? cardThumbnail : imagePath;
+}
+
 // ─── Utility functions ───────────────────────────────────────────────────────
 const utils = {
     isSourceDocument(fileName) {
@@ -2315,6 +2325,17 @@ if (!isMainThread) {
         const indexPath = path.join(__dirname, 'blog-index-data.json');
         fs.writeFileSync(indexPath, JSON.stringify({ posts: indexPosts }, null, 0));
         console.log(`Blog index data saved to ${indexPath} (${Math.round(JSON.stringify({ posts: indexPosts }).length / 1024)} KB)`);
+
+        const homeLatest = blogPosts.slice(0, 3).map(p => ({
+            title: p.title,
+            slug: p.id,
+            date: p.date,
+            excerpt: p.excerpt,
+            thumbnail: getCardThumbnailPath(p.image)
+        }));
+        const homeLatestPath = path.join(__dirname, 'home-latest.json');
+        fs.writeFileSync(homeLatestPath, JSON.stringify(homeLatest, null, 0));
+        console.log(`Home latest data saved to ${homeLatestPath} (${Math.round(JSON.stringify(homeLatest).length / 1024)} KB)`);
         
         // ── Generate related articles (runs on main thread, fast) ────────────
         blogPosts.forEach((post, index) => {
