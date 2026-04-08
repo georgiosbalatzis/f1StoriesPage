@@ -14,6 +14,35 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="F1 Stories">
     <meta name="mobile-web-app-capable" content="yes">
+    <script>
+        window.__F1StoriesHeroBackgrounds = [
+            { desktop: { avif: '/images/bg/bg8.avif', webp: '/images/bg/bg8.webp' }, mobile: { avif: '/images/bg/bg8-mobile.avif', webp: '/images/bg/bg8-mobile.webp' }, desktopWidth: 1617, mobileWidth: 768 },
+            { desktop: { avif: '/images/bg/bg5.avif', webp: '/images/bg/bg5.webp' }, mobile: { avif: '/images/bg/bg5-mobile.avif', webp: '/images/bg/bg5-mobile.webp' }, desktopWidth: 2560, mobileWidth: 768 },
+            { desktop: { avif: '/images/bg/bg6.avif', webp: '/images/bg/bg6.webp' }, mobile: { avif: '/images/bg/bg6-mobile.avif', webp: '/images/bg/bg6-mobile.webp' }, desktopWidth: 1917, mobileWidth: 768 },
+            { desktop: { avif: '/images/bg/bg3.avif', webp: '/images/bg/bg3.webp' }, mobile: { avif: '/images/bg/bg3-mobile.avif', webp: '/images/bg/bg3-mobile.webp' }, desktopWidth: 1920, mobileWidth: 768 },
+            { desktop: { avif: '/images/bg/bg7.avif', webp: '/images/bg/bg7.webp' }, mobile: { avif: '/images/bg/bg7-mobile.avif', webp: '/images/bg/bg7-mobile.webp' }, desktopWidth: 1200, mobileWidth: 768 },
+            { desktop: { avif: '/images/bg/bg4.avif', webp: '/images/bg/bg4.webp' }, mobile: { avif: '/images/bg/bg4-mobile.avif', webp: '/images/bg/bg4-mobile.webp' }, desktopWidth: 2048, mobileWidth: 768 },
+            { desktop: { avif: '/images/bg/bg1.avif', webp: '/images/bg/bg1.webp' }, mobile: { avif: '/images/bg/bg1-mobile.avif', webp: '/images/bg/bg1-mobile.webp' }, desktopWidth: 1125, mobileWidth: 768 },
+            { desktop: { avif: '/images/bg/bg2.avif', webp: '/images/bg/bg2.webp' }, mobile: { avif: '/images/bg/bg2-mobile.avif', webp: '/images/bg/bg2-mobile.webp' }, desktopWidth: 1600, mobileWidth: 768 }
+        ];
+        (function () {
+            var now = new Date();
+            var startOfYear = Date.UTC(now.getFullYear(), 0, 0);
+            var today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+            var dayOfYear = Math.max(1, Math.floor((today - startOfYear) / 86400000));
+            var backgrounds = window.__F1StoriesHeroBackgrounds || [];
+            if (!backgrounds.length) return;
+            var selected = backgrounds[(dayOfYear - 1) % backgrounds.length];
+            window.__F1StoriesHeroBackground = selected;
+            var preload = document.createElement('link');
+            preload.rel = 'preload';
+            preload.as = 'image';
+            preload.setAttribute('fetchpriority', 'high');
+            preload.setAttribute('imagesrcset', selected.mobile.avif + ' ' + selected.mobileWidth + 'w, ' + selected.desktop.avif + ' ' + selected.desktopWidth + 'w');
+            preload.setAttribute('imagesizes', '100vw');
+            document.head.appendChild(preload);
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -73,7 +102,13 @@
 
 <!-- ═══ HERO — no buttons, Greek text ═══ -->
 <section id="hero">
-    <div class="hero-overlay"></div>
+    <div class="hero-overlay image-bg" aria-hidden="true">
+        <picture id="hero-picture">
+            <source id="hero-source-avif" type="image/avif">
+            <source id="hero-source-webp" type="image/webp">
+            <img id="hero-image" src="/images/bg/bg8.webp" alt="" loading="eager" fetchpriority="high" decoding="async" sizes="100vw">
+        </picture>
+    </div>
     <div class="container"><div class="row justify-content-center text-center"><div class="col-lg-8"><div class="hero-content">
         <h1>F1 Stories Podcast</h1>
         <p class="hero-subtitle">Ανάλυση αγώνων, εσωτερικές ιστορίες &amp; τολμηρές απόψεις — κατευθείαν από το paddock στα αυτιά σου.</p>

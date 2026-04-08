@@ -1,43 +1,60 @@
-// background-randomizer.js
-// Homepage-only background selection from a fixed, optimized set.
 (function () {
     'use strict';
 
-    var CURATED_BACKGROUNDS = [
-        'images/bg/bg8.avif',
-        'images/bg/bg5.avif',
-        'images/bg/bg6.avif',
-        'images/bg/bg3.avif',
-        'images/bg/bg7.avif',
-        'images/bg/bg4.avif',
-        'images/bg/bg1.avif',
-        'images/bg/bg2.webp'
-    ];
-
-    function shouldSkipDiscovery() {
-        if (!navigator.connection) return false;
-        return navigator.connection.saveData ||
-            navigator.connection.effectiveType === 'slow-2g' ||
-            navigator.connection.effectiveType === '2g' ||
-            navigator.connection.effectiveType === '3g';
+    function getDayOfYear(now) {
+        var current = now || new Date();
+        var startOfYear = Date.UTC(current.getFullYear(), 0, 0);
+        var today = Date.UTC(current.getFullYear(), current.getMonth(), current.getDate());
+        return Math.max(1, Math.floor((today - startOfYear) / 86400000));
     }
 
     function pickBackground() {
-        if (shouldSkipDiscovery()) return CURATED_BACKGROUNDS[0];
-        var dayIndex = Math.floor(Date.now() / 86400000);
-        return CURATED_BACKGROUNDS[dayIndex % CURATED_BACKGROUNDS.length];
+        var curated = window.__F1StoriesHeroBackgrounds || [];
+        if (!curated.length) return null;
+        if (window.__F1StoriesHeroBackground) return window.__F1StoriesHeroBackground;
+        var dayOfYear = getDayOfYear(new Date());
+        var selected = curated[(dayOfYear - 1) % curated.length];
+        window.__F1StoriesHeroBackground = selected;
+        return selected;
+    }
+
+    function buildSrcSet(format, selection) {
+        if (!selection || !selection.mobile || !selection.desktop) return '';
+        if (!selection.mobile[format] || !selection.desktop[format]) return '';
+        return selection.mobile[format] + ' ' + String(selection.mobileWidth || 768) + 'w, ' +
+            selection.desktop[format] + ' ' + String(selection.desktopWidth || 1280) + 'w';
     }
 
     function initBackground() {
-        var heroOverlay = document.querySelector('.hero-overlay');
-        if (!heroOverlay) return;
+        var avifSource = document.getElementById('hero-source-avif');
+        var webpSource = document.getElementById('hero-source-webp');
+        var heroImage = document.getElementById('hero-image');
+        var selection = pickBackground();
+        var avifSrcSet;
+        var webpSrcSet;
 
-        heroOverlay.classList.add('image-bg');
-        heroOverlay.style.backgroundImage = 'url("' + pickBackground() + '")';
+        if (!avifSource || !webpSource || !heroImage || !selection) return;
+
+        avifSrcSet = buildSrcSet('avif', selection);
+        webpSrcSet = buildSrcSet('webp', selection);
+
+        if (avifSrcSet) {
+            avifSource.srcset = avifSrcSet;
+        } else {
+            avifSource.removeAttribute('srcset');
+        }
+
+        if (webpSrcSet) {
+            webpSource.srcset = webpSrcSet;
+            heroImage.srcset = webpSrcSet;
+        }
+
+        heroImage.sizes = '100vw';
+        heroImage.src = selection.desktop.webp || selection.mobile.webp || heroImage.src;
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initBackground);
+        document.addEventListener('DOMContentLoaded', initBackground, { once: true });
     } else {
         initBackground();
     }

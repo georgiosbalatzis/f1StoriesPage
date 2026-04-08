@@ -4,35 +4,19 @@
    blog entries and API calls, offline fallback for HTML.
    ============================================================ */
 
-const CACHE_NAME = 'f1stories-v4';
+const CACHE_NAME = 'f1stories-v5';
 const OFFLINE_URL = '/offline.html';
 
-const SHELL_ASSETS = [
-  '/',
-  '/styles.css',
-  '/styles/legal.css',
-  '/home.css',
-  '/theme-overrides.css',
-  '/styles/shared-nav.css',
-  '/scripts/analytics.js',
-  '/scripts/cookie-consent.js',
-  '/scripts/f1-optimized.js',
-  '/scripts/shared-nav.js',
-  '/scripts/sw-register.js',
-  '/images/logo.png',
-  '/images/icons/icon-192.png',
-  '/images/icons/icon-512.png',
-  '/manifest.json',
-  '/privacy/privacy.html',
-  '/privacy/terms.html',
-  OFFLINE_URL
+const OFFLINE_SHELL_ASSETS = [
+  OFFLINE_URL,
+  '/images/logo.png'
 ];
 
 // ── Install: pre-cache shell assets ──────────────
 self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE_NAME).then(function (cache) {
-      return cache.addAll(SHELL_ASSETS);
+      return cache.addAll(OFFLINE_SHELL_ASSETS);
     }).then(function () {
       return self.skipWaiting();
     })
