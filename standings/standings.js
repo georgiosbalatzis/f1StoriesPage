@@ -4870,6 +4870,22 @@ function buildDebriefTeamCellHTML(entry) {
         + '</div>';
 }
 
+function deriveDebriefTeamCode(teamKey, teamName) {
+    var key = resolveTeamId(teamKey, teamName);
+    if (key === 'mclaren') return 'MCL';
+    if (key === 'red_bull') return 'RBR';
+    if (key === 'ferrari') return 'FER';
+    if (key === 'mercedes') return 'MER';
+    if (key === 'aston_martin') return 'AMR';
+    if (key === 'alpine') return 'ALP';
+    if (key === 'haas') return 'HAA';
+    if (key === 'rb') return 'RB';
+    if (key === 'williams') return 'WIL';
+    if (key === 'audi') return 'AUD';
+    if (key === 'cadillac') return 'CAD';
+    return String(teamName || '').replace(/[^A-Za-z0-9]+/g, '').toUpperCase().slice(0, 3) || 'TM';
+}
+
 function normalizeDebriefSnapshot(payload) {
     function normalizeEntries(list) {
         if (!Array.isArray(list)) return [];
@@ -4906,6 +4922,31 @@ function normalizeDebriefSnapshot(payload) {
         });
     }
 
+    function normalizeCompoundUsageEntries(list) {
+        if (!Array.isArray(list)) return [];
+        return list.map(function(entry, index) {
+            var fullName = String(entry && (entry.fullName || entry.name || entry.code) || 'Unknown Driver');
+            var driverId = normalizeDriverLookupKey(entry && (entry.driverId || entry.code || fullName));
+            var code = String(entry && (entry.code || deriveSnapshotAcronym(fullName)) || 'DRV').toUpperCase().slice(0, 3);
+            var teamKey = resolveTeamId(entry && entry.teamKey || '', entry && entry.teamName || '');
+            var teamName = getCanonicalTeamName(teamKey) || getCanonicalTeamName(entry && entry.teamName || '') || String(entry && entry.teamName || teamKey || 'Unknown');
+            var teamColor = getCanonicalTeamColor(teamKey, teamName, entry && entry.teamColor || '');
+            return {
+                order: parseInt(entry && entry.order, 10) || (index + 1),
+                driverId: driverId,
+                code: code,
+                fullName: fullName,
+                teamKey: teamKey,
+                teamName: teamName,
+                teamColor: teamColor,
+                headshot: getPreferredHeadshot(driverId, fullName, ''),
+                soft: parseInt(entry && entry.soft, 10) || 0,
+                medium: parseInt(entry && entry.medium, 10) || 0,
+                hard: parseInt(entry && entry.hard, 10) || 0
+            };
+        });
+    }
+
     function normalizeTeamEntries(list) {
         if (!Array.isArray(list)) return [];
         return list.map(function(entry, index) {
@@ -4917,6 +4958,8 @@ function normalizeDebriefSnapshot(payload) {
                 teamKey: teamKey,
                 teamName: teamName,
                 teamColor: teamColor,
+                code: String(entry && entry.code || deriveDebriefTeamCode(teamKey, teamName)).toUpperCase().slice(0, 4),
+                lapTime: String(entry && entry.lapTime || ''),
                 s1: String(entry && entry.s1 || ''),
                 s2: String(entry && entry.s2 || ''),
                 s3: String(entry && entry.s3 || ''),
@@ -4946,6 +4989,7 @@ function normalizeDebriefSnapshot(payload) {
             singleLap: normalizeEntries(entry && entry.singleLap),
             longRun: normalizeEntries(entry && entry.longRun),
             tyreDeg: normalizeEntries(entry && entry.tyreDeg),
+            compoundUsage: normalizeCompoundUsageEntries(entry && entry.compoundUsage),
             teamIdealLap: normalizeTeamEntries(entry && entry.teamIdealLap),
             cornerPerformance: normalizeTeamEntries(entry && entry.cornerPerformance),
             racePacePrediction: normalizeTeamEntries(entry && entry.racePacePrediction)
@@ -4994,25 +5038,86 @@ function buildDebriefViewSwitch() {
         + '</div></div>';
 }
 
+function formatDebriefAxisTick(value) {
+    return String(value.toFixed(1)).replace(/\.0$/, '');
+}
+
+function formatDebriefGapStat(gapSeconds, baseSeconds) {
+    var pct = baseSeconds > 0 ? (gapSeconds / baseSeconds) * 100 : 0;
+    return '+' + gapSeconds.toFixed(2) + ' (' + pct.toFixed(2) + '%)';
+}
+
+function buildDebriefPaceChartHTML(title, rows) {
+    if (!rows || !rows.length) {
+        return '<div class="debrief-empty"><i class="fas fa-chart-bar"></i><p>No chart data available for this round.</p></div>';
+    }
+
+    var fastest = rows[0].seconds;
+    var maxGap = rows.reduce(function(max, entry) {
+        return Math.max(max, entry.seconds - fastest);
+    }, 0);
+    var axisMax = Math.max(0.5, Math.ceil((maxGap + 0.35) * 2) / 2);
+    var ticks = [];
+    var tick;
+
+    for (tick = 0; tick <= axisMax + 0.001; tick += 0.5) {
+        ticks.push(tick);
+    }
+
+    var rowsHTML = rows.map(function(entry) {
+        var gap = entry.seconds - fastest;
+        var width = gap > 0 ? Math.max(2, (gap / axisMax) * 100) : 0;
+        var valueStyle = gap > 0
+            ? 'left:calc(' + width.toFixed(3) + '% + 0.55rem);'
+            : 'left:0.5rem;';
+        return '<div class="debrief-hchart-row">'
+            + '<div class="debrief-hchart-label">' + esc(entry.teamName) + '</div>'
+            + '<div class="debrief-hchart-plot" style="--debrief-grid-count:' + Math.max(1, ticks.length - 1) + ';">'
+            + (gap > 0 ? '<div class="debrief-hchart-bar" style="width:' + width.toFixed(3) + '%;background:#' + esc(entry.teamColor) + ';"></div>' : '')
+            + '<div class="debrief-hchart-value" style="' + valueStyle + '">' + esc(formatDebriefGapStat(gap, fastest)) + '</div>'
+            + '</div>'
+            + '</div>';
+    }).join('');
+
+    var axisHTML = ticks.map(function(value) {
+        return '<span>' + esc(formatDebriefAxisTick(value)) + '</span>';
+    }).join('');
+
+    return '<div class="debrief-figure">'
+        + '<div class="debrief-figure-title">' + esc(title) + '</div>'
+        + '<div class="debrief-hchart-shell">'
+        + rowsHTML
+        + '<div class="debrief-hchart-axis">' + axisHTML + '</div>'
+        + '<div class="debrief-hchart-xlabel">Gap to Fastest - Lap (s)</div>'
+        + '</div></div>';
+}
+
 function buildDebriefSingleLapHTML(round) {
     if (!round || !round.singleLap.length) {
         return '<div class="debrief-empty"><i class="fas fa-flag-checkered"></i><p>No single-lap data available for this round.</p></div>';
     }
 
-    var rows = round.singleLap.map(function(entry, index) {
-        var compoundClass = getDebriefCompoundClass(entry.compound);
-        var gapText = (entry.gap && entry.gap !== 'null') ? entry.gap : (index === 0 ? 'Leader' : '');
-        return '<tr>'
-            + '<td>' + (index + 1) + '</td>'
-            + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
-            + '<td><span class="debrief-time">' + esc(entry.lapTime) + '</span></td>'
-            + '<td><span class="debrief-gap">' + esc(gapText) + '</span></td>'
-            + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
-            + '<td>' + esc(String(entry.laps || 0)) + ' laps</td>'
-            + '</tr>';
-    }).join('');
+    var teamsByKey = {};
+    round.singleLap.forEach(function(entry) {
+        var seconds = parseTimeSeconds(entry.lapTime);
+        if (!isFiniteNumber(seconds)) return;
+        if (!teamsByKey[entry.teamKey] || seconds < teamsByKey[entry.teamKey].seconds) {
+            teamsByKey[entry.teamKey] = {
+                teamKey: entry.teamKey,
+                teamName: entry.teamName,
+                teamColor: entry.teamColor,
+                seconds: seconds
+            };
+        }
+    });
 
-    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Best Lap</th><th>Gap</th><th>Tyre</th><th>Push</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    var rows = Object.keys(teamsByKey).map(function(teamKey) {
+        return teamsByKey[teamKey];
+    }).sort(function(a, b) {
+        return a.seconds - b.seconds;
+    });
+
+    return buildDebriefPaceChartHTML('Qualifying Simulation Pace', rows);
 }
 
 function buildDebriefLongRunHTML(round) {
@@ -5036,46 +5141,234 @@ function buildDebriefLongRunHTML(round) {
     return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Avg Lap</th><th>Delta</th><th>Tyre</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
-function buildDebriefTyreDegHTML(round) {
-    if (!round || !round.tyreDeg.length) {
-        return '<div class="debrief-empty"><i class="fas fa-chart-line"></i><p>No tyre degradation data available for this round.</p></div>';
+function buildDebriefCompoundUsageHTML(round) {
+    var rows = round && round.compoundUsage && round.compoundUsage.length
+        ? round.compoundUsage.slice().sort(function(a, b) { return (a.order || 0) - (b.order || 0); })
+        : [];
+
+    if (!rows.length && round && round.singleLap.length) {
+        var driverMap = {};
+
+        function ensureDriver(entry, index) {
+            var key = entry.driverId;
+            if (!driverMap[key]) {
+                driverMap[key] = {
+                    driverId: key,
+                    code: entry.code,
+                    order: typeof index === 'number' ? index : Object.keys(driverMap).length + 1,
+                    soft: 0,
+                    medium: 0,
+                    hard: 0
+                };
+            }
+            return driverMap[key];
+        }
+
+        function addLaps(target, compound, laps) {
+            var count = parseInt(laps, 10) || 0;
+            if (!count) return;
+            var value = String(compound || '').toLowerCase();
+            if (value.indexOf('soft') !== -1) target.soft += count;
+            else if (value.indexOf('medium') !== -1) target.medium += count;
+            else if (value.indexOf('hard') !== -1) target.hard += count;
+        }
+
+        round.singleLap.forEach(function(entry, index) {
+            addLaps(ensureDriver(entry, index), entry.compound, entry.laps);
+        });
+
+        round.longRun.forEach(function(entry) {
+            addLaps(ensureDriver(entry), entry.compound, entry.stintLaps);
+        });
+
+        rows = Object.keys(driverMap).map(function(driverId) {
+            return driverMap[driverId];
+        }).sort(function(a, b) {
+            return a.order - b.order;
+        });
     }
 
-    var rows = round.tyreDeg.map(function(entry, index) {
-        var compoundClass = getDebriefCompoundClass(entry.compound);
-        var degClass = getDebriefDegClass(entry.deg);
-        return '<tr>'
-            + '<td>' + (index + 1) + '</td>'
-            + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
-            + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
-            + '<td><span class="debrief-time ' + degClass + '">' + esc(entry.deg) + ' s/lap</span></td>'
-            + '<td><span class="debrief-gap">' + esc(entry.window || 'Friday long run') + '</span></td>'
-            + '<td>' + esc(String(entry.stintLaps || 0)) + ' laps</td>'
-            + '</tr>';
+    if (!rows.length) {
+        return '<div class="debrief-empty"><i class="fas fa-layer-group"></i><p>No compound-usage data available for this round.</p></div>';
+    }
+
+    var maxTotal = rows.reduce(function(max, entry) {
+        return Math.max(max, entry.soft + entry.medium + entry.hard);
+    }, 0);
+    var axisMax = Math.max(5, Math.ceil(maxTotal / 5) * 5);
+    var ticks = [];
+    var tick;
+
+    for (tick = 0; tick <= axisMax; tick += 5) {
+        ticks.push(tick);
+    }
+
+    var barsHTML = rows.map(function(entry) {
+        var hardHeight = axisMax > 0 ? (entry.hard / axisMax) * 100 : 0;
+        var mediumHeight = axisMax > 0 ? (entry.medium / axisMax) * 100 : 0;
+        var softHeight = axisMax > 0 ? (entry.soft / axisMax) * 100 : 0;
+        return '<div class="debrief-compound-col">'
+            + '<div class="debrief-compound-stack">'
+            + (entry.hard ? '<span class="debrief-compound-seg hard" style="height:' + hardHeight.toFixed(3) + '%;" title="Hard ' + esc(String(entry.hard)) + ' laps"></span>' : '')
+            + (entry.medium ? '<span class="debrief-compound-seg medium" style="height:' + mediumHeight.toFixed(3) + '%;" title="Medium ' + esc(String(entry.medium)) + ' laps"></span>' : '')
+            + (entry.soft ? '<span class="debrief-compound-seg soft" style="height:' + softHeight.toFixed(3) + '%;" title="Soft ' + esc(String(entry.soft)) + ' laps"></span>' : '')
+            + '</div>'
+            + '<div class="debrief-compound-code">' + esc(entry.code) + '</div>'
+            + '</div>';
     }).join('');
 
-    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Tyre</th><th>Drop-off</th><th>Window</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    var ticksHTML = ticks.map(function(value) {
+        return '<span>' + esc(String(value)) + '</span>';
+    }).join('');
+
+    return '<div class="debrief-figure">'
+        + '<div class="debrief-figure-title">Laps Completed By Compound FP2</div>'
+        + '<div class="debrief-compound-chart">'
+        + '<div class="debrief-compound-ytitle">Laps</div>'
+        + '<div class="debrief-compound-axis">' + ticksHTML + '</div>'
+        + '<div class="debrief-compound-grid" style="--debrief-grid-count:' + Math.max(1, ticks.length - 1) + ';">' + barsHTML + '</div>'
+        + '</div></div>';
+}
+
+function buildDebriefTyreDegHTML(round) {
+    return buildDebriefCompoundUsageHTML(round);
+}
+
+function buildDebriefIdealScatterSVG(rows, title, color, xMin, xMax) {
+    var width = 520;
+    var left = 54;
+    var right = 10;
+    var top = 10;
+    var bottom = 28;
+    var rowGap = 16;
+    var plotHeight = rows.length * rowGap;
+    var height = top + bottom + plotHeight;
+    var plotWidth = width - left - right;
+    var range = Math.max(0.5, xMax - xMin);
+    var tickStep = 0.5;
+    var ticks = [];
+    var tick;
+
+    for (tick = xMin; tick <= xMax + 0.001; tick += tickStep) {
+        ticks.push(tick);
+    }
+
+    var gridHTML = ticks.map(function(value) {
+        var x = left + ((value - xMin) / range) * plotWidth;
+        return '<line x1="' + x.toFixed(2) + '" y1="' + top + '" x2="' + x.toFixed(2) + '" y2="' + (top + plotHeight) + '" class="debrief-ideal-grid-line"></line>'
+            + '<text x="' + x.toFixed(2) + '" y="' + (height - 6) + '" text-anchor="middle" class="debrief-ideal-tick">' + esc(formatDebriefAxisTick(value)) + '</text>';
+    }).join('');
+
+    var pointsHTML = rows.map(function(entry, index) {
+        var y = top + index * rowGap + rowGap / 2;
+        var x = left + ((entry.plotSeconds - xMin) / range) * plotWidth;
+        return '<text x="' + (left - 8) + '" y="' + (y + 4) + '" text-anchor="end" class="debrief-ideal-label">' + esc(entry.code) + '</text>'
+            + '<circle cx="' + x.toFixed(2) + '" cy="' + y.toFixed(2) + '" r="4.8" fill="' + esc(color) + '"></circle>';
+    }).join('');
+
+    return '<div class="debrief-ideal-panel">'
+        + '<div class="debrief-ideal-panel-title">' + esc(title) + '</div>'
+        + '<svg class="debrief-ideal-svg" viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="' + esc(title) + '">'
+        + gridHTML + pointsHTML
+        + '</svg>'
+        + '<div class="debrief-ideal-axis-label">Lap Time (s)</div>'
+        + '</div>';
+}
+
+function buildDebriefIdealGapBarsHTML(rows) {
+    var maxGap = rows.reduce(function(max, entry) {
+        return Math.max(max, entry.idealGap);
+    }, 0);
+    var axisMax = Math.max(0.1, Math.ceil((maxGap + 0.02) * 10) / 10);
+    var ticks = [];
+    var tick;
+
+    for (tick = 0; tick <= axisMax + 0.001; tick += 0.1) {
+        ticks.push(Number(tick.toFixed(3)));
+    }
+
+    var ticksHTML = ticks.map(function(value) {
+        return '<span>' + esc(value === 0 ? '0' : value.toFixed(1)) + '</span>';
+    }).join('');
+
+    var barsHTML = rows.map(function(entry) {
+        var height = axisMax > 0 ? (entry.idealGap / axisMax) * 100 : 0;
+        var label = entry.idealGap > 0 ? '+' + entry.idealGap.toFixed(3) : '+0';
+        return '<div class="debrief-ideal-bar-col">'
+            + '<div class="debrief-ideal-bar-value">' + esc(label) + '</div>'
+            + '<div class="debrief-ideal-bar-track"><div class="debrief-ideal-bar" style="height:' + height.toFixed(3) + '%;"></div></div>'
+            + '<div class="debrief-ideal-bar-label">' + esc(entry.code) + '</div>'
+            + '</div>';
+    }).join('');
+
+    return '<div class="debrief-ideal-bars-wrap">'
+        + '<div class="debrief-ideal-panel-title">Gap to Ideal Lap</div>'
+        + '<div class="debrief-ideal-bars-chart">'
+        + '<div class="debrief-ideal-bars-ytitle">Gap (s)</div>'
+        + '<div class="debrief-ideal-bars-axis">' + ticksHTML + '</div>'
+        + '<div class="debrief-ideal-bars-grid" style="--debrief-grid-count:' + Math.max(1, ticks.length - 1) + ';">' + barsHTML + '</div>'
+        + '</div>'
+        + '</div>';
 }
 
 function buildDebriefTeamIdealHTML(round) {
     if (!round || !round.teamIdealLap.length) {
-        return '<div class="debrief-empty"><i class="fas fa-users"></i><p>No team ideal-lap data available for this round.</p></div>';
+        return '<div class="debrief-empty"><i class="fas fa-users"></i><p>No ideal-lap analysis available for this round.</p></div>';
     }
 
-    var rows = round.teamIdealLap.map(function(entry, index) {
-        var gapText = (entry.gapToFirst && entry.gapToFirst !== 'null') ? entry.gapToFirst : '—';
-        return '<tr>'
-            + '<td>' + esc(String(entry.pos || (index + 1))) + '</td>'
-            + '<td>' + buildDebriefTeamCellHTML(entry) + '</td>'
-            + '<td><span class="debrief-sector">' + esc(entry.s1) + '</span></td>'
-            + '<td><span class="debrief-sector">' + esc(entry.s2) + '</span></td>'
-            + '<td><span class="debrief-sector">' + esc(entry.s3) + '</span></td>'
-            + '<td><span class="debrief-time">' + esc(entry.idealLap) + '</span></td>'
-            + '<td><span class="debrief-gap">' + esc(gapText) + '</span></td>'
-            + '</tr>';
-    }).join('');
+    var rows = round.teamIdealLap.slice().map(function(entry) {
+        return {
+            pos: parseInt(entry.pos, 10) || 0,
+            code: entry.code || deriveDebriefTeamCode(entry.teamKey, entry.teamName),
+            teamName: entry.teamName,
+            lapSeconds: parseTimeSeconds(entry.lapTime || entry.idealLap),
+            idealSeconds: parseTimeSeconds(entry.idealLap),
+            plotSeconds: 0
+        };
+    }).filter(function(entry) {
+        return isFiniteNumber(entry.lapSeconds) && isFiniteNumber(entry.idealSeconds);
+    });
 
-    return '<div class="debrief-table"><table><thead><tr><th>Pos</th><th>Team</th><th>S1</th><th>S2</th><th>S3</th><th>Ideal Lap</th><th>Gap</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    if (!rows.length) {
+        return '<div class="debrief-empty"><i class="fas fa-users"></i><p>No ideal-lap analysis available for this round.</p></div>';
+    }
+
+    var classified = rows.slice().sort(function(a, b) {
+        if (a.pos && b.pos && a.pos !== b.pos) return a.pos - b.pos;
+        return a.lapSeconds - b.lapSeconds;
+    });
+    var ideal = rows.slice().sort(function(a, b) {
+        return a.idealSeconds - b.idealSeconds;
+    });
+    var leaderIdeal = ideal[0].idealSeconds;
+
+    classified.forEach(function(entry) {
+        entry.plotSeconds = entry.lapSeconds;
+    });
+    ideal.forEach(function(entry) {
+        entry.plotSeconds = entry.idealSeconds;
+    });
+
+    var allTimes = classified.map(function(entry) { return entry.lapSeconds; }).concat(ideal.map(function(entry) { return entry.idealSeconds; }));
+    var minTime = Math.floor(Math.min.apply(null, allTimes) * 2) / 2;
+    var maxTime = Math.ceil((Math.max.apply(null, allTimes) + 0.2) * 2) / 2;
+    var gapRows = ideal.slice().map(function(entry) {
+        return {
+            code: entry.code,
+            idealGap: Math.max(0, entry.idealSeconds - leaderIdeal)
+        };
+    }).sort(function(a, b) {
+        return a.idealGap - b.idealGap;
+    });
+
+    return '<div class="debrief-figure">'
+        + '<div class="debrief-figure-title">Ideal Lap Analysis</div>'
+        + '<div class="debrief-ideal-top">'
+        + buildDebriefIdealScatterSVG(classified, 'Classified Order', '#1d4ed8', minTime, maxTime)
+        + buildDebriefIdealScatterSVG(ideal, 'Ideal Order', '#22c55e', minTime, maxTime)
+        + '</div>'
+        + buildDebriefIdealGapBarsHTML(gapRows)
+        + '</div>';
 }
 
 function buildDebriefCornerPerfHTML(round) {
@@ -5108,18 +5401,19 @@ function buildDebriefRacePaceHTML(round) {
         return '<div class="debrief-empty"><i class="fas fa-gauge-high"></i><p>No race-pace prediction data available for this round.</p></div>';
     }
 
-    var rows = round.racePacePrediction.map(function(entry, index) {
-        var gapText = (entry.gapToFirst && entry.gapToFirst !== 'null') ? entry.gapToFirst : '—';
-        return '<tr>'
-            + '<td>' + esc(String(entry.pos || (index + 1))) + '</td>'
-            + '<td>' + buildDebriefTeamCellHTML(entry) + '</td>'
-            + '<td><span class="debrief-time">' + esc(entry.predictedLap) + '</span></td>'
-            + '<td><span class="strategy-pill">' + esc(entry.strategy) + '</span></td>'
-            + '<td><span class="debrief-gap">' + esc(gapText) + '</span></td>'
-            + '</tr>';
-    }).join('');
+    var rows = round.racePacePrediction.map(function(entry) {
+        return {
+            teamName: entry.teamName,
+            teamColor: entry.teamColor,
+            seconds: parseTimeSeconds(entry.predictedLap)
+        };
+    }).filter(function(entry) {
+        return isFiniteNumber(entry.seconds);
+    }).sort(function(a, b) {
+        return a.seconds - b.seconds;
+    });
 
-    return '<div class="debrief-table"><table><thead><tr><th>Pos</th><th>Team</th><th>Predicted Lap</th><th>Strategy</th><th>Gap</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    return buildDebriefPaceChartHTML('Race Simulation Pace', rows);
 }
 
 function renderDebrief(snapshot) {
