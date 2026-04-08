@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>F1 Stories — Βαθμολογίες Πρωταθλήματος</title>
+    <meta name="description" content="Βαθμολογίες Formula 1 από το F1 Stories με live standings οδηγών και κατασκευαστών, plus quali gaps, tyre pace, dirty air και pit stop analysis.">
     <meta property="og:title" content="F1 Stories — Βαθμολογίες Πρωταθλήματος">
-    <meta property="og:description" content="Live βαθμολογίες οδηγών και κατασκευαστών της Formula 1">
+    <meta property="og:description" content="Βαθμολογίες Formula 1 από το F1 Stories με live standings οδηγών και κατασκευαστών, plus quali gaps, tyre pace, dirty air και pit stop analysis.">
     <meta property="og:url" content="https://f1stories.gr/standings/">
     <meta property="og:type" content="website">
     <link rel="icon" type="image/png" href="/images/favicon.png">
@@ -62,7 +63,7 @@
 <header>
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
-            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" width="48" height="48"></a>
+            <a class="blog-nav-brand" href="/" aria-label="F1 Stories home"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" width="48" height="48"></a>
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><i class="fas fa-home"></i> Home</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link"><i class="fas fa-newspaper"></i> Blog</a>
@@ -103,23 +104,23 @@
         </div>
 
         <div class="standings-tabs" role="tablist">
-            <button class="standings-tab active" data-tab="drivers" role="tab" aria-selected="true"><i class="fas fa-helmet-safety"></i> Οδηγοί</button>
-            <button class="standings-tab" data-tab="constructors" role="tab" aria-selected="false"><i class="fas fa-flag-checkered"></i> Κατασκευαστές</button>
-            <button class="standings-tab" data-tab="quali-gaps" role="tab" aria-selected="false"><i class="fas fa-stopwatch"></i> Quali Gaps</button>
-            <button class="standings-tab" data-tab="lap1-gains" role="tab" aria-selected="false"><i class="fas fa-arrow-trend-up"></i> Lap 1 Gains</button>
-            <button class="standings-tab" data-tab="tyre-pace" role="tab" aria-selected="false"><i class="fas fa-wave-square"></i> Tyre Pace</button>
-            <button class="standings-tab" data-tab="dirty-air" role="tab" aria-selected="false"><i class="fas fa-wind"></i> Dirty Air</button>
-            <button class="standings-tab" data-tab="track-dominance" role="tab" aria-selected="false"><i class="fas fa-route"></i> Track Dominance</button>
-            <button class="standings-tab" data-tab="pit-stops" role="tab" aria-selected="false"><i class="fas fa-wrench"></i> Pit Stops</button>
-            <button class="standings-tab" data-tab="destructors" role="tab" aria-selected="false"><i class="fas fa-car-burst"></i> Destructors</button>
+            <button class="standings-tab active" id="tab-drivers" data-tab="drivers" role="tab" aria-controls="panel-drivers" aria-selected="true"><i class="fas fa-helmet-safety"></i> Οδηγοί</button>
+            <button class="standings-tab" id="tab-constructors" data-tab="constructors" role="tab" aria-controls="panel-constructors" aria-selected="false"><i class="fas fa-flag-checkered"></i> Κατασκευαστές</button>
+            <button class="standings-tab" id="tab-quali-gaps" data-tab="quali-gaps" role="tab" aria-controls="panel-quali-gaps" aria-selected="false"><i class="fas fa-stopwatch"></i> Quali Gaps</button>
+            <button class="standings-tab" id="tab-lap1-gains" data-tab="lap1-gains" role="tab" aria-controls="panel-lap1-gains" aria-selected="false"><i class="fas fa-arrow-trend-up"></i> Lap 1 Gains</button>
+            <button class="standings-tab" id="tab-tyre-pace" data-tab="tyre-pace" role="tab" aria-controls="panel-tyre-pace" aria-selected="false"><i class="fas fa-wave-square"></i> Tyre Pace</button>
+            <button class="standings-tab" id="tab-dirty-air" data-tab="dirty-air" role="tab" aria-controls="panel-dirty-air" aria-selected="false"><i class="fas fa-wind"></i> Dirty Air</button>
+            <button class="standings-tab" id="tab-track-dominance" data-tab="track-dominance" role="tab" aria-controls="panel-track-dominance" aria-selected="false"><i class="fas fa-route"></i> Track Dominance</button>
+            <button class="standings-tab" id="tab-pit-stops" data-tab="pit-stops" role="tab" aria-controls="panel-pit-stops" aria-selected="false"><i class="fas fa-wrench"></i> Pit Stops</button>
+            <button class="standings-tab" id="tab-destructors" data-tab="destructors" role="tab" aria-controls="panel-destructors" aria-selected="false"><i class="fas fa-car-burst"></i> Destructors</button>
         </div>
 
-        <div class="standings-panel active" id="panel-drivers" role="tabpanel">
+        <div class="standings-panel active" id="panel-drivers" role="tabpanel" aria-labelledby="tab-drivers">
             <div class="standings-table-wrap" id="drivers-table"></div>
             <div class="chart-section" id="drivers-chart">
                 <div class="chart-head">
                     <div class="chart-copy">
-                        <h3 class="chart-title"><i class="fas fa-chart-bar" style="margin-right:0.4rem;opacity:0.6;font-size:0.9em;"></i>Κατανομή βαθμών — Top 10</h3>
+                        <h2 class="chart-title"><i class="fas fa-chart-bar" style="margin-right:0.4rem;opacity:0.6;font-size:0.9em;"></i>Κατανομή βαθμών — Top 10</h2>
                         <div class="chart-note">Share or embed just the current drivers points chart.</div>
                     </div>
                     <div class="share-tools">
@@ -131,12 +132,12 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-constructors" role="tabpanel">
+        <div class="standings-panel" id="panel-constructors" role="tabpanel" aria-labelledby="tab-constructors">
             <div class="standings-table-wrap" id="constructors-table"></div>
             <div class="chart-section" id="constructors-chart" style="display:none">
                 <div class="chart-head">
                     <div class="chart-copy">
-                        <h3 class="chart-title"><i class="fas fa-chart-bar" style="margin-right:0.4rem;opacity:0.6;font-size:0.9em;"></i>Κατανομή βαθμών</h3>
+                        <h2 class="chart-title"><i class="fas fa-chart-bar" style="margin-right:0.4rem;opacity:0.6;font-size:0.9em;"></i>Κατανομή βαθμών</h2>
                         <div class="chart-note">Share or embed the constructors points distribution card on its own.</div>
                     </div>
                     <div class="share-tools">
@@ -148,11 +149,11 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-quali-gaps" role="tabpanel">
+        <div class="standings-panel" id="panel-quali-gaps" role="tabpanel" aria-labelledby="tab-quali-gaps">
             <div class="quali-gaps-wrap">
                 <div class="quali-gaps-intro">
                     <div class="quali-kicker">Teammate H2H · <span id="qualifying-gaps-year">2026</span></div>
-                    <h3 class="quali-title">Teammate Qualifying Gaps</h3>
+                    <h2 class="quali-title">Teammate Qualifying Gaps</h2>
                     <p class="quali-sub">Q + Sprint Shootout. Ο συνολικά ταχύτερος teammate εμφανίζεται αριστερά και τα rows ταξινομούνται από το μικρότερο στο μεγαλύτερο average gap.</p>
                 </div>
                 <div class="panel-tools">
@@ -169,11 +170,11 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-lap1-gains" role="tabpanel">
+        <div class="standings-panel" id="panel-lap1-gains" role="tabpanel" aria-labelledby="tab-lap1-gains">
             <div class="lap1-gains-wrap">
                 <div class="lap1-gains-intro">
                     <div class="lap1-kicker">Race Starts · <span id="lap1-gains-year">2026</span></div>
-                    <h3 class="lap1-title">Who Gains Most on Lap 1?</h3>
+                    <h2 class="lap1-title">Who Gains Most on Lap 1?</h2>
                     <p class="lap1-sub">Για κάθε completed Grand Prix race ή sprint, υπολογίζεται ποιος κέρδισε τις περισσότερες θέσεις μέχρι το τέλος του πρώτου γύρου.</p>
                 </div>
                 <div class="panel-tools">
@@ -190,11 +191,11 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-tyre-pace" role="tabpanel">
+        <div class="standings-panel" id="panel-tyre-pace" role="tabpanel" aria-labelledby="tab-tyre-pace">
             <div class="tyre-pace-wrap">
                 <div class="tyre-pace-intro">
                     <div class="tyre-pace-kicker">Race Pace · <span id="tyre-pace-year">2026</span></div>
-                    <h3 class="tyre-pace-title">Race & Sprint Lap Time Distributions</h3>
+                    <h2 class="tyre-pace-title">Race & Sprint Lap Time Distributions</h2>
                     <p class="tyre-pace-sub">Για κάθε completed Grand Prix race ή sprint, βλέπεις όλους τους οδηγούς ταξινομημένους από τον ταχύτερο προς τον πιο αργό καλύτερο lap pace, με χρωματισμό ανά γόμα.</p>
                 </div>
                 <div class="panel-tools">
@@ -211,11 +212,11 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-dirty-air" role="tabpanel">
+        <div class="standings-panel" id="panel-dirty-air" role="tabpanel" aria-labelledby="tab-dirty-air">
             <div class="dirty-air-wrap">
                 <div class="dirty-air-intro">
                     <div class="dirty-air-kicker">Race Traffic · <span id="dirty-air-year">2026</span></div>
-                    <h3 class="dirty-air-title">Dirty Air Analysis</h3>
+                    <h2 class="dirty-air-title">Dirty Air Analysis</h2>
                     <p class="dirty-air-sub">Κάθε race lap χωρίζεται σε 30 ίσα minisectors. Για κάθε minisector μετράμε πόσο κοντά ήταν το πλησιέστερο μονοθέσιο μπροστά στην πίστα, ακόμη κι αν επρόκειτο για backmarker που δεχόταν γύρο.</p>
                 </div>
                 <div class="panel-tools">
@@ -232,11 +233,11 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-track-dominance" role="tabpanel">
+        <div class="standings-panel" id="panel-track-dominance" role="tabpanel" aria-labelledby="tab-track-dominance">
             <div class="track-dom-wrap">
                 <div class="track-dom-intro">
                     <div class="track-dom-kicker">Telemetry · <span id="track-dominance-year">2026</span></div>
-                    <h3 class="track-dom-title">Track Dominance</h3>
+                    <h2 class="track-dom-title">Track Dominance</h2>
                     <p class="track-dom-sub">Σύγκρινε το fastest lap δύο οδηγών από το ίδιο completed session και δες πού κερδίζει χρόνο ο καθένας πάνω στην πίστα.</p>
                 </div>
                 <div class="panel-tools">
@@ -253,11 +254,11 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-pit-stops" role="tabpanel">
+        <div class="standings-panel" id="panel-pit-stops" role="tabpanel" aria-labelledby="tab-pit-stops">
             <div class="pit-stops-wrap">
                 <div class="pit-stops-intro">
                     <div class="pit-stops-kicker">Pit Stops · <span id="pit-stops-year">2026</span></div>
-                    <h3 class="pit-stops-title">Fastest Pit Stops</h3>
+                    <h2 class="pit-stops-title">Fastest Pit Stops</h2>
                     <p class="pit-stops-sub">Ταχύτερο pit stop ανά οδηγό και ομάδα — ανά αγώνα ή season-best ranking.</p>
                 </div>
                 <div class="panel-tools">
@@ -274,11 +275,11 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-destructors" role="tabpanel">
+        <div class="standings-panel" id="panel-destructors" role="tabpanel" aria-labelledby="tab-destructors">
             <div class="destructors-wrap">
                 <div class="destructors-intro">
                     <div class="destructors-kicker">Crash Costs · <span id="destructors-year">2026</span></div>
-                    <h3 class="destructors-title">Destructors Championship</h3>
+                    <h2 class="destructors-title">Destructors Championship</h2>
                     <p class="destructors-sub">Team damage bars και driver-to-team flow chart σε ένα tabbed view, βασισμένα στο destructors snapshot των εικόνων.</p>
                 </div>
                 <div class="panel-tools">
@@ -301,18 +302,18 @@
     </div>
 </section>
 
-<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
+<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Επιστροφή στην κορυφή"><i class="fas fa-chevron-up"></i></button>
 <div class="share-feedback" id="share-feedback" aria-live="polite"></div>
 
 <footer class="py-4">
     <div class="container"><div class="row"><div class="col-12 text-center">
         <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
         <div class="social-media">
-            <a href="https://www.youtube.com/@F1StoriesOriginal" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
-            <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
-            <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+            <a href="https://www.youtube.com/@F1StoriesOriginal" target="_blank" rel="noopener" aria-label="F1 Stories on YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories on Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories on Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories on TikTok"><i class="fab fa-tiktok"></i></a>
+            <a href="mailto:myf1stories@gmail.com" aria-label="Email F1 Stories"><i class="fas fa-envelope"></i></a>
         </div>
         <div class="footer-links mt-3">
             <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>

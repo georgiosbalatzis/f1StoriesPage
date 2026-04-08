@@ -16,7 +16,7 @@
     --bg-overlay: rgba(17,17,19,.92);
     --text-primary: #e5e5e7;
     --text-secondary: #a1a1a6;
-    --text-tertiary: #6e6e73;
+    --text-tertiary: #8a8a93;
     --accent: #3b82f6;
     --accent-hover: #5b9cf5;
     --accent-muted: rgba(59,130,246,.10);
@@ -251,7 +251,7 @@ footer::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; 
 .footer-link::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 1px; background: var(--gradient-accent); transition: width 0.3s ease; }
 .footer-link:hover { color: var(--accent); }
 .footer-link:hover::after { width: 100%; }
-.footer-separator { color: rgba(255,255,255,0.2); margin: 0 0.5rem; }
+.footer-separator { color: rgba(255,255,255,0.38); margin: 0 0.5rem; }
 
 /* Footer grid (shared by home + episodes) */
 .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; padding-bottom: var(--space-lg); border-bottom: 1px solid var(--border); margin-bottom: var(--space-lg); }

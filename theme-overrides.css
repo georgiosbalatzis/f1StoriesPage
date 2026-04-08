@@ -18,7 +18,7 @@
     --light-text: #1d1d1f;
     --text-primary: #1d1d1f;
     --text-secondary: #6e6e73;
-    --text-tertiary: #86868b;
+    --text-tertiary: #5f5f67;
 
     /* Accent — deeper navy, not electric */
     --primary: #0e4ca6;
@@ -494,7 +494,7 @@
 [data-theme="light"] footer h4,
 [data-theme="light"] .footer-col__title,
 [data-theme="light"] .footer-bottom p {
-    color: #86868b !important;
+    color: #5f5f67 !important;
 }
 
 [data-theme="light"] .footer-links-list a,
@@ -511,7 +511,7 @@
 
 [data-theme="light"] .footer-social a,
 [data-theme="light"] .social-media a {
-    color: #86868b !important;
+    color: #5f5f67 !important;
     background: rgba(0,0,0,0.04) !important;
     border-color: transparent !important;
 }
@@ -522,7 +522,7 @@
 [data-theme="light"] .social-media a i::before,
 [data-theme="light"] footer .footer-social a i,
 [data-theme="light"] footer .social-media a i {
-    color: #86868b !important;
+    color: #5f5f67 !important;
 }
 
 [data-theme="light"] .footer-social a:hover,
@@ -547,7 +547,7 @@
 }
 
 [data-theme="light"] .footer-separator {
-    color: rgba(0,0,0,0.15) !important;
+    color: rgba(0,0,0,0.28) !important;
 }
 
 /* ── Cookie Banner ───────────────────────────── */
@@ -581,7 +581,7 @@
 }
 
 [data-theme="light"] .cookie-section p {
-    color: #86868b !important;
+    color: #5f5f67 !important;
 }
 
 [data-theme="light"] .cookie-details {
@@ -614,7 +614,7 @@
 }
 
 [data-theme="light"] .close-btn {
-    color: #86868b !important;
+    color: #5f5f67 !important;
 }
 
 [data-theme="light"] .close-btn:hover {
