@@ -2317,6 +2317,7 @@ if (!isMainThread) {
                 id: p.id, title: p.title, author: p.author,
                 date: p.date, displayDate: p.displayDate,
                 image: p.image, backgroundImage: p.backgroundImage,
+                thumbnail: getCardThumbnailPath(p.image),
                 excerpt: p.excerpt, url: p.url,
                 wordCount: p.wordCount, readingTime: p.readingTime,
                 categories: cats

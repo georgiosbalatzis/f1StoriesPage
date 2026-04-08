@@ -19,6 +19,7 @@ const FORCE   = process.argv.includes('--force');
 const BLOG_DIR = path.join(__dirname, 'blog-entries');
 const SM_MAX_WIDTH = 800;
 const FULL_MAX_WIDTH = 1600;
+const CARD_MAX_WIDTH = 400;
 
 // ─── Worker thread ────────────────────────────────────────────────────────────
 if (!isMainThread) {
@@ -76,13 +77,19 @@ async function main() {
             }
         }
 
-        // Hero/bg images (1.webp, 2.webp) — AVIF only, no sm needed
+        // Hero/bg images (1.webp, 2.webp)
         const heroWebps = files.filter(f => /^[12]\.webp$/i.test(f));
         for (const webpFile of heroWebps) {
             const num = path.parse(webpFile).name;
-            const dest = path.join(entryPath, `${num}.avif`);
-            if (!FORCE && fs.existsSync(dest)) continue;
-            allTasks.push({ src: path.join(entryPath, webpFile), dest, format: 'avif', quality: 60, maxWidth: FULL_MAX_WIDTH });
+            const src = path.join(entryPath, webpFile);
+            const variants = [
+                { dest: path.join(entryPath, `${num}.avif`), format: 'avif', quality: 60, maxWidth: FULL_MAX_WIDTH },
+                { dest: path.join(entryPath, `${num}-card.webp`), format: 'webp', quality: 60, maxWidth: CARD_MAX_WIDTH }
+            ];
+            for (const v of variants) {
+                if (!FORCE && fs.existsSync(v.dest)) continue;
+                allTasks.push({ src, ...v });
+            }
         }
     }
 
