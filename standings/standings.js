@@ -520,7 +520,8 @@ function sanitizeDestructorsView(value) {
 }
 
 function sanitizeDebriefView(value) {
-    return (value === 'long-run' || value === 'tyre-deg') ? value : 'single-lap';
+    var valid = ['single-lap', 'long-run', 'tyre-deg', 'team-ideal', 'corners', 'race-pace'];
+    return valid.indexOf(value) !== -1 ? value : 'single-lap';
 }
 
 function readStandingsURLState() {
@@ -588,12 +589,9 @@ function appendShareStateParams(params, tabName) {
     }
 
     if (tabName === 'debrief') {
-        var debriefRound = debriefState.selectedRound;
-        if (!debriefRound && debriefState.rounds && debriefState.rounds.length) {
-            debriefRound = String(debriefState.rounds[debriefState.rounds.length - 1].round);
-        }
-        params.set('debriefView', sanitizeDebriefView(debriefState.activeView));
-        if (debriefRound) params.set('debriefRound', String(debriefRound));
+        var dv = sanitizeDebriefView(debriefState.activeView);
+        if (dv !== 'single-lap') params.set('debriefView', dv);
+        if (debriefState.selectedRound) params.set('debriefRound', String(debriefState.selectedRound));
         return;
     }
 
@@ -4847,6 +4845,11 @@ function getDebriefDegClass(value) {
     return 'debrief-deg-bad';
 }
 
+function getDebriefDeltaClass(value) {
+    if (value == null || value === '' || value === 'null') return 'debrief-delta-leader';
+    return parseNumberValue(value) < 0 ? 'debrief-delta-fast' : 'debrief-delta-slow';
+}
+
 function buildDebriefDriverCellHTML(entry) {
     var headshot = entry.headshot || getPreferredHeadshot(entry.driverId, entry.fullName, '');
     var teamColor = '#' + esc(entry.teamColor || '3b82f6');
@@ -4856,6 +4859,14 @@ function buildDebriefDriverCellHTML(entry) {
             + '<span class="debrief-avatar-fallback" style="display:none;">' + esc(entry.code) + '</span>'
             : '<span class="debrief-avatar-fallback">' + esc(entry.code) + '</span>')
         + '<div><div class="debrief-driver-code">' + esc(entry.code) + '</div><div class="debrief-driver-name">' + esc(entry.fullName) + ' · ' + esc(entry.teamName) + '</div></div>'
+        + '</div>';
+}
+
+function buildDebriefTeamCellHTML(entry) {
+    var teamColor = '#' + esc(getCanonicalTeamColor(entry.teamKey, entry.teamName, entry.teamColor));
+    return '<div class="debrief-team-cell">'
+        + '<span class="debrief-team-bar" style="background:' + teamColor + ';"></span>'
+        + '<span>' + esc(entry.teamName) + '</span>'
         + '</div>';
 }
 
@@ -4895,6 +4906,32 @@ function normalizeDebriefSnapshot(payload) {
         });
     }
 
+    function normalizeTeamEntries(list) {
+        if (!Array.isArray(list)) return [];
+        return list.map(function(entry, index) {
+            var teamKey = resolveTeamId(entry && entry.teamKey || '', entry && entry.teamName || '');
+            var teamName = getCanonicalTeamName(entry && (entry.teamName || teamKey) || '') || String(entry && (entry.teamName || teamKey) || 'Unknown');
+            var teamColor = getCanonicalTeamColor(teamKey, teamName, entry && entry.teamColor || '');
+            return {
+                pos: parseInt(entry && entry.pos, 10) || (index + 1),
+                teamKey: teamKey,
+                teamName: teamName,
+                teamColor: teamColor,
+                s1: String(entry && entry.s1 || ''),
+                s2: String(entry && entry.s2 || ''),
+                s3: String(entry && entry.s3 || ''),
+                idealLap: String(entry && entry.idealLap || ''),
+                gapToFirst: entry && entry.gapToFirst != null ? String(entry.gapToFirst) : '',
+                slowCorners: entry && entry.slowCorners != null ? String(entry.slowCorners) : '',
+                mediumCorners: entry && entry.mediumCorners != null ? String(entry.mediumCorners) : '',
+                fastCorners: entry && entry.fastCorners != null ? String(entry.fastCorners) : '',
+                overall: entry && entry.overall != null ? String(entry.overall) : '',
+                predictedLap: String(entry && entry.predictedLap || ''),
+                strategy: String(entry && entry.strategy || '')
+            };
+        });
+    }
+
     if (!payload || !Array.isArray(payload.rounds) || !payload.rounds.length) {
         throw new Error('No Friday Debrief snapshot available');
     }
@@ -4908,7 +4945,10 @@ function normalizeDebriefSnapshot(payload) {
             date: String(entry && entry.date || ''),
             singleLap: normalizeEntries(entry && entry.singleLap),
             longRun: normalizeEntries(entry && entry.longRun),
-            tyreDeg: normalizeEntries(entry && entry.tyreDeg)
+            tyreDeg: normalizeEntries(entry && entry.tyreDeg),
+            teamIdealLap: normalizeTeamEntries(entry && entry.teamIdealLap),
+            cornerPerformance: normalizeTeamEntries(entry && entry.cornerPerformance),
+            racePacePrediction: normalizeTeamEntries(entry && entry.racePacePrediction)
         };
     }).filter(function(round) {
         return round.round > 0;
@@ -4948,6 +4988,9 @@ function buildDebriefViewSwitch() {
         + '<button class="debrief-view-tab' + (debriefState.activeView === 'single-lap' ? ' active' : '') + '" type="button" data-debrief-view="single-lap" role="tab" aria-selected="' + (debriefState.activeView === 'single-lap' ? 'true' : 'false') + '"><i class="fas fa-stopwatch"></i> Single Lap</button>'
         + '<button class="debrief-view-tab' + (debriefState.activeView === 'long-run' ? ' active' : '') + '" type="button" data-debrief-view="long-run" role="tab" aria-selected="' + (debriefState.activeView === 'long-run' ? 'true' : 'false') + '"><i class="fas fa-wave-square"></i> Long Run</button>'
         + '<button class="debrief-view-tab' + (debriefState.activeView === 'tyre-deg' ? ' active' : '') + '" type="button" data-debrief-view="tyre-deg" role="tab" aria-selected="' + (debriefState.activeView === 'tyre-deg' ? 'true' : 'false') + '"><i class="fas fa-chart-line"></i> Tyre Deg</button>'
+        + '<button class="debrief-view-tab' + (debriefState.activeView === 'team-ideal' ? ' active' : '') + '" type="button" data-debrief-view="team-ideal" role="tab" aria-selected="' + (debriefState.activeView === 'team-ideal' ? 'true' : 'false') + '"><i class="fas fa-users"></i> Team Ideal</button>'
+        + '<button class="debrief-view-tab' + (debriefState.activeView === 'corners' ? ' active' : '') + '" type="button" data-debrief-view="corners" role="tab" aria-selected="' + (debriefState.activeView === 'corners' ? 'true' : 'false') + '"><i class="fas fa-road"></i> Corners</button>'
+        + '<button class="debrief-view-tab' + (debriefState.activeView === 'race-pace' ? ' active' : '') + '" type="button" data-debrief-view="race-pace" role="tab" aria-selected="' + (debriefState.activeView === 'race-pace' ? 'true' : 'false') + '"><i class="fas fa-gauge-high"></i> Race Pace</button>'
         + '</div></div>';
 }
 
@@ -4958,7 +5001,7 @@ function buildDebriefSingleLapHTML(round) {
 
     var rows = round.singleLap.map(function(entry, index) {
         var compoundClass = getDebriefCompoundClass(entry.compound);
-        var gapText = entry.gap || (index === 0 ? 'Leader' : '');
+        var gapText = (entry.gap && entry.gap !== 'null') ? entry.gap : (index === 0 ? 'Leader' : '');
         return '<tr>'
             + '<td>' + (index + 1) + '</td>'
             + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
@@ -4979,7 +5022,7 @@ function buildDebriefLongRunHTML(round) {
 
     var rows = round.longRun.map(function(entry, index) {
         var compoundClass = getDebriefCompoundClass(entry.compound);
-        var deltaText = entry.delta || (index === 0 ? 'Leader' : '');
+        var deltaText = (entry.delta && entry.delta !== 'null') ? entry.delta : (index === 0 ? 'Leader' : '');
         return '<tr>'
             + '<td>' + (index + 1) + '</td>'
             + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
@@ -5012,6 +5055,71 @@ function buildDebriefTyreDegHTML(round) {
     }).join('');
 
     return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Tyre</th><th>Drop-off</th><th>Window</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+
+function buildDebriefTeamIdealHTML(round) {
+    if (!round || !round.teamIdealLap.length) {
+        return '<div class="debrief-empty"><i class="fas fa-users"></i><p>No team ideal-lap data available for this round.</p></div>';
+    }
+
+    var rows = round.teamIdealLap.map(function(entry, index) {
+        var gapText = (entry.gapToFirst && entry.gapToFirst !== 'null') ? entry.gapToFirst : '—';
+        return '<tr>'
+            + '<td>' + esc(String(entry.pos || (index + 1))) + '</td>'
+            + '<td>' + buildDebriefTeamCellHTML(entry) + '</td>'
+            + '<td><span class="debrief-sector">' + esc(entry.s1) + '</span></td>'
+            + '<td><span class="debrief-sector">' + esc(entry.s2) + '</span></td>'
+            + '<td><span class="debrief-sector">' + esc(entry.s3) + '</span></td>'
+            + '<td><span class="debrief-time">' + esc(entry.idealLap) + '</span></td>'
+            + '<td><span class="debrief-gap">' + esc(gapText) + '</span></td>'
+            + '</tr>';
+    }).join('');
+
+    return '<div class="debrief-table"><table><thead><tr><th>Pos</th><th>Team</th><th>S1</th><th>S2</th><th>S3</th><th>Ideal Lap</th><th>Gap</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+
+function buildDebriefCornerPerfHTML(round) {
+    if (!round || !round.cornerPerformance.length) {
+        return '<div class="debrief-empty"><i class="fas fa-road"></i><p>No corner-performance data available for this round.</p></div>';
+    }
+
+    function buildDeltaCell(value) {
+        if (value == null || value === '' || value === 'null') {
+            return '<span class="debrief-delta-leader">Leader</span>';
+        }
+        return '<span class="' + getDebriefDeltaClass(value) + '">' + esc(value) + '</span>';
+    }
+
+    var rows = round.cornerPerformance.map(function(entry) {
+        return '<tr>'
+            + '<td>' + buildDebriefTeamCellHTML(entry) + '</td>'
+            + '<td>' + buildDeltaCell(entry.slowCorners) + '</td>'
+            + '<td>' + buildDeltaCell(entry.mediumCorners) + '</td>'
+            + '<td>' + buildDeltaCell(entry.fastCorners) + '</td>'
+            + '<td>' + buildDeltaCell(entry.overall) + '</td>'
+            + '</tr>';
+    }).join('');
+
+    return '<div class="debrief-table"><table><thead><tr><th>Team</th><th>Slow</th><th>Medium</th><th>Fast</th><th>Overall</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+
+function buildDebriefRacePaceHTML(round) {
+    if (!round || !round.racePacePrediction.length) {
+        return '<div class="debrief-empty"><i class="fas fa-gauge-high"></i><p>No race-pace prediction data available for this round.</p></div>';
+    }
+
+    var rows = round.racePacePrediction.map(function(entry, index) {
+        var gapText = (entry.gapToFirst && entry.gapToFirst !== 'null') ? entry.gapToFirst : '—';
+        return '<tr>'
+            + '<td>' + esc(String(entry.pos || (index + 1))) + '</td>'
+            + '<td>' + buildDebriefTeamCellHTML(entry) + '</td>'
+            + '<td><span class="debrief-time">' + esc(entry.predictedLap) + '</span></td>'
+            + '<td><span class="strategy-pill">' + esc(entry.strategy) + '</span></td>'
+            + '<td><span class="debrief-gap">' + esc(gapText) + '</span></td>'
+            + '</tr>';
+    }).join('');
+
+    return '<div class="debrief-table"><table><thead><tr><th>Pos</th><th>Team</th><th>Predicted Lap</th><th>Strategy</th><th>Gap</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
 function renderDebrief(snapshot) {
@@ -5057,7 +5165,10 @@ function renderDebrief(snapshot) {
         + buildDebriefViewSwitch()
         + '<div class="debrief-view-panel' + (debriefState.activeView === 'single-lap' ? ' active' : '') + '" data-debrief-panel="single-lap">' + buildDebriefSingleLapHTML(selectedRound) + '</div>'
         + '<div class="debrief-view-panel' + (debriefState.activeView === 'long-run' ? ' active' : '') + '" data-debrief-panel="long-run">' + buildDebriefLongRunHTML(selectedRound) + '</div>'
-        + '<div class="debrief-view-panel' + (debriefState.activeView === 'tyre-deg' ? ' active' : '') + '" data-debrief-panel="tyre-deg">' + buildDebriefTyreDegHTML(selectedRound) + '</div>';
+        + '<div class="debrief-view-panel' + (debriefState.activeView === 'tyre-deg' ? ' active' : '') + '" data-debrief-panel="tyre-deg">' + buildDebriefTyreDegHTML(selectedRound) + '</div>'
+        + '<div class="debrief-view-panel' + (debriefState.activeView === 'team-ideal' ? ' active' : '') + '" data-debrief-panel="team-ideal">' + buildDebriefTeamIdealHTML(selectedRound) + '</div>'
+        + '<div class="debrief-view-panel' + (debriefState.activeView === 'corners' ? ' active' : '') + '" data-debrief-panel="corners">' + buildDebriefCornerPerfHTML(selectedRound) + '</div>'
+        + '<div class="debrief-view-panel' + (debriefState.activeView === 'race-pace' ? ' active' : '') + '" data-debrief-panel="race-pace">' + buildDebriefRacePaceHTML(selectedRound) + '</div>';
 
     finalizeRenderedPanel('debrief');
 }
@@ -5446,7 +5557,14 @@ function createPitStopsSkeleton() {
 }
 
 function formatRaceDate(race) {
-    var d = new Date(race.date);
+    var value = race && race.date ? race.date : race;
+    var d;
+    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        var parts = value.split('-');
+        d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    } else {
+        d = new Date(value);
+    }
     return d.toLocaleDateString('el-GR', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 

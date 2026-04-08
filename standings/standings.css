@@ -727,14 +727,22 @@ body { overflow-y: auto !important; }
 .debrief-driver-cell img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--debrief-team-color, rgba(6,182,212,0.2)); background: var(--st-surface); flex-shrink: 0; }
 .debrief-avatar-fallback { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'Outfit',sans-serif; font-size: 0.82rem; font-weight: 800; color: var(--debrief-team-color, #06b6d4); border: 2px solid var(--debrief-team-color, rgba(6,182,212,0.2)); background: rgba(6,182,212,0.12); }
 .debrief-team-bar { width: 4px; min-height: 42px; border-radius: 999px; flex-shrink: 0; }
+.debrief-team-cell { display: flex; align-items: center; gap: 0.6rem; min-width: 200px; }
+.debrief-team-cell .debrief-team-bar { width: 4px; min-height: 36px; border-radius: 999px; flex-shrink: 0; }
+.debrief-team-cell span { font-family: 'Outfit',sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--st-text); }
 .debrief-driver-code { font-family: 'Outfit',sans-serif; font-size: 0.9rem; font-weight: 800; line-height: 1; color: var(--st-text); }
 .debrief-driver-name { font-size: 0.72rem; color: var(--st-text-muted); margin-top: 0.16rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; }
 .debrief-gap { font-size: 0.76rem; font-weight: 700; color: var(--st-text-secondary); }
 .debrief-time { font-family: 'Outfit',sans-serif; font-size: 0.98rem; font-weight: 800; color: var(--st-text); }
+.debrief-sector { font-family: 'DM Sans', monospace; font-size: 0.82rem; color: var(--st-text-secondary); }
 .compound-pill { display: inline-flex; align-items: center; justify-content: center; min-height: 24px; padding: 0.18rem 0.55rem; border-radius: 999px; font-size: 0.66rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid transparent; }
 .compound-soft { color: #fecaca; background: rgba(239,68,68,0.14); border-color: rgba(239,68,68,0.18); }
 .compound-medium { color: #fde68a; background: rgba(245,158,11,0.14); border-color: rgba(245,158,11,0.18); }
 .compound-hard { color: #dbeafe; background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.18); }
+.debrief-delta-fast { color: #34d399; font-weight: 700; }
+.debrief-delta-slow { color: #f87171; font-weight: 700; }
+.debrief-delta-leader { color: #06b6d4; font-weight: 800; font-family: 'Outfit',sans-serif; }
+.strategy-pill { display: inline-flex; align-items: center; justify-content: center; min-height: 24px; padding: 0.18rem 0.55rem; border-radius: 999px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.03em; color: var(--st-text-secondary); background: var(--st-surface); border: 1px solid var(--st-border); }
 .debrief-deg-good { color: #34d399; }
 .debrief-deg-mid { color: #fbbf24; }
 .debrief-deg-bad { color: #f87171; }
@@ -754,6 +762,9 @@ body { overflow-y: auto !important; }
 [data-theme="light"] .compound-soft { color: #b91c1c; background: rgba(239,68,68,0.10); }
 [data-theme="light"] .compound-medium { color: #a16207; background: rgba(245,158,11,0.10); }
 [data-theme="light"] .compound-hard { color: #1d4ed8; background: rgba(96,165,250,0.10); }
+[data-theme="light"] .debrief-delta-fast { color: #047857; }
+[data-theme="light"] .debrief-delta-slow { color: #b91c1c; }
+[data-theme="light"] .debrief-delta-leader { color: #0f766e; }
 
 .destructors-wrap { display: flex; flex-direction: column; gap: 1rem; }
 .destructors-intro {
@@ -957,7 +968,10 @@ body.standings-embed [data-embed-hidden="true"] { display: none !important; }
     .debrief-round-selector::-webkit-scrollbar { display: none; }
     .debrief-round-btn { min-width: 176px; flex: 0 0 auto; }
     .debrief-view-switch { justify-content: flex-start; }
+    .debrief-view-tabs { flex-wrap: wrap; max-width: 100%; }
+    .debrief-view-tab { padding: 0.48rem 0.72rem; font-size: 0.74rem; }
     .debrief-table { font-size: 0.78rem; }
+    .debrief-team-cell { min-width: 170px; }
     .debrief-driver-cell { min-width: 180px; gap: 0.55rem; }
     .debrief-driver-cell img, .debrief-avatar-fallback { display: none; }
     .compound-pill { min-height: 22px; padding: 0.16rem 0.42rem; font-size: 0.6rem; }
