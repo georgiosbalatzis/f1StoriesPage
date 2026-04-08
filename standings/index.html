@@ -6,7 +6,7 @@
     <title>F1 Stories — Βαθμολογίες Πρωταθλήματος</title>
     <meta name="description" content="Βαθμολογίες Formula 1 από το F1 Stories με live standings οδηγών και κατασκευαστών, plus quali gaps, tyre pace, dirty air και pit stop analysis.">
     <meta property="og:title" content="F1 Stories — Βαθμολογίες Πρωταθλήματος">
-    <meta property="og:description" content="Live βαθμολογίες οδηγών και κατασκευαστών της Formula 1">
+    <meta property="og:description" content="Βαθμολογίες Formula 1 από το F1 Stories με live standings οδηγών και κατασκευαστών, plus quali gaps, tyre pace, dirty air και pit stop analysis.">
     <meta property="og:url" content="https://f1stories.gr/standings/">
     <meta property="og:type" content="website">
     <link rel="icon" type="image/png" href="/images/favicon.png">
@@ -104,18 +104,18 @@
         </div>
 
         <div class="standings-tabs" role="tablist">
-            <button class="standings-tab active" data-tab="drivers" role="tab" aria-selected="true"><i class="fas fa-helmet-safety"></i> Οδηγοί</button>
-            <button class="standings-tab" data-tab="constructors" role="tab" aria-selected="false"><i class="fas fa-flag-checkered"></i> Κατασκευαστές</button>
-            <button class="standings-tab" data-tab="quali-gaps" role="tab" aria-selected="false"><i class="fas fa-stopwatch"></i> Quali Gaps</button>
-            <button class="standings-tab" data-tab="lap1-gains" role="tab" aria-selected="false"><i class="fas fa-arrow-trend-up"></i> Lap 1 Gains</button>
-            <button class="standings-tab" data-tab="tyre-pace" role="tab" aria-selected="false"><i class="fas fa-wave-square"></i> Tyre Pace</button>
-            <button class="standings-tab" data-tab="dirty-air" role="tab" aria-selected="false"><i class="fas fa-wind"></i> Dirty Air</button>
-            <button class="standings-tab" data-tab="track-dominance" role="tab" aria-selected="false"><i class="fas fa-route"></i> Track Dominance</button>
-            <button class="standings-tab" data-tab="pit-stops" role="tab" aria-selected="false"><i class="fas fa-wrench"></i> Pit Stops</button>
-            <button class="standings-tab" data-tab="destructors" role="tab" aria-selected="false"><i class="fas fa-car-burst"></i> Destructors</button>
+            <button class="standings-tab active" id="tab-drivers" data-tab="drivers" role="tab" aria-controls="panel-drivers" aria-selected="true"><i class="fas fa-helmet-safety"></i> Οδηγοί</button>
+            <button class="standings-tab" id="tab-constructors" data-tab="constructors" role="tab" aria-controls="panel-constructors" aria-selected="false"><i class="fas fa-flag-checkered"></i> Κατασκευαστές</button>
+            <button class="standings-tab" id="tab-quali-gaps" data-tab="quali-gaps" role="tab" aria-controls="panel-quali-gaps" aria-selected="false"><i class="fas fa-stopwatch"></i> Quali Gaps</button>
+            <button class="standings-tab" id="tab-lap1-gains" data-tab="lap1-gains" role="tab" aria-controls="panel-lap1-gains" aria-selected="false"><i class="fas fa-arrow-trend-up"></i> Lap 1 Gains</button>
+            <button class="standings-tab" id="tab-tyre-pace" data-tab="tyre-pace" role="tab" aria-controls="panel-tyre-pace" aria-selected="false"><i class="fas fa-wave-square"></i> Tyre Pace</button>
+            <button class="standings-tab" id="tab-dirty-air" data-tab="dirty-air" role="tab" aria-controls="panel-dirty-air" aria-selected="false"><i class="fas fa-wind"></i> Dirty Air</button>
+            <button class="standings-tab" id="tab-track-dominance" data-tab="track-dominance" role="tab" aria-controls="panel-track-dominance" aria-selected="false"><i class="fas fa-route"></i> Track Dominance</button>
+            <button class="standings-tab" id="tab-pit-stops" data-tab="pit-stops" role="tab" aria-controls="panel-pit-stops" aria-selected="false"><i class="fas fa-wrench"></i> Pit Stops</button>
+            <button class="standings-tab" id="tab-destructors" data-tab="destructors" role="tab" aria-controls="panel-destructors" aria-selected="false"><i class="fas fa-car-burst"></i> Destructors</button>
         </div>
 
-        <div class="standings-panel active" id="panel-drivers" role="tabpanel">
+        <div class="standings-panel active" id="panel-drivers" role="tabpanel" aria-labelledby="tab-drivers">
             <div class="standings-table-wrap" id="drivers-table"></div>
             <div class="chart-section" id="drivers-chart">
                 <div class="chart-head">
@@ -132,7 +132,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-constructors" role="tabpanel">
+        <div class="standings-panel" id="panel-constructors" role="tabpanel" aria-labelledby="tab-constructors">
             <div class="standings-table-wrap" id="constructors-table"></div>
             <div class="chart-section" id="constructors-chart" style="display:none">
                 <div class="chart-head">
@@ -149,7 +149,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-quali-gaps" role="tabpanel">
+        <div class="standings-panel" id="panel-quali-gaps" role="tabpanel" aria-labelledby="tab-quali-gaps">
             <div class="quali-gaps-wrap">
                 <div class="quali-gaps-intro">
                     <div class="quali-kicker">Teammate H2H · <span id="qualifying-gaps-year">2026</span></div>
@@ -170,7 +170,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-lap1-gains" role="tabpanel">
+        <div class="standings-panel" id="panel-lap1-gains" role="tabpanel" aria-labelledby="tab-lap1-gains">
             <div class="lap1-gains-wrap">
                 <div class="lap1-gains-intro">
                     <div class="lap1-kicker">Race Starts · <span id="lap1-gains-year">2026</span></div>
@@ -191,7 +191,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-tyre-pace" role="tabpanel">
+        <div class="standings-panel" id="panel-tyre-pace" role="tabpanel" aria-labelledby="tab-tyre-pace">
             <div class="tyre-pace-wrap">
                 <div class="tyre-pace-intro">
                     <div class="tyre-pace-kicker">Race Pace · <span id="tyre-pace-year">2026</span></div>
@@ -212,7 +212,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-dirty-air" role="tabpanel">
+        <div class="standings-panel" id="panel-dirty-air" role="tabpanel" aria-labelledby="tab-dirty-air">
             <div class="dirty-air-wrap">
                 <div class="dirty-air-intro">
                     <div class="dirty-air-kicker">Race Traffic · <span id="dirty-air-year">2026</span></div>
@@ -233,7 +233,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-track-dominance" role="tabpanel">
+        <div class="standings-panel" id="panel-track-dominance" role="tabpanel" aria-labelledby="tab-track-dominance">
             <div class="track-dom-wrap">
                 <div class="track-dom-intro">
                     <div class="track-dom-kicker">Telemetry · <span id="track-dominance-year">2026</span></div>
@@ -254,7 +254,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-pit-stops" role="tabpanel">
+        <div class="standings-panel" id="panel-pit-stops" role="tabpanel" aria-labelledby="tab-pit-stops">
             <div class="pit-stops-wrap">
                 <div class="pit-stops-intro">
                     <div class="pit-stops-kicker">Pit Stops · <span id="pit-stops-year">2026</span></div>
@@ -275,7 +275,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-destructors" role="tabpanel">
+        <div class="standings-panel" id="panel-destructors" role="tabpanel" aria-labelledby="tab-destructors">
             <div class="destructors-wrap">
                 <div class="destructors-intro">
                     <div class="destructors-kicker">Crash Costs · <span id="destructors-year">2026</span></div>
@@ -302,7 +302,7 @@
     </div>
 </section>
 
-<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
+<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Επιστροφή στην κορυφή"><i class="fas fa-chevron-up"></i></button>
 <div class="share-feedback" id="share-feedback" aria-live="polite"></div>
 
 <footer class="py-4">

@@ -121,7 +121,7 @@ body { overflow-y: auto !important; }
 .retry-btn:hover { background: var(--st-accent); color: #fff; }
 
 .data-source { text-align: center; margin-top: 1.2rem; font-size: 0.7rem; color: var(--st-text-muted); }
-.data-source a { color: var(--st-accent); text-decoration: none; }
+.data-source a { color: var(--st-accent); text-decoration: underline; }
 .share-feedback { position: fixed; right: 16px; bottom: 16px; z-index: 3000; max-width: min(320px, calc(100vw - 32px)); padding: 0.78rem 0.9rem; border-radius: 14px; background: rgba(17,17,19,0.96); color: #fff; font-size: 0.78rem; font-weight: 700; line-height: 1.35; box-shadow: 0 18px 38px rgba(0,0,0,0.26); opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; }
 .share-feedback.is-visible { opacity: 1; transform: translateY(0); }
 [data-theme="light"] .share-feedback { background: rgba(29,29,31,0.94); }
@@ -679,7 +679,7 @@ body { overflow-y: auto !important; }
 .pit-stops-skeleton-card { padding: 1rem; }
 .pit-stops-skeleton-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
 .pit-stops-footnote { margin-top: 0.9rem; font-size: 0.72rem; color: var(--st-text-muted); }
-.pit-stops-footnote a { color: var(--st-accent); text-decoration: none; }
+.pit-stops-footnote a { color: var(--st-accent); text-decoration: underline; }
 
 .destructors-wrap { display: flex; flex-direction: column; gap: 1rem; }
 .destructors-intro {
@@ -742,7 +742,7 @@ body { overflow-y: auto !important; }
 .destructors-loading, .destructors-empty { padding: 3rem 1rem; text-align: center; color: rgba(255,255,255,0.74); }
 .destructors-loading i, .destructors-empty i { display: block; font-size: 1.8rem; margin-bottom: 0.8rem; opacity: 0.7; }
 .destructors-source { font-size: 0.74rem; color: var(--st-text-muted); line-height: 1.5; }
-.destructors-source a { color: var(--st-accent); text-decoration: none; }
+.destructors-source a { color: var(--st-accent); text-decoration: underline; }
 
 body.standings-embed { background: transparent !important; }
 body.standings-embed .background,
