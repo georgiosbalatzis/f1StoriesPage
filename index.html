@@ -37,8 +37,6 @@
             var preload = document.createElement('link');
             preload.rel = 'preload';
             preload.as = 'image';
-            preload.href = selected.desktop.avif;
-            preload.type = 'image/avif';
             preload.setAttribute('fetchpriority', 'high');
             preload.setAttribute('imagesrcset', selected.mobile.avif + ' ' + selected.mobileWidth + 'w, ' + selected.desktop.avif + ' ' + selected.desktopWidth + 'w');
             preload.setAttribute('imagesizes', '100vw');
