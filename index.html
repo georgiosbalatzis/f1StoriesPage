@@ -153,12 +153,12 @@
     <div class="container">
         <h2 class="text-center">Τελευταία από τα F1 Stories</h2>
         <div class="latest-tabs" role="tablist">
-            <button class="latest-tab active" data-tab="videos" role="tab" aria-selected="true"><i class="fas fa-video"></i> Βίντεο</button>
-            <button class="latest-tab" data-tab="articles" role="tab" aria-selected="false"><i class="fas fa-pen-nib"></i> Άρθρα</button>
+            <button class="latest-tab" data-tab="videos" role="tab" aria-selected="false"><i class="fas fa-video"></i> Βίντεο</button>
+            <button class="latest-tab active" data-tab="articles" role="tab" aria-selected="true"><i class="fas fa-pen-nib"></i> Άρθρα</button>
         </div>
 
         <!-- Videos panel -->
-        <div class="latest-panel active" id="panel-videos" role="tabpanel">
+        <div class="latest-panel" id="panel-videos" role="tabpanel">
             <div class="row g-4 episode-grid" id="video-cards-row">
                 <!-- Skeleton placeholders while loading -->
                 <div class="col-md-4 video-skeleton">
@@ -195,7 +195,7 @@
         </div>
 
         <!-- Articles panel -->
-        <div class="latest-panel" id="panel-articles" role="tabpanel">
+        <div class="latest-panel active" id="panel-articles" role="tabpanel">
             <div class="row g-4 blog-posts"><div class="col-12 text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Φόρτωση...</span></div></div></div>
             <div class="text-center mt-4"><a href="/blog-module/blog/index.html" class="cta-button cta-secondary cta-sm">Όλα τα άρθρα <i class="fas fa-arrow-right"></i></a></div>
         </div>
