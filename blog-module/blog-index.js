@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var CACHE_TTL = 15 * 60 * 1000;
     var activeCategory = 'all';
     var activeQuery = '';
+    var searchTimer = null;
     var DATE_FORMATTER = typeof Intl !== 'undefined'
         ? new Intl.DateTimeFormat('el-GR', { day: 'numeric', month: 'long', year: 'numeric' })
         : null;
@@ -296,8 +297,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (searchInput) {
         searchInput.addEventListener('input', function() {
-            activeQuery = searchInput.value.trim();
-            renderPosts();
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(function() {
+                activeQuery = searchInput.value.trim();
+                renderPosts();
+            }, 250);
         });
     }
 

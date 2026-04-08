@@ -113,45 +113,13 @@
         observer.observe(grid, { childList: true, subtree: true });
     }
 
-    // ── 4. AUTHOR CHIP DEBOUNCE ─────────────────
-    function fixAuthorChips() {
-        var strip = document.getElementById('author-strip');
-        if (!strip) return;
-
-        var newStrip = strip.cloneNode(true);
-        strip.parentNode.replaceChild(newStrip, strip);
-
-        var lastActivation = 0;
-        var DEBOUNCE_MS = 400;
-
-        function handleChip(e) {
-            var now = Date.now();
-            if (now - lastActivation < DEBOUNCE_MS) { e.preventDefault(); return; }
-            var chip = e.target.closest('.author-chip');
-            if (!chip) return;
-            e.preventDefault();
-            lastActivation = now;
-            newStrip.querySelectorAll('.author-chip').forEach(function (c) { c.classList.remove('active'); });
-            chip.classList.add('active');
-            var author = chip.getAttribute('data-author');
-            document.dispatchEvent(new CustomEvent('authorFilter', { detail: { author: author } }));
-            if (window.__blogFilterByAuthor) window.__blogFilterByAuthor(author);
-        }
-
-        if ('PointerEvent' in window) {
-            newStrip.addEventListener('pointerup', handleChip);
-        } else {
-            newStrip.addEventListener('click', handleChip);
-        }
-    }
-
-    // ── 5. ARTICLE CARD TAP FIX ─────────────────
+    // ── 4. ARTICLE CARD TAP FIX ─────────────────
     // Cards are <a> tags — native click handles navigation.
     // touch-action: manipulation (CSS) removes the 300ms iOS delay.
     // No custom touchend handler needed; it would fire on scroll-end too.
     function fixCardTaps() {}
 
-    // ── 6. PREVENT OVERSCROLL ON MOBILE NAV ─────
+    // ── 5. PREVENT OVERSCROLL ON MOBILE NAV ─────
     function preventOverscroll() {
         var hamburger = document.getElementById('nav-hamburger');
         var mobileNav = document.getElementById('nav-mobile');
@@ -165,7 +133,7 @@
         obs.observe(mobileNav, { attributes: true, attributeFilter: ['class', 'style'] });
     }
 
-    // ── 7. TTS HEADER TAP FIX ───────────────────
+    // ── 6. TTS HEADER TAP FIX ───────────────────
     // Intercepts at capture phase to prevent double-toggle
     // from both touchend and click firing.
     function fixTTSHeader() {
@@ -201,7 +169,7 @@
         }, { capture: true, passive: false });
     }
 
-    // ── 8. VIEWPORT HEIGHT FIX (100vh on mobile) ─
+    // ── 7. VIEWPORT HEIGHT FIX (100vh on mobile) ─
     function fixViewportHeight() {
         function setVH() {
             document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
@@ -215,7 +183,7 @@
     // PERFORMANCE FIXES
     // ═════════════════════════════════════════════
 
-    // ── 9. IMAGE SHIMMER CLEANUP ────────────────
+    // ── 8. IMAGE SHIMMER CLEANUP ────────────────
     function watchImageLoads() {
         var containers = document.querySelectorAll('.blog-img-container, .article-card-img-wrap');
         containers.forEach(function (container) {
@@ -229,11 +197,13 @@
         });
     }
 
-    // ── 10. NATIVE LAZY LOADING UPGRADE ─────────
+    // ── 9. NATIVE LAZY LOADING UPGRADE ──────────
     function upgradeNativeLazy() {
         if (!('loading' in HTMLImageElement.prototype)) return;
         var imgs = document.querySelectorAll('img[data-src]');
+        var grid = document.getElementById('articles-grid');
         imgs.forEach(function (img) {
+            if (grid && grid.contains(img)) return;
             img.setAttribute('loading', 'lazy');
             img.src = img.getAttribute('data-src');
             img.removeAttribute('data-src');
@@ -241,7 +211,7 @@
         });
     }
 
-    // ── 11. ASYNC IMAGE DECODE ──────────────────
+    // ── 10. ASYNC IMAGE DECODE ──────────────────
     function asyncDecodeImages() {
         if (typeof HTMLImageElement.prototype.decode !== 'function') return;
         var imgs = document.querySelectorAll('.blog-img, .article-card-img, .article-header-img');
@@ -251,7 +221,7 @@
         });
     }
 
-    // ── 12. PREFETCH NEXT PAGES ─────────────────
+    // ── 11. PREFETCH NEXT PAGES ─────────────────
     function prefetchNextPages() {
         if (navigator.connection) {
             var conn = navigator.connection;
@@ -276,7 +246,7 @@
         }
     }
 
-    // ── 13. FADE-IN OBSERVER ────────────────────
+    // ── 12. FADE-IN OBSERVER ────────────────────
     // Replaces scroll-based .fade-in with IntersectionObserver.
     // Only runs on blog pages — f1-optimized.js handles homepage.
     function setupFadeInObserver() {
@@ -303,7 +273,7 @@
         sections.forEach(function (s) { observer.observe(s); });
     }
 
-    // ── 14. BLOG GRID MUTATION WATCHER ──────────
+    // ── 13. BLOG GRID MUTATION WATCHER ──────────
     // Re-run image fixes when blog cards are dynamically injected.
     // Debounced so rapid mutations (many cards injected at once) only trigger once.
     function watchBlogGrid() {
@@ -315,7 +285,6 @@
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(function () {
                 watchImageLoads();
-                upgradeNativeLazy();
                 asyncDecodeImages();
             }, 100);
         });
@@ -338,12 +307,6 @@
         fixCardTaps();
         preventOverscroll();
         fixTTSHeader();
-
-        // Author chips: only on blog index
-        var path = window.location.pathname;
-        if (path.includes('/blog/index.html') || path.endsWith('/blog/')) {
-            fixAuthorChips();
-        }
 
         // Performance fixes
         watchImageLoads();
