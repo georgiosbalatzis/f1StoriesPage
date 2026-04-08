@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderCard(post, idx) {
         var cats = (post.categories || []).slice(0, 2).map(function(c) { return '<span class="article-card-cat">' + escHtml(c) + '</span>'; }).join('');
         var url = post.url || ('/blog-module/blog-entries/' + post.id + '/article.html');
-        var img = post.image || '/blog-module/images/default-blog.jpg';
+        var img = post.thumbnail || post.image || '/blog-module/images/default-blog.jpg';
         var date = formatPostDate(post);
         var author = post.author || 'F1 Stories';
         var excerpt = post.excerpt || '';

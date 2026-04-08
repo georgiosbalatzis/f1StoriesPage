@@ -3,33 +3,28 @@
 // This script loads the 3 most recent posts for the homepage blog preview.
 
 document.addEventListener('DOMContentLoaded', function () {
-    const AUTHOR_MAP = {
-        G: 'Georgios Balatzis',
-        J: 'Giannis Poulikidis',
-        T: 'Thanasis Batalas',
-        W: '2Fast',
-        D: 'Dimitris Keramidiotis'
-    };
-    const CACHE_KEY = 'f1s-home-blog-v1';
+    const CACHE_KEY = 'f1s-home-blog-v2';
     const CACHE_TTL = 15 * 60 * 1000;
+    const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
     const $ = sel => document.querySelector(sel);
     let started = false;
-
-    // ── Determine author from folder ID if not set ──
-    function resolveAuthor(post) {
-        if (post.author && post.author.trim() && post.author !== 'F1 Stories Team') return post.author;
-        const id = post.id || '';
-        const m = id.match(/\d{8}(?:-\d+)?([A-Z])F?$/) || id.match(/\d{8}([A-Z])$/);
-        if (m && AUTHOR_MAP[m[1]]) return AUTHOR_MAP[m[1]];
-        return post.author || 'F1 Stories Team';
-    }
 
     // ── Build image path ────────────────────────────
     function imgSrc(src) {
         if (!src) return '/blog-module/images/default-blog.jpg';
         if (src.startsWith('http')) return src;
         return src.startsWith('/') ? src : '/' + src;
+    }
+
+    function dateParts(value) {
+        const match = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!match) return { day: '', month: '' };
+        const monthIndex = parseInt(match[2], 10) - 1;
+        return {
+            day: String(parseInt(match[3], 10) || ''),
+            month: MONTHS[monthIndex] || ''
+        };
     }
 
     function escapeHtml(value) {
@@ -41,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .replace(/'/g, '&#39;');
     }
 
-    // ── Fetch blog-index-data.json with fallback paths ────
+    // ── Fetch home-latest.json with fallback paths ────────
     function readCachedBlogData() {
         try {
             const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY));
@@ -66,9 +61,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (cached) return cached;
 
         const paths = [
-            '/blog-module/blog-index-data.json',
-            'blog-module/blog-index-data.json',
-            '../blog-module/blog-index-data.json'
+            '/blog-module/home-latest.json',
+            'blog-module/home-latest.json',
+            '/blog-module/blog-index-data.json'
         ];
         for (const p of paths) {
             try {
@@ -85,16 +80,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Render a single card ────────────────────────
     function cardHTML(post) {
-        const href = '/blog-module/blog-entries/' + encodeURIComponent(post.id || '') + '/article.html';
-        const img = escapeHtml(imgSrc(post.image));
+        const href = '/blog-module/blog-entries/' + encodeURIComponent(post.slug || post.id || '') + '/article.html';
+        const img = escapeHtml(imgSrc(post.thumbnail || post.image));
         const fallback = '/blog-module/images/default-blog.jpg';
-        const dm = (post.displayDate || '').match(/([A-Za-z]+)\s+(\d+)/);
-        const month = dm ? dm[1].substring(0, 3).toUpperCase() : '';
-        const day = dm ? dm[2] : '';
+        const parts = dateParts(post.date);
+        const month = parts.month;
+        const day = parts.day;
         const title = escapeHtml(post.title || '');
-        const author = escapeHtml(post.author || 'F1 Stories Team');
         const excerpt = escapeHtml(post.excerpt || '');
-        const readTime = escapeHtml(post.readingTime || '');
 
         return `
         <div class="col-md-4">
@@ -111,10 +104,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                     <div class="blog-content">
                         <h3 class="blog-title">${title}</h3>
-                        <div class="blog-meta">
-                            <span><i class="fas fa-user"></i> ${author}</span>
-                            ${readTime ? '<span><i class="fas fa-clock"></i> ' + readTime + '</span>' : ''}
-                        </div>
                         <p class="blog-excerpt">${excerpt}</p>
                         <span class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></span>
                     </div>
@@ -164,9 +153,6 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchBlogData()
             .then(function (data) {
                 var posts = (data.posts || data || []);
-                posts.forEach(function (p) { p.author = resolveAuthor(p); });
-                posts.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
-
                 var recent = posts.slice(0, 3);
                 if (!recent.length) {
                     container.innerHTML = '<div class="col-12 text-center"><p style="color:var(--bs-text-muted)">No blog posts yet.</p></div>';
