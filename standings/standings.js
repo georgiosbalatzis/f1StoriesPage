@@ -101,26 +101,26 @@ var DRIVER_HEADSHOTS = {
     'stroll':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LANSTR01_Lance_Stroll/lanstr01.png.transform/1col/image.png',
     'gasly':           'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/P/PIEGAS01_Pierre_Gasly/piegas01.png.transform/1col/image.png',
     'ocon':            'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/E/ESTOCO01_Esteban_Ocon/estoco01.png.transform/1col/image.png',
-    'hulkenberg':      'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/audi/nichul01/2026audinichul01right.webp',
-    'nico_hulkenberg': 'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/audi/nichul01/2026audinichul01right.webp',
+    'hulkenberg':      'https://media.formula1.com/image/upload/c_fill,w_80/q_auto/v1740000001/common/f1/2026/audi/nichul01/2026audinichul01right.webp',
+    'nico_hulkenberg': 'https://media.formula1.com/image/upload/c_fill,w_80/q_auto/v1740000001/common/f1/2026/audi/nichul01/2026audinichul01right.webp',
     'tsunoda':         'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/Y/YUKTSU01_Yuki_Tsunoda/yuktsu01.png.transform/1col/image.png',
     'albon':           'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ALEALB01_Alexander_Albon/alealb01.png.transform/1col/image.png',
     'bearman':         'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/O/OLIBEA01_Oliver_Bearman/olibea01.png.transform/1col/image.png',
     'hadjar':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/I/ISAHAD01_Isack_Hadjar/isahad01.png.transform/1col/image.png',
-    'antonelli':       'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026/mercedes/andant01/2026mercedesandant01right.webp',
-    'bortoleto':       'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/audi/gabbor01/2026audigabbor01right.webp',
-    'gabriel_bortoleto': 'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/audi/gabbor01/2026audigabbor01right.webp',
+    'antonelli':       'https://media.formula1.com/image/upload/c_lfill,w_80/q_auto/v1740000001/common/f1/2026/mercedes/andant01/2026mercedesandant01right.webp',
+    'bortoleto':       'https://media.formula1.com/image/upload/c_fill,w_80/q_auto/v1740000001/common/f1/2026/audi/gabbor01/2026audigabbor01right.webp',
+    'gabriel_bortoleto': 'https://media.formula1.com/image/upload/c_fill,w_80/q_auto/v1740000001/common/f1/2026/audi/gabbor01/2026audigabbor01right.webp',
     'lawson':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LIALAW01_Liam_Lawson/lialaw01.png.transform/1col/image.png',
     'doohan':          'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/J/JACDOO01_Jack_Doohan/jacdoo01.png.transform/1col/image.png',
     'colapinto':       'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/F/FRACOL01_Franco_Colapinto/fracol01.png.transform/1col/image.png',
-    'bottas':          'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/cadillac/valbot01/2026cadillacvalbot01right.webp',
-    'valtteri_bottas': 'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/cadillac/valbot01/2026cadillacvalbot01right.webp',
-    'perez':           'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/cadillac/serper01/2026cadillacserper01right.webp',
-    'sergio_perez':    'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/cadillac/serper01/2026cadillacserper01right.webp',
-    'lindblad':        'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp',
-    'arvid_lindblad':  'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp',
-    'lidblad':         'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp',
-    'arvid_lidblad':   'https://media.formula1.com/image/upload/c_fill,w_720/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp'
+    'bottas':          'https://media.formula1.com/image/upload/c_fill,w_80/q_auto/v1740000001/common/f1/2026/cadillac/valbot01/2026cadillacvalbot01right.webp',
+    'valtteri_bottas': 'https://media.formula1.com/image/upload/c_fill,w_80/q_auto/v1740000001/common/f1/2026/cadillac/valbot01/2026cadillacvalbot01right.webp',
+    'perez':           'https://media.formula1.com/image/upload/c_fill,w_80/q_auto/v1740000001/common/f1/2026/cadillac/serper01/2026cadillacserper01right.webp',
+    'sergio_perez':    'https://media.formula1.com/image/upload/c_fill,w_80/q_auto/v1740000001/common/f1/2026/cadillac/serper01/2026cadillacserper01right.webp',
+    'lindblad':        'https://media.formula1.com/image/upload/c_fill,w_80/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp',
+    'arvid_lindblad':  'https://media.formula1.com/image/upload/c_fill,w_80/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp',
+    'lidblad':         'https://media.formula1.com/image/upload/c_fill,w_80/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp',
+    'arvid_lidblad':   'https://media.formula1.com/image/upload/c_fill,w_80/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp'
 };
 
 var DRIVER_HEADSHOT_POSITIONS = {
@@ -362,11 +362,15 @@ function getDriverLookupCandidates(driverId, fallbackName) {
     return candidates;
 }
 
+function normalizeHeadshotUrl(url) {
+    return String(url || '').replace(/([,_])w_\d+/g, '$1w_80');
+}
+
 function getHeadshot(driverId, fallbackName) {
     var candidates = getDriverLookupCandidates(driverId, fallbackName);
 
     for (var i = 0; i < candidates.length; i++) {
-        if (DRIVER_HEADSHOTS[candidates[i]]) return DRIVER_HEADSHOTS[candidates[i]];
+        if (DRIVER_HEADSHOTS[candidates[i]]) return normalizeHeadshotUrl(DRIVER_HEADSHOTS[candidates[i]]);
     }
     return '';
 }
@@ -383,7 +387,7 @@ function shouldPreferLocalHeadshot(driverId, fallbackName) {
 function getPreferredHeadshot(driverId, fallbackName, sourceHeadshot) {
     var localHeadshot = getHeadshot(driverId, fallbackName);
     if (localHeadshot && shouldPreferLocalHeadshot(driverId, fallbackName)) return localHeadshot;
-    return String(sourceHeadshot || localHeadshot || '');
+    return normalizeHeadshotUrl(sourceHeadshot || localHeadshot || '');
 }
 
 function getHeadshotObjectPosition(driverId, fallbackName) {
