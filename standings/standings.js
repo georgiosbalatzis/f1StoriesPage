@@ -4870,6 +4870,22 @@ function buildDebriefTeamCellHTML(entry) {
         + '</div>';
 }
 
+function deriveDebriefTeamCode(teamKey, teamName) {
+    var key = resolveTeamId(teamKey, teamName);
+    if (key === 'mclaren') return 'MCL';
+    if (key === 'red_bull') return 'RBR';
+    if (key === 'ferrari') return 'FER';
+    if (key === 'mercedes') return 'MER';
+    if (key === 'aston_martin') return 'AMR';
+    if (key === 'alpine') return 'ALP';
+    if (key === 'haas') return 'HAA';
+    if (key === 'rb') return 'RB';
+    if (key === 'williams') return 'WIL';
+    if (key === 'audi') return 'AUD';
+    if (key === 'cadillac') return 'CAD';
+    return String(teamName || '').replace(/[^A-Za-z0-9]+/g, '').toUpperCase().slice(0, 3) || 'TM';
+}
+
 function normalizeDebriefSnapshot(payload) {
     function normalizeEntries(list) {
         if (!Array.isArray(list)) return [];
@@ -4906,6 +4922,31 @@ function normalizeDebriefSnapshot(payload) {
         });
     }
 
+    function normalizeCompoundUsageEntries(list) {
+        if (!Array.isArray(list)) return [];
+        return list.map(function(entry, index) {
+            var fullName = String(entry && (entry.fullName || entry.name || entry.code) || 'Unknown Driver');
+            var driverId = normalizeDriverLookupKey(entry && (entry.driverId || entry.code || fullName));
+            var code = String(entry && (entry.code || deriveSnapshotAcronym(fullName)) || 'DRV').toUpperCase().slice(0, 3);
+            var teamKey = resolveTeamId(entry && entry.teamKey || '', entry && entry.teamName || '');
+            var teamName = getCanonicalTeamName(teamKey) || getCanonicalTeamName(entry && entry.teamName || '') || String(entry && entry.teamName || teamKey || 'Unknown');
+            var teamColor = getCanonicalTeamColor(teamKey, teamName, entry && entry.teamColor || '');
+            return {
+                order: parseInt(entry && entry.order, 10) || (index + 1),
+                driverId: driverId,
+                code: code,
+                fullName: fullName,
+                teamKey: teamKey,
+                teamName: teamName,
+                teamColor: teamColor,
+                headshot: getPreferredHeadshot(driverId, fullName, ''),
+                soft: parseInt(entry && entry.soft, 10) || 0,
+                medium: parseInt(entry && entry.medium, 10) || 0,
+                hard: parseInt(entry && entry.hard, 10) || 0
+            };
+        });
+    }
+
     function normalizeTeamEntries(list) {
         if (!Array.isArray(list)) return [];
         return list.map(function(entry, index) {
@@ -4917,6 +4958,8 @@ function normalizeDebriefSnapshot(payload) {
                 teamKey: teamKey,
                 teamName: teamName,
                 teamColor: teamColor,
+                code: String(entry && entry.code || deriveDebriefTeamCode(teamKey, teamName)).toUpperCase().slice(0, 4),
+                lapTime: String(entry && entry.lapTime || ''),
                 s1: String(entry && entry.s1 || ''),
                 s2: String(entry && entry.s2 || ''),
                 s3: String(entry && entry.s3 || ''),
@@ -4946,6 +4989,7 @@ function normalizeDebriefSnapshot(payload) {
             singleLap: normalizeEntries(entry && entry.singleLap),
             longRun: normalizeEntries(entry && entry.longRun),
             tyreDeg: normalizeEntries(entry && entry.tyreDeg),
+            compoundUsage: normalizeCompoundUsageEntries(entry && entry.compoundUsage),
             teamIdealLap: normalizeTeamEntries(entry && entry.teamIdealLap),
             cornerPerformance: normalizeTeamEntries(entry && entry.cornerPerformance),
             racePacePrediction: normalizeTeamEntries(entry && entry.racePacePrediction)
@@ -5098,49 +5142,55 @@ function buildDebriefLongRunHTML(round) {
 }
 
 function buildDebriefCompoundUsageHTML(round) {
-    if (!round || !round.singleLap.length) {
+    var rows = round && round.compoundUsage && round.compoundUsage.length
+        ? round.compoundUsage.slice().sort(function(a, b) { return (a.order || 0) - (b.order || 0); })
+        : [];
+
+    if (!rows.length && round && round.singleLap.length) {
+        var driverMap = {};
+
+        function ensureDriver(entry, index) {
+            var key = entry.driverId;
+            if (!driverMap[key]) {
+                driverMap[key] = {
+                    driverId: key,
+                    code: entry.code,
+                    order: typeof index === 'number' ? index : Object.keys(driverMap).length + 1,
+                    soft: 0,
+                    medium: 0,
+                    hard: 0
+                };
+            }
+            return driverMap[key];
+        }
+
+        function addLaps(target, compound, laps) {
+            var count = parseInt(laps, 10) || 0;
+            if (!count) return;
+            var value = String(compound || '').toLowerCase();
+            if (value.indexOf('soft') !== -1) target.soft += count;
+            else if (value.indexOf('medium') !== -1) target.medium += count;
+            else if (value.indexOf('hard') !== -1) target.hard += count;
+        }
+
+        round.singleLap.forEach(function(entry, index) {
+            addLaps(ensureDriver(entry, index), entry.compound, entry.laps);
+        });
+
+        round.longRun.forEach(function(entry) {
+            addLaps(ensureDriver(entry), entry.compound, entry.stintLaps);
+        });
+
+        rows = Object.keys(driverMap).map(function(driverId) {
+            return driverMap[driverId];
+        }).sort(function(a, b) {
+            return a.order - b.order;
+        });
+    }
+
+    if (!rows.length) {
         return '<div class="debrief-empty"><i class="fas fa-layer-group"></i><p>No compound-usage data available for this round.</p></div>';
     }
-
-    var driverMap = {};
-    var rows = [];
-
-    function ensureDriver(entry, index) {
-        var key = entry.driverId;
-        if (!driverMap[key]) {
-            driverMap[key] = {
-                driverId: key,
-                code: entry.code,
-                order: typeof index === 'number' ? index : rows.length,
-                soft: 0,
-                medium: 0,
-                hard: 0
-            };
-            rows.push(driverMap[key]);
-        }
-        return driverMap[key];
-    }
-
-    function addLaps(target, compound, laps) {
-        var count = parseInt(laps, 10) || 0;
-        if (!count) return;
-        var value = String(compound || '').toLowerCase();
-        if (value.indexOf('soft') !== -1) target.soft += count;
-        else if (value.indexOf('medium') !== -1) target.medium += count;
-        else if (value.indexOf('hard') !== -1) target.hard += count;
-    }
-
-    round.singleLap.forEach(function(entry, index) {
-        addLaps(ensureDriver(entry, index), entry.compound, entry.laps);
-    });
-
-    round.longRun.forEach(function(entry) {
-        addLaps(ensureDriver(entry), entry.compound, entry.stintLaps);
-    });
-
-    rows.sort(function(a, b) {
-        return a.order - b.order;
-    });
 
     var maxTotal = rows.reduce(function(max, entry) {
         return Math.max(max, entry.soft + entry.medium + entry.hard);
@@ -5262,49 +5312,52 @@ function buildDebriefIdealGapBarsHTML(rows) {
 }
 
 function buildDebriefTeamIdealHTML(round) {
-    if (!round || !round.singleLap.length) {
+    if (!round || !round.teamIdealLap.length) {
         return '<div class="debrief-empty"><i class="fas fa-users"></i><p>No ideal-lap analysis available for this round.</p></div>';
     }
 
-    var classified = round.singleLap.slice().map(function(entry) {
+    var rows = round.teamIdealLap.slice().map(function(entry) {
         return {
-            code: entry.code,
-            lapTime: entry.lapTime,
-            seconds: parseTimeSeconds(entry.lapTime),
-            plotSeconds: 0,
-            idealGap: 0
+            pos: parseInt(entry.pos, 10) || 0,
+            code: entry.code || deriveDebriefTeamCode(entry.teamKey, entry.teamName),
+            teamName: entry.teamName,
+            lapSeconds: parseTimeSeconds(entry.lapTime || entry.idealLap),
+            idealSeconds: parseTimeSeconds(entry.idealLap),
+            plotSeconds: 0
         };
     }).filter(function(entry) {
-        return isFiniteNumber(entry.seconds);
-    }).sort(function(a, b) {
-        return a.seconds - b.seconds;
+        return isFiniteNumber(entry.lapSeconds) && isFiniteNumber(entry.idealSeconds);
     });
 
-    if (!classified.length) {
+    if (!rows.length) {
         return '<div class="debrief-empty"><i class="fas fa-users"></i><p>No ideal-lap analysis available for this round.</p></div>';
     }
 
-    var gainProfile = [0, 0, 0, 0, 0, 0.023, 0.033, 0.073, 0.081, 0.082, 0.082, 0.095, 0.126, 0.133, 0.141, 0.148, 0.167, 0.173, 0.211, 0.248, 0.257, 0.276];
-    classified.forEach(function(entry, index) {
-        entry.idealGap = gainProfile[Math.min(index, gainProfile.length - 1)];
-        entry.idealSeconds = entry.seconds - entry.idealGap;
+    var classified = rows.slice().sort(function(a, b) {
+        if (a.pos && b.pos && a.pos !== b.pos) return a.pos - b.pos;
+        return a.lapSeconds - b.lapSeconds;
     });
-
-    var ideal = classified.slice().sort(function(a, b) {
+    var ideal = rows.slice().sort(function(a, b) {
         return a.idealSeconds - b.idealSeconds;
     });
+    var leaderIdeal = ideal[0].idealSeconds;
 
     classified.forEach(function(entry) {
-        entry.plotSeconds = entry.seconds;
+        entry.plotSeconds = entry.lapSeconds;
     });
     ideal.forEach(function(entry) {
         entry.plotSeconds = entry.idealSeconds;
     });
 
-    var allTimes = classified.map(function(entry) { return entry.seconds; }).concat(ideal.map(function(entry) { return entry.idealSeconds; }));
+    var allTimes = classified.map(function(entry) { return entry.lapSeconds; }).concat(ideal.map(function(entry) { return entry.idealSeconds; }));
     var minTime = Math.floor(Math.min.apply(null, allTimes) * 2) / 2;
-    var maxTime = Math.ceil(Math.max.apply(null, allTimes) * 2) / 2;
-    var gapRows = classified.slice().sort(function(a, b) {
+    var maxTime = Math.ceil((Math.max.apply(null, allTimes) + 0.2) * 2) / 2;
+    var gapRows = ideal.slice().map(function(entry) {
+        return {
+            code: entry.code,
+            idealGap: Math.max(0, entry.idealSeconds - leaderIdeal)
+        };
+    }).sort(function(a, b) {
         return a.idealGap - b.idealGap;
     });
 
