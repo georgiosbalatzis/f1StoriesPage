@@ -1,7 +1,7 @@
 :root {
     --st-bg: #111113; --st-surface: #161618; --st-surface-raised: #1e1e20;
     --st-border: rgba(255,255,255,0.08); --st-border-strong: rgba(255,255,255,0.14);
-    --st-text: #e5e5e7; --st-text-secondary: #a1a1a6; --st-text-muted: #6e6e73;
+    --st-text: #e5e5e7; --st-text-secondary: #a1a1a6; --st-text-muted: #8a8a93;
     --st-accent: #3b82f6; --st-accent-soft: rgba(59,130,246,0.10);
     --st-radius: 14px; --st-radius-sm: 10px;
     --st-transition: 0.25s cubic-bezier(0.4,0,0.2,1);
@@ -10,7 +10,7 @@
 [data-theme="light"] {
     --st-bg: #FFFFFF; --st-surface: #f5f5f7; --st-surface-raised: #FFFFFF;
     --st-border: rgba(0,0,0,0.06); --st-border-strong: rgba(0,0,0,0.1);
-    --st-text: #1d1d1f; --st-text-secondary: #6e6e73; --st-text-muted: #86868b;
+    --st-text: #1d1d1f; --st-text-secondary: #6e6e73; --st-text-muted: #5f5f67;
     --st-accent: #0e4ca6; --st-accent-soft: rgba(14,76,166,0.06);
     --st-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
 }
@@ -21,12 +21,13 @@ body { overflow-y: auto !important; }
 [data-theme="light"] .background { background: #FFFFFF !important; opacity: 1 !important; }
 [data-theme="light"] .streak { display: none !important; }
 [data-theme="light"] footer { background-color: #f5f5f7 !important; }
-[data-theme="light"] footer p, [data-theme="light"] footer a, [data-theme="light"] footer .footer-link, [data-theme="light"] footer .footer-separator { color: #86868b !important; }
+[data-theme="light"] footer p, [data-theme="light"] footer a, [data-theme="light"] footer .footer-link, [data-theme="light"] footer .footer-separator { color: #5f5f67 !important; }
 [data-theme="light"] footer a:hover, [data-theme="light"] footer .footer-link:hover { color: #0e4ca6 !important; }
-[data-theme="light"] .social-media a, [data-theme="light"] .social-media a i { color: #86868b !important; }
+[data-theme="light"] .social-media a, [data-theme="light"] .social-media a i { color: #5f5f67 !important; }
 [data-theme="light"] .social-media a:hover, [data-theme="light"] .social-media a:hover i { color: #0e4ca6 !important; }
 
 .standings-wrapper { font-family: 'DM Sans','Helvetica Neue',sans-serif; color: var(--st-text); -webkit-font-smoothing: antialiased; padding-top: 1rem; }
+.standings-wrapper h2 { border-bottom: none; display: block; padding-bottom: 0; }
 
 .standings-header { padding: 2rem 0 0.5rem; }
 .standings-title { font-family: 'Outfit',sans-serif; font-size: 2.4rem; font-weight: 800; letter-spacing: -0.03em; color: var(--st-text); margin: 0; line-height: 1.1; }

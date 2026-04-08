@@ -69,7 +69,7 @@
 <!-- ═══ NAVBAR — stays in English ═══ -->
 <nav class="blog-nav" id="blog-nav">
     <div class="container blog-nav-inner">
-        <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="Λογότυπο F1 Stories" loading="eager" fetchpriority="high" width="48" height="48"></a>
+        <a class="blog-nav-brand" href="/" aria-label="Αρχική σελίδα F1 Stories"><img src="/images/logo-nav.webp" alt="Λογότυπο F1 Stories" loading="eager" fetchpriority="high" width="48" height="48"></a>
         <div class="blog-nav-links" id="nav-links">
             <a href="/" class="blog-nav-link active"><i class="fas fa-home"></i> Home</a>
             <a href="/blog-module/blog/index.html" class="blog-nav-link"><i class="fas fa-newspaper"></i> Blog</a>
@@ -270,7 +270,8 @@
                     <span>Κάτι πήγε στραβά. Δοκίμασε ξανά ή στείλε email στο <a href="mailto:myf1stories@gmail.com">myf1stories@gmail.com</a></span>
                 </div>
             </div>
-            <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
+            <label for="contact-gotcha" class="visually-hidden">Μην συμπληρώσετε αυτό το πεδίο</label>
+            <input type="text" id="contact-gotcha" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
             <button type="submit" class="cta-button cta-primary contact-submit">
                 <span class="submit-text">Αποστολή Μηνύματος</span>
                 <span class="submit-spinner" style="display:none"><i class="fas fa-circle-notch fa-spin"></i></span>
@@ -287,11 +288,11 @@
             <div class="col-12 text-center">
                 <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
                 <div class="social-media">
-                    <a href="https://www.youtube.com/@F1StoriesOriginal" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
-                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
-                    <a href="mailto:myf1stories@gmail.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://www.youtube.com/@F1StoriesOriginal" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><i class="fab fa-tiktok"></i></a>
+                    <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><i class="fas fa-envelope"></i></a>
                 </div>
                 <div class="footer-links mt-3">
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
@@ -308,7 +309,7 @@
     <div class="cookie-content">
         <div class="cookie-header">
             <h3>Συγκατάθεση Cookies</h3>
-            <button id="close-cookie" class="close-btn"><i class="fas fa-times"></i></button>
+            <button id="close-cookie" class="close-btn" aria-label="Κλείσιμο ρυθμίσεων cookies"><i class="fas fa-times"></i></button>
         </div>
         <p class="cookie-intro">Η μέτρηση επισκεψιμότητας είναι ενεργή από προεπιλογή. Μπορείς να την απενεργοποιήσεις για ανώνυμη μέτρηση χωρίς analytics cookies.</p>
         <div class="cookie-details">
@@ -319,6 +320,7 @@
             <div class="cookie-section">
                 <div class="cookie-toggle">
                     <h4>Cookies Ανάλυσης</h4>
+                    <label class="visually-hidden" for="analytics-cookies">Cookies Ανάλυσης</label>
                     <label class="toggle-switch"><input type="checkbox" id="analytics-cookies"><span class="toggle-slider"></span></label>
                 </div>
                 <p>Ενεργά από προεπιλογή. Αν τα απενεργοποιήσεις, συνεχίζουμε μόνο με ανώνυμη μέτρηση χωρίς analytics cookies.</p>
@@ -326,6 +328,7 @@
             <div class="cookie-section">
                 <div class="cookie-toggle">
                     <h4>Cookies Μάρκετινγκ</h4>
+                    <label class="visually-hidden" for="marketing-cookies">Cookies Μάρκετινγκ</label>
                     <label class="toggle-switch"><input type="checkbox" id="marketing-cookies"><span class="toggle-slider"></span></label>
                 </div>
                 <p>Επιτρέπουν εξατομικευμένο περιεχόμενο και διαφημίσεις.</p>
@@ -344,7 +347,7 @@
 </div>
 
 <button class="theme-toggle-btn" id="theme-toggle" aria-label="Εναλλαγή φωτεινού/σκοτεινού θέματος"><i class="fas fa-sun icon-sun"></i><i class="fas fa-moon icon-moon"></i></button>
-<button id="scroll-to-top" class="scroll-to-top-btn"><i class="fas fa-chevron-up"></i></button>
+<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Επιστροφή στην κορυφή"><i class="fas fa-chevron-up"></i></button>
 
 <script src="/blog-module/blog-loader.js" defer></script>
 <script src="scripts/background-randomizer.js" defer></script>
