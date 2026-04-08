@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const paths = [
             '/blog-module/home-latest.json',
             'blog-module/home-latest.json',
-            '../blog-module/home-latest.json'
+            '/blog-module/blog-index-data.json'
         ];
         for (const p of paths) {
             try {
