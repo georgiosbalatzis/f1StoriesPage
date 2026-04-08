@@ -112,6 +112,7 @@
             <button class="standings-tab" id="tab-dirty-air" data-tab="dirty-air" role="tab" aria-controls="panel-dirty-air" aria-selected="false"><i class="fas fa-wind"></i> Dirty Air</button>
             <button class="standings-tab" id="tab-track-dominance" data-tab="track-dominance" role="tab" aria-controls="panel-track-dominance" aria-selected="false"><i class="fas fa-route"></i> Track Dominance</button>
             <button class="standings-tab" id="tab-pit-stops" data-tab="pit-stops" role="tab" aria-controls="panel-pit-stops" aria-selected="false"><i class="fas fa-wrench"></i> Pit Stops</button>
+            <button class="standings-tab" id="tab-debrief" data-tab="debrief" role="tab" aria-controls="panel-debrief" aria-selected="false"><i class="fas fa-clipboard-list"></i> Debrief</button>
             <button class="standings-tab" id="tab-destructors" data-tab="destructors" role="tab" aria-controls="panel-destructors" aria-selected="false"><i class="fas fa-car-burst"></i> Destructors</button>
         </div>
 
@@ -272,6 +273,27 @@
                     </div>
                 </div>
                 <div id="pit-stops-table"></div>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-debrief" role="tabpanel" aria-labelledby="tab-debrief">
+            <div class="debrief-wrap">
+                <div class="debrief-intro">
+                    <div class="debrief-kicker">Friday Practice · <span id="debrief-year">2026</span></div>
+                    <h2 class="debrief-title">Friday Debrief</h2>
+                    <p class="debrief-sub">Ανάλυση δεδομένων FP1/FP2: single-lap pace, long-run pace και tyre degradation ανά Grand Prix, βασισμένα στο FIA Friday Debrief.</p>
+                </div>
+                <div class="panel-tools">
+                    <div class="panel-tools-copy">
+                        <div class="panel-tools-title">Debrief Tab</div>
+                        <div class="panel-tools-note">The shared link preserves the selected GP round and sub-view.</div>
+                    </div>
+                    <div class="share-tools">
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-debrief"><i class="fas fa-share-nodes"></i> Share tab</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-debrief"><i class="fas fa-code"></i> Embed tab</button>
+                    </div>
+                </div>
+                <div id="debrief-table"></div>
             </div>
         </div>
 

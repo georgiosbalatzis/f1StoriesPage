@@ -26,13 +26,16 @@ var trackDominanceState = { loaded: false, loading: false, pendingReload: false,
 var pitStopsTable = document.getElementById('pit-stops-table');
 var pitStopsYear = document.getElementById('pit-stops-year');
 var pitStopsState = { loaded: false, loading: false, races: [], selectedRound: '', activeView: 'race', raceCache: {}, seasonCache: null };
+var debriefTable = document.getElementById('debrief-table');
+var debriefYear = document.getElementById('debrief-year');
+var debriefState = { loaded: false, loading: false, rounds: [], selectedRound: '', activeView: 'single-lap', snapshot: null };
 var destructorsTable = document.getElementById('destructors-table');
 var destructorsYear = document.getElementById('destructors-year');
 var destructorsState = { loaded: false, loading: false, activeView: 'teams', snapshot: null };
 var standingsTabs = Array.prototype.slice.call(document.querySelectorAll('.standings-tab'));
 var standingsPanels = Array.prototype.slice.call(document.querySelectorAll('.standings-panel'));
 var shareFeedback = document.getElementById('share-feedback');
-var VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'destructors'];
+var VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief', 'destructors'];
 var SHARE_TARGETS = {
     'panel-drivers': { tab: 'drivers', title: 'Driver standings tab', height: 980 },
     'drivers-table': { tab: 'drivers', title: 'Driver standings table', height: 760 },
@@ -46,6 +49,7 @@ var SHARE_TARGETS = {
     'panel-dirty-air': { tab: 'dirty-air', title: 'Dirty air analysis', height: 1520 },
     'panel-track-dominance': { tab: 'track-dominance', title: 'Track dominance analysis', height: 1320 },
     'panel-pit-stops': { tab: 'pit-stops', title: 'Fastest pit stops', height: 1080 },
+    'panel-debrief': { tab: 'debrief', title: 'Friday Debrief analysis', height: 1200 },
     'panel-destructors': { tab: 'destructors', title: 'Destructors championship', height: 1260 }
 };
 var activeStandingsTab = 'drivers';
@@ -54,6 +58,7 @@ var pendingRevealTarget = '';
 var isEmbedMode = false;
 var shareFeedbackTimer = 0;
 var DIRTY_AIR_CACHE_URL = 'dirty-air-cache.json';
+var DEBRIEF_CACHE_URL = 'debrief-cache.json';
 var DESTRUCTORS_CACHE_URL = 'destructors-cache.json';
 var DESTRUCTORS_TEAM_ORDER = ['haas', 'mercedes', 'mclaren', 'red_bull', 'cadillac', 'williams', 'alpine', 'audi', 'ferrari', 'rb', 'aston_martin'];
 var DESTRUCTORS_TEAM_META = {
@@ -198,6 +203,7 @@ if (tyrePaceYear) tyrePaceYear.textContent = YEAR;
 if (dirtyAirYear) dirtyAirYear.textContent = YEAR;
 if (trackDominanceYear) trackDominanceYear.textContent = YEAR;
 if (pitStopsYear) pitStopsYear.textContent = YEAR;
+if (debriefYear) debriefYear.textContent = YEAR;
 if (destructorsYear) destructorsYear.textContent = YEAR;
 
 var initialURLState = readStandingsURLState();
@@ -216,6 +222,8 @@ trackDominanceState.leftDriverKey = initialURLState.trackTeamA;
 trackDominanceState.rightDriverKey = initialURLState.trackTeamB;
 pitStopsState.selectedRound = initialURLState.pitRound;
 pitStopsState.activeView = initialURLState.pitView;
+debriefState.selectedRound = initialURLState.debriefRound;
+debriefState.activeView = initialURLState.debriefView;
 destructorsState.activeView = initialURLState.destructorsView;
 
 // ── Tab switching ──
@@ -511,6 +519,10 @@ function sanitizeDestructorsView(value) {
     return value === 'flow' ? 'flow' : 'teams';
 }
 
+function sanitizeDebriefView(value) {
+    return (value === 'long-run' || value === 'tyre-deg') ? value : 'single-lap';
+}
+
 function readStandingsURLState() {
     var params = new URLSearchParams(window.location.search || '');
     var focus = sanitizeShareTarget(params.get('focus'));
@@ -531,6 +543,8 @@ function readStandingsURLState() {
         trackTeamB: params.get('trackTeamB') || '',
         pitView: (params.get('pitView') === 'season' ? 'season' : 'race'),
         pitRound: params.get('pitRound') || '',
+        debriefRound: params.get('debriefRound') || '',
+        debriefView: sanitizeDebriefView(params.get('debriefView')),
         destructorsView: sanitizeDestructorsView(params.get('destructorsView'))
     };
 }
@@ -570,6 +584,16 @@ function appendShareStateParams(params, tabName) {
     if (tabName === 'pit-stops') {
         if (pitStopsState.activeView !== 'race') params.set('pitView', pitStopsState.activeView);
         if (pitStopsState.selectedRound) params.set('pitRound', String(pitStopsState.selectedRound));
+        return;
+    }
+
+    if (tabName === 'debrief') {
+        var debriefRound = debriefState.selectedRound;
+        if (!debriefRound && debriefState.rounds && debriefState.rounds.length) {
+            debriefRound = String(debriefState.rounds[debriefState.rounds.length - 1].round);
+        }
+        params.set('debriefView', sanitizeDebriefView(debriefState.activeView));
+        if (debriefRound) params.set('debriefRound', String(debriefRound));
         return;
     }
 
@@ -743,6 +767,7 @@ function activateStandingsTab(tabName, options) {
     if (nextTab === 'dirty-air') ensureDirtyAirLoaded();
     if (nextTab === 'track-dominance') ensureTrackDominanceLoaded();
     if (nextTab === 'pit-stops') ensurePitStopsLoaded();
+    if (nextTab === 'debrief') ensureDebriefLoaded();
     if (nextTab === 'destructors') ensureDestructorsLoaded();
 
     refreshEmbedVisibility();
@@ -4444,6 +4469,8 @@ window.addEventListener('popstate', function() {
     trackDominanceState.rightDriverKey = nextState.trackTeamB;
     pitStopsState.activeView = nextState.pitView;
     pitStopsState.selectedRound = nextState.pitRound;
+    debriefState.activeView = nextState.debriefView;
+    debriefState.selectedRound = nextState.debriefRound;
     destructorsState.activeView = nextState.destructorsView;
     activateStandingsTab(nextState.tab, { skipURL: true });
 });
@@ -4803,6 +4830,266 @@ function renderConstructorsFromOpenF1(standings, driverInfo) {
     document.getElementById('constructors-chart-bars').innerHTML = chartHTML;
     document.getElementById('constructors-chart').style.display = 'block';
     finalizeRenderedPanel('constructors');
+}
+
+function getDebriefCompoundClass(compound) {
+    var value = String(compound || '').toLowerCase();
+    if (value.indexOf('soft') !== -1) return 'compound-soft';
+    if (value.indexOf('medium') !== -1) return 'compound-medium';
+    if (value.indexOf('hard') !== -1) return 'compound-hard';
+    return '';
+}
+
+function getDebriefDegClass(value) {
+    var deg = parseNumberValue(value);
+    if (deg && deg <= 0.045) return 'debrief-deg-good';
+    if (deg && deg <= 0.060) return 'debrief-deg-mid';
+    return 'debrief-deg-bad';
+}
+
+function buildDebriefDriverCellHTML(entry) {
+    var headshot = entry.headshot || getPreferredHeadshot(entry.driverId, entry.fullName, '');
+    var teamColor = '#' + esc(entry.teamColor || '3b82f6');
+    return '<div class="debrief-driver-cell" style="--debrief-team-color:' + teamColor + ';">'
+        + '<span class="debrief-team-bar" style="background:' + teamColor + ';"></span>'
+        + (headshot ? '<img src="' + esc(headshot) + '" alt="' + esc(entry.fullName) + '"' + getHeadshotImgStyle(entry.driverId, entry.fullName) + ' loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+            + '<span class="debrief-avatar-fallback" style="display:none;">' + esc(entry.code) + '</span>'
+            : '<span class="debrief-avatar-fallback">' + esc(entry.code) + '</span>')
+        + '<div><div class="debrief-driver-code">' + esc(entry.code) + '</div><div class="debrief-driver-name">' + esc(entry.fullName) + ' · ' + esc(entry.teamName) + '</div></div>'
+        + '</div>';
+}
+
+function normalizeDebriefSnapshot(payload) {
+    function normalizeEntries(list) {
+        if (!Array.isArray(list)) return [];
+        return list.map(function(entry, index) {
+            var fullName = String(entry && (entry.fullName || entry.name || entry.code) || 'Unknown Driver');
+            var driverId = normalizeDriverLookupKey(entry && (entry.driverId || entry.code || fullName));
+            var code = String(entry && (entry.code || deriveSnapshotAcronym(fullName)) || 'DRV').toUpperCase().slice(0, 3);
+            var teamKey = resolveTeamId(entry && entry.teamKey || '', entry && entry.teamName || '');
+            var teamName = getCanonicalTeamName(teamKey) || getCanonicalTeamName(entry && entry.teamName || '') || String(entry && entry.teamName || teamKey || 'Unknown');
+            var teamColor = getCanonicalTeamColor(teamKey, teamName, entry && entry.teamColor || '');
+            var degValue = '';
+            if (entry && (entry.deg != null || entry.degPerLap != null)) {
+                degValue = entry.deg != null ? entry.deg : entry.degPerLap;
+            }
+            return {
+                order: index + 1,
+                driverId: driverId,
+                code: code,
+                fullName: fullName,
+                teamKey: teamKey,
+                teamName: teamName,
+                teamColor: teamColor,
+                headshot: getPreferredHeadshot(driverId, fullName, ''),
+                compound: String(entry && entry.compound || ''),
+                lapTime: String(entry && (entry.lapTime || entry.time) || ''),
+                gap: String(entry && entry.gap != null ? entry.gap : ''),
+                laps: parseInt(entry && entry.laps, 10) || 0,
+                avgLap: String(entry && (entry.avgLap || entry.time) || ''),
+                delta: String(entry && entry.delta != null ? entry.delta : ''),
+                deg: String(degValue),
+                stintLaps: parseInt(entry && (entry.stintLaps || entry.laps), 10) || 0,
+                window: String(entry && entry.window || '')
+            };
+        });
+    }
+
+    if (!payload || !Array.isArray(payload.rounds) || !payload.rounds.length) {
+        throw new Error('No Friday Debrief snapshot available');
+    }
+
+    var rounds = payload.rounds.map(function(entry) {
+        var round = parseInt(entry && entry.round, 10) || 0;
+        return {
+            round: round,
+            grandPrix: String(entry && (entry.grandPrix || entry.name) || ('Round ' + round)),
+            location: String(entry && entry.location || ''),
+            date: String(entry && entry.date || ''),
+            singleLap: normalizeEntries(entry && entry.singleLap),
+            longRun: normalizeEntries(entry && entry.longRun),
+            tyreDeg: normalizeEntries(entry && entry.tyreDeg)
+        };
+    }).filter(function(round) {
+        return round.round > 0;
+    });
+
+    rounds.sort(function(a, b) {
+        return a.round - b.round;
+    });
+
+    if (!rounds.length) {
+        throw new Error('No Friday Debrief rounds available');
+    }
+
+    return {
+        version: parseInt(payload.version, 10) || 1,
+        season: parseInt(payload.season, 10) || YEAR,
+        generatedAt: String(payload.generatedAt || ''),
+        source: payload.source || {},
+        rounds: rounds
+    };
+}
+
+function buildDebriefRoundSelector(rounds, selectedRound) {
+    var buttons = rounds.map(function(round) {
+        var roundKey = String(round.round);
+        var isActive = roundKey === String(selectedRound);
+        return '<button class="debrief-round-btn' + (isActive ? ' active' : '') + '" type="button" data-debrief-round="' + esc(roundKey) + '" aria-pressed="' + (isActive ? 'true' : 'false') + '">'
+            + '<strong>R' + esc(roundKey) + ' · ' + esc(round.grandPrix) + '</strong>'
+            + '<small>' + esc(round.location) + ' · ' + esc(formatRaceDate(round)) + '</small>'
+            + '</button>';
+    }).join('');
+    return '<div class="debrief-round-selector" role="group" aria-label="Friday Debrief rounds">' + buttons + '</div>';
+}
+
+function buildDebriefViewSwitch() {
+    return '<div class="debrief-view-switch"><div class="debrief-view-tabs" role="tablist" aria-label="Friday Debrief views">'
+        + '<button class="debrief-view-tab' + (debriefState.activeView === 'single-lap' ? ' active' : '') + '" type="button" data-debrief-view="single-lap" role="tab" aria-selected="' + (debriefState.activeView === 'single-lap' ? 'true' : 'false') + '"><i class="fas fa-stopwatch"></i> Single Lap</button>'
+        + '<button class="debrief-view-tab' + (debriefState.activeView === 'long-run' ? ' active' : '') + '" type="button" data-debrief-view="long-run" role="tab" aria-selected="' + (debriefState.activeView === 'long-run' ? 'true' : 'false') + '"><i class="fas fa-wave-square"></i> Long Run</button>'
+        + '<button class="debrief-view-tab' + (debriefState.activeView === 'tyre-deg' ? ' active' : '') + '" type="button" data-debrief-view="tyre-deg" role="tab" aria-selected="' + (debriefState.activeView === 'tyre-deg' ? 'true' : 'false') + '"><i class="fas fa-chart-line"></i> Tyre Deg</button>'
+        + '</div></div>';
+}
+
+function buildDebriefSingleLapHTML(round) {
+    if (!round || !round.singleLap.length) {
+        return '<div class="debrief-empty"><i class="fas fa-flag-checkered"></i><p>No single-lap data available for this round.</p></div>';
+    }
+
+    var rows = round.singleLap.map(function(entry, index) {
+        var compoundClass = getDebriefCompoundClass(entry.compound);
+        var gapText = entry.gap || (index === 0 ? 'Leader' : '');
+        return '<tr>'
+            + '<td>' + (index + 1) + '</td>'
+            + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
+            + '<td><span class="debrief-time">' + esc(entry.lapTime) + '</span></td>'
+            + '<td><span class="debrief-gap">' + esc(gapText) + '</span></td>'
+            + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
+            + '<td>' + esc(String(entry.laps || 0)) + ' laps</td>'
+            + '</tr>';
+    }).join('');
+
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Best Lap</th><th>Gap</th><th>Tyre</th><th>Push</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+
+function buildDebriefLongRunHTML(round) {
+    if (!round || !round.longRun.length) {
+        return '<div class="debrief-empty"><i class="fas fa-wave-square"></i><p>No long-run data available for this round.</p></div>';
+    }
+
+    var rows = round.longRun.map(function(entry, index) {
+        var compoundClass = getDebriefCompoundClass(entry.compound);
+        var deltaText = entry.delta || (index === 0 ? 'Leader' : '');
+        return '<tr>'
+            + '<td>' + (index + 1) + '</td>'
+            + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
+            + '<td><span class="debrief-time">' + esc(entry.avgLap) + '</span></td>'
+            + '<td><span class="debrief-gap">' + esc(deltaText) + '</span></td>'
+            + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
+            + '<td>' + esc(String(entry.stintLaps || 0)) + ' laps</td>'
+            + '</tr>';
+    }).join('');
+
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Avg Lap</th><th>Delta</th><th>Tyre</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+
+function buildDebriefTyreDegHTML(round) {
+    if (!round || !round.tyreDeg.length) {
+        return '<div class="debrief-empty"><i class="fas fa-chart-line"></i><p>No tyre degradation data available for this round.</p></div>';
+    }
+
+    var rows = round.tyreDeg.map(function(entry, index) {
+        var compoundClass = getDebriefCompoundClass(entry.compound);
+        var degClass = getDebriefDegClass(entry.deg);
+        return '<tr>'
+            + '<td>' + (index + 1) + '</td>'
+            + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
+            + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
+            + '<td><span class="debrief-time ' + degClass + '">' + esc(entry.deg) + ' s/lap</span></td>'
+            + '<td><span class="debrief-gap">' + esc(entry.window || 'Friday long run') + '</span></td>'
+            + '<td>' + esc(String(entry.stintLaps || 0)) + ' laps</td>'
+            + '</tr>';
+    }).join('');
+
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Tyre</th><th>Drop-off</th><th>Window</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+
+function renderDebrief(snapshot) {
+    if (!debriefTable) return;
+    if (debriefYear) debriefYear.textContent = snapshot.season;
+
+    debriefState.snapshot = snapshot;
+    debriefState.rounds = snapshot.rounds.slice();
+    debriefState.activeView = sanitizeDebriefView(debriefState.activeView);
+
+    var selectedRound = null;
+    var i;
+    for (i = 0; i < snapshot.rounds.length; i++) {
+        if (String(snapshot.rounds[i].round) === String(debriefState.selectedRound)) {
+            selectedRound = snapshot.rounds[i];
+            break;
+        }
+    }
+    if (!selectedRound) selectedRound = snapshot.rounds[snapshot.rounds.length - 1];
+    debriefState.selectedRound = String(selectedRound.round);
+
+    var singleLapLeader = selectedRound.singleLap[0] || null;
+    var longRunLeader = selectedRound.longRun[0] || null;
+    var tyreDegLeader = selectedRound.tyreDeg[0] || null;
+    var summaryParts = [];
+
+    summaryParts.push(selectedRound.location + ' · ' + formatRaceDate(selectedRound));
+    if (singleLapLeader) summaryParts.push('Single lap: ' + singleLapLeader.code + ' ' + singleLapLeader.lapTime);
+    if (longRunLeader) summaryParts.push('Long run: ' + longRunLeader.code + ' ' + longRunLeader.avgLap);
+    if (tyreDegLeader) summaryParts.push('Tyre deg: ' + tyreDegLeader.code + ' ' + tyreDegLeader.deg + ' s/lap');
+    if (snapshot.source && snapshot.source.note) summaryParts.push(String(snapshot.source.note));
+
+    var summaryHTML = '<div class="debrief-summary">'
+        + '<div class="debrief-summary-main"><div class="debrief-summary-title">Round ' + esc(String(selectedRound.round)) + ' · ' + esc(selectedRound.grandPrix) + '</div><div class="debrief-summary-sub">' + esc(summaryParts.join(' · ')) + '</div></div>'
+        + '<div class="debrief-summary-stats">'
+        + '<div class="debrief-summary-stat"><div class="debrief-summary-label">Single Lap</div><div class="debrief-summary-value">' + selectedRound.singleLap.length + '</div></div>'
+        + '<div class="debrief-summary-stat"><div class="debrief-summary-label">Long Run</div><div class="debrief-summary-value">' + selectedRound.longRun.length + '</div></div>'
+        + '<div class="debrief-summary-stat"><div class="debrief-summary-label">Tyre Deg</div><div class="debrief-summary-value">' + selectedRound.tyreDeg.length + '</div></div>'
+        + '</div></div>';
+
+    debriefTable.innerHTML = summaryHTML
+        + buildDebriefRoundSelector(snapshot.rounds, debriefState.selectedRound)
+        + buildDebriefViewSwitch()
+        + '<div class="debrief-view-panel' + (debriefState.activeView === 'single-lap' ? ' active' : '') + '" data-debrief-panel="single-lap">' + buildDebriefSingleLapHTML(selectedRound) + '</div>'
+        + '<div class="debrief-view-panel' + (debriefState.activeView === 'long-run' ? ' active' : '') + '" data-debrief-panel="long-run">' + buildDebriefLongRunHTML(selectedRound) + '</div>'
+        + '<div class="debrief-view-panel' + (debriefState.activeView === 'tyre-deg' ? ' active' : '') + '" data-debrief-panel="tyre-deg">' + buildDebriefTyreDegHTML(selectedRound) + '</div>';
+
+    finalizeRenderedPanel('debrief');
+}
+
+function showDebriefError() {
+    if (!debriefTable) return;
+    debriefTable.innerHTML = '<div class="debrief-empty"><i class="fas fa-exclamation-triangle"></i><p>Failed to load the Friday Debrief snapshot.</p></div>';
+    finalizeRenderedPanel('debrief');
+}
+
+function ensureDebriefLoaded(forceReload) {
+    if (!debriefTable) return;
+    if (debriefState.loading) return;
+    if (debriefState.loaded && debriefState.snapshot && !forceReload) {
+        renderDebrief(debriefState.snapshot);
+        return;
+    }
+
+    debriefState.loading = true;
+    debriefTable.innerHTML = '<div class="debrief-loading"><i class="fas fa-circle-notch fa-spin"></i><p>Loading Friday Debrief snapshot...</p></div>';
+
+    fetchJSONNoCache(DEBRIEF_CACHE_URL, 8000).then(function(payload) {
+        debriefState.snapshot = normalizeDebriefSnapshot(payload);
+        debriefState.rounds = debriefState.snapshot.rounds.slice();
+        debriefState.loaded = true;
+        renderDebrief(debriefState.snapshot);
+    }).catch(function(error) {
+        console.error('Friday Debrief error:', error);
+        showDebriefError();
+    }).finally(function() {
+        debriefState.loading = false;
+    });
 }
 
 // ── Destructors ──
@@ -5495,6 +5782,29 @@ if (pitStopsTable) {
                 });
             }
         }
+    });
+}
+
+if (debriefTable) {
+    debriefTable.addEventListener('click', function(event) {
+        var roundButton = event.target.closest('[data-debrief-round]');
+        if (roundButton) {
+            var nextRound = roundButton.getAttribute('data-debrief-round') || '';
+            if (debriefState.snapshot && nextRound && nextRound !== debriefState.selectedRound) {
+                debriefState.selectedRound = nextRound;
+                renderDebrief(debriefState.snapshot);
+            }
+            return;
+        }
+
+        var viewTab = event.target.closest('[data-debrief-view]');
+        if (!viewTab) return;
+
+        var nextView = sanitizeDebriefView(viewTab.getAttribute('data-debrief-view'));
+        if (!debriefState.snapshot || nextView === debriefState.activeView) return;
+
+        debriefState.activeView = nextView;
+        renderDebrief(debriefState.snapshot);
     });
 }
 
