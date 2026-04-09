@@ -5234,11 +5234,28 @@ function buildDebriefTyreDegHTML(round) {
         return '<div class="debrief-empty"><i class="fas fa-chart-line"></i><p>No tyre-degradation data available for this round.</p></div>';
     }
 
+    var leaderDeg = NaN;
+    round.tyreDeg.forEach(function(entry) {
+        var degValue = parseNumberValue(entry && entry.deg);
+        if (!isFiniteNumber(degValue)) return;
+        if (!isFiniteNumber(leaderDeg) || degValue < leaderDeg) {
+            leaderDeg = degValue;
+        }
+    });
+
     var rows = round.tyreDeg.map(function(entry, index) {
         var compoundClass = getDebriefCompoundClass(entry.compound);
+        var degValue = parseNumberValue(entry && entry.deg);
         var degText = entry.deg ? (entry.deg + ' s/lap') : 'n/a';
         var degClass = entry.deg ? getDebriefDegClass(entry.deg) : '';
-        var deltaText = (entry.delta && entry.delta !== 'null') ? entry.delta : (index === 0 ? 'Leader' : '');
+        var deltaText = (entry.delta && entry.delta !== 'null') ? entry.delta : '';
+        if (!deltaText && isFiniteNumber(degValue) && isFiniteNumber(leaderDeg)) {
+            var deltaValue = degValue - leaderDeg;
+            deltaText = deltaValue > 0.0004 ? ('+' + deltaValue.toFixed(3)) : '';
+        }
+        if (!deltaText && index === 0) {
+            deltaText = 'Leader';
+        }
         return '<tr>'
             + '<td>' + (index + 1) + '</td>'
             + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
