@@ -34,6 +34,7 @@ var debriefTooltipTarget = null;
 var destructorsTable = document.getElementById('destructors-table');
 var destructorsYear = document.getElementById('destructors-year');
 var destructorsState = { loaded: false, loading: false, activeView: 'teams', snapshot: null };
+var standingsTablist = document.querySelector('.standings-tabs');
 var standingsTabs = Array.prototype.slice.call(document.querySelectorAll('.standings-tab'));
 var standingsPanels = Array.prototype.slice.call(document.querySelectorAll('.standings-panel'));
 var shareFeedback = document.getElementById('share-feedback');
@@ -273,6 +274,21 @@ standingsTabs.forEach(function(tab) {
         activateStandingsTab(tab.getAttribute('data-tab'));
     });
 });
+
+if (standingsTablist) {
+    standingsTablist.addEventListener('keydown', function(event) {
+        var current = standingsTabs.indexOf(document.activeElement);
+        var next = -1;
+        if (current < 0) return;
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (current + 1) % standingsTabs.length;
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (current - 1 + standingsTabs.length) % standingsTabs.length;
+        if (next >= 0) {
+            event.preventDefault();
+            standingsTabs[next].focus();
+            standingsTabs[next].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
+    });
+}
 
 // ── Helpers ──
 function esc(s) {
