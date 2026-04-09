@@ -325,7 +325,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12 text-center">
-                <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
+                <p>&copy; <span id="footer-year">2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
                 <div class="social-media">
                     <a href="https://www.youtube.com/@F1StoriesOriginal" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><i class="fab fa-youtube"></i></a>
                     <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><i class="fab fa-facebook-f"></i></a>
@@ -394,5 +394,9 @@
 <script src="/scripts/cookie-consent.js" defer></script>
 <script src="scripts/shared-nav.js" defer></script>
 <script src="/scripts/sw-register.js" defer></script>
+<script>
+    var fy = document.getElementById('footer-year');
+    if (fy) fy.textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
