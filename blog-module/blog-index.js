@@ -134,15 +134,17 @@ document.addEventListener('DOMContentLoaded', function() {
         var readBadge = readMins ? '<span>\u00b7</span><span class="article-card-reading-time"><i class="fas fa-clock"></i> ' + escHtml(readMins) + '</span>' : '';
 
         var stagger = window.innerWidth < 768 ? 0.03 : 0.06;
-        return '<a href="' + escHtml(url) + '" class="article-card" style="animation-delay:' + (idx * stagger) + 's">'
+        return '<article class="article-card-wrap">'
+            + '<a href="' + escHtml(url) + '" class="article-card" style="animation-delay:' + (idx * stagger) + 's">'
             + '<div class="article-card-img-wrap"><img class="article-card-img" loading="lazy" data-src="' + escHtml(img) + '" alt="' + escHtml(post.title) + '" onerror="this.src=\'/blog-module/images/default-blog.jpg\';this.onerror=null;"></div>'
             + '<div class="article-card-body">'
-            + '<div class="article-card-meta"><span class="author-tag">' + escHtml(author) + '</span><span>\u00b7</span><span>' + escHtml(date) + '</span>' + readBadge + '</div>'
+            + '<div class="article-card-meta"><span class="author-tag">' + escHtml(author) + '</span><span>\u00b7</span><time class="article-card-date" datetime="' + escHtml(post.date || '') + '">' + escHtml(date) + '</time>' + readBadge + '</div>'
             + '<h3 class="article-card-title">' + escHtml(post.title) + '</h3>'
             + '<p class="article-card-excerpt">' + escHtml(excerpt) + '</p>'
             + '</div>'
             + '<div class="article-card-footer"><span class="article-card-read">Διαβάστε περισσότερα <i class="fas fa-arrow-right"></i></span><div class="article-card-cats">' + cats + '</div></div>'
-            + '</a>';
+            + '</a>'
+            + '</article>';
     }
 
     function lazyLoadImages() {
