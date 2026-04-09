@@ -6488,6 +6488,8 @@ if (destructorsTable) {
 
 // ── Init ──
 document.getElementById('season-year').textContent = YEAR;
+var footerYear = document.getElementById('footer-year');
+if (footerYear) footerYear.textContent = new Date().getFullYear();
 activateStandingsTab(activeStandingsTab, { skipURL: true });
 refreshEmbedVisibility();
 loadStandings();
