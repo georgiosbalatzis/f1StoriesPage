@@ -29,6 +29,8 @@ var pitStopsState = { loaded: false, loading: false, races: [], selectedRound: '
 var debriefTable = document.getElementById('debrief-table');
 var debriefYear = document.getElementById('debrief-year');
 var debriefState = { loaded: false, loading: false, rounds: [], selectedRound: '', activeView: 'single-lap', idealChartView: 'classified', snapshot: null };
+var debriefTooltip = null;
+var debriefTooltipTarget = null;
 var destructorsTable = document.getElementById('destructors-table');
 var destructorsYear = document.getElementById('destructors-year');
 var destructorsState = { loaded: false, loading: false, activeView: 'teams', snapshot: null };
@@ -240,6 +242,9 @@ function esc(s) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
+}
+function escAttr(s) {
+    return esc(s).replace(/'/g, '&#39;');
 }
 var FETCH_CACHE_PREFIX = 'f1s-standings:';
 var FETCH_CACHE_TTL = 60 * 60 * 1000;
@@ -5050,6 +5055,67 @@ function formatDebriefGapStat(gapSeconds, baseSeconds) {
     return '+' + gapSeconds.toFixed(2) + ' (' + pct.toFixed(2) + '%)';
 }
 
+function buildDebriefTooltipText(parts) {
+    return (parts || []).filter(function(part) {
+        return part != null && String(part) !== '';
+    }).join(' | ');
+}
+
+function ensureDebriefTooltip() {
+    if (!document.body) return null;
+    if (!debriefTooltip) {
+        debriefTooltip = document.createElement('div');
+        debriefTooltip.className = 'debrief-chart-tooltip';
+        document.body.appendChild(debriefTooltip);
+    }
+    return debriefTooltip;
+}
+
+function hideDebriefTooltip() {
+    if (!debriefTooltip) return;
+    debriefTooltip.classList.remove('is-active');
+    debriefTooltipTarget = null;
+}
+
+function showDebriefTooltip(target, clientX, clientY) {
+    var tooltip = ensureDebriefTooltip();
+    var text;
+    var rect;
+    var x;
+    var y;
+    if (!tooltip || !target) return;
+
+    text = target.getAttribute('data-debrief-tooltip') || '';
+    if (!text) {
+        hideDebriefTooltip();
+        return;
+    }
+
+    debriefTooltipTarget = target;
+    tooltip.textContent = String(text).replace(/ \| /g, '\n');
+    tooltip.classList.add('is-active');
+    tooltip.style.left = '0px';
+    tooltip.style.top = '0px';
+
+    rect = tooltip.getBoundingClientRect();
+    x = clampNumber(clientX, (rect.width / 2) + 14, window.innerWidth - (rect.width / 2) - 14);
+    y = clientY - rect.height - 16;
+
+    if (y < 14) {
+        y = Math.min(window.innerHeight - rect.height - 14, clientY + 18);
+    }
+
+    tooltip.style.left = x.toFixed(1) + 'px';
+    tooltip.style.top = y.toFixed(1) + 'px';
+}
+
+function showDebriefTooltipFromElement(target) {
+    var rect;
+    if (!target) return;
+    rect = target.getBoundingClientRect();
+    showDebriefTooltip(target, rect.left + (rect.width / 2), rect.top + Math.min(rect.height / 2, 24));
+}
+
 function buildDebriefPaceChartHTML(title, rows) {
     if (!rows || !rows.length) {
         return '<div class="debrief-empty"><i class="fas fa-chart-bar"></i><p>No chart data available for this round.</p></div>';
@@ -5073,9 +5139,14 @@ function buildDebriefPaceChartHTML(title, rows) {
         var valueStyle = gap > 0
             ? 'left:calc(' + width.toFixed(3) + '% + 0.55rem);'
             : 'left:0.5rem;';
+        var tooltip = buildDebriefTooltipText([
+            entry.teamName,
+            'Predicted lap ' + formatLapTime(entry.seconds, true),
+            'Gap ' + formatDebriefGapStat(gap, fastest)
+        ]);
         return '<div class="debrief-hchart-row">'
             + '<div class="debrief-hchart-label">' + esc(entry.teamName) + '</div>'
-            + '<div class="debrief-hchart-plot" style="--debrief-grid-count:' + Math.max(1, ticks.length - 1) + ';">'
+            + '<div class="debrief-hchart-plot debrief-chart-hit" tabindex="0" data-debrief-tooltip="' + escAttr(tooltip) + '" style="--debrief-grid-count:' + Math.max(1, ticks.length - 1) + ';">'
             + (gap > 0 ? '<div class="debrief-hchart-bar" style="width:' + width.toFixed(3) + '%;background:#' + esc(entry.teamColor) + ';"></div>' : '')
             + '<div class="debrief-hchart-value" style="' + valueStyle + '">' + esc(formatDebriefGapStat(gap, fastest)) + '</div>'
             + '</div>'
@@ -5204,7 +5275,15 @@ function buildDebriefCompoundUsageHTML(round) {
         var hardHeight = axisMax > 0 ? (entry.hard / axisMax) * 100 : 0;
         var mediumHeight = axisMax > 0 ? (entry.medium / axisMax) * 100 : 0;
         var softHeight = axisMax > 0 ? (entry.soft / axisMax) * 100 : 0;
-        return '<div class="debrief-compound-col">'
+        var totalLaps = entry.soft + entry.medium + entry.hard;
+        var tooltip = buildDebriefTooltipText([
+            entry.code,
+            'Soft ' + entry.soft,
+            'Medium ' + entry.medium,
+            'Hard ' + entry.hard,
+            'Total ' + totalLaps + ' laps'
+        ]);
+        return '<div class="debrief-compound-col debrief-chart-hit" tabindex="0" data-debrief-tooltip="' + escAttr(tooltip) + '">'
             + '<div class="debrief-compound-stack">'
             + (entry.hard ? '<span class="debrief-compound-seg hard" style="height:' + hardHeight.toFixed(3) + '%;" title="Hard ' + esc(String(entry.hard)) + ' laps"></span>' : '')
             + (entry.medium ? '<span class="debrief-compound-seg medium" style="height:' + mediumHeight.toFixed(3) + '%;" title="Medium ' + esc(String(entry.medium)) + ' laps"></span>' : '')
@@ -5267,7 +5346,7 @@ function buildDebriefTyreDegHTML(round) {
     return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Deg Rate</th><th>Delta</th><th>Tyre</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
-function buildDebriefIdealScatterSVG(rows, title, color, xMin, xMax) {
+function buildDebriefIdealScatterSVG(rows, title, xMin, xMax) {
     var width = 520;
     var left = 54;
     var right = 10;
@@ -5295,8 +5374,18 @@ function buildDebriefIdealScatterSVG(rows, title, color, xMin, xMax) {
     var pointsHTML = rows.map(function(entry, index) {
         var y = top + index * rowGap + rowGap / 2;
         var x = left + ((entry.plotSeconds - xMin) / range) * plotWidth;
-        return '<text x="' + (left - 8) + '" y="' + (y + 4) + '" text-anchor="end" class="debrief-ideal-label">' + esc(entry.code) + '</text>'
-            + '<circle cx="' + x.toFixed(2) + '" cy="' + y.toFixed(2) + '" r="4.8" fill="' + esc(color) + '"></circle>';
+        var pointColor = entry.teamColor ? ('#' + entry.teamColor) : '#06b6d4';
+        var tooltip = buildDebriefTooltipText([
+            entry.code,
+            'Lap ' + formatLapTime(entry.lapSeconds, true),
+            'Ideal ' + formatLapTime(entry.idealSeconds, true),
+            'Gap to ideal ' + (entry.lapSeconds > entry.idealSeconds ? '+' + (entry.lapSeconds - entry.idealSeconds).toFixed(3) : '+0.000')
+        ]);
+        return '<g class="debrief-chart-point" tabindex="0" data-debrief-tooltip="' + escAttr(tooltip) + '">'
+            + '<text x="' + (left - 8) + '" y="' + (y + 4) + '" text-anchor="end" class="debrief-ideal-label">' + esc(entry.code) + '</text>'
+            + '<circle class="debrief-chart-hit-area" cx="' + x.toFixed(2) + '" cy="' + y.toFixed(2) + '" r="11"></circle>'
+            + '<circle cx="' + x.toFixed(2) + '" cy="' + y.toFixed(2) + '" r="4.8" fill="' + esc(pointColor) + '"></circle>'
+            + '</g>';
     }).join('');
 
     return '<div class="debrief-ideal-panel">'
@@ -5313,31 +5402,37 @@ function buildDebriefIdealGapBarsHTML(rows) {
         return Math.max(max, entry.idealGap);
     }, 0);
     var axisMax = Math.max(0.1, Math.ceil((maxGap + 0.02) * 10) / 10);
+    var tickStep = axisMax > 4 ? 1 : (axisMax > 2 ? 0.5 : (axisMax > 1 ? 0.2 : 0.1));
     var ticks = [];
     var tick;
 
-    for (tick = 0; tick <= axisMax + 0.001; tick += 0.1) {
+    for (tick = 0; tick <= axisMax + 0.001; tick += tickStep) {
         ticks.push(Number(tick.toFixed(3)));
     }
 
     var ticksHTML = ticks.map(function(value) {
-        return '<span>' + esc(value === 0 ? '0' : value.toFixed(1)) + '</span>';
+        return '<span>' + esc(formatDebriefAxisTick(value)) + '</span>';
     }).join('');
 
     var barsHTML = rows.map(function(entry) {
         var height = axisMax > 0 ? (entry.idealGap / axisMax) * 100 : 0;
         var label = entry.idealGap > 0 ? '+' + entry.idealGap.toFixed(3) : '+0';
-        return '<div class="debrief-ideal-bar-col">'
+        var barColor = entry.teamColor ? ('#' + entry.teamColor) : '#f97316';
+        var tooltip = buildDebriefTooltipText([
+            entry.code,
+            'Gap to ideal ' + label
+        ]);
+        return '<div class="debrief-ideal-bar-col debrief-chart-hit" tabindex="0" data-debrief-tooltip="' + escAttr(tooltip) + '">'
             + '<div class="debrief-ideal-bar-value">' + esc(label) + '</div>'
-            + '<div class="debrief-ideal-bar-track"><div class="debrief-ideal-bar" style="height:' + height.toFixed(3) + '%;"></div></div>'
+            + '<div class="debrief-ideal-bar-track"><div class="debrief-ideal-bar" style="height:' + height.toFixed(3) + '%;background:' + esc(barColor) + ';"></div></div>'
             + '<div class="debrief-ideal-bar-label">' + esc(entry.code) + '</div>'
             + '</div>';
     }).join('');
 
     return '<div class="debrief-ideal-bars-wrap">'
         + '<div class="debrief-ideal-panel-title">Gap to Ideal Lap</div>'
-        + '<div class="debrief-ideal-bars-chart">'
         + '<div class="debrief-ideal-bars-ytitle">Gap (s)</div>'
+        + '<div class="debrief-ideal-bars-chart">'
         + '<div class="debrief-ideal-bars-axis">' + ticksHTML + '</div>'
         + '<div class="debrief-ideal-bars-grid" style="--debrief-grid-count:' + Math.max(1, ticks.length - 1) + ';">' + barsHTML + '</div>'
         + '</div>'
@@ -5357,6 +5452,7 @@ function buildDebriefTeamIdealHTML(round) {
         return {
             pos: index + 1,
             code: entry.code || deriveSnapshotAcronym(entry.fullName),
+            teamColor: entry.teamColor,
             lapSeconds: parseTimeSeconds(entry.lapTime),
             idealSeconds: parseTimeSeconds(entry.idealLap),
             plotSeconds: 0
@@ -5391,6 +5487,7 @@ function buildDebriefTeamIdealHTML(round) {
     var gapRows = ideal.slice().map(function(entry) {
         return {
             code: entry.code,
+            teamColor: entry.teamColor,
             idealGap: Math.max(0, entry.idealSeconds - leaderIdeal)
         };
     }).sort(function(a, b) {
@@ -5403,10 +5500,10 @@ function buildDebriefTeamIdealHTML(round) {
         + '<button class="debrief-ideal-tab' + (chartView === 'gap' ? ' active' : '') + '" type="button" data-ideal-view="gap" role="tab" aria-selected="' + (chartView === 'gap' ? 'true' : 'false') + '">Gap to Ideal Lap</button>'
         + '</div></div>';
     var panelHTML = chartView === 'ideal'
-        ? buildDebriefIdealScatterSVG(ideal, 'Ideal Order', '#22c55e', minTime, maxTime)
+        ? buildDebriefIdealScatterSVG(ideal, 'Ideal Order', minTime, maxTime)
         : (chartView === 'gap'
             ? buildDebriefIdealGapBarsHTML(gapRows)
-            : buildDebriefIdealScatterSVG(classified, 'Classified Order', '#1d4ed8', minTime, maxTime));
+            : buildDebriefIdealScatterSVG(classified, 'Classified Order', minTime, maxTime));
 
     return '<div class="debrief-figure">'
         + '<div class="debrief-figure-title">Ideal Lap Analysis</div>'
@@ -5444,9 +5541,14 @@ function buildDebriefCornerPanelHTML(title, rows, metricKey) {
         var valueStyle = entry.gap > 0
             ? 'left:calc(' + width.toFixed(3) + '% + 0.45rem);'
             : 'left:0.4rem;';
+        var tooltip = buildDebriefTooltipText([
+            title,
+            entry.code,
+            entry.gap > 0 ? 'Gap ' + valueText : 'Leader'
+        ]);
         return '<div class="debrief-corner-row">'
             + '<div class="debrief-corner-label">' + esc(entry.code) + '</div>'
-            + '<div class="debrief-corner-plot" style="--debrief-grid-count:' + Math.max(1, ticks.length - 1) + ';">'
+            + '<div class="debrief-corner-plot debrief-chart-hit" tabindex="0" data-debrief-tooltip="' + escAttr(tooltip) + '" style="--debrief-grid-count:' + Math.max(1, ticks.length - 1) + ';">'
             + (entry.gap > 0 ? '<div class="debrief-corner-bar" style="width:' + width.toFixed(3) + '%;background:#' + esc(entry.teamColor) + ';"></div>' : '')
             + '<div class="debrief-corner-value" style="' + valueStyle + '">' + esc(valueText) + '</div>'
             + '</div>'
@@ -5505,6 +5607,7 @@ function buildDebriefRacePaceHTML(round) {
 
 function renderDebrief(snapshot) {
     if (!debriefTable) return;
+    hideDebriefTooltip();
     if (debriefYear) debriefYear.textContent = snapshot.season;
 
     debriefState.snapshot = snapshot;
@@ -6285,6 +6388,39 @@ if (pitStopsTable) {
 }
 
 if (debriefTable) {
+    debriefTable.addEventListener('mouseover', function(event) {
+        var chartItem = event.target.closest('[data-debrief-tooltip]');
+        if (!chartItem) return;
+        showDebriefTooltip(chartItem, event.clientX, event.clientY);
+    });
+
+    debriefTable.addEventListener('mousemove', function(event) {
+        var chartItem = event.target.closest('[data-debrief-tooltip]');
+        if (!chartItem) {
+            hideDebriefTooltip();
+            return;
+        }
+        showDebriefTooltip(chartItem, event.clientX, event.clientY);
+    });
+
+    debriefTable.addEventListener('mouseout', function(event) {
+        var current = event.target.closest('[data-debrief-tooltip]');
+        var next = event.relatedTarget && event.relatedTarget.closest ? event.relatedTarget.closest('[data-debrief-tooltip]') : null;
+        if (!current) return;
+        if (current !== next) hideDebriefTooltip();
+    });
+
+    debriefTable.addEventListener('focusin', function(event) {
+        var chartItem = event.target.closest('[data-debrief-tooltip]');
+        if (!chartItem) return;
+        showDebriefTooltipFromElement(chartItem);
+    });
+
+    debriefTable.addEventListener('focusout', function(event) {
+        var next = event.relatedTarget && event.relatedTarget.closest ? event.relatedTarget.closest('[data-debrief-tooltip]') : null;
+        if (!next) hideDebriefTooltip();
+    });
+
     debriefTable.addEventListener('change', function(event) {
         var roundSelect = event.target.closest('[data-debrief-select]');
         if (!roundSelect) return;
@@ -6294,6 +6430,11 @@ if (debriefTable) {
     });
 
     debriefTable.addEventListener('click', function(event) {
+        var chartItem = event.target.closest('[data-debrief-tooltip]');
+        if (chartItem) {
+            showDebriefTooltipFromElement(chartItem);
+        }
+
         var idealTab = event.target.closest('[data-ideal-view]');
         if (idealTab) {
             var nextIdealView = sanitizeDebriefIdealChartView(idealTab.getAttribute('data-ideal-view'));
@@ -6322,6 +6463,13 @@ if (debriefTable) {
         debriefState.activeView = nextView;
         renderDebrief(debriefState.snapshot);
     });
+
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('[data-debrief-tooltip]')) hideDebriefTooltip();
+    });
+
+    window.addEventListener('scroll', hideDebriefTooltip, true);
+    window.addEventListener('resize', hideDebriefTooltip);
 }
 
 if (destructorsTable) {

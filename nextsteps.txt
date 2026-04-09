@@ -1,250 +1,150 @@
-Codex Prompt                                                                                                                                                                                                                                             
-                                                                                                                                                                                                                                                           
-  You are working on f1stories.github.io — a static vanilla HTML/CSS/JS site
-  hosted on GitHub Pages. The working branch is `development`, base is `main`.                                                                                                                                                                             
-                                                                                                                                                                                                                                                           
-  PR #36 added a "Friday Debrief" tab to standings. It needs significant                                                                                                                                                                                   
-  fixes: data errors, missing views, and code bugs. Apply all changes to                                                                                                                                                                                   
-  the existing files on `development`.                                                                                                                                                                                                                     
-                                                                                                                                                                                                                                                           
-  Do NOT introduce a build system. Do NOT use ES6+ syntax in standings.js                                                                                                                                                                                  
-  (no arrow functions, const/let, template literals, destructuring). Match                                                                                                                                                                                 
-  the ES5 style of the existing file.                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                         
-  ──────────────────────────────────────────────────────────                                                                                                                                                                                               
-  PART 1: Fix debrief-cache.json — Driver roster errors                                                                                                                                                                                                  
-  ──────────────────────────────────────────────────────────                                                                                                                                                                                               
-                                                                                                                                                                                                                                                         
-  The 2026 F1 grid is (22 drivers):                                                                                                                                                                                                                        
-    VER + HAD → red_bull                                                                                                                                                                                                                                 
-    HAM + LEC → ferrari                                                                                                                                                                                                                                    
-    NOR + PIA → mclaren                                                                                                                                                                                                                                  
-    RUS + ANT → mercedes                                                                                                                                                                                                                                   
-    ALO + STR → aston_martin                                                                                                                                                                                                                             
-    GAS + DOO → alpine                                                                                                                                                                                                                                     
-    BEA + OCO → haas                                                                                                                                                                                                                                       
-    LAW + LIN → rb (Racing Bulls)
-    ALB + SAI → williams                                                                                                                                                                                                                                   
-    HUL + BOR → audi                                                                                                                                                                                                                                     
-    BOT + PER → cadillac                                                                                                                                                                                                                                   
-                                                                                                                                                                                                                                                           
-  Fix ALL of the following across ALL 3 rounds in debrief-cache.json:                                                                                                                                                                                      
-                                                                                                                                                                                                                                                           
-  1. **Remove Tsunoda entirely** — he is NOT on the 2026 grid.                                                                                                                                                                                             
-     Replace his entries with Lawson (LAW, Liam Lawson, rb).                                                                                                                                                                                             
-                                                                                                                                                                                                                                                           
-  2. **Fix Hadjar's team** — change teamKey from "rb" to "red_bull"
-     in all appearances.                                                                                                                                                                                                                                   
-                                                                                                                                                                                                                                                           
-  3. **Add missing drivers** to singleLap data (all 3 rounds):                                                                                                                                                                                             
-     - STR (Lance Stroll, aston_martin) — mid-pack, ~+0.5-0.7s                                                                                                                                                                                             
-     - DOO (Jack Doohan, alpine) — near Gasly, ~+0.5-0.6s                                                                                                                                                                                                  
-     Not every driver needs to appear in longRun/tyreDeg (only those                                                                                                                                                                                       
-     who did meaningful stints).                                                                                                                                                                                                                           
-                                                                                                                                                                                                                                                           
-  4. **Fix leader gap** — change `"gap": "+0.000"` to `"gap": null`                                                                                                                                                                                        
-     and `"delta": "+0.000"` to `"delta": null` for the P1 driver in                                                                                                                                                                                     
-     every singleLap and longRun array.                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                           
-  5. **Verify Ocon's code** is "OCO" (this is correct for 2026).                                                                                                                                                                                           
-                                                                                                                                                                                                                                                           
-  ──────────────────────────────────────────────────────────                                                                                                                                                                                               
-  PART 2: Add missing Debrief views to the JSON schema                                                                                                                                                                                                   
-  ──────────────────────────────────────────────────────────                                                                                                                                                                                               
-   
-  Add 3 new data arrays to each round in debrief-cache.json:                                                                                                                                                                                               
-                                                                                                                                                                                                                                                         
-  ### 2a. `teamIdealLap` — Theoretical best team lap                                                                                                                                                                                                       
-                                                                                                                                                                                                                                                         
-  Best sector times from each driver combined into a team ideal lap.                                                                                                                                                                                       
-                                                                                                                                                                                                                                                         
-  ```json                                                                                                                                                                                                                                                  
-  "teamIdealLap": [                                                                                                                                                                                                                                      
-    {
-      "pos": 1,
-      "teamKey": "mclaren",                                                                                                                                                                                                                                
-      "teamName": "McLaren",
-      "s1": "25.412",                                                                                                                                                                                                                                      
-      "s2": "32.891",                                                                                                                                                                                                                                      
-      "s3": "18.022",
-      "idealLap": "1:16.325",                                                                                                                                                                                                                              
-      "gapToFirst": null                                                                                                                                                                                                                                   
-    }
-  ]                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                         
-  Include all 11 teams sorted by idealLap. Generate realistic data                                                                                                                                                                                         
-  consistent with the existing singleLap times (team ideal should be
-  equal to or slightly faster than the best individual driver lap).                                                                                                                                                                                        
-                                                                                                                                                                                                                                                           
-  2b. cornerPerformance — Team pace by corner type                                                                                                                                                                                                         
-                                                                                                                                                                                                                                                           
-  "cornerPerformance": [                                                                                                                                                                                                                                   
-    {                                                                                                                                                                                                                                                    
-      "teamKey": "mclaren",
-      "teamName": "McLaren",
-      "slowCorners": "+0.000",
-      "mediumCorners": "+0.000",                                                                                                                                                                                                                           
-      "fastCorners": "+0.000",
-      "overall": "+0.000"                                                                                                                                                                                                                                  
-    }                                                                                                                                                                                                                                                    
-  ]
+ ## Context
+  The Friday Debrief tab in standings/ has several bugs after PR #36. Fix ALL issues below. Do NOT change any code outside the files listed.
 
-  Deltas relative to the leader in each category. null for leader.                                                                                                                                                                                         
-  Include all 11 teams. Slow = <120km/h corners, Medium = 120-180km/h,
-  Fast = >180km/h. Generate realistic data where:                                                                                                                                                                                                          
-  - High-downforce teams (Red Bull, McLaren) excel in fast corners                                                                                                                                                                                       
-  - Good mechanical grip teams (Ferrari, Mercedes) excel in slow corners                                                                                                                                                                                   
-  - Different teams lead different categories                                                                                                                                                                                                            
-                                                                                                                                                                                                                                                           
-  2c. racePacePrediction — Estimated race pace                                                                                                                                                                                                           
-                                                                                                                                                                                                                                                           
-  "racePacePrediction": [                                                                                                                                                                                                                                
-    {                                                                                                                                                                                                                                                      
-      "pos": 1,                                                                                                                                                                                                                                          
-      "teamKey": "mclaren",
-      "teamName": "McLaren",
-      "predictedLap": "1:19.445",
-      "strategy": "M-H (1 stop)",                                                                                                                                                                                                                          
-      "gapToFirst": null                                                                                                                                                                                                                                   
-    }                                                                                                                                                                                                                                                      
-  ]                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                         
-  Include all 11 teams. Strategy is a string like "S-M-H (2 stop)" or                                                                                                                                                                                      
-  "M-H (1 stop)". Predicted lap is the expected average race lap
-  accounting for fuel, deg, and strategy. Generate data consistent with                                                                                                                                                                                    
-  the longRun and tyreDeg data.                                                                                                                                                                                                                            
-                                                                                                                                                                                                                                                           
-  ──────────────────────────────────────────────────────────                                                                                                                                                                                               
-  PART 3: Add new view rendering in standings.js                                                                                                                                                                                                         
-  ──────────────────────────────────────────────────────────                                                                                                                                                                                               
-   
-  3a. Update sanitizeDebriefView                                                                                                                                                                                                                           
-                                                                                                                                                                                                                                                         
-  Add the 3 new views:                                                                                                                                                                                                                                     
-  function sanitizeDebriefView(value) {                                                                                                                                                                                                                  
-      var valid = ['single-lap', 'long-run', 'tyre-deg',                                                                                                                                                                                                   
-                   'team-ideal', 'corners', 'race-pace'];
-      return valid.indexOf(value) !== -1 ? value : 'single-lap';                                                                                                                                                                                           
-  }                                                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                           
-  3b. Update buildDebriefViewSwitch                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                           
-  Add 3 new buttons (6 total):                                                                                                                                                                                                                             
-  - team-ideal icon: fa-users label: "Team Ideal"
-  - corners icon: fa-road label: "Corners"                                                                                                                                                                                                                 
-  - race-pace icon: fa-gauge-high label: "Race Pace"                                                                                                                                                                                                     
-                                                                                                                                                                                                                                                           
-  3c. Add buildDebriefTeamIdealHTML(round)                                                                                                                                                                                                                 
-   
-  Table with columns: Pos, Team (team color bar + name), S1, S2, S3,                                                                                                                                                                                       
-  Ideal Lap, Gap.                                                                                                                                                                                                                                        
-  - Team name cell: 4px color bar + team name (use getCanonicalTeamColor)                                                                                                                                                                                  
-  - Times in monospace, gap uses .debrief-gap class                                                                                                                                                                                                        
-  - Leader shows "—" for gap                       
-                                                                                                                                                                                                                                                           
-  3d. Add buildDebriefCornerPerfHTML(round)                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                           
-  Table with columns: Team, Slow, Medium, Fast, Overall.                                                                                                                                                                                                 
-  - Each delta cell: green if negative (faster), red if positive, bold                                                                                                                                                                                     
-  for leader (null → "Leader" in cyan)                                                                                                                                                                                                                     
-  - Color-code cells: .debrief-delta-fast (green), .debrief-delta-slow
-  (red), .debrief-delta-leader (cyan)                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                           
-  3e. Add buildDebriefRacePaceHTML(round)                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                           
-  Table with columns: Pos, Team, Predicted Lap, Strategy, Gap.                                                                                                                                                                                           
-  - Strategy pill: styled like compound-pill but neutral gray background                                                                                                                                                                                   
-  - Leader gap shows "—"                                                                                                                                                                                                                                   
-   
-  3f. Update renderDebrief                                                                                                                                                                                                                                 
-                                                                                                                                                                                                                                                         
-  Add the 3 new view panels after the existing 3:                                                                                                                                                                                                          
-  + '<div class="debrief-view-panel' + (debriefState.activeView === 'team-ideal' ? ' active' : '') + '" data-debrief-panel="team-ideal">' + buildDebriefTeamIdealHTML(selectedRound) + '</div>'                                                          
-  + '<div class="debrief-view-panel' + (debriefState.activeView === 'corners' ? ' active' : '') + '" data-debrief-panel="corners">' + buildDebriefCornerPerfHTML(selectedRound) + '</div>'                                                                 
-  + '<div class="debrief-view-panel' + (debriefState.activeView === 'race-pace' ? ' active' : '') + '" data-debrief-panel="race-pace">' + buildDebriefRacePaceHTML(selectedRound) + '</div>'                                                               
-                                                                                                                                                                                                                                                           
-  3g. Update normalizeDebriefSnapshot                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                           
-  Normalize the 3 new arrays per round (same pattern as existing):                                                                                                                                                                                         
-  teamIdealLap: normalizeTeamEntries(entry && entry.teamIdealLap),                                                                                                                                                                                       
-  cornerPerformance: normalizeTeamEntries(entry && entry.cornerPerformance),                                                                                                                                                                               
-  racePacePrediction: normalizeTeamEntries(entry && entry.racePacePrediction)                                                                                                                                                                              
-                                                                             
-  Add a normalizeTeamEntries function that validates team-level data                                                                                                                                                                                       
-  (similar to normalizeEntries but for team rows — teamKey, teamName,                                                                                                                                                                                      
-  teamColor).                                                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                           
-  ──────────────────────────────────────────────────────────                                                                                                                                                                                               
-  PART 4: Fix code bugs in standings.js                                                                                                                                                                                                                  
-  ──────────────────────────────────────────────────────────
-                                                                                                                                                                                                                                                           
-  1. Fix appendShareStateParams — only write debriefView to URL
-  if it's NOT the default value ('single-lap'):                                                                                                                                                                                                            
-  if (tabName === 'debrief') {                                                                                                                                                                                                                             
-      var dv = sanitizeDebriefView(debriefState.activeView);
-      if (dv !== 'single-lap') params.set('debriefView', dv);                                                                                                                                                                                              
-      if (debriefState.selectedRound) params.set('debriefRound', String(debriefState.selectedRound));                                                                                                                                                      
-      return;                                                                                                                                                                                                                                              
-  }                                                                                                                                                                                                                                                        
-  2. Fix leader display in buildDebriefSingleLapHTML — handle                                                                                                                                                                                            
-  null gap properly:                                                                                                                                                                                                                                       
-  var gapText = (entry.gap && entry.gap !== 'null')                                                                                                                                                                                                      
-      ? entry.gap : (index === 0 ? 'Leader' : '');                                                                                                                                                                                                         
-  2. Apply same fix in buildDebriefLongRunHTML for delta field.                                                                                                                                                                                          
-  3. Verify formatRaceDate handles debrief round objects — the                                                                                                                                                                                             
-  function is called with a round object that has a date property                                                                                                                                                                                          
-  like "2026-03-07". If formatRaceDate expects a different shape,                                                                                                                                                                                          
-  add a wrapper or adjust the call.                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                           
-  ──────────────────────────────────────────────────────────                                                                                                                                                                                               
-  PART 5: Add CSS for new views in standings.css                                                                                                                                                                                                         
-  ──────────────────────────────────────────────────────────                                                                                                                                                                                               
-   
-  Add styles for the new table types:                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                         
-  .debrief-team-cell {                                                                                                                                                                                                                                     
-      display: flex; align-items: center; gap: 0.6rem;                                                                                                                                                                                                   
-      min-width: 200px;                                                                                                                                                                                                                                    
+  ## Files to modify
+  - standings/standings.css
+  - standings/standings.js
+  - standings/debrief-cache.json
+
+  ────────────────────────────────────────
+  ## Fix 1 — Dark Mode for Chart Elements
+  ────────────────────────────────────────
+
+  The `.debrief-figure` and all child chart elements use hardcoded light-theme colors. The site default is dark theme. Fix by replacing hardcoded hex colors with `var(--st-*)` design tokens.
+
+  In standings/standings.css, change:
+
+  1. `.debrief-figure`:
+     - `background: #ffffff` → `background: var(--st-surface-raised)`
+     - `color: #111827` → `color: var(--st-text)`
+     - `border: 1px solid rgba(15,23,42,0.08)` → `border: 1px solid var(--st-border)`
+     - `box-shadow: 0 18px 36px rgba(15,23,42,0.10)` → `box-shadow: var(--st-shadow-sm)`
+
+  2. `.debrief-figure-title`: `color: #0f172a` → `color: var(--st-text)`
+
+  3. `.debrief-hchart-label`: `color: #4b5563` → `color: var(--st-text-secondary)`
+
+  4. `.debrief-hchart-value`: `color: #111827` → `color: var(--st-text)`
+
+  5. `.debrief-hchart-axis`: `color: #6b7280` → `color: var(--st-text-muted)`
+
+  6. `.debrief-hchart-xlabel`: `color: #4b5563` → `color: var(--st-text-secondary)`
+
+  7. `.debrief-ideal-panel-title`: `color: #0f172a` → `color: var(--st-text)`
+
+  8. `.debrief-ideal-label` (SVG fill): `fill: #4b5563` → `fill: var(--st-text-secondary)`
+
+  9. `.debrief-ideal-tick` (SVG fill): `fill: #6b7280` → `fill: var(--st-text-muted)`
+
+  10. `.debrief-ideal-axis-label`: `color: #4b5563` → `color: var(--st-text-secondary)`
+
+  11. `.debrief-ideal-bars-ytitle`: `color: #374151` → `color: var(--st-text-secondary)`
+
+  12. `.debrief-ideal-bars-axis`: `color: #6b7280` → `color: var(--st-text-muted)`
+
+  13. `.debrief-ideal-bar-value`: `color: #374151` → `color: var(--st-text-secondary)`
+
+  14. `.debrief-ideal-bar-label`: `color: #4b5563` → `color: var(--st-text-secondary)`
+
+  15. `.debrief-compound-ytitle`: `color: #374151` → `color: var(--st-text-secondary)`
+
+  16. `.debrief-compound-axis`: `color: #6b7280` → `color: var(--st-text-muted)`
+
+  17. `.debrief-compound-code`: `color: #4b5563` → `color: var(--st-text-secondary)`
+
+  The existing `[data-theme="light"] .debrief-figure` override already handles the light shadow — no additional light overrides needed.
+
+  ────────────────────────────────────────
+  ## Fix 2 — Single Lap View: Driver Table
+  ────────────────────────────────────────
+
+  In standings/standings.js, replace `buildDebriefSingleLapHTML()` (currently at ~line 5095-5121).
+
+  The current implementation aggregates to team level and renders a horizontal bar chart. Replace it with a driver-level table. Replace the ENTIRE function body with:
+
+  ```javascript
+  function buildDebriefSingleLapHTML(round) {
+      if (!round || !round.singleLap.length) {
+          return '<div class="debrief-empty"><i class="fas fa-flag-checkered"></i><p>No single-lap data available for this round.</p></div>';
+      }
+
+      var rows = round.singleLap.map(function(entry, index) {
+          var compoundClass = getDebriefCompoundClass(entry.compound);
+          var gapText = (entry.gap && entry.gap !== 'null') ? entry.gap : (index === 0 ? 'Leader' : '');
+          var gapClass = index === 0 ? 'debrief-delta-leader' : 'debrief-gap';
+          return '<tr>'
+              + '<td>' + (index + 1) + '</td>'
+              + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
+              + '<td><span class="debrief-time">' + esc(entry.lapTime) + '</span></td>'
+              + '<td><span class="' + gapClass + '">' + esc(gapText) + '</span></td>'
+              + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
+              + '<td>' + esc(String(entry.laps || 0)) + ' laps</td>'
+              + '</tr>';
+      }).join('');
+
+      return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Lap Time</th><th>Gap</th><th>Tyre</th><th>Laps</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
   }
-  .debrief-team-cell .debrief-team-bar {                                                                                                                                                                                                                   
-      width: 4px; min-height: 36px; border-radius: 999px; flex-shrink: 0;                                                                                                                                                                                  
-  }                                                                                                                                                                                                                                                        
-  .debrief-team-cell span {                                                                                                                                                                                                                                
-      font-family: 'Outfit',sans-serif; font-size: 0.88rem;                                                                                                                                                                                                
-      font-weight: 700; color: var(--st-text);                                                                                                                                                                                                             
+
+  ────────────────────────────────────────
+  Fix 3 — Tyre Deg View: Degradation Table
+
+  ────────────────────────────────────────
+
+  In standings/standings.js, replace buildDebriefTyreDegHTML() (currently at ~line 5233-5235). It currently just delegates to buildDebriefCompoundUsageHTML().
+
+  Replace it with a proper degradation table:
+
+  function buildDebriefTyreDegHTML(round) {
+      if (!round || !round.tyreDeg.length) {
+          return '<div class="debrief-empty"><i class="fas fa-chart-line"></i><p>No tyre-degradation data available for this round.</p></div>';
+      }
+
+      var rows = round.tyreDeg.map(function(entry, index) {
+          var compoundClass = getDebriefCompoundClass(entry.compound);
+          var degText = entry.deg ? (entry.deg + ' s/lap') : 'n/a';
+          var degClass = entry.deg ? getDebriefDegClass(entry.deg) : '';
+          var deltaText = (entry.delta && entry.delta !== 'null') ? entry.delta : (index === 0 ? 'Leader' : '');
+          return '<tr>'
+              + '<td>' + (index + 1) + '</td>'
+              + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
+              + '<td><span class="debrief-time' + (degClass ? ' ' + degClass : '') + '">' + esc(degText) + '</span></td>'
+              + '<td><span class="debrief-gap">' + esc(deltaText) + '</span></td>'
+              + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
+              + '<td>' + esc(String(entry.stintLaps || 0)) + ' laps</td>'
+              + '</tr>';
+      }).join('');
+
+      return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Deg Rate</th><th>Delta</th><th>Tyre</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
   }
-  .debrief-sector {                                                                                                                                                                                                                                        
-      font-family: 'DM Sans', monospace; font-size: 0.82rem;                                                                                                                                                                                               
-      color: var(--st-text-secondary);
-  }                                                                                                                                                                                                                                                        
-  .debrief-delta-fast { color: #34d399; font-weight: 700; }                                                                                                                                                                                              
-  .debrief-delta-slow { color: #f87171; font-weight: 700; }                                                                                                                                                                                                
-  .debrief-delta-leader {                                                                                                                                                                                                                                
-      color: #06b6d4; font-weight: 800;                                                                                                                                                                                                                    
-      font-family: 'Outfit',sans-serif;                                                                                                                                                                                                                    
-  }
-  .strategy-pill {                                                                                                                                                                                                                                         
-      display: inline-flex; align-items: center; justify-content: center;                                                                                                                                                                                
-      min-height: 24px; padding: 0.18rem 0.55rem; border-radius: 999px;
-      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.03em;                                                                                                                                                                                        
-      color: var(--st-text-secondary);                                                                                                                                                                                                                     
-      background: var(--st-surface); border: 1px solid var(--st-border);                                                                                                                                                                                   
-  }                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                         
-  Add [data-theme="light"] overrides for delta colors (ensure                                                                                                                                                                                              
-  readability on white bg — use darker shades).                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                           
-  Add mobile @media (max-width: 767.98px) rules:                                                                                                                                                                                                           
-  - .debrief-view-tabs should wrap or scroll horizontally when 6 buttons                                                                                                                                                                                   
-  don't fit. Set flex-wrap: wrap and reduce padding/font-size.                                                                                                                                                                                             
-                                                                                                                                                                                                                                                         
-  ──────────────────────────────────────────────────────────                                                                                                                                                                                               
-  AFTER ALL CHANGES                                                                                                                                                                                                                                        
-  ──────────────────────────────────────────────────────────                                                                                                                                                                                               
-                                                                                                                                                                                                                                                           
-  Commit on development with message:                                                                                                                                                                                                                      
-   
-    fix: debrief tab — fix driver roster, add team ideal/corners/race pace views                                                                                                                                                                           
-                                                                                                                                                                                                                                                         
-  Push and update PR #36. Do NOT create a new PR.                                                                                                                                                                                                          
-  ```                                                  
+
+  Do NOT remove buildDebriefCompoundUsageHTML() — just stop calling it from buildDebriefTyreDegHTML.
+
+  ────────────────────────────────────────
+  Fix 4 — Driver Roster in debrief-cache.json
+
+  ────────────────────────────────────────
+
+  Replace ALL instances of Franco Colapinto (COL, Alpine) with Jack Doohan across every round and every data array (singleLap, longRun, tyreDeg):
+  - "driverId": "franco_colapinto" → "driverId": "jack_doohan"
+  - "code": "COL" → "code": "DOO"
+  - "fullName": "Franco Colapinto" → "fullName": "Jack Doohan"
+  - Keep teamKey: "alpine" and teamName: "Alpine" unchanged
+  - Update headshot to: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/J/JACDOO01_Jack_Doohan/jacdoo01.png.transform/1col/image.png"
+  - Keep all lap times, gaps, compounds, and performance data unchanged
+
+  Do NOT fabricate data for PER (missing R1/R2) or LIN (missing R3) — leave as-is.
+
+  ────────────────────────────────────────
+  Rules — IMPORTANT
+
+  ────────────────────────────────────────
+
+  - ES5 only in standings.js — no arrow functions, no const/let, no template literals, no destructuring
+  - Use var for all variables, function(){} for all callbacks, string concatenation with +
+  - Use esc() for all user-facing text inserted into HTML
+  - Do NOT add new tabs, views, or features
+  - Do NOT change the Long Run, Team Ideal, Corners, or Race Pace views
+  - Do NOT modify normalizeDebriefSnapshot or buildDebriefCompoundUsageHTML
+  - Do NOT change any files outside standings/standings.css, standings/standings.js, and standings/debrief-cache.json
+  - After all changes, commit with message: "fix(debrief): dark mode tokens, single-lap & tyre-deg tables, Doohan roster"
+  - Create a PR targeting development branch with title "Debrief: Dark mode, view fixes, roster correction" and body listing the 4 fixes
