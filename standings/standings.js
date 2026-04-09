@@ -28,7 +28,7 @@ var pitStopsYear = document.getElementById('pit-stops-year');
 var pitStopsState = { loaded: false, loading: false, races: [], selectedRound: '', activeView: 'race', raceCache: {}, seasonCache: null };
 var debriefTable = document.getElementById('debrief-table');
 var debriefYear = document.getElementById('debrief-year');
-var debriefState = { loaded: false, loading: false, rounds: [], selectedRound: '', activeView: 'single-lap', snapshot: null };
+var debriefState = { loaded: false, loading: false, rounds: [], selectedRound: '', activeView: 'single-lap', idealChartView: 'classified', snapshot: null };
 var destructorsTable = document.getElementById('destructors-table');
 var destructorsYear = document.getElementById('destructors-year');
 var destructorsState = { loaded: false, loading: false, activeView: 'teams', snapshot: null };
@@ -5021,15 +5021,13 @@ function normalizeDebriefSnapshot(payload) {
 }
 
 function buildDebriefRoundSelector(rounds, selectedRound) {
-    var buttons = rounds.map(function(round) {
+    var options = rounds.map(function(round) {
         var roundKey = String(round.round);
-        var isActive = roundKey === String(selectedRound);
-        return '<button class="debrief-round-btn' + (isActive ? ' active' : '') + '" type="button" data-debrief-round="' + esc(roundKey) + '" aria-pressed="' + (isActive ? 'true' : 'false') + '">'
-            + '<strong>R' + esc(roundKey) + ' · ' + esc(round.grandPrix) + '</strong>'
-            + '<small>' + esc(round.location) + ' · ' + esc(formatRaceDate(round)) + '</small>'
-            + '</button>';
+        return '<option value="' + esc(roundKey) + '"' + (roundKey === String(selectedRound) ? ' selected' : '') + '>'
+            + 'R' + esc(roundKey) + ' · ' + esc(round.grandPrix) + ' · ' + esc(formatRaceDate(round))
+            + '</option>';
     }).join('');
-    return '<div class="debrief-round-selector" role="group" aria-label="Friday Debrief rounds">' + buttons + '</div>';
+    return '<div class="debrief-round-selector"><label class="debrief-round-picker"><span class="debrief-round-label">Select Grand Prix</span><select class="debrief-round-select" data-debrief-select aria-label="Select Friday Debrief round">' + options + '</select></label></div>';
 }
 
 function buildDebriefViewSwitch() {
@@ -5346,6 +5344,10 @@ function buildDebriefIdealGapBarsHTML(rows) {
         + '</div>';
 }
 
+function sanitizeDebriefIdealChartView(value) {
+    return value === 'ideal' || value === 'gap' ? value : 'classified';
+}
+
 function buildDebriefTeamIdealHTML(round) {
     if (!round || !round.singleLap.length) {
         return '<div class="debrief-empty"><i class="fas fa-users"></i><p>No ideal-lap analysis available for this round.</p></div>';
@@ -5394,14 +5396,22 @@ function buildDebriefTeamIdealHTML(round) {
     }).sort(function(a, b) {
         return a.idealGap - b.idealGap;
     });
+    var chartView = sanitizeDebriefIdealChartView(debriefState.idealChartView);
+    var tabsHTML = '<div class="debrief-ideal-switch"><div class="debrief-ideal-tabs" role="tablist" aria-label="Ideal lap analysis charts">'
+        + '<button class="debrief-ideal-tab' + (chartView === 'classified' ? ' active' : '') + '" type="button" data-ideal-view="classified" role="tab" aria-selected="' + (chartView === 'classified' ? 'true' : 'false') + '">Classified Order</button>'
+        + '<button class="debrief-ideal-tab' + (chartView === 'ideal' ? ' active' : '') + '" type="button" data-ideal-view="ideal" role="tab" aria-selected="' + (chartView === 'ideal' ? 'true' : 'false') + '">Ideal Order</button>'
+        + '<button class="debrief-ideal-tab' + (chartView === 'gap' ? ' active' : '') + '" type="button" data-ideal-view="gap" role="tab" aria-selected="' + (chartView === 'gap' ? 'true' : 'false') + '">Gap to Ideal Lap</button>'
+        + '</div></div>';
+    var panelHTML = chartView === 'ideal'
+        ? buildDebriefIdealScatterSVG(ideal, 'Ideal Order', '#22c55e', minTime, maxTime)
+        : (chartView === 'gap'
+            ? buildDebriefIdealGapBarsHTML(gapRows)
+            : buildDebriefIdealScatterSVG(classified, 'Classified Order', '#1d4ed8', minTime, maxTime));
 
     return '<div class="debrief-figure">'
         + '<div class="debrief-figure-title">Ideal Lap Analysis</div>'
-        + '<div class="debrief-ideal-top">'
-        + buildDebriefIdealScatterSVG(classified, 'Classified Order', '#1d4ed8', minTime, maxTime)
-        + buildDebriefIdealScatterSVG(ideal, 'Ideal Order', '#22c55e', minTime, maxTime)
-        + '</div>'
-        + buildDebriefIdealGapBarsHTML(gapRows)
+        + tabsHTML
+        + panelHTML
         + '</div>';
 }
 
@@ -6275,7 +6285,24 @@ if (pitStopsTable) {
 }
 
 if (debriefTable) {
+    debriefTable.addEventListener('change', function(event) {
+        var roundSelect = event.target.closest('[data-debrief-select]');
+        if (!roundSelect) return;
+        if (!debriefState.snapshot || !roundSelect.value || roundSelect.value === debriefState.selectedRound) return;
+        debriefState.selectedRound = roundSelect.value;
+        renderDebrief(debriefState.snapshot);
+    });
+
     debriefTable.addEventListener('click', function(event) {
+        var idealTab = event.target.closest('[data-ideal-view]');
+        if (idealTab) {
+            var nextIdealView = sanitizeDebriefIdealChartView(idealTab.getAttribute('data-ideal-view'));
+            if (!debriefState.snapshot || nextIdealView === debriefState.idealChartView) return;
+            debriefState.idealChartView = nextIdealView;
+            renderDebrief(debriefState.snapshot);
+            return;
+        }
+
         var roundButton = event.target.closest('[data-debrief-round]');
         if (roundButton) {
             var nextRound = roundButton.getAttribute('data-debrief-round') || '';

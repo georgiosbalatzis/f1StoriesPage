@@ -1,7 +1,7 @@
 {
   "version": 2,
   "season": 2026,
-  "generatedAt": "2026-04-09T09:17:00.415Z",
+  "generatedAt": "2026-04-09T09:37:30.407Z",
   "source": {
     "label": "OpenF1 Friday Debrief cache",
     "upstream": "https://api.openf1.org/v1",
@@ -534,7 +534,8 @@
           "avgLap": "1:23.622",
           "delta": null,
           "compound": "Hard",
-          "stintLaps": 9
+          "stintLaps": 9,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "kimi_antonelli",
@@ -546,7 +547,8 @@
           "avgLap": "1:24.060",
           "delta": "+0.438",
           "compound": "Hard",
-          "stintLaps": 10
+          "stintLaps": 10,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "sergio_perez",
@@ -558,7 +560,8 @@
           "avgLap": "1:26.245",
           "delta": "+2.623",
           "compound": "Medium",
-          "stintLaps": 8
+          "stintLaps": 8,
+          "sourceSession": "Practice 3"
         },
         {
           "driverId": "gabriel_bortoleto",
@@ -570,7 +573,8 @@
           "avgLap": "1:31.896",
           "delta": "+8.274",
           "compound": "Medium",
-          "stintLaps": 8
+          "stintLaps": 8,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "oscar_piastri",
@@ -582,7 +586,8 @@
           "avgLap": "1:35.647",
           "delta": "+12.025",
           "compound": "Soft",
-          "stintLaps": 11
+          "stintLaps": 11,
+          "sourceSession": "Practice 3"
         },
         {
           "driverId": "lando_norris",
@@ -594,7 +599,8 @@
           "avgLap": "1:36.272",
           "delta": "+12.650",
           "compound": "Soft",
-          "stintLaps": 14
+          "stintLaps": 14,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "pierre_gasly",
@@ -606,7 +612,8 @@
           "avgLap": "1:45.283",
           "delta": "+21.661",
           "compound": "Soft",
-          "stintLaps": 12
+          "stintLaps": 12,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "valtteri_bottas",
@@ -618,7 +625,8 @@
           "avgLap": "1:47.193",
           "delta": "+23.572",
           "compound": "Soft",
-          "stintLaps": 13
+          "stintLaps": 13,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "arvid_lindblad",
@@ -630,7 +638,8 @@
           "avgLap": "1:51.756",
           "delta": "+28.134",
           "compound": "Soft",
-          "stintLaps": 18
+          "stintLaps": 18,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "max_verstappen",
@@ -642,7 +651,8 @@
           "avgLap": "1:54.007",
           "delta": "+30.385",
           "compound": "Medium",
-          "stintLaps": 9
+          "stintLaps": 9,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "carlos_sainz",
@@ -654,7 +664,8 @@
           "avgLap": "1:55.874",
           "delta": "+32.252",
           "compound": "Hard",
-          "stintLaps": 13
+          "stintLaps": 13,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "alexander_albon",
@@ -666,7 +677,8 @@
           "avgLap": "2:02.722",
           "delta": "+39.100",
           "compound": "Medium",
-          "stintLaps": 17
+          "stintLaps": 17,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "charles_leclerc",
@@ -678,7 +690,8 @@
           "avgLap": "2:09.529",
           "delta": "+45.907",
           "compound": "Medium",
-          "stintLaps": 15
+          "stintLaps": 15,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "lewis_hamilton",
@@ -690,7 +703,8 @@
           "avgLap": "2:12.862",
           "delta": "+49.240",
           "compound": "Medium",
-          "stintLaps": 15
+          "stintLaps": 15,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "esteban_ocon",
@@ -702,7 +716,8 @@
           "avgLap": "2:14.208",
           "delta": "+50.586",
           "compound": "Medium",
-          "stintLaps": 14
+          "stintLaps": 14,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "nico_hulkenberg",
@@ -714,7 +729,8 @@
           "avgLap": "2:18.709",
           "delta": "+55.087",
           "compound": "Medium",
-          "stintLaps": 9
+          "stintLaps": 9,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "liam_lawson",
@@ -726,7 +742,8 @@
           "avgLap": "2:23.722",
           "delta": "+60.100",
           "compound": "Medium",
-          "stintLaps": 12
+          "stintLaps": 12,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "oliver_bearman",
@@ -738,7 +755,8 @@
           "avgLap": "2:34.507",
           "delta": "+70.885",
           "compound": "Medium",
-          "stintLaps": 15
+          "stintLaps": 15,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "fernando_alonso",
@@ -750,7 +768,8 @@
           "avgLap": "2:49.907",
           "delta": "+86.285",
           "compound": "Soft",
-          "stintLaps": 6
+          "stintLaps": 6,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "franco_colapinto",
@@ -762,7 +781,8 @@
           "avgLap": "2:49.958",
           "delta": "+86.336",
           "compound": "Medium",
-          "stintLaps": 9
+          "stintLaps": 9,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "isack_hadjar",
@@ -774,7 +794,8 @@
           "avgLap": "2:50.505",
           "delta": "+86.883",
           "compound": "Medium",
-          "stintLaps": 8
+          "stintLaps": 8,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "lance_stroll",
@@ -786,7 +807,8 @@
           "avgLap": "3:04.128",
           "delta": "+100.506",
           "compound": "Soft",
-          "stintLaps": 7
+          "stintLaps": 7,
+          "sourceSession": "Practice 2"
         }
       ],
       "tyreDeg": [
@@ -801,7 +823,8 @@
           "deg": "-1.640",
           "delta": null,
           "stintLaps": 11,
-          "window": "Laps 2-12"
+          "window": "Laps 2-12",
+          "sourceSession": "Practice 3"
         },
         {
           "driverId": "pierre_gasly",
@@ -814,7 +837,8 @@
           "deg": "-0.603",
           "delta": "+1.037",
           "stintLaps": 12,
-          "window": "Laps 15-26"
+          "window": "Laps 15-26",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "sergio_perez",
@@ -827,7 +851,8 @@
           "deg": "-0.085",
           "delta": "+1.555",
           "stintLaps": 8,
-          "window": "Laps 8-15"
+          "window": "Laps 8-15",
+          "sourceSession": "Practice 3"
         },
         {
           "driverId": "george_russell",
@@ -840,7 +865,8 @@
           "deg": "0.013",
           "delta": "+1.653",
           "stintLaps": 9,
-          "window": "Laps 15-23"
+          "window": "Laps 15-23",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "kimi_antonelli",
@@ -853,7 +879,8 @@
           "deg": "0.016",
           "delta": "+1.656",
           "stintLaps": 10,
-          "window": "Laps 16-26"
+          "window": "Laps 16-26",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "valtteri_bottas",
@@ -866,7 +893,8 @@
           "deg": "0.539",
           "delta": "+2.179",
           "stintLaps": 13,
-          "window": "Laps 11-23"
+          "window": "Laps 11-23",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "lando_norris",
@@ -879,7 +907,8 @@
           "deg": "0.941",
           "delta": "+2.581",
           "stintLaps": 14,
-          "window": "Laps 15-28"
+          "window": "Laps 15-28",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "arvid_lindblad",
@@ -892,7 +921,8 @@
           "deg": "1.794",
           "delta": "+3.434",
           "stintLaps": 18,
-          "window": "Laps 3-21"
+          "window": "Laps 3-21",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "gabriel_bortoleto",
@@ -905,7 +935,8 @@
           "deg": "2.300",
           "delta": "+3.940",
           "stintLaps": 8,
-          "window": "Laps 18-25"
+          "window": "Laps 18-25",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "max_verstappen",
@@ -918,7 +949,8 @@
           "deg": "3.512",
           "delta": "+5.152",
           "stintLaps": 9,
-          "window": "Laps 2-10"
+          "window": "Laps 2-10",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "alexander_albon",
@@ -931,7 +963,8 @@
           "deg": "6.393",
           "delta": "+8.033",
           "stintLaps": 17,
-          "window": "Laps 2-18"
+          "window": "Laps 2-18",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "carlos_sainz",
@@ -944,7 +977,8 @@
           "deg": "9.378",
           "delta": "+11.018",
           "stintLaps": 13,
-          "window": "Laps 3-15"
+          "window": "Laps 3-15",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "charles_leclerc",
@@ -957,7 +991,8 @@
           "deg": "10.998",
           "delta": "+12.638",
           "stintLaps": 15,
-          "window": "Laps 2-16"
+          "window": "Laps 2-16",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "lewis_hamilton",
@@ -970,7 +1005,8 @@
           "deg": "11.968",
           "delta": "+13.608",
           "stintLaps": 15,
-          "window": "Laps 2-16"
+          "window": "Laps 2-16",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "esteban_ocon",
@@ -983,7 +1019,8 @@
           "deg": "14.869",
           "delta": "+16.509",
           "stintLaps": 14,
-          "window": "Laps 5-18"
+          "window": "Laps 5-18",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "liam_lawson",
@@ -996,7 +1033,8 @@
           "deg": "18.159",
           "delta": "+19.798",
           "stintLaps": 12,
-          "window": "Laps 2-13"
+          "window": "Laps 2-13",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "oliver_bearman",
@@ -1009,7 +1047,8 @@
           "deg": "18.390",
           "delta": "+20.030",
           "stintLaps": 15,
-          "window": "Laps 2-16"
+          "window": "Laps 2-16",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "nico_hulkenberg",
@@ -1022,7 +1061,8 @@
           "deg": "24.510",
           "delta": "+26.150",
           "stintLaps": 9,
-          "window": "Laps 2-10"
+          "window": "Laps 2-10",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "isack_hadjar",
@@ -1035,7 +1075,8 @@
           "deg": "36.854",
           "delta": "+38.494",
           "stintLaps": 8,
-          "window": "Laps 2-9"
+          "window": "Laps 2-9",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "franco_colapinto",
@@ -1048,7 +1089,8 @@
           "deg": "36.952",
           "delta": "+38.591",
           "stintLaps": 9,
-          "window": "Laps 2-10"
+          "window": "Laps 2-10",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "lance_stroll",
@@ -1061,7 +1103,8 @@
           "deg": "59.504",
           "delta": "+61.144",
           "stintLaps": 7,
-          "window": "Laps 4-10"
+          "window": "Laps 4-10",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "fernando_alonso",
@@ -1074,7 +1117,8 @@
           "deg": "63.104",
           "delta": "+64.744",
           "stintLaps": 6,
-          "window": "Laps 4-9"
+          "window": "Laps 4-9",
+          "sourceSession": "Practice 2"
         }
       ],
       "compoundUsage": [
@@ -1640,109 +1684,29 @@
           "teamName": "Mercedes",
           "teamColor": "00D7B6",
           "code": "MER",
-          "predictedLap": "1:23.841",
-          "strategy": "",
+          "predictedLap": "1:23.622",
+          "strategy": "HARD",
           "gapToFirst": null
         },
         {
           "pos": 2,
-          "teamKey": "mclaren",
-          "teamName": "McLaren",
-          "teamColor": "F47600",
-          "code": "MCL",
-          "predictedLap": "1:35.959",
-          "strategy": "",
-          "gapToFirst": "+12.118"
-        },
-        {
-          "pos": 3,
-          "teamKey": "cadillac",
-          "teamName": "Cadillac",
-          "teamColor": "909090",
-          "code": "CAD",
-          "predictedLap": "1:36.719",
-          "strategy": "",
-          "gapToFirst": "+12.879"
-        },
-        {
-          "pos": 4,
           "teamKey": "audi",
           "teamName": "Audi",
           "teamColor": "F50537",
           "code": "AUD",
-          "predictedLap": "1:55.303",
-          "strategy": "",
-          "gapToFirst": "+31.462"
+          "predictedLap": "1:31.896",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+8.274"
         },
         {
-          "pos": 5,
-          "teamKey": "williams",
-          "teamName": "Williams",
-          "teamColor": "1868DB",
-          "code": "WIL",
-          "predictedLap": "1:59.298",
-          "strategy": "",
-          "gapToFirst": "+35.457"
-        },
-        {
-          "pos": 6,
-          "teamKey": "rb",
-          "teamName": "Racing Bulls",
-          "teamColor": "6C98FF",
-          "code": "RB",
-          "predictedLap": "2:07.739",
-          "strategy": "",
-          "gapToFirst": "+43.898"
-        },
-        {
-          "pos": 7,
-          "teamKey": "ferrari",
-          "teamName": "Ferrari",
-          "teamColor": "ED1131",
-          "code": "FER",
-          "predictedLap": "2:11.195",
-          "strategy": "",
-          "gapToFirst": "+47.355"
-        },
-        {
-          "pos": 8,
-          "teamKey": "alpine",
-          "teamName": "Alpine",
-          "teamColor": "00A1E8",
-          "code": "ALP",
-          "predictedLap": "2:17.620",
-          "strategy": "",
-          "gapToFirst": "+53.780"
-        },
-        {
-          "pos": 9,
-          "teamKey": "red_bull",
-          "teamName": "Red Bull Racing",
-          "teamColor": "4781D7",
-          "code": "RBR",
-          "predictedLap": "2:22.256",
-          "strategy": "",
-          "gapToFirst": "+58.415"
-        },
-        {
-          "pos": 10,
-          "teamKey": "haas",
-          "teamName": "Haas F1 Team",
-          "teamColor": "9C9FA2",
-          "code": "HAA",
-          "predictedLap": "2:24.357",
-          "strategy": "",
-          "gapToFirst": "+60.517"
-        },
-        {
-          "pos": 11,
-          "teamKey": "aston_martin",
-          "teamName": "Aston Martin",
-          "teamColor": "229971",
-          "code": "AMR",
-          "predictedLap": "2:57.018",
-          "strategy": "",
-          "gapToFirst": "+93.177"
+          "pos": 3,
+          "teamKey": "mclaren",
+          "teamName": "McLaren",
+          "teamColor": "F47600",
+          "code": "MCL",
+          "predictedLap": "1:36.272",
+          "strategy": "SOFT",
+          "gapToFirst": "+12.650"
         }
       ]
     },
@@ -2272,7 +2236,8 @@
           "avgLap": "1:36.453",
           "delta": null,
           "compound": "Medium",
-          "stintLaps": 8
+          "stintLaps": 8,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "george_russell",
@@ -2284,7 +2249,8 @@
           "avgLap": "1:36.545",
           "delta": "+0.092",
           "compound": "Medium",
-          "stintLaps": 8
+          "stintLaps": 8,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "liam_lawson",
@@ -2296,7 +2262,8 @@
           "avgLap": "1:39.503",
           "delta": "+3.049",
           "compound": "Medium",
-          "stintLaps": 7
+          "stintLaps": 7,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "max_verstappen",
@@ -2308,7 +2275,8 @@
           "avgLap": "1:39.669",
           "delta": "+3.216",
           "compound": "Medium",
-          "stintLaps": 7
+          "stintLaps": 7,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "sergio_perez",
@@ -2320,7 +2288,8 @@
           "avgLap": "1:41.804",
           "delta": "+5.350",
           "compound": "Medium",
-          "stintLaps": 3
+          "stintLaps": 3,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "gabriel_bortoleto",
@@ -2332,7 +2301,8 @@
           "avgLap": "1:45.437",
           "delta": "+8.984",
           "compound": "Medium",
-          "stintLaps": 8
+          "stintLaps": 8,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "arvid_lindblad",
@@ -2344,7 +2314,8 @@
           "avgLap": "1:53.781",
           "delta": "+17.328",
           "compound": "Medium",
-          "stintLaps": 4
+          "stintLaps": 4,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "alexander_albon",
@@ -2356,7 +2327,8 @@
           "avgLap": "1:54.832",
           "delta": "+18.379",
           "compound": "Medium",
-          "stintLaps": 11
+          "stintLaps": 11,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "carlos_sainz",
@@ -2368,7 +2340,8 @@
           "avgLap": "1:55.682",
           "delta": "+19.229",
           "compound": "Soft",
-          "stintLaps": 3
+          "stintLaps": 3,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "nico_hulkenberg",
@@ -2380,7 +2353,8 @@
           "avgLap": "1:57.357",
           "delta": "+20.904",
           "compound": "Soft",
-          "stintLaps": 9
+          "stintLaps": 9,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "oscar_piastri",
@@ -2392,7 +2366,8 @@
           "avgLap": "2:00.087",
           "delta": "+23.634",
           "compound": "Soft",
-          "stintLaps": 8
+          "stintLaps": 8,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "fernando_alonso",
@@ -2404,7 +2379,8 @@
           "avgLap": "2:00.676",
           "delta": "+24.223",
           "compound": "Medium",
-          "stintLaps": 5
+          "stintLaps": 5,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "valtteri_bottas",
@@ -2416,7 +2392,8 @@
           "avgLap": "2:02.514",
           "delta": "+26.061",
           "compound": "Soft",
-          "stintLaps": 7
+          "stintLaps": 7,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "charles_leclerc",
@@ -2428,7 +2405,8 @@
           "avgLap": "2:04.025",
           "delta": "+27.572",
           "compound": "Soft",
-          "stintLaps": 6
+          "stintLaps": 6,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "lewis_hamilton",
@@ -2440,7 +2418,8 @@
           "avgLap": "2:05.445",
           "delta": "+28.991",
           "compound": "Soft",
-          "stintLaps": 6
+          "stintLaps": 6,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "lando_norris",
@@ -2452,7 +2431,8 @@
           "avgLap": "2:05.732",
           "delta": "+29.279",
           "compound": "Soft",
-          "stintLaps": 3
+          "stintLaps": 3,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "franco_colapinto",
@@ -2464,7 +2444,8 @@
           "avgLap": "2:07.930",
           "delta": "+31.476",
           "compound": "Soft",
-          "stintLaps": 6
+          "stintLaps": 6,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "esteban_ocon",
@@ -2476,7 +2457,8 @@
           "avgLap": "2:08.583",
           "delta": "+32.130",
           "compound": "Soft",
-          "stintLaps": 5
+          "stintLaps": 5,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "isack_hadjar",
@@ -2488,7 +2470,8 @@
           "avgLap": "2:10.118",
           "delta": "+33.665",
           "compound": "Soft",
-          "stintLaps": 6
+          "stintLaps": 6,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "lance_stroll",
@@ -2500,7 +2483,8 @@
           "avgLap": "2:12.998",
           "delta": "+36.544",
           "compound": "Medium",
-          "stintLaps": 5
+          "stintLaps": 5,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "oliver_bearman",
@@ -2512,7 +2496,8 @@
           "avgLap": "2:20.682",
           "delta": "+44.229",
           "compound": "Soft",
-          "stintLaps": 3
+          "stintLaps": 3,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "pierre_gasly",
@@ -2524,7 +2509,8 @@
           "avgLap": "2:28.477",
           "delta": "+52.023",
           "compound": "Medium",
-          "stintLaps": 3
+          "stintLaps": 3,
+          "sourceSession": "Practice 1"
         }
       ],
       "tyreDeg": [
@@ -2539,7 +2525,8 @@
           "deg": "-1.073",
           "delta": null,
           "stintLaps": 3,
-          "window": "Laps 13-16"
+          "window": "Laps 13-16",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "oliver_bearman",
@@ -2552,7 +2539,8 @@
           "deg": "-0.968",
           "delta": "+0.105",
           "stintLaps": 3,
-          "window": "Laps 25-28"
+          "window": "Laps 25-28",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "gabriel_bortoleto",
@@ -2565,7 +2553,8 @@
           "deg": "-0.778",
           "delta": "+0.296",
           "stintLaps": 8,
-          "window": "Laps 11-18"
+          "window": "Laps 11-18",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "sergio_perez",
@@ -2578,7 +2567,8 @@
           "deg": "-0.173",
           "delta": "+0.900",
           "stintLaps": 3,
-          "window": "Laps 10-12"
+          "window": "Laps 10-12",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "alexander_albon",
@@ -2591,7 +2581,8 @@
           "deg": "-0.144",
           "delta": "+0.930",
           "stintLaps": 11,
-          "window": "Laps 2-12"
+          "window": "Laps 2-12",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "liam_lawson",
@@ -2604,7 +2595,8 @@
           "deg": "-0.004",
           "delta": "+1.069",
           "stintLaps": 7,
-          "window": "Laps 13-19"
+          "window": "Laps 13-19",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "kimi_antonelli",
@@ -2617,7 +2609,8 @@
           "deg": "0.158",
           "delta": "+1.231",
           "stintLaps": 8,
-          "window": "Laps 11-18"
+          "window": "Laps 11-18",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "george_russell",
@@ -2630,7 +2623,8 @@
           "deg": "0.226",
           "delta": "+1.299",
           "stintLaps": 8,
-          "window": "Laps 11-18"
+          "window": "Laps 11-18",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "max_verstappen",
@@ -2643,7 +2637,8 @@
           "deg": "0.226",
           "delta": "+1.300",
           "stintLaps": 7,
-          "window": "Laps 9-15"
+          "window": "Laps 9-15",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "lando_norris",
@@ -2656,7 +2651,8 @@
           "deg": "0.356",
           "delta": "+1.429",
           "stintLaps": 3,
-          "window": "Laps 23-27"
+          "window": "Laps 23-27",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "lance_stroll",
@@ -2669,7 +2665,8 @@
           "deg": "5.209",
           "delta": "+6.282",
           "stintLaps": 5,
-          "window": "Laps 16-20"
+          "window": "Laps 16-20",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "nico_hulkenberg",
@@ -2682,7 +2679,8 @@
           "deg": "5.419",
           "delta": "+6.493",
           "stintLaps": 9,
-          "window": "Laps 19-27"
+          "window": "Laps 19-27",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "lewis_hamilton",
@@ -2695,7 +2693,8 @@
           "deg": "6.499",
           "delta": "+7.572",
           "stintLaps": 6,
-          "window": "Laps 9-14"
+          "window": "Laps 9-14",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "oscar_piastri",
@@ -2708,7 +2707,8 @@
           "deg": "7.689",
           "delta": "+8.763",
           "stintLaps": 8,
-          "window": "Laps 21-28"
+          "window": "Laps 21-28",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "franco_colapinto",
@@ -2721,7 +2721,8 @@
           "deg": "7.824",
           "delta": "+8.897",
           "stintLaps": 6,
-          "window": "Laps 21-26"
+          "window": "Laps 21-26",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "valtteri_bottas",
@@ -2734,7 +2735,8 @@
           "deg": "8.449",
           "delta": "+9.523",
           "stintLaps": 7,
-          "window": "Laps 19-25"
+          "window": "Laps 19-25",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "isack_hadjar",
@@ -2747,7 +2749,8 @@
           "deg": "9.567",
           "delta": "+10.640",
           "stintLaps": 6,
-          "window": "Laps 21-26"
+          "window": "Laps 21-26",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "pierre_gasly",
@@ -2760,7 +2763,8 @@
           "deg": "10.447",
           "delta": "+11.520",
           "stintLaps": 3,
-          "window": "Laps 26-28"
+          "window": "Laps 26-28",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "charles_leclerc",
@@ -2773,7 +2777,8 @@
           "deg": "11.399",
           "delta": "+12.472",
           "stintLaps": 6,
-          "window": "Laps 23-28"
+          "window": "Laps 23-28",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "arvid_lindblad",
@@ -2786,7 +2791,8 @@
           "deg": "12.532",
           "delta": "+13.606",
           "stintLaps": 4,
-          "window": "Laps 2-5"
+          "window": "Laps 2-5",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "esteban_ocon",
@@ -2799,7 +2805,8 @@
           "deg": "13.345",
           "delta": "+14.418",
           "stintLaps": 5,
-          "window": "Laps 21-25"
+          "window": "Laps 21-25",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "fernando_alonso",
@@ -2812,7 +2819,8 @@
           "deg": "14.431",
           "delta": "+15.505",
           "stintLaps": 5,
-          "window": "Laps 14-18"
+          "window": "Laps 14-18",
+          "sourceSession": "Practice 1"
         }
       ],
       "compoundUsage": [
@@ -3378,8 +3386,8 @@
           "teamName": "Mercedes",
           "teamColor": "00D7B6",
           "code": "MER",
-          "predictedLap": "1:36.499",
-          "strategy": "",
+          "predictedLap": "1:36.453",
+          "strategy": "MEDIUM",
           "gapToFirst": null
         },
         {
@@ -3388,19 +3396,19 @@
           "teamName": "Racing Bulls",
           "teamColor": "6C98FF",
           "code": "RB",
-          "predictedLap": "1:46.642",
-          "strategy": "",
-          "gapToFirst": "+10.143"
+          "predictedLap": "1:39.503",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+3.049"
         },
         {
           "pos": 3,
-          "teamKey": "audi",
-          "teamName": "Audi",
-          "teamColor": "F50537",
-          "code": "AUD",
-          "predictedLap": "1:51.397",
-          "strategy": "",
-          "gapToFirst": "+14.898"
+          "teamKey": "red_bull",
+          "teamName": "Red Bull Racing",
+          "teamColor": "4781D7",
+          "code": "RBR",
+          "predictedLap": "1:39.669",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+3.216"
         },
         {
           "pos": 4,
@@ -3408,19 +3416,19 @@
           "teamName": "Cadillac",
           "teamColor": "909090",
           "code": "CAD",
-          "predictedLap": "1:52.159",
-          "strategy": "",
-          "gapToFirst": "+15.660"
+          "predictedLap": "1:41.804",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+5.350"
         },
         {
           "pos": 5,
-          "teamKey": "red_bull",
-          "teamName": "Red Bull Racing",
-          "teamColor": "4781D7",
-          "code": "RBR",
-          "predictedLap": "1:54.894",
-          "strategy": "",
-          "gapToFirst": "+18.394"
+          "teamKey": "audi",
+          "teamName": "Audi",
+          "teamColor": "F50537",
+          "code": "AUD",
+          "predictedLap": "1:45.437",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+8.984"
         },
         {
           "pos": 6,
@@ -3428,59 +3436,9 @@
           "teamName": "Williams",
           "teamColor": "1868DB",
           "code": "WIL",
-          "predictedLap": "1:55.257",
-          "strategy": "",
-          "gapToFirst": "+18.758"
-        },
-        {
-          "pos": 7,
-          "teamKey": "mclaren",
-          "teamName": "McLaren",
-          "teamColor": "F47600",
-          "code": "MCL",
-          "predictedLap": "2:02.910",
-          "strategy": "",
-          "gapToFirst": "+26.410"
-        },
-        {
-          "pos": 8,
-          "teamKey": "ferrari",
-          "teamName": "Ferrari",
-          "teamColor": "ED1131",
-          "code": "FER",
-          "predictedLap": "2:04.735",
-          "strategy": "",
-          "gapToFirst": "+28.236"
-        },
-        {
-          "pos": 9,
-          "teamKey": "aston_martin",
-          "teamName": "Aston Martin",
-          "teamColor": "229971",
-          "code": "AMR",
-          "predictedLap": "2:06.837",
-          "strategy": "",
-          "gapToFirst": "+30.338"
-        },
-        {
-          "pos": 10,
-          "teamKey": "haas",
-          "teamName": "Haas F1 Team",
-          "teamColor": "9C9FA2",
-          "code": "HAA",
-          "predictedLap": "2:14.633",
-          "strategy": "",
-          "gapToFirst": "+38.133"
-        },
-        {
-          "pos": 11,
-          "teamKey": "alpine",
-          "teamName": "Alpine",
-          "teamColor": "00A1E8",
-          "code": "ALP",
-          "predictedLap": "2:18.203",
-          "strategy": "",
-          "gapToFirst": "+41.704"
+          "predictedLap": "1:54.832",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+18.379"
         }
       ]
     },
@@ -4010,7 +3968,8 @@
           "avgLap": "1:35.534",
           "delta": null,
           "compound": "Medium",
-          "stintLaps": 7
+          "stintLaps": 7,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "oscar_piastri",
@@ -4022,7 +3981,8 @@
           "avgLap": "1:36.193",
           "delta": "+0.660",
           "compound": "Medium",
-          "stintLaps": 8
+          "stintLaps": 8,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "oliver_bearman",
@@ -4034,7 +3994,8 @@
           "avgLap": "1:36.214",
           "delta": "+0.681",
           "compound": "Medium",
-          "stintLaps": 9
+          "stintLaps": 9,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "esteban_ocon",
@@ -4046,7 +4007,8 @@
           "avgLap": "1:36.582",
           "delta": "+1.048",
           "compound": "Medium",
-          "stintLaps": 9
+          "stintLaps": 9,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "max_verstappen",
@@ -4058,7 +4020,8 @@
           "avgLap": "1:36.753",
           "delta": "+1.220",
           "compound": "Hard",
-          "stintLaps": 12
+          "stintLaps": 12,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "isack_hadjar",
@@ -4070,7 +4033,8 @@
           "avgLap": "1:37.448",
           "delta": "+1.914",
           "compound": "Hard",
-          "stintLaps": 8
+          "stintLaps": 8,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "valtteri_bottas",
@@ -4082,7 +4046,8 @@
           "avgLap": "1:38.019",
           "delta": "+2.485",
           "compound": "Medium",
-          "stintLaps": 9
+          "stintLaps": 9,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "gabriel_bortoleto",
@@ -4094,7 +4059,8 @@
           "avgLap": "1:47.932",
           "delta": "+12.399",
           "compound": "Soft",
-          "stintLaps": 14
+          "stintLaps": 14,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "lando_norris",
@@ -4106,7 +4072,8 @@
           "avgLap": "1:49.048",
           "delta": "+13.514",
           "compound": "Medium",
-          "stintLaps": 9
+          "stintLaps": 9,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "alexander_albon",
@@ -4118,7 +4085,8 @@
           "avgLap": "1:49.328",
           "delta": "+13.794",
           "compound": "Hard",
-          "stintLaps": 11
+          "stintLaps": 11,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "nico_hulkenberg",
@@ -4130,7 +4098,8 @@
           "avgLap": "1:49.619",
           "delta": "+14.086",
           "compound": "Medium",
-          "stintLaps": 9
+          "stintLaps": 9,
+          "sourceSession": "Practice 3"
         },
         {
           "driverId": "kimi_antonelli",
@@ -4142,7 +4111,8 @@
           "avgLap": "1:51.588",
           "delta": "+16.054",
           "compound": "Hard",
-          "stintLaps": 8
+          "stintLaps": 8,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "fernando_alonso",
@@ -4154,7 +4124,8 @@
           "avgLap": "1:51.849",
           "delta": "+16.315",
           "compound": "Soft",
-          "stintLaps": 6
+          "stintLaps": 6,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "liam_lawson",
@@ -4166,7 +4137,8 @@
           "avgLap": "1:52.538",
           "delta": "+17.004",
           "compound": "Medium",
-          "stintLaps": 10
+          "stintLaps": 10,
+          "sourceSession": "Practice 3"
         },
         {
           "driverId": "pierre_gasly",
@@ -4178,7 +4150,8 @@
           "avgLap": "1:52.657",
           "delta": "+17.124",
           "compound": "Hard",
-          "stintLaps": 9
+          "stintLaps": 9,
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "arvid_lindblad",
@@ -4190,7 +4163,8 @@
           "avgLap": "1:54.754",
           "delta": "+19.220",
           "compound": "Soft",
-          "stintLaps": 8
+          "stintLaps": 8,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "carlos_sainz",
@@ -4202,7 +4176,8 @@
           "avgLap": "1:54.793",
           "delta": "+19.260",
           "compound": "Soft",
-          "stintLaps": 9
+          "stintLaps": 9,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "lance_stroll",
@@ -4214,7 +4189,8 @@
           "avgLap": "1:56.095",
           "delta": "+20.561",
           "compound": "Hard",
-          "stintLaps": 7
+          "stintLaps": 7,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "charles_leclerc",
@@ -4226,7 +4202,8 @@
           "avgLap": "1:56.675",
           "delta": "+21.141",
           "compound": "Soft",
-          "stintLaps": 10
+          "stintLaps": 10,
+          "sourceSession": "Practice 3"
         },
         {
           "driverId": "franco_colapinto",
@@ -4238,7 +4215,8 @@
           "avgLap": "1:57.373",
           "delta": "+21.840",
           "compound": "Soft",
-          "stintLaps": 13
+          "stintLaps": 13,
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "sergio_perez",
@@ -4250,7 +4228,8 @@
           "avgLap": "1:59.550",
           "delta": "+24.016",
           "compound": "Soft",
-          "stintLaps": 6
+          "stintLaps": 6,
+          "sourceSession": "Practice 3"
         },
         {
           "driverId": "lewis_hamilton",
@@ -4262,7 +4241,8 @@
           "avgLap": "2:08.572",
           "delta": "+33.038",
           "compound": "Soft",
-          "stintLaps": 9
+          "stintLaps": 9,
+          "sourceSession": "Practice 3"
         }
       ],
       "tyreDeg": [
@@ -4277,7 +4257,8 @@
           "deg": "-1.795",
           "delta": null,
           "stintLaps": 13,
-          "window": "Laps 12-24"
+          "window": "Laps 12-24",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "carlos_sainz",
@@ -4290,7 +4271,8 @@
           "deg": "-1.024",
           "delta": "+0.771",
           "stintLaps": 9,
-          "window": "Laps 11-19"
+          "window": "Laps 11-19",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "liam_lawson",
@@ -4303,7 +4285,8 @@
           "deg": "-0.245",
           "delta": "+1.550",
           "stintLaps": 10,
-          "window": "Laps 2-11"
+          "window": "Laps 2-11",
+          "sourceSession": "Practice 3"
         },
         {
           "driverId": "isack_hadjar",
@@ -4316,7 +4299,8 @@
           "deg": "-0.199",
           "delta": "+1.596",
           "stintLaps": 8,
-          "window": "Laps 18-26"
+          "window": "Laps 18-26",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "lando_norris",
@@ -4329,7 +4313,8 @@
           "deg": "-0.121",
           "delta": "+1.674",
           "stintLaps": 9,
-          "window": "Laps 3-11"
+          "window": "Laps 3-11",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "pierre_gasly",
@@ -4342,7 +4327,8 @@
           "deg": "-0.118",
           "delta": "+1.677",
           "stintLaps": 9,
-          "window": "Laps 2-10"
+          "window": "Laps 2-10",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "arvid_lindblad",
@@ -4355,7 +4341,8 @@
           "deg": "-0.102",
           "delta": "+1.693",
           "stintLaps": 8,
-          "window": "Laps 15-22"
+          "window": "Laps 15-22",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "max_verstappen",
@@ -4368,7 +4355,8 @@
           "deg": "-0.082",
           "delta": "+1.713",
           "stintLaps": 12,
-          "window": "Laps 14-25"
+          "window": "Laps 14-25",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "oliver_bearman",
@@ -4381,7 +4369,8 @@
           "deg": "-0.020",
           "delta": "+1.775",
           "stintLaps": 9,
-          "window": "Laps 16-24"
+          "window": "Laps 16-24",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "valtteri_bottas",
@@ -4394,7 +4383,8 @@
           "deg": "0.044",
           "delta": "+1.839",
           "stintLaps": 9,
-          "window": "Laps 16-24"
+          "window": "Laps 16-24",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "esteban_ocon",
@@ -4407,7 +4397,8 @@
           "deg": "0.101",
           "delta": "+1.896",
           "stintLaps": 9,
-          "window": "Laps 18-26"
+          "window": "Laps 18-26",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "oscar_piastri",
@@ -4420,7 +4411,8 @@
           "deg": "0.121",
           "delta": "+1.916",
           "stintLaps": 8,
-          "window": "Laps 18-25"
+          "window": "Laps 18-25",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "nico_hulkenberg",
@@ -4433,7 +4425,8 @@
           "deg": "0.302",
           "delta": "+2.097",
           "stintLaps": 9,
-          "window": "Laps 2-10"
+          "window": "Laps 2-10",
+          "sourceSession": "Practice 3"
         },
         {
           "driverId": "george_russell",
@@ -4446,7 +4439,8 @@
           "deg": "0.388",
           "delta": "+2.183",
           "stintLaps": 7,
-          "window": "Laps 19-25"
+          "window": "Laps 19-25",
+          "sourceSession": "Practice 2"
         },
         {
           "driverId": "alexander_albon",
@@ -4459,7 +4453,8 @@
           "deg": "0.709",
           "delta": "+2.504",
           "stintLaps": 11,
-          "window": "Laps 3-13"
+          "window": "Laps 3-13",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "kimi_antonelli",
@@ -4472,7 +4467,8 @@
           "deg": "1.146",
           "delta": "+2.941",
           "stintLaps": 8,
-          "window": "Laps 2-9"
+          "window": "Laps 2-9",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "gabriel_bortoleto",
@@ -4485,7 +4481,8 @@
           "deg": "1.180",
           "delta": "+2.975",
           "stintLaps": 14,
-          "window": "Laps 14-27"
+          "window": "Laps 14-27",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "lewis_hamilton",
@@ -4498,7 +4495,8 @@
           "deg": "1.394",
           "delta": "+3.189",
           "stintLaps": 9,
-          "window": "Laps 15-23"
+          "window": "Laps 15-23",
+          "sourceSession": "Practice 3"
         },
         {
           "driverId": "charles_leclerc",
@@ -4511,7 +4509,8 @@
           "deg": "1.686",
           "delta": "+3.481",
           "stintLaps": 10,
-          "window": "Laps 11-20"
+          "window": "Laps 11-20",
+          "sourceSession": "Practice 3"
         },
         {
           "driverId": "lance_stroll",
@@ -4524,7 +4523,8 @@
           "deg": "4.274",
           "delta": "+6.069",
           "stintLaps": 7,
-          "window": "Laps 5-11"
+          "window": "Laps 5-11",
+          "sourceSession": "Practice 1"
         },
         {
           "driverId": "sergio_perez",
@@ -4537,7 +4537,8 @@
           "deg": "5.279",
           "delta": "+7.074",
           "stintLaps": 6,
-          "window": "Laps 2-7"
+          "window": "Laps 2-7",
+          "sourceSession": "Practice 3"
         },
         {
           "driverId": "fernando_alonso",
@@ -4550,7 +4551,8 @@
           "deg": "10.145",
           "delta": "+11.940",
           "stintLaps": 6,
-          "window": "Laps 19-24"
+          "window": "Laps 19-24",
+          "sourceSession": "Practice 2"
         }
       ],
       "compoundUsage": [
@@ -5112,113 +5114,73 @@
       "racePacePrediction": [
         {
           "pos": 1,
-          "teamKey": "haas",
-          "teamName": "Haas F1 Team",
-          "teamColor": "9C9FA2",
-          "code": "HAA",
-          "predictedLap": "1:36.398",
-          "strategy": "",
-          "gapToFirst": null
-        },
-        {
-          "pos": 2,
-          "teamKey": "red_bull",
-          "teamName": "Red Bull Racing",
-          "teamColor": "4781D7",
-          "code": "RBR",
-          "predictedLap": "1:37.100",
-          "strategy": "",
-          "gapToFirst": "+0.702"
-        },
-        {
-          "pos": 3,
-          "teamKey": "mclaren",
-          "teamName": "McLaren",
-          "teamColor": "F47600",
-          "code": "MCL",
-          "predictedLap": "1:42.620",
-          "strategy": "",
-          "gapToFirst": "+6.222"
-        },
-        {
-          "pos": 4,
           "teamKey": "mercedes",
           "teamName": "Mercedes",
           "teamColor": "00D7B6",
           "code": "MER",
-          "predictedLap": "1:43.561",
-          "strategy": "",
-          "gapToFirst": "+7.163"
+          "predictedLap": "1:35.534",
+          "strategy": "MEDIUM",
+          "gapToFirst": null
+        },
+        {
+          "pos": 2,
+          "teamKey": "mclaren",
+          "teamName": "McLaren",
+          "teamColor": "F47600",
+          "code": "MCL",
+          "predictedLap": "1:36.193",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+0.660"
+        },
+        {
+          "pos": 3,
+          "teamKey": "haas",
+          "teamName": "Haas F1 Team",
+          "teamColor": "9C9FA2",
+          "code": "HAA",
+          "predictedLap": "1:36.214",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+0.681"
+        },
+        {
+          "pos": 4,
+          "teamKey": "red_bull",
+          "teamName": "Red Bull Racing",
+          "teamColor": "4781D7",
+          "code": "RBR",
+          "predictedLap": "1:36.753",
+          "strategy": "HARD",
+          "gapToFirst": "+1.220"
         },
         {
           "pos": 5,
-          "teamKey": "audi",
-          "teamName": "Audi",
-          "teamColor": "F50537",
-          "code": "AUD",
-          "predictedLap": "1:48.776",
-          "strategy": "",
-          "gapToFirst": "+12.378"
-        },
-        {
-          "pos": 6,
           "teamKey": "cadillac",
           "teamName": "Cadillac",
           "teamColor": "909090",
           "code": "CAD",
-          "predictedLap": "1:48.784",
-          "strategy": "",
-          "gapToFirst": "+12.386"
+          "predictedLap": "1:38.019",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+2.485"
         },
         {
-          "pos": 7,
-          "teamKey": "williams",
-          "teamName": "Williams",
-          "teamColor": "1868DB",
-          "code": "WIL",
-          "predictedLap": "1:52.061",
-          "strategy": "",
-          "gapToFirst": "+15.663"
-        },
-        {
-          "pos": 8,
-          "teamKey": "rb",
-          "teamName": "Racing Bulls",
-          "teamColor": "6C98FF",
-          "code": "RB",
-          "predictedLap": "1:53.646",
-          "strategy": "",
-          "gapToFirst": "+17.248"
-        },
-        {
-          "pos": 9,
+          "pos": 6,
           "teamKey": "aston_martin",
           "teamName": "Aston Martin",
           "teamColor": "229971",
           "code": "AMR",
-          "predictedLap": "1:53.972",
-          "strategy": "",
-          "gapToFirst": "+17.574"
+          "predictedLap": "1:51.849",
+          "strategy": "SOFT",
+          "gapToFirst": "+16.315"
         },
         {
-          "pos": 10,
+          "pos": 7,
           "teamKey": "alpine",
           "teamName": "Alpine",
           "teamColor": "00A1E8",
           "code": "ALP",
-          "predictedLap": "1:55.015",
-          "strategy": "",
-          "gapToFirst": "+18.617"
-        },
-        {
-          "pos": 11,
-          "teamKey": "ferrari",
-          "teamName": "Ferrari",
-          "teamColor": "ED1131",
-          "code": "FER",
-          "predictedLap": "2:02.624",
-          "strategy": "",
-          "gapToFirst": "+26.226"
+          "predictedLap": "1:52.657",
+          "strategy": "HARD",
+          "gapToFirst": "+17.124"
         }
       ]
     }

@@ -625,7 +625,8 @@ function buildLongRunCandidatesForThreshold(sessionDataList, rosterMap, minLaps)
                     stintLaps: usable.length,
                     window: 'Laps ' + usable[0].lapNumber + '-' + usable[usable.length - 1].lapNumber,
                     degSeconds: deg,
-                    sessionIndex: sessionIndex
+                    sessionIndex: sessionIndex,
+                    sourceSession: String(sessionData.session && sessionData.session.session_name || '')
                 };
 
                 if (!bestByDriver[driverNumber]
@@ -680,7 +681,8 @@ function buildBestLongRunCandidates(sessionDataList, rosterMap) {
             stintLaps: 0,
             window: '',
             degSeconds: NaN,
-            sessionIndex: 999
+            sessionIndex: 999,
+            sourceSession: ''
         });
     });
 
@@ -709,7 +711,8 @@ function buildLongRunRows(candidates) {
             avgLap: row.avgLap,
             delta: row.delta,
             compound: row.compound,
-            stintLaps: row.stintLaps
+            stintLaps: row.stintLaps,
+            sourceSession: row.sourceSession
         };
     });
 }
@@ -734,7 +737,8 @@ function buildTyreDegRows(candidates) {
             deg: isFiniteNumber(row.degSeconds) ? formatDeg(row.degSeconds) : '',
             delta: isFiniteNumber(row.degSeconds) && isFiniteNumber(leader) ? formatGap(row.degSeconds - leader) : '',
             stintLaps: row.stintLaps,
-            window: row.window
+            window: row.window,
+            sourceSession: row.sourceSession
         };
     });
 }
@@ -893,7 +897,10 @@ function buildCornerPerformanceRows(teamIdealRows) {
 
 function buildRacePaceRows(candidates) {
     var teamMap = {};
-    var eligible = (candidates || []).filter(function(candidate) {
+    var primary = (candidates || []).filter(function(candidate) {
+        return isFiniteNumber(candidate.avgSeconds) && (candidate.stintLaps || 0) >= 3 && candidate.sessionIndex === 0;
+    });
+    var eligible = primary.length ? primary : (candidates || []).filter(function(candidate) {
         return isFiniteNumber(candidate.avgSeconds) && (candidate.stintLaps || 0) >= 3;
     });
 
@@ -905,23 +912,19 @@ function buildRacePaceRows(candidates) {
 
     eligible.forEach(function(candidate) {
         if (!candidate.teamKey) return;
-        if (!teamMap[candidate.teamKey]) {
+        if (!teamMap[candidate.teamKey] || candidate.avgSeconds < teamMap[candidate.teamKey].avgSeconds) {
             teamMap[candidate.teamKey] = {
                 teamKey: candidate.teamKey,
                 teamName: candidate.teamName,
                 teamColor: candidate.teamColor,
-                total: 0,
-                count: 0
+                avgSeconds: candidate.avgSeconds,
+                compound: candidate.compound
             };
         }
-
-        teamMap[candidate.teamKey].total += candidate.avgSeconds;
-        teamMap[candidate.teamKey].count += 1;
     });
 
     var rows = Object.keys(teamMap).map(function(teamKey) {
         var row = teamMap[teamKey];
-        row.avgSeconds = row.count ? row.total / row.count : NaN;
         return row;
     }).filter(function(row) {
         return isFiniteNumber(row.avgSeconds);
@@ -930,6 +933,11 @@ function buildRacePaceRows(candidates) {
     });
 
     var leader = rows.length ? rows[0].avgSeconds : NaN;
+    rows = rows.filter(function(row, index) {
+        if (index === 0) return true;
+        return isFiniteNumber(leader) && (row.avgSeconds - leader) <= 20;
+    });
+
     return rows.map(function(row, index) {
         return {
             pos: index + 1,
@@ -938,7 +946,7 @@ function buildRacePaceRows(candidates) {
             teamColor: row.teamColor,
             code: TEAM_CODES[row.teamKey] || row.teamName.substring(0, 3).toUpperCase(),
             predictedLap: formatLapTime(row.avgSeconds),
-            strategy: '',
+            strategy: String(row.compound || '').toUpperCase(),
             gapToFirst: formatGap(row.avgSeconds - leader)
         };
     });
