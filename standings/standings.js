@@ -168,9 +168,10 @@ var PREFER_LOCAL_HEADSHOT = {
 
 // ── Skeleton loader ──
 function skelRows(n) {
-    var h = '';
+    var rowHeight = 72;
+    var h = '<div style="min-height:' + (n * rowHeight) + 'px;">';
     for (var i = 0; i < n; i++) {
-        h += '<div class="skeleton-row">'
+        h += '<div class="skeleton-row" style="min-height:62px;">'
             + '<div class="skel" style="width:22px;height:18px;margin:0 auto;"></div>'
             + '<div style="display:flex;align-items:center;gap:0.7rem;">'
             + '<div class="skel skel-circle"></div>'
@@ -179,7 +180,7 @@ function skelRows(n) {
             + '<div class="skel" style="width:44px;height:20px;margin-left:auto;"></div>'
             + '</div>';
     }
-    return h;
+    return h + '</div>';
 }
 
 function skelChartRows(n) {
