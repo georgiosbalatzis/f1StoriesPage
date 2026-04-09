@@ -37,7 +37,7 @@
       "name": "YouTube",
       "short_name": "YouTube",
       "description": "Δες τα τελευταία βίντεο",
-      "url": "https://www.youtube.com/@F1StoriesOriginal",
+      "url": "https://www.youtube.com/@f1_stories_original",
       "icons": [{ "src": "/images/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]

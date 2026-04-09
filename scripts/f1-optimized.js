@@ -390,7 +390,7 @@
             .catch(function (error) {
                 console.error('Video load error:', error);
                 removeVideoSkeletons();
-                videoGrid.innerHTML = '<div class="col-12 text-center"><p style="color:var(--text-secondary)">Δεν ήταν δυνατή η φόρτωση βίντεο. <a href="https://www.youtube.com/@F1StoriesOriginal" target="_blank" rel="noopener" style="color:var(--accent)">Δες το κανάλι μας στο YouTube</a>.</p></div>';
+                videoGrid.innerHTML = '<div class="col-12 text-center"><p style="color:var(--text-secondary)">Δεν ήταν δυνατή η φόρτωση βίντεο. <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" style="color:var(--accent)">Δες το κανάλι μας στο YouTube</a>.</p></div>';
             });
     }
 
