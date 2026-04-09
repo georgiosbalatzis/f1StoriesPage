@@ -5097,27 +5097,21 @@ function buildDebriefSingleLapHTML(round) {
         return '<div class="debrief-empty"><i class="fas fa-flag-checkered"></i><p>No single-lap data available for this round.</p></div>';
     }
 
-    var teamsByKey = {};
-    round.singleLap.forEach(function(entry) {
-        var seconds = parseTimeSeconds(entry.lapTime);
-        if (!isFiniteNumber(seconds)) return;
-        if (!teamsByKey[entry.teamKey] || seconds < teamsByKey[entry.teamKey].seconds) {
-            teamsByKey[entry.teamKey] = {
-                teamKey: entry.teamKey,
-                teamName: entry.teamName,
-                teamColor: entry.teamColor,
-                seconds: seconds
-            };
-        }
-    });
+    var rows = round.singleLap.map(function(entry, index) {
+        var compoundClass = getDebriefCompoundClass(entry.compound);
+        var gapText = (entry.gap && entry.gap !== 'null') ? entry.gap : (index === 0 ? 'Leader' : '');
+        var gapClass = index === 0 ? 'debrief-delta-leader' : 'debrief-gap';
+        return '<tr>'
+            + '<td>' + (index + 1) + '</td>'
+            + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
+            + '<td><span class="debrief-time">' + esc(entry.lapTime) + '</span></td>'
+            + '<td><span class="' + gapClass + '">' + esc(gapText) + '</span></td>'
+            + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
+            + '<td>' + esc(String(entry.laps || 0)) + ' laps</td>'
+            + '</tr>';
+    }).join('');
 
-    var rows = Object.keys(teamsByKey).map(function(teamKey) {
-        return teamsByKey[teamKey];
-    }).sort(function(a, b) {
-        return a.seconds - b.seconds;
-    });
-
-    return buildDebriefPaceChartHTML('Qualifying Simulation Pace', rows);
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Lap Time</th><th>Gap</th><th>Tyre</th><th>Laps</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
 function buildDebriefLongRunHTML(round) {
@@ -5231,7 +5225,26 @@ function buildDebriefCompoundUsageHTML(round) {
 }
 
 function buildDebriefTyreDegHTML(round) {
-    return buildDebriefCompoundUsageHTML(round);
+    if (!round || !round.tyreDeg.length) {
+        return '<div class="debrief-empty"><i class="fas fa-chart-line"></i><p>No tyre-degradation data available for this round.</p></div>';
+    }
+
+    var rows = round.tyreDeg.map(function(entry, index) {
+        var compoundClass = getDebriefCompoundClass(entry.compound);
+        var degText = entry.deg ? (entry.deg + ' s/lap') : 'n/a';
+        var degClass = entry.deg ? getDebriefDegClass(entry.deg) : '';
+        var deltaText = (entry.delta && entry.delta !== 'null') ? entry.delta : (index === 0 ? 'Leader' : '');
+        return '<tr>'
+            + '<td>' + (index + 1) + '</td>'
+            + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
+            + '<td><span class="debrief-time' + (degClass ? ' ' + degClass : '') + '">' + esc(degText) + '</span></td>'
+            + '<td><span class="debrief-gap">' + esc(deltaText) + '</span></td>'
+            + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
+            + '<td>' + esc(String(entry.stintLaps || 0)) + ' laps</td>'
+            + '</tr>';
+    }).join('');
+
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Deg Rate</th><th>Delta</th><th>Tyre</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
 function buildDebriefIdealScatterSVG(rows, title, color, xMin, xMax) {
