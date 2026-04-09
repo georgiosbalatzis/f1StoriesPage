@@ -21,6 +21,7 @@ const CONFIG = {
     OUTPUT_JSON: path.join(__dirname, 'blog-data.json'),
     OUTPUT_HTML_DIR: path.join(__dirname, 'blog'),
     TEMPLATE_PATH: path.join(__dirname, 'blog', 'template.html'),
+    SITEMAP_PATH: path.join(__dirname, '..', 'sitemap.xml'),
     DEFAULT_BLOG_IMAGE: '/blog-module/images/default-blog.jpg',
     IMAGE_FORMATS: ['webp', 'jpg', 'jpeg', 'png', 'gif'],
     IMAGE_EXTENSIONS: ['.jpg', '.jpeg', '.png', '.webp', '.gif'],
@@ -77,6 +78,57 @@ function escapeHtmlAttribute(value) {
         .replace(/"/g, '&quot;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
+}
+
+function escapeXml(value) {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+function formatSitemapDate(value) {
+    if (!value) return '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) return String(value);
+    const parsed = new Date(value);
+    return isNaN(parsed.getTime()) ? '' : parsed.toISOString().slice(0, 10);
+}
+
+function sitemapUrl(loc, changefreq, priority, lastmod) {
+    let entry = '  <url>\n';
+    entry += `    <loc>${escapeXml(loc)}</loc>\n`;
+    if (lastmod) entry += `    <lastmod>${escapeXml(lastmod)}</lastmod>\n`;
+    entry += `    <changefreq>${escapeXml(changefreq)}</changefreq>\n`;
+    entry += `    <priority>${escapeXml(priority)}</priority>\n`;
+    entry += '  </url>\n';
+    return entry;
+}
+
+function generateSitemap(articles) {
+    const entries = [
+        sitemapUrl('https://f1stories.gr/', 'daily', '1.0'),
+        sitemapUrl('https://f1stories.gr/blog-module/blog/index.html', 'daily', '0.9'),
+        sitemapUrl('https://f1stories.gr/standings/', 'weekly', '0.8'),
+        sitemapUrl('https://f1stories.gr/privacy/privacy.html', 'yearly', '0.2'),
+        sitemapUrl('https://f1stories.gr/privacy/terms.html', 'yearly', '0.2')
+    ];
+
+    (articles || []).forEach(article => {
+        entries.push(sitemapUrl(
+            `https://f1stories.gr/blog-module/blog-entries/${article.id}/article.html`,
+            'monthly',
+            '0.6',
+            formatSitemapDate(article.date || article.dateISO)
+        ));
+    });
+
+    const xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+        + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + entries.join('')
+        + '</urlset>\n';
+
+    fs.writeFileSync(CONFIG.SITEMAP_PATH, xml, 'utf8');
+    console.log(`Sitemap generated with ${entries.length} URLs`);
 }
 
 function getCardThumbnailPath(imagePath) {
@@ -2339,6 +2391,8 @@ if (!isMainThread) {
         const homeLatestPath = path.join(__dirname, 'home-latest.json');
         fs.writeFileSync(homeLatestPath, JSON.stringify(homeLatest, null, 0));
         console.log(`Home latest data saved to ${homeLatestPath} (${Math.round(JSON.stringify(homeLatest).length / 1024)} KB)`);
+
+        generateSitemap(blogPosts);
         
         // ── Generate related articles (runs on main thread, fast) ────────────
         blogPosts.forEach((post, index) => {
