@@ -938,7 +938,7 @@ body.standings-embed [data-embed-hidden="true"] { display: none !important; }
 }
 @media (max-width: 767px) {
     .standings-title { font-size: 1.8rem; }
-    .standings-tabs { max-width: 100%; }
+    .standings-tabs { max-width: 100%; -webkit-mask-image: linear-gradient(to right, transparent 0, black 8px, black calc(100% - 24px), transparent 100%); mask-image: linear-gradient(to right, transparent 0, black 8px, black calc(100% - 24px), transparent 100%); }
     .standings-tab { min-width: 144px; min-height: 50px; padding: 0.75rem 1rem; }
     .st-row { padding: 0.55rem 0.8rem; grid-template-columns: 38px 1fr auto; }
     .st-headshot, .st-avatar-fallback, .st-team-swatch { width: 34px; height: 34px; }
