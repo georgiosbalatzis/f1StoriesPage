@@ -472,6 +472,19 @@ function getHeadshotImgStyle(driverId, fallbackName) {
     return position ? ' style="object-position:' + esc(position) + ';"' : '';
 }
 
+var headshotResultCache = {};
+
+function getCachedHeadshotResult(driverId, fallbackName, sourceHeadshot) {
+    var key = (driverId || '') + '|' + (fallbackName || '') + '|' + normalizeHeadshotUrl(sourceHeadshot || '');
+    if (!headshotResultCache[key]) {
+        headshotResultCache[key] = {
+            url: getPreferredHeadshot(driverId, fallbackName, sourceHeadshot),
+            style: getHeadshotImgStyle(driverId, fallbackName)
+        };
+    }
+    return headshotResultCache[key];
+}
+
 function formatWinsLabel(wins) {
     return wins + ' ' + (wins === 1 ? 'νίκη' : 'νίκες');
 }
@@ -2624,7 +2637,7 @@ function buildDriverLookup(drivers) {
             firstName: driver.first_name || '',
             lastName: driver.last_name || '',
             acronym: (driver.name_acronym || '').toUpperCase(),
-            headshot: getPreferredHeadshot('', fullName, driver.headshot_url || ''),
+            headshot: getCachedHeadshotResult('', fullName, driver.headshot_url || '').url,
             teamName: driver.team_name || '',
             teamColor: getCanonicalTeamColor('', driver.team_name || '', driver.team_colour || ''),
             meetingKey: driver.meeting_key || ''
@@ -3708,6 +3721,8 @@ function renderQualifyingGapOverview(rows) {
         var pairColor = hexToRgbChannels(row.teamColor);
         var leftChannels = hexToRgbChannels(leftColor);
         var rightChannels = hexToRgbChannels(rightColor);
+        var leftHeadshot = getCachedHeadshotResult('', row.left.fullName, row.left.headshot || '');
+        var rightHeadshot = getCachedHeadshotResult('', row.right.fullName, row.right.headshot || '');
 
         html += '<div class="quali-gap-card">'
             + '<div class="quali-gap-card-inner" style="--pair-color:' + esc(pairColor) + ';--left-color:' + esc(leftChannels) + ';--right-color:' + esc(rightChannels) + ';">'
@@ -3715,8 +3730,8 @@ function renderQualifyingGapOverview(rows) {
             + '<div class="quali-side-top"><span class="quali-h2h-count">' + row.left.wins + '</span><span class="quali-h2h-label">H2H</span></div>'
             + '<div class="quali-gap-avg fast">' + esc(formatSignedGap(-row.avgGap, false)) + '</div>'
             + '<div class="quali-driver">'
-            + (row.left.headshot
-                ? '<img class="quali-headshot" src="' + esc(row.left.headshot) + '" alt="' + esc(row.left.fullName) + '" width="48" height="48"' + getHeadshotImgStyle('', row.left.fullName) + ' loading="lazy" decoding="async">'
+            + (leftHeadshot.url
+                ? '<img class="quali-headshot" src="' + esc(leftHeadshot.url) + '" alt="' + esc(row.left.fullName) + '" width="48" height="48"' + leftHeadshot.style + ' loading="lazy" decoding="async">'
                     + '<div class="quali-avatar-fallback" style="display:none;--driver-color:' + esc(leftChannels) + ';">' + esc(row.left.acronym) + '</div>'
                 : '<div class="quali-avatar-fallback" style="--driver-color:' + esc(leftChannels) + ';">' + esc(row.left.acronym) + '</div>')
             + '<div class="quali-driver-meta"><div class="quali-driver-code">' + esc(row.left.acronym) + '</div><div class="quali-driver-name">' + esc(row.left.fullName) + '</div></div>'
@@ -3745,8 +3760,8 @@ function renderQualifyingGapOverview(rows) {
             + '<div class="quali-side-top"><span class="quali-h2h-count">' + row.right.wins + '</span><span class="quali-h2h-label">H2H</span></div>'
             + '<div class="quali-gap-avg slow">' + esc(formatSignedGap(row.avgGap, false)) + '</div>'
             + '<div class="quali-driver">'
-            + (row.right.headshot
-                ? '<img class="quali-headshot" src="' + esc(row.right.headshot) + '" alt="' + esc(row.right.fullName) + '" width="48" height="48"' + getHeadshotImgStyle('', row.right.fullName) + ' loading="lazy" decoding="async">'
+            + (rightHeadshot.url
+                ? '<img class="quali-headshot" src="' + esc(rightHeadshot.url) + '" alt="' + esc(row.right.fullName) + '" width="48" height="48"' + rightHeadshot.style + ' loading="lazy" decoding="async">'
                     + '<div class="quali-avatar-fallback" style="display:none;--driver-color:' + esc(rightChannels) + ';">' + esc(row.right.acronym) + '</div>'
                 : '<div class="quali-avatar-fallback" style="--driver-color:' + esc(rightChannels) + ';">' + esc(row.right.acronym) + '</div>')
             + '<div class="quali-driver-meta"><div class="quali-driver-code">' + esc(row.right.acronym) + '</div><div class="quali-driver-name">' + esc(row.right.fullName) + '</div></div>'
@@ -3760,10 +3775,11 @@ function renderQualifyingGapOverview(rows) {
 }
 
 function renderQualifyingRaceDriverPin(driver, topPct, driverChannels) {
+    var headshot = getCachedHeadshotResult('', driver.fullName, driver.headshot || '');
     return '<div class="quali-race-driver-pin" style="top:' + topPct.toFixed(2) + '%;--driver-color:' + esc(driverChannels) + ';">'
         + '<div class="quali-race-avatar">'
-        + (driver.headshot
-            ? '<img src="' + esc(driver.headshot) + '" alt="' + esc(driver.fullName) + '" width="58" height="58"' + getHeadshotImgStyle('', driver.fullName) + ' loading="lazy" decoding="async">'
+        + (headshot.url
+            ? '<img src="' + esc(headshot.url) + '" alt="' + esc(driver.fullName) + '" width="58" height="58"' + headshot.style + ' loading="lazy" decoding="async">'
                 + '<div class="quali-race-avatar-fallback" style="display:none;">' + esc(driver.acronym) + '</div>'
             : '<div class="quali-race-avatar-fallback">' + esc(driver.acronym) + '</div>')
         + '</div>'
@@ -4038,9 +4054,10 @@ function buildLap1AxisValues(maxGain) {
 
 function renderLap1Bubble(driver, extraBadge) {
     var winnerColor = hexToRgbChannels(driver.teamColor || '3b82f6');
+    var headshot = getCachedHeadshotResult('', driver.fullName, driver.headshot || '');
     return '<div class="lap1-bubble" style="--winner-color:' + esc(winnerColor) + ';">'
-        + (driver.headshot
-            ? '<img src="' + esc(driver.headshot) + '" alt="' + esc(driver.fullName) + '" width="56" height="56"' + getHeadshotImgStyle('', driver.fullName) + ' loading="lazy" decoding="async">'
+        + (headshot.url
+            ? '<img src="' + esc(headshot.url) + '" alt="' + esc(driver.fullName) + '" width="56" height="56"' + headshot.style + ' loading="lazy" decoding="async">'
                 + '<div class="lap1-bubble-fallback" style="display:none;">' + esc(driver.acronym) + '</div>'
             : '<div class="lap1-bubble-fallback">' + esc(driver.acronym) + '</div>')
         + (extraBadge ? '<span class="lap1-bubble-badge">' + esc(extraBadge) + '</span>' : '')
@@ -4049,10 +4066,11 @@ function renderLap1Bubble(driver, extraBadge) {
 
 function renderLap1DriverChip(driver) {
     var winnerColor = hexToRgbChannels(driver.teamColor || '3b82f6');
+    var headshot = getCachedHeadshotResult('', driver.fullName, driver.headshot || '');
     return '<div class="lap1-driver-chip" style="--winner-color:' + esc(winnerColor) + ';">'
         + '<div class="lap1-driver-chip-avatar">'
-        + (driver.headshot
-            ? '<img src="' + esc(driver.headshot) + '" alt="' + esc(driver.fullName) + '" width="38" height="38"' + getHeadshotImgStyle('', driver.fullName) + ' loading="lazy" decoding="async">'
+        + (headshot.url
+            ? '<img src="' + esc(headshot.url) + '" alt="' + esc(driver.fullName) + '" width="38" height="38"' + headshot.style + ' loading="lazy" decoding="async">'
                 + '<div class="lap1-driver-chip-avatar-fallback" style="display:none;">' + esc(driver.acronym) + '</div>'
             : '<div class="lap1-driver-chip-avatar-fallback">' + esc(driver.acronym) + '</div>')
         + '</div>'
@@ -4120,13 +4138,14 @@ function renderLap1OverviewContent(rows) {
 function renderLap1RaceDriverRow(move, index) {
     var winnerColor = hexToRgbChannels(move.teamColor || '3b82f6');
     var deltaTone = move.gain > 0 ? 'positive' : move.gain < 0 ? 'negative' : 'neutral';
+    var headshot = getCachedHeadshotResult('', move.fullName, move.headshot || '');
 
     return '<article class="lap1-race-row" style="--winner-color:' + esc(winnerColor) + ';">'
         + '<div class="lap1-race-rank">' + (index + 1) + '</div>'
         + '<div class="lap1-race-driver">'
         + '<div class="lap1-race-avatar">'
-        + (move.headshot
-            ? '<img src="' + esc(move.headshot) + '" alt="' + esc(move.fullName) + '" width="42" height="42"' + getHeadshotImgStyle('', move.fullName) + ' loading="lazy" decoding="async">'
+        + (headshot.url
+            ? '<img src="' + esc(headshot.url) + '" alt="' + esc(move.fullName) + '" width="42" height="42"' + headshot.style + ' loading="lazy" decoding="async">'
                 + '<div class="lap1-race-avatar-fallback" style="display:none;">' + esc(move.acronym) + '</div>'
             : '<div class="lap1-race-avatar-fallback">' + esc(move.acronym) + '</div>')
         + '</div>'
@@ -4634,7 +4653,7 @@ function enrichWithOpenF1() {
                 var key = normalizeDriverLookupKey(d.last_name || '');
                 var fullName = d.full_name || [d.first_name, d.last_name].filter(Boolean).join(' ');
                 map[key] = {
-                    headshot: getPreferredHeadshot('', fullName, d.headshot_url || ''),
+                    headshot: getCachedHeadshotResult('', fullName, d.headshot_url || '').url,
                     teamColor: getCanonicalTeamColor('', d.team_name || '', d.team_colour || ''),
                     acronym: d.name_acronym || '',
                     teamName: d.team_name || '',
@@ -4702,13 +4721,13 @@ function renderDrivers(standings, openf1Map) {
 
         // Try OpenF1 enrichment for headshot & team colour
         var of1 = openf1Map[lastName] || {};
-        var hs = getPreferredHeadshot(driverId, name, of1.headshot);
+        var hs = getCachedHeadshotResult(driverId, name, of1.headshot);
         var acr = of1.acronym || (driver.code || driverId.substring(0,3)).toUpperCase();
 
         html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
             + '<div class="st-pos">' + pos + '</div>'
             + '<div class="st-info">'
-            + (hs ? '<img class="st-headshot" src="' + esc(hs) + '" alt="' + esc(name) + '" width="40" height="40"' + getHeadshotImgStyle(driverId, name) + ' loading="lazy" decoding="async">'
+            + (hs.url ? '<img class="st-headshot" src="' + esc(hs.url) + '" alt="' + esc(name) + '" width="40" height="40"' + hs.style + ' loading="lazy" decoding="async">'
                    + '<div class="st-avatar-fallback" style="display:none;color:#' + esc(tc) + ';">' + esc(acr) + '</div>'
                   : '<div class="st-avatar-fallback" style="color:#' + esc(tc) + ';">' + esc(acr) + '</div>')
             + '<div class="st-name-block"><div class="st-name">' + esc(name) + '</div><div class="st-team-label">' + esc(teamName) + '</div></div></div>'
@@ -4821,7 +4840,7 @@ function renderDriversFromOpenF1(standings, driverInfo) {
         var d = dMap[s.driver_number] || {};
         var tc = getCanonicalTeamColor('', d.team_name || '', d.team_colour);
         var name = d.full_name || ('Οδηγός #' + s.driver_number);
-        var hs = getPreferredHeadshot('', name, d.headshot_url || '');
+        var hs = getCachedHeadshotResult('', name, d.headshot_url || '');
         var team = d.team_name || '';
         var acr = d.name_acronym || '';
         var barPct = Math.max(2, (s.points_current / maxPts) * 100);
@@ -4829,7 +4848,7 @@ function renderDriversFromOpenF1(standings, driverInfo) {
         html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
             + '<div class="st-pos">' + s.position_current + '</div>'
             + '<div class="st-info">'
-            + (hs ? '<img class="st-headshot" src="' + esc(hs) + '" alt="' + esc(name) + '" width="40" height="40"' + getHeadshotImgStyle('', name) + ' loading="lazy" decoding="async">'
+            + (hs.url ? '<img class="st-headshot" src="' + esc(hs.url) + '" alt="' + esc(name) + '" width="40" height="40"' + hs.style + ' loading="lazy" decoding="async">'
                    + '<div class="st-avatar-fallback" style="display:none;color:#' + esc(tc) + ';">' + esc(acr) + '</div>'
                   : '<div class="st-avatar-fallback" style="color:#' + esc(tc) + ';">' + esc(acr) + '</div>')
             + '<div class="st-name-block"><div class="st-name">' + esc(name) + '</div><div class="st-team-label">' + esc(team) + '</div></div></div>'
@@ -4918,11 +4937,11 @@ function getDebriefDeltaClass(value) {
 }
 
 function buildDebriefDriverCellHTML(entry) {
-    var headshot = entry.headshot || getPreferredHeadshot(entry.driverId, entry.fullName, '');
+    var headshot = getCachedHeadshotResult(entry.driverId, entry.fullName, entry.headshot || '');
     var teamColor = '#' + esc(entry.teamColor || '3b82f6');
     return '<div class="debrief-driver-cell" style="--debrief-team-color:' + teamColor + ';">'
         + '<span class="debrief-team-bar" style="background:' + teamColor + ';"></span>'
-        + (headshot ? '<img src="' + esc(headshot) + '" alt="' + esc(entry.fullName) + '" width="44" height="44"' + getHeadshotImgStyle(entry.driverId, entry.fullName) + ' loading="lazy" decoding="async">'
+        + (headshot.url ? '<img src="' + esc(headshot.url) + '" alt="' + esc(entry.fullName) + '" width="44" height="44"' + headshot.style + ' loading="lazy" decoding="async">'
             + '<span class="debrief-avatar-fallback" style="display:none;">' + esc(entry.code) + '</span>'
             : '<span class="debrief-avatar-fallback">' + esc(entry.code) + '</span>')
         + '<div><div class="debrief-driver-code">' + esc(entry.code) + '</div><div class="debrief-driver-name">' + esc(entry.fullName) + ' · ' + esc(entry.teamName) + '</div></div>'
@@ -4975,7 +4994,7 @@ function normalizeDebriefSnapshot(payload) {
                 teamKey: teamKey,
                 teamName: teamName,
                 teamColor: teamColor,
-                headshot: getPreferredHeadshot(driverId, fullName, ''),
+                headshot: getCachedHeadshotResult(driverId, fullName, '').url,
                 compound: String(entry && entry.compound || ''),
                 lapTime: String(entry && (entry.lapTime || entry.time) || ''),
                 s1: String(entry && entry.s1 || ''),
@@ -5011,7 +5030,7 @@ function normalizeDebriefSnapshot(payload) {
                 teamKey: teamKey,
                 teamName: teamName,
                 teamColor: teamColor,
-                headshot: getPreferredHeadshot(driverId, fullName, ''),
+                headshot: getCachedHeadshotResult(driverId, fullName, '').url,
                 soft: parseInt(entry && entry.soft, 10) || 0,
                 medium: parseInt(entry && entry.medium, 10) || 0,
                 hard: parseInt(entry && entry.hard, 10) || 0
@@ -6180,10 +6199,10 @@ function buildPitStopFastestPerDriver(stops, driverMap) {
 
 function buildPitStopsDriverRowHTML(entry, idx, fastestDuration) {
     var rgb = hexToRgbChannels(entry.teamColor);
-    var headshot = getHeadshot(entry.driverId, entry.fullName);
+    var headshot = getCachedHeadshotResult(entry.driverId, entry.fullName, '');
     var barPct = Math.max(3, (fastestDuration / entry.duration) * 100);
-    var avatarContent = headshot
-        ? '<img src="' + esc(headshot) + '" alt="' + esc(entry.code) + '" width="42" height="42"' + getHeadshotImgStyle(entry.driverId, entry.fullName) + ' loading="lazy" decoding="async">'
+    var avatarContent = headshot.url
+        ? '<img src="' + esc(headshot.url) + '" alt="' + esc(entry.code) + '" width="42" height="42"' + headshot.style + ' loading="lazy" decoding="async">'
           + '<div class="pit-stops-avatar-fallback" style="display:none">' + esc(entry.code) + '</div>'
         : '<div class="pit-stops-avatar-fallback">' + esc(entry.code) + '</div>';
 
