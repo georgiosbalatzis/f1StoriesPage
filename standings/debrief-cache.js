@@ -301,12 +301,6 @@ function buildDriverMap(drivers) {
         var code = String(driver.name_acronym || '').toUpperCase();
         var headshot = String(driver.headshot_url || '');
 
-        if (teamKey === 'alpine' && (code === 'COL' || fullName.toLowerCase().indexOf('colapinto') !== -1)) {
-            fullName = 'Jack Doohan';
-            code = 'DOO';
-            headshot = 'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/J/JACDOO01_Jack_Doohan/jacdoo01.png.transform/1col/image.png';
-        }
-
         map[key] = {
             driverNumber: key,
             driverId: normalizeKey(fullName),

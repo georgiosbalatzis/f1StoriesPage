@@ -1,7 +1,7 @@
 {
   "version": 2,
   "season": 2026,
-  "generatedAt": "2026-04-09T07:37:18.107Z",
+  "generatedAt": "2026-04-09T09:17:00.415Z",
   "source": {
     "label": "OpenF1 Friday Debrief cache",
     "upstream": "https://api.openf1.org/v1",
@@ -408,13 +408,13 @@
           "gap": "+2.524"
         },
         {
-          "driverId": "jack_doohan",
-          "code": "DOO",
-          "fullName": "Jack Doohan",
+          "driverId": "franco_colapinto",
+          "code": "COL",
+          "fullName": "Franco Colapinto",
           "teamKey": "alpine",
           "teamName": "Alpine",
           "teamColor": "00A1E8",
-          "headshot": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/J/JACDOO01_Jack_Doohan/jacdoo01.png.transform/1col/image.png",
+          "headshot": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/F/FRACOL01_Franco_Colapinto/fracol01.png.transform/1col/image.png",
           "seconds": 82.619,
           "lapTime": "1:22.619",
           "compound": "Soft",
@@ -753,9 +753,9 @@
           "stintLaps": 6
         },
         {
-          "driverId": "jack_doohan",
-          "code": "DOO",
-          "fullName": "Jack Doohan",
+          "driverId": "franco_colapinto",
+          "code": "COL",
+          "fullName": "Franco Colapinto",
           "teamKey": "alpine",
           "teamName": "Alpine",
           "teamColor": "00A1E8",
@@ -1038,9 +1038,9 @@
           "window": "Laps 2-9"
         },
         {
-          "driverId": "jack_doohan",
-          "code": "DOO",
-          "fullName": "Jack Doohan",
+          "driverId": "franco_colapinto",
+          "code": "COL",
+          "fullName": "Franco Colapinto",
           "teamKey": "alpine",
           "teamName": "Alpine",
           "teamColor": "00A1E8",
@@ -1266,9 +1266,9 @@
           "hard": 0
         },
         {
-          "driverId": "jack_doohan",
-          "code": "DOO",
-          "fullName": "Jack Doohan",
+          "driverId": "franco_colapinto",
+          "code": "COL",
+          "fullName": "Franco Colapinto",
           "teamKey": "alpine",
           "teamName": "Alpine",
           "teamColor": "00A1E8",
@@ -2100,13 +2100,13 @@
           "gap": "+2.528"
         },
         {
-          "driverId": "jack_doohan",
-          "code": "DOO",
-          "fullName": "Jack Doohan",
+          "driverId": "franco_colapinto",
+          "code": "COL",
+          "fullName": "Franco Colapinto",
           "teamKey": "alpine",
           "teamName": "Alpine",
           "teamColor": "00A1E8",
-          "headshot": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/J/JACDOO01_Jack_Doohan/jacdoo01.png.transform/1col/image.png",
+          "headshot": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/F/FRACOL01_Franco_Colapinto/fracol01.png.transform/1col/image.png",
           "seconds": 94.327,
           "lapTime": "1:34.327",
           "compound": "Medium",
@@ -2455,9 +2455,9 @@
           "stintLaps": 3
         },
         {
-          "driverId": "jack_doohan",
-          "code": "DOO",
-          "fullName": "Jack Doohan",
+          "driverId": "franco_colapinto",
+          "code": "COL",
+          "fullName": "Franco Colapinto",
           "teamKey": "alpine",
           "teamName": "Alpine",
           "teamColor": "00A1E8",
@@ -2711,9 +2711,9 @@
           "window": "Laps 21-28"
         },
         {
-          "driverId": "jack_doohan",
-          "code": "DOO",
-          "fullName": "Jack Doohan",
+          "driverId": "franco_colapinto",
+          "code": "COL",
+          "fullName": "Franco Colapinto",
           "teamKey": "alpine",
           "teamName": "Alpine",
           "teamColor": "00A1E8",
@@ -2982,9 +2982,9 @@
           "hard": 0
         },
         {
-          "driverId": "jack_doohan",
-          "code": "DOO",
-          "fullName": "Jack Doohan",
+          "driverId": "franco_colapinto",
+          "code": "COL",
+          "fullName": "Franco Colapinto",
           "teamKey": "alpine",
           "teamName": "Alpine",
           "teamColor": "00A1E8",
@@ -3861,13 +3861,13 @@
           "gap": "+1.800"
         },
         {
-          "driverId": "jack_doohan",
-          "code": "DOO",
-          "fullName": "Jack Doohan",
+          "driverId": "franco_colapinto",
+          "code": "COL",
+          "fullName": "Franco Colapinto",
           "teamKey": "alpine",
           "teamName": "Alpine",
           "teamColor": "00A1E8",
-          "headshot": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/J/JACDOO01_Jack_Doohan/jacdoo01.png.transform/1col/image.png",
+          "headshot": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/F/FRACOL01_Franco_Colapinto/fracol01.png.transform/1col/image.png",
           "seconds": 92.438,
           "lapTime": "1:32.438",
           "compound": "Soft",
@@ -4229,9 +4229,9 @@
           "stintLaps": 10
         },
         {
-          "driverId": "jack_doohan",
-          "code": "DOO",
-          "fullName": "Jack Doohan",
+          "driverId": "franco_colapinto",
+          "code": "COL",
+          "fullName": "Franco Colapinto",
           "teamKey": "alpine",
           "teamName": "Alpine",
           "teamColor": "00A1E8",
@@ -4267,9 +4267,9 @@
       ],
       "tyreDeg": [
         {
-          "driverId": "jack_doohan",
-          "code": "DOO",
-          "fullName": "Jack Doohan",
+          "driverId": "franco_colapinto",
+          "code": "COL",
+          "fullName": "Franco Colapinto",
           "teamKey": "alpine",
           "teamName": "Alpine",
           "teamColor": "00A1E8",
@@ -4731,9 +4731,9 @@
           "hard": 0
         },
         {
-          "driverId": "jack_doohan",
-          "code": "DOO",
-          "fullName": "Jack Doohan",
+          "driverId": "franco_colapinto",
+          "code": "COL",
+          "fullName": "Franco Colapinto",
           "teamKey": "alpine",
           "teamName": "Alpine",
           "teamColor": "00A1E8",
