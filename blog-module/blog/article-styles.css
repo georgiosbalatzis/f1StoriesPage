@@ -154,6 +154,16 @@
     margin: 0 auto !important;
     max-width: 540px;
 }
+.article-content .embed-container.embed-iframe > iframe[src*="sketchfab.com"] {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    border: 0;
+    border-radius: var(--blog-radius-sm);
+    background: var(--blog-surface);
+}
 .social-embed a { border-bottom: none; }
 .article-content blockquote { border-left: 3px solid var(--blog-accent); margin: 2rem 0; padding: 1.2rem 1.8rem; background: var(--blog-accent-soft); border-radius: 0 var(--blog-radius-sm) var(--blog-radius-sm) 0; font-style: italic; color: var(--blog-text-secondary); }
 .article-content ul, .article-content ol { margin: 1rem 0 1.5rem; padding-left: 1.5rem; }
