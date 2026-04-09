@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://f1stories.gr/sitemap.xml
+
+# Block indexing of raw data files
+Disallow: /standings/debrief-cache.json
+Disallow: /standings/destructors-cache.json
+Disallow: /standings/dirty-air-cache.json
+Disallow: /blog-module/blog-data.json
+Disallow: /blog-module/blog-index-data.json
+Disallow: /blog-module/home-latest.json
