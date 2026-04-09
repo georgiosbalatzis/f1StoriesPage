@@ -791,6 +791,7 @@ function refreshEmbedVisibility() {
 
 function activateStandingsTab(tabName, options) {
     var nextTab = sanitizeStandingsTab(tabName);
+    var activePanel = null;
     activeStandingsTab = nextTab;
 
     standingsTabs.forEach(function(tab) {
@@ -802,6 +803,12 @@ function activateStandingsTab(tabName, options) {
     standingsPanels.forEach(function(panel) {
         panel.classList.toggle('active', panel.id === 'panel-' + nextTab);
     });
+
+    activePanel = document.getElementById('panel-' + nextTab);
+    if (activePanel && !(options && options.skipFocus)) {
+        activePanel.setAttribute('tabindex', '-1');
+        activePanel.focus({ preventScroll: true });
+    }
 
     if (nextTab === 'quali-gaps') ensureQualifyingGapsLoaded();
     if (nextTab === 'lap1-gains') ensureLap1GainsLoaded();
@@ -4514,7 +4521,7 @@ window.addEventListener('popstate', function() {
     debriefState.activeView = nextState.debriefView;
     debriefState.selectedRound = nextState.debriefRound;
     destructorsState.activeView = nextState.destructorsView;
-    activateStandingsTab(nextState.tab, { skipURL: true });
+    activateStandingsTab(nextState.tab, { skipURL: true, skipFocus: true });
 });
 
 function showError(el) {
@@ -6529,7 +6536,7 @@ if (destructorsTable) {
 document.getElementById('season-year').textContent = YEAR;
 var footerYear = document.getElementById('footer-year');
 if (footerYear) footerYear.textContent = new Date().getFullYear();
-activateStandingsTab(activeStandingsTab, { skipURL: true });
+activateStandingsTab(activeStandingsTab, { skipURL: true, skipFocus: true });
 refreshEmbedVisibility();
 loadStandings();
 })();
