@@ -51,7 +51,9 @@ const CONFIG = {
         'open.spotify.com',
         'player.vimeo.com',
         'codepen.io',
-        'datawrapper.dwcdn.net'
+        'datawrapper.dwcdn.net',
+        'sketchfab.com',
+        'www.sketchfab.com'
     ],
     // Allowed extensions for EMBED: file references
     EMBED_EXTENSIONS: ['.html', '.htm', '.svg']
