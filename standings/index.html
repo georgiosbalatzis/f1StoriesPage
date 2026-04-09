@@ -9,6 +9,14 @@
     <meta property="og:description" content="Βαθμολογίες Formula 1 από το F1 Stories με live standings οδηγών και κατασκευαστών, plus quali gaps, tyre pace, dirty air και pit stop analysis.">
     <meta property="og:url" content="https://f1stories.gr/standings/">
     <meta property="og:type" content="website">
+    <meta property="og:image" content="https://f1stories.gr/images/logo.png">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="1024">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="F1 Stories — Βαθμολογίες Πρωταθλήματος">
+    <meta name="twitter:description" content="Βαθμολογίες Formula 1 από το F1 Stories με live standings οδηγών και κατασκευαστών.">
+    <meta name="twitter:image" content="https://f1stories.gr/images/logo.png">
+    <link rel="canonical" href="https://f1stories.gr/standings/">
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
     <link rel="manifest" href="/manifest.json">
@@ -117,7 +125,7 @@
         </div>
 
         <div class="standings-panel active" id="panel-drivers" role="tabpanel" aria-labelledby="tab-drivers">
-            <div class="standings-table-wrap" id="drivers-table"></div>
+            <div class="standings-table-wrap" id="drivers-table" aria-live="polite"></div>
             <div class="chart-section" id="drivers-chart">
                 <div class="chart-head">
                     <div class="chart-copy">
@@ -134,7 +142,7 @@
         </div>
 
         <div class="standings-panel" id="panel-constructors" role="tabpanel" aria-labelledby="tab-constructors">
-            <div class="standings-table-wrap" id="constructors-table"></div>
+            <div class="standings-table-wrap" id="constructors-table" aria-live="polite"></div>
             <div class="chart-section" id="constructors-chart" style="display:none">
                 <div class="chart-head">
                     <div class="chart-copy">
@@ -167,7 +175,7 @@
                         <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-quali-gaps"><i class="fas fa-code"></i> Embed tab</button>
                     </div>
                 </div>
-                <div id="qualifying-gaps-table"></div>
+                <div id="qualifying-gaps-table" aria-live="polite"></div>
             </div>
         </div>
 
@@ -188,7 +196,7 @@
                         <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-lap1-gains"><i class="fas fa-code"></i> Embed tab</button>
                     </div>
                 </div>
-                <div id="lap1-gains-table"></div>
+                <div id="lap1-gains-table" aria-live="polite"></div>
             </div>
         </div>
 
@@ -209,7 +217,7 @@
                         <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-tyre-pace"><i class="fas fa-code"></i> Embed tab</button>
                     </div>
                 </div>
-                <div id="tyre-pace-table"></div>
+                <div id="tyre-pace-table" aria-live="polite"></div>
             </div>
         </div>
 
@@ -230,7 +238,7 @@
                         <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-dirty-air"><i class="fas fa-code"></i> Embed tab</button>
                     </div>
                 </div>
-                <div id="dirty-air-table"></div>
+                <div id="dirty-air-table" aria-live="polite"></div>
             </div>
         </div>
 
@@ -251,7 +259,7 @@
                         <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-track-dominance"><i class="fas fa-code"></i> Embed tab</button>
                     </div>
                 </div>
-                <div id="track-dominance-table"></div>
+                <div id="track-dominance-table" aria-live="polite"></div>
             </div>
         </div>
 
@@ -272,7 +280,7 @@
                         <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-pit-stops"><i class="fas fa-code"></i> Embed tab</button>
                     </div>
                 </div>
-                <div id="pit-stops-table"></div>
+                <div id="pit-stops-table" aria-live="polite"></div>
             </div>
         </div>
 
@@ -293,7 +301,7 @@
                         <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-debrief"><i class="fas fa-code"></i> Embed tab</button>
                     </div>
                 </div>
-                <div id="debrief-table"></div>
+                <div id="debrief-table" aria-live="polite"></div>
             </div>
         </div>
 
@@ -314,7 +322,7 @@
                         <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-destructors"><i class="fas fa-code"></i> Embed tab</button>
                     </div>
                 </div>
-                <div id="destructors-table"></div>
+                <div id="destructors-table" aria-live="polite"></div>
             </div>
         </div>
 
@@ -329,7 +337,7 @@
 
 <footer class="py-4">
     <div class="container"><div class="row"><div class="col-12 text-center">
-        <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
+        <p>&copy; <span id="footer-year">2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
         <div class="social-media">
             <a href="https://www.youtube.com/@F1StoriesOriginal" target="_blank" rel="noopener" aria-label="F1 Stories on YouTube"><i class="fab fa-youtube"></i></a>
             <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories on Facebook"><i class="fab fa-facebook-f"></i></a>
