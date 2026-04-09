@@ -895,48 +895,135 @@ function buildCornerPerformanceRows(teamIdealRows) {
     });
 }
 
-function buildRacePaceRows(candidates) {
+function buildRacePaceSessionCandidates(sessionData, rosterMap, minLaps) {
     var teamMap = {};
-    var primary = (candidates || []).filter(function(candidate) {
-        return isFiniteNumber(candidate.avgSeconds) && (candidate.stintLaps || 0) >= 3 && candidate.sessionIndex === 0;
-    });
-    var eligible = primary.length ? primary : (candidates || []).filter(function(candidate) {
-        return isFiniteNumber(candidate.avgSeconds) && (candidate.stintLaps || 0) >= 3;
-    });
 
-    if (!eligible.length) {
-        eligible = (candidates || []).filter(function(candidate) {
-            return isFiniteNumber(candidate.avgSeconds);
-        });
-    }
+    Object.keys(sessionData.stintsByDriver).forEach(function(driverNumber) {
+        var driver = sessionData.drivers[driverNumber];
+        var driverLaps = sessionData.lapsByDriver[driverNumber] || [];
 
-    eligible.forEach(function(candidate) {
-        if (!candidate.teamKey) return;
-        if (!teamMap[candidate.teamKey] || candidate.avgSeconds < teamMap[candidate.teamKey].avgSeconds) {
-            teamMap[candidate.teamKey] = {
-                teamKey: candidate.teamKey,
-                teamName: candidate.teamName,
-                teamColor: candidate.teamColor,
-                avgSeconds: candidate.avgSeconds,
-                compound: candidate.compound
+        if (rosterMap && !rosterMap[driverNumber]) return;
+        if (!driver || !driver.teamKey) return;
+
+        sessionData.stintsByDriver[driverNumber].forEach(function(stint) {
+            var start = parseInt(stint.lap_start, 10) || 0;
+            var end = parseInt(stint.lap_end, 10) || 0;
+            var valid = driverLaps.filter(function(lap) {
+                var lapNumber = parseInt(lap && lap.lap_number, 10) || 0;
+                var lapSeconds = parseNumber(lap && lap.lap_duration);
+                return lapNumber >= start
+                    && lapNumber <= end
+                    && isFiniteNumber(lapSeconds)
+                    && lapSeconds > 0
+                    && !(lap && lap.is_pit_out_lap);
+            }).map(function(lap) {
+                return {
+                    lapNumber: parseInt(lap.lap_number, 10) || 0,
+                    seconds: parseNumber(lap.lap_duration)
+                };
+            }).sort(function(a, b) {
+                return a.lapNumber - b.lapNumber;
+            });
+            var usable = trimUsableLongRunLaps(valid, minLaps);
+            var durations;
+            var average;
+            var candidate;
+            var current;
+
+            if (usable.length < minLaps) return;
+
+            durations = usable.map(function(lap) { return lap.seconds; });
+            average = mean(durations);
+            candidate = {
+                teamKey: driver.teamKey,
+                teamName: driver.teamName,
+                teamColor: driver.teamColor,
+                avgSeconds: average,
+                compound: formatCompound(stint.compound),
+                stintLaps: usable.length,
+                sourceSession: String(sessionData.session && sessionData.session.session_name || '')
             };
-        }
+            current = teamMap[driver.teamKey];
+
+            if (!current
+                || candidate.avgSeconds < current.avgSeconds
+                || (candidate.avgSeconds === current.avgSeconds && candidate.stintLaps > current.stintLaps)) {
+                teamMap[driver.teamKey] = candidate;
+            }
+        });
     });
 
     var rows = Object.keys(teamMap).map(function(teamKey) {
-        var row = teamMap[teamKey];
-        return row;
+        return teamMap[teamKey];
     }).filter(function(row) {
         return isFiniteNumber(row.avgSeconds);
     }).sort(function(a, b) {
         return a.avgSeconds - b.avgSeconds;
     });
-
     var leader = rows.length ? rows[0].avgSeconds : NaN;
-    rows = rows.filter(function(row, index) {
-        if (index === 0) return true;
-        return isFiniteNumber(leader) && (row.avgSeconds - leader) <= 20;
+
+    return rows.map(function(row) {
+        row.sessionGap = isFiniteNumber(leader) ? Math.max(0, row.avgSeconds - leader) : NaN;
+        return row;
     });
+}
+
+function buildRacePaceRowsForThreshold(sessionDataList, rosterMap, minLaps) {
+    var selectedByTeam = {};
+    var primaryLeader = NaN;
+    var sessionPenalty = 0.2;
+
+    (sessionDataList || []).forEach(function(sessionData, sessionIndex) {
+        var candidates = buildRacePaceSessionCandidates(sessionData, rosterMap, minLaps);
+
+        if (!candidates.length) return;
+        if (!isFiniteNumber(primaryLeader)) primaryLeader = candidates[0].avgSeconds;
+
+        candidates.forEach(function(candidate) {
+            var score = candidate.sessionGap + (sessionIndex * sessionPenalty);
+            var existing = selectedByTeam[candidate.teamKey];
+            var next = {
+                teamKey: candidate.teamKey,
+                teamName: candidate.teamName,
+                teamColor: candidate.teamColor,
+                avgSeconds: candidate.avgSeconds,
+                compound: candidate.compound,
+                stintLaps: candidate.stintLaps,
+                sourceSession: candidate.sourceSession,
+                sessionGap: candidate.sessionGap,
+                sessionIndex: sessionIndex,
+                score: score
+            };
+            var existingPrimaryUsable;
+
+            if (!existing) {
+                selectedByTeam[candidate.teamKey] = next;
+                return;
+            }
+
+            existingPrimaryUsable = existing.sessionIndex === 0 && isFiniteNumber(existing.sessionGap) && existing.sessionGap <= 12;
+            if (existingPrimaryUsable && sessionIndex > 0) return;
+
+            if ((next.score + 0.001) < existing.score
+                || (((next.score - 0.001) <= existing.score && (next.score + 0.001) >= existing.score)
+                    && (next.sessionIndex < existing.sessionIndex
+                        || (next.sessionIndex === existing.sessionIndex && next.avgSeconds < existing.avgSeconds)
+                        || (next.sessionIndex === existing.sessionIndex && next.avgSeconds === existing.avgSeconds && next.stintLaps > existing.stintLaps)))) {
+                selectedByTeam[candidate.teamKey] = next;
+            }
+        });
+    });
+
+    if (!isFiniteNumber(primaryLeader)) return [];
+
+    var rows = Object.keys(selectedByTeam).map(function(teamKey) {
+        var row = selectedByTeam[teamKey];
+        row.normalizedSeconds = primaryLeader + row.score;
+        return row;
+    }).sort(function(a, b) {
+        return a.normalizedSeconds - b.normalizedSeconds;
+    });
+    var leader = rows.length ? rows[0].normalizedSeconds : NaN;
 
     return rows.map(function(row, index) {
         return {
@@ -945,11 +1032,37 @@ function buildRacePaceRows(candidates) {
             teamName: row.teamName,
             teamColor: row.teamColor,
             code: TEAM_CODES[row.teamKey] || row.teamName.substring(0, 3).toUpperCase(),
-            predictedLap: formatLapTime(row.avgSeconds),
+            predictedLap: formatLapTime(row.normalizedSeconds),
             strategy: String(row.compound || '').toUpperCase(),
-            gapToFirst: formatGap(row.avgSeconds - leader)
+            gapToFirst: formatGap(row.normalizedSeconds - leader)
         };
     });
+}
+
+function buildRacePaceRows(sessionDataList, rosterMap) {
+    var thresholds = [MIN_LONG_RUN_LAPS, 4, 3];
+    var teamMap = {};
+    var desiredCount;
+    var bestRows = [];
+    var i;
+
+    Object.keys(rosterMap || {}).forEach(function(driverNumber) {
+        var driver = rosterMap[driverNumber];
+        if (!driver || !driver.teamKey) return;
+        teamMap[driver.teamKey] = true;
+    });
+    desiredCount = Object.keys(teamMap).length;
+
+    for (i = 0; i < thresholds.length; i += 1) {
+        var rows = buildRacePaceRowsForThreshold(sessionDataList, rosterMap, thresholds[i]);
+        if (rows.length > bestRows.length) bestRows = rows;
+        if (rows.length >= desiredCount) {
+            bestRows = rows;
+            break;
+        }
+    }
+
+    return bestRows;
 }
 
 function buildRoundLabel(session) {
@@ -1019,7 +1132,7 @@ async function buildRound(meeting, roundNumber, cache) {
         compoundUsage: buildCompoundUsageRows(longRunData[0], singleLapRows),
         teamIdealLap: teamIdealRows,
         cornerPerformance: buildCornerPerformanceRows(teamIdealRows),
-        racePacePrediction: buildRacePaceRows(longRunCandidates)
+        racePacePrediction: buildRacePaceRows(longRunData, rosterMap)
     };
 }
 

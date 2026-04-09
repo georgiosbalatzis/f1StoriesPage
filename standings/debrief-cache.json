@@ -1,7 +1,7 @@
 {
   "version": 2,
   "season": 2026,
-  "generatedAt": "2026-04-09T09:37:30.407Z",
+  "generatedAt": "2026-04-09T11:12:37.037Z",
   "source": {
     "label": "OpenF1 Friday Debrief cache",
     "upstream": "https://api.openf1.org/v1",
@@ -1690,23 +1690,103 @@
         },
         {
           "pos": 2,
-          "teamKey": "audi",
-          "teamName": "Audi",
-          "teamColor": "F50537",
-          "code": "AUD",
-          "predictedLap": "1:31.896",
-          "strategy": "MEDIUM",
-          "gapToFirst": "+8.274"
+          "teamKey": "ferrari",
+          "teamName": "Ferrari",
+          "teamColor": "ED1131",
+          "code": "FER",
+          "predictedLap": "1:24.412",
+          "strategy": "HARD",
+          "gapToFirst": "+0.790"
         },
         {
           "pos": 3,
+          "teamKey": "red_bull",
+          "teamName": "Red Bull Racing",
+          "teamColor": "4781D7",
+          "code": "RBR",
+          "predictedLap": "1:24.734",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+1.112"
+        },
+        {
+          "pos": 4,
           "teamKey": "mclaren",
           "teamName": "McLaren",
           "teamColor": "F47600",
           "code": "MCL",
-          "predictedLap": "1:36.272",
+          "predictedLap": "1:24.848",
           "strategy": "SOFT",
-          "gapToFirst": "+12.650"
+          "gapToFirst": "+1.227"
+        },
+        {
+          "pos": 5,
+          "teamKey": "audi",
+          "teamName": "Audi",
+          "teamColor": "F50537",
+          "code": "AUD",
+          "predictedLap": "1:25.536",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+1.914"
+        },
+        {
+          "pos": 6,
+          "teamKey": "alpine",
+          "teamName": "Alpine",
+          "teamColor": "00A1E8",
+          "code": "ALP",
+          "predictedLap": "1:25.847",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+2.225"
+        },
+        {
+          "pos": 7,
+          "teamKey": "rb",
+          "teamName": "Racing Bulls",
+          "teamColor": "6C98FF",
+          "code": "RB",
+          "predictedLap": "1:25.898",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+2.276"
+        },
+        {
+          "pos": 8,
+          "teamKey": "haas",
+          "teamName": "Haas F1 Team",
+          "teamColor": "9C9FA2",
+          "code": "HAA",
+          "predictedLap": "1:26.311",
+          "strategy": "HARD",
+          "gapToFirst": "+2.689"
+        },
+        {
+          "pos": 9,
+          "teamKey": "cadillac",
+          "teamName": "Cadillac",
+          "teamColor": "909090",
+          "code": "CAD",
+          "predictedLap": "1:28.691",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+5.069"
+        },
+        {
+          "pos": 10,
+          "teamKey": "williams",
+          "teamName": "Williams",
+          "teamColor": "1868DB",
+          "code": "WIL",
+          "predictedLap": "1:35.273",
+          "strategy": "HARD",
+          "gapToFirst": "+11.651"
+        },
+        {
+          "pos": 11,
+          "teamKey": "aston_martin",
+          "teamName": "Aston Martin",
+          "teamColor": "229971",
+          "code": "AMR",
+          "predictedLap": "2:49.907",
+          "strategy": "SOFT",
+          "gapToFirst": "+86.285"
         }
       ]
     },
@@ -3416,9 +3496,9 @@
           "teamName": "Cadillac",
           "teamColor": "909090",
           "code": "CAD",
-          "predictedLap": "1:41.804",
+          "predictedLap": "1:39.867",
           "strategy": "MEDIUM",
-          "gapToFirst": "+5.350"
+          "gapToFirst": "+3.414"
         },
         {
           "pos": 5,
@@ -3426,12 +3506,22 @@
           "teamName": "Audi",
           "teamColor": "F50537",
           "code": "AUD",
-          "predictedLap": "1:45.437",
+          "predictedLap": "1:41.482",
           "strategy": "MEDIUM",
-          "gapToFirst": "+8.984"
+          "gapToFirst": "+5.029"
         },
         {
           "pos": 6,
+          "teamKey": "ferrari",
+          "teamName": "Ferrari",
+          "teamColor": "ED1131",
+          "code": "FER",
+          "predictedLap": "1:45.262",
+          "strategy": "SOFT",
+          "gapToFirst": "+8.808"
+        },
+        {
+          "pos": 7,
           "teamKey": "williams",
           "teamName": "Williams",
           "teamColor": "1868DB",
@@ -3439,6 +3529,46 @@
           "predictedLap": "1:54.832",
           "strategy": "MEDIUM",
           "gapToFirst": "+18.379"
+        },
+        {
+          "pos": 8,
+          "teamKey": "mclaren",
+          "teamName": "McLaren",
+          "teamColor": "F47600",
+          "code": "MCL",
+          "predictedLap": "2:00.087",
+          "strategy": "SOFT",
+          "gapToFirst": "+23.634"
+        },
+        {
+          "pos": 9,
+          "teamKey": "aston_martin",
+          "teamName": "Aston Martin",
+          "teamColor": "229971",
+          "code": "AMR",
+          "predictedLap": "2:00.676",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+24.223"
+        },
+        {
+          "pos": 10,
+          "teamKey": "alpine",
+          "teamName": "Alpine",
+          "teamColor": "00A1E8",
+          "code": "ALP",
+          "predictedLap": "2:07.930",
+          "strategy": "SOFT",
+          "gapToFirst": "+31.476"
+        },
+        {
+          "pos": 11,
+          "teamKey": "haas",
+          "teamName": "Haas F1 Team",
+          "teamColor": "9C9FA2",
+          "code": "HAA",
+          "predictedLap": "2:08.583",
+          "strategy": "SOFT",
+          "gapToFirst": "+32.130"
         }
       ]
     },
@@ -5118,69 +5248,109 @@
           "teamName": "Mercedes",
           "teamColor": "00D7B6",
           "code": "MER",
-          "predictedLap": "1:35.534",
+          "predictedLap": "1:35.130",
           "strategy": "MEDIUM",
           "gapToFirst": null
         },
         {
           "pos": 2,
+          "teamKey": "ferrari",
+          "teamName": "Ferrari",
+          "teamColor": "ED1131",
+          "code": "FER",
+          "predictedLap": "1:35.442",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+0.312"
+        },
+        {
+          "pos": 3,
           "teamKey": "mclaren",
           "teamName": "McLaren",
           "teamColor": "F47600",
           "code": "MCL",
           "predictedLap": "1:36.193",
           "strategy": "MEDIUM",
-          "gapToFirst": "+0.660"
+          "gapToFirst": "+1.063"
         },
         {
-          "pos": 3,
+          "pos": 4,
           "teamKey": "haas",
           "teamName": "Haas F1 Team",
           "teamColor": "9C9FA2",
           "code": "HAA",
           "predictedLap": "1:36.214",
           "strategy": "MEDIUM",
-          "gapToFirst": "+0.681"
+          "gapToFirst": "+1.084"
         },
         {
-          "pos": 4,
+          "pos": 5,
+          "teamKey": "alpine",
+          "teamName": "Alpine",
+          "teamColor": "00A1E8",
+          "code": "ALP",
+          "predictedLap": "1:36.248",
+          "strategy": "HARD",
+          "gapToFirst": "+1.118"
+        },
+        {
+          "pos": 6,
           "teamKey": "red_bull",
           "teamName": "Red Bull Racing",
           "teamColor": "4781D7",
           "code": "RBR",
           "predictedLap": "1:36.753",
           "strategy": "HARD",
-          "gapToFirst": "+1.220"
+          "gapToFirst": "+1.623"
         },
         {
-          "pos": 5,
+          "pos": 7,
+          "teamKey": "audi",
+          "teamName": "Audi",
+          "teamColor": "F50537",
+          "code": "AUD",
+          "predictedLap": "1:36.923",
+          "strategy": "HARD",
+          "gapToFirst": "+1.793"
+        },
+        {
+          "pos": 8,
+          "teamKey": "rb",
+          "teamName": "Racing Bulls",
+          "teamColor": "6C98FF",
+          "code": "RB",
+          "predictedLap": "1:37.036",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+1.906"
+        },
+        {
+          "pos": 9,
+          "teamKey": "williams",
+          "teamName": "Williams",
+          "teamColor": "1868DB",
+          "code": "WIL",
+          "predictedLap": "1:37.292",
+          "strategy": "MEDIUM",
+          "gapToFirst": "+2.162"
+        },
+        {
+          "pos": 10,
           "teamKey": "cadillac",
           "teamName": "Cadillac",
           "teamColor": "909090",
           "code": "CAD",
           "predictedLap": "1:38.019",
           "strategy": "MEDIUM",
-          "gapToFirst": "+2.485"
+          "gapToFirst": "+2.889"
         },
         {
-          "pos": 6,
+          "pos": 11,
           "teamKey": "aston_martin",
           "teamName": "Aston Martin",
           "teamColor": "229971",
           "code": "AMR",
           "predictedLap": "1:51.849",
           "strategy": "SOFT",
-          "gapToFirst": "+16.315"
-        },
-        {
-          "pos": 7,
-          "teamKey": "alpine",
-          "teamName": "Alpine",
-          "teamColor": "00A1E8",
-          "code": "ALP",
-          "predictedLap": "1:52.657",
-          "strategy": "HARD",
-          "gapToFirst": "+17.124"
+          "gapToFirst": "+16.719"
         }
       ]
     }
