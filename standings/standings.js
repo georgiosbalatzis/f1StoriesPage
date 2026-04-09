@@ -4911,13 +4911,18 @@ function normalizeDebriefSnapshot(payload) {
                 headshot: getPreferredHeadshot(driverId, fullName, ''),
                 compound: String(entry && entry.compound || ''),
                 lapTime: String(entry && (entry.lapTime || entry.time) || ''),
+                s1: String(entry && entry.s1 || ''),
+                s2: String(entry && entry.s2 || ''),
+                s3: String(entry && entry.s3 || ''),
+                idealLap: String(entry && entry.idealLap || ''),
                 gap: String(entry && entry.gap != null ? entry.gap : ''),
                 laps: parseInt(entry && entry.laps, 10) || 0,
                 avgLap: String(entry && (entry.avgLap || entry.time) || ''),
                 delta: String(entry && entry.delta != null ? entry.delta : ''),
                 deg: String(degValue),
                 stintLaps: parseInt(entry && (entry.stintLaps || entry.laps), 10) || 0,
-                window: String(entry && entry.window || '')
+                window: String(entry && entry.window || ''),
+                sourceSession: String(entry && entry.sourceSession || '')
             };
         });
     }
@@ -5325,16 +5330,15 @@ function buildDebriefIdealGapBarsHTML(rows) {
 }
 
 function buildDebriefTeamIdealHTML(round) {
-    if (!round || !round.teamIdealLap.length) {
+    if (!round || !round.singleLap.length) {
         return '<div class="debrief-empty"><i class="fas fa-users"></i><p>No ideal-lap analysis available for this round.</p></div>';
     }
 
-    var rows = round.teamIdealLap.slice().map(function(entry) {
+    var rows = round.singleLap.slice().map(function(entry, index) {
         return {
-            pos: parseInt(entry.pos, 10) || 0,
-            code: entry.code || deriveDebriefTeamCode(entry.teamKey, entry.teamName),
-            teamName: entry.teamName,
-            lapSeconds: parseTimeSeconds(entry.lapTime || entry.idealLap),
+            pos: index + 1,
+            code: entry.code || deriveSnapshotAcronym(entry.fullName),
+            lapSeconds: parseTimeSeconds(entry.lapTime),
             idealSeconds: parseTimeSeconds(entry.idealLap),
             plotSeconds: 0
         };
@@ -5384,29 +5388,72 @@ function buildDebriefTeamIdealHTML(round) {
         + '</div>';
 }
 
+function buildDebriefCornerPanelHTML(title, rows, metricKey) {
+    var chartRows = rows.map(function(entry) {
+        var gap = parseNumberValue(entry[metricKey]);
+        return {
+            code: entry.code || deriveDebriefTeamCode(entry.teamKey, entry.teamName),
+            teamColor: entry.teamColor,
+            gap: isFiniteNumber(gap) && gap > 0 ? gap : 0
+        };
+    }).sort(function(a, b) {
+        return a.gap - b.gap;
+    });
+    var maxGap = chartRows.reduce(function(max, entry) {
+        return Math.max(max, entry.gap);
+    }, 0);
+    var axisMax = Math.max(0.1, Math.ceil((maxGap + 0.02) * 10) / 10);
+    var tickStep = axisMax > 0.6 ? 0.2 : 0.1;
+    var ticks = [];
+    var tick;
+
+    for (tick = 0; tick <= axisMax + 0.001; tick += tickStep) {
+        ticks.push(Number(tick.toFixed(3)));
+    }
+
+    var rowsHTML = chartRows.map(function(entry) {
+        var width = entry.gap > 0 ? Math.max(2, (entry.gap / axisMax) * 100) : 0;
+        var valueText = entry.gap > 0 ? '+' + entry.gap.toFixed(3) : 'Leader';
+        var valueStyle = entry.gap > 0
+            ? 'left:calc(' + width.toFixed(3) + '% + 0.45rem);'
+            : 'left:0.4rem;';
+        return '<div class="debrief-corner-row">'
+            + '<div class="debrief-corner-label">' + esc(entry.code) + '</div>'
+            + '<div class="debrief-corner-plot" style="--debrief-grid-count:' + Math.max(1, ticks.length - 1) + ';">'
+            + (entry.gap > 0 ? '<div class="debrief-corner-bar" style="width:' + width.toFixed(3) + '%;background:#' + esc(entry.teamColor) + ';"></div>' : '')
+            + '<div class="debrief-corner-value" style="' + valueStyle + '">' + esc(valueText) + '</div>'
+            + '</div>'
+            + '</div>';
+    }).join('');
+
+    var ticksHTML = ticks.map(function(value) {
+        return '<span>' + esc(value === 0 ? '0' : value.toFixed(1)) + '</span>';
+    }).join('');
+
+    return '<div class="debrief-corner-panel">'
+        + '<div class="debrief-corner-title">' + esc(title) + '</div>'
+        + '<div class="debrief-corner-shell">'
+        + rowsHTML
+        + '<div class="debrief-corner-axis">' + ticksHTML + '</div>'
+        + '<div class="debrief-corner-xlabel">Gap to Best (s)</div>'
+        + '</div>'
+        + '</div>';
+}
+
 function buildDebriefCornerPerfHTML(round) {
     if (!round || !round.cornerPerformance.length) {
         return '<div class="debrief-empty"><i class="fas fa-road"></i><p>No corner-performance data available for this round.</p></div>';
     }
 
-    function buildDeltaCell(value) {
-        if (value == null || value === '' || value === 'null') {
-            return '<span class="debrief-delta-leader">Leader</span>';
-        }
-        return '<span class="' + getDebriefDeltaClass(value) + '">' + esc(value) + '</span>';
-    }
-
-    var rows = round.cornerPerformance.map(function(entry) {
-        return '<tr>'
-            + '<td>' + buildDebriefTeamCellHTML(entry) + '</td>'
-            + '<td>' + buildDeltaCell(entry.slowCorners) + '</td>'
-            + '<td>' + buildDeltaCell(entry.mediumCorners) + '</td>'
-            + '<td>' + buildDeltaCell(entry.fastCorners) + '</td>'
-            + '<td>' + buildDeltaCell(entry.overall) + '</td>'
-            + '</tr>';
-    }).join('');
-
-    return '<div class="debrief-table"><table><thead><tr><th>Team</th><th>Slow</th><th>Medium</th><th>Fast</th><th>Overall</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    return '<div class="debrief-figure">'
+        + '<div class="debrief-figure-title">Corner Performance</div>'
+        + '<div class="debrief-corner-grid">'
+        + buildDebriefCornerPanelHTML('Slow Corners', round.cornerPerformance, 'slowCorners')
+        + buildDebriefCornerPanelHTML('Medium Corners', round.cornerPerformance, 'mediumCorners')
+        + buildDebriefCornerPanelHTML('Fast Corners', round.cornerPerformance, 'fastCorners')
+        + buildDebriefCornerPanelHTML('Overall', round.cornerPerformance, 'overall')
+        + '</div>'
+        + '</div>';
 }
 
 function buildDebriefRacePaceHTML(round) {
