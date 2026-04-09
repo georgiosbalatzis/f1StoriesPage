@@ -1050,8 +1050,9 @@ body.standings-embed [data-embed-hidden="true"] { display: none !important; }
     .debrief-compound-stack { max-width: 26px; height: 260px; }
     .debrief-table { font-size: 0.78rem; }
     .debrief-team-cell { min-width: 170px; }
-    .debrief-driver-cell { min-width: 180px; gap: 0.55rem; }
+    .debrief-driver-cell { min-width: 140px; gap: 0.55rem; }
     .debrief-driver-cell img, .debrief-avatar-fallback { display: none; }
+    .debrief-team-bar { min-height: 28px; }
     .compound-pill { min-height: 22px; padding: 0.16rem 0.42rem; font-size: 0.6rem; }
     .destructors-title { font-size: 1.38rem; }
     .destructors-summary { flex-direction: column; align-items: flex-start; }
