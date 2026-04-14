@@ -397,22 +397,10 @@
     color: #86868b !important;
 }
 
-[data-theme="light"] .team-guests__label {
-    color: #86868b !important;
-}
-
 [data-theme="light"] .persona .avatar,
 [data-theme="light"] .team-member__avatar {
     border-color: rgba(14,76,166,0.3) !important;
     background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0e4ca6, rgba(14,76,166,0.3)) !important;
-}
-
-[data-theme="light"] .team-guest__avatar {
-    border-color: rgba(0,0,0,0.08) !important;
-}
-
-[data-theme="light"] .team-guest__avatar:hover {
-    border-color: #0e4ca6 !important;
 }
 
 /* ── Contact Form ────────────────────────────── */
