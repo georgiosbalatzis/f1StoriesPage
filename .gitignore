@@ -15,5 +15,8 @@ blog-module/blog-entries/*/extracted/
 # Source documents — not needed on the web server
 blog-module/blog-entries/**/*.docx
 
+# Planning notes — personal reference only
+nextsteps.txt
+
 # Note: .avif and -sm.* variants ARE tracked in git (required for deployment on GitHub Pages)
 # Regenerate missing ones with: node blog-module/generate-image-variants.js --run
