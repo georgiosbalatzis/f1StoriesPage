@@ -390,10 +390,10 @@ a.ep-card:focus-visible, .card:focus-visible { outline: 2px solid var(--accent);
    PERFORMANCE (from polish.css)
    ============================================================ */
 
-.blog-img, .avatar, .team-member__avatar, .team-guest__avatar, .ep-card__thumb img { will-change: transform; transform: translateZ(0); }
+.blog-img, .avatar, .team-member__avatar, .ep-card__thumb img { will-change: transform; transform: translateZ(0); }
 a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .toggle-switch, .scroll-to-top-btn, .close-btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 .ep-card__thumb, .card__media { aspect-ratio: 16 / 9; overflow: hidden; }
-.team-member__avatar, .team-guest__avatar, .persona .avatar { aspect-ratio: 1; }
+.team-member__avatar, .persona .avatar { aspect-ratio: 1; }
 .skeleton-card { contain: content; }
 .navbar, .cookie-banner, .cookie-consent, .scroll-to-top-btn { contain: layout style; }
 @media (prefers-reduced-motion: no-preference) { .streak { contain: strict; } }
