@@ -434,6 +434,173 @@
     .sponsor-logo img { max-height: 30px; }
 }
 
+/* ── Gallery Carousel ───────────────────────────── */
+.gallery-carousel {
+    margin: 1.5rem 0 2rem;
+}
+
+.gallery-carousel-stage {
+    position: relative;
+    border-radius: var(--radius-md, 10px);
+    overflow: hidden;
+    background: #0d0d1a;
+}
+
+.gallery-carousel-slides {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+}
+
+.gallery-slide {
+    display: none;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.gallery-slide.active {
+    display: flex;
+    animation: galleryFadeIn 0.28s ease;
+}
+
+@keyframes galleryFadeIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.gallery-slide picture {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 62vh;
+}
+
+.gallery-slide .article-content-img {
+    max-width: 100%;
+    max-height: 62vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    cursor: zoom-in;
+    border-radius: 6px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.gallery-slide .article-content-img:hover {
+    opacity: 1;
+    transform: none;
+}
+
+.gallery-carousel-prev,
+.gallery-carousel-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.gallery-carousel-prev { left: 10px; }
+.gallery-carousel-next { right: 10px; }
+
+.gallery-carousel-prev:hover,
+.gallery-carousel-next:hover { background: rgba(0, 0, 0, 0.72); }
+
+.gallery-carousel-prev[disabled],
+.gallery-carousel-next[disabled] { opacity: 0.2; pointer-events: none; }
+
+.gallery-carousel-counter {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    padding: 3px 10px;
+    border-radius: 12px;
+    pointer-events: none;
+}
+
+.gallery-carousel-thumbs {
+    display: flex;
+    gap: 5px;
+    padding: 10px 0 4px;
+    overflow-x: auto;
+    justify-content: center;
+    flex-wrap: wrap;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+.gallery-carousel-thumbs::-webkit-scrollbar { height: 4px; }
+.gallery-carousel-thumbs::-webkit-scrollbar-track { background: transparent; }
+.gallery-carousel-thumbs::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+.gallery-thumb {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    padding: 0;
+    background: #0d0d1a;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.gallery-thumb.active {
+    border-color: var(--accent, #60a5fa);
+    opacity: 1;
+}
+
+.gallery-thumb:hover:not(.active) {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+.gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+@media (max-width: 600px) {
+    .gallery-carousel-prev,
+    .gallery-carousel-next { width: 36px; height: 36px; font-size: 0.8rem; }
+    .gallery-thumb { width: 38px; height: 38px; }
+    .gallery-slide { padding: 0.5rem; }
+}
+
 /* ── Image Lightbox ──────────────────────────── */
 .lb-overlay {
     display: none;

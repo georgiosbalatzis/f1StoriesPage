@@ -212,6 +212,14 @@ const utils = {
         return { year, month, day, fullDate, authorCode };
     },
 
+    hasGalleryImages(entryPath, entryFiles) {
+        if (!entryFiles) entryFiles = fs.readdirSync(entryPath);
+        for (const format of CONFIG.IMAGE_FORMATS) {
+            if (entryFiles.includes(`3.${format}`)) return true;
+        }
+        return false;
+    },
+
     /**
      * Check whether an entry can be skipped.
      * Skip when article.html exists AND is newer than the source doc.
@@ -221,7 +229,20 @@ const utils = {
 
         const folderFiles = fs.readdirSync(entryPath);
         const docFile = utils.findSourceDocument(folderFiles);
-        if (!docFile) return true; // no source → nothing to do
+        if (!docFile) {
+            // Image-only gallery: skip only if article.html is newer than all images
+            if (!utils.hasGalleryImages(entryPath, folderFiles)) return true;
+            const articlePath = path.join(entryPath, 'article.html');
+            if (!fs.existsSync(articlePath)) return false;
+            try {
+                if (hasInlineDataImageTag(fs.readFileSync(articlePath, 'utf8'))) return false;
+            } catch { return false; }
+            const htmlMtime = fs.statSync(articlePath).mtimeMs;
+            return !folderFiles.some(f => {
+                if (!CONFIG.IMAGE_EXTENSIONS.some(ext => f.toLowerCase().endsWith(ext))) return false;
+                return fs.statSync(path.join(entryPath, f)).mtimeMs > htmlMtime;
+            });
+        }
 
         const articlePath = path.join(entryPath, 'article.html');
         if (!fs.existsSync(articlePath)) return false; // no output → must build
@@ -1929,6 +1950,19 @@ async function convertToHtml(filePath) {
     }
 }
 
+// ─── Gallery detection ──────────────────────────────────────────────────────
+function isImagesOnlyContent(content) {
+    if (!content || content.trim() === '') return true;
+    const textOnly = content
+        .replace(/<figure[^>]*>[\s\S]*?<\/figure>/gi, '')
+        .replace(/<picture[^>]*>[\s\S]*?<\/picture>/gi, '')
+        .replace(/<img[^>]*\/?>/gi, '')
+        .replace(/<[^>]*>/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    return textOnly.length === 0;
+}
+
 // ─── Process single blog entry ───────────────────────────────────────────────
 async function processBlogEntry(entryPath) {
     const folderName = path.basename(entryPath);
@@ -1942,80 +1976,101 @@ async function processBlogEntry(entryPath) {
     }
     
     const docFile = utils.findSourceDocument(entryFiles);
-    
-    if (!docFile) {
+    const isImageOnlyGallery = !docFile && utils.hasGalleryImages(entryPath, entryFiles);
+
+    if (!docFile && !isImageOnlyGallery) {
         console.warn(`⚠️ No document found in ${entryPath}`);
         return null;
     }
-    
-    const docPath = path.join(entryPath, docFile);
-    
-    try {
-        fs.accessSync(docPath, fs.constants.R_OK);
-    } catch (error) {
-        console.error(`File ${docPath} is not readable:`, error);
-        return null;
-    }
-    
-    // Process DOCX images if needed
-    let extractedImages = [];
-    if (docFile.endsWith('.docx')) {
-        const mediaFiles = await extractImagesFromDocx(docPath, entryPath);
 
-        for (let i = 0; i < mediaFiles.length; i++) {
-            const imageNumber = i + 3;
-            const src = mediaFiles[i].extracted;
-            // Full-size variants (capped at 1600px — sufficient for 2× retina on any screen)
-            await convertImage(src, path.join(entryPath, `${imageNumber}.webp`),    'webp', 80, 1600);
-            await convertImage(src, path.join(entryPath, `${imageNumber}.avif`),    'avif', 60, 1600);
-            // Small variants (800px — serves mobile and the article's 770px content column)
-            await convertImage(src, path.join(entryPath, `${imageNumber}-sm.webp`), 'webp', 80, 800);
-            await convertImage(src, path.join(entryPath, `${imageNumber}-sm.avif`), 'avif', 60, 800);
-            extractedImages.push({ fileName: `${imageNumber}.webp` });
+    if (isImageOnlyGallery) {
+        console.log(`📷 Image-only gallery detected: ${folderName}`);
+    }
+
+    // Process DOCX images if needed (skip for image-only galleries)
+    let extractedImages = [];
+    if (docFile) {
+        const docPath = path.join(entryPath, docFile);
+        try {
+            fs.accessSync(docPath, fs.constants.R_OK);
+        } catch (error) {
+            console.error(`File ${docPath} is not readable:`, error);
+            return null;
         }
 
-        // Clean up the extracted/ temp folder — converted images are now in entry root
-        const extractDir = path.join(entryPath, 'extracted');
-        if (fs.existsSync(extractDir)) {
-            fs.rmSync(extractDir, { recursive: true, force: true });
+        if (docFile.endsWith('.docx')) {
+            const mediaFiles = await extractImagesFromDocx(docPath, entryPath);
+
+            for (let i = 0; i < mediaFiles.length; i++) {
+                const imageNumber = i + 3;
+                const src = mediaFiles[i].extracted;
+                await convertImage(src, path.join(entryPath, `${imageNumber}.webp`),    'webp', 80, 1600);
+                await convertImage(src, path.join(entryPath, `${imageNumber}.avif`),    'avif', 60, 1600);
+                await convertImage(src, path.join(entryPath, `${imageNumber}-sm.webp`), 'webp', 80, 800);
+                await convertImage(src, path.join(entryPath, `${imageNumber}-sm.avif`), 'avif', 60, 800);
+                extractedImages.push({ fileName: `${imageNumber}.webp` });
+            }
+
+            const extractDir = path.join(entryPath, 'extracted');
+            if (fs.existsSync(extractDir)) {
+                fs.rmSync(extractDir, { recursive: true, force: true });
+            }
         }
     }
 
     await convertHeroImages(entryPath);
     const images = processImages(entryPath, folderName);
-    
+
     // Get raw content for metadata
     let rawContent = '';
-    if (docFile.endsWith('.docx')) {
-        try {
-            const textResult = await mammoth.extractRawText({path: docPath});
-            rawContent = textResult.value;
-        } catch (error) {
-            console.error(`Error extracting text from docx: ${docPath}`, error);
-            rawContent = 'Error extracting text';
-        }
-    } else {
-        try {
-            rawContent = fs.readFileSync(docPath, 'utf8');
-        } catch (error) {
-            console.error(`Error reading text file: ${docPath}`, error);
-            rawContent = 'Error reading file';
+    if (docFile) {
+        const docPath = path.join(entryPath, docFile);
+        if (docFile.endsWith('.docx')) {
+            try {
+                const textResult = await mammoth.extractRawText({path: docPath});
+                rawContent = textResult.value;
+            } catch (error) {
+                console.error(`Error extracting text from docx: ${docPath}`, error);
+                rawContent = 'Error extracting text';
+            }
+        } else {
+            try {
+                rawContent = fs.readFileSync(docPath, 'utf8');
+            } catch (error) {
+                console.error(`Error reading text file: ${docPath}`, error);
+                rawContent = 'Error reading file';
+            }
         }
     }
-    
+
     const { year, month, day, fullDate, authorCode } = utils.parseDate(folderName);
     const authorName = authorCode ? CONFIG.AUTHOR_MAP[authorCode] : null;
-    
-    const metadata = extractMetadata(docFile, rawContent);
+
+    const metadata = docFile
+        ? extractMetadata(docFile, rawContent)
+        : {
+            title: `Gallery — ${fullDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`,
+            author: 'F1 Stories Team',
+            tag: 'Images',
+            category: 'Gallery'
+        };
     if (authorName) metadata.author = authorName;
-    
-    let content = await convertToHtml(docPath);
-    content = stripLeadingArticleBoilerplate(content, metadata);
-    content = await processContentImages(content, folderName, extractedImages);
-    content = await processImageInsertTags(content, images, folderName);
-    
-    if ((!content || content.trim() === '') && Object.keys(images).length > 0) {
-        content = createImageGallery(images, folderName);
+
+    let content = '';
+    if (docFile) {
+        const docPath = path.join(entryPath, docFile);
+        content = await convertToHtml(docPath);
+        content = stripLeadingArticleBoilerplate(content, metadata);
+        content = await processContentImages(content, folderName, extractedImages);
+        content = await processImageInsertTags(content, images, folderName);
+    }
+
+    // Gallery: if content is images-only and there are content images (3+)
+    const hasContentImages = Object.keys(images).some(k => k.startsWith('image'));
+    if (hasContentImages && isImagesOnlyContent(content)) {
+        content = await createImageGallery(images, folderName);
+        metadata.tag = 'Images';
+        metadata.category = 'Gallery';
     }
 
     assertNoInlineDataImages(content, folderName);
@@ -2121,41 +2176,66 @@ async function processImageInsertTags(content, images, folderName) {
     return content;
 }
 
-function createImageGallery(images, folderName) {
-    let galleryHtml = `
-    <p>Photo gallery for this article.</p>
-    <div class="article-gallery">`;
-    
-    Object.entries(images).forEach(([key, imagePath], index) => {
-        if (key === 'thumbnail' || key === 'background') {
-            const imageNumber = index + 1;
-            
-            let displayPath;
-            if (typeof imagePath === 'string') {
-                displayPath = imagePath;
-            } else if (typeof imagePath === 'object' && imagePath.absolutePath) {
-                displayPath = imagePath.absolutePath;
-            } else {
-                return;
-            }
-            
-            const imageFilename = displayPath.includes('/')
-                ? displayPath.substring(displayPath.lastIndexOf('/') + 1)
-                : displayPath;
-            
-            galleryHtml += `
-            <figure class="gallery-item">
-                <img src="${imageFilename}" 
-                    alt="Gallery Image ${imageNumber}" 
-                    class="gallery-img"
-                    onerror="if(!this.dataset.fallbackTried){this.dataset.fallbackTried='1';this.src='${displayPath}';} else { this.src='${CONFIG.DEFAULT_BLOG_IMAGE}'; this.onerror=null; }">
-                <figcaption>Image ${imageNumber}</figcaption>
-            </figure>`;
-        }
-    });
-    
-    galleryHtml += `</div>`;
-    return galleryHtml;
+async function createImageGallery(images, folderName) {
+    const entryPath = path.join(CONFIG.BLOG_DIR, folderName);
+
+    // Collect ALL numbered images (1, 2, 3, …) from disk
+    const allImageNumbers = [];
+    let num = 1;
+    while (true) {
+        const file = utils.findImageByBaseName(entryPath, num.toString());
+        if (!file) break;
+        allImageNumbers.push(num);
+        num++;
+    }
+
+    if (allImageNumbers.length === 0) {
+        return '<p>Photo gallery</p>';
+    }
+
+    let slidesHtml = '';
+    let thumbsHtml = '';
+
+    for (let i = 0; i < allImageNumbers.length; i++) {
+        const imageNumber = allImageNumbers[i].toString();
+        const isActive = i === 0 ? ' active' : '';
+
+        const pictureHtml = await buildPictureHtml(folderName, imageNumber, `Gallery image ${i + 1}`);
+
+        slidesHtml += `
+            <div class="gallery-slide${isActive}" data-index="${i}">
+                ${pictureHtml}
+            </div>`;
+
+        const smWebp = `${imageNumber}-sm.webp`;
+        const fullWebp = `${imageNumber}.webp`;
+        const thumbSrc = fs.existsSync(path.join(entryPath, smWebp)) ? smWebp : fullWebp;
+
+        thumbsHtml += `
+            <button class="gallery-thumb${isActive}" data-index="${i}" aria-label="Show image ${i + 1}">
+                <img src="${thumbSrc}" alt="" loading="lazy" draggable="false">
+            </button>`;
+    }
+
+    const total = allImageNumbers.length;
+    return `
+    <div class="gallery-carousel" role="region" aria-label="Image Gallery" aria-roledescription="carousel">
+        <div class="gallery-carousel-stage">
+            <div class="gallery-carousel-slides">
+                ${slidesHtml}
+            </div>
+            <button class="gallery-carousel-prev" aria-label="Previous image" disabled>
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="gallery-carousel-next" aria-label="Next image"${total <= 1 ? ' disabled' : ''}>
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            <div class="gallery-carousel-counter">1 / ${total}</div>
+        </div>
+        <div class="gallery-carousel-thumbs">
+            ${thumbsHtml}
+        </div>
+    </div>`;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
