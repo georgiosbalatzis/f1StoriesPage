@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Article Preview | F1 Stories</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/blog-module/blog-styles.css">
+    <link rel="stylesheet" href="/blog-module/blog/article-styles.css?v=20260403-5">
+    <link rel="stylesheet" href="/styles/shared-nav.css?v=20260403-2">
+    <link rel="stylesheet" href="/theme-overrides.css">
+
+    <script>
+        (function() {
+            var session = sessionStorage.getItem('f1stories-theme');
+            if (session) {
+                if (session === 'light') document.documentElement.setAttribute('data-theme', 'light');
+            } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+    <style>
+        /* ── Editor panel ──────────────────────────────────── */
+        .gen-panel {
+            position: relative;
+            max-width: 820px;
+            margin: 100px auto 0;
+            padding: 1.5rem;
+            background: var(--bg-surface, #1a1a2e);
+            border: 1px solid var(--border, rgba(255,255,255,0.08));
+            border-radius: var(--radius-lg, 14px);
+            box-shadow: var(--shadow-md);
+        }
+        .gen-panel h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0 0 1rem;
+            color: var(--text-primary);
+        }
+        .gen-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .gen-field {
+            flex: 1;
+            min-width: 140px;
+        }
+        .gen-field label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-tertiary, rgba(255,255,255,0.45));
+            margin-bottom: 4px;
+        }
+        .gen-field input,
+        .gen-field select {
+            width: 100%;
+            padding: 0.5rem 0.7rem;
+            border-radius: 8px;
+            border: 1px solid var(--border, rgba(255,255,255,0.1));
+            background: var(--bg-base, #111113);
+            color: var(--text-primary, #fff);
+            font-size: 0.88rem;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .gen-textarea {
+            width: 100%;
+            min-height: 260px;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border, rgba(255,255,255,0.1));
+            background: var(--bg-base, #111113);
+            color: var(--text-primary, #fff);
+            font-size: 0.88rem;
+            font-family: 'DM Sans', monospace;
+            line-height: 1.6;
+            resize: vertical;
+            tab-size: 4;
+        }
+        .gen-textarea::placeholder { color: var(--text-tertiary, rgba(255,255,255,0.3)); }
+        .gen-textarea:focus, .gen-field input:focus {
+            outline: none;
+            border-color: var(--accent, #60a5fa);
+            box-shadow: 0 0 0 2px rgba(96,165,250,0.15);
+        }
+
+        .gen-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+        .gen-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.6rem 1.4rem;
+            border-radius: 8px;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.15s ease;
+        }
+        .gen-btn:active { transform: scale(0.97); }
+        .gen-btn-primary {
+            background: var(--accent, #60a5fa);
+            color: #fff;
+        }
+        .gen-btn-primary:hover { background: #4e94e8; }
+        .gen-btn-secondary {
+            background: var(--bg-surface-alt, rgba(255,255,255,0.06));
+            color: var(--text-primary, #fff);
+            border: 1px solid var(--border, rgba(255,255,255,0.1));
+        }
+        .gen-btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+        .gen-file-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: 1px dashed var(--border, rgba(255,255,255,0.15));
+            background: var(--bg-surface-alt, rgba(255,255,255,0.03));
+            color: var(--text-secondary, rgba(255,255,255,0.7));
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        .gen-file-label:hover {
+            border-color: var(--accent, #60a5fa);
+            background: rgba(96,165,250,0.06);
+        }
+        .gen-file-label.has-file {
+            border-style: solid;
+            border-color: var(--accent, #60a5fa);
+            color: var(--accent, #60a5fa);
+        }
+        .gen-file-input { display: none; }
+        .gen-file-name {
+            font-size: 0.78rem;
+            color: var(--text-tertiary);
+            margin-left: 0.25rem;
+        }
+
+        .gen-hint {
+            font-size: 0.72rem;
+            color: var(--text-tertiary, rgba(255,255,255,0.35));
+            margin-top: 0.5rem;
+            line-height: 1.5;
+        }
+        .gen-hint code {
+            background: rgba(255,255,255,0.06);
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+
+        /* ── Preview wrapper ───────────────────────────────── */
+        #preview-wrapper {
+            display: none;
+        }
+        #preview-wrapper.visible {
+            display: block;
+        }
+        .gen-preview-bar {
+            max-width: 820px;
+            margin: 100px auto 0;
+            padding: 0.6rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-surface, #1a1a2e);
+            border: 1px solid var(--border, rgba(255,255,255,0.08));
+            border-radius: 10px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+        .gen-preview-bar i { color: var(--accent, #60a5fa); }
+    </style>
+</head>
+<body>
+<div class="background"></div>
+<div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
+
+<!-- Theme Toggle -->
+<button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle theme">
+    <i class="fas fa-sun icon-sun"></i>
+    <i class="fas fa-moon icon-moon"></i>
+</button>
+
+<!-- Navbar -->
+<header>
+    <nav class="blog-nav" id="blog-nav">
+        <div class="container blog-nav-inner">
+            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" width="48" height="48"></a>
+            <div class="blog-nav-links" id="nav-links">
+                <a href="/" class="blog-nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link"><i class="fas fa-newspaper"></i> Blog</a>
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><i class="fab fa-youtube"></i> YouTube</a>
+                <a href="/standings/" class="blog-nav-link"><i class="fas fa-trophy"></i> Standings</a>
+            </div>
+            <div class="blog-nav-right">
+                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+        <div class="blog-nav-mobile" id="nav-mobile">
+            <a href="/" class="blog-nav-mobile-link"><i class="fas fa-home"></i> Home</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><i class="fas fa-newspaper"></i> Blog</a>
+        </div>
+    </nav>
+</header>
+
+<!-- ═══ Editor Panel ═══════════════════════════════════════ -->
+<div class="gen-panel" id="editor-panel">
+    <h2><i class="fas fa-pen-nib" style="color:var(--accent);margin-right:0.4rem;"></i> Article Preview Generator</h2>
+
+    <div class="gen-row">
+        <div class="gen-field">
+            <label>Title</label>
+            <input type="text" id="gen-title" placeholder="Article title…">
+        </div>
+        <div class="gen-field" style="max-width:160px;">
+            <label>Author</label>
+            <select id="gen-author">
+                <option value="Georgios Balatzis">Georgios Balatzis</option>
+                <option value="Giannis Poulikidis">Giannis Poulikidis</option>
+                <option value="Thanasis Batalas">Thanasis Batalas</option>
+                <option value="2Fast">2Fast</option>
+                <option value="Dimitris Keramidiotis">Dimitris Keramidiotis</option>
+                <option value="F1 Stories Team">F1 Stories Team</option>
+            </select>
+        </div>
+    </div>
+    <div class="gen-row">
+        <div class="gen-field" style="max-width:180px;">
+            <label>Tag</label>
+            <input type="text" id="gen-tag" placeholder="e.g. Historical" value="F1">
+        </div>
+        <div class="gen-field" style="max-width:180px;">
+            <label>Category</label>
+            <input type="text" id="gen-category" placeholder="e.g. Ferrari" value="Racing">
+        </div>
+    </div>
+
+    <textarea class="gen-textarea" id="gen-content" placeholder="Write or paste your article content here…
+
+Supports:
+# Heading 2
+## Heading 3
+- List items
+**bold** and *italic*
+
+YouTube / X / Instagram / Threads links auto-embed.
+Blank lines separate paragraphs."></textarea>
+
+    <div class="gen-actions">
+        <button class="gen-btn gen-btn-primary" id="gen-preview-btn">
+            <i class="fas fa-eye"></i> Preview
+        </button>
+        <label class="gen-file-label" id="gen-file-label">
+            <i class="fas fa-image"></i> <span id="gen-file-text">Attach Hero Image</span>
+            <input type="file" accept="image/*" class="gen-file-input" id="gen-hero-input">
+        </label>
+        <button class="gen-btn gen-btn-secondary" id="gen-clear-btn">
+            <i class="fas fa-eraser"></i> Clear
+        </button>
+    </div>
+    <div class="gen-hint">
+        Format: plain text with markdown-style headings. Links to YouTube, X, Instagram, Threads, and Facebook auto-embed.
+    </div>
+</div>
+
+<!-- ═══ Preview ════════════════════════════════════════════ -->
+<div id="preview-wrapper">
+    <div class="gen-preview-bar">
+        <span><i class="fas fa-eye"></i> Preview Mode</span>
+        <button class="gen-btn gen-btn-secondary" id="gen-back-btn" style="padding:0.35rem 0.9rem;font-size:0.78rem;">
+            <i class="fas fa-pen"></i> Back to Editor
+        </button>
+    </div>
+
+    <section class="article-page-wrapper py-5 mt-3">
+        <div class="container">
+            <article class="article-container">
+                <div class="article-header" id="pv-header">
+                    <picture>
+                        <img src="/blog-module/images/default-blog.jpg" alt="" class="article-header-img" id="pv-hero-img"
+                             loading="eager" decoding="sync">
+                    </picture>
+                    <div class="article-header-overlay">
+                        <h1 class="article-title" id="pv-title"></h1>
+                        <div class="article-meta">
+                            <span><i class="fas fa-calendar-alt"></i> <span id="pv-date"></span></span>
+                            <span><i class="fas fa-tag"></i> <span id="pv-tag"></span></span>
+                            <span><i class="fas fa-folder-open"></i> <span id="pv-category"></span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="social-share-bar">
+                    <div class="share-label"><i class="fas fa-share-alt"></i> <span>Share</span></div>
+                    <div class="share-buttons">
+                        <span class="share-btn facebook"><i class="fab fa-facebook-f"></i></span>
+                        <span class="share-btn threads"><i class="fab fa-threads"></i></span>
+                        <span class="share-btn instagram"><i class="fab fa-instagram"></i></span>
+                        <span class="share-btn whatsapp"><i class="fab fa-whatsapp"></i></span>
+                        <span class="share-btn telegram"><i class="fab fa-telegram-plane"></i></span>
+                        <span class="share-btn web-share"><i class="fas fa-share-nodes"></i></span>
+                        <span class="share-btn copy-link"><i class="fas fa-link"></i></span>
+                    </div>
+                </div>
+
+                <div class="article-content" id="pv-content"></div>
+
+                <div class="article-author-footer">
+                    <div class="reading-time-badge"><i class="fas fa-clock"></i> <span id="pv-reading-time">1 min read</span></div>
+                    <div class="author-box">
+                        <div class="author-header">
+                            <div class="author-avatar">
+                                <img id="pv-author-img" src="/images/authors/default.webp" alt="">
+                                <span class="avatar-text" id="pv-author-initial">A</span>
+                            </div>
+                            <div class="author-info">
+                                <h4 class="author-name" id="pv-author-name"></h4>
+                                <div class="author-title" id="pv-author-title">F1 Stories Contributor</div>
+                            </div>
+                        </div>
+                        <div class="author-bio" id="pv-author-bio"></div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+</div>
+
+<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
+
+<script defer src="/scripts/shared-nav.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    // ── Author data (mirrors article-script.js) ──────────
+    var AUTHORS = {
+        'Georgios Balatzis':    { image: '/images/authors/georgios.webp',  title: 'Founder & Host',       bio: 'Ο Γιώργος είναι ο ιδρυτής του F1 Stories podcast. Μοιράζεται αναλύσεις, ιστορίες και insights από τον κόσμο της Formula 1.' },
+        'Giannis Poulikidis':   { image: '/images/authors/giannis.webp',  title: 'Co-Host & Analyst',    bio: 'Ο Γιάννης φέρνει αναλυτική ματιά στα τεχνικά θέματα και τις στρατηγικές αγώνων της F1.' },
+        'Thanasis Batalas':     { image: '/images/authors/thanasis.webp', title: 'Contributor',          bio: 'Ο Θανάσης συνεισφέρει με ιστορίες από τα παρασκήνια και ανασκοπήσεις αγώνων.' },
+        '2Fast':                { image: '/images/authors/2fast.webp',    title: 'Sim Racing Expert',    bio: 'Ο 2Fast είναι ειδικός στο sim racing, φέρνοντας τον κόσμο του virtual motorsport στο F1 Stories.' },
+        'Dimitris Keramidiotis':{ image: '/images/authors/dimitris.webp', title: 'Contributor',          bio: 'Ο Δημήτρης μοιράζεται θεματικά άρθρα, rankings και opinion pieces.' }
+    };
+
+    // ── DOM refs ──────────────────────────────────────────
+    var titleInput    = document.getElementById('gen-title');
+    var authorSelect  = document.getElementById('gen-author');
+    var tagInput      = document.getElementById('gen-tag');
+    var categoryInput = document.getElementById('gen-category');
+    var contentArea   = document.getElementById('gen-content');
+    var heroInput     = document.getElementById('gen-hero-input');
+    var fileLabel     = document.getElementById('gen-file-label');
+    var fileText      = document.getElementById('gen-file-text');
+    var previewBtn    = document.getElementById('gen-preview-btn');
+    var clearBtn      = document.getElementById('gen-clear-btn');
+    var backBtn       = document.getElementById('gen-back-btn');
+    var editorPanel   = document.getElementById('editor-panel');
+    var previewWrap   = document.getElementById('preview-wrapper');
+
+    var heroObjectUrl = null;
+
+    // ── Hero image handler ────────────────────────────────
+    heroInput.addEventListener('change', function () {
+        if (heroInput.files && heroInput.files[0]) {
+            if (heroObjectUrl) URL.revokeObjectURL(heroObjectUrl);
+            heroObjectUrl = URL.createObjectURL(heroInput.files[0]);
+            fileText.textContent = heroInput.files[0].name;
+            fileLabel.classList.add('has-file');
+        }
+    });
+
+    // ── Clear ─────────────────────────────────────────────
+    clearBtn.addEventListener('click', function () {
+        titleInput.value = '';
+        tagInput.value = 'F1';
+        categoryInput.value = 'Racing';
+        contentArea.value = '';
+        heroInput.value = '';
+        fileText.textContent = 'Attach Hero Image';
+        fileLabel.classList.remove('has-file');
+        if (heroObjectUrl) { URL.revokeObjectURL(heroObjectUrl); heroObjectUrl = null; }
+        previewWrap.classList.remove('visible');
+    });
+
+    // ── Back to editor ────────────────────────────────────
+    backBtn.addEventListener('click', function () {
+        previewWrap.classList.remove('visible');
+        editorPanel.style.display = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // ── Preview ───────────────────────────────────────────
+    previewBtn.addEventListener('click', function () {
+        var title    = titleInput.value.trim() || 'Untitled Article';
+        var author   = authorSelect.value;
+        var tag      = tagInput.value.trim() || 'F1';
+        var category = categoryInput.value.trim() || 'Racing';
+        var raw      = contentArea.value;
+
+        // Convert content
+        var html = convertContent(raw);
+
+        // Fill preview
+        document.getElementById('pv-title').textContent = title;
+        document.getElementById('pv-tag').textContent = tag;
+        document.getElementById('pv-category').textContent = category;
+        document.getElementById('pv-date').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Hero image
+        var heroImg = document.getElementById('pv-hero-img');
+        heroImg.src = heroObjectUrl || '/blog-module/images/default-blog.jpg';
+        heroImg.alt = title;
+
+        // Content
+        var contentEl = document.getElementById('pv-content');
+        contentEl.innerHTML = html;
+
+        // Author
+        var authorData = AUTHORS[author];
+        document.getElementById('pv-author-name').textContent = author;
+        document.getElementById('pv-author-initial').textContent = author.charAt(0).toUpperCase();
+        if (authorData) {
+            document.getElementById('pv-author-img').src = authorData.image;
+            document.getElementById('pv-author-title').textContent = authorData.title;
+            document.getElementById('pv-author-bio').textContent = authorData.bio;
+        }
+
+        // Reading time
+        var words = contentEl.textContent.trim().split(/\s+/).length;
+        document.getElementById('pv-reading-time').textContent = Math.max(1, Math.ceil(words / 200)) + ' min read';
+
+        // Show preview
+        editorPanel.style.display = 'none';
+        previewWrap.classList.add('visible');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Process social embeds after render
+        processSocialEmbeds(contentEl);
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // Content conversion (client-side .txt → HTML)
+    // ═══════════════════════════════════════════════════════
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function inlineFormat(text) {
+        // Bold: **text** or __text__
+        text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        text = text.replace(/__(.+?)__/g, '<strong>$1</strong>');
+        // Italic: *text* or _text_
+        text = text.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
+        text = text.replace(/(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g, '<em>$1</em>');
+        return text;
+    }
+
+    // ── Embed detection ──────────────────────────────────
+    function getYouTubeId(url) {
+        try {
+            var u = new URL(url);
+            var host = u.hostname.replace('www.', '');
+            if (host === 'youtube.com' && u.pathname === '/watch') return u.searchParams.get('v');
+            if (host === 'youtu.be') return u.pathname.split('/')[1];
+            if (host === 'youtube.com' && u.pathname.startsWith('/shorts/')) return u.pathname.split('/')[2];
+        } catch (e) {}
+        return null;
+    }
+
+    function isXUrl(url) {
+        try {
+            var host = new URL(url).hostname.replace('www.', '').replace('mobile.', '');
+            return (host === 'x.com' || host === 'twitter.com') && /\/status\/\d+/.test(url);
+        } catch (e) { return false; }
+    }
+
+    function isInstagramUrl(url) {
+        try {
+            var host = new URL(url).hostname.replace('www.', '');
+            return host === 'instagram.com' && /^\/(p|reel|reels|tv)\//.test(new URL(url).pathname);
+        } catch (e) { return false; }
+    }
+
+    function isThreadsUrl(url) {
+        try {
+            var host = new URL(url).hostname.replace('www.', '');
+            return (host === 'threads.net' || host === 'threads.com');
+        } catch (e) { return false; }
+    }
+
+    function isFacebookUrl(url) {
+        try {
+            var host = new URL(url).hostname.replace('www.', '').replace('m.', '').replace('mbasic.', '');
+            return host === 'facebook.com' || host === 'fb.watch';
+        } catch (e) { return false; }
+    }
+
+    function buildEmbed(url) {
+        var ytId = getYouTubeId(url);
+        if (ytId) {
+            return '<div class="youtube-embed-container">' +
+                '<iframe src="https://www.youtube.com/embed/' + escapeHtml(ytId) + '" ' +
+                'title="YouTube video player" frameborder="0" ' +
+                'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
+                'allowfullscreen></iframe>' +
+                '<div class="video-caption">Video: YouTube</div></div>';
+        }
+        if (isXUrl(url)) {
+            return '<div class="social-embed social-embed-x">' +
+                '<blockquote class="twitter-tweet" data-theme="dark">' +
+                '<a href="' + escapeHtml(url) + '">View this post on X</a>' +
+                '</blockquote></div>';
+        }
+        if (isInstagramUrl(url)) {
+            return '<div class="social-embed social-embed-instagram">' +
+                '<blockquote class="instagram-media" data-instgrm-permalink="' + escapeHtml(url) + '" data-instgrm-version="14">' +
+                '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener">View this post on Instagram</a>' +
+                '</blockquote></div>';
+        }
+        if (isThreadsUrl(url)) {
+            return '<div class="social-embed social-embed-threads">' +
+                '<blockquote class="text-post-media" data-text-post-permalink="' + escapeHtml(url) + '" data-text-post-version="0">' +
+                '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener">View this post on Threads</a>' +
+                '</blockquote></div>';
+        }
+        if (isFacebookUrl(url)) {
+            var kind = /video|reel|watch/.test(url) ? 'fb-video' : 'fb-post';
+            return '<div class="social-embed social-embed-facebook">' +
+                '<div class="' + kind + '" data-href="' + escapeHtml(url) + '" data-width="500" data-show-text="true"></div></div>';
+        }
+        return null;
+    }
+
+    function isStandaloneUrl(line) {
+        return /^https?:\/\/\S+$/.test(line.trim());
+    }
+
+    // ── Main converter ───────────────────────────────────
+    function convertContent(raw) {
+        var lines = raw.split('\n');
+        var html = '';
+        var currentParagraph = '';
+        var inList = false;
+
+        function flushParagraph() {
+            if (currentParagraph) {
+                html += '<p>' + inlineFormat(currentParagraph) + '</p>\n';
+                currentParagraph = '';
+            }
+        }
+
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            var trimmed = line.trim();
+
+            if (trimmed === '') {
+                flushParagraph();
+                if (inList) { html += '</ul>\n'; inList = false; }
+                continue;
+            }
+
+            // Headings
+            if (trimmed.startsWith('## ')) {
+                flushParagraph();
+                if (inList) { html += '</ul>\n'; inList = false; }
+                html += '<h3>' + inlineFormat(trimmed.substring(3)) + '</h3>\n';
+                continue;
+            }
+            if (trimmed.startsWith('# ')) {
+                flushParagraph();
+                if (inList) { html += '</ul>\n'; inList = false; }
+                html += '<h2>' + inlineFormat(trimmed.substring(2)) + '</h2>\n';
+                continue;
+            }
+
+            // List items
+            if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+                flushParagraph();
+                if (!inList) { html += '<ul>\n'; inList = true; }
+                html += '<li>' + inlineFormat(trimmed.substring(2)) + '</li>\n';
+                continue;
+            }
+            if (inList) { html += '</ul>\n'; inList = false; }
+
+            // Standalone URL → embed
+            if (isStandaloneUrl(trimmed)) {
+                flushParagraph();
+                var embed = buildEmbed(trimmed);
+                if (embed) { html += embed + '\n'; continue; }
+            }
+
+            // Regular text → accumulate paragraph
+            currentParagraph = currentParagraph ? currentParagraph + ' ' + trimmed : trimmed;
+        }
+
+        flushParagraph();
+        if (inList) html += '</ul>\n';
+
+        return html;
+    }
+
+    // ── Social embed script loading ──────────────────────
+    function loadScript(src, attrs) {
+        return new Promise(function (resolve, reject) {
+            if (document.querySelector('script[src*="' + src.split('/').pop() + '"]')) {
+                resolve();
+                return;
+            }
+            var s = document.createElement('script');
+            s.src = src;
+            s.async = true;
+            if (attrs) Object.keys(attrs).forEach(function (k) { s.setAttribute(k, attrs[k]); });
+            s.onload = resolve;
+            s.onerror = reject;
+            document.body.appendChild(s);
+        });
+    }
+
+    function processSocialEmbeds(container) {
+        // X / Twitter
+        var tweets = container.querySelectorAll('blockquote.twitter-tweet');
+        if (tweets.length) {
+            var theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+            tweets.forEach(function (el) { el.setAttribute('data-theme', theme); });
+            if (window.twttr && window.twttr.widgets) {
+                window.twttr.widgets.load(container);
+            } else {
+                loadScript('https://platform.twitter.com/widgets.js', { charset: 'utf-8' })
+                    .then(function () { if (window.twttr && window.twttr.widgets) window.twttr.widgets.load(container); });
+            }
+        }
+
+        // Instagram
+        if (container.querySelectorAll('blockquote.instagram-media').length) {
+            if (window.instgrm && window.instgrm.Embeds) {
+                window.instgrm.Embeds.process();
+            } else {
+                loadScript('https://www.instagram.com/embed.js')
+                    .then(function () { if (window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process(); });
+            }
+        }
+
+        // Threads
+        if (container.querySelectorAll('blockquote.text-post-media').length) {
+            loadScript('https://www.threads.net/embed.js');
+        }
+
+        // Facebook
+        var fbEmbeds = container.querySelectorAll('.fb-post, .fb-video');
+        if (fbEmbeds.length) {
+            function ensureFbRoot() {
+                if (!document.getElementById('fb-root')) {
+                    var r = document.createElement('div');
+                    r.id = 'fb-root';
+                    document.body.prepend(r);
+                }
+            }
+            ensureFbRoot();
+            if (window.FB && window.FB.XFBML) {
+                window.FB.XFBML.parse(container);
+            } else {
+                window.fbAsyncInit = function () { window.FB.XFBML.parse(container); };
+                loadScript('https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v23.0', { crossorigin: 'anonymous' });
+            }
+        }
+    }
+
+    // ── Lightbox for preview images ──────────────────────
+    // (Reuses the same lightbox pattern from article-script.js)
+    document.addEventListener('click', function (e) {
+        var img = e.target.closest && e.target.closest('.article-content-img');
+        if (!img) return;
+        // Simple fullscreen view
+        var overlay = document.createElement('div');
+        overlay.className = 'lb-overlay open';
+        overlay.innerHTML = '<button class="lb-close" aria-label="Close"><i class="fas fa-times"></i></button>' +
+            '<div class="lb-img-wrap"><img class="lb-img" src="' + (img.dataset.fullSrc || img.src) + '" alt=""></div>';
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+        function close() { overlay.remove(); document.body.style.overflow = ''; }
+        overlay.querySelector('.lb-close').addEventListener('click', close);
+        overlay.addEventListener('click', function (ev) { if (ev.target === overlay) close(); });
+        document.addEventListener('keydown', function handler(ev) {
+            if (ev.key === 'Escape') { close(); document.removeEventListener('keydown', handler); }
+        });
+    });
+})();
+</script>
+</body>
+</html>
