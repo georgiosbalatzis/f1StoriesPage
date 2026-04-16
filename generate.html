@@ -264,6 +264,13 @@
         </div>
     </div>
 
+    <div style="display:flex;gap:0.5rem;margin-bottom:4px;align-items:center;flex-wrap:wrap;">
+        <button class="gen-btn gen-btn-secondary" id="gen-insert-img-marker" type="button" style="padding:0.35rem 0.8rem;font-size:0.78rem;">
+            <i class="fas fa-image"></i> Insert image marker
+        </button>
+        <span class="gen-hint" style="margin:0;" id="gen-marker-count">0 markers • 0 images</span>
+    </div>
+
     <textarea class="gen-textarea" id="gen-content" placeholder="Write or paste your article content here…
 
 Supports:
@@ -271,6 +278,7 @@ Supports:
 ## Heading 3
 - List items
 **bold** and *italic*
+[img-instert-tag]  ← placeholder for a content image (processor replaces with 3.*, 4.*, …)
 
 YouTube / X / Instagram / Threads links auto-embed.
 Blank lines separate paragraphs."></textarea>
@@ -289,6 +297,10 @@ Blank lines separate paragraphs."></textarea>
             <i class="fas fa-image"></i> <span id="gen-file-text">Attach Hero Image</span>
             <input type="file" accept="image/*" class="gen-file-input" id="gen-hero-input">
         </label>
+        <label class="gen-file-label" id="gen-content-file-label">
+            <i class="fas fa-images"></i> <span id="gen-content-file-text">Attach Content Images</span>
+            <input type="file" accept="image/*" multiple class="gen-file-input" id="gen-content-input">
+        </label>
         <button class="gen-btn gen-btn-secondary" id="gen-clear-btn">
             <i class="fas fa-eraser"></i> Clear
         </button>
@@ -296,11 +308,16 @@ Blank lines separate paragraphs."></textarea>
             <i class="fas fa-key"></i>
         </button>
     </div>
+
+    <div id="gen-content-images-list" style="margin-top:0.75rem;display:none;"></div>
+
     <div class="gen-hint">
         Format: plain text with markdown-style headings. Links to YouTube, X, Instagram, Threads, and Facebook auto-embed.<br>
+        <strong>Hero</strong>: image <code>1</code> is both the hero and the thumbnail — slot <code>2</code> is reserved (don't use it).<br>
+        <strong>Content images</strong>: add <code>[img-instert-tag]</code> where you want an image; attach images in that same order. <em>2+ markers back-to-back become a carousel; isolated markers stay as single figures.</em><br>
+        <strong>No markers?</strong> Attached images are appended as a carousel at the end of the article.<br>
         <strong>Publish</strong> commits directly to <code>main</code> via GitHub API — the workflow then builds the article (~1 min).
-        <strong>Export ZIP</strong> is the manual fallback (unzip into <code>blog-module/blog-entries/</code>, commit, push).
-        Click the <i class="fas fa-key"></i> to set up your publishing token.
+        <strong>Export ZIP</strong> is the manual fallback. Click the <i class="fas fa-key"></i> to set up your publishing token.
     </div>
 </div>
 
@@ -392,6 +409,12 @@ Blank lines separate paragraphs."></textarea>
     var heroInput     = document.getElementById('gen-hero-input');
     var fileLabel     = document.getElementById('gen-file-label');
     var fileText      = document.getElementById('gen-file-text');
+    var contentInput      = document.getElementById('gen-content-input');
+    var contentFileLabel  = document.getElementById('gen-content-file-label');
+    var contentFileText   = document.getElementById('gen-content-file-text');
+    var contentImagesList = document.getElementById('gen-content-images-list');
+    var insertMarkerBtn   = document.getElementById('gen-insert-img-marker');
+    var markerCountEl     = document.getElementById('gen-marker-count');
     var previewBtn    = document.getElementById('gen-preview-btn');
     var exportBtn     = document.getElementById('gen-export-btn');
     var publishBtn    = document.getElementById('gen-publish-btn');
@@ -423,6 +446,160 @@ Blank lines separate paragraphs."></textarea>
         }
     });
 
+    // ── Content images handlers ───────────────────────────
+    var contentImageFiles = []; // [{ file, url }]
+    var MARKER_TOKEN = '[img-instert-tag]';
+
+    function countMarkers() {
+        var matches = contentArea.value.match(/\[img-instert-tag\]/g);
+        return matches ? matches.length : 0;
+    }
+
+    function updateMarkerCount() {
+        var markers = countMarkers();
+        var imgs    = contentImageFiles.length;
+        var label =
+            markers + ' marker' + (markers === 1 ? '' : 's') + ' • ' +
+            imgs    + ' image'  + (imgs    === 1 ? '' : 's');
+        if (imgs > markers && markers > 0) {
+            label += ' (extras → end-of-article carousel)';
+        } else if (imgs > 0 && markers === 0) {
+            label += ' → carousel at end';
+        }
+        markerCountEl.textContent = label;
+        // Only warn when markers outnumber images — those slots will render empty.
+        markerCountEl.style.color = (markers > imgs) ? '#f59e0b' : '';
+    }
+
+    function renderContentImagesList() {
+        if (!contentImageFiles.length) {
+            contentImagesList.style.display = 'none';
+            contentImagesList.innerHTML = '';
+            contentFileText.textContent = 'Attach Content Images';
+            contentFileLabel.classList.remove('has-file');
+            updateMarkerCount();
+            return;
+        }
+        contentImagesList.style.display = 'grid';
+        contentImagesList.style.gridTemplateColumns = 'repeat(auto-fill, minmax(140px, 1fr))';
+        contentImagesList.style.gap = '0.5rem';
+        contentImagesList.innerHTML = '';
+
+        contentImageFiles.forEach(function (item, idx) {
+            var tile = document.createElement('div');
+            tile.style.cssText =
+                'position:relative;border:1px solid var(--border,rgba(255,255,255,0.1));' +
+                'border-radius:8px;overflow:hidden;background:var(--bg-base,#111113);';
+
+            var img = document.createElement('img');
+            img.src = item.url;
+            img.alt = item.file.name;
+            img.style.cssText = 'width:100%;height:90px;object-fit:cover;display:block;';
+
+            var label = document.createElement('div');
+            label.textContent = (idx + 3) + '.' + sanitizeImageExtension(item.file.name) + ' · ' + item.file.name;
+            label.style.cssText =
+                'padding:4px 6px;font-size:0.7rem;color:var(--text-tertiary);' +
+                'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+
+            var controls = document.createElement('div');
+            controls.style.cssText =
+                'position:absolute;top:4px;right:4px;display:flex;gap:3px;';
+
+            function mkBtn(html, title, handler) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.innerHTML = html;
+                b.title = title;
+                b.style.cssText =
+                    'width:22px;height:22px;padding:0;border:none;border-radius:50%;' +
+                    'background:rgba(0,0,0,0.65);color:#fff;cursor:pointer;font-size:0.65rem;' +
+                    'display:flex;align-items:center;justify-content:center;';
+                b.addEventListener('click', handler);
+                return b;
+            }
+
+            if (idx > 0) {
+                controls.appendChild(mkBtn(
+                    '<i class="fas fa-arrow-left"></i>',
+                    'Move left',
+                    function () {
+                        var tmp = contentImageFiles[idx - 1];
+                        contentImageFiles[idx - 1] = contentImageFiles[idx];
+                        contentImageFiles[idx] = tmp;
+                        renderContentImagesList();
+                    }
+                ));
+            }
+            if (idx < contentImageFiles.length - 1) {
+                controls.appendChild(mkBtn(
+                    '<i class="fas fa-arrow-right"></i>',
+                    'Move right',
+                    function () {
+                        var tmp = contentImageFiles[idx + 1];
+                        contentImageFiles[idx + 1] = contentImageFiles[idx];
+                        contentImageFiles[idx] = tmp;
+                        renderContentImagesList();
+                    }
+                ));
+            }
+            controls.appendChild(mkBtn(
+                '<i class="fas fa-times"></i>',
+                'Remove',
+                function () {
+                    URL.revokeObjectURL(item.url);
+                    contentImageFiles.splice(idx, 1);
+                    renderContentImagesList();
+                }
+            ));
+
+            tile.appendChild(img);
+            tile.appendChild(label);
+            tile.appendChild(controls);
+            contentImagesList.appendChild(tile);
+        });
+
+        contentFileText.textContent =
+            contentImageFiles.length + ' image' + (contentImageFiles.length === 1 ? '' : 's') + ' attached';
+        contentFileLabel.classList.add('has-file');
+        updateMarkerCount();
+    }
+
+    contentInput.addEventListener('change', function () {
+        if (!contentInput.files || !contentInput.files.length) return;
+        for (var i = 0; i < contentInput.files.length; i++) {
+            var f = contentInput.files[i];
+            contentImageFiles.push({ file: f, url: URL.createObjectURL(f) });
+        }
+        // Reset so picking the same file again still fires 'change'
+        contentInput.value = '';
+        renderContentImagesList();
+    });
+
+    insertMarkerBtn.addEventListener('click', function () {
+        var start  = contentArea.selectionStart;
+        var end    = contentArea.selectionEnd;
+        var val    = contentArea.value;
+        var before = val.substring(0, start);
+        var after  = val.substring(end);
+
+        // Put the marker on its own paragraph
+        var prefix = (before.length === 0 || /\n\n$/.test(before))
+            ? '' : (/\n$/.test(before) ? '\n' : '\n\n');
+        var suffix = (after.length === 0 || /^\n\n/.test(after))
+            ? '' : (/^\n/.test(after) ? '\n' : '\n\n');
+        var insertion = prefix + MARKER_TOKEN + suffix;
+
+        contentArea.value = before + insertion + after;
+        var caret = start + insertion.length;
+        contentArea.focus();
+        contentArea.setSelectionRange(caret, caret);
+        updateMarkerCount();
+    });
+
+    contentArea.addEventListener('input', updateMarkerCount);
+    updateMarkerCount();
+
     // ── Clear ─────────────────────────────────────────────
     clearBtn.addEventListener('click', function () {
         titleInput.value = '';
@@ -433,6 +610,10 @@ Blank lines separate paragraphs."></textarea>
         fileText.textContent = 'Attach Hero Image';
         fileLabel.classList.remove('has-file');
         if (heroObjectUrl) { URL.revokeObjectURL(heroObjectUrl); heroObjectUrl = null; }
+        contentImageFiles.forEach(function (item) { URL.revokeObjectURL(item.url); });
+        contentImageFiles = [];
+        contentInput.value = '';
+        renderContentImagesList();
         previewWrap.classList.remove('visible');
     });
 
@@ -513,6 +694,11 @@ Blank lines separate paragraphs."></textarea>
                 folder.file('1.' + ext, heroFile);
             }
 
+            for (var i = 0; i < contentImageFiles.length; i++) {
+                var cExt = sanitizeImageExtension(contentImageFiles[i].file.name);
+                folder.file((i + 3) + '.' + cExt, contentImageFiles[i].file);
+            }
+
             var readme =
                 'F1 Stories — Article Package\n' +
                 '================================\n\n' +
@@ -520,11 +706,13 @@ Blank lines separate paragraphs."></textarea>
                 'Title:    ' + title + '\n' +
                 'Author:   ' + author + (authorCode ? ' (code: ' + authorCode + ')' : ' (no code)') + '\n' +
                 'Tag:      ' + tag + '\n' +
-                'Category: ' + category + '\n\n' +
+                'Category: ' + category + '\n' +
+                'Content images: ' + contentImageFiles.length + ' (markers in source.txt: ' + countMarkers() + ')\n\n' +
                 'To publish:\n' +
                 '1. Unzip this file into blog-module/blog-entries/ so you get:\n' +
                 '     blog-module/blog-entries/' + folderName + '/source.txt\n' +
                 '     blog-module/blog-entries/' + folderName + '/1.<ext>   (hero image)\n' +
+                '     blog-module/blog-entries/' + folderName + '/3.<ext>…  (content images, in order)\n' +
                 '2. Delete this README.txt from that folder (optional, keeps it tidy).\n' +
                 '3. git add, commit, push to main.\n' +
                 '4. The "Publish Blog" GitHub Action runs blog-processor.js and commits\n' +
@@ -631,15 +819,18 @@ Blank lines separate paragraphs."></textarea>
         }
     }
 
-    async function publishToGitHub(token, folderName, sourceTxt, heroFile, heroExt, commitMessage) {
-        // 1. Current main ref + commit + tree
+    async function publishToGitHub(token, folderName, sourceTxt, heroFile, heroExt, contentImages, commitMessage, progress) {
+        function tick(msg) { if (progress) progress(msg); }
+
+        tick('Reading main ref…');
         var ref = await ghFetch('/git/ref/heads/main', token);
         var latestCommitSha = ref.object.sha;
         var commit = await ghFetch('/git/commits/' + latestCommitSha, token);
         var baseTreeSha = commit.tree.sha;
 
-        // 2. Blobs
         var blobs = [];
+
+        tick('Uploading source.txt…');
         var txtBlob = await ghFetch('/git/blobs', token, {
             method: 'POST',
             body: { content: utf8ToBase64(sourceTxt), encoding: 'base64' }
@@ -650,6 +841,7 @@ Blank lines separate paragraphs."></textarea>
         });
 
         if (heroFile) {
+            tick('Uploading hero image…');
             var heroB64 = await blobToBase64(heroFile);
             var heroBlob = await ghFetch('/git/blobs', token, {
                 method: 'POST',
@@ -661,13 +853,27 @@ Blank lines separate paragraphs."></textarea>
             });
         }
 
-        // 3. Tree based on current main
+        for (var i = 0; i < (contentImages || []).length; i++) {
+            var ci = contentImages[i];
+            tick('Uploading image ' + (i + 1) + '/' + contentImages.length + '…');
+            var ciB64 = await blobToBase64(ci.file);
+            var ciBlob = await ghFetch('/git/blobs', token, {
+                method: 'POST',
+                body: { content: ciB64, encoding: 'base64' }
+            });
+            blobs.push({
+                path: 'blog-module/blog-entries/' + folderName + '/' + (i + 3) + '.' + sanitizeImageExtension(ci.file.name),
+                mode: '100644', type: 'blob', sha: ciBlob.sha
+            });
+        }
+
+        tick('Writing tree…');
         var newTree = await ghFetch('/git/trees', token, {
             method: 'POST',
             body: { base_tree: baseTreeSha, tree: blobs }
         });
 
-        // 4. Commit + 5. Update ref
+        tick('Creating commit…');
         var newCommit = await ghFetch('/git/commits', token, {
             method: 'POST',
             body: { message: commitMessage, tree: newTree.sha, parents: [latestCommitSha] }
@@ -715,9 +921,25 @@ Blank lines separate paragraphs."></textarea>
                 }
             }
 
-            if (!confirm('Publish "' + title + '" to blog-module/blog-entries/' + folderName + '/ on main?')) {
-                return;
+            var markerCount = countMarkers();
+            var confirmMsg = 'Publish "' + title + '" to blog-module/blog-entries/' + folderName + '/ on main?';
+            if (contentImageFiles.length) {
+                confirmMsg += '\n\nIncludes ' + contentImageFiles.length + ' content image' +
+                    (contentImageFiles.length === 1 ? '' : 's') + ' + ' + markerCount + ' marker' +
+                    (markerCount === 1 ? '' : 's') + '.';
+                if (markerCount === 0) {
+                    confirmMsg += '\n\nNo [img-instert-tag] markers — images will render as a carousel at the end of the article.';
+                } else if (contentImageFiles.length > markerCount) {
+                    confirmMsg += '\n\n' + (contentImageFiles.length - markerCount) + ' extra image' +
+                        ((contentImageFiles.length - markerCount) === 1 ? '' : 's') +
+                        ' will be appended as an end-of-article carousel.';
+                } else if (markerCount > contentImageFiles.length) {
+                    confirmMsg += '\n\n⚠ ' + (markerCount - contentImageFiles.length) + ' marker' +
+                        ((markerCount - contentImageFiles.length) === 1 ? '' : 's') +
+                        ' have no attached image — those spots will be empty.';
+                }
             }
+            if (!confirm(confirmMsg)) return;
 
             publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing…';
 
@@ -725,7 +947,10 @@ Blank lines separate paragraphs."></textarea>
             var sourceTxt = buildSourceTxt(tag, category, title, body);
             var commitMessage = 'publish: ' + title + ' (' + folderName + ')';
 
-            var sha = await publishToGitHub(token, folderName, sourceTxt, heroFile, heroExt, commitMessage);
+            var sha = await publishToGitHub(
+                token, folderName, sourceTxt, heroFile, heroExt, contentImageFiles, commitMessage,
+                function (msg) { publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + msg; }
+            );
 
             var shortSha = sha.substring(0, 7);
             var actionsUrl = 'https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/actions';
@@ -898,6 +1123,7 @@ Blank lines separate paragraphs."></textarea>
         var html = '';
         var currentParagraph = '';
         var inList = false;
+        var imageIdx = 0; // sequential marker counter, mirrors processor
 
         function flushParagraph() {
             if (currentParagraph) {
@@ -939,6 +1165,25 @@ Blank lines separate paragraphs."></textarea>
             }
             if (inList) { html += '</ul>\n'; inList = false; }
 
+            // Image marker → pull next attached content image
+            if (trimmed === '[img-instert-tag]') {
+                flushParagraph();
+                var item = contentImageFiles[imageIdx];
+                imageIdx++;
+                if (item) {
+                    var num = imageIdx + 2; // 3, 4, 5 …
+                    html += '<figure class="article-figure">' +
+                        '<img class="article-content-img" src="' + escapeHtml(item.url) + '" alt="Image ' + num + '" loading="lazy">' +
+                        '<figcaption>Image ' + num + '</figcaption>' +
+                        '</figure>\n';
+                } else {
+                    html += '<div style="padding:0.6rem 0.9rem;border:1px dashed #f59e0b;border-radius:6px;color:#f59e0b;font-size:0.82rem;">' +
+                        '[img-instert-tag] #' + imageIdx + ' — no attached image for this marker (would be empty in the published article)' +
+                        '</div>\n';
+                }
+                continue;
+            }
+
             // Standalone URL → embed
             if (isStandaloneUrl(trimmed)) {
                 flushParagraph();
@@ -953,6 +1198,98 @@ Blank lines separate paragraphs."></textarea>
         flushParagraph();
         if (inList) html += '</ul>\n';
 
+        // Post-pass: merge consecutive <figure> into a carousel (mirrors
+        // blog-processor.js mergeConsecutiveFigures).
+        html = mergeConsecutiveFiguresInHtml(html);
+
+        // Orphan content images (attached but no marker for them) → appended
+        // as a carousel at the end.
+        var orphansStart = imageIdx;
+        if (orphansStart < contentImageFiles.length) {
+            var orphanHtmls = [];
+            for (var o = orphansStart; o < contentImageFiles.length; o++) {
+                var item = contentImageFiles[o];
+                var num = o + 3;
+                orphanHtmls.push(
+                    '<figure class="article-figure">' +
+                    '<img class="article-content-img" src="' + escapeHtml(item.url) + '" alt="Image ' + num + '">' +
+                    '</figure>'
+                );
+            }
+            if (orphanHtmls.length === 1) {
+                html += '\n' + orphanHtmls[0];
+            } else {
+                html += '\n' + buildPreviewCarousel(orphanHtmls);
+            }
+        }
+
+        return html;
+    }
+
+    function buildPreviewCarousel(figureHtmls) {
+        var slides = '';
+        var thumbs = '';
+        for (var i = 0; i < figureHtmls.length; i++) {
+            var imgMatch = figureHtmls[i].match(/<img[^>]*src="([^"]+)"[^>]*>/);
+            var src = imgMatch ? imgMatch[1] : '';
+            var active = i === 0 ? ' active' : '';
+            slides +=
+                '<div class="gallery-slide' + active + '" data-index="' + i + '">' +
+                    '<img src="' + src + '" alt="Gallery image ' + (i + 1) + '" class="article-content-img">' +
+                '</div>';
+            thumbs +=
+                '<button class="gallery-thumb' + active + '" data-index="' + i + '" aria-label="Show image ' + (i + 1) + '">' +
+                    '<img src="' + src + '" alt="" loading="lazy">' +
+                '</button>';
+        }
+        var total = figureHtmls.length;
+        return '<div class="gallery-carousel" role="region" aria-label="Image Gallery" aria-roledescription="carousel">' +
+            '<div class="gallery-carousel-stage">' +
+                '<div class="gallery-carousel-slides">' + slides + '</div>' +
+                '<button class="gallery-carousel-prev" aria-label="Previous image" disabled><i class="fas fa-chevron-left"></i></button>' +
+                '<button class="gallery-carousel-next" aria-label="Next image"' + (total <= 1 ? ' disabled' : '') + '><i class="fas fa-chevron-right"></i></button>' +
+                '<div class="gallery-carousel-counter">1 / ' + total + '</div>' +
+            '</div>' +
+            '<div class="gallery-carousel-thumbs">' + thumbs + '</div>' +
+        '</div>';
+    }
+
+    function mergeConsecutiveFiguresInHtml(html) {
+        var figureRe = /<figure class="article-figure">([\s\S]*?)<\/figure>/g;
+        var figures = [];
+        var m;
+        while ((m = figureRe.exec(html)) !== null) {
+            figures.push({ start: m.index, end: m.index + m[0].length, html: m[0] });
+        }
+        if (figures.length < 2) return html;
+
+        var gapRe = /^(?:\s|<p>\s*<\/p>|<\/p>\s*<p>)*$/;
+        var groups = [[figures[0]]];
+        for (var i = 1; i < figures.length; i++) {
+            var gap = html.substring(figures[i - 1].end, figures[i].start);
+            if (gapRe.test(gap)) {
+                groups[groups.length - 1].push(figures[i]);
+            } else {
+                groups.push([figures[i]]);
+            }
+        }
+
+        var replacements = [];
+        for (var g = 0; g < groups.length; g++) {
+            if (groups[g].length < 2) continue;
+            var carousel = buildPreviewCarousel(groups[g].map(function (f) { return f.html; }));
+            replacements.push({
+                start: groups[g][0].start,
+                end:   groups[g][groups[g].length - 1].end,
+                html:  carousel
+            });
+        }
+        if (!replacements.length) return html;
+
+        replacements.sort(function (a, b) { return b.start - a.start; });
+        for (var r = 0; r < replacements.length; r++) {
+            html = html.substring(0, replacements[r].start) + replacements[r].html + html.substring(replacements[r].end);
+        }
         return html;
     }
 

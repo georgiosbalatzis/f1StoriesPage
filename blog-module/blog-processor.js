@@ -2065,12 +2065,20 @@ async function processBlogEntry(entryPath) {
         content = await processImageInsertTags(content, images, folderName);
     }
 
-    // Gallery: if content is images-only and there are content images (3+)
+    // Full-article gallery takes precedence over the inline merge: if the body
+    // is entirely images, the whole article becomes a single gallery carousel
+    // (preserves the legacy behavior for pure image-only articles).
     const hasContentImages = Object.keys(images).some(k => k.startsWith('image'));
     if (hasContentImages && isImagesOnlyContent(content)) {
         content = await createImageGallery(images, folderName);
         metadata.tag = 'Images';
         metadata.category = 'Gallery';
+    } else if (docFile) {
+        // Otherwise, merge adjacent figures into carousels and append any
+        // orphan content images (attached without a marker) as a trailing
+        // carousel.
+        content = await mergeConsecutiveFigures(content, folderName);
+        content = await appendOrphanContentImagesGallery(content, folderName);
     }
 
     assertNoInlineDataImages(content, folderName);
@@ -2176,28 +2184,21 @@ async function processImageInsertTags(content, images, folderName) {
     return content;
 }
 
-async function createImageGallery(images, folderName) {
+// Build a carousel from an explicit list of image slot numbers. Used both for
+// full-article galleries AND for inline runs of 2+ adjacent images.
+//
+// When `withUnwrapMarkers` is set, the result is wrapped in <!--ig-carousel-->
+// comments so a later pass can strip any <p>…</p> that the HTML conversion
+// wrapped around it (regex can't reliably walk the nested <div>s otherwise).
+async function buildImageCarousel(folderName, imageNumbers, options = {}) {
+    const { ariaLabel = 'Image Gallery', withUnwrapMarkers = false } = options;
     const entryPath = path.join(CONFIG.BLOG_DIR, folderName);
-
-    // Collect ALL numbered images (1, 2, 3, …) from disk
-    const allImageNumbers = [];
-    let num = 1;
-    while (true) {
-        const file = utils.findImageByBaseName(entryPath, num.toString());
-        if (!file) break;
-        allImageNumbers.push(num);
-        num++;
-    }
-
-    if (allImageNumbers.length === 0) {
-        return '<p>Photo gallery</p>';
-    }
 
     let slidesHtml = '';
     let thumbsHtml = '';
 
-    for (let i = 0; i < allImageNumbers.length; i++) {
-        const imageNumber = allImageNumbers[i].toString();
+    for (let i = 0; i < imageNumbers.length; i++) {
+        const imageNumber = String(imageNumbers[i]);
         const isActive = i === 0 ? ' active' : '';
 
         const pictureHtml = await buildPictureHtml(folderName, imageNumber, `Gallery image ${i + 1}`);
@@ -2217,9 +2218,9 @@ async function createImageGallery(images, folderName) {
             </button>`;
     }
 
-    const total = allImageNumbers.length;
-    return `
-    <div class="gallery-carousel" role="region" aria-label="Image Gallery" aria-roledescription="carousel">
+    const total = imageNumbers.length;
+    const html = `
+    <div class="gallery-carousel" role="region" aria-label="${ariaLabel}" aria-roledescription="carousel">
         <div class="gallery-carousel-stage">
             <div class="gallery-carousel-slides">
                 ${slidesHtml}
@@ -2236,6 +2237,118 @@ async function createImageGallery(images, folderName) {
             ${thumbsHtml}
         </div>
     </div>`;
+
+    return withUnwrapMarkers ? `<!--ig-carousel-->${html}<!--/ig-carousel-->` : html;
+}
+
+async function createImageGallery(images, folderName) {
+    const entryPath = path.join(CONFIG.BLOG_DIR, folderName);
+
+    // Collect ALL numbered images (1, 2, 3, …) from disk
+    const allImageNumbers = [];
+    let num = 1;
+    while (true) {
+        const file = utils.findImageByBaseName(entryPath, num.toString());
+        if (!file) break;
+        allImageNumbers.push(num);
+        num++;
+    }
+
+    if (allImageNumbers.length === 0) {
+        return '<p>Photo gallery</p>';
+    }
+
+    return buildImageCarousel(folderName, allImageNumbers);
+}
+
+// Merge runs of 2+ adjacent <figure class="article-figure"> elements into a
+// single carousel. An adjacent pair is one where the gap between them contains
+// only whitespace, empty paragraphs, or </p><p> paragraph boundaries — i.e. the
+// figures sit back-to-back in the source, with no intervening text.
+async function mergeConsecutiveFigures(content, folderName) {
+    const figureRe = /<figure class="article-figure">([\s\S]*?)<\/figure>/g;
+    const figures = [];
+    let m;
+    while ((m = figureRe.exec(content)) !== null) {
+        figures.push({ start: m.index, end: m.index + m[0].length, html: m[0] });
+    }
+    if (figures.length < 2) return content;
+
+    // Cluster adjacent figures
+    const GAP_RE = /^(?:\s|<p>\s*<\/p>|<\/p>\s*<p>)*$/;
+    const groups = [[figures[0]]];
+    for (let i = 1; i < figures.length; i++) {
+        const prev = figures[i - 1];
+        const cur = figures[i];
+        const gap = content.substring(prev.end, cur.start);
+        if (GAP_RE.test(gap)) {
+            groups[groups.length - 1].push(cur);
+        } else {
+            groups.push([cur]);
+        }
+    }
+
+    // Build replacements for groups with 2+ figures
+    const replacements = [];
+    for (const group of groups) {
+        if (group.length < 2) continue;
+        const nums = [];
+        for (const fig of group) {
+            // figures reference N.webp in their <img src> or first <source srcset>
+            let numMatch = fig.html.match(/src="(\d+)\.webp"/);
+            if (!numMatch) numMatch = fig.html.match(/srcset="[^"]*?(\d+)\.webp/);
+            if (numMatch) nums.push(Number(numMatch[1]));
+        }
+        if (nums.length < 2) continue;
+        const carousel = await buildImageCarousel(folderName, nums, { withUnwrapMarkers: true });
+        replacements.push({
+            start: group[0].start,
+            end: group[group.length - 1].end,
+            html: carousel
+        });
+    }
+    if (!replacements.length) return content;
+
+    // Apply right-to-left so earlier indices stay valid
+    replacements.sort((a, b) => b.start - a.start);
+    for (const r of replacements) {
+        content = content.substring(0, r.start) + r.html + content.substring(r.end);
+    }
+
+    // Unwrap <p>…</p> around the carousel (we couldn't do this during emit
+    // because the carousel has nested divs regex can't walk).
+    content = content.replace(
+        /<p>\s*<!--ig-carousel-->([\s\S]*?)<!--\/ig-carousel-->\s*<\/p>/g,
+        '$1'
+    );
+    content = content.replace(/<!--ig-carousel-->|<!--\/ig-carousel-->/g, '');
+    return content;
+}
+
+// Append a gallery of content-image slots (3+) that exist on disk but aren't
+// referenced in the processed content. Covers the "user attached images but
+// used no [img-instert-tag] markers" flow from generate.html.
+async function appendOrphanContentImagesGallery(content, folderName) {
+    const entryPath = path.join(CONFIG.BLOG_DIR, folderName);
+
+    const referenced = new Set();
+    const srcRe = /src="(\d+)\.webp"/g;
+    let m;
+    while ((m = srcRe.exec(content)) !== null) referenced.add(Number(m[1]));
+    const setRe = /srcset="[^"]*?(\d+)\.webp/g;
+    while ((m = setRe.exec(content)) !== null) referenced.add(Number(m[1]));
+
+    const orphanSlots = [];
+    for (let n = 3; n < 100; n++) {
+        if (utils.findImageByBaseName(entryPath, String(n))) {
+            if (!referenced.has(n)) orphanSlots.push(n);
+        } else {
+            break;
+        }
+    }
+    if (!orphanSlots.length) return content;
+    const carousel = await buildImageCarousel(folderName, orphanSlots, { ariaLabel: 'Image Gallery' });
+    return content + '\n' + carousel;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

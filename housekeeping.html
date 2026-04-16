@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Housekeeping | F1 Stories</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/blog-module/blog-styles.css">
+    <link rel="stylesheet" href="/styles/shared-nav.css?v=20260403-2">
+    <link rel="stylesheet" href="/theme-overrides.css">
+
+    <script>
+        (function() {
+            var session = sessionStorage.getItem('f1stories-theme');
+            if (session) {
+                if (session === 'light') document.documentElement.setAttribute('data-theme', 'light');
+            } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+    <style>
+        .hk-wrap {
+            max-width: 1180px;
+            margin: 100px auto 3rem;
+            padding: 0 1rem;
+        }
+        .hk-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+        }
+        .hk-head h1 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin: 0;
+            color: var(--text-primary);
+        }
+        .hk-head h1 i { color: var(--accent, #60a5fa); margin-right: 0.5rem; }
+
+        .hk-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+            align-items: center;
+        }
+        .hk-toolbar input,
+        .hk-toolbar select {
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border, rgba(255,255,255,0.1));
+            background: var(--bg-base, #111113);
+            color: var(--text-primary, #fff);
+            font-size: 0.88rem;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .hk-toolbar input:focus,
+        .hk-toolbar select:focus {
+            outline: none;
+            border-color: var(--accent, #60a5fa);
+            box-shadow: 0 0 0 2px rgba(96,165,250,0.15);
+        }
+        .hk-toolbar input { min-width: 220px; flex: 1; }
+        .hk-stats {
+            font-size: 0.78rem;
+            color: var(--text-tertiary);
+            margin-left: auto;
+        }
+
+        .hk-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            border: 1px solid var(--border, rgba(255,255,255,0.1));
+            background: var(--bg-surface-alt, rgba(255,255,255,0.04));
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .hk-btn:hover { background: rgba(255,255,255,0.08); }
+        .hk-btn:active { transform: scale(0.97); }
+        .hk-btn-primary { background: var(--accent, #60a5fa); color: #fff; border-color: transparent; }
+        .hk-btn-primary:hover { background: #4e94e8; }
+        .hk-btn-danger { background: #ef4444; color: #fff; border-color: transparent; }
+        .hk-btn-danger:hover { background: #dc2626; }
+
+        .hk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1rem;
+        }
+        .hk-card {
+            background: var(--bg-surface, #1a1a2e);
+            border: 1px solid var(--border, rgba(255,255,255,0.08));
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .hk-card-img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            display: block;
+            background: rgba(255,255,255,0.03);
+        }
+        .hk-card-body {
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            flex: 1;
+        }
+        .hk-card-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            line-height: 1.3;
+            color: var(--text-primary);
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .hk-card-meta {
+            font-size: 0.72rem;
+            color: var(--text-tertiary);
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .hk-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.68rem;
+            background: rgba(96,165,250,0.15);
+            color: var(--accent, #60a5fa);
+            font-weight: 600;
+        }
+        .hk-badge-cat {
+            background: rgba(239,68,68,0.15);
+            color: #f87171;
+        }
+        .hk-card-id {
+            font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+            font-size: 0.68rem;
+            color: var(--text-tertiary);
+        }
+        .hk-card-actions {
+            margin-top: auto;
+            padding-top: 0.5rem;
+            display: flex;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+        .hk-card-actions .hk-btn { padding: 0.35rem 0.6rem; font-size: 0.76rem; }
+
+        .hk-empty, .hk-error {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-tertiary);
+            font-size: 0.92rem;
+        }
+        .hk-error { color: #f87171; }
+
+        /* ─── Edit modal ───────────────────────────────────── */
+        .hk-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem 1rem;
+        }
+        .hk-modal-backdrop.open { display: flex; }
+        .hk-modal {
+            width: 100%;
+            max-width: 780px;
+            background: var(--bg-surface, #1a1a2e);
+            border: 1px solid var(--border, rgba(255,255,255,0.08));
+            border-radius: 14px;
+            padding: 1.5rem;
+            color: var(--text-primary);
+        }
+        .hk-modal h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 0 0 0.25rem;
+        }
+        .hk-modal-sub {
+            font-size: 0.78rem;
+            color: var(--text-tertiary);
+            font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+            margin-bottom: 1rem;
+        }
+        .hk-field { margin-bottom: 0.75rem; }
+        .hk-field label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+        }
+        .hk-field input,
+        .hk-field textarea {
+            width: 100%;
+            padding: 0.55rem 0.7rem;
+            border-radius: 8px;
+            border: 1px solid var(--border, rgba(255,255,255,0.1));
+            background: var(--bg-base, #111113);
+            color: var(--text-primary);
+            font-size: 0.88rem;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .hk-field textarea {
+            min-height: 260px;
+            resize: vertical;
+            line-height: 1.55;
+            font-family: 'DM Sans', monospace;
+        }
+        .hk-field input:focus,
+        .hk-field textarea:focus {
+            outline: none;
+            border-color: var(--accent, #60a5fa);
+            box-shadow: 0 0 0 2px rgba(96,165,250,0.15);
+        }
+        .hk-field-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .hk-field-row .hk-field { flex: 1; min-width: 160px; }
+
+        .hk-image-slot {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            padding: 0.6rem;
+            border: 1px solid var(--border, rgba(255,255,255,0.08));
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            background: var(--bg-base, #111113);
+        }
+        .hk-image-slot img {
+            width: 90px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            flex: 0 0 auto;
+        }
+        .hk-image-slot-info {
+            flex: 1;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            overflow: hidden;
+        }
+        .hk-image-slot-info strong { color: var(--text-primary); font-family: 'Outfit', sans-serif; }
+        .hk-image-slot-info .hk-slot-files {
+            font-size: 0.7rem;
+            color: var(--text-tertiary);
+            font-family: ui-monospace, Menlo, monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .hk-image-slot-info .hk-slot-op {
+            font-size: 0.7rem;
+            margin-top: 2px;
+            font-weight: 600;
+        }
+        .hk-op-replace { color: #60a5fa; }
+        .hk-op-remove  { color: #f87171; }
+        .hk-op-add     { color: #22c55e; }
+        .hk-image-slot-actions { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+        .hk-image-slot-actions .hk-btn { padding: 0.3rem 0.55rem; font-size: 0.72rem; }
+
+        .hk-modal-foot {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .hk-modal-status {
+            font-size: 0.78rem;
+            color: var(--text-tertiary);
+            margin-right: auto;
+            align-self: center;
+        }
+        .hk-modal-status.err { color: #f87171; }
+
+        .hk-sr { position: absolute; left: -9999px; }
+    </style>
+</head>
+<body>
+<div class="background"></div>
+<div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
+
+<button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle theme">
+    <i class="fas fa-sun icon-sun"></i>
+    <i class="fas fa-moon icon-moon"></i>
+</button>
+
+<header>
+    <nav class="blog-nav" id="blog-nav">
+        <div class="container blog-nav-inner">
+            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" width="48" height="48"></a>
+            <div class="blog-nav-links" id="nav-links">
+                <a href="/" class="blog-nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link"><i class="fas fa-newspaper"></i> Blog</a>
+                <a href="/generate.html" class="blog-nav-link"><i class="fas fa-pen-nib"></i> Generate</a>
+                <a href="/standings/" class="blog-nav-link"><i class="fas fa-trophy"></i> Standings</a>
+            </div>
+            <div class="blog-nav-right">
+                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+        <div class="blog-nav-mobile" id="nav-mobile">
+            <a href="/" class="blog-nav-mobile-link"><i class="fas fa-home"></i> Home</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><i class="fas fa-newspaper"></i> Blog</a>
+            <a href="/generate.html" class="blog-nav-mobile-link"><i class="fas fa-pen-nib"></i> Generate</a>
+        </div>
+    </nav>
+</header>
+
+<main class="hk-wrap">
+    <div class="hk-head">
+        <h1><i class="fas fa-broom"></i> Housekeeping</h1>
+        <div>
+            <button class="hk-btn" id="hk-refresh-btn" title="Refresh list">
+                <i class="fas fa-rotate"></i> Refresh
+            </button>
+            <button class="hk-btn" id="hk-token-btn" title="Manage publishing token">
+                <i class="fas fa-key"></i> Token
+            </button>
+        </div>
+    </div>
+
+    <div class="hk-toolbar">
+        <input type="search" id="hk-search" placeholder="Search title, author, tag…">
+        <select id="hk-filter-tag"><option value="">All tags</option></select>
+        <select id="hk-filter-cat"><option value="">All categories</option></select>
+        <select id="hk-filter-author"><option value="">All authors</option></select>
+        <span class="hk-stats" id="hk-stats">—</span>
+    </div>
+
+    <div id="hk-list" class="hk-grid"></div>
+</main>
+
+<!-- Edit modal -->
+<div class="hk-modal-backdrop" id="hk-edit-backdrop">
+    <div class="hk-modal" role="dialog" aria-labelledby="hk-edit-title">
+        <h2 id="hk-edit-title"><i class="fas fa-pen"></i> Edit Article</h2>
+        <div class="hk-modal-sub" id="hk-edit-folder"></div>
+
+        <div class="hk-field-row">
+            <div class="hk-field">
+                <label>Tag</label>
+                <input type="text" id="hk-edit-tag">
+            </div>
+            <div class="hk-field">
+                <label>Category</label>
+                <input type="text" id="hk-edit-category">
+            </div>
+        </div>
+        <div class="hk-field">
+            <label>Title</label>
+            <input type="text" id="hk-edit-title-input">
+        </div>
+        <div class="hk-field">
+            <label>Body (paragraphs separated by blank lines — use <code>[img-instert-tag]</code> for inline images)</label>
+            <textarea id="hk-edit-body" spellcheck="false"></textarea>
+        </div>
+
+        <div class="hk-field">
+            <label>Images</label>
+            <div id="hk-edit-images"></div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.35rem;">
+                <label class="hk-btn" style="cursor:pointer;">
+                    <i class="fas fa-star"></i> Replace hero
+                    <input type="file" accept="image/*" id="hk-edit-hero-input" class="hk-sr">
+                </label>
+                <label class="hk-btn" style="cursor:pointer;">
+                    <i class="fas fa-images"></i> Add content images
+                    <input type="file" accept="image/*" multiple id="hk-edit-content-input" class="hk-sr">
+                </label>
+            </div>
+        </div>
+
+        <div class="hk-modal-foot">
+            <span class="hk-modal-status" id="hk-edit-status"></span>
+            <button class="hk-btn" id="hk-edit-cancel"><i class="fas fa-times"></i> Cancel</button>
+            <button class="hk-btn hk-btn-primary" id="hk-edit-save"><i class="fas fa-check"></i> Save changes</button>
+        </div>
+    </div>
+</div>
+
+<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Scroll to top"><i class="fas fa-chevron-up"></i></button>
+
+<script defer src="/scripts/shared-nav.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    var REPO_OWNER = 'georgiosbalatzis';
+    var REPO_NAME  = 'f1StoriesPage';
+    var TOKEN_KEY  = 'f1stories-gh-token';
+    var ENTRIES_PATH = 'blog-module/blog-entries';
+
+    // ── Token helpers (shared with generate.html) ────────
+    function getStoredToken() {
+        try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+    }
+    function setStoredToken(t) {
+        try { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    }
+    function promptForToken(existing) {
+        var msg =
+            'GitHub Personal Access Token (fine-grained):\n\n' +
+            '• Create at: github.com/settings/personal-access-tokens/new\n' +
+            '• Resource owner: ' + REPO_OWNER + '\n' +
+            '• Only select repository: ' + REPO_NAME + '\n' +
+            '• Repository permissions → Contents: Read and write\n' +
+            '• Expiration: as short as you are comfortable with\n\n' +
+            'Paste the token below. Leave empty to clear. Stored in your browser only.';
+        var input = prompt(msg, existing || '');
+        if (input === null) return null;
+        input = input.trim();
+        setStoredToken(input);
+        return input;
+    }
+    function requireToken() {
+        var t = getStoredToken();
+        if (!t) {
+            t = promptForToken('');
+            if (!t) {
+                alert('Cannot continue without a token.');
+                return null;
+            }
+        }
+        return t;
+    }
+
+    // ── GitHub API wrapper ───────────────────────────────
+    async function ghFetch(path, token, opts) {
+        opts = opts || {};
+        var url = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + path;
+        var headers = Object.assign({
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28'
+        }, opts.headers || {});
+        if (opts.body && typeof opts.body !== 'string') {
+            headers['Content-Type'] = 'application/json';
+            opts.body = JSON.stringify(opts.body);
+        }
+        var resp = await fetch(url, { method: opts.method || 'GET', headers: headers, body: opts.body });
+        if (!resp.ok) {
+            var errText = await resp.text();
+            var err = new Error('GitHub API ' + resp.status + ' on ' + path + ': ' + errText);
+            err.status = resp.status;
+            throw err;
+        }
+        if (resp.status === 204) return null;
+        return resp.json();
+    }
+
+    function utf8ToBase64(str) {
+        var bytes = new TextEncoder().encode(str);
+        var binary = '';
+        for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        return btoa(binary);
+    }
+    function base64ToUtf8(b64) {
+        var binary = atob(b64.replace(/\s+/g, ''));
+        var bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        return new TextDecoder('utf-8').decode(bytes);
+    }
+    function blobToBase64(blob) {
+        return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function () { resolve(String(reader.result).split(',')[1] || ''); };
+            reader.onerror = function () { reject(reader.error || new Error('Read failed')); };
+            reader.readAsDataURL(blob);
+        });
+    }
+    function sanitizeImageExtension(name) {
+        var m = String(name || '').toLowerCase().match(/\.([a-z0-9]+)$/);
+        if (!m) return 'jpg';
+        var ext = m[1];
+        if (ext === 'jpeg') return 'jpg';
+        return ext;
+    }
+
+    // ─── DOM refs ────────────────────────────────────────
+    var listEl       = document.getElementById('hk-list');
+    var searchEl     = document.getElementById('hk-search');
+    var filterTag    = document.getElementById('hk-filter-tag');
+    var filterCat    = document.getElementById('hk-filter-cat');
+    var filterAuthor = document.getElementById('hk-filter-author');
+    var statsEl      = document.getElementById('hk-stats');
+    var refreshBtn   = document.getElementById('hk-refresh-btn');
+    var tokenBtn     = document.getElementById('hk-token-btn');
+
+    var editBackdrop = document.getElementById('hk-edit-backdrop');
+    var editFolderEl = document.getElementById('hk-edit-folder');
+    var editTagEl    = document.getElementById('hk-edit-tag');
+    var editCatEl    = document.getElementById('hk-edit-category');
+    var editTitleEl  = document.getElementById('hk-edit-title-input');
+    var editBodyEl   = document.getElementById('hk-edit-body');
+    var editImagesEl = document.getElementById('hk-edit-images');
+    var editHeroIn   = document.getElementById('hk-edit-hero-input');
+    var editContIn   = document.getElementById('hk-edit-content-input');
+    var editSaveBtn  = document.getElementById('hk-edit-save');
+    var editCancelBtn= document.getElementById('hk-edit-cancel');
+    var editStatusEl = document.getElementById('hk-edit-status');
+
+    var posts = [];
+    var rendered = [];
+
+    // ─── Fetch + render list ─────────────────────────────
+    async function loadList() {
+        listEl.innerHTML = '<div class="hk-empty"><i class="fas fa-spinner fa-spin"></i> Loading articles…</div>';
+        try {
+            var resp = await fetch('/blog-module/blog-data.json', { cache: 'no-store' });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            var data = await resp.json();
+            posts = (data.posts || []).slice();
+            posts.sort(function (a, b) {
+                return (b.dateISO || b.date || '').localeCompare(a.dateISO || a.date || '');
+            });
+            populateFilters();
+            applyFilters();
+        } catch (e) {
+            listEl.innerHTML = '<div class="hk-error">Failed to load blog-data.json: ' + escapeHtml(e.message) + '</div>';
+        }
+    }
+
+    function populateFilters() {
+        var tags = new Set(), cats = new Set(), authors = new Set();
+        posts.forEach(function (p) {
+            if (p.tag) tags.add(p.tag);
+            if (p.category) cats.add(p.category);
+            if (p.author) authors.add(p.author);
+        });
+        function fill(sel, values) {
+            var current = sel.value;
+            sel.innerHTML = '<option value="">All ' + sel.dataset.kind + '</option>';
+            Array.from(values).sort().forEach(function (v) {
+                var o = document.createElement('option');
+                o.value = v; o.textContent = v;
+                if (v === current) o.selected = true;
+                sel.appendChild(o);
+            });
+        }
+        filterTag.dataset.kind = 'tags';
+        filterCat.dataset.kind = 'categories';
+        filterAuthor.dataset.kind = 'authors';
+        fill(filterTag, tags);
+        fill(filterCat, cats);
+        fill(filterAuthor, authors);
+    }
+
+    function applyFilters() {
+        var q = searchEl.value.trim().toLowerCase();
+        var ft = filterTag.value, fc = filterCat.value, fa = filterAuthor.value;
+        rendered = posts.filter(function (p) {
+            if (ft && p.tag !== ft) return false;
+            if (fc && p.category !== fc) return false;
+            if (fa && p.author !== fa) return false;
+            if (q) {
+                var hay = (p.title + ' ' + p.author + ' ' + (p.tag || '') + ' ' + (p.category || '') + ' ' + (p.id || '')).toLowerCase();
+                if (hay.indexOf(q) === -1) return false;
+            }
+            return true;
+        });
+        renderList();
+    }
+
+    function renderList() {
+        statsEl.textContent = rendered.length + ' of ' + posts.length + ' article' + (posts.length === 1 ? '' : 's');
+        if (!rendered.length) {
+            listEl.innerHTML = '<div class="hk-empty">No articles match.</div>';
+            return;
+        }
+        var frag = document.createDocumentFragment();
+        rendered.forEach(function (p) {
+            frag.appendChild(buildCard(p));
+        });
+        listEl.innerHTML = '';
+        listEl.appendChild(frag);
+    }
+
+    function buildCard(p) {
+        var card = document.createElement('article');
+        card.className = 'hk-card';
+
+        var img = document.createElement('img');
+        img.className = 'hk-card-img';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.src = p.image || '/blog-module/images/default-blog.jpg';
+        img.alt = '';
+        img.onerror = function () { img.src = '/blog-module/images/default-blog.jpg'; };
+
+        var body = document.createElement('div');
+        body.className = 'hk-card-body';
+
+        var title = document.createElement('h3');
+        title.className = 'hk-card-title';
+        title.textContent = p.title || '(untitled)';
+
+        var meta = document.createElement('div');
+        meta.className = 'hk-card-meta';
+        meta.innerHTML =
+            '<span><i class="fas fa-user"></i> ' + escapeHtml(p.author || '—') + '</span>' +
+            '<span><i class="fas fa-calendar-alt"></i> ' + escapeHtml(p.displayDate || p.date || '—') + '</span>';
+
+        var badges = document.createElement('div');
+        badges.className = 'hk-card-meta';
+        if (p.tag) {
+            var b1 = document.createElement('span'); b1.className = 'hk-badge'; b1.textContent = p.tag; badges.appendChild(b1);
+        }
+        if (p.category) {
+            var b2 = document.createElement('span'); b2.className = 'hk-badge hk-badge-cat'; b2.textContent = p.category; badges.appendChild(b2);
+        }
+
+        var idEl = document.createElement('div');
+        idEl.className = 'hk-card-id';
+        idEl.textContent = p.id || '';
+
+        var actions = document.createElement('div');
+        actions.className = 'hk-card-actions';
+
+        var previewBtn = document.createElement('button');
+        previewBtn.className = 'hk-btn';
+        previewBtn.innerHTML = '<i class="fas fa-eye"></i> Preview';
+        previewBtn.addEventListener('click', function () {
+            window.open(p.url, '_blank', 'noopener');
+        });
+
+        var editBtn = document.createElement('button');
+        editBtn.className = 'hk-btn hk-btn-primary';
+        editBtn.innerHTML = '<i class="fas fa-pen"></i> Edit';
+        editBtn.addEventListener('click', function () { openEdit(p); });
+
+        var delBtn = document.createElement('button');
+        delBtn.className = 'hk-btn hk-btn-danger';
+        delBtn.innerHTML = '<i class="fas fa-trash"></i> Delete';
+        delBtn.addEventListener('click', function () { deleteArticle(p, delBtn); });
+
+        actions.appendChild(previewBtn);
+        actions.appendChild(editBtn);
+        actions.appendChild(delBtn);
+
+        body.appendChild(title);
+        body.appendChild(meta);
+        body.appendChild(badges);
+        body.appendChild(idEl);
+        body.appendChild(actions);
+
+        card.appendChild(img);
+        card.appendChild(body);
+        return card;
+    }
+
+    function escapeHtml(str) {
+        return String(str == null ? '' : str)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    // ─── Source.txt parse / serialise ───────────────────
+    function parseSourceTxt(text) {
+        var raw = text.replace(/\r\n/g, '\n');
+        var lines = raw.split('\n');
+        var firstLine = (lines[0] || '').trim();
+        var first = firstLine.split(/\s+/);
+        var tag = first[0] || 'F1';
+        var category = first[1] || 'Racing';
+        // Find first non-blank line after index 0 as title
+        var titleIdx = -1;
+        for (var i = 1; i < lines.length; i++) {
+            if (lines[i].trim() !== '') { titleIdx = i; break; }
+        }
+        var title = titleIdx !== -1 ? lines[titleIdx].trim() : '';
+        // Body = lines after title, trimming leading blank lines
+        var body = '';
+        if (titleIdx !== -1) {
+            var rest = lines.slice(titleIdx + 1);
+            while (rest.length && rest[0].trim() === '') rest.shift();
+            body = rest.join('\n').replace(/\s+$/, '');
+        }
+        return { tag: tag, category: category, title: title, body: body };
+    }
+
+    function buildSourceTxt(tag, category, title, body) {
+        var safeTag = (tag || 'F1').replace(/\s+/g, '-');
+        var safeCategory = (category || 'Racing').replace(/\s+/g, '-');
+        var safeTitle = (title || 'Untitled').replace(/\r/g, '');
+        var safeBody = (body || '').replace(/\r/g, '');
+        return safeTag + ' ' + safeCategory + '\n\n' + safeTitle + '\n\n' + safeBody + '\n';
+    }
+
+    // ─── Folder listing / deletion helpers ──────────────
+    async function listFolder(token, folder) {
+        // Returns [{ name, sha, size, type }]
+        var path = '/contents/' + ENTRIES_PATH + '/' + encodeURIComponent(folder);
+        var data = await ghFetch(path, token);
+        return Array.isArray(data) ? data : [];
+    }
+
+    // All files for a given image slot (N.webp, N.avif, N-card.webp, N-480.webp, etc.)
+    function filesForSlot(files, slot) {
+        var re = new RegExp('^' + slot + '([.\\-])');
+        return files.filter(function (f) { return f.type === 'file' && re.test(f.name); });
+    }
+
+    // Slots present in a folder, based on "1", "3", "4", … prefixes
+    function slotsInFolder(files) {
+        var found = {};
+        files.forEach(function (f) {
+            if (f.type !== 'file') return;
+            var m = f.name.match(/^(\d+)([.\-])/);
+            if (m) found[m[1]] = true;
+        });
+        var nums = Object.keys(found).map(Number).sort(function (a, b) { return a - b; });
+        return nums;
+    }
+
+    // ─── Delete article ─────────────────────────────────
+    async function deleteArticle(post, btn) {
+        var token = requireToken();
+        if (!token) return;
+        if (!confirm('Delete article "' + post.title + '"?\n\nFolder: ' + ENTRIES_PATH + '/' + post.id + '\n\nThis removes source, generated article.html, and all image variants. The workflow will rebuild blog-data.json + sitemap.')) {
+            return;
+        }
+        btn.disabled = true;
+        var originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+            var files = await listFolder(token, post.id);
+            if (!files.length) throw new Error('Folder is empty or missing.');
+
+            var ref = await ghFetch('/git/ref/heads/main', token);
+            var latestCommitSha = ref.object.sha;
+            var commit = await ghFetch('/git/commits/' + latestCommitSha, token);
+            var baseTreeSha = commit.tree.sha;
+
+            var tree = files.filter(function (f) { return f.type === 'file'; }).map(function (f) {
+                return {
+                    path: ENTRIES_PATH + '/' + post.id + '/' + f.name,
+                    mode: '100644', type: 'blob', sha: null
+                };
+            });
+
+            var newTree = await ghFetch('/git/trees', token, {
+                method: 'POST',
+                body: { base_tree: baseTreeSha, tree: tree }
+            });
+            var newCommit = await ghFetch('/git/commits', token, {
+                method: 'POST',
+                body: { message: 'chore(blog): delete ' + post.id + ' — ' + post.title, tree: newTree.sha, parents: [latestCommitSha] }
+            });
+            await ghFetch('/git/refs/heads/main', token, {
+                method: 'PATCH', body: { sha: newCommit.sha, force: false }
+            });
+
+            posts = posts.filter(function (p) { return p.id !== post.id; });
+            applyFilters();
+            alert('Deleted. The workflow is rebuilding the index.');
+        } catch (e) {
+            console.error('Delete failed', e);
+            var hint = (e.status === 401 || e.status === 403)
+                ? '\n\nCheck your token — Contents: Read and write is required.' : '';
+            alert('Delete failed: ' + e.message + hint);
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
+    }
+
+    // ─── Edit modal ─────────────────────────────────────
+    // imageOps[slot] = { op: 'keep'|'replace'|'remove'|'add', file?: File, existing?: [filename] }
+    var editState = null;
+
+    async function openEdit(post) {
+        var token = requireToken();
+        if (!token) return;
+
+        editStatusEl.textContent = 'Loading source…';
+        editStatusEl.classList.remove('err');
+        editFolderEl.textContent = ENTRIES_PATH + '/' + post.id;
+        editTagEl.value = post.tag || '';
+        editCatEl.value = post.category || '';
+        editTitleEl.value = post.title || '';
+        editBodyEl.value = '';
+        editImagesEl.innerHTML = '<div class="hk-empty" style="padding:0.8rem;"><i class="fas fa-spinner fa-spin"></i> Loading…</div>';
+        editBackdrop.classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        try {
+            // 1. Load folder listing
+            var files = await listFolder(token, post.id);
+            var srcFile = files.find(function (f) { return f.type === 'file' && f.name === 'source.txt'; });
+            if (!srcFile) {
+                // Fallback: any .txt, but not article.html
+                srcFile = files.find(function (f) {
+                    return f.type === 'file' && /\.txt$/i.test(f.name) && !/^article\./.test(f.name);
+                });
+            }
+            if (!srcFile) {
+                throw new Error('No editable .txt source in this folder. Likely a .docx-originated article — edit it via the source file on GitHub.');
+            }
+
+            // 2. Load source content (GitHub returns base64 for files via /contents)
+            var blob = await ghFetch('/contents/' + ENTRIES_PATH + '/' + encodeURIComponent(post.id) + '/' + encodeURIComponent(srcFile.name), token);
+            var text = blob.encoding === 'base64' ? base64ToUtf8(blob.content) : (blob.content || '');
+            var parsed = parseSourceTxt(text);
+
+            editTagEl.value = parsed.tag || post.tag || '';
+            editCatEl.value = parsed.category || post.category || '';
+            editTitleEl.value = parsed.title || post.title || '';
+            editBodyEl.value = parsed.body;
+
+            // 3. Compute existing slots from folder
+            var slots = slotsInFolder(files);
+            var slotMap = {};
+            slots.forEach(function (n) { slotMap[n] = filesForSlot(files, n).map(function (f) { return f.name; }); });
+
+            editState = {
+                token: token,
+                post: post,
+                folder: post.id,
+                srcName: srcFile.name,
+                files: files,
+                slotMap: slotMap,
+                imageOps: {},          // slot → { op, file }
+                addContent: []         // File[] to append at slot 3/4/… beyond current max
+            };
+
+            // Initialise imageOps as "keep"
+            slots.forEach(function (n) {
+                editState.imageOps[n] = { op: 'keep' };
+            });
+
+            renderEditImages();
+            editStatusEl.textContent = '';
+        } catch (e) {
+            console.error('Load edit failed', e);
+            editStatusEl.textContent = e.message;
+            editStatusEl.classList.add('err');
+            editImagesEl.innerHTML = '';
+        }
+    }
+
+    function renderEditImages() {
+        if (!editState) return;
+        editImagesEl.innerHTML = '';
+
+        var slots = Object.keys(editState.imageOps).map(Number).sort(function (a, b) { return a - b; });
+
+        // Existing slots + any replace/remove states
+        slots.forEach(function (slot) {
+            var op = editState.imageOps[slot];
+            var files = editState.slotMap[slot] || [];
+            var row = document.createElement('div');
+            row.className = 'hk-image-slot';
+
+            // Preview image for this slot
+            var img = document.createElement('img');
+            img.loading = 'lazy';
+            img.onerror = function () { img.style.background = 'rgba(255,255,255,0.05)'; img.removeAttribute('src'); };
+            if (op.op === 'replace' && op.file) {
+                img.src = URL.createObjectURL(op.file);
+                img.dataset.objectUrl = '1';
+            } else {
+                // Prefer .webp > .avif > any; use the first existing file
+                var pref = files.find(function (n) { return /\.webp$/i.test(n) && !/-\d+\.webp$/i.test(n); })
+                    || files.find(function (n) { return /\.jpg$/i.test(n) || /\.jpeg$/i.test(n) || /\.png$/i.test(n); })
+                    || files[0];
+                if (pref) {
+                    img.src = '/' + ENTRIES_PATH + '/' + encodeURIComponent(editState.folder) + '/' + encodeURIComponent(pref);
+                }
+            }
+
+            var info = document.createElement('div');
+            info.className = 'hk-image-slot-info';
+            var isHero = (slot === 1);
+            var label = (isHero ? 'Hero (slot 1)' : 'Content image slot ' + slot);
+            var opLabel = {
+                keep: '',
+                replace: '<span class="hk-slot-op hk-op-replace">Will replace</span>',
+                remove:  '<span class="hk-slot-op hk-op-remove">Will be removed</span>'
+            }[op.op] || '';
+            info.innerHTML =
+                '<strong>' + label + '</strong>' +
+                '<div class="hk-slot-files">' + files.map(escapeHtml).join(', ') + '</div>' +
+                opLabel;
+
+            var actions = document.createElement('div');
+            actions.className = 'hk-image-slot-actions';
+            if (op.op === 'keep' || op.op === 'replace') {
+                var replaceLabel = document.createElement('label');
+                replaceLabel.className = 'hk-btn';
+                replaceLabel.style.cursor = 'pointer';
+                replaceLabel.innerHTML = '<i class="fas fa-rotate"></i> Replace';
+                var replaceInput = document.createElement('input');
+                replaceInput.type = 'file';
+                replaceInput.accept = 'image/*';
+                replaceInput.className = 'hk-sr';
+                replaceInput.addEventListener('change', function () {
+                    if (replaceInput.files && replaceInput.files[0]) {
+                        editState.imageOps[slot] = { op: 'replace', file: replaceInput.files[0] };
+                        renderEditImages();
+                    }
+                });
+                replaceLabel.appendChild(replaceInput);
+                actions.appendChild(replaceLabel);
+            }
+            if (!isHero) {
+                var delBtn = document.createElement('button');
+                delBtn.className = 'hk-btn hk-btn-danger';
+                delBtn.innerHTML = '<i class="fas fa-trash"></i> Remove';
+                delBtn.addEventListener('click', function () {
+                    editState.imageOps[slot] = { op: 'remove' };
+                    renderEditImages();
+                });
+                actions.appendChild(delBtn);
+            }
+            if (op.op !== 'keep') {
+                var undoBtn = document.createElement('button');
+                undoBtn.className = 'hk-btn';
+                undoBtn.innerHTML = '<i class="fas fa-undo"></i> Undo';
+                undoBtn.addEventListener('click', function () {
+                    editState.imageOps[slot] = { op: 'keep' };
+                    renderEditImages();
+                });
+                actions.appendChild(undoBtn);
+            }
+
+            row.appendChild(img);
+            row.appendChild(info);
+            row.appendChild(actions);
+            editImagesEl.appendChild(row);
+        });
+
+        // New content images queued to append
+        editState.addContent.forEach(function (file, idx) {
+            var row = document.createElement('div');
+            row.className = 'hk-image-slot';
+
+            var img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+
+            var info = document.createElement('div');
+            info.className = 'hk-image-slot-info';
+            info.innerHTML =
+                '<strong>New content image</strong>' +
+                '<div class="hk-slot-files">' + escapeHtml(file.name) + '</div>' +
+                '<span class="hk-slot-op hk-op-add">Will be added</span>';
+
+            var actions = document.createElement('div');
+            actions.className = 'hk-image-slot-actions';
+            var rmBtn = document.createElement('button');
+            rmBtn.className = 'hk-btn hk-btn-danger';
+            rmBtn.innerHTML = '<i class="fas fa-times"></i>';
+            rmBtn.addEventListener('click', function () {
+                editState.addContent.splice(idx, 1);
+                renderEditImages();
+            });
+            actions.appendChild(rmBtn);
+
+            row.appendChild(img);
+            row.appendChild(info);
+            row.appendChild(actions);
+            editImagesEl.appendChild(row);
+        });
+
+        if (!slots.length && !editState.addContent.length) {
+            var hint = document.createElement('div');
+            hint.className = 'hk-empty';
+            hint.style.padding = '0.8rem';
+            hint.textContent = 'No images yet.';
+            editImagesEl.appendChild(hint);
+        }
+    }
+
+    editHeroIn.addEventListener('change', function () {
+        if (!editState) return;
+        if (editHeroIn.files && editHeroIn.files[0]) {
+            editState.imageOps[1] = { op: 'replace', file: editHeroIn.files[0] };
+            // If slot 1 was never in the folder, still register it
+            if (!editState.slotMap[1]) editState.slotMap[1] = [];
+            editHeroIn.value = '';
+            renderEditImages();
+        }
+    });
+
+    editContIn.addEventListener('change', function () {
+        if (!editState) return;
+        if (editContIn.files && editContIn.files.length) {
+            for (var i = 0; i < editContIn.files.length; i++) {
+                editState.addContent.push(editContIn.files[i]);
+            }
+            editContIn.value = '';
+            renderEditImages();
+        }
+    });
+
+    editCancelBtn.addEventListener('click', closeEdit);
+    editBackdrop.addEventListener('click', function (e) {
+        if (e.target === editBackdrop) closeEdit();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && editBackdrop.classList.contains('open')) closeEdit();
+    });
+
+    function closeEdit() {
+        editBackdrop.classList.remove('open');
+        document.body.style.overflow = '';
+        editState = null;
+    }
+
+    // ─── Save edits ─────────────────────────────────────
+    editSaveBtn.addEventListener('click', async function () {
+        if (!editState) return;
+        var token = editState.token;
+        var folder = editState.folder;
+
+        var tag = editTagEl.value.trim() || 'F1';
+        var category = editCatEl.value.trim() || 'Racing';
+        var title = editTitleEl.value.trim();
+        var body = editBodyEl.value.trim();
+        if (!title) { alert('Title is required.'); editTitleEl.focus(); return; }
+        if (!body)  { alert('Body is required.');  editBodyEl.focus();  return; }
+
+        // Build plan
+        var newSource = buildSourceTxt(tag, category, title, body);
+        var sourceChanged = true; // Always re-write to avoid fetching old for diff
+
+        var deletes = []; // filenames to delete inside the folder
+        var additions = []; // { path, file | text }
+
+        additions.push({ path: folder + '/' + editState.srcName, text: newSource });
+
+        // Determine highest existing slot → append new content images after it
+        var existingSlots = Object.keys(editState.slotMap).map(Number);
+        var maxSlot = existingSlots.length ? Math.max.apply(null, existingSlots) : 2;
+        // Convention: slot 1 is hero, 2 reserved for OG image (generated), content starts at 3
+        var nextSlot = Math.max(maxSlot + 1, 3);
+
+        // Apply ops on existing slots
+        Object.keys(editState.imageOps).forEach(function (slotStr) {
+            var slot = Number(slotStr);
+            var op = editState.imageOps[slot];
+            var currentFiles = editState.slotMap[slot] || [];
+
+            if (op.op === 'replace') {
+                // Delete ALL variant files for this slot (processor regenerates from new source)
+                currentFiles.forEach(function (n) { deletes.push(n); });
+                var ext = sanitizeImageExtension(op.file.name);
+                additions.push({ path: folder + '/' + slot + '.' + ext, file: op.file });
+            } else if (op.op === 'remove') {
+                currentFiles.forEach(function (n) { deletes.push(n); });
+            }
+            // 'keep' → nothing
+        });
+
+        // Append new content images at nextSlot, nextSlot+1, …
+        editState.addContent.forEach(function (file, idx) {
+            var slot = nextSlot + idx;
+            var ext = sanitizeImageExtension(file.name);
+            additions.push({ path: folder + '/' + slot + '.' + ext, file: file });
+        });
+
+        var summary =
+            'Save changes to ' + folder + '?\n\n' +
+            '• ' + (sourceChanged ? 'Rewrite source' : 'Source unchanged') + '\n' +
+            '• ' + deletes.length + ' file' + (deletes.length === 1 ? '' : 's') + ' to delete\n' +
+            '• ' + (additions.length - 1) + ' image file' + ((additions.length - 1) === 1 ? '' : 's') + ' to upload' +
+            (editState.addContent.length ? ' (' + editState.addContent.length + ' new)' : '');
+        if (!confirm(summary)) return;
+
+        editSaveBtn.disabled = true;
+        var originalHtml = editSaveBtn.innerHTML;
+        editStatusEl.classList.remove('err');
+
+        try {
+            editStatusEl.textContent = 'Reading main ref…';
+            editSaveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+            var ref = await ghFetch('/git/ref/heads/main', token);
+            var latestCommitSha = ref.object.sha;
+            var commit = await ghFetch('/git/commits/' + latestCommitSha, token);
+            var baseTreeSha = commit.tree.sha;
+
+            var tree = [];
+
+            // Deletions
+            deletes.forEach(function (name) {
+                tree.push({
+                    path: ENTRIES_PATH + '/' + folder + '/' + name,
+                    mode: '100644', type: 'blob', sha: null
+                });
+            });
+
+            // Additions
+            for (var i = 0; i < additions.length; i++) {
+                var a = additions[i];
+                editStatusEl.textContent = 'Uploading ' + a.path + '…';
+                var contentB64;
+                if (a.text != null) {
+                    contentB64 = utf8ToBase64(a.text);
+                } else {
+                    contentB64 = await blobToBase64(a.file);
+                }
+                var blob = await ghFetch('/git/blobs', token, {
+                    method: 'POST',
+                    body: { content: contentB64, encoding: 'base64' }
+                });
+                tree.push({
+                    path: ENTRIES_PATH + '/' + a.path,
+                    mode: '100644', type: 'blob', sha: blob.sha
+                });
+            }
+
+            editStatusEl.textContent = 'Writing tree…';
+            var newTree = await ghFetch('/git/trees', token, {
+                method: 'POST',
+                body: { base_tree: baseTreeSha, tree: tree }
+            });
+
+            editStatusEl.textContent = 'Creating commit…';
+            var newCommit = await ghFetch('/git/commits', token, {
+                method: 'POST',
+                body: { message: 'edit: ' + title + ' (' + folder + ')', tree: newTree.sha, parents: [latestCommitSha] }
+            });
+            await ghFetch('/git/refs/heads/main', token, {
+                method: 'PATCH', body: { sha: newCommit.sha, force: false }
+            });
+
+            editStatusEl.textContent = 'Saved. Workflow rebuilding…';
+            var actionsUrl = 'https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/actions';
+            if (confirm('Committed ' + newCommit.sha.substring(0, 7) + ' to main.\n\nThe Publish Blog workflow is rebuilding the article (~1 min).\n\nOpen the Actions tab?')) {
+                window.open(actionsUrl, '_blank', 'noopener');
+            }
+            closeEdit();
+        } catch (e) {
+            console.error('Save failed', e);
+            editStatusEl.classList.add('err');
+            var hint = (e.status === 401 || e.status === 403)
+                ? ' — check token (Contents: Read and write required).' : '';
+            editStatusEl.textContent = 'Save failed: ' + e.message + hint;
+            editSaveBtn.disabled = false;
+            editSaveBtn.innerHTML = originalHtml;
+        }
+    });
+
+    // ─── Events ──────────────────────────────────────────
+    tokenBtn.addEventListener('click', function () {
+        var existing = getStoredToken();
+        promptForToken(existing ? '(token stored — paste new one to replace, or leave empty to clear)' : '');
+    });
+    refreshBtn.addEventListener('click', function () { loadList(); });
+
+    var searchTimer;
+    searchEl.addEventListener('input', function () {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(applyFilters, 120);
+    });
+    filterTag.addEventListener('change', applyFilters);
+    filterCat.addEventListener('change', applyFilters);
+    filterAuthor.addEventListener('change', applyFilters);
+
+    // Init
+    loadList();
+})();
+</script>
+</body>
+</html>
