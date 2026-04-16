@@ -1,7 +1,11 @@
 name: Publish Blog
 
 # Runs the blog-processor whenever a new or modified article source lands on main,
-# then commits the generated article.html, feed JSONs, and sitemap back to the branch.
+# then folds the generated article.html, feed JSONs, and sitemap into the same
+# commit via amend + force-with-lease. This keeps source + build as a single
+# commit so the dynamic pages-build-deployment workflow only fires once per
+# publish (otherwise two parallel Pages runs race the github-pages artifact
+# and the deploy step fails with "Multiple artifacts named github-pages").
 # Commits made by GITHUB_TOKEN do not re-trigger workflows, so there is no loop.
 
 on:
@@ -30,13 +34,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           persist-credentials: true
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '20'
           cache: 'npm'
@@ -49,6 +53,7 @@ jobs:
 
       - name: Commit generated artifacts
         run: |
+          set -eu
           git config user.name  "f1stories-bot"
           git config user.email "bot@users.noreply.github.com"
           git add -A
@@ -56,5 +61,19 @@ jobs:
             echo "No changes produced by blog-processor — nothing to commit."
             exit 0
           fi
+
+          if [ "${{ github.event_name }}" = "push" ]; then
+            # Fold the generated artifacts into the triggering commit so
+            # Pages only runs one deploy. --force-with-lease refuses if
+            # main moved since checkout, protecting against lost commits.
+            git commit --amend --no-edit
+            if git push --force-with-lease; then
+              echo "Amended triggering commit with build artifacts."
+              exit 0
+            fi
+            echo "Force-push rejected (main moved); falling back to fresh commit."
+            git reset --soft HEAD@{1}
+          fi
+
           git commit -m "chore(blog): auto-build generated artifacts [skip ci]"
           git push

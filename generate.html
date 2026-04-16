@@ -945,7 +945,7 @@ Blank lines separate paragraphs."></textarea>
 
             var heroExt = heroFile ? sanitizeImageExtension(heroFile.name) : null;
             var sourceTxt = buildSourceTxt(tag, category, title, body);
-            var commitMessage = 'publish: ' + title + ' (' + folderName + ')';
+            var commitMessage = 'publish(blog): ' + title + ' (' + folderName + ')';
 
             var sha = await publishToGitHub(
                 token, folderName, sourceTxt, heroFile, heroExt, contentImageFiles, commitMessage,

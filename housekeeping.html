@@ -783,7 +783,7 @@
             });
             var newCommit = await ghFetch('/git/commits', token, {
                 method: 'POST',
-                body: { message: 'chore(blog): delete ' + post.id + ' — ' + post.title, tree: newTree.sha, parents: [latestCommitSha] }
+                body: { message: 'delete(blog): ' + post.title + ' (' + post.id + ')', tree: newTree.sha, parents: [latestCommitSha] }
             });
             await ghFetch('/git/refs/heads/main', token, {
                 method: 'PATCH', body: { sha: newCommit.sha, force: false }
@@ -1156,7 +1156,7 @@
             editStatusEl.textContent = 'Creating commit…';
             var newCommit = await ghFetch('/git/commits', token, {
                 method: 'POST',
-                body: { message: 'edit: ' + title + ' (' + folder + ')', tree: newTree.sha, parents: [latestCommitSha] }
+                body: { message: 'edit(blog): ' + title + ' (' + folder + ')', tree: newTree.sha, parents: [latestCommitSha] }
             });
             await ghFetch('/git/refs/heads/main', token, {
                 method: 'PATCH', body: { sha: newCommit.sha, force: false }
