@@ -279,6 +279,9 @@ Blank lines separate paragraphs."></textarea>
         <button class="gen-btn gen-btn-primary" id="gen-preview-btn">
             <i class="fas fa-eye"></i> Preview
         </button>
+        <button class="gen-btn gen-btn-primary" id="gen-publish-btn" style="background:#ef4444;">
+            <i class="fas fa-rocket"></i> Publish
+        </button>
         <button class="gen-btn gen-btn-primary" id="gen-export-btn" style="background:#22c55e;">
             <i class="fas fa-file-zipper"></i> Export ZIP
         </button>
@@ -289,10 +292,15 @@ Blank lines separate paragraphs."></textarea>
         <button class="gen-btn gen-btn-secondary" id="gen-clear-btn">
             <i class="fas fa-eraser"></i> Clear
         </button>
+        <button class="gen-btn gen-btn-secondary" id="gen-token-btn" title="Manage publishing token">
+            <i class="fas fa-key"></i>
+        </button>
     </div>
     <div class="gen-hint">
         Format: plain text with markdown-style headings. Links to YouTube, X, Instagram, Threads, and Facebook auto-embed.<br>
-        <strong>Export ZIP</strong> downloads a ready-to-publish folder. Unzip it into <code>blog-module/blog-entries/</code>, commit and push — GitHub Actions builds the article.
+        <strong>Publish</strong> commits directly to <code>main</code> via GitHub API — the workflow then builds the article (~1 min).
+        <strong>Export ZIP</strong> is the manual fallback (unzip into <code>blog-module/blog-entries/</code>, commit, push).
+        Click the <i class="fas fa-key"></i> to set up your publishing token.
     </div>
 </div>
 
@@ -386,6 +394,8 @@ Blank lines separate paragraphs."></textarea>
     var fileText      = document.getElementById('gen-file-text');
     var previewBtn    = document.getElementById('gen-preview-btn');
     var exportBtn     = document.getElementById('gen-export-btn');
+    var publishBtn    = document.getElementById('gen-publish-btn');
+    var tokenBtn      = document.getElementById('gen-token-btn');
     var clearBtn      = document.getElementById('gen-clear-btn');
     var backBtn       = document.getElementById('gen-back-btn');
     var editorPanel   = document.getElementById('editor-panel');
@@ -536,6 +546,202 @@ Blank lines separate paragraphs."></textarea>
         } finally {
             exportBtn.disabled = false;
             exportBtn.innerHTML = originalHtml;
+        }
+    });
+
+    // ── Publish directly to GitHub ────────────────────────
+    var REPO_OWNER = 'georgiosbalatzis';
+    var REPO_NAME  = 'f1StoriesPage';
+    var TOKEN_KEY  = 'f1stories-gh-token';
+
+    function getStoredToken() {
+        try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+    }
+    function setStoredToken(t) {
+        try { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    }
+
+    function promptForToken(existing) {
+        var msg =
+            'GitHub Personal Access Token (fine-grained):\n\n' +
+            '• Create at: github.com/settings/personal-access-tokens/new\n' +
+            '• Resource owner: ' + REPO_OWNER + '\n' +
+            '• Only select repository: ' + REPO_NAME + '\n' +
+            '• Repository permissions → Contents: Read and write\n' +
+            '• Expiration: as short as you are comfortable with\n\n' +
+            'Paste the token below. Leave empty to clear. Stored in your browser only.';
+        var input = prompt(msg, existing || '');
+        if (input === null) return null; // cancelled
+        input = input.trim();
+        setStoredToken(input);
+        return input;
+    }
+
+    tokenBtn.addEventListener('click', function () {
+        var existing = getStoredToken();
+        promptForToken(existing ? '(token stored — paste new one to replace, or leave empty to clear)' : '');
+    });
+
+    function utf8ToBase64(str) {
+        var bytes = new TextEncoder().encode(str);
+        var binary = '';
+        for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        return btoa(binary);
+    }
+
+    function blobToBase64(blob) {
+        return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function () { resolve(String(reader.result).split(',')[1] || ''); };
+            reader.onerror = function () { reject(reader.error || new Error('Read failed')); };
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    async function ghFetch(path, token, opts) {
+        opts = opts || {};
+        var url = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + path;
+        var headers = Object.assign({
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28'
+        }, opts.headers || {});
+        if (opts.body && typeof opts.body !== 'string') {
+            headers['Content-Type'] = 'application/json';
+            opts.body = JSON.stringify(opts.body);
+        }
+        var resp = await fetch(url, { method: opts.method || 'GET', headers: headers, body: opts.body });
+        if (!resp.ok) {
+            var errText = await resp.text();
+            var err = new Error('GitHub API ' + resp.status + ' on ' + path + ': ' + errText);
+            err.status = resp.status;
+            throw err;
+        }
+        if (resp.status === 204) return null;
+        return resp.json();
+    }
+
+    async function folderExists(token, folderName) {
+        try {
+            await ghFetch('/contents/blog-module/blog-entries/' + encodeURIComponent(folderName), token);
+            return true;
+        } catch (e) {
+            if (e.status === 404) return false;
+            throw e;
+        }
+    }
+
+    async function publishToGitHub(token, folderName, sourceTxt, heroFile, heroExt, commitMessage) {
+        // 1. Current main ref + commit + tree
+        var ref = await ghFetch('/git/ref/heads/main', token);
+        var latestCommitSha = ref.object.sha;
+        var commit = await ghFetch('/git/commits/' + latestCommitSha, token);
+        var baseTreeSha = commit.tree.sha;
+
+        // 2. Blobs
+        var blobs = [];
+        var txtBlob = await ghFetch('/git/blobs', token, {
+            method: 'POST',
+            body: { content: utf8ToBase64(sourceTxt), encoding: 'base64' }
+        });
+        blobs.push({
+            path: 'blog-module/blog-entries/' + folderName + '/source.txt',
+            mode: '100644', type: 'blob', sha: txtBlob.sha
+        });
+
+        if (heroFile) {
+            var heroB64 = await blobToBase64(heroFile);
+            var heroBlob = await ghFetch('/git/blobs', token, {
+                method: 'POST',
+                body: { content: heroB64, encoding: 'base64' }
+            });
+            blobs.push({
+                path: 'blog-module/blog-entries/' + folderName + '/1.' + heroExt,
+                mode: '100644', type: 'blob', sha: heroBlob.sha
+            });
+        }
+
+        // 3. Tree based on current main
+        var newTree = await ghFetch('/git/trees', token, {
+            method: 'POST',
+            body: { base_tree: baseTreeSha, tree: blobs }
+        });
+
+        // 4. Commit + 5. Update ref
+        var newCommit = await ghFetch('/git/commits', token, {
+            method: 'POST',
+            body: { message: commitMessage, tree: newTree.sha, parents: [latestCommitSha] }
+        });
+        await ghFetch('/git/refs/heads/main', token, {
+            method: 'PATCH',
+            body: { sha: newCommit.sha, force: false }
+        });
+        return newCommit.sha;
+    }
+
+    publishBtn.addEventListener('click', async function () {
+        var title = titleInput.value.trim();
+        if (!title) { alert('Please fill in a title before publishing.'); titleInput.focus(); return; }
+
+        var body = contentArea.value.trim();
+        if (!body) { alert('Please write some article content before publishing.'); contentArea.focus(); return; }
+
+        var token = getStoredToken();
+        if (!token) {
+            token = promptForToken('');
+            if (!token) { alert('Cannot publish without a token.'); return; }
+        }
+
+        var author = authorSelect.value;
+        var tag = tagInput.value.trim() || 'F1';
+        var category = categoryInput.value.trim() || 'Racing';
+        var authorCode = AUTHOR_CODES[author] || '';
+        var folderName = todayYYYYMMDD() + authorCode;
+        var heroFile = heroInput.files && heroInput.files[0];
+
+        if (!heroFile) {
+            if (!confirm('No hero image attached. Publish anyway (will use default blog image)?')) return;
+        }
+
+        publishBtn.disabled = true;
+        var originalHtml = publishBtn.innerHTML;
+        publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking…';
+
+        try {
+            var exists = await folderExists(token, folderName);
+            if (exists) {
+                if (!confirm('Folder blog-entries/' + folderName + ' already exists on main. Overwrite its files?')) {
+                    return;
+                }
+            }
+
+            if (!confirm('Publish "' + title + '" to blog-module/blog-entries/' + folderName + '/ on main?')) {
+                return;
+            }
+
+            publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing…';
+
+            var heroExt = heroFile ? sanitizeImageExtension(heroFile.name) : null;
+            var sourceTxt = buildSourceTxt(tag, category, title, body);
+            var commitMessage = 'publish: ' + title + ' (' + folderName + ')';
+
+            var sha = await publishToGitHub(token, folderName, sourceTxt, heroFile, heroExt, commitMessage);
+
+            var shortSha = sha.substring(0, 7);
+            var actionsUrl = 'https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/actions';
+            if (confirm('Published commit ' + shortSha + ' to main.\n\nThe Publish Blog workflow is building the article now (~1 min).\n\nOpen the Actions tab to watch it?')) {
+                window.open(actionsUrl, '_blank', 'noopener');
+            }
+        } catch (err) {
+            console.error('Publish failed', err);
+            var hint = '';
+            if (err.status === 401 || err.status === 403) {
+                hint = '\n\nCheck your token — it may be expired, missing permissions, or not scoped to this repo. Click the key icon to update it.';
+            }
+            alert('Publish failed: ' + (err && err.message ? err.message : err) + hint);
+        } finally {
+            publishBtn.disabled = false;
+            publishBtn.innerHTML = originalHtml;
         }
     });
 
