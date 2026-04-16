@@ -1,0 +1,19 @@
+{
+  "name": "f1stories-site",
+  "version": "1.0.0",
+  "description": "F1 Stories static website — build scripts for the blog publishing pipeline.",
+  "private": true,
+  "scripts": {
+    "build:blog": "node blog-module/blog-processor.js",
+    "build:blog:force": "node blog-module/blog-processor.js --force",
+    "build:image-variants": "node blog-module/generate-image-variants.js --run"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.12",
+    "mammoth": "^1.8.0",
+    "sharp": "^0.33.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="/styles/shared-nav.css?v=20260403-2">
     <link rel="stylesheet" href="/theme-overrides.css">
 
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
+
     <script>
         (function() {
             var session = sessionStorage.getItem('f1stories-theme');
@@ -277,6 +279,9 @@ Blank lines separate paragraphs."></textarea>
         <button class="gen-btn gen-btn-primary" id="gen-preview-btn">
             <i class="fas fa-eye"></i> Preview
         </button>
+        <button class="gen-btn gen-btn-primary" id="gen-export-btn" style="background:#22c55e;">
+            <i class="fas fa-file-zipper"></i> Export ZIP
+        </button>
         <label class="gen-file-label" id="gen-file-label">
             <i class="fas fa-image"></i> <span id="gen-file-text">Attach Hero Image</span>
             <input type="file" accept="image/*" class="gen-file-input" id="gen-hero-input">
@@ -286,7 +291,8 @@ Blank lines separate paragraphs."></textarea>
         </button>
     </div>
     <div class="gen-hint">
-        Format: plain text with markdown-style headings. Links to YouTube, X, Instagram, Threads, and Facebook auto-embed.
+        Format: plain text with markdown-style headings. Links to YouTube, X, Instagram, Threads, and Facebook auto-embed.<br>
+        <strong>Export ZIP</strong> downloads a ready-to-publish folder. Unzip it into <code>blog-module/blog-entries/</code>, commit and push — GitHub Actions builds the article.
     </div>
 </div>
 
@@ -379,10 +385,21 @@ Blank lines separate paragraphs."></textarea>
     var fileLabel     = document.getElementById('gen-file-label');
     var fileText      = document.getElementById('gen-file-text');
     var previewBtn    = document.getElementById('gen-preview-btn');
+    var exportBtn     = document.getElementById('gen-export-btn');
     var clearBtn      = document.getElementById('gen-clear-btn');
     var backBtn       = document.getElementById('gen-back-btn');
     var editorPanel   = document.getElementById('editor-panel');
     var previewWrap   = document.getElementById('preview-wrapper');
+
+    // Author → folder code (mirrors blog-processor.js AUTHOR_MAP)
+    var AUTHOR_CODES = {
+        'Georgios Balatzis':    'G',
+        'Giannis Poulikidis':   'J',
+        'Thanasis Batalas':     'T',
+        '2Fast':                'W',
+        'Dimitris Keramidiotis':'D',
+        'F1 Stories Team':      ''
+    };
 
     var heroObjectUrl = null;
 
@@ -414,6 +431,112 @@ Blank lines separate paragraphs."></textarea>
         previewWrap.classList.remove('visible');
         editorPanel.style.display = '';
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // ── Export ZIP ────────────────────────────────────────
+    function pad2(n) { return String(n).padStart(2, '0'); }
+
+    function todayYYYYMMDD() {
+        var d = new Date();
+        return d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate());
+    }
+
+    function sanitizeImageExtension(name) {
+        var m = String(name || '').toLowerCase().match(/\.([a-z0-9]+)$/);
+        if (!m) return 'jpg';
+        var ext = m[1];
+        // Normalise jpeg → jpg; processor handles {webp,jpg,jpeg,png,gif}
+        if (ext === 'jpeg') return 'jpg';
+        return ext;
+    }
+
+    function buildSourceTxt(tag, category, title, body) {
+        // Positional format expected by blog-processor.js:
+        // Line 1: "<Tag> <Category>"  (stripped by convertToHtml, read by extractMetadata)
+        // Blank line
+        // Line 3: "<Title>"           (read by extractMetadata; stripped from body by stripLeadingArticleBoilerplate)
+        // Blank line
+        // Line 5+: body paragraphs
+        var safeTag = (tag || 'F1').replace(/\s+/g, '-');
+        var safeCategory = (category || 'Racing').replace(/\s+/g, '-');
+        var safeTitle = (title || 'Untitled').replace(/\r/g, '');
+        var safeBody = (body || '').replace(/\r/g, '');
+        return safeTag + ' ' + safeCategory + '\n\n' + safeTitle + '\n\n' + safeBody + '\n';
+    }
+
+    exportBtn.addEventListener('click', async function () {
+        if (typeof JSZip === 'undefined') {
+            alert('ZIP library is still loading — try again in a second.');
+            return;
+        }
+
+        var title = titleInput.value.trim();
+        if (!title) { alert('Please fill in a title before exporting.'); titleInput.focus(); return; }
+
+        var body = contentArea.value.trim();
+        if (!body) { alert('Please write some article content before exporting.'); contentArea.focus(); return; }
+
+        var author = authorSelect.value;
+        var tag = tagInput.value.trim() || 'F1';
+        var category = categoryInput.value.trim() || 'Racing';
+        var authorCode = AUTHOR_CODES[author] || '';
+        var folderName = todayYYYYMMDD() + authorCode;
+
+        var heroFile = heroInput.files && heroInput.files[0];
+        if (!heroFile) {
+            var proceed = confirm('No hero image attached. The article will use the default blog image. Continue?');
+            if (!proceed) return;
+        }
+
+        exportBtn.disabled = true;
+        var originalHtml = exportBtn.innerHTML;
+        exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Packing…';
+
+        try {
+            var zip = new JSZip();
+            var folder = zip.folder(folderName);
+
+            folder.file('source.txt', buildSourceTxt(tag, category, title, body));
+
+            if (heroFile) {
+                var ext = sanitizeImageExtension(heroFile.name);
+                folder.file('1.' + ext, heroFile);
+            }
+
+            var readme =
+                'F1 Stories — Article Package\n' +
+                '================================\n\n' +
+                'Folder:   ' + folderName + '\n' +
+                'Title:    ' + title + '\n' +
+                'Author:   ' + author + (authorCode ? ' (code: ' + authorCode + ')' : ' (no code)') + '\n' +
+                'Tag:      ' + tag + '\n' +
+                'Category: ' + category + '\n\n' +
+                'To publish:\n' +
+                '1. Unzip this file into blog-module/blog-entries/ so you get:\n' +
+                '     blog-module/blog-entries/' + folderName + '/source.txt\n' +
+                '     blog-module/blog-entries/' + folderName + '/1.<ext>   (hero image)\n' +
+                '2. Delete this README.txt from that folder (optional, keeps it tidy).\n' +
+                '3. git add, commit, push to main.\n' +
+                '4. The "Publish Blog" GitHub Action runs blog-processor.js and commits\n' +
+                '   the generated article.html and updated JSON feeds back to main.\n';
+            folder.file('README.txt', readme);
+
+            var blob = await zip.generateAsync({ type: 'blob' });
+
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = folderName + '.zip';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(function () { URL.revokeObjectURL(link.href); }, 1000);
+        } catch (err) {
+            console.error('Export failed', err);
+            alert('Export failed: ' + (err && err.message ? err.message : err));
+        } finally {
+            exportBtn.disabled = false;
+            exportBtn.innerHTML = originalHtml;
+        }
     });
 
     // ── Preview ───────────────────────────────────────────
