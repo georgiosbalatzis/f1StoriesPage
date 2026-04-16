@@ -742,32 +742,47 @@ Blank lines separate paragraphs."></textarea>
     var REPO_NAME  = 'f1StoriesPage';
     var TOKEN_KEY  = 'f1stories-gh-token';
 
+    // Tokens must be ASCII-only. fetch() rejects header values with any
+    // character > 255, so a smart-dash slipped into the token (e.g. from
+    // pasting the hint placeholder) would break every request with
+    // "Cannot convert value in record<ByteString, ByteString> to ByteString".
+    function isAsciiToken(t) { return /^[\x20-\x7E]+$/.test(t); }
+
     function getStoredToken() {
-        try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+        try {
+            var t = localStorage.getItem(TOKEN_KEY) || '';
+            if (t && !isAsciiToken(t)) { localStorage.removeItem(TOKEN_KEY); return ''; }
+            return t;
+        } catch (e) { return ''; }
     }
     function setStoredToken(t) {
         try { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); } catch (e) {}
     }
 
-    function promptForToken(existing) {
+    function promptForToken(hint) {
         var msg =
+            (hint ? hint + '\n\n' : '') +
             'GitHub Personal Access Token (fine-grained):\n\n' +
-            '• Create at: github.com/settings/personal-access-tokens/new\n' +
-            '• Resource owner: ' + REPO_OWNER + '\n' +
-            '• Only select repository: ' + REPO_NAME + '\n' +
-            '• Repository permissions → Contents: Read and write\n' +
-            '• Expiration: as short as you are comfortable with\n\n' +
+            '- Create at: github.com/settings/personal-access-tokens/new\n' +
+            '- Resource owner: ' + REPO_OWNER + '\n' +
+            '- Only select repository: ' + REPO_NAME + '\n' +
+            '- Repository permissions -> Contents: Read and write\n' +
+            '- Expiration: as short as you are comfortable with\n\n' +
             'Paste the token below. Leave empty to clear. Stored in your browser only.';
-        var input = prompt(msg, existing || '');
+        var input = prompt(msg, '');
         if (input === null) return null; // cancelled
         input = input.trim();
+        if (input && !isAsciiToken(input)) {
+            alert('Token contains non-ASCII characters. Paste only the raw token from GitHub.');
+            return null;
+        }
         setStoredToken(input);
         return input;
     }
 
     tokenBtn.addEventListener('click', function () {
         var existing = getStoredToken();
-        promptForToken(existing ? '(token stored — paste new one to replace, or leave empty to clear)' : '');
+        promptForToken(existing ? 'Token already stored. Paste a new one to replace, or leave empty to clear.' : '');
     });
 
     function utf8ToBase64(str) {
