@@ -151,7 +151,7 @@
 
 /* ── Hero ─────────────────────────────────────── */
 [data-theme="light"] #hero::before {
-    background: linear-gradient(to right, rgba(255,255,255,0.8), rgba(245,245,247,0.7)) !important;
+    background: linear-gradient(to right, rgba(255,255,255,0.92), rgba(245,245,247,0.88)) !important;
 }
 
 [data-theme="light"] .hero-content h1 {
@@ -165,12 +165,12 @@
 }
 
 [data-theme="light"] .hero-content p {
-    color: #6e6e73 !important;
+    color: #3a3a3c !important;
     text-shadow: none !important;
 }
 
 [data-theme="light"] .hero-subtitle {
-    color: #6e6e73 !important;
+    color: #3a3a3c !important;
 }
 
 [data-theme="light"] .hero-platforms__label {
