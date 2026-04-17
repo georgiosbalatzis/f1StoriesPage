@@ -228,6 +228,7 @@
             margin-bottom: 4px;
         }
         .hk-field input,
+        .hk-field select,
         .hk-field textarea {
             width: 100%;
             padding: 0.55rem 0.7rem;
@@ -245,6 +246,7 @@
             font-family: 'DM Sans', monospace;
         }
         .hk-field input:focus,
+        .hk-field select:focus,
         .hk-field textarea:focus {
             outline: none;
             border-color: var(--accent, #60a5fa);
@@ -383,6 +385,23 @@
             <div class="hk-field">
                 <label>Category</label>
                 <input type="text" id="hk-edit-category">
+            </div>
+        </div>
+        <div class="hk-field-row">
+            <div class="hk-field">
+                <label>Author</label>
+                <select id="hk-edit-author">
+                    <option value="Georgios Balatzis">Georgios Balatzis</option>
+                    <option value="Giannis Poulikidis">Giannis Poulikidis</option>
+                    <option value="Thanasis Batalas">Thanasis Batalas</option>
+                    <option value="2Fast">2Fast</option>
+                    <option value="Dimitris Keramidiotis">Dimitris Keramidiotis</option>
+                    <option value="F1 Stories Team">F1 Stories Team</option>
+                </select>
+            </div>
+            <div class="hk-field">
+                <label>Date</label>
+                <input type="date" id="hk-edit-date">
             </div>
         </div>
         <div class="hk-field">
@@ -540,18 +559,67 @@
     var refreshBtn   = document.getElementById('hk-refresh-btn');
     var tokenBtn     = document.getElementById('hk-token-btn');
 
-    var editBackdrop = document.getElementById('hk-edit-backdrop');
-    var editFolderEl = document.getElementById('hk-edit-folder');
-    var editTagEl    = document.getElementById('hk-edit-tag');
-    var editCatEl    = document.getElementById('hk-edit-category');
-    var editTitleEl  = document.getElementById('hk-edit-title-input');
-    var editBodyEl   = document.getElementById('hk-edit-body');
-    var editImagesEl = document.getElementById('hk-edit-images');
-    var editHeroIn   = document.getElementById('hk-edit-hero-input');
-    var editContIn   = document.getElementById('hk-edit-content-input');
-    var editSaveBtn  = document.getElementById('hk-edit-save');
-    var editCancelBtn= document.getElementById('hk-edit-cancel');
-    var editStatusEl = document.getElementById('hk-edit-status');
+    var editBackdrop  = document.getElementById('hk-edit-backdrop');
+    var editFolderEl  = document.getElementById('hk-edit-folder');
+    var editTagEl     = document.getElementById('hk-edit-tag');
+    var editCatEl     = document.getElementById('hk-edit-category');
+    var editAuthorEl  = document.getElementById('hk-edit-author');
+    var editDateEl    = document.getElementById('hk-edit-date');
+    var editTitleEl   = document.getElementById('hk-edit-title-input');
+    var editBodyEl    = document.getElementById('hk-edit-body');
+    var editImagesEl  = document.getElementById('hk-edit-images');
+    var editHeroIn    = document.getElementById('hk-edit-hero-input');
+    var editContIn    = document.getElementById('hk-edit-content-input');
+    var editSaveBtn   = document.getElementById('hk-edit-save');
+    var editCancelBtn = document.getElementById('hk-edit-cancel');
+    var editStatusEl  = document.getElementById('hk-edit-status');
+
+    // Mirrors blog-processor.js AUTHOR_MAP — changing author on an
+    // edit rewrites the folder name so the processor picks up the
+    // right code (author from source is hard-overridden by the code
+    // in the folder name).
+    var AUTHOR_CODES = {
+        'Georgios Balatzis':    'G',
+        'Giannis Poulikidis':   'J',
+        'Thanasis Batalas':     'T',
+        '2Fast':                'W',
+        'Dimitris Keramidiotis':'D',
+        'F1 Stories Team':      ''
+    };
+    var AUTHOR_CODE_TO_NAME = {};
+    Object.keys(AUTHOR_CODES).forEach(function (name) {
+        AUTHOR_CODE_TO_NAME[AUTHOR_CODES[name]] = name;
+    });
+
+    // "20260416G" → { date: "2026-04-16", suffix: null, authorCode: "G" }
+    // "20260416-2G" → { date: "2026-04-16", suffix: 2,    authorCode: "G" }
+    function folderParts(folderName) {
+        var m = String(folderName).match(/^(\d{4})(\d{2})(\d{2})(?:-(\d+))?([A-Z]?)$/);
+        if (!m) return null;
+        return {
+            date:       m[1] + '-' + m[2] + '-' + m[3],
+            suffix:     m[4] ? Number(m[4]) : null,
+            authorCode: m[5] || ''
+        };
+    }
+    function buildFolderName(isoDate, authorCode, suffix) {
+        var digits = String(isoDate || '').replace(/-/g, '');
+        if (!/^\d{8}$/.test(digits)) return null;
+        return digits + (suffix ? '-' + suffix : '') + (authorCode || '');
+    }
+    async function findNextFolderSuffix(token, isoDate, authorCode) {
+        var digits = String(isoDate).replace(/-/g, '');
+        for (var n = 2; n < 100; n++) {
+            var candidate = digits + '-' + n + authorCode;
+            try {
+                await ghFetch('/contents/' + ENTRIES_PATH + '/' + encodeURIComponent(candidate), token);
+            } catch (e) {
+                if (e.status === 404) return candidate;
+                throw e;
+            }
+        }
+        throw new Error('No free -N suffix found for ' + isoDate + authorCode + ' (tried 2-99).');
+    }
 
     var posts = [];
     var rendered = [];
@@ -780,11 +848,6 @@
             var files = await listFolder(token, post.id);
             if (!files.length) throw new Error('Folder is empty or missing.');
 
-            var ref = await ghFetch('/git/ref/heads/main', token);
-            var latestCommitSha = ref.object.sha;
-            var commit = await ghFetch('/git/commits/' + latestCommitSha, token);
-            var baseTreeSha = commit.tree.sha;
-
             var tree = files.filter(function (f) { return f.type === 'file'; }).map(function (f) {
                 return {
                     path: ENTRIES_PATH + '/' + post.id + '/' + f.name,
@@ -792,17 +855,32 @@
                 };
             });
 
-            var newTree = await ghFetch('/git/trees', token, {
-                method: 'POST',
-                body: { base_tree: baseTreeSha, tree: tree }
-            });
-            var newCommit = await ghFetch('/git/commits', token, {
-                method: 'POST',
-                body: { message: 'delete(blog): ' + post.title + ' (' + post.id + ')', tree: newTree.sha, parents: [latestCommitSha] }
-            });
-            await ghFetch('/git/refs/heads/main', token, {
-                method: 'PATCH', body: { sha: newCommit.sha, force: false }
-            });
+            var attempts = 0, maxAttempts = 3, newCommit;
+            while (true) {
+                attempts++;
+                var ref = await ghFetch('/git/ref/heads/main', token);
+                var latestCommitSha = ref.object.sha;
+                var commit = await ghFetch('/git/commits/' + latestCommitSha, token);
+                var baseTreeSha = commit.tree.sha;
+
+                var newTree = await ghFetch('/git/trees', token, {
+                    method: 'POST',
+                    body: { base_tree: baseTreeSha, tree: tree }
+                });
+                newCommit = await ghFetch('/git/commits', token, {
+                    method: 'POST',
+                    body: { message: 'delete(blog): ' + post.title + ' (' + post.id + ')', tree: newTree.sha, parents: [latestCommitSha] }
+                });
+                try {
+                    await ghFetch('/git/refs/heads/main', token, {
+                        method: 'PATCH', body: { sha: newCommit.sha, force: false }
+                    });
+                    break;
+                } catch (err) {
+                    if ((err.status === 409 || err.status === 422) && attempts < maxAttempts) continue;
+                    throw err;
+                }
+            }
 
             posts = posts.filter(function (p) { return p.id !== post.id; });
             applyFilters();
@@ -833,6 +911,19 @@
         editTitleEl.value = post.title || '';
         editBodyEl.value = '';
         editImagesEl.innerHTML = '<div class="hk-empty" style="padding:0.8rem;"><i class="fas fa-spinner fa-spin"></i> Loading…</div>';
+
+        // Seed author + date from the folder name (single source of truth — the
+        // processor derives both from the folder prefix). If the folder isn't
+        // in the expected format, fall back to blog-data.json fields.
+        var parts = folderParts(post.id);
+        if (parts) {
+            editAuthorEl.value = AUTHOR_CODE_TO_NAME[parts.authorCode] || 'F1 Stories Team';
+            editDateEl.value = parts.date;
+        } else {
+            editAuthorEl.value = post.author || 'F1 Stories Team';
+            editDateEl.value = (post.dateISO || post.date || '').slice(0, 10);
+        }
+
         editBackdrop.classList.add('open');
         document.body.style.overflow = 'hidden';
 
@@ -860,10 +951,11 @@
             editTitleEl.value = parsed.title || post.title || '';
             editBodyEl.value = parsed.body;
 
-            // 3. Compute existing slots from folder
+            // 3. Compute existing slots from folder, keep full file list so we
+            //    can rename the folder by reusing blob SHAs for non-slot files.
             var slots = slotsInFolder(files);
             var slotMap = {};
-            slots.forEach(function (n) { slotMap[n] = filesForSlot(files, n).map(function (f) { return f.name; }); });
+            slots.forEach(function (n) { slotMap[n] = filesForSlot(files, n); });
 
             editState = {
                 token: token,
@@ -871,7 +963,7 @@
                 folder: post.id,
                 srcName: srcFile.name,
                 files: files,
-                slotMap: slotMap,
+                slotMap: slotMap,      // slot → [{ name, sha, ... }]
                 imageOps: {},          // slot → { op, file }
                 addContent: []         // File[] to append at slot 3/4/… beyond current max
             };
@@ -912,12 +1004,12 @@
                 img.src = URL.createObjectURL(op.file);
                 img.dataset.objectUrl = '1';
             } else {
-                // Prefer .webp > .avif > any; use the first existing file
-                var pref = files.find(function (n) { return /\.webp$/i.test(n) && !/-\d+\.webp$/i.test(n); })
-                    || files.find(function (n) { return /\.jpg$/i.test(n) || /\.jpeg$/i.test(n) || /\.png$/i.test(n); })
+                // Prefer .webp > jpg/png; use the first existing file
+                var pref = files.find(function (f) { return /\.webp$/i.test(f.name) && !/-\d+\.webp$/i.test(f.name); })
+                    || files.find(function (f) { return /\.(jpg|jpeg|png)$/i.test(f.name); })
                     || files[0];
                 if (pref) {
-                    img.src = '/' + ENTRIES_PATH + '/' + encodeURIComponent(editState.folder) + '/' + encodeURIComponent(pref);
+                    img.src = '/' + ENTRIES_PATH + '/' + encodeURIComponent(editState.folder) + '/' + encodeURIComponent(pref.name);
                 }
             }
 
@@ -932,7 +1024,7 @@
             }[op.op] || '';
             info.innerHTML =
                 '<strong>' + label + '</strong>' +
-                '<div class="hk-slot-files">' + files.map(escapeHtml).join(', ') + '</div>' +
+                '<div class="hk-slot-files">' + files.map(function (f) { return escapeHtml(f.name); }).join(', ') + '</div>' +
                 opLabel;
 
             var actions = document.createElement('div');
@@ -1063,60 +1155,122 @@
     editSaveBtn.addEventListener('click', async function () {
         if (!editState) return;
         var token = editState.token;
-        var folder = editState.folder;
+        var oldFolder = editState.folder;
 
-        var tag = editTagEl.value.trim() || 'F1';
-        var category = editCatEl.value.trim() || 'Racing';
-        var title = editTitleEl.value.trim();
-        var body = editBodyEl.value.trim();
-        if (!title) { alert('Title is required.'); editTitleEl.focus(); return; }
-        if (!body)  { alert('Body is required.');  editBodyEl.focus();  return; }
+        var tag       = editTagEl.value.trim() || 'F1';
+        var category  = editCatEl.value.trim() || 'Racing';
+        var title     = editTitleEl.value.trim();
+        var body      = editBodyEl.value.trim();
+        var isoDate   = (editDateEl.value || '').trim();
+        var authorName = editAuthorEl.value;
+        var authorCode = AUTHOR_CODES[authorName];
+        if (authorCode === undefined) authorCode = '';
 
-        // Build plan
+        if (!title)   { alert('Title is required.'); editTitleEl.focus(); return; }
+        if (!body)    { alert('Body is required.');  editBodyEl.focus();  return; }
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) {
+            alert('Valid date (YYYY-MM-DD) is required.');
+            editDateEl.focus();
+            return;
+        }
+
+        // The folder name encodes date + author — rebuild it from the form.
+        // Keep the existing -N suffix if the source folder had one so we
+        // don't collide with other same-day posts by the same author.
+        var oldParts = folderParts(oldFolder) || { suffix: null, authorCode: authorCode, date: isoDate };
+        var newFolder = buildFolderName(isoDate, authorCode, oldParts.suffix);
+        if (!newFolder) { alert('Could not build folder name from date/author.'); return; }
+
+        var isRename = (newFolder !== oldFolder);
+
+        // Collision check: if the computed folder already exists elsewhere,
+        // offer the next free -N suffix or abort.
+        if (isRename) {
+            var exists = false;
+            try {
+                await ghFetch('/contents/' + ENTRIES_PATH + '/' + encodeURIComponent(newFolder), token);
+                exists = true;
+            } catch (e) {
+                if (e.status !== 404) throw e;
+            }
+            if (exists) {
+                var pickNext = confirm(
+                    'Target folder already exists:\n\n  blog-entries/' + newFolder + '\n\n' +
+                    '• OK: pick the next free -N suffix\n' +
+                    '• Cancel: abort the save'
+                );
+                if (!pickNext) return;
+                newFolder = await findNextFolderSuffix(token, isoDate, authorCode);
+            }
+        }
+
+        // Plan: deletes are full folder-relative paths, additions carry either
+        // a File (new upload) or a reuseSha (keep existing blob at new path).
         var newSource = buildSourceTxt(tag, category, title, body);
-        var sourceChanged = true; // Always re-write to avoid fetching old for diff
+        var deletes = [];
+        var additions = [];
 
-        var deletes = []; // filenames to delete inside the folder
-        var additions = []; // { path, file | text }
+        additions.push({ path: newFolder + '/' + editState.srcName, text: newSource });
 
-        additions.push({ path: folder + '/' + editState.srcName, text: newSource });
-
-        // Determine highest existing slot → append new content images after it
         var existingSlots = Object.keys(editState.slotMap).map(Number);
         var maxSlot = existingSlots.length ? Math.max.apply(null, existingSlots) : 2;
-        // Convention: slot 1 is hero, 2 reserved for OG image (generated), content starts at 3
         var nextSlot = Math.max(maxSlot + 1, 3);
 
-        // Apply ops on existing slots
-        Object.keys(editState.imageOps).forEach(function (slotStr) {
-            var slot = Number(slotStr);
-            var op = editState.imageOps[slot];
-            var currentFiles = editState.slotMap[slot] || [];
+        if (isRename) {
+            // Rename = wipe everything from the old folder and re-land it
+            // under the new name. Kept images reuse the existing blob SHA so
+            // we don't re-upload megabytes of variants.
+            editState.files.forEach(function (f) {
+                if (f.type === 'file') deletes.push(oldFolder + '/' + f.name);
+            });
+            Object.keys(editState.imageOps).forEach(function (slotStr) {
+                var slot = Number(slotStr);
+                var op = editState.imageOps[slot];
+                var currentFiles = editState.slotMap[slot] || [];
+                if (op.op === 'keep') {
+                    currentFiles.forEach(function (f) {
+                        additions.push({ path: newFolder + '/' + f.name, reuseSha: f.sha });
+                    });
+                } else if (op.op === 'replace') {
+                    var ext = sanitizeImageExtension(op.file.name);
+                    additions.push({ path: newFolder + '/' + slot + '.' + ext, file: op.file });
+                }
+                // 'remove' → drop; already deleted above
+            });
+        } else {
+            // Same folder — only touch slots with an op attached.
+            Object.keys(editState.imageOps).forEach(function (slotStr) {
+                var slot = Number(slotStr);
+                var op = editState.imageOps[slot];
+                var currentFiles = editState.slotMap[slot] || [];
+                if (op.op === 'replace') {
+                    currentFiles.forEach(function (f) { deletes.push(oldFolder + '/' + f.name); });
+                    var ext = sanitizeImageExtension(op.file.name);
+                    additions.push({ path: oldFolder + '/' + slot + '.' + ext, file: op.file });
+                } else if (op.op === 'remove') {
+                    currentFiles.forEach(function (f) { deletes.push(oldFolder + '/' + f.name); });
+                }
+            });
+        }
 
-            if (op.op === 'replace') {
-                // Delete ALL variant files for this slot (processor regenerates from new source)
-                currentFiles.forEach(function (n) { deletes.push(n); });
-                var ext = sanitizeImageExtension(op.file.name);
-                additions.push({ path: folder + '/' + slot + '.' + ext, file: op.file });
-            } else if (op.op === 'remove') {
-                currentFiles.forEach(function (n) { deletes.push(n); });
-            }
-            // 'keep' → nothing
-        });
-
-        // Append new content images at nextSlot, nextSlot+1, …
         editState.addContent.forEach(function (file, idx) {
             var slot = nextSlot + idx;
             var ext = sanitizeImageExtension(file.name);
-            additions.push({ path: folder + '/' + slot + '.' + ext, file: file });
+            additions.push({ path: newFolder + '/' + slot + '.' + ext, file: file });
         });
 
-        var summary =
-            'Save changes to ' + folder + '?\n\n' +
-            '• ' + (sourceChanged ? 'Rewrite source' : 'Source unchanged') + '\n' +
-            '• ' + deletes.length + ' file' + (deletes.length === 1 ? '' : 's') + ' to delete\n' +
-            '• ' + (additions.length - 1) + ' image file' + ((additions.length - 1) === 1 ? '' : 's') + ' to upload' +
-            (editState.addContent.length ? ' (' + editState.addContent.length + ' new)' : '');
+        var newUploadCount = additions.filter(function (a) { return a.file || a.text != null; }).length;
+        var summary = isRename
+            ? ('Rename + save:\n\n' +
+               '  ' + oldFolder + '\n    ↓\n  ' + newFolder + '\n\n' +
+               '• ' + editState.files.length + ' file(s) re-keyed\n' +
+               '• ' + newUploadCount + ' upload(s) (source + new/replaced images)\n' +
+               '• Kept variants are moved by SHA (no re-upload)')
+            : ('Save changes to ' + oldFolder + '?\n\n' +
+               '• Source will be rewritten\n' +
+               '• ' + deletes.length + ' file(s) to delete\n' +
+               '• ' + (newUploadCount - 1) + ' image upload(s)' +
+               (editState.addContent.length ? ' (' + editState.addContent.length + ' new)' : ''));
         if (!confirm(summary)) return;
 
         editSaveBtn.disabled = true;
@@ -1124,64 +1278,80 @@
         editStatusEl.classList.remove('err');
 
         try {
-            editStatusEl.textContent = 'Reading main ref…';
-            editSaveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
-
-            var ref = await ghFetch('/git/ref/heads/main', token);
-            var latestCommitSha = ref.object.sha;
-            var commit = await ghFetch('/git/commits/' + latestCommitSha, token);
-            var baseTreeSha = commit.tree.sha;
-
-            var tree = [];
-
-            // Deletions
-            deletes.forEach(function (name) {
-                tree.push({
-                    path: ENTRIES_PATH + '/' + folder + '/' + name,
-                    mode: '100644', type: 'blob', sha: null
-                });
-            });
-
-            // Additions
+            // Phase 1: upload blobs once. These are global by SHA, so we can
+            // reuse them if a retry is needed below.
+            editSaveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading…';
+            var pathToSha = {};
             for (var i = 0; i < additions.length; i++) {
                 var a = additions[i];
-                editStatusEl.textContent = 'Uploading ' + a.path + '…';
-                var contentB64;
-                if (a.text != null) {
-                    contentB64 = utf8ToBase64(a.text);
-                } else {
-                    contentB64 = await blobToBase64(a.file);
+                if (a.reuseSha) {
+                    pathToSha[a.path] = a.reuseSha;
+                    continue;
                 }
+                editStatusEl.textContent = 'Uploading ' + a.path + ' (' + (i + 1) + '/' + additions.length + ')…';
+                var contentB64 = (a.text != null) ? utf8ToBase64(a.text) : await blobToBase64(a.file);
                 var blob = await ghFetch('/git/blobs', token, {
                     method: 'POST',
                     body: { content: contentB64, encoding: 'base64' }
                 });
-                tree.push({
-                    path: ENTRIES_PATH + '/' + a.path,
-                    mode: '100644', type: 'blob', sha: blob.sha
-                });
+                pathToSha[a.path] = blob.sha;
             }
 
-            editStatusEl.textContent = 'Writing tree…';
-            var newTree = await ghFetch('/git/trees', token, {
-                method: 'POST',
-                body: { base_tree: baseTreeSha, tree: tree }
-            });
+            // Phase 2: tree + commit + ref-patch, retried on 409/422 so a
+            // concurrent push to main doesn't make us lose the edit.
+            var attempts = 0, maxAttempts = 3, newCommit;
+            while (true) {
+                attempts++;
+                editSaveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+                editStatusEl.textContent = 'Writing tree' + (attempts > 1 ? ' (retry ' + attempts + ')' : '') + '…';
 
-            editStatusEl.textContent = 'Creating commit…';
-            var newCommit = await ghFetch('/git/commits', token, {
-                method: 'POST',
-                body: { message: 'edit(blog): ' + title + ' (' + folder + ')', tree: newTree.sha, parents: [latestCommitSha] }
-            });
-            await ghFetch('/git/refs/heads/main', token, {
-                method: 'PATCH', body: { sha: newCommit.sha, force: false }
-            });
+                var ref = await ghFetch('/git/ref/heads/main', token);
+                var latestCommitSha = ref.object.sha;
+                var baseCommit = await ghFetch('/git/commits/' + latestCommitSha, token);
+                var baseTreeSha = baseCommit.tree.sha;
+
+                var tree = [];
+                deletes.forEach(function (p) {
+                    tree.push({ path: ENTRIES_PATH + '/' + p, mode: '100644', type: 'blob', sha: null });
+                });
+                Object.keys(pathToSha).forEach(function (p) {
+                    tree.push({ path: ENTRIES_PATH + '/' + p, mode: '100644', type: 'blob', sha: pathToSha[p] });
+                });
+
+                var newTree = await ghFetch('/git/trees', token, {
+                    method: 'POST',
+                    body: { base_tree: baseTreeSha, tree: tree }
+                });
+
+                editStatusEl.textContent = 'Creating commit…';
+                var commitMsg = isRename
+                    ? ('edit(blog): rename ' + oldFolder + ' to ' + newFolder + ' (' + title + ')')
+                    : ('edit(blog): ' + title + ' (' + oldFolder + ')');
+                newCommit = await ghFetch('/git/commits', token, {
+                    method: 'POST',
+                    body: { message: commitMsg, tree: newTree.sha, parents: [latestCommitSha] }
+                });
+
+                try {
+                    await ghFetch('/git/refs/heads/main', token, {
+                        method: 'PATCH', body: { sha: newCommit.sha, force: false }
+                    });
+                    break;
+                } catch (err) {
+                    if ((err.status === 409 || err.status === 422) && attempts < maxAttempts) {
+                        editStatusEl.textContent = 'Main moved — rebuilding on latest (attempt ' + (attempts + 1) + ')…';
+                        continue;
+                    }
+                    throw err;
+                }
+            }
 
             editStatusEl.textContent = 'Saved. Workflow rebuilding…';
             var actionsUrl = 'https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/actions';
-            if (confirm('Committed ' + newCommit.sha.substring(0, 7) + ' to main.\n\nThe Publish Blog workflow is rebuilding the article (~1 min).\n\nOpen the Actions tab?')) {
-                window.open(actionsUrl, '_blank', 'noopener');
-            }
+            var msg = 'Committed ' + newCommit.sha.substring(0, 7) + ' to main.\n\n' +
+                (isRename ? ('Folder renamed: ' + oldFolder + ' → ' + newFolder + '\n\n') : '') +
+                'The Publish Blog workflow is rebuilding the article (~1 min).\n\nOpen the Actions tab?';
+            if (confirm(msg)) window.open(actionsUrl, '_blank', 'noopener');
             closeEdit();
         } catch (e) {
             console.error('Save failed', e);

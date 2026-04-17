@@ -234,15 +234,15 @@
 
 <!-- ═══ Editor Panel ═══════════════════════════════════════ -->
 <div class="gen-panel" id="editor-panel">
-    <h2><i class="fas fa-pen-nib" style="color:var(--accent);margin-right:0.4rem;"></i> Article Preview Generator</h2>
+    <h2><i class="fas fa-pen-nib" style="color:var(--accent);margin-right:0.4rem;"></i> Γεννήτρια Άρθρων</h2>
 
     <div class="gen-row">
         <div class="gen-field">
-            <label>Title</label>
-            <input type="text" id="gen-title" placeholder="Article title…">
+            <label>Τίτλος</label>
+            <input type="text" id="gen-title" placeholder="Τίτλος άρθρου…">
         </div>
         <div class="gen-field" style="max-width:160px;">
-            <label>Author</label>
+            <label>Συντάκτης</label>
             <select id="gen-author">
                 <option value="Georgios Balatzis">Georgios Balatzis</option>
                 <option value="Giannis Poulikidis">Giannis Poulikidis</option>
@@ -255,56 +255,56 @@
     </div>
     <div class="gen-row">
         <div class="gen-field" style="max-width:180px;">
-            <label>Tag</label>
-            <input type="text" id="gen-tag" placeholder="e.g. Historical" value="F1">
+            <label>Ετικέτα</label>
+            <input type="text" id="gen-tag" placeholder="π.χ. Historical" value="F1">
         </div>
         <div class="gen-field" style="max-width:180px;">
-            <label>Category</label>
-            <input type="text" id="gen-category" placeholder="e.g. Ferrari" value="Racing">
+            <label>Κατηγορία</label>
+            <input type="text" id="gen-category" placeholder="π.χ. Ferrari" value="Racing">
         </div>
     </div>
 
     <div style="display:flex;gap:0.5rem;margin-bottom:4px;align-items:center;flex-wrap:wrap;">
         <button class="gen-btn gen-btn-secondary" id="gen-insert-img-marker" type="button" style="padding:0.35rem 0.8rem;font-size:0.78rem;">
-            <i class="fas fa-image"></i> Insert image marker
+            <i class="fas fa-image"></i> Εισαγωγή δείκτη εικόνας
         </button>
-        <span class="gen-hint" style="margin:0;" id="gen-marker-count">0 markers • 0 images</span>
+        <span class="gen-hint" style="margin:0;" id="gen-marker-count">0 δείκτες • 0 εικόνες</span>
     </div>
 
-    <textarea class="gen-textarea" id="gen-content" placeholder="Write or paste your article content here…
+    <textarea class="gen-textarea" id="gen-content" placeholder="Γράψε ή επικόλλησε εδώ το κείμενο του άρθρου…
 
-Supports:
-# Heading 2
-## Heading 3
-- List items
-**bold** and *italic*
-[img-instert-tag]  ← placeholder for a content image (processor replaces with 3.*, 4.*, …)
+Υποστηρίζονται:
+# Επικεφαλίδα 2
+## Επικεφαλίδα 3
+- Στοιχεία λίστας
+**έντονα** και *πλάγια*
+[img-instert-tag]  ← δείκτης εικόνας (η γεννήτρια τον αντικαθιστά με 3.*, 4.*, …)
 
-YouTube / X / Instagram / Threads links auto-embed.
-Blank lines separate paragraphs."></textarea>
+Οι σύνδεσμοι YouTube / X / Instagram / Threads ενσωματώνονται αυτόματα.
+Οι κενές γραμμές χωρίζουν παραγράφους."></textarea>
 
     <div class="gen-actions">
         <button class="gen-btn gen-btn-primary" id="gen-preview-btn">
-            <i class="fas fa-eye"></i> Preview
+            <i class="fas fa-eye"></i> Προεπισκόπηση
         </button>
         <button class="gen-btn gen-btn-primary" id="gen-publish-btn" style="background:#ef4444;">
-            <i class="fas fa-rocket"></i> Publish
+            <i class="fas fa-rocket"></i> Δημοσίευση
         </button>
         <button class="gen-btn gen-btn-primary" id="gen-export-btn" style="background:#22c55e;">
-            <i class="fas fa-file-zipper"></i> Export ZIP
+            <i class="fas fa-file-zipper"></i> Εξαγωγή ZIP
         </button>
         <label class="gen-file-label" id="gen-file-label">
-            <i class="fas fa-image"></i> <span id="gen-file-text">Attach Hero Image</span>
+            <i class="fas fa-image"></i> <span id="gen-file-text">Κεντρική εικόνα</span>
             <input type="file" accept="image/*" class="gen-file-input" id="gen-hero-input">
         </label>
         <label class="gen-file-label" id="gen-content-file-label">
-            <i class="fas fa-images"></i> <span id="gen-content-file-text">Attach Content Images</span>
+            <i class="fas fa-images"></i> <span id="gen-content-file-text">Εικόνες κειμένου</span>
             <input type="file" accept="image/*" multiple class="gen-file-input" id="gen-content-input">
         </label>
         <button class="gen-btn gen-btn-secondary" id="gen-clear-btn">
-            <i class="fas fa-eraser"></i> Clear
+            <i class="fas fa-eraser"></i> Καθαρισμός
         </button>
-        <button class="gen-btn gen-btn-secondary" id="gen-token-btn" title="Manage publishing token">
+        <button class="gen-btn gen-btn-secondary" id="gen-token-btn" title="Διαχείριση token δημοσίευσης">
             <i class="fas fa-key"></i>
         </button>
     </div>
@@ -312,12 +312,12 @@ Blank lines separate paragraphs."></textarea>
     <div id="gen-content-images-list" style="margin-top:0.75rem;display:none;"></div>
 
     <div class="gen-hint">
-        Format: plain text with markdown-style headings. Links to YouTube, X, Instagram, Threads, and Facebook auto-embed.<br>
-        <strong>Hero</strong>: image <code>1</code> is both the hero and the thumbnail — slot <code>2</code> is reserved (don't use it).<br>
-        <strong>Content images</strong>: add <code>[img-instert-tag]</code> where you want an image; attach images in that same order. <em>2+ markers back-to-back become a carousel; isolated markers stay as single figures.</em><br>
-        <strong>No markers?</strong> Attached images are appended as a carousel at the end of the article.<br>
-        <strong>Publish</strong> commits directly to <code>main</code> via GitHub API — the workflow then builds the article (~1 min).
-        <strong>Export ZIP</strong> is the manual fallback. Click the <i class="fas fa-key"></i> to set up your publishing token.
+        Μορφή: απλό κείμενο με επικεφαλίδες σε στυλ markdown. Οι σύνδεσμοι σε YouTube, X, Instagram, Threads και Facebook ενσωματώνονται αυτόματα.<br>
+        <strong>Κεντρική</strong>: η εικόνα <code>1</code> είναι ταυτόχρονα η κεντρική και το thumbnail — η θέση <code>2</code> είναι δεσμευμένη (μην τη χρησιμοποιείς).<br>
+        <strong>Εικόνες κειμένου</strong>: πρόσθεσε <code>[img-instert-tag]</code> εκεί που θέλεις μια εικόνα και επισύναψε τις εικόνες με την ίδια σειρά. <em>2+ δείκτες σε συνεχόμενες σειρές γίνονται carousel· μεμονωμένοι δείκτες παραμένουν ως μεμονωμένες εικόνες.</em><br>
+        <strong>Χωρίς δείκτες;</strong> Οι επισυναπτόμενες εικόνες εμφανίζονται ως carousel στο τέλος του άρθρου.<br>
+        <strong>Δημοσίευση</strong>: commit απευθείας στο <code>main</code> μέσω GitHub API — το workflow χτίζει μετά το άρθρο (~1 λεπτό).
+        <strong>Εξαγωγή ZIP</strong> είναι το χειροκίνητο εναλλακτικό. Πάτα το <i class="fas fa-key"></i> για να ορίσεις το token δημοσίευσης.
     </div>
 </div>
 
@@ -459,12 +459,12 @@ Blank lines separate paragraphs."></textarea>
         var markers = countMarkers();
         var imgs    = contentImageFiles.length;
         var label =
-            markers + ' marker' + (markers === 1 ? '' : 's') + ' • ' +
-            imgs    + ' image'  + (imgs    === 1 ? '' : 's');
+            markers + ' δείκτ' + (markers === 1 ? 'ης' : 'ες') + ' • ' +
+            imgs    + ' εικόν' + (imgs    === 1 ? 'α'  : 'ες');
         if (imgs > markers && markers > 0) {
-            label += ' (extras → end-of-article carousel)';
+            label += ' (οι επιπλέον → carousel στο τέλος)';
         } else if (imgs > 0 && markers === 0) {
-            label += ' → carousel at end';
+            label += ' → carousel στο τέλος';
         }
         markerCountEl.textContent = label;
         // Only warn when markers outnumber images — those slots will render empty.
@@ -475,7 +475,7 @@ Blank lines separate paragraphs."></textarea>
         if (!contentImageFiles.length) {
             contentImagesList.style.display = 'none';
             contentImagesList.innerHTML = '';
-            contentFileText.textContent = 'Attach Content Images';
+            contentFileText.textContent = 'Εικόνες κειμένου';
             contentFileLabel.classList.remove('has-file');
             updateMarkerCount();
             return;
@@ -522,7 +522,7 @@ Blank lines separate paragraphs."></textarea>
             if (idx > 0) {
                 controls.appendChild(mkBtn(
                     '<i class="fas fa-arrow-left"></i>',
-                    'Move left',
+                    'Μετακίνηση αριστερά',
                     function () {
                         var tmp = contentImageFiles[idx - 1];
                         contentImageFiles[idx - 1] = contentImageFiles[idx];
@@ -534,7 +534,7 @@ Blank lines separate paragraphs."></textarea>
             if (idx < contentImageFiles.length - 1) {
                 controls.appendChild(mkBtn(
                     '<i class="fas fa-arrow-right"></i>',
-                    'Move right',
+                    'Μετακίνηση δεξιά',
                     function () {
                         var tmp = contentImageFiles[idx + 1];
                         contentImageFiles[idx + 1] = contentImageFiles[idx];
@@ -545,7 +545,7 @@ Blank lines separate paragraphs."></textarea>
             }
             controls.appendChild(mkBtn(
                 '<i class="fas fa-times"></i>',
-                'Remove',
+                'Αφαίρεση',
                 function () {
                     URL.revokeObjectURL(item.url);
                     contentImageFiles.splice(idx, 1);
@@ -560,7 +560,7 @@ Blank lines separate paragraphs."></textarea>
         });
 
         contentFileText.textContent =
-            contentImageFiles.length + ' image' + (contentImageFiles.length === 1 ? '' : 's') + ' attached';
+            contentImageFiles.length + (contentImageFiles.length === 1 ? ' εικόνα επισυνάφθηκε' : ' εικόνες επισυνάφθηκαν');
         contentFileLabel.classList.add('has-file');
         updateMarkerCount();
     }
@@ -607,7 +607,7 @@ Blank lines separate paragraphs."></textarea>
         categoryInput.value = 'Racing';
         contentArea.value = '';
         heroInput.value = '';
-        fileText.textContent = 'Attach Hero Image';
+        fileText.textContent = 'Κεντρική εικόνα';
         fileLabel.classList.remove('has-file');
         if (heroObjectUrl) { URL.revokeObjectURL(heroObjectUrl); heroObjectUrl = null; }
         contentImageFiles.forEach(function (item) { URL.revokeObjectURL(item.url); });
@@ -657,15 +657,15 @@ Blank lines separate paragraphs."></textarea>
 
     exportBtn.addEventListener('click', async function () {
         if (typeof JSZip === 'undefined') {
-            alert('ZIP library is still loading — try again in a second.');
+            alert('Η βιβλιοθήκη ZIP φορτώνει ακόμη — δοκίμασε ξανά σε λίγο.');
             return;
         }
 
         var title = titleInput.value.trim();
-        if (!title) { alert('Please fill in a title before exporting.'); titleInput.focus(); return; }
+        if (!title) { alert('Συμπλήρωσε τίτλο πριν από την εξαγωγή.'); titleInput.focus(); return; }
 
         var body = contentArea.value.trim();
-        if (!body) { alert('Please write some article content before exporting.'); contentArea.focus(); return; }
+        if (!body) { alert('Γράψε το κείμενο του άρθρου πριν από την εξαγωγή.'); contentArea.focus(); return; }
 
         var author = authorSelect.value;
         var tag = tagInput.value.trim() || 'F1';
@@ -675,13 +675,13 @@ Blank lines separate paragraphs."></textarea>
 
         var heroFile = heroInput.files && heroInput.files[0];
         if (!heroFile) {
-            var proceed = confirm('No hero image attached. The article will use the default blog image. Continue?');
+            var proceed = confirm('Δεν έχει επισυναφθεί κεντρική εικόνα. Το άρθρο θα χρησιμοποιήσει την προεπιλεγμένη. Να συνεχίσω;');
             if (!proceed) return;
         }
 
         exportBtn.disabled = true;
         var originalHtml = exportBtn.innerHTML;
-        exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Packing…';
+        exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Πακετάρισμα…';
 
         try {
             var zip = new JSZip();
@@ -730,7 +730,7 @@ Blank lines separate paragraphs."></textarea>
             setTimeout(function () { URL.revokeObjectURL(link.href); }, 1000);
         } catch (err) {
             console.error('Export failed', err);
-            alert('Export failed: ' + (err && err.message ? err.message : err));
+            alert('Η εξαγωγή απέτυχε: ' + (err && err.message ? err.message : err));
         } finally {
             exportBtn.disabled = false;
             exportBtn.innerHTML = originalHtml;
@@ -763,17 +763,17 @@ Blank lines separate paragraphs."></textarea>
         var msg =
             (hint ? hint + '\n\n' : '') +
             'GitHub Personal Access Token (fine-grained):\n\n' +
-            '- Create at: github.com/settings/personal-access-tokens/new\n' +
+            '- Δημιούργησέ το στο: github.com/settings/personal-access-tokens/new\n' +
             '- Resource owner: ' + REPO_OWNER + '\n' +
             '- Only select repository: ' + REPO_NAME + '\n' +
             '- Repository permissions -> Contents: Read and write\n' +
-            '- Expiration: as short as you are comfortable with\n\n' +
-            'Paste the token below. Leave empty to clear. Stored in your browser only.';
+            '- Διάρκεια: όσο πιο σύντομη σε βολεύει\n\n' +
+            'Επικόλλησε το token παρακάτω. Άφησέ το κενό για διαγραφή. Αποθηκεύεται μόνο στον browser σου.';
         var input = prompt(msg, '');
         if (input === null) return null; // cancelled
         input = input.trim();
         if (input && !isAsciiToken(input)) {
-            alert('Token contains non-ASCII characters. Paste only the raw token from GitHub.');
+            alert('Το token περιέχει μη-ASCII χαρακτήρες. Επικόλλησε μόνο το αρχικό token από το GitHub.');
             return null;
         }
         setStoredToken(input);
@@ -782,7 +782,7 @@ Blank lines separate paragraphs."></textarea>
 
     tokenBtn.addEventListener('click', function () {
         var existing = getStoredToken();
-        promptForToken(existing ? 'Token already stored. Paste a new one to replace, or leave empty to clear.' : '');
+        promptForToken(existing ? 'Υπάρχει ήδη αποθηκευμένο token. Επικόλλησε νέο για αντικατάσταση ή άφησε κενό για διαγραφή.' : '');
     });
 
     function utf8ToBase64(str) {
@@ -834,18 +834,23 @@ Blank lines separate paragraphs."></textarea>
         }
     }
 
+    // Finds the next unused "-N<Author>" suffix for a same-day article
+    // (matches blog-processor.js parseDate's ^\d{8}-\d+[A-Z]?$ pattern).
+    async function nextNumberedFolder(token, baseDate, authorCode) {
+        for (var n = 2; n < 100; n++) {
+            var candidate = baseDate + '-' + n + authorCode;
+            if (!(await folderExists(token, candidate))) return candidate;
+        }
+        throw new Error('Δεν βρέθηκε ελεύθερο suffix (-2 έως -99) για σημερινό άρθρο.');
+    }
+
     async function publishToGitHub(token, folderName, sourceTxt, heroFile, heroExt, contentImages, commitMessage, progress) {
         function tick(msg) { if (progress) progress(msg); }
 
-        tick('Reading main ref…');
-        var ref = await ghFetch('/git/ref/heads/main', token);
-        var latestCommitSha = ref.object.sha;
-        var commit = await ghFetch('/git/commits/' + latestCommitSha, token);
-        var baseTreeSha = commit.tree.sha;
-
+        // Phase 1: upload blobs (content-addressed, safe to do once)
         var blobs = [];
 
-        tick('Uploading source.txt…');
+        tick('Ανέβασμα source.txt…');
         var txtBlob = await ghFetch('/git/blobs', token, {
             method: 'POST',
             body: { content: utf8ToBase64(sourceTxt), encoding: 'base64' }
@@ -856,7 +861,7 @@ Blank lines separate paragraphs."></textarea>
         });
 
         if (heroFile) {
-            tick('Uploading hero image…');
+            tick('Ανέβασμα κεντρικής εικόνας…');
             var heroB64 = await blobToBase64(heroFile);
             var heroBlob = await ghFetch('/git/blobs', token, {
                 method: 'POST',
@@ -870,7 +875,7 @@ Blank lines separate paragraphs."></textarea>
 
         for (var i = 0; i < (contentImages || []).length; i++) {
             var ci = contentImages[i];
-            tick('Uploading image ' + (i + 1) + '/' + contentImages.length + '…');
+            tick('Ανέβασμα εικόνας ' + (i + 1) + '/' + contentImages.length + '…');
             var ciB64 = await blobToBase64(ci.file);
             var ciBlob = await ghFetch('/git/blobs', token, {
                 method: 'POST',
@@ -882,81 +887,109 @@ Blank lines separate paragraphs."></textarea>
             });
         }
 
-        tick('Writing tree…');
-        var newTree = await ghFetch('/git/trees', token, {
-            method: 'POST',
-            body: { base_tree: baseTreeSha, tree: blobs }
-        });
+        // Phase 2: tree + commit + ref-patch with retry on conflict
+        var attempts = 0, maxAttempts = 3, newCommit;
+        while (true) {
+            attempts++;
+            tick('Γράψιμο tree' + (attempts > 1 ? ' (retry ' + attempts + ')' : '') + '…');
 
-        tick('Creating commit…');
-        var newCommit = await ghFetch('/git/commits', token, {
-            method: 'POST',
-            body: { message: commitMessage, tree: newTree.sha, parents: [latestCommitSha] }
-        });
-        await ghFetch('/git/refs/heads/main', token, {
-            method: 'PATCH',
-            body: { sha: newCommit.sha, force: false }
-        });
+            var ref = await ghFetch('/git/ref/heads/main', token);
+            var latestCommitSha = ref.object.sha;
+            var commit = await ghFetch('/git/commits/' + latestCommitSha, token);
+            var baseTreeSha = commit.tree.sha;
+
+            var newTree = await ghFetch('/git/trees', token, {
+                method: 'POST',
+                body: { base_tree: baseTreeSha, tree: blobs }
+            });
+
+            tick('Δημιουργία commit…');
+            newCommit = await ghFetch('/git/commits', token, {
+                method: 'POST',
+                body: { message: commitMessage, tree: newTree.sha, parents: [latestCommitSha] }
+            });
+
+            try {
+                await ghFetch('/git/refs/heads/main', token, {
+                    method: 'PATCH',
+                    body: { sha: newCommit.sha, force: false }
+                });
+                break;
+            } catch (err) {
+                if ((err.status === 409 || err.status === 422) && attempts < maxAttempts) continue;
+                throw err;
+            }
+        }
         return newCommit.sha;
     }
 
     publishBtn.addEventListener('click', async function () {
         var title = titleInput.value.trim();
-        if (!title) { alert('Please fill in a title before publishing.'); titleInput.focus(); return; }
+        if (!title) { alert('Συμπλήρωσε τίτλο πριν από τη δημοσίευση.'); titleInput.focus(); return; }
 
         var body = contentArea.value.trim();
-        if (!body) { alert('Please write some article content before publishing.'); contentArea.focus(); return; }
+        if (!body) { alert('Γράψε το κείμενο του άρθρου πριν από τη δημοσίευση.'); contentArea.focus(); return; }
 
         var token = getStoredToken();
         if (!token) {
             token = promptForToken('');
-            if (!token) { alert('Cannot publish without a token.'); return; }
+            if (!token) { alert('Δεν είναι δυνατή η δημοσίευση χωρίς token.'); return; }
         }
 
         var author = authorSelect.value;
         var tag = tagInput.value.trim() || 'F1';
         var category = categoryInput.value.trim() || 'Racing';
         var authorCode = AUTHOR_CODES[author] || '';
-        var folderName = todayYYYYMMDD() + authorCode;
+        var baseDate = todayYYYYMMDD();
+        var folderName = baseDate + authorCode;
         var heroFile = heroInput.files && heroInput.files[0];
 
         if (!heroFile) {
-            if (!confirm('No hero image attached. Publish anyway (will use default blog image)?')) return;
+            if (!confirm('Δεν έχει επισυναφθεί κεντρική εικόνα. Να γίνει δημοσίευση με την προεπιλεγμένη;')) return;
         }
 
         publishBtn.disabled = true;
         var originalHtml = publishBtn.innerHTML;
-        publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking…';
+        publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Έλεγχος…';
 
         try {
             var exists = await folderExists(token, folderName);
             if (exists) {
-                if (!confirm('Folder blog-entries/' + folderName + ' already exists on main. Overwrite its files?')) {
-                    return;
+                // Two-step choice: new numbered version vs overwrite in place.
+                // confirm() returns true for OK (= new version), false for Cancel.
+                var wantNewVersion = confirm(
+                    'Υπάρχει ήδη άρθρο για σήμερα:\n\n  blog-entries/' + folderName + '\n\n' +
+                    '• Πάτα OK για ΝΕΑ έκδοση (θα πάρει επόμενο -N suffix)\n' +
+                    '• Πάτα Cancel για να ΑΝΤΙΚΑΤΑΣΤΑΘΕΙ το υπάρχον'
+                );
+                if (wantNewVersion) {
+                    publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Εύρεση suffix…';
+                    folderName = await nextNumberedFolder(token, baseDate, authorCode);
+                } else {
+                    if (!confirm('Σίγουρα να αντικατασταθούν τα αρχεία στο ' + folderName + ';')) return;
                 }
             }
 
             var markerCount = countMarkers();
-            var confirmMsg = 'Publish "' + title + '" to blog-module/blog-entries/' + folderName + '/ on main?';
+            var confirmMsg = 'Δημοσίευση του "' + title + '" στο blog-module/blog-entries/' + folderName + '/ στο main;';
             if (contentImageFiles.length) {
-                confirmMsg += '\n\nIncludes ' + contentImageFiles.length + ' content image' +
-                    (contentImageFiles.length === 1 ? '' : 's') + ' + ' + markerCount + ' marker' +
-                    (markerCount === 1 ? '' : 's') + '.';
+                confirmMsg += '\n\nΠεριλαμβάνει ' + contentImageFiles.length + (contentImageFiles.length === 1 ? ' εικόνα' : ' εικόνες') +
+                    ' κειμένου + ' + markerCount + (markerCount === 1 ? ' δείκτη' : ' δείκτες') + '.';
                 if (markerCount === 0) {
-                    confirmMsg += '\n\nNo [img-instert-tag] markers — images will render as a carousel at the end of the article.';
+                    confirmMsg += '\n\nΧωρίς δείκτες [img-instert-tag] — οι εικόνες θα εμφανιστούν ως carousel στο τέλος.';
                 } else if (contentImageFiles.length > markerCount) {
-                    confirmMsg += '\n\n' + (contentImageFiles.length - markerCount) + ' extra image' +
-                        ((contentImageFiles.length - markerCount) === 1 ? '' : 's') +
-                        ' will be appended as an end-of-article carousel.';
+                    confirmMsg += '\n\n' + (contentImageFiles.length - markerCount) +
+                        (contentImageFiles.length - markerCount === 1 ? ' επιπλέον εικόνα' : ' επιπλέον εικόνες') +
+                        ' θα μπουν σε carousel στο τέλος.';
                 } else if (markerCount > contentImageFiles.length) {
-                    confirmMsg += '\n\n⚠ ' + (markerCount - contentImageFiles.length) + ' marker' +
-                        ((markerCount - contentImageFiles.length) === 1 ? '' : 's') +
-                        ' have no attached image — those spots will be empty.';
+                    confirmMsg += '\n\n⚠ ' + (markerCount - contentImageFiles.length) +
+                        (markerCount - contentImageFiles.length === 1 ? ' δείκτης' : ' δείκτες') +
+                        ' χωρίς αντίστοιχη εικόνα — αυτές οι θέσεις θα μείνουν κενές.';
                 }
             }
             if (!confirm(confirmMsg)) return;
 
-            publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing…';
+            publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Δημοσίευση…';
 
             var heroExt = heroFile ? sanitizeImageExtension(heroFile.name) : null;
             var sourceTxt = buildSourceTxt(tag, category, title, body);
@@ -969,16 +1002,16 @@ Blank lines separate paragraphs."></textarea>
 
             var shortSha = sha.substring(0, 7);
             var actionsUrl = 'https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/actions';
-            if (confirm('Published commit ' + shortSha + ' to main.\n\nThe Publish Blog workflow is building the article now (~1 min).\n\nOpen the Actions tab to watch it?')) {
+            if (confirm('Δημοσιεύτηκε το commit ' + shortSha + ' στο main.\n\nΤο workflow "Publish Blog" χτίζει τώρα το άρθρο (~1 λεπτό).\n\nΝα ανοίξει η καρτέλα Actions;')) {
                 window.open(actionsUrl, '_blank', 'noopener');
             }
         } catch (err) {
             console.error('Publish failed', err);
             var hint = '';
             if (err.status === 401 || err.status === 403) {
-                hint = '\n\nCheck your token — it may be expired, missing permissions, or not scoped to this repo. Click the key icon to update it.';
+                hint = '\n\nΈλεγξε το token — μπορεί να έχει λήξει, να λείπουν δικαιώματα ή να μην είναι σωστό για το repo. Πάτα το εικονίδιο κλειδί για ενημέρωση.';
             }
-            alert('Publish failed: ' + (err && err.message ? err.message : err) + hint);
+            alert('Η δημοσίευση απέτυχε: ' + (err && err.message ? err.message : err) + hint);
         } finally {
             publishBtn.disabled = false;
             publishBtn.innerHTML = originalHtml;
