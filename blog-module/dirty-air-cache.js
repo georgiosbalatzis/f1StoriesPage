@@ -160,7 +160,8 @@ async function fetchOpenF1ByDriverNumbers(endpoint, sessionKey, driverNumbers, e
 }
 
 function isCompletedSession(session) {
-    const dateValue = session && (session.date_end || session.date_start || session.date);
+    if (!session || session.is_cancelled) return false;
+    const dateValue = session.date_end || session.date_start || session.date;
     return dateValue ? new Date(dateValue) <= new Date() : false;
 }
 

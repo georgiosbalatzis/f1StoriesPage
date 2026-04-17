@@ -170,8 +170,9 @@ function parseDateValue(value) {
 }
 
 function isCompletedSession(session) {
-    return parseDateValue(session && (session.date_end || session.date_start || session.date)) > 0
-        && parseDateValue(session && (session.date_end || session.date_start || session.date)) <= Date.now();
+    if (!session || session.is_cancelled) return false;
+    var d = parseDateValue(session.date_end || session.date_start || session.date);
+    return d > 0 && d <= Date.now();
 }
 
 async function fetchJSON(url, attempt) {

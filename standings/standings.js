@@ -1739,7 +1739,7 @@ function normalizeDirtyAirTimelineSegments(segments, cachedLaps) {
 }
 
 function normalizeDirtyAirCacheSession(session) {
-    if (!session || session.session_key == null) return null;
+    if (!session || session.session_key == null || !(session.rows && session.rows.length)) return null;
 
     var normalized = {
         session_key: session.session_key,
