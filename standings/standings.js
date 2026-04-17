@@ -1023,7 +1023,8 @@ function isQualifyingSession(session) {
 }
 
 function isCompletedSession(session) {
-    var dateValue = session && (session.date_end || session.date_start || session.date);
+    if (!session || session.is_cancelled) return false;
+    var dateValue = session.date_end || session.date_start || session.date;
     return dateValue ? new Date(dateValue) <= new Date() : false;
 }
 
