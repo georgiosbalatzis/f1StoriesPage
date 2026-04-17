@@ -1,0 +1,1233 @@
+================================================================================
+  F1 STORIES MOBILE APPLICATION — DEVELOPMENT MANUAL
+  Target: Android + iOS viewer for f1stories.gr
+  Created: 2026-04-17
+================================================================================
+
+
+TABLE OF CONTENTS
+─────────────────
+  1.  Executive Summary & Strategy Decision
+  2.  Technology Comparison Matrix
+  3.  Recommended Architecture
+  4.  Prerequisites & Development Environment
+  5.  Phase 0 — PWA Enhancement (Week 1)
+  6.  Phase 1 — Capacitor Shell + Native Packaging (Weeks 2-3)
+  7.  Phase 2 — Native Navigation & Blog Reader (Weeks 3-5)
+  8.  Phase 3 — Standings WebView Integration (Weeks 5-6)
+  9.  Phase 4 — Push Notifications (Week 7)
+  10. Phase 5 — Offline Support & Caching (Week 8)
+  11. Phase 6 — App Store Preparation & Submission (Weeks 9-10)
+  12. Phase 7 — Post-Launch Maintenance
+  13. Project Structure Reference
+  14. Cost & Timeline Summary
+  15. Alternative Approaches (If You Change Direction)
+
+
+================================================================================
+1. EXECUTIVE SUMMARY & STRATEGY DECISION
+================================================================================
+
+The f1stories.gr site has three distinct content areas:
+
+  A) BLOG — 207+ articles, JSON-driven index, HTML article pages
+  B) STANDINGS — 6,578-line JS app with 10 interactive tabs, live API
+     calls to OpenF1/Jolpica, SVG/Canvas charts, complex DOM rendering
+  C) STATIC PAGES — Home, teams, about, privacy
+
+Key insight: The standings module is the most complex part of the site.
+Rewriting its 6,578 lines of chart rendering, API orchestration, retry
+logic, and 10 analysis tabs (Tyre Pace, Dirty Air, Track Dominance,
+Qualifying Gaps, Lap 1 Gains, Pit Stops, Friday Debrief, Destructors)
+into native code would take 3-6 months and create a permanent
+maintenance burden (every standings bug fix needs to be applied twice).
+
+RECOMMENDATION: Hybrid architecture using Capacitor (by the Ionic team).
+
+  - Blog & navigation: native-feel components via Ionic/web components
+  - Standings & articles: WebView loading the existing web pages
+  - Result: one codebase, both platforms, 80% code reuse from the site
+
+This gives you App Store presence, push notifications, and offline
+reading without rewriting the standings engine.
+
+
+================================================================================
+2. TECHNOLOGY COMPARISON MATRIX
+================================================================================
+
+┌──────────────────┬────────┬──────────┬──────────┬───────────┬─────────┐
+│ Approach         │ Effort │ Perf     │ Reuse    │ App Store │ Offline │
+├──────────────────┼────────┼──────────┼──────────┼───────────┼─────────┤
+│ PWA only         │ 1 week │ Good     │ 100%     │ No*       │ Yes     │
+│ Capacitor+Ionic  │ 8 weeks│ Good     │ ~80%     │ Yes       │ Yes     │
+│ React Native     │ 14 wks │ Good     │ ~20%     │ Yes       │ Yes     │
+│ Flutter          │ 16 wks │ Excellent│ 0%       │ Yes       │ Yes     │
+│ Native (2x)      │ 24 wks │ Best     │ 0%       │ Yes       │ Yes     │
+│ React Native+WV  │ 10 wks │ Mixed    │ ~50%     │ Yes       │ Yes     │
+└──────────────────┴────────┴──────────┴──────────┴───────────┴─────────┘
+
+  * PWA can appear on Google Play via TWA (Trusted Web Activity), but
+    Apple does not allow PWA App Store listings. iOS Safari supports
+    "Add to Home Screen" with standalone display.
+
+WHY CAPACITOR WINS for this project:
+
+  1. The standings module (6,578 lines of JS) runs as-is in WebView.
+     No rewrite. No divergence. Bug fixes land in both web and app.
+
+  2. Blog reading is the primary mobile use case. Capacitor lets you
+     build a native-feeling article reader with smooth scroll, native
+     share sheet, and offline storage — while still being HTML/CSS/JS.
+
+  3. Ionic components (optional) give you iOS/Android-appropriate
+     transitions, tab bars, and pull-to-refresh out of the box.
+
+  4. Push notifications via @capacitor/push-notifications use APNs
+     (iOS) and FCM (Android) natively — no third-party service needed.
+
+  5. You already know HTML/CSS/JS. No Dart, no Swift, no Kotlin.
+
+
+================================================================================
+3. RECOMMENDED ARCHITECTURE
+================================================================================
+
+┌─────────────────────────────────────────────────────────┐
+│                    F1 Stories App                        │
+│                                                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
+│  │  Blog Tab    │  │ Standings Tab│  │  More Tab    │  │
+│  │  (Native UI) │  │  (WebView)   │  │  (Native UI) │  │
+│  │              │  │              │  │              │  │
+│  │ Article list │  │ f1stories.gr │  │ About        │  │
+│  │ from JSON    │  │ /standings/  │  │ Settings     │  │
+│  │              │  │              │  │ Notifications│  │
+│  │ Article view │  │ Full 10-tab  │  │ Theme toggle │  │
+│  │ from HTML    │  │ experience   │  │ Links        │  │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  │
+│         │                 │                  │          │
+│  ┌──────┴─────────────────┴──────────────────┴───────┐  │
+│  │              Capacitor Bridge Layer                │  │
+│  │  @capacitor/push-notifications                    │  │
+│  │  @capacitor/share                                 │  │
+│  │  @capacitor/preferences (offline storage)         │  │
+│  │  @capacitor/network (connectivity detection)      │  │
+│  │  @capacitor/splash-screen                         │  │
+│  │  @capacitor/status-bar                            │  │
+│  │  @capacitor/browser (external links)              │  │
+│  └───────────────────────────────────────────────────┘  │
+│                                                         │
+│  ┌─────────────────────┐  ┌───────────────────────────┐ │
+│  │  Android (Kotlin)   │  │  iOS (Swift)              │ │
+│  │  Gradle build       │  │  Xcode project            │ │
+│  │  Firebase Cloud Msg │  │  APNs                     │ │
+│  │  Play Store release │  │  App Store release        │ │
+│  └─────────────────────┘  └───────────────────────────┘ │
+└─────────────────────────────────────────────────────────┘
+
+Data flow:
+
+  Blog list  →  fetch blog-data.json from f1stories.gr
+             →  cache locally via @capacitor/preferences
+             →  render native-feel cards with thumbnail, title, date
+
+  Article    →  load article HTML in styled WebView
+             →  inject CSS overrides for mobile (hide nav, adjust padding)
+             →  cache HTML+images for offline reading
+
+  Standings  →  full-page WebView pointing to f1stories.gr/standings/
+             →  inject JS to hide site nav (app has its own tab bar)
+             →  pull-to-refresh reloads the WebView
+
+  Push       →  Firebase Cloud Messaging (both platforms)
+             →  server-side: GitHub Actions sends push on new article
+             →  payload: { title, body, articleUrl, imageUrl }
+
+
+================================================================================
+4. PREREQUISITES & DEVELOPMENT ENVIRONMENT
+================================================================================
+
+HARDWARE:
+  - Mac required for iOS builds (Xcode is macOS-only)
+  - Android builds work on Mac/Windows/Linux
+  - Your current Mac is sufficient
+
+SOFTWARE TO INSTALL:
+
+  1. Node.js 20+ (you already have this)
+     $ node -v  # should show v20+
+
+  2. Xcode (from Mac App Store)
+     $ xcode-select --install
+     - Also open Xcode once to accept the license and install
+       additional components
+     - Install an iOS Simulator via Xcode > Settings > Platforms
+
+  3. Android Studio
+     $ brew install --cask android-studio
+     - On first launch, install Android SDK 34 (Android 14)
+     - Install an Android Emulator via Tools > Device Manager
+     - Set ANDROID_HOME:
+       export ANDROID_HOME=$HOME/Library/Android/sdk
+       export PATH=$PATH:$ANDROID_HOME/platform-tools
+       (add to ~/.zshrc)
+
+  4. CocoaPods (for iOS native dependencies)
+     $ sudo gem install cocoapods
+
+  5. JDK 17 (for Android Gradle)
+     $ brew install openjdk@17
+
+  6. Capacitor CLI + Ionic CLI
+     $ npm install -g @ionic/cli @capacitor/cli
+
+ACCOUNTS NEEDED:
+
+  - Apple Developer Account ($99/year) — required to submit to App Store
+    https://developer.apple.com/programs/
+
+  - Google Play Console ($25 one-time) — required to submit to Play Store
+    https://play.google.com/console/
+
+  - Firebase project (free) — for push notifications (FCM)
+    https://console.firebase.google.com/
+
+
+================================================================================
+5. PHASE 0 — PWA ENHANCEMENT (Week 1)
+================================================================================
+
+Before building the native app, improve the PWA so that the WebView
+experience inside the app is already good. These changes benefit both
+the website and the app.
+
+STEP 0.1 — Improve manifest.json
+─────────────────────────────────
+The current manifest.json is already decent. Add:
+
+  {
+    "id": "/",
+    "launch_handler": { "client_mode": "navigate-existing" },
+    "handle_links": "preferred",
+    "screenshots": [
+      {
+        "src": "/images/screenshots/blog-mobile.webp",
+        "sizes": "390x844",
+        "type": "image/webp",
+        "form_factor": "narrow",
+        "label": "Blog listing on mobile"
+      },
+      {
+        "src": "/images/screenshots/standings-mobile.webp",
+        "sizes": "390x844",
+        "type": "image/webp",
+        "form_factor": "narrow",
+        "label": "Championship standings"
+      }
+    ]
+  }
+
+STEP 0.2 — Improve service worker caching
+──────────────────────────────────────────
+Update sw.js to pre-cache critical assets:
+
+  const SHELL_ASSETS = [
+    '/',
+    '/blog-module/blog/index.html',
+    '/standings/index.html',
+    '/standings/standings.css',
+    '/standings/standings.js',
+    '/blog-module/blog-styles.css',
+    '/blog-module/blog-data.json',
+    '/styles.css',
+    '/styles/shared-nav.css',
+    '/theme-overrides.css',
+    '/images/logo.png',
+    '/offline.html'
+  ];
+
+  Add runtime caching for blog article HTML:
+  - Match /blog-module/blog-entries/*/article.html
+  - Strategy: stale-while-revalidate (serve cached, update in background)
+
+STEP 0.3 — Add viewport-fit=cover CSS
+──────────────────────────────────────
+Already present in meta viewport. Ensure CSS handles safe-area-inset:
+
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+This prevents content from hiding behind iPhone notch/Dynamic Island.
+
+STEP 0.4 — Create "app mode" CSS class
+───────────────────────────────────────
+Add a .in-app class that the Capacitor shell will inject:
+
+  .in-app .site-nav,
+  .in-app .footer-section,
+  .in-app .cookie-consent { display: none !important; }
+  .in-app .blog-hero-section { padding-top: env(safe-area-inset-top, 20px); }
+
+The app will add this class via JS injection, hiding the web navigation
+(the app has its own native tab bar).
+
+
+================================================================================
+6. PHASE 1 — CAPACITOR SHELL + NATIVE PACKAGING (Weeks 2-3)
+================================================================================
+
+STEP 1.1 — Create the app project
+──────────────────────────────────
+Create a sibling directory (NOT inside the site repo):
+
+  $ mkdir ~/PhpstormProjects/f1stories-app
+  $ cd ~/PhpstormProjects/f1stories-app
+  $ npm init -y
+
+  $ npm install @capacitor/core @capacitor/cli
+  $ npm install @capacitor/ios @capacitor/android
+  $ npm install @capacitor/splash-screen @capacitor/status-bar
+  $ npm install @capacitor/preferences @capacitor/share
+  $ npm install @capacitor/network @capacitor/browser
+  $ npm install @capacitor/push-notifications
+
+  $ npx cap init "F1 Stories" "gr.f1stories.app" --web-dir=www
+
+STEP 1.2 — Create the web shell
+────────────────────────────────
+The www/ directory is what Capacitor packages into the native app.
+It contains the app's local HTML/CSS/JS (the blog list, the tab bar,
+the settings page). The standings page loads remotely via WebView.
+
+  mkdir -p www/css www/js www/img
+
+  www/
+  ├── index.html          ← app entry point (tab bar + router)
+  ├── css/
+  │   └── app.css         ← app-specific styles
+  ├── js/
+  │   ├── app.js          ← main app logic, routing
+  │   ├── blog.js         ← fetch blog-data.json, render cards
+  │   ├── article.js      ← load article HTML in styled container
+  │   ├── settings.js     ← theme, notifications, about
+  │   └── capacitor.js    ← Capacitor runtime (auto-copied)
+  └── img/
+      ├── logo.png
+      └── splash.png
+
+STEP 1.3 — Build www/index.html
+────────────────────────────────
+This is the app's root. It renders a native-style tab bar at the
+bottom and swaps content based on the active tab.
+
+  <!DOCTYPE html>
+  <html lang="el">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,
+          viewport-fit=cover, user-scalable=no">
+    <title>F1 Stories</title>
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  </head>
+  <body>
+    <div id="app">
+      <!-- Tab content area -->
+      <div id="tab-content"></div>
+
+      <!-- Native-style tab bar -->
+      <nav id="tab-bar">
+        <button data-tab="blog" class="tab-btn active">
+          <i class="fas fa-newspaper"></i>
+          <span>Blog</span>
+        </button>
+        <button data-tab="standings" class="tab-btn">
+          <i class="fas fa-trophy"></i>
+          <span>Standings</span>
+        </button>
+        <button data-tab="more" class="tab-btn">
+          <i class="fas fa-ellipsis-h"></i>
+          <span>More</span>
+        </button>
+      </nav>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+  </html>
+
+STEP 1.4 — capacitor.config.ts
+───────────────────────────────
+  import type { CapacitorConfig } from '@capacitor/cli';
+
+  const config: CapacitorConfig = {
+    appId: 'gr.f1stories.app',
+    appName: 'F1 Stories',
+    webDir: 'www',
+    server: {
+      // Allow loading f1stories.gr content in WebView
+      allowNavigation: [
+        'f1stories.gr',
+        '*.f1stories.gr',
+        'api.openf1.org',
+        'api.jolpi.ca',
+        'media.formula1.com'
+      ]
+    },
+    plugins: {
+      SplashScreen: {
+        launchAutoHide: true,
+        backgroundColor: '#111113',
+        androidSplashResourceName: 'splash',
+        showSpinner: false,
+        launchShowDuration: 1500
+      },
+      StatusBar: {
+        style: 'dark',
+        backgroundColor: '#111113'
+      },
+      PushNotifications: {
+        presentationOptions: ['badge', 'sound', 'alert']
+      }
+    },
+    ios: {
+      scheme: 'F1 Stories',
+      backgroundColor: '#111113'
+    },
+    android: {
+      backgroundColor: '#111113',
+      allowMixedContent: true
+    }
+  };
+
+  export default config;
+
+STEP 1.5 — Add native platforms
+───────────────────────────────
+  $ npx cap add android
+  $ npx cap add ios
+
+This creates:
+  - android/     ← full Android Studio project (Kotlin/Gradle)
+  - ios/         ← full Xcode project (Swift)
+
+STEP 1.6 — App icons & splash screen
+─────────────────────────────────────
+Use the existing icon-512.png from the site.
+
+  Tool: https://github.com/nicknisi/capacitor-assets
+  $ npm install -D @nicknisi/capacitor-assets
+  $ npx @nicknisi/capacitor-assets generate \
+      --icon images/icons/icon-512.png \
+      --splash images/splash.png
+
+  OR use capacitor-assets (official):
+  $ npm install -D @capacitor/assets
+  $ npx capacitor-assets generate
+
+  This generates all required sizes for both platforms:
+  - Android: mipmap-mdpi through mipmap-xxxhdpi (48px-192px)
+  - iOS: AppIcon.appiconset (20px-1024px)
+  - Splash screens for all device sizes
+
+STEP 1.7 — First build & test
+──────────────────────────────
+  # Sync www/ to native projects
+  $ npx cap sync
+
+  # Open in Android Studio
+  $ npx cap open android
+  # Click Run (green play button) — choose emulator or connected device
+
+  # Open in Xcode
+  $ npx cap open ios
+  # Select a simulator, click Run
+
+
+================================================================================
+7. PHASE 2 — NATIVE NAVIGATION & BLOG READER (Weeks 3-5)
+================================================================================
+
+STEP 2.1 — Blog list (www/js/blog.js)
+──────────────────────────────────────
+Fetch the blog JSON from the live site and render article cards:
+
+  const BLOG_DATA_URL = 'https://f1stories.gr/blog-module/blog-data.json';
+  const SITE_BASE = 'https://f1stories.gr';
+
+  let cachedPosts = null;
+
+  export async function loadBlogList() {
+    const container = document.getElementById('tab-content');
+
+    // Try cached data first
+    const { Preferences } = await import('@capacitor/preferences');
+    const stored = await Preferences.get({ key: 'blog-data' });
+    if (stored.value) {
+      cachedPosts = JSON.parse(stored.value);
+      renderBlogList(cachedPosts, container);
+    }
+
+    // Fetch fresh data in background
+    try {
+      const resp = await fetch(BLOG_DATA_URL, { cache: 'no-store' });
+      const data = await resp.json();
+      cachedPosts = data.posts || [];
+      await Preferences.set({
+        key: 'blog-data',
+        value: JSON.stringify(cachedPosts)
+      });
+      renderBlogList(cachedPosts, container);
+    } catch (err) {
+      if (!cachedPosts) {
+        container.innerHTML = '<div class="error">Could not load articles.</div>';
+      }
+    }
+  }
+
+  function renderBlogList(posts, container) {
+    const cards = posts.map(post => `
+      <article class="article-card" data-url="${post.url}">
+        <img class="article-thumb"
+             src="${SITE_BASE}${post.image}"
+             alt=""
+             loading="lazy">
+        <div class="article-meta">
+          <span class="article-tag">${post.tag || 'F1'}</span>
+          <time>${post.displayDate || post.date}</time>
+        </div>
+        <h2 class="article-title">${post.title}</h2>
+        <p class="article-excerpt">${post.excerpt || ''}</p>
+        <div class="article-footer">
+          <span class="article-author">${post.author}</span>
+          <span class="article-read-time">${post.readingTime || ''}</span>
+        </div>
+      </article>
+    `).join('');
+
+    container.innerHTML = `
+      <header class="blog-header">
+        <img src="img/logo.png" class="app-logo" alt="F1 Stories">
+        <h1>F1 Stories Blog</h1>
+      </header>
+      <div class="article-grid">${cards}</div>
+    `;
+
+    // Click handler for cards
+    container.querySelectorAll('.article-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const url = card.dataset.url;
+        if (url) openArticle(SITE_BASE + url);
+      });
+    });
+  }
+
+STEP 2.2 — Article reader (www/js/article.js)
+──────────────────────────────────────────────
+Load article HTML in an in-app WebView with the site nav hidden:
+
+  export function openArticle(articleUrl) {
+    const container = document.getElementById('tab-content');
+
+    container.innerHTML = `
+      <div class="article-view">
+        <button id="article-back" class="back-btn">
+          <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <div id="article-frame-wrap">
+          <iframe id="article-frame"
+                  src="${articleUrl}"
+                  sandbox="allow-scripts allow-same-origin allow-popups"
+                  style="width:100%; height:100%; border:none;">
+          </iframe>
+        </div>
+      </div>
+    `;
+
+    // Inject CSS to hide nav inside the iframe after load
+    const frame = document.getElementById('article-frame');
+    frame.addEventListener('load', () => {
+      try {
+        const doc = frame.contentDocument || frame.contentWindow.document;
+        const style = doc.createElement('style');
+        style.textContent = `
+          .site-nav, .footer-section, .cookie-consent,
+          .blog-back-btn { display: none !important; }
+          body { padding-top: 0 !important; }
+        `;
+        doc.head.appendChild(style);
+      } catch (e) {
+        // Cross-origin — injection not possible; ok, still readable
+      }
+    });
+
+    document.getElementById('article-back').addEventListener('click', () => {
+      loadBlogList(); // from blog.js
+    });
+  }
+
+  NOTE: If cross-origin blocks iframe injection, use Capacitor's
+  InAppBrowser or the WebView plugin instead of an iframe. The
+  capacitor-webview-overlay plugin allows overlaying a native WebView
+  on top of the web layer with full control.
+
+  Alternative for article display (recommended if iframe has issues):
+
+    import { Browser } from '@capacitor/browser';
+    export function openArticle(url) {
+      Browser.open({ url, presentationStyle: 'popover' });
+    }
+
+  Or for a seamless in-app feel, fetch the article HTML, strip the
+  nav, and inject it directly into a <div>:
+
+    export async function openArticleInline(articleUrl) {
+      const resp = await fetch(articleUrl);
+      const html = await resp.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // Remove nav, footer
+      doc.querySelectorAll('.site-nav, footer, .cookie-consent')
+         .forEach(el => el.remove());
+
+      // Get the article content
+      const article = doc.querySelector('.article-container')
+                      || doc.querySelector('main')
+                      || doc.body;
+
+      container.innerHTML = `
+        <div class="article-view">
+          <button id="article-back" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back
+          </button>
+          <div class="article-content">${article.innerHTML}</div>
+        </div>
+      `;
+    }
+
+STEP 2.3 — Share button
+───────────────────────
+Add a share icon to the article view:
+
+  import { Share } from '@capacitor/share';
+
+  shareBtn.addEventListener('click', async () => {
+    await Share.share({
+      title: articleTitle,
+      text: articleExcerpt,
+      url: articleUrl,
+      dialogTitle: 'Share this article'
+    });
+  });
+
+STEP 2.4 — Pull-to-refresh
+───────────────────────────
+Implement pull-to-refresh on the blog list using a lightweight library
+like pulltorefreshjs or a simple touch event handler:
+
+  import PullToRefresh from 'pulltorefreshjs';
+
+  PullToRefresh.init({
+    mainElement: '.article-grid',
+    onRefresh() { return loadBlogList(); }
+  });
+
+STEP 2.5 — Theme support
+─────────────────────────
+Respect system dark/light preference (matching the website):
+
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+  function applyTheme(isDark) {
+    document.documentElement.setAttribute(
+      'data-theme', isDark ? 'dark' : 'light'
+    );
+    StatusBar.setStyle({ style: isDark ? 'dark' : 'light' });
+    StatusBar.setBackgroundColor({
+      color: isDark ? '#111113' : '#f5f5f7'
+    });
+  }
+
+  prefersDark.addEventListener('change', e => applyTheme(e.matches));
+  applyTheme(prefersDark.matches);
+
+
+================================================================================
+8. PHASE 3 — STANDINGS WEBVIEW INTEGRATION (Weeks 5-6)
+================================================================================
+
+The standings page is too complex to rewrite. Load it in a WebView.
+
+STEP 3.1 — Standings tab
+─────────────────────────
+When the user taps the Standings tab, load the full standings page
+from f1stories.gr in a WebView:
+
+  export function loadStandings() {
+    const container = document.getElementById('tab-content');
+    container.innerHTML = `
+      <div class="standings-view">
+        <iframe id="standings-frame"
+                src="https://f1stories.gr/standings/?embed=1"
+                style="width:100%; height:100%; border:none;"
+                allow="accelerometer; gyroscope">
+        </iframe>
+      </div>
+    `;
+
+    const frame = document.getElementById('standings-frame');
+    frame.addEventListener('load', () => {
+      try {
+        frame.contentDocument.documentElement.classList.add('in-app');
+      } catch (e) { /* cross-origin */ }
+    });
+  }
+
+STEP 3.2 — Embed mode in standings
+───────────────────────────────────
+Add embed detection to standings/index.html (on the website):
+
+  // At the top of standings.js, detect embed mode
+  var urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('embed') === '1'
+      || navigator.userAgent.indexOf('F1StoriesApp') !== -1) {
+    document.documentElement.classList.add('in-app');
+  }
+
+STEP 3.3 — Custom User-Agent
+─────────────────────────────
+Set a custom User-Agent suffix in capacitor.config.ts so the site
+can detect the app:
+
+  server: {
+    appendUserAgent: 'F1StoriesApp/1.0'
+  }
+
+STEP 3.4 — Deep linking to specific tabs
+─────────────────────────────────────────
+Support opening a specific standings tab from a push notification:
+
+  function openStandingsTab(tabName) {
+    loadStandings();
+    // The standings page reads ?tab= from the URL
+    const frame = document.getElementById('standings-frame');
+    frame.src = `https://f1stories.gr/standings/?embed=1&tab=${tabName}`;
+  }
+
+STEP 3.5 — Handle WebView navigation
+─────────────────────────────────────
+Prevent the WebView from navigating away when the user taps external
+links (YouTube, social media). Intercept and open in the system browser:
+
+  frame.addEventListener('load', () => {
+    try {
+      const doc = frame.contentDocument;
+      doc.addEventListener('click', (e) => {
+        const link = e.target.closest('a[href]');
+        if (link) {
+          const href = link.href;
+          if (!href.includes('f1stories.gr')) {
+            e.preventDefault();
+            Browser.open({ url: href });
+          }
+        }
+      });
+    } catch (e) { /* cross-origin */ }
+  });
+
+
+================================================================================
+9. PHASE 4 — PUSH NOTIFICATIONS (Week 7)
+================================================================================
+
+STEP 4.1 — Firebase project setup
+──────────────────────────────────
+  1. Go to https://console.firebase.google.com/
+  2. Create project "F1 Stories App"
+  3. Add Android app with package name: gr.f1stories.app
+     - Download google-services.json
+     - Place in android/app/google-services.json
+  4. Add iOS app with bundle ID: gr.f1stories.app
+     - Download GoogleService-Info.plist
+     - Place in ios/App/App/GoogleService-Info.plist
+  5. In Project Settings > Cloud Messaging:
+     - Note the Server Key (for sending from GitHub Actions)
+     - For iOS: upload your APNs authentication key (.p8 file)
+
+STEP 4.2 — iOS APNs setup
+──────────────────────────
+  1. In Apple Developer portal > Certificates, IDs & Profiles
+  2. Create an APNs Key (Keys > + > Apple Push Notifications)
+  3. Download the .p8 file
+  4. Upload it to Firebase > Project Settings > Cloud Messaging > iOS
+
+STEP 4.3 — Client-side registration (www/js/notifications.js)
+─────────────────────────────────────────────────────────────
+
+  import { PushNotifications } from '@capacitor/push-notifications';
+
+  export async function initPush() {
+    const permission = await PushNotifications.requestPermissions();
+    if (permission.receive !== 'granted') return;
+
+    await PushNotifications.register();
+
+    PushNotifications.addListener('registration', (token) => {
+      // Send this token to your server so you can target this device
+      // Store in Firebase Realtime DB or your own endpoint
+      console.log('Push registration token:', token.value);
+      sendTokenToServer(token.value);
+    });
+
+    PushNotifications.addListener(
+      'pushNotificationReceived',
+      (notification) => {
+        // App is in foreground — show an in-app banner
+        showInAppNotification(notification);
+      }
+    );
+
+    PushNotifications.addListener(
+      'pushNotificationActionPerformed',
+      (action) => {
+        // User tapped the notification — navigate to the article
+        const data = action.notification.data;
+        if (data && data.articleUrl) {
+          openArticle(data.articleUrl);
+        }
+      }
+    );
+  }
+
+  async function sendTokenToServer(token) {
+    // Option A: Store in Firebase Realtime Database
+    await fetch(
+      'https://your-firebase-project.firebaseio.com/tokens.json',
+      {
+        method: 'POST',
+        body: JSON.stringify({ token, platform: getPlatform(), ts: Date.now() })
+      }
+    );
+  }
+
+STEP 4.4 — Server-side: send push on new article
+─────────────────────────────────────────────────
+Add a step to the publish-blog.yml GitHub Actions workflow:
+
+  - name: Send push notification
+    if: steps.commit.outputs.changed == 'true'
+    env:
+      FCM_SERVER_KEY: ${{ secrets.FCM_SERVER_KEY }}
+    run: |
+      # Extract article title from the commit message
+      TITLE=$(echo "${{ github.event.head_commit.message }}" \
+              | head -1 | sed 's/publish(blog): //')
+
+      curl -s -X POST https://fcm.googleapis.com/fcm/send \
+        -H "Authorization: key=$FCM_SERVER_KEY" \
+        -H "Content-Type: application/json" \
+        -d '{
+          "to": "/topics/new-articles",
+          "notification": {
+            "title": "New article on F1 Stories",
+            "body": "'"$TITLE"'"
+          },
+          "data": {
+            "articleUrl": "https://f1stories.gr/blog-module/blog-entries/...",
+            "click_action": "OPEN_ARTICLE"
+          }
+        }'
+
+  NOTE: For production, use Firebase Admin SDK (Node.js) or
+  FCM HTTP v1 API instead of the legacy endpoint. The v1 API uses
+  OAuth2 service account credentials instead of a server key.
+
+STEP 4.5 — Topic subscription
+──────────────────────────────
+Subscribe all users to a "new-articles" topic on registration:
+
+  PushNotifications.addListener('registration', async (token) => {
+    // Subscribe to topic via FCM
+    await fetch(
+      `https://iid.googleapis.com/iid/v1/${token.value}/rel/topics/new-articles`,
+      {
+        method: 'POST',
+        headers: { 'Authorization': `key=${FCM_SERVER_KEY}` }
+      }
+    );
+  });
+
+
+================================================================================
+10. PHASE 5 — OFFLINE SUPPORT & CACHING (Week 8)
+================================================================================
+
+STEP 5.1 — Offline article reading
+───────────────────────────────────
+Allow users to save articles for offline reading:
+
+  import { Preferences } from '@capacitor/preferences';
+
+  export async function saveArticleOffline(post) {
+    // Fetch the article HTML
+    const resp = await fetch(post.url);
+    const html = await resp.text();
+
+    // Store in Preferences (SQLite-backed on native)
+    const saved = await getSavedArticles();
+    saved[post.id] = {
+      title: post.title,
+      author: post.author,
+      date: post.date,
+      image: post.image,
+      html: html,
+      savedAt: Date.now()
+    };
+    await Preferences.set({
+      key: 'offline-articles',
+      value: JSON.stringify(saved)
+    });
+  }
+
+  export async function getSavedArticles() {
+    const stored = await Preferences.get({ key: 'offline-articles' });
+    return stored.value ? JSON.parse(stored.value) : {};
+  }
+
+  For large articles with many images, consider using the Filesystem
+  plugin (@capacitor/filesystem) to store images separately.
+
+STEP 5.2 — Network detection
+─────────────────────────────
+  import { Network } from '@capacitor/network';
+
+  Network.addListener('networkStatusChange', (status) => {
+    if (!status.connected) {
+      showOfflineBanner();
+      // Switch blog to offline-only mode
+      // Disable standings tab or show cached version
+    } else {
+      hideOfflineBanner();
+    }
+  });
+
+STEP 5.3 — Standings offline fallback
+──────────────────────────────────────
+The standings page requires live API calls. When offline:
+  - Show a message: "Standings require internet connection"
+  - Optionally cache the last-viewed standings HTML snapshot
+  - The driver/constructor tables (static data) can be cached in
+    blog-data.json or a separate endpoint
+
+
+================================================================================
+11. PHASE 6 — APP STORE PREPARATION & SUBMISSION (Weeks 9-10)
+================================================================================
+
+STEP 6.1 — App Store assets
+────────────────────────────
+You need:
+  - App icon: 1024x1024 PNG (no alpha for iOS)
+  - Screenshots: at least 2 per device size
+    - iPhone 6.7" (1290x2796)
+    - iPhone 6.5" (1284x2778)
+    - iPad 12.9" (2048x2732) — if supporting iPad
+    - Android phone (1080x1920 minimum)
+  - Feature graphic (Android): 1024x500
+  - Short description: max 80 chars
+  - Full description: max 4000 chars
+  - Privacy policy URL (you have /privacy/)
+
+STEP 6.2 — iOS-specific configuration
+──────────────────────────────────────
+In ios/App/App/Info.plist, ensure:
+
+  - NSAppTransportSecurity allows f1stories.gr and API domains
+  - UIBackgroundModes includes "remote-notification"
+  - Privacy descriptions for any used permissions
+
+In Xcode:
+  - Set Team to your Apple Developer account
+  - Set Bundle Identifier: gr.f1stories.app
+  - Set Version: 1.0.0, Build: 1
+  - Enable Push Notifications capability
+  - Enable Background Modes > Remote notifications
+
+STEP 6.3 — Android-specific configuration
+──────────────────────────────────────────
+In android/app/build.gradle:
+  - Set applicationId "gr.f1stories.app"
+  - Set versionCode 1, versionName "1.0.0"
+  - Ensure minSdkVersion is 24+ (Android 7.0)
+  - Set targetSdkVersion 34
+
+In AndroidManifest.xml:
+  - Add INTERNET permission (usually already there)
+  - Add POST_NOTIFICATIONS permission (Android 13+)
+
+STEP 6.4 — Build release APK/AAB
+─────────────────────────────────
+  # Android
+  $ cd android
+  $ ./gradlew assembleRelease    # APK
+  $ ./gradlew bundleRelease      # AAB (required by Play Store)
+
+  Sign with a keystore:
+  $ keytool -genkey -v -keystore f1stories-release.keystore \
+      -alias f1stories -keyalg RSA -keysize 2048 -validity 10000
+
+  Configure signing in android/app/build.gradle:
+    signingConfigs {
+      release {
+        storeFile file('f1stories-release.keystore')
+        storePassword System.getenv('KEYSTORE_PASSWORD')
+        keyAlias 'f1stories'
+        keyPassword System.getenv('KEY_PASSWORD')
+      }
+    }
+
+STEP 6.5 — Build iOS archive
+─────────────────────────────
+  $ cd ios
+  $ xcodebuild -workspace App.xcworkspace -scheme App \
+      -configuration Release -archivePath build/F1Stories.xcarchive archive
+  $ xcodebuild -exportArchive \
+      -archivePath build/F1Stories.xcarchive \
+      -exportPath build/export \
+      -exportOptionsPlist ExportOptions.plist
+
+  OR use Xcode GUI:
+  Product > Archive > Distribute App > App Store Connect
+
+STEP 6.6 — Google Play submission
+─────────────────────────────────
+  1. Go to https://play.google.com/console/
+  2. Create new application
+  3. Fill in store listing (title, description, screenshots)
+  4. Upload AAB to Production track (or Internal Testing first)
+  5. Fill content rating questionnaire
+  6. Set pricing: Free
+  7. Set target audience and content
+  8. Submit for review (usually 1-3 days)
+
+STEP 6.7 — App Store Connect submission
+────────────────────────────────────────
+  1. Go to https://appstoreconnect.apple.com/
+  2. Create new app (bundle ID: gr.f1stories.app)
+  3. Fill in app information, description, screenshots
+  4. Upload build via Xcode or Transporter
+  5. Fill in privacy questionnaire
+  6. Submit for review (usually 1-2 days, can take up to 7)
+
+  IMPORTANT for App Store review:
+  - Apple may reject "thin" WebView-only apps. The blog reader tab
+    with native-feel cards and offline reading provides enough native
+    functionality to differentiate from a simple website wrapper.
+  - Include the "More" tab with settings, about, notification
+    preferences — this shows native app value.
+  - The push notifications feature is a clear differentiator.
+
+
+================================================================================
+12. PHASE 7 — POST-LAUNCH MAINTENANCE
+================================================================================
+
+ONGOING TASKS:
+
+  1. STANDINGS UPDATES — When you update standings.js on the website,
+     the app picks it up automatically (it's a WebView). No app update
+     needed for standings bug fixes or new analysis tabs.
+
+  2. BLOG UPDATES — New articles appear automatically since the blog
+     list fetches blog-data.json from the live site.
+
+  3. CACHE UPDATES — dirty-air-cache.json, debrief-cache.json, and
+     destructors-cache.json are loaded from the live site via WebView.
+     No app update needed when these change.
+
+  4. APP UPDATES — Only needed for:
+     - Changes to the app shell (tab bar, blog list layout, settings)
+     - New native features (widgets, Apple Watch, shortcuts)
+     - SDK updates (Capacitor, push notification library)
+     - OS compatibility (new Android/iOS versions)
+
+  5. DEPENDENCY UPDATES — Run quarterly:
+     $ npm outdated
+     $ npm update
+     $ npx cap sync
+     $ npx cap open android  # rebuild
+     $ npx cap open ios      # rebuild
+
+  6. ANALYTICS — Add Firebase Analytics to track:
+     - Which articles are read most in the app
+     - How much time users spend on standings vs blog
+     - Notification open rates
+     - Crash reports (Firebase Crashlytics)
+
+
+================================================================================
+13. PROJECT STRUCTURE REFERENCE
+================================================================================
+
+f1stories-app/
+├── package.json
+├── capacitor.config.ts
+├── www/                        ← Web assets (the app's UI)
+│   ├── index.html              ← App entry point
+│   ├── css/
+│   │   └── app.css             ← App styles (dark theme, cards, tab bar)
+│   ├── js/
+│   │   ├── app.js              ← Router, tab management, init
+│   │   ├── blog.js             ← Blog list fetch + render
+│   │   ├── article.js          ← Article display
+│   │   ├── settings.js         ← Settings/about/theme
+│   │   └── notifications.js    ← Push notification setup
+│   └── img/
+│       ├── logo.png            ← App logo
+│       └── default-thumb.webp  ← Fallback article thumbnail
+├── android/                    ← Generated by `npx cap add android`
+│   ├── app/
+│   │   ├── src/main/
+│   │   │   ├── AndroidManifest.xml
+│   │   │   ├── java/.../MainActivity.kt
+│   │   │   └── res/            ← Icons, splash, strings
+│   │   ├── build.gradle
+│   │   └── google-services.json  ← Firebase config
+│   ├── build.gradle
+│   └── gradle.properties
+├── ios/                        ← Generated by `npx cap add ios`
+│   ├── App/
+│   │   ├── App/
+│   │   │   ├── AppDelegate.swift
+│   │   │   ├── Info.plist
+│   │   │   ├── GoogleService-Info.plist  ← Firebase config
+│   │   │   └── Assets.xcassets  ← Icons, splash
+│   │   ├── App.xcodeproj
+│   │   └── Podfile
+│   └── Pods/
+└── resources/                  ← Source images for icon generation
+    ├── icon.png                ← 1024x1024 app icon
+    └── splash.png              ← 2732x2732 splash screen
+
+
+================================================================================
+14. COST & TIMELINE SUMMARY
+================================================================================
+
+TIMELINE:
+  Phase 0 (PWA):                1 week
+  Phase 1 (Capacitor shell):    2 weeks
+  Phase 2 (Blog reader):        2 weeks
+  Phase 3 (Standings WebView):  1 week
+  Phase 4 (Push notifications): 1 week
+  Phase 5 (Offline support):    1 week
+  Phase 6 (App Store submit):   2 weeks
+  ─────────────────────────────────────
+  Total:                        ~10 weeks
+
+COSTS:
+  Apple Developer Account:      $99/year (required for App Store)
+  Google Play Console:          $25 one-time (required for Play Store)
+  Firebase:                     Free tier (10K notifications/month)
+  Capacitor:                    Open source, free
+  Ionic:                        Free (CE) or $499/year (Enterprise)
+  ─────────────────────────────────────
+  Year 1:                       ~$125
+  Ongoing:                      ~$99/year (just Apple renewal)
+
+HARDWARE:
+  Mac:                          Required (you have one)
+  iPhone for testing:           Optional (simulator works)
+  Android phone for testing:    Optional (emulator works)
+
+
+================================================================================
+15. ALTERNATIVE APPROACHES (IF YOU CHANGE DIRECTION)
+================================================================================
+
+ALTERNATIVE A: React Native
+────────────────────────────
+If you want a more "native" feel and are willing to invest 14+ weeks:
+
+  - Use React Native with Expo for managed workflow
+  - Blog list: FlatList with native Image components
+  - Article reader: react-native-webview loading article HTML
+  - Standings: react-native-webview loading the full page
+  - Push: expo-notifications (simplifies FCM+APNs)
+  - State management: Zustand or React Query
+  - Navigation: React Navigation (stack + bottom tabs)
+  - Build/deploy: EAS Build (Expo Application Services)
+
+  Pro: Smoother animations, better OS integration
+  Con: Must learn React Native, more complex tooling, standings
+       still needs WebView anyway
+
+ALTERNATIVE B: Flutter
+──────────────────────
+If you want maximum UI customization and don't mind learning Dart:
+
+  - Blog list: ListView with CachedNetworkImage
+  - Article reader: flutter_html or webview_flutter
+  - Standings: webview_flutter (same WebView approach)
+  - Push: firebase_messaging
+  - State: Riverpod or BLoC
+  - Navigation: GoRouter
+
+  Pro: Beautiful custom UI, excellent performance
+  Con: Must learn Dart, 16+ weeks, standings still WebView
+
+ALTERNATIVE C: Native (Swift + Kotlin) — TWO separate codebases
+────────────────────────────────────────────────────────────────
+Only recommended if you plan to hire dedicated mobile developers:
+
+  iOS (Swift/SwiftUI):
+  - Blog: SwiftUI List + AsyncImage
+  - Article: WKWebView
+  - Standings: WKWebView
+  - Push: UserNotifications + APNs
+
+  Android (Kotlin/Jetpack Compose):
+  - Blog: LazyColumn + Coil
+  - Article: AndroidView(::WebView)
+  - Standings: AndroidView(::WebView)
+  - Push: Firebase Cloud Messaging
+
+  Pro: Maximum native feel, best performance
+  Con: 24+ weeks, two codebases to maintain, need Swift + Kotlin skills
+
+ALTERNATIVE D: Trusted Web Activity (Android-only, cheapest)
+────────────────────────────────────────────────────────────
+Wrap the existing PWA in a TWA for Google Play listing:
+
+  - Uses Chrome Custom Tabs (no WebView)
+  - Full-screen, no browser chrome
+  - Requires Digital Asset Links verification
+  - Literally just the website in an Android app wrapper
+  - Tool: https://github.com/nicknisi/nicknisi/nicknisi
+    OR Bubblewrap: https://github.com/nicknisi/nicknisi-nicknisi
+
+  Pro: 1 day of work, 0 maintenance
+  Con: Android only, no push, Apple will reject this for iOS
+
+
+================================================================================
+END OF MANUAL
+================================================================================
+
+Quick-start checklist:
+  [ ] Install Xcode + Android Studio
+  [ ] Create Apple Developer + Google Play accounts
+  [ ] Create Firebase project
+  [ ] mkdir f1stories-app && cd f1stories-app
+  [ ] npm init && npm install @capacitor/core @capacitor/cli ...
+  [ ] Build www/ shell with tab bar + blog list
+  [ ] npx cap add android && npx cap add ios
+  [ ] npx cap sync && npx cap open android
+  [ ] Test on emulator
+  [ ] Iterate through phases 2-6

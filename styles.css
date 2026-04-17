@@ -424,3 +424,53 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
     .hero-content h1 { font-size: 1.6rem; margin-bottom: 0.5rem; }
     .hero-content p, .hero-subtitle { font-size: 0.95rem; margin-bottom: 1rem; }
 }
+
+/* ── PWA install banner ────────────────────────── */
+#pwa-install-banner {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 10000;
+    transform: translateY(100%); transition: transform .35s cubic-bezier(.4,0,.2,1);
+    padding: 0 env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+    pointer-events: none;
+}
+#pwa-install-banner.pwa-banner-visible { transform: translateY(0); pointer-events: auto; }
+.pwa-banner-inner {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .85rem 1rem; margin: .5rem;
+    background: var(--bg-surface, #1c1c1e);
+    border: 1px solid var(--border, rgba(255,255,255,.1));
+    border-radius: 14px;
+    box-shadow: 0 -2px 24px rgba(0,0,0,.35);
+    font-family: 'DM Sans', system-ui, sans-serif;
+}
+.pwa-banner-icon { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; }
+.pwa-banner-text { flex: 1; min-width: 0; }
+.pwa-banner-text strong { display: block; font-size: .88rem; color: var(--text-primary, #fff); }
+.pwa-banner-text span { font-size: .78rem; color: var(--text-secondary, #a1a1a6); line-height: 1.4; }
+.pwa-banner-btn {
+    flex-shrink: 0; padding: .45rem 1rem; border: none; border-radius: 8px;
+    background: var(--accent, #3b82f6); color: #fff;
+    font-family: 'Outfit', sans-serif; font-weight: 600; font-size: .82rem;
+    cursor: pointer;
+}
+.pwa-banner-btn:active { opacity: .85; }
+.pwa-banner-close {
+    flex-shrink: 0; width: 28px; height: 28px; border: none; border-radius: 50%;
+    background: rgba(255,255,255,.08); color: var(--text-secondary, #a1a1a6);
+    font-size: 1.1rem; line-height: 1; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+}
+.pwa-banner-close:active { background: rgba(255,255,255,.15); }
+[data-theme="light"] .pwa-banner-inner {
+    background: #fff; border-color: rgba(0,0,0,.08);
+    box-shadow: 0 -2px 24px rgba(0,0,0,.1);
+}
+[data-theme="light"] .pwa-banner-close { background: rgba(0,0,0,.06); }
+
+/* ��─ Standalone PWA mode ───────────────────────── */
+@media (display-mode: standalone) {
+    .cookie-consent, .cookie-banner { display: none !important; }
+    body { padding-top: env(safe-area-inset-top); }
+}
+@media (display-mode: standalone) and (max-width: 768px) {
+    .site-nav { position: sticky; top: 0; }
+}

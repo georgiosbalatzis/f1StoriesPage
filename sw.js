@@ -1,34 +1,54 @@
 /* ============================================================
-   F1 Stories — Service Worker
-   Strategy: cache-first for shell assets, network-first for
-   blog entries and API calls, offline fallback for HTML.
+   F1 Stories — Service Worker v6
+   ─────────────────────────────────────────────────────────────
+   Shell assets          → pre-cached on install
+   Static assets         → cache-first, background revalidate
+   HTML pages            → network-first, cached fallback, then offline.html
+   Blog JSON data        → stale-while-revalidate (fast loads + freshness)
+   Blog article pages    → network-first, cache every visited article
+   External APIs         → network-only (OpenF1, Jolpica, etc.)
    ============================================================ */
 
-const CACHE_NAME = 'f1stories-v5';
-const OFFLINE_URL = '/offline.html';
+var CACHE_SHELL   = 'f1s-shell-v6';
+var CACHE_PAGES   = 'f1s-pages-v6';
+var CACHE_ASSETS  = 'f1s-assets-v6';
+var CACHE_DATA    = 'f1s-data-v6';
+var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
+var OFFLINE_URL   = '/offline.html';
 
-const OFFLINE_SHELL_ASSETS = [
+var SHELL_ASSETS = [
   OFFLINE_URL,
-  '/images/logo.png'
+  '/',
+  '/styles.css',
+  '/theme-overrides.css',
+  '/styles/shared-nav.css',
+  '/scripts/shared-nav.js',
+  '/scripts/sw-register.js',
+  '/images/logo.png',
+  '/images/icons/icon-192.png',
+  '/blog-module/blog/index.html',
+  '/blog-module/blog-styles.css',
+  '/standings/index.html',
+  '/standings/standings.css'
 ];
 
-// ── Install: pre-cache shell assets ──────────────
+// ── Install ─────────────────────────────────────
 self.addEventListener('install', function (e) {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(function (cache) {
-      return cache.addAll(OFFLINE_SHELL_ASSETS);
+    caches.open(CACHE_SHELL).then(function (cache) {
+      return cache.addAll(SHELL_ASSETS);
     }).then(function () {
       return self.skipWaiting();
     })
   );
 });
 
-// ── Activate: remove old caches ──────────────────
+// ── Activate: clean old caches ──────────────────
 self.addEventListener('activate', function (e) {
   e.waitUntil(
     caches.keys().then(function (keys) {
       return Promise.all(
-        keys.filter(function (k) { return k !== CACHE_NAME; })
+        keys.filter(function (k) { return ALL_CACHES.indexOf(k) === -1; })
             .map(function (k) { return caches.delete(k); })
       );
     }).then(function () {
@@ -37,55 +57,103 @@ self.addEventListener('activate', function (e) {
   );
 });
 
-// ── Fetch: cache-first for assets, network-first for pages ──
+// ── Helpers ─────────────────────────────────────
+function isStaticAsset(pathname) {
+  return /\.(css|js|png|jpg|jpeg|webp|avif|svg|woff2?|ttf|ico|json)$/i.test(pathname);
+}
+
+function isBlogData(pathname) {
+  return pathname === '/blog-module/blog-data.json'
+      || pathname === '/blog-module/blog-index-data.json'
+      || pathname === '/blog-module/home-latest.json';
+}
+
+function isStandingsCache(pathname) {
+  return pathname.indexOf('/standings/') === 0
+      && /\.json$/i.test(pathname);
+}
+
+function isBlogArticle(pathname) {
+  return pathname.indexOf('/blog-module/blog-entries/') === 0
+      && pathname.indexOf('/article.html') !== -1;
+}
+
+function isHtmlRequest(request) {
+  var accept = request.headers.get('accept') || '';
+  return accept.indexOf('text/html') !== -1;
+}
+
+// Cache-first with background revalidation
+function staleWhileRevalidate(request, cacheName) {
+  return caches.open(cacheName).then(function (cache) {
+    return cache.match(request).then(function (cached) {
+      var fetched = fetch(request).then(function (response) {
+        if (response.ok) cache.put(request, response.clone());
+        return response;
+      }).catch(function () { return null; });
+
+      return cached || fetched.then(function (r) { return r || Response.error(); });
+    });
+  });
+}
+
+// Network-first with cache fallback
+function networkFirst(request, cacheName) {
+  return fetch(request).then(function (response) {
+    if (response.ok) {
+      var clone = response.clone();
+      caches.open(cacheName).then(function (cache) { cache.put(request, clone); });
+    }
+    return response;
+  }).catch(function () {
+    return caches.match(request);
+  });
+}
+
+// ── Fetch ───────────────────────────────────────
 self.addEventListener('fetch', function (e) {
   var url = new URL(e.request.url);
 
-  // Only handle same-origin GET requests
+  // Only handle same-origin GET
   if (e.request.method !== 'GET' || url.origin !== self.location.origin) return;
 
-  // Cache-first for static assets (css, js, images, fonts)
-  if (/\.(css|js|png|jpg|jpeg|webp|avif|svg|woff2?|ttf|ico)$/.test(url.pathname)) {
+  var pathname = url.pathname;
+
+  // Blog data JSON → stale-while-revalidate (instant load + background update)
+  if (isBlogData(pathname)) {
+    e.respondWith(staleWhileRevalidate(e.request, CACHE_DATA));
+    return;
+  }
+
+  // Standings cache JSON → stale-while-revalidate
+  if (isStandingsCache(pathname)) {
+    e.respondWith(staleWhileRevalidate(e.request, CACHE_DATA));
+    return;
+  }
+
+  // Blog article HTML → network-first (cache every article you read)
+  if (isBlogArticle(pathname)) {
     e.respondWith(
-      caches.open(CACHE_NAME).then(function (cache) {
-        return cache.match(e.request).then(function (cached) {
-          var networkFetch = fetch(e.request).then(function (response) {
-            if (response.ok) {
-              cache.put(e.request, response.clone());
-            }
-            return response;
-          }).catch(function () {
-            return null;
-          });
-
-          if (cached) {
-            e.waitUntil(networkFetch);
-            return cached;
-          }
-
-          return networkFetch.then(function (response) {
-            return response || Response.error();
-          });
-        });
+      networkFirst(e.request, CACHE_PAGES).then(function (response) {
+        return response || caches.match(OFFLINE_URL);
       })
     );
     return;
   }
 
-  // Network-first for HTML pages, with offline fallback
-  if (e.request.headers.get('accept') && e.request.headers.get('accept').includes('text/html')) {
+  // Static assets (CSS, JS, images, fonts) → cache-first, background update
+  if (isStaticAsset(pathname)) {
+    e.respondWith(staleWhileRevalidate(e.request, CACHE_ASSETS));
+    return;
+  }
+
+  // HTML pages → network-first with offline fallback
+  if (isHtmlRequest(e.request)) {
     e.respondWith(
-      fetch(e.request).then(function (response) {
-        if (response.ok) {
-          var clone = response.clone();
-          caches.open(CACHE_NAME).then(function (cache) { cache.put(e.request, clone); });
-        }
-        return response;
-      }).catch(function () {
-        return caches.match(e.request).then(function (cached) {
-          return cached || caches.match(OFFLINE_URL);
-        });
+      networkFirst(e.request, CACHE_PAGES).then(function (response) {
+        return response || caches.match(OFFLINE_URL);
       })
     );
+    return;
   }
 });

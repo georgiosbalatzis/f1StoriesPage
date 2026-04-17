@@ -5,23 +5,111 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>F1 Stories — Offline</title>
   <style>
-    :root { --bg: #111113; --surface: #161618; --accent: #3b82f6; --text: #e5e5e7; --sub: #a1a1a6; }
+    :root { --bg: #111113; --surface: #1c1c1e; --accent: #3b82f6; --text: #e5e5e7; --sub: #a1a1a6; --border: rgba(255,255,255,.08); }
+    @media (prefers-color-scheme: light) {
+      :root { --bg: #f5f5f7; --surface: #fff; --accent: #0e4ca6; --text: #1d1d1f; --sub: #6e6e73; --border: rgba(0,0,0,.08); }
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100svh; text-align: center; padding: 2rem; }
-    .card { background: var(--surface); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 3rem 2rem; max-width: 360px; width: 100%; }
-    img { width: 64px; height: 64px; margin-bottom: 1.5rem; border-radius: 12px; }
-    h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: .5rem; }
-    p { font-size: .95rem; color: var(--sub); line-height: 1.6; margin-bottom: 1.75rem; }
-    a { display: inline-block; background: var(--accent); color: #fff; text-decoration: none; padding: .7rem 1.75rem; border-radius: 8px; font-weight: 600; font-size: .9rem; }
-    a:active { opacity: .85; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+      min-height: 100svh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 2rem 1rem calc(2rem + env(safe-area-inset-bottom, 0));
+    }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2.5rem 2rem; max-width: 380px;
+      width: 100%; text-align: center;
+    }
+    .logo { width: 56px; height: 56px; margin-bottom: 1.25rem; border-radius: 12px; }
+    h1 { font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: .4rem; }
+    .sub { font-size: .9rem; color: var(--sub); line-height: 1.55; margin-bottom: 1.5rem; }
+    .retry {
+      display: inline-block; background: var(--accent); color: #fff;
+      text-decoration: none; padding: .65rem 1.75rem; border-radius: 10px;
+      font-weight: 600; font-size: .88rem; border: none; cursor: pointer;
+      font-family: 'Outfit', sans-serif; transition: opacity .15s;
+    }
+    .retry:active { opacity: .8; }
+    .cached-section { margin-top: 2rem; width: 100%; max-width: 380px; }
+    .cached-title {
+      font-size: .78rem; color: var(--sub); text-transform: uppercase;
+      letter-spacing: .06em; margin-bottom: .6rem; text-align: left;
+    }
+    .cached-list { list-style: none; }
+    .cached-list li {
+      border-bottom: 1px solid var(--border);
+    }
+    .cached-list a {
+      display: block; padding: .7rem 0; color: var(--text);
+      text-decoration: none; font-size: .88rem; line-height: 1.4;
+    }
+    .cached-list a:active { color: var(--accent); }
+    .cached-list li:last-child { border-bottom: none; }
+    #no-cached { display: none; font-size: .82rem; color: var(--sub); text-align: center; }
   </style>
 </head>
 <body>
   <div class="card">
-    <img src="/images/logo.png" alt="F1 Stories">
-    <h1>Δεν υπάρχει σύνδεση</h1>
-    <p>Φαίνεται ότι είσαι offline. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.</p>
-    <a href="/" onclick="location.reload(); return false;">Δοκιμή ξανά</a>
+    <img src="/images/logo.png" alt="F1 Stories" class="logo">
+    <h1>Offline</h1>
+    <p class="sub">No internet connection. Check your network and try again.</p>
+    <button class="retry" onclick="location.reload()">Retry</button>
   </div>
+
+  <div class="cached-section" id="cached-section" style="display:none;">
+    <div class="cached-title">Cached articles</div>
+    <ul class="cached-list" id="cached-list"></ul>
+    <p id="no-cached">No cached articles yet. Visit articles while online to save them.</p>
+  </div>
+
+  <script>
+    (function () {
+      if (!('caches' in window)) return;
+      var section = document.getElementById('cached-section');
+      var list = document.getElementById('cached-list');
+      var noCached = document.getElementById('no-cached');
+
+      caches.open('f1s-pages-v6').then(function (cache) {
+        return cache.keys();
+      }).then(function (requests) {
+        var articles = requests.filter(function (r) {
+          return r.url.indexOf('/blog-entries/') !== -1 && r.url.indexOf('/article.html') !== -1;
+        });
+        if (!articles.length) {
+          section.style.display = 'block';
+          noCached.style.display = 'block';
+          return;
+        }
+        section.style.display = 'block';
+        articles.slice(0, 10).forEach(function (req) {
+          var url = new URL(req.url);
+          var parts = url.pathname.split('/');
+          var folder = parts[parts.length - 2] || 'Article';
+          var li = document.createElement('li');
+          var a = document.createElement('a');
+          a.href = url.pathname;
+          a.textContent = folder;
+          li.appendChild(a);
+          list.appendChild(li);
+
+          caches.open('f1s-pages-v6').then(function (cache) {
+            return cache.match(req);
+          }).then(function (resp) {
+            if (!resp) return;
+            return resp.text();
+          }).then(function (html) {
+            if (!html) return;
+            var m = html.match(/<title[^>]*>([^<]+)/i);
+            if (m && m[1]) {
+              var title = m[1].replace(/\s*[\|—–-]\s*F1 Stories.*$/i, '').trim();
+              if (title) a.textContent = title;
+            }
+          });
+        });
+      }).catch(function () {});
+    })();
+  </script>
 </body>
 </html>
