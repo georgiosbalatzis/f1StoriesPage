@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v12
+   F1 Stories — Service Worker v13
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,9 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v13 bump: Phase 6A (standings module entry) — the standings shell now
+   loads a lightweight ES module entry and lazy-loads the preserved legacy
+   chunk only when a heavy analysis tab is requested.
    v12 bump: Phase 5 (navigation preload + update UX) — navigation
    requests use preloadResponse before falling back to network/cache,
    the latest article pages are precached during install, successful
@@ -36,11 +39,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v12';
-var CACHE_SHELL   = 'f1s-shell-v12';
-var CACHE_PAGES   = 'f1s-pages-v12';
-var CACHE_ASSETS  = 'f1s-assets-v12';
-var CACHE_DATA    = 'f1s-data-v12';
+var SW_VERSION    = 'v13';
+var CACHE_SHELL   = 'f1s-shell-v13';
+var CACHE_PAGES   = 'f1s-pages-v13';
+var CACHE_ASSETS  = 'f1s-assets-v13';
+var CACHE_DATA    = 'f1s-data-v13';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
@@ -65,6 +68,7 @@ var SHELL_ASSETS = [
   '/blog-module/blog-styles.min.css',
   '/standings/index.html',
   '/standings/standings.min.css',
+  '/standings/standings.min.js',
   // Primary font weights — matched to FONT_PRELOADS in stamp-html.mjs.
   // Kept deliberately narrow: Roboto 400/700 (homepage), DM Sans 400 +
   // Outfit 700 (blog/standings). Other subsets fetch on demand.
