@@ -22,6 +22,7 @@ const SOURCE_FILES = [
     'theme-overrides.css',
     'styles/shared-nav.css',
     'styles/critical-common.css',
+    'styles/fonts.css',
     'blog-module/blog-styles.css',
     'blog-module/blog/article-styles.css',
     'standings/standings.css',

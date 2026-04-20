@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v8
+   F1 Stories — Service Worker v9
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,11 @@
    Blog article pages    → network-first, cache every visited article
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v9 bump: Phase 3a (Google Fonts self-host) — shell HTML no longer
+   references fonts.googleapis.com or fonts.gstatic.com. Primary woff2
+   weights + /styles/fonts.min.css are precached so the first load can
+   serve them from cache on repeat visits. Bumping cache names forces
+   the shell refresh so returning users stop hitting Google's CDN.
    v8 bump: Phase 2 (critical CSS) — shell HTML now carries an inlined
    critical-CSS <style> block + rel="preload" async-loads the rest of the
    stylesheets. Bumping cache names forces returning users to re-precache
@@ -17,10 +22,10 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var CACHE_SHELL   = 'f1s-shell-v8';
-var CACHE_PAGES   = 'f1s-pages-v8';
-var CACHE_ASSETS  = 'f1s-assets-v8';
-var CACHE_DATA    = 'f1s-data-v8';
+var CACHE_SHELL   = 'f1s-shell-v9';
+var CACHE_PAGES   = 'f1s-pages-v9';
+var CACHE_ASSETS  = 'f1s-assets-v9';
+var CACHE_DATA    = 'f1s-data-v9';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 
@@ -30,6 +35,7 @@ var SHELL_ASSETS = [
   '/styles.min.css',
   '/theme-overrides.min.css',
   '/styles/shared-nav.min.css',
+  '/styles/fonts.min.css',
   '/scripts/shared-nav.min.js',
   '/scripts/sw-register.min.js',
   '/scripts/analytics.min.js',
@@ -40,7 +46,14 @@ var SHELL_ASSETS = [
   '/blog-module/blog/index.html',
   '/blog-module/blog-styles.min.css',
   '/standings/index.html',
-  '/standings/standings.min.css'
+  '/standings/standings.min.css',
+  // Primary font weights — matched to FONT_PRELOADS in stamp-html.mjs.
+  // Kept deliberately narrow: Roboto 400/700 (homepage), DM Sans 400 +
+  // Outfit 700 (blog/standings). Other subsets fetch on demand.
+  '/assets/fonts/roboto-400.woff2',
+  '/assets/fonts/roboto-700.woff2',
+  '/assets/fonts/dm-sans-400.woff2',
+  '/assets/fonts/outfit-700.woff2'
 ];
 
 // ── Install ─────────────────────────────────────

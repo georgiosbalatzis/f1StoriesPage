@@ -7,6 +7,7 @@
     "build:blog": "node blog-module/blog-processor.js",
     "build:blog:force": "node blog-module/blog-processor.js --force",
     "build:image-variants": "node blog-module/generate-image-variants.js --run",
+    "build:fonts": "node scripts/build/download-fonts.mjs",
     "build:assets": "node scripts/build/minify.mjs && node scripts/build/stamp-html.mjs",
     "build:assets:minify": "node scripts/build/minify.mjs",
     "build:assets:stamp": "node scripts/build/stamp-html.mjs",
