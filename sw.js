@@ -1,35 +1,42 @@
 /* ============================================================
-   F1 Stories — Service Worker v6
+   F1 Stories — Service Worker v7
    ─────────────────────────────────────────────────────────────
-   Shell assets          → pre-cached on install
+   Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
    HTML pages            → network-first, cached fallback, then offline.html
    Blog JSON data        → stale-while-revalidate (fast loads + freshness)
    Blog article pages    → network-first, cache every visited article
    External APIs         → network-only (OpenF1, Jolpica, etc.)
+
+   v7 bump: Phase 1 (deployment hygiene) — shell precache points at .min.*
+   files produced by scripts/build/minify.mjs. Older non-min shell entries
+   are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var CACHE_SHELL   = 'f1s-shell-v6';
-var CACHE_PAGES   = 'f1s-pages-v6';
-var CACHE_ASSETS  = 'f1s-assets-v6';
-var CACHE_DATA    = 'f1s-data-v6';
+var CACHE_SHELL   = 'f1s-shell-v7';
+var CACHE_PAGES   = 'f1s-pages-v7';
+var CACHE_ASSETS  = 'f1s-assets-v7';
+var CACHE_DATA    = 'f1s-data-v7';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 
 var SHELL_ASSETS = [
   OFFLINE_URL,
   '/',
-  '/styles.css',
-  '/theme-overrides.css',
-  '/styles/shared-nav.css',
-  '/scripts/shared-nav.js',
-  '/scripts/sw-register.js',
+  '/styles.min.css',
+  '/theme-overrides.min.css',
+  '/styles/shared-nav.min.css',
+  '/scripts/shared-nav.min.js',
+  '/scripts/sw-register.min.js',
+  '/scripts/analytics.min.js',
+  '/scripts/cookie-consent.min.js',
+  '/scripts/perf/web-vitals-beacon.min.js',
   '/images/logo.png',
   '/images/icons/icon-192.png',
   '/blog-module/blog/index.html',
-  '/blog-module/blog-styles.css',
+  '/blog-module/blog-styles.min.css',
   '/standings/index.html',
-  '/standings/standings.css'
+  '/standings/standings.min.css'
 ];
 
 // ── Install ─────────────────────────────────────

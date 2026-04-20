@@ -20,3 +20,8 @@ nextsteps.txt
 
 # Note: .avif and -sm.* variants ARE tracked in git (required for deployment on GitHub Pages)
 # Regenerate missing ones with: node blog-module/generate-image-variants.js --run
+
+# Build output — sourcemaps are not committed (minified files themselves ARE tracked).
+# Regenerate with: npm run build:assets
+*.min.js.map
+*.min.css.map

@@ -444,6 +444,26 @@ python3 blog-module/tts-generator-parallel.py --post 20250101G
 
 Με απλά λόγια, το `f1stories.github.io` δεν είναι μόνο ένα website. Είναι το λειτουργικό publishing layer του F1 Stories.
 
+<a id="build-assets"></a>
+## Build assets (minification pipeline)
+
+Από τη Phase 1 του roadmap, κάθε tracked CSS/JS έχει δίπλα του ένα `.min` sibling (π.χ. `styles.css` + `styles.min.css`). Το production HTML φορτώνει τα minified αρχεία με content-hash query string για σωστό cache-busting, ενώ τα sources παραμένουν commit-ed ως πηγή αλήθειας για diff/review.
+
+- `npm run build:assets` — τρέχει minify (`lightningcss` για CSS, `esbuild` για JS) και μετά stamp (rewrite HTML references σε `.min.<ext>?v=<hash>`).
+- `npm run build:assets:watch` — rebuild σε κάθε αλλαγή source.
+- `npm run build:assets:minify` / `build:assets:stamp` — τα δύο βήματα ξεχωριστά.
+- Χειροκίνητα source edits σε `.css` / `.js`: τρέξε `npm run build:assets` πριν το commit, ώστε να commit-αριστούν μαζί με το `.min` sibling και το ενημερωμένο HTML reference.
+
+Τα generated artifacts που commit-άρονται:
+
+- `*.min.css` / `*.min.js` δίπλα στα sources
+- `scripts/build/asset-manifest.json` (path → `{ min, hash, bytes, sourceBytes }`)
+- τα rewritten HTML refs στα tracked landing pages (βλ. `TARGET_HTML` στο `stamp-html.mjs`)
+
+Τα sourcemaps (`*.min.js.map`, `*.min.css.map`) είναι στο `.gitignore`.
+
+Τα 208 υπάρχοντα `blog-module/blog-entries/*/article.html` ΔΕΝ stamp-άρονται από το script — παραμένουν στα κλασικά (non-min) refs μέχρι να γίνει rebuild μέσω `npm run build:blog:force`, οπότε το (ήδη stamped) `blog-module/blog/template.html` θα διαδώσει τα `.min` refs παντού. Αυτή η ροή είναι σκόπιμα incremental.
+
 <a id="performance-budget"></a>
 ## Performance budget
 
@@ -451,6 +471,6 @@ python3 blog-module/tts-generator-parallel.py --post 20250101G
 
 - `npm run perf:budget` — τρέχει τον έλεγχο· exit code 1 αν οποιοδήποτε tracked αρχείο έχει μεγαλώσει πάνω από `thresholdPercent` (default 10%) σε σχέση με το αποθηκευμένο baseline.
 - `npm run perf:budget:update` — ξαναγράφει το baseline με τα τρέχοντα μεγέθη. Τρέξε το μόνο μετά από συνειδητό perf review (π.χ. μετά από Phase 1 minification).
-- Ο πρώτος baseline ελήφθη στις `2026-04-20` (βλ. `perf/baseline-2026-04-20.md`) — είναι το reference point για κάθε φάση optimization που ακολουθεί στο `nextsteps.txt`.
+- Ο πρώτος baseline ελήφθη στις `2026-04-20` (βλ. `perf/baseline-2026-04-20.md`) — είναι το reference point για κάθε φάση optimization που ακολουθεί στο `nextsteps.txt`. Μετά τη Phase 1, το budget tracks και τα sources και τα `.min` siblings (37 αρχεία συνολικά) — έτσι regression του minifier πιάνεται κι αυτό.
 
 Επίσης, κάθε σελίδα landing (home, blog index, standings, article template) φορτώνει το `scripts/perf/web-vitals-beacon.js` μέσα σε `requestIdleCallback` και στέλνει στο GA4 event `web_vital` με `metric_name`, `metric_value`, `metric_rating`, `page_path`. Οι ζωντανές τιμές δημιουργούν ένα RUM dataset για LCP/INP/CLS/FCP/TTFB ανά route — αυτό είναι το χρήσιμο signal πριν και μετά από κάθε perf phase.
