@@ -1,0 +1,27 @@
+{
+  "updatedAt": "2026-04-20T10:02:23.805Z",
+  "thresholdPercent": 10,
+  "note": "Byte budgets for tracked JS/CSS/HTML assets. Run `npm run perf:budget` to check, `npm run perf:budget:update` to rewrite this file with current sizes. Threshold is the max % growth allowed before the check fails.",
+  "files": {
+    "styles.css": 37455,
+    "home.css": 11607,
+    "theme-overrides.css": 22765,
+    "styles/shared-nav.css": 14991,
+    "blog-module/blog-styles.css": 37569,
+    "blog-module/blog/article-styles.css": 32671,
+    "standings/standings.css": 120998,
+    "standings/standings.js": 320281,
+    "scripts/analytics.js": 7350,
+    "scripts/f1-optimized.js": 17748,
+    "scripts/shared-nav.js": 13227,
+    "scripts/sw-register.js": 9765,
+    "scripts/cookie-consent.js": 6738,
+    "scripts/background-randomizer.js": 2266,
+    "scripts/perf/web-vitals-beacon.js": 3423,
+    "blog-module/blog-loader.js": 8161,
+    "blog-module/blog-index.js": 15959,
+    "blog-module/blog-processor.js": 106501,
+    "sw.js": 5395,
+    "manifest.json": 1810
+  }
+}
