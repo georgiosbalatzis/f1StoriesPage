@@ -34,6 +34,24 @@ const TARGET_HTML = [
     '404.html'
 ];
 
+// HTML files that get the critical-CSS treatment (inlined critical block +
+// async-preload for local stylesheets). Excluded: offline.html and 404.html
+// which already inline all their CSS and have no external refs.
+const CRITICAL_TARGETS = new Set([
+    'index.html',
+    'standings/index.html',
+    'blog-module/blog/index.html',
+    'blog-module/blog/template.html'
+]);
+
+// Source path of the hand-crafted critical block (resolved against manifest).
+const CRITICAL_SOURCE = 'styles/critical-common.css';
+
+// Marker comments around the injected <style> block. Idempotent: the block
+// is replaced in place on every run so re-stamps produce stable output.
+const CRITICAL_BEGIN = '<!-- f1s:critical-css:begin -->';
+const CRITICAL_END   = '<!-- f1s:critical-css:end -->';
+
 function loadManifest() {
     if (!fs.existsSync(MANIFEST_PATH)) {
         console.error(`✗ manifest missing: ${MANIFEST_PATH}\n  run: npm run build:assets`);
@@ -108,11 +126,101 @@ function rewrite(html, patterns) {
     return { result, hits };
 }
 
+// Load the minified critical CSS from disk so it can be inlined verbatim.
+function loadCriticalCss(manifest) {
+    const info = manifest[CRITICAL_SOURCE];
+    if (!info) {
+        throw new Error(`manifest missing entry for ${CRITICAL_SOURCE} — run build:assets:minify`);
+    }
+    const abs = path.join(REPO_ROOT, info.min);
+    if (!fs.existsSync(abs)) {
+        throw new Error(`critical CSS build missing at ${abs} — run build:assets:minify`);
+    }
+    return {
+        css: fs.readFileSync(abs, 'utf8'),
+        hash: info.hash,
+        bytes: info.bytes
+    };
+}
+
+// Replace the existing critical block (if any) or inject a new one right
+// before the first <link rel="stylesheet"> inside <head>. Idempotent.
+function injectCritical(html, critical) {
+    const block =
+        `${CRITICAL_BEGIN}\n` +
+        `    <style id="f1s-critical" data-hash="${critical.hash}">${critical.css.trimEnd()}</style>\n` +
+        `    ${CRITICAL_END}`;
+
+    const existing = new RegExp(
+        escapeRegex(CRITICAL_BEGIN) + '[\\s\\S]*?' + escapeRegex(CRITICAL_END),
+        'g'
+    );
+    if (existing.test(html)) {
+        const replaced = html.replace(existing, block);
+        return { result: replaced, injected: false, replaced: true };
+    }
+
+    // Insert before first <link rel="stylesheet" ...> that points to a local
+    // stylesheet (skips bootstrap CDN etc. by requiring no :// in href value,
+    // but simplest: just anchor on the first local .min.css link — which
+    // post-Phase-1 always exists on these pages).
+    const anchor = /([ \t]*)<link rel="stylesheet" href="([^"]*\.min\.css)/;
+    const m = html.match(anchor);
+    if (!m) {
+        return { result: html, injected: false, replaced: false };
+    }
+    const indent = m[1] || '    ';
+    const insertion = `${indent}${block}\n`;
+    const result = html.slice(0, m.index) + insertion + html.slice(m.index);
+    return { result, injected: true, replaced: false };
+}
+
+// Convert a local stylesheet link to the async-preload pattern. External
+// hrefs (bootstrap CDN, google fonts, font-awesome CDN) are left alone.
+// Skips links that are already in preload form or in <noscript>.
+//
+// Before:  <link rel="stylesheet" href="/styles.min.css?v=abc123">
+// After:   <link rel="preload" as="style" href="/styles.min.css?v=abc123"
+//              onload="this.onload=null;this.rel='stylesheet'">
+//          <noscript><link rel="stylesheet" href="/styles.min.css?v=abc123"></noscript>
+function asyncifyStylesheets(html) {
+    const conversions = [];
+
+    // Match <link rel="stylesheet" ...> where href points to a .min.css (local
+    // post-stamp form). href may appear before or after rel. The attribute
+    // order in stamped files is `rel="stylesheet" href="..."` so that's what
+    // we optimize for. Exclude lines inside <noscript> via a lookbehind-free
+    // check: require the match to start at an indent, not immediately after
+    // <noscript>.
+    const re = /^([ \t]*)<link rel="stylesheet" href="([^"]*\.min\.css\?v=[a-f0-9]+)">/gm;
+
+    const result = html.replace(re, (match, indent, href, offset) => {
+        // Skip if the match is inside a <noscript>…</noscript> block. We look
+        // for the nearest <noscript> tag before `offset` without a closing
+        // </noscript> between it and the match.
+        const before = html.slice(0, offset);
+        const lastOpen = before.lastIndexOf('<noscript');
+        const lastClose = before.lastIndexOf('</noscript>');
+        if (lastOpen > lastClose) return match;
+
+        conversions.push(href);
+        return (
+            `${indent}<link rel="preload" as="style" href="${href}" onload="this.onload=null;this.rel='stylesheet'">\n` +
+            `${indent}<noscript><link rel="stylesheet" href="${href}"></noscript>`
+        );
+    });
+
+    return { result, conversions };
+}
+
 function main() {
     const manifest = loadManifest();
     const patterns = buildPatternsFromManifest(manifest);
+    const critical = loadCriticalCss(manifest);
     const dry = process.argv.includes('--dry');
     let totalHits = 0;
+    let totalCriticalOps = 0;
+    let totalAsyncified = 0;
 
     for (const rel of TARGET_HTML) {
         const abs = path.join(REPO_ROOT, rel);
@@ -121,23 +229,59 @@ function main() {
             continue;
         }
         const original = fs.readFileSync(abs, 'utf8');
-        const { result, hits } = rewrite(original, patterns);
-        if (hits.length === 0) {
+
+        // 1) stamp local asset refs with content-hash query strings
+        let { result, hits } = rewrite(original, patterns);
+
+        // 2) inject/refresh critical-CSS block + asyncify local stylesheets
+        let criticalNote = '';
+        let conversions = [];
+        if (CRITICAL_TARGETS.has(rel)) {
+            const inj = injectCritical(result, critical);
+            result = inj.result;
+            if (inj.injected) { criticalNote = 'injected'; totalCriticalOps++; }
+            else if (inj.replaced) { criticalNote = 'refreshed'; totalCriticalOps++; }
+            else criticalNote = 'skipped (no anchor)';
+
+            const out = asyncifyStylesheets(result);
+            result = out.result;
+            conversions = out.conversions;
+            totalAsyncified += conversions.length;
+        }
+
+        totalHits += hits.length;
+        const changed = result !== original;
+        if (!changed) {
             console.log(`· ${rel}  (no changes)`);
             continue;
         }
-        totalHits += hits.length;
-        console.log(`\n${rel}  →  ${hits.length} rewrite(s)`);
+        const parts = [];
+        if (hits.length) parts.push(`${hits.length} stamp(s)`);
+        if (criticalNote && criticalNote !== 'skipped (no anchor)') parts.push(`critical ${criticalNote}`);
+        if (conversions.length) parts.push(`${conversions.length} async-preload`);
+        console.log(`\n${rel}  →  ${parts.join(', ') || 'updated'}`);
         for (const h of hits) {
             console.log(`    ${h.from}\n  → ${h.to}`);
         }
-        if (!dry && original !== result) {
+        for (const href of conversions) {
+            console.log(`    async: ${href}`);
+        }
+        if (!dry) {
             fs.writeFileSync(abs, result, 'utf8');
         }
     }
 
-    if (dry) console.log(`\n(dry-run) ${totalHits} rewrite(s) planned.`);
-    else console.log(`\n✓ stamped ${totalHits} reference(s) across ${TARGET_HTML.length} file(s).`);
+    if (dry) {
+        console.log(
+            `\n(dry-run) ${totalHits} rewrite(s), ${totalCriticalOps} critical op(s), ` +
+            `${totalAsyncified} async-preload conversion(s) planned.`
+        );
+    } else {
+        console.log(
+            `\n✓ stamped ${totalHits} reference(s), ${totalCriticalOps} critical block(s), ` +
+            `${totalAsyncified} stylesheet(s) async-preloaded across ${TARGET_HTML.length} file(s).`
+        );
+    }
 }
 
 main();

@@ -32,6 +32,7 @@ const CSS_INPUTS = [
     'home.css',
     'theme-overrides.css',
     'styles/shared-nav.css',
+    'styles/critical-common.css',
     'blog-module/blog-styles.css',
     'blog-module/blog/article-styles.css',
     'standings/standings.css'
