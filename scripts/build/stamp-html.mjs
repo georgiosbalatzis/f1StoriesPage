@@ -139,16 +139,32 @@ function buildPatternsFor(sourceRel) {
     const minBasename = path.basename(sourceRel).replace(/\.(css|js)$/, '.min.$1');
     const minRel = sourceRel.replace(/\.(css|js)$/, '.min.$1');
     const refs = [];
+    const seen = new Set();
+
+    function addRef(from, to) {
+        const key = `${from}=>${to}`;
+        if (seen.has(key)) return;
+        refs.push({ from, to });
+        seen.add(key);
+    }
+
     // Root-absolute form: "/styles/shared-nav.css"
-    refs.push({ from: '/' + sourceRel, to: '/' + minRel });
+    addRef('/' + sourceRel, '/' + minRel);
+    // Root-absolute minified form already present from a previous stamp.
+    addRef('/' + minRel, '/' + minRel);
+
     // Relative-with-subpath form: "styles/shared-nav.css"
     if (sourceRel.includes('/')) {
-        refs.push({ from: sourceRel, to: minRel });
+        addRef(sourceRel, minRel);
+        addRef(minRel, minRel);
     }
+
     // Bare basename (only if the source has no subpath, else ambiguous)
     if (!sourceRel.includes('/') || sourceRel.split('/').length === 2) {
-        refs.push({ from: basename, to: minBasename });
+        addRef(basename, minBasename);
+        addRef(minBasename, minBasename);
     }
+
     return refs.map(ref => ({
         regex: new RegExp(
             `(href|src)=("|')(` + escapeRegex(ref.from) + `)(\\?[^"']*)?(\\2)`,

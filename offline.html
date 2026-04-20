@@ -70,8 +70,9 @@
       var section = document.getElementById('cached-section');
       var list = document.getElementById('cached-list');
       var noCached = document.getElementById('no-cached');
+      var pagesCache = 'f1s-pages-v12';
 
-      caches.open('f1s-pages-v6').then(function (cache) {
+      caches.open(pagesCache).then(function (cache) {
         return cache.keys();
       }).then(function (requests) {
         var articles = requests.filter(function (r) {
@@ -94,7 +95,7 @@
           li.appendChild(a);
           list.appendChild(li);
 
-          caches.open('f1s-pages-v6').then(function (cache) {
+          caches.open(pagesCache).then(function (cache) {
             return cache.match(req);
           }).then(function (resp) {
             if (!resp) return;

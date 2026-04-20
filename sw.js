@@ -1,13 +1,18 @@
 /* ============================================================
-   F1 Stories — Service Worker v11
+   F1 Stories — Service Worker v12
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
    HTML pages            → network-first, cached fallback, then offline.html
    Blog JSON data        → stale-while-revalidate (fast loads + freshness)
-   Blog article pages    → network-first, cache every visited article
+   Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v12 bump: Phase 5 (navigation preload + update UX) — navigation
+   requests use preloadResponse before falling back to network/cache,
+   the latest article pages are precached during install, successful
+   navigations are cached in f1s-pages, and waiting SWs activate only
+   after the user accepts the update banner.
    v11 bump: Phase 4 (Bootstrap slim build) — shell and article HTML no
    longer reference jsDelivr for Bootstrap CSS, and the unused Bootstrap JS
    bundle is removed. /styles/vendor/bootstrap.slim.min.css is precached so
@@ -31,12 +36,15 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var CACHE_SHELL   = 'f1s-shell-v11';
-var CACHE_PAGES   = 'f1s-pages-v11';
-var CACHE_ASSETS  = 'f1s-assets-v11';
-var CACHE_DATA    = 'f1s-data-v11';
+var SW_VERSION    = 'v12';
+var CACHE_SHELL   = 'f1s-shell-v12';
+var CACHE_PAGES   = 'f1s-pages-v12';
+var CACHE_ASSETS  = 'f1s-assets-v12';
+var CACHE_DATA    = 'f1s-data-v12';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
+var BROADCAST_CHANNEL = 'f1s-sw';
+var RECENT_ARTICLE_COUNT = 10;
 
 var SHELL_ASSETS = [
   OFFLINE_URL,
@@ -72,7 +80,7 @@ self.addEventListener('install', function (e) {
     caches.open(CACHE_SHELL).then(function (cache) {
       return cache.addAll(SHELL_ASSETS);
     }).then(function () {
-      return self.skipWaiting();
+      return precacheRecentArticles();
     })
   );
 });
@@ -86,9 +94,22 @@ self.addEventListener('activate', function (e) {
             .map(function (k) { return caches.delete(k); })
       );
     }).then(function () {
+      if (self.registration.navigationPreload) {
+        return self.registration.navigationPreload.enable();
+      }
+      return undefined;
+    }).then(function () {
       return self.clients.claim();
+    }).then(function () {
+      return broadcastVersion();
     })
   );
+});
+
+self.addEventListener('message', function (e) {
+  if (e.data && e.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // ── Helpers ─────────────────────────────────────
@@ -115,6 +136,74 @@ function isBlogArticle(pathname) {
 function isHtmlRequest(request) {
   var accept = request.headers.get('accept') || '';
   return accept.indexOf('text/html') !== -1;
+}
+
+function broadcastVersion() {
+  var payload = { type: 'version', value: SW_VERSION };
+
+  if (typeof BroadcastChannel !== 'undefined') {
+    try {
+      var channel = new BroadcastChannel(BROADCAST_CHANNEL);
+      channel.postMessage(payload);
+      channel.close();
+    } catch (e) {}
+  }
+
+  return self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+    .then(function (clients) {
+      clients.forEach(function (client) {
+        client.postMessage(payload);
+      });
+    }).catch(function () {});
+}
+
+function jsonFrom(url) {
+  return fetch(url, { cache: 'no-store' }).then(function (response) {
+    if (!response.ok) throw new Error('Unable to fetch ' + url);
+    return response.json();
+  });
+}
+
+function postsFromPayload(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (payload && Array.isArray(payload.posts)) return payload.posts;
+  return [];
+}
+
+function articleUrlFromPost(post) {
+  var slug = post && (post.slug || post.id);
+  if (post && post.url && post.url.indexOf('/blog-module/blog-entries/') === 0) {
+    return post.url;
+  }
+  if (!slug) return null;
+  return '/blog-module/blog-entries/' + encodeURIComponent(slug) + '/article.html';
+}
+
+function recentArticleUrls(posts) {
+  var seen = {};
+  var urls = [];
+  posts.forEach(function (post) {
+    var url = articleUrlFromPost(post);
+    if (!url || seen[url]) return;
+    seen[url] = true;
+    urls.push(url);
+  });
+  return urls.slice(0, RECENT_ARTICLE_COUNT);
+}
+
+function precacheRecentArticles() {
+  return jsonFrom('/blog-module/blog-index-data.json')
+    .catch(function () { return jsonFrom('/blog-module/home-latest.json'); })
+    .then(function (payload) {
+      var urls = recentArticleUrls(postsFromPayload(payload));
+      if (!urls.length) return undefined;
+      return caches.open(CACHE_PAGES).then(function (cache) {
+        return cache.addAll(urls);
+      });
+    }).catch(function () {
+      // Recent articles are an offline enhancement, not an install blocker.
+      return undefined;
+    });
 }
 
 // Cache-first with background revalidation
@@ -144,6 +233,42 @@ function networkFirst(request, cacheName) {
   });
 }
 
+function cacheNavigationResponse(request, response, event) {
+  if (response && response.ok) {
+    var cacheWrite = caches.open(CACHE_PAGES).then(function (cache) {
+      return cache.put(request, response.clone());
+    }).catch(function () {});
+
+    if (event && typeof event.waitUntil === 'function') {
+      event.waitUntil(cacheWrite);
+    }
+  }
+  return response;
+}
+
+function fetchAndCacheNavigation(request, event) {
+  return fetch(request).then(function (response) {
+    return cacheNavigationResponse(request, response, event);
+  });
+}
+
+function navigationFallback(request) {
+  return caches.match(request).then(function (cached) {
+    return cached || caches.match(OFFLINE_URL);
+  });
+}
+
+function handleNavigate(e) {
+  return e.preloadResponse.then(function (preloaded) {
+    if (preloaded) return cacheNavigationResponse(e.request, preloaded, e);
+    return fetchAndCacheNavigation(e.request, e);
+  }).catch(function () {
+    return fetchAndCacheNavigation(e.request, e);
+  }).catch(function () {
+    return navigationFallback(e.request);
+  });
+}
+
 // ── Fetch ───────────────────────────────────────
 self.addEventListener('fetch', function (e) {
   var url = new URL(e.request.url);
@@ -152,6 +277,12 @@ self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET' || url.origin !== self.location.origin) return;
 
   var pathname = url.pathname;
+
+  // Navigation requests → preload first, then network, cache, offline page.
+  if (e.request.mode === 'navigate') {
+    e.respondWith(handleNavigate(e));
+    return;
+  }
 
   // Blog data JSON → stale-while-revalidate (instant load + background update)
   if (isBlogData(pathname)) {
