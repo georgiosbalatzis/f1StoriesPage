@@ -9,7 +9,8 @@
     "build:image-variants": "node blog-module/generate-image-variants.js --run",
     "build:fonts": "node scripts/build/download-fonts.mjs",
     "build:icons": "node scripts/build/build-icon-sprite.mjs",
-    "build:assets": "node scripts/build/build-icon-sprite.mjs && node scripts/build/minify.mjs && node scripts/build/stamp-html.mjs",
+    "build:bootstrap": "sass styles/vendor/bootstrap.slim.scss styles/vendor/bootstrap.slim.css --style=compressed --no-source-map",
+    "build:assets": "node scripts/build/build-icon-sprite.mjs && npm run build:bootstrap && node scripts/build/minify.mjs && node scripts/build/stamp-html.mjs",
     "build:assets:minify": "node scripts/build/minify.mjs",
     "build:assets:stamp": "node scripts/build/stamp-html.mjs",
     "build:assets:watch": "node scripts/build/minify.mjs --watch",
@@ -26,7 +27,9 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^6.5.1",
+    "bootstrap": "^5.3.8",
     "esbuild": "^0.25.12",
-    "lightningcss": "^1.32.0"
+    "lightningcss": "^1.32.0",
+    "sass": "^1.99.0"
   }
 }

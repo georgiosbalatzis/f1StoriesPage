@@ -1,0 +1,33 @@
+// Phase 4: self-hosted Bootstrap subset.
+// Keep this intentionally narrow: grid/layout primitives, used utilities,
+// and the small helper/component styles referenced by the site shell.
+
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/variables-dark";
+@import "../../node_modules/bootstrap/scss/maps";
+@import "../../node_modules/bootstrap/scss/mixins";
+@import "../../node_modules/bootstrap/scss/utilities";
+
+$utilities: map-get-multiple(
+  $utilities,
+  (
+    "display",
+    "justify-content",
+    "align-items",
+    "margin-top",
+    "margin-bottom",
+    "padding-y",
+    "text-align",
+    "color"
+  )
+);
+
+@import "../../node_modules/bootstrap/scss/root";
+@import "../../node_modules/bootstrap/scss/reboot";
+@import "../../node_modules/bootstrap/scss/containers";
+@import "../../node_modules/bootstrap/scss/grid";
+@import "../../node_modules/bootstrap/scss/helpers/visually-hidden";
+@import "../../node_modules/bootstrap/scss/spinners";
+@import "../../node_modules/bootstrap/scss/alert";
+@import "../../node_modules/bootstrap/scss/utilities/api";

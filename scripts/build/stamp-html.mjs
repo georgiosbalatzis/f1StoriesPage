@@ -5,10 +5,12 @@
 // Idempotent: re-running produces identical output. Only the content hash
 // changes when the underlying asset changes.
 //
-// Scope: explicit list of HTML files below. Deliberately does NOT touch
-// blog-module/blog-entries/**/article.html — those are committed content
-// artifacts that will be regenerated on the next blog rebuild via the
-// (already-stamped) blog-module/blog/template.html.
+// Scope: explicit list of shell HTML files below. Asset stamping deliberately
+// does NOT touch blog-module/blog-entries/**/article.html — those are
+// committed content artifacts that will be regenerated on the next blog
+// rebuild via the (already-stamped) blog-module/blog/template.html. The only
+// exception is the Phase 4 Bootstrap CDN swap, which is applied to committed
+// articles too so no live HTML keeps loading Bootstrap from jsDelivr.
 //
 // Usage:
 //   node scripts/build/stamp-html.mjs
@@ -79,6 +81,12 @@ const CRITICAL_END   = '<!-- f1s:critical-css:end -->';
 // fonts.googleapis.com <link> reference and is inserted into the preload
 // section for the primary weight.
 const FONTS_SOURCE = 'styles/fonts.css';
+
+// Phase 4: self-hosted Bootstrap subset. Replaces the Bootstrap CDN CSS with
+// the minified local subset and drops Bootstrap's JS bundle after the repo
+// audit confirmed no Bootstrap JS components are used.
+const BOOTSTRAP_SOURCE = 'styles/vendor/bootstrap.slim.css';
+const ARTICLE_HTML_ROOT = 'blog-module/blog-entries';
 
 // Primary font weight to preload per page template. Picked to match the
 // dominant above-the-fold text (hero h1 + body). Path is relative to the
@@ -330,6 +338,107 @@ function swapFonts(html, relPath, fontsInfo, manifest) {
     return { result: html, swaps };
 }
 
+function bootstrapPreloadBlock(indent, href) {
+    return (
+        `${indent}<link rel="preload" as="style" href="${href}" onload="this.onload=null;this.rel='stylesheet'">\n` +
+        `${indent}<noscript><link rel="stylesheet" href="${href}"></noscript>\n`
+    );
+}
+
+function swapBootstrapCdn(html, bootstrapInfo) {
+    const swaps = { cssSwapped: 0, cssDropped: 0, jsDropped: 0, preconnectDropped: 0 };
+    const localHref = `/${bootstrapInfo.min}?v=${bootstrapInfo.hash}`;
+    let emitted = html.includes(localHref);
+
+    const cssLineRe = new RegExp(
+        [
+            // Plain or preload CDN stylesheet line.
+            `^([ \\t]*)<link\\s+[^>]*cdn\\.jsdelivr\\.net\\/npm\\/bootstrap@[^"]+\\/dist\\/css\\/bootstrap\\.min\\.css[^>]*>\\n?`,
+            // Noscript fallback line for the same CDN stylesheet.
+            `^([ \\t]*)<noscript><link[^>]*cdn\\.jsdelivr\\.net\\/npm\\/bootstrap@[^"]+\\/dist\\/css\\/bootstrap\\.min\\.css[^>]*><\\/noscript>\\n?`
+        ].join('|'),
+        'gm'
+    );
+
+    html = html.replace(cssLineRe, (_m, i1, i2) => {
+        const indent = i1 || i2 || '    ';
+        if (emitted) {
+            swaps.cssDropped++;
+            return '';
+        }
+        emitted = true;
+        swaps.cssSwapped++;
+        return bootstrapPreloadBlock(indent, localHref);
+    });
+
+    html = html.replace(
+        /^[ \t]*<script\s+[^>]*cdn\.jsdelivr\.net\/npm\/bootstrap@[^"]+\/dist\/js\/bootstrap(?:\.bundle)?\.min\.js[^>]*><\/script>\n?/gm,
+        () => {
+            swaps.jsDropped++;
+            return '';
+        }
+    );
+
+    const hasJsdelivrResource = html
+        .split('\n')
+        .some(line => (
+            line.includes('cdn.jsdelivr.net/')
+            && !/<link\s+[^>]*rel="preconnect"[^>]*href="https:\/\/cdn\.jsdelivr\.net"[^>]*>/i.test(line)
+        ));
+    if (!hasJsdelivrResource) {
+        html = html.replace(
+            /^[ \t]*<link\s+[^>]*rel="preconnect"[^>]*href="https:\/\/cdn\.jsdelivr\.net"[^>]*>\n?/gm,
+            () => {
+                swaps.preconnectDropped++;
+                return '';
+            }
+        );
+    }
+
+    return { result: html, swaps };
+}
+
+function listArticleHtml() {
+    const root = path.join(REPO_ROOT, ARTICLE_HTML_ROOT);
+    const out = [];
+    if (!fs.existsSync(root)) return out;
+
+    function walk(dir) {
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            const abs = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+                walk(abs);
+            } else if (entry.isFile() && entry.name === 'article.html') {
+                out.push(path.relative(REPO_ROOT, abs).split(path.sep).join('/'));
+            }
+        }
+    }
+
+    walk(root);
+    return out.sort();
+}
+
+function stampArticleBootstrap(bootstrapInfo, dry) {
+    const totals = { files: 0, cssSwapped: 0, cssDropped: 0, jsDropped: 0, preconnectDropped: 0 };
+    for (const rel of listArticleHtml()) {
+        const abs = path.join(REPO_ROOT, rel);
+        const original = fs.readFileSync(abs, 'utf8');
+        const { result, swaps } = swapBootstrapCdn(original, bootstrapInfo);
+        if (result === original) continue;
+
+        totals.files++;
+        totals.cssSwapped += swaps.cssSwapped;
+        totals.cssDropped += swaps.cssDropped;
+        totals.jsDropped += swaps.jsDropped;
+        totals.preconnectDropped += swaps.preconnectDropped;
+        if (!dry) {
+            fs.writeFileSync(abs, result, 'utf8');
+        }
+    }
+
+    return totals;
+}
+
 // Small sha256-short for font files (content hash based on path, since
 // fonts are woff2 binaries and we don't re-read them on every stamp).
 function sha256Short(input) {
@@ -450,6 +559,10 @@ function main() {
     if (!fontsInfo) {
         throw new Error(`manifest missing entry for ${FONTS_SOURCE} — run build:fonts then build:assets:minify`);
     }
+    const bootstrapInfo = manifest[BOOTSTRAP_SOURCE];
+    if (!bootstrapInfo) {
+        throw new Error(`manifest missing entry for ${BOOTSTRAP_SOURCE} — run build:bootstrap then build:assets:minify`);
+    }
     const sprite = loadSprite();
     const dry = process.argv.includes('--dry');
     let totalHits = 0;
@@ -459,6 +572,10 @@ function main() {
     let totalPreconnectDrops = 0;
     let totalSpriteOps = 0;
     let totalFaCdnDrops = 0;
+    let totalBootstrapCssSwaps = 0;
+    let totalBootstrapCssDrops = 0;
+    let totalBootstrapJsDrops = 0;
+    let totalBootstrapPreconnectDrops = 0;
 
     for (const rel of TARGET_HTML) {
         const abs = path.join(REPO_ROOT, rel);
@@ -470,6 +587,15 @@ function main() {
 
         // 1) stamp local asset refs with content-hash query strings
         let { result, hits } = rewrite(original, patterns);
+
+        // 1b) swap Bootstrap CDN CSS → local slim build and drop the unused
+        //     Bootstrap JS bundle.
+        const bootstrapSwap = swapBootstrapCdn(result, bootstrapInfo);
+        result = bootstrapSwap.result;
+        totalBootstrapCssSwaps += bootstrapSwap.swaps.cssSwapped;
+        totalBootstrapCssDrops += bootstrapSwap.swaps.cssDropped;
+        totalBootstrapJsDrops += bootstrapSwap.swaps.jsDropped;
+        totalBootstrapPreconnectDrops += bootstrapSwap.swaps.preconnectDropped;
 
         // 2) swap Google Fonts → self-hosted (only on pages that had them)
         const fontSwap = swapFonts(result, rel, fontsInfo, manifest);
@@ -517,6 +643,10 @@ function main() {
         }
         const parts = [];
         if (hits.length) parts.push(`${hits.length} stamp(s)`);
+        if (bootstrapSwap.swaps.cssSwapped) parts.push(`${bootstrapSwap.swaps.cssSwapped} Bootstrap swap`);
+        if (bootstrapSwap.swaps.cssDropped) parts.push(`${bootstrapSwap.swaps.cssDropped} Bootstrap drop`);
+        if (bootstrapSwap.swaps.jsDropped) parts.push(`${bootstrapSwap.swaps.jsDropped} Bootstrap JS drop`);
+        if (bootstrapSwap.swaps.preconnectDropped) parts.push(`${bootstrapSwap.swaps.preconnectDropped} jsDelivr preconnect drop`);
         if (criticalNote && criticalNote !== 'skipped (no anchor)') parts.push(`critical ${criticalNote}`);
         if (conversions.length) parts.push(`${conversions.length} async-preload`);
         if (fontSwap.swaps.googleLinksSwapped) parts.push(`${fontSwap.swaps.googleLinksSwapped} font swap`);
@@ -536,19 +666,38 @@ function main() {
         }
     }
 
+    const articleBootstrap = stampArticleBootstrap(bootstrapInfo, dry);
+    totalBootstrapCssSwaps += articleBootstrap.cssSwapped;
+    totalBootstrapCssDrops += articleBootstrap.cssDropped;
+    totalBootstrapJsDrops += articleBootstrap.jsDropped;
+    totalBootstrapPreconnectDrops += articleBootstrap.preconnectDropped;
+    if (articleBootstrap.files) {
+        console.log(
+            `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleBootstrap.files} file(s), ` +
+            `${articleBootstrap.cssSwapped} Bootstrap swap(s), ` +
+            `${articleBootstrap.cssDropped} Bootstrap drop(s), ` +
+            `${articleBootstrap.jsDropped} Bootstrap JS drop(s), ` +
+            `${articleBootstrap.preconnectDropped} jsDelivr preconnect drop(s)`
+        );
+    }
+
     if (dry) {
         console.log(
             `\n(dry-run) ${totalHits} rewrite(s), ${totalCriticalOps} critical op(s), ` +
             `${totalAsyncified} async-preload conversion(s), ${totalFontSwaps} font swap(s), ` +
             `${totalPreconnectDrops} preconnect drop(s), ${totalSpriteOps} sprite op(s), ` +
-            `${totalFaCdnDrops} FA CDN drop(s) planned.`
+            `${totalFaCdnDrops} FA CDN drop(s), ${totalBootstrapCssSwaps} Bootstrap CSS swap(s), ` +
+            `${totalBootstrapCssDrops} Bootstrap CSS drop(s), ${totalBootstrapJsDrops} Bootstrap JS drop(s), ` +
+            `${totalBootstrapPreconnectDrops} jsDelivr preconnect drop(s) planned.`
         );
     } else {
         console.log(
             `\n✓ stamped ${totalHits} reference(s), ${totalCriticalOps} critical block(s), ` +
             `${totalAsyncified} stylesheet(s) async-preloaded, ${totalFontSwaps} font swap(s), ` +
             `${totalPreconnectDrops} preconnect(s) dropped, ${totalSpriteOps} sprite op(s), ` +
-            `${totalFaCdnDrops} FA CDN drop(s) across ${TARGET_HTML.length} file(s).`
+            `${totalFaCdnDrops} FA CDN drop(s), ${totalBootstrapCssSwaps} Bootstrap CSS swap(s), ` +
+            `${totalBootstrapCssDrops} Bootstrap CSS drop(s), ${totalBootstrapJsDrops} Bootstrap JS drop(s), ` +
+            `${totalBootstrapPreconnectDrops} jsDelivr preconnect drop(s) across ${TARGET_HTML.length} shell file(s).`
         );
     }
 }

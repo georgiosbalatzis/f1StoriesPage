@@ -56,10 +56,10 @@
             document.head.appendChild(preload);
         })();
     </script>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link rel="preload" href="/blog-module/home-latest.json" as="fetch" crossorigin>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preload" as="style" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f"></noscript>
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/roboto-400.woff2?v=0a44e0bb" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/roboto-700.woff2?v=0a44e0bb" crossorigin>

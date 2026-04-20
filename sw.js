@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v10
+   F1 Stories — Service Worker v11
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,10 @@
    Blog article pages    → network-first, cache every visited article
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v11 bump: Phase 4 (Bootstrap slim build) — shell and article HTML no
+   longer reference jsDelivr for Bootstrap CSS, and the unused Bootstrap JS
+   bundle is removed. /styles/vendor/bootstrap.slim.min.css is precached so
+   returning users get the self-hosted grid/utilities subset immediately.
    v10 bump: Phase 3b (icon sprite) — shell HTML no longer references
    cdnjs.cloudflare.com for Font Awesome. An SVG sprite is inlined into
    each shell page at build time, so `<svg><use href="#fa-*"/>` renders
@@ -27,10 +31,10 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var CACHE_SHELL   = 'f1s-shell-v10';
-var CACHE_PAGES   = 'f1s-pages-v10';
-var CACHE_ASSETS  = 'f1s-assets-v10';
-var CACHE_DATA    = 'f1s-data-v10';
+var CACHE_SHELL   = 'f1s-shell-v11';
+var CACHE_PAGES   = 'f1s-pages-v11';
+var CACHE_ASSETS  = 'f1s-assets-v11';
+var CACHE_DATA    = 'f1s-data-v11';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 
@@ -41,6 +45,7 @@ var SHELL_ASSETS = [
   '/theme-overrides.min.css',
   '/styles/shared-nav.min.css',
   '/styles/fonts.min.css',
+  '/styles/vendor/bootstrap.slim.min.css',
   '/scripts/shared-nav.min.js',
   '/scripts/sw-register.min.js',
   '/scripts/analytics.min.js',
