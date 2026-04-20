@@ -16,7 +16,7 @@ const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const BUDGET_PATH = path.join(REPO_ROOT, 'perf', 'size-budget.json');
 
-const TRACKED_GLOBS = [
+const SOURCE_FILES = [
     'styles.css',
     'home.css',
     'theme-overrides.css',
@@ -38,6 +38,16 @@ const TRACKED_GLOBS = [
     'sw.js',
     'manifest.json'
 ];
+
+// After Phase 1, every CSS/JS with a .min.<ext> sibling is also tracked so
+// a regression in the minification pipeline surfaces in the budget check.
+function deriveMinSiblings(files) {
+    return files
+        .filter(f => /\.(css|js)$/.test(f) && f !== 'blog-module/blog-processor.js' && f !== 'sw.js')
+        .map(f => f.replace(/\.(css|js)$/, '.min.$1'));
+}
+
+const TRACKED_GLOBS = [...SOURCE_FILES, ...deriveMinSiblings(SOURCE_FILES)];
 
 function parseArgs(argv) {
     const args = { update: false, threshold: 10 };

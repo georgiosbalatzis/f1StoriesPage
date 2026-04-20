@@ -7,6 +7,10 @@
     "build:blog": "node blog-module/blog-processor.js",
     "build:blog:force": "node blog-module/blog-processor.js --force",
     "build:image-variants": "node blog-module/generate-image-variants.js --run",
+    "build:assets": "node scripts/build/minify.mjs && node scripts/build/stamp-html.mjs",
+    "build:assets:minify": "node scripts/build/minify.mjs",
+    "build:assets:stamp": "node scripts/build/stamp-html.mjs",
+    "build:assets:watch": "node scripts/build/minify.mjs --watch",
     "perf:budget": "node scripts/perf/size-guard.mjs",
     "perf:budget:update": "node scripts/perf/size-guard.mjs --update"
   },
@@ -17,5 +21,9 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.12",
+    "lightningcss": "^1.32.0"
   }
 }
