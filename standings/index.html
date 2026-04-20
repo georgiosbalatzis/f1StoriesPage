@@ -32,6 +32,7 @@
     <link rel="dns-prefetch" href="https://api.jolpi.ca">
     <link rel="dns-prefetch" href="https://api.openf1.org">
     <link rel="preload" href="standings.min.css?v=4c45366c" as="style">
+    <link rel="modulepreload" href="/standings/standings.min.js?v=5d2c44ac">
     <link rel="preload" as="style" href="/styles/fonts.min.css?v=d7f3513a" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/styles/fonts.min.css?v=d7f3513a"></noscript>
     <link rel="preload" as="style" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f" onload="this.onload=null;this.rel='stylesheet'">
@@ -449,6 +450,13 @@
 <script defer src="/scripts/cookie-consent.min.js?v=9d38adec"></script>
 <script defer src="/scripts/sw-register.min.js?v=302c6d86"></script>
 
-<script defer src="standings.min.js?v=213022d0"></script>
+<script type="module" src="standings.min.js?v=5d2c44ac"></script>
+<script nomodule>
+    document.addEventListener('DOMContentLoaded', function() {
+        var wrapper = document.querySelector('.standings-wrapper .container');
+        if (!wrapper) return;
+        wrapper.insertAdjacentHTML('afterbegin', '<div class="standings-error"><svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg><p>Ο browser δεν υποστηρίζει τη νεότερη έκδοση των βαθμολογιών.</p><p style="font-size:0.8rem;">Χρησιμοποίησε έναν σύγχρονο browser για να φορτώσουν τα δεδομένα.</p></div>');
+    });
+</script>
 </body>
 </html>

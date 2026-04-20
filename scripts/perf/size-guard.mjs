@@ -28,6 +28,7 @@ const SOURCE_FILES = [
     'blog-module/blog/article-styles.css',
     'standings/standings.css',
     'standings/standings.js',
+    'standings/standings.legacy.js',
     'scripts/analytics.js',
     'scripts/f1-optimized.js',
     'scripts/shared-nav.js',

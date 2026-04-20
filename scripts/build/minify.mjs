@@ -49,9 +49,34 @@ const JS_INPUTS = [
     'scripts/background-randomizer.js',
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog-loader.js',
-    'blog-module/blog-index.js',
-    'standings/standings.js'
+    'blog-module/blog-index.js'
 ];
+
+function discoverStandingsBrowserJs() {
+    const out = [];
+    const allowDirs = new Set([
+        path.join(REPO_ROOT, 'standings'),
+        path.join(REPO_ROOT, 'standings', 'core'),
+        path.join(REPO_ROOT, 'standings', 'tabs')
+    ]);
+
+    function walk(absDir) {
+        if (!fs.existsSync(absDir)) return;
+        for (const entry of fs.readdirSync(absDir, { withFileTypes: true })) {
+            const abs = path.join(absDir, entry.name);
+            if (entry.isDirectory()) {
+                if (allowDirs.has(abs)) walk(abs);
+                continue;
+            }
+            if (!entry.isFile() || !entry.name.endsWith('.js') || entry.name.endsWith('.min.js')) continue;
+            if (entry.name === 'debrief-cache.js') continue;
+            out.push(path.relative(REPO_ROOT, abs).replace(/\\/g, '/'));
+        }
+    }
+
+    walk(path.join(REPO_ROOT, 'standings'));
+    return out.sort();
+}
 
 function sha256Short(buf) {
     return crypto.createHash('sha256').update(buf).digest('hex').slice(0, 8);
@@ -126,7 +151,7 @@ async function buildOnce() {
         rows.push({ rel, outRel, sourceBytes, bytes });
     }
 
-    for (const rel of JS_INPUTS) {
+    for (const rel of [...JS_INPUTS, ...discoverStandingsBrowserJs()]) {
         if (!fs.existsSync(path.join(REPO_ROOT, rel))) {
             console.warn(`skip (missing): ${rel}`);
             continue;
