@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v13
+   F1 Stories — Service Worker v14
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,11 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v14 bump: Phase 6B (standings core modules) — the slim standings entry
+   now imports its TEAMS map, driver headshot catalog, sessionStorage cache
+   and format helpers from /standings/core/*.js. Those four modules join
+   the precache so repeat visitors warm them alongside the entry module
+   instead of re-fetching on first paint.
    v13 bump: Phase 6A (standings module entry) — the standings shell now
    loads a lightweight ES module entry and lazy-loads the preserved legacy
    chunk only when a heavy analysis tab is requested.
@@ -39,11 +44,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v13';
-var CACHE_SHELL   = 'f1s-shell-v13';
-var CACHE_PAGES   = 'f1s-pages-v13';
-var CACHE_ASSETS  = 'f1s-assets-v13';
-var CACHE_DATA    = 'f1s-data-v13';
+var SW_VERSION    = 'v14';
+var CACHE_SHELL   = 'f1s-shell-v14';
+var CACHE_PAGES   = 'f1s-pages-v14';
+var CACHE_ASSETS  = 'f1s-assets-v14';
+var CACHE_DATA    = 'f1s-data-v14';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
@@ -69,6 +74,10 @@ var SHELL_ASSETS = [
   '/standings/index.html',
   '/standings/standings.min.css',
   '/standings/standings.min.js',
+  '/standings/core/format.min.js',
+  '/standings/core/teams.min.js',
+  '/standings/core/drivers-meta.min.js',
+  '/standings/core/fetchers.min.js',
   // Primary font weights — matched to FONT_PRELOADS in stamp-html.mjs.
   // Kept deliberately narrow: Roboto 400/700 (homepage), DM Sans 400 +
   // Outfit 700 (blog/standings). Other subsets fetch on demand.
