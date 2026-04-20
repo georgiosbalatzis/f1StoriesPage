@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="blog-content">
                         <h3 class="blog-title">${title}</h3>
                         <p class="blog-excerpt">${excerpt}</p>
-                        <span class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></span>
+                        <span class="blog-read-more">Read More <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                     </div>
                 </div>
             </a>

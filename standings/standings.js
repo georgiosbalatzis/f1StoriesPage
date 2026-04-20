@@ -1487,7 +1487,7 @@ function buildTyrePaceSessionData(session, drivers, laps, stints) {
 function renderTyrePace(data, session) {
     if (!data || !session || !data.rows || !data.rows.length) {
         tyrePaceTable.innerHTML = '<div class="tyre-pace-empty-card">'
-            + '<i class="fas fa-wave-square"></i>'
+            + '<svg class="icon" aria-hidden="true"><use href="#fa-wave-square"/></svg>'
             + '<p>Δεν υπάρχουν ακόμη διαθέσιμα lap distributions για το επιλεγμένο session.</p>'
             + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν race ή sprint laps μαζί με stint data.</p>'
             + '</div>';
@@ -1553,10 +1553,10 @@ function renderTyrePace(data, session) {
 
 function showTyrePaceError() {
     tyrePaceTable.innerHTML = '<div class="tyre-pace-empty-card">'
-        + '<i class="fas fa-exclamation-triangle"></i>'
+        + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση του tyre pace chart.</p>'
         + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
-        + '<button class="retry-btn" type="button" onclick="window.__retryTyrePace && window.__retryTyrePace()"><i class="fas fa-redo"></i> Νέα προσπάθεια</button>'
+        + '<button class="retry-btn" type="button" onclick="window.__retryTyrePace && window.__retryTyrePace()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
         + '</div>';
     finalizeRenderedPanel('tyre-pace');
 }
@@ -2411,7 +2411,7 @@ function renderDirtyAir(sessionData, session) {
 
     if (!sessionData || !session) {
         dirtyAirTable.innerHTML = '<div class="dirty-air-empty-card">'
-            + '<i class="fas fa-wind"></i>'
+            + '<svg class="icon" aria-hidden="true"><use href="#fa-wind"/></svg>'
             + '<p>Δεν υπάρχουν ακόμη completed races για dirty air analysis.</p>'
             + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρχουν διαθέσιμα race telemetry samples.</p>'
             + '</div>';
@@ -2424,7 +2424,7 @@ function renderDirtyAir(sessionData, session) {
             + '<div class="dirty-air-head"><div class="dirty-air-head-copy"><h3 class="dirty-air-head-title">Dirty Air Proximity Breakdown</h3><p class="dirty-air-head-note">Clean air σημαίνει ότι δεν υπάρχει κανένα μονοθέσιο μπροστά μέσα σε 4.0s στο ίδιο minisector. Τα backmarkers που ετοιμάζονται να δεχτούν γύρο μετρούν κανονικά ως traffic.</p></div><label class="dirty-air-controls"><span class="dirty-air-controls-label">Available races</span><select class="dirty-air-select" data-dirty-air-select aria-label="Επιλογή αγώνα για dirty air analysis">' + sessionOptions + '</select></label></div>'
             + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || 'Race')) + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Drivers</span><span class="dirty-air-summary-value">0</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">MiniSectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div></div></div>'
             + '<div class="dirty-air-empty-card">'
-            + '<i class="fas fa-wind"></i>'
+            + '<svg class="icon" aria-hidden="true"><use href="#fa-wind"/></svg>'
             + '<p>Δεν υπάρχουν ακόμη αρκετά race telemetry samples για το συγκεκριμένο race.</p>'
             + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Διάλεξε άλλο completed Grand Prix ή δοκίμασε ξανά αργότερα όταν το OpenF1 έχει περισσότερα location samples.</p>'
             + '</div>'
@@ -2519,10 +2519,10 @@ function renderDirtyAir(sessionData, session) {
 function showDirtyAirError() {
     if (!dirtyAirTable) return;
     dirtyAirTable.innerHTML = '<div class="dirty-air-empty-card">'
-        + '<i class="fas fa-exclamation-triangle"></i>'
+        + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση του dirty air analysis.</p>'
         + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 telemetry endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
-        + '<button class="retry-btn" type="button" onclick="window.__retryDirtyAir && window.__retryDirtyAir()"><i class="fas fa-redo"></i> Νέα προσπάθεια</button>'
+        + '<button class="retry-btn" type="button" onclick="window.__retryDirtyAir && window.__retryDirtyAir()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
         + '</div>';
     finalizeRenderedPanel('dirty-air');
 }
@@ -3241,7 +3241,7 @@ function renderTrackDominance(sessionData, pairData, session) {
 
     if (!sessionData || !session || !sessionData.drivers || sessionData.drivers.length < 2) {
         trackDominanceTable.innerHTML = '<div class="track-dom-empty-card">'
-            + '<i class="fas fa-route"></i>'
+            + '<svg class="icon" aria-hidden="true"><use href="#fa-route"/></svg>'
             + '<p>Δεν υπάρχουν ακόμη αρκετά telemetry laps για driver comparison.</p>'
             + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed sessions με valid fastest laps για τουλάχιστον δύο οδηγούς.</p>'
             + '</div>';
@@ -3268,7 +3268,7 @@ function renderTrackDominance(sessionData, pairData, session) {
     var rightDriver = sessionData.driverMap[trackDominanceState.rightDriverKey];
     if (!leftDriver || !rightDriver) {
         trackDominanceTable.innerHTML = '<div class="track-dom-empty-card">'
-            + '<i class="fas fa-route"></i>'
+            + '<svg class="icon" aria-hidden="true"><use href="#fa-route"/></svg>'
             + '<p>Δεν ήταν δυνατή η φόρτωση των selected drivers για το session.</p>'
             + '</div>';
         finalizeRenderedPanel('track-dominance');
@@ -3296,7 +3296,7 @@ function renderTrackDominance(sessionData, pairData, session) {
         + '</div>';
 
     if (!pairData || !pairData.pathD || !pairData.segments.length) {
-        html += '<div class="track-dom-map-empty"><i class="fas fa-location-crosshairs"></i><p>Υπάρχουν lap times αλλά όχι αρκετά location samples για να χτιστεί το track map αυτής της σύγκρισης.</p></div>';
+        html += '<div class="track-dom-map-empty"><svg class="icon" aria-hidden="true"><use href="#fa-location-crosshairs"/></svg><p>Υπάρχουν lap times αλλά όχι αρκετά location samples για να χτιστεί το track map αυτής της σύγκρισης.</p></div>';
     } else {
         var svg = '<svg class="track-dom-track-svg" viewBox="0 0 ' + pairData.viewWidth + ' ' + pairData.viewHeight + '" preserveAspectRatio="xMidYMid meet" aria-label="Track dominance comparison map">'
             + '<path class="track-dom-track-base" d="' + esc(pairData.pathD) + '"></path>';
@@ -3333,10 +3333,10 @@ function renderTrackDominance(sessionData, pairData, session) {
 function showTrackDominanceError() {
     if (!trackDominanceTable) return;
     trackDominanceTable.innerHTML = '<div class="track-dom-empty-card">'
-        + '<i class="fas fa-exclamation-triangle"></i>'
+        + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση του track dominance chart.</p>'
         + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 telemetry endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
-        + '<button class="retry-btn" type="button" onclick="window.__retryTrackDominance && window.__retryTrackDominance()"><i class="fas fa-redo"></i> Νέα προσπάθεια</button>'
+        + '<button class="retry-btn" type="button" onclick="window.__retryTrackDominance && window.__retryTrackDominance()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
         + '</div>';
     finalizeRenderedPanel('track-dominance');
 }
@@ -3835,7 +3835,7 @@ function renderQualifyingGaps(data) {
 
     if ((!overviewRows || !overviewRows.length) && (!raceRows || !raceRows.length)) {
         qualifyingGapsTable.innerHTML = '<div class="quali-empty-card">'
-            + '<i class="fas fa-stopwatch"></i>'
+            + '<svg class="icon" aria-hidden="true"><use href="#fa-stopwatch"/></svg>'
             + '<p>Δεν υπάρχουν ακόμη αρκετά qualifying δεδομένα για teammate gaps.</p>'
             + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed qualifying ή sprint shootout sessions.</p>'
             + '</div>';
@@ -3874,10 +3874,10 @@ function renderQualifyingGaps(data) {
 
 function showQualifyingError() {
     qualifyingGapsTable.innerHTML = '<div class="quali-empty-card">'
-        + '<i class="fas fa-exclamation-triangle"></i>'
+        + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση των teammate qualifying gaps.</p>'
         + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
-        + '<button class="retry-btn" type="button" onclick="window.__retryQualifyingGaps && window.__retryQualifyingGaps()"><i class="fas fa-redo"></i> Νέα προσπάθεια</button>'
+        + '<button class="retry-btn" type="button" onclick="window.__retryQualifyingGaps && window.__retryQualifyingGaps()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
         + '</div>';
     finalizeRenderedPanel('quali-gaps');
 }
@@ -4180,7 +4180,7 @@ function renderLap1Gains(rows) {
 
     if (!rows || !rows.length) {
         lap1GainsTable.innerHTML = '<div class="lap1-empty-card">'
-            + '<i class="fas fa-arrow-trend-up"></i>'
+            + '<svg class="icon" aria-hidden="true"><use href="#fa-arrow-trend-up"/></svg>'
             + '<p>Δεν υπάρχουν ακόμη διαθέσιμα δεδομένα για τα μεγαλύτερα gains μετά τον 1ο γύρο.</p>'
             + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed race ή sprint sessions με lap timing data.</p>'
             + '</div>';
@@ -4213,10 +4213,10 @@ function renderLap1Gains(rows) {
 
 function showLap1GainsError() {
     lap1GainsTable.innerHTML = '<div class="lap1-empty-card">'
-        + '<i class="fas fa-exclamation-triangle"></i>'
+        + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση των Lap 1 gains.</p>'
         + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
-        + '<button class="retry-btn" type="button" onclick="window.__retryLap1Gains && window.__retryLap1Gains()"><i class="fas fa-redo"></i> Νέα προσπάθεια</button>'
+        + '<button class="retry-btn" type="button" onclick="window.__retryLap1Gains && window.__retryLap1Gains()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
         + '</div>';
     finalizeRenderedPanel('lap1-gains');
 }
@@ -4562,10 +4562,10 @@ window.addEventListener('popstate', function() {
 
 function showError(el) {
     el.innerHTML = '<div class="standings-error">'
-        + '<i class="fas fa-exclamation-triangle"></i>'
+        + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση των βαθμολογιών.</p>'
         + '<p style="font-size:0.8rem;">Η σεζόν μπορεί να μην έχει ξεκινήσει ακόμη ή το API να είναι προσωρινά μη διαθέσιμο.</p>'
-        + '<button class="retry-btn" onclick="location.reload()"><i class="fas fa-redo"></i> Νέα προσπάθεια</button>'
+        + '<button class="retry-btn" onclick="location.reload()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
         + '</div>';
     if (el === driversTable) finalizeRenderedPanel('drivers');
     if (el === constructorsTable) finalizeRenderedPanel('constructors');
@@ -4698,7 +4698,7 @@ function loadFromOpenF1Fallback() {
 // ── Render drivers from Jolpica data ──
 function renderDrivers(standings, openf1Map) {
     if (!standings || !standings.length) {
-        driversTable.innerHTML = '<div class="standings-empty"><i class="fas fa-flag-checkered"></i><p>Δεν υπάρχουν ακόμη διαθέσιμες βαθμολογίες οδηγών.</p></div>';
+        driversTable.innerHTML = '<div class="standings-empty"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg><p>Δεν υπάρχουν ακόμη διαθέσιμες βαθμολογίες οδηγών.</p></div>';
         finalizeRenderedPanel('drivers');
         return;
     }
@@ -4763,7 +4763,7 @@ function renderDrivers(standings, openf1Map) {
 // ── Render constructors from Jolpica data ──
 function renderConstructors(standings, driverStandings, openf1Map) {
     if (!standings || !standings.length) {
-        constructorsTable.innerHTML = '<div class="standings-empty"><i class="fas fa-flag-checkered"></i><p>Δεν υπάρχουν ακόμη διαθέσιμες βαθμολογίες κατασκευαστών.</p></div>';
+        constructorsTable.innerHTML = '<div class="standings-empty"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg><p>Δεν υπάρχουν ακόμη διαθέσιμες βαθμολογίες κατασκευαστών.</p></div>';
         finalizeRenderedPanel('constructors');
         return;
     }
@@ -5119,12 +5119,12 @@ function buildDebriefRoundSelector(rounds, selectedRound) {
 
 function buildDebriefViewSwitch() {
     return '<div class="debrief-view-switch"><div class="debrief-view-tabs" role="tablist" aria-label="Friday Debrief views">'
-        + '<button class="debrief-view-tab' + (debriefState.activeView === 'single-lap' ? ' active' : '') + '" type="button" data-debrief-view="single-lap" role="tab" aria-selected="' + (debriefState.activeView === 'single-lap' ? 'true' : 'false') + '"><i class="fas fa-stopwatch"></i> Single Lap</button>'
-        + '<button class="debrief-view-tab' + (debriefState.activeView === 'long-run' ? ' active' : '') + '" type="button" data-debrief-view="long-run" role="tab" aria-selected="' + (debriefState.activeView === 'long-run' ? 'true' : 'false') + '"><i class="fas fa-wave-square"></i> Long Run</button>'
-        + '<button class="debrief-view-tab' + (debriefState.activeView === 'tyre-deg' ? ' active' : '') + '" type="button" data-debrief-view="tyre-deg" role="tab" aria-selected="' + (debriefState.activeView === 'tyre-deg' ? 'true' : 'false') + '"><i class="fas fa-chart-line"></i> Tyre Deg</button>'
-        + '<button class="debrief-view-tab' + (debriefState.activeView === 'team-ideal' ? ' active' : '') + '" type="button" data-debrief-view="team-ideal" role="tab" aria-selected="' + (debriefState.activeView === 'team-ideal' ? 'true' : 'false') + '"><i class="fas fa-users"></i> Team Ideal</button>'
-        + '<button class="debrief-view-tab' + (debriefState.activeView === 'corners' ? ' active' : '') + '" type="button" data-debrief-view="corners" role="tab" aria-selected="' + (debriefState.activeView === 'corners' ? 'true' : 'false') + '"><i class="fas fa-road"></i> Corners</button>'
-        + '<button class="debrief-view-tab' + (debriefState.activeView === 'race-pace' ? ' active' : '') + '" type="button" data-debrief-view="race-pace" role="tab" aria-selected="' + (debriefState.activeView === 'race-pace' ? 'true' : 'false') + '"><i class="fas fa-gauge-high"></i> Race Pace</button>'
+        + '<button class="debrief-view-tab' + (debriefState.activeView === 'single-lap' ? ' active' : '') + '" type="button" data-debrief-view="single-lap" role="tab" aria-selected="' + (debriefState.activeView === 'single-lap' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-stopwatch"/></svg> Single Lap</button>'
+        + '<button class="debrief-view-tab' + (debriefState.activeView === 'long-run' ? ' active' : '') + '" type="button" data-debrief-view="long-run" role="tab" aria-selected="' + (debriefState.activeView === 'long-run' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-wave-square"/></svg> Long Run</button>'
+        + '<button class="debrief-view-tab' + (debriefState.activeView === 'tyre-deg' ? ' active' : '') + '" type="button" data-debrief-view="tyre-deg" role="tab" aria-selected="' + (debriefState.activeView === 'tyre-deg' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Tyre Deg</button>'
+        + '<button class="debrief-view-tab' + (debriefState.activeView === 'team-ideal' ? ' active' : '') + '" type="button" data-debrief-view="team-ideal" role="tab" aria-selected="' + (debriefState.activeView === 'team-ideal' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Team Ideal</button>'
+        + '<button class="debrief-view-tab' + (debriefState.activeView === 'corners' ? ' active' : '') + '" type="button" data-debrief-view="corners" role="tab" aria-selected="' + (debriefState.activeView === 'corners' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-road"/></svg> Corners</button>'
+        + '<button class="debrief-view-tab' + (debriefState.activeView === 'race-pace' ? ' active' : '') + '" type="button" data-debrief-view="race-pace" role="tab" aria-selected="' + (debriefState.activeView === 'race-pace' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-gauge-high"/></svg> Race Pace</button>'
         + '</div></div>';
 }
 
@@ -5200,7 +5200,7 @@ function showDebriefTooltipFromElement(target) {
 
 function buildDebriefPaceChartHTML(title, rows) {
     if (!rows || !rows.length) {
-        return '<div class="debrief-empty"><i class="fas fa-chart-bar"></i><p>No chart data available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-chart-bar"/></svg><p>No chart data available for this round.</p></div>';
     }
 
     var fastest = rows[0].seconds;
@@ -5250,7 +5250,7 @@ function buildDebriefPaceChartHTML(title, rows) {
 
 function buildDebriefSingleLapHTML(round) {
     if (!round || !round.singleLap.length) {
-        return '<div class="debrief-empty"><i class="fas fa-flag-checkered"></i><p>No single-lap data available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg><p>No single-lap data available for this round.</p></div>';
     }
 
     var rows = round.singleLap.map(function(entry, index) {
@@ -5272,7 +5272,7 @@ function buildDebriefSingleLapHTML(round) {
 
 function buildDebriefLongRunHTML(round) {
     if (!round || !round.longRun.length) {
-        return '<div class="debrief-empty"><i class="fas fa-wave-square"></i><p>No long-run data available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-wave-square"/></svg><p>No long-run data available for this round.</p></div>';
     }
 
     var rows = round.longRun.map(function(entry, index) {
@@ -5339,7 +5339,7 @@ function buildDebriefCompoundUsageHTML(round) {
     }
 
     if (!rows.length) {
-        return '<div class="debrief-empty"><i class="fas fa-layer-group"></i><p>No compound-usage data available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-layer-group"/></svg><p>No compound-usage data available for this round.</p></div>';
     }
 
     var maxTotal = rows.reduce(function(max, entry) {
@@ -5390,7 +5390,7 @@ function buildDebriefCompoundUsageHTML(round) {
 
 function buildDebriefTyreDegHTML(round) {
     if (!round || !round.tyreDeg.length) {
-        return '<div class="debrief-empty"><i class="fas fa-chart-line"></i><p>No tyre-degradation data available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg><p>No tyre-degradation data available for this round.</p></div>';
     }
 
     var leaderDeg = NaN;
@@ -5527,7 +5527,7 @@ function sanitizeDebriefIdealChartView(value) {
 
 function buildDebriefTeamIdealHTML(round) {
     if (!round || !round.singleLap.length) {
-        return '<div class="debrief-empty"><i class="fas fa-users"></i><p>No ideal-lap analysis available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg><p>No ideal-lap analysis available for this round.</p></div>';
     }
 
     var rows = round.singleLap.slice().map(function(entry, index) {
@@ -5544,7 +5544,7 @@ function buildDebriefTeamIdealHTML(round) {
     });
 
     if (!rows.length) {
-        return '<div class="debrief-empty"><i class="fas fa-users"></i><p>No ideal-lap analysis available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg><p>No ideal-lap analysis available for this round.</p></div>';
     }
 
     var classified = rows.slice().sort(function(a, b) {
@@ -5653,7 +5653,7 @@ function buildDebriefCornerPanelHTML(title, rows, metricKey) {
 
 function buildDebriefCornerPerfHTML(round) {
     if (!round || !round.cornerPerformance.length) {
-        return '<div class="debrief-empty"><i class="fas fa-road"></i><p>No corner-performance data available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-road"/></svg><p>No corner-performance data available for this round.</p></div>';
     }
 
     return '<div class="debrief-figure">'
@@ -5669,7 +5669,7 @@ function buildDebriefCornerPerfHTML(round) {
 
 function buildDebriefRacePaceHTML(round) {
     if (!round || !round.racePacePrediction.length) {
-        return '<div class="debrief-empty"><i class="fas fa-gauge-high"></i><p>No race-pace prediction data available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-gauge-high"/></svg><p>No race-pace prediction data available for this round.</p></div>';
     }
 
     var rows = round.racePacePrediction.map(function(entry) {
@@ -5741,7 +5741,7 @@ function renderDebrief(snapshot) {
 
 function showDebriefError() {
     if (!debriefTable) return;
-    debriefTable.innerHTML = '<div class="debrief-empty"><i class="fas fa-exclamation-triangle"></i><p>Failed to load the Friday Debrief snapshot.</p></div>';
+    debriefTable.innerHTML = '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg><p>Failed to load the Friday Debrief snapshot.</p></div>';
     finalizeRenderedPanel('debrief');
 }
 
@@ -5754,7 +5754,7 @@ function ensureDebriefLoaded(forceReload) {
     }
 
     debriefState.loading = true;
-    debriefTable.innerHTML = '<div class="debrief-loading"><i class="fas fa-circle-notch fa-spin"></i><p>Loading Friday Debrief snapshot...</p></div>';
+    debriefTable.innerHTML = '<div class="debrief-loading"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-circle-notch"/></svg><p>Loading Friday Debrief snapshot...</p></div>';
 
     fetchJSONNoCache(DEBRIEF_CACHE_URL, 8000).then(function(payload) {
         debriefState.snapshot = normalizeDebriefSnapshot(payload);
@@ -5935,7 +5935,7 @@ function buildDestructorsFlowChartHTML(data) {
     var drivers = data.drivers.slice();
     var teams = data.nonZeroTeams.slice();
     if (!drivers.length || !teams.length) {
-        return '<div class="destructors-card"><div class="destructors-empty"><i class="fas fa-car-side"></i><p>No destructors data available for this snapshot.</p></div></div>';
+        return '<div class="destructors-card"><div class="destructors-empty"><svg class="icon" aria-hidden="true"><use href="#fa-car-side"/></svg><p>No destructors data available for this snapshot.</p></div></div>';
     }
 
     var width = 920;
@@ -6064,8 +6064,8 @@ function renderDestructors(snapshot) {
         + '</div></div>';
 
     var switchHTML = '<div class="destructors-view-switch"><div class="destructors-view-tabs" role="tablist" aria-label="Destructors views">'
-        + '<button class="destructors-view-tab' + (destructorsState.activeView === 'teams' ? ' active' : '') + '" type="button" data-destructors-view="teams" role="tab" aria-selected="' + (destructorsState.activeView === 'teams' ? 'true' : 'false') + '"><i class="fas fa-chart-bar"></i> Team Damage</button>'
-        + '<button class="destructors-view-tab' + (destructorsState.activeView === 'flow' ? ' active' : '') + '" type="button" data-destructors-view="flow" role="tab" aria-selected="' + (destructorsState.activeView === 'flow' ? 'true' : 'false') + '"><i class="fas fa-diagram-project"></i> Driver Flow</button>'
+        + '<button class="destructors-view-tab' + (destructorsState.activeView === 'teams' ? ' active' : '') + '" type="button" data-destructors-view="teams" role="tab" aria-selected="' + (destructorsState.activeView === 'teams' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-chart-bar"/></svg> Team Damage</button>'
+        + '<button class="destructors-view-tab' + (destructorsState.activeView === 'flow' ? ' active' : '') + '" type="button" data-destructors-view="flow" role="tab" aria-selected="' + (destructorsState.activeView === 'flow' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-diagram-project"/></svg> Driver Flow</button>'
         + '</div></div>';
 
     destructorsTable.innerHTML = summaryHTML
@@ -6080,7 +6080,7 @@ function renderDestructors(snapshot) {
 function showDestructorsError() {
     if (!destructorsTable) return;
     destructorsTable.innerHTML = '<div class="destructors-card"><div class="destructors-empty">'
-        + '<i class="fas fa-exclamation-triangle"></i><p>Failed to load the destructors snapshot.</p>'
+        + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg><p>Failed to load the destructors snapshot.</p>'
         + '</div></div>';
     finalizeRenderedPanel('destructors');
 }
@@ -6094,7 +6094,7 @@ function ensureDestructorsLoaded(forceReload) {
     }
 
     destructorsState.loading = true;
-    destructorsTable.innerHTML = '<div class="destructors-card"><div class="destructors-loading"><i class="fas fa-circle-notch fa-spin"></i><p>Loading destructors snapshot...</p></div></div>';
+    destructorsTable.innerHTML = '<div class="destructors-card"><div class="destructors-loading"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-circle-notch"/></svg><p>Loading destructors snapshot...</p></div></div>';
 
     fetchJSONNoCache(DESTRUCTORS_CACHE_URL, 8000).then(function(payload) {
         destructorsState.snapshot = normalizeDestructorsSnapshot(payload);
@@ -6225,14 +6225,14 @@ function renderPitStopsSeasonContent(seasonCache) {
     var driverBest = seasonCache.driverBest;
 
     if (!teamBest.length && !driverBest.length) {
-        return '<div class="pit-stops-empty-card"><i class="fas fa-clock"></i><p>Δεν υπάρχουν ακόμη δεδομένα.</p></div>';
+        return '<div class="pit-stops-empty-card"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg><p>Δεν υπάρχουν ακόμη δεδομένα.</p></div>';
     }
-    var disclaimer = '<div class="pit-stops-footnote" style="margin-bottom:1rem;"><i class="fas fa-circle-info" style="margin-right:0.3rem;opacity:0.6;"></i>Συνολική διέλευση pit lane (είσοδος–έξοδος) — όχι χρόνος ακινησίας.</div>';
+    var disclaimer = '<div class="pit-stops-footnote" style="margin-bottom:1rem;"><svg class="icon" aria-hidden="true" style="margin-right:0.3rem;opacity:0.6;"><use href="#fa-circle-info"/></svg>Συνολική διέλευση pit lane (είσοδος–έξοδος) — όχι χρόνος ακινησίας.</div>';
 
     var html = disclaimer;
 
     if (teamBest.length) {
-        html += '<p class="pit-stops-section-title"><i class="fas fa-flag-checkered" style="margin-right:0.4rem;opacity:0.7;"></i>Team Season Best</p><div class="pit-stops-team-rows">';
+        html += '<p class="pit-stops-section-title"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-flag-checkered"/></svg>Team Season Best</p><div class="pit-stops-team-rows">';
         var teamFastest = teamBest[0].duration;
         teamBest.forEach(function(entry, idx) {
             var rgb = hexToRgbChannels(entry.teamColor);
@@ -6258,7 +6258,7 @@ function renderPitStopsSeasonContent(seasonCache) {
     }
 
     if (driverBest.length) {
-        html += '<p class="pit-stops-section-title" style="margin-top:1.4rem;"><i class="fas fa-helmet-safety" style="margin-right:0.4rem;opacity:0.7;"></i>Driver Season Best</p><div class="pit-stops-rows">';
+        html += '<p class="pit-stops-section-title" style="margin-top:1.4rem;"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-helmet-safety"/></svg>Driver Season Best</p><div class="pit-stops-rows">';
         var driverFastest = driverBest[0].duration;
         driverBest.forEach(function(entry, idx) {
             var modifiedEntry = Object.assign({}, entry, {
@@ -6328,14 +6328,14 @@ function renderPitStops(raceData, race, races) {
         + '<select class="pit-stops-select" data-pitstop-select>' + selectOptions + '</select></div></div>';
 
     html += '<div class="pit-stops-view-switch"><div class="pit-stops-view-tabs">'
-        + '<button class="pit-stops-view-tab' + (pitStopsState.activeView === 'race' ? ' active' : '') + '" data-pitstop-view="race"><i class="fas fa-flag-checkered"></i> Per Race</button>'
-        + '<button class="pit-stops-view-tab' + (pitStopsState.activeView === 'season' ? ' active' : '') + '" data-pitstop-view="season"><i class="fas fa-trophy"></i> Season Best</button>'
+        + '<button class="pit-stops-view-tab' + (pitStopsState.activeView === 'race' ? ' active' : '') + '" data-pitstop-view="race"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg> Per Race</button>'
+        + '<button class="pit-stops-view-tab' + (pitStopsState.activeView === 'season' ? ' active' : '') + '" data-pitstop-view="season"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Season Best</button>'
         + '</div></div>';
 
     // Per-race panel
     html += '<div class="pit-stops-view-panel' + (pitStopsState.activeView === 'race' ? ' active' : '') + '" data-pitstop-panel="race">';
     if (!sorted.length) {
-        html += '<div class="pit-stops-empty-card"><i class="fas fa-wrench"></i><p>Δεν βρέθηκαν δεδομένα pit stop για αυτόν τον αγώνα.</p></div>';
+        html += '<div class="pit-stops-empty-card"><svg class="icon" aria-hidden="true"><use href="#fa-wrench"/></svg><p>Δεν βρέθηκαν δεδομένα pit stop για αυτόν τον αγώνα.</p></div>';
     } else {
         var p1 = sorted[0];
         html += '<div class="pit-stops-summary">'
@@ -6359,11 +6359,11 @@ function renderPitStops(raceData, race, races) {
     if (pitStopsState.activeView === 'season') {
         html += pitStopsState.seasonCache
             ? renderPitStopsSeasonContent(pitStopsState.seasonCache)
-            : '<div class="pit-stops-season-loading"><i class="fas fa-circle-notch fa-spin"></i><p>Φόρτωση season data...</p></div>';
+            : '<div class="pit-stops-season-loading"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-circle-notch"/></svg><p>Φόρτωση season data...</p></div>';
     }
     html += '</div>';
 
-    html += '<div class="pit-stops-footnote"><i class="fas fa-circle-info" style="margin-right:0.3rem;opacity:0.6;"></i>Οι χρόνοι αντικατοπτρίζουν τη <strong>συνολική διέλευση του pit lane</strong> (είσοδος–έξοδος), όχι τον χρόνο ακινησίας του αλλαγής ελαστικών. Δεδομένα: <a href="https://github.com/jolpica/jolpica-f1" target="_blank" rel="noopener">Jolpica F1</a></div>';
+    html += '<div class="pit-stops-footnote"><svg class="icon" aria-hidden="true" style="margin-right:0.3rem;opacity:0.6;"><use href="#fa-circle-info"/></svg>Οι χρόνοι αντικατοπτρίζουν τη <strong>συνολική διέλευση του pit lane</strong> (είσοδος–έξοδος), όχι τον χρόνο ακινησίας του αλλαγής ελαστικών. Δεδομένα: <a href="https://github.com/jolpica/jolpica-f1" target="_blank" rel="noopener">Jolpica F1</a></div>';
     html += '</div>';
 
     pitStopsTable.innerHTML = html;
@@ -6373,8 +6373,8 @@ function renderPitStops(raceData, race, races) {
 function showPitStopsError() {
     if (!pitStopsTable) return;
     pitStopsTable.innerHTML = '<div class="pit-stops-card"><div class="pit-stops-empty-card">'
-        + '<i class="fas fa-exclamation-triangle"></i><p>Αποτυχία φόρτωσης δεδομένων pit stop.</p>'
-        + '<button class="retry-btn" onclick="window.__retryPitStops&&window.__retryPitStops()"><i class="fas fa-redo"></i> Νέα προσπάθεια</button>'
+        + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg><p>Αποτυχία φόρτωσης δεδομένων pit stop.</p>'
+        + '<button class="retry-btn" onclick="window.__retryPitStops&&window.__retryPitStops()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
         + '</div></div>';
     finalizeRenderedPanel('pit-stops');
 }
@@ -6390,7 +6390,7 @@ function ensurePitStopsLoaded(forceReload) {
     loadPitStopRaces().then(function(races) {
         pitStopsState.races = races;
         if (!races.length) {
-            pitStopsTable.innerHTML = '<div class="pit-stops-card"><div class="pit-stops-empty-card"><i class="fas fa-clock"></i><p>Δεν έχουν ολοκληρωθεί αγώνες ακόμη για το ' + YEAR + '.</p></div></div>';
+            pitStopsTable.innerHTML = '<div class="pit-stops-card"><div class="pit-stops-empty-card"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg><p>Δεν έχουν ολοκληρωθεί αγώνες ακόμη για το ' + YEAR + '.</p></div></div>';
             pitStopsState.loaded = true;
             return;
         }
@@ -6452,7 +6452,7 @@ if (pitStopsTable) {
             if (pitStopsState.seasonCache) {
                 seasonPanel.innerHTML = renderPitStopsSeasonContent(pitStopsState.seasonCache);
             } else {
-                seasonPanel.innerHTML = '<div class="pit-stops-season-loading"><i class="fas fa-circle-notch fa-spin"></i><p>Φόρτωση season data...</p></div>';
+                seasonPanel.innerHTML = '<div class="pit-stops-season-loading"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-circle-notch"/></svg><p>Φόρτωση season data...</p></div>';
                 loadSeasonPitStops(pitStopsState.races).then(function() {
                     pitStopsState.seasonCache = buildSeasonBestCache(pitStopsState.races);
                     var panel = pitStopsTable ? pitStopsTable.querySelector('[data-pitstop-panel="season"]') : null;
@@ -6462,7 +6462,7 @@ if (pitStopsTable) {
                 }).catch(function(e) {
                     console.error('Season pit stops error:', e);
                     var panel = pitStopsTable ? pitStopsTable.querySelector('[data-pitstop-panel="season"]') : null;
-                    if (panel) panel.innerHTML = '<div class="pit-stops-empty-card"><i class="fas fa-exclamation-triangle"></i><p>Αποτυχία φόρτωσης season data.</p></div>';
+                    if (panel) panel.innerHTML = '<div class="pit-stops-empty-card"><svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg><p>Αποτυχία φόρτωσης season data.</p></div>';
                 });
             }
         }

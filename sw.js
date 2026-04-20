@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v9
+   F1 Stories — Service Worker v10
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,11 @@
    Blog article pages    → network-first, cache every visited article
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v10 bump: Phase 3b (icon sprite) — shell HTML no longer references
+   cdnjs.cloudflare.com for Font Awesome. An SVG sprite is inlined into
+   each shell page at build time, so `<svg><use href="#fa-*"/>` renders
+   without a network hop. Bumping cache names forces returning users to
+   re-precache the updated shell and drop the FA CDN entry.
    v9 bump: Phase 3a (Google Fonts self-host) — shell HTML no longer
    references fonts.googleapis.com or fonts.gstatic.com. Primary woff2
    weights + /styles/fonts.min.css are precached so the first load can
@@ -22,10 +27,10 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var CACHE_SHELL   = 'f1s-shell-v9';
-var CACHE_PAGES   = 'f1s-pages-v9';
-var CACHE_ASSETS  = 'f1s-assets-v9';
-var CACHE_DATA    = 'f1s-data-v9';
+var CACHE_SHELL   = 'f1s-shell-v10';
+var CACHE_PAGES   = 'f1s-pages-v10';
+var CACHE_ASSETS  = 'f1s-assets-v10';
+var CACHE_DATA    = 'f1s-data-v10';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 

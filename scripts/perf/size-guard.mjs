@@ -38,7 +38,8 @@ const SOURCE_FILES = [
     'blog-module/blog-index.js',
     'blog-module/blog-processor.js',
     'sw.js',
-    'manifest.json'
+    'manifest.json',
+    'images/icons/sprite.svg'
 ];
 
 // After Phase 1, every CSS/JS with a .min.<ext> sibling is also tracked so

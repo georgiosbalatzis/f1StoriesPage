@@ -295,20 +295,20 @@
         var thumb = 'https://i.ytimg.com/vi/' + encodeURIComponent(video.id) + '/hqdefault.jpg';
         var meta = [];
 
-        if (date) meta.push('<i class="fas fa-calendar-alt"></i> ' + escapeHtml(date));
-        if (duration) meta.push('<i class="fas fa-clock"></i> ' + duration);
+        if (date) meta.push('<svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ' + escapeHtml(date));
+        if (duration) meta.push('<svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> ' + duration);
 
         return '<div class="col-md-6 col-lg-4">'
             + '<a href="' + url + '" target="_blank" rel="noopener" class="ep-card" title="' + title + '">'
             + '<div class="ep-card__thumb">'
             + '<img src="' + thumb + '" alt="' + title + '" loading="lazy" decoding="async" width="480" height="360">'
             + (duration ? '<span class="ep-card__duration">' + duration + '</span>' : '')
-            + '<div class="ep-card__play"><i class="fas fa-play"></i></div>'
+            + '<div class="ep-card__play"><svg class="icon" aria-hidden="true"><use href="#fa-play"/></svg></div>'
             + '</div>'
             + '<div class="ep-card__body">'
             + '<h3 class="ep-card__title">' + title + '</h3>'
             + (meta.length ? '<div class="ep-card__meta">' + meta.join(' <span style="opacity:.4">·</span> ') + '</div>' : '')
-            + '<span class="ep-card__cta">Παρακολούθηση <i class="fas fa-play"></i></span>'
+            + '<span class="ep-card__cta">Παρακολούθηση <svg class="icon" aria-hidden="true"><use href="#fa-play"/></svg></span>'
             + '</div>'
             + '</a>'
             + '</div>';

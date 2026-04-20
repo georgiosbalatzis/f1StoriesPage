@@ -32,8 +32,30 @@ const TARGET_HTML = [
     'standings/index.html',
     'blog-module/blog/index.html',
     'blog-module/blog/template.html',
+    'housekeeping.html',
+    'privacy/privacy.html',
+    'privacy/terms.html',
+    'generate.html',
     '404.html'
 ];
+
+// Pages that get the inlined SVG sprite + FA CDN removal (Phase 3b). Only
+// pages that actually use fa-* icons need this; offline.html + 404.html have
+// none, so they're excluded.
+const SPRITE_TARGETS = new Set([
+    'index.html',
+    'standings/index.html',
+    'blog-module/blog/index.html',
+    'blog-module/blog/template.html',
+    'housekeeping.html',
+    'privacy/privacy.html',
+    'privacy/terms.html',
+    'generate.html'
+]);
+
+const SPRITE_SOURCE = 'images/icons/sprite.svg';
+const SPRITE_BEGIN = '<!-- f1s:icon-sprite:begin -->';
+const SPRITE_END   = '<!-- f1s:icon-sprite:end -->';
 
 // HTML files that get the critical-CSS treatment (inlined critical block +
 // async-preload for local stylesheets). Excluded: offline.html and 404.html
@@ -316,6 +338,80 @@ function sha256Short(input) {
     return crypto.createHash('sha256').update(buf).digest('hex').slice(0, 8);
 }
 
+// Drop the Font Awesome CDN references. Phase 3b replaces them with an
+// inlined SVG sprite, so every cdnjs FA <link> — plain stylesheet, media-
+// swap async form, and the <noscript> fallback — becomes dead weight.
+// Also drops the sibling `<link rel="dns-prefetch" href="https://cdnjs…">`
+// since cdnjs is only used for FA on this site.
+function dropFontAwesomeCdn(html) {
+    let dropped = 0;
+    const before = html;
+
+    // Match any <link …cdnjs.cloudflare.com…font-awesome…> whole line
+    // (plain stylesheet, async with media=print onload=…, or standalone).
+    html = html.replace(
+        /^[ \t]*<link\s+[^>]*cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/[^>]*>\n/gm,
+        () => { dropped++; return ''; }
+    );
+    // Match the <noscript> fallback form as a whole line.
+    html = html.replace(
+        /^[ \t]*<noscript><link[^>]*cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/[^>]*><\/noscript>\n/gm,
+        () => { dropped++; return ''; }
+    );
+    // Drop the dns-prefetch line for cdnjs (cdnjs is only used for FA here).
+    html = html.replace(
+        /^[ \t]*<link\s+rel="dns-prefetch"\s+href="https:\/\/cdnjs\.cloudflare\.com"[^>]*>\n/gm,
+        () => { dropped++; return ''; }
+    );
+
+    return { result: html, dropped, changed: html !== before };
+}
+
+// Inline the SVG sprite inside <body> so every `<svg><use href="#fa-*"/>`
+// resolves without a network hop. Idempotent via marker-bracketed block;
+// the stored `data-hash` lets browsers (and us) see when the sprite churned.
+function injectSprite(html, spriteInfo) {
+    const block =
+        `${SPRITE_BEGIN}\n` +
+        `<div hidden data-hash="${spriteInfo.hash}">${spriteInfo.svg}</div>\n` +
+        `${SPRITE_END}`;
+
+    const existing = new RegExp(
+        escapeRegex(SPRITE_BEGIN) + '[\\s\\S]*?' + escapeRegex(SPRITE_END),
+        'g'
+    );
+    if (existing.test(html)) {
+        const replaced = html.replace(existing, block);
+        return { result: replaced, injected: false, replaced: true };
+    }
+
+    // Insert immediately after the opening <body …> tag.
+    const anchor = /<body\b[^>]*>\n?/;
+    const m = html.match(anchor);
+    if (!m) return { result: html, injected: false, replaced: false };
+    const insertAt = m.index + m[0].length;
+    const result = html.slice(0, insertAt) + block + '\n' + html.slice(insertAt);
+    return { result, injected: true, replaced: false };
+}
+
+// Load the sprite once per stamp run. Stripped of the leading <?xml?> + the
+// outer comment so the inlined form reads as ordinary markup inside <body>.
+function loadSprite() {
+    const abs = path.join(REPO_ROOT, SPRITE_SOURCE);
+    if (!fs.existsSync(abs)) {
+        throw new Error(`sprite missing at ${abs} — run: npm run build:icons`);
+    }
+    const raw = fs.readFileSync(abs, 'utf8');
+    const hash = crypto.createHash('sha256').update(raw).digest('hex').slice(0, 8);
+    // Trim the XML prolog + generator comment for cleaner HTML output;
+    // browsers don't need xmlns on a child <svg> inside <body>.
+    const svg = raw
+        .replace(/^<\?xml[^?]*\?>\s*/, '')
+        .replace(/^<!--[\s\S]*?-->\s*/, '')
+        .trim();
+    return { svg, hash };
+}
+
 function asyncifyStylesheets(html) {
     const conversions = [];
 
@@ -354,12 +450,15 @@ function main() {
     if (!fontsInfo) {
         throw new Error(`manifest missing entry for ${FONTS_SOURCE} — run build:fonts then build:assets:minify`);
     }
+    const sprite = loadSprite();
     const dry = process.argv.includes('--dry');
     let totalHits = 0;
     let totalCriticalOps = 0;
     let totalAsyncified = 0;
     let totalFontSwaps = 0;
     let totalPreconnectDrops = 0;
+    let totalSpriteOps = 0;
+    let totalFaCdnDrops = 0;
 
     for (const rel of TARGET_HTML) {
         const abs = path.join(REPO_ROOT, rel);
@@ -377,6 +476,22 @@ function main() {
         result = fontSwap.result;
         totalFontSwaps += fontSwap.swaps.googleLinksSwapped;
         totalPreconnectDrops += fontSwap.swaps.preconnectDropped;
+
+        // 2b) Phase 3b: drop FA CDN <link>s + inline sprite (only on pages
+        //     that use icons; offline/404 have none).
+        let faDropNote = '';
+        let spriteNote = '';
+        if (SPRITE_TARGETS.has(rel)) {
+            const cdnDrop = dropFontAwesomeCdn(result);
+            result = cdnDrop.result;
+            totalFaCdnDrops += cdnDrop.dropped;
+            if (cdnDrop.dropped) faDropNote = `${cdnDrop.dropped} FA CDN drop`;
+
+            const inj = injectSprite(result, sprite);
+            result = inj.result;
+            if (inj.injected) { spriteNote = 'sprite injected'; totalSpriteOps++; }
+            else if (inj.replaced) { spriteNote = 'sprite refreshed'; totalSpriteOps++; }
+        }
 
         // 3) inject/refresh critical-CSS block + asyncify local stylesheets
         let criticalNote = '';
@@ -407,6 +522,8 @@ function main() {
         if (fontSwap.swaps.googleLinksSwapped) parts.push(`${fontSwap.swaps.googleLinksSwapped} font swap`);
         if (fontSwap.swaps.preconnectDropped) parts.push(`${fontSwap.swaps.preconnectDropped} preconnect drop`);
         if (fontSwap.swaps.preloadsInjected) parts.push(`${fontSwap.swaps.preloadsInjected} font preload`);
+        if (faDropNote) parts.push(faDropNote);
+        if (spriteNote) parts.push(spriteNote);
         console.log(`\n${rel}  →  ${parts.join(', ') || 'updated'}`);
         for (const h of hits) {
             console.log(`    ${h.from}\n  → ${h.to}`);
@@ -423,13 +540,15 @@ function main() {
         console.log(
             `\n(dry-run) ${totalHits} rewrite(s), ${totalCriticalOps} critical op(s), ` +
             `${totalAsyncified} async-preload conversion(s), ${totalFontSwaps} font swap(s), ` +
-            `${totalPreconnectDrops} preconnect drop(s) planned.`
+            `${totalPreconnectDrops} preconnect drop(s), ${totalSpriteOps} sprite op(s), ` +
+            `${totalFaCdnDrops} FA CDN drop(s) planned.`
         );
     } else {
         console.log(
             `\n✓ stamped ${totalHits} reference(s), ${totalCriticalOps} critical block(s), ` +
             `${totalAsyncified} stylesheet(s) async-preloaded, ${totalFontSwaps} font swap(s), ` +
-            `${totalPreconnectDrops} preconnect(s) dropped across ${TARGET_HTML.length} file(s).`
+            `${totalPreconnectDrops} preconnect(s) dropped, ${totalSpriteOps} sprite op(s), ` +
+            `${totalFaCdnDrops} FA CDN drop(s) across ${TARGET_HTML.length} file(s).`
         );
     }
 }
