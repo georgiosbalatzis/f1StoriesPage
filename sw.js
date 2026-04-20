@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v7
+   F1 Stories — Service Worker v8
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,15 +8,19 @@
    Blog article pages    → network-first, cache every visited article
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v8 bump: Phase 2 (critical CSS) — shell HTML now carries an inlined
+   critical-CSS <style> block + rel="preload" async-loads the rest of the
+   stylesheets. Bumping cache names forces returning users to re-precache
+   the updated shell so they get the new above-the-fold render path.
    v7 bump: Phase 1 (deployment hygiene) — shell precache points at .min.*
    files produced by scripts/build/minify.mjs. Older non-min shell entries
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var CACHE_SHELL   = 'f1s-shell-v7';
-var CACHE_PAGES   = 'f1s-pages-v7';
-var CACHE_ASSETS  = 'f1s-assets-v7';
-var CACHE_DATA    = 'f1s-data-v7';
+var CACHE_SHELL   = 'f1s-shell-v8';
+var CACHE_PAGES   = 'f1s-pages-v8';
+var CACHE_ASSETS  = 'f1s-assets-v8';
+var CACHE_DATA    = 'f1s-data-v8';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 
