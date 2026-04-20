@@ -2084,8 +2084,11 @@ async function processBlogEntry(entryPath) {
     assertNoInlineDataImages(content, folderName);
     
     const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-    const wordCount = plainText.split(/\s+/).length;
+    const wordCount = plainText ? plainText.split(/\s+/).length : 0;
     const readingTime = Math.max(1, Math.ceil(wordCount / 200)) + ' min';
+    const generatedExcerpt = plainText
+        ? plainText.substring(0, 200) + '...'
+        : `${metadata.title} image gallery.`;
 
     const primaryImage = images.thumbnail || images.background || CONFIG.DEFAULT_BLOG_IMAGE;
     const headerImage = images.background || images.thumbnail || CONFIG.DEFAULT_BLOG_IMAGE;
@@ -2103,7 +2106,7 @@ async function processBlogEntry(entryPath) {
         }),
         image: primaryImage,
         backgroundImage: headerImage,
-        excerpt: metadata.excerpt || content.replace(/<[^>]*>/g, '').substring(0, 200) + '...',
+        excerpt: metadata.excerpt || generatedExcerpt,
         comments: 0,
         url: `/blog-module/blog-entries/${folderName}/article.html`,
         tag: metadata.tag || 'F1',
@@ -2156,7 +2159,8 @@ async function processBlogEntry(entryPath) {
         utils.ensureDirectory(CONFIG.OUTPUT_HTML_DIR);
     }
     
-    fs.writeFileSync(path.join(entryPath, 'article.html'), blogHtml);
+    const cleanBlogHtml = blogHtml.replace(/[ \t]+$/gm, '');
+    fs.writeFileSync(path.join(entryPath, 'article.html'), cleanBlogHtml);
     
     return postData;
 }
