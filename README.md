@@ -443,3 +443,14 @@ python3 blog-module/tts-generator-parallel.py --post 20250101G
 - καθαρός διαχωρισμός ανάμεσα σε brand site, content system και analytics surfaces
 
 Με απλά λόγια, το `f1stories.github.io` δεν είναι μόνο ένα website. Είναι το λειτουργικό publishing layer του F1 Stories.
+
+<a id="performance-budget"></a>
+## Performance budget
+
+Ένα ελαφρύ guardrail για το βάρος των critical JS/CSS assets. Το budget ζει στο `perf/size-budget.json` και ελέγχεται με το script `scripts/perf/size-guard.mjs`.
+
+- `npm run perf:budget` — τρέχει τον έλεγχο· exit code 1 αν οποιοδήποτε tracked αρχείο έχει μεγαλώσει πάνω από `thresholdPercent` (default 10%) σε σχέση με το αποθηκευμένο baseline.
+- `npm run perf:budget:update` — ξαναγράφει το baseline με τα τρέχοντα μεγέθη. Τρέξε το μόνο μετά από συνειδητό perf review (π.χ. μετά από Phase 1 minification).
+- Ο πρώτος baseline ελήφθη στις `2026-04-20` (βλ. `perf/baseline-2026-04-20.md`) — είναι το reference point για κάθε φάση optimization που ακολουθεί στο `nextsteps.txt`.
+
+Επίσης, κάθε σελίδα landing (home, blog index, standings, article template) φορτώνει το `scripts/perf/web-vitals-beacon.js` μέσα σε `requestIdleCallback` και στέλνει στο GA4 event `web_vital` με `metric_name`, `metric_value`, `metric_rating`, `page_path`. Οι ζωντανές τιμές δημιουργούν ένα RUM dataset για LCP/INP/CLS/FCP/TTFB ανά route — αυτό είναι το χρήσιμο signal πριν και μετά από κάθε perf phase.

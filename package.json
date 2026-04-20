@@ -6,7 +6,9 @@
   "scripts": {
     "build:blog": "node blog-module/blog-processor.js",
     "build:blog:force": "node blog-module/blog-processor.js --force",
-    "build:image-variants": "node blog-module/generate-image-variants.js --run"
+    "build:image-variants": "node blog-module/generate-image-variants.js --run",
+    "perf:budget": "node scripts/perf/size-guard.mjs",
+    "perf:budget:update": "node scripts/perf/size-guard.mjs --update"
   },
   "dependencies": {
     "adm-zip": "^0.5.12",
