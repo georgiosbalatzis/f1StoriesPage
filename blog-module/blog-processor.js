@@ -983,7 +983,7 @@ function buildResponsiveDocTable(headers, rows, tableId) {
             <div class="table-container scroll-view active" id="${tableId}-scroll">
                 <div class="table-scroll-indicator">
                     <span>Σύρετε για περισσότερα</span>
-                    <i class="fas fa-arrows-left-right"></i>
+                    <svg class="icon" aria-hidden="true"><use href="#fa-arrows-left-right"/></svg>
                 </div>
                 <table class="responsive-table docx-table">
                     <thead>
@@ -1114,17 +1114,17 @@ function createResponsiveTableFromCSV(csvContent, csvFileName) {
                 <h4 class="table-title">${tableName}</h4>
                 <div class="view-toggle">
                     <button class="view-toggle-btn scroll-view active" data-view="scroll" data-table="${tableId}">
-                        <i class="fas fa-table"></i> Προβολή πίνακα
+                        <svg class="icon" aria-hidden="true"><use href="#fa-table"/></svg> Προβολή πίνακα
                     </button>
                     <button class="view-toggle-btn card-view" data-view="card" data-table="${tableId}">
-                        <i class="fas fa-th-large"></i> Προβολή καρτών
+                        <svg class="icon" aria-hidden="true"><use href="#fa-th-large"/></svg> Προβολή καρτών
                     </button>
                 </div>
             </div>
             <div class="table-container scroll-view active" id="${tableId}-scroll">
                 <div class="table-scroll-indicator">
                     <span>Σύρετε για περισσότερα</span>
-                    <i class="fas fa-arrows-left-right"></i>
+                    <svg class="icon" aria-hidden="true"><use href="#fa-arrows-left-right"/></svg>
                 </div>
                 <table class="responsive-table">
                     <thead>
@@ -2226,10 +2226,10 @@ async function buildImageCarousel(folderName, imageNumbers, options = {}) {
                 ${slidesHtml}
             </div>
             <button class="gallery-carousel-prev" aria-label="Previous image" disabled>
-                <i class="fas fa-chevron-left"></i>
+                <svg class="icon" aria-hidden="true"><use href="#fa-chevron-left"/></svg>
             </button>
             <button class="gallery-carousel-next" aria-label="Next image"${total <= 1 ? ' disabled' : ''}>
-                <i class="fas fa-chevron-right"></i>
+                <svg class="icon" aria-hidden="true"><use href="#fa-chevron-right"/></svg>
             </button>
             <div class="gallery-carousel-counter">1 / ${total}</div>
         </div>
@@ -2630,7 +2630,7 @@ if (!isMainThread) {
                 const relatedAuthor = escapeHtmlAttribute(related.author);
                 const relatedReadTime = escapeHtmlAttribute(related.readingTime || '');
                 const hoverMeta = relatedReadTime
-                    ? `<span class="related-card-hover-meta"><i class="far fa-clock"></i> ${relatedReadTime}</span>`
+                    ? `<span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> ${relatedReadTime}</span>`
                     : '';
                 
                 return `
@@ -2648,10 +2648,10 @@ if (!isMainThread) {
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> ${relDateStr}</div>
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ${relDateStr}</div>
                             <h5>${relatedTitle}</h5>
                             <div class="related-card-footer">
-                                <span class="related-card-read">Read More <i class="fas fa-arrow-right"></i></span>
+                                <span class="related-card-read">Read More <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">${relatedAuthor}</span>
                             </div>
                         </div>

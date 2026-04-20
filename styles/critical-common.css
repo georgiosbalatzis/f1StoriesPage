@@ -198,3 +198,23 @@ body {
   border-bottom-color: rgba(0,0,0,0.06);
 }
 [data-theme="light"] .blog-nav-link { color: #6e6e73; }
+
+/* ── Icon sprite base (Phase 3b) ── */
+/* Replaces the Font Awesome <i> webfont glyphs. Sized to currentColor like
+   a character so `<svg class="icon">` drops into existing layouts with no
+   extra tweaks. The -.125em baseline nudge matches FA's own glyph metrics. */
+.icon {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  vertical-align: -0.125em;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.fa-spin {
+  animation: fa-spin 2s linear infinite;
+}
+@keyframes fa-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

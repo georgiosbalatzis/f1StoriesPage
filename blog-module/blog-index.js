@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!readMins && post.wordCount) { readMins = Math.max(1, Math.ceil(post.wordCount / 200)) + ' min'; }
         if (!readMins && excerpt) { readMins = Math.max(2, Math.ceil(Math.round(excerpt.split(/\s+/).length * 10) / 200)) + ' min'; }
         readMins = formatReadingTime(readMins);
-        var readBadge = readMins ? '<span>\u00b7</span><span class="article-card-reading-time"><i class="fas fa-clock"></i> ' + escHtml(readMins) + '</span>' : '';
+        var readBadge = readMins ? '<span>\u00b7</span><span class="article-card-reading-time"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> ' + escHtml(readMins) + '</span>' : '';
 
         var stagger = window.innerWidth < 768 ? 0.03 : 0.06;
         return '<article class="article-card-wrap">'
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
             + '<h3 class="article-card-title">' + escHtml(post.title) + '</h3>'
             + '<p class="article-card-excerpt">' + escHtml(excerpt) + '</p>'
             + '</div>'
-            + '<div class="article-card-footer"><span class="article-card-read">Διαβάστε περισσότερα <i class="fas fa-arrow-right"></i></span><div class="article-card-cats">' + cats + '</div></div>'
+            + '<div class="article-card-footer"><span class="article-card-read">Διαβάστε περισσότερα <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span><div class="article-card-cats">' + cats + '</div></div>'
             + '</a>'
             + '</article>';
     }
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
         if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
         var range = getPageRange(currentPage, totalPages);
-        var html = '<button class="page-btn page-prev" aria-label="Προηγούμενη σελίδα"' + (currentPage === 1 ? ' disabled' : '') + '><i class="fas fa-chevron-left"></i></button>';
+        var html = '<button class="page-btn page-prev" aria-label="Προηγούμενη σελίδα"' + (currentPage === 1 ? ' disabled' : '') + '><svg class="icon" aria-hidden="true"><use href="#fa-chevron-left"/></svg></button>';
         range.forEach(function(item) {
             if (item === '…') {
                 html += '<span class="page-ellipsis">&hellip;</span>';
@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 html += '<button class="page-btn page-num' + (item === currentPage ? ' active' : '') + '" data-page="' + item + '" aria-label="Σελίδα ' + item + '"' + (item === currentPage ? ' aria-current="page"' : '') + '>' + item + '</button>';
             }
         });
-        html += '<button class="page-btn page-next" aria-label="Επόμενη σελίδα"' + (currentPage === totalPages ? ' disabled' : '') + '><i class="fas fa-chevron-right"></i></button>';
+        html += '<button class="page-btn page-next" aria-label="Επόμενη σελίδα"' + (currentPage === totalPages ? ' disabled' : '') + '><svg class="icon" aria-hidden="true"><use href="#fa-chevron-right"/></svg></button>';
         paginationEl.innerHTML = html;
     }
 
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (countEl) { countEl.textContent = getResultsSummary(filteredPosts.length); }
         updateSearchControls();
         if (!filteredPosts.length) {
-            grid.innerHTML = '<div class="empty-state"><i class="fas fa-newspaper"></i><p>Δεν βρέθηκαν άρθρα για τα επιλεγμένα φίλτρα.</p></div>';
+            grid.innerHTML = '<div class="empty-state"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg><p>Δεν βρέθηκαν άρθρα για τα επιλεγμένα φίλτρα.</p></div>';
             if (paginationEl) paginationEl.innerHTML = '';
             return;
         }
@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function tryFetch(paths, idx) {
         var cached = idx === 0 ? readCachedPosts() : null;
         if (cached) { hydratePosts(cached); return; }
-        if (idx >= paths.length) { if (grid) grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Δεν ήταν δυνατή η φόρτωση των άρθρων.</p></div>'; return; }
+        if (idx >= paths.length) { if (grid) grid.innerHTML = '<div class="empty-state"><svg class="icon" aria-hidden="true"><use href="#fa-exclamation-circle"/></svg><p>Δεν ήταν δυνατή η φόρτωση των άρθρων.</p></div>'; return; }
         fetch(paths[idx]).then(function(r) { if (!r.ok) throw new Error('not ok'); return r.json(); }).then(function(data) {
             var posts = data.posts || data || [];
             writeCachedPosts(posts);

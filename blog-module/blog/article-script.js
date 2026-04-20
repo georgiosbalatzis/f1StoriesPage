@@ -566,9 +566,9 @@ document.addEventListener('DOMContentLoaded', function () {
         tocEl.className = 'article-toc';
         tocEl.innerHTML = `
             <button class="toc-toggle" id="toc-toggle" aria-label="Toggle table of contents">
-                <i class="fas fa-list-ul"></i>
+                <svg class="icon" aria-hidden="true"><use href="#fa-list-ul"/></svg>
                 <span>Περιεχόμενα / Contents</span>
-                <i class="fas fa-chevron-down toc-chevron"></i>
+                <svg class="icon toc-chevron" aria-hidden="true"><use href="#fa-chevron-down"/></svg>
             </button>
             <div class="toc-body" id="toc-body">${tocItems}</div>
         `;
@@ -680,12 +680,12 @@ document.addEventListener('DOMContentLoaded', function () {
         overlay.setAttribute('aria-modal', 'true');
         overlay.setAttribute('aria-label', 'Image viewer');
         overlay.innerHTML = `
-            <button class="lb-close" aria-label="Close"><i class="fas fa-times"></i></button>
+            <button class="lb-close" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#fa-times"/></svg></button>
             <div class="lb-img-wrap">
                 <img class="lb-img" src="" alt="">
             </div>
-            <button class="lb-prev" aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
-            <button class="lb-next" aria-label="Next image"><i class="fas fa-chevron-right"></i></button>
+            <button class="lb-prev" aria-label="Previous image"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-left"/></svg></button>
+            <button class="lb-next" aria-label="Next image"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-right"/></svg></button>
             <div class="lb-counter"></div>`;
         document.body.appendChild(overlay);
 
