@@ -449,7 +449,8 @@ python3 blog-module/tts-generator-parallel.py --post 20250101G
 
 Από τη Phase 1 του roadmap, κάθε tracked CSS/JS έχει δίπλα του ένα `.min` sibling (π.χ. `styles.css` + `styles.min.css`). Το production HTML φορτώνει τα minified αρχεία με content-hash query string για σωστό cache-busting, ενώ τα sources παραμένουν commit-ed ως πηγή αλήθειας για diff/review.
 
-- `npm run build:assets` — τρέχει minify (`lightningcss` για CSS, `esbuild` για JS) και μετά stamp (rewrite HTML references σε `.min.<ext>?v=<hash>`).
+- `npm run build:assets` — χτίζει icon sprite + slim Bootstrap CSS, τρέχει minify (`lightningcss` για CSS, `esbuild` για JS) και μετά stamp (rewrite HTML references σε `.min.<ext>?v=<hash>`).
+- `npm run build:bootstrap` — παράγει το self-hosted `styles/vendor/bootstrap.slim.css` από το scoped SCSS subset.
 - `npm run build:assets:watch` — rebuild σε κάθε αλλαγή source.
 - `npm run build:assets:minify` / `build:assets:stamp` — τα δύο βήματα ξεχωριστά.
 - Χειροκίνητα source edits σε `.css` / `.js`: τρέξε `npm run build:assets` πριν το commit, ώστε να commit-αριστούν μαζί με το `.min` sibling και το ενημερωμένο HTML reference.
@@ -462,7 +463,7 @@ python3 blog-module/tts-generator-parallel.py --post 20250101G
 
 Τα sourcemaps (`*.min.js.map`, `*.min.css.map`) είναι στο `.gitignore`.
 
-Τα 208 υπάρχοντα `blog-module/blog-entries/*/article.html` ΔΕΝ stamp-άρονται από το script — παραμένουν στα κλασικά (non-min) refs μέχρι να γίνει rebuild μέσω `npm run build:blog:force`, οπότε το (ήδη stamped) `blog-module/blog/template.html` θα διαδώσει τα `.min` refs παντού. Αυτή η ροή είναι σκόπιμα incremental.
+Τα 208 υπάρχοντα `blog-module/blog-entries/*/article.html` ΔΕΝ παίρνουν γενικό asset stamping από το script — παραμένουν στα κλασικά (non-min) refs μέχρι να γίνει rebuild μέσω `npm run build:blog:force`, οπότε το (ήδη stamped) `blog-module/blog/template.html` θα διαδώσει τα `.min` refs παντού. Εξαίρεση: το Phase 4 Bootstrap CDN swap εφαρμόζεται και στα committed articles, ώστε κανένα live HTML να μη φορτώνει Bootstrap από jsDelivr.
 
 <a id="performance-budget"></a>
 ## Performance budget

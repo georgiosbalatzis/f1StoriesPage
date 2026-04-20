@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-20T11:47:41.691Z",
+  "updatedAt": "2026-04-20T12:46:38.525Z",
   "thresholdPercent": 10,
   "note": "Byte budgets for tracked JS/CSS/HTML assets. Run `npm run perf:budget` to check, `npm run perf:budget:update` to rewrite this file with current sizes. Threshold is the max % growth allowed before the check fails.",
   "files": {
@@ -9,6 +9,7 @@
     "styles/shared-nav.css": 14991,
     "styles/critical-common.css": 5817,
     "styles/fonts.css": 11584,
+    "styles/vendor/bootstrap.slim.css": 41976,
     "blog-module/blog-styles.css": 37569,
     "blog-module/blog/article-styles.css": 32671,
     "standings/standings.css": 120998,
@@ -22,8 +23,8 @@
     "scripts/perf/web-vitals-beacon.js": 3423,
     "blog-module/blog-loader.js": 8199,
     "blog-module/blog-index.js": 16187,
-    "blog-module/blog-processor.js": 106843,
-    "sw.js": 7151,
+    "blog-module/blog-processor.js": 107015,
+    "sw.js": 7494,
     "manifest.json": 1810,
     "images/icons/sprite.svg": 38742,
     "styles.min.css": 30293,
@@ -32,6 +33,7 @@
     "styles/shared-nav.min.css": 9721,
     "styles/critical-common.min.css": 3000,
     "styles/fonts.min.css": 8533,
+    "styles/vendor/bootstrap.slim.min.css": 39627,
     "blog-module/blog-styles.min.css": 22209,
     "blog-module/blog/article-styles.min.css": 24223,
     "standings/standings.min.css": 103193,
