@@ -37,7 +37,16 @@ const CSS_INPUTS = [
     'styles/vendor/bootstrap.slim.css',
     'blog-module/blog-styles.css',
     'blog-module/blog/article-styles.css',
-    'standings/standings.css'
+    'standings/standings.css',
+    // Phase 7: per-tab stylesheets lazily injected by standings.js.
+    'standings/tabs/quali-gaps.css',
+    'standings/tabs/lap1-gains.css',
+    'standings/tabs/tyre-pace.css',
+    'standings/tabs/dirty-air.css',
+    'standings/tabs/track-dominance.css',
+    'standings/tabs/pit-stops.css',
+    'standings/tabs/debrief.css',
+    'standings/tabs/destructors.css'
 ];
 
 const JS_INPUTS = [

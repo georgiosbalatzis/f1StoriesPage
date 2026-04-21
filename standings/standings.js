@@ -255,6 +255,42 @@ function resolveModulePath(path) {
     return path.replace(/\.js$/, '.min.js');
 }
 
+// Phase 7: per-tab stylesheets are lazily injected. Drivers + constructors
+// render against the shell (standings.min.css) alone; the other eight tabs
+// each live in /standings/tabs/<id>.min.css and load on first activation.
+const TAB_STYLESHEET_BASE = '/standings/tabs/';
+const TAB_STYLESHEETS = {
+    'quali-gaps': 'quali-gaps.min.css',
+    'lap1-gains': 'lap1-gains.min.css',
+    'tyre-pace': 'tyre-pace.min.css',
+    'dirty-air': 'dirty-air.min.css',
+    'track-dominance': 'track-dominance.min.css',
+    'pit-stops': 'pit-stops.min.css',
+    'debrief': 'debrief.min.css',
+    'destructors': 'destructors.min.css'
+};
+const injectedTabStyles = Object.create(null);
+
+function ensureStyle(href) {
+    if (!href || injectedTabStyles[href]) return;
+    if (document.querySelector('link[rel="stylesheet"][data-f1s-tab-css="' + href + '"]')) {
+        injectedTabStyles[href] = true;
+        return;
+    }
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.setAttribute('data-f1s-tab-css', href);
+    document.head.appendChild(link);
+    injectedTabStyles[href] = true;
+}
+
+function ensureTabStylesheet(tabName) {
+    const filename = TAB_STYLESHEETS[tabName];
+    if (!filename) return;
+    ensureStyle(TAB_STYLESHEET_BASE + filename);
+}
+
 function loadLegacyStandings() {
     if (legacyPromise) return legacyPromise;
     legacyPromise = import(resolveModulePath('./standings.legacy.js')).then(function() {
@@ -281,6 +317,7 @@ function activateStandingsTab(tabName, options) {
     if (legacyActive) return;
 
     const nextTab = sanitizeStandingsTab(tabName);
+    ensureTabStylesheet(nextTab);
     activeStandingsTab = nextTab;
 
     standingsTabs.forEach(function(tab) {
