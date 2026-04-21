@@ -79,6 +79,7 @@ function discoverStandingsBrowserJs() {
             }
             if (!entry.isFile() || !entry.name.endsWith('.js') || entry.name.endsWith('.min.js')) continue;
             if (entry.name === 'debrief-cache.js') continue;
+            if (entry.name === 'standings.legacy.js') continue;
             out.push(path.relative(REPO_ROOT, abs).replace(/\\/g, '/'));
         }
     }

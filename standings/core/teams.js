@@ -1,8 +1,8 @@
 // 2026 constructor roster + team-color / logo utilities.
 //
 // The TEAMS map is the single source of truth for constructor identity in
-// the slim standings entry (and, once the legacy chunk is retired, every
-// per-tab module). The 'sauber' key aliases to the same entry as 'audi'
+// the slim standings entry and every per-tab module. The 'sauber' key aliases
+// to the same entry as 'audi'
 // because Jolpica still emits the old constructorId for the first races
 // of the rebrand.
 

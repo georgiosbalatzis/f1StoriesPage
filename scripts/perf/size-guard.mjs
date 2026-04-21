@@ -37,7 +37,6 @@ const SOURCE_FILES = [
     'standings/tabs/debrief.css',
     'standings/tabs/destructors.css',
     'standings/standings.js',
-    'standings/standings.legacy.js',
     'standings/core/format.js',
     'standings/core/teams.js',
     'standings/core/drivers-meta.js',

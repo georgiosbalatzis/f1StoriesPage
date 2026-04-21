@@ -1,8 +1,8 @@
 // JSON fetch + sessionStorage cache wrapper used by every standings tab.
 //
 // The cache is keyed by full URL with a shared f1s-standings: prefix so the
-// slim entry and the lazy legacy chunk can see each other's writes: on a
-// cold load of /standings/?tab=debrief the legacy chunk can reuse driver
+// slim entry and every lazy tab module can see each other's writes: on a
+// cold load of /standings/?tab=debrief the Debrief module can reuse driver
 // standings data that drivers-table already fetched minutes ago from another
 // session.
 //
