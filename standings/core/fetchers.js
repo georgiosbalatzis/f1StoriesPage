@@ -77,3 +77,38 @@ export function fetchJSONWithRetry(url, attempt) {
         throw error;
     });
 }
+
+export function chunkArray(items, size) {
+    const chunks = [];
+    for (let i = 0; i < items.length; i += size) {
+        chunks.push(items.slice(i, i + size));
+    }
+    return chunks;
+}
+
+// OpenF1 accepts at most ~8 session_key= query params per call, so tabs that
+// pull cross-session data (qualifying drivers+results, lap1 gains, tyre pace)
+// fan out in chunks of 8 with a 120ms gap to stay under the rate limit.
+export function fetchOpenF1BySessionKeys(baseUrl, endpoint, sessionKeys, extraQuery) {
+    if (!sessionKeys || !sessionKeys.length) return Promise.resolve([]);
+
+    const chunks = chunkArray(sessionKeys, 8);
+    let results = [];
+
+    return chunks.reduce(function(chain, keys, index) {
+        return chain.then(function() {
+            let query = keys.map(function(sessionKey) {
+                return 'session_key=' + encodeURIComponent(sessionKey);
+            }).join('&');
+            if (extraQuery) query += '&' + extraQuery;
+
+            return fetchJSONWithRetry(baseUrl + '/' + endpoint + '?' + query, 0).then(function(chunk) {
+                results = results.concat(chunk || []);
+            });
+        }).then(function() {
+            if (index < chunks.length - 1) return delay(120);
+        });
+    }, Promise.resolve()).then(function() {
+        return results;
+    });
+}

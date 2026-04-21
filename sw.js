@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v17
+   F1 Stories — Service Worker v18
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,13 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v18 bump: Phase 6C step 3 (quali-gaps per-tab module) — quali-gaps now
+   lives in /standings/tabs/quali-gaps.min.js instead of the legacy bundle.
+   The orchestrator owns its URL state (qualiView + qualiSession) end-to-end,
+   and core/fetchers.js grew chunkArray() + fetchOpenF1BySessionKeys() so the
+   remaining heavy tabs can reuse the 8-key fan-out helper as they get split.
+   Bump ensures returning sessions pick up the new module, the extended
+   fetchers helpers, and the updated slim entry from f1s-assets-v18.
    v17 bump: Phase 6C step 2 (pit-stops per-tab module) — pit-stops now
    lives in /standings/tabs/pit-stops.min.js instead of the legacy bundle.
    The orchestrator owns its URL state (pitView + pitRound) end-to-end,
@@ -65,11 +72,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v17';
-var CACHE_SHELL   = 'f1s-shell-v17';
-var CACHE_PAGES   = 'f1s-pages-v17';
-var CACHE_ASSETS  = 'f1s-assets-v17';
-var CACHE_DATA    = 'f1s-data-v17';
+var SW_VERSION    = 'v18';
+var CACHE_SHELL   = 'f1s-shell-v18';
+var CACHE_PAGES   = 'f1s-pages-v18';
+var CACHE_ASSETS  = 'f1s-assets-v18';
+var CACHE_DATA    = 'f1s-data-v18';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
