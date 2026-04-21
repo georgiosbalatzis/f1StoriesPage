@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v16
+   F1 Stories — Service Worker v17
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,13 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v17 bump: Phase 6C step 2 (pit-stops per-tab module) — pit-stops now
+   lives in /standings/tabs/pit-stops.min.js instead of the legacy bundle.
+   The orchestrator owns its URL state (pitView + pitRound) end-to-end,
+   and core/fetchers.js grew delay() + fetchJSONWithRetry() so the module
+   can rate-limit its season-best sweep without a legacy round-trip.
+   Bump ensures the updated slim entry + new tab module are fetched on
+   returning sessions instead of serving v16 from f1s-assets-v16.
    v16 bump: Phase 6C step 1 (destructors per-tab module) — destructors is
    the first tab that no longer routes through the legacy bundle. The
    orchestrator dynamic-imports /standings/tabs/destructors.min.js on first
@@ -58,11 +65,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v16';
-var CACHE_SHELL   = 'f1s-shell-v16';
-var CACHE_PAGES   = 'f1s-pages-v16';
-var CACHE_ASSETS  = 'f1s-assets-v16';
-var CACHE_DATA    = 'f1s-data-v16';
+var SW_VERSION    = 'v17';
+var CACHE_SHELL   = 'f1s-shell-v17';
+var CACHE_PAGES   = 'f1s-pages-v17';
+var CACHE_ASSETS  = 'f1s-assets-v17';
+var CACHE_DATA    = 'f1s-data-v17';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
