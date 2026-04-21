@@ -35,13 +35,15 @@ const constructorsChartBars = document.getElementById('constructors-chart-bars')
 const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief', 'destructors'];
 const LIGHTWEIGHT_TABS = ['drivers', 'constructors'];
 // Phase 6C: destructors (step 1), pit-stops (step 2), quali-gaps
-// (step 3), and lap1-gains (step 4) have their own modules; other heavy
-// tabs still route through the legacy bundle until their modules land.
+// (step 3), lap1-gains (step 4), and tyre-pace (step 5) have their own
+// modules; other heavy tabs still route through the legacy bundle until
+// their modules land.
 const TAB_MODULES = {
     'destructors': './tabs/destructors.js',
     'pit-stops': './tabs/pit-stops.js',
     'quali-gaps': './tabs/quali-gaps.js',
-    'lap1-gains': './tabs/lap1-gains.js'
+    'lap1-gains': './tabs/lap1-gains.js',
+    'tyre-pace': './tabs/tyre-pace.js'
 };
 const SHARE_TARGETS = {
     'panel-drivers': { tab: 'drivers', title: 'Driver standings tab', height: 980 },
@@ -75,6 +77,7 @@ let pendingQualiView = 'overview';
 let pendingQualiSession = '';
 let pendingLap1View = 'overview';
 let pendingLap1Session = '';
+let pendingTyreSession = '';
 const tabModulePromises = Object.create(null);
 const tabModuleInstances = Object.create(null);
 
@@ -143,6 +146,10 @@ function sanitizeLap1Session(value) {
     return value == null ? '' : String(value);
 }
 
+function sanitizeTyreSession(value) {
+    return value == null ? '' : String(value);
+}
+
 function readStandingsURLState() {
     const params = new URLSearchParams(window.location.search || '');
     const focus = sanitizeShareTarget(params.get('focus'));
@@ -158,7 +165,8 @@ function readStandingsURLState() {
         qualiView: sanitizeQualiView(params.get('qualiView')),
         qualiSession: sanitizeQualiSession(params.get('qualiSession')),
         lap1View: sanitizeLap1View(params.get('lap1View')),
-        lap1Session: sanitizeLap1Session(params.get('lap1Session'))
+        lap1Session: sanitizeLap1Session(params.get('lap1Session')),
+        tyreSession: sanitizeTyreSession(params.get('tyreSession'))
     };
 }
 
@@ -204,6 +212,12 @@ function currentLap1Session() {
     return pendingLap1Session;
 }
 
+function currentTyreSession() {
+    const mod = tabModuleInstances['tyre-pace'];
+    if (mod && typeof mod.getSelectedSession === 'function') return mod.getSelectedSession();
+    return pendingTyreSession;
+}
+
 function buildStandingsURL(target, embed) {
     const shareTarget = sanitizeShareTarget(target);
     const tabName = sanitizeStandingsTab(shareTarget ? SHARE_TARGETS[shareTarget].tab : activeStandingsTab);
@@ -234,6 +248,10 @@ function buildStandingsURL(target, embed) {
         if (view && view !== 'overview') url.searchParams.set('lap1View', view);
         const session = currentLap1Session();
         if (session) url.searchParams.set('lap1Session', session);
+    }
+    if (tabName === 'tyre-pace') {
+        const session = currentTyreSession();
+        if (session) url.searchParams.set('tyreSession', session);
     }
     return url.toString();
 }
@@ -488,6 +506,19 @@ function loadTabModule(tabName) {
             if (typeof mod.setActiveView === 'function') mod.setActiveView(pendingLap1View);
             if (typeof mod.setSelectedSession === 'function' && pendingLap1Session) {
                 mod.setSelectedSession(pendingLap1Session);
+            }
+        }
+        if (tabName === 'tyre-pace') {
+            if (typeof mod.initTyrePace === 'function') {
+                mod.initTyrePace({
+                    onRendered: finalizeRenderedPanel,
+                    onSessionChange: function() {
+                        if (activeStandingsTab === 'tyre-pace') writeStandingsURLState(true);
+                    }
+                });
+            }
+            if (typeof mod.setSelectedSession === 'function' && pendingTyreSession) {
+                mod.setSelectedSession(pendingTyreSession);
             }
         }
         return mod;
@@ -991,6 +1022,7 @@ function bindEvents() {
         pendingQualiSession = nextState.qualiSession;
         pendingLap1View = nextState.lap1View;
         pendingLap1Session = nextState.lap1Session;
+        pendingTyreSession = nextState.tyreSession;
         const destructorsMod = tabModuleInstances['destructors'];
         if (destructorsMod && typeof destructorsMod.setActiveView === 'function') {
             destructorsMod.setActiveView(nextState.destructorsView);
@@ -1011,6 +1043,10 @@ function bindEvents() {
         if (lap1GainsMod) {
             if (typeof lap1GainsMod.setActiveView === 'function') lap1GainsMod.setActiveView(nextState.lap1View);
             if (typeof lap1GainsMod.setSelectedSession === 'function') lap1GainsMod.setSelectedSession(nextState.lap1Session);
+        }
+        const tyrePaceMod = tabModuleInstances['tyre-pace'];
+        if (tyrePaceMod && typeof tyrePaceMod.setSelectedSession === 'function') {
+            tyrePaceMod.setSelectedSession(nextState.tyreSession);
         }
         if (TAB_MODULES[nextState.tab]) {
             // Stop legacy's popstate handler from also firing ensureXxxLoaded
@@ -1038,6 +1074,7 @@ function init() {
     pendingQualiSession = initialURLState.qualiSession;
     pendingLap1View = initialURLState.lap1View;
     pendingLap1Session = initialURLState.lap1Session;
+    pendingTyreSession = initialURLState.tyreSession;
 
     if (driversTable) driversTable.innerHTML = skelRows(20);
     if (constructorsTable) constructorsTable.innerHTML = skelRows(10);
