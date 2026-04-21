@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v23
+   F1 Stories — Service Worker v24
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,12 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v24 bump: Phase 8 (standings IndexedDB cache) — standings/core/cache.js
+   now writes OpenF1/Jolpica response payloads into IndexedDB with a
+   sessionStorage fallback and lazy migration for old warm-tab entries.
+   The standings footer also exposes a cache-clear action. Bump ensures
+   returning sessions refresh the standings shell, fetchers wrapper, and
+   the new core/cache module instead of serving the pre-IDB v23 shell.
    v23 bump: Phase 6C step 9 (retire legacy runtime path) — all standings
    tabs are now module-backed, so the shell no longer lazy-imports
    standings.legacy.js at runtime. The preserved source stays in-repo for
@@ -78,11 +84,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v23';
-var CACHE_SHELL   = 'f1s-shell-v23';
-var CACHE_PAGES   = 'f1s-pages-v23';
-var CACHE_ASSETS  = 'f1s-assets-v23';
-var CACHE_DATA    = 'f1s-data-v23';
+var SW_VERSION    = 'v24';
+var CACHE_SHELL   = 'f1s-shell-v24';
+var CACHE_PAGES   = 'f1s-pages-v24';
+var CACHE_ASSETS  = 'f1s-assets-v24';
+var CACHE_DATA    = 'f1s-data-v24';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
@@ -111,6 +117,7 @@ var SHELL_ASSETS = [
   '/standings/core/format.min.js',
   '/standings/core/teams.min.js',
   '/standings/core/drivers-meta.min.js',
+  '/standings/core/cache.min.js',
   '/standings/core/fetchers.min.js',
   // Primary font weights — matched to FONT_PRELOADS in stamp-html.mjs.
   // Kept deliberately narrow: Roboto 400/700 (homepage), DM Sans 400 +

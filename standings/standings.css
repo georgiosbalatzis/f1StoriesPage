@@ -39,6 +39,10 @@ body { overflow-y: auto !important; }
 
 [data-theme="light"] .social-media a:hover, [data-theme="light"] .social-media a:hover i { color: #0e4ca6 !important; }
 
+.footer-link-button { appearance: none; -webkit-appearance: none; background: none; border: 0; padding: 0; font: inherit; line-height: inherit; cursor: pointer; }
+
+.footer-link-button:disabled { opacity: 0.65; cursor: wait; }
+
 .standings-wrapper { font-family: 'DM Sans','Helvetica Neue',sans-serif; color: var(--st-text); -webkit-font-smoothing: antialiased; padding-top: 1rem; }
 
 .standings-wrapper h2 { border-bottom: none; display: block; padding-bottom: 0; }

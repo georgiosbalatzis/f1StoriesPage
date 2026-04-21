@@ -16,6 +16,7 @@ import {
     getCachedHeadshotResult,
     normalizeDriverLookupKey
 } from './core/drivers-meta.js';
+import { cacheClear, cachePurgeExpired } from './core/cache.js';
 import { fetchJSON } from './core/fetchers.js';
 
 const JOLPICA = 'https://api.jolpi.ca/ergast/f1';
@@ -28,6 +29,7 @@ const standingsTablist = document.querySelector('.standings-tabs');
 const standingsTabs = Array.prototype.slice.call(document.querySelectorAll('.standings-tab'));
 const standingsPanels = Array.prototype.slice.call(document.querySelectorAll('.standings-panel'));
 const shareFeedback = document.getElementById('share-feedback');
+const clearCacheButton = document.getElementById('standings-clear-cache');
 const driversChart = document.getElementById('drivers-chart');
 const driversChartBars = document.getElementById('drivers-chart-bars');
 const constructorsChart = document.getElementById('constructors-chart');
@@ -35,11 +37,8 @@ const constructorsChartBars = document.getElementById('constructors-chart-bars')
 
 const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief', 'destructors'];
 const LIGHTWEIGHT_TABS = ['drivers', 'constructors'];
-// Phase 6C: destructors (step 1), pit-stops (step 2), quali-gaps
-// (step 3), lap1-gains (step 4), tyre-pace (step 5), dirty-air
-// (step 6), track-dominance (step 7), and debrief (step 8) have their
-// own modules; other heavy tabs still route through the legacy bundle
-// until their modules land.
+// Phase 6C: every heavy tab now lives in its own module while the
+// drivers/constructors tables keep rendering from this shell.
 const TAB_MODULES = {
     'destructors': './tabs/destructors.js',
     'pit-stops': './tabs/pit-stops.js',
@@ -435,6 +434,24 @@ function handleShareAction(kind, target) {
         showShareFeedback('Link copied.');
     }).catch(function() {
         showShareFeedback('Could not copy link.');
+    });
+}
+
+function handleClearCacheAction() {
+    if (!clearCacheButton) return Promise.resolve();
+
+    clearCacheButton.disabled = true;
+    clearCacheButton.setAttribute('aria-busy', 'true');
+
+    return cacheClear().then(function() {
+        standingsPromise = null;
+        showShareFeedback('Stored standings cache cleared.');
+    }).catch(function(error) {
+        console.error('Could not clear standings cache:', error);
+        showShareFeedback('Could not clear standings cache.');
+    }).finally(function() {
+        clearCacheButton.disabled = false;
+        clearCacheButton.removeAttribute('aria-busy');
     });
 }
 
@@ -1122,6 +1139,13 @@ function bindEvents() {
         handleShareAction(button.getAttribute('data-share-kind'), button.getAttribute('data-share-target'));
     });
 
+    if (clearCacheButton) {
+        clearCacheButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            handleClearCacheAction();
+        });
+    }
+
     window.addEventListener('popstate', function(event) {
         const nextState = readStandingsURLState();
         currentFocusTarget = nextState.focus;
@@ -1216,6 +1240,10 @@ function init() {
     ['qualifying-gaps-year', 'lap1-gains-year', 'tyre-pace-year', 'dirty-air-year', 'track-dominance-year', 'pit-stops-year', 'debrief-year', 'destructors-year'].forEach(function(id) {
         const el = document.getElementById(id);
         if (el) el.textContent = YEAR;
+    });
+
+    cachePurgeExpired().catch(function(error) {
+        console.warn('Standings cache cleanup skipped:', error);
     });
 
     bindEvents();
