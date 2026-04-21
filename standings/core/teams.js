@@ -67,6 +67,16 @@ export function getCanonicalTeamColor(constructorId, teamName, fallbackColor) {
     return fallbackColor ? normalizeHexColor(fallbackColor) : '3b82f6';
 }
 
+export function getCanonicalTeamName(teamName) {
+    const teamId = resolveTeamId('', teamName);
+    return teamId && TEAMS[teamId] ? TEAMS[teamId].name : (teamName || '');
+}
+
+export function getTeamColor(constructorId) {
+    const t = TEAMS[constructorId];
+    return t ? t.color : '3b82f6';
+}
+
 export function getTeamLogo(constructorId, teamName) {
     const teamId = resolveTeamId(constructorId, teamName);
     const t = teamId ? TEAMS[teamId] : null;

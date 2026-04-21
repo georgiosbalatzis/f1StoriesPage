@@ -34,6 +34,11 @@ const constructorsChartBars = document.getElementById('constructors-chart-bars')
 
 const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief', 'destructors'];
 const LIGHTWEIGHT_TABS = ['drivers', 'constructors'];
+// Phase 6C (step 1): destructors has its own module; other heavy tabs still
+// route through the legacy bundle until their modules land.
+const TAB_MODULES = {
+    'destructors': './tabs/destructors.js'
+};
 const SHARE_TARGETS = {
     'panel-drivers': { tab: 'drivers', title: 'Driver standings tab', height: 980 },
     'drivers-table': { tab: 'drivers', title: 'Driver standings table', height: 760 },
@@ -59,6 +64,9 @@ let shareFeedbackTimer = 0;
 let standingsPromise = null;
 let legacyPromise = null;
 let legacyActive = false;
+let pendingDestructorsView = 'teams';
+const tabModulePromises = Object.create(null);
+const tabModuleInstances = Object.create(null);
 
 function skelRows(n) {
     const rowHeight = 72;
@@ -95,6 +103,10 @@ function sanitizeShareTarget(value) {
     return value && SHARE_TARGETS[value] ? value : '';
 }
 
+function sanitizeDestructorsView(value) {
+    return value === 'flow' ? 'flow' : 'teams';
+}
+
 function readStandingsURLState() {
     const params = new URLSearchParams(window.location.search || '');
     const focus = sanitizeShareTarget(params.get('focus'));
@@ -103,8 +115,15 @@ function readStandingsURLState() {
     return {
         tab: tab,
         focus: focus,
-        embed: params.get('embed') === '1'
+        embed: params.get('embed') === '1',
+        destructorsView: sanitizeDestructorsView(params.get('destructorsView'))
     };
+}
+
+function currentDestructorsView() {
+    const mod = tabModuleInstances['destructors'];
+    if (mod && typeof mod.getActiveView === 'function') return mod.getActiveView();
+    return pendingDestructorsView;
 }
 
 function buildStandingsURL(target, embed) {
@@ -116,6 +135,10 @@ function buildStandingsURL(target, embed) {
     url.searchParams.set('tab', tabName);
     if (shareTarget) url.searchParams.set('focus', shareTarget);
     if (embed) url.searchParams.set('embed', '1');
+    if (tabName === 'destructors') {
+        const view = currentDestructorsView();
+        if (view && view !== 'teams') url.searchParams.set('destructorsView', view);
+    }
     return url.toString();
 }
 
@@ -302,6 +325,39 @@ function loadLegacyStandings() {
     return legacyPromise;
 }
 
+function loadTabModule(tabName) {
+    if (tabModulePromises[tabName]) return tabModulePromises[tabName];
+    const modulePath = TAB_MODULES[tabName];
+    if (!modulePath) return Promise.resolve(null);
+
+    tabModulePromises[tabName] = import(resolveModulePath(modulePath)).then(function(mod) {
+        tabModuleInstances[tabName] = mod;
+        if (tabName === 'destructors') {
+            if (typeof mod.initDestructors === 'function') {
+                mod.initDestructors({
+                    onRendered: finalizeRenderedPanel,
+                    onViewChange: function() {
+                        if (activeStandingsTab === 'destructors') writeStandingsURLState(true);
+                    }
+                });
+            }
+            if (typeof mod.setActiveView === 'function') mod.setActiveView(pendingDestructorsView);
+        }
+        return mod;
+    }).catch(function(error) {
+        console.error('Tab module failed:', tabName, error);
+        showActivePanelError();
+        return null;
+    });
+    return tabModulePromises[tabName];
+}
+
+function activateTabModule(tabName) {
+    loadTabModule(tabName).then(function(mod) {
+        if (mod && typeof mod.ensureLoaded === 'function') mod.ensureLoaded();
+    });
+}
+
 function showActivePanelError() {
     const activePanel = document.getElementById('panel-' + activeStandingsTab);
     const target = activePanel && activePanel.querySelector('[aria-live="polite"], .standings-table-wrap, .quali-gaps-wrap, .tyre-pace-wrap');
@@ -314,9 +370,15 @@ function showActivePanelError() {
 }
 
 function activateStandingsTab(tabName, options) {
-    if (legacyActive) return;
-
     const nextTab = sanitizeStandingsTab(tabName);
+
+    // Tabs with a dedicated module (TAB_MODULES) are owned by the orchestrator
+    // for their entire lifetime. Everything else is handed to the legacy
+    // bundle the first time any heavy tab activates; once legacyActive, only
+    // module-owned tabs stay under orchestrator control.
+    const hasModule = !!TAB_MODULES[nextTab];
+    if (legacyActive && !hasModule) return;
+
     ensureTabStylesheet(nextTab);
     activeStandingsTab = nextTab;
 
@@ -340,6 +402,10 @@ function activateStandingsTab(tabName, options) {
     if (!options || !options.skipURL) writeStandingsURLState(true);
     window.setTimeout(revealRequestedTarget, 0);
 
+    if (hasModule) {
+        activateTabModule(nextTab);
+        return;
+    }
     if (!isLightweightTab(nextTab)) loadLegacyStandings();
 }
 
@@ -722,19 +788,27 @@ function bindEvents() {
     }, true);
 
     standingsTabs.forEach(function(tab) {
-        tab.addEventListener('click', function() {
-            ensureTabStylesheet(tab.getAttribute('data-tab'));
+        tab.addEventListener('click', function(event) {
+            const tabName = tab.getAttribute('data-tab');
+            ensureTabStylesheet(tabName);
+            if (TAB_MODULES[tabName]) {
+                // Orchestrator owns this tab even after legacy activates; stop
+                // propagation so the legacy bundle's own click handler doesn't
+                // also try to re-render it via its private state.
+                event.stopImmediatePropagation();
+                activateStandingsTab(tabName);
+                return;
+            }
             if (legacyActive) return;
-            activateStandingsTab(tab.getAttribute('data-tab'));
+            activateStandingsTab(tabName);
         });
     });
 
     if (standingsTablist) {
         standingsTablist.addEventListener('keydown', function(event) {
-            if (legacyActive) return;
             const current = standingsTabs.indexOf(document.activeElement);
-            let next = -1;
             if (current < 0) return;
+            let next = -1;
             if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (current + 1) % standingsTabs.length;
             if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (current - 1 + standingsTabs.length) % standingsTabs.length;
             if (next >= 0) {
@@ -746,19 +820,37 @@ function bindEvents() {
     }
 
     document.addEventListener('click', function(event) {
-        if (legacyActive) return;
         const button = event.target.closest('[data-share-kind][data-share-target]');
         if (!button) return;
+        if (legacyActive) {
+            // Share for module-owned tabs is still orchestrator-handled.
+            const shareTarget = button.getAttribute('data-share-target');
+            const meta = SHARE_TARGETS[shareTarget];
+            if (!meta || !TAB_MODULES[meta.tab]) return;
+        }
         event.preventDefault();
         handleShareAction(button.getAttribute('data-share-kind'), button.getAttribute('data-share-target'));
     });
 
-    window.addEventListener('popstate', function() {
-        if (legacyActive) return;
+    window.addEventListener('popstate', function(event) {
         const nextState = readStandingsURLState();
         currentFocusTarget = nextState.focus;
         pendingRevealTarget = nextState.focus;
         isEmbedMode = nextState.embed;
+        pendingDestructorsView = nextState.destructorsView;
+        const destructorsMod = tabModuleInstances['destructors'];
+        if (destructorsMod && typeof destructorsMod.setActiveView === 'function') {
+            destructorsMod.setActiveView(nextState.destructorsView);
+        }
+        if (TAB_MODULES[nextState.tab]) {
+            // Stop legacy's popstate handler from also firing ensureXxxLoaded
+            // for a tab the orchestrator now owns — it would fetch + re-render
+            // with its separate state and clobber our module's work.
+            event.stopImmediatePropagation();
+            activateStandingsTab(nextState.tab, { skipURL: true, skipFocus: true });
+            return;
+        }
+        if (legacyActive) return;
         activateStandingsTab(nextState.tab, { skipURL: true, skipFocus: true });
     });
 }
@@ -769,6 +861,7 @@ function init() {
     currentFocusTarget = initialURLState.focus;
     pendingRevealTarget = initialURLState.focus;
     isEmbedMode = initialURLState.embed;
+    pendingDestructorsView = initialURLState.destructorsView;
 
     if (driversTable) driversTable.innerHTML = skelRows(20);
     if (constructorsTable) constructorsTable.innerHTML = skelRows(10);
@@ -783,7 +876,11 @@ function init() {
     bindEvents();
     activateStandingsTab(activeStandingsTab, { skipURL: true, skipFocus: true });
 
-    if (isLightweightTab(activeStandingsTab)) {
+    // When landing on a module-backed tab we still want drivers/constructors
+    // to hydrate in the background so the adjacent panels don't sit empty on
+    // tab switch. Legacy-backed tabs skip this because the legacy bundle
+    // calls its own loadStandings() once it boots.
+    if (isLightweightTab(activeStandingsTab) || TAB_MODULES[activeStandingsTab]) {
         loadStandings();
     } else {
         loadLegacyStandings();
