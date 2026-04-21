@@ -43,8 +43,9 @@ const SOURCE_FILES = [
     'standings/core/drivers-meta.js',
     'standings/core/fetchers.js',
     // Phase 6C: per-tab ES modules. _shared holds the leaf helpers the tab
-    // modules pull in; steps 1-7 extracted destructors, pit-stops,
-    // quali-gaps, lap1-gains, tyre-pace, dirty-air, and track-dominance.
+    // modules pull in; steps 1-8 extracted destructors, pit-stops,
+    // quali-gaps, lap1-gains, tyre-pace, dirty-air, track-dominance,
+    // and debrief.
     'standings/tabs/_shared.js',
     'standings/tabs/destructors.js',
     'standings/tabs/pit-stops.js',
@@ -53,6 +54,7 @@ const SOURCE_FILES = [
     'standings/tabs/tyre-pace.js',
     'standings/tabs/dirty-air.js',
     'standings/tabs/track-dominance.js',
+    'standings/tabs/debrief.js',
     'scripts/analytics.js',
     'scripts/f1-optimized.js',
     'scripts/shared-nav.js',
