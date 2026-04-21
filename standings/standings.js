@@ -35,15 +35,16 @@ const constructorsChartBars = document.getElementById('constructors-chart-bars')
 const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief', 'destructors'];
 const LIGHTWEIGHT_TABS = ['drivers', 'constructors'];
 // Phase 6C: destructors (step 1), pit-stops (step 2), quali-gaps
-// (step 3), lap1-gains (step 4), and tyre-pace (step 5) have their own
-// modules; other heavy tabs still route through the legacy bundle until
-// their modules land.
+// (step 3), lap1-gains (step 4), tyre-pace (step 5), and dirty-air
+// (step 6) have their own modules; other heavy tabs still route through
+// the legacy bundle until their modules land.
 const TAB_MODULES = {
     'destructors': './tabs/destructors.js',
     'pit-stops': './tabs/pit-stops.js',
     'quali-gaps': './tabs/quali-gaps.js',
     'lap1-gains': './tabs/lap1-gains.js',
-    'tyre-pace': './tabs/tyre-pace.js'
+    'tyre-pace': './tabs/tyre-pace.js',
+    'dirty-air': './tabs/dirty-air.js'
 };
 const SHARE_TARGETS = {
     'panel-drivers': { tab: 'drivers', title: 'Driver standings tab', height: 980 },
@@ -78,6 +79,7 @@ let pendingQualiSession = '';
 let pendingLap1View = 'overview';
 let pendingLap1Session = '';
 let pendingTyreSession = '';
+let pendingDirtyAirSession = '';
 const tabModulePromises = Object.create(null);
 const tabModuleInstances = Object.create(null);
 
@@ -150,6 +152,10 @@ function sanitizeTyreSession(value) {
     return value == null ? '' : String(value);
 }
 
+function sanitizeDirtyAirSession(value) {
+    return value == null ? '' : String(value);
+}
+
 function readStandingsURLState() {
     const params = new URLSearchParams(window.location.search || '');
     const focus = sanitizeShareTarget(params.get('focus'));
@@ -166,7 +172,8 @@ function readStandingsURLState() {
         qualiSession: sanitizeQualiSession(params.get('qualiSession')),
         lap1View: sanitizeLap1View(params.get('lap1View')),
         lap1Session: sanitizeLap1Session(params.get('lap1Session')),
-        tyreSession: sanitizeTyreSession(params.get('tyreSession'))
+        tyreSession: sanitizeTyreSession(params.get('tyreSession')),
+        dirtyAirSession: sanitizeDirtyAirSession(params.get('dirtyAirSession'))
     };
 }
 
@@ -218,6 +225,12 @@ function currentTyreSession() {
     return pendingTyreSession;
 }
 
+function currentDirtyAirSession() {
+    const mod = tabModuleInstances['dirty-air'];
+    if (mod && typeof mod.getSelectedSession === 'function') return mod.getSelectedSession();
+    return pendingDirtyAirSession;
+}
+
 function buildStandingsURL(target, embed) {
     const shareTarget = sanitizeShareTarget(target);
     const tabName = sanitizeStandingsTab(shareTarget ? SHARE_TARGETS[shareTarget].tab : activeStandingsTab);
@@ -252,6 +265,10 @@ function buildStandingsURL(target, embed) {
     if (tabName === 'tyre-pace') {
         const session = currentTyreSession();
         if (session) url.searchParams.set('tyreSession', session);
+    }
+    if (tabName === 'dirty-air') {
+        const session = currentDirtyAirSession();
+        if (session) url.searchParams.set('dirtyAirSession', session);
     }
     return url.toString();
 }
@@ -521,6 +538,19 @@ function loadTabModule(tabName) {
                 mod.setSelectedSession(pendingTyreSession);
             }
         }
+        if (tabName === 'dirty-air') {
+            if (typeof mod.initDirtyAir === 'function') {
+                mod.initDirtyAir({
+                    onRendered: finalizeRenderedPanel,
+                    onSessionChange: function() {
+                        if (activeStandingsTab === 'dirty-air') writeStandingsURLState(true);
+                    }
+                });
+            }
+            if (typeof mod.setSelectedSession === 'function' && pendingDirtyAirSession) {
+                mod.setSelectedSession(pendingDirtyAirSession);
+            }
+        }
         return mod;
     }).catch(function(error) {
         console.error('Tab module failed:', tabName, error);
@@ -538,7 +568,7 @@ function activateTabModule(tabName) {
 
 function showActivePanelError() {
     const activePanel = document.getElementById('panel-' + activeStandingsTab);
-    const target = activePanel && activePanel.querySelector('[aria-live="polite"], .standings-table-wrap, .quali-gaps-wrap, .tyre-pace-wrap');
+    const target = activePanel && activePanel.querySelector('[aria-live="polite"], .standings-table-wrap, .quali-gaps-wrap, .tyre-pace-wrap, .dirty-air-wrap');
     if (!target) return;
     target.innerHTML = '<div class="standings-error">'
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
@@ -1023,6 +1053,7 @@ function bindEvents() {
         pendingLap1View = nextState.lap1View;
         pendingLap1Session = nextState.lap1Session;
         pendingTyreSession = nextState.tyreSession;
+        pendingDirtyAirSession = nextState.dirtyAirSession;
         const destructorsMod = tabModuleInstances['destructors'];
         if (destructorsMod && typeof destructorsMod.setActiveView === 'function') {
             destructorsMod.setActiveView(nextState.destructorsView);
@@ -1047,6 +1078,10 @@ function bindEvents() {
         const tyrePaceMod = tabModuleInstances['tyre-pace'];
         if (tyrePaceMod && typeof tyrePaceMod.setSelectedSession === 'function') {
             tyrePaceMod.setSelectedSession(nextState.tyreSession);
+        }
+        const dirtyAirMod = tabModuleInstances['dirty-air'];
+        if (dirtyAirMod && typeof dirtyAirMod.setSelectedSession === 'function') {
+            dirtyAirMod.setSelectedSession(nextState.dirtyAirSession);
         }
         if (TAB_MODULES[nextState.tab]) {
             // Stop legacy's popstate handler from also firing ensureXxxLoaded
@@ -1075,6 +1110,7 @@ function init() {
     pendingLap1View = initialURLState.lap1View;
     pendingLap1Session = initialURLState.lap1Session;
     pendingTyreSession = initialURLState.tyreSession;
+    pendingDirtyAirSession = initialURLState.dirtyAirSession;
 
     if (driversTable) driversTable.innerHTML = skelRows(20);
     if (constructorsTable) constructorsTable.innerHTML = skelRows(10);
