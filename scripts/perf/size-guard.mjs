@@ -42,10 +42,11 @@ const SOURCE_FILES = [
     'standings/core/teams.js',
     'standings/core/drivers-meta.js',
     'standings/core/fetchers.js',
-    // Phase 6C step 1: destructors moved to its own ES module; _shared holds
-    // the leaf helpers the tab modules pull in.
+    // Phase 6C: per-tab ES modules. _shared holds the leaf helpers the tab
+    // modules pull in; step 1 extracted destructors, step 2 extracted pit-stops.
     'standings/tabs/_shared.js',
     'standings/tabs/destructors.js',
+    'standings/tabs/pit-stops.js',
     'scripts/analytics.js',
     'scripts/f1-optimized.js',
     'scripts/shared-nav.js',

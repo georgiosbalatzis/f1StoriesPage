@@ -58,3 +58,22 @@ export function fetchJSON(url) {
         return data;
     });
 }
+
+export function delay(ms) {
+    return new Promise(function(resolve) { window.setTimeout(resolve, ms); });
+}
+
+// Retries only on rate-limit (HTTP 429) or aborted fetches, up to 2 extra
+// attempts with 350ms * (attempt+1) backoff. Anything else rethrows so the
+// caller can render an error card.
+export function fetchJSONWithRetry(url, attempt) {
+    return fetchJSON(url).catch(function(error) {
+        const message = error && error.message ? error.message : String(error);
+        if ((message.indexOf('HTTP 429') !== -1 || message.indexOf('AbortError') !== -1) && attempt < 2) {
+            return delay(350 * (attempt + 1)).then(function() {
+                return fetchJSONWithRetry(url, attempt + 1);
+            });
+        }
+        throw error;
+    });
+}

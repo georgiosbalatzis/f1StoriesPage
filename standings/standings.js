@@ -34,10 +34,12 @@ const constructorsChartBars = document.getElementById('constructors-chart-bars')
 
 const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief', 'destructors'];
 const LIGHTWEIGHT_TABS = ['drivers', 'constructors'];
-// Phase 6C (step 1): destructors has its own module; other heavy tabs still
-// route through the legacy bundle until their modules land.
+// Phase 6C: destructors (step 1) and pit-stops (step 2) have their own
+// modules; other heavy tabs still route through the legacy bundle until
+// their modules land.
 const TAB_MODULES = {
-    'destructors': './tabs/destructors.js'
+    'destructors': './tabs/destructors.js',
+    'pit-stops': './tabs/pit-stops.js'
 };
 const SHARE_TARGETS = {
     'panel-drivers': { tab: 'drivers', title: 'Driver standings tab', height: 980 },
@@ -65,6 +67,8 @@ let standingsPromise = null;
 let legacyPromise = null;
 let legacyActive = false;
 let pendingDestructorsView = 'teams';
+let pendingPitStopsView = 'race';
+let pendingPitStopsRound = '';
 const tabModulePromises = Object.create(null);
 const tabModuleInstances = Object.create(null);
 
@@ -107,6 +111,16 @@ function sanitizeDestructorsView(value) {
     return value === 'flow' ? 'flow' : 'teams';
 }
 
+function sanitizePitStopsView(value) {
+    return value === 'season' ? 'season' : 'race';
+}
+
+function sanitizePitStopsRound(value) {
+    if (value == null) return '';
+    const trimmed = String(value).trim();
+    return /^\d+$/.test(trimmed) ? trimmed : '';
+}
+
 function readStandingsURLState() {
     const params = new URLSearchParams(window.location.search || '');
     const focus = sanitizeShareTarget(params.get('focus'));
@@ -116,7 +130,9 @@ function readStandingsURLState() {
         tab: tab,
         focus: focus,
         embed: params.get('embed') === '1',
-        destructorsView: sanitizeDestructorsView(params.get('destructorsView'))
+        destructorsView: sanitizeDestructorsView(params.get('destructorsView')),
+        pitView: sanitizePitStopsView(params.get('pitView')),
+        pitRound: sanitizePitStopsRound(params.get('pitRound'))
     };
 }
 
@@ -124,6 +140,18 @@ function currentDestructorsView() {
     const mod = tabModuleInstances['destructors'];
     if (mod && typeof mod.getActiveView === 'function') return mod.getActiveView();
     return pendingDestructorsView;
+}
+
+function currentPitStopsView() {
+    const mod = tabModuleInstances['pit-stops'];
+    if (mod && typeof mod.getActiveView === 'function') return mod.getActiveView();
+    return pendingPitStopsView;
+}
+
+function currentPitStopsRound() {
+    const mod = tabModuleInstances['pit-stops'];
+    if (mod && typeof mod.getSelectedRound === 'function') return mod.getSelectedRound();
+    return pendingPitStopsRound;
 }
 
 function buildStandingsURL(target, embed) {
@@ -138,6 +166,12 @@ function buildStandingsURL(target, embed) {
     if (tabName === 'destructors') {
         const view = currentDestructorsView();
         if (view && view !== 'teams') url.searchParams.set('destructorsView', view);
+    }
+    if (tabName === 'pit-stops') {
+        const view = currentPitStopsView();
+        if (view && view !== 'race') url.searchParams.set('pitView', view);
+        const round = currentPitStopsRound();
+        if (round) url.searchParams.set('pitRound', round);
     }
     return url.toString();
 }
@@ -342,6 +376,23 @@ function loadTabModule(tabName) {
                 });
             }
             if (typeof mod.setActiveView === 'function') mod.setActiveView(pendingDestructorsView);
+        }
+        if (tabName === 'pit-stops') {
+            if (typeof mod.initPitStops === 'function') {
+                mod.initPitStops({
+                    onRendered: finalizeRenderedPanel,
+                    onViewChange: function() {
+                        if (activeStandingsTab === 'pit-stops') writeStandingsURLState(true);
+                    },
+                    onRoundChange: function() {
+                        if (activeStandingsTab === 'pit-stops') writeStandingsURLState(true);
+                    }
+                });
+            }
+            if (typeof mod.setActiveView === 'function') mod.setActiveView(pendingPitStopsView);
+            if (typeof mod.setSelectedRound === 'function' && pendingPitStopsRound) {
+                mod.setSelectedRound(pendingPitStopsRound);
+            }
         }
         return mod;
     }).catch(function(error) {
@@ -838,9 +889,18 @@ function bindEvents() {
         pendingRevealTarget = nextState.focus;
         isEmbedMode = nextState.embed;
         pendingDestructorsView = nextState.destructorsView;
+        pendingPitStopsView = nextState.pitView;
+        pendingPitStopsRound = nextState.pitRound;
         const destructorsMod = tabModuleInstances['destructors'];
         if (destructorsMod && typeof destructorsMod.setActiveView === 'function') {
             destructorsMod.setActiveView(nextState.destructorsView);
+        }
+        const pitStopsMod = tabModuleInstances['pit-stops'];
+        if (pitStopsMod) {
+            if (typeof pitStopsMod.setActiveView === 'function') pitStopsMod.setActiveView(nextState.pitView);
+            if (typeof pitStopsMod.setSelectedRound === 'function' && nextState.pitRound) {
+                pitStopsMod.setSelectedRound(nextState.pitRound);
+            }
         }
         if (TAB_MODULES[nextState.tab]) {
             // Stop legacy's popstate handler from also firing ensureXxxLoaded
@@ -862,6 +922,8 @@ function init() {
     pendingRevealTarget = initialURLState.focus;
     isEmbedMode = initialURLState.embed;
     pendingDestructorsView = initialURLState.destructorsView;
+    pendingPitStopsView = initialURLState.pitView;
+    pendingPitStopsRound = initialURLState.pitRound;
 
     if (driversTable) driversTable.innerHTML = skelRows(20);
     if (constructorsTable) constructorsTable.innerHTML = skelRows(10);

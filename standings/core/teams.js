@@ -61,6 +61,15 @@ export function normalizeHexColor(hex) {
     return value.toLowerCase();
 }
 
+export function hexToRgbChannels(hex) {
+    const value = normalizeHexColor(hex);
+    return [
+        parseInt(value.slice(0, 2), 16),
+        parseInt(value.slice(2, 4), 16),
+        parseInt(value.slice(4, 6), 16)
+    ].join(', ');
+}
+
 export function getCanonicalTeamColor(constructorId, teamName, fallbackColor) {
     const teamId = resolveTeamId(constructorId, teamName);
     if (teamId && TEAMS[teamId]) return TEAMS[teamId].color;
