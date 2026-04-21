@@ -35,16 +35,17 @@ const constructorsChartBars = document.getElementById('constructors-chart-bars')
 const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief', 'destructors'];
 const LIGHTWEIGHT_TABS = ['drivers', 'constructors'];
 // Phase 6C: destructors (step 1), pit-stops (step 2), quali-gaps
-// (step 3), lap1-gains (step 4), tyre-pace (step 5), and dirty-air
-// (step 6) have their own modules; other heavy tabs still route through
-// the legacy bundle until their modules land.
+// (step 3), lap1-gains (step 4), tyre-pace (step 5), dirty-air
+// (step 6), and track-dominance (step 7) have their own modules; other
+// heavy tabs still route through the legacy bundle until their modules land.
 const TAB_MODULES = {
     'destructors': './tabs/destructors.js',
     'pit-stops': './tabs/pit-stops.js',
     'quali-gaps': './tabs/quali-gaps.js',
     'lap1-gains': './tabs/lap1-gains.js',
     'tyre-pace': './tabs/tyre-pace.js',
-    'dirty-air': './tabs/dirty-air.js'
+    'dirty-air': './tabs/dirty-air.js',
+    'track-dominance': './tabs/track-dominance.js'
 };
 const SHARE_TARGETS = {
     'panel-drivers': { tab: 'drivers', title: 'Driver standings tab', height: 980 },
@@ -80,6 +81,9 @@ let pendingLap1View = 'overview';
 let pendingLap1Session = '';
 let pendingTyreSession = '';
 let pendingDirtyAirSession = '';
+let pendingTrackSession = '';
+let pendingTrackTeamA = '';
+let pendingTrackTeamB = '';
 const tabModulePromises = Object.create(null);
 const tabModuleInstances = Object.create(null);
 
@@ -156,6 +160,14 @@ function sanitizeDirtyAirSession(value) {
     return value == null ? '' : String(value);
 }
 
+function sanitizeTrackSession(value) {
+    return value == null ? '' : String(value);
+}
+
+function sanitizeTrackDriverKey(value) {
+    return value == null ? '' : String(value);
+}
+
 function readStandingsURLState() {
     const params = new URLSearchParams(window.location.search || '');
     const focus = sanitizeShareTarget(params.get('focus'));
@@ -173,7 +185,10 @@ function readStandingsURLState() {
         lap1View: sanitizeLap1View(params.get('lap1View')),
         lap1Session: sanitizeLap1Session(params.get('lap1Session')),
         tyreSession: sanitizeTyreSession(params.get('tyreSession')),
-        dirtyAirSession: sanitizeDirtyAirSession(params.get('dirtyAirSession'))
+        dirtyAirSession: sanitizeDirtyAirSession(params.get('dirtyAirSession')),
+        trackSession: sanitizeTrackSession(params.get('trackSession')),
+        trackTeamA: sanitizeTrackDriverKey(params.get('trackTeamA')),
+        trackTeamB: sanitizeTrackDriverKey(params.get('trackTeamB'))
     };
 }
 
@@ -231,6 +246,23 @@ function currentDirtyAirSession() {
     return pendingDirtyAirSession;
 }
 
+function currentTrackSession() {
+    const mod = tabModuleInstances['track-dominance'];
+    if (mod && typeof mod.getSelectedSession === 'function') return mod.getSelectedSession();
+    return pendingTrackSession;
+}
+
+function currentTrackDriverKeys() {
+    const mod = tabModuleInstances['track-dominance'];
+    if (mod && typeof mod.getSelectedDriverKeys === 'function') {
+        return mod.getSelectedDriverKeys();
+    }
+    return {
+        leftDriverKey: pendingTrackTeamA,
+        rightDriverKey: pendingTrackTeamB
+    };
+}
+
 function buildStandingsURL(target, embed) {
     const shareTarget = sanitizeShareTarget(target);
     const tabName = sanitizeStandingsTab(shareTarget ? SHARE_TARGETS[shareTarget].tab : activeStandingsTab);
@@ -269,6 +301,13 @@ function buildStandingsURL(target, embed) {
     if (tabName === 'dirty-air') {
         const session = currentDirtyAirSession();
         if (session) url.searchParams.set('dirtyAirSession', session);
+    }
+    if (tabName === 'track-dominance') {
+        const session = currentTrackSession();
+        const driverKeys = currentTrackDriverKeys();
+        if (session) url.searchParams.set('trackSession', session);
+        if (driverKeys.leftDriverKey) url.searchParams.set('trackTeamA', driverKeys.leftDriverKey);
+        if (driverKeys.rightDriverKey) url.searchParams.set('trackTeamB', driverKeys.rightDriverKey);
     }
     return url.toString();
 }
@@ -551,6 +590,23 @@ function loadTabModule(tabName) {
                 mod.setSelectedSession(pendingDirtyAirSession);
             }
         }
+        if (tabName === 'track-dominance') {
+            if (typeof mod.initTrackDominance === 'function') {
+                mod.initTrackDominance({
+                    onRendered: finalizeRenderedPanel,
+                    onSelectionChange: function() {
+                        if (activeStandingsTab === 'track-dominance') writeStandingsURLState(true);
+                    }
+                });
+            }
+            if (typeof mod.setSelection === 'function') {
+                mod.setSelection({
+                    sessionKey: pendingTrackSession,
+                    leftDriverKey: pendingTrackTeamA,
+                    rightDriverKey: pendingTrackTeamB
+                });
+            }
+        }
         return mod;
     }).catch(function(error) {
         console.error('Tab module failed:', tabName, error);
@@ -568,7 +624,7 @@ function activateTabModule(tabName) {
 
 function showActivePanelError() {
     const activePanel = document.getElementById('panel-' + activeStandingsTab);
-    const target = activePanel && activePanel.querySelector('[aria-live="polite"], .standings-table-wrap, .quali-gaps-wrap, .tyre-pace-wrap, .dirty-air-wrap');
+    const target = activePanel && activePanel.querySelector('[aria-live="polite"], .standings-table-wrap, .quali-gaps-wrap, .tyre-pace-wrap, .dirty-air-wrap, .track-dom-wrap');
     if (!target) return;
     target.innerHTML = '<div class="standings-error">'
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
@@ -1054,6 +1110,9 @@ function bindEvents() {
         pendingLap1Session = nextState.lap1Session;
         pendingTyreSession = nextState.tyreSession;
         pendingDirtyAirSession = nextState.dirtyAirSession;
+        pendingTrackSession = nextState.trackSession;
+        pendingTrackTeamA = nextState.trackTeamA;
+        pendingTrackTeamB = nextState.trackTeamB;
         const destructorsMod = tabModuleInstances['destructors'];
         if (destructorsMod && typeof destructorsMod.setActiveView === 'function') {
             destructorsMod.setActiveView(nextState.destructorsView);
@@ -1083,6 +1142,14 @@ function bindEvents() {
         if (dirtyAirMod && typeof dirtyAirMod.setSelectedSession === 'function') {
             dirtyAirMod.setSelectedSession(nextState.dirtyAirSession);
         }
+        const trackDominanceMod = tabModuleInstances['track-dominance'];
+        if (trackDominanceMod && typeof trackDominanceMod.setSelection === 'function') {
+            trackDominanceMod.setSelection({
+                sessionKey: nextState.trackSession,
+                leftDriverKey: nextState.trackTeamA,
+                rightDriverKey: nextState.trackTeamB
+            });
+        }
         if (TAB_MODULES[nextState.tab]) {
             // Stop legacy's popstate handler from also firing ensureXxxLoaded
             // for a tab the orchestrator now owns — it would fetch + re-render
@@ -1111,6 +1178,9 @@ function init() {
     pendingLap1Session = initialURLState.lap1Session;
     pendingTyreSession = initialURLState.tyreSession;
     pendingDirtyAirSession = initialURLState.dirtyAirSession;
+    pendingTrackSession = initialURLState.trackSession;
+    pendingTrackTeamA = initialURLState.trackTeamA;
+    pendingTrackTeamB = initialURLState.trackTeamB;
 
     if (driversTable) driversTable.innerHTML = skelRows(20);
     if (constructorsTable) constructorsTable.innerHTML = skelRows(10);
