@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v14
+   F1 Stories — Service Worker v15
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,13 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v15 bump: Phase 7 (standings CSS code-splitting) — the monolithic
+   standings.css has been split into a slim shell (layout + drivers/
+   constructors primitives) plus 8 per-tab stylesheets under
+   /standings/tabs/. The shell is still precached; per-tab files are
+   fetched on demand by standings.js when a tab activates and cached
+   via the static-asset rule. Bumping the cache names forces returning
+   users to drop the old 120KB monolith from CACHE_SHELL.
    v14 bump: Phase 6B (standings core modules) — the slim standings entry
    now imports its TEAMS map, driver headshot catalog, sessionStorage cache
    and format helpers from /standings/core/*.js. Those four modules join
@@ -44,11 +51,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v14';
-var CACHE_SHELL   = 'f1s-shell-v14';
-var CACHE_PAGES   = 'f1s-pages-v14';
-var CACHE_ASSETS  = 'f1s-assets-v14';
-var CACHE_DATA    = 'f1s-data-v14';
+var SW_VERSION    = 'v15';
+var CACHE_SHELL   = 'f1s-shell-v15';
+var CACHE_PAGES   = 'f1s-pages-v15';
+var CACHE_ASSETS  = 'f1s-assets-v15';
+var CACHE_DATA    = 'f1s-data-v15';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';

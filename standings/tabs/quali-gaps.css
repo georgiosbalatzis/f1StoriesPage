@@ -1,0 +1,263 @@
+/* tab-quali-gaps — auto-split from standings.css by scripts/build/split-standings-css.mjs */
+
+.quali-gaps-wrap { display: flex; flex-direction: column; gap: 0.95rem; }
+
+.quali-gaps-intro, .quali-gap-card { background: var(--st-surface-raised); border: 1px solid var(--st-border); border-radius: var(--st-radius); box-shadow: var(--st-shadow-sm); }
+
+.quali-gaps-intro { padding: 1.15rem 1.2rem; }
+
+.quali-kicker { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--st-text-muted); }
+
+.quali-kicker::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, #22c55e, #0ea5e9); box-shadow: 0 0 0 5px rgba(34,197,94,0.12); }
+
+.quali-title { font-family: 'Outfit',sans-serif; font-size: 1.65rem; font-weight: 800; letter-spacing: -0.03em; margin: 0.3rem 0 0.2rem; color: var(--st-text); }
+
+.quali-sub { font-size: 0.9rem; color: var(--st-text-secondary); margin: 0; max-width: 700px; }
+
+.quali-gaps-list { display: flex; flex-direction: column; gap: 0.9rem; }
+
+.quali-gap-card { padding: 1rem 1.05rem; }
+
+.quali-gap-card-inner { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(280px, 2.4fr) minmax(150px, 1fr); gap: 1rem; align-items: center; }
+
+.quali-side { display: flex; flex-direction: column; gap: 0.45rem; min-width: 0; }
+
+.quali-side.left { align-items: flex-start; text-align: left; }
+
+.quali-side.right { align-items: flex-end; text-align: right; }
+
+.quali-side-top { display: flex; align-items: baseline; gap: 0.55rem; }
+
+.quali-side.right .quali-side-top { justify-content: flex-end; }
+
+.quali-h2h-count { font-family: 'Outfit',sans-serif; font-size: 1.55rem; font-weight: 800; line-height: 1; color: var(--st-text); }
+
+.quali-h2h-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--st-text-muted); }
+
+.quali-gap-avg { font-family: 'Outfit',sans-serif; font-size: 1rem; font-weight: 700; line-height: 1; }
+
+.quali-gap-avg.fast { color: #16a34a; }
+
+.quali-gap-avg.slow { color: #ef4444; }
+
+.quali-driver { display: flex; align-items: center; gap: 0.7rem; min-width: 0; }
+
+.quali-side.right .quali-driver { flex-direction: row-reverse; }
+
+.quali-headshot { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(var(--pair-color), 0.35); background: var(--st-surface); flex-shrink: 0; }
+
+.quali-avatar-fallback { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Outfit',sans-serif; font-size: 0.9rem; font-weight: 800; color: rgb(var(--driver-color)); background: rgba(var(--driver-color), 0.12); border: 2px solid rgba(var(--driver-color), 0.35); flex-shrink: 0; }
+
+.quali-driver-meta { min-width: 0; }
+
+.quali-driver-code { font-family: 'Outfit',sans-serif; font-size: 1.15rem; font-weight: 800; line-height: 1; color: var(--st-text); }
+
+.quali-driver-name { font-size: 0.74rem; color: var(--st-text-muted); margin-top: 0.12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.quali-track-wrap { display: flex; flex-direction: column; gap: 0.55rem; min-width: 0; }
+
+.quali-track-meta { display: flex; align-items: center; justify-content: space-between; gap: 0.65rem; font-size: 0.73rem; color: var(--st-text-secondary); }
+
+.quali-track-team { font-weight: 700; color: var(--st-text); }
+
+.quali-track-note { color: var(--st-text-muted); text-align: right; }
+
+.quali-track { position: relative; height: 74px; border-radius: 14px; border: 1px solid rgba(var(--pair-color), 0.16); background:
+    linear-gradient(90deg,
+        rgba(var(--left-color), 0.11) 0%,
+        rgba(var(--left-color), 0.04) 44%,
+        rgba(255,255,255,0) 50%,
+        rgba(var(--right-color), 0.04) 56%,
+        rgba(var(--right-color), 0.11) 100%);
+    overflow: visible; }
+
+[data-theme="light"] .quali-track {
+    background:
+        linear-gradient(90deg,
+            rgba(var(--left-color), 0.10) 0%,
+            rgba(var(--left-color), 0.03) 44%,
+            rgba(255,255,255,0) 50%,
+            rgba(var(--right-color), 0.03) 56%,
+            rgba(var(--right-color), 0.10) 100%);
+}
+
+.quali-track::before, .quali-track::after { content: ''; position: absolute; top: 10px; bottom: 10px; width: 1px; background: rgba(255,255,255,0.08); }
+
+.quali-track::before { left: 25%; }
+
+.quali-track::after { left: 75%; }
+
+[data-theme="light"] .quali-track::before, [data-theme="light"] .quali-track::after { background: rgba(0,0,0,0.06); }
+
+.quali-zero-line { position: absolute; top: 8px; bottom: 8px; left: 50%; width: 1px; background: rgba(var(--pair-color), 0.28); transform: translateX(-0.5px); }
+
+.quali-dots { position: absolute; inset: 0; }
+
+.quali-dot { position: absolute; width: 12px; height: 12px; padding: 0; border-radius: 50%; transform: translate(-50%, -50%); background: rgb(var(--dot-color)); border: 2px solid rgba(255,255,255,0.55); box-shadow: 0 0 0 4px rgba(var(--dot-color), 0.14); appearance: none; -webkit-appearance: none; cursor: pointer; z-index: 2; }
+
+.quali-dot:hover, .quali-dot:focus-visible, .quali-dot.is-active { z-index: 5; box-shadow: 0 0 0 5px rgba(var(--dot-color), 0.2); }
+
+.quali-dot:focus-visible { outline: 2px solid rgba(var(--dot-color), 0.42); outline-offset: 3px; }
+
+[data-theme="light"] .quali-dot { border-color: rgba(255,255,255,0.85); }
+
+.quali-dot-tooltip { position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translate(-50%, 8px); min-width: 96px; max-width: 180px; padding: 0.5rem 0.6rem; border-radius: 10px; background: rgba(17,17,19,0.96); color: #fff; text-align: center; box-shadow: 0 14px 30px rgba(0,0,0,0.28); opacity: 0; pointer-events: none; transition: opacity 0.18s ease, transform 0.18s ease; }
+
+[data-theme="light"] .quali-dot-tooltip { background: rgba(29,29,31,0.96); }
+
+.quali-dot.tooltip-bottom .quali-dot-tooltip { top: calc(100% + 10px); bottom: auto; transform: translate(-50%, -8px); }
+
+.quali-dot:hover .quali-dot-tooltip, .quali-dot:focus-visible .quali-dot-tooltip, .quali-dot.is-active .quali-dot-tooltip { opacity: 1; transform: translate(-50%, 0); }
+
+.quali-dot.tooltip-bottom:hover .quali-dot-tooltip, .quali-dot.tooltip-bottom:focus-visible .quali-dot-tooltip, .quali-dot.tooltip-bottom.is-active .quali-dot-tooltip { transform: translate(-50%, 0); }
+
+.quali-dot-tooltip-gap { display: block; font-family: 'Outfit',sans-serif; font-size: 0.86rem; font-weight: 700; line-height: 1; }
+
+.quali-dot-tooltip-session { display: block; margin-top: 0.28rem; font-size: 0.64rem; line-height: 1.3; color: rgba(255,255,255,0.72); white-space: normal; }
+
+.quali-track-scale { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; font-size: 0.7rem; font-weight: 700; color: var(--st-text-muted); }
+
+.quali-track-scale span:nth-child(2) { color: var(--st-text-secondary); }
+
+.quali-empty-card { padding: 2.4rem 1rem; text-align: center; color: var(--st-text-muted); }
+
+.quali-empty-card i { display: block; font-size: 2rem; opacity: 0.4; margin-bottom: 0.8rem; }
+
+.quali-skeleton-card { background: var(--st-surface-raised); border: 1px solid var(--st-border); border-radius: var(--st-radius); padding: 1rem 1.05rem; box-shadow: var(--st-shadow-sm); }
+
+.quali-skeleton-grid { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(280px, 2.4fr) minmax(150px, 1fr); gap: 1rem; align-items: center; }
+
+.quali-skeleton-side { display: flex; align-items: center; gap: 0.7rem; }
+
+.quali-skeleton-track { height: 74px; border-radius: 14px; }
+
+.quali-view-switch { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
+
+.quali-view-tabs { display: inline-flex; gap: 0.32rem; padding: 5px; border-radius: 999px; background: var(--st-surface); border: 1px solid var(--st-border); }
+
+.quali-view-tab { appearance: none; -webkit-appearance: none; border: none; background: transparent; color: var(--st-text-secondary); min-height: 40px; padding: 0.55rem 0.95rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all var(--st-transition); }
+
+.quali-view-tab:hover { color: var(--st-text); background: rgba(59,130,246,0.08); }
+
+.quali-view-tab:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; }
+
+.quali-view-tab.active { color: #fff; background: linear-gradient(135deg, var(--st-accent), #4f8df3); box-shadow: 0 8px 18px rgba(59,130,246,0.24); }
+
+[data-theme="light"] .quali-view-tab:hover { background: rgba(14,76,166,0.06); }
+
+[data-theme="light"] .quali-view-tab.active { box-shadow: 0 8px 18px rgba(14,76,166,0.18); }
+
+.quali-race-card { background: var(--st-surface-raised); border: 1px solid var(--st-border); border-radius: var(--st-radius); box-shadow: var(--st-shadow-sm); padding: 1rem; }
+
+.quali-race-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+
+.quali-race-head-copy { min-width: 0; }
+
+.quali-race-head-title { font-family: 'Outfit',sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--st-text); margin: 0; }
+
+.quali-race-head-note { font-size: 0.75rem; color: var(--st-text-muted); margin: 0.18rem 0 0; }
+
+.quali-race-controls { display: flex; flex-direction: column; gap: 0.35rem; min-width: min(100%, 260px); }
+
+.quali-race-controls-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--st-text-muted); }
+
+.quali-race-select { width: 100%; min-height: 46px; padding: 0.72rem 0.9rem; border-radius: 12px; border: 1px solid var(--st-border); background: var(--st-surface); color: var(--st-text); font-size: 0.88rem; font-weight: 600; }
+
+.quali-race-select:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; }
+
+.quali-race-summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.9rem 1rem; border-radius: 16px; background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(59,130,246,0.03)); border: 1px solid rgba(59,130,246,0.12); margin-bottom: 1rem; }
+
+.quali-race-summary-title { font-family: 'Outfit',sans-serif; font-size: 1rem; font-weight: 700; color: var(--st-text); line-height: 1.1; }
+
+.quali-race-summary-sub { font-size: 0.74rem; color: var(--st-text-secondary); margin-top: 0.22rem; }
+
+.quali-race-summary-stats { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 0.75rem; }
+
+.quali-race-summary-stat { display: flex; flex-direction: column; align-items: flex-end; gap: 0.14rem; }
+
+.quali-race-summary-label { font-size: 0.64rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--st-text-muted); }
+
+.quali-race-summary-value { font-family: 'Outfit',sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--st-text); }
+
+.quali-race-chart-scroll { overflow-x: auto; overflow-y: visible; padding-bottom: 0.3rem; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+
+.quali-race-chart { display: grid; grid-template-columns: repeat(var(--pair-count), minmax(96px, 1fr)); gap: 1rem; min-width: 980px; }
+
+.quali-race-pair { position: relative; min-height: 400px; padding: 0 0.2rem; }
+
+.quali-race-pair::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: var(--st-border); transform: translateX(-0.5px); }
+
+.quali-race-driver-pin { position: absolute; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 0.38rem; z-index: 2; }
+
+.quali-race-avatar { width: 58px; height: 58px; border-radius: 50%; overflow: hidden; background: rgba(var(--driver-color), 0.14); border: 2px solid rgba(var(--driver-color), 0.24); display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 24px rgba(0,0,0,0.16); }
+
+.quali-race-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.quali-race-avatar-fallback { font-family: 'Outfit',sans-serif; font-size: 0.92rem; font-weight: 800; color: rgb(var(--driver-color)); }
+
+.quali-race-code { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; padding: 0.18rem 0.55rem; border-radius: 999px; background: rgb(var(--driver-color)); color: #fff; font-family: 'Outfit',sans-serif; font-size: 0.72rem; font-weight: 800; line-height: 1; letter-spacing: 0.06em; text-transform: uppercase; box-shadow: var(--st-shadow-sm); }
+
+.quali-race-name { max-width: 82px; font-size: 0.64rem; color: var(--st-text-muted); text-align: center; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.quali-race-gap-line { position: absolute; left: 50%; width: 3px; border-radius: 999px; background: linear-gradient(180deg, rgba(var(--top-color), 0.6), rgba(var(--bottom-color), 0.6)); transform: translateX(-50%); opacity: 0.95; }
+
+.quali-race-gap-badge { position: absolute; left: 50%; transform: translate(-50%, -50%); display: inline-flex; flex-direction: column; align-items: center; gap: 0.16rem; padding: 0.42rem 0.55rem; border-radius: 12px; background: rgba(17,17,19,0.94); color: #fff; box-shadow: 0 14px 28px rgba(0,0,0,0.24); z-index: 3; min-width: 82px; }
+
+[data-theme="light"] .quali-race-gap-badge { background: rgba(29,29,31,0.94); }
+
+.quali-race-gap-value { font-family: 'Outfit',sans-serif; font-size: 0.82rem; font-weight: 800; line-height: 1; }
+
+.quali-race-gap-stage { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.74); }
+
+.quali-race-team { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; font-size: 0.68rem; font-weight: 700; color: var(--st-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 767px) {
+    .quali-title { font-size: 1.38rem; }
+    .quali-gap-card, .quali-gaps-intro { padding: 0.95rem; }
+    .quali-gap-card-inner, .quali-skeleton-grid { grid-template-columns: 1fr 1fr; grid-template-areas: "left right" "track track"; gap: 0.85rem 0.9rem; }
+    .quali-side.left, .quali-skeleton-side.left { grid-area: left; }
+    .quali-side.right, .quali-skeleton-side.right { grid-area: right; }
+    .quali-track-wrap, .quali-skeleton-track-wrap { grid-area: track; }
+    .quali-track { height: 68px; }
+    .quali-track-meta { font-size: 0.7rem; }
+    .quali-h2h-count { font-size: 1.35rem; }
+    .quali-driver-code { font-size: 1rem; }
+    .quali-headshot, .quali-avatar-fallback { width: 42px; height: 42px; }
+    .quali-view-switch { justify-content: flex-start; }
+    .quali-race-head { flex-direction: column; align-items: flex-start; }
+    .quali-race-controls { width: 100%; min-width: 0; }
+    .quali-race-summary { flex-direction: column; align-items: flex-start; }
+    .quali-race-summary-stats { justify-content: flex-start; }
+    .quali-race-summary-stat { align-items: flex-start; }
+    .quali-race-chart { min-width: 860px; gap: 0.85rem; }
+    .quali-race-pair { min-height: 372px; }
+    .quali-race-avatar { width: 52px; height: 52px; }
+}
+
+@media (max-width: 480px) {
+    .quali-gaps-intro { padding: 0.85rem; }
+    .quali-sub { font-size: 0.84rem; }
+    .quali-gap-card, .quali-skeleton-card { padding: 0.8rem; }
+    .quali-gap-card-inner, .quali-skeleton-grid { gap: 0.75rem 0.7rem; }
+    .quali-side-top { gap: 0.4rem; }
+    .quali-h2h-count { font-size: 1.2rem; }
+    .quali-gap-avg { font-size: 0.9rem; }
+    .quali-driver { gap: 0.55rem; }
+    .quali-headshot, .quali-avatar-fallback { width: 38px; height: 38px; }
+    .quali-driver-name { font-size: 0.68rem; }
+    .quali-track-meta { flex-direction: column; align-items: flex-start; }
+    .quali-track-note { text-align: left; }
+    .quali-track { height: 62px; }
+    .quali-dot { width: 10px; height: 10px; }
+    .quali-dot-tooltip { min-width: 90px; max-width: 150px; padding: 0.42rem 0.5rem; }
+    .quali-dot-tooltip-session { font-size: 0.6rem; }
+    .quali-view-tabs { width: 100%; }
+    .quali-view-tab { flex: 1; padding: 0.55rem 0.7rem; }
+    .quali-race-card { padding: 0.85rem; }
+    .quali-race-summary { padding: 0.8rem 0.85rem; }
+    .quali-race-chart { min-width: 720px; gap: 0.72rem; }
+    .quali-race-pair { min-height: 344px; }
+    .quali-race-avatar { width: 46px; height: 46px; }
+    .quali-race-code { min-width: 38px; font-size: 0.68rem; }
+    .quali-race-name { max-width: 74px; font-size: 0.6rem; }
+}
