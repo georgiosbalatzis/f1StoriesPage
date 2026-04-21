@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-21T05:37:42.292Z",
+  "updatedAt": "2026-04-21T05:44:39.868Z",
   "thresholdPercent": 10,
   "note": "Byte budgets for tracked JS/CSS/HTML assets. Run `npm run perf:budget` to check, `npm run perf:budget:update` to rewrite this file with current sizes. Threshold is the max % growth allowed before the check fails.",
   "files": {
@@ -21,7 +21,7 @@
     "standings/tabs/pit-stops.css": 11266,
     "standings/tabs/debrief.css": 21037,
     "standings/tabs/destructors.css": 8037,
-    "standings/standings.js": 36587,
+    "standings/standings.js": 36650,
     "standings/standings.legacy.js": 322485,
     "standings/core/format.js": 576,
     "standings/core/teams.js": 3551,
@@ -58,7 +58,7 @@
     "standings/tabs/pit-stops.min.css": 9612,
     "standings/tabs/debrief.min.css": 17819,
     "standings/tabs/destructors.min.css": 6597,
-    "standings/standings.min.js": 21701,
+    "standings/standings.min.js": 21733,
     "standings/standings.legacy.min.js": 187253,
     "standings/core/format.min.js": 357,
     "standings/core/teams.min.js": 1859,

@@ -723,6 +723,7 @@ function bindEvents() {
 
     standingsTabs.forEach(function(tab) {
         tab.addEventListener('click', function() {
+            ensureTabStylesheet(tab.getAttribute('data-tab'));
             if (legacyActive) return;
             activateStandingsTab(tab.getAttribute('data-tab'));
         });
