@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v21
+   F1 Stories — Service Worker v22
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,14 +8,13 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
-   v21 bump: Phase 6C step 7 (track-dominance per-tab module) —
-   track-dominance now lives in /standings/tabs/track-dominance.min.js
-   instead of the legacy bundle. The orchestrator owns its URL state
-   (trackSession + trackTeamA + trackTeamB) end-to-end, and the updated
-   slim entry can land directly on the track-dominance tab without paying
-   for the legacy chunk first. Bump ensures returning sessions drop the old
-   v20 shell cache and fetch the new standings entry plus the standalone tab
-   module from f1s-assets-v21.
+   v22 bump: Phase 6C step 8 (debrief per-tab module) — debrief now
+   lives in /standings/tabs/debrief.min.js instead of the legacy bundle.
+   The orchestrator owns its URL state (debriefRound + debriefView)
+   end-to-end, and the updated slim entry can land directly on the debrief
+   tab without paying for the legacy chunk first. Bump ensures returning
+   sessions drop the old v21 shell cache and fetch the new standings entry
+   plus the standalone tab module from f1s-assets-v22.
    v18 bump: Phase 6C step 3 (quali-gaps per-tab module) — quali-gaps now
    lives in /standings/tabs/quali-gaps.min.js instead of the legacy bundle.
    The orchestrator owns its URL state (qualiView + qualiSession) end-to-end,
@@ -80,11 +79,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v21';
-var CACHE_SHELL   = 'f1s-shell-v21';
-var CACHE_PAGES   = 'f1s-pages-v21';
-var CACHE_ASSETS  = 'f1s-assets-v21';
-var CACHE_DATA    = 'f1s-data-v21';
+var SW_VERSION    = 'v22';
+var CACHE_SHELL   = 'f1s-shell-v22';
+var CACHE_PAGES   = 'f1s-pages-v22';
+var CACHE_ASSETS  = 'f1s-assets-v22';
+var CACHE_DATA    = 'f1s-data-v22';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
