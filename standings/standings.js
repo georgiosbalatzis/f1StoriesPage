@@ -1,10 +1,11 @@
 // Slim standings entry — Phase 6B.
 //
-// Phase 6A moved the drivers/constructors render path into this ES module
-// and kept the 320 KB monolith alive as standings.legacy.js, lazily loaded
-// when any heavier analysis tab is activated. Phase 6B now pulls the
-// duplicated constants + helpers into ./core/*.js so future tab modules
-// can share the same primitives without forking them.
+// Phase 6A moved the drivers/constructors render path into this ES module.
+// Phase 6B then pulled duplicated constants + helpers into ./core/*.js so
+// future tab modules could share the same primitives without forking them.
+// Phase 6C finished the per-tab extraction and retired the runtime
+// dependency on standings.legacy.js; the preserved source file now exists
+// only as an emergency rollback artifact outside the live asset graph.
 
 import { esc, escAttr, formatWinsLabel } from './core/format.js';
 import {
@@ -72,8 +73,6 @@ let pendingRevealTarget = '';
 let isEmbedMode = false;
 let shareFeedbackTimer = 0;
 let standingsPromise = null;
-let legacyPromise = null;
-let legacyActive = false;
 let pendingDestructorsView = 'teams';
 let pendingPitStopsView = 'race';
 let pendingPitStopsRound = '';
@@ -517,17 +516,6 @@ function ensureTabStylesheet(tabName) {
     ensureStyle(TAB_STYLESHEET_BASE + filename);
 }
 
-function loadLegacyStandings() {
-    if (legacyPromise) return legacyPromise;
-    legacyPromise = import(resolveModulePath('./standings.legacy.js')).then(function() {
-        legacyActive = true;
-    }).catch(function(error) {
-        console.error('Legacy standings module failed:', error);
-        showActivePanelError();
-    });
-    return legacyPromise;
-}
-
 function loadTabModule(tabName) {
     if (tabModulePromises[tabName]) return tabModulePromises[tabName];
     const modulePath = TAB_MODULES[tabName];
@@ -688,12 +676,10 @@ function showActivePanelError() {
 function activateStandingsTab(tabName, options) {
     const nextTab = sanitizeStandingsTab(tabName);
 
-    // Tabs with a dedicated module (TAB_MODULES) are owned by the orchestrator
-    // for their entire lifetime. Everything else is handed to the legacy
-    // bundle the first time any heavy tab activates; once legacyActive, only
-    // module-owned tabs stay under orchestrator control.
+    // Heavy analysis tabs are all module-backed after Phase 6C. The
+    // orchestrator owns every tab switch; drivers/constructors still render
+    // inline from this shell.
     const hasModule = !!TAB_MODULES[nextTab];
-    if (legacyActive && !hasModule) return;
 
     ensureTabStylesheet(nextTab);
     activeStandingsTab = nextTab;
@@ -722,7 +708,10 @@ function activateStandingsTab(tabName, options) {
         activateTabModule(nextTab);
         return;
     }
-    if (!isLightweightTab(nextTab)) loadLegacyStandings();
+    if (!isLightweightTab(nextTab)) {
+        console.error('No standings module registered for tab:', nextTab);
+        showActivePanelError();
+    }
 }
 
 function finalizeRenderedPanel(tabName) {
@@ -1107,15 +1096,6 @@ function bindEvents() {
         tab.addEventListener('click', function(event) {
             const tabName = tab.getAttribute('data-tab');
             ensureTabStylesheet(tabName);
-            if (TAB_MODULES[tabName]) {
-                // Orchestrator owns this tab even after legacy activates; stop
-                // propagation so the legacy bundle's own click handler doesn't
-                // also try to re-render it via its private state.
-                event.stopImmediatePropagation();
-                activateStandingsTab(tabName);
-                return;
-            }
-            if (legacyActive) return;
             activateStandingsTab(tabName);
         });
     });
@@ -1138,12 +1118,6 @@ function bindEvents() {
     document.addEventListener('click', function(event) {
         const button = event.target.closest('[data-share-kind][data-share-target]');
         if (!button) return;
-        if (legacyActive) {
-            // Share for module-owned tabs is still orchestrator-handled.
-            const shareTarget = button.getAttribute('data-share-target');
-            const meta = SHARE_TARGETS[shareTarget];
-            if (!meta || !TAB_MODULES[meta.tab]) return;
-        }
         event.preventDefault();
         handleShareAction(button.getAttribute('data-share-kind'), button.getAttribute('data-share-target'));
     });
@@ -1209,15 +1183,6 @@ function bindEvents() {
             if (typeof debriefMod.setSelectedRound === 'function') debriefMod.setSelectedRound(nextState.debriefRound);
             if (typeof debriefMod.setActiveView === 'function') debriefMod.setActiveView(nextState.debriefView);
         }
-        if (TAB_MODULES[nextState.tab]) {
-            // Stop legacy's popstate handler from also firing ensureXxxLoaded
-            // for a tab the orchestrator now owns — it would fetch + re-render
-            // with its separate state and clobber our module's work.
-            event.stopImmediatePropagation();
-            activateStandingsTab(nextState.tab, { skipURL: true, skipFocus: true });
-            return;
-        }
-        if (legacyActive) return;
         activateStandingsTab(nextState.tab, { skipURL: true, skipFocus: true });
     });
 }
@@ -1256,15 +1221,9 @@ function init() {
     bindEvents();
     activateStandingsTab(activeStandingsTab, { skipURL: true, skipFocus: true });
 
-    // When landing on a module-backed tab we still want drivers/constructors
-    // to hydrate in the background so the adjacent panels don't sit empty on
-    // tab switch. Legacy-backed tabs skip this because the legacy bundle
-    // calls its own loadStandings() once it boots.
-    if (isLightweightTab(activeStandingsTab) || TAB_MODULES[activeStandingsTab]) {
-        loadStandings();
-    } else {
-        loadLegacyStandings();
-    }
+    // Always hydrate drivers/constructors in the background so adjacent
+    // panels don't sit empty on the first tab switch.
+    loadStandings();
 }
 
 init();
