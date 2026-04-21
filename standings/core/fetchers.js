@@ -1,31 +1,27 @@
-// JSON fetch + sessionStorage cache wrapper used by every standings tab.
+// JSON fetch + async standings cache wrapper used by every standings tab.
 //
 // The cache is keyed by full URL with a shared f1s-standings: prefix so the
 // slim entry and every lazy tab module can see each other's writes: on a
 // cold load of /standings/?tab=debrief the Debrief module can reuse driver
 // standings data that drivers-table already fetched minutes ago from another
-// session.
-//
-// Phase 8 is planned to swap this sessionStorage layer for IndexedDB with
-// TTL metadata. The function surface (readCachedResponse / writeCachedResponse
-// / fetchJSON) is what the swap will keep stable — please preserve these
-// names when migrating.
+// session. Phase 8 moved the storage backend to IndexedDB with a lazy
+// sessionStorage migration path, but the wrapper surface stays stable.
+
+import { cacheGet, cacheSet } from './cache.js';
 
 const FETCH_CACHE_PREFIX = 'f1s-standings:';
 const FETCH_CACHE_TTL = 60 * 60 * 1000;
 
 export function readCachedResponse(url) {
-    try {
-        const cached = JSON.parse(sessionStorage.getItem(FETCH_CACHE_PREFIX + url));
-        if (cached && cached.ts && Date.now() - cached.ts < FETCH_CACHE_TTL) return cached.data;
-    } catch (_) {}
-    return null;
+    return cacheGet(FETCH_CACHE_PREFIX + url, FETCH_CACHE_TTL).then(function(cached) {
+        return cached == null ? null : cached;
+    }).catch(function() {
+        return null;
+    });
 }
 
 export function writeCachedResponse(url, data) {
-    try {
-        sessionStorage.setItem(FETCH_CACHE_PREFIX + url, JSON.stringify({ ts: Date.now(), data: data }));
-    } catch (_) {}
+    return cacheSet(FETCH_CACHE_PREFIX + url, data).catch(function() {});
 }
 
 export function fetchJSONWithTimeout(url, timeoutMs, fetchOptions) {
@@ -50,12 +46,14 @@ export function fetchJSONNoCache(url, timeoutMs) {
 }
 
 export function fetchJSON(url) {
-    const cached = readCachedResponse(url);
-    if (cached) return Promise.resolve(cached);
+    return readCachedResponse(url).then(function(cached) {
+        if (cached != null) return cached;
 
-    return fetchJSONNoCache(url).then(function(data) {
-        writeCachedResponse(url, data);
-        return data;
+        return fetchJSONNoCache(url).then(function(data) {
+            return writeCachedResponse(url, data).then(function() {
+                return data;
+            });
+        });
     });
 }
 
