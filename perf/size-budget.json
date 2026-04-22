@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-22T06:48:58.372Z",
+  "updatedAt": "2026-04-22T07:01:57.739Z",
   "thresholdPercent": 10,
   "note": "Byte budgets for tracked JS/CSS/HTML assets. Run `npm run perf:budget` to check, `npm run perf:budget:update` to rewrite this file with current sizes. Threshold is the max % growth allowed before the check fails.",
   "files": {
@@ -54,13 +54,13 @@
     "blog-module/build/embed-render.js": 11750,
     "blog-module/build/media.js": 13104,
     "blog-module/build/parse-docx.js": 2625,
-    "blog-module/build/parse-txt.js": 3648,
+    "blog-module/build/parse-txt.js": 5438,
     "blog-module/build/related.js": 4505,
     "blog-module/build/nav.js": 1120,
     "blog-module/build/sitemap.js": 1839,
     "blog-module/build/worker.js": 8653,
     "blog-module/build/index.js": 13746,
-    "blog-module/build/__tests__/golden.js": 5050,
+    "blog-module/build/__tests__/golden.js": 7198,
     "blog-module/build/__tests__/run-golden.js": 778,
     "sw.js": 15596,
     "manifest.json": 1810,

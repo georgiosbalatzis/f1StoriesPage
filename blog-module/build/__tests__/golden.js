@@ -1,7 +1,9 @@
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { processBlogEntry } = require('../worker');
 const { classifyEntry } = require('../index');
+const { convertTxtToHtml } = require('../parse-txt');
 const { createResponsiveTableFromCSV } = require('../csv-to-table');
 const { injectRelatedArticles } = require('../related');
 const { injectPrevNextLinks } = require('../nav');
@@ -79,10 +81,54 @@ function verifyClassificationGuards() {
     return failures;
 }
 
+async function verifyPipeTableConversion() {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-pipe-table-'));
+    const fixturePath = path.join(tempDir, 'source.txt');
+    const fixture = [
+        'Technical Ferrari',
+        '',
+        'SF25 vs SF26',
+        '',
+        '| Τομέας | SF25 (2025) | SF26 (2026) |',
+        '|--------|-------------|-------------|',
+        '| **Μονοκόκ** | Παραδοσιακό ανθρακονημάτινο | Ελαφρύτερο monocoque |',
+        '| **Αεροδυναμική** | Πολύπλοκα τούνελ | Απλοποιημένο δάπεδο |',
+        ''
+    ].join('\n');
+
+    try {
+        fs.writeFileSync(fixturePath, fixture, 'utf8');
+        const html = await convertTxtToHtml(fixturePath);
+        const failures = [];
+
+        if (!html.includes('<table class="responsive-table docx-table">')) {
+            failures.push('pipe table did not render as responsive table');
+        }
+        if (!html.includes('<th>Τομέας</th>')) {
+            failures.push('pipe table header missing');
+        }
+        if (!html.includes('<strong>Μονοκόκ</strong>')) {
+            failures.push('inline markdown inside table cells was not formatted');
+        }
+        if (html.includes('|--------|')) {
+            failures.push('pipe table divider leaked into output');
+        }
+
+        return failures;
+    } finally {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+}
+
 async function updateGoldenSnapshots() {
     const classificationFailures = verifyClassificationGuards();
     if (classificationFailures.length) {
         throw new Error(`Classification guard failed:\n${classificationFailures.join('\n')}`);
+    }
+
+    const pipeTableFailures = await verifyPipeTableConversion();
+    if (pipeTableFailures.length) {
+        throw new Error(`Pipe table guard failed:\n${pipeTableFailures.join('\n')}`);
     }
 
     for (const slug of GOLDEN_ENTRIES) {
@@ -108,6 +154,15 @@ async function verifyGoldenSnapshots() {
         expectedPath: BLOG_DATA_PATH,
         actualPath: BLOG_ENTRIES_DIR
     }));
+
+    const pipeTableFailures = await verifyPipeTableConversion();
+    pipeTableFailures.forEach(message => {
+        failures.push({
+            name: `pipe-table: ${message}`,
+            expectedPath: fixtureLabel('pipe-table'),
+            actualPath: fixtureLabel('pipe-table')
+        });
+    });
 
     for (const slug of GOLDEN_ENTRIES) {
         await processBlogEntry(entryPath(slug));
@@ -140,6 +195,10 @@ async function verifyGoldenSnapshots() {
     }
 
     return failures;
+}
+
+function fixtureLabel(name) {
+    return path.join(TEST_ROOT, 'fixtures', name);
 }
 
 module.exports = {

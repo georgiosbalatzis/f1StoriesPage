@@ -6,7 +6,67 @@ const {
     processStandaloneLinkEmbeds,
     resolveEmbedPlaceholders
 } = require('./embeds');
-const { processDocumentTables, processEmbeddedCSV } = require('./csv-to-table');
+const { buildResponsiveDocTable, processDocumentTables, processEmbeddedCSV } = require('./csv-to-table');
+
+function escapeHtml(text) {
+    return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function inlineFormat(text) {
+    const safe = escapeHtml(text);
+    return safe
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/__(.+?)__/g, '<strong>$1</strong>')
+        .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>')
+        .replace(/(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g, '<em>$1</em>');
+}
+
+function parsePipeTableRow(line) {
+    const trimmed = String(line || '').trim();
+    if (!trimmed.includes('|')) return null;
+
+    const normalized = trimmed
+        .replace(/^\|\s*/, '')
+        .replace(/\s*\|$/, '');
+
+    const cells = normalized.split('|').map(cell => cell.trim());
+    return cells.length >= 2 ? cells : null;
+}
+
+function isPipeTableDivider(line, expectedCols) {
+    const cells = parsePipeTableRow(line);
+    if (!cells || cells.length !== expectedCols) return false;
+    return cells.every(cell => /^:?-{3,}:?$/.test(cell.replace(/\s+/g, '')));
+}
+
+function readPipeTable(lines, startIndex) {
+    const headers = parsePipeTableRow(lines[startIndex]);
+    if (!headers) return null;
+    if (startIndex + 1 >= lines.length || !isPipeTableDivider(lines[startIndex + 1], headers.length)) return null;
+
+    const rows = [];
+    let i = startIndex + 2;
+    while (i < lines.length) {
+        const rawLine = lines[i];
+        const trimmed = rawLine.trim();
+        if (!trimmed) break;
+
+        const row = parsePipeTableRow(rawLine);
+        if (!row || isPipeTableDivider(rawLine, headers.length)) break;
+        rows.push(row);
+        i++;
+    }
+
+    return {
+        nextIndex: i - 1,
+        headers: headers.map(inlineFormat),
+        rows: rows.map(row => row.map(inlineFormat))
+    };
+}
 
 async function convertTxtToHtml(filePath) {
     try {
@@ -25,48 +85,55 @@ async function convertTxtToHtml(filePath) {
         let htmlContent = '';
         let currentParagraph = '';
         let inList = false;
+        let tableIndex = 0;
+
+        function flushParagraph() {
+            if (currentParagraph === '') return;
+            htmlContent += `<p>${inlineFormat(currentParagraph)}</p>\n`;
+            currentParagraph = '';
+        }
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
 
             if (line === '') {
-                if (currentParagraph !== '') {
-                    htmlContent += `<p>${currentParagraph}</p>\n`;
-                    currentParagraph = '';
+                flushParagraph();
+                continue;
+            }
+
+            const table = readPipeTable(lines, i);
+            if (table) {
+                flushParagraph();
+                if (inList) {
+                    htmlContent += '</ul>\n';
+                    inList = false;
                 }
+                htmlContent += buildResponsiveDocTable(table.headers, table.rows, `txt-table-${tableIndex++}`) + '\n';
+                i = table.nextIndex;
                 continue;
             }
 
             if (line.startsWith('# ')) {
-                if (currentParagraph !== '') {
-                    htmlContent += `<p>${currentParagraph}</p>\n`;
-                    currentParagraph = '';
-                }
-                htmlContent += `<h2>${line.substring(2)}</h2>\n`;
+                flushParagraph();
+                htmlContent += `<h2>${inlineFormat(line.substring(2))}</h2>\n`;
                 continue;
             }
 
             if (line.startsWith('## ')) {
-                if (currentParagraph !== '') {
-                    htmlContent += `<p>${currentParagraph}</p>\n`;
-                    currentParagraph = '';
-                }
-                htmlContent += `<h3>${line.substring(3)}</h3>\n`;
+                flushParagraph();
+                htmlContent += `<h3>${inlineFormat(line.substring(3))}</h3>\n`;
                 continue;
             }
 
             if (line.startsWith('- ') || line.startsWith('* ')) {
-                if (currentParagraph !== '') {
-                    htmlContent += `<p>${currentParagraph}</p>\n`;
-                    currentParagraph = '';
-                }
+                flushParagraph();
 
                 if (!inList) {
                     htmlContent += '<ul>\n';
                     inList = true;
                 }
 
-                htmlContent += `<li>${line.substring(2)}</li>\n`;
+                htmlContent += `<li>${inlineFormat(line.substring(2))}</li>\n`;
 
                 if (i === lines.length - 1 || !(lines[i + 1].trim().startsWith('- ') || lines[i + 1].trim().startsWith('* '))) {
                     htmlContent += '</ul>\n';
@@ -76,10 +143,7 @@ async function convertTxtToHtml(filePath) {
             }
 
             if (isStandaloneEmbedLine(line)) {
-                if (currentParagraph !== '') {
-                    htmlContent += `<p>${currentParagraph}</p>\n`;
-                    currentParagraph = '';
-                }
+                flushParagraph();
                 htmlContent += `<p>${line}</p>\n`;
                 continue;
             }
@@ -87,9 +151,7 @@ async function convertTxtToHtml(filePath) {
             currentParagraph = currentParagraph === '' ? line : `${currentParagraph} ${line}`;
         }
 
-        if (currentParagraph !== '') {
-            htmlContent += `<p>${currentParagraph}</p>\n`;
-        }
+        flushParagraph();
 
         htmlContent = splitParagraphsAroundStandaloneEmbeds(htmlContent);
         htmlContent = processDocumentTables(htmlContent);
