@@ -1,8 +1,20 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
+    <!-- @include partials/head-meta.html -->
+    <!-- @include:begin partials/head-meta.html -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/icons/favicon-32.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="F1 Stories">
+    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+    <!-- @include:end partials/head-meta.html -->
     <title>F1 Stories — Βαθμολογίες Πρωταθλήματος</title>
     <meta name="description" content="Βαθμολογίες Formula 1 από το F1 Stories με live standings οδηγών και κατασκευαστών, plus quali gaps, tyre pace, dirty air και pit stop analysis.">
     <meta property="og:title" content="F1 Stories — Βαθμολογίες Πρωταθλήματος">
@@ -17,15 +29,6 @@
     <meta name="twitter:description" content="Βαθμολογίες Formula 1 από το F1 Stories με live standings οδηγών και κατασκευαστών.">
     <meta name="twitter:image" content="https://f1stories.gr/images/logo.png">
     <link rel="canonical" href="https://f1stories.gr/standings/">
-    <link rel="icon" type="image/png" href="/images/favicon.png">
-    <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/icons/favicon-32.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="F1 Stories">
-    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
 
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link rel="preconnect" href="https://media.formula1.com" crossorigin>
@@ -433,26 +436,32 @@
 <button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Επιστροφή στην κορυφή"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
 <div class="share-feedback" id="share-feedback" aria-live="polite"></div>
 
+<!-- @include partials/footer.html -->
+<!-- @include:begin partials/footer.html -->
 <footer class="py-4">
-    <div class="container"><div class="row"><div class="col-12 text-center">
-        <p>&copy; <span id="footer-year">2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
-        <div class="social-media">
-            <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories on YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
-            <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories on Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
-            <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories on Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
-            <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories on TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
-            <a href="mailto:myf1stories@gmail.com" aria-label="Email F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
+                <div class="social-media">
+                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
+                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
+                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
+                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
+                    <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
+                </div>
+                <div class="footer-links mt-3">
+                    <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
+                    <span class="footer-separator">|</span>
+                    <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" id="standings-clear-cache">Εκκαθάριση cache</button>
+                </div>
+            </div>
         </div>
-        <div class="footer-links mt-3">
-            <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
-            <span class="footer-separator">|</span>
-            <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
-            <span class="footer-separator">|</span>
-            <button type="button" class="footer-link footer-link-button" id="standings-clear-cache">Εκκαθάριση cache</button>
-        </div>
-    </div></div></div>
+    </div>
 </footer>
-
+<!-- @include:end partials/footer.html -->
 <script defer src="/scripts/shared-nav.min.js?v=aa376236"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=9d38adec"></script>
 <script defer src="/scripts/sw-register.min.js?v=302c6d86"></script>

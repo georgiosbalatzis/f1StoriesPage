@@ -1,8 +1,20 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
+    <!-- @include partials/head-meta.html -->
+    <!-- @include:begin partials/head-meta.html -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/icons/favicon-32.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="F1 Stories">
+    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+    <!-- @include:end partials/head-meta.html -->
     <title>F1 Stories — Όροι Χρήσης</title>
     <meta name="description" content="Όροι χρήσης του F1 Stories για περιεχόμενο, πνευματικά δικαιώματα και εξωτερικές υπηρεσίες.">
     <meta property="og:title" content="F1 Stories — Όροι Χρήσης">
@@ -15,11 +27,6 @@
     <meta name="twitter:description" content="Όροι χρήσης του F1 Stories για περιεχόμενο, πνευματικά δικαιώματα και εξωτερικές υπηρεσίες.">
     <meta name="twitter:image" content="https://f1stories.gr/images/logo.png">
     <link rel="canonical" href="https://f1stories.gr/privacy/terms.html">
-    <link rel="icon" type="image/png" href="/images/favicon.png">
-    <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
     <link rel="stylesheet" href="/styles/fonts.min.css?v=d7f3513a">
     <link rel="preload" as="style" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f"></noscript>
@@ -248,17 +255,19 @@
     </div>
 </div>
 
+<!-- @include partials/footer.html -->
+<!-- @include:begin partials/footer.html -->
 <footer class="py-4">
     <div class="container">
         <div class="row">
             <div class="col-12 text-center">
                 <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
                 <div class="social-media">
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
-                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
-                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
-                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
-                    <a href="mailto:myf1stories@gmail.com"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
+                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
+                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
+                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
+                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
+                    <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
                 </div>
                 <div class="footer-links mt-3">
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
@@ -269,7 +278,7 @@
         </div>
     </div>
 </footer>
-
+<!-- @include:end partials/footer.html -->
 <script defer src="/scripts/shared-nav.min.js?v=aa376236"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=9d38adec"></script>
 <script defer src="/scripts/sw-register.min.js?v=302c6d86"></script>

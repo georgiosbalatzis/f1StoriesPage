@@ -433,11 +433,14 @@ node blog-module/generate-image-variants.js --run --force
 
 Από τη Phase 1 του roadmap, κάθε tracked CSS/JS έχει δίπλα του ένα `.min` sibling (π.χ. `styles.css` + `styles.min.css`). Το production HTML φορτώνει τα minified αρχεία με content-hash query string για σωστό cache-busting, ενώ τα sources παραμένουν commit-ed ως πηγή αλήθειας για diff/review.
 
+- `npm run build` — full shell rebuild: expanded HTML partials first, then asset minify/stamp.
+- `npm run build:html` — επεκτείνει τα `<!-- @include ... -->` markers στα shared shell pages (`partials/head-meta.html`, `partials/footer.html`) με idempotent generated blocks.
 - `npm run build:assets` — χτίζει icon sprite + slim Bootstrap CSS, τρέχει minify (`lightningcss` για CSS, `esbuild` για JS) και μετά stamp (rewrite HTML references σε `.min.<ext>?v=<hash>`).
 - `npm run build:bootstrap` — παράγει το self-hosted `styles/vendor/bootstrap.slim.css` από το scoped SCSS subset.
 - `npm run build:assets:watch` — rebuild σε κάθε αλλαγή source.
-- `npm run build:assets:minify` / `build:assets:stamp` — τα δύο βήματα ξεχωριστά.
+- `npm run build:assets:minify` / `build:assets:stamp` — τα δύο βήματα ξεχωριστά. Το `build:assets:stamp` περνά πρώτα από το include expansion ώστε footer/head partial edits να γράφονται στα shell HTML πριν το stamping.
 - Χειροκίνητα source edits σε `.css` / `.js`: τρέξε `npm run build:assets` πριν το commit, ώστε να commit-αριστούν μαζί με το `.min` sibling και το ενημερωμένο HTML reference.
+- Χειροκίνητα edits σε `partials/*.html`: τρέξε `npm run build` ή τουλάχιστον `npm run build:html && npm run build:assets:stamp` πριν το commit.
 
 Τα generated artifacts που commit-άρονται:
 

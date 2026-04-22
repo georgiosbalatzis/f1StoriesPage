@@ -4,15 +4,17 @@
   "description": "F1 Stories static website — build scripts for the blog publishing pipeline.",
   "private": true,
   "scripts": {
+    "build": "npm run build:html && npm run build:assets",
     "build:blog": "node blog-module/build/index.js",
     "build:blog:force": "node blog-module/build/index.js --force",
+    "build:html": "node scripts/build/include.mjs",
     "build:image-variants": "node blog-module/generate-image-variants.js --run",
     "build:fonts": "node scripts/build/download-fonts.mjs",
     "build:icons": "node scripts/build/build-icon-sprite.mjs",
     "build:bootstrap": "sass styles/vendor/bootstrap.slim.scss styles/vendor/bootstrap.slim.css --style=compressed --no-source-map",
     "build:assets": "node scripts/build/build-icon-sprite.mjs && npm run build:bootstrap && node scripts/build/minify.mjs && node scripts/build/stamp-html.mjs",
     "build:assets:minify": "node scripts/build/minify.mjs",
-    "build:assets:stamp": "node scripts/build/stamp-html.mjs",
+    "build:assets:stamp": "npm run build:html && node scripts/build/stamp-html.mjs",
     "build:assets:watch": "node scripts/build/minify.mjs --watch",
     "perf:budget": "node scripts/perf/size-guard.mjs",
     "perf:budget:update": "node scripts/perf/size-guard.mjs --update"
