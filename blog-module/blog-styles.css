@@ -836,10 +836,8 @@ body {
     .category-chip, .filter-reset-btn { min-height: 48px; }
     .blog-search-shell { min-height: 56px; }
     .article-nav-link { min-height: 48px; padding: 0.75rem 1.2rem; }
-    .tts-btn { width: 44px; height: 44px; font-size: 0.85rem; }
     .toc-item { min-height: 44px; display: flex; align-items: center; padding: 0.5rem 0.6rem; }
     .back-link { min-height: 48px; display: inline-flex; align-items: center; padding: 0.5rem 0.5rem 0.5rem 0; }
-    .tts-header { min-height: 48px; padding: 0.75rem 1.5rem; }
     .toc-toggle { min-height: 48px; padding: 0.75rem 1.5rem; }
     .blog-nav-hamburger { width: 48px; height: 48px; }
 }
@@ -907,19 +905,7 @@ body {
 
 
 /* ═══════════════════════════════════════════════
-   § 13  TTS HEADER TAP FIX
-   ═══════════════════════════════════════════════ */
-
-.tts-header {
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-
-/* ═══════════════════════════════════════════════
-   § 14  READING PROGRESS BAR
+   § 13  READING PROGRESS BAR
    ═══════════════════════════════════════════════ */
 
 .reading-progress-track {
@@ -943,7 +929,7 @@ body {
 
 
 /* ═══════════════════════════════════════════════
-   § 15  iOS SAFE AREA INSETS
+   § 14  iOS SAFE AREA INSETS
    ═══════════════════════════════════════════════ */
 
 @supports (padding: env(safe-area-inset-bottom)) {
@@ -955,20 +941,18 @@ body {
 
 
 /* ═══════════════════════════════════════════════
-   § 16  iOS ZOOM PREVENTION
+   § 15  iOS ZOOM PREVENTION
    Applies on all touch devices (phones + tablets)
    ═══════════════════════════════════════════════ */
 
 @media (pointer: coarse) {
-    .tts-voice-selector select,
-    .tts-speed-control input[type="range"],
     input[type="text"], input[type="email"],
     input[type="search"], textarea, select { font-size: max(1rem, 16px); }
 }
 
 
 /* ═══════════════════════════════════════════════
-   § 17  PERFORMANCE — Contain, will-change, etc.
+   § 16  PERFORMANCE — Contain, will-change, etc.
    ═══════════════════════════════════════════════ */
 
 .blog-card,
@@ -1034,7 +1018,7 @@ body {
 
 @media print {
     .blog-nav, .theme-toggle-btn, .scroll-to-top-btn,
-    .social-share-bar, .tts-widget, .article-toc,
+    .social-share-bar, .article-toc,
     .cookie-consent, .cookie-banner, footer,
     .blog-nav-mobile, .article-navigation,
     .related-article-card, #cookie-consent,
