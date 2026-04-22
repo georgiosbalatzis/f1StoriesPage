@@ -42,6 +42,10 @@
             .replace(/'/g, '&#39;');
     }
 
+    function prefersReducedMotion() {
+        return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    }
+
     function fetchWithTimeout(url, options, timeoutMs) {
         var controller = typeof AbortController === 'function' ? new AbortController() : null;
         var timer = null;
@@ -181,7 +185,9 @@
         });
 
         panels.forEach(function (panel) {
-            panel.classList.toggle('active', panel.id === 'panel-' + tabName);
+            var isActive = panel.id === 'panel-' + tabName;
+            panel.classList.toggle('active', isActive);
+            panel.hidden = !isActive;
         });
 
         document.dispatchEvent(new CustomEvent('homepage:latest-panel-change', {
@@ -196,6 +202,8 @@
     }
 
     function initTabs() {
+        var initialActiveTab = null;
+
         if (!tabs.length || !panels.length) return;
 
         tabs.forEach(function (tab) {
@@ -206,8 +214,56 @@
 
         tabs.forEach(function (tab, index) {
             var isActive = tab.classList.contains('active');
+            if (isActive && !initialActiveTab) initialActiveTab = tab.getAttribute('data-tab');
             tab.setAttribute('tabindex', isActive || (!tabs.some(function (item) { return item.classList.contains('active'); }) && index === 0) ? '0' : '-1');
         });
+
+        panels.forEach(function (panel) {
+            var isActive = panel.classList.contains('active');
+            panel.hidden = !isActive;
+        });
+
+        if (!initialActiveTab && tabs[0]) {
+            initialActiveTab = tabs[0].getAttribute('data-tab');
+        }
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener('keydown', function (event) {
+                var currentIndex = tabs.indexOf(tab);
+                var nextIndex = currentIndex;
+
+                if (currentIndex < 0) return;
+
+                if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabs.length;
+                if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+                if (event.key === 'Home') nextIndex = 0;
+                if (event.key === 'End') nextIndex = tabs.length - 1;
+
+                if (nextIndex !== currentIndex) {
+                    event.preventDefault();
+                    tabs[nextIndex].focus();
+                    tabs[nextIndex].scrollIntoView({
+                        block: 'nearest',
+                        inline: 'nearest',
+                        behavior: prefersReducedMotion() ? 'auto' : 'smooth'
+                    });
+                    return;
+                }
+
+                if (event.key === 'Enter' || event.key === ' ' || event.code === 'Space') {
+                    event.preventDefault();
+                    setActiveTab(tab.getAttribute('data-tab'));
+                }
+            });
+        });
+
+        if (initialActiveTab) {
+            panels.forEach(function (panel) {
+                var isActive = panel.id === 'panel-' + initialActiveTab;
+                panel.classList.toggle('active', isActive);
+                panel.hidden = !isActive;
+            });
+        }
     }
 
     function initContactForm() {

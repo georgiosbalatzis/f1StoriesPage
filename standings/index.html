@@ -33,8 +33,8 @@
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link rel="dns-prefetch" href="https://api.jolpi.ca">
     <link rel="dns-prefetch" href="https://api.openf1.org">
-    <link rel="preload" href="standings.min.css?v=7ee4075a" as="style">
-    <link rel="modulepreload" href="/standings/standings.min.js?v=4b051427">
+    <link rel="preload" href="standings.min.css?v=c20853f1" as="style">
+    <link rel="modulepreload" href="/standings/standings.min.js?v=fd6245d3">
     <link rel="modulepreload" href="/standings/core/format.min.js?v=fb3e3eb2">
     <link rel="modulepreload" href="/standings/core/teams.min.js?v=db706009">
     <link rel="modulepreload" href="/standings/core/drivers-meta.min.js?v=b21ea22b">
@@ -71,8 +71,8 @@
             }
         })();
     </script>
-    <link rel="preload" as="style" href="standings.min.css?v=7ee4075a" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="standings.min.css?v=7ee4075a"></noscript>
+    <link rel="preload" as="style" href="standings.min.css?v=c20853f1" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="standings.min.css?v=c20853f1"></noscript>
 </head>
 <body>
 <!-- f1s:icon-sprite:begin -->
@@ -157,6 +157,7 @@
   <symbol id="fa-youtube" viewBox="0 0 576 512"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></symbol>
 </svg></div>
 <!-- f1s:icon-sprite:end -->
+<a href="#main" class="skip-link">Μετάβαση στο περιεχόμενο</a>
 <div class="background"></div>
 <div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
 
@@ -201,27 +202,27 @@
     </nav>
 </header>
 
-<section class="standings-wrapper py-5 mt-5">
+<main id="main" class="standings-wrapper py-5 mt-5">
     <div class="container">
         <div class="standings-header text-center">
             <h1 class="standings-title">Βαθμολογίες Πρωταθλήματος</h1>
             <p class="standings-sub"><span class="live-dot"></span>Live δεδομένα · Σεζόν <span id="season-year">2026</span> <span class="round-badge" id="round-badge">Μετά τον γύρο <span id="round-num"></span></span></p>
         </div>
 
-        <div class="standings-tabs" role="tablist">
-            <button class="standings-tab active" id="tab-drivers" data-tab="drivers" role="tab" aria-controls="panel-drivers" aria-selected="true"><svg class="icon" aria-hidden="true"><use href="#fa-helmet-safety"/></svg> Οδηγοί</button>
-            <button class="standings-tab" id="tab-constructors" data-tab="constructors" role="tab" aria-controls="panel-constructors" aria-selected="false"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg> Κατασκευαστές</button>
-            <button class="standings-tab" id="tab-quali-gaps" data-tab="quali-gaps" role="tab" aria-controls="panel-quali-gaps" aria-selected="false"><svg class="icon" aria-hidden="true"><use href="#fa-stopwatch"/></svg> Quali Gaps</button>
-            <button class="standings-tab" id="tab-lap1-gains" data-tab="lap1-gains" role="tab" aria-controls="panel-lap1-gains" aria-selected="false"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-trend-up"/></svg> Lap 1 Gains</button>
-            <button class="standings-tab" id="tab-tyre-pace" data-tab="tyre-pace" role="tab" aria-controls="panel-tyre-pace" aria-selected="false"><svg class="icon" aria-hidden="true"><use href="#fa-wave-square"/></svg> Tyre Pace</button>
-            <button class="standings-tab" id="tab-dirty-air" data-tab="dirty-air" role="tab" aria-controls="panel-dirty-air" aria-selected="false"><svg class="icon" aria-hidden="true"><use href="#fa-wind"/></svg> Dirty Air</button>
-            <button class="standings-tab" id="tab-track-dominance" data-tab="track-dominance" role="tab" aria-controls="panel-track-dominance" aria-selected="false"><svg class="icon" aria-hidden="true"><use href="#fa-route"/></svg> Track Dominance</button>
-            <button class="standings-tab" id="tab-pit-stops" data-tab="pit-stops" role="tab" aria-controls="panel-pit-stops" aria-selected="false"><svg class="icon" aria-hidden="true"><use href="#fa-wrench"/></svg> Pit Stops</button>
-            <button class="standings-tab" id="tab-debrief" data-tab="debrief" role="tab" aria-controls="panel-debrief" aria-selected="false"><svg class="icon" aria-hidden="true"><use href="#fa-clipboard-list"/></svg> Debrief</button>
-            <button class="standings-tab" id="tab-destructors" data-tab="destructors" role="tab" aria-controls="panel-destructors" aria-selected="false"><svg class="icon" aria-hidden="true"><use href="#fa-car-burst"/></svg> Destructors</button>
+        <div class="standings-tabs" role="tablist" aria-label="Ενότητες βαθμολογιών και ανάλυσης">
+            <button class="standings-tab active" id="tab-drivers" data-tab="drivers" role="tab" aria-controls="panel-drivers" aria-selected="true" tabindex="0"><svg class="icon" aria-hidden="true"><use href="#fa-helmet-safety"/></svg> Οδηγοί</button>
+            <button class="standings-tab" id="tab-constructors" data-tab="constructors" role="tab" aria-controls="panel-constructors" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg> Κατασκευαστές</button>
+            <button class="standings-tab" id="tab-quali-gaps" data-tab="quali-gaps" role="tab" aria-controls="panel-quali-gaps" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-stopwatch"/></svg> Quali Gaps</button>
+            <button class="standings-tab" id="tab-lap1-gains" data-tab="lap1-gains" role="tab" aria-controls="panel-lap1-gains" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-trend-up"/></svg> Lap 1 Gains</button>
+            <button class="standings-tab" id="tab-tyre-pace" data-tab="tyre-pace" role="tab" aria-controls="panel-tyre-pace" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-wave-square"/></svg> Tyre Pace</button>
+            <button class="standings-tab" id="tab-dirty-air" data-tab="dirty-air" role="tab" aria-controls="panel-dirty-air" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-wind"/></svg> Dirty Air</button>
+            <button class="standings-tab" id="tab-track-dominance" data-tab="track-dominance" role="tab" aria-controls="panel-track-dominance" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-route"/></svg> Track Dominance</button>
+            <button class="standings-tab" id="tab-pit-stops" data-tab="pit-stops" role="tab" aria-controls="panel-pit-stops" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-wrench"/></svg> Pit Stops</button>
+            <button class="standings-tab" id="tab-debrief" data-tab="debrief" role="tab" aria-controls="panel-debrief" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-clipboard-list"/></svg> Debrief</button>
+            <button class="standings-tab" id="tab-destructors" data-tab="destructors" role="tab" aria-controls="panel-destructors" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-car-burst"/></svg> Destructors</button>
         </div>
 
-        <div class="standings-panel active" id="panel-drivers" role="tabpanel" aria-labelledby="tab-drivers">
+        <div class="standings-panel active" id="panel-drivers" role="tabpanel" aria-labelledby="tab-drivers" tabindex="0">
             <div class="standings-table-wrap" id="drivers-table" aria-live="polite"></div>
             <div class="chart-section" id="drivers-chart">
                 <div class="chart-head">
@@ -238,7 +239,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-constructors" role="tabpanel" aria-labelledby="tab-constructors">
+        <div class="standings-panel" id="panel-constructors" role="tabpanel" aria-labelledby="tab-constructors" hidden>
             <div class="standings-table-wrap" id="constructors-table" aria-live="polite"></div>
             <div class="chart-section" id="constructors-chart" style="display:none">
                 <div class="chart-head">
@@ -255,7 +256,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-quali-gaps" role="tabpanel" aria-labelledby="tab-quali-gaps">
+        <div class="standings-panel" id="panel-quali-gaps" role="tabpanel" aria-labelledby="tab-quali-gaps" hidden>
             <div class="quali-gaps-wrap">
                 <div class="quali-gaps-intro">
                     <div class="quali-kicker">Teammate H2H · <span id="qualifying-gaps-year">2026</span></div>
@@ -276,7 +277,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-lap1-gains" role="tabpanel" aria-labelledby="tab-lap1-gains">
+        <div class="standings-panel" id="panel-lap1-gains" role="tabpanel" aria-labelledby="tab-lap1-gains" hidden>
             <div class="lap1-gains-wrap">
                 <div class="lap1-gains-intro">
                     <div class="lap1-kicker">Race Starts · <span id="lap1-gains-year">2026</span></div>
@@ -297,7 +298,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-tyre-pace" role="tabpanel" aria-labelledby="tab-tyre-pace">
+        <div class="standings-panel" id="panel-tyre-pace" role="tabpanel" aria-labelledby="tab-tyre-pace" hidden>
             <div class="tyre-pace-wrap">
                 <div class="tyre-pace-intro">
                     <div class="tyre-pace-kicker">Race Pace · <span id="tyre-pace-year">2026</span></div>
@@ -318,7 +319,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-dirty-air" role="tabpanel" aria-labelledby="tab-dirty-air">
+        <div class="standings-panel" id="panel-dirty-air" role="tabpanel" aria-labelledby="tab-dirty-air" hidden>
             <div class="dirty-air-wrap">
                 <div class="dirty-air-intro">
                     <div class="dirty-air-kicker">Race Traffic · <span id="dirty-air-year">2026</span></div>
@@ -339,7 +340,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-track-dominance" role="tabpanel" aria-labelledby="tab-track-dominance">
+        <div class="standings-panel" id="panel-track-dominance" role="tabpanel" aria-labelledby="tab-track-dominance" hidden>
             <div class="track-dom-wrap">
                 <div class="track-dom-intro">
                     <div class="track-dom-kicker">Telemetry · <span id="track-dominance-year">2026</span></div>
@@ -360,7 +361,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-pit-stops" role="tabpanel" aria-labelledby="tab-pit-stops">
+        <div class="standings-panel" id="panel-pit-stops" role="tabpanel" aria-labelledby="tab-pit-stops" hidden>
             <div class="pit-stops-wrap">
                 <div class="pit-stops-intro">
                     <div class="pit-stops-kicker">Pit Stops · <span id="pit-stops-year">2026</span></div>
@@ -381,7 +382,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-debrief" role="tabpanel" aria-labelledby="tab-debrief">
+        <div class="standings-panel" id="panel-debrief" role="tabpanel" aria-labelledby="tab-debrief" hidden>
             <div class="debrief-wrap">
                 <div class="debrief-intro">
                     <div class="debrief-kicker">Friday Practice · <span id="debrief-year">2026</span></div>
@@ -402,7 +403,7 @@
             </div>
         </div>
 
-        <div class="standings-panel" id="panel-destructors" role="tabpanel" aria-labelledby="tab-destructors">
+        <div class="standings-panel" id="panel-destructors" role="tabpanel" aria-labelledby="tab-destructors" hidden>
             <div class="destructors-wrap">
                 <div class="destructors-intro">
                     <div class="destructors-kicker">Crash Costs · <span id="destructors-year">2026</span></div>
@@ -427,7 +428,7 @@
             Δεδομένα από <a href="https://github.com/jolpica/jolpica-f1" target="_blank" rel="noopener">Jolpica F1</a> &amp; <a href="https://openf1.org" target="_blank" rel="noopener">OpenF1</a> · Ενημέρωση μετά από κάθε αγώνα
         </div>
     </div>
-</section>
+</main>
 
 <button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Επιστροφή στην κορυφή"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
 <div class="share-feedback" id="share-feedback" aria-live="polite"></div>
@@ -462,7 +463,7 @@
 <script defer src="/scripts/cookie-consent.min.js?v=9d38adec"></script>
 <script defer src="/scripts/sw-register.min.js?v=0d87bbc1"></script>
 
-<script type="module" src="standings.min.js?v=4b051427"></script>
+<script type="module" src="standings.min.js?v=fd6245d3"></script>
 <script nomodule>
     document.addEventListener('DOMContentLoaded', function() {
         var wrapper = document.querySelector('.standings-wrapper .container');

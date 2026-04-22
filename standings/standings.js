@@ -86,14 +86,16 @@ let pendingTrackTeamA = '';
 let pendingTrackTeamB = '';
 let pendingDebriefRound = '';
 let pendingDebriefView = 'single-lap';
+let scheduledModuleFrame = 0;
+let scheduledModuleTab = '';
 const tabModulePromises = Object.create(null);
 const tabModuleInstances = Object.create(null);
 
 function skelRows(n) {
-    const rowHeight = 72;
+    const rowHeight = 84;
     let h = '<div style="min-height:' + (n * rowHeight) + 'px;">';
     for (let i = 0; i < n; i++) {
-        h += '<div class="skeleton-row" style="min-height:62px;">'
+        h += '<div class="skeleton-row">'
             + '<div class="skel" style="width:22px;height:18px;margin:0 auto;"></div>'
             + '<div style="display:flex;align-items:center;gap:0.7rem;">'
             + '<div class="skel skel-circle"></div>'
@@ -367,6 +369,10 @@ function showShareFeedback(message) {
     }, 2600);
 }
 
+function prefersReducedMotion() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+
 function copyTextToClipboard(text) {
     if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
         return navigator.clipboard.writeText(text);
@@ -465,7 +471,12 @@ function revealRequestedTarget() {
         target.classList.remove('share-focus-target');
     }, 1800);
 
-    if (!isEmbedMode) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!isEmbedMode) {
+        target.scrollIntoView({
+            behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+            block: 'start'
+        });
+    }
     pendingRevealTarget = '';
 }
 
@@ -690,6 +701,21 @@ function showActivePanelError() {
         + '</div>';
 }
 
+function scheduleStandingsModuleActivation(tabName) {
+    if (scheduledModuleFrame) {
+        window.cancelAnimationFrame(scheduledModuleFrame);
+        scheduledModuleFrame = 0;
+    }
+
+    scheduledModuleTab = tabName;
+    scheduledModuleFrame = window.requestAnimationFrame(function() {
+        const nextTab = scheduledModuleTab;
+        scheduledModuleFrame = 0;
+        scheduledModuleTab = '';
+        if (nextTab) activateTabModule(nextTab);
+    });
+}
+
 function activateStandingsTab(tabName, options) {
     const nextTab = sanitizeStandingsTab(tabName);
 
@@ -705,24 +731,26 @@ function activateStandingsTab(tabName, options) {
         const isActive = tab.getAttribute('data-tab') === nextTab;
         tab.classList.toggle('active', isActive);
         tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        tab.setAttribute('tabindex', isActive ? '0' : '-1');
     });
 
     standingsPanels.forEach(function(panel) {
-        panel.classList.toggle('active', panel.id === 'panel-' + nextTab);
+        const isActive = panel.id === 'panel-' + nextTab;
+        panel.classList.toggle('active', isActive);
+        panel.hidden = !isActive;
+        if (isActive) {
+            panel.setAttribute('tabindex', '0');
+        } else {
+            panel.removeAttribute('tabindex');
+        }
     });
-
-    const activePanel = document.getElementById('panel-' + nextTab);
-    if (activePanel && !(options && options.skipFocus)) {
-        activePanel.setAttribute('tabindex', '-1');
-        activePanel.focus({ preventScroll: true });
-    }
 
     refreshEmbedVisibility();
     if (!options || !options.skipURL) writeStandingsURLState(true);
     window.setTimeout(revealRequestedTarget, 0);
 
     if (hasModule) {
-        activateTabModule(nextTab);
+        scheduleStandingsModuleActivation(nextTab);
         return;
     }
     if (!isLightweightTab(nextTab)) {
@@ -1124,10 +1152,18 @@ function bindEvents() {
             let next = -1;
             if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (current + 1) % standingsTabs.length;
             if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (current - 1 + standingsTabs.length) % standingsTabs.length;
+            if (event.key === 'Home') next = 0;
+            if (event.key === 'End') next = standingsTabs.length - 1;
             if (next >= 0) {
                 event.preventDefault();
                 standingsTabs[next].focus();
                 standingsTabs[next].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+                return;
+            }
+
+            if (event.key === 'Enter' || event.key === ' ' || event.code === 'Space') {
+                event.preventDefault();
+                activateStandingsTab(standingsTabs[current].getAttribute('data-tab'));
             }
         });
     }

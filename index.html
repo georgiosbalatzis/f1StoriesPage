@@ -31,6 +31,7 @@
     <link rel="canonical" href="https://f1stories.gr/">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/icons/favicon-16.png">
     <meta name="mobile-web-app-capable" content="yes">
+    <link id="hero-image-preload" rel="preload" as="image" fetchpriority="high" imagesizes="100vw">
     <script>
         window.__F1StoriesHeroBackgrounds = [
             { desktop: { avif: '/images/bg/bg8.avif', webp: '/images/bg/bg8.webp' }, mobile: { avif: '/images/bg/bg8-mobile.avif', webp: '/images/bg/bg8-mobile.webp' }, desktopWidth: 1617, mobileWidth: 768 },
@@ -50,14 +51,13 @@
             var backgrounds = window.__F1StoriesHeroBackgrounds || [];
             if (!backgrounds.length) return;
             var selected = backgrounds[(dayOfYear - 1) % backgrounds.length];
+            var preload = document.getElementById('hero-image-preload');
             window.__F1StoriesHeroBackground = selected;
-            var preload = document.createElement('link');
-            preload.rel = 'preload';
-            preload.as = 'image';
-            preload.setAttribute('fetchpriority', 'high');
-            preload.setAttribute('imagesrcset', selected.mobile.avif + ' ' + selected.mobileWidth + 'w, ' + selected.desktop.avif + ' ' + selected.desktopWidth + 'w');
-            preload.setAttribute('imagesizes', '100vw');
-            document.head.appendChild(preload);
+            if (preload) {
+                preload.href = selected.desktop.avif || selected.mobile.avif || '';
+                preload.setAttribute('imagesrcset', selected.mobile.avif + ' ' + selected.mobileWidth + 'w, ' + selected.desktop.avif + ' ' + selected.desktopWidth + 'w');
+                preload.setAttribute('imagesizes', '100vw');
+            }
         })();
     </script>
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
@@ -73,8 +73,8 @@
     <!-- f1s:critical-css:end -->
     <link rel="preload" as="style" href="styles.min.css?v=53367291" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="styles.min.css?v=53367291"></noscript>
-    <link rel="preload" as="style" href="home.min.css?v=3700d19d" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="home.min.css?v=3700d19d"></noscript>
+    <link rel="preload" as="style" href="home.min.css?v=deb49e6f" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="home.min.css?v=deb49e6f"></noscript>
     <link rel="preload" as="style" href="theme-overrides.min.css?v=2728eb3a" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="theme-overrides.min.css?v=2728eb3a"></noscript>
     <link rel="preload" as="style" href="/blog-module/blog-styles.min.css?v=0f638228" onload="this.onload=null;this.rel='stylesheet'">
@@ -196,7 +196,7 @@
   <symbol id="fa-youtube" viewBox="0 0 576 512"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></symbol>
 </svg></div>
 <!-- f1s:icon-sprite:end -->
-<a href="#latest" class="skip-link">Μετάβαση στο περιεχόμενο</a>
+<a href="#main" class="skip-link">Μετάβαση στο περιεχόμενο</a>
 <div class="background"></div>
 <div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
 
@@ -235,6 +235,7 @@
     </div>
 </nav>
 
+<main id="main">
 <!-- ═══ HERO — no buttons, Greek text ═══ -->
 <section id="hero">
     <div class="hero-overlay image-bg" aria-hidden="true">
@@ -281,39 +282,39 @@
 <section id="latest" class="fade-in">
     <div class="container">
         <h2 class="text-center">Τελευταία από τα F1 Stories</h2>
-        <div class="latest-tabs" role="tablist">
-            <button class="latest-tab" data-tab="videos" role="tab" aria-selected="false"><svg class="icon" aria-hidden="true"><use href="#fa-video"/></svg> Βίντεο</button>
-            <button class="latest-tab active" data-tab="articles" role="tab" aria-selected="true"><svg class="icon" aria-hidden="true"><use href="#fa-pen-nib"/></svg> Άρθρα</button>
+        <div class="latest-tabs" role="tablist" aria-label="Τελευταίο περιεχόμενο">
+            <button class="latest-tab" id="tab-videos" data-tab="videos" role="tab" aria-controls="panel-videos" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-video"/></svg> Βίντεο</button>
+            <button class="latest-tab active" id="tab-articles" data-tab="articles" role="tab" aria-controls="panel-articles" aria-selected="true" tabindex="0"><svg class="icon" aria-hidden="true"><use href="#fa-pen-nib"/></svg> Άρθρα</button>
         </div>
 
         <!-- Videos panel -->
-        <div class="latest-panel" id="panel-videos" role="tabpanel">
+        <div class="latest-panel" id="panel-videos" role="tabpanel" aria-labelledby="tab-videos" hidden>
             <div class="row g-4 episode-grid" id="video-cards-row">
                 <!-- Skeleton placeholders while loading -->
                 <div class="col-md-4 video-skeleton">
-                    <div class="ep-card" style="pointer-events:none;animation:skeletonPulse 1.6s ease-in-out infinite;">
-                        <div style="aspect-ratio:16/9;background:var(--bg-surface-alt);"></div>
-                        <div class="ep-card__body" style="gap:.6rem;display:flex;flex-direction:column;">
-                            <div style="height:14px;border-radius:4px;background:var(--bg-surface-alt);width:80%;"></div>
-                            <div style="height:10px;border-radius:4px;background:var(--bg-surface-alt);width:50%;"></div>
+                    <div class="ep-card video-skeleton__card" style="animation:skeletonPulse 1.6s ease-in-out infinite;">
+                        <div class="video-skeleton__thumb"></div>
+                        <div class="ep-card__body video-skeleton__body">
+                            <div class="video-skeleton__line video-skeleton__line--title" style="width:80%;"></div>
+                            <div class="video-skeleton__line video-skeleton__line--meta" style="width:50%;"></div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 video-skeleton">
-                    <div class="ep-card" style="pointer-events:none;animation:skeletonPulse 1.6s ease-in-out infinite .2s;">
-                        <div style="aspect-ratio:16/9;background:var(--bg-surface-alt);"></div>
-                        <div class="ep-card__body" style="gap:.6rem;display:flex;flex-direction:column;">
-                            <div style="height:14px;border-radius:4px;background:var(--bg-surface-alt);width:75%;"></div>
-                            <div style="height:10px;border-radius:4px;background:var(--bg-surface-alt);width:45%;"></div>
+                    <div class="ep-card video-skeleton__card" style="animation:skeletonPulse 1.6s ease-in-out infinite .2s;">
+                        <div class="video-skeleton__thumb"></div>
+                        <div class="ep-card__body video-skeleton__body">
+                            <div class="video-skeleton__line video-skeleton__line--title" style="width:75%;"></div>
+                            <div class="video-skeleton__line video-skeleton__line--meta" style="width:45%;"></div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 video-skeleton">
-                    <div class="ep-card" style="pointer-events:none;animation:skeletonPulse 1.6s ease-in-out infinite .4s;">
-                        <div style="aspect-ratio:16/9;background:var(--bg-surface-alt);"></div>
-                        <div class="ep-card__body" style="gap:.6rem;display:flex;flex-direction:column;">
-                            <div style="height:14px;border-radius:4px;background:var(--bg-surface-alt);width:70%;"></div>
-                            <div style="height:10px;border-radius:4px;background:var(--bg-surface-alt);width:40%;"></div>
+                    <div class="ep-card video-skeleton__card" style="animation:skeletonPulse 1.6s ease-in-out infinite .4s;">
+                        <div class="video-skeleton__thumb"></div>
+                        <div class="ep-card__body video-skeleton__body">
+                            <div class="video-skeleton__line video-skeleton__line--title" style="width:70%;"></div>
+                            <div class="video-skeleton__line video-skeleton__line--meta" style="width:40%;"></div>
                         </div>
                     </div>
                 </div>
@@ -324,7 +325,7 @@
         </div>
 
         <!-- Articles panel -->
-        <div class="latest-panel active" id="panel-articles" role="tabpanel">
+        <div class="latest-panel active" id="panel-articles" role="tabpanel" aria-labelledby="tab-articles">
             <div class="row g-4 blog-posts"><div class="col-12 text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Φόρτωση...</span></div></div></div>
             <div class="text-center mt-4"><a href="/blog-module/blog/index.html" class="cta-button cta-secondary cta-sm">Όλα τα άρθρα <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></a></div>
         </div>
@@ -417,6 +418,7 @@
         </form>
     </div></div></div></div>
 </section>
+</main>
 
 <!-- @include partials/footer.html -->
 <!-- @include:begin partials/footer.html -->
@@ -488,8 +490,8 @@
 <button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Επιστροφή στην κορυφή"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
 
 <script src="/blog-module/blog-loader.min.js?v=0b698350" defer></script>
-<script src="scripts/background-randomizer.min.js?v=1d564635" defer></script>
-<script src="scripts/f1-optimized.min.js?v=6edf1f97" defer></script>
+<script src="scripts/background-randomizer.min.js?v=6f8cace4" defer></script>
+<script src="scripts/f1-optimized.min.js?v=400bdd14" defer></script>
 <script src="/scripts/cookie-consent.min.js?v=9d38adec" defer></script>
 <script src="scripts/shared-nav.min.js?v=aa376236" defer></script>
 <script src="/scripts/sw-register.min.js?v=0d87bbc1" defer></script>

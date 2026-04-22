@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v28
+   F1 Stories — Service Worker v29
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,11 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v29 bump: Phase 15 accessibility + CWV polish — homepage hero image
+   preloading now resolves before the randomizer runs, shell pages expose
+   consistent skip links and main landmarks, and tab UIs on home/standings
+   now manage hidden state, roving tabindex, and keyboard activation
+   without pinning stale shell markup or JS in returning sessions.
    v28 bump: Phase 13 YouTube snapshot — the homepage latest-videos rail
    now reads a committed /assets/youtube-latest.json snapshot before any
    live proxy refresh. Precache ensures the section renders from the local
@@ -104,11 +109,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v28';
-var CACHE_SHELL   = 'f1s-shell-v28';
-var CACHE_PAGES   = 'f1s-pages-v28';
-var CACHE_ASSETS  = 'f1s-assets-v28';
-var CACHE_DATA    = 'f1s-data-v28';
+var SW_VERSION    = 'v29';
+var CACHE_SHELL   = 'f1s-shell-v29';
+var CACHE_PAGES   = 'f1s-pages-v29';
+var CACHE_ASSETS  = 'f1s-assets-v29';
+var CACHE_DATA    = 'f1s-data-v29';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
