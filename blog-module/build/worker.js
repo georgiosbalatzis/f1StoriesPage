@@ -1,5 +1,5 @@
 const { parentPort, workerData, isMainThread } = require('worker_threads');
-const { fs, path, mammoth, CONFIG, utils, assertNoInlineDataImages } = require('./shared');
+const { fs, path, mammoth, CONFIG, utils, assertNoInlineDataImages, getImageDimensionsForPublicPath } = require('./shared');
 const { extractMetadata, stripLeadingArticleBoilerplate } = require('./metadata');
 const { convertDocxToHtml } = require('./parse-docx');
 const { convertTxtToHtml } = require('./parse-txt');
@@ -135,6 +135,8 @@ async function processBlogEntry(entryPath) {
 
     const primaryImage = images.thumbnail || images.background || CONFIG.DEFAULT_BLOG_IMAGE;
     const headerImage = images.background || images.thumbnail || CONFIG.DEFAULT_BLOG_IMAGE;
+    const primaryImageDimensions = await getImageDimensionsForPublicPath(primaryImage);
+    const headerImageDimensions = await getImageDimensionsForPublicPath(headerImage);
     const postData = {
         id: folderName,
         title: metadata.title,
@@ -155,7 +157,11 @@ async function processBlogEntry(entryPath) {
         category: metadata.category || 'Racing',
         wordCount,
         readingTime,
-        content
+        content,
+        imageWidth: primaryImageDimensions && primaryImageDimensions.width ? primaryImageDimensions.width : 848,
+        imageHeight: primaryImageDimensions && primaryImageDimensions.height ? primaryImageDimensions.height : 400,
+        backgroundImageWidth: headerImageDimensions && headerImageDimensions.width ? headerImageDimensions.width : 848,
+        backgroundImageHeight: headerImageDimensions && headerImageDimensions.height ? headerImageDimensions.height : 400
     };
 
     const bgImageFilename = postData.backgroundImage.includes('/')
@@ -166,6 +172,7 @@ async function processBlogEntry(entryPath) {
         ? `<source type="image/avif" srcset="${heroAvifFile}">`
         : '';
     const authorImagePath = CONFIG.AUTHOR_AVATARS[postData.author] || CONFIG.AUTHOR_AVATARS.default;
+    const authorImageDimensions = await getImageDimensionsForPublicPath(`/images/authors/${authorImagePath}`);
     const templateHtml = fs.readFileSync(CONFIG.TEMPLATE_PATH, 'utf8');
     const safeExcerpt = postData.excerpt
         .replace(/&/g, '&amp;')
@@ -180,6 +187,8 @@ async function processBlogEntry(entryPath) {
         .replace(/ARTICLE_DATE/g, postData.displayDate)
         .replace(/ARTICLE_EXCERPT/g, safeExcerpt)
         .replace(/ARTICLE_COMMENTS/g, postData.comments)
+        .replace(/ARTICLE_IMAGE_WIDTH/g, String(postData.backgroundImageWidth || 848))
+        .replace(/ARTICLE_IMAGE_HEIGHT/g, String(postData.backgroundImageHeight || 400))
         .replace(/ARTICLE_IMAGE/g, bgImageFilename)
         .replace(/ARTICLE_HERO_AVIF_SOURCE/g, heroAvifSource)
         .replace(/ARTICLE_ID/g, folderName)
@@ -187,6 +196,8 @@ async function processBlogEntry(entryPath) {
         .replace(/ARTICLE_CATEGORY/g, postData.category)
         .replace(/ARTICLE_CONTENT/g, postData.content)
         .replace(/CURRENT_URL/g, `https://f1stories.gr/blog-module/blog-entries/${folderName}/article.html`)
+        .replace(/ARTICLE_AUTHOR_IMAGE_WIDTH/g, String(authorImageDimensions && authorImageDimensions.width ? authorImageDimensions.width : 474))
+        .replace(/ARTICLE_AUTHOR_IMAGE_HEIGHT/g, String(authorImageDimensions && authorImageDimensions.height ? authorImageDimensions.height : 474))
         .replace(/src="\/images\/authors\/default\.webp"/, `src="/images/authors/${authorImagePath}"`);
 
     if (!fs.existsSync(CONFIG.OUTPUT_HTML_DIR)) utils.ensureDirectory(CONFIG.OUTPUT_HTML_DIR);

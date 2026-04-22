@@ -297,7 +297,7 @@
 <header>
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
-            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" width="48" height="48"></a>
+            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" decoding="async" width="48" height="48"></a>
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
@@ -419,7 +419,7 @@
                 <div class="article-header" id="pv-header">
                     <picture>
                         <img src="/blog-module/images/default-blog.jpg" alt="" class="article-header-img" id="pv-hero-img"
-                             loading="eager" decoding="sync">
+                             loading="eager" decoding="sync" width="848" height="400">
                     </picture>
                     <div class="article-header-overlay">
                         <h1 class="article-title" id="pv-title"></h1>
@@ -451,7 +451,7 @@
                     <div class="author-box">
                         <div class="author-header">
                             <div class="author-avatar">
-                                <img id="pv-author-img" src="/images/authors/default.webp" alt="">
+                                <img id="pv-author-img" src="/images/authors/default.webp" alt="Author" loading="lazy" decoding="async" width="474" height="474">
                                 <span class="avatar-text" id="pv-author-initial">A</span>
                             </div>
                             <div class="author-info">
@@ -518,19 +518,42 @@
     };
 
     var heroObjectUrl = null;
+    var heroImageMeta = { width: 848, height: 400 };
+
+    function readImageMeta(url) {
+        return new Promise(function (resolve) {
+            var probe = new Image();
+            probe.onload = function () {
+                resolve({
+                    width: probe.naturalWidth || 0,
+                    height: probe.naturalHeight || 0
+                });
+            };
+            probe.onerror = function () {
+                resolve({ width: 0, height: 0 });
+            };
+            probe.src = url;
+        });
+    }
+
+    function applyImageMeta(img, meta, fallbackWidth, fallbackHeight) {
+        img.width = meta && meta.width ? meta.width : fallbackWidth;
+        img.height = meta && meta.height ? meta.height : fallbackHeight;
+    }
 
     // ── Hero image handler ────────────────────────────────
-    heroInput.addEventListener('change', function () {
+    heroInput.addEventListener('change', async function () {
         if (heroInput.files && heroInput.files[0]) {
             if (heroObjectUrl) URL.revokeObjectURL(heroObjectUrl);
             heroObjectUrl = URL.createObjectURL(heroInput.files[0]);
+            heroImageMeta = await readImageMeta(heroObjectUrl);
             fileText.textContent = heroInput.files[0].name;
             fileLabel.classList.add('has-file');
         }
     });
 
     // ── Content images handlers ───────────────────────────
-    var contentImageFiles = []; // [{ file, url }]
+    var contentImageFiles = []; // [{ file, url, width, height }]
     var MARKER_TOKEN = '[img-instert-tag]';
 
     function countMarkers() {
@@ -577,6 +600,9 @@
             var img = document.createElement('img');
             img.src = item.url;
             img.alt = item.file.name;
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            applyImageMeta(img, item, 1600, 900);
             img.style.cssText = 'width:100%;height:90px;object-fit:cover;display:block;';
 
             var label = document.createElement('div');
@@ -648,11 +674,13 @@
         updateMarkerCount();
     }
 
-    contentInput.addEventListener('change', function () {
+    contentInput.addEventListener('change', async function () {
         if (!contentInput.files || !contentInput.files.length) return;
         for (var i = 0; i < contentInput.files.length; i++) {
             var f = contentInput.files[i];
-            contentImageFiles.push({ file: f, url: URL.createObjectURL(f) });
+            var url = URL.createObjectURL(f);
+            var meta = await readImageMeta(url);
+            contentImageFiles.push({ file: f, url: url, width: meta.width, height: meta.height });
         }
         // Reset so picking the same file again still fires 'change'
         contentInput.value = '';
@@ -1122,6 +1150,7 @@
         var heroImg = document.getElementById('pv-hero-img');
         heroImg.src = heroObjectUrl || '/blog-module/images/default-blog.jpg';
         heroImg.alt = title;
+        applyImageMeta(heroImg, heroObjectUrl ? heroImageMeta : { width: 848, height: 400 }, 848, 400);
 
         // Content
         var contentEl = document.getElementById('pv-content');
@@ -1133,6 +1162,7 @@
         document.getElementById('pv-author-initial').textContent = author.charAt(0).toUpperCase();
         if (authorData) {
             document.getElementById('pv-author-img').src = authorData.image;
+            document.getElementById('pv-author-img').alt = author;
             document.getElementById('pv-author-title').textContent = authorData.title;
             document.getElementById('pv-author-bio').textContent = authorData.bio;
         }
@@ -1251,6 +1281,21 @@
 
     function isStandaloneUrl(line) {
         return /^https?:\/\/\S+$/.test(line.trim());
+    }
+
+    function buildPreviewImageTag(src, alt, meta, options) {
+        var opts = options || {};
+        var attrs = [
+            'class="' + (opts.className || 'article-content-img') + '"',
+            'src="' + escapeHtml(src) + '"',
+            'alt="' + escapeHtml(alt || '') + '"',
+            'decoding="' + (opts.decoding || 'async') + '"',
+            'width="' + String(meta && meta.width ? meta.width : (opts.fallbackWidth || 1600)) + '"',
+            'height="' + String(meta && meta.height ? meta.height : (opts.fallbackHeight || 900)) + '"'
+        ];
+        if (opts.loading) attrs.push('loading="' + opts.loading + '"');
+        if (opts.dataFullSrc !== false) attrs.push('data-full-src="' + escapeHtml(src) + '"');
+        return '<img ' + attrs.join(' ') + '>';
     }
 
     function parsePipeTableRow(line) {
@@ -1396,7 +1441,7 @@
                 if (item) {
                     var num = imageIdx + 2; // 3, 4, 5 …
                     html += '<figure class="article-figure">' +
-                        '<img class="article-content-img" src="' + escapeHtml(item.url) + '" alt="Image ' + num + '" loading="lazy">' +
+                        buildPreviewImageTag(item.url, 'Image ' + num, item, { loading: 'lazy' }) +
                         '<figcaption>Image ' + num + '</figcaption>' +
                         '</figure>\n';
                 } else {
@@ -1435,7 +1480,7 @@
                 var num = o + 3;
                 orphanHtmls.push(
                     '<figure class="article-figure">' +
-                    '<img class="article-content-img" src="' + escapeHtml(item.url) + '" alt="Image ' + num + '">' +
+                    buildPreviewImageTag(item.url, 'Image ' + num, item, { loading: 'lazy' }) +
                     '</figure>'
                 );
             }
@@ -1455,14 +1500,18 @@
         for (var i = 0; i < figureHtmls.length; i++) {
             var imgMatch = figureHtmls[i].match(/<img[^>]*src="([^"]+)"[^>]*>/);
             var src = imgMatch ? imgMatch[1] : '';
+            var widthMatch = figureHtmls[i].match(/\bwidth="(\d+)"/i);
+            var heightMatch = figureHtmls[i].match(/\bheight="(\d+)"/i);
+            var width = widthMatch ? parseInt(widthMatch[1], 10) : 1600;
+            var height = heightMatch ? parseInt(heightMatch[1], 10) : 900;
             var active = i === 0 ? ' active' : '';
             slides +=
                 '<div class="gallery-slide' + active + '" data-index="' + i + '">' +
-                    '<img src="' + src + '" alt="Gallery image ' + (i + 1) + '" class="article-content-img">' +
+                    buildPreviewImageTag(src, 'Gallery image ' + (i + 1), { width: width, height: height }, { loading: 'lazy' }) +
                 '</div>';
             thumbs +=
                 '<button class="gallery-thumb' + active + '" data-index="' + i + '" aria-label="Show image ' + (i + 1) + '">' +
-                    '<img src="' + src + '" alt="" loading="lazy">' +
+                    '<img src="' + src + '" alt="" loading="lazy" decoding="async" width="' + width + '" height="' + height + '">' +
                 '</button>';
         }
         var total = figureHtmls.length;
@@ -1590,8 +1639,10 @@
         // Simple fullscreen view
         var overlay = document.createElement('div');
         overlay.className = 'lb-overlay open';
+        var naturalWidth = img.naturalWidth || img.width || 1600;
+        var naturalHeight = img.naturalHeight || img.height || 900;
         overlay.innerHTML = '<button class="lb-close" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#fa-times"/></svg></button>' +
-            '<div class="lb-img-wrap"><img class="lb-img" src="' + (img.dataset.fullSrc || img.src) + '" alt=""></div>';
+            '<div class="lb-img-wrap"><img class="lb-img" src="' + (img.dataset.fullSrc || img.src) + '" alt="" decoding="async" width="' + naturalWidth + '" height="' + naturalHeight + '"></div>';
         document.body.appendChild(overlay);
         document.body.style.overflow = 'hidden';
         function close() { overlay.remove(); document.body.style.overflow = ''; }

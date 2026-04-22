@@ -2,7 +2,7 @@ const { Worker } = require('worker_threads');
 const os = require('os');
 const { updateDirtyAirCache } = require('../dirty-air-cache');
 const { updateDestructorsCache } = require('../destructors-cache');
-const { fs, path, CONFIG, utils, getCardThumbnailPath } = require('./shared');
+const { fs, path, CONFIG, utils, getCardThumbnailPath, getImageDimensionsForPublicPath } = require('./shared');
 const { generateSitemap } = require('./sitemap');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
@@ -69,11 +69,13 @@ function fixMissingAuthors(blogPosts) {
     });
 }
 
-function buildIndexPosts(blogPosts) {
-    return blogPosts.map(post => {
+async function buildIndexPosts(blogPosts) {
+    return Promise.all(blogPosts.map(async post => {
         const categories = [];
         if (post.tag) categories.push(post.tag);
         if (post.category && String(post.category) !== post.tag) categories.push(String(post.category));
+        const thumbnail = getCardThumbnailPath(post.image);
+        const thumbnailDimensions = await getImageDimensionsForPublicPath(thumbnail);
         return {
             id: post.id,
             title: post.title,
@@ -82,23 +84,35 @@ function buildIndexPosts(blogPosts) {
             displayDate: post.displayDate,
             image: post.image,
             backgroundImage: post.backgroundImage,
-            thumbnail: getCardThumbnailPath(post.image),
+            thumbnail,
+            imageWidth: post.imageWidth,
+            imageHeight: post.imageHeight,
+            backgroundImageWidth: post.backgroundImageWidth,
+            backgroundImageHeight: post.backgroundImageHeight,
+            thumbnailWidth: thumbnailDimensions && thumbnailDimensions.width ? thumbnailDimensions.width : 400,
+            thumbnailHeight: thumbnailDimensions && thumbnailDimensions.height ? thumbnailDimensions.height : 188,
             excerpt: post.excerpt,
             url: post.url,
             wordCount: post.wordCount,
             readingTime: post.readingTime,
             categories
         };
-    });
+    }));
 }
 
-function buildHomeLatest(blogPosts) {
-    return blogPosts.slice(0, 3).map(post => ({
+async function buildHomeLatest(blogPosts) {
+    return Promise.all(blogPosts.slice(0, 3).map(async post => {
+        const thumbnail = getCardThumbnailPath(post.image);
+        const thumbnailDimensions = await getImageDimensionsForPublicPath(thumbnail);
+        return {
         title: post.title,
         slug: post.id,
         date: post.date,
         excerpt: post.excerpt,
-        thumbnail: getCardThumbnailPath(post.image)
+        thumbnail,
+        thumbnailWidth: thumbnailDimensions && thumbnailDimensions.width ? thumbnailDimensions.width : 400,
+        thumbnailHeight: thumbnailDimensions && thumbnailDimensions.height ? thumbnailDimensions.height : 188
+    };
     }));
 }
 
@@ -316,18 +330,18 @@ async function processBlogEntries(options = {}) {
     fs.writeFileSync(CONFIG.OUTPUT_JSON, JSON.stringify(blogData, null, 2));
     console.log(`Blog data saved to ${CONFIG.OUTPUT_JSON}`);
 
-    const indexPosts = buildIndexPosts(blogPosts);
+    const indexPosts = await buildIndexPosts(blogPosts);
     const indexPath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-data.json');
     fs.writeFileSync(indexPath, JSON.stringify({ posts: indexPosts }, null, 0));
     console.log(`Blog index data saved to ${indexPath} (${Math.round(JSON.stringify({ posts: indexPosts }).length / 1024)} KB)`);
 
-    const homeLatest = buildHomeLatest(blogPosts);
+    const homeLatest = await buildHomeLatest(blogPosts);
     const homeLatestPath = path.join(CONFIG.BLOG_DIR, '..', 'home-latest.json');
     fs.writeFileSync(homeLatestPath, JSON.stringify(homeLatest, null, 0));
     console.log(`Home latest data saved to ${homeLatestPath} (${Math.round(JSON.stringify(homeLatest).length / 1024)} KB)`);
 
     generateSitemap(blogPosts);
-    injectRelatedArticles(blogPosts);
+    await injectRelatedArticles(blogPosts);
     injectPrevNextLinks(blogPosts);
 
     try {

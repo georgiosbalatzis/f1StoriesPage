@@ -39,6 +39,11 @@ export const DRIVER_HEADSHOTS = {
     'arvid_lidblad':   'https://media.formula1.com/image/upload/c_fill,w_80/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp'
 };
 
+export const LOCAL_DRIVER_HEADSHOT_ALIASES = {
+    'lidblad': 'lindblad',
+    'arvid_lidblad': 'lindblad'
+};
+
 export const DRIVER_HEADSHOT_POSITIONS = {
     'antonelli': 'center top',
     'andrea_kimi_antonelli': 'center top',
@@ -57,23 +62,7 @@ export const DRIVER_HEADSHOT_POSITIONS = {
     'arvid_lidblad': 'center top'
 };
 
-export const PREFER_LOCAL_HEADSHOT = {
-    'antonelli': true,
-    'andrea_kimi_antonelli': true,
-    'kimi_antonelli': true,
-    'perez': true,
-    'sergio_perez': true,
-    'bottas': true,
-    'valtteri_bottas': true,
-    'hulkenberg': true,
-    'nico_hulkenberg': true,
-    'bortoleto': true,
-    'gabriel_bortoleto': true,
-    'lindblad': true,
-    'arvid_lindblad': true,
-    'lidblad': true,
-    'arvid_lidblad': true
-};
+export const PREFER_LOCAL_HEADSHOT = true;
 
 export function normalizeDriverLookupKey(value) {
     let normalized = String(value || '').trim().toLowerCase();
@@ -116,7 +105,22 @@ export function getHeadshot(driverId, fallbackName) {
     return '';
 }
 
+export function getLocalHeadshot(driverId, fallbackName) {
+    const candidates = getDriverLookupCandidates(driverId, fallbackName);
+    for (let i = 0; i < candidates.length; i++) {
+        const slug = LOCAL_DRIVER_HEADSHOT_ALIASES[candidates[i]]
+            || candidates[i].split('_').filter(Boolean).slice(-1)[0]
+            || candidates[i];
+        if (!slug) continue;
+        if (DRIVER_HEADSHOTS[candidates[i]] || DRIVER_HEADSHOTS[slug]) {
+            return '/images/drivers/' + slug + '.webp';
+        }
+    }
+    return '';
+}
+
 export function shouldPreferLocalHeadshot(driverId, fallbackName) {
+    if (PREFER_LOCAL_HEADSHOT === true) return Boolean(getLocalHeadshot(driverId, fallbackName));
     const candidates = getDriverLookupCandidates(driverId, fallbackName);
     for (let i = 0; i < candidates.length; i++) {
         if (PREFER_LOCAL_HEADSHOT[candidates[i]]) return true;
@@ -125,9 +129,10 @@ export function shouldPreferLocalHeadshot(driverId, fallbackName) {
 }
 
 export function getPreferredHeadshot(driverId, fallbackName, sourceHeadshot) {
-    const localHeadshot = getHeadshot(driverId, fallbackName);
+    const localHeadshot = getLocalHeadshot(driverId, fallbackName);
+    const externalHeadshot = getHeadshot(driverId, fallbackName);
     if (localHeadshot && shouldPreferLocalHeadshot(driverId, fallbackName)) return localHeadshot;
-    return normalizeHeadshotUrl(sourceHeadshot || localHeadshot || '');
+    return normalizeHeadshotUrl(sourceHeadshot || externalHeadshot || '');
 }
 
 export function getHeadshotObjectPosition(driverId, fallbackName) {

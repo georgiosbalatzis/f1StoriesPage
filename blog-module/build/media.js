@@ -1,4 +1,4 @@
-const { fs, path, sharp, AdmZip, CONFIG, utils } = require('./shared');
+const { fs, path, sharp, AdmZip, CONFIG, utils, getImageDimensions } = require('./shared');
 
 function processImages(entryPath, folderName) {
     const entryFiles = fs.readdirSync(entryPath);
@@ -41,15 +41,9 @@ async function buildPictureHtml(folderName, imageNumber, altText = '') {
     const hasSmWebp = fs.existsSync(path.join(entryPath, smWebp));
     const hasSmAvif = hasAvif && fs.existsSync(path.join(entryPath, smAvif));
 
-    let widthAttr = '';
-    let heightAttr = '';
-    try {
-        const { width, height } = await sharp(path.join(entryPath, webpFile)).metadata();
-        if (width && height) {
-            widthAttr = ` width="${width}"`;
-            heightAttr = ` height="${height}"`;
-        }
-    } catch (_) {}
+    const fullDimensions = await getImageDimensions(path.join(entryPath, webpFile));
+    const widthAttr = fullDimensions && fullDimensions.width ? ` width="${fullDimensions.width}"` : '';
+    const heightAttr = fullDimensions && fullDimensions.height ? ` height="${fullDimensions.height}"` : '';
 
     const sizes = '(max-width: 820px) calc(100vw - 2rem), 770px';
     let webpSrcset = webpFile;
@@ -57,8 +51,10 @@ async function buildPictureHtml(folderName, imageNumber, altText = '') {
 
     if (hasSmWebp) {
         try {
-            const { width: smWidth } = await sharp(path.join(entryPath, smWebp)).metadata();
-            const { width: fullWidth } = await sharp(path.join(entryPath, webpFile)).metadata();
+            const smDimensions = await getImageDimensions(path.join(entryPath, smWebp));
+            const smWidth = smDimensions && smDimensions.width ? smDimensions.width : null;
+            const fullWidth = fullDimensions && fullDimensions.width ? fullDimensions.width : null;
+            if (!smWidth || !fullWidth) throw new Error('missing image dimensions');
             webpSrcset = `${smWebp} ${smWidth}w, ${webpFile} ${fullWidth}w`;
             if (hasSmAvif) avifSrcset = `${smAvif} ${smWidth}w, ${avifFile} ${fullWidth}w`;
         } catch (_) {}
@@ -69,7 +65,7 @@ async function buildPictureHtml(folderName, imageNumber, altText = '') {
                  sizes="${sizes}"
                  alt="${altText}"
                  class="article-content-img"
-                 loading="lazy"${widthAttr}${heightAttr}
+                 loading="lazy" decoding="async"${widthAttr}${heightAttr}
                  data-full-src="${webpFile}"
                  onerror="this.src='${CONFIG.DEFAULT_BLOG_IMAGE}';this.onerror=null;">`;
 
@@ -210,10 +206,13 @@ async function buildImageCarousel(folderName, imageNumbers, options = {}) {
         const smWebp = `${imageNumber}-sm.webp`;
         const fullWebp = `${imageNumber}.webp`;
         const thumbSrc = fs.existsSync(path.join(entryPath, smWebp)) ? smWebp : fullWebp;
+        const thumbDimensions = await getImageDimensions(path.join(entryPath, thumbSrc));
+        const thumbWidthAttr = thumbDimensions && thumbDimensions.width ? ` width="${thumbDimensions.width}"` : '';
+        const thumbHeightAttr = thumbDimensions && thumbDimensions.height ? ` height="${thumbDimensions.height}"` : '';
 
         thumbsHtml += `
             <button class="gallery-thumb${isActive}" data-index="${i}" aria-label="Show image ${i + 1}">
-                <img src="${thumbSrc}" alt="" loading="lazy" draggable="false">
+                <img src="${thumbSrc}" alt="" loading="lazy" decoding="async"${thumbWidthAttr}${thumbHeightAttr} draggable="false">
             </button>`;
     }
 

@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v26
+   F1 Stories — Service Worker v27
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,12 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v27 bump: Phase 12 image hardening — the shell now precaches the
+   optimized /images/logo-256.webp variant instead of the 1.5MB
+   /images/logo.png asset, and standings headshots/team logos are served
+   from committed local WebP copies under /images/. Returning sessions
+   refresh onto the lighter image shell and the local-first standings
+   image graph instead of pinning the external F1 CDN path.
    v26 bump: retire article race-radio narration and remove the
    article-audio data path. Returning sessions refresh onto the
    audio-free article shell/runtime instead of serving the v25 player
@@ -92,11 +98,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v26';
-var CACHE_SHELL   = 'f1s-shell-v26';
-var CACHE_PAGES   = 'f1s-pages-v26';
-var CACHE_ASSETS  = 'f1s-assets-v26';
-var CACHE_DATA    = 'f1s-data-v26';
+var SW_VERSION    = 'v27';
+var CACHE_SHELL   = 'f1s-shell-v27';
+var CACHE_PAGES   = 'f1s-pages-v27';
+var CACHE_ASSETS  = 'f1s-assets-v27';
+var CACHE_DATA    = 'f1s-data-v27';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
@@ -115,7 +121,7 @@ var SHELL_ASSETS = [
   '/scripts/analytics.min.js',
   '/scripts/cookie-consent.min.js',
   '/scripts/perf/web-vitals-beacon.min.js',
-  '/images/logo.png',
+  '/images/logo-256.webp',
   '/images/icons/icon-192.png',
   '/blog-module/blog/index.html',
   '/blog-module/blog-styles.min.css',

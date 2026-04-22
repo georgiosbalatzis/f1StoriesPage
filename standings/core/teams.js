@@ -8,25 +8,27 @@
 
 const TEAM_LOGO_BASE = 'https://media.formula1.com/image/upload/c_lfill,w_160/q_auto/v1740000001/common/f1/2026';
 
-function teamEntry(color, name, logoSlug) {
+function teamEntry(color, name, localLogoSlug, remoteLogoSlug) {
+    const slug = remoteLogoSlug || localLogoSlug;
     return {
         color: color,
         name: name,
-        logo: TEAM_LOGO_BASE + '/' + logoSlug + '/2026' + logoSlug + 'logo.webp'
+        logo: '/images/teams/' + localLogoSlug + '.webp',
+        fallbackLogo: TEAM_LOGO_BASE + '/' + slug + '/2026' + slug + 'logo.webp'
     };
 }
 
 export const TEAMS = {
     'mercedes':      teamEntry('27F4D2', 'Mercedes',        'mercedes'),
-    'red_bull':      teamEntry('3671C6', 'Red Bull Racing', 'redbullracing'),
+    'red_bull':      teamEntry('3671C6', 'Red Bull Racing', 'red_bull', 'redbullracing'),
     'ferrari':       teamEntry('E8002D', 'Ferrari',         'ferrari'),
     'mclaren':       teamEntry('FF8000', 'McLaren',         'mclaren'),
-    'aston_martin':  teamEntry('229971', 'Aston Martin',    'astonmartin'),
+    'aston_martin':  teamEntry('229971', 'Aston Martin',    'aston_martin', 'astonmartin'),
     'alpine':        teamEntry('FF87BC', 'Alpine',          'alpine'),
-    'haas':          teamEntry('B6BABD', 'Haas F1 Team',    'haasf1team'),
-    'rb':            teamEntry('6692FF', 'Racing Bulls',    'racingbulls'),
+    'haas':          teamEntry('B6BABD', 'Haas F1 Team',    'haas', 'haasf1team'),
+    'rb':            teamEntry('6692FF', 'Racing Bulls',    'rb', 'racingbulls'),
     'williams':      teamEntry('64C4FF', 'Williams',        'williams'),
-    'sauber':        teamEntry('F50537', 'Audi',            'audi'),
+    'sauber':        teamEntry('F50537', 'Audi',            'sauber', 'audi'),
     'audi':          teamEntry('F50537', 'Audi',            'audi'),
     'cadillac':      teamEntry('1E4168', 'Cadillac',        'cadillac')
 };
@@ -89,5 +91,5 @@ export function getTeamColor(constructorId) {
 export function getTeamLogo(constructorId, teamName) {
     const teamId = resolveTeamId(constructorId, teamName);
     const t = teamId ? TEAMS[teamId] : null;
-    return t ? t.logo : '';
+    return t ? (t.logo || t.fallbackLogo || '') : '';
 }
