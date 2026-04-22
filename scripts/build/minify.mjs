@@ -56,6 +56,7 @@ const JS_INPUTS = [
     'scripts/sw-register.js',
     'scripts/f1-optimized.js',
     'scripts/background-randomizer.js',
+    'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog-loader.js',
     'blog-module/blog-index.js'
@@ -129,10 +130,11 @@ async function minifyCss(rel) {
 async function minifyJs(rel) {
     const abs = path.join(REPO_ROOT, rel);
     const source = fs.readFileSync(abs, 'utf8');
+    const inlineSourceMap = rel !== 'scripts/perf/error-beacon.js';
     const result = await esbuildTransform(source, {
         loader: 'js',
         minify: true,
-        sourcemap: 'external',
+        sourcemap: inlineSourceMap ? 'external' : false,
         target: ['es2019'],
         legalComments: 'none',
         sourcefile: rel
@@ -140,10 +142,14 @@ async function minifyJs(rel) {
     const outRel = minPathFor(rel);
     const outAbs = path.join(REPO_ROOT, outRel);
     const sourcemapRel = outRel + '.map';
-    const codeWithMapComment = result.code + `//# sourceMappingURL=${path.basename(sourcemapRel)}\n`;
-    fs.writeFileSync(outAbs, codeWithMapComment);
-    fs.writeFileSync(path.join(REPO_ROOT, sourcemapRel), result.map);
-    return { outRel, sourceBytes: Buffer.byteLength(source, 'utf8'), bytes: codeWithMapComment.length };
+    const outputCode = inlineSourceMap
+        ? result.code + `//# sourceMappingURL=${path.basename(sourcemapRel)}\n`
+        : result.code;
+    fs.writeFileSync(outAbs, outputCode);
+    if (inlineSourceMap) {
+        fs.writeFileSync(path.join(REPO_ROOT, sourcemapRel), result.map);
+    }
+    return { outRel, sourceBytes: Buffer.byteLength(source, 'utf8'), bytes: outputCode.length };
 }
 
 async function buildOnce() {
