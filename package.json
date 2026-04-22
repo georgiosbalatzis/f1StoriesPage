@@ -7,8 +7,6 @@
     "build:blog": "node blog-module/build/index.js",
     "build:blog:force": "node blog-module/build/index.js --force",
     "build:image-variants": "node blog-module/generate-image-variants.js --run",
-    "migrate:mp3:inventory": "node scripts/migrate/inventory-mp3.mjs",
-    "migrate:mp3:plan": "node scripts/migrate/upload-mp3.mjs",
     "build:fonts": "node scripts/build/download-fonts.mjs",
     "build:icons": "node scripts/build/build-icon-sprite.mjs",
     "build:bootstrap": "sass styles/vendor/bootstrap.slim.scss styles/vendor/bootstrap.slim.css --style=compressed --no-source-map",

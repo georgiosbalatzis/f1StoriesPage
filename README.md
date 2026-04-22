@@ -153,7 +153,6 @@
 - vanilla JavaScript για client-side interaction και data rendering
 - Bootstrap όπου χρειάζεται για baseline layout utilities
 - Node.js scripts για content build και data preparation
-- Python script για build-time text-to-speech generation
 
 Δεν υπάρχει frontend bundler, framework router ή component runtime τύπου React/Vue/Next. Αυτό κρατά το deployment απλό και ταιριαστό σε static hosting, αλλά μεταφέρει μέρος της πειθαρχίας στην οργάνωση αρχείων, naming conventions και helper scripts.
 
@@ -171,7 +170,6 @@
 │   ├── blog-entries/
 │   ├── blog-data.json
 │   ├── blog-index-data.json
-│   ├── narration-manifest.json
 │   ├── blog-loader.js
 │   ├── blog-processor.js
 │   ├── blog-fixes.js
@@ -179,8 +177,7 @@
 │   ├── dirty-air-cache.js
 │   ├── destructors-cache.js
 │   ├── generate-image-variants.js
-│   ├── convert-to-avifwebp.sh
-│   └── tts-generator-parallel.py
+│   └── convert-to-avifwebp.sh
 ├── standings/
 │   ├── index.html
 │   ├── standings.js
@@ -188,7 +185,6 @@
 │   ├── dirty-air-cache.json
 │   └── destructors-cache.json
 ├── scripts/
-│   └── migrate/
 ├── styles/
 ├── images/
 ├── ghostcar/
@@ -301,7 +297,6 @@ http://localhost:8080/
 ### Προτεινόμενες runtime προϋποθέσεις
 
 - Node.js 18 ή νεότερο
-- Python 3.10 ή νεότερο
 
 Το Node 18+ είναι ουσιαστικά αναγκαίο, επειδή αρκετά scripts βασίζονται στο built-in `fetch`.
 
@@ -322,19 +317,6 @@ http://localhost:8080/
 
 ```bash
 npm install mammoth sharp adm-zip
-```
-
-### Python dependencies
-
-Το [tts-generator-parallel.py](./blog-module/tts-generator-parallel.py) απαιτεί:
-
-- `edge-tts`
-- `beautifulsoup4`
-
-Ενδεικτική εγκατάσταση:
-
-```bash
-pip install edge-tts beautifulsoup4
 ```
 
 ### Προαιρετικά system tools
@@ -378,51 +360,6 @@ Force regeneration:
 ```bash
 node blog-module/generate-image-variants.js --run --force
 ```
-
-### Δημιουργία TTS narration για άρθρα
-
-Για όσα posts δεν έχουν ήδη narration:
-
-```bash
-python3 blog-module/tts-generator-parallel.py
-```
-
-Για πλήρη αναπαραγωγή:
-
-```bash
-python3 blog-module/tts-generator-parallel.py --force
-```
-
-Για συγκεκριμένο post:
-
-```bash
-python3 blog-module/tts-generator-parallel.py --post 20250101G
-```
-
-### Phase 10: migration των narration mp3 σε external storage
-
-Η προετοιμασία της μεταφοράς ζει στα `scripts/migrate/` και βασίζεται σε δύο artifacts:
-
-- `scripts/migrate/mp3-inventory.json` για το πλήρες inventory των tracked narrations
-- `blog-module/narration-manifest.json` για το public runtime routing που διαβάζει το article player
-
-Βασικά βήματα:
-
-```bash
-npm run migrate:mp3:inventory
-npm run migrate:mp3:plan -- --base-url https://media.example.com/narration --remote your-rclone-remote
-```
-
-Τι κάνει κάθε βήμα:
-
-- το inventory script γράφει `{ slug, path, sizeBytes, sha256 }` για κάθε `blog-module/blog-entries/*/narration.mp3`
-- το planning script παράγει `scripts/migrate/mp3-manifest.json` και, αν δοθεί `--remote`, ένα `scripts/migrate/upload-mp3-commands.sh` με `rclone copyto ...`
-- το public `blog-module/narration-manifest.json` μένει σε `mode: "local"` μέχρι να γίνει verified upload και συνειδητή ενεργοποίηση με `--activate`
-
-Σημείωση λειτουργίας:
-
-- όσο το manifest είναι `local`, τα άρθρα συνεχίζουν να διαβάζουν `./narration.mp3`
-- όταν περάσει σε `external`, το article player χρησιμοποιεί το CDN URL και αν αυτό αποτύχει δείχνει μήνυμα προσωρινής μη διαθεσιμότητας αντί να ψάχνει τοπικό fallback
 
 <a id="design-and-ux"></a>
 ## Design και εμπειρία χρήστη

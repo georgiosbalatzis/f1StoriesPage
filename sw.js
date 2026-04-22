@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v25
+   F1 Stories — Service Worker v26
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,11 +8,14 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
-   v25 bump: Phase 10 groundwork — blog article audio can now switch via
-   /blog-module/narration-manifest.json, and that JSON is treated like the
-   other blog data feeds so a future CDN cutover is not pinned behind a
-   stale static-asset cache entry. Returning sessions refresh onto the new
-   data-cache routing instead of serving an older shell/data policy.
+   v26 bump: retire article race-radio narration and remove the
+   article-audio data path. Returning sessions refresh onto the
+   audio-free article shell/runtime instead of serving the v25 player
+   markup, player script branch, or stale data-cache routing.
+   v25 bump: Phase 10 groundwork — blog article audio could switch via
+   a public audio manifest JSON, and that data was treated like
+   the other blog data feeds so a future CDN cutover was not pinned
+   behind a stale static-asset cache entry.
    v24 bump: Phase 8 (standings IndexedDB cache) — standings/core/cache.js
    now writes OpenF1/Jolpica response payloads into IndexedDB with a
    sessionStorage fallback and lazy migration for old warm-tab entries.
@@ -89,11 +92,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v25';
-var CACHE_SHELL   = 'f1s-shell-v25';
-var CACHE_PAGES   = 'f1s-pages-v25';
-var CACHE_ASSETS  = 'f1s-assets-v25';
-var CACHE_DATA    = 'f1s-data-v25';
+var SW_VERSION    = 'v26';
+var CACHE_SHELL   = 'f1s-shell-v26';
+var CACHE_PAGES   = 'f1s-pages-v26';
+var CACHE_ASSETS  = 'f1s-assets-v26';
+var CACHE_DATA    = 'f1s-data-v26';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
@@ -179,8 +182,7 @@ function isStaticAsset(pathname) {
 function isBlogData(pathname) {
   return pathname === '/blog-module/blog-data.json'
       || pathname === '/blog-module/blog-index-data.json'
-      || pathname === '/blog-module/home-latest.json'
-      || pathname === '/blog-module/narration-manifest.json';
+      || pathname === '/blog-module/home-latest.json';
 }
 
 function isStandingsCache(pathname) {
