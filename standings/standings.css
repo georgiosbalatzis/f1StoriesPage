@@ -74,6 +74,7 @@ body { overflow-y: auto !important; }
 .standings-tab i { font-size: 0.78em; }
 
 .standings-panel { display: none; contain: layout; }
+.standings-panel[hidden] { display: none !important; }
 
 .standings-panel.active { display: block; animation: panelIn 0.35s ease-out; }
 
@@ -107,7 +108,8 @@ body { overflow-y: auto !important; }
 
 [data-theme="light"] .standings-table-wrap { box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06); }
 
-#drivers-table:empty { min-height: 1248px; }
+#drivers-table:empty { min-height: 1680px; }
+#constructors-table:empty { min-height: 840px; }
 
 #drivers-chart { min-height: 362px; }
 
@@ -183,7 +185,8 @@ body { overflow-y: auto !important; }
 
 .chart-pts-label { font-size: 0.62rem; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
 
-.skeleton-row { display: grid; grid-template-columns: 48px 1fr auto; align-items: center; padding: 0.75rem 1.2rem; border-bottom: 1px solid var(--st-border); gap: 0.7rem; }
+.skeleton-row { display: grid; grid-template-columns: 48px 1fr auto; align-items: center; padding: 0.65rem 1.2rem; min-height: 62px; border-bottom: 1px solid var(--st-border); gap: 0.7rem; contain: layout; }
+.skeleton-row:last-child { border-bottom: none; }
 
 .skel { background: var(--st-surface); border-radius: 6px; animation: skelPulse 1.5s ease-in-out infinite; }
 
@@ -214,6 +217,21 @@ body { overflow-y: auto !important; }
 .round-badge { display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem; min-width: 8.3rem; background: var(--st-accent-soft); color: var(--st-accent); padding: 0.2rem 0.6rem; border-radius: 100px; font-size: 0.72rem; font-weight: 600; margin-left: 0.5rem; visibility: hidden; opacity: 0; }
 
 .round-badge.is-visible { visibility: visible; opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+    .standings-panel.active,
+    .live-dot,
+    .skel {
+        animation: none;
+    }
+
+    .st-bar,
+    .chart-fill,
+    .share-feedback,
+    .share-focus-target {
+        transition: none;
+    }
+}
 
 /* ── Dirty Air ── */
 

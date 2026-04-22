@@ -65,9 +65,10 @@
             font-size: 0.88rem;
             font-family: 'DM Sans', sans-serif;
         }
-        .hk-toolbar input:focus,
-        .hk-toolbar select:focus {
-            outline: none;
+        .hk-toolbar input:focus-visible,
+        .hk-toolbar select:focus-visible {
+            outline: 2px solid var(--accent, #60a5fa);
+            outline-offset: 2px;
             border-color: var(--accent, #60a5fa);
             box-shadow: 0 0 0 2px rgba(96,165,250,0.15);
         }
@@ -243,10 +244,11 @@
             line-height: 1.55;
             font-family: 'DM Sans', monospace;
         }
-        .hk-field input:focus,
-        .hk-field select:focus,
-        .hk-field textarea:focus {
-            outline: none;
+        .hk-field input:focus-visible,
+        .hk-field select:focus-visible,
+        .hk-field textarea:focus-visible {
+            outline: 2px solid var(--accent, #60a5fa);
+            outline-offset: 2px;
             border-color: var(--accent, #60a5fa);
             box-shadow: 0 0 0 2px rgba(96,165,250,0.15);
         }
