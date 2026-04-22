@@ -433,8 +433,9 @@ node blog-module/generate-image-variants.js --run --force
 
 Από τη Phase 1 του roadmap, κάθε tracked CSS/JS έχει δίπλα του ένα `.min` sibling (π.χ. `styles.css` + `styles.min.css`). Το production HTML φορτώνει τα minified αρχεία με content-hash query string για σωστό cache-busting, ενώ τα sources παραμένουν commit-ed ως πηγή αλήθειας για diff/review.
 
-- `npm run build` — full shell rebuild: expanded HTML partials first, then asset minify/stamp.
+- `npm run build` — full shell rebuild: expanded HTML partials first, then refresh of `assets/youtube-latest.json`, then asset minify/stamp.
 - `npm run build:html` — επεκτείνει τα `<!-- @include ... -->` markers στα shared shell pages (`partials/head-meta.html`, `partials/footer.html`) με idempotent generated blocks.
+- `npm run build:youtube` — τραβά το YouTube channel RSS στο build-time και ξαναγράφει το local snapshot `assets/youtube-latest.json` που χρησιμοποιεί η homepage videos rail.
 - `npm run build:assets` — χτίζει icon sprite + slim Bootstrap CSS, τρέχει minify (`lightningcss` για CSS, `esbuild` για JS) και μετά stamp (rewrite HTML references σε `.min.<ext>?v=<hash>`).
 - `npm run build:bootstrap` — παράγει το self-hosted `styles/vendor/bootstrap.slim.css` από το scoped SCSS subset.
 - `npm run build:assets:watch` — rebuild σε κάθε αλλαγή source.
