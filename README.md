@@ -85,7 +85,17 @@
 - metadata bundles για homepage και blog listing
 - βοηθητικά εργαλεία για εικόνες, TTS και caches
 
-Η παραγωγή άρθρων γίνεται κυρίως από το [blog-processor.js](./blog-module/blog-processor.js), το οποίο:
+Η παραγωγή άρθρων εκκινεί από το [blog-processor.js](./blog-module/blog-processor.js), το οποίο πλέον είναι thin compatibility wrapper προς το `blog-module/build/`. Ο πραγματικός pipeline κώδικας είναι σπασμένος σε concern-specific modules όπως:
+
+- [build/index.js](./blog-module/build/index.js) για το orchestrator και το worker pool
+- [build/worker.js](./blog-module/build/worker.js) για το per-entry build
+- [build/embeds.js](./blog-module/build/embeds.js) για detection και placeholder extraction στα social/iframe/widget embeds
+- [build/embed-render.js](./blog-module/build/embed-render.js) για render/sanitization/resolution των embed payloads
+- [build/media.js](./blog-module/build/media.js) για εικόνες, galleries και responsive `<picture>`
+- [build/parse-docx.js](./blog-module/build/parse-docx.js) και [build/parse-txt.js](./blog-module/build/parse-txt.js) για source parsing
+- [build/csv-to-table.js](./blog-module/build/csv-to-table.js) για CSV/doc tables
+
+Το pipeline:
 
 - διαβάζει άρθρα από `blog-module/blog-entries/`
 - υποστηρίζει source αρχεία `.docx` και `.txt`
@@ -213,7 +223,7 @@ YYYYMMDD-1X
 
 ### Τι κάνει ο blog processor
 
-Όταν εκτελείται το `blog-processor.js`:
+Όταν εκτελείται το `npm run build:blog`:
 
 1. εντοπίζει νέα ή αλλαγμένα άρθρα
 2. μετατρέπει DOCX περιεχόμενο σε HTML
@@ -225,7 +235,17 @@ YYYYMMDD-1X
 8. συμπληρώνει previous/next article navigation
 9. ανανεώνει τα cache αρχεία του standings module
 
-Το script υποστηρίζει incremental rebuilds και `--force` mode για πλήρη αναδημιουργία.
+Το script υποστηρίζει incremental rebuilds, `--force` mode για πλήρη αναδημιουργία των source-backed entries και golden regression harness στο `blog-module/build/__tests__/`.
+
+Αν ένα παλιότερο article folder υπάρχει ακόμα στο repo αλλά δεν έχει πλέον το αρχικό `.docx` ή `.txt`, ο orchestrator δεν το ξαναχτίζει ως gallery από τα εναπομείναντα images. Αντί γι' αυτό επαναχρησιμοποιεί το committed metadata από το `blog-data.json`, ώστε τα historical cached posts να μένουν σταθερά.
+
+### Νέα διάταξη build modules
+
+- `blog-module/build/index.js`: διαβάζει τα entry folders, αποφασίζει skip/rebuild και γράφει `blog-data.json`, `blog-index-data.json`, `home-latest.json`, `sitemap.xml`
+- `blog-module/build/worker.js`: τρέχει το build ενός μόνο article folder
+- `blog-module/build/embeds.js`: αν θέλεις νέο embed type, πρόσθεσε detection + render case εδώ
+- `blog-module/build/media.js`: αν αλλάζουν targets εικόνων, ενημέρωσε εδώ τα quality / width όρια για hero και content variants
+- `blog-module/blog-processor.legacy.js`: fallback αντίγραφο του παλιού monolith μέχρι να σταθεροποιηθεί πλήρως η νέα διάσπαση
 
 <a id="standings-data-pipeline"></a>
 ## Data pipeline για τα standings
@@ -328,13 +348,13 @@ pip install edge-tts beautifulsoup4
 ### Αναδημιουργία blog content
 
 ```bash
-node blog-module/blog-processor.js
+npm run build:blog
 ```
 
 Για πλήρες rebuild:
 
 ```bash
-node blog-module/blog-processor.js --force
+npm run build:blog:force
 ```
 
 ### Δημιουργία image variants

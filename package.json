@@ -4,8 +4,8 @@
   "description": "F1 Stories static website — build scripts for the blog publishing pipeline.",
   "private": true,
   "scripts": {
-    "build:blog": "node blog-module/blog-processor.js",
-    "build:blog:force": "node blog-module/blog-processor.js --force",
+    "build:blog": "node blog-module/build/index.js",
+    "build:blog:force": "node blog-module/build/index.js --force",
     "build:image-variants": "node blog-module/generate-image-variants.js --run",
     "build:fonts": "node scripts/build/download-fonts.mjs",
     "build:icons": "node scripts/build/build-icon-sprite.mjs",
