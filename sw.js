@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v27
+   F1 Stories — Service Worker v28
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,12 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v28 bump: Phase 13 YouTube snapshot — the homepage latest-videos rail
+   now reads a committed /assets/youtube-latest.json snapshot before any
+   live proxy refresh. Precache ensures the section renders from the local
+   shell/data graph even when the legacy RSS proxy chain is slow or down.
+   Returning sessions refresh onto the local-first video rail instead of
+   pinning the old runtime-only proxy waterfall.
    v27 bump: Phase 12 image hardening — the shell now precaches the
    optimized /images/logo-256.webp variant instead of the 1.5MB
    /images/logo.png asset, and standings headshots/team logos are served
@@ -98,11 +104,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v27';
-var CACHE_SHELL   = 'f1s-shell-v27';
-var CACHE_PAGES   = 'f1s-pages-v27';
-var CACHE_ASSETS  = 'f1s-assets-v27';
-var CACHE_DATA    = 'f1s-data-v27';
+var SW_VERSION    = 'v28';
+var CACHE_SHELL   = 'f1s-shell-v28';
+var CACHE_PAGES   = 'f1s-pages-v28';
+var CACHE_ASSETS  = 'f1s-assets-v28';
+var CACHE_DATA    = 'f1s-data-v28';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
@@ -121,6 +127,7 @@ var SHELL_ASSETS = [
   '/scripts/analytics.min.js',
   '/scripts/cookie-consent.min.js',
   '/scripts/perf/web-vitals-beacon.min.js',
+  '/assets/youtube-latest.json',
   '/images/logo-256.webp',
   '/images/icons/icon-192.png',
   '/blog-module/blog/index.html',

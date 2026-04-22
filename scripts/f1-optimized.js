@@ -10,9 +10,10 @@
     var panels = Array.prototype.slice.call(document.querySelectorAll('.latest-panel'));
     var videosRequested = false;
     var latestObserver = null;
+    var liveRefreshStarted = false;
 
-    var VIDEO_CACHE_KEY = 'f1s-home-videos-v2';
-    var VIDEO_CACHE_TTL = 30 * 60 * 1000;
+    var VIDEO_SNAPSHOT_URL = '/assets/youtube-latest.json';
+    var LIVE_REFRESH_MAX_AGE = 12 * 60 * 60 * 1000;
     var CHANNEL_ID = 'UCTSK8lbEiHJ10KVFrhNaL4g';
     var MAX_RESULTS = 3;
     var RSS_URL = 'https://www.youtube.com/feeds/videos.xml?channel_id=' + CHANNEL_ID;
@@ -58,23 +59,86 @@
         });
     }
 
-    function readVideoCache() {
-        try {
-            var cached = JSON.parse(sessionStorage.getItem(VIDEO_CACHE_KEY));
-            if (cached && cached.ts && Date.now() - cached.ts < VIDEO_CACHE_TTL && Array.isArray(cached.videos)) {
-                return cached.videos;
-            }
-        } catch (_) {}
-        return null;
+    function videoTimestamp(value) {
+        var ts = Date.parse(value || '');
+        return Number.isFinite(ts) ? ts : 0;
     }
 
-    function writeVideoCache(videos) {
-        try {
-            sessionStorage.setItem(VIDEO_CACHE_KEY, JSON.stringify({
-                ts: Date.now(),
-                videos: videos
-            }));
-        } catch (_) {}
+    function pickNewestPublishedAt(videos) {
+        var newest = '';
+        var newestTs = 0;
+
+        (videos || []).forEach(function (video) {
+            var currentTs = videoTimestamp(video && video.publishedAt);
+            if (currentTs > newestTs) {
+                newestTs = currentTs;
+                newest = new Date(currentTs).toISOString();
+            }
+        });
+
+        return newest;
+    }
+
+    function normalizeVideo(video) {
+        var id = String(video && video.id || '').trim();
+        if (!id) return null;
+
+        return {
+            id: id,
+            title: String(video && video.title || '').trim(),
+            publishedAt: String(video && video.publishedAt || '').trim(),
+            thumbnail: String(video && video.thumbnail || '').trim() || ('https://i.ytimg.com/vi/' + encodeURIComponent(id) + '/hqdefault.jpg'),
+            url: String(video && video.url || '').trim() || ('https://www.youtube.com/watch?v=' + encodeURIComponent(id))
+        };
+    }
+
+    function normalizeSnapshot(payload) {
+        var rawVideos = payload && Array.isArray(payload.videos) ? payload.videos : [];
+        var videos = rawVideos
+            .map(normalizeVideo)
+            .filter(Boolean)
+            .slice(0, MAX_RESULTS);
+
+        return {
+            lastUpdated: String(payload && payload.lastUpdated || '').trim(),
+            newestPublishedAt: String(payload && payload.newestPublishedAt || '').trim() || pickNewestPublishedAt(videos),
+            videos: videos
+        };
+    }
+
+    function snapshotTimestamp(snapshot) {
+        return videoTimestamp(snapshot && (snapshot.lastUpdated || snapshot.newestPublishedAt));
+    }
+
+    function isSnapshotUsable(snapshot) {
+        return !!(snapshot && Array.isArray(snapshot.videos) && snapshot.videos.length);
+    }
+
+    function isSnapshotStale(snapshot) {
+        var ts = snapshotTimestamp(snapshot);
+        if (!ts) return true;
+        return Date.now() - ts > LIVE_REFRESH_MAX_AGE;
+    }
+
+    function isSnapshotNewer(nextSnapshot, prevSnapshot) {
+        var nextPublishedTs = videoTimestamp(nextSnapshot && nextSnapshot.newestPublishedAt);
+        var prevPublishedTs = videoTimestamp(prevSnapshot && prevSnapshot.newestPublishedAt);
+
+        if (nextPublishedTs && prevPublishedTs) return nextPublishedTs > prevPublishedTs;
+        return snapshotTimestamp(nextSnapshot) > snapshotTimestamp(prevSnapshot);
+    }
+
+    function fetchSnapshot() {
+        return fetchWithTimeout(VIDEO_SNAPSHOT_URL, {
+            headers: { Accept: 'application/json' }
+        }, 5000).then(function (response) {
+            if (!response.ok) throw new Error('snapshot ' + response.status);
+            return response.json();
+        }).then(function (payload) {
+            var snapshot = normalizeSnapshot(payload);
+            if (!isSnapshotUsable(snapshot)) throw new Error('empty snapshot');
+            return snapshot;
+        });
     }
 
     function initFadeIns() {
@@ -269,18 +333,6 @@
         return date.getDate() + ' ' + GR_MONTHS[date.getMonth()] + ' ' + date.getFullYear();
     }
 
-    function fmtDuration(isoDuration) {
-        if (!isoDuration) return '';
-        var match = isoDuration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-        if (!match) return '';
-
-        var hours = parseInt(match[1], 10) || 0;
-        var minutes = parseInt(match[2], 10) || 0;
-        var seconds = parseInt(match[3], 10) || 0;
-        var result = hours > 0 ? hours + ':' + String(minutes).padStart(2, '0') + ':' : minutes + ':';
-        return result + String(seconds).padStart(2, '0');
-    }
-
     function removeVideoSkeletons() {
         document.querySelectorAll('.video-skeleton').forEach(function (node) {
             node.remove();
@@ -289,20 +341,17 @@
 
     function buildVideoCard(video) {
         var title = escapeHtml(video.title || 'Χωρίς τίτλο');
-        var date = video.date ? fmtDate(video.date) : '';
-        var duration = escapeHtml(video.duration || '');
-        var url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(video.id);
-        var thumb = 'https://i.ytimg.com/vi/' + encodeURIComponent(video.id) + '/hqdefault.jpg';
+        var date = video.publishedAt ? fmtDate(video.publishedAt) : '';
+        var url = video.url || ('https://www.youtube.com/watch?v=' + encodeURIComponent(video.id));
+        var thumb = video.thumbnail || ('https://i.ytimg.com/vi/' + encodeURIComponent(video.id) + '/hqdefault.jpg');
         var meta = [];
 
         if (date) meta.push('<svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ' + escapeHtml(date));
-        if (duration) meta.push('<svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> ' + duration);
 
         return '<div class="col-md-6 col-lg-4">'
             + '<a href="' + url + '" target="_blank" rel="noopener" class="ep-card" title="' + title + '">'
             + '<div class="ep-card__thumb">'
             + '<img src="' + thumb + '" alt="' + title + '" loading="lazy" decoding="async" width="480" height="360">'
-            + (duration ? '<span class="ep-card__duration">' + duration + '</span>' : '')
             + '<div class="ep-card__play"><svg class="icon" aria-hidden="true"><use href="#fa-play"/></svg></div>'
             + '</div>'
             + '<div class="ep-card__body">'
@@ -335,28 +384,41 @@
             })
             .then(function (xml) {
                 var doc = new DOMParser().parseFromString(xml, 'application/xml');
+                if (doc.querySelector('parsererror')) throw new Error('rss parse');
                 var entries = Array.prototype.slice.call(doc.getElementsByTagName('entry'), 0, MAX_RESULTS);
 
                 if (!entries.length) throw new Error('no entries');
 
-                return entries.map(function (entry) {
+                var videos = entries.map(function (entry) {
                     var id = entry.getElementsByTagName('yt:videoId')[0];
                     var title = entry.getElementsByTagName('title')[0];
-                    var published = entry.getElementsByTagName('published')[0];
+                    var published = entry.getElementsByTagName('published')[0] || entry.getElementsByTagName('updated')[0];
+                    var thumbnail = entry.getElementsByTagName('media:thumbnail')[0] || entry.getElementsByTagName('thumbnail')[0];
+                    var links = Array.prototype.slice.call(entry.getElementsByTagName('link'));
+                    var alternate = links.find(function (node) {
+                        return node.getAttribute('rel') === 'alternate' && node.getAttribute('href');
+                    });
 
                     if (!id) return null;
 
                     return {
                         id: id.textContent.trim(),
                         title: title ? title.textContent.trim() : '',
-                        date: published ? published.textContent.trim() : '',
-                        duration: ''
+                        publishedAt: published ? published.textContent.trim() : '',
+                        thumbnail: thumbnail ? thumbnail.getAttribute('url') : '',
+                        url: alternate ? alternate.getAttribute('href') : ''
                     };
                 }).filter(Boolean);
+
+                return normalizeSnapshot({
+                    lastUpdated: new Date().toISOString(),
+                    newestPublishedAt: pickNewestPublishedAt(videos),
+                    videos: videos
+                });
         });
     }
 
-    function fetchVideos() {
+    function fetchLiveSnapshot() {
         var proxyIndex = 0;
 
         function tryNextProxy() {
@@ -371,21 +433,36 @@
         return tryNextProxy();
     }
 
+    function maybeRefreshVideosInBackground(snapshot) {
+        if (liveRefreshStarted || !canEagerLoadContent() || !isSnapshotStale(snapshot)) return;
+        liveRefreshStarted = true;
+
+        fetchLiveSnapshot()
+            .then(function (freshSnapshot) {
+                if (!isSnapshotUsable(freshSnapshot) || !isSnapshotNewer(freshSnapshot, snapshot)) return;
+                writeVideoCache(freshSnapshot);
+                renderVideos(freshSnapshot.videos);
+            })
+            .catch(function (error) {
+                console.warn('Video refresh skipped:', error);
+            });
+    }
+
     function actuallyLoadVideos() {
         if (!videoGrid || videosRequested) return;
 
         videosRequested = true;
 
-        var cachedVideos = readVideoCache();
-        if (cachedVideos) {
-            renderVideos(cachedVideos);
-            return;
-        }
-
-        fetchVideos()
-            .then(function (videos) {
-                writeVideoCache(videos);
-                renderVideos(videos);
+        fetchSnapshot()
+            .then(function (snapshot) {
+                renderVideos(snapshot.videos);
+                maybeRefreshVideosInBackground(snapshot);
+            })
+            .catch(function () {
+                if (!canEagerLoadContent()) throw new Error('snapshot unavailable on constrained connection');
+                return fetchLiveSnapshot().then(function (snapshot) {
+                    renderVideos(snapshot.videos);
+                });
             })
             .catch(function (error) {
                 console.error('Video load error:', error);

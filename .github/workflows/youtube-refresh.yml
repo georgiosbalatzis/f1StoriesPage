@@ -1,0 +1,50 @@
+name: Refresh YouTube Snapshot
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: youtube-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Refresh YouTube snapshot
+        run: node scripts/build/fetch-youtube.mjs
+
+      - name: Commit updated snapshot
+        run: |
+          set -eu
+          git add assets/youtube-latest.json
+          if git diff --cached --quiet; then
+            echo "No YouTube snapshot changes."
+            exit 0
+          fi
+
+          git config user.name  "f1stories-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git commit -m "chore(data): refresh youtube snapshot [skip ci]"
+          git push origin HEAD:main
