@@ -35,7 +35,7 @@
         banner.setAttribute('role', 'alert');
         banner.innerHTML =
             '<div class="pwa-banner-inner">' +
-                '<img src="/images/icons/icon-192.png" alt="" class="pwa-banner-icon">' +
+                '<img src="/images/logo-256.webp" alt="" class="pwa-banner-icon" width="256" height="256" decoding="async">' +
                 '<div class="pwa-banner-text">' +
                     '<strong>New version available</strong>' +
                     '<span>Reload to use the latest F1 Stories updates.</span>' +
@@ -308,7 +308,7 @@
         banner.setAttribute('role', 'alert');
         banner.innerHTML =
             '<div class="pwa-banner-inner">' +
-                '<img src="/images/icons/icon-192.png" alt="" class="pwa-banner-icon">' +
+                '<img src="/images/logo-256.webp" alt="" class="pwa-banner-icon" width="256" height="256" decoding="async">' +
                 '<div class="pwa-banner-text">' +
                     '<strong>F1 Stories</strong>' +
                     '<span>' + info.text + '</span>' +

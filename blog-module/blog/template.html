@@ -199,7 +199,7 @@
 <header>
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
-            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" width="48" height="48"></a>
+            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"></a>
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
@@ -245,6 +245,7 @@
                     ARTICLE_HERO_AVIF_SOURCE
                     <img src="ARTICLE_IMAGE" alt="ARTICLE_TITLE" class="article-header-img"
                          loading="eager" fetchpriority="high" decoding="sync"
+                         width="ARTICLE_IMAGE_WIDTH" height="ARTICLE_IMAGE_HEIGHT"
                          onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                 </picture>
                 <div class="article-header-overlay">
@@ -276,22 +277,22 @@
                 <div class="sponsor-strip-label">Presented by</div>
                 <div class="sponsor-logos">
                     <a href="https://georgiosbalatzis.github.io/excavatorsPage/" target="_blank" rel="noopener sponsored" class="sponsor-logo">
-                        <img src="/images/sponsors/Balatzis.webp" alt="Sponsor 1">
+                        <img src="/images/sponsors/Balatzis.webp" alt="Μπαλατζής Χωματουργικά" loading="lazy" decoding="async" width="612" height="408">
                     </a>
                     <a href="https://pourtsidisgenerators.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo">
-                        <img src="/images/sponsors/ps.webp" alt="Sponsor 2">
+                        <img src="/images/sponsors/ps.webp" alt="Πουρτσίδης Γεννήτριες" loading="lazy" decoding="async" width="612" height="408">
                     </a>
                     <a href="https://georgiosbalatzis.github.io/excavatorsPage/" target="_blank" rel="noopener sponsored" class="sponsor-logo">
-                        <img src="/images/sponsors/BalatzisDomika.webp" alt="Sponsor 3">
+                        <img src="/images/sponsors/BalatzisDomika.webp" alt="Μπαλατζής Δομικά" loading="lazy" decoding="async" width="612" height="408">
                     </a>
                     <a href="https://ambrosiadis.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo">
-                        <img src="/images/sponsors/am.webp" alt="Sponsor 4">
+                        <img src="/images/sponsors/am.webp" alt="Αμβροσιάδης" loading="lazy" decoding="async" width="612" height="408">
                     </a>
                     <a href="https://www.bedandhome.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo">
-                        <img src="/images/sponsors/bedhome.webp" alt="Sponsor 5">
+                        <img src="/images/sponsors/bedhome.webp" alt="Bed and Home" loading="lazy" decoding="async" width="612" height="408">
                     </a>
                     <a href="https://www.grandrealm.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo">
-                        <img src="/images/sponsors/GrandRealm.webp" alt="Sponsor 6">
+                        <img src="/images/sponsors/GrandRealm.webp" alt="Grand Realm" loading="lazy" decoding="async" width="1536" height="1024">
                     </a>
                 </div>
             </div>
@@ -303,6 +304,7 @@
                     <div class="author-header">
                         <div class="author-avatar">
                             <img id="author-image" src="/images/authors/default.webp" alt="ARTICLE_AUTHOR"
+                                 loading="lazy" decoding="async" width="ARTICLE_AUTHOR_IMAGE_WIDTH" height="ARTICLE_AUTHOR_IMAGE_HEIGHT"
                                  onerror="this.style.display='none';document.getElementById('author-initial').style.display='flex';">
                             <span class="avatar-text" id="author-initial">A</span>
                         </div>

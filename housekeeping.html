@@ -411,7 +411,7 @@
 <header>
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
-            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" width="48" height="48"></a>
+            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" decoding="async" width="48" height="48"></a>
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
@@ -788,6 +788,8 @@
         img.className = 'hk-card-img';
         img.loading = 'lazy';
         img.decoding = 'async';
+        img.width = parseInt(p.imageWidth, 10) || 848;
+        img.height = parseInt(p.imageHeight, 10) || 400;
         img.src = p.image || '/blog-module/images/default-blog.jpg';
         img.alt = '';
         img.onerror = function () { img.src = '/blog-module/images/default-blog.jpg'; };
@@ -1082,7 +1084,14 @@
             // Preview image for this slot
             var img = document.createElement('img');
             img.loading = 'lazy';
+            img.decoding = 'async';
+            img.width = 1600;
+            img.height = 900;
             img.onerror = function () { img.style.background = 'rgba(255,255,255,0.05)'; img.removeAttribute('src'); };
+            img.addEventListener('load', function () {
+                if (img.naturalWidth) img.width = img.naturalWidth;
+                if (img.naturalHeight) img.height = img.naturalHeight;
+            }, { once: true });
             if (op.op === 'replace' && op.file) {
                 img.src = URL.createObjectURL(op.file);
                 img.dataset.objectUrl = '1';
@@ -1163,7 +1172,15 @@
             row.className = 'hk-image-slot';
 
             var img = document.createElement('img');
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.width = 1600;
+            img.height = 900;
             img.src = URL.createObjectURL(file);
+            img.addEventListener('load', function () {
+                if (img.naturalWidth) img.width = img.naturalWidth;
+                if (img.naturalHeight) img.height = img.naturalHeight;
+            }, { once: true });
 
             var info = document.createElement('div');
             info.className = 'hk-image-slot-info';

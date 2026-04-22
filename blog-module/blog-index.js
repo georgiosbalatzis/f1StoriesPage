@@ -128,6 +128,8 @@ document.addEventListener('DOMContentLoaded', function() {
         var author = post.author || 'F1 Stories';
         var excerpt = post.excerpt || '';
         var readMins = post.readingTime || post.readTime || '';
+        var imageWidth = parseInt(post.thumbnailWidth, 10) || 400;
+        var imageHeight = parseInt(post.thumbnailHeight, 10) || 188;
         if (!readMins && post.wordCount) { readMins = Math.max(1, Math.ceil(post.wordCount / 200)) + ' min'; }
         if (!readMins && excerpt) { readMins = Math.max(2, Math.ceil(Math.round(excerpt.split(/\s+/).length * 10) / 200)) + ' min'; }
         readMins = formatReadingTime(readMins);
@@ -136,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var stagger = window.innerWidth < 768 ? 0.03 : 0.06;
         return '<article class="article-card-wrap">'
             + '<a href="' + escHtml(url) + '" class="article-card" style="animation-delay:' + (idx * stagger) + 's">'
-            + '<div class="article-card-img-wrap"><img class="article-card-img" loading="lazy" data-src="' + escHtml(img) + '" alt="' + escHtml(post.title) + '" onerror="this.src=\'/blog-module/images/default-blog.jpg\';this.onerror=null;"></div>'
+            + '<div class="article-card-img-wrap"><img class="article-card-img" loading="lazy" width="' + imageWidth + '" height="' + imageHeight + '" data-src="' + escHtml(img) + '" alt="' + escHtml(post.title) + '" onerror="this.src=\'/blog-module/images/default-blog.jpg\';this.onerror=null;"></div>'
             + '<div class="article-card-body">'
             + '<div class="article-card-meta"><span class="author-tag">' + escHtml(author) + '</span><span>\u00b7</span><time class="article-card-date" datetime="' + escHtml(post.date || '') + '">' + escHtml(date) + '</time>' + readBadge + '</div>'
             + '<h3 class="article-card-title">' + escHtml(post.title) + '</h3>'

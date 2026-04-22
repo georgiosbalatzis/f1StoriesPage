@@ -1,8 +1,20 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
+    <!-- @include partials/head-meta.html -->
+    <!-- @include:begin partials/head-meta.html -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/icons/favicon-32.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="F1 Stories">
+    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+    <!-- @include:end partials/head-meta.html -->
     <title>Όταν η νίκη ξεπερνά τους αριθμούς. | F1 Stories Blog</title>
     <meta name="description" content="Spa 1995.... Ο Michael Schumacher υπέγραψε μία από τις πιο εμβληματικές νίκες της καριέρας του στο Βελγικό Grand Prix του 1995, σε έναν αγώνα που έμεινε στην ιστορία για τον τρόπο με τον οποίο ήρθε η ...">
     <meta property="og:title" content="Όταν η νίκη ξεπερνά τους αριθμούς. | F1 Stories Blog">
@@ -15,15 +27,6 @@
     <meta name="twitter:description" content="Spa 1995.... Ο Michael Schumacher υπέγραψε μία από τις πιο εμβληματικές νίκες της καριέρας του στο Βελγικό Grand Prix του 1995, σε έναν αγώνα που έμεινε στην ιστορία για τον τρόπο με τον οποίο ήρθε η ...">
     <meta name="twitter:image" content="https://f1stories.gr/blog-module/blog-entries/20260418W/1.webp">
     <link rel="canonical" href="https://f1stories.gr/blog-module/blog-entries/20260418W/article.html">
-    <link rel="icon" type="image/png" href="/images/favicon.png">
-    <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/icons/favicon-32.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="F1 Stories">
-    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
 
     <script type="application/ld+json">
     {
@@ -196,7 +199,7 @@
 <header>
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
-            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" width="48" height="48"></a>
+            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"></a>
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
@@ -242,6 +245,7 @@
                     <source type="image/avif" srcset="1.avif">
                     <img src="1.webp" alt="Όταν η νίκη ξεπερνά τους αριθμούς." class="article-header-img"
                          loading="eager" fetchpriority="high" decoding="sync"
+                         width="1024" height="676"
                          onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                 </picture>
                 <div class="article-header-overlay">
@@ -273,26 +277,25 @@
                 <div class="sponsor-strip-label">Presented by</div>
                 <div class="sponsor-logos">
                     <a href="https://georgiosbalatzis.github.io/excavatorsPage/" target="_blank" rel="noopener sponsored" class="sponsor-logo">
-                        <img src="/images/sponsors/Balatzis.webp" alt="Sponsor 1">
+                        <img src="/images/sponsors/Balatzis.webp" alt="Μπαλατζής Χωματουργικά" loading="lazy" decoding="async" width="612" height="408">
                     </a>
                     <a href="https://pourtsidisgenerators.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo">
-                        <img src="/images/sponsors/ps.webp" alt="Sponsor 2">
+                        <img src="/images/sponsors/ps.webp" alt="Πουρτσίδης Γεννήτριες" loading="lazy" decoding="async" width="612" height="408">
                     </a>
                     <a href="https://georgiosbalatzis.github.io/excavatorsPage/" target="_blank" rel="noopener sponsored" class="sponsor-logo">
-                        <img src="/images/sponsors/BalatzisDomika.webp" alt="Sponsor 3">
+                        <img src="/images/sponsors/BalatzisDomika.webp" alt="Μπαλατζής Δομικά" loading="lazy" decoding="async" width="612" height="408">
                     </a>
                     <a href="https://ambrosiadis.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo">
-                        <img src="/images/sponsors/am.webp" alt="Sponsor 4">
+                        <img src="/images/sponsors/am.webp" alt="Αμβροσιάδης" loading="lazy" decoding="async" width="612" height="408">
                     </a>
                     <a href="https://www.bedandhome.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo">
-                        <img src="/images/sponsors/bedhome.webp" alt="Sponsor 5">
+                        <img src="/images/sponsors/bedhome.webp" alt="Bed and Home" loading="lazy" decoding="async" width="612" height="408">
                     </a>
                     <a href="https://www.grandrealm.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo">
-                        <img src="/images/sponsors/GrandRealm.webp" alt="Sponsor 6">
+                        <img src="/images/sponsors/GrandRealm.webp" alt="Grand Realm" loading="lazy" decoding="async" width="1536" height="1024">
                     </a>
                 </div>
             </div>
-
             <div class="article-content"><p>Spa 1995.... Ο Michael Schumacher υπέγραψε μία από τις πιο εμβληματικές νίκες της καριέρας του στο Βελγικό Grand Prix του 1995, σε έναν αγώνα που έμεινε στην ιστορία  για τον τρόπο με τον οποίο ήρθε η νίκη. Ξεκινώντας μόλις 16ος στο grid,  με τις Ferrari να έχουν κλειδώσει την πρώτη σειρά εκκίνησης, μέσα σε συνθήκες που άλλαζαν διαρκώς, ο Γερμανός βρήκε τρόπο να κυριαρχήσει στο χάος του Circuit de Spa-Francorchamps. Με το ένστικτο και την τόλμη που τον χαρακτήριζαν, επέλεξε να μείνει με slick ελαστικά ενώ η βροχή επέστρεφε,  μια απόφαση που έμοιαζε με τρέλα, αλλά τελικά αποδείχθηκε καθοριστική. Δεν το έκρυψε ούτε κι ο ίδιος μετά το τέλος. Ήξερε πως αυτή η νίκη είχε κάτι ξεχωριστό. Ήταν από εκείνες που δεν χτίζονται απλώς με ταχύτητα, αλλά με καθαρή οδηγική ιδιοφυΐα. Απέναντί του, ο Damon Hill πίεζε ασφυκτικά στους τελευταίους γύρους, με τα κατάλληλα ελαστικά για τις συνθήκες. Και όμως, ο Schumacher κράτησε πίσω του τη Williams με τρόπο  αδιανόητο, αμυνόμενος με ακρίβεια και αποφασιστικότητα σε κάθε στροφή. Με την εικόνα εκείνης της σεζόν και την αυτοπεποίθηση που του έδινε η Benetton Formula, ήταν ξεκάθαρο πως δεν επρόκειτο απλώς για μία νίκη. Ο δρόμος προς τον δεύτερο τίτλο του είχε ήδη χαραχθεί. Τελικά, η ιστορία του 1995 θα τον βρει στην κορυφή για δεύτερη συνεχόμενη χρονιά. Όμως το Spa έμεινε ως μία από τις πιο χαρακτηριστικές στιγμές εκείνης της πορείας. Ήταν μία νίκη που ξεπερνούσε αριθμούς και στατιστικά. Ήταν η μέρα που ο Schumacher απέδειξε, για ακόμη μία φορά, γιατί ανήκε ήδη στους μεγάλους.</p></div>
 
             <div class="article-author-footer">
@@ -301,6 +304,7 @@
                     <div class="author-header">
                         <div class="author-avatar">
                             <img id="author-image" src="/images/authors/2fast.webp" alt="2Fast"
+                                 loading="lazy" decoding="async" width="2Fast_IMAGE_WIDTH" height="2Fast_IMAGE_HEIGHT"
                                  onerror="this.style.display='none';document.getElementById('author-initial').style.display='flex';">
                             <span class="avatar-text" id="author-initial">A</span>
                         </div>
@@ -372,6 +376,7 @@
                             <img src="/blog-module/blog-entries/20260417W/1.webp"
                                  alt="Ο Peter Collins"
                                  loading="lazy"
+                                 decoding="async" width="1200" height="900"
                                  onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                             <div class="related-card-hover">
                                 <span class="related-card-hover-label">Περισσότερα</span>
@@ -396,6 +401,7 @@
                             <img src="/blog-module/blog-entries/20260416W/1.webp"
                                  alt="Red Bull RB12 (2016) – Ένα πλήρες αφιέρωμα"
                                  loading="lazy"
+                                 decoding="async" width="1600" height="1067"
                                  onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                             <div class="related-card-hover">
                                 <span class="related-card-hover-label">Περισσότερα</span>
@@ -420,6 +426,7 @@
                             <img src="/blog-module/blog-entries/20260414W/1.webp"
                                  alt="Κράζοντας την Ferrari επεισόδιο 1.723.0000"
                                  loading="lazy"
+                                 decoding="async" width="1325" height="827"
                                  onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                             <div class="related-card-hover">
                                 <span class="related-card-hover-label">Περισσότερα</span>
@@ -453,17 +460,19 @@
     </div>
 </div>
 
+<!-- @include partials/footer.html -->
+<!-- @include:begin partials/footer.html -->
 <footer class="py-4">
     <div class="container">
         <div class="row">
             <div class="col-12 text-center">
                 <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
                 <div class="social-media">
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
-                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
-                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
-                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
-                    <a href="/cdn-cgi/l/email-protection#6904100f581a1d061b000c1a290e04080005470a0604"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
+                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
+                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
+                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
+                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
+                    <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
                 </div>
                 <div class="footer-links mt-3">
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
@@ -474,8 +483,7 @@
         </div>
     </div>
 </footer>
-
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.js?v=20260422-2"></script>
 <script defer src="/scripts/shared-nav.min.js?v=aa376236"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=9d38adec"></script>

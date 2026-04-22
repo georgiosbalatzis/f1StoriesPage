@@ -1,4 +1,4 @@
-const { fs, path, CONFIG, escapeHtmlAttribute } = require('./shared');
+const { fs, path, CONFIG, escapeHtmlAttribute, getImageDimensionsForPublicPath } = require('./shared');
 
 function scoreRelatedPosts(blogPosts, post, index) {
     const scored = blogPosts
@@ -30,14 +30,17 @@ function scoreRelatedPosts(blogPosts, post, index) {
     return relatedPosts;
 }
 
-function buildRelatedPostsHtml(relatedPosts) {
-    return relatedPosts.map(related => {
+async function buildRelatedPostsHtml(relatedPosts) {
+    const cards = await Promise.all(relatedPosts.map(async related => {
         const relatedImagePath = related.image.substring(related.image.lastIndexOf('/') + 1);
         const relDate = new Date(related.date);
         const relDateStr = relDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
         const relatedTitle = escapeHtmlAttribute(related.title);
         const relatedAuthor = escapeHtmlAttribute(related.author);
         const relatedReadTime = escapeHtmlAttribute(related.readingTime || '');
+        const imageDimensions = await getImageDimensionsForPublicPath(related.image);
+        const widthAttr = imageDimensions && imageDimensions.width ? ` width="${imageDimensions.width}"` : '';
+        const heightAttr = imageDimensions && imageDimensions.height ? ` height="${imageDimensions.height}"` : '';
         const hoverMeta = relatedReadTime
             ? `<span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> ${relatedReadTime}</span>`
             : '';
@@ -50,6 +53,7 @@ function buildRelatedPostsHtml(relatedPosts) {
                             <img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}"
                                  alt="${relatedTitle}"
                                  loading="lazy"
+                                 decoding="async"${widthAttr}${heightAttr}
                                  onerror="this.src='${CONFIG.DEFAULT_BLOG_IMAGE}';this.onerror=null;">
                             <div class="related-card-hover">
                                 <span class="related-card-hover-label">Περισσότερα</span>
@@ -67,19 +71,20 @@ function buildRelatedPostsHtml(relatedPosts) {
                     </div>
                 </a>
             </div>`;
-    }).join('');
+    }));
+    return cards.join('');
 }
 
-function injectRelatedArticles(blogPosts) {
-    blogPosts.forEach((post, index) => {
+async function injectRelatedArticles(blogPosts) {
+    for (const [index, post] of blogPosts.entries()) {
         const postHtmlPath = path.join(CONFIG.BLOG_DIR, post.id, 'article.html');
-        if (!fs.existsSync(postHtmlPath)) return;
+        if (!fs.existsSync(postHtmlPath)) continue;
 
         const relatedPosts = scoreRelatedPosts(blogPosts, post, index);
-        const relatedPostsHtml = buildRelatedPostsHtml(relatedPosts);
+        const relatedPostsHtml = await buildRelatedPostsHtml(relatedPosts);
         const postHtml = fs.readFileSync(postHtmlPath, 'utf8').replace(/RELATED_ARTICLES/g, relatedPostsHtml || '');
         fs.writeFileSync(postHtmlPath, postHtml);
-    });
+    }
 }
 
 module.exports = {

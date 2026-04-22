@@ -75,6 +75,42 @@ function escapeXml(value) {
         .replace(/>/g, '&gt;');
 }
 
+const imageMetadataCache = new Map();
+
+function publicPathToFsPath(publicPath) {
+    const normalized = String(publicPath || '').trim();
+    if (!normalized) return null;
+    if (normalized.startsWith('/blog-module/')) {
+        return path.join(BLOG_MODULE_DIR, normalized.replace(/^\/blog-module\//, ''));
+    }
+    if (normalized.startsWith('/')) {
+        return path.join(BLOG_MODULE_DIR, '..', normalized.slice(1));
+    }
+    return path.join(BLOG_MODULE_DIR, normalized);
+}
+
+async function getImageDimensions(absPath) {
+    if (!absPath) return null;
+    if (imageMetadataCache.has(absPath)) return imageMetadataCache.get(absPath);
+
+    const pending = sharp(absPath)
+        .metadata()
+        .then(meta => {
+            if (!meta.width || !meta.height) return null;
+            return { width: meta.width, height: meta.height };
+        })
+        .catch(() => null);
+
+    imageMetadataCache.set(absPath, pending);
+    return pending;
+}
+
+async function getImageDimensionsForPublicPath(publicPath) {
+    const absPath = publicPathToFsPath(publicPath);
+    if (!absPath || !fs.existsSync(absPath)) return null;
+    return getImageDimensions(absPath);
+}
+
 function getCardThumbnailPath(imagePath) {
     if (!imagePath) return CONFIG.DEFAULT_BLOG_IMAGE;
     if (!imagePath.startsWith('/blog-module/blog-entries/')) return imagePath;
@@ -237,6 +273,8 @@ module.exports = {
     assertNoInlineDataImages,
     escapeHtmlAttribute,
     escapeXml,
+    getImageDimensions,
+    getImageDimensionsForPublicPath,
     getCardThumbnailPath,
     utils
 };
