@@ -61,6 +61,7 @@ const SOURCE_FILES = [
     'scripts/sw-register.js',
     'scripts/cookie-consent.js',
     'scripts/background-randomizer.js',
+    'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog-loader.js',
     'blog-module/blog-index.js',

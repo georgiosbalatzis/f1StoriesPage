@@ -31,6 +31,8 @@ const MANIFEST_PATH = path.join(REPO_ROOT, 'scripts', 'build', 'asset-manifest.j
 const TARGET_HTML = [
     'index.html',
     'offline.html',
+    'ghostcar/index.html',
+    'f1telemetry/index.html',
     'standings/index.html',
     'blog-module/blog/index.html',
     'blog-module/blog/template.html',
