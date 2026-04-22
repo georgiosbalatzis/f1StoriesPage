@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-21T20:11:11.184Z",
+  "updatedAt": "2026-04-22T06:48:58.372Z",
   "thresholdPercent": 10,
   "note": "Byte budgets for tracked JS/CSS/HTML assets. Run `npm run perf:budget` to check, `npm run perf:budget:update` to rewrite this file with current sizes. Threshold is the max % growth allowed before the check fails.",
   "files": {
@@ -45,6 +45,7 @@
     "scripts/perf/web-vitals-beacon.js": 3423,
     "blog-module/blog-loader.js": 8199,
     "blog-module/blog-index.js": 16187,
+    "blog-module/blog/article-script.js": 42036,
     "blog-module/blog-processor.js": 236,
     "blog-module/build/shared.js": 8763,
     "blog-module/build/metadata.js": 3278,
@@ -61,7 +62,7 @@
     "blog-module/build/index.js": 13746,
     "blog-module/build/__tests__/golden.js": 5050,
     "blog-module/build/__tests__/run-golden.js": 778,
-    "sw.js": 15169,
+    "sw.js": 15596,
     "manifest.json": 1810,
     "images/icons/sprite.svg": 38742,
     "styles.min.css": 30348,

@@ -64,6 +64,7 @@ const SOURCE_FILES = [
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog-loader.js',
     'blog-module/blog-index.js',
+    'blog-module/blog/article-script.js',
     'blog-module/blog-processor.js',
     'blog-module/build/shared.js',
     'blog-module/build/metadata.js',
@@ -89,7 +90,12 @@ const SOURCE_FILES = [
 // a regression in the minification pipeline surfaces in the budget check.
 function deriveMinSiblings(files) {
     return files
-        .filter(f => /\.(css|js)$/.test(f) && f !== 'blog-module/blog-processor.js' && f !== 'sw.js')
+        .filter(f =>
+            /\.(css|js)$/.test(f)
+            && f !== 'blog-module/blog-processor.js'
+            && f !== 'blog-module/blog/article-script.js'
+            && f !== 'sw.js'
+        )
         .map(f => f.replace(/\.(css|js)$/, '.min.$1'));
 }
 
