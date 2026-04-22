@@ -14,6 +14,7 @@ blog-module/blog-entries/*/extracted/
 
 # Source documents — not needed on the web server
 blog-module/blog-entries/**/*.docx
+blog-module/blog-entries/**/narration.mp3
 
 # Planning notes — personal reference only
 nextsteps.txt

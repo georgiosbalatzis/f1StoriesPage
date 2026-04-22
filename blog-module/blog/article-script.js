@@ -1,13 +1,115 @@
 // article-script.js — Article page functionality
-// TTS: pre-generated MP3 narration, falls back to SpeechSynthesis.
+// TTS: local narration falls back to SpeechSynthesis; external narration
+// failures surface an unavailable message so cutovers do not silently
+// regress back to missing local files.
 // Share + scroll-to-top handled by blog-fixes.js / shared-nav.js.
 document.addEventListener('DOMContentLoaded', function () {
     const $ = sel => document.querySelector(sel);
     const $$ = sel => document.querySelectorAll(sel);
     const DEFAULT_TTS_SPEED = 0.8;
+    const NARRATION_MANIFEST_KEY = 'f1s-narration-manifest-v1';
+    const NARRATION_MANIFEST_TTL = 15 * 60 * 1000;
 
     // Cache article content element — queried by multiple functions
     const articleContent = $('.article-content');
+
+    function getCurrentArticleSlug() {
+        return window.location.pathname.split('/blog-entries/')[1]?.split('/')[0] || '';
+    }
+
+    function getLocalNarrationUrl() {
+        const pathParts = window.location.pathname.split('/');
+        const entryIdx = pathParts.indexOf('blog-entries');
+        if (entryIdx === -1 || !pathParts[entryIdx + 1]) return null;
+        const basePath = pathParts.slice(0, entryIdx + 2).join('/');
+        return basePath + '/narration.mp3';
+    }
+
+    function readCachedNarrationManifest() {
+        try {
+            const cached = JSON.parse(sessionStorage.getItem(NARRATION_MANIFEST_KEY));
+            if (!cached || !cached.ts || Date.now() - cached.ts > NARRATION_MANIFEST_TTL || !cached.data) return null;
+            return cached.data;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function writeCachedNarrationManifest(data) {
+        try {
+            sessionStorage.setItem(NARRATION_MANIFEST_KEY, JSON.stringify({ ts: Date.now(), data }));
+        } catch (_) {}
+    }
+
+    function normalizeNarrationManifest(payload) {
+        const entries = Array.isArray(payload?.entries) ? payload.entries : [];
+        const entriesBySlug = {};
+        entries.forEach(entry => {
+            if (entry && entry.slug) entriesBySlug[entry.slug] = entry;
+        });
+
+        return {
+            mode: payload?.mode === 'external' ? 'external' : 'local',
+            baseUrl: String(payload?.baseUrl || '').replace(/\/+$/, ''),
+            origin: String(payload?.origin || ''),
+            entriesBySlug
+        };
+    }
+
+    async function loadNarrationManifest() {
+        const cached = readCachedNarrationManifest();
+        if (cached) return normalizeNarrationManifest(cached);
+
+        const paths = [
+            '/blog-module/narration-manifest.json',
+            '../../narration-manifest.json',
+            '../../../blog-module/narration-manifest.json'
+        ];
+
+        for (const manifestPath of paths) {
+            try {
+                const response = await fetch(manifestPath, { cache: 'no-store' });
+                if (!response.ok) continue;
+                const payload = await response.json();
+                writeCachedNarrationManifest(payload);
+                return normalizeNarrationManifest(payload);
+            } catch (_) {}
+        }
+
+        return normalizeNarrationManifest(null);
+    }
+
+    async function resolveNarrationSource() {
+        const slug = getCurrentArticleSlug();
+        const localUrl = getLocalNarrationUrl();
+        if (!slug) return { url: localUrl, sourcePolicy: 'local', origin: '' };
+
+        const manifest = await loadNarrationManifest();
+        if (manifest.mode !== 'external') {
+            return { url: localUrl, sourcePolicy: 'local', origin: '' };
+        }
+
+        const manifestEntry = manifest.entriesBySlug[slug];
+        const externalUrl = manifestEntry?.url || (manifest.baseUrl ? `${manifest.baseUrl}/${encodeURIComponent(slug)}.mp3` : '');
+        const origin = manifest.origin || (externalUrl ? new URL(externalUrl, window.location.origin).origin : '');
+
+        if (!externalUrl) {
+            return { url: '', sourcePolicy: 'external-missing', origin };
+        }
+
+        return { url: externalUrl, sourcePolicy: 'external', origin };
+    }
+
+    function ensurePreconnect(origin) {
+        if (!origin) return;
+        if (document.head.querySelector(`link[rel="preconnect"][href="${origin}"]`)) return;
+
+        const link = document.createElement('link');
+        link.rel = 'preconnect';
+        link.href = origin;
+        link.crossOrigin = 'anonymous';
+        document.head.appendChild(link);
+    }
 
     // ── Author data ─────────────────────────────────────────
     const AUTHORS = {
@@ -63,17 +165,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (speedSlider) speedSlider.value = String(DEFAULT_TTS_SPEED);
         if (speedValue) speedValue.textContent = DEFAULT_TTS_SPEED + 'x';
 
-        // Determine narration MP3 path from current article URL
-        const pathParts = window.location.pathname.split('/');
-        const entryIdx = pathParts.indexOf('blog-entries');
         let mp3Url = null;
-        if (entryIdx !== -1 && pathParts[entryIdx + 1]) {
-            const basePath = pathParts.slice(0, entryIdx + 2).join('/');
-            mp3Url = basePath + '/narration.mp3';
-        }
+        let narrationSourcePolicy = 'local';
+        let narrationOrigin = '';
 
         let audioEl = null;
-        let mode = null; // 'mp3' or 'speech'
+        let mode = null; // 'mp3', 'speech', or 'unavailable'
         let speechUtterance = null;
         let isPaused = false;
         let initPromise = null;
@@ -82,6 +179,24 @@ document.addEventListener('DOMContentLoaded', function () {
         let speechReady = false;
 
         if (statusEl) statusEl.textContent = 'Έτοιμο — Πατήστε play για ακρόαση';
+
+        function setControlsDisabled(disabled) {
+            if (playBtn) playBtn.disabled = disabled;
+            if (pauseBtn) pauseBtn.disabled = disabled;
+            if (stopBtn) stopBtn.disabled = disabled;
+            if (speedSlider) speedSlider.disabled = disabled;
+        }
+
+        function setUnavailableState(message) {
+            mode = 'unavailable';
+            resetUI();
+            setControlsDisabled(true);
+            if (statusEl) statusEl.textContent = message || 'Το audio είναι προσωρινά μη διαθέσιμο.';
+            const voiceRow = $('.tts-voice-selector');
+            if (voiceRow) voiceRow.style.display = 'none';
+            if (progressTrack) progressTrack.style.cursor = 'default';
+            if (ttsWidget) ttsWidget.classList.remove('has-audio');
+        }
 
         // ── Format time helper ──
         function formatTime(seconds) {
@@ -109,9 +224,9 @@ document.addEventListener('DOMContentLoaded', function () {
         toggle.addEventListener('click', togglePanel);
 
         // ── Check if MP3 narration exists ──
-        function checkMP3() {
-            if (!mp3Url) return Promise.resolve(false);
-            return fetch(mp3Url, { method: 'HEAD' })
+        function checkMP3(url) {
+            if (!url) return Promise.resolve(false);
+            return fetch(url, { method: 'HEAD' })
                 .then(r => r.ok)
                 .catch(() => false);
         }
@@ -120,20 +235,55 @@ document.addEventListener('DOMContentLoaded', function () {
             if (initPromise) return initPromise;
             if (statusEl) statusEl.textContent = 'Προετοιμασία audio...';
 
-            initPromise = checkMP3().then((hasMP3) => {
-                if (hasMP3) {
+            initPromise = resolveNarrationSource().then((resolvedNarration) => {
+                mp3Url = resolvedNarration.url;
+                narrationSourcePolicy = resolvedNarration.sourcePolicy;
+                narrationOrigin = resolvedNarration.origin;
+                if (narrationSourcePolicy === 'external' && narrationOrigin) ensurePreconnect(narrationOrigin);
+
+                if (narrationSourcePolicy === 'external-missing') {
+                    setUnavailableState('Το audio είναι προσωρινά μη διαθέσιμο.');
+                    return mode;
+                }
+
+                if (narrationSourcePolicy === 'external') {
                     mode = 'mp3';
+                    setControlsDisabled(false);
                     initAudioPlayer();
                     if (statusEl) statusEl.textContent = 'Έτοιμο — Ακούστε το άρθρο';
                     if (ttsWidget) ttsWidget.classList.add('has-audio');
-                } else {
+                    return mode;
+                }
+
+                return checkMP3(mp3Url).then((hasMP3) => {
+                    if (hasMP3) {
+                        mode = 'mp3';
+                        setControlsDisabled(false);
+                        initAudioPlayer();
+                        if (statusEl) statusEl.textContent = 'Έτοιμο — Ακούστε το άρθρο';
+                        if (ttsWidget) ttsWidget.classList.add('has-audio');
+                        return mode;
+                    }
+
+                    if (narrationSourcePolicy === 'external') {
+                        setUnavailableState('Το audio είναι προσωρινά μη διαθέσιμο.');
+                        return mode;
+                    }
+
                     mode = 'speech';
+                    setControlsDisabled(false);
                     initSpeechFallback();
                     if (statusEl) statusEl.textContent = 'Έτοιμο (browser voice)';
-                }
-                return mode;
+                    return mode;
+                });
             }).catch(() => {
+                if (narrationSourcePolicy === 'external') {
+                    setUnavailableState('Το audio είναι προσωρινά μη διαθέσιμο.');
+                    return mode;
+                }
+
                 mode = 'speech';
+                setControlsDisabled(false);
                 initSpeechFallback();
                 if (statusEl) statusEl.textContent = 'Έτοιμο (browser voice)';
                 return mode;
@@ -195,8 +345,11 @@ document.addEventListener('DOMContentLoaded', function () {
             // Error
             audioEl.addEventListener('error', () => {
                 resetUI();
+                if (narrationSourcePolicy === 'external') {
+                    setUnavailableState('Το audio είναι προσωρινά μη διαθέσιμο.');
+                    return;
+                }
                 if (statusEl) statusEl.textContent = 'Έτοιμο (browser voice)';
-                // Fall back to speech synthesis
                 mode = 'speech';
                 initSpeechFallback();
             });
@@ -220,6 +373,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (pauseBtn) pauseBtn.style.display = '';
                     if (statusEl) statusEl.textContent = 'Αναπαραγωγή...';
                 }).catch(() => {
+                    if (narrationSourcePolicy === 'external') {
+                        setUnavailableState('Το audio είναι προσωρινά μη διαθέσιμο.');
+                        return;
+                    }
                     if (statusEl) statusEl.textContent = 'Σφάλμα αναπαραγωγής';
                 });
             });

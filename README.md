@@ -171,6 +171,7 @@
 │   ├── blog-entries/
 │   ├── blog-data.json
 │   ├── blog-index-data.json
+│   ├── narration-manifest.json
 │   ├── blog-loader.js
 │   ├── blog-processor.js
 │   ├── blog-fixes.js
@@ -187,6 +188,7 @@
 │   ├── dirty-air-cache.json
 │   └── destructors-cache.json
 ├── scripts/
+│   └── migrate/
 ├── styles/
 ├── images/
 ├── ghostcar/
@@ -396,6 +398,31 @@ python3 blog-module/tts-generator-parallel.py --force
 ```bash
 python3 blog-module/tts-generator-parallel.py --post 20250101G
 ```
+
+### Phase 10: migration των narration mp3 σε external storage
+
+Η προετοιμασία της μεταφοράς ζει στα `scripts/migrate/` και βασίζεται σε δύο artifacts:
+
+- `scripts/migrate/mp3-inventory.json` για το πλήρες inventory των tracked narrations
+- `blog-module/narration-manifest.json` για το public runtime routing που διαβάζει το article player
+
+Βασικά βήματα:
+
+```bash
+npm run migrate:mp3:inventory
+npm run migrate:mp3:plan -- --base-url https://media.example.com/narration --remote your-rclone-remote
+```
+
+Τι κάνει κάθε βήμα:
+
+- το inventory script γράφει `{ slug, path, sizeBytes, sha256 }` για κάθε `blog-module/blog-entries/*/narration.mp3`
+- το planning script παράγει `scripts/migrate/mp3-manifest.json` και, αν δοθεί `--remote`, ένα `scripts/migrate/upload-mp3-commands.sh` με `rclone copyto ...`
+- το public `blog-module/narration-manifest.json` μένει σε `mode: "local"` μέχρι να γίνει verified upload και συνειδητή ενεργοποίηση με `--activate`
+
+Σημείωση λειτουργίας:
+
+- όσο το manifest είναι `local`, τα άρθρα συνεχίζουν να διαβάζουν `./narration.mp3`
+- όταν περάσει σε `external`, το article player χρησιμοποιεί το CDN URL και αν αυτό αποτύχει δείχνει μήνυμα προσωρινής μη διαθεσιμότητας αντί να ψάχνει τοπικό fallback
 
 <a id="design-and-ux"></a>
 ## Design και εμπειρία χρήστη
