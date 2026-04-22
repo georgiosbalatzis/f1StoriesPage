@@ -1155,10 +1155,15 @@
     // ═══════════════════════════════════════════════════════
 
     function escapeHtml(str) {
-        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
     }
 
     function inlineFormat(text) {
+        text = escapeHtml(text);
         // Bold: **text** or __text__
         text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
         text = text.replace(/__(.+?)__/g, '<strong>$1</strong>');
@@ -1248,6 +1253,83 @@
         return /^https?:\/\/\S+$/.test(line.trim());
     }
 
+    function parsePipeTableRow(line) {
+        var trimmed = String(line || '').trim();
+        if (trimmed.indexOf('|') === -1) return null;
+        var normalized = trimmed.replace(/^\|\s*/, '').replace(/\s*\|$/, '');
+        var cells = normalized.split('|').map(function (cell) { return cell.trim(); });
+        return cells.length >= 2 ? cells : null;
+    }
+
+    function isPipeTableDivider(line, expectedCols) {
+        var cells = parsePipeTableRow(line);
+        if (!cells || cells.length !== expectedCols) return false;
+        return cells.every(function (cell) {
+            return /^:?-{3,}:?$/.test(cell.replace(/\s+/g, ''));
+        });
+    }
+
+    function readPipeTable(lines, startIndex) {
+        var headers = parsePipeTableRow(lines[startIndex]);
+        if (!headers) return null;
+        if (startIndex + 1 >= lines.length || !isPipeTableDivider(lines[startIndex + 1], headers.length)) return null;
+
+        var rows = [];
+        var i = startIndex + 2;
+        while (i < lines.length) {
+            var rawLine = lines[i];
+            var trimmed = rawLine.trim();
+            if (!trimmed) break;
+
+            var row = parsePipeTableRow(rawLine);
+            if (!row || isPipeTableDivider(rawLine, headers.length)) break;
+            rows.push(row);
+            i++;
+        }
+
+        return {
+            nextIndex: i - 1,
+            headers: headers.map(inlineFormat),
+            rows: rows.map(function (row) { return row.map(inlineFormat); })
+        };
+    }
+
+    function plainTextFromHtml(html) {
+        return String(html || '').replace(/<[^>]+>/g, '').trim();
+    }
+
+    function buildPreviewTable(headers, rows, tableId) {
+        var html = '<div class="table-responsive-container docx-table-container">' +
+            '<div class="table-container scroll-view active" id="' + tableId + '-scroll">' +
+                '<div class="table-scroll-indicator">' +
+                    '<span>Σύρετε για περισσότερα</span>' +
+                    '<svg class="icon" aria-hidden="true"><use href="#fa-arrows-left-right"/></svg>' +
+                '</div>' +
+                '<table class="responsive-table docx-table">' +
+                    '<thead><tr>';
+
+        headers.forEach(function (header) {
+            html += '<th>' + header + '</th>';
+        });
+
+        html += '</tr></thead>';
+        if (rows.length) {
+            html += '<tbody>';
+            rows.forEach(function (row) {
+                html += '<tr>';
+                headers.forEach(function (header, index) {
+                    var cell = row[index] || '';
+                    html += '<td data-label="' + escapeHtml(plainTextFromHtml(header)) + '">' + cell + '</td>';
+                });
+                html += '</tr>';
+            });
+            html += '</tbody>';
+        }
+
+        html += '</table></div></div>';
+        return html;
+    }
+
     // ── Main converter ───────────────────────────────────
     function convertContent(raw) {
         var lines = raw.split('\n');
@@ -1255,6 +1337,7 @@
         var currentParagraph = '';
         var inList = false;
         var imageIdx = 0; // sequential marker counter, mirrors processor
+        var tableIdx = 0;
 
         function flushParagraph() {
             if (currentParagraph) {
@@ -1270,6 +1353,15 @@
             if (trimmed === '') {
                 flushParagraph();
                 if (inList) { html += '</ul>\n'; inList = false; }
+                continue;
+            }
+
+            var table = readPipeTable(lines, i);
+            if (table) {
+                flushParagraph();
+                if (inList) { html += '</ul>\n'; inList = false; }
+                html += buildPreviewTable(table.headers, table.rows, 'preview-txt-table-' + tableIdx++) + '\n';
+                i = table.nextIndex;
                 continue;
             }
 
