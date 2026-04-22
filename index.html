@@ -1,8 +1,20 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
+    <!-- @include partials/head-meta.html -->
+    <!-- @include:begin partials/head-meta.html -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/icons/favicon-32.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="F1 Stories">
+    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+    <!-- @include:end partials/head-meta.html -->
     <title>F1 Stories Podcast</title>
     <meta name="description" content="F1 Stories Podcast με αναλύσεις αγώνων, τεχνικά άρθρα, ιστορίες από το paddock και τα πιο πρόσφατα νέα από τη Formula 1.">
     <meta property="og:title" content="F1 Stories Podcast">
@@ -17,15 +29,7 @@
     <meta name="twitter:description" content="F1 Stories Podcast με αναλύσεις αγώνων, τεχνικά άρθρα, ιστορίες από το paddock και τα πιο πρόσφατα νέα από τη Formula 1.">
     <meta name="twitter:image" content="https://f1stories.gr/images/logo.png">
     <link rel="canonical" href="https://f1stories.gr/">
-    <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/icons/favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/icons/favicon-16.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="F1 Stories">
     <meta name="mobile-web-app-capable" content="yes">
     <script>
         window.__F1StoriesHeroBackgrounds = [
@@ -417,12 +421,13 @@
     </div></div></div></div>
 </section>
 
-<!-- ═══ FOOTER — Greek ═══ -->
+<!-- @include partials/footer.html -->
+<!-- @include:begin partials/footer.html -->
 <footer class="py-4">
     <div class="container">
         <div class="row">
             <div class="col-12 text-center">
-                <p>&copy; <span id="footer-year">2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
+                <p>&copy; <script>document.write(new Date().getFullYear())</script> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
                 <div class="social-media">
                     <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
                     <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
@@ -439,7 +444,7 @@
         </div>
     </div>
 </footer>
-
+<!-- @include:end partials/footer.html -->
 <!-- ═══ COOKIE BANNER — Greek ═══ -->
 <div id="cookie-consent" class="cookie-banner">
     <div class="cookie-content">
@@ -491,9 +496,5 @@
 <script src="/scripts/cookie-consent.min.js?v=9d38adec" defer></script>
 <script src="scripts/shared-nav.min.js?v=aa376236" defer></script>
 <script src="/scripts/sw-register.min.js?v=302c6d86" defer></script>
-<script>
-    var fy = document.getElementById('footer-year');
-    if (fy) fy.textContent = new Date().getFullYear();
-</script>
 </body>
 </html>
