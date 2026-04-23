@@ -451,7 +451,16 @@ node blog-module/generate-image-variants.js --run --force
 
 Τα sourcemaps (`*.min.js.map`, `*.min.css.map`) είναι στο `.gitignore`.
 
-Τα 208 υπάρχοντα `blog-module/blog-entries/*/article.html` ΔΕΝ παίρνουν γενικό asset stamping από το script — παραμένουν στα κλασικά (non-min) refs μέχρι να γίνει rebuild μέσω `npm run build:blog:force`, οπότε το (ήδη stamped) `blog-module/blog/template.html` θα διαδώσει τα `.min` refs παντού. Εξαίρεση: το Phase 4 Bootstrap CDN swap εφαρμόζεται και στα committed articles, ώστε κανένα live HTML να μη φορτώνει Bootstrap από jsDelivr.
+Τα 211 committed `blog-module/blog-entries/*/article.html` περνούν πλέον από repo-level normalization στο `stamp-html.mjs`, ώστε το ιστορικό archive να μένει στο τρέχον self-hosted/minified shell stack χωρίς να ξαναχτίζεται το editorial body. Το normalization καλύπτει local `.min` refs με content-hash, self-hosted fonts/Bootstrap, icon sprite, critical CSS, async stylesheet preloads, web-vitals beacon και cleanup παλιών CDN/email-protection leftovers. Πλήρες content regeneration παραμένει δουλειά του `npm run build:blog` / `npm run build:blog:force`.
+
+### Hook install και perf guard
+
+```bash
+npm run hooks:install
+npm run perf:budget
+```
+
+Το πρώτο ενεργοποιεί το checked-in `.githooks/pre-commit`, ενώ το δεύτερο είναι ο ίδιος έλεγχος μεγέθους assets που θα τρέχει πριν από κάθε commit.
 
 <a id="performance-budget"></a>
 ## Performance budget

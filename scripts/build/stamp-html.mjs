@@ -26,9 +26,9 @@ const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const MANIFEST_PATH = path.join(REPO_ROOT, 'scripts', 'build', 'asset-manifest.json');
 
 // HTML files whose asset references we rewrite. Add to this list with care
-// — stamping a file with external asset references is fine; stamping a
-// content-committed article needs special handling: article shells are
-// normalized below without rebuilding the editorial content body.
+// — stamping a file with external asset references is fine; content-
+// committed articles are normalized separately below without rebuilding the
+// editorial body.
 const TARGET_HTML = [
     'index.html',
     'offline.html',
@@ -226,8 +226,79 @@ function loadCriticalCss(manifest) {
     };
 }
 
+function getTagAttr(tag, name) {
+    const match = tag.match(new RegExp(`\\b${name}\\s*=\\s*(["'])(.*?)\\1`, 'i'));
+    return match ? match[2] : '';
+}
+
+function isLocalHref(href) {
+    return href && !/^(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(href);
+}
+
+function isLocalStylesheetHref(href) {
+    return isLocalHref(href) && /\.css(?:\?[^"'#]*)?$/i.test(href);
+}
+
+function isLocalMinStylesheetHref(href) {
+    return isLocalHref(href) && /\.min\.css(?:\?[^"'#]*)?$/i.test(href);
+}
+
+function isDeferredAuxiliaryStylesheet(href) {
+    return /\/styles\/fonts\.min\.css(?:\?|$)|\/styles\/vendor\/bootstrap\.slim\.min\.css(?:\?|$)/i.test(href);
+}
+
+function findLocalStylesheetAnchor(html) {
+    const linkRe = /<link\b[^>]*>/gi;
+    let match;
+    let fallback = null;
+
+    while ((match = linkRe.exec(html))) {
+        const index = match.index ?? 0;
+        if (isInsideNoscript(html, index)) continue;
+
+        const tag = match[0];
+        const href = getTagAttr(tag, 'href');
+        if (!isLocalMinStylesheetHref(href)) continue;
+
+        const rel = getTagAttr(tag, 'rel').toLowerCase();
+        const as = getTagAttr(tag, 'as').toLowerCase();
+        const isStylesheet = rel === 'stylesheet' || (rel === 'preload' && as === 'style');
+        if (!isStylesheet) continue;
+
+        const lineStart = html.lastIndexOf('\n', index - 1) + 1;
+        const indent = html.slice(lineStart, index).match(/^[ \t]*/)?.[0] || '    ';
+        const anchor = { index, indent, href, rel };
+        if (!isDeferredAuxiliaryStylesheet(href)) {
+            return anchor;
+        }
+        if (!fallback) {
+            fallback = anchor;
+        }
+    }
+
+    return fallback;
+}
+
+function normalizeStylesheetNoscriptFallbacks(html) {
+    let fixes = 0;
+    const result = html.replace(
+        /^([ \t]*)<noscript>[ \t]*\n[ \t]*(<link\b[^>]*>)<\/noscript>\s*$/gm,
+        (match, indent, linkTag) => {
+            const rel = getTagAttr(linkTag, 'rel').toLowerCase();
+            const href = getTagAttr(linkTag, 'href');
+            if (rel !== 'stylesheet' || !isLocalStylesheetHref(href)) {
+                return match;
+            }
+            fixes++;
+            return `${indent}<noscript>${linkTag}</noscript>`;
+        }
+    );
+    return { result, fixes };
+}
+
 // Replace the existing critical block (if any) or inject a new one right
-// before the first <link rel="stylesheet"> inside <head>. Idempotent.
+// before the first local non-noscript stylesheet anchor inside <head>.
+// Idempotent.
 function injectCritical(html, critical) {
     const block =
         `${CRITICAL_BEGIN}\n` +
@@ -249,32 +320,22 @@ function injectCritical(html, critical) {
         html = html.replace(existing, '');
     }
 
-    // Insert before first <link rel="stylesheet" ...> that points to a local
-    // stylesheet (skips bootstrap CDN etc. by requiring no :// in href value,
-    // but simplest: just anchor on the first local .min.css link — which
-    // post-Phase-1 always exists on these pages).
-    const m = findStylesheetOutsideNoscript(html);
-    if (!m) {
+    // Prefer the main shell stylesheet anchors. On already-asyncified pages
+    // that means the first local rel=preload/as=style .min.css outside any
+    // <noscript>, not the malformed fallback that older archive pages had.
+    const anchor = findLocalStylesheetAnchor(html);
+    if (!anchor) {
         return { result: html, injected: false, replaced: false };
     }
-    const indent = m[1] || '    ';
+    const indent = anchor.indent || '    ';
     const insertion = `${indent}${block}\n`;
-    const result = html.slice(0, m.index) + insertion + html.slice(m.index);
+    const result = html.slice(0, anchor.index) + insertion + html.slice(anchor.index);
     return { result, injected: true, replaced: false };
 }
 
 function isInsideNoscript(html, offset) {
     const before = html.slice(0, offset);
     return before.lastIndexOf('<noscript') > before.lastIndexOf('</noscript>');
-}
-
-function findStylesheetOutsideNoscript(html) {
-    const anchor = /^([ \t]*)<link rel="stylesheet" href="([^"]*\.min\.css)/gm;
-    let match;
-    while ((match = anchor.exec(html))) {
-        if (!isInsideNoscript(html, match.index ?? 0)) return match;
-    }
-    return null;
 }
 
 // Convert a local stylesheet link to the async-preload pattern. External
@@ -683,6 +744,7 @@ function stampArticleShell({ patterns, bootstrapInfo, fontsInfo, critical, sprit
         bootstrapCssDrops: 0,
         bootstrapJsDrops: 0,
         bootstrapPreconnectDrops: 0,
+        noscriptFixes: 0,
         fontSwaps: 0,
         fontPreconnectDrops: 0,
         fontPreloads: 0,
@@ -708,6 +770,10 @@ function stampArticleShell({ patterns, bootstrapInfo, fontsInfo, critical, sprit
         totals.bootstrapCssDrops += bootstrapSwap.swaps.cssDropped;
         totals.bootstrapJsDrops += bootstrapSwap.swaps.jsDropped;
         totals.bootstrapPreconnectDrops += bootstrapSwap.swaps.preconnectDropped;
+
+        const noscriptCleanup = normalizeStylesheetNoscriptFallbacks(result);
+        result = noscriptCleanup.result;
+        totals.noscriptFixes += noscriptCleanup.fixes;
 
         const criticalSwap = injectCritical(result, critical);
         result = criticalSwap.result;
@@ -776,6 +842,7 @@ function main() {
     let totalBootstrapCssDrops = 0;
     let totalBootstrapJsDrops = 0;
     let totalBootstrapPreconnectDrops = 0;
+    let totalNoscriptFixes = 0;
 
     for (const rel of TARGET_HTML) {
         const abs = path.join(REPO_ROOT, rel);
@@ -796,6 +863,10 @@ function main() {
         totalBootstrapCssDrops += bootstrapSwap.swaps.cssDropped;
         totalBootstrapJsDrops += bootstrapSwap.swaps.jsDropped;
         totalBootstrapPreconnectDrops += bootstrapSwap.swaps.preconnectDropped;
+
+        const noscriptCleanup = normalizeStylesheetNoscriptFallbacks(result);
+        result = noscriptCleanup.result;
+        totalNoscriptFixes += noscriptCleanup.fixes;
 
         // 2) swap Google Fonts → self-hosted (only on pages that had them)
         const fontSwap = swapFonts(result, rel, fontsInfo, manifest);
@@ -875,6 +946,7 @@ function main() {
     totalBootstrapCssDrops += articleShell.bootstrapCssDrops;
     totalBootstrapJsDrops += articleShell.bootstrapJsDrops;
     totalBootstrapPreconnectDrops += articleShell.bootstrapPreconnectDrops;
+    totalNoscriptFixes += articleShell.noscriptFixes;
     totalFontSwaps += articleShell.fontSwaps;
     totalPreconnectDrops += articleShell.fontPreconnectDrops;
     totalSpriteOps += articleShell.spriteOps;
@@ -885,6 +957,7 @@ function main() {
         console.log(
             `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleShell.files} file(s), ` +
             `${articleShell.stamps} stamp(s), ` +
+            `${articleShell.noscriptFixes} noscript fix(es), ` +
             `${articleShell.fontSwaps} font swap(s), ` +
             `${articleShell.faCdnDrops} FA CDN drop(s), ` +
             `${articleShell.iconTags} icon tag(s), ` +
@@ -901,7 +974,7 @@ function main() {
             `${totalPreconnectDrops} preconnect drop(s), ${totalSpriteOps} sprite op(s), ` +
             `${totalFaCdnDrops} FA CDN drop(s), ${totalBootstrapCssSwaps} Bootstrap CSS swap(s), ` +
             `${totalBootstrapCssDrops} Bootstrap CSS drop(s), ${totalBootstrapJsDrops} Bootstrap JS drop(s), ` +
-            `${totalBootstrapPreconnectDrops} jsDelivr preconnect drop(s) planned.`
+            `${totalBootstrapPreconnectDrops} jsDelivr preconnect drop(s), ${totalNoscriptFixes} noscript fix(es) planned.`
         );
     } else {
         console.log(
@@ -910,7 +983,7 @@ function main() {
             `${totalPreconnectDrops} preconnect(s) dropped, ${totalSpriteOps} sprite op(s), ` +
             `${totalFaCdnDrops} FA CDN drop(s), ${totalBootstrapCssSwaps} Bootstrap CSS swap(s), ` +
             `${totalBootstrapCssDrops} Bootstrap CSS drop(s), ${totalBootstrapJsDrops} Bootstrap JS drop(s), ` +
-            `${totalBootstrapPreconnectDrops} jsDelivr preconnect drop(s) across ${TARGET_HTML.length} shell file(s).`
+            `${totalBootstrapPreconnectDrops} jsDelivr preconnect drop(s), ${totalNoscriptFixes} noscript fix(es) across ${TARGET_HTML.length} shell file(s).`
         );
     }
 }
