@@ -27,7 +27,8 @@ const MANIFEST_PATH = path.join(REPO_ROOT, 'scripts', 'build', 'asset-manifest.j
 
 // HTML files whose asset references we rewrite. Add to this list with care
 // — stamping a file with external asset references is fine; stamping a
-// content-committed article is NOT (see module header).
+// content-committed article needs special handling: article shells are
+// normalized below without rebuilding the editorial content body.
 const TARGET_HTML = [
     'index.html',
     'offline.html',
@@ -89,6 +90,8 @@ const FONTS_SOURCE = 'styles/fonts.css';
 // audit confirmed no Bootstrap JS components are used.
 const BOOTSTRAP_SOURCE = 'styles/vendor/bootstrap.slim.css';
 const ARTICLE_HTML_ROOT = 'blog-module/blog-entries';
+const ARTICLE_SHELL_CONTEXT = 'blog-module/blog/template.html';
+const WEB_VITALS_SOURCE = 'scripts/perf/web-vitals-beacon.js';
 
 // Primary font weight to preload per page template. Picked to match the
 // dominant above-the-fold text (hero h1 + body). Path is relative to the
@@ -235,17 +238,22 @@ function injectCritical(html, critical) {
         escapeRegex(CRITICAL_BEGIN) + '[\\s\\S]*?' + escapeRegex(CRITICAL_END),
         'g'
     );
-    if (existing.test(html)) {
-        const replaced = html.replace(existing, block);
-        return { result: replaced, injected: false, replaced: true };
+    const existingMatch = html.match(existing);
+    if (existingMatch) {
+        const firstIndex = html.indexOf(existingMatch[0]);
+        if (!isInsideNoscript(html, firstIndex)) {
+            const replaced = html.replace(existing, block);
+            return { result: replaced, injected: false, replaced: true };
+        }
+
+        html = html.replace(existing, '');
     }
 
     // Insert before first <link rel="stylesheet" ...> that points to a local
     // stylesheet (skips bootstrap CDN etc. by requiring no :// in href value,
     // but simplest: just anchor on the first local .min.css link — which
     // post-Phase-1 always exists on these pages).
-    const anchor = /([ \t]*)<link rel="stylesheet" href="([^"]*\.min\.css)/;
-    const m = html.match(anchor);
+    const m = findStylesheetOutsideNoscript(html);
     if (!m) {
         return { result: html, injected: false, replaced: false };
     }
@@ -253,6 +261,20 @@ function injectCritical(html, critical) {
     const insertion = `${indent}${block}\n`;
     const result = html.slice(0, m.index) + insertion + html.slice(m.index);
     return { result, injected: true, replaced: false };
+}
+
+function isInsideNoscript(html, offset) {
+    const before = html.slice(0, offset);
+    return before.lastIndexOf('<noscript') > before.lastIndexOf('</noscript>');
+}
+
+function findStylesheetOutsideNoscript(html) {
+    const anchor = /^([ \t]*)<link rel="stylesheet" href="([^"]*\.min\.css)/gm;
+    let match;
+    while ((match = anchor.exec(html))) {
+        if (!isInsideNoscript(html, match.index ?? 0)) return match;
+    }
+    return null;
 }
 
 // Convert a local stylesheet link to the async-preload pattern. External
@@ -569,6 +591,166 @@ function asyncifyStylesheets(html) {
     return { result, conversions };
 }
 
+const I_TAG_RE = /<i\s+class=(["'])([^"']*?)\1([^>]*)><\/i>/g;
+const FA_MODIFIERS = new Set(['spin', 'pulse', 'flip', 'flip-horizontal', 'flip-vertical']);
+const FA_DROP_PREFIXES = new Set(['fas', 'fab', 'far', 'fa']);
+
+function extractIconName(classAttr) {
+    const tokens = classAttr.split(/\s+/).filter(Boolean);
+    for (const token of tokens) {
+        const match = token.match(/^fa-([a-z][a-z0-9-]*)$/);
+        if (!match) continue;
+        const name = match[1];
+        if (FA_MODIFIERS.has(name)) continue;
+        if (/^[0-9]x$/.test(name)) continue;
+        if (/^rotate-\d+$/.test(name)) continue;
+        return name;
+    }
+    return null;
+}
+
+function rewriteFaClass(classAttr, iconName) {
+    const kept = ['icon'];
+    for (const token of classAttr.split(/\s+/).filter(Boolean)) {
+        if (FA_DROP_PREFIXES.has(token)) continue;
+        if (token === `fa-${iconName}`) continue;
+        kept.push(token);
+    }
+    return kept.join(' ');
+}
+
+function migrateFaIcons(html) {
+    let changes = 0;
+    const result = html.replace(I_TAG_RE, (match, quote, classAttr, rest) => {
+        const iconName = extractIconName(classAttr);
+        if (!iconName) return match;
+
+        const trailing = rest.trim() ? ` ${rest.trim()}` : '';
+        const ariaHidden = /aria-hidden=/.test(rest) ? '' : ' aria-hidden="true"';
+        changes++;
+        return `<svg class="${rewriteFaClass(classAttr, iconName)}"${ariaHidden}${trailing}><use href="#fa-${iconName}"/></svg>`;
+    });
+
+    return { result, changes };
+}
+
+function ensureWebVitalsBeacon(html, manifest) {
+    const info = manifest[WEB_VITALS_SOURCE];
+    if (!info) {
+        throw new Error(`manifest missing entry for ${WEB_VITALS_SOURCE} — run build:assets:minify`);
+    }
+
+    const src = `/${info.min}?v=${info.hash}`;
+    if (html.includes(src)) {
+        return { result: html, injected: false };
+    }
+
+    const analyticsLine = /^([ \t]*)<script defer src="\/scripts\/analytics\.min\.js\?v=[a-f0-9]+"><\/script>\n?/m;
+    const match = html.match(analyticsLine);
+    if (!match) {
+        return { result: html, injected: false };
+    }
+
+    const indent = match[1] || '    ';
+    const insertAt = (match.index ?? 0) + match[0].length;
+    const result = html.slice(0, insertAt) + `${indent}<script defer src="${src}"></script>\n` + html.slice(insertAt);
+    return { result, injected: true };
+}
+
+function normalizeCloudflareEmail(html) {
+    let changes = 0;
+    let result = html.replace(/href="\/cdn-cgi\/l\/email-protection#[^"]+"/g, () => {
+        changes++;
+        return 'href="mailto:myf1stories@gmail.com"';
+    });
+
+    result = result.replace(
+        /^[ \t]*<script\s+data-cfasync="false"\s+src="\/cdn-cgi\/scripts\/[^"]+\/cloudflare-static\/email-decode\.min\.js"><\/script>\n?/gm,
+        () => {
+            changes++;
+            return '';
+        }
+    );
+
+    return { result, changes };
+}
+
+function stampArticleShell({ patterns, bootstrapInfo, fontsInfo, critical, sprite, manifest }, dry) {
+    const totals = {
+        files: 0,
+        stamps: 0,
+        bootstrapCssSwaps: 0,
+        bootstrapCssDrops: 0,
+        bootstrapJsDrops: 0,
+        bootstrapPreconnectDrops: 0,
+        fontSwaps: 0,
+        fontPreconnectDrops: 0,
+        fontPreloads: 0,
+        faCdnDrops: 0,
+        iconTags: 0,
+        spriteOps: 0,
+        criticalOps: 0,
+        asyncified: 0,
+        webVitals: 0,
+        cloudflareEmail: 0
+    };
+
+    for (const rel of listArticleHtml()) {
+        const abs = path.join(REPO_ROOT, rel);
+        const original = fs.readFileSync(abs, 'utf8');
+
+        let { result, hits } = rewrite(original, patterns);
+        totals.stamps += hits.length;
+
+        const bootstrapSwap = swapBootstrapCdn(result, bootstrapInfo);
+        result = bootstrapSwap.result;
+        totals.bootstrapCssSwaps += bootstrapSwap.swaps.cssSwapped;
+        totals.bootstrapCssDrops += bootstrapSwap.swaps.cssDropped;
+        totals.bootstrapJsDrops += bootstrapSwap.swaps.jsDropped;
+        totals.bootstrapPreconnectDrops += bootstrapSwap.swaps.preconnectDropped;
+
+        const criticalSwap = injectCritical(result, critical);
+        result = criticalSwap.result;
+        if (criticalSwap.injected || criticalSwap.replaced) totals.criticalOps++;
+
+        const fontSwap = swapFonts(result, ARTICLE_SHELL_CONTEXT, fontsInfo, manifest);
+        result = fontSwap.result;
+        totals.fontSwaps += fontSwap.swaps.googleLinksSwapped;
+        totals.fontPreconnectDrops += fontSwap.swaps.preconnectDropped;
+        totals.fontPreloads += fontSwap.swaps.preloadsInjected;
+
+        const cdnDrop = dropFontAwesomeCdn(result);
+        result = cdnDrop.result;
+        totals.faCdnDrops += cdnDrop.dropped;
+
+        const iconMigration = migrateFaIcons(result);
+        result = iconMigration.result;
+        totals.iconTags += iconMigration.changes;
+
+        const spriteSwap = injectSprite(result, sprite);
+        result = spriteSwap.result;
+        if (spriteSwap.injected || spriteSwap.replaced) totals.spriteOps++;
+
+        const vitals = ensureWebVitalsBeacon(result, manifest);
+        result = vitals.result;
+        if (vitals.injected) totals.webVitals++;
+
+        const cloudflare = normalizeCloudflareEmail(result);
+        result = cloudflare.result;
+        totals.cloudflareEmail += cloudflare.changes;
+
+        const asyncSwap = asyncifyStylesheets(result);
+        result = asyncSwap.result;
+        totals.asyncified += asyncSwap.conversions.length;
+
+        if (result === original) continue;
+        totals.files++;
+        if (!dry) fs.writeFileSync(abs, result, 'utf8');
+    }
+
+    return totals;
+}
+
 function main() {
     const manifest = loadManifest();
     const patterns = buildPatternsFromManifest(manifest);
@@ -684,18 +866,31 @@ function main() {
         }
     }
 
-    const articleBootstrap = stampArticleBootstrap(bootstrapInfo, dry);
-    totalBootstrapCssSwaps += articleBootstrap.cssSwapped;
-    totalBootstrapCssDrops += articleBootstrap.cssDropped;
-    totalBootstrapJsDrops += articleBootstrap.jsDropped;
-    totalBootstrapPreconnectDrops += articleBootstrap.preconnectDropped;
-    if (articleBootstrap.files) {
+    const articleShell = stampArticleShell(
+        { patterns, bootstrapInfo, fontsInfo, critical, sprite, manifest },
+        dry
+    );
+    totalHits += articleShell.stamps;
+    totalBootstrapCssSwaps += articleShell.bootstrapCssSwaps;
+    totalBootstrapCssDrops += articleShell.bootstrapCssDrops;
+    totalBootstrapJsDrops += articleShell.bootstrapJsDrops;
+    totalBootstrapPreconnectDrops += articleShell.bootstrapPreconnectDrops;
+    totalFontSwaps += articleShell.fontSwaps;
+    totalPreconnectDrops += articleShell.fontPreconnectDrops;
+    totalSpriteOps += articleShell.spriteOps;
+    totalFaCdnDrops += articleShell.faCdnDrops;
+    totalCriticalOps += articleShell.criticalOps;
+    totalAsyncified += articleShell.asyncified;
+    if (articleShell.files) {
         console.log(
-            `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleBootstrap.files} file(s), ` +
-            `${articleBootstrap.cssSwapped} Bootstrap swap(s), ` +
-            `${articleBootstrap.cssDropped} Bootstrap drop(s), ` +
-            `${articleBootstrap.jsDropped} Bootstrap JS drop(s), ` +
-            `${articleBootstrap.preconnectDropped} jsDelivr preconnect drop(s)`
+            `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleShell.files} file(s), ` +
+            `${articleShell.stamps} stamp(s), ` +
+            `${articleShell.fontSwaps} font swap(s), ` +
+            `${articleShell.faCdnDrops} FA CDN drop(s), ` +
+            `${articleShell.iconTags} icon tag(s), ` +
+            `${articleShell.webVitals} web-vitals insert(s), ` +
+            `${articleShell.asyncified} async-preload conversion(s), ` +
+            `${articleShell.cloudflareEmail} Cloudflare email cleanup(s)`
         );
     }
 

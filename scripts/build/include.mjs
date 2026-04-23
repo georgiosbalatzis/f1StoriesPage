@@ -5,6 +5,7 @@ import path from 'node:path';
 import process from 'node:process';
 
 const ROOT = process.cwd();
+const ASSET_MANIFEST_PATH = path.join(ROOT, 'scripts', 'build', 'asset-manifest.json');
 
 const TARGET_HTML = [
   'index.html',
@@ -60,6 +61,34 @@ function renderTemplate(source, context, includePath) {
   });
 }
 
+async function loadAssetManifest() {
+  try {
+    const payload = JSON.parse(await fs.readFile(ASSET_MANIFEST_PATH, 'utf8'));
+    return payload.files || {};
+  } catch (error) {
+    if (error && error.code === 'ENOENT') return {};
+    throw error;
+  }
+}
+
+function assetHref(files, sourceRel, fallback) {
+  const info = files[sourceRel];
+  if (!info) return fallback;
+  return `/${info.min}?v=${info.hash}`;
+}
+
+async function buildDefaultContext() {
+  const manifest = await loadAssetManifest();
+  return {
+    ...DEFAULT_CONTEXT,
+    headErrorBeaconSrc: assetHref(
+      manifest,
+      'scripts/perf/error-beacon.js',
+      '/scripts/perf/error-beacon.js'
+    ),
+  };
+}
+
 async function loadPartial(includePath, currentDir, context, stack) {
   const resolvedPath = resolveIncludePath(includePath, currentDir);
   const relativePath = path.relative(ROOT, resolvedPath);
@@ -109,12 +138,13 @@ async function expandIncludes(source, currentDir, context, stack = []) {
 
 async function main() {
   let changedFiles = 0;
+  const defaultContext = await buildDefaultContext();
 
   for (const relativePath of TARGET_HTML) {
     const absolutePath = path.join(ROOT, relativePath);
     const original = await fs.readFile(absolutePath, 'utf8');
     const context = {
-      ...DEFAULT_CONTEXT,
+      ...defaultContext,
       ...(PAGE_CONTEXT[relativePath] || {}),
     };
     const expanded = await expandIncludes(
