@@ -30,6 +30,13 @@
         })();
     </script>
     <style>
+        /* Above-the-fold critical subset (pages outside CRITICAL_TARGETS
+           don't get critical-common.css inlined, so icons otherwise render
+           at their native SVG viewBox size). */
+        .icon { fill: currentColor; vertical-align: -0.125em; flex-shrink: 0; width: 1em; height: 1em; display: inline-block; }
+        .fa-spin { animation: 2s linear infinite fa-spin; }
+        @keyframes fa-spin { 0% { transform: rotate(0); } to { transform: rotate(360deg); } }
+
         /* ── Editor panel ──────────────────────────────────── */
         .gen-panel {
             position: relative;
