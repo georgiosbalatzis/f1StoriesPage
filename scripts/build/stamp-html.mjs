@@ -68,7 +68,9 @@ const CRITICAL_TARGETS = new Set([
     'index.html',
     'standings/index.html',
     'blog-module/blog/index.html',
-    'blog-module/blog/template.html'
+    'blog-module/blog/template.html',
+    'generate.html',
+    'housekeeping.html'
 ]);
 
 // Source path of the hand-crafted critical block (resolved against manifest).
@@ -107,6 +109,14 @@ const FONT_PRELOADS = {
         'assets/fonts/outfit-700.woff2'
     ],
     'blog-module/blog/template.html': [
+        'assets/fonts/dm-sans-400.woff2',
+        'assets/fonts/outfit-700.woff2'
+    ],
+    'generate.html': [
+        'assets/fonts/dm-sans-400.woff2',
+        'assets/fonts/outfit-700.woff2'
+    ],
+    'housekeeping.html': [
         'assets/fonts/dm-sans-400.woff2',
         'assets/fonts/outfit-700.woff2'
     ]

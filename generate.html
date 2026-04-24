@@ -8,14 +8,27 @@
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <script src="/scripts/perf/error-beacon.min.js?v=ea43d064"></script>
 
-    <link rel="stylesheet" href="/styles/fonts.min.css?v=d7f3513a">
+    <!-- f1s:fonts-preload:begin -->
+    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/dm-sans-400.woff2?v=468d56b6" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/outfit-700.woff2?v=92684e4a" crossorigin>
+    <!-- f1s:fonts-preload:end -->
+    <!-- f1s:critical-css:begin -->
+    <style id="f1s-critical" data-hash="fc86d7bd">:root{--bg-base:#111113;--bg-surface:#161618;--bg-overlay:#111113eb;--text-primary:#e5e5e7;--text-secondary:#a1a1a6;--accent:#3b82f6;--border:#ffffff14;--font-body:"Roboto", system-ui, -apple-system, sans-serif;--radius-lg:14px;--space-md:1rem;--space-lg:1.5rem}*{box-sizing:border-box}html{-moz-text-size-adjust:100%;text-size-adjust:100%}body{font-family:var(--font-body);color:var(--text-primary);background-color:var(--bg-base);min-height:100svh;margin:0;padding:0;position:relative;overflow-x:hidden}.background{background:var(--bg-base);z-index:-2;width:100%;height:100%;position:fixed;top:0;left:0}.streak{z-index:-1;opacity:0;position:fixed}@media (min-width:769px){.streak{opacity:.5}}.skip-link{background:var(--accent);color:#fff;z-index:9999;border-radius:0 0 8px;padding:.6rem 1rem;text-decoration:none;position:absolute;top:0;left:-9999px}.skip-link:focus{left:0}.blog-nav{z-index:1060;-webkit-backdrop-filter:blur(20px)saturate(1.4);backdrop-filter:blur(20px)saturate(1.4);border-bottom:1px solid var(--border);background:#111113d9;position:fixed;top:0;left:0;right:0}.blog-nav-inner{align-items:center;gap:1.5rem;min-height:58px;padding:.6rem 0;display:flex}.blog-nav-brand img{width:auto;height:38px;display:block}.blog-nav-links{align-items:center;gap:.25rem;margin-left:.5rem;display:flex}.blog-nav-link{color:#fff9;white-space:nowrap;border-radius:8px;align-items:center;gap:.4rem;padding:.45rem .85rem;font-size:.82rem;font-weight:500;text-decoration:none;display:flex}.blog-nav-right{align-items:center;gap:.5rem;margin-left:auto;display:flex}#hero{color:#fff;text-align:center;justify-content:center;align-items:center;min-height:80vh;margin-top:70px;padding:10rem 0;display:flex;position:relative;overflow:hidden}.hero-overlay{z-index:-1;opacity:.7;position:absolute;inset:0;overflow:hidden}#hero:before{content:"";z-index:-1;background:linear-gradient(90deg,#111113e0,#161618d1);position:absolute;inset:0}.hero-content{z-index:1;max-width:800px;padding:0 var(--space-md);position:relative}.hero-content h1{margin:0 0 var(--space-md);text-shadow:2px 2px 8px #000000b3;font-size:3.5rem}.hero-content p{margin-bottom:var(--space-lg);text-shadow:1px 1px 4px #000000b3;font-size:1.5rem}@media (max-width:767.98px){.hero-content h1{font-size:2.125rem}.hero-content p{font-size:1.125rem}#hero{min-height:70vh;padding:6rem 0}}[data-theme=light]{--bg-base:#fff;--bg-surface:#f5f5f7;--bg-overlay:#ffffffeb;--text-primary:#1d1d1f;--text-secondary:#6e6e73;--accent:#0e4ca6;--border:#00000014}[data-theme=light] body{color:#1d1d1f;background-color:#fff}[data-theme=light] .background{background:#fff}[data-theme=light] .streak{display:none}[data-theme=light] .blog-nav{background:#ffffffd1;border-bottom-color:#0000000f}[data-theme=light] .blog-nav-link{color:#6e6e73}.icon{fill:currentColor;vertical-align:-.125em;flex-shrink:0;width:1em;height:1em;display:inline-block}.fa-spin{animation:2s linear infinite fa-spin}@keyframes fa-spin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}</style>
+    <!-- f1s:critical-css:end -->
+    <link rel="preload" as="style" href="/styles/fonts.min.css?v=d7f3513a" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/styles/fonts.min.css?v=d7f3513a"></noscript>
     <link rel="preload" as="style" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f"></noscript>
-    <link rel="stylesheet" href="/styles.min.css?v=53367291">
-    <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=0f638228">
-    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=f4030529">
-    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=d8e2b657">
-    <link rel="stylesheet" href="/theme-overrides.min.css?v=2728eb3a">
+    <link rel="preload" as="style" href="/styles.min.css?v=53367291" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/styles.min.css?v=53367291"></noscript>
+    <link rel="preload" as="style" href="/blog-module/blog-styles.min.css?v=0f638228" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=0f638228"></noscript>
+    <link rel="preload" as="style" href="/blog-module/blog/article-styles.min.css?v=f4030529" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=f4030529"></noscript>
+    <link rel="preload" as="style" href="/styles/shared-nav.min.css?v=d8e2b657" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/styles/shared-nav.min.css?v=d8e2b657"></noscript>
+    <link rel="preload" as="style" href="/theme-overrides.min.css?v=2728eb3a" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/theme-overrides.min.css?v=2728eb3a"></noscript>
 
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
 
@@ -30,13 +43,6 @@
         })();
     </script>
     <style>
-        /* Above-the-fold critical subset (pages outside CRITICAL_TARGETS
-           don't get critical-common.css inlined, so icons otherwise render
-           at their native SVG viewBox size). */
-        .icon { fill: currentColor; vertical-align: -0.125em; flex-shrink: 0; width: 1em; height: 1em; display: inline-block; }
-        .fa-spin { animation: 2s linear infinite fa-spin; }
-        @keyframes fa-spin { 0% { transform: rotate(0); } to { transform: rotate(360deg); } }
-
         /* ── Editor panel ──────────────────────────────────── */
         .gen-panel {
             position: relative;
@@ -446,9 +452,13 @@
             <svg class="icon" aria-hidden="true"><use href="#fa-folder-open"/></svg> <span id="gen-import-text">Εισαγωγή ZIP</span>
             <input type="file" accept=".zip,application/zip" class="gen-file-input" id="gen-import-input">
         </label>
-        <label class="gen-file-label" id="gen-file-label">
-            <svg class="icon" aria-hidden="true"><use href="#fa-image"/></svg> <span id="gen-file-text">Κεντρική εικόνα</span>
+        <label class="gen-file-label" id="gen-file-label" title="Εικόνα 1 — thumbnail κάρτας + fallback για header">
+            <svg class="icon" aria-hidden="true"><use href="#fa-image"/></svg> <span id="gen-file-text">Κεντρική / thumbnail</span>
             <input type="file" accept="image/*" class="gen-file-input" id="gen-hero-input">
+        </label>
+        <label class="gen-file-label" id="gen-header-label" title="Εικόνα 2 — banner στην κορυφή του άρθρου (προαιρετικό, προεπιλογή: η κεντρική)">
+            <svg class="icon" aria-hidden="true"><use href="#fa-layer-group"/></svg> <span id="gen-header-text">Banner άρθρου</span>
+            <input type="file" accept="image/*" class="gen-file-input" id="gen-header-input">
         </label>
         <label class="gen-file-label" id="gen-content-file-label">
             <svg class="icon" aria-hidden="true"><use href="#fa-images"/></svg> <span id="gen-content-file-text">Εικόνες κειμένου</span>
@@ -466,7 +476,7 @@
 
     <div class="gen-hint">
         Μορφή: απλό κείμενο με επικεφαλίδες σε στυλ markdown. Οι σύνδεσμοι σε YouTube, X, Instagram, Threads και Facebook ενσωματώνονται αυτόματα.<br>
-        <strong>Κεντρική</strong>: η εικόνα <code>1</code> είναι ταυτόχρονα η κεντρική και το thumbnail — η θέση <code>2</code> είναι δεσμευμένη (μην τη χρησιμοποιείς). Οι ανεβασμένες εικόνες μετατρέπονται αυτόματα σε <code>.webp</code> κατά το export/publish.<br>
+        <strong>Κεντρική / thumbnail</strong> (εικόνα <code>1</code>): εμφανίζεται στις κάρτες του blog και, αν δεν έχει οριστεί banner, και ως header του άρθρου. <strong>Banner άρθρου</strong> (εικόνα <code>2</code>, προαιρετικό): εμφανίζεται στην κορυφή του άρθρου· αν λείπει, χρησιμοποιείται η κεντρική. Όλες οι εικόνες μετατρέπονται αυτόματα σε <code>.webp</code> κατά το export/publish.<br>
         <strong>Εικόνες κειμένου</strong>: πρόσθεσε <code>[img-instert-tag]</code> εκεί που θέλεις μια εικόνα και επισύναψε τις εικόνες με την ίδια σειρά. <em>2+ δείκτες σε συνεχόμενες σειρές γίνονται carousel· μεμονωμένοι δείκτες παραμένουν ως μεμονωμένες εικόνες.</em><br>
         <strong>Χωρίς δείκτες;</strong> Οι επισυναπτόμενες εικόνες εμφανίζονται ως carousel στο τέλος του άρθρου.<br>
         <strong>Δημοσίευση</strong>: commit απευθείας στο <code>main</code> μέσω GitHub API — το workflow χτίζει μετά το άρθρο (~1 λεπτό).
@@ -565,6 +575,9 @@
     var heroInput     = document.getElementById('gen-hero-input');
     var fileLabel     = document.getElementById('gen-file-label');
     var fileText      = document.getElementById('gen-file-text');
+    var headerInput   = document.getElementById('gen-header-input');
+    var headerLabel   = document.getElementById('gen-header-label');
+    var headerText    = document.getElementById('gen-header-text');
     var contentInput      = document.getElementById('gen-content-input');
     var contentFileLabel  = document.getElementById('gen-content-file-label');
     var contentFileText   = document.getElementById('gen-content-file-text');
@@ -595,6 +608,8 @@
 
     var heroObjectUrl = null;
     var heroImageMeta = { width: 848, height: 400 };
+    var headerObjectUrl = null;
+    var headerImageMeta = { width: 848, height: 400 };
 
     function readImageMeta(url) {
         return new Promise(function (resolve) {
@@ -625,6 +640,17 @@
             heroImageMeta = await readImageMeta(heroObjectUrl);
             fileText.textContent = heroInput.files[0].name;
             fileLabel.classList.add('has-file');
+        }
+    });
+
+    // ── Article banner (slot 2) handler ───────────────────
+    headerInput.addEventListener('change', async function () {
+        if (headerInput.files && headerInput.files[0]) {
+            if (headerObjectUrl) URL.revokeObjectURL(headerObjectUrl);
+            headerObjectUrl = URL.createObjectURL(headerInput.files[0]);
+            headerImageMeta = await readImageMeta(headerObjectUrl);
+            headerText.textContent = headerInput.files[0].name;
+            headerLabel.classList.add('has-file');
         }
     });
 
@@ -794,9 +820,14 @@
         categoryInput.value = 'Racing';
         contentArea.value = '';
         heroInput.value = '';
-        fileText.textContent = 'Κεντρική εικόνα';
+        fileText.textContent = 'Κεντρική / thumbnail';
         fileLabel.classList.remove('has-file');
         if (heroObjectUrl) { URL.revokeObjectURL(heroObjectUrl); heroObjectUrl = null; }
+        headerInput.value = '';
+        headerText.textContent = 'Banner άρθρου';
+        headerLabel.classList.remove('has-file');
+        if (headerObjectUrl) { URL.revokeObjectURL(headerObjectUrl); headerObjectUrl = null; }
+        headerImageMeta = { width: 848, height: 400 };
         contentImageFiles.forEach(function (item) { URL.revokeObjectURL(item.url); });
         contentImageFiles = [];
         contentInput.value = '';
@@ -849,18 +880,19 @@
         return null;
     }
 
-    function resetHeroInputFile(file) {
+    function resetFileInputWith(inputEl, file) {
         // DataTransfer lets us programmatically populate a <input type="file">,
-        // so the export flow reads the imported hero exactly like a picked one.
+        // so the export flow reads the imported image exactly like a picked one.
         try {
             var dt = new DataTransfer();
             if (file) dt.items.add(file);
-            heroInput.files = dt.files;
+            inputEl.files = dt.files;
             return true;
         } catch (e) {
             return false;
         }
     }
+    function resetHeroInputFile(file) { return resetFileInputWith(heroInput, file); }
 
     importInput.addEventListener('change', async function () {
         var zipFile = importInput.files && importInput.files[0];
@@ -872,7 +904,7 @@
             return;
         }
 
-        var dirty = titleInput.value.trim() || contentArea.value.trim() || contentImageFiles.length || heroObjectUrl;
+        var dirty = titleInput.value.trim() || contentArea.value.trim() || contentImageFiles.length || heroObjectUrl || headerObjectUrl;
         if (dirty && !confirm('Θα αντικατασταθούν τα τρέχοντα πεδία και οι εικόνες από το ZIP. Συνέχεια;')) {
             return;
         }
@@ -935,12 +967,17 @@
             if (heroObjectUrl) { URL.revokeObjectURL(heroObjectUrl); heroObjectUrl = null; }
             heroImageMeta = { width: 848, height: 400 };
             heroInput.value = '';
-            fileText.textContent = 'Κεντρική εικόνα';
+            fileText.textContent = 'Κεντρική / thumbnail';
             fileLabel.classList.remove('has-file');
+            if (headerObjectUrl) { URL.revokeObjectURL(headerObjectUrl); headerObjectUrl = null; }
+            headerImageMeta = { width: 848, height: 400 };
+            headerInput.value = '';
+            headerText.textContent = 'Banner άρθρου';
+            headerLabel.classList.remove('has-file');
             contentImageFiles.forEach(function (item) { URL.revokeObjectURL(item.url); });
             contentImageFiles = [];
 
-            // Load hero (slot 1) and content (slot >= 3)
+            // Load thumbnail (slot 1), banner (slot 2), content (slot >= 3)
             for (var k = 0; k < imageEntries.length; k++) {
                 var ent = imageEntries[k];
                 var blob = await ent.entry.async('blob');
@@ -957,10 +994,16 @@
                     resetHeroInputFile(file);
                     fileText.textContent = file.name;
                     fileLabel.classList.add('has-file');
+                } else if (ent.slot === 2) {
+                    headerObjectUrl = url;
+                    headerImageMeta = meta2;
+                    resetFileInputWith(headerInput, file);
+                    headerText.textContent = file.name;
+                    headerLabel.classList.add('has-file');
                 } else if (ent.slot >= 3) {
                     contentImageFiles.push({ file: file, url: url, width: meta2.width, height: meta2.height });
                 } else {
-                    URL.revokeObjectURL(url); // ignore slot 2 (reserved)
+                    URL.revokeObjectURL(url);
                 }
             }
 
@@ -1093,6 +1136,7 @@
         var folderName = todayYYYYMMDD() + authorCode;
 
         var heroFile = heroInput.files && heroInput.files[0];
+        var headerFile = headerInput.files && headerInput.files[0];
         if (!heroFile) {
             var proceed = confirm('Δεν έχει επισυναφθεί κεντρική εικόνα. Το άρθρο θα χρησιμοποιήσει την προεπιλεγμένη. Να συνεχίσω;');
             if (!proceed) return;
@@ -1106,6 +1150,7 @@
             var zip = new JSZip();
             var folder = zip.folder(folderName);
             var zippedHeroFile = heroFile ? await ensureWebpFile(heroFile, 'Hero image') : null;
+            var zippedHeaderFile = headerFile ? await ensureWebpFile(headerFile, 'Header image') : null;
             var zippedContentFiles = [];
 
             for (var i = 0; i < contentImageFiles.length; i++) {
@@ -1117,6 +1162,9 @@
 
             if (zippedHeroFile) {
                 folder.file('1.webp', zippedHeroFile);
+            }
+            if (zippedHeaderFile) {
+                folder.file('2.webp', zippedHeaderFile);
             }
 
             for (var j = 0; j < zippedContentFiles.length; j++) {
@@ -1278,7 +1326,7 @@
         throw new Error('Δεν βρέθηκε ελεύθερο suffix (-2 έως -99) για σημερινό άρθρο.');
     }
 
-    async function publishToGitHub(token, folderName, sourceTxt, heroFile, contentImages, commitMessage, progress, replaceExisting) {
+    async function publishToGitHub(token, folderName, sourceTxt, heroFile, headerFile, contentImages, commitMessage, progress, replaceExisting) {
         function tick(msg) { if (progress) progress(msg); }
 
         // Phase 1: upload blobs (content-addressed, safe to do once)
@@ -1305,6 +1353,16 @@
                 body: { content: heroB64, encoding: 'base64' }
             });
             addBlobPath('blog-module/blog-entries/' + folderName + '/1.webp', heroBlob.sha);
+        }
+
+        if (headerFile) {
+            tick('Ανέβασμα banner άρθρου…');
+            var headerB64 = await blobToBase64(headerFile);
+            var headerBlob = await ghFetch('/git/blobs', token, {
+                method: 'POST',
+                body: { content: headerB64, encoding: 'base64' }
+            });
+            addBlobPath('blog-module/blog-entries/' + folderName + '/2.webp', headerBlob.sha);
         }
 
         for (var i = 0; i < (contentImages || []).length; i++) {
@@ -1385,6 +1443,7 @@
         var baseDate = todayYYYYMMDD();
         var folderName = baseDate + authorCode;
         var heroFile = heroInput.files && heroInput.files[0];
+        var headerFile = headerInput.files && headerInput.files[0];
         var replaceExisting = false;
 
         if (!heroFile) {
@@ -1436,6 +1495,7 @@
             publishBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Δημοσίευση…';
 
             var publishHeroFile = heroFile ? await ensureWebpFile(heroFile, 'Hero image') : null;
+            var publishHeaderFile = headerFile ? await ensureWebpFile(headerFile, 'Header image') : null;
             var publishContentImages = [];
             for (var i = 0; i < contentImageFiles.length; i++) {
                 publishBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Μετατροπή εικόνων…';
@@ -1447,7 +1507,7 @@
             var commitMessage = 'publish(blog): ' + title + ' (' + folderName + ')';
 
             var sha = await publishToGitHub(
-                token, folderName, sourceTxt, publishHeroFile, publishContentImages, commitMessage,
+                token, folderName, sourceTxt, publishHeroFile, publishHeaderFile, publishContentImages, commitMessage,
                 function (msg) { publishBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> ' + msg; },
                 replaceExisting
             );
@@ -1488,10 +1548,13 @@
         document.getElementById('pv-category').textContent = category;
         document.getElementById('pv-date').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
+        // Article header prefers the banner (slot 2); falls back to thumbnail (slot 1).
         var heroImg = document.getElementById('pv-hero-img');
-        heroImg.src = heroObjectUrl || '/blog-module/images/default-blog.jpg';
+        var headerUrl = headerObjectUrl || heroObjectUrl;
+        var headerMeta = headerObjectUrl ? headerImageMeta : (heroObjectUrl ? heroImageMeta : null);
+        heroImg.src = headerUrl || '/blog-module/images/default-blog.jpg';
         heroImg.alt = title;
-        applyImageMeta(heroImg, heroObjectUrl ? heroImageMeta : { width: 848, height: 400 }, 848, 400);
+        applyImageMeta(heroImg, headerMeta || { width: 848, height: 400 }, 848, 400);
 
         var contentEl = document.getElementById('pv-content');
         contentEl.innerHTML = html;
@@ -1534,6 +1597,7 @@
     });
     authorSelect.addEventListener('change', schedulePreview);
     heroInput.addEventListener('change', schedulePreview);
+    headerInput.addEventListener('change', schedulePreview);
     contentInput.addEventListener('change', schedulePreview);
 
     // Re-render on viewport crossings of the split-view breakpoint so the
