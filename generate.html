@@ -304,6 +304,7 @@
                 <a href="/blog-module/blog/index.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
                 <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/housekeeping.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-broom"/></svg> Housekeeping</a>
             </div>
             <div class="blog-nav-right">
                 <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
@@ -312,6 +313,9 @@
         <div class="blog-nav-mobile" id="nav-mobile">
             <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
             <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/housekeeping.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-broom"/></svg> Housekeeping</a>
         </div>
     </nav>
 </header>
@@ -377,6 +381,10 @@
         <button class="gen-btn gen-btn-primary" id="gen-export-btn" style="background:#22c55e;">
             <svg class="icon" aria-hidden="true"><use href="#fa-file-zipper"/></svg> Εξαγωγή ZIP
         </button>
+        <label class="gen-file-label" id="gen-import-label" title="Φόρτωση άρθρου από ZIP που εξήχθη προηγουμένως">
+            <svg class="icon" aria-hidden="true"><use href="#fa-folder-open"/></svg> <span id="gen-import-text">Εισαγωγή ZIP</span>
+            <input type="file" accept=".zip,application/zip" class="gen-file-input" id="gen-import-input">
+        </label>
         <label class="gen-file-label" id="gen-file-label">
             <svg class="icon" aria-hidden="true"><use href="#fa-image"/></svg> <span id="gen-file-text">Κεντρική εικόνα</span>
             <input type="file" accept="image/*" class="gen-file-input" id="gen-hero-input">
@@ -401,7 +409,9 @@
         <strong>Εικόνες κειμένου</strong>: πρόσθεσε <code>[img-instert-tag]</code> εκεί που θέλεις μια εικόνα και επισύναψε τις εικόνες με την ίδια σειρά. <em>2+ δείκτες σε συνεχόμενες σειρές γίνονται carousel· μεμονωμένοι δείκτες παραμένουν ως μεμονωμένες εικόνες.</em><br>
         <strong>Χωρίς δείκτες;</strong> Οι επισυναπτόμενες εικόνες εμφανίζονται ως carousel στο τέλος του άρθρου.<br>
         <strong>Δημοσίευση</strong>: commit απευθείας στο <code>main</code> μέσω GitHub API — το workflow χτίζει μετά το άρθρο (~1 λεπτό).
-        <strong>Εξαγωγή ZIP</strong> είναι το χειροκίνητο εναλλακτικό. Πάτα το <svg class="icon" aria-hidden="true"><use href="#fa-key"/></svg> για να ορίσεις το token δημοσίευσης.
+        <strong>Εξαγωγή ZIP</strong> είναι το χειροκίνητο εναλλακτικό.
+        <strong>Εισαγωγή ZIP</strong>: φορτώνει πίσω στη φόρμα ένα ZIP που έχεις ήδη εξάγει, για να συνεχίσεις την επεξεργασία.
+        Πάτα το <svg class="icon" aria-hidden="true"><use href="#fa-key"/></svg> για να ορίσεις το token δημοσίευσης.
     </div>
 </div>
 
@@ -501,6 +511,9 @@
     var markerCountEl     = document.getElementById('gen-marker-count');
     var previewBtn    = document.getElementById('gen-preview-btn');
     var exportBtn     = document.getElementById('gen-export-btn');
+    var importInput   = document.getElementById('gen-import-input');
+    var importLabel   = document.getElementById('gen-import-label');
+    var importText    = document.getElementById('gen-import-text');
     var publishBtn    = document.getElementById('gen-publish-btn');
     var tokenBtn      = document.getElementById('gen-token-btn');
     var clearBtn      = document.getElementById('gen-clear-btn');
@@ -725,6 +738,9 @@
         contentImageFiles.forEach(function (item) { URL.revokeObjectURL(item.url); });
         contentImageFiles = [];
         contentInput.value = '';
+        if (importInput) importInput.value = '';
+        if (importLabel) importLabel.classList.remove('has-file');
+        if (importText) importText.textContent = 'Εισαγωγή ZIP';
         renderContentImagesList();
         previewWrap.classList.remove('visible');
     });
@@ -734,6 +750,167 @@
         previewWrap.classList.remove('visible');
         editorPanel.style.display = '';
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // ── Import ZIP (reverse of Export) ────────────────────
+    function normalizeZipPath(path) {
+        return String(path || '').replace(/\\/g, '/').replace(/^\.\/+/, '').replace(/^\/+/, '');
+    }
+
+    function parseSourceTxtForImport(text) {
+        var lines = String(text || '').replace(/\r\n/g, '\n').split('\n');
+        var first = (lines[0] || '').trim().split(/\s+/);
+        var tag = (first[0] || 'F1').replace(/-/g, ' ');
+        var category = (first[1] || 'Racing').replace(/-/g, ' ');
+        var titleIdx = -1;
+        for (var i = 1; i < lines.length; i++) {
+            if (lines[i].trim() !== '') { titleIdx = i; break; }
+        }
+        var title = titleIdx !== -1 ? lines[titleIdx].trim() : '';
+        var body = '';
+        if (titleIdx !== -1) {
+            var rest = lines.slice(titleIdx + 1);
+            while (rest.length && rest[0].trim() === '') rest.shift();
+            body = rest.join('\n').replace(/\s+$/, '');
+        }
+        return { tag: tag, category: category, title: title, body: body };
+    }
+
+    function authorFromFolderName(folderName) {
+        var m = String(folderName || '').match(/^\d{8}(?:-\d+)?([A-Z])?$/);
+        if (!m) return null;
+        var code = m[1] || '';
+        for (var name in AUTHOR_CODES) {
+            if (Object.prototype.hasOwnProperty.call(AUTHOR_CODES, name) && AUTHOR_CODES[name] === code) return name;
+        }
+        return null;
+    }
+
+    function resetHeroInputFile(file) {
+        // DataTransfer lets us programmatically populate a <input type="file">,
+        // so the export flow reads the imported hero exactly like a picked one.
+        try {
+            var dt = new DataTransfer();
+            if (file) dt.items.add(file);
+            heroInput.files = dt.files;
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    importInput.addEventListener('change', async function () {
+        var zipFile = importInput.files && importInput.files[0];
+        importInput.value = '';
+        if (!zipFile) return;
+
+        if (typeof JSZip === 'undefined') {
+            alert('Η βιβλιοθήκη ZIP φορτώνει ακόμη — δοκίμασε ξανά σε λίγο.');
+            return;
+        }
+
+        var dirty = titleInput.value.trim() || contentArea.value.trim() || contentImageFiles.length || heroObjectUrl;
+        if (dirty && !confirm('Θα αντικατασταθούν τα τρέχοντα πεδία και οι εικόνες από το ZIP. Συνέχεια;')) {
+            return;
+        }
+
+        importLabel.classList.remove('has-file');
+        var originalText = importText.textContent;
+        importText.textContent = 'Φόρτωση…';
+
+        try {
+            var zip = await JSZip.loadAsync(zipFile);
+            var entries = {};
+            Object.keys(zip.files).forEach(function (raw) {
+                var e = zip.files[raw];
+                if (e.dir) return;
+                entries[normalizeZipPath(raw)] = e;
+            });
+
+            var names = Object.keys(entries);
+            if (!names.length) throw new Error('Το ZIP είναι κενό.');
+
+            var sourcePath = names.find(function (n) { return /(?:^|\/)source\.txt$/i.test(n); });
+            if (!sourcePath) throw new Error('Το ZIP δεν περιέχει source.txt.');
+
+            var folderName = sourcePath.indexOf('/') !== -1
+                ? sourcePath.split('/')[0]
+                : String(zipFile.name || '').replace(/\.zip$/i, '');
+
+            var sourceText = await entries[sourcePath].async('string');
+            var meta = parseSourceTxtForImport(sourceText);
+
+            // Collect image slots at the top level of the article folder
+            var imageEntries = [];
+            for (var i = 0; i < names.length; i++) {
+                var full = names[i];
+                var rel = full.indexOf(folderName + '/') === 0 ? full.slice(folderName.length + 1) : full;
+                if (rel.indexOf('/') !== -1) continue;
+                if (/^readme\.txt$/i.test(rel) || /^article\.html$/i.test(rel) || /^source\.txt$/i.test(rel)) continue;
+                var m = rel.match(/^(\d+)\.([a-z0-9]+)$/i);
+                if (!m) continue;
+                var slot = Number(m[1]);
+                if (!slot) continue;
+                imageEntries.push({ slot: slot, name: rel, entry: entries[full] });
+            }
+            imageEntries.sort(function (a, b) { return a.slot - b.slot; });
+
+            // Populate text fields
+            titleInput.value = meta.title || '';
+            tagInput.value = meta.tag || 'F1';
+            categoryInput.value = meta.category || 'Racing';
+            contentArea.value = meta.body || '';
+
+            var authorName = authorFromFolderName(folderName);
+            if (authorName) {
+                for (var oi = 0; oi < authorSelect.options.length; oi++) {
+                    if (authorSelect.options[oi].value === authorName) { authorSelect.selectedIndex = oi; break; }
+                }
+            }
+
+            // Reset current images
+            if (heroObjectUrl) { URL.revokeObjectURL(heroObjectUrl); heroObjectUrl = null; }
+            heroImageMeta = { width: 848, height: 400 };
+            heroInput.value = '';
+            fileText.textContent = 'Κεντρική εικόνα';
+            fileLabel.classList.remove('has-file');
+            contentImageFiles.forEach(function (item) { URL.revokeObjectURL(item.url); });
+            contentImageFiles = [];
+
+            // Load hero (slot 1) and content (slot >= 3)
+            for (var k = 0; k < imageEntries.length; k++) {
+                var ent = imageEntries[k];
+                var blob = await ent.entry.async('blob');
+                var ext = sanitizeImageExtension(ent.name);
+                var file = new File([blob], ent.name, {
+                    type: blob.type || ('image/' + (ext === 'jpg' ? 'jpeg' : ext)),
+                    lastModified: Date.now()
+                });
+                var url = URL.createObjectURL(file);
+                var meta2 = await readImageMeta(url);
+                if (ent.slot === 1) {
+                    heroObjectUrl = url;
+                    heroImageMeta = meta2;
+                    resetHeroInputFile(file);
+                    fileText.textContent = file.name;
+                    fileLabel.classList.add('has-file');
+                } else if (ent.slot >= 3) {
+                    contentImageFiles.push({ file: file, url: url, width: meta2.width, height: meta2.height });
+                } else {
+                    URL.revokeObjectURL(url); // ignore slot 2 (reserved)
+                }
+            }
+
+            renderContentImagesList();
+            updateMarkerCount();
+
+            importLabel.classList.add('has-file');
+            importText.textContent = folderName;
+        } catch (err) {
+            console.error('Import failed', err);
+            alert('Η εισαγωγή απέτυχε: ' + (err && err.message ? err.message : err));
+            importText.textContent = originalText;
+        }
     });
 
     // ── Export ZIP ────────────────────────────────────────
