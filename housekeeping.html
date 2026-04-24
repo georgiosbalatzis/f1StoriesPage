@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=0f638228">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=d8e2b657">
     <link rel="stylesheet" href="/theme-overrides.min.css?v=2728eb3a">
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
 
     <script>
         (function() {
@@ -434,6 +435,10 @@
     <div class="hk-head">
         <h1><svg class="icon" aria-hidden="true"><use href="#fa-broom"/></svg> Housekeeping</h1>
         <div>
+            <button class="hk-btn hk-btn-primary" id="hk-import-btn" title="Import ZIP from Generate">
+                <svg class="icon" aria-hidden="true"><use href="#fa-file-zipper"/></svg> Import ZIP
+            </button>
+            <input type="file" accept=".zip,application/zip" id="hk-import-input" class="hk-sr">
             <button class="hk-btn" id="hk-refresh-btn" title="Refresh list">
                 <svg class="icon" aria-hidden="true"><use href="#fa-rotate"/></svg> Refresh
             </button>
@@ -632,6 +637,99 @@
         return ext;
     }
 
+    function replaceFileExtension(name, nextExt) {
+        var base = String(name || 'image').replace(/\.[^.]*$/, '') || 'image';
+        return base + '.' + nextExt;
+    }
+
+    function baseName(path) {
+        var parts = String(path || '').split('/');
+        return parts[parts.length - 1] || '';
+    }
+
+    function normalizeZipPath(path) {
+        return String(path || '')
+            .replace(/\\/g, '/')
+            .replace(/^\.\/+/, '')
+            .replace(/^\/+/, '');
+    }
+
+    function mimeTypeForExtension(ext) {
+        switch (String(ext || '').toLowerCase()) {
+            case 'webp': return 'image/webp';
+            case 'jpg':
+            case 'jpeg': return 'image/jpeg';
+            case 'png': return 'image/png';
+            case 'gif': return 'image/gif';
+            case 'avif': return 'image/avif';
+            case 'svg': return 'image/svg+xml';
+            case 'txt': return 'text/plain';
+            default: return 'application/octet-stream';
+        }
+    }
+
+    function isWebpFile(file) {
+        return !!file && (
+            sanitizeImageExtension(file.name) === 'webp' ||
+            String(file.type || '').toLowerCase() === 'image/webp'
+        );
+    }
+
+    function loadImageFromFile(file, label) {
+        return new Promise(function (resolve, reject) {
+            var url = URL.createObjectURL(file);
+            var img = new Image();
+            img.onload = function () {
+                URL.revokeObjectURL(url);
+                resolve(img);
+            };
+            img.onerror = function () {
+                URL.revokeObjectURL(url);
+                reject(new Error((label || 'Image') + ' could not be decoded for WebP conversion.'));
+            };
+            img.src = url;
+        });
+    }
+
+    function canvasToWebpBlob(canvas, quality, label) {
+        return new Promise(function (resolve, reject) {
+            canvas.toBlob(function (blob) {
+                if (!blob) {
+                    reject(new Error((label || 'Image') + ' could not be converted to WebP.'));
+                    return;
+                }
+                resolve(blob);
+            }, 'image/webp', quality == null ? 0.9 : quality);
+        });
+    }
+
+    async function ensureWebpFile(file, label) {
+        if (!file || isWebpFile(file)) return file;
+
+        var img = await loadImageFromFile(file, label);
+        var width = img.naturalWidth || img.width || 0;
+        var height = img.naturalHeight || img.height || 0;
+        if (!width || !height) {
+            throw new Error((label || 'Image') + ' has invalid dimensions for WebP conversion.');
+        }
+
+        var canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) {
+            throw new Error('Canvas is not available for WebP conversion.');
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+
+        var webpBlob = await canvasToWebpBlob(canvas, 0.9, label);
+        return new File(
+            [webpBlob],
+            replaceFileExtension(file.name, 'webp'),
+            { type: 'image/webp', lastModified: file.lastModified || Date.now() }
+        );
+    }
+
     // ─── DOM refs ────────────────────────────────────────
     var listEl       = document.getElementById('hk-list');
     var searchEl     = document.getElementById('hk-search');
@@ -639,6 +737,8 @@
     var filterCat    = document.getElementById('hk-filter-cat');
     var filterAuthor = document.getElementById('hk-filter-author');
     var statsEl      = document.getElementById('hk-stats');
+    var importBtn    = document.getElementById('hk-import-btn');
+    var importInput  = document.getElementById('hk-import-input');
     var refreshBtn   = document.getElementById('hk-refresh-btn');
     var tokenBtn     = document.getElementById('hk-token-btn');
 
@@ -702,6 +802,16 @@
             }
         }
         throw new Error('No free -N suffix found for ' + isoDate + authorCode + ' (tried 2-99).');
+    }
+
+    async function folderExists(token, folder) {
+        try {
+            await ghFetch('/contents/' + ENTRIES_PATH + '/' + encodeURIComponent(folder), token);
+            return true;
+        } catch (e) {
+            if (e.status === 404) return false;
+            throw e;
+        }
     }
 
     var posts = [];
@@ -917,6 +1027,214 @@
         });
         var nums = Object.keys(found).map(Number).sort(function (a, b) { return a - b; });
         return nums;
+    }
+
+    async function parseGeneratedZipPackage(zipFile) {
+        if (typeof JSZip === 'undefined') {
+            throw new Error('ZIP library is still loading. Try again in a moment.');
+        }
+
+        var zip = await JSZip.loadAsync(zipFile);
+        var entryMap = {};
+        Object.keys(zip.files).forEach(function (rawName) {
+            var entry = zip.files[rawName];
+            if (entry.dir) return;
+            entryMap[normalizeZipPath(rawName)] = entry;
+        });
+
+        var names = Object.keys(entryMap);
+        if (!names.length) {
+            throw new Error('ZIP is empty.');
+        }
+
+        var sourcePath = names.find(function (name) {
+            return /(?:^|\/)source\.txt$/i.test(name);
+        }) || names.find(function (name) {
+            var fileName = baseName(name);
+            return /\.txt$/i.test(fileName) && !/^readme\.txt$/i.test(fileName) && !/^article\./i.test(fileName);
+        });
+
+        if (!sourcePath) {
+            throw new Error('ZIP does not contain source.txt.');
+        }
+
+        var folderName = sourcePath.indexOf('/') !== -1
+            ? sourcePath.split('/')[0]
+            : String(zipFile.name || '').replace(/\.zip$/i, '');
+        if (!folderParts(folderName)) {
+            throw new Error('ZIP folder name is invalid. Export a fresh package from Generate.');
+        }
+
+        var sourceText = await entryMap[sourcePath].async('string');
+        var sourceName = baseName(sourcePath) || 'source.txt';
+        var images = [];
+
+        for (var i = 0; i < names.length; i++) {
+            var fullPath = names[i];
+            var relPath = fullPath.indexOf(folderName + '/') === 0
+                ? fullPath.slice(folderName.length + 1)
+                : fullPath;
+
+            if (relPath.indexOf('/') !== -1) continue;
+            if (/^readme\.txt$/i.test(relPath) || /^article\.html$/i.test(relPath)) continue;
+
+            var match = relPath.match(/^(\d+)\.([a-z0-9]+)$/i);
+            if (!match) continue;
+
+            var slot = Number(match[1]);
+            if (!slot) continue;
+
+            var blob = await entryMap[fullPath].async('blob');
+            var ext = sanitizeImageExtension(relPath);
+            images.push({
+                slot: slot,
+                file: new File(
+                    [blob],
+                    match[1] + '.' + ext,
+                    { type: blob.type || mimeTypeForExtension(ext), lastModified: Date.now() }
+                ),
+                originalName: relPath
+            });
+        }
+
+        images.sort(function (a, b) { return a.slot - b.slot; });
+
+        return {
+            folderName: folderName,
+            sourceName: sourceName,
+            sourceText: sourceText,
+            meta: parseSourceTxt(sourceText),
+            images: images
+        };
+    }
+
+    async function importGeneratedZip(zipFile) {
+        var token = requireToken();
+        if (!token) return;
+
+        var pkg = await parseGeneratedZipPackage(zipFile);
+        var targetFolder = pkg.folderName;
+        var replaceExisting = false;
+        var parsedParts = folderParts(pkg.folderName);
+        var title = pkg.meta && pkg.meta.title ? pkg.meta.title : pkg.folderName;
+
+        if (await folderExists(token, targetFolder)) {
+            var wantNewVersion = confirm(
+                'ZIP targets an existing article:\n\n  ' + ENTRIES_PATH + '/' + targetFolder + '\n\n' +
+                '• OK: create a new article with the next free -N suffix\n' +
+                '• Cancel: replace the existing folder'
+            );
+            if (wantNewVersion) {
+                targetFolder = await findNextFolderSuffix(token, parsedParts.date, parsedParts.authorCode);
+            } else {
+                if (!confirm('Replace everything in ' + ENTRIES_PATH + '/' + targetFolder + '?\n\nThis removes the current source, generated article.html, and all image variants before the workflow rebuilds it.')) {
+                    return;
+                }
+                replaceExisting = true;
+            }
+        }
+
+        var confirmMsg = 'Import "' + title + '" from ' + zipFile.name + ' to ' + ENTRIES_PATH + '/' + targetFolder + ' on main?';
+        if (pkg.images.length) {
+            confirmMsg += '\n\n' + pkg.images.length + ' image file' + (pkg.images.length === 1 ? '' : 's') + ' will be normalized to .webp.';
+        }
+        if (!confirm(confirmMsg)) return;
+
+        importBtn.disabled = true;
+        var originalHtml = importBtn.innerHTML;
+
+        try {
+            var additions = [{
+                path: targetFolder + '/' + (pkg.sourceName || 'source.txt'),
+                text: pkg.sourceText
+            }];
+
+            for (var i = 0; i < pkg.images.length; i++) {
+                importBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Converting images…';
+                additions.push({
+                    path: targetFolder + '/' + pkg.images[i].slot + '.webp',
+                    file: await ensureWebpFile(pkg.images[i].file, 'ZIP image slot ' + pkg.images[i].slot)
+                });
+            }
+
+            var deletes = [];
+            if (replaceExisting) {
+                var existingFiles = await listFolder(token, targetFolder);
+                var desiredPaths = {};
+                additions.forEach(function (a) { desiredPaths[a.path] = true; });
+                existingFiles.forEach(function (f) {
+                    if (f.type !== 'file') return;
+                    var folderPath = targetFolder + '/' + f.name;
+                    if (desiredPaths[folderPath]) return;
+                    deletes.push(folderPath);
+                });
+            }
+
+            var pathToSha = {};
+            for (var j = 0; j < additions.length; j++) {
+                var a = additions[j];
+                importBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Uploading…';
+                var contentB64 = (a.text != null) ? utf8ToBase64(a.text) : await blobToBase64(a.file);
+                var blob = await ghFetch('/git/blobs', token, {
+                    method: 'POST',
+                    body: { content: contentB64, encoding: 'base64' }
+                });
+                pathToSha[a.path] = blob.sha;
+            }
+
+            var attempts = 0, maxAttempts = 3, newCommit;
+            while (true) {
+                attempts++;
+                importBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Saving…';
+
+                var ref = await ghFetch('/git/ref/heads/main', token);
+                var latestCommitSha = ref.object.sha;
+                var baseCommit = await ghFetch('/git/commits/' + latestCommitSha, token);
+                var baseTreeSha = baseCommit.tree.sha;
+
+                var tree = [];
+                deletes.forEach(function (p) {
+                    tree.push({ path: ENTRIES_PATH + '/' + p, mode: '100644', type: 'blob', sha: null });
+                });
+                Object.keys(pathToSha).forEach(function (p) {
+                    tree.push({ path: ENTRIES_PATH + '/' + p, mode: '100644', type: 'blob', sha: pathToSha[p] });
+                });
+
+                var newTree = await ghFetch('/git/trees', token, {
+                    method: 'POST',
+                    body: { base_tree: baseTreeSha, tree: tree }
+                });
+
+                newCommit = await ghFetch('/git/commits', token, {
+                    method: 'POST',
+                    body: {
+                        message: 'import(blog): ' + title + ' (' + targetFolder + ')',
+                        tree: newTree.sha,
+                        parents: [latestCommitSha]
+                    }
+                });
+
+                try {
+                    await ghFetch('/git/refs/heads/main', token, {
+                        method: 'PATCH',
+                        body: { sha: newCommit.sha, force: false }
+                    });
+                    break;
+                } catch (err) {
+                    if ((err.status === 409 || err.status === 422) && attempts < maxAttempts) continue;
+                    throw err;
+                }
+            }
+
+            var actionsUrl = 'https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/actions';
+            var msg = 'Committed ' + newCommit.sha.substring(0, 7) + ' to main.\n\n' +
+                'Imported into ' + ENTRIES_PATH + '/' + targetFolder + '.\n\n' +
+                'The Publish Blog workflow is rebuilding the article (~1 min).\n\nOpen the Actions tab?';
+            if (confirm(msg)) window.open(actionsUrl, '_blank', 'noopener');
+        } finally {
+            importBtn.disabled = false;
+            importBtn.innerHTML = originalHtml;
+        }
     }
 
     // ─── Delete article ─────────────────────────────────
@@ -1332,8 +1650,7 @@
                         additions.push({ path: newFolder + '/' + f.name, reuseSha: f.sha });
                     });
                 } else if (op.op === 'replace') {
-                    var ext = sanitizeImageExtension(op.file.name);
-                    additions.push({ path: newFolder + '/' + slot + '.' + ext, file: op.file });
+                    additions.push({ path: newFolder + '/' + slot + '.webp', file: op.file, convertToWebp: true });
                 }
                 // 'remove' → drop; already deleted above
             });
@@ -1345,8 +1662,7 @@
                 var currentFiles = editState.slotMap[slot] || [];
                 if (op.op === 'replace') {
                     currentFiles.forEach(function (f) { deletes.push(oldFolder + '/' + f.name); });
-                    var ext = sanitizeImageExtension(op.file.name);
-                    additions.push({ path: oldFolder + '/' + slot + '.' + ext, file: op.file });
+                    additions.push({ path: oldFolder + '/' + slot + '.webp', file: op.file, convertToWebp: true });
                 } else if (op.op === 'remove') {
                     currentFiles.forEach(function (f) { deletes.push(oldFolder + '/' + f.name); });
                 }
@@ -1355,8 +1671,7 @@
 
         editState.addContent.forEach(function (file, idx) {
             var slot = nextSlot + idx;
-            var ext = sanitizeImageExtension(file.name);
-            additions.push({ path: newFolder + '/' + slot + '.' + ext, file: file });
+            additions.push({ path: newFolder + '/' + slot + '.webp', file: file, convertToWebp: true });
         });
 
         var newUploadCount = additions.filter(function (a) { return a.file || a.text != null; }).length;
@@ -1389,7 +1704,11 @@
                     continue;
                 }
                 editStatusEl.textContent = 'Uploading ' + a.path + ' (' + (i + 1) + '/' + additions.length + ')…';
-                var contentB64 = (a.text != null) ? utf8ToBase64(a.text) : await blobToBase64(a.file);
+                var uploadFile = a.file;
+                if (uploadFile && a.convertToWebp) {
+                    uploadFile = await ensureWebpFile(uploadFile, baseName(a.path));
+                }
+                var contentB64 = (a.text != null) ? utf8ToBase64(a.text) : await blobToBase64(uploadFile);
                 var blob = await ghFetch('/git/blobs', token, {
                     method: 'POST',
                     body: { content: contentB64, encoding: 'base64' }
@@ -1468,6 +1787,22 @@
     tokenBtn.addEventListener('click', function () {
         var existing = getStoredToken();
         promptForToken(existing ? 'Token already stored. Paste a new one to replace, or leave empty to clear.' : '');
+    });
+    importBtn.addEventListener('click', function () { importInput.click(); });
+    importInput.addEventListener('change', async function () {
+        if (!importInput.files || !importInput.files[0]) return;
+        var zipFile = importInput.files[0];
+        importInput.value = '';
+        try {
+            await importGeneratedZip(zipFile);
+        } catch (e) {
+            console.error('ZIP import failed', e);
+            var hint = (e.status === 401 || e.status === 403)
+                ? '\n\nCheck your token — Contents: Read and write is required.' : '';
+            alert('ZIP import failed: ' + e.message + hint);
+            importBtn.disabled = false;
+            importBtn.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#fa-file-zipper"/></svg> Import ZIP';
+        }
     });
     refreshBtn.addEventListener('click', function () { loadList(); });
 
