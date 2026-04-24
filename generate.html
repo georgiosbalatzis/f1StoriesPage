@@ -200,6 +200,59 @@
             color: var(--text-secondary);
         }
         .gen-preview-bar i { color: var(--accent, #60a5fa); }
+
+        /* ── Split view (desktop only) ─────────────────────── */
+        @media (min-width: 1200px) {
+            .gen-split {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                gap: 1.25rem;
+                max-width: 1720px;
+                margin: 100px auto 0;
+                padding: 0 1rem;
+                align-items: start;
+            }
+            .gen-split > #editor-panel {
+                margin: 0;
+                max-width: none;
+                position: sticky;
+                top: 90px;
+                max-height: calc(100vh - 110px);
+                overflow-y: auto;
+            }
+            .gen-split > #preview-wrapper {
+                display: block;
+            }
+            .gen-split > #preview-wrapper .gen-preview-bar {
+                margin: 0 0 0.5rem 0;
+                max-width: none;
+                position: sticky;
+                top: 90px;
+                z-index: 2;
+            }
+            .gen-split > #preview-wrapper .article-page-wrapper {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
+            }
+            .gen-split > #preview-wrapper .container {
+                max-width: none;
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .gen-split > #preview-wrapper .article-container {
+                max-width: none;
+            }
+            .gen-split > #preview-wrapper .article-header-img {
+                width: 100%;
+                max-width: 100%;
+                height: auto;
+            }
+            /* In split view the Preview / Back toggle is meaningless */
+            .gen-split #gen-preview-btn,
+            .gen-split #gen-back-btn {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -320,7 +373,8 @@
     </nav>
 </header>
 
-<!-- ═══ Editor Panel ═══════════════════════════════════════ -->
+<!-- ═══ Editor + Live Preview (split view on desktop) ═════ -->
+<div class="gen-split">
 <div class="gen-panel" id="editor-panel">
     <h2><svg class="icon" aria-hidden="true" style="color:var(--accent);margin-right:0.4rem;"><use href="#fa-pen-nib"/></svg> Γεννήτρια Άρθρων</h2>
 
@@ -477,6 +531,7 @@
         </div>
     </section>
 </div>
+</div><!-- /.gen-split -->
 
 <button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Scroll to top"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
 
@@ -743,6 +798,7 @@
         if (importText) importText.textContent = 'Εισαγωγή ZIP';
         renderContentImagesList();
         previewWrap.classList.remove('visible');
+        if (typeof schedulePreview === 'function') schedulePreview();
     });
 
     // ── Back to editor ────────────────────────────────────
@@ -1408,33 +1464,31 @@
     });
 
     // ── Preview ───────────────────────────────────────────
-    previewBtn.addEventListener('click', function () {
+    var SPLIT_QUERY = window.matchMedia('(min-width: 1200px)');
+    function isSplitView() { return SPLIT_QUERY.matches; }
+
+    function renderPreview() {
         var title    = titleInput.value.trim() || 'Untitled Article';
         var author   = authorSelect.value;
         var tag      = tagInput.value.trim() || 'F1';
         var category = categoryInput.value.trim() || 'Racing';
         var raw      = contentArea.value;
 
-        // Convert content
         var html = convertContent(raw);
 
-        // Fill preview
         document.getElementById('pv-title').textContent = title;
         document.getElementById('pv-tag').textContent = tag;
         document.getElementById('pv-category').textContent = category;
         document.getElementById('pv-date').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-        // Hero image
         var heroImg = document.getElementById('pv-hero-img');
         heroImg.src = heroObjectUrl || '/blog-module/images/default-blog.jpg';
         heroImg.alt = title;
         applyImageMeta(heroImg, heroObjectUrl ? heroImageMeta : { width: 848, height: 400 }, 848, 400);
 
-        // Content
         var contentEl = document.getElementById('pv-content');
         contentEl.innerHTML = html;
 
-        // Author
         var authorData = AUTHORS[author];
         document.getElementById('pv-author-name').textContent = author;
         document.getElementById('pv-author-initial').textContent = author.charAt(0).toUpperCase();
@@ -1445,18 +1499,46 @@
             document.getElementById('pv-author-bio').textContent = authorData.bio;
         }
 
-        // Reading time
         var words = contentEl.textContent.trim().split(/\s+/).length;
         document.getElementById('pv-reading-time').textContent = Math.max(1, Math.ceil(words / 200)) + ' min read';
 
-        // Show preview
-        editorPanel.style.display = 'none';
-        previewWrap.classList.add('visible');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        // Process social embeds after render
         processSocialEmbeds(contentEl);
+    }
+
+    previewBtn.addEventListener('click', function () {
+        renderPreview();
+        if (!isSplitView()) {
+            editorPanel.style.display = 'none';
+            previewWrap.classList.add('visible');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     });
+
+    // ── Live preview (split view only) ────────────────────
+    var previewTimer = null;
+    function schedulePreview() {
+        if (!isSplitView()) return;
+        if (previewTimer) clearTimeout(previewTimer);
+        previewTimer = setTimeout(renderPreview, 250);
+    }
+
+    [titleInput, tagInput, categoryInput, contentArea].forEach(function (el) {
+        el.addEventListener('input', schedulePreview);
+    });
+    authorSelect.addEventListener('change', schedulePreview);
+    heroInput.addEventListener('change', schedulePreview);
+    contentInput.addEventListener('change', schedulePreview);
+
+    // Re-render on viewport crossings of the split-view breakpoint so the
+    // preview pane on the right is always populated when the user resizes.
+    if (typeof SPLIT_QUERY.addEventListener === 'function') {
+        SPLIT_QUERY.addEventListener('change', function (e) {
+            if (e.matches) renderPreview();
+        });
+    }
+
+    // Initial paint in split view
+    if (isSplitView()) renderPreview();
 
     // ═══════════════════════════════════════════════════════
     // Content conversion (client-side .txt → HTML)
