@@ -397,7 +397,7 @@
 
     <div class="gen-hint">
         Μορφή: απλό κείμενο με επικεφαλίδες σε στυλ markdown. Οι σύνδεσμοι σε YouTube, X, Instagram, Threads και Facebook ενσωματώνονται αυτόματα.<br>
-        <strong>Κεντρική</strong>: η εικόνα <code>1</code> είναι ταυτόχρονα η κεντρική και το thumbnail — η θέση <code>2</code> είναι δεσμευμένη (μην τη χρησιμοποιείς).<br>
+        <strong>Κεντρική</strong>: η εικόνα <code>1</code> είναι ταυτόχρονα η κεντρική και το thumbnail — η θέση <code>2</code> είναι δεσμευμένη (μην τη χρησιμοποιείς). Οι ανεβασμένες εικόνες μετατρέπονται αυτόματα σε <code>.webp</code> κατά το export/publish.<br>
         <strong>Εικόνες κειμένου</strong>: πρόσθεσε <code>[img-instert-tag]</code> εκεί που θέλεις μια εικόνα και επισύναψε τις εικόνες με την ίδια σειρά. <em>2+ δείκτες σε συνεχόμενες σειρές γίνονται carousel· μεμονωμένοι δείκτες παραμένουν ως μεμονωμένες εικόνες.</em><br>
         <strong>Χωρίς δείκτες;</strong> Οι επισυναπτόμενες εικόνες εμφανίζονται ως carousel στο τέλος του άρθρου.<br>
         <strong>Δημοσίευση</strong>: commit απευθείας στο <code>main</code> μέσω GitHub API — το workflow χτίζει μετά το άρθρο (~1 λεπτό).
@@ -607,7 +607,7 @@
             img.style.cssText = 'width:100%;height:90px;object-fit:cover;display:block;';
 
             var label = document.createElement('div');
-            label.textContent = (idx + 3) + '.' + sanitizeImageExtension(item.file.name) + ' · ' + item.file.name;
+            label.textContent = (idx + 3) + '.webp · ' + item.file.name;
             label.style.cssText =
                 'padding:4px 6px;font-size:0.7rem;color:var(--text-tertiary);' +
                 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
@@ -753,6 +753,73 @@
         return ext;
     }
 
+    function replaceFileExtension(name, nextExt) {
+        var base = String(name || 'image').replace(/\.[^.]*$/, '') || 'image';
+        return base + '.' + nextExt;
+    }
+
+    function isWebpFile(file) {
+        return !!file && (
+            sanitizeImageExtension(file.name) === 'webp' ||
+            String(file.type || '').toLowerCase() === 'image/webp'
+        );
+    }
+
+    function loadImageFromFile(file, label) {
+        return new Promise(function (resolve, reject) {
+            var url = URL.createObjectURL(file);
+            var img = new Image();
+            img.onload = function () {
+                URL.revokeObjectURL(url);
+                resolve(img);
+            };
+            img.onerror = function () {
+                URL.revokeObjectURL(url);
+                reject(new Error((label || 'Image') + ' could not be decoded for WebP conversion.'));
+            };
+            img.src = url;
+        });
+    }
+
+    function canvasToWebpBlob(canvas, quality, label) {
+        return new Promise(function (resolve, reject) {
+            canvas.toBlob(function (blob) {
+                if (!blob) {
+                    reject(new Error((label || 'Image') + ' could not be converted to WebP.'));
+                    return;
+                }
+                resolve(blob);
+            }, 'image/webp', quality == null ? 0.9 : quality);
+        });
+    }
+
+    async function ensureWebpFile(file, label) {
+        if (!file || isWebpFile(file)) return file;
+
+        var img = await loadImageFromFile(file, label);
+        var width = img.naturalWidth || img.width || 0;
+        var height = img.naturalHeight || img.height || 0;
+        if (!width || !height) {
+            throw new Error((label || 'Image') + ' has invalid dimensions for WebP conversion.');
+        }
+
+        var canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) {
+            throw new Error('Canvas is not available for WebP conversion.');
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+
+        var webpBlob = await canvasToWebpBlob(canvas, 0.9, label);
+        return new File(
+            [webpBlob],
+            replaceFileExtension(file.name, 'webp'),
+            { type: 'image/webp', lastModified: file.lastModified || Date.now() }
+        );
+    }
+
     function buildSourceTxt(tag, category, title, body) {
         // Positional format expected by blog-processor.js:
         // Line 1: "<Tag> <Category>"  (stripped by convertToHtml, read by extractMetadata)
@@ -798,17 +865,22 @@
         try {
             var zip = new JSZip();
             var folder = zip.folder(folderName);
+            var zippedHeroFile = heroFile ? await ensureWebpFile(heroFile, 'Hero image') : null;
+            var zippedContentFiles = [];
+
+            for (var i = 0; i < contentImageFiles.length; i++) {
+                exportBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Μετατροπή εικόνων…';
+                zippedContentFiles.push(await ensureWebpFile(contentImageFiles[i].file, 'Content image ' + (i + 1)));
+            }
 
             folder.file('source.txt', buildSourceTxt(tag, category, title, body));
 
-            if (heroFile) {
-                var ext = sanitizeImageExtension(heroFile.name);
-                folder.file('1.' + ext, heroFile);
+            if (zippedHeroFile) {
+                folder.file('1.webp', zippedHeroFile);
             }
 
-            for (var i = 0; i < contentImageFiles.length; i++) {
-                var cExt = sanitizeImageExtension(contentImageFiles[i].file.name);
-                folder.file((i + 3) + '.' + cExt, contentImageFiles[i].file);
+            for (var j = 0; j < zippedContentFiles.length; j++) {
+                folder.file((j + 3) + '.webp', zippedContentFiles[j]);
             }
 
             var readme =
@@ -823,8 +895,8 @@
                 'To publish:\n' +
                 '1. Unzip this file into blog-module/blog-entries/ so you get:\n' +
                 '     blog-module/blog-entries/' + folderName + '/source.txt\n' +
-                '     blog-module/blog-entries/' + folderName + '/1.<ext>   (hero image)\n' +
-                '     blog-module/blog-entries/' + folderName + '/3.<ext>…  (content images, in order)\n' +
+                '     blog-module/blog-entries/' + folderName + '/1.webp   (hero image)\n' +
+                '     blog-module/blog-entries/' + folderName + '/3.webp…  (content images, in order)\n' +
                 '2. Delete this README.txt from that folder (optional, keeps it tidy).\n' +
                 '3. git add, commit, push to main.\n' +
                 '4. The "Publish Blog" GitHub Action runs blog-processor.js and commits\n' +
@@ -946,6 +1018,16 @@
         }
     }
 
+    async function listFolderEntries(token, folderName) {
+        try {
+            var data = await ghFetch('/contents/blog-module/blog-entries/' + encodeURIComponent(folderName), token);
+            return Array.isArray(data) ? data : [];
+        } catch (e) {
+            if (e.status === 404) return [];
+            throw e;
+        }
+    }
+
     // Finds the next unused "-N<Author>" suffix for a same-day article
     // (matches blog-processor.js parseDate's ^\d{8}-\d+[A-Z]?$ pattern).
     async function nextNumberedFolder(token, baseDate, authorCode) {
@@ -956,21 +1038,24 @@
         throw new Error('Δεν βρέθηκε ελεύθερο suffix (-2 έως -99) για σημερινό άρθρο.');
     }
 
-    async function publishToGitHub(token, folderName, sourceTxt, heroFile, heroExt, contentImages, commitMessage, progress) {
+    async function publishToGitHub(token, folderName, sourceTxt, heroFile, contentImages, commitMessage, progress, replaceExisting) {
         function tick(msg) { if (progress) progress(msg); }
 
         // Phase 1: upload blobs (content-addressed, safe to do once)
-        var blobs = [];
+        var treeEntries = [];
+        var desiredPaths = {};
+
+        function addBlobPath(path, sha) {
+            desiredPaths[path] = true;
+            treeEntries.push({ path: path, mode: '100644', type: 'blob', sha: sha });
+        }
 
         tick('Ανέβασμα source.txt…');
         var txtBlob = await ghFetch('/git/blobs', token, {
             method: 'POST',
             body: { content: utf8ToBase64(sourceTxt), encoding: 'base64' }
         });
-        blobs.push({
-            path: 'blog-module/blog-entries/' + folderName + '/source.txt',
-            mode: '100644', type: 'blob', sha: txtBlob.sha
-        });
+        addBlobPath('blog-module/blog-entries/' + folderName + '/source.txt', txtBlob.sha);
 
         if (heroFile) {
             tick('Ανέβασμα κεντρικής εικόνας…');
@@ -979,10 +1064,7 @@
                 method: 'POST',
                 body: { content: heroB64, encoding: 'base64' }
             });
-            blobs.push({
-                path: 'blog-module/blog-entries/' + folderName + '/1.' + heroExt,
-                mode: '100644', type: 'blob', sha: heroBlob.sha
-            });
+            addBlobPath('blog-module/blog-entries/' + folderName + '/1.webp', heroBlob.sha);
         }
 
         for (var i = 0; i < (contentImages || []).length; i++) {
@@ -993,9 +1075,17 @@
                 method: 'POST',
                 body: { content: ciB64, encoding: 'base64' }
             });
-            blobs.push({
-                path: 'blog-module/blog-entries/' + folderName + '/' + (i + 3) + '.' + sanitizeImageExtension(ci.file.name),
-                mode: '100644', type: 'blob', sha: ciBlob.sha
+            addBlobPath('blog-module/blog-entries/' + folderName + '/' + (i + 3) + '.webp', ciBlob.sha);
+        }
+
+        if (replaceExisting) {
+            tick('Καθαρισμός παλιού φακέλου…');
+            var existingEntries = await listFolderEntries(token, folderName);
+            existingEntries.forEach(function (entry) {
+                if (entry.type !== 'file') return;
+                var repoPath = 'blog-module/blog-entries/' + folderName + '/' + entry.name;
+                if (desiredPaths[repoPath]) return;
+                treeEntries.push({ path: repoPath, mode: '100644', type: 'blob', sha: null });
             });
         }
 
@@ -1012,7 +1102,7 @@
 
             var newTree = await ghFetch('/git/trees', token, {
                 method: 'POST',
-                body: { base_tree: baseTreeSha, tree: blobs }
+                body: { base_tree: baseTreeSha, tree: treeEntries }
             });
 
             tick('Δημιουργία commit…');
@@ -1055,6 +1145,7 @@
         var baseDate = todayYYYYMMDD();
         var folderName = baseDate + authorCode;
         var heroFile = heroInput.files && heroInput.files[0];
+        var replaceExisting = false;
 
         if (!heroFile) {
             if (!confirm('Δεν έχει επισυναφθεί κεντρική εικόνα. Να γίνει δημοσίευση με την προεπιλεγμένη;')) return;
@@ -1079,6 +1170,7 @@
                     folderName = await nextNumberedFolder(token, baseDate, authorCode);
                 } else {
                     if (!confirm('Σίγουρα να αντικατασταθούν τα αρχεία στο ' + folderName + ';')) return;
+                    replaceExisting = true;
                 }
             }
 
@@ -1103,13 +1195,21 @@
 
             publishBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Δημοσίευση…';
 
-            var heroExt = heroFile ? sanitizeImageExtension(heroFile.name) : null;
+            var publishHeroFile = heroFile ? await ensureWebpFile(heroFile, 'Hero image') : null;
+            var publishContentImages = [];
+            for (var i = 0; i < contentImageFiles.length; i++) {
+                publishBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Μετατροπή εικόνων…';
+                publishContentImages.push({
+                    file: await ensureWebpFile(contentImageFiles[i].file, 'Content image ' + (i + 1))
+                });
+            }
             var sourceTxt = buildSourceTxt(tag, category, title, body);
             var commitMessage = 'publish(blog): ' + title + ' (' + folderName + ')';
 
             var sha = await publishToGitHub(
-                token, folderName, sourceTxt, heroFile, heroExt, contentImageFiles, commitMessage,
-                function (msg) { publishBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> ' + msg; }
+                token, folderName, sourceTxt, publishHeroFile, publishContentImages, commitMessage,
+                function (msg) { publishBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> ' + msg; },
+                replaceExisting
             );
 
             var shortSha = sha.substring(0, 7);
