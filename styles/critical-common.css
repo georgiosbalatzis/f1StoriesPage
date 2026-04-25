@@ -1,0 +1,220 @@
+/* ============================================================
+   critical-common.css — Phase 2 (Above-the-fold critical path)
+   ─────────────────────────────────────────────────────────────
+   Minified + inlined into every page <head> by stamp-html.mjs.
+   Keeps FOUC away while the rest of the stylesheets load
+   asynchronously via rel="preload"+onload="this.rel='stylesheet'".
+
+   Scope (strictly above-the-fold):
+     • Theme design tokens (both light + dark)
+     • html/body reset + typography defaults
+     • .background fixed layer (prevents flash-of-wrong-bg)
+     • .skip-link a11y affordance
+     • .blog-nav sticky navbar + inner layout
+     • #hero / .hero-content baseline layout
+     • Light-mode overrides for the same scope
+
+   Non-goals (full stylesheets still load async):
+     • Card grids, section dividers, footer, animations
+     • Legacy .navbar (only used on episodes page)
+     • Everything below the hero
+
+   Hand-crafted (not generated) so the diff stays reviewable.
+   ============================================================ */
+
+:root {
+  --bg-base: #111113;
+  --bg-surface: #161618;
+  --bg-overlay: rgba(17,17,19,.92);
+  --text-primary: #e5e5e7;
+  --text-secondary: #a1a1a6;
+  --accent: #3b82f6;
+  --border: rgba(255,255,255,.08);
+  --font-body: 'Roboto', system-ui, -apple-system, sans-serif;
+  --radius-lg: 14px;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  margin: 0;
+  padding: 0;
+  color: var(--text-primary);
+  background-color: var(--bg-base);
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100svh;
+}
+
+/* Fixed background layer so the page never flashes white behind hero */
+.background {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: var(--bg-base);
+  z-index: -2;
+}
+
+/* Streaks hidden on mobile + reduced-motion — keep the rule in critical so
+   the animation never kicks in on slow devices before full CSS arrives. */
+.streak { position: fixed; z-index: -1; opacity: 0; }
+@media (min-width: 769px) {
+  .streak { opacity: 0.5; }
+}
+
+/* a11y — the skip link stays offscreen until focused */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.6rem 1rem;
+  text-decoration: none;
+  z-index: 9999;
+  border-radius: 0 0 8px 0;
+}
+.skip-link:focus { left: 0; }
+
+/* ── Shared fixed navbar (above-the-fold on every page) ── */
+.blog-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1060;
+  background: rgba(17,17,19,0.85);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+}
+.blog-nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.6rem 0;
+  min-height: 58px;
+}
+.blog-nav-brand img {
+  height: 38px;
+  width: auto;
+  display: block;
+}
+.blog-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+}
+.blog-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.blog-nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ── Hero baseline (homepage/standings share this shape) ── */
+#hero {
+  position: relative;
+  color: #fff;
+  text-align: center;
+  padding: 10rem 0;
+  margin-top: 70px;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.7;
+  overflow: hidden;
+}
+#hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(17,17,19,0.88), rgba(22,22,24,0.82));
+  z-index: -1;
+}
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  padding: 0 var(--space-md);
+}
+.hero-content h1 {
+  font-size: 3.5rem;
+  margin: 0 0 var(--space-md);
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+}
+.hero-content p {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-lg);
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+}
+@media (max-width: 767.98px) {
+  .hero-content h1 { font-size: 2.125rem; }
+  .hero-content p { font-size: 1.125rem; }
+  #hero { padding: 6rem 0; min-height: 70vh; }
+}
+
+/* ── Light-mode overrides for the critical scope only ── */
+[data-theme="light"] {
+  --bg-base: #ffffff;
+  --bg-surface: #f5f5f7;
+  --bg-overlay: rgba(255,255,255,.92);
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --accent: #0e4ca6;
+  --border: rgba(0,0,0,.08);
+}
+[data-theme="light"] body { background-color: #fff; color: #1d1d1f; }
+[data-theme="light"] .background { background: #fff; }
+[data-theme="light"] .streak { display: none; }
+[data-theme="light"] .blog-nav {
+  background: rgba(255,255,255,0.82);
+  border-bottom-color: rgba(0,0,0,0.06);
+}
+[data-theme="light"] .blog-nav-link { color: #6e6e73; }
+
+/* ── Icon sprite base (Phase 3b) ── */
+/* Replaces the Font Awesome <i> webfont glyphs. Sized to currentColor like
+   a character so `<svg class="icon">` drops into existing layouts with no
+   extra tweaks. The -.125em baseline nudge matches FA's own glyph metrics. */
+.icon {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  vertical-align: -0.125em;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.fa-spin {
+  animation: fa-spin 2s linear infinite;
+}
+@keyframes fa-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

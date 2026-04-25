@@ -88,6 +88,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const day = parts.day;
         const title = escapeHtml(post.title || '');
         const excerpt = escapeHtml(post.excerpt || '');
+        const thumbWidth = parseInt(post.thumbnailWidth, 10) || 400;
+        const thumbHeight = parseInt(post.thumbnailHeight, 10) || 188;
 
         return `
         <div class="col-md-4">
@@ -95,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="blog-card">
                     <div class="blog-img-container">
                         <img src="${img}" alt="${title}" class="blog-img" loading="lazy"
-                             decoding="async"
+                             decoding="async" width="${thumbWidth}" height="${thumbHeight}"
                              onerror="this.src='${fallback}';this.onerror=null;">
                         <div class="blog-date">
                             <span class="day">${day}</span>
@@ -105,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="blog-content">
                         <h3 class="blog-title">${title}</h3>
                         <p class="blog-excerpt">${excerpt}</p>
-                        <span class="blog-read-more">Read More <i class="fas fa-arrow-right"></i></span>
+                        <span class="blog-read-more">Read More <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                     </div>
                 </div>
             </a>

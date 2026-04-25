@@ -25,6 +25,30 @@
             selection.desktop[format] + ' ' + String(selection.desktopWidth || 1280) + 'w';
     }
 
+    function syncPreload(selection, avifSrcSet, webpSrcSet) {
+        var preload = document.getElementById('hero-image-preload');
+        var preloadHref;
+        var preloadSrcSet;
+
+        if (!preload || !selection) return;
+
+        preloadHref = selection.desktop.avif || selection.mobile.avif || selection.desktop.webp || selection.mobile.webp || '';
+        preloadSrcSet = avifSrcSet || webpSrcSet || '';
+
+        if (preloadHref) {
+            preload.href = preloadHref;
+        } else {
+            preload.removeAttribute('href');
+        }
+
+        if (preloadSrcSet) {
+            preload.setAttribute('imagesrcset', preloadSrcSet);
+            preload.setAttribute('imagesizes', '100vw');
+        } else {
+            preload.removeAttribute('imagesrcset');
+        }
+    }
+
     function initBackground() {
         var avifSource = document.getElementById('hero-source-avif');
         var webpSource = document.getElementById('hero-source-webp');
@@ -49,6 +73,7 @@
             heroImage.srcset = webpSrcSet;
         }
 
+        syncPreload(selection, avifSrcSet, webpSrcSet);
         heroImage.sizes = '100vw';
         heroImage.src = selection.desktop.webp || selection.mobile.webp || heroImage.src;
     }

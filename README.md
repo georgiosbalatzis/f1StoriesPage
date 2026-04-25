@@ -85,7 +85,17 @@
 - metadata bundles για homepage και blog listing
 - βοηθητικά εργαλεία για εικόνες, TTS και caches
 
-Η παραγωγή άρθρων γίνεται κυρίως από το [blog-processor.js](./blog-module/blog-processor.js), το οποίο:
+Η παραγωγή άρθρων εκκινεί από το [blog-processor.js](./blog-module/blog-processor.js), το οποίο πλέον είναι thin compatibility wrapper προς το `blog-module/build/`. Ο πραγματικός pipeline κώδικας είναι σπασμένος σε concern-specific modules όπως:
+
+- [build/index.js](./blog-module/build/index.js) για το orchestrator και το worker pool
+- [build/worker.js](./blog-module/build/worker.js) για το per-entry build
+- [build/embeds.js](./blog-module/build/embeds.js) για detection και placeholder extraction στα social/iframe/widget embeds
+- [build/embed-render.js](./blog-module/build/embed-render.js) για render/sanitization/resolution των embed payloads
+- [build/media.js](./blog-module/build/media.js) για εικόνες, galleries και responsive `<picture>`
+- [build/parse-docx.js](./blog-module/build/parse-docx.js) και [build/parse-txt.js](./blog-module/build/parse-txt.js) για source parsing
+- [build/csv-to-table.js](./blog-module/build/csv-to-table.js) για CSV/doc tables
+
+Το pipeline:
 
 - διαβάζει άρθρα από `blog-module/blog-entries/`
 - υποστηρίζει source αρχεία `.docx` και `.txt`
@@ -143,7 +153,6 @@
 - vanilla JavaScript για client-side interaction και data rendering
 - Bootstrap όπου χρειάζεται για baseline layout utilities
 - Node.js scripts για content build και data preparation
-- Python script για build-time text-to-speech generation
 
 Δεν υπάρχει frontend bundler, framework router ή component runtime τύπου React/Vue/Next. Αυτό κρατά το deployment απλό και ταιριαστό σε static hosting, αλλά μεταφέρει μέρος της πειθαρχίας στην οργάνωση αρχείων, naming conventions και helper scripts.
 
@@ -168,8 +177,7 @@
 │   ├── dirty-air-cache.js
 │   ├── destructors-cache.js
 │   ├── generate-image-variants.js
-│   ├── convert-to-avifwebp.sh
-│   └── tts-generator-parallel.py
+│   └── convert-to-avifwebp.sh
 ├── standings/
 │   ├── index.html
 │   ├── standings.js
@@ -213,7 +221,7 @@ YYYYMMDD-1X
 
 ### Τι κάνει ο blog processor
 
-Όταν εκτελείται το `blog-processor.js`:
+Όταν εκτελείται το `npm run build:blog`:
 
 1. εντοπίζει νέα ή αλλαγμένα άρθρα
 2. μετατρέπει DOCX περιεχόμενο σε HTML
@@ -225,7 +233,17 @@ YYYYMMDD-1X
 8. συμπληρώνει previous/next article navigation
 9. ανανεώνει τα cache αρχεία του standings module
 
-Το script υποστηρίζει incremental rebuilds και `--force` mode για πλήρη αναδημιουργία.
+Το script υποστηρίζει incremental rebuilds, `--force` mode για πλήρη αναδημιουργία των source-backed entries και golden regression harness στο `blog-module/build/__tests__/`.
+
+Αν ένα παλιότερο article folder υπάρχει ακόμα στο repo αλλά δεν έχει πλέον το αρχικό `.docx` ή `.txt`, ο orchestrator δεν το ξαναχτίζει ως gallery από τα εναπομείναντα images. Αντί γι' αυτό επαναχρησιμοποιεί το committed metadata από το `blog-data.json`, ώστε τα historical cached posts να μένουν σταθερά.
+
+### Νέα διάταξη build modules
+
+- `blog-module/build/index.js`: διαβάζει τα entry folders, αποφασίζει skip/rebuild και γράφει `blog-data.json`, `blog-index-data.json`, `home-latest.json`, `sitemap.xml`
+- `blog-module/build/worker.js`: τρέχει το build ενός μόνο article folder
+- `blog-module/build/embeds.js`: αν θέλεις νέο embed type, πρόσθεσε detection + render case εδώ
+- `blog-module/build/media.js`: αν αλλάζουν targets εικόνων, ενημέρωσε εδώ τα quality / width όρια για hero και content variants
+- `blog-module/blog-processor.legacy.js`: fallback αντίγραφο του παλιού monolith μέχρι να σταθεροποιηθεί πλήρως η νέα διάσπαση
 
 <a id="standings-data-pipeline"></a>
 ## Data pipeline για τα standings
@@ -279,7 +297,6 @@ http://localhost:8080/
 ### Προτεινόμενες runtime προϋποθέσεις
 
 - Node.js 18 ή νεότερο
-- Python 3.10 ή νεότερο
 
 Το Node 18+ είναι ουσιαστικά αναγκαίο, επειδή αρκετά scripts βασίζονται στο built-in `fetch`.
 
@@ -302,19 +319,6 @@ http://localhost:8080/
 npm install mammoth sharp adm-zip
 ```
 
-### Python dependencies
-
-Το [tts-generator-parallel.py](./blog-module/tts-generator-parallel.py) απαιτεί:
-
-- `edge-tts`
-- `beautifulsoup4`
-
-Ενδεικτική εγκατάσταση:
-
-```bash
-pip install edge-tts beautifulsoup4
-```
-
 ### Προαιρετικά system tools
 
 Το [convert-to-avifwebp.sh](./blog-module/convert-to-avifwebp.sh) υποθέτει macOS/Homebrew περιβάλλον και χρησιμοποιεί:
@@ -328,13 +332,13 @@ pip install edge-tts beautifulsoup4
 ### Αναδημιουργία blog content
 
 ```bash
-node blog-module/blog-processor.js
+npm run build:blog
 ```
 
 Για πλήρες rebuild:
 
 ```bash
-node blog-module/blog-processor.js --force
+npm run build:blog:force
 ```
 
 ### Δημιουργία image variants
@@ -355,26 +359,6 @@ Force regeneration:
 
 ```bash
 node blog-module/generate-image-variants.js --run --force
-```
-
-### Δημιουργία TTS narration για άρθρα
-
-Για όσα posts δεν έχουν ήδη narration:
-
-```bash
-python3 blog-module/tts-generator-parallel.py
-```
-
-Για πλήρη αναπαραγωγή:
-
-```bash
-python3 blog-module/tts-generator-parallel.py --force
-```
-
-Για συγκεκριμένο post:
-
-```bash
-python3 blog-module/tts-generator-parallel.py --post 20250101G
 ```
 
 <a id="design-and-ux"></a>
@@ -443,3 +427,39 @@ python3 blog-module/tts-generator-parallel.py --post 20250101G
 - καθαρός διαχωρισμός ανάμεσα σε brand site, content system και analytics surfaces
 
 Με απλά λόγια, το `f1stories.github.io` δεν είναι μόνο ένα website. Είναι το λειτουργικό publishing layer του F1 Stories.
+
+<a id="build-assets"></a>
+## Build assets (minification pipeline)
+
+Από τη Phase 1 του roadmap, κάθε tracked CSS/JS έχει δίπλα του ένα `.min` sibling (π.χ. `styles.css` + `styles.min.css`). Το production HTML φορτώνει τα minified αρχεία με content-hash query string για σωστό cache-busting, ενώ τα sources παραμένουν commit-ed ως πηγή αλήθειας για diff/review.
+
+- `npm run build` — full shell rebuild: expanded HTML partials first, then refresh of `assets/youtube-latest.json`, then asset minify/stamp.
+- `npm run build:html` — επεκτείνει τα `<!-- @include ... -->` markers στα shared shell pages (`partials/head-meta.html`, `partials/footer.html`) με idempotent generated blocks.
+- `npm run build:youtube` — τραβά το YouTube channel RSS στο build-time και ξαναγράφει το local snapshot `assets/youtube-latest.json` που χρησιμοποιεί η homepage videos rail.
+- `npm run build:assets` — χτίζει icon sprite + slim Bootstrap CSS, τρέχει minify (`lightningcss` για CSS, `esbuild` για JS) και μετά stamp (rewrite HTML references σε `.min.<ext>?v=<hash>`).
+- `npm run build:bootstrap` — παράγει το self-hosted `styles/vendor/bootstrap.slim.css` από το scoped SCSS subset.
+- `npm run build:assets:watch` — rebuild σε κάθε αλλαγή source.
+- `npm run build:assets:minify` / `build:assets:stamp` — τα δύο βήματα ξεχωριστά. Το `build:assets:stamp` περνά πρώτα από το include expansion ώστε footer/head partial edits να γράφονται στα shell HTML πριν το stamping.
+- Χειροκίνητα source edits σε `.css` / `.js`: τρέξε `npm run build:assets` πριν το commit, ώστε να commit-αριστούν μαζί με το `.min` sibling και το ενημερωμένο HTML reference.
+- Χειροκίνητα edits σε `partials/*.html`: τρέξε `npm run build` ή τουλάχιστον `npm run build:html && npm run build:assets:stamp` πριν το commit.
+
+Τα generated artifacts που commit-άρονται:
+
+- `*.min.css` / `*.min.js` δίπλα στα sources
+- `scripts/build/asset-manifest.json` (path → `{ min, hash, bytes, sourceBytes }`)
+- τα rewritten HTML refs στα tracked landing pages (βλ. `TARGET_HTML` στο `stamp-html.mjs`)
+
+Τα sourcemaps (`*.min.js.map`, `*.min.css.map`) είναι στο `.gitignore`.
+
+Τα 208 υπάρχοντα `blog-module/blog-entries/*/article.html` ΔΕΝ παίρνουν γενικό asset stamping από το script — παραμένουν στα κλασικά (non-min) refs μέχρι να γίνει rebuild μέσω `npm run build:blog:force`, οπότε το (ήδη stamped) `blog-module/blog/template.html` θα διαδώσει τα `.min` refs παντού. Εξαίρεση: το Phase 4 Bootstrap CDN swap εφαρμόζεται και στα committed articles, ώστε κανένα live HTML να μη φορτώνει Bootstrap από jsDelivr.
+
+<a id="performance-budget"></a>
+## Performance budget
+
+Ένα ελαφρύ guardrail για το βάρος των critical JS/CSS assets. Το budget ζει στο `perf/size-budget.json` και ελέγχεται με το script `scripts/perf/size-guard.mjs`.
+
+- `npm run perf:budget` — τρέχει τον έλεγχο· exit code 1 αν οποιοδήποτε tracked αρχείο έχει μεγαλώσει πάνω από `thresholdPercent` (default 10%) σε σχέση με το αποθηκευμένο baseline.
+- `npm run perf:budget:update` — ξαναγράφει το baseline με τα τρέχοντα μεγέθη. Τρέξε το μόνο μετά από συνειδητό perf review (π.χ. μετά από Phase 1 minification).
+- Ο πρώτος baseline ελήφθη στις `2026-04-20` (βλ. `perf/baseline-2026-04-20.md`) — είναι το reference point για κάθε φάση optimization που ακολουθεί στο `nextsteps.txt`. Το budget tracks τόσο τα source assets όσο και τα `.min` siblings του current shell/per-tab graph, ώστε regression του minifier να πιάνεται μαζί με source-level growth.
+
+Επίσης, κάθε σελίδα landing (home, blog index, standings, article template) φορτώνει το `scripts/perf/web-vitals-beacon.js` μέσα σε `requestIdleCallback` και στέλνει στο GA4 event `web_vital` με `metric_name`, `metric_value`, `metric_rating`, `page_path`. Οι ζωντανές τιμές δημιουργούν ένα RUM dataset για LCP/INP/CLS/FCP/TTFB ανά route — αυτό είναι το χρήσιμο signal πριν και μετά από κάθε perf phase.
