@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>F1 Stories — Offline</title>
+  <script src="/scripts/perf/error-beacon.min.js?v=ea43d064"></script>
   <style>
     :root { --bg: #111113; --surface: #1c1c1e; --accent: #3b82f6; --text: #e5e5e7; --sub: #a1a1a6; --border: rgba(255,255,255,.08); }
     @media (prefers-color-scheme: light) {
@@ -52,7 +53,7 @@
 </head>
 <body>
   <div class="card">
-    <img src="/images/logo.png" alt="F1 Stories" class="logo">
+    <img src="/images/logo-256.webp" alt="F1 Stories" class="logo" width="256" height="256" decoding="async">
     <h1>Offline</h1>
     <p class="sub">No internet connection. Check your network and try again.</p>
     <button class="retry" onclick="location.reload()">Retry</button>
@@ -70,8 +71,9 @@
       var section = document.getElementById('cached-section');
       var list = document.getElementById('cached-list');
       var noCached = document.getElementById('no-cached');
+      var pagesCache = 'f1s-pages-v12';
 
-      caches.open('f1s-pages-v6').then(function (cache) {
+      caches.open(pagesCache).then(function (cache) {
         return cache.keys();
       }).then(function (requests) {
         var articles = requests.filter(function (r) {
@@ -94,7 +96,7 @@
           li.appendChild(a);
           list.appendChild(li);
 
-          caches.open('f1s-pages-v6').then(function (cache) {
+          caches.open(pagesCache).then(function (cache) {
             return cache.match(req);
           }).then(function (resp) {
             if (!resp) return;
