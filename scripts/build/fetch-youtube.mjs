@@ -62,18 +62,46 @@ function parseEntry(entry) {
     };
 }
 
-async function fetchFeedXml() {
-    const response = await fetch(RSS_URL, {
-        headers: {
-            'user-agent': 'f1stories-youtube-snapshot/1.0 (+https://f1stories.gr)'
-        }
-    });
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-    if (!response.ok) {
-        throw new Error(`YouTube RSS fetch failed: ${response.status} ${response.statusText}`);
+async function fetchFeedXml() {
+    // YouTube's RSS endpoint occasionally returns transient 5xx / 429s;
+    // retry with exponential backoff before giving up so a single blip
+    // doesn't fail the scheduled workflow.
+    const MAX_ATTEMPTS = 4;
+    let lastError = null;
+
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        try {
+            const response = await fetch(RSS_URL, {
+                headers: {
+                    'user-agent': 'f1stories-youtube-snapshot/1.0 (+https://f1stories.gr)'
+                }
+            });
+
+            if (response.ok) {
+                return response.text();
+            }
+
+            const transient = response.status === 429 || response.status >= 500;
+            lastError = new Error(`YouTube RSS fetch failed: ${response.status} ${response.statusText}`);
+
+            if (!transient || attempt === MAX_ATTEMPTS) {
+                throw lastError;
+            }
+        } catch (err) {
+            lastError = err;
+            if (attempt === MAX_ATTEMPTS) throw err;
+        }
+
+        const backoffMs = 1000 * 2 ** attempt; // 2s, 4s, 8s
+        console.warn(`Attempt ${attempt}/${MAX_ATTEMPTS} failed (${lastError?.message || lastError}); retrying in ${backoffMs}ms…`);
+        await sleep(backoffMs);
     }
 
-    return response.text();
+    throw lastError || new Error('YouTube RSS fetch failed after retries.');
 }
 
 function newestPublishedAt(videos) {
@@ -120,6 +148,14 @@ async function main() {
 }
 
 main().catch(error => {
+    // If a prior snapshot exists, don't fail the workflow on transient
+    // YouTube outages — the existing JSON keeps serving until the next
+    // scheduled run. Hard-fail only when there's nothing on disk yet.
+    if (fs.existsSync(OUTPUT_PATH)) {
+        console.warn(`YouTube refresh skipped: ${error.message || error}`);
+        console.warn(`Keeping existing snapshot at ${path.relative(REPO_ROOT, OUTPUT_PATH)}.`);
+        process.exit(0);
+    }
     console.error(error.message || error);
     process.exit(1);
 });
