@@ -786,3 +786,28 @@ h1, h2, h3, h4, p, a, span {
 [data-theme="light"] .sponsor-strip-label {
     color: #86868b;
 }
+
+/* ── Episode (ep-card) — Light theme ─────────── */
+[data-theme="light"] .ep-card {
+    background: #FFFFFF !important;
+    border-color: rgba(0,0,0,0.06) !important;
+    box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] a.ep-card:hover {
+    border-color: rgba(0,0,0,0.08) !important;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.04) !important;
+}
+
+[data-theme="light"] .ep-card__thumb { background: #f0f0f2; }
+
+[data-theme="light"] .ep-card__title { color: #1d1d1f; }
+
+[data-theme="light"] a.ep-card:hover .ep-card__title { color: #0e4ca6; }
+
+[data-theme="light"] .ep-card__meta {
+    background: rgba(14,76,166,0.10);
+    color: #0e4ca6;
+}
+
+[data-theme="light"] .ep-card__cta { color: #0e4ca6; }
