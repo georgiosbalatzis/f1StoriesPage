@@ -238,6 +238,33 @@ a.ep-card:hover .ep-card__thumb img { transform: scale(1.06); }
 
 a.ep-card:hover .ep-card__thumb::after { opacity: 1; }
 
+/* YouTube branding pill — top-left corner of thumbnail */
+.ep-card__brand {
+    position: absolute;
+    top: 0.6rem;
+    left: 0.6rem;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32rem;
+    padding: 0.22rem 0.55rem;
+    border-radius: 4px;
+    background: #FF0000;
+    color: #fff;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-transform: uppercase;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.45);
+    pointer-events: none;
+}
+
+.ep-card__brand .icon {
+    width: 0.95em;
+    height: 0.95em;
+}
+
 .ep-card__play {
     position: absolute;
     top: 50%;
@@ -292,21 +319,16 @@ a.ep-card:hover .ep-card__play {
 a.ep-card:hover .ep-card__title { color: var(--accent); }
 
 .ep-card__meta {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 0.4rem;
-    align-self: flex-start;
-    padding: 0.2rem 0.55rem;
-    border-radius: 100px;
-    background: var(--accent-muted);
-    color: var(--accent);
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    white-space: nowrap;
+    color: var(--text-tertiary);
+    font-size: 0.75rem;
+    font-weight: 400;
+    flex-wrap: wrap;
 }
 
-.ep-card__meta .icon { width: 0.8em; height: 0.8em; }
+.ep-card__meta .icon { width: 0.8em; height: 0.8em; color: var(--accent); }
 
 .ep-card__cta {
     margin-top: auto;

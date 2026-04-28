@@ -25,8 +25,8 @@
     <noscript><link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=0f638228"></noscript>
     <link rel="preload" as="style" href="/styles/shared-nav.min.css?v=d8e2b657" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/styles/shared-nav.min.css?v=d8e2b657"></noscript>
-    <link rel="preload" as="style" href="/theme-overrides.min.css?v=75fed1fb" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="/theme-overrides.min.css?v=75fed1fb"></noscript>
+    <link rel="preload" as="style" href="/theme-overrides.min.css?v=a6200619" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/theme-overrides.min.css?v=a6200619"></noscript>
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
 
     <script>
@@ -117,36 +117,44 @@
 
         .hk-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1rem;
         }
         .hk-card {
-            background: var(--bg-surface, #1a1a2e);
+            background: var(--bg-surface-alt, #1e1e20);
             border: 1px solid var(--border, rgba(255,255,255,0.08));
-            border-radius: 12px;
+            border-radius: var(--radius-md, 10px);
             overflow: hidden;
             display: flex;
             flex-direction: column;
         }
+        .hk-card-img-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            background: var(--bg-surface, #161618);
+        }
         .hk-card-img {
             width: 100%;
-            aspect-ratio: 4/3;
+            height: 100%;
             object-fit: cover;
+            object-position: center 20%;
             display: block;
-            background: rgba(255,255,255,0.03);
         }
         .hk-card-body {
-            padding: 0.75rem;
+            padding: 0.85rem 1rem 0.75rem;
             display: flex;
             flex-direction: column;
-            gap: 0.35rem;
+            gap: 0.4rem;
             flex: 1;
         }
         .hk-card-title {
             font-family: 'Outfit', sans-serif;
-            font-weight: 600;
-            font-size: 0.95rem;
-            line-height: 1.3;
+            font-weight: 700;
+            font-size: 0.98rem;
+            line-height: 1.35;
+            letter-spacing: -0.01em;
             color: var(--text-primary);
             margin: 0;
             display: -webkit-box;
@@ -158,35 +166,45 @@
             font-size: 0.72rem;
             color: var(--text-tertiary);
             display: flex;
-            gap: 0.5rem;
+            gap: 0.55rem;
             flex-wrap: wrap;
-        }
-        .hk-badge {
-            display: inline-flex;
             align-items: center;
-            padding: 0.15rem 0.55rem;
-            border-radius: 100px;
+        }
+        .hk-card-meta .icon { color: var(--accent, #3b82f6); }
+        .hk-badge {
             font-size: 0.65rem;
             font-weight: 500;
-            line-height: 1.4;
-            letter-spacing: 0.01em;
+            padding: 0.15rem 0.5rem;
+            border-radius: 100px;
             background: var(--accent-muted, rgba(59,130,246,0.10));
             color: var(--accent, #3b82f6);
             white-space: nowrap;
         }
+        .hk-card-footer {
+            padding: 0.55rem 1rem;
+            border-top: 1px solid var(--border, rgba(255,255,255,0.08));
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            min-height: 44px;
+        }
         .hk-card-id {
             font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-            font-size: 0.68rem;
+            font-size: 0.65rem;
             color: var(--text-tertiary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 50%;
         }
         .hk-card-actions {
-            margin-top: auto;
-            padding-top: 0.5rem;
+            margin-left: auto;
             display: flex;
-            gap: 0.35rem;
+            gap: 0.3rem;
             flex-wrap: wrap;
         }
-        .hk-card-actions .hk-btn { padding: 0.35rem 0.6rem; font-size: 0.76rem; }
+        .hk-card-actions .hk-btn { padding: 0.3rem 0.55rem; font-size: 0.74rem; gap: 0.3rem; }
 
         .hk-empty, .hk-error {
             text-align: center;
@@ -907,6 +925,9 @@
         var card = document.createElement('article');
         card.className = 'hk-card';
 
+        var imgWrap = document.createElement('div');
+        imgWrap.className = 'hk-card-img-wrap';
+
         var img = document.createElement('img');
         img.className = 'hk-card-img';
         img.loading = 'lazy';
@@ -916,19 +937,20 @@
         img.src = p.image || '/blog-module/images/default-blog.jpg';
         img.alt = '';
         img.onerror = function () { img.src = '/blog-module/images/default-blog.jpg'; };
+        imgWrap.appendChild(img);
 
         var body = document.createElement('div');
         body.className = 'hk-card-body';
-
-        var title = document.createElement('h3');
-        title.className = 'hk-card-title';
-        title.textContent = p.title || '(untitled)';
 
         var meta = document.createElement('div');
         meta.className = 'hk-card-meta';
         meta.innerHTML =
             '<span><svg class="icon" aria-hidden="true"><use href="#fa-user"/></svg> ' + escapeHtml(p.author || '—') + '</span>' +
             '<span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ' + escapeHtml(p.displayDate || p.date || '—') + '</span>';
+
+        var title = document.createElement('h3');
+        title.className = 'hk-card-title';
+        title.textContent = p.title || '(untitled)';
 
         var badges = document.createElement('div');
         badges.className = 'hk-card-meta';
@@ -939,15 +961,20 @@
             var b2 = document.createElement('span'); b2.className = 'hk-badge hk-badge-cat'; b2.textContent = p.category; badges.appendChild(b2);
         }
 
+        var footer = document.createElement('div');
+        footer.className = 'hk-card-footer';
+
         var idEl = document.createElement('div');
         idEl.className = 'hk-card-id';
         idEl.textContent = p.id || '';
+        idEl.title = p.id || '';
 
         var actions = document.createElement('div');
         actions.className = 'hk-card-actions';
 
         var previewBtn = document.createElement('button');
         previewBtn.className = 'hk-btn';
+        previewBtn.title = 'Preview';
         previewBtn.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#fa-eye"/></svg> Preview';
         previewBtn.addEventListener('click', function () {
             window.open(p.url, '_blank', 'noopener');
@@ -955,11 +982,13 @@
 
         var editBtn = document.createElement('button');
         editBtn.className = 'hk-btn hk-btn-primary';
+        editBtn.title = 'Edit';
         editBtn.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#fa-pen"/></svg> Edit';
         editBtn.addEventListener('click', function () { openEdit(p); });
 
         var delBtn = document.createElement('button');
         delBtn.className = 'hk-btn hk-btn-danger';
+        delBtn.title = 'Delete';
         delBtn.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#fa-trash"/></svg> Delete';
         delBtn.addEventListener('click', function () { deleteArticle(p, delBtn); });
 
@@ -967,14 +996,16 @@
         actions.appendChild(editBtn);
         actions.appendChild(delBtn);
 
-        body.appendChild(title);
-        body.appendChild(meta);
-        body.appendChild(badges);
-        body.appendChild(idEl);
-        body.appendChild(actions);
+        footer.appendChild(idEl);
+        footer.appendChild(actions);
 
-        card.appendChild(img);
+        body.appendChild(meta);
+        body.appendChild(title);
+        if (badges.childNodes.length) body.appendChild(badges);
+
+        card.appendChild(imgWrap);
         card.appendChild(body);
+        card.appendChild(footer);
         return card;
     }
 

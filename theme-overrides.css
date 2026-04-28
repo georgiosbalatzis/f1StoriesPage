@@ -805,9 +805,7 @@ h1, h2, h3, h4, p, a, span {
 
 [data-theme="light"] a.ep-card:hover .ep-card__title { color: #0e4ca6; }
 
-[data-theme="light"] .ep-card__meta {
-    background: rgba(14,76,166,0.10);
-    color: #0e4ca6;
-}
+[data-theme="light"] .ep-card__meta { color: #6e6e73; }
+[data-theme="light"] .ep-card__meta .icon { color: #0e4ca6; }
 
 [data-theme="light"] .ep-card__cta { color: #0e4ca6; }

@@ -408,6 +408,7 @@
             + '<a href="' + url + '" target="_blank" rel="noopener" class="ep-card" title="' + title + '">'
             + '<div class="ep-card__thumb">'
             + '<img src="' + thumb + '" alt="' + title + '" loading="lazy" decoding="async" width="480" height="360">'
+            + '<span class="ep-card__brand"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</span>'
             + '<div class="ep-card__play"><svg class="icon" aria-hidden="true"><use href="#fa-play"/></svg></div>'
             + '</div>'
             + '<div class="ep-card__body">'
