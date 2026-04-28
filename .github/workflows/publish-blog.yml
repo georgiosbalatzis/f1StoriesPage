@@ -63,7 +63,14 @@ jobs:
                 !seen[$0]++ { printf "%s\t%s\n", ts, $0 }
               ' \
             | while IFS=$'\t' read -r ts file; do
-                [ -e "$file" ] && touch -m -d "@$ts" "$file"
+                # `git log` includes deleted/renamed files; skip them.
+                # An `if` is used (not `&& touch`) so the loop body returns 0
+                # even when the file is missing — otherwise the whole `while`
+                # exits non-zero on the last skipped iteration and `set -e`
+                # aborts the step.
+                if [ -e "$file" ]; then
+                  touch -m -d "@$ts" "$file"
+                fi
               done
 
       - name: Run blog processor
