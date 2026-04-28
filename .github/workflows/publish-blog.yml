@@ -48,6 +48,24 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
+      - name: Restore git mtimes for blog entries
+        # actions/checkout sets every file's mtime to the checkout time, so the
+        # blog processor's mtime-based skip check can't tell that source.txt was
+        # edited in a later commit than article.html — and silently skips the
+        # rebuild. Restore each tracked file's mtime to the latest commit that
+        # touched it so the skip check matches local-dev behaviour.
+        run: |
+          set -eu
+          git log --pretty=tformat:'@%at' --name-only -- 'blog-module/blog-entries/' \
+            | awk '
+                /^@[0-9]+$/ { ts = substr($0, 2); next }
+                NF == 0 { next }
+                !seen[$0]++ { printf "%s\t%s\n", ts, $0 }
+              ' \
+            | while IFS=$'\t' read -r ts file; do
+                [ -e "$file" ] && touch -m -d "@$ts" "$file"
+              done
+
       - name: Run blog processor
         run: node blog-module/blog-processor.js
 
