@@ -1635,6 +1635,67 @@
     }
 
     // ── Embed detection ──────────────────────────────────
+    // Mirrors blog-module/build/shared.js → CONFIG.IFRAME_WHITELIST
+    var IFRAME_WHITELIST = [
+        'georgiosbalatzis.github.io',
+        'f1stories.gr',
+        'www.f1stories.gr',
+        'facebook.com',
+        'www.facebook.com',
+        'www.youtube.com',
+        'youtube.com',
+        'open.spotify.com',
+        'player.vimeo.com',
+        'codepen.io',
+        'datawrapper.dwcdn.net',
+        'sketchfab.com',
+        'www.sketchfab.com'
+    ];
+
+    function isIframeUrlWhitelisted(urlStr) {
+        try {
+            var host = new URL(urlStr).hostname;
+            return IFRAME_WHITELIST.some(function (d) {
+                return host === d || host.endsWith('.' + d);
+            });
+        } catch (e) { return false; }
+    }
+
+    function buildIframeBlockedHtml(url) {
+        return '<div class="embed-error" style="padding:0.75rem 1rem;border:1px solid #ef4444;border-radius:8px;color:#ef4444;font-size:0.85rem;">' +
+            '<strong>Iframe blocked:</strong> ' + escapeHtml(url) + ' is not in the allowed domain list.' +
+            '</div>';
+    }
+
+    // IFRAME:url[|key=value&key=value] line marker (mirrors embed-render.js)
+    function buildIframeMarkerHtml(rest) {
+        var pipeIdx = rest.indexOf('|');
+        var url = (pipeIdx > -1 ? rest.substring(0, pipeIdx) : rest).trim();
+        var attrStr = pipeIdx > -1 ? rest.substring(pipeIdx + 1).trim() : '';
+        if (!isIframeUrlWhitelisted(url)) return buildIframeBlockedHtml(url);
+
+        var attrs = { height: '650', loading: 'lazy', style: 'border-radius:12px;border:1px solid #E1060033;background:#15151e' };
+        if (attrStr) {
+            attrStr.split('&').forEach(function (pair) {
+                var eq = pair.indexOf('=');
+                if (eq <= 0) return;
+                var key = pair.substring(0, eq).trim();
+                var value = pair.substring(eq + 1).trim();
+                if (key) attrs[key] = value;
+            });
+        }
+        return '<div class="embed-container embed-iframe">' +
+            '<iframe src="' + escapeHtml(url) + '" width="100%" height="' + escapeHtml(attrs.height) + '" ' +
+            'frameborder="0" style="' + escapeHtml(attrs.style) + '" allowfullscreen loading="' + escapeHtml(attrs.loading) + '">' +
+            '</iframe></div>';
+    }
+
+    // Wrap a raw <iframe>...</iframe> block (whitelist-checked) in the embed container.
+    function wrapRawIframeHtml(block, src) {
+        if (!isIframeUrlWhitelisted(src)) return buildIframeBlockedHtml(src);
+        return '<div class="embed-container embed-iframe">\n' + block + '\n</div>';
+    }
+
     function getYouTubeId(url) {
         try {
             var u = new URL(url);
@@ -1808,6 +1869,20 @@
 
     // ── Main converter ───────────────────────────────────
     function convertContent(raw) {
+        // Pre-pass: extract raw multi-line <iframe ...></iframe> blocks into
+        // single-line tokens so the line-based parser below treats each as one
+        // standalone embed (mirrors blog-module/build/embeds.js raw-iframe path).
+        var iframePlaceholders = {};
+        var iframeCounter = 0;
+        raw = String(raw || '').replace(
+            /<iframe\s[^>]*src=["']([^"']+)["'][^>]*>[\s\S]*?<\/iframe>/gi,
+            function (block, src) {
+                var token = '__F1S_RAW_IFRAME_' + (iframeCounter++) + '__';
+                iframePlaceholders[token] = { block: block, src: src };
+                return '\n' + token + '\n';
+            }
+        );
+
         var lines = raw.split('\n');
         var html = '';
         var currentParagraph = '';
@@ -1880,6 +1955,22 @@
                         '[img-instert-tag] #' + imageIdx + ' — no attached image for this marker (would be empty in the published article)' +
                         '</div>\n';
                 }
+                continue;
+            }
+
+            // Raw <iframe> placeholder (substituted by the pre-pass above)
+            if (iframePlaceholders[trimmed]) {
+                flushParagraph();
+                var rawInfo = iframePlaceholders[trimmed];
+                html += wrapRawIframeHtml(rawInfo.block, rawInfo.src) + '\n';
+                continue;
+            }
+
+            // IFRAME:url[|key=value&...] line marker (whitelist-checked)
+            var iframeTagMatch = trimmed.match(/^IFRAME:(https?:\/\/.+)$/i);
+            if (iframeTagMatch) {
+                flushParagraph();
+                html += buildIframeMarkerHtml(iframeTagMatch[1].trim()) + '\n';
                 continue;
             }
 
