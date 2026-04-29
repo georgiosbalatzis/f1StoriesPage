@@ -191,6 +191,20 @@
             border-radius: 4px;
             font-size: 0.7rem;
         }
+        .gen-hint-status {
+            border: 1px solid var(--border, rgba(255,255,255,0.1));
+            border-radius: 10px;
+            padding: 0.7rem 0.85rem;
+            background: rgba(255,255,255,0.03);
+        }
+        .gen-hint-status[data-state="ok"] {
+            border-color: rgba(34,197,94,0.35);
+            background: rgba(34,197,94,0.08);
+        }
+        .gen-hint-status[data-state="warn"] {
+            border-color: rgba(245,158,11,0.4);
+            background: rgba(245,158,11,0.08);
+        }
 
         /* ── Preview wrapper ───────────────────────────────── */
         #preview-wrapper {
@@ -434,9 +448,15 @@
 - Στοιχεία λίστας
 **έντονα** και *πλάγια*
 [img-instert-tag]  ← δείκτης εικόνας (η γεννήτρια τον αντικαθιστά με 3.*, 4.*, …)
+## Πηγές
+fia.com
+motorsport.com
 
 Οι σύνδεσμοι YouTube / X / Instagram / Threads ενσωματώνονται αυτόματα.
-Οι κενές γραμμές χωρίζουν παραγράφους."></textarea>
+Οι κενές γραμμές χωρίζουν παραγράφους.
+Απόφυγε captions / share / sponsor boilerplate μέσα στο body."></textarea>
+
+    <div class="gen-hint gen-hint-status" id="gen-narration-hint" data-state="info"></div>
 
     <div class="gen-actions">
         <button class="gen-btn gen-btn-primary" id="gen-preview-btn">
@@ -476,6 +496,7 @@
 
     <div class="gen-hint">
         Μορφή: απλό κείμενο με επικεφαλίδες σε στυλ markdown. Οι σύνδεσμοι σε YouTube, X, Instagram, Threads και Facebook ενσωματώνονται αυτόματα.<br>
+        <strong>Αφήγηση</strong>: για πηγές ξεκίνα νέο section με <code>## Πηγές</code>. Ό,τι βρίσκεται πριν από αυτό θεωρείται narratable σώμα· απέφυγε γραμμές όπως <code>Video: YouTube</code>, <code>Presented by</code>, <code>View this post on …</code> ή captions εικόνων μέσα στο κείμενο.<br>
         <strong>Κεντρική / thumbnail</strong> (εικόνα <code>1</code>): εμφανίζεται στις κάρτες του blog και, αν δεν έχει οριστεί banner, και ως header του άρθρου. <strong>Banner άρθρου</strong> (εικόνα <code>2</code>, προαιρετικό): εμφανίζεται στην κορυφή του άρθρου· αν λείπει, χρησιμοποιείται η κεντρική. Όλες οι εικόνες μετατρέπονται αυτόματα σε <code>.webp</code> κατά το export/publish.<br>
         <strong>Εικόνες κειμένου</strong>: πρόσθεσε <code>[img-instert-tag]</code> εκεί που θέλεις μια εικόνα και επισύναψε τις εικόνες με την ίδια σειρά. <em>2+ δείκτες σε συνεχόμενες σειρές γίνονται carousel· μεμονωμένοι δείκτες παραμένουν ως μεμονωμένες εικόνες.</em><br>
         <strong>Χωρίς δείκτες;</strong> Οι επισυναπτόμενες εικόνες εμφανίζονται ως carousel στο τέλος του άρθρου.<br>
@@ -584,6 +605,7 @@
     var contentImagesList = document.getElementById('gen-content-images-list');
     var insertMarkerBtn   = document.getElementById('gen-insert-img-marker');
     var markerCountEl     = document.getElementById('gen-marker-count');
+    var narrationHintEl   = document.getElementById('gen-narration-hint');
     var previewBtn    = document.getElementById('gen-preview-btn');
     var exportBtn     = document.getElementById('gen-export-btn');
     var importInput   = document.getElementById('gen-import-input');
@@ -657,6 +679,15 @@
     // ── Content images handlers ───────────────────────────
     var contentImageFiles = []; // [{ file, url, width, height }]
     var MARKER_TOKEN = '[img-instert-tag]';
+    var NARRATION_SOURCE_LABELS = ['πηγες', 'sources'];
+    var NARRATION_SOURCE_BOILERPLATE = [
+        { regex: /^video:\s*youtube$/i, label: 'caption βίντεο τύπου "Video: YouTube"' },
+        { regex: /^presented by$/i, label: 'χορηγικό boilerplate τύπου "Presented by"' },
+        { regex: /^view this post on /i, label: 'κείμενο social embed τύπου "View this post on ..."' },
+        { regex: /^share$/i, label: 'γραμμή share UI' },
+        { regex: /^comments$/i, label: 'γραμμή comments UI' },
+        { regex: /^image \d+$/i, label: 'caption εικόνας τύπου "Image 3"' }
+    ];
 
     function countMarkers() {
         var matches = contentArea.value.match(/\[img-instert-tag\]/g);
@@ -677,6 +708,148 @@
         markerCountEl.textContent = label;
         // Only warn when markers outnumber images — those slots will render empty.
         markerCountEl.style.color = (markers > imgs) ? '#f59e0b' : '';
+    }
+
+    function stripDiacritics(value) {
+        var text = String(value || '');
+        try {
+            return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        } catch (_) {
+            return text;
+        }
+    }
+
+    function normalizeNarrationLine(value) {
+        return stripDiacritics(value)
+            .replace(/[“”«»"'`]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .toLowerCase();
+    }
+
+    function normalizeNarrationLabel(value) {
+        return normalizeNarrationLine(value)
+            .replace(/[:;,.!?()[\]{}]+/g, '')
+            .trim();
+    }
+
+    function getNarrationSourcesHeadingType(line) {
+        var normalized = normalizeNarrationLine(line).replace(/\s*:\s*$/, '');
+        if (normalized === '## πηγες' || normalized === '## sources') return 'canonical';
+        if (normalized === '# πηγες' || normalized === '# sources') return 'alias';
+        return '';
+    }
+
+    function looksLikeSourceReferenceLine(line) {
+        var trimmed = String(line || '').trim().replace(/^[-*]\s+/, '');
+        if (!trimmed) return false;
+        return /https?:\/\/\S+/i.test(trimmed) || /(?:^|\s)([a-z0-9-]+\.)+[a-z]{2,}(?:\/\S*)?$/i.test(trimmed);
+    }
+
+    function getTrailingSourceLikeLineCount(lines) {
+        var count = 0;
+        for (var i = lines.length - 1; i >= 0; i--) {
+            var trimmed = String(lines[i] || '').trim();
+            if (!trimmed) {
+                if (count > 0) break;
+                continue;
+            }
+            if (looksLikeSourceReferenceLine(trimmed)) {
+                count++;
+                continue;
+            }
+            break;
+        }
+        return count;
+    }
+
+    function analyzeNarrationReadiness(raw) {
+        var lines = String(raw || '').replace(/\r/g, '').split('\n');
+        var headingType = '';
+        var headingLine = '';
+        var warnings = [];
+        var boilerplate = [];
+
+        for (var i = 0; i < lines.length; i++) {
+            var trimmed = lines[i].trim();
+            if (!trimmed) continue;
+
+            var currentHeadingType = getNarrationSourcesHeadingType(trimmed);
+            if (currentHeadingType) {
+                headingType = currentHeadingType;
+                headingLine = trimmed;
+                break;
+            }
+
+            var normalizedLabel = normalizeNarrationLabel(trimmed);
+            if (NARRATION_SOURCE_LABELS.indexOf(normalizedLabel) !== -1) {
+                warnings.push('Βρέθηκε γραμμή πηγών χωρίς heading. Χρησιμοποίησε ξεχωριστή γραμμή `## Πηγές` και βάλε από κάτω μόνο τις πηγές.');
+            } else if (NARRATION_SOURCE_LABELS.some(function (label) { return normalizedLabel.indexOf(label + ' ') === 0; })) {
+                warnings.push('Βρέθηκε inline αναφορά πηγών μέσα στο σώμα. Βάλε νέο section `## Πηγές` αντί για παράγραφο τύπου `Πηγές: ...`.');
+            }
+
+            var normalizedLine = normalizeNarrationLine(trimmed);
+            for (var j = 0; j < NARRATION_SOURCE_BOILERPLATE.length; j++) {
+                if (NARRATION_SOURCE_BOILERPLATE[j].regex.test(normalizedLine)) {
+                    boilerplate.push(NARRATION_SOURCE_BOILERPLATE[j].label);
+                    break;
+                }
+            }
+        }
+
+        if (!headingType && getTrailingSourceLikeLineCount(lines) >= 2) {
+            warnings.push('Οι τελευταίες γραμμές μοιάζουν με λίστα πηγών χωρίς heading. Πρόσθεσε `## Πηγές` ακριβώς πριν από αυτές.');
+        }
+        if (headingType === 'alias') {
+            warnings.push('Βρέθηκε heading πηγών `' + headingLine + '`. Θα δουλέψει, αλλά το σταθερό format είναι `## Πηγές`.');
+        }
+        if (boilerplate.length) {
+            var uniqueBoilerplate = [];
+            for (var k = 0; k < boilerplate.length; k++) {
+                if (uniqueBoilerplate.indexOf(boilerplate[k]) === -1) uniqueBoilerplate.push(boilerplate[k]);
+            }
+            warnings.push('Βρέθηκαν μη narratable γραμμές στο σώμα: ' + uniqueBoilerplate.slice(0, 3).join(', ') + '.');
+        }
+
+        return {
+            hasCanonicalSourcesHeading: headingType === 'canonical',
+            warnings: warnings
+        };
+    }
+
+    function updateNarrationHint() {
+        if (!narrationHintEl) return;
+
+        var analysis = analyzeNarrationReadiness(contentArea.value);
+        var state = 'info';
+        var message = 'Για πηγές ξεκίνα νέο section με <code>## Πηγές</code>. Ό,τι προηγείται θεωρείται narratable σώμα.';
+
+        if (analysis.warnings.length) {
+            state = 'warn';
+            message = analysis.warnings[0];
+        } else if (analysis.hasCanonicalSourcesHeading) {
+            state = 'ok';
+            message = 'Βρέθηκε σωστό section <code>## Πηγές</code>. Ό,τι βρίσκεται πριν από αυτό θα είναι το narratable κομμάτι του άρθρου.';
+        }
+
+        narrationHintEl.dataset.state = state;
+        narrationHintEl.innerHTML = '<strong>Αφήγηση:</strong> ' + message;
+    }
+
+    function confirmNarrationAuthoring(body, actionLabel) {
+        var analysis = analyzeNarrationReadiness(body);
+        if (!analysis.warnings.length) return true;
+
+        return confirm(
+            'Πριν από την ' + actionLabel + ':\n\n' +
+            analysis.warnings.join('\n\n') +
+            '\n\nΣυνέχεια παρ\' όλα αυτά;'
+        );
+    }
+
+    function refreshBodyDiagnostics() {
+        updateMarkerCount();
+        updateNarrationHint();
     }
 
     function renderContentImagesList() {
@@ -807,11 +980,12 @@
         var caret = start + insertion.length;
         contentArea.focus();
         contentArea.setSelectionRange(caret, caret);
-        updateMarkerCount();
+        refreshBodyDiagnostics();
+        if (typeof schedulePreview === 'function') schedulePreview();
     });
 
-    contentArea.addEventListener('input', updateMarkerCount);
-    updateMarkerCount();
+    contentArea.addEventListener('input', refreshBodyDiagnostics);
+    refreshBodyDiagnostics();
 
     // ── Clear ─────────────────────────────────────────────
     clearBtn.addEventListener('click', function () {
@@ -836,6 +1010,7 @@
         if (importText) importText.textContent = 'Εισαγωγή ZIP';
         renderContentImagesList();
         previewWrap.classList.remove('visible');
+        refreshBodyDiagnostics();
         if (typeof schedulePreview === 'function') schedulePreview();
     });
 
@@ -1008,10 +1183,11 @@
             }
 
             renderContentImagesList();
-            updateMarkerCount();
+            refreshBodyDiagnostics();
 
             importLabel.classList.add('has-file');
             importText.textContent = folderName;
+            if (typeof schedulePreview === 'function') schedulePreview();
         } catch (err) {
             console.error('Import failed', err);
             alert('Η εισαγωγή απέτυχε: ' + (err && err.message ? err.message : err));
@@ -1128,6 +1304,7 @@
 
         var body = contentArea.value.trim();
         if (!body) { alert('Γράψε το κείμενο του άρθρου πριν από την εξαγωγή.'); contentArea.focus(); return; }
+        if (!confirmNarrationAuthoring(body, 'εξαγωγή')) { contentArea.focus(); return; }
 
         var author = authorSelect.value;
         var tag = tagInput.value.trim() || 'F1';
@@ -1179,6 +1356,7 @@
                 'Author:   ' + author + (authorCode ? ' (code: ' + authorCode + ')' : ' (no code)') + '\n' +
                 'Tag:      ' + tag + '\n' +
                 'Category: ' + category + '\n' +
+                'Narration: sources should live under a dedicated "## Πηγές" heading in source.txt\n' +
                 'Content images: ' + contentImageFiles.length + ' (markers in source.txt: ' + countMarkers() + ')\n\n' +
                 'To publish:\n' +
                 '1. Unzip this file into blog-module/blog-entries/ so you get:\n' +
@@ -1429,6 +1607,7 @@
 
         var body = contentArea.value.trim();
         if (!body) { alert('Γράψε το κείμενο του άρθρου πριν από τη δημοσίευση.'); contentArea.focus(); return; }
+        if (!confirmNarrationAuthoring(body, 'δημοσίευση')) { contentArea.focus(); return; }
 
         var token = getStoredToken();
         if (!token) {
