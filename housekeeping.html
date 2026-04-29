@@ -1283,11 +1283,20 @@
 
     // ─── Delete article ─────────────────────────────────
     async function deleteArticle(post, btn) {
-        var token = requireToken();
-        if (!token) return;
         if (!confirm('Delete article "' + post.title + '"?\n\nFolder: ' + ENTRIES_PATH + '/' + post.id + '\n\nThis removes source, generated article.html, and all image variants. The workflow will rebuild blog-data.json + sitemap.')) {
             return;
         }
+        var confirmation = prompt(
+            'Type the article folder ID to confirm deletion:\n\n' + post.id,
+            ''
+        );
+        if (confirmation === null) return;
+        if (confirmation.trim() !== post.id) {
+            alert('Delete cancelled. Folder ID did not match.');
+            return;
+        }
+        var token = requireToken();
+        if (!token) return;
         btn.disabled = true;
         var originalHtml = btn.innerHTML;
         btn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg>';
