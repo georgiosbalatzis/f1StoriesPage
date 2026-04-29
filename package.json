@@ -7,6 +7,7 @@
     "build": "npm run build:html && npm run build:youtube && npm run build:assets",
     "build:blog": "node blog-module/build/index.js",
     "build:blog:force": "node blog-module/build/index.js --force",
+    "spotify:phase0:check": "node scripts/spotify/validate-config.mjs",
     "build:html": "node scripts/build/include.mjs",
     "build:logo": "node scripts/build/optimize-logo.mjs",
     "build:driver-headshots": "node scripts/build/fetch-driver-headshots.mjs",

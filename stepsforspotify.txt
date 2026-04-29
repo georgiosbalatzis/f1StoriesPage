@@ -1,0 +1,535 @@
+SPOTIFY ARTICLE NARRATION PLAN
+================================
+
+Goal
+----
+When a new article is published through `generate.html`, the build pipeline should:
+
+1. create a Greek narration from the article title + body
+2. clone the narration voice from provided reference audio
+3. upload the generated audio as a new episode to the existing Spotify for Creators show
+4. use the article hero image as episode artwork
+5. embed the Spotify episode player near the top of the generated article
+6. regenerate and republish a fresh episode revision if the article text changes later
+
+
+Confirmed product decisions
+---------------------------
+- Spotify target: existing Spotify for Creators show
+- Audio storage: do NOT store MP3 in the git repo
+- Automation level: fully automated, including Spotify publishing
+- Voice: cloned voice from owner-provided reference audio
+- Narration content: title + body only
+- Exclusions: tables, embeds, source lists, captions, sponsor text
+- Edit behavior: create a fresh episode revision when article text changes
+- Player location: below hero/share area, above article body
+- Artwork: reuse article hero image
+- Unsupported automation risk: accepted
+
+
+Important external constraint
+-----------------------------
+Spotify appears to support episode embeds and UI-based publishing for Spotify-hosted shows, but I did not find a public official API for uploading/publishing hosted show episodes automatically. That means the Spotify publish step will need browser automation against Spotify for Creators.
+
+This is the main platform risk in the project. The repo/build work is straightforward. Spotify UI automation is the fragile part.
+
+
+Repo touch points
+-----------------
+These are the current files that matter most:
+
+- `.github/workflows/publish-blog.yml`
+  Current publish/build workflow on `main`
+
+- `blog-module/build/worker.js`
+  Builds post data and renders `article.html`
+
+- `blog-module/blog/template.html`
+  Article template where the Spotify player block will be inserted
+
+- `blog-module/build/shared.js`
+  Already whitelists `open.spotify.com` for iframes
+
+- `generate.html`
+  Current article publishing UI and `source.txt` generation
+
+- `housekeeping.html`
+  Must be considered if article-side metadata is ever written back into `source.txt`
+
+
+Recommended architecture
+------------------------
+Do NOT store Spotify state inside `source.txt` at first.
+
+Reason:
+- `generate.html` currently writes positional plain-text article data
+- `housekeeping.html` rebuilds `source.txt` and would likely wipe automation-added metadata unless updated carefully
+- Spotify linkage is system-generated state, not author input
+
+Recommended state file per article folder:
+
+- `blog-module/blog-entries/<ARTICLE_ID>/narration.json`
+
+Suggested contents:
+
+{
+  "text_hash": "...",
+  "voice_profile": "owner-v1",
+  "spotify_episode_url": "...",
+  "spotify_embed_url": "...",
+  "spotify_episode_id": "...",
+  "published_title": "...",
+  "published_at": "...",
+  "revision_of": "...",
+  "status": "published"
+}
+
+This keeps automation state separate from authoring state.
+
+
+Phase 0 - Prerequisites and operating model
+-------------------------------------------
+Deliverable:
+- lock the operational inputs before code changes
+
+Required inputs/secrets:
+- `SPOTIFY_CREATORS_EMAIL`
+- `SPOTIFY_CREATORS_PASSWORD`
+- `SPOTIFY_SHOW_URL` or `SPOTIFY_SHOW_ID`
+- `VOICE_REF_BUNDLE_URL` or equivalent private download location
+- optional integrity value: `VOICE_REF_BUNDLE_SHA256`
+
+Voice reference bundle:
+- should contain multiple clean WAV/MP3 clips of the same speaker
+- Greek language only
+- low background noise
+- total reference material target: 2-10 minutes clean speech
+
+Engineering notes:
+- GitHub-hosted runners are CPU-only by default
+- cloned-voice TTS on CPU can be slow for full articles
+- preferred setup: self-hosted GPU runner for the TTS step
+- fallback setup: keep GitHub-hosted runner, accept long synthesis time, chunk aggressively, and cache model downloads
+
+Recommended default behavior on Spotify failure:
+- publish the article anyway
+- mark narration state as `failed` or `pending`
+- allow retry via `workflow_dispatch`
+
+Reason:
+- Spotify UI automation is the least reliable piece
+- article publication should not be blocked by a third-party web UI change
+
+
+Phase 1 - Build deterministic narration text
+--------------------------------------------
+Deliverable:
+- produce a stable narration text string from the article content
+
+Implementation:
+1. Add a new build helper, likely:
+   - `blog-module/build/narration.js`
+
+2. Input source:
+   - use the already-built article content from `worker.js`
+   - do not narrate from raw `source.txt` alone
+   - narrate from cleaned article HTML so exclusion rules are based on final rendered structure
+
+3. Build narration text from:
+   - article title
+   - article body prose
+
+4. Exclude:
+   - responsive data tables / CSV tables
+   - standalone iframes
+   - social embeds
+   - widget embeds
+   - sponsor strip
+   - captions / figure captions
+   - source list section
+   - comments area
+   - author bio box
+   - share UI text
+
+5. Add source-list stop rule:
+   - preferred standard heading: `## Πηγές`
+   - allow aliases: `# Πηγές`, `## Sources`, `# Sources`
+   - once such a heading is reached, stop narration extraction entirely
+
+6. Normalize narration text:
+   - decode HTML entities
+   - collapse repeated whitespace
+   - preserve paragraph pauses
+   - preserve headings as sentence boundaries
+   - keep Greek punctuation
+
+7. Hash the final narration text:
+   - `text_hash = sha256(normalized narration text + voice profile version)`
+   - this drives rebuild/skip logic
+
+Acceptance criteria:
+- same article content produces same narration text hash
+- embeds/tables never leak into narration
+- source list never leaks into narration
+
+
+Phase 2 - Standardize article authoring for narration-safe output
+-----------------------------------------------------------------
+Deliverable:
+- make article generation consistently produce narratable structure
+
+Implementation:
+1. Update article-writing guidance in `generate.html`:
+   - explicitly require `## Πηγές` for source lists
+   - explicitly avoid putting non-narrative boilerplate inside body text
+
+2. Optional later enhancement:
+   - add a UI hint near the editor explaining that everything before `## Πηγές` is narratable
+
+3. Keep first version simple:
+   - no per-article narration toggle
+   - all published articles are eligible for narration
+
+Reason:
+- this avoids expanding the authoring model before the automation path is proven
+
+
+Phase 3 - Add cloned-voice TTS pipeline
+---------------------------------------
+Deliverable:
+- generate narration audio locally inside the build job
+
+Recommended engine:
+- Coqui XTTS v2 (or the best currently maintained Coqui cloned-voice path available at implementation time)
+
+Suggested files:
+- `scripts/tts/render_article_narration.py`
+- `scripts/tts/requirements.txt`
+- optional helper: `scripts/tts/fetch_voice_refs.py`
+
+Responsibilities of the TTS script:
+1. download or load the private reference voice bundle
+2. load the Greek narration text
+3. chunk long text into synthesis-safe segments
+4. synthesize WAV segments
+5. concatenate them
+6. trim excessive silence
+7. normalize loudness
+8. export MP3 for Spotify upload
+
+Recommended output path during CI only:
+- `/tmp/f1stories-narration/<ARTICLE_ID>.mp3`
+
+Do not commit generated audio.
+
+Recommended chunking rules:
+- split on paragraph boundaries first
+- then split long paragraphs by sentence
+- keep chunk sizes conservative to avoid model instability
+
+Post-processing:
+- use `ffmpeg` for concat + loudness normalization + MP3 export
+- keep bitrate stable and speech-first, not music-first
+
+Acceptance criteria:
+- generated MP3 plays cleanly from start to finish
+- no missing chunks
+- no large volume jumps between chunks
+
+
+Phase 4 - Derive Spotify-compatible episode artwork
+---------------------------------------------------
+Deliverable:
+- produce an artwork file Spotify accepts
+
+Reason:
+- article hero images are often `.webp` / `.avif`
+- Spotify episode artwork flows usually expect `.jpg`, `.png`, or `.gif`
+
+Suggested helper:
+- `scripts/tts/build_episode_art.mjs`
+
+Implementation:
+1. take the selected article hero image
+2. convert to JPEG or PNG
+3. center-crop or pad to square
+4. export temporary artwork file
+
+Temporary output:
+- `/tmp/f1stories-narration/<ARTICLE_ID>-cover.jpg`
+
+Acceptance criteria:
+- artwork is accepted by Spotify UI upload
+- artwork looks reasonable when square-cropped
+
+
+Phase 5 - Automate Spotify for Creators publishing
+--------------------------------------------------
+Deliverable:
+- create a new Spotify episode from CI through browser automation
+
+Suggested file:
+- `scripts/spotify/publish_episode.mjs`
+
+Recommended tool:
+- Playwright
+
+Implementation steps:
+1. start browser
+2. log in with `SPOTIFY_CREATORS_EMAIL` / `SPOTIFY_CREATORS_PASSWORD`
+3. navigate to the existing show
+4. create a new episode
+5. upload MP3
+6. upload episode artwork
+7. set episode title
+8. set episode description
+9. publish episode
+10. capture resulting episode URL
+11. derive or capture embed URL
+12. save `narration.json`
+
+Recommended episode title format:
+- exactly the article title
+or
+- `ARTICLE_TITLE (Narration)`
+
+Recommended episode description:
+- short machine-generated or fixed template
+- include canonical article URL
+- include article ID
+- include revision timestamp
+
+Failure diagnostics:
+- always save screenshot on failure
+- always save page HTML snapshot on failure
+- optionally save Playwright trace/video
+
+Retries:
+- retry navigation and upload interactions
+- do not blindly retry publish button clicks without checking page state
+
+Major risk:
+- Spotify may change selectors, flows, or anti-bot behavior at any time
+
+
+Phase 6 - Persist narration state in the article folder
+-------------------------------------------------------
+Deliverable:
+- write `narration.json` after Spotify publish
+
+Why this matters:
+- avoid republishing the same narration if text did not change
+- allow later build steps to embed the correct Spotify player
+- keep a stable link between article revision and published episode
+
+Suggested `narration.json` fields:
+- `text_hash`
+- `voice_profile`
+- `spotify_episode_id`
+- `spotify_episode_url`
+- `spotify_embed_url`
+- `published_title`
+- `published_at`
+- `revision_of`
+- `status`
+
+Revision behavior:
+- when article text hash changes:
+  - create a fresh Spotify episode
+  - overwrite `narration.json` with the new episode data
+  - optionally keep a `previous_episode_url`
+
+First version recommendation:
+- do not attempt to delete or unpublish prior revisions automatically
+
+Reason:
+- deleting or editing previous Spotify episodes via UI automation adds more fragility
+
+
+Phase 7 - Inject Spotify embed into the article template
+--------------------------------------------------------
+Deliverable:
+- render the Spotify episode player near the top of each article when `narration.json` exists
+
+Suggested changes:
+1. update `blog-module/build/worker.js`
+   - read `narration.json` if present
+   - inject embed markup into template replacements
+
+2. update `blog-module/blog/template.html`
+   - add placeholder block between:
+     - hero/share area
+     - article body
+
+Recommended location:
+- after `.social-share-bar`
+- before sponsor strip / article body
+
+Suggested placeholder:
+- `ARTICLE_SPOTIFY_NARRATION_BLOCK`
+
+Suggested behavior:
+- if no `narration.json` or no embed URL, render nothing
+
+Styling:
+- create a clean, compact audio section
+- title like `Audio Narration`
+- Spotify iframe below it
+
+
+Phase 8 - Integrate into the publish workflow
+---------------------------------------------
+Deliverable:
+- wire narration generation + Spotify publish into CI
+
+Recommended workflow shape:
+
+1. Checkout
+2. Node setup
+3. Python setup
+4. Install Node deps
+5. Install Python TTS deps
+6. Restore mtimes
+7. First article build pass
+   - generate article HTML/content normally
+8. Detect changed / newly published article folders
+9. For each changed article:
+   - compute narration text
+   - compare hash with `narration.json`
+   - if changed:
+     - synthesize MP3
+     - build artwork
+     - publish Spotify episode
+     - write/update `narration.json`
+10. Second article build pass
+    - rebuild article HTML with Spotify embed included
+11. Commit generated artifacts
+
+Why two passes are recommended:
+- the first pass gives the final cleaned article content
+- Spotify state is created after narration publish
+- the second pass renders the embed into final `article.html`
+
+This is simpler and lower-risk than deeply refactoring the article builder up front.
+
+
+Phase 9 - Detect which articles need narration work
+---------------------------------------------------
+Deliverable:
+- avoid scanning and republishing every article on every run
+
+Implementation:
+1. detect changed article folders from git diff in CI
+2. only run narration pipeline for changed folders
+3. for changed folders:
+   - build narration text
+   - compare against stored `text_hash`
+   - skip if unchanged
+
+This keeps cost and runtime under control.
+
+
+Phase 10 - Failure strategy and retry model
+-------------------------------------------
+Deliverable:
+- keep the site publication path usable even when Spotify automation breaks
+
+Recommended strategy:
+- if Spotify publish fails:
+  - keep article build successful if possible
+  - write a visible failure status to logs
+  - preserve diagnostic artifacts
+  - allow manual rerun through `workflow_dispatch`
+
+Optional state file on failure:
+{
+  "status": "failed",
+  "text_hash": "...",
+  "error_at": "...",
+  "error_summary": "..."
+}
+
+Why:
+- Spotify UI automation is not a stable contract
+- article publication should remain more reliable than third-party media publication
+
+
+Phase 11 - Testing and rollout
+------------------------------
+Deliverable:
+- release in a controlled way
+
+Recommended rollout steps:
+1. Implement narration text extraction and test locally
+2. Implement TTS generation and verify output quality
+3. Implement Spotify automation against a test article
+4. Add embed rendering using a manually supplied Spotify episode URL first
+5. Run the full end-to-end flow from CI on a non-critical article
+6. After success, enable by default for all articles
+
+Test cases:
+- new article publish
+- edited article publish
+- article with tables
+- article with social embeds
+- article with source list
+- article with no source list heading
+- Spotify login failure
+- Spotify upload timeout
+- TTS generation timeout
+
+
+Phase 12 - Future improvements after v1
+---------------------------------------
+These are useful but should not block v1:
+
+- per-article narration toggle in `generate.html`
+- per-author voice profiles
+- automatic cleanup / archival of older episode revisions
+- richer episode descriptions
+- narration status panel inside `housekeeping.html`
+- manual retry button for failed narrations
+- waveform preview in article
+
+
+Initial implementation order I would use
+----------------------------------------
+1. add `narration.js` and deterministic text extraction
+2. add temporary local TTS generation
+3. add `narration.json` support in `worker.js`
+4. add template embed placeholder and render logic
+5. add Playwright Spotify publisher
+6. wire the two-pass CI workflow
+7. harden retries and diagnostics
+
+
+Open decisions that are still worth confirming before implementation
+--------------------------------------------------------------------
+1. preferred runner model:
+   - self-hosted GPU
+   - or GitHub-hosted CPU with longer runs
+
+2. episode title format:
+   - exact article title
+   - or article title plus narration suffix
+
+3. whether failed Spotify publish should:
+   - fail the workflow
+   - or publish article anyway and leave narration pending
+
+My recommendation:
+- publish article anyway
+- retry Spotify separately if needed
+
+
+Referenced external docs checked during planning
+------------------------------------------------
+- Spotify embed docs:
+  https://developer.spotify.com/documentation/embeds/tutorials/creating-an-embed
+
+- Spotify for Creators publishing help:
+  https://support.spotify.com/ve-en/creators/article/publishing-audio-episodes/
+
+- Spotify Web API episode reference:
+  https://developer.spotify.com/documentation/web-api/reference/get-an-episode
+
