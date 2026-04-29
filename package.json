@@ -8,6 +8,7 @@
     "build:blog": "node blog-module/build/index.js",
     "build:blog:force": "node blog-module/build/index.js --force",
     "spotify:phase0:check": "node scripts/spotify/validate-config.mjs",
+    "spotify:phase1:test": "node blog-module/build/__tests__/run-narration.js",
     "build:html": "node scripts/build/include.mjs",
     "build:logo": "node scripts/build/optimize-logo.mjs",
     "build:driver-headshots": "node scripts/build/fetch-driver-headshots.mjs",
