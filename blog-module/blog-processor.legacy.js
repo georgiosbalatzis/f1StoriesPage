@@ -29,14 +29,14 @@ const CONFIG = {
         'G': 'Georgios Balatzis',
         'J': 'Giannis Poulikidis',
         'T': 'Thanasis Batalas',
-        'W': '2Fast',
+        'W': 'Themis Charvalis',
         'D': 'Dimitris Keramidiotis'
     },
     AUTHOR_AVATARS: {
         'Georgios Balatzis': 'georgios.webp',
         'Giannis Poulikidis': 'giannis.webp',
         'Thanasis Batalas': 'thanasis.webp',
-        '2Fast': '2fast.webp',
+        'Themis Charvalis': '2fast.webp',
         'Dimitris Keramidiotis': 'dimitris.webp',
         'default': 'default.webp'
     },
