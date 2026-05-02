@@ -2,9 +2,16 @@
   "channelId": "UCTSK8lbEiHJ10KVFrhNaL4g",
   "channelTitle": "F1 Stories",
   "source": "https://www.youtube.com/feeds/videos.xml?channel_id=UCTSK8lbEiHJ10KVFrhNaL4g",
-  "lastUpdated": "2026-05-02T07:59:27.727Z",
-  "newestPublishedAt": "2026-03-28T05:57:05.000Z",
+  "lastUpdated": "2026-05-02T13:47:33.878Z",
+  "newestPublishedAt": "2026-05-02T10:57:09.000Z",
   "videos": [
+    {
+      "id": "RBGVaM9BVRE",
+      "title": "BetCast #263 Miami GP",
+      "thumbnail": "https://i3.ytimg.com/vi/RBGVaM9BVRE/hqdefault.jpg",
+      "publishedAt": "2026-05-02T10:57:09+00:00",
+      "url": "https://www.youtube.com/watch?v=RBGVaM9BVRE"
+    },
     {
       "id": "hi56UPPWRpQ",
       "title": "BetCast #262 Suzuka GP",
@@ -67,13 +74,6 @@
       "thumbnail": "https://i2.ytimg.com/vi/QYWK9HPQDuw/hqdefault.jpg",
       "publishedAt": "2026-03-15T19:06:16+00:00",
       "url": "https://www.youtube.com/shorts/QYWK9HPQDuw"
-    },
-    {
-      "id": "pf5dveXzdw0",
-      "title": "Mercedes vs Ferrari: Who's got the better tire game? #f1 #formula1",
-      "thumbnail": "https://i1.ytimg.com/vi/pf5dveXzdw0/hqdefault.jpg",
-      "publishedAt": "2026-03-15T19:05:13+00:00",
-      "url": "https://www.youtube.com/shorts/pf5dveXzdw0"
     }
   ]
 }
