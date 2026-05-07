@@ -1,13 +1,25 @@
 {
   "version": 1,
   "season": 2026,
-  "generatedAt": "2026-05-06T08:30:53.779Z",
-  "snapshotLabel": "Latest available on F1 Top App (April 6, 2026)",
+  "generatedAt": "2026-05-07T16:07:56.378Z",
+  "snapshotLabel": "Latest available on F1 Top App (May 7, 2026)",
   "source": {
     "upstreamHtml": "https://f1.top-app.eu/destructors-championship/2026/",
     "note": "Auto-refreshed from the F1 Top App HTML standings. A local snapshot is still required because the upstream page does not expose a stable browser-safe API."
   },
   "drivers": [
+    {
+      "acronym": "GAS",
+      "fullName": "Pierre Gasly",
+      "teamKey": "alpine",
+      "damage": 1100000
+    },
+    {
+      "acronym": "HAD",
+      "fullName": "Isack Hadjar",
+      "teamKey": "red_bull",
+      "damage": 907000
+    },
     {
       "acronym": "ANT",
       "fullName": "Andrea Kimi Antonelli",
@@ -27,22 +39,10 @@
       "damage": 641000
     },
     {
-      "acronym": "HAD",
-      "fullName": "Isack Hadjar",
-      "teamKey": "red_bull",
-      "damage": 574000
-    },
-    {
-      "acronym": "PER",
-      "fullName": "Sergio Perez",
-      "teamKey": "cadillac",
-      "damage": 410000
-    },
-    {
       "acronym": "VER",
       "fullName": "Max Verstappen",
       "teamKey": "red_bull",
-      "damage": 350000
+      "damage": 500000
     },
     {
       "acronym": "ALB",
@@ -51,10 +51,28 @@
       "damage": 260000
     },
     {
+      "acronym": "PER",
+      "fullName": "Sergio Perez",
+      "teamKey": "cadillac",
+      "damage": 410000
+    },
+    {
       "acronym": "OCO",
       "fullName": "Esteban Ocon",
       "teamKey": "haas",
       "damage": 260000
+    },
+    {
+      "acronym": "HAM",
+      "fullName": "Lewis Hamilton",
+      "teamKey": "ferrari",
+      "damage": 310000
+    },
+    {
+      "acronym": "RUS",
+      "fullName": "George Russell",
+      "teamKey": "mercedes",
+      "damage": 150000
     },
     {
       "acronym": "COL",
@@ -69,15 +87,9 @@
       "damage": 150000
     },
     {
-      "acronym": "RUS",
-      "fullName": "George Russell",
-      "teamKey": "mercedes",
-      "damage": 150000
-    },
-    {
-      "acronym": "GAS",
-      "fullName": "Pierre Gasly",
-      "teamKey": "alpine",
+      "acronym": "HUL",
+      "fullName": "Nico Hulkenberg",
+      "teamKey": "audi",
       "damage": 150000
     },
     {
@@ -87,6 +99,18 @@
       "damage": 150000
     },
     {
+      "acronym": "LEC",
+      "fullName": "Charles Leclerc",
+      "teamKey": "ferrari",
+      "damage": 125000
+    },
+    {
+      "acronym": "LAW",
+      "fullName": "Liam Lawson",
+      "teamKey": "rb",
+      "damage": 125000
+    },
+    {
       "acronym": "BOR",
       "fullName": "Gabriel Bortoleto",
       "teamKey": "audi",
@@ -94,8 +118,6 @@
     }
   ],
   "zeroTeams": [
-    "ferrari",
-    "rb",
     "aston_martin"
   ]
 }
