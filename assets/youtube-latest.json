@@ -2,9 +2,16 @@
   "channelId": "UCTSK8lbEiHJ10KVFrhNaL4g",
   "channelTitle": "F1 Stories",
   "source": "https://www.youtube.com/feeds/videos.xml?channel_id=UCTSK8lbEiHJ10KVFrhNaL4g",
-  "lastUpdated": "2026-05-08T14:16:28.617Z",
-  "newestPublishedAt": "2026-05-03T03:10:30.000Z",
+  "lastUpdated": "2026-05-08T19:44:53.724Z",
+  "newestPublishedAt": "2026-05-08T18:58:40.000Z",
   "videos": [
+    {
+      "id": "GiM0h0WjROo",
+      "title": "CoolDownRoom #264 Miami GP",
+      "thumbnail": "https://i4.ytimg.com/vi/GiM0h0WjROo/hqdefault.jpg",
+      "publishedAt": "2026-05-08T18:58:40+00:00",
+      "url": "https://www.youtube.com/watch?v=GiM0h0WjROo"
+    },
     {
       "id": "RBGVaM9BVRE",
       "title": "BetCast #263 Miami GP",
@@ -67,13 +74,6 @@
       "thumbnail": "https://i1.ytimg.com/vi/hpDXmaiLro4/hqdefault.jpg",
       "publishedAt": "2026-03-15T19:06:23+00:00",
       "url": "https://www.youtube.com/shorts/hpDXmaiLro4"
-    },
-    {
-      "id": "QYWK9HPQDuw",
-      "title": "🇮🇹 Επική νίκη! 🏆 Πόσο συγκινητικό να βλέπεις Ιταλό νικητή μετά από 20 χρόνια; 😍 #F1 #Victory",
-      "thumbnail": "https://i2.ytimg.com/vi/QYWK9HPQDuw/hqdefault.jpg",
-      "publishedAt": "2026-03-15T19:06:16+00:00",
-      "url": "https://www.youtube.com/shorts/QYWK9HPQDuw"
     }
   ]
 }
