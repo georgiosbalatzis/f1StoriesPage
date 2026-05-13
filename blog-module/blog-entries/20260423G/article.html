@@ -73,10 +73,10 @@
     <noscript><link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=0f638228"></noscript>
     <link rel="preload" as="style" href="/blog-module/blog/article-styles.min.css?v=f4030529" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=f4030529"></noscript>
-    <link rel="preload" as="style" href="/styles/shared-nav.min.css?v=d8e2b657" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="/styles/shared-nav.min.css?v=d8e2b657"></noscript>
-    <link rel="preload" as="style" href="/theme-overrides.min.css?v=2728eb3a" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="/theme-overrides.min.css?v=2728eb3a"></noscript>
+    <link rel="preload" as="style" href="/styles/shared-nav.min.css?v=c089b3d1" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/styles/shared-nav.min.css?v=c089b3d1"></noscript>
+    <link rel="preload" as="style" href="/theme-overrides.min.css?v=a6200619" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/theme-overrides.min.css?v=a6200619"></noscript>
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" href="1.webp" fetchpriority="high">
@@ -215,7 +215,7 @@
                     </div>
                 </div>
                 <div class="blog-nav-countdown-mobile" id="nav-countdown-mobile">
-                    <svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg>
+                    <span class="countdown-flag-mobile" data-race-flag-mobile aria-hidden="true">🏁</span>
                     <span id="race-countdown-mobile">--</span>
                 </div>
                 <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
@@ -456,13 +456,38 @@
             <div class="col-12"><h2 class="mb-4 related-section-title">Related Articles</h2></div>
             
             <div class="col-md-4 mb-4">
-                <a href="/blog-module/blog-entries/20260425W/article.html" class="related-card-link" style="display:block;height:100%;">
+                <a href="/blog-module/blog-entries/20260427G/article.html" class="related-card-link" style="display:block;height:100%;">
                     <div class="related-article-card">
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260425W/1.webp"
-                                 alt="Chris Amon διαχρονική αξία"
+                            <img src="/blog-module/blog-entries/20260427G/1.webp"
+                                 alt="McLaren MCL40: Νέα αρχή;"
                                  loading="lazy"
-                                 decoding="async" width="1080" height="1604"
+                                 decoding="async" width="528" height="352"
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
+                            <div class="related-card-hover">
+                                <span class="related-card-hover-label">Περισσότερα</span>
+                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 5 min</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 27 Apr 2026</div>
+                            <h5>McLaren MCL40: Νέα αρχή;</h5>
+                            <div class="related-card-footer">
+                                <span class="related-card-read">Read More <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
+                                <span class="related-card-author">Georgios Balatzis</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <a href="/blog-module/blog-entries/20260513W/article.html" class="related-card-link" style="display:block;height:100%;">
+                    <div class="related-article-card">
+                        <div class="related-card-media">
+                            <img src="/blog-module/blog-entries/20260513W/1.webp"
+                                 alt="Το χάος που έγινε δήλωση ταλέντου"
+                                 loading="lazy"
+                                 decoding="async" width="1920" height="1280"
                                  onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                             <div class="related-card-hover">
                                 <span class="related-card-hover-label">Περισσότερα</span>
@@ -470,8 +495,8 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 25 Apr 2026</div>
-                            <h5>Chris Amon διαχρονική αξία</h5>
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 13 May 2026</div>
+                            <h5>Το χάος που έγινε δήλωση ταλέντου</h5>
                             <div class="related-card-footer">
                                 <span class="related-card-read">Read More <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">Themis Charvalis</span>
@@ -481,38 +506,13 @@
                 </a>
             </div>
             <div class="col-md-4 mb-4">
-                <a href="/blog-module/blog-entries/20260425-2W/article.html" class="related-card-link" style="display:block;height:100%;">
+                <a href="/blog-module/blog-entries/20260513J/article.html" class="related-card-link" style="display:block;height:100%;">
                     <div class="related-article-card">
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260425-2W/1.webp"
-                                 alt="Chris Amon διαχρονική αξία"
+                            <img src="/blog-module/blog-entries/20260513J/1.webp"
+                                 alt="Από τη Formula 1 στο Nürburgring: Η νέα πρόκληση του Max Verstappen"
                                  loading="lazy"
-                                 decoding="async" width="1080" height="1604"
-                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
-                            <div class="related-card-hover">
-                                <span class="related-card-hover-label">Περισσότερα</span>
-                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 2 min</span>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 25 Apr 2026</div>
-                            <h5>Chris Amon διαχρονική αξία</h5>
-                            <div class="related-card-footer">
-                                <span class="related-card-read">Read More <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
-                                <span class="related-card-author">Themis Charvalis</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 mb-4">
-                <a href="/blog-module/blog-entries/20260421-2J/article.html" class="related-card-link" style="display:block;height:100%;">
-                    <div class="related-article-card">
-                        <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260421-2J/1.webp"
-                                 alt="Το παιδί που μπήκε last minute στη Ferrari"
-                                 loading="lazy"
-                                 decoding="async" width="590" height="393"
+                                 decoding="async" width="1672" height="941"
                                  onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                             <div class="related-card-hover">
                                 <span class="related-card-hover-label">Περισσότερα</span>
@@ -520,8 +520,8 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 21 Apr 2026</div>
-                            <h5>Το παιδί που μπήκε last minute στη Ferrari</h5>
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 13 May 2026</div>
+                            <h5>Από τη Formula 1 στο Nürburgring: Η νέα πρόκληση του Max Verstappen</h5>
                             <div class="related-card-footer">
                                 <span class="related-card-read">Read More <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">Giannis Poulikidis</span>
@@ -570,9 +570,9 @@
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.js?v=20260422-2"></script>
-<script defer src="/scripts/shared-nav.min.js?v=aa376236"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=40e91148"></script>
+<script defer src="/scripts/shared-nav.min.js?v=73fe6e53"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=9d38adec"></script>
-<script defer src="/blog-module/blog-fixes.js"></script>
+<script defer src="/blog-module/blog-fixes.min.js?v=2c047015"></script>
 </body>
 </html>

@@ -17,6 +17,8 @@ on:
       - 'blog-module/blog/template.html'
       - 'blog-module/dirty-air-cache.js'
       - 'blog-module/destructors-cache.js'
+      - 'standings/debrief-cache.js'
+      - 'standings/debrief-cache.json'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/publish-blog.yml'

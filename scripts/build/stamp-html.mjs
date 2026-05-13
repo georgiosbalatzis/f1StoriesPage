@@ -8,9 +8,11 @@
 // Scope: explicit list of shell HTML files below. Asset stamping deliberately
 // does NOT touch blog-module/blog-entries/**/article.html — those are
 // committed content artifacts that will be regenerated on the next blog
-// rebuild via the (already-stamped) blog-module/blog/template.html. The only
-// exception is the Phase 4 Bootstrap CDN swap, which is applied to committed
-// articles too so no live HTML keeps loading Bootstrap from jsDelivr.
+// rebuild via the (already-stamped) blog-module/blog/template.html. The narrow
+// exceptions are:
+//   - Bootstrap CDN swap, so no live HTML keeps loading Bootstrap from jsDelivr.
+//   - Article runtime script refs, so committed articles can move to minified
+//     stamped JS without a full content rebuild.
 //
 // Usage:
 //   node scripts/build/stamp-html.mjs
@@ -91,6 +93,10 @@ const FONTS_SOURCE = 'styles/fonts.css';
 // audit confirmed no Bootstrap JS components are used.
 const BOOTSTRAP_SOURCE = 'styles/vendor/bootstrap.slim.css';
 const ARTICLE_HTML_ROOT = 'blog-module/blog-entries';
+const ARTICLE_RUNTIME_SOURCES = new Set([
+    'blog-module/blog/article-script.js',
+    'blog-module/blog-fixes.js'
+]);
 
 // Primary font weight to preload per page template. Picked to match the
 // dominant above-the-fold text (hero h1 + body). Path is relative to the
@@ -467,6 +473,27 @@ function stampArticleBootstrap(bootstrapInfo, dry) {
     return totals;
 }
 
+function stampArticleRuntimeScripts(patterns, dry) {
+    const articlePatterns = patterns.filter(pattern => ARTICLE_RUNTIME_SOURCES.has(pattern.source));
+    const totals = { files: 0, hits: 0 };
+    if (!articlePatterns.length) return totals;
+
+    for (const rel of listArticleHtml()) {
+        const abs = path.join(REPO_ROOT, rel);
+        const original = fs.readFileSync(abs, 'utf8');
+        const { result, hits } = rewrite(original, articlePatterns);
+        if (result === original) continue;
+
+        totals.files++;
+        totals.hits += hits.length;
+        if (!dry) {
+            fs.writeFileSync(abs, result, 'utf8');
+        }
+    }
+
+    return totals;
+}
+
 // Small sha256-short for font files (content hash based on path, since
 // fonts are woff2 binaries and we don't re-read them on every stamp).
 function sha256Short(input) {
@@ -604,6 +631,7 @@ function main() {
     let totalBootstrapCssDrops = 0;
     let totalBootstrapJsDrops = 0;
     let totalBootstrapPreconnectDrops = 0;
+    let totalArticleRuntimeHits = 0;
 
     for (const rel of TARGET_HTML) {
         const abs = path.join(REPO_ROOT, rel);
@@ -709,6 +737,15 @@ function main() {
         );
     }
 
+    const articleRuntime = stampArticleRuntimeScripts(patterns, dry);
+    totalArticleRuntimeHits += articleRuntime.hits;
+    if (articleRuntime.files) {
+        console.log(
+            `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleRuntime.files} file(s), ` +
+            `${articleRuntime.hits} article runtime script stamp(s)`
+        );
+    }
+
     if (dry) {
         console.log(
             `\n(dry-run) ${totalHits} rewrite(s), ${totalCriticalOps} critical op(s), ` +
@@ -716,7 +753,8 @@ function main() {
             `${totalPreconnectDrops} preconnect drop(s), ${totalSpriteOps} sprite op(s), ` +
             `${totalFaCdnDrops} FA CDN drop(s), ${totalBootstrapCssSwaps} Bootstrap CSS swap(s), ` +
             `${totalBootstrapCssDrops} Bootstrap CSS drop(s), ${totalBootstrapJsDrops} Bootstrap JS drop(s), ` +
-            `${totalBootstrapPreconnectDrops} jsDelivr preconnect drop(s) planned.`
+            `${totalBootstrapPreconnectDrops} jsDelivr preconnect drop(s), ` +
+            `${totalArticleRuntimeHits} article runtime script stamp(s) planned.`
         );
     } else {
         console.log(
@@ -725,7 +763,8 @@ function main() {
             `${totalPreconnectDrops} preconnect(s) dropped, ${totalSpriteOps} sprite op(s), ` +
             `${totalFaCdnDrops} FA CDN drop(s), ${totalBootstrapCssSwaps} Bootstrap CSS swap(s), ` +
             `${totalBootstrapCssDrops} Bootstrap CSS drop(s), ${totalBootstrapJsDrops} Bootstrap JS drop(s), ` +
-            `${totalBootstrapPreconnectDrops} jsDelivr preconnect drop(s) across ${TARGET_HTML.length} shell file(s).`
+            `${totalBootstrapPreconnectDrops} jsDelivr preconnect drop(s), ` +
+            `${totalArticleRuntimeHits} article runtime script stamp(s) across ${TARGET_HTML.length} shell file(s).`
         );
     }
 }

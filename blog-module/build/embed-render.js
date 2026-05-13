@@ -57,11 +57,186 @@ function buildSocialEmbed(info) {
     return '';
 }
 
+const ALLOWED_IFRAME_ATTRIBUTES = new Set([
+    'title',
+    'width',
+    'height',
+    'frameborder',
+    'allow',
+    'allowfullscreen',
+    'mozallowfullscreen',
+    'webkitallowfullscreen',
+    'xr-spatial-tracking',
+    'execution-while-out-of-viewport',
+    'execution-while-not-rendered',
+    'web-share',
+    'loading',
+    'referrerpolicy',
+    'style'
+]);
+
+const BOOLEAN_IFRAME_ATTRIBUTES = new Set([
+    'allowfullscreen',
+    'mozallowfullscreen',
+    'webkitallowfullscreen',
+    'xr-spatial-tracking',
+    'execution-while-out-of-viewport',
+    'execution-while-not-rendered',
+    'web-share'
+]);
+
+const IFRAME_ATTRIBUTE_ORDER = [
+    'title',
+    'width',
+    'height',
+    'frameborder',
+    'style',
+    'allow',
+    'allowfullscreen',
+    'mozallowfullscreen',
+    'webkitallowfullscreen',
+    'xr-spatial-tracking',
+    'execution-while-out-of-viewport',
+    'execution-while-not-rendered',
+    'web-share',
+    'loading',
+    'referrerpolicy'
+];
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function normalizeEmbedUrl(urlStr) {
+    return decodeHtmlEntities(String(urlStr || '').trim());
+}
+
+function buildEmbedError(title, message) {
+    return `<div class="embed-error">
+                <strong>${escapeHtml(title)}:</strong> ${escapeHtml(message)}
+            </div>`;
+}
+
+function stripUnsafeHtmlAttributes(html) {
+    return String(html || '')
+        .replace(/\s+on[a-z0-9_-]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+        .replace(/\s+srcdoc\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+        .replace(/\s+(href|src)\s*=\s*(["'])\s*javascript:[^"']*\2/gi, '')
+        .replace(/\s+(href|src)\s*=\s*javascript:[^\s>]+/gi, '');
+}
+
+function sanitizeIframeStyle(style) {
+    const value = String(style || '').trim();
+    if (!value) return null;
+    if (/[<>]/.test(value)) return null;
+    if (/(?:javascript\s*:|expression\s*\(|@import|url\s*\()/i.test(value)) return null;
+    return value;
+}
+
+function parseHtmlAttributes(tagHtml) {
+    const attrs = {};
+    const openingTag = String(tagHtml || '').match(/^<iframe\b([^>]*)>/i);
+    if (!openingTag) return attrs;
+
+    const attrRegex = /([^\s"'=<>`]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
+    let match;
+    while ((match = attrRegex.exec(openingTag[1])) !== null) {
+        const name = match[1].toLowerCase();
+        attrs[name] = match[2] ?? match[3] ?? match[4] ?? '';
+    }
+    return attrs;
+}
+
+function sanitizeIframeAttributes(rawAttrs = {}) {
+    const attrs = {};
+
+    Object.entries(rawAttrs).forEach(([key, value]) => {
+        const name = String(key || '').toLowerCase();
+        if (!ALLOWED_IFRAME_ATTRIBUTES.has(name)) return;
+        if (name.startsWith('on') || name === 'srcdoc' || name === 'src') return;
+
+        if (BOOLEAN_IFRAME_ATTRIBUTES.has(name)) {
+            attrs[name] = true;
+            return;
+        }
+
+        const normalizedValue = String(value ?? '').trim();
+        if (!normalizedValue) return;
+        if (name === 'style') {
+            const style = sanitizeIframeStyle(normalizedValue);
+            if (style) attrs.style = style;
+            return;
+        }
+        if (/[<>]/.test(normalizedValue)) return;
+        attrs[name] = normalizedValue;
+    });
+
+    return attrs;
+}
+
+function renderIframe(src, attrs = {}) {
+    const orderedAttrs = [];
+    const remainingAttrs = { ...attrs };
+    const safeSrc = normalizeEmbedUrl(src);
+
+    orderedAttrs.push(`src="${escapeHtmlAttribute(safeSrc)}"`);
+
+    IFRAME_ATTRIBUTE_ORDER.forEach(name => {
+        if (!(name in remainingAttrs)) return;
+        const value = remainingAttrs[name];
+        delete remainingAttrs[name];
+        if (value === true) {
+            orderedAttrs.push(name);
+            return;
+        }
+        orderedAttrs.push(`${name}="${escapeHtmlAttribute(value)}"`);
+    });
+
+    Object.keys(remainingAttrs).sort().forEach(name => {
+        const value = remainingAttrs[name];
+        orderedAttrs.push(`${name}="${escapeHtmlAttribute(value)}"`);
+    });
+
+    return `<iframe
+                ${orderedAttrs.join('\n                ')}>
+            </iframe>`;
+}
+
+function isSafeEmbedFileName(fileName) {
+    const value = String(fileName || '').trim();
+    return Boolean(
+        value &&
+        !value.includes('/') &&
+        !value.includes('\\') &&
+        !value.includes('..') &&
+        path.basename(value) === value
+    );
+}
+
+function isRawWidgetAllowed(html) {
+    const value = String(html || '');
+    if (!/\sdata-f1s-raw-widget(?:\s|=|>)/i.test(value)) {
+        return { ok: false, reason: 'missing data-f1s-raw-widget allowlist marker' };
+    }
+    if (/<\s*(?:script|iframe|object|embed|base|link|meta|form|input|button|textarea|select|svg|math)\b/i.test(value)) {
+        return { ok: false, reason: 'contains a disallowed element' };
+    }
+    if (/\son[a-z0-9_-]+\s*=/i.test(value) || /(?:javascript\s*:|srcdoc\s*=)/i.test(value)) {
+        return { ok: false, reason: 'contains an unsafe attribute or URL' };
+    }
+    return { ok: true, reason: '' };
+}
+
 function sanitizeRawSocialEmbedHtml(info) {
-    const sanitized = String(info.value || '')
+    const sanitized = stripUnsafeHtmlAttributes(String(info.value || '')
         .replace(/<div\b[^>]*id=["']fb-root["'][^>]*>\s*<\/div>/gi, '')
         .replace(/<script\b[^>]*src=["'][^"']*(?:platform\.twitter\.com\/widgets\.js|(?:www\.)?instagram\.com\/embed\.js|(?:www\.)?threads\.(?:net|com)\/embed\.js|connect\.facebook\.net\/[^"']*sdk\.js)[^"']*["'][^>]*>\s*<\/script>/gi, '')
-        .trim();
+        .trim());
 
     if (info.platform === 'facebook') {
         const facebookMatch = sanitized.match(/<div\b[^>]*class=["'][^"']*\bfb-(?:post|video)\b[^"']*["'][^>]*>[\s\S]*?<\/div>/i);
@@ -80,7 +255,7 @@ function buildStandaloneEmbedHtml(info) {
 
 function isUrlWhitelisted(urlStr) {
     try {
-        const parsed = new URL(urlStr);
+        const parsed = new URL(normalizeEmbedUrl(urlStr));
         return CONFIG.IFRAME_WHITELIST.some(domain => parsed.hostname === domain || parsed.hostname.endsWith(`.${domain}`));
     } catch (_) {
         return false;
@@ -101,53 +276,52 @@ function normalizeHtmlFragmentForMatching(fragment) {
 function buildEmbedHtml(info) {
     if (info.type === 'iframe') {
         const pipeIdx = info.value.indexOf('|');
-        const url = pipeIdx > -1 ? info.value.substring(0, pipeIdx).trim() : info.value;
+        const url = normalizeEmbedUrl(pipeIdx > -1 ? info.value.substring(0, pipeIdx) : info.value);
         const attrStr = pipeIdx > -1 ? info.value.substring(pipeIdx + 1).trim() : '';
 
         if (!isUrlWhitelisted(url)) {
             console.warn(`⚠️  IFRAME blocked (not whitelisted): ${url}`);
-            return `<div class="embed-error">
-                <strong>Iframe blocked:</strong> ${url} is not in the allowed domain list.
-            </div>`;
+            return buildEmbedError('Iframe blocked', `${url} is not in the allowed domain list.`);
         }
 
-        const attrs = { height: '650', loading: 'lazy' };
+        const rawAttrs = {
+            width: '100%',
+            height: '650',
+            frameborder: '0',
+            style: 'border-radius:12px;border:1px solid #E1060033;background:#15151e',
+            allowfullscreen: true,
+            loading: 'lazy'
+        };
         if (attrStr) {
             attrStr.split('&').forEach(pair => {
                 const [key, ...valueParts] = pair.split('=');
-                if (key && valueParts.length) attrs[key.trim()] = valueParts.join('=').trim();
+                if (key && valueParts.length) rawAttrs[key.trim()] = valueParts.join('=').trim();
             });
         }
+        const attrs = sanitizeIframeAttributes(rawAttrs);
         const height = attrs.height || '650';
-        const style = attrs.style || 'border-radius:12px;border:1px solid #E1060033;background:#15151e';
-        const loading = attrs.loading || 'lazy';
 
         console.log(`  📺 IFRAME embed: ${url} (h=${height})`);
 
         return `
         <div class="embed-container embed-iframe">
-            <iframe
-                src="${url}"
-                width="100%"
-                height="${height}"
-                frameborder="0"
-                style="${style}"
-                allowfullscreen
-                loading="${loading}">
-            </iframe>
+            ${renderIframe(url, attrs)}
         </div>`;
     }
 
     if (info.type === 'embed') {
-        const fileName = info.value;
+        const fileName = String(info.value || '').trim();
         const ext = path.extname(fileName).toLowerCase();
-        const entryPath = info.entryPath;
+        const entryPath = info.entryPath || CONFIG.BLOG_DIR;
+
+        if (!isSafeEmbedFileName(fileName)) {
+            console.warn(`⚠️  EMBED blocked (unsafe path): ${fileName}`);
+            return buildEmbedError('Embed blocked', 'unsafe embed file path.');
+        }
 
         if (!CONFIG.EMBED_EXTENSIONS.includes(ext)) {
             console.warn(`⚠️  EMBED blocked (extension not allowed): ${fileName}`);
-            return `<div class="embed-error">
-                <strong>Embed blocked:</strong> ${ext} files are not allowed. Use ${CONFIG.EMBED_EXTENSIONS.join(', ')}.
-            </div>`;
+            return buildEmbedError('Embed blocked', `${ext || '(none)'} files are not allowed. Use ${CONFIG.EMBED_EXTENSIONS.join(', ')}.`);
         }
 
         const candidates = [path.join(entryPath, fileName), path.join(entryPath, 'embeds', fileName)];
@@ -167,7 +341,7 @@ function buildEmbedHtml(info) {
         if (fileContent === null) {
             console.warn(`⚠️  EMBED file not found: ${fileName} in ${entryPath}`);
             return `<div class="embed-error">
-                <strong>Embed file not found:</strong> ${fileName}
+                <strong>Embed file not found:</strong> ${escapeHtml(fileName)}
                 <div class="embed-error-details">
                     Place the file in the same folder as the DOCX, or in an <code>embeds/</code> subfolder.
                 </div>
@@ -184,19 +358,26 @@ function buildEmbedHtml(info) {
     }
 
     if (info.type === 'raw-iframe') {
-        if (!isUrlWhitelisted(info.src)) {
-            console.warn(`⚠️  Raw IFRAME blocked (not whitelisted): ${info.src}`);
-            return `<div class="embed-error">
-                <strong>Iframe blocked:</strong> ${info.src} is not in the allowed domain list.
-            </div>`;
+        const src = normalizeEmbedUrl(info.src);
+        if (!isUrlWhitelisted(src)) {
+            console.warn(`⚠️  Raw IFRAME blocked (not whitelisted): ${src}`);
+            return buildEmbedError('Iframe blocked', `${src} is not in the allowed domain list.`);
         }
-        console.log(`  📺 Raw IFRAME embed: ${info.src}`);
-        return `<div class="embed-container embed-iframe">\n${info.value}\n</div>`;
+        const rawAttrs = parseHtmlAttributes(info.value);
+        const attrs = sanitizeIframeAttributes(rawAttrs);
+        console.log(`  📺 Raw IFRAME embed: ${src}`);
+        return `<div class="embed-container embed-iframe">\n${renderIframe(src, attrs)}\n</div>`;
     }
 
     if (info.type === 'raw-widget') {
+        const allowlist = isRawWidgetAllowed(info.value);
+        if (!allowlist.ok) {
+            console.warn(`⚠️  Raw WIDGET blocked: ${allowlist.reason}`);
+            return buildEmbedError('Raw widget blocked', allowlist.reason);
+        }
+        const sanitized = stripUnsafeHtmlAttributes(info.value);
         console.log(`  🧩 Raw WIDGET embed (${info.value.length} chars)`);
-        return `<div class="embed-container embed-widget">\n${info.value}\n</div>`;
+        return `<div class="embed-container embed-widget">\n${sanitized}\n</div>`;
     }
 
     return '';

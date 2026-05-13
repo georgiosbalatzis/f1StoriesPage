@@ -145,7 +145,13 @@
     var countdownEl = document.getElementById('race-countdown');
     var countdownMobileEl = document.getElementById('race-countdown-mobile');
     var countdownFlagEl = document.getElementById('race-flag-emoji');
-    var countdownMobileFlagEl = document.querySelector('#nav-countdown-mobile i');
+    var countdownMobileRootEl = document.getElementById('nav-countdown-mobile');
+    var countdownMobileFlagEl = countdownMobileRootEl
+        ? countdownMobileRootEl.querySelector('[data-race-flag-mobile], .countdown-flag-mobile')
+        : null;
+    var countdownMobileFallbackIconEl = countdownMobileRootEl
+        ? countdownMobileRootEl.querySelector('.icon, i')
+        : null;
     var countdownTimer = null;
 
     RACES.forEach(function (r) { r.ts = new Date(r.date).getTime(); });
@@ -197,15 +203,32 @@
         return COUNTRY_FLAGS[key] || '\u{1F3C1}';
     }
 
-    function setMobileFlag(flag) {
-        if (!countdownMobileFlagEl) return;
-        if (flag) {
-            countdownMobileFlagEl.className = 'countdown-flag-mobile';
-            countdownMobileFlagEl.textContent = flag;
-            return;
+    function getMobileFlagEl() {
+        if (countdownMobileFlagEl) return countdownMobileFlagEl;
+        if (!countdownMobileRootEl) return null;
+
+        countdownMobileFlagEl = document.createElement('span');
+        countdownMobileFlagEl.className = 'countdown-flag-mobile';
+        countdownMobileFlagEl.setAttribute('data-race-flag-mobile', '');
+        countdownMobileFlagEl.setAttribute('aria-hidden', 'true');
+
+        if (countdownMobileEl) {
+            countdownMobileRootEl.insertBefore(countdownMobileFlagEl, countdownMobileEl);
+        } else {
+            countdownMobileRootEl.appendChild(countdownMobileFlagEl);
         }
-        countdownMobileFlagEl.className = 'fas fa-flag-checkered';
-        countdownMobileFlagEl.textContent = '';
+
+        if (countdownMobileFallbackIconEl) {
+            countdownMobileFallbackIconEl.setAttribute('hidden', '');
+        }
+
+        return countdownMobileFlagEl;
+    }
+
+    function setMobileFlag(flag) {
+        var flagEl = getMobileFlagEl();
+        if (!flagEl) return;
+        flagEl.textContent = flag || '\u{1F3C1}';
     }
 
     function tickCountdown() {

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Article Preview | F1 Stories</title>
     <meta name="robots" content="noindex, nofollow">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://platform.twitter.com https://www.instagram.com https://www.threads.net https://threads.net https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://api.github.com https://twitter.com https://*.twitter.com https://x.com https://*.x.com https://instagram.com https://*.instagram.com https://threads.net https://*.threads.net https://threads.com https://*.threads.com https://facebook.com https://*.facebook.com; frame-src 'self' https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://open.spotify.com https://player.vimeo.com https://codepen.io https://datawrapper.dwcdn.net https://sketchfab.com https://www.sketchfab.com https://facebook.com https://www.facebook.com https://platform.twitter.com https://syndication.twitter.com https://instagram.com https://www.instagram.com https://threads.net https://www.threads.net https://threads.com https://www.threads.com https://f1stories.gr https://www.f1stories.gr https://georgiosbalatzis.github.io; worker-src 'self' blob:; upgrade-insecure-requests">
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <script src="/scripts/perf/error-beacon.min.js?v=ea43d064"></script>
 
@@ -25,8 +26,8 @@
     <noscript><link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=0f638228"></noscript>
     <link rel="preload" as="style" href="/blog-module/blog/article-styles.min.css?v=f4030529" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=f4030529"></noscript>
-    <link rel="preload" as="style" href="/styles/shared-nav.min.css?v=d8e2b657" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="/styles/shared-nav.min.css?v=d8e2b657"></noscript>
+    <link rel="preload" as="style" href="/styles/shared-nav.min.css?v=c089b3d1" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/styles/shared-nav.min.css?v=c089b3d1"></noscript>
     <link rel="preload" as="style" href="/theme-overrides.min.css?v=a6200619" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/theme-overrides.min.css?v=a6200619"></noscript>
 
@@ -552,7 +553,7 @@
 
 <button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Scroll to top"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
 
-<script defer src="/scripts/shared-nav.min.js?v=aa376236"></script>
+<script defer src="/scripts/shared-nav.min.js?v=73fe6e53"></script>
 <script>
 (function () {
     'use strict';
@@ -1213,6 +1214,8 @@
     var REPO_OWNER = 'georgiosbalatzis';
     var REPO_NAME  = 'f1StoriesPage';
     var TOKEN_KEY  = 'f1stories-gh-token';
+    var TOKEN_REMEMBER_KEY = TOKEN_KEY + '-remember';
+    var tokenMemory = '';
 
     // Tokens must be ASCII-only. fetch() rejects header values with any
     // character > 255, so a smart-dash slipped into the token (e.g. from
@@ -1220,15 +1223,88 @@
     // "Cannot convert value in record<ByteString, ByteString> to ByteString".
     function isAsciiToken(t) { return /^[\x20-\x7E]+$/.test(t); }
 
-    function getStoredToken() {
-        try {
-            var t = localStorage.getItem(TOKEN_KEY) || '';
-            if (t && !isAsciiToken(t)) { localStorage.removeItem(TOKEN_KEY); return ''; }
-            return t;
-        } catch (e) { return ''; }
+    function readStorage(storage, key) {
+        try { return storage.getItem(key) || ''; } catch (e) { return ''; }
     }
-    function setStoredToken(t) {
-        try { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+
+    function writeStorage(storage, key, value) {
+        try {
+            if (value) storage.setItem(key, value);
+            else storage.removeItem(key);
+        } catch (e) {}
+    }
+
+    function removeStorage(storage, key) {
+        try { storage.removeItem(key); } catch (e) {}
+    }
+
+    function setSessionToken(t) {
+        tokenMemory = t || '';
+        writeStorage(sessionStorage, TOKEN_KEY, tokenMemory);
+    }
+
+    function clearStoredToken() {
+        tokenMemory = '';
+        removeStorage(sessionStorage, TOKEN_KEY);
+        removeStorage(localStorage, TOKEN_KEY);
+        removeStorage(localStorage, TOKEN_REMEMBER_KEY);
+    }
+
+    function hasPersistentToken() {
+        var t = readStorage(localStorage, TOKEN_KEY);
+        if (!t || readStorage(localStorage, TOKEN_REMEMBER_KEY) !== '1') return false;
+        if (!isAsciiToken(t)) {
+            removeStorage(localStorage, TOKEN_KEY);
+            removeStorage(localStorage, TOKEN_REMEMBER_KEY);
+            return false;
+        }
+        return true;
+    }
+
+    function getStoredToken() {
+        if (tokenMemory && isAsciiToken(tokenMemory)) return tokenMemory;
+
+        var sessionToken = readStorage(sessionStorage, TOKEN_KEY);
+        if (sessionToken) {
+            if (!isAsciiToken(sessionToken)) {
+                removeStorage(sessionStorage, TOKEN_KEY);
+                return '';
+            }
+            tokenMemory = sessionToken;
+            return sessionToken;
+        }
+
+        var localToken = readStorage(localStorage, TOKEN_KEY);
+        if (!localToken) return '';
+        if (!isAsciiToken(localToken)) {
+            removeStorage(localStorage, TOKEN_KEY);
+            removeStorage(localStorage, TOKEN_REMEMBER_KEY);
+            return '';
+        }
+
+        if (readStorage(localStorage, TOKEN_REMEMBER_KEY) !== '1') {
+            removeStorage(localStorage, TOKEN_KEY);
+            removeStorage(localStorage, TOKEN_REMEMBER_KEY);
+        }
+
+        setSessionToken(localToken);
+        return localToken;
+    }
+
+    function setStoredToken(t, remember) {
+        if (!t) {
+            clearStoredToken();
+            return;
+        }
+
+        setSessionToken(t);
+        if (remember) {
+            writeStorage(localStorage, TOKEN_KEY, t);
+            writeStorage(localStorage, TOKEN_REMEMBER_KEY, '1');
+        } else {
+            removeStorage(localStorage, TOKEN_KEY);
+            removeStorage(localStorage, TOKEN_REMEMBER_KEY);
+        }
     }
 
     function promptForToken(hint) {
@@ -1240,7 +1316,8 @@
             '- Only select repository: ' + REPO_NAME + '\n' +
             '- Repository permissions -> Contents: Read and write\n' +
             '- Διάρκεια: όσο πιο σύντομη σε βολεύει\n\n' +
-            'Επικόλλησε το token παρακάτω. Άφησέ το κενό για διαγραφή. Αποθηκεύεται μόνο στον browser σου.';
+            'Επικόλλησε το token παρακάτω. Άφησέ το κενό για διαγραφή.\n' +
+            'Προεπιλογή: χρήση μόνο για την τρέχουσα καρτέλα/session.';
         var input = prompt(msg, '');
         if (input === null) return null; // cancelled
         input = input.trim();
@@ -1248,13 +1325,26 @@
             alert('Το token περιέχει μη-ASCII χαρακτήρες. Επικόλλησε μόνο το αρχικό token από το GitHub.');
             return null;
         }
-        setStoredToken(input);
+        if (!input) {
+            setStoredToken('', false);
+            return '';
+        }
+        var remember = confirm(
+            'Να παραμείνει το token σε αυτή τη συσκευή μετά το κλείσιμο του browser;\n\n' +
+            'OK: αποθήκευση στο localStorage.\n' +
+            'Cancel: χρήση μόνο για την τρέχουσα καρτέλα/session.'
+        );
+        setStoredToken(input, remember);
         return input;
     }
 
+    // Migrate legacy persistent tokens into session storage as soon as this tool loads.
+    getStoredToken();
+
     tokenBtn.addEventListener('click', function () {
         var existing = getStoredToken();
-        promptForToken(existing ? 'Υπάρχει ήδη αποθηκευμένο token. Επικόλλησε νέο για αντικατάσταση ή άφησε κενό για διαγραφή.' : '');
+        var storageScope = hasPersistentToken() ? 'μόνιμα σε αυτή τη συσκευή' : 'για την τρέχουσα session';
+        promptForToken(existing ? 'Υπάρχει ήδη token (' + storageScope + '). Επικόλλησε νέο για αντικατάσταση ή άφησε κενό για διαγραφή.' : '');
     });
 
     function utf8ToBase64(str) {

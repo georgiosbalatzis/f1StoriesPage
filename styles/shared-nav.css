@@ -157,7 +157,7 @@
 [data-theme="light"] .blog-nav-countdown-mobile { color: #0e4ca6; }
 .blog-nav-countdown-mobile i { font-size: 0.65rem; color: rgba(255,255,255,0.38); }
 [data-theme="light"] .blog-nav-countdown-mobile i { color: #86868b; }
-.blog-nav-countdown-mobile i.countdown-flag-mobile {
+.blog-nav-countdown-mobile .countdown-flag-mobile {
     font-size: 1rem;
     line-height: 1;
     font-style: normal;

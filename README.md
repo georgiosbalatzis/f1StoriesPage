@@ -165,13 +165,17 @@
 .
 ├── index.html
 ├── README.md
+├── package.json
+├── package-lock.json
 ├── blog-module/
 │   ├── blog/
 │   ├── blog-entries/
+│   ├── build/
 │   ├── blog-data.json
 │   ├── blog-index-data.json
 │   ├── blog-loader.js
 │   ├── blog-processor.js
+│   ├── blog-processor.legacy.js
 │   ├── blog-fixes.js
 │   ├── blog-styles.css
 │   ├── dirty-air-cache.js
@@ -183,9 +187,14 @@
 │   ├── standings.js
 │   ├── standings.css
 │   ├── dirty-air-cache.json
-│   └── destructors-cache.json
+│   ├── destructors-cache.json
+│   ├── debrief-cache.js
+│   └── debrief-cache.json
 ├── scripts/
+│   ├── build/
+│   └── perf/
 ├── styles/
+├── perf/
 ├── images/
 ├── ghostcar/
 ├── f1telemetry/
@@ -243,7 +252,8 @@ YYYYMMDD-1X
 - `blog-module/build/worker.js`: τρέχει το build ενός μόνο article folder
 - `blog-module/build/embeds.js`: αν θέλεις νέο embed type, πρόσθεσε detection + render case εδώ
 - `blog-module/build/media.js`: αν αλλάζουν targets εικόνων, ενημέρωσε εδώ τα quality / width όρια για hero και content variants
-- `blog-module/blog-processor.legacy.js`: fallback αντίγραφο του παλιού monolith μέχρι να σταθεροποιηθεί πλήρως η νέα διάσπαση
+- `blog-module/blog-processor.js`: compatibility wrapper που καλεί το νέο build module
+- `blog-module/blog-processor.legacy.js`: archived reference του παλιού monolith, όχι η κύρια διαδρομή build
 
 <a id="standings-data-pipeline"></a>
 ## Data pipeline για τα standings
@@ -267,13 +277,15 @@ YYYYMMDD-1X
 
 - [standings/dirty-air-cache.json](./standings/dirty-air-cache.json)
 - [standings/destructors-cache.json](./standings/destructors-cache.json)
+- [standings/debrief-cache.json](./standings/debrief-cache.json)
 
 Αυτά δημιουργούνται ή ανανεώνονται από:
 
 - [blog-module/dirty-air-cache.js](./blog-module/dirty-air-cache.js)
 - [blog-module/destructors-cache.js](./blog-module/destructors-cache.js)
+- [standings/debrief-cache.js](./standings/debrief-cache.js)
 
-Σημαντικό: δεν είναι πλήρως αυτόνομα CLI scripts. Η κύρια αναμενόμενη ροή είναι να ενεργοποιούνται από το `blog-processor.js`.
+Η κύρια αναμενόμενη ροή είναι να ενεργοποιούνται από το `npm run build:blog`, μέσω του orchestrator στο `blog-module/build/index.js`. Τα cache builders παραμένουν επίσης χρήσιμα ως direct scripts για στοχευμένο refresh όταν χρειάζεται.
 
 <a id="local-development"></a>
 ## Τοπική ανάπτυξη
@@ -297,27 +309,20 @@ http://localhost:8080/
 ### Προτεινόμενες runtime προϋποθέσεις
 
 - Node.js 18 ή νεότερο
+- npm με υποστήριξη `npm ci`
 
-Το Node 18+ είναι ουσιαστικά αναγκαίο, επειδή αρκετά scripts βασίζονται στο built-in `fetch`.
+Το Node 18+ είναι ουσιαστικά αναγκαίο επειδή αρκετά scripts βασίζονται στο built-in `fetch`, ενώ το image pipeline χρησιμοποιεί native packages όπως `sharp`.
 
 <a id="build-requirements"></a>
 ## Απαιτούμενα εργαλεία για content build
 
-Το αποθετήριο δεν περιλαμβάνει σήμερα ολοκληρωμένο `package.json`, οπότε οι εξαρτήσεις των build scripts είναι implicit και πρέπει να υπάρχουν στο περιβάλλον του maintainer.
-
-### Node dependencies
-
-Το `blog-processor.js` χρησιμοποιεί:
-
-- `mammoth`
-- `sharp`
-- `adm-zip`
-
-Ενδεικτική εγκατάσταση:
+Το αποθετήριο έχει πλέον πλήρες [package.json](./package.json) και lockfile. Από καθαρό checkout, η προτεινόμενη εγκατάσταση είναι:
 
 ```bash
-npm install mammoth sharp adm-zip
+npm ci
 ```
+
+Οι βασικές runtime dependencies για το blog pipeline είναι `mammoth`, `sharp` και `adm-zip`. Τα build/dev εργαλεία όπως `sass`, `esbuild`, `lightningcss`, Bootstrap και Font Awesome εγκαθίστανται από το ίδιο lockfile.
 
 ### Προαιρετικά system tools
 
@@ -328,6 +333,28 @@ npm install mammoth sharp adm-zip
 
 <a id="maintenance-commands"></a>
 ## Βασικά commands συντήρησης
+
+### Καθαρό setup
+
+```bash
+npm ci
+```
+
+### Shell, partials και assets
+
+```bash
+npm run build
+```
+
+Το full build επεκτείνει HTML partials, ανανεώνει το YouTube snapshot και ξαναχτίζει/stamp-άρει τα browser assets. Για επιμέρους βήματα:
+
+```bash
+npm run build:html
+npm run build:youtube
+npm run build:assets
+npm run build:assets:minify
+npm run build:assets:stamp
+```
 
 ### Αναδημιουργία blog content
 
@@ -359,6 +386,13 @@ Force regeneration:
 
 ```bash
 node blog-module/generate-image-variants.js --run --force
+```
+
+### Regression και performance checks
+
+```bash
+node blog-module/build/__tests__/run-golden.js
+npm run perf:budget
 ```
 
 <a id="design-and-ux"></a>
@@ -401,18 +435,20 @@ node blog-module/generate-image-variants.js --run --force
 Πριν από publish σε production, η ασφαλής ροή είναι:
 
 1. ενημέρωση ή προσθήκη περιεχομένου στο `blog-module/blog-entries/`
-2. εκτέλεση `blog-processor.js`
-3. έλεγχος ότι ενημερώθηκαν σωστά τα `blog-data.json`, `blog-index-data.json` και τα cache bundles
-4. local preview του site
-5. deploy των static artifacts
+2. εκτέλεση `npm run build:blog`
+3. εκτέλεση `npm run build` αν άλλαξαν shared partials, CSS, JS, icons ή stamped asset references
+4. έλεγχος ότι ενημερώθηκαν σωστά τα `blog-data.json`, `blog-index-data.json`, `home-latest.json`, `sitemap.xml` και τα cache bundles
+5. εκτέλεση `node blog-module/build/__tests__/run-golden.js` και `npm run perf:budget`
+6. local preview του site
+7. deploy των static artifacts
 
 <a id="maintainer-notes"></a>
 ## Πρακτικές σημειώσεις για maintainers
 
 - Το blog subsystem είναι convention-driven. Αν τα filenames των εικόνων ή των source documents παρεκκλίνουν, το build μπορεί να μην παράξει το αναμενόμενο αποτέλεσμα.
 - Το standings module συνδυάζει live fetch και local fallback data. Άρα κάποια regressions ενδέχεται να εμφανίζονται μόνο σε πραγματικό runtime και όχι σε απλή ανάγνωση κώδικα.
-- Η απουσία ενιαίου package manifest σημαίνει ότι το περιβάλλον build χρειάζεται λίγη χειροκίνητη πειθαρχία.
-- Το `blog-processor.js` δεν παράγει μόνο άρθρα. Ανανεώνει και supporting datasets που επηρεάζουν το `/standings/`.
+- Το `package-lock.json` είναι μέρος της build reproducibility. Προτίμησε `npm ci` για καθαρό περιβάλλον αντί για ad hoc package installs.
+- Το `npm run build:blog` δεν παράγει μόνο άρθρα. Ανανεώνει και supporting datasets που επηρεάζουν το `/standings/`.
 - Τα redirect routes σε `f1telemetry/` και `ghostcar/` είναι μέρος της public εμπειρίας του domain και δεν πρέπει να αντιμετωπίζονται ως άσχετα placeholder αρχεία.
 
 <a id="why-this-repo-matters"></a>
@@ -431,7 +467,7 @@ node blog-module/generate-image-variants.js --run --force
 <a id="build-assets"></a>
 ## Build assets (minification pipeline)
 
-Από τη Phase 1 του roadmap, κάθε tracked CSS/JS έχει δίπλα του ένα `.min` sibling (π.χ. `styles.css` + `styles.min.css`). Το production HTML φορτώνει τα minified αρχεία με content-hash query string για σωστό cache-busting, ενώ τα sources παραμένουν commit-ed ως πηγή αλήθειας για diff/review.
+Κάθε browser-delivered CSS/JS έχει δίπλα του ένα `.min` sibling (π.χ. `styles.css` + `styles.min.css`). Το production HTML φορτώνει τα minified αρχεία με content-hash query string για σωστό cache-busting, ενώ τα sources παραμένουν commit-ed ως πηγή αλήθειας για diff/review. Node-only build/test modules μπορούν να είναι budgeted χωρίς να απαιτούν minified sibling.
 
 - `npm run build` — full shell rebuild: expanded HTML partials first, then refresh of `assets/youtube-latest.json`, then asset minify/stamp.
 - `npm run build:html` — επεκτείνει τα `<!-- @include ... -->` markers στα shared shell pages (`partials/head-meta.html`, `partials/footer.html`) με idempotent generated blocks.
@@ -451,7 +487,7 @@ node blog-module/generate-image-variants.js --run --force
 
 Τα sourcemaps (`*.min.js.map`, `*.min.css.map`) είναι στο `.gitignore`.
 
-Τα 208 υπάρχοντα `blog-module/blog-entries/*/article.html` ΔΕΝ παίρνουν γενικό asset stamping από το script — παραμένουν στα κλασικά (non-min) refs μέχρι να γίνει rebuild μέσω `npm run build:blog:force`, οπότε το (ήδη stamped) `blog-module/blog/template.html` θα διαδώσει τα `.min` refs παντού. Εξαίρεση: το Phase 4 Bootstrap CDN swap εφαρμόζεται και στα committed articles, ώστε κανένα live HTML να μη φορτώνει Bootstrap από jsDelivr.
+Το `stamp-html.mjs` stamp-άρει τα maintained shell pages και τα article runtime refs σε committed `blog-module/blog-entries/*/article.html`, ώστε τα article pages να δείχνουν στα minified `article-script` / `blog-fixes` assets χωρίς να απαιτείται full content rebuild. Για αλλαγές στο ίδιο το article template ή στο generated content, το source of truth παραμένει το `npm run build:blog` / `npm run build:blog:force`.
 
 <a id="performance-budget"></a>
 ## Performance budget
