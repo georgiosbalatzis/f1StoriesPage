@@ -2,6 +2,7 @@ const { Worker } = require('worker_threads');
 const os = require('os');
 const { updateDirtyAirCache } = require('../dirty-air-cache');
 const { updateDestructorsCache } = require('../destructors-cache');
+const { updateDebriefCache } = require('../../standings/debrief-cache');
 const { fs, path, CONFIG, utils, getCardThumbnailPath, getImageDimensionsForPublicPath } = require('./shared');
 const { generateSitemap } = require('./sitemap');
 const { injectRelatedArticles } = require('./related');
@@ -362,6 +363,16 @@ async function processBlogEntries(options = {}) {
         );
     } catch (error) {
         console.warn(`⚠️  Destructors cache update skipped: ${error.message}`);
+    }
+
+    try {
+        const debriefResult = await updateDebriefCache({ force: forceRebuild });
+        console.log(
+            `Debrief cache saved to ${debriefResult.outputPath} ` +
+            `(${debriefResult.roundCount} rounds, season ${debriefResult.season})`
+        );
+    } catch (error) {
+        console.warn(`⚠️  Debrief cache update skipped: ${error.message}`);
     }
 
     console.log('Blog processing complete');

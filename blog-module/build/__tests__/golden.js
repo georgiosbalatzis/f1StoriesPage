@@ -4,7 +4,8 @@ const path = require('path');
 const { processBlogEntry } = require('../worker');
 const { classifyEntry } = require('../index');
 const { convertTxtToHtml } = require('../parse-txt');
-const { createResponsiveTableFromCSV } = require('../csv-to-table');
+const { createResponsiveTableFromCSV, enhancedExtractCSVTags } = require('../csv-to-table');
+const { buildEmbedHtml } = require('../embed-render');
 const { injectRelatedArticles } = require('../related');
 const { injectPrevNextLinks } = require('../nav');
 
@@ -120,6 +121,82 @@ async function verifyPipeTableConversion() {
     }
 }
 
+function verifyCsvEscapingGuards() {
+    const failures = [];
+    const escapedHtml = createResponsiveTableFromCSV([
+        'Name & Team,<img src=x onerror=alert(1)>',
+        '<script>alert(1)</script>,Fish & Chips'
+    ].join('\n'), 'unsafe.csv');
+
+    if (escapedHtml.includes('<script>alert') || escapedHtml.includes('<img')) {
+        failures.push('CSV HTML-like values were emitted as raw markup');
+    }
+    if (!escapedHtml.includes('&lt;script&gt;alert(1)&lt;/script&gt;')) {
+        failures.push('CSV script-like cell text was not escaped visibly');
+    }
+    if (!escapedHtml.includes('Name &amp; Team') || !escapedHtml.includes('Fish &amp; Chips')) {
+        failures.push('CSV ampersands were not escaped in text nodes');
+    }
+
+    const richHtml = createResponsiveTableFromCSV(
+        'Name\n<strong>Ok</strong>',
+        'rich.csv',
+        { allowHtml: true }
+    );
+    if (!richHtml.includes('<strong>Ok</strong>')) {
+        failures.push('CSV rich HTML opt-in did not preserve explicit cell markup');
+    }
+
+    const richTags = enhancedExtractCSVTags('<p>CSV_TABLE_HTML:rich.csv</p>');
+    if (!richTags.length || !richTags[0].allowHtml || richTags[0].fileName !== 'rich.csv') {
+        failures.push('CSV_TABLE_HTML marker was not parsed as an explicit rich HTML opt-in');
+    }
+
+    return failures;
+}
+
+function verifyEmbedHardeningGuards() {
+    const failures = [];
+    const blockedWidget = buildEmbedHtml({
+        type: 'raw-widget',
+        value: '<div style="color:red" onclick="alert(1)">x</div>'
+    });
+    if (!blockedWidget.includes('Raw widget blocked') || blockedWidget.includes('onclick')) {
+        failures.push('raw widget without allowlist marker did not fail closed');
+    }
+
+    const allowedWidget = buildEmbedHtml({
+        type: 'raw-widget',
+        value: '<div data-f1s-raw-widget style="color:red">x</div>'
+    });
+    if (!allowedWidget.includes('data-f1s-raw-widget') || allowedWidget.includes('Raw widget blocked')) {
+        failures.push('allowlisted raw widget was not preserved');
+    }
+
+    const rawIframe = buildEmbedHtml({
+        type: 'raw-iframe',
+        src: 'https://www.youtube.com/embed/abcdefghijk',
+        value: '<iframe src="https://www.youtube.com/embed/abcdefghijk" onload="alert(1)" srcdoc="<script>alert(1)</script>" width="560"></iframe>'
+    });
+    if (!rawIframe.includes('https://www.youtube.com/embed/abcdefghijk')) {
+        failures.push('whitelisted raw iframe src was not preserved');
+    }
+    if (rawIframe.includes('onload') || rawIframe.includes('srcdoc') || rawIframe.includes('<script')) {
+        failures.push('raw iframe unsafe attributes were not stripped');
+    }
+
+    const blockedFile = buildEmbedHtml({
+        type: 'embed',
+        value: '../../index.html',
+        entryPath: BLOG_ENTRIES_DIR
+    });
+    if (!blockedFile.includes('Embed blocked') || blockedFile.includes('../../index.html')) {
+        failures.push('unsafe embed file path did not fail closed');
+    }
+
+    return failures;
+}
+
 async function updateGoldenSnapshots() {
     const classificationFailures = verifyClassificationGuards();
     if (classificationFailures.length) {
@@ -129,6 +206,16 @@ async function updateGoldenSnapshots() {
     const pipeTableFailures = await verifyPipeTableConversion();
     if (pipeTableFailures.length) {
         throw new Error(`Pipe table guard failed:\n${pipeTableFailures.join('\n')}`);
+    }
+
+    const csvGuardFailures = verifyCsvEscapingGuards();
+    if (csvGuardFailures.length) {
+        throw new Error(`CSV escaping guard failed:\n${csvGuardFailures.join('\n')}`);
+    }
+
+    const embedGuardFailures = verifyEmbedHardeningGuards();
+    if (embedGuardFailures.length) {
+        throw new Error(`Embed hardening guard failed:\n${embedGuardFailures.join('\n')}`);
     }
 
     for (const slug of GOLDEN_ENTRIES) {
@@ -161,6 +248,22 @@ async function verifyGoldenSnapshots() {
             name: `pipe-table: ${message}`,
             expectedPath: fixtureLabel('pipe-table'),
             actualPath: fixtureLabel('pipe-table')
+        });
+    });
+
+    verifyCsvEscapingGuards().forEach(message => {
+        failures.push({
+            name: `csv-escaping: ${message}`,
+            expectedPath: fixtureLabel('csv-escaping'),
+            actualPath: CSV_FIXTURE_PATH
+        });
+    });
+
+    verifyEmbedHardeningGuards().forEach(message => {
+        failures.push({
+            name: `embed-hardening: ${message}`,
+            expectedPath: fixtureLabel('embed-hardening'),
+            actualPath: fixtureLabel('embed-hardening')
         });
     });
 
@@ -210,6 +313,8 @@ module.exports = {
     articlePath,
     goldenPath,
     verifyClassificationGuards,
+    verifyCsvEscapingGuards,
+    verifyEmbedHardeningGuards,
     updateGoldenSnapshots,
     verifyGoldenSnapshots
 };

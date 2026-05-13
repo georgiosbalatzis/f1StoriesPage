@@ -3,7 +3,7 @@ var fs = require('fs');
 var path = require('path');
 
 var OPENF1 = 'https://api.openf1.org/v1';
-var YEAR = 2026;
+var DEFAULT_YEAR = new Date().getFullYear();
 var OUTPUT_PATH = path.join(__dirname, 'debrief-cache.json');
 var MIN_LONG_RUN_LAPS = 5;
 var TEAM_CODES = {
@@ -1137,8 +1137,26 @@ async function buildRound(meeting, roundNumber, cache) {
     };
 }
 
-async function main() {
-    var sessions = await fetchJSON(OPENF1 + '/sessions?year=' + encodeURIComponent(YEAR));
+function parseCliOptions(argv) {
+    var args = Array.isArray(argv) ? argv : [];
+    var options = { force: false };
+    var i;
+
+    for (i = 2; i < args.length; i += 1) {
+        if (args[i] === '--force' || args[i] === '-f') {
+            options.force = true;
+        } else if (args[i] === '--year') {
+            options.year = parseInt(args[i + 1], 10);
+            i += 1;
+        }
+    }
+
+    return options;
+}
+
+async function updateDebriefCache(options) {
+    var year = parseInt(options && options.year, 10) || DEFAULT_YEAR;
+    var sessions = await fetchJSON(OPENF1 + '/sessions?year=' + encodeURIComponent(year));
     var meetings = buildMeetings(sessions);
     var rounds = [];
     var cache = {};
@@ -1150,21 +1168,39 @@ async function main() {
 
     var payload = {
         version: 2,
-        season: YEAR,
+        season: year,
         generatedAt: new Date().toISOString(),
         source: {
             label: 'OpenF1 Friday Debrief cache',
             upstream: 'https://api.openf1.org/v1',
-            note: 'Derived from completed 2026 OpenF1 Friday sessions. Single Lap and Team Ideal use Practice 2 or Sprint Qualifying; Long Run, Tyre Deg and Race Pace use Practice 2 or Practice 1 on sprint weekends.'
+            note: 'Derived from completed OpenF1 Friday sessions. Single Lap and Team Ideal use Practice 2 or Sprint Qualifying; Long Run, Tyre Deg and Race Pace use Practice 2 or Practice 1 on sprint weekends.'
         },
         rounds: rounds
     };
 
+    fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
     fs.writeFileSync(OUTPUT_PATH, JSON.stringify(payload, null, 2) + '\n', 'utf8');
-    process.stdout.write('Updated ' + OUTPUT_PATH + ' with ' + rounds.length + ' rounds.\n');
+
+    return {
+        outputPath: OUTPUT_PATH,
+        season: year,
+        roundCount: rounds.length
+    };
 }
 
-main().catch(function(error) {
-    process.stderr.write((error && error.stack) ? error.stack + '\n' : String(error) + '\n');
-    process.exit(1);
-});
+async function main() {
+    var result = await updateDebriefCache(parseCliOptions(process.argv));
+    process.stdout.write('Updated ' + result.outputPath + ' with ' + result.roundCount + ' rounds.\n');
+}
+
+if (require.main === module) {
+    main().catch(function(error) {
+        process.stderr.write((error && error.stack) ? error.stack + '\n' : String(error) + '\n');
+        process.exit(1);
+    });
+}
+
+module.exports = {
+    DEBRIEF_CACHE_OUTPUT_PATH: OUTPUT_PATH,
+    updateDebriefCache: updateDebriefCache
+};

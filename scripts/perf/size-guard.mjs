@@ -66,6 +66,7 @@ const SOURCE_FILES = [
     'blog-module/blog-loader.js',
     'blog-module/blog-index.js',
     'blog-module/blog/article-script.js',
+    'blog-module/blog-fixes.js',
     'blog-module/blog-processor.js',
     'blog-module/build/shared.js',
     'blog-module/build/metadata.js',
@@ -89,15 +90,43 @@ const SOURCE_FILES = [
     'images/icons/sprite.svg'
 ];
 
-// After Phase 1, every CSS/JS with a .min.<ext> sibling is also tracked so
-// a regression in the minification pipeline surfaces in the budget check.
+const MINIFIED_JS_SOURCES = new Set([
+    'standings/standings.js',
+    'standings/core/format.js',
+    'standings/core/teams.js',
+    'standings/core/drivers-meta.js',
+    'standings/core/cache.js',
+    'standings/core/fetchers.js',
+    'standings/tabs/_shared.js',
+    'standings/tabs/destructors.js',
+    'standings/tabs/pit-stops.js',
+    'standings/tabs/quali-gaps.js',
+    'standings/tabs/lap1-gains.js',
+    'standings/tabs/tyre-pace.js',
+    'standings/tabs/dirty-air.js',
+    'standings/tabs/track-dominance.js',
+    'standings/tabs/debrief.js',
+    'scripts/analytics.js',
+    'scripts/f1-optimized.js',
+    'scripts/shared-nav.js',
+    'scripts/sw-register.js',
+    'scripts/cookie-consent.js',
+    'scripts/background-randomizer.js',
+    'scripts/perf/error-beacon.js',
+    'scripts/perf/web-vitals-beacon.js',
+    'blog-module/blog-loader.js',
+    'blog-module/blog-index.js',
+    'blog-module/blog/article-script.js',
+    'blog-module/blog-fixes.js'
+]);
+
+// Every browser CSS source in SOURCE_FILES is emitted by scripts/build/minify.mjs.
+// JS is explicit because SOURCE_FILES also budgets Node-only build/test scripts.
 function deriveMinSiblings(files) {
     return files
         .filter(f =>
-            /\.(css|js)$/.test(f)
-            && f !== 'blog-module/blog-processor.js'
-            && f !== 'blog-module/blog/article-script.js'
-            && f !== 'sw.js'
+            f.endsWith('.css')
+            || MINIFIED_JS_SOURCES.has(f)
         )
         .map(f => f.replace(/\.(css|js)$/, '.min.$1'));
 }

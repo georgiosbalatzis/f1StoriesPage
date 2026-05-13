@@ -32,6 +32,15 @@ function sanitizeId(str) {
     return str.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
 }
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 function getTableName(csvFileName) {
     let tableName = csvFileName.replace(/\.[^.]+$/, '');
     tableName = tableName.replace(/([A-Z])/g, ' $1').trim();
@@ -133,9 +142,11 @@ function processDocumentTables(htmlContent) {
 }
 
 function createCSVErrorMessage(csvFileName) {
+    const safeFileName = escapeHtml(csvFileName);
+
     return `
     <div class="csv-error">
-        <strong>CSV αρχείο δεν βρέθηκε:</strong> ${csvFileName}
+        <strong>CSV αρχείο δεν βρέθηκε:</strong> ${safeFileName}
         <div class="csv-error-details">
             <p>Το αρχείο πρέπει να βρίσκεται στον ίδιο φάκελο με το DOCX ή στον φάκελο 'data/'. Ελέγξτε:</p>
             <ul>
@@ -184,8 +195,9 @@ function findCSVFile(csvFileName, entryPath) {
     return { filePath: null, content: null };
 }
 
-function createResponsiveTableFromCSV(csvContent, csvFileName) {
+function createResponsiveTableFromCSV(csvContent, csvFileName, options = {}) {
     try {
+        const allowHtml = Boolean(options.allowHtml);
         const rows = csvContent.split(/\r?\n/).filter(row => row.trim() !== '');
         if (!rows.length) return '<div class="csv-error">Κενό CSV αρχείο</div>';
 
@@ -193,12 +205,23 @@ function createResponsiveTableFromCSV(csvContent, csvFileName) {
         if (!headers.length) return '<div class="csv-error">Αδυναμία ανάλυσης επικεφαλίδων CSV</div>';
 
         const tableName = getTableName(csvFileName);
+        const safeTableName = escapeHtml(tableName);
+        const safeCsvFileName = escapeHtml(csvFileName);
         const tableId = `csv-table-${sanitizeId(csvFileName)}`;
+        const headerMeta = headers.map((header, index) => {
+            const raw = String(header || '').trim() || `Column ${index + 1}`;
+            const label = htmlToPlainText(raw) || `Column ${index + 1}`;
+            return {
+                html: allowHtml ? raw : escapeHtml(raw),
+                label,
+                cardLabel: escapeHtml(label)
+            };
+        });
 
         let html = `
         <div class="table-responsive-container">
             <div class="table-controls">
-                <h4 class="table-title">${tableName}</h4>
+                <h4 class="table-title">${safeTableName}</h4>
                 <div class="view-toggle">
                     <button class="view-toggle-btn scroll-view active" data-view="scroll" data-table="${tableId}">
                         <svg class="icon" aria-hidden="true"><use href="#fa-table"/></svg> Προβολή πίνακα
@@ -217,8 +240,8 @@ function createResponsiveTableFromCSV(csvContent, csvFileName) {
                     <thead>
                         <tr>`;
 
-        headers.forEach(header => {
-            html += `<th>${header}</th>`;
+        headerMeta.forEach(header => {
+            html += `<th>${header.html}</th>`;
         });
 
         html += `
@@ -231,9 +254,10 @@ function createResponsiveTableFromCSV(csvContent, csvFileName) {
             if (cells.length === 0 || (cells.length === 1 && cells[0] === '')) continue;
 
             html += '<tr>';
-            for (let j = 0; j < headers.length; j++) {
-                const cellValue = j < cells.length ? cells[j] : '';
-                html += `<td data-label="${headers[j]}">${cellValue}</td>`;
+            for (let j = 0; j < headerMeta.length; j++) {
+                const cellValue = j < cells.length ? String(cells[j] || '') : '';
+                const cellHtml = allowHtml ? cellValue : escapeHtml(cellValue);
+                html += `<td data-label="${escapeHtmlAttribute(headerMeta[j].label)}">${cellHtml}</td>`;
             }
             html += '</tr>';
         }
@@ -250,12 +274,13 @@ function createResponsiveTableFromCSV(csvContent, csvFileName) {
             if (cells.length === 0 || (cells.length === 1 && cells[0] === '')) continue;
 
             html += '<div class="data-card">';
-            for (let j = 0; j < headers.length; j++) {
-                const cellValue = j < cells.length ? cells[j] : '';
+            for (let j = 0; j < headerMeta.length; j++) {
+                const cellValue = j < cells.length ? String(cells[j] || '') : '';
+                const cellHtml = allowHtml ? cellValue : escapeHtml(cellValue);
                 html += `
                     <div class="card-field">
-                        <div class="card-label">${headers[j]}</div>
-                        <div class="card-value">${cellValue}</div>
+                        <div class="card-label">${headerMeta[j].cardLabel}</div>
+                        <div class="card-value">${cellHtml}</div>
                     </div>`;
             }
             html += '</div>';
@@ -265,7 +290,7 @@ function createResponsiveTableFromCSV(csvContent, csvFileName) {
                 </div>
             </div>
             <div class="table-footer">
-                <div class="table-source">Πηγή: ${csvFileName}</div>
+                <div class="table-source">Πηγή: ${safeCsvFileName}</div>
             </div>
         </div>
         <script>
@@ -301,27 +326,32 @@ function createResponsiveTableFromCSV(csvContent, csvFileName) {
         return html;
     } catch (error) {
         console.error(`Error creating table from CSV: ${error.message}`);
-        return `<div class="csv-error">Σφάλμα δημιουργίας πίνακα: ${error.message}</div>`;
+        return `<div class="csv-error">Σφάλμα δημιουργίας πίνακα: ${escapeHtml(error.message)}</div>`;
     }
 }
 
 function enhancedExtractCSVTags(htmlContent) {
     const patterns = [
-        /<p>CSV_TABLE:([^<]+)<\/p>/g,
-        /<p[^>]*>CSV_TABLE:([^<]+)<\/p>/g,
-        /CSV_TABLE:([^\s<]+)/g,
-        /<div[^>]*>CSV_TABLE:([^<]+)<\/div>/g,
-        /<span[^>]*>CSV_TABLE:([^<]+)<\/span>/g
+        /<p>CSV_TABLE(_HTML)?:([^<]+)<\/p>/g,
+        /<p[^>]*>CSV_TABLE(_HTML)?:([^<]+)<\/p>/g,
+        /CSV_TABLE(_HTML)?:([^\s<]+)/g,
+        /<div[^>]*>CSV_TABLE(_HTML)?:([^<]+)<\/div>/g,
+        /<span[^>]*>CSV_TABLE(_HTML)?:([^<]+)<\/span>/g
     ];
     const allMatches = [];
+    const seen = new Set();
 
     patterns.forEach(pattern => {
         pattern.lastIndex = 0;
         let match;
         while ((match = pattern.exec(htmlContent)) !== null) {
+            const fullMatch = match[0];
+            if (seen.has(fullMatch)) continue;
+            seen.add(fullMatch);
             allMatches.push({
-                fullMatch: match[0],
-                fileName: match[1].trim()
+                fullMatch,
+                allowHtml: match[1] === '_HTML',
+                fileName: match[2].trim()
             });
         }
     });
@@ -339,7 +369,7 @@ function processEmbeddedCSV(htmlContent, entryPath) {
         try {
             const { content } = findCSVFile(tag.fileName, resolvedEntryPath);
             const replacement = content
-                ? createResponsiveTableFromCSV(content, tag.fileName)
+                ? createResponsiveTableFromCSV(content, tag.fileName, { allowHtml: tag.allowHtml })
                 : createCSVErrorMessage(tag.fileName);
             const escapedMatch = tag.fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             processedContent = processedContent.replace(new RegExp(escapedMatch, 'g'), replacement);
@@ -348,7 +378,7 @@ function processEmbeddedCSV(htmlContent, entryPath) {
             const escapedMatch = tag.fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             processedContent = processedContent.replace(
                 new RegExp(escapedMatch, 'g'),
-                `<div class="csv-error"><strong>Σφάλμα επεξεργασίας CSV:</strong> ${error.message}</div>`
+                `<div class="csv-error"><strong>Σφάλμα επεξεργασίας CSV:</strong> ${escapeHtml(error.message)}</div>`
             );
         }
     });
@@ -359,6 +389,7 @@ function processEmbeddedCSV(htmlContent, entryPath) {
 module.exports = {
     parseCSVRow,
     sanitizeId,
+    escapeHtml,
     getTableName,
     stripCellParagraphs,
     extractTableRowsFromHtml,
