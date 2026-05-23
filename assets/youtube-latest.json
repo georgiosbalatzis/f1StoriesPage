@@ -2,9 +2,16 @@
   "channelId": "UCTSK8lbEiHJ10KVFrhNaL4g",
   "channelTitle": "F1 Stories",
   "source": "https://www.youtube.com/feeds/videos.xml?channel_id=UCTSK8lbEiHJ10KVFrhNaL4g",
-  "lastUpdated": "2026-05-22T20:08:33.540Z",
-  "newestPublishedAt": "2026-05-09T07:58:39.000Z",
+  "lastUpdated": "2026-05-23T08:31:08.050Z",
+  "newestPublishedAt": "2026-05-23T08:23:37.000Z",
   "videos": [
+    {
+      "id": "EYeQxSDTI7o",
+      "title": "CoolDownRoom #264 BetCast Canada",
+      "thumbnail": "https://i2.ytimg.com/vi/EYeQxSDTI7o/hqdefault.jpg",
+      "publishedAt": "2026-05-23T08:23:37+00:00",
+      "url": "https://www.youtube.com/watch?v=EYeQxSDTI7o"
+    },
     {
       "id": "GiM0h0WjROo",
       "title": "CoolDownRoom #264 Miami GP",
@@ -67,13 +74,6 @@
       "thumbnail": "https://i2.ytimg.com/vi/En5wwzL7iJc/hqdefault.jpg",
       "publishedAt": "2026-03-15T19:06:35+00:00",
       "url": "https://www.youtube.com/shorts/En5wwzL7iJc"
-    },
-    {
-      "id": "hpDXmaiLro4",
-      "title": "🚗💨 Mercedes: Μια κατηγορια μονοι τους! Πώς τα πήγαν στα GP; 🤔 #Formula1 #Mercedes",
-      "thumbnail": "https://i1.ytimg.com/vi/hpDXmaiLro4/hqdefault.jpg",
-      "publishedAt": "2026-03-15T19:06:23+00:00",
-      "url": "https://www.youtube.com/shorts/hpDXmaiLro4"
     }
   ]
 }
