@@ -15,3 +15,5 @@ Race
 Τοπ 10 - Gabriel Bortoleto: 3.05
 Red Flag - Ναι: Απόδοση 4,5
 Τοπ 6 - Pierre Gasly: Απόδοση 35,00
+
+<iframe src="https://georgiosbalatzis.github.io/BetCastVisualisation/?viz=dataTable&embed=1" title="BetCast F1Stories" loading="lazy" style="width:100%;min-height:960px;border:0;"></iframe>
