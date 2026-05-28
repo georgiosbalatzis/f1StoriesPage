@@ -9,6 +9,10 @@ name: Publish Blog
 # Commits made by GITHUB_TOKEN do not re-trigger workflows, so there is no loop.
 
 on:
+  schedule:
+    # GitHub schedules use UTC. These two runs keep generated blog artifacts
+    # refreshed at least morning and evening every day.
+    - cron: '17 5,17 * * *'
   push:
     branches: [main]
     paths:

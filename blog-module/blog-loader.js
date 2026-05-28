@@ -58,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function fetchBlogData() {
         const cached = readCachedBlogData();
-        if (cached) return cached;
 
         const paths = [
             '/blog-module/home-latest.json',
@@ -67,7 +66,10 @@ document.addEventListener('DOMContentLoaded', function () {
         ];
         for (const p of paths) {
             try {
-                const r = await fetch(p);
+                const r = await fetch(p, {
+                    cache: 'no-store',
+                    headers: { 'Accept': 'application/json' }
+                });
                 if (r.ok) {
                     const data = await r.json();
                     writeCachedBlogData(data);
@@ -75,6 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             } catch (_) { /* next */ }
         }
+        if (cached) return cached;
         throw new Error('Failed to fetch blog data');
     }
 

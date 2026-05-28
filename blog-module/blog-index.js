@@ -258,10 +258,16 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function tryFetch(paths, idx) {
-        var cached = idx === 0 ? readCachedPosts() : null;
-        if (cached) { hydratePosts(cached); return; }
-        if (idx >= paths.length) { if (grid) grid.innerHTML = '<div class="empty-state"><svg class="icon" aria-hidden="true"><use href="#fa-exclamation-circle"/></svg><p>Δεν ήταν δυνατή η φόρτωση των άρθρων.</p></div>'; return; }
-        fetch(paths[idx]).then(function(r) { if (!r.ok) throw new Error('not ok'); return r.json(); }).then(function(data) {
+        if (idx >= paths.length) {
+            var cached = readCachedPosts();
+            if (cached) { hydratePosts(cached); return; }
+            if (grid) grid.innerHTML = '<div class="empty-state"><svg class="icon" aria-hidden="true"><use href="#fa-exclamation-circle"/></svg><p>Δεν ήταν δυνατή η φόρτωση των άρθρων.</p></div>';
+            return;
+        }
+        fetch(paths[idx], {
+            cache: 'no-store',
+            headers: { 'Accept': 'application/json' }
+        }).then(function(r) { if (!r.ok) throw new Error('not ok'); return r.json(); }).then(function(data) {
             var posts = data.posts || data || [];
             writeCachedPosts(posts);
             hydratePosts(posts);

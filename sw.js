@@ -1,13 +1,17 @@
 /* ============================================================
-   F1 Stories — Service Worker v29
+   F1 Stories — Service Worker v30
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
    HTML pages            → network-first, cached fallback, then offline.html
-   Blog JSON data        → stale-while-revalidate (fast loads + freshness)
+   Blog JSON data        → network-first, cached fallback
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v30 bump: Blog freshness — blog feed JSON and article HTML now bypass the
+   browser HTTP cache before falling back to Cache Storage, so returning
+   sessions see newly published articles on the first load instead of waiting
+   for a stale-while-revalidate refresh or a second reload.
    v29 bump: Phase 15 accessibility + CWV polish — homepage hero image
    preloading now resolves before the randomizer runs, shell pages expose
    consistent skip links and main landmarks, and tab UIs on home/standings
@@ -109,11 +113,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v29';
-var CACHE_SHELL   = 'f1s-shell-v29';
-var CACHE_PAGES   = 'f1s-pages-v29';
-var CACHE_ASSETS  = 'f1s-assets-v29';
-var CACHE_DATA    = 'f1s-data-v29';
+var SW_VERSION    = 'v30';
+var CACHE_SHELL   = 'f1s-shell-v30';
+var CACHE_PAGES   = 'f1s-pages-v30';
+var CACHE_ASSETS  = 'f1s-assets-v30';
+var CACHE_DATA    = 'f1s-data-v30';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
@@ -313,6 +317,19 @@ function networkFirst(request, cacheName) {
   });
 }
 
+// Fresh network-first with cache fallback for publish-sensitive content.
+function networkFirstFresh(request, cacheName) {
+  return fetch(request, { cache: 'no-store' }).then(function (response) {
+    if (response.ok) {
+      var clone = response.clone();
+      caches.open(cacheName).then(function (cache) { cache.put(request, clone); });
+    }
+    return response;
+  }).catch(function () {
+    return caches.match(request);
+  });
+}
+
 function cacheNavigationResponse(request, response, event) {
   if (response && response.ok) {
     var cacheWrite = caches.open(CACHE_PAGES).then(function (cache) {
@@ -364,9 +381,13 @@ self.addEventListener('fetch', function (e) {
     return;
   }
 
-  // Blog data JSON → stale-while-revalidate (instant load + background update)
+  // Blog data JSON → fresh network first, cached fallback for offline reads.
   if (isBlogData(pathname)) {
-    e.respondWith(staleWhileRevalidate(e.request, CACHE_DATA));
+    e.respondWith(
+      networkFirstFresh(e.request, CACHE_DATA).then(function (response) {
+        return response || Response.error();
+      })
+    );
     return;
   }
 
@@ -379,7 +400,7 @@ self.addEventListener('fetch', function (e) {
   // Blog article HTML → network-first (cache every article you read)
   if (isBlogArticle(pathname)) {
     e.respondWith(
-      networkFirst(e.request, CACHE_PAGES).then(function (response) {
+      networkFirstFresh(e.request, CACHE_PAGES).then(function (response) {
         return response || caches.match(OFFLINE_URL);
       })
     );
