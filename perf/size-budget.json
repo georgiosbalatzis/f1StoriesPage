@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-30T09:39:44.100Z",
+  "updatedAt": "2026-05-30T09:43:43.142Z",
   "thresholdPercent": 10,
   "note": "Byte budgets for tracked JS/CSS/HTML assets. Run `npm run perf:budget` to check, `npm run perf:budget:update` to rewrite this file with current sizes. Threshold is the max % growth allowed before the check fails.",
   "files": {
@@ -46,7 +46,7 @@
     "scripts/perf/error-beacon.js": 3390,
     "scripts/perf/web-vitals-beacon.js": 3423,
     "blog-module/blog-loader.js": 8507,
-    "blog-module/blog-index.js": 16498,
+    "blog-module/blog-index.js": 16958,
     "blog-module/blog/article-script.js": 19419,
     "blog-module/blog-fixes.js": 13591,
     "blog-module/blog-processor.js": 236,
@@ -113,7 +113,7 @@
     "scripts/perf/error-beacon.min.js": 1753,
     "scripts/perf/web-vitals-beacon.min.js": 1508,
     "blog-module/blog-loader.min.js": 4288,
-    "blog-module/blog-index.min.js": 9248,
+    "blog-module/blog-index.min.js": 9462,
     "blog-module/blog/article-script.min.js": 12254,
     "blog-module/blog-fixes.min.js": 5484
   }
