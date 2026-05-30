@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { CONTENT_SECURITY_POLICY, REFERRER_POLICY } from './security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -123,6 +124,33 @@ function validateCssRefs(errors, abs, relPath) {
     }
 }
 
+function attrValue(tag, name) {
+    const match = String(tag).match(new RegExp(`\\b${name}=(["'])(.*?)\\1`, 'i'));
+    return match ? match[2] : '';
+}
+
+function findMetaTags(html, attrName, attrValueExpected) {
+    return Array.from(String(html).matchAll(/<meta\b[^>]*>/gi))
+        .map(match => match[0])
+        .filter(tag => attrValue(tag, attrName).toLowerCase() === attrValueExpected.toLowerCase());
+}
+
+function validateHtmlSecurityMeta(errors, html, relPath) {
+    const cspTags = findMetaTags(html, 'http-equiv', 'Content-Security-Policy');
+    if (cspTags.length !== 1) {
+        errors.push(`${relPath}: expected exactly one Content-Security-Policy meta tag`);
+    } else if (attrValue(cspTags[0], 'content') !== CONTENT_SECURITY_POLICY) {
+        errors.push(`${relPath}: Content-Security-Policy meta does not match scripts/build/security-policy.mjs`);
+    }
+
+    const referrerTags = findMetaTags(html, 'name', 'referrer');
+    if (referrerTags.length !== 1) {
+        errors.push(`${relPath}: expected exactly one referrer meta tag`);
+    } else if (attrValue(referrerTags[0], 'content') !== REFERRER_POLICY) {
+        errors.push(`${relPath}: referrer meta does not match scripts/build/security-policy.mjs`);
+    }
+}
+
 function main() {
     if (!fs.existsSync(DIST_ROOT)) {
         console.error('✗ dist/ does not exist. Run `node scripts/build/public-artifact.mjs` first.');
@@ -150,7 +178,11 @@ function main() {
             errors.push(`${relPath}: ${fmtBytes(size)} exceeds max ${fmtBytes(MAX_FILE_BYTES)}`);
         }
 
-        if (/\.html$/i.test(relPath)) validateHtmlRefs(errors, abs, relPath);
+        if (/\.html$/i.test(relPath)) {
+            const html = fs.readFileSync(abs, 'utf8');
+            validateHtmlSecurityMeta(errors, html, relPath);
+            validateHtmlRefs(errors, abs, relPath);
+        }
         if (/\.css$/i.test(relPath)) validateCssRefs(errors, abs, relPath);
     });
 

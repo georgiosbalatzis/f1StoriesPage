@@ -7,6 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { securityMetaHtml } from './security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -118,10 +119,32 @@ function shouldCopy(relPath) {
     return false;
 }
 
+function stripSecurityMeta(html) {
+    return String(html)
+        .replace(/^[ \t]*<!-- f1s:security-meta:begin -->[\s\S]*?<!-- f1s:security-meta:end -->[ \t]*\r?\n?/gim, '')
+        .replace(/^[ \t]*<meta\b(?=[^>]*\bhttp-equiv=["']Content-Security-Policy["'])[^>]*>[ \t]*\r?\n?/gim, '')
+        .replace(/^[ \t]*<meta\b(?=[^>]*\bname=["']referrer["'])[^>]*>[ \t]*\r?\n?/gim, '');
+}
+
+function injectSecurityMeta(html) {
+    const nextHtml = stripSecurityMeta(html);
+    const block = securityMetaHtml('    ');
+
+    if (/<meta\s+charset=["'][^"']+["']>/i.test(nextHtml)) {
+        return nextHtml.replace(/(<meta\s+charset=["'][^"']+["']>)/i, `$1\n${block}`);
+    }
+
+    return nextHtml.replace(/(<head\b[^>]*>\s*)/i, `$1\n${block}\n`);
+}
+
 function copyFile(relPath) {
     const src = path.join(REPO_ROOT, relPath);
     const dest = path.join(DIST_ROOT, relPath);
     ensureDir(path.dirname(dest));
+    if (/\.html$/i.test(relPath)) {
+        fs.writeFileSync(dest, injectSecurityMeta(fs.readFileSync(src, 'utf8')), 'utf8');
+        return;
+    }
     fs.copyFileSync(src, dest);
 }
 
