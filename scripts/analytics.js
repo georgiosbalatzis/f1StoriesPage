@@ -1,4 +1,4 @@
-// analytics.js — GA4 with default analytics, anonymized opt-out, and internal page click tracking.
+// analytics.js — GA4 after explicit opt-in, plus internal page click tracking when analytics is granted.
 (function () {
     'use strict';
 
@@ -6,6 +6,7 @@
     var STORAGE_KEY = 'f1stories-cookie-consent-v1';
     var SCRIPT_SRC = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(TRACKING_ID);
     var scriptInjected = false;
+    var consentInitialized = false;
     var analyticsConfigured = false;
     var clickTrackingBound = false;
     var CLICK_EVENT_NAME = 'internal_page_click';
@@ -29,13 +30,34 @@
     }
 
     function buildConsentState(consent) {
-        var analyticsGranted = !(consent && consent.analytics === false);
+        var analyticsGranted = !!(consent && consent.analytics === true);
         return {
             analytics_storage: analyticsGranted ? 'granted' : 'denied',
             ad_storage: 'denied',
             ad_user_data: 'denied',
             ad_personalization: 'denied'
         };
+    }
+
+    function hasAnalyticsConsent(consent) {
+        return !!(consent && consent.analytics === true);
+    }
+
+    function applyGaDisable(consent) {
+        window['ga-disable-' + TRACKING_ID] = !hasAnalyticsConsent(consent);
+    }
+
+    function clearGaCookies() {
+        var names = document.cookie
+            ? document.cookie.split(';').map(function (part) {
+                return part.split('=')[0].trim();
+            })
+            : [];
+        names.forEach(function (name) {
+            if (!/^_ga(?:_|$)/.test(name) && name !== '_gid' && name !== '_gat') return;
+            document.cookie = name + '=; Max-Age=0; path=/; SameSite=Lax';
+            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=' + window.location.hostname;
+        });
     }
 
     function injectScript() {
@@ -104,7 +126,7 @@
     }
 
     function trackInternalPageClick(anchor, destination, callback) {
-        if (typeof window.gtag !== 'function') {
+        if (!hasAnalyticsConsent(readConsent()) || typeof window.gtag !== 'function') {
             if (typeof callback === 'function') callback();
             return;
         }
@@ -168,24 +190,34 @@
     }
 
     function configureAnalytics(consent) {
+        applyGaDisable(consent);
         ensureGtag();
-        if (!analyticsConfigured) {
+        if (!consentInitialized) {
             window.gtag('consent', 'default', buildConsentState(consent));
             window.gtag('set', 'ads_data_redaction', true);
-            injectScript();
+            consentInitialized = true;
+        } else {
+            window.gtag('consent', 'update', buildConsentState(consent));
+        }
+
+        if (!hasAnalyticsConsent(consent)) {
+            clearGaCookies();
+            return;
+        }
+
+        injectScript();
+        if (!analyticsConfigured) {
             window.gtag('js', new Date());
             window.gtag('config', TRACKING_ID, {
                 transport_type: 'beacon'
             });
             analyticsConfigured = true;
-        } else {
-            window.gtag('consent', 'update', buildConsentState(consent));
         }
     }
 
     window.f1storiesAnalytics = {
         trackEvent: function (name, params) {
-            if (!name) return;
+            if (!name || !hasAnalyticsConsent(readConsent())) return;
             ensureGtag();
             window.gtag('event', name, params || {});
         },

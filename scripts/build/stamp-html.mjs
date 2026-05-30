@@ -97,6 +97,17 @@ const FONTS_SOURCE = 'styles/fonts.css';
 const BOOTSTRAP_SOURCE = 'styles/vendor/bootstrap.slim.css';
 const ARTICLE_HTML_ROOT = 'blog-module/blog-entries';
 const ARTICLE_RUNTIME_SOURCES = new Set([
+    'styles.css',
+    'styles/fonts.css',
+    'styles/shared-nav.css',
+    'theme-overrides.css',
+    'blog-module/blog-styles.css',
+    'blog-module/blog/article-styles.css',
+    'scripts/analytics.js',
+    'scripts/cookie-consent.js',
+    'scripts/shared-nav.js',
+    'scripts/perf/error-beacon.js',
+    'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog/article-script.js',
     'blog-module/blog-fixes.js'
 ]);
@@ -522,6 +533,24 @@ function stampArticleRuntimeScripts(patterns, dry) {
     return totals;
 }
 
+function stampArticleGtmDnsPrefetch(dry) {
+    const totals = { files: 0, dropped: 0 };
+    for (const rel of listArticleHtml()) {
+        const abs = path.join(REPO_ROOT, rel);
+        const original = fs.readFileSync(abs, 'utf8');
+        const { result, dropped } = dropGtmDnsPrefetch(original);
+        if (result === original) continue;
+
+        totals.files++;
+        totals.dropped += dropped;
+        if (!dry) {
+            fs.writeFileSync(abs, result, 'utf8');
+        }
+    }
+
+    return totals;
+}
+
 // Small sha256-short for font files (content hash based on path, since
 // fonts are woff2 binaries and we don't re-read them on every stamp).
 function sha256Short(input) {
@@ -556,6 +585,16 @@ function dropFontAwesomeCdn(html) {
         () => { dropped++; return ''; }
     );
 
+    return { result: html, dropped, changed: html !== before };
+}
+
+function dropGtmDnsPrefetch(html) {
+    let dropped = 0;
+    const before = html;
+    html = html.replace(
+        /^[ \t]*<link\s+rel="dns-prefetch"\s+href="https:\/\/www\.googletagmanager\.com"[^>]*>\n/gm,
+        () => { dropped++; return ''; }
+    );
     return { result: html, dropped, changed: html !== before };
 }
 
@@ -660,6 +699,7 @@ function main() {
     let totalBootstrapJsDrops = 0;
     let totalBootstrapPreconnectDrops = 0;
     let totalArticleRuntimeHits = 0;
+    let totalGtmDnsDrops = 0;
 
     for (const rel of TARGET_HTML) {
         const abs = path.join(REPO_ROOT, rel);
@@ -703,6 +743,10 @@ function main() {
             else if (inj.replaced) { spriteNote = 'sprite refreshed'; totalSpriteOps++; }
         }
 
+        const gtmDnsDrop = dropGtmDnsPrefetch(result);
+        result = gtmDnsDrop.result;
+        totalGtmDnsDrops += gtmDnsDrop.dropped;
+
         // 3) inject/refresh critical-CSS block + asyncify local stylesheets
         let criticalNote = '';
         let conversions = [];
@@ -738,6 +782,7 @@ function main() {
         if (fontSwap.swaps.preconnectDropped) parts.push(`${fontSwap.swaps.preconnectDropped} preconnect drop`);
         if (fontSwap.swaps.preloadsInjected) parts.push(`${fontSwap.swaps.preloadsInjected} font preload`);
         if (faDropNote) parts.push(faDropNote);
+        if (gtmDnsDrop.dropped) parts.push(`${gtmDnsDrop.dropped} GTM dns-prefetch drop`);
         if (spriteNote) parts.push(spriteNote);
         console.log(`\n${rel}  →  ${parts.join(', ') || 'updated'}`);
         for (const h of hits) {
@@ -775,6 +820,15 @@ function main() {
         );
     }
 
+    const articleGtmDns = stampArticleGtmDnsPrefetch(dry);
+    totalGtmDnsDrops += articleGtmDns.dropped;
+    if (articleGtmDns.files) {
+        console.log(
+            `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleGtmDns.files} file(s), ` +
+            `${articleGtmDns.dropped} GTM dns-prefetch drop(s)`
+        );
+    }
+
     if (dry) {
         console.log(
             `\n(dry-run) ${totalHits} rewrite(s), ${totalCriticalOps} critical op(s), ` +
@@ -783,6 +837,7 @@ function main() {
             `${totalFaCdnDrops} FA CDN drop(s), ${totalBootstrapCssSwaps} Bootstrap CSS swap(s), ` +
             `${totalBootstrapCssDrops} Bootstrap CSS drop(s), ${totalBootstrapJsDrops} Bootstrap JS drop(s), ` +
             `${totalBootstrapPreconnectDrops} jsDelivr preconnect drop(s), ` +
+            `${totalGtmDnsDrops} GTM dns-prefetch drop(s), ` +
             `${totalArticleRuntimeHits} article runtime script stamp(s) planned.`
         );
     } else {
@@ -793,6 +848,7 @@ function main() {
             `${totalFaCdnDrops} FA CDN drop(s), ${totalBootstrapCssSwaps} Bootstrap CSS swap(s), ` +
             `${totalBootstrapCssDrops} Bootstrap CSS drop(s), ${totalBootstrapJsDrops} Bootstrap JS drop(s), ` +
             `${totalBootstrapPreconnectDrops} jsDelivr preconnect drop(s), ` +
+            `${totalGtmDnsDrops} GTM dns-prefetch drop(s), ` +
             `${totalArticleRuntimeHits} article runtime script stamp(s) across ${TARGET_HTML.length} shell file(s).`
         );
     }

@@ -418,6 +418,42 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
     .cookie-banner, .cookie-consent { padding-bottom: env(safe-area-inset-bottom); }
 }
 
+/* ── Compact consent banner ───────────────────── */
+.cookie-banner,
+.cookie-consent { max-height: min(34vh, 320px); border-radius: 12px 12px 0 0; }
+.cookie-content { padding: 1rem 1.25rem; }
+.cookie-header { margin-bottom: 0.5rem; padding-bottom: 0.35rem; position: static; }
+.cookie-header h3 { font-size: 1rem; }
+.cookie-intro,
+.cookie-content > p { margin: 0; font-size: 0.9rem; line-height: 1.45; }
+.cookie-details { margin: 0.65rem 0 0; border-radius: 8px; }
+.cookie-settings-summary {
+    cursor: pointer;
+    padding: 0.7rem 0.9rem;
+    color: var(--accent);
+    font-weight: 700;
+    list-style-position: inside;
+}
+.cookie-section { padding: 0.8rem 0.95rem; }
+.cookie-section h4 { font-size: 0.9rem; margin-bottom: 0.3rem; }
+.cookie-section p { margin: 0; font-size: 0.82rem; line-height: 1.4; }
+.cookie-actions { justify-content: flex-end; gap: 0.5rem; margin: 0.75rem 0 0; }
+.cookie-btn { min-width: 0; padding: 0.6rem 1rem; font-size: 0.85rem; white-space: nowrap; }
+.cookie-footer { margin-top: 0.65rem; font-size: 0.8rem; }
+
+@media (max-width: 767.98px) {
+    .cookie-banner,
+    .cookie-consent { max-height: 28vh; border-radius: 0; }
+    .cookie-content { padding: 0.75rem 0.85rem; }
+    .cookie-header { margin-bottom: 0.35rem; }
+    .cookie-intro,
+    .cookie-content > p { font-size: 0.82rem; }
+    .cookie-details { margin-top: 0.5rem; }
+    .cookie-actions { flex-direction: row; gap: 0.45rem; margin: 0.65rem 0 0; }
+    .cookie-btn { width: auto; flex: 1 1 0; padding: 0.55rem 0.45rem; font-size: clamp(0.72rem, 2.8vw, 0.82rem); }
+    .cookie-footer { display: none; }
+}
+
 /* ── Landscape phone — shrink hero so it isn't mostly navbar ── */
 @media (max-height: 500px) and (orientation: landscape) {
     #hero { min-height: auto; padding: 2rem 0 1.5rem; clip-path: none; }

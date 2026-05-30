@@ -255,7 +255,7 @@
 }
 
 [data-theme="light"] .latest-tab {
-    color: #86868b !important;
+    color: #5f5f67 !important;
     background: transparent !important;
 }
 
@@ -764,7 +764,7 @@ h1, h2, h3, h4, p, a, span {
 }
 
 [data-theme="light"] .sponsor-strip-home .sponsor-strip-label {
-    color: #86868b;
+    color: #5f5f67;
 }
 
 [data-theme="light"] .sponsor-logo {
@@ -784,7 +784,7 @@ h1, h2, h3, h4, p, a, span {
 }
 
 [data-theme="light"] .sponsor-strip-label {
-    color: #86868b;
+    color: #5f5f67;
 }
 
 /* ── Episode (ep-card) — Light theme ─────────── */
