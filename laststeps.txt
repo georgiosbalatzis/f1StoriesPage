@@ -1,0 +1,1180 @@
+LAST STEPS TO GET F1 STORIES TO A+
+
+Objective
+
+Bring the codebase, visuals, and performance from the current B to B+ range to an A+ production standard.
+
+The target is not only better Lighthouse numbers. The target is a product that feels professionally operated: fast first paint, stable layout, polished mobile UI, clean deploy surface, compliant analytics behavior, automated regression gates, and no public clutter.
+
+
+A+ Acceptance Bar
+
+Use these as release gates. Do not call the work complete until all are true.
+
+1. Production Lighthouse, mobile, median of 3 runs:
+   - Home: Performance >= 95, Accessibility >= 98, Best Practices = 100, SEO = 100.
+   - Blog index: Performance >= 95, Accessibility >= 98, Best Practices = 100, SEO = 100.
+   - Standings: Performance >= 95, Accessibility >= 98, Best Practices = 100, SEO = 100.
+
+2. Core Web Vitals, production:
+   - LCP <= 2.5s on home, blog index, and standings.
+   - CLS <= 0.02 on home, blog index, and standings.
+   - INP <= 200ms.
+   - TBT <= 100ms in Lighthouse.
+
+3. Visual QA:
+   - No clipped tags, buttons, category pills, cards, chart labels, or nav items on 390px, 768px, 1440px, and 1920px widths.
+   - Cookie UI must not block the product experience. On mobile it should use a compact banner or sheet that leaves the page understandable.
+   - Home, blog, and standings must look intentional on first load with no blank avatars, no grey image blocks above the fold, and no large dead whitespace.
+
+4. Public deploy hygiene:
+   - No private task files served from the public site.
+   - No source maps served publicly unless intentionally required.
+   - No admin publishing tools exposed publicly without real access control.
+   - No source-only files such as `.docx`, draft `.txt`, original large `.png`, or original `.jpg` files in the deploy artifact unless they are intentionally linked public assets.
+
+5. Automation:
+   - One command verifies build, tests, budget, and Lighthouse budgets locally.
+   - CI runs the same checks on pull requests or pushes to main.
+   - Performance budget covers route-level Lighthouse results, not only file byte sizes.
+
+
+Current Baseline From Review
+
+Production Lighthouse on May 30, 2026:
+
+1. Home:
+   - Performance 95.
+   - Accessibility 97.
+   - Best Practices 100.
+   - SEO 100.
+   - FCP 1.2s.
+   - LCP 2.8s.
+   - CLS 0.001.
+   - TBT 0ms.
+
+2. Blog index:
+   - Performance 75.
+   - Accessibility 98.
+   - Best Practices 100.
+   - SEO 100.
+   - FCP 1.2s.
+   - LCP 8.0s.
+   - CLS 0.031.
+   - TBT 10ms.
+
+3. Standings:
+   - Performance 59.
+   - Accessibility 96.
+   - Best Practices 100.
+   - SEO 100.
+   - FCP 2.6s.
+   - LCP 4.0s.
+   - CLS 1.036.
+   - TBT 10ms.
+
+Automated checks that already pass:
+
+1. `npm run perf:budget`
+2. `node blog-module/build/__tests__/run-golden.js`
+
+
+PHASE 0: Create A Clean Baseline Before Editing
+
+Goal: make every later improvement measurable.
+
+Steps:
+
+1. Confirm the worktree is clean.
+   Command:
+   `git status --short`
+
+2. Install dependencies from lockfile.
+   Command:
+   `npm ci --no-audit --no-fund`
+
+3. Run the existing file-size budget.
+   Command:
+   `npm run perf:budget`
+
+4. Run the blog golden snapshots.
+   Command:
+   `node blog-module/build/__tests__/run-golden.js`
+
+5. Capture local Lighthouse JSON for the three core routes.
+   Commands:
+   `python3 -m http.server 8080 --bind 127.0.0.1`
+   `npx lighthouse http://127.0.0.1:8080/ --quiet --chrome-flags="--headless --no-sandbox" --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=perf/lighthouse-home.local.json`
+   `npx lighthouse http://127.0.0.1:8080/blog-module/blog/index.html --quiet --chrome-flags="--headless --no-sandbox" --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=perf/lighthouse-blog.local.json`
+   `npx lighthouse http://127.0.0.1:8080/standings/ --quiet --chrome-flags="--headless --no-sandbox" --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=perf/lighthouse-standings.local.json`
+
+6. Capture production Lighthouse JSON for the same routes.
+   Commands:
+   `npx lighthouse https://f1stories.gr/ --quiet --chrome-flags="--headless --no-sandbox" --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=perf/lighthouse-home.prod.json`
+   `npx lighthouse https://f1stories.gr/blog-module/blog/index.html --quiet --chrome-flags="--headless --no-sandbox" --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=perf/lighthouse-blog.prod.json`
+   `npx lighthouse https://f1stories.gr/standings/ --quiet --chrome-flags="--headless --no-sandbox" --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=perf/lighthouse-standings.prod.json`
+
+7. Add a small parser script if one does not exist.
+   Target file:
+   `scripts/perf/lighthouse-summary.mjs`
+
+   Required output:
+   - URL
+   - Performance score
+   - Accessibility score
+   - Best Practices score
+   - SEO score
+   - FCP
+   - LCP
+   - CLS
+   - TBT
+   - Speed Index
+   - top failed audits
+
+8. Update `perf/baseline-2026-04-20.md` or create a new baseline file.
+   Target file:
+   `perf/baseline-2026-05-30.md`
+
+   Include:
+   - current production numbers
+   - current local numbers
+   - screenshots used for review
+   - known critical defects
+
+Acceptance:
+
+1. Baseline file exists.
+2. Lighthouse JSON files are generated locally.
+3. The summary command prints the same metrics in a readable table.
+
+
+PHASE 1: Fix Standings Performance And CLS
+
+Goal: make standings feel like a professional data dashboard. This is the biggest production defect because CLS 1.036 is not acceptable.
+
+
+1. Fix minified ES module imports
+
+Problem:
+
+`standings/standings.min.js` is minified, but it imports unminified modules:
+
+`import ... from "./core/format.js"`
+
+That makes the browser fetch unminified core files after the page already preloads the minified files. It wastes requests, makes preloads less useful, and creates inconsistent deploy behavior.
+
+Files:
+
+1. `scripts/build/minify.mjs`
+2. `standings/standings.min.js`
+3. `standings/core/*.min.js`
+4. `standings/tabs/*.min.js`
+5. `standings/index.html`
+
+Implementation steps:
+
+1. Add a helper in `scripts/build/minify.mjs` after JS minification:
+   - It should rewrite static ESM import specifiers ending in `.js` to `.min.js`.
+   - It should rewrite static export specifiers ending in `.js` to `.min.js`.
+   - It should rewrite dynamic imports where the string literal is directly visible.
+   - It must only rewrite relative imports beginning with `./` or `../`.
+   - It must not rewrite external URLs.
+
+2. Apply the rewrite only to browser-shipped ESM modules:
+   - files under `standings/`
+   - any future browser module that imports sibling modules
+
+3. Keep source files readable.
+   - Do not change source imports in `standings/standings.js` to `.min.js`.
+   - Source files should continue importing `.js`.
+   - The build step should produce deploy-ready minified imports.
+
+4. Run:
+   `npm run build:assets`
+
+5. Verify the generated file:
+   `rg -n "from\\s+[\"']\\./core/.*\\.js|import\\([\"']\\./tabs/.*\\.js" standings/standings.min.js`
+
+   Expected:
+   - No raw `.js` imports from `standings.min.js`.
+   - Imports should point to `.min.js` files.
+
+6. Verify browser network:
+   - Open `/standings/` in a clean browser context.
+   - Confirm no requests for:
+     - `/standings/core/format.js`
+     - `/standings/core/teams.js`
+     - `/standings/core/drivers-meta.js`
+     - `/standings/core/cache.js`
+     - `/standings/core/fetchers.js`
+
+Acceptance:
+
+1. Standings page requests only minified browser JS files.
+2. Lighthouse no longer reports unminified JavaScript on standings.
+3. No duplicate preload/import mismatch remains.
+
+
+2. Remove standings font-driven layout shift
+
+Problem:
+
+Production Lighthouse reports the main CLS culprit as web fonts loading. The whole `body` shifts after Roboto, DM Sans, and Outfit files load.
+
+Files:
+
+1. `styles/fonts.css`
+2. `styles/critical-common.css`
+3. `standings/standings.css`
+4. `standings/index.html`
+5. `scripts/build/stamp-html.mjs`
+6. `scripts/build/download-fonts.mjs` if font generation needs changes
+
+Implementation steps:
+
+1. Audit above-the-fold typography on standings.
+   - Header title.
+   - Race metadata badge.
+   - Tabs.
+   - Driver table rows.
+   - Chart title.
+
+2. Use fewer font families above the fold.
+   - Prefer one primary family for standings first paint.
+   - Use Roboto or system UI for table text.
+   - Avoid mixing Roboto, DM Sans, and Outfit in above-the-fold standings UI unless all needed subsets are preloaded and metric adjusted.
+
+3. Preload the actual critical Greek font subsets used above the fold.
+   Current preload only covers some Latin files. Standings above the fold is Greek text, so the browser still fetches Greek subsets after render.
+
+   Add route-specific preloads for:
+   - `roboto-400-greek.woff2`
+   - `roboto-600-greek.woff2`
+   - `roboto-700-greek.woff2`
+
+   Only keep these if the measured CLS improves. If too much font preload hurts FCP, reduce to 400 and 700 or switch standings to system font for above-the-fold text.
+
+4. Add metric-compatible fallbacks.
+   Create fallback font faces like:
+   - `Roboto Fallback`
+   - `DM Sans Fallback`
+   - `Outfit Fallback`
+
+   Use local system fonts with `size-adjust`, `ascent-override`, `descent-override`, and `line-gap-override`.
+
+   Example pattern:
+   `@font-face { font-family: "Roboto Fallback"; src: local("Arial"); size-adjust: ...; ascent-override: ...; descent-override: ...; line-gap-override: 0%; }`
+
+   Tune values with before/after screenshots and CLS data. Do not guess once and move on.
+
+5. Consider `font-display: optional` for non-critical font weights.
+   - Keep `swap` or `optional` only where measured behavior improves.
+   - Do not apply blindly to every font.
+
+6. Lock stable dimensions for standings above-the-fold containers.
+   - Header block should reserve final height.
+   - Tabs row should reserve final height and horizontal overflow.
+   - Table skeleton rows should match final row heights.
+   - Chart container should reserve final height before data render.
+
+7. Ensure standings skeleton and final rows have the same core dimensions.
+   Check:
+   - `.skeleton-row`
+   - `.st-row`
+   - `.st-headshot`
+   - `.st-pos`
+   - `.st-points-area`
+   - `.st-bar-wrap`
+
+8. Run local Lighthouse three times.
+   Target:
+   - CLS <= 0.02 locally.
+   - CLS <= 0.02 on production after deploy.
+
+Acceptance:
+
+1. Production standings CLS <= 0.02.
+2. No Lighthouse `layout-shifts` audit failure.
+3. No body-wide shift caused by font loading.
+4. Visual table layout does not jump when fonts and data finish loading.
+
+
+3. Improve standings first paint and request graph
+
+Files:
+
+1. `standings/index.html`
+2. `standings/standings.js`
+3. `standings/core/fetchers.js`
+4. `standings/core/cache.js`
+5. `sw.js`
+
+Implementation steps:
+
+1. Keep the default drivers tab light.
+   - Do not load heavy tab modules until clicked or linked.
+   - Confirm route activation does not import non-active tabs.
+
+2. Keep driver headshots optimized.
+   - Ensure all above-the-fold driver images are local WebP.
+   - Confirm no OpenF1 remote headshot URLs are used on first render if local versions exist.
+
+3. Avoid fetching all driver images before needed if it hurts performance.
+   - Above-the-fold rows can load eager if they are visible.
+   - Rows below the viewport should use `loading="lazy"`.
+
+4. Keep chart render stable.
+   - Render chart only after table content or reserve chart height from the start.
+   - Do not let chart insertion push the footer in Lighthouse viewport.
+
+5. Re-run production Lighthouse after deploy.
+   Target:
+   - Performance >= 95.
+   - LCP <= 2.5s.
+   - CLS <= 0.02.
+
+Acceptance:
+
+1. Standings reaches A+ performance target.
+2. No visible layout jump on mobile.
+3. No unminified module requests.
+
+
+PHASE 2: Fix Blog LCP, Mobile Polish, And Card Rendering
+
+Goal: make the blog index feel like a professional publication index, not a JS-rendered grid that slowly discovers its first image.
+
+
+1. Fix first-card LCP image discovery
+
+Problem:
+
+The first visible article image is inserted by JS with `data-src` and `loading="lazy"`. Lighthouse flags the LCP image as not discoverable in the initial document, not priority hinted, and lazy-loaded.
+
+File:
+
+`blog-module/blog-index.js`
+
+Current area:
+
+`renderCard(post, idx)`
+
+Implementation steps:
+
+1. Change `renderCard(post, idx)` so the first visible card image is eager:
+   - For `idx === 0`, render `src="..."`, not `data-src`.
+   - For `idx === 0`, set `loading="eager"`.
+   - For `idx === 0`, set `fetchpriority="high"`.
+   - For `idx === 0`, add class `loaded` immediately.
+
+2. Consider eager-loading the second card only if tests show it helps perceived render without hurting bandwidth.
+   Suggested:
+   - `idx === 0`: eager, high priority.
+   - `idx === 1`: eager, default priority.
+   - `idx >= 2`: current lazy behavior.
+
+3. Do not remove lazy loading for the full grid.
+   The blog has many posts. Full eager loading would regress performance.
+
+4. Update `lazyLoadImages()` so it ignores images that already have `src`.
+
+5. Add a preload for the first article thumbnail if the first page remains JS-rendered.
+   Options:
+   - Inline a small script in `blog/index.html` that reads a build-time first post manifest.
+   - Generate a route-specific `<link rel="preload" as="image" href="...">` at build time.
+
+6. Run:
+   `npm run build:assets`
+
+Acceptance:
+
+1. Lighthouse no longer flags blog LCP image as lazy-loaded.
+2. Lighthouse no longer flags blog LCP request discovery.
+3. Production blog LCP improves below 2.5s.
+
+
+2. Generate above-the-fold blog markup at build time
+
+Problem:
+
+The blog index waits for JS and `blog-index-data.json` before meaningful article content appears. The JSON payload is about 209 KB and contains the full listing.
+
+Files:
+
+1. `blog-module/blog/index.html`
+2. `blog-module/build/index.js`
+3. `blog-module/build/metadata.js`
+4. `blog-module/blog-index.js`
+5. `blog-module/blog-index-data.json`
+
+Implementation steps:
+
+1. Add build-time rendering for the first page of blog cards.
+   - Generate the first 12 card cards into `blog-module/blog/index.html`.
+   - Keep the same card markup that `blog-index.js` produces.
+   - Use idempotent markers:
+     - `<!-- f1s:blog-first-page:begin -->`
+     - `<!-- f1s:blog-first-page:end -->`
+
+2. Make the first card image discoverable in static HTML.
+   - `src`
+   - `loading="eager"`
+   - `fetchpriority="high"`
+   - width and height
+
+3. Make cards 2 to 12 static but lazy where appropriate.
+   - Cards visible in the first viewport can be eager.
+   - Cards below the fold should remain lazy.
+
+4. Let `blog-index.js` hydrate the existing static cards.
+   - It should not blank the grid immediately.
+   - It should attach filters, search, and pagination.
+   - When filters change, it can re-render.
+
+5. Split the blog data payload.
+   Recommended structure:
+   - `blog-module/blog-index-page-1.json` for page 1 and category metadata.
+   - `blog-module/blog-index-data.json` for full search and pagination.
+
+6. Defer loading full `blog-index-data.json` until:
+   - user searches
+   - user changes category
+   - user goes to page 2+
+
+7. Keep no-JS behavior useful.
+   - Static first page cards should link to articles.
+   - Pagination can remain enhanced by JS, but first page must be readable.
+
+Acceptance:
+
+1. Blog index shows real cards before JS completes.
+2. Blog first LCP image is in initial HTML.
+3. Production blog Performance >= 95.
+4. Production blog LCP <= 2.5s.
+
+
+3. Fix blog card footer overflow and mobile clipping
+
+Problem:
+
+Category chips overflow or clip in card footers, especially on mobile and in long category strings.
+
+Files:
+
+1. `blog-module/blog-styles.css`
+2. `blog-module/blog-index.js`
+3. `blog-module/build/metadata.js`
+
+Implementation steps:
+
+1. Constrain category labels.
+   - Limit each card to 2 visible categories.
+   - Add `+N` only if more exist.
+   - Normalize generated category strings so they do not become long comma-separated text.
+
+2. Update CSS:
+   - `.article-card-footer` should support wrapping on narrow widths.
+   - `.article-card-read` should not shrink into unreadable text.
+   - `.article-card-cats` should have `min-width: 0`.
+   - `.article-card-cat` should use `max-width`, `overflow: hidden`, `text-overflow: ellipsis`.
+
+3. Mobile layout:
+   - Put tags on a second row under the read link if available width is too small.
+   - Do not horizontally scroll individual cards.
+
+4. Desktop layout:
+   - Keep footer visually balanced.
+   - Do not let long tags push the read link.
+
+Acceptance:
+
+1. No visible clipping on 390px.
+2. No card footer overflow on 1440px.
+3. All cards keep a stable height rhythm.
+
+
+4. Fix blog heading order
+
+Problem:
+
+Lighthouse flags heading order because the page has `h1` then article card `h3` without a preceding `h2`.
+
+Files:
+
+1. `blog-module/blog/index.html`
+2. `blog-module/blog-index.js`
+3. `blog-module/blog-styles.css`
+
+Implementation steps:
+
+1. Preferred fix:
+   - Change article card titles from `h3` to `h2`.
+   - Style remains identical through `.article-card-title`.
+
+2. Alternative fix:
+   - Add a visible or visually hidden `h2` before the article grid.
+   - Keep card titles as `h3`.
+
+3. Re-run Lighthouse accessibility.
+
+Acceptance:
+
+1. No `heading-order` Lighthouse failure.
+2. Visual card typography does not change unexpectedly.
+
+
+PHASE 3: Fix Cookie Consent And Analytics Risk
+
+Goal: make the first visit feel professional and make analytics behavior defensible for a Greek/EU-facing site.
+
+
+1. Decide consent policy
+
+Required decision:
+
+Choose one of these policies and document it in `privacy/privacy.html`.
+
+Option A, recommended:
+Analytics off until explicit opt-in.
+
+Option B:
+Consent Mode starts with denied storage, GA loads but stores no analytics cookies until user accepts.
+
+Do not leave the current behavior undocumented. Current logic treats missing consent as analytics granted.
+
+Files:
+
+1. `scripts/analytics.js`
+2. `scripts/cookie-consent.js`
+3. `privacy/privacy.html`
+4. `privacy/terms.html` if needed
+
+
+2. Change analytics default
+
+Implementation steps for Option A:
+
+1. In `scripts/analytics.js`, change `buildConsentState(consent)` so missing consent is denied.
+   - Missing consent should not mean analytics granted.
+
+2. Do not inject `https://www.googletagmanager.com/gtag/js` until consent exists and `analytics === true`.
+
+3. If user chooses anonymous measurement:
+   - Keep analytics denied.
+   - Do not load GA.
+   - Optionally keep local, non-identifying performance logging if no network beacon is sent.
+
+4. If user chooses full measurement:
+   - Store consent.
+   - Inject GA.
+   - Send page view.
+
+5. If user later rejects:
+   - Update consent.
+   - Stop future event sends.
+   - Consider deleting relevant GA cookies where possible.
+
+Acceptance:
+
+1. In a fresh browser profile, no request goes to `googletagmanager.com` before opt-in.
+2. After opt-in, GA loads and events work.
+3. After reject, GA does not load in new sessions.
+
+
+3. Redesign cookie UI
+
+Problem:
+
+The home cookie panel dominates the viewport. On mobile it hides the product before the visitor understands the site.
+
+Files:
+
+1. `index.html`
+2. `styles.css`
+3. `theme-overrides.css`
+4. `scripts/cookie-consent.js`
+
+Implementation steps:
+
+1. Replace the large default preferences panel with a compact first-visit banner.
+   Content:
+   - One short sentence.
+   - Primary action: `Αποδοχή`
+   - Secondary action: `Ανώνυμη μέτρηση` or `Απόρριψη`
+   - Tertiary action: `Ρυθμίσεις`
+
+2. Move detailed toggles into a modal or expandable details panel.
+
+3. Mobile rules:
+   - Banner max height should be <= 28vh.
+   - Buttons must fit without wrapping awkwardly.
+   - Page content must remain understandable behind it.
+
+4. Desktop rules:
+   - Banner should not cover the latest cards.
+   - Keep it visually quiet.
+
+5. Accessibility:
+   - Use real buttons.
+   - Manage focus if opening a modal.
+   - Escape closes modal but should not silently accept tracking.
+
+Acceptance:
+
+1. First mobile viewport still shows the brand and enough content to understand the page.
+2. No button text overflow.
+3. Consent choice is clear and reversible.
+4. Lighthouse accessibility stays >= 98.
+
+
+PHASE 4: Improve Home Visual Quality
+
+Goal: bring the home page from good-enough to professional brand surface.
+
+
+1. Improve hero image and brand signal
+
+Current issue:
+
+The desktop hero reads as washed-out and overly blurred. Mobile can appear too plain or weak depending on the selected background.
+
+Files:
+
+1. `index.html`
+2. `home.css`
+3. `styles.css`
+4. `scripts/background-randomizer.js`
+5. `images/bg/*`
+
+Implementation steps:
+
+1. Audit each hero background on desktop and mobile.
+   - `bg1` through `bg9`
+   - AVIF and WebP
+   - mobile variants
+
+2. Remove or replace backgrounds that look low-quality, too blurred, too abstract, or too pale.
+
+3. Ensure each selected background has:
+   - visible F1 subject matter
+   - good contrast behind the headline
+   - mobile crop that still reads as motorsport
+
+4. Tune overlay:
+   - Keep text contrast high.
+   - Avoid making the whole image look grey.
+   - Use route-specific CSS if needed.
+
+5. Add a stronger brand signal above the fold.
+   Options:
+   - Larger podcast mark.
+   - Short primary CTA to latest article or YouTube.
+   - Subtle sponsor placement remains below, not competing with hero.
+
+6. Re-test LCP.
+   Home already scores 95, so do not regress it.
+
+Acceptance:
+
+1. Home still scores Performance >= 95.
+2. Hero looks intentional on mobile and desktop.
+3. Text contrast passes Lighthouse.
+
+
+2. Fix team avatar blanks and dead whitespace
+
+Current issue:
+
+Some team avatars render as nearly blank white circles in screenshots. The home page also has a large amount of empty vertical space before the footer.
+
+Files:
+
+1. `index.html`
+2. `home.css`
+3. `images/avatars/*`
+
+Implementation steps:
+
+1. Inspect every avatar asset.
+   - Confirm transparency.
+   - Confirm contrast on white and dark backgrounds.
+   - Confirm actual subject is visible at 90px to 120px.
+
+2. Replace or restyle weak avatars.
+   - Add a subtle filled background inside avatar circles if transparent art lacks contrast.
+   - Use consistent crop and scale.
+
+3. Check why the contact section is not prominent in the rendered page.
+   - If it intentionally exists, make it visible and polished.
+   - If it is not needed, remove the dead layout space.
+
+4. Reduce unnecessary vertical gaps.
+   - Keep breathing room.
+   - Avoid blank-page feeling between team and footer.
+
+Acceptance:
+
+1. Every avatar is visible on mobile and desktop.
+2. No large unexplained whitespace.
+3. The home page has a complete journey: hero, sponsors, latest content, team, contact or footer.
+
+
+PHASE 5: Public Deploy Hygiene
+
+Goal: stop treating the repo root as the public artifact. A+ requires a clean deploy boundary.
+
+
+1. Remove public clutter from deployed site
+
+Current issue:
+
+Files such as `nextsteps.txt`, `appdev.txt`, source maps, source documents, and admin tools are present in the repo root or public tree. Some are noindexed, but noindex is not access control.
+
+Files and paths to review:
+
+1. `nextsteps.txt`
+2. `laststeps.txt`
+3. `appdev.txt`
+4. `generate.html`
+5. `housekeeping.html`
+6. `*.map`
+7. `blog-module/blog-entries/**/*.docx`
+8. `blog-module/blog-entries/**/*.png`
+9. `blog-module/blog-entries/**/*.jpg`
+10. `blog-module/blog-entries/**/*.jpeg`
+
+Implementation steps:
+
+1. Choose a real deploy model.
+
+Recommended:
+Deploy a generated artifact directory, not the repo root.
+
+Suggested directory:
+`dist/`
+
+2. Add a build script that copies only public files into `dist/`.
+   Target file:
+   `scripts/build/public-artifact.mjs`
+
+3. Include:
+   - public HTML pages
+   - minified CSS and JS
+   - optimized images
+   - public JSON data
+   - fonts
+   - manifest
+   - service worker
+   - robots
+   - sitemap
+
+4. Exclude:
+   - `nextsteps.txt`
+   - `laststeps.txt`
+   - `appdev.txt`
+   - source maps unless explicitly required
+   - raw `.docx`
+   - raw `.txt` article sources
+   - original `.png`, `.jpg`, `.jpeg` files where optimized `.webp` or `.avif` versions exist
+   - internal admin tools unless protected elsewhere
+   - build scripts
+   - tests
+   - package lock files unless needed publicly, which they are not
+
+5. Update GitHub Pages deployment.
+   - Prefer GitHub Actions Pages artifact deploy.
+   - Do not deploy from repo root.
+
+6. If GitHub Pages root deploy must remain temporarily:
+   - Move internal text files out of root.
+   - Remove source maps from committed public paths or stop linking them.
+   - Move `generate.html` and `housekeeping.html` out of public deploy.
+   - Add `Disallow` rules for temporary mitigation, but do not count that as final security.
+
+Acceptance:
+
+1. Public deployed artifact contains only files intended for visitors.
+2. `https://f1stories.gr/nextsteps.txt` and similar internal paths return 404.
+3. `https://f1stories.gr/scripts/*.map` returns 404 unless source maps are intentionally public.
+4. Admin pages are not publicly reachable unless protected by real authentication.
+
+
+2. Add deploy artifact validation
+
+Implementation steps:
+
+1. Add script:
+   `scripts/build/validate-public-artifact.mjs`
+
+2. The script should fail if `dist/` contains:
+   - `.docx`
+   - `.bak`
+   - `.map`
+   - `nextsteps.txt`
+   - `laststeps.txt`
+   - `appdev.txt`
+   - raw article source `.txt`
+   - files over a configured size limit without allowlist
+
+3. Add package script:
+   `"build:public": "npm run build && node scripts/build/public-artifact.mjs && node scripts/build/validate-public-artifact.mjs"`
+
+Acceptance:
+
+1. CI fails if public clutter returns.
+2. Public artifact size is tracked.
+
+
+PHASE 6: Security And Policy Headers
+
+Goal: raise the trust level of the public site.
+
+Current issue:
+
+Only internal admin pages have a CSP meta tag. The public pages do not appear to have a full security header policy.
+
+Implementation steps:
+
+1. Decide whether to keep GitHub Pages directly or put Cloudflare in front.
+
+2. If Cloudflare is available, add response headers:
+   - `Content-Security-Policy`
+   - `Referrer-Policy: strict-origin-when-cross-origin`
+   - `Permissions-Policy`
+   - `X-Content-Type-Options: nosniff`
+   - `Strict-Transport-Security` if HTTPS is fully stable
+
+3. If staying on GitHub Pages only:
+   - Add CSP meta tags to public pages as a partial mitigation.
+   - Move inline scripts toward external files or hashed inline scripts.
+   - Avoid broad `unsafe-inline` where possible.
+
+4. Define a practical CSP.
+   Required allowances based on current product:
+   - self scripts and styles
+   - Google Tag Manager only after consent policy is fixed
+   - YouTube embeds
+   - Spotify embeds if used in articles
+   - OpenF1 and Jolpica API endpoints
+   - Formspree for contact form
+   - image hosts that are actually required
+
+5. Remove unused external allowances.
+   Do not include wide domains because they were useful once.
+
+Acceptance:
+
+1. Public pages have a documented security header strategy.
+2. CSP does not break article embeds or standings data.
+3. No new Lighthouse Best Practices regressions.
+
+
+PHASE 7: CI And Regression Gates
+
+Goal: make A+ sustainable.
+
+
+1. Add one local verification command
+
+File:
+
+`package.json`
+
+Add scripts:
+
+1. `test:blog`
+   `node blog-module/build/__tests__/run-golden.js`
+
+2. `perf:lighthouse`
+   Runs Lighthouse on home, blog, standings against local server.
+
+3. `verify`
+   Runs:
+   - build
+   - blog golden test
+   - size budget
+   - public artifact validation
+   - Lighthouse budget
+
+Suggested:
+
+`"verify": "npm run build && npm run test:blog && npm run perf:budget && npm run build:public && npm run perf:lighthouse"`
+
+
+2. Add Lighthouse budgets
+
+Files:
+
+1. `perf/lighthouse-budget.json`
+2. `scripts/perf/lighthouse-guard.mjs`
+
+Budget thresholds:
+
+1. Home:
+   - Performance >= 95
+   - Accessibility >= 98
+   - Best Practices = 100
+   - SEO = 100
+   - LCP <= 2500ms
+   - CLS <= 0.02
+   - TBT <= 100ms
+
+2. Blog:
+   - Same thresholds.
+
+3. Standings:
+   - Same thresholds.
+
+Implementation steps:
+
+1. Store route budgets in JSON.
+2. Parse Lighthouse JSON files.
+3. Fail if any route misses threshold.
+4. Print actionable route-specific failures.
+
+Acceptance:
+
+1. `npm run perf:lighthouse` fails when a route drops below target.
+2. Output clearly shows which route and metric failed.
+
+
+3. Add GitHub Actions quality workflow
+
+File:
+
+`.github/workflows/quality.yml`
+
+Workflow should run on:
+
+1. pull request
+2. push to main
+3. workflow dispatch
+
+Steps:
+
+1. Checkout.
+2. Setup Node.
+3. `npm ci --no-audit --no-fund`
+4. `npm run build`
+5. `npm run test:blog`
+6. `npm run perf:budget`
+7. `npm run build:public`
+8. Start static server.
+9. Run Lighthouse budgets.
+
+Acceptance:
+
+1. A regression cannot land silently.
+2. Build artifacts remain synchronized.
+3. Blog generator regressions fail fast.
+
+
+PHASE 8: Content And Asset Optimization
+
+Goal: keep the public experience fast as the content archive grows.
+
+
+1. Remove raw heavy article assets from public deploy
+
+Current observation:
+
+`blog-module/blog-entries` is about 146 MB and contains raw `.png`, `.jpg`, `.jpeg`, and `.docx` files alongside optimized output.
+
+Implementation steps:
+
+1. Keep source files in the repo if needed for editorial workflow.
+2. Exclude source files from `dist/`.
+3. Ensure each article references optimized `.webp` or `.avif` assets.
+4. Generate card thumbnails for all article hero images.
+5. Add a script that lists any public image over 300 KB.
+
+Suggested command:
+`find dist -type f \\( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" -o -name "*.avif" \\) -size +300k -print`
+
+Acceptance:
+
+1. Public artifact contains no accidental raw source assets.
+2. No article card image over budget without allowlist.
+3. Lighthouse image delivery warnings are either fixed or documented.
+
+
+2. Optimize blog index data
+
+Implementation steps:
+
+1. Reduce `blog-index-data.json`.
+   - Remove fields not used by the index.
+   - Keep full article metadata in `blog-data.json` if needed elsewhere.
+
+2. Split data by route need:
+   - home latest
+   - blog first page
+   - full blog search index
+
+3. Load the full search index only when needed.
+
+Acceptance:
+
+1. Initial blog index JSON payload is much smaller than 209 KB.
+2. Search and filters still work.
+3. Blog LCP stays under 2.5s.
+
+
+PHASE 9: Final Visual QA Matrix
+
+Goal: verify polish the way a user sees it.
+
+Use these viewports:
+
+1. Mobile: 390 x 844
+2. Tablet: 768 x 1024
+3. Desktop: 1440 x 900
+4. Wide desktop: 1920 x 1080
+
+Pages:
+
+1. `/`
+2. `/blog-module/blog/index.html`
+3. latest article page
+4. `/standings/`
+5. `/standings/?tab=constructors`
+6. `/standings/?tab=quali-gaps`
+7. `/standings/?tab=dirty-air`
+8. `/privacy/privacy.html`
+9. offline page
+
+Checklist:
+
+1. Navigation:
+   - active state correct
+   - mobile menu opens and closes
+   - countdown does not shift layout
+   - no nav text clips
+
+2. Home:
+   - hero image visible and professional
+   - sponsor strip aligned
+   - latest cards render real images
+   - tab buttons fit
+   - team avatars visible
+   - no dead whitespace
+   - contact path clear
+
+3. Cookie:
+   - first visit banner does not dominate
+   - choices work
+   - settings are reversible
+   - no GA request before opt-in if Option A is chosen
+
+4. Blog:
+   - first card image appears immediately
+   - no grey placeholders above the fold
+   - category filters fit
+   - search input fits
+   - card tags do not overflow
+   - pagination fits mobile
+   - heading order passes
+
+5. Article:
+   - article hero image loads
+   - related articles render
+   - embeds do not overflow
+   - tables are usable on mobile
+
+6. Standings:
+   - no layout jump after fonts load
+   - tabs scroll horizontally on mobile
+   - active tab visible
+   - table rows stable
+   - chart labels pass contrast
+   - share/embed buttons fit
+   - cache clear footer link does not look like a stray admin control
+
+7. Theme:
+   - light and dark modes both work
+   - contrast passes
+   - theme toggle does not shift content
+
+Acceptance:
+
+1. Save screenshots for all core pages and viewports.
+2. No visual issue remains that would look amateur in a sponsor/client review.
+
+
+PHASE 10: Final A+ Release Process
+
+Run this sequence before calling the project A+.
+
+1. Clean install:
+   `rm -rf node_modules`
+   `npm ci --no-audit --no-fund`
+
+2. Build:
+   `npm run build`
+
+3. Blog tests:
+   `node blog-module/build/__tests__/run-golden.js`
+
+4. Size budget:
+   `npm run perf:budget`
+
+5. Public artifact:
+   `npm run build:public`
+
+6. Local Lighthouse budget:
+   `npm run perf:lighthouse`
+
+7. Manual local smoke:
+   `python3 -m http.server 8080 --bind 127.0.0.1`
+   Visit:
+   - `http://127.0.0.1:8080/`
+   - `http://127.0.0.1:8080/blog-module/blog/index.html`
+   - `http://127.0.0.1:8080/standings/`
+
+8. Deploy to production.
+
+9. Run production Lighthouse median of 3.
+
+10. Check production paths that must not exist:
+    - `/nextsteps.txt`
+    - `/laststeps.txt`
+    - `/appdev.txt`
+    - `/generate.html`
+    - `/housekeeping.html`
+    - any `*.map`
+    - any raw source `.docx`
+
+11. Confirm GA consent behavior in production with a fresh profile.
+
+12. Confirm service worker update path.
+    - Existing user gets updated assets.
+    - No stale CSS or JS remains pinned.
+
+Final A+ criteria:
+
+1. Home, blog, and standings all pass Lighthouse thresholds.
+2. Visual QA passes all viewport checks.
+3. Public deploy contains only intended visitor-facing assets.
+4. Analytics consent behavior is documented and technically enforced.
+5. CI blocks future regressions.
+
+
+Suggested Work Order
+
+Do the work in this exact order:
+
+1. Standings minified import fix.
+2. Standings CLS font fix.
+3. Blog LCP first-card fix.
+4. Blog static first-page rendering.
+5. Cookie and analytics policy fix.
+6. Blog card overflow and heading order polish.
+7. Home visual polish.
+8. Public artifact deploy cleanup.
+9. Security headers.
+10. CI Lighthouse gates.
+11. Final production validation.
+
+Reason:
+
+The first four items move the measurable product quality fastest. Consent and deploy hygiene then remove professional risk. Visual polish and CI make the improvement stick.
