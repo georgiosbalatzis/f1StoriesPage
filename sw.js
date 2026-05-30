@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v31
+   F1 Stories — Service Worker v32
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,10 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v32 bump: Phase 2.2 blog first paint — the blog index now ships a
+   static first page plus a small /blog-module/blog-index-page-1.json
+   metadata payload. Returning sessions refresh onto the split data graph
+   instead of pinning the old full-feed preload path.
    v31 bump: Phase 1.3 standings first paint — the drivers/constructors
    route now has a committed standings snapshot cached as data, so returning
    sessions can render the default dashboard before standings Jolpica/OpenF1
@@ -118,11 +122,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v31';
-var CACHE_SHELL   = 'f1s-shell-v31';
-var CACHE_PAGES   = 'f1s-pages-v31';
-var CACHE_ASSETS  = 'f1s-assets-v31';
-var CACHE_DATA    = 'f1s-data-v31';
+var SW_VERSION    = 'v32';
+var CACHE_SHELL   = 'f1s-shell-v32';
+var CACHE_PAGES   = 'f1s-pages-v32';
+var CACHE_ASSETS  = 'f1s-assets-v32';
+var CACHE_DATA    = 'f1s-data-v32';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
@@ -145,6 +149,7 @@ var SHELL_ASSETS = [
   '/images/logo-256.webp',
   '/images/icons/icon-192.png',
   '/blog-module/blog/index.html',
+  '/blog-module/blog-index-page-1.json',
   '/blog-module/blog-styles.min.css',
   '/standings/index.html',
   '/standings/standings.min.css',
@@ -215,6 +220,7 @@ function isStaticAsset(pathname) {
 function isBlogData(pathname) {
   return pathname === '/blog-module/blog-data.json'
       || pathname === '/blog-module/blog-index-data.json'
+      || pathname === '/blog-module/blog-index-page-1.json'
       || pathname === '/blog-module/home-latest.json';
 }
 
@@ -287,7 +293,8 @@ function recentArticleUrls(posts) {
 }
 
 function precacheRecentArticles() {
-  return jsonFrom('/blog-module/blog-index-data.json')
+  return jsonFrom('/blog-module/blog-index-page-1.json')
+    .catch(function () { return jsonFrom('/blog-module/blog-index-data.json'); })
     .catch(function () { return jsonFrom('/blog-module/home-latest.json'); })
     .then(function (payload) {
       var urls = recentArticleUrls(postsFromPayload(payload));

@@ -3,7 +3,15 @@ const os = require('os');
 const { updateDirtyAirCache } = require('../dirty-air-cache');
 const { updateDestructorsCache } = require('../destructors-cache');
 const { updateDebriefCache } = require('../../standings/debrief-cache');
-const { fs, path, CONFIG, utils, getCardThumbnailPath, getImageDimensionsForPublicPath } = require('./shared');
+const {
+    fs,
+    path,
+    CONFIG,
+    utils,
+    escapeHtmlAttribute,
+    getCardThumbnailPath,
+    getImageDimensionsForPublicPath
+} = require('./shared');
 const { generateSitemap } = require('./sitemap');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
@@ -99,6 +107,178 @@ async function buildIndexPosts(blogPosts) {
             categories
         };
     }));
+}
+
+function formatBlogIndexDate(post) {
+    const value = post.date || post.displayDate || '';
+    const parsed = value ? new Date(value.length === 10 ? `${value}T12:00:00` : value) : null;
+    if (parsed && !Number.isNaN(parsed.getTime())) {
+        return new Intl.DateTimeFormat('el-GR', { day: 'numeric', month: 'long', year: 'numeric' }).format(parsed);
+    }
+    return post.displayDate || post.date || '';
+}
+
+function formatReadingTime(value) {
+    return String(value || '').replace(/\bmin\b/gi, 'λεπ');
+}
+
+function getBlogIndexSummary(count) {
+    return `${count} ${count === 1 ? 'άρθρο' : 'άρθρα'}`;
+}
+
+function summarizeCategories(posts) {
+    const counts = {};
+    posts.forEach(post => {
+        (post.categories || []).forEach(category => {
+            const key = String(category || '').trim();
+            if (!key) return;
+            counts[key] = (counts[key] || 0) + 1;
+        });
+    });
+
+    return Object.keys(counts)
+        .sort((a, b) => {
+            const diff = counts[b] - counts[a];
+            return diff || a.localeCompare(b, 'el');
+        })
+        .map(name => ({ name, count: counts[name] }));
+}
+
+function renderBlogCategoryFilters(categories) {
+    const buttons = [
+        '<button class="category-chip active" data-category="all" aria-pressed="true">Όλες</button>'
+    ];
+
+    categories.forEach(category => {
+        const name = typeof category === 'string' ? category : category.name;
+        if (!name) return;
+        buttons.push(
+            `<button class="category-chip" data-category="${escapeHtmlAttribute(name)}" aria-pressed="false">${escapeHtmlAttribute(name)}</button>`
+        );
+    });
+
+    return buttons.join('\n                    ');
+}
+
+function renderBlogIndexCard(post, idx) {
+    const categories = (post.categories || [])
+        .slice(0, 2)
+        .map(category => `<span class="article-card-cat">${escapeHtmlAttribute(category)}</span>`)
+        .join('');
+    const url = post.url || `/blog-module/blog-entries/${post.id}/article.html`;
+    const image = post.thumbnail || post.image || CONFIG.DEFAULT_BLOG_IMAGE;
+    const author = post.author || 'F1 Stories';
+    const excerpt = post.excerpt || '';
+    let readingTime = post.readingTime || post.readTime || '';
+    if (!readingTime && post.wordCount) readingTime = `${Math.max(1, Math.ceil(post.wordCount / 200))} min`;
+    if (!readingTime && excerpt) readingTime = `${Math.max(2, Math.ceil(Math.round(excerpt.split(/\s+/).length * 10) / 200))} min`;
+    readingTime = formatReadingTime(readingTime);
+    const readBadge = readingTime
+        ? `<span>·</span><span class="article-card-reading-time"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> ${escapeHtmlAttribute(readingTime)}</span>`
+        : '';
+    const imageWidth = parseInt(post.thumbnailWidth, 10) || 400;
+    const imageHeight = parseInt(post.thumbnailHeight, 10) || 188;
+    const isLcpImage = idx === 0;
+    const imageClass = `article-card-img${isLcpImage ? ' loaded' : ''}`;
+    const imageAttrs = isLcpImage
+        ? ` src="${escapeHtmlAttribute(image)}" loading="eager" fetchpriority="high"`
+        : ` data-src="${escapeHtmlAttribute(image)}" loading="lazy"`;
+    const stagger = 0.06;
+    const animationDelay = Math.round(idx * stagger * 100) / 100;
+
+    return '<article class="article-card-wrap">'
+        + `<a href="${escapeHtmlAttribute(url)}" class="article-card" style="animation-delay:${animationDelay}s">`
+        + `<div class="article-card-img-wrap"><img class="${imageClass}" width="${imageWidth}" height="${imageHeight}"${imageAttrs} decoding="async" alt="${escapeHtmlAttribute(post.title)}" onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;"></div>`
+        + '<div class="article-card-body">'
+        + `<div class="article-card-meta"><span class="author-tag">${escapeHtmlAttribute(author)}</span><span>·</span><time class="article-card-date" datetime="${escapeHtmlAttribute(post.date || '')}">${escapeHtmlAttribute(formatBlogIndexDate(post))}</time>${readBadge}</div>`
+        + `<h3 class="article-card-title">${escapeHtmlAttribute(post.title)}</h3>`
+        + `<p class="article-card-excerpt">${escapeHtmlAttribute(excerpt)}</p>`
+        + '</div>'
+        + `<div class="article-card-footer"><span class="article-card-read">Διαβάστε περισσότερα <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span><div class="article-card-cats">${categories}</div></div>`
+        + '</a>'
+        + '</article>';
+}
+
+function replaceMarkedBlock(html, begin, end, innerHtml) {
+    const start = html.indexOf(begin);
+    const finish = html.indexOf(end);
+    if (start === -1 || finish === -1 || finish < start) return html;
+    const lineStart = html.lastIndexOf('\n', start) + 1;
+    const indentMatch = html.slice(lineStart, start).match(/^[ \t]*/);
+    const indent = indentMatch ? indentMatch[0] : '';
+    return html.slice(0, start + begin.length)
+        + '\n'
+        + innerHtml
+        + '\n'
+        + indent
+        + html.slice(finish);
+}
+
+function injectBlogIndexFirstPage(indexPosts, pageOneData) {
+    const indexHtmlPath = path.join(CONFIG.OUTPUT_HTML_DIR, 'index.html');
+    if (!fs.existsSync(indexHtmlPath)) {
+        console.warn(`⚠️  Blog index HTML not found, static first-page render skipped: ${indexHtmlPath}`);
+        return false;
+    }
+
+    const firstPagePosts = pageOneData.posts || indexPosts.slice(0, 12);
+    const firstImage = firstPagePosts[0] && (firstPagePosts[0].thumbnail || firstPagePosts[0].image);
+    const preloadBlock = [
+        '<link rel="preload" href="/blog-module/blog-index-page-1.json" as="fetch" crossorigin>',
+        firstImage ? `<link rel="preload" as="image" href="${escapeHtmlAttribute(firstImage)}" fetchpriority="high">` : ''
+    ].filter(Boolean).join('\n    ');
+    const cards = firstPagePosts.map((post, idx) => renderBlogIndexCard(post, idx)).join('\n            ');
+    const categories = renderBlogCategoryFilters(pageOneData.categories || summarizeCategories(indexPosts));
+    const count = getBlogIndexSummary(pageOneData.totalCount || indexPosts.length);
+
+    let html = fs.readFileSync(indexHtmlPath, 'utf8');
+    const original = html;
+
+    html = html.replace(
+        /[ \t]*<link rel="preload" href="\/blog-module\/blog-index-data\.json" as="fetch" crossorigin>\n?/,
+        '    <!-- f1s:blog-index-preload:begin -->\n    <!-- f1s:blog-index-preload:end -->\n'
+    );
+    html = replaceMarkedBlock(
+        html,
+        '<!-- f1s:blog-index-preload:begin -->',
+        '<!-- f1s:blog-index-preload:end -->',
+        `    ${preloadBlock}`
+    );
+
+    html = html.replace(
+        /(<div class="category-strip" id="category-strip" aria-label="Φίλτρο κατηγορίας">)([\s\S]*?)(<\/div>)/,
+        `$1\n                    <!-- f1s:blog-categories:begin -->\n                    ${categories}\n                    <!-- f1s:blog-categories:end -->\n                $3`
+    );
+    html = replaceMarkedBlock(
+        html,
+        '<!-- f1s:blog-categories:begin -->',
+        '<!-- f1s:blog-categories:end -->',
+        `                    ${categories}`
+    );
+
+    html = html.replace(
+        /(<div class="post-count" id="post-count" aria-live="polite">)([\s\S]*?)(<\/div>)/,
+        `$1<!-- f1s:blog-count:begin -->${escapeHtmlAttribute(count)}<!-- f1s:blog-count:end -->$3`
+    );
+
+    html = html.replace(
+        /(<div class="articles-grid" id="articles-grid">)([\s\S]*?)(\n\s*<\/div>\n\s*<nav class="blog-pagination" id="blog-pagination")/,
+        `$1\n            <!-- f1s:blog-first-page:begin -->\n            ${cards}\n            <!-- f1s:blog-first-page:end -->$3`
+    );
+    html = replaceMarkedBlock(
+        html,
+        '<!-- f1s:blog-first-page:begin -->',
+        '<!-- f1s:blog-first-page:end -->',
+        `            ${cards}`
+    );
+
+    if (html !== original) {
+        fs.writeFileSync(indexHtmlPath, html);
+        console.log(`Blog first page rendered into ${indexHtmlPath}`);
+        return true;
+    }
+
+    return false;
 }
 
 async function buildHomeLatest(blogPosts) {
@@ -324,9 +504,10 @@ async function processBlogEntries(options = {}) {
         return String(b.id).localeCompare(String(a.id));
     });
 
+    const lastUpdated = new Date().toISOString();
     const blogData = {
         posts: blogPosts,
-        lastUpdated: new Date().toISOString()
+        lastUpdated
     };
     fs.writeFileSync(CONFIG.OUTPUT_JSON, JSON.stringify(blogData, null, 2));
     console.log(`Blog data saved to ${CONFIG.OUTPUT_JSON}`);
@@ -335,6 +516,17 @@ async function processBlogEntries(options = {}) {
     const indexPath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-data.json');
     fs.writeFileSync(indexPath, JSON.stringify({ posts: indexPosts }, null, 0));
     console.log(`Blog index data saved to ${indexPath} (${Math.round(JSON.stringify({ posts: indexPosts }).length / 1024)} KB)`);
+
+    const pageOneData = {
+        posts: indexPosts.slice(0, 12),
+        categories: summarizeCategories(indexPosts),
+        totalCount: indexPosts.length,
+        lastUpdated
+    };
+    const pageOnePath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-page-1.json');
+    fs.writeFileSync(pageOnePath, JSON.stringify(pageOneData, null, 0));
+    console.log(`Blog first-page data saved to ${pageOnePath} (${Math.round(JSON.stringify(pageOneData).length / 1024)} KB)`);
+    injectBlogIndexFirstPage(indexPosts, pageOneData);
 
     const homeLatest = await buildHomeLatest(blogPosts);
     const homeLatestPath = path.join(CONFIG.BLOG_DIR, '..', 'home-latest.json');
@@ -391,6 +583,9 @@ module.exports = {
     runWorkerPool,
     fixMissingAuthors,
     buildIndexPosts,
+    summarizeCategories,
+    renderBlogIndexCard,
+    injectBlogIndexFirstPage,
     buildHomeLatest,
     loadExistingPosts,
     classifyEntry,

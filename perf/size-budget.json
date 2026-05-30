@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-30T09:43:43.142Z",
+  "updatedAt": "2026-05-30T09:55:46.806Z",
   "thresholdPercent": 10,
   "note": "Byte budgets for tracked JS/CSS/HTML assets. Run `npm run perf:budget` to check, `npm run perf:budget:update` to rewrite this file with current sizes. Threshold is the max % growth allowed before the check fails.",
   "files": {
@@ -46,7 +46,9 @@
     "scripts/perf/error-beacon.js": 3390,
     "scripts/perf/web-vitals-beacon.js": 3423,
     "blog-module/blog-loader.js": 8507,
-    "blog-module/blog-index.js": 16958,
+    "blog-module/blog-index.js": 21543,
+    "blog-module/blog-index-page-1.json": 13569,
+    "blog-module/blog-index-data.json": 213539,
     "blog-module/blog/article-script.js": 19419,
     "blog-module/blog-fixes.js": 13591,
     "blog-module/blog-processor.js": 236,
@@ -62,11 +64,11 @@
     "blog-module/build/nav.js": 1120,
     "blog-module/build/sitemap.js": 1839,
     "blog-module/build/worker.js": 9914,
-    "blog-module/build/index.js": 15203,
+    "blog-module/build/index.js": 23949,
     "blog-module/build/__tests__/golden.js": 11230,
     "blog-module/build/__tests__/run-golden.js": 778,
     "scripts/build/fetch-youtube.mjs": 5358,
-    "sw.js": 18502,
+    "sw.js": 18956,
     "manifest.json": 2322,
     "assets/youtube-latest.json": 3329,
     "images/icons/sprite.svg": 37808,
@@ -113,7 +115,7 @@
     "scripts/perf/error-beacon.min.js": 1753,
     "scripts/perf/web-vitals-beacon.min.js": 1508,
     "blog-module/blog-loader.min.js": 4288,
-    "blog-module/blog-index.min.js": 9462,
+    "blog-module/blog-index.min.js": 10900,
     "blog-module/blog/article-script.min.js": 12254,
     "blog-module/blog-fixes.min.js": 5484
   }

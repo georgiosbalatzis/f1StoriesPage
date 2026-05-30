@@ -66,6 +66,8 @@ const SOURCE_FILES = [
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog-loader.js',
     'blog-module/blog-index.js',
+    'blog-module/blog-index-page-1.json',
+    'blog-module/blog-index-data.json',
     'blog-module/blog/article-script.js',
     'blog-module/blog-fixes.js',
     'blog-module/blog-processor.js',
