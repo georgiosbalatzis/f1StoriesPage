@@ -73,16 +73,20 @@ body {
 /* a11y — the skip link stays offscreen until focused */
 .skip-link {
   position: absolute;
-  left: -9999px;
-  top: 0;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
   background: var(--accent);
-  color: #fff;
-  padding: 0.6rem 1rem;
+  color: var(--bg-base);
+  padding: 0.5rem 1.5rem;
   text-decoration: none;
-  z-index: 9999;
-  border-radius: 0 0 8px 0;
+  z-index: 10000;
+  border-radius: 0 0 6px 6px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
 }
-.skip-link:focus { left: 0; }
+.skip-link:focus { top: 0; }
 
 /* ── Shared fixed navbar (above-the-fold on every page) ── */
 .blog-nav {
@@ -102,8 +106,9 @@ body {
   min-height: 58px;
 }
 .blog-nav-brand img {
+  width: 38px;
   height: 38px;
-  width: auto;
+  object-fit: contain;
   display: block;
 }
 .blog-nav-links {
@@ -129,6 +134,98 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+.blog-nav-countdown {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+}
+.countdown-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.countdown-race {
+  max-width: 140px;
+  overflow: hidden;
+  color: rgba(255,255,255,0.38);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: .68rem;
+  font-weight: 500;
+}
+.countdown-timer {
+  color: #3b82f6;
+  font-size: .78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .02em;
+}
+.countdown-flag {
+  line-height: 1;
+  font-size: 1.1rem;
+}
+.blog-nav-countdown-mobile {
+  display: none;
+  align-items: center;
+  gap: .35rem;
+  color: #3b82f6;
+  font-size: .78rem;
+  font-weight: 600;
+}
+.blog-nav-countdown-mobile .countdown-flag-mobile {
+  line-height: 1;
+  font-size: 1rem;
+  font-style: normal;
+}
+.blog-nav-hamburger {
+  display: none;
+  width: 44px;
+  height: 44px;
+  padding: 8px;
+  border: 0;
+  background: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+}
+.blog-nav-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 2px;
+}
+.blog-nav-mobile {
+  display: none;
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 1rem;
+  border-top: 1px solid transparent;
+  background: rgba(17,17,19,0.97);
+}
+.blog-nav-mobile-link {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .75rem .85rem;
+  color: rgba(255,255,255,.6);
+  text-decoration: none;
+  border-radius: 8px;
+}
+@media (max-width: 991px) {
+  .blog-nav-links { display: none; }
+  .blog-nav-hamburger { display: flex; }
+  .blog-nav-mobile { display: block; }
+}
+@media (max-width: 767px) {
+  .blog-nav-countdown { display: none; }
+  .blog-nav-countdown-mobile { display: flex; }
 }
 
 /* ── Hero baseline (homepage/standings share this shape) ── */

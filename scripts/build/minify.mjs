@@ -33,6 +33,7 @@ const CSS_INPUTS = [
     'theme-overrides.css',
     'styles/shared-nav.css',
     'styles/critical-common.css',
+    'styles/critical-standings.css',
     'styles/fonts.css',
     'styles/vendor/bootstrap.slim.css',
     'blog-module/blog-styles.css',

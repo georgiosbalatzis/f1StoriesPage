@@ -371,7 +371,7 @@ a.ep-card:focus-visible, .card:focus-visible { outline: 2px solid var(--accent);
 .navbar-toggler:focus-visible { box-shadow: 0 0 0 3px var(--accent-muted) !important; outline: none; }
 
 /* Skip to content link */
-.skip-link { position: absolute; top: -100%; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg-base); padding: 0.5rem 1.5rem; border-radius: 0 0 var(--radius-sm) var(--radius-sm); font-weight: 700; font-size: var(--text-sm); z-index: 10000; text-decoration: none; transition: top var(--dur-fast) var(--ease-out); }
+.skip-link { position: absolute; top: -100%; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg-base); padding: 0.5rem 1.5rem; border-radius: 0 0 var(--radius-sm) var(--radius-sm); font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; font-weight: 700; font-size: var(--text-sm); z-index: 10000; text-decoration: none; transition: top var(--dur-fast) var(--ease-out); }
 .skip-link:focus { top: 0; }
 
 /* Reduced motion */

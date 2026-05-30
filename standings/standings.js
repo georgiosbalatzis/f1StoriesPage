@@ -17,11 +17,12 @@ import {
     normalizeDriverLookupKey
 } from './core/drivers-meta.js';
 import { cacheClear, cachePurgeExpired } from './core/cache.js';
-import { fetchJSON } from './core/fetchers.js';
+import { fetchJSON, fetchJSONNoCache } from './core/fetchers.js';
 
 const JOLPICA = 'https://api.jolpi.ca/ergast/f1';
 const OPENF1  = 'https://api.openf1.org/v1';
 const YEAR    = new Date().getFullYear();
+const STANDINGS_SNAPSHOT_URL = 'standings-cache.json';
 
 const driversTable = document.getElementById('drivers-table');
 const constructorsTable = document.getElementById('constructors-table');
@@ -37,6 +38,10 @@ const constructorsChartBars = document.getElementById('constructors-chart-bars')
 const STANDINGS_ROW_HEIGHT = 62;
 const EXPECTED_DRIVER_ROWS = 22;
 const EXPECTED_CONSTRUCTOR_ROWS = 11;
+const ABOVE_FOLD_DRIVER_IMAGES = 10;
+const ABOVE_FOLD_CONSTRUCTOR_LOGOS = 8;
+const LIVE_STANDINGS_REFRESH_DELAY_MS = 3500;
+const LAZY_IMAGE_PLACEHOLDER = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 
 const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief', 'destructors'];
 const LIGHTWEIGHT_TABS = ['drivers', 'constructors'];
@@ -91,6 +96,9 @@ let pendingDebriefRound = '';
 let pendingDebriefView = 'single-lap';
 let scheduledModuleFrame = 0;
 let scheduledModuleTab = '';
+let latestStandingsSignature = '';
+let liveStandingsRefreshTimer = 0;
+let standingsLazyImageObserver = null;
 const tabModulePromises = Object.create(null);
 const tabModuleInstances = Object.create(null);
 
@@ -749,6 +757,8 @@ function activateStandingsTab(tabName, options) {
     });
 
     refreshEmbedVisibility();
+    if (nextTab === 'drivers' && driversTable) hydrateStandingsLazyImages(driversTable);
+    if (nextTab === 'constructors' && constructorsTable) hydrateStandingsLazyImages(constructorsTable);
     if (!options || !options.skipURL) writeStandingsURLState(true);
     window.setTimeout(revealRequestedTarget, 0);
 
@@ -779,13 +789,118 @@ function showError(el) {
     if (el === constructorsTable) finalizeRenderedPanel('constructors');
 }
 
-function loadStandings() {
-    if (standingsPromise) return standingsPromise;
+function imageLoadAttrs(index, eagerLimit, highPriority) {
+    if (index < eagerLimit) {
+        return ' loading="eager" decoding="async"' + (highPriority ? ' fetchpriority="high"' : '');
+    }
+    return ' loading="lazy" decoding="async"';
+}
 
+function imageSourceAttrs(url, index, eagerLimit, highPriority) {
+    if (index < eagerLimit) {
+        return ' src="' + escAttr(url) + '"' + imageLoadAttrs(index, eagerLimit, highPriority);
+    }
+    return ' src="' + LAZY_IMAGE_PLACEHOLDER + '" data-standings-lazy-src="' + escAttr(url) + '" loading="lazy" decoding="async" fetchpriority="low"';
+}
+
+function loadStandingsLazyImage(img) {
+    if (!img) return;
+    const src = img.getAttribute('data-standings-lazy-src');
+    if (!src) return;
+    img.removeAttribute('data-standings-lazy-src');
+    img.src = src;
+    if (standingsLazyImageObserver) standingsLazyImageObserver.unobserve(img);
+}
+
+function hydrateStandingsLazyImages(root) {
+    const scope = root || document;
+    const imgs = Array.prototype.slice.call(scope.querySelectorAll('img[data-standings-lazy-src]'));
+    if (!imgs.length) return;
+
+    if (!('IntersectionObserver' in window)) {
+        window.setTimeout(function() {
+            imgs.forEach(loadStandingsLazyImage);
+        }, 0);
+        return;
+    }
+
+    if (!standingsLazyImageObserver) {
+        standingsLazyImageObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting || entry.intersectionRatio > 0) {
+                    loadStandingsLazyImage(entry.target);
+                }
+            });
+        }, { rootMargin: '80px 0px' });
+    }
+
+    imgs.forEach(function(img) {
+        standingsLazyImageObserver.observe(img);
+    });
+}
+
+function getStandingsLists(payload) {
+    return payload
+        && payload.MRData
+        && payload.MRData.StandingsTable
+        && payload.MRData.StandingsTable.StandingsLists
+        ? payload.MRData.StandingsTable.StandingsLists
+        : [];
+}
+
+function standingsSignature(season, round, driverStandings, constructorStandings) {
+    const drivers = (driverStandings || []).map(function(s) {
+        const driver = s.Driver || {};
+        return [
+            s.position || '',
+            driver.driverId || '',
+            s.points || '',
+            s.wins || ''
+        ].join(':');
+    }).join('|');
+    const constructors = (constructorStandings || []).map(function(s) {
+        const constructor = s.Constructor || {};
+        return [
+            s.position || '',
+            constructor.constructorId || '',
+            s.points || '',
+            s.wins || ''
+        ].join(':');
+    }).join('|');
+    return [season || '', round || '', drivers, constructors].join('::');
+}
+
+function renderStandingsPayload(driverData, constructorData) {
+    const dList = getStandingsLists(driverData);
+    const cList = getStandingsLists(constructorData);
+
+    if (!dList || !dList.length) throw new Error('No driver standings data');
+
+    const dStandings = dList[0].DriverStandings || [];
+    const cStandings = cList && cList.length ? (cList[0].ConstructorStandings || []) : [];
+    const round = dList[0].round;
+    const season = dList[0].season;
+    const signature = standingsSignature(season, round, dStandings, cStandings);
+
+    if (signature && signature === latestStandingsSignature) return false;
+    latestStandingsSignature = signature;
+
+    document.getElementById('season-year').textContent = season || YEAR;
+    if (round) {
+        document.getElementById('round-badge').classList.add('is-visible');
+        document.getElementById('round-num').textContent = round;
+    }
+
+    renderDrivers(dStandings, {});
+    renderConstructors(cStandings, dStandings);
+    return true;
+}
+
+function fetchPrimaryStandings() {
     const driverUrl = JOLPICA + '/' + YEAR + '/driverstandings.json?limit=30';
     const constructorUrl = JOLPICA + '/' + YEAR + '/constructorstandings.json?limit=30';
 
-    standingsPromise = Promise.all([
+    return Promise.all([
         fetchJSON(driverUrl).catch(function() {
             return fetchJSON(JOLPICA + '/current/driverstandings.json?limit=30');
         }),
@@ -793,74 +908,53 @@ function loadStandings() {
             return fetchJSON(JOLPICA + '/current/constructorstandings.json?limit=30');
         })
     ]).then(function(results) {
-        const dData = results[0];
-        const cData = results[1];
-        const dList = dData.MRData.StandingsTable.StandingsLists;
-        const cList = cData.MRData.StandingsTable.StandingsLists;
+        return {
+            driverStandings: results[0],
+            constructorStandings: results[1]
+        };
+    });
+}
 
-        if (!dList || !dList.length) throw new Error('No driver standings data');
-
-        const dStandings = dList[0].DriverStandings;
-        const cStandings = cList && cList.length ? cList[0].ConstructorStandings : [];
-        const round = dList[0].round;
-        const season = dList[0].season;
-
-        document.getElementById('season-year').textContent = season;
-        if (round) {
-            document.getElementById('round-badge').classList.add('is-visible');
-            document.getElementById('round-num').textContent = round;
-        }
-
-        return enrichWithOpenF1().then(function(openf1Map) {
-            renderDrivers(dStandings, openf1Map);
-            renderConstructors(cStandings, dStandings, openf1Map);
-        }).catch(function() {
-            renderDrivers(dStandings, {});
-            renderConstructors(cStandings, dStandings, {});
-        });
+function renderPrimaryStandings(useFallback) {
+    return fetchPrimaryStandings().then(function(payload) {
+        renderStandingsPayload(payload.driverStandings, payload.constructorStandings);
     }).catch(function(err) {
+        if (!useFallback) {
+            console.warn('Live standings refresh skipped:', err);
+            return;
+        }
         console.error('Standings error:', err);
         return loadFromOpenF1Fallback();
     });
-
-    return standingsPromise;
 }
 
-function enrichWithOpenF1() {
-    return fetchJSON(OPENF1 + '/sessions?year=' + YEAR + '&session_type=Race')
-        .then(function(sessions) {
-            if (!sessions || !sessions.length) return {};
-            sessions.sort(function(a, b) {
-                return new Date(b.date_start || b.date) - new Date(a.date_start || a.date);
-            });
-            const now = new Date();
-            let sk = null;
-            for (let i = 0; i < sessions.length; i++) {
-                if (new Date(sessions[i].date_start || sessions[i].date) <= now) {
-                    sk = sessions[i].session_key;
-                    break;
-                }
-            }
-            if (!sk) return {};
-            return fetchJSON(OPENF1 + '/drivers?session_key=' + sk);
-        })
-        .then(function(drivers) {
-            if (!drivers || !Array.isArray(drivers)) return {};
-            const map = {};
-            drivers.forEach(function(d) {
-                const key = normalizeDriverLookupKey(d.last_name || '');
-                const fullName = d.full_name || [d.first_name, d.last_name].filter(Boolean).join(' ');
-                map[key] = {
-                    headshot: getCachedHeadshotResult('', fullName, d.headshot_url || '').url,
-                    teamColor: getCanonicalTeamColor('', d.team_name || '', d.team_colour || ''),
-                    acronym: d.name_acronym || '',
-                    teamName: d.team_name || '',
-                    number: d.driver_number
-                };
-            });
-            return map;
-        })
-        .catch(function() { return {}; });
+function scheduleLiveStandingsRefresh() {
+    if (liveStandingsRefreshTimer) return;
+    liveStandingsRefreshTimer = window.setTimeout(function() {
+        liveStandingsRefreshTimer = 0;
+        renderPrimaryStandings(false);
+    }, LIVE_STANDINGS_REFRESH_DELAY_MS);
+}
+
+function loadStandingsSnapshot() {
+    return fetchJSONNoCache(STANDINGS_SNAPSHOT_URL, 4500).then(function(snapshot) {
+        if (!snapshot || !snapshot.driverStandings || !snapshot.constructorStandings) {
+            throw new Error('Invalid standings snapshot');
+        }
+        renderStandingsPayload(snapshot.driverStandings, snapshot.constructorStandings);
+        scheduleLiveStandingsRefresh();
+    });
+}
+
+function loadStandings() {
+    if (standingsPromise) return standingsPromise;
+
+    standingsPromise = loadStandingsSnapshot().catch(function(snapshotError) {
+        console.warn('Standings snapshot unavailable:', snapshotError);
+        return renderPrimaryStandings(true);
+    });
+
+    return standingsPromise;
 }
 
 function loadFromOpenF1Fallback() {
@@ -901,7 +995,7 @@ function renderDrivers(standings, openf1Map) {
     const maxPts = parseFloat(standings[0].points) || 1;
     let html = '';
 
-    standings.forEach(function(s) {
+    standings.forEach(function(s, index) {
         const driver = s.Driver;
         const constructor = s.Constructors && s.Constructors[0];
         const cId = constructor ? constructor.constructorId : '';
@@ -917,11 +1011,12 @@ function renderDrivers(standings, openf1Map) {
         const of1 = openf1Map[lastName] || {};
         const hs = getCachedHeadshotResult(driverId, name, of1.headshot);
         const acr = of1.acronym || (driver.code || driverId.substring(0, 3)).toUpperCase();
+        const imgAttrs = hs.url ? imageSourceAttrs(hs.url, index, ABOVE_FOLD_DRIVER_IMAGES, index === 0) : '';
 
         html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
             + '<div class="st-pos">' + pos + '</div>'
             + '<div class="st-info">'
-            + (hs.url ? '<img class="st-headshot" src="' + esc(hs.url) + '" alt="' + esc(name) + '" width="40" height="40"' + hs.style + ' loading="lazy" decoding="async">'
+            + (hs.url ? '<img class="st-headshot" alt="' + esc(name) + '" width="40" height="40"' + hs.style + imgAttrs + '>'
                    + '<div class="st-avatar-fallback" style="display:none;color:#' + esc(tc) + ';">' + esc(acr) + '</div>'
                   : '<div class="st-avatar-fallback" style="color:#' + esc(tc) + ';">' + esc(acr) + '</div>')
             + '<div class="st-name-block"><div class="st-name">' + esc(name) + '</div><div class="st-team-label">' + esc(teamName) + '</div></div></div>'
@@ -932,6 +1027,7 @@ function renderDrivers(standings, openf1Map) {
             + '</div>';
     });
     driversTable.innerHTML = html;
+    hydrateStandingsLazyImages(driversTable);
 
     const top10 = standings.slice(0, 10);
     let chartHTML = '';
@@ -972,7 +1068,7 @@ function renderConstructors(standings, driverStandings) {
     const maxPts = parseFloat(standings[0].points) || 1;
     let html = '';
 
-    standings.forEach(function(s) {
+    standings.forEach(function(s, index) {
         const c = s.Constructor;
         const cId = c.constructorId;
         const teamName = c.name || '';
@@ -984,12 +1080,14 @@ function renderConstructors(standings, driverStandings) {
         const pos = s.position;
         const barPct = Math.max(2, (pts / maxPts) * 100);
         const shortName = teamName.substring(0, 3).toUpperCase();
+        const eagerLimit = activeStandingsTab === 'constructors' ? ABOVE_FOLD_CONSTRUCTOR_LOGOS : 0;
+        const imgAttrs = logo ? imageSourceAttrs(logo, index, eagerLimit, activeStandingsTab === 'constructors' && index === 0) : '';
 
         html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
             + '<div class="st-pos">' + pos + '</div>'
             + '<div class="st-info">'
             + '<div class="st-team-swatch" data-team-short="' + escAttr(shortName) + '" style="border-color:#' + esc(tc) + '60;">'
-            + (logo ? '<img src="' + esc(logo) + '" alt="' + esc(teamName) + '" width="40" height="40" loading="lazy" decoding="async">'
+            + (logo ? '<img alt="' + esc(teamName) + '" width="40" height="40"' + imgAttrs + '>'
                     : '<span class="swatch-text">' + esc(shortName) + '</span>')
             + '</div>'
             + '<div class="st-name-block"><div class="st-name">' + esc(teamName) + '</div><div class="st-drivers-list">' + drivers.map(esc).join(' · ') + '</div></div></div>'
@@ -1000,6 +1098,7 @@ function renderConstructors(standings, driverStandings) {
             + '</div>';
     });
     constructorsTable.innerHTML = html;
+    hydrateStandingsLazyImages(constructorsTable);
 
     let chartHTML = '';
     standings.forEach(function(s) {
@@ -1025,7 +1124,7 @@ function renderDriversFromOpenF1(standings, driverInfo) {
     const maxPts = standings[0].points_current || 1;
     let html = '';
 
-    standings.forEach(function(s) {
+    standings.forEach(function(s, index) {
         const d = dMap[s.driver_number] || {};
         const tc = getCanonicalTeamColor('', d.team_name || '', d.team_colour);
         const name = d.full_name || ('Οδηγός #' + s.driver_number);
@@ -1033,11 +1132,12 @@ function renderDriversFromOpenF1(standings, driverInfo) {
         const team = d.team_name || '';
         const acr = d.name_acronym || '';
         const barPct = Math.max(2, (s.points_current / maxPts) * 100);
+        const imgAttrs = hs.url ? imageSourceAttrs(hs.url, index, ABOVE_FOLD_DRIVER_IMAGES, index === 0) : '';
 
         html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
             + '<div class="st-pos">' + s.position_current + '</div>'
             + '<div class="st-info">'
-            + (hs.url ? '<img class="st-headshot" src="' + esc(hs.url) + '" alt="' + esc(name) + '" width="40" height="40"' + hs.style + ' loading="lazy" decoding="async">'
+            + (hs.url ? '<img class="st-headshot" alt="' + esc(name) + '" width="40" height="40"' + hs.style + imgAttrs + '>'
                    + '<div class="st-avatar-fallback" style="display:none;color:#' + esc(tc) + ';">' + esc(acr) + '</div>'
                   : '<div class="st-avatar-fallback" style="color:#' + esc(tc) + ';">' + esc(acr) + '</div>')
             + '<div class="st-name-block"><div class="st-name">' + esc(name) + '</div><div class="st-team-label">' + esc(team) + '</div></div></div>'
@@ -1046,6 +1146,7 @@ function renderDriversFromOpenF1(standings, driverInfo) {
             + '</div>';
     });
     driversTable.innerHTML = html;
+    hydrateStandingsLazyImages(driversTable);
 
     let chartHTML = '';
     standings.slice(0, 10).forEach(function(s) {

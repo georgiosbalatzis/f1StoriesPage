@@ -77,6 +77,9 @@ const CRITICAL_TARGETS = new Set([
 
 // Source path of the hand-crafted critical block (resolved against manifest).
 const CRITICAL_SOURCE = 'styles/critical-common.css';
+const ROUTE_CRITICAL_SOURCES = {
+    'standings/index.html': 'styles/critical-standings.css'
+};
 
 // Marker comments around the injected <style> block. Idempotent: the block
 // is replaced in place on every run so re-stamps produce stable output.
@@ -106,12 +109,7 @@ const FONT_PRELOADS = {
         'assets/fonts/roboto-400.woff2',
         'assets/fonts/roboto-700.woff2'
     ],
-    'standings/index.html': [
-        'assets/fonts/roboto-400-greek.woff2',
-        'assets/fonts/roboto-700-greek.woff2',
-        'assets/fonts/roboto-400.woff2',
-        'assets/fonts/roboto-700.woff2'
-    ],
+    'standings/index.html': [],
     'blog-module/blog/index.html': [
         'assets/fonts/dm-sans-400.woff2',
         'assets/fonts/outfit-700.woff2'
@@ -238,6 +236,28 @@ function loadCriticalCss(manifest) {
         css: fs.readFileSync(abs, 'utf8'),
         hash: info.hash,
         bytes: info.bytes
+    };
+}
+
+function loadRouteCriticalCss(manifest, relPath, commonCritical) {
+    const routeSource = ROUTE_CRITICAL_SOURCES[relPath];
+    if (!routeSource) return commonCritical;
+
+    const info = manifest[routeSource];
+    if (!info) {
+        throw new Error(`manifest missing entry for ${routeSource} — run build:assets:minify`);
+    }
+    const abs = path.join(REPO_ROOT, info.min);
+    if (!fs.existsSync(abs)) {
+        throw new Error(`route critical CSS build missing at ${abs} — run build:assets:minify`);
+    }
+
+    const routeCss = fs.readFileSync(abs, 'utf8');
+    const css = `${commonCritical.css.trimEnd()}\n${routeCss.trimEnd()}`;
+    return {
+        css,
+        hash: crypto.createHash('sha256').update(css).digest('hex').slice(0, 8),
+        bytes: commonCritical.bytes + info.bytes
     };
 }
 
@@ -369,6 +389,12 @@ function swapFonts(html, relPath, fontsInfo, manifest) {
             }
             swaps.preloadsInjected = preloadList.length;
         }
+    } else {
+        const existing = new RegExp(
+            '\\n?[ \\t]*' + escapeRegex(FONTS_BEGIN) + '[\\s\\S]*?' + escapeRegex(FONTS_END) + '\\n?',
+            'g'
+        );
+        html = html.replace(existing, '\n');
     }
 
     return { result: html, swaps };
@@ -597,7 +623,6 @@ function asyncifyStylesheets(html, relPath) {
         const lastOpen = before.lastIndexOf('<noscript');
         const lastClose = before.lastIndexOf('</noscript>');
         if (lastOpen > lastClose) return match;
-        if (relPath === 'standings/index.html' && /(^|\/)standings\.min\.css\?v=/.test(href)) return match;
 
         conversions.push(href);
         return (
@@ -682,7 +707,8 @@ function main() {
         let criticalNote = '';
         let conversions = [];
         if (CRITICAL_TARGETS.has(rel)) {
-            const inj = injectCritical(result, critical);
+            const routeCritical = loadRouteCriticalCss(manifest, rel, critical);
+            const inj = injectCritical(result, routeCritical);
             result = inj.result;
             if (inj.injected) { criticalNote = 'injected'; totalCriticalOps++; }
             else if (inj.replaced) { criticalNote = 'refreshed'; totalCriticalOps++; }

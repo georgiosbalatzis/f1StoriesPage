@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v30
+   F1 Stories — Service Worker v31
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,11 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v31 bump: Phase 1.3 standings first paint — the drivers/constructors
+   route now has a committed standings snapshot cached as data, so returning
+   sessions can render the default dashboard before standings Jolpica/OpenF1
+   endpoints are touched. The live API refresh remains network-backed and
+   happens after first paint.
    v30 bump: Blog freshness — blog feed JSON and article HTML now bypass the
    browser HTTP cache before falling back to Cache Storage, so returning
    sessions see newly published articles on the first load instead of waiting
@@ -113,11 +118,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v30';
-var CACHE_SHELL   = 'f1s-shell-v30';
-var CACHE_PAGES   = 'f1s-pages-v30';
-var CACHE_ASSETS  = 'f1s-assets-v30';
-var CACHE_DATA    = 'f1s-data-v30';
+var SW_VERSION    = 'v31';
+var CACHE_SHELL   = 'f1s-shell-v31';
+var CACHE_PAGES   = 'f1s-pages-v31';
+var CACHE_ASSETS  = 'f1s-assets-v31';
+var CACHE_DATA    = 'f1s-data-v31';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
@@ -158,11 +163,17 @@ var SHELL_ASSETS = [
   '/assets/fonts/outfit-700.woff2'
 ];
 
+var STANDINGS_DATA_ASSETS = [
+  '/standings/standings-cache.json'
+];
+
 // ── Install ─────────────────────────────────────
 self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE_SHELL).then(function (cache) {
       return cache.addAll(SHELL_ASSETS);
+    }).then(function () {
+      return precacheStandingsData();
     }).then(function () {
       return precacheRecentArticles();
     })
@@ -288,6 +299,16 @@ function precacheRecentArticles() {
       // Recent articles are an offline enhancement, not an install blocker.
       return undefined;
     });
+}
+
+function precacheStandingsData() {
+  return caches.open(CACHE_DATA).then(function (cache) {
+    return cache.addAll(STANDINGS_DATA_ASSETS);
+  }).catch(function () {
+    // The live API path remains available; snapshot precache is an offline
+    // and repeat-visit optimization, not an install blocker.
+    return undefined;
+  });
 }
 
 // Cache-first with background revalidation

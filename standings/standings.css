@@ -9,7 +9,7 @@
     --st-radius: 14px; --st-radius-sm: 10px;
     --st-transition: 0.25s cubic-bezier(0.4,0,0.2,1);
     --st-shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
-    --st-shell-font: 'Roboto', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+    --st-shell-font: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
     --st-display-font: var(--st-shell-font);
     --st-row-height: 62px;
     --st-driver-rows: 22;
@@ -48,7 +48,7 @@ body { overflow-y: auto !important; }
 
 .footer-link-button:disabled { opacity: 0.65; cursor: wait; }
 
-.standings-wrapper { font-family: var(--st-shell-font); color: var(--st-text); -webkit-font-smoothing: antialiased; margin-top: 3rem; padding: 3rem 0; }
+.standings-wrapper { font-family: var(--st-shell-font); color: var(--st-text); -webkit-font-smoothing: antialiased; margin-top: 0; padding: 6rem 0 3rem; }
 
 .standings-wrapper .container { width: 100%; max-width: 1320px; margin-right: auto; margin-left: auto; padding-right: 12px; padding-left: 12px; }
 
@@ -99,7 +99,7 @@ body { overflow-y: auto !important; }
 .standings-panel { display: none; contain: layout; }
 .standings-panel[hidden] { display: none !important; }
 
-.standings-panel.active { display: block; animation: panelIn 0.35s ease-out; }
+.standings-panel.active { display: block; }
 
 @keyframes panelIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
@@ -289,8 +289,12 @@ body.standings-embed .standings-panel.active { display: block !important; animat
 
 body.standings-embed [data-embed-hidden="true"] { display: none !important; }
 
+@media (max-width: 767.98px) {
+    body:not(.standings-embed) .theme-toggle-btn { display: none; }
+}
+
 @media (max-width: 1024px) {
-    .standings-wrapper { padding-top: 0.85rem; padding-bottom: 2rem; }
+    .standings-wrapper { padding-top: 3.85rem; padding-bottom: 2rem; }
     .standings-wrapper .container { padding-left: 16px; padding-right: 16px; }
     .standings-header { padding: 1.45rem 0 0.35rem; }
     .standings-title { font-size: 2rem; }
