@@ -206,7 +206,20 @@ body { overflow-y: auto !important; }
 
 .chart-fill { height: 100%; border-radius: 4px; transition: width 0.8s cubic-bezier(.4,0,.2,1); display: flex; align-items: center; justify-content: flex-end; padding-right: 0.5rem; min-width: 30px; }
 
-.chart-pts-label { font-size: 0.62rem; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+.chart-pts-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.45rem;
+    padding: 0.08rem 0.32rem;
+    border-radius: 999px;
+    background: rgba(17,17,19,0.78);
+    color: #fff;
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 1.25;
+    text-shadow: none;
+}
 
 .skeleton-row { display: grid; grid-template-columns: 48px minmax(0,1fr) minmax(3.5rem,auto); align-items: center; padding: 0.65rem 1.2rem; min-height: var(--st-row-height); border-bottom: 1px solid var(--st-border); gap: 0.7rem; contain: layout; }
 .skeleton-row:last-child { border-bottom: none; }
