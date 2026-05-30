@@ -172,15 +172,9 @@ body {
 .blog-nav-countdown-mobile {
   display: none;
   align-items: center;
-  gap: .35rem;
   color: #3b82f6;
   font-size: .78rem;
   font-weight: 600;
-}
-.blog-nav-countdown-mobile .countdown-flag-mobile {
-  line-height: 1;
-  font-size: 1rem;
-  font-style: normal;
 }
 .blog-nav-hamburger {
   display: none;
@@ -201,6 +195,7 @@ body {
   background: rgba(255,255,255,0.6);
   border-radius: 2px;
 }
+[data-theme="light"] .blog-nav-hamburger span { background: #6e6e73; }
 .blog-nav-mobile {
   display: none;
   max-height: 0;
@@ -227,32 +222,47 @@ body {
   .blog-nav-countdown { display: none; }
   .blog-nav-countdown-mobile { display: flex; }
 }
+@media (max-width: 575.98px) {
+  .blog-nav-countdown-mobile { display: none; }
+  .blog-nav-hamburger { display: flex !important; position: fixed; top: 11px; right: 12px; z-index: 1062; }
+}
 
 /* ── Hero baseline (homepage/standings share this shape) ── */
 #hero {
   position: relative;
   color: #fff;
   text-align: center;
-  padding: 10rem 0;
+  padding: 5.75rem 0 4.75rem;
   margin-top: 70px;
-  min-height: 80vh;
+  min-height: clamp(520px, 70vh, 720px);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% 94%, 0 100%);
 }
 .hero-overlay {
   position: absolute;
   inset: 0;
   z-index: -1;
-  opacity: 0.7;
+  opacity: 0.92;
   overflow: hidden;
+}
+.hero-overlay picture,
+.hero-overlay img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.hero-overlay.image-bg img {
+  object-fit: cover;
+  transform: scale(1.015);
 }
 #hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to right, rgba(17,17,19,0.88), rgba(22,22,24,0.82));
+  background: linear-gradient(90deg, rgba(7,9,13,0.84) 0%, rgba(12,16,22,0.66) 46%, rgba(9,10,14,0.78) 100%);
   z-index: -1;
 }
 .hero-content {
@@ -262,19 +272,19 @@ body {
   padding: 0 var(--space-md);
 }
 .hero-content h1 {
-  font-size: 3.5rem;
+  font-size: clamp(2rem, 5vw, 3.25rem);
   margin: 0 0 var(--space-md);
   text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
 }
 .hero-content p {
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
   margin-bottom: var(--space-lg);
   text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
 }
 @media (max-width: 767.98px) {
   .hero-content h1 { font-size: 2.125rem; }
   .hero-content p { font-size: 1.125rem; }
-  #hero { padding: 6rem 0; min-height: 70vh; }
+  #hero { padding: 4.25rem 0 3.25rem; min-height: 590px; }
 }
 
 /* ── Light-mode overrides for the critical scope only ── */

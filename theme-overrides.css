@@ -151,26 +151,37 @@
 
 /* ── Hero ─────────────────────────────────────── */
 [data-theme="light"] #hero::before {
-    background: linear-gradient(to right, rgba(255,255,255,0.92), rgba(245,245,247,0.88)) !important;
+    background: linear-gradient(90deg, rgba(7,9,13,0.86) 0%, rgba(12,16,22,0.68) 46%, rgba(9,10,14,0.8) 100%) !important;
 }
 
 [data-theme="light"] .hero-content h1 {
-    background: linear-gradient(135deg, #1d1d1f 30%, #0e4ca6) !important;
+    background: none !important;
     -webkit-background-clip: text !important;
     background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
+    -webkit-text-fill-color: #fff !important;
+    color: #fff !important;
     filter: none !important;
-    text-shadow: none !important;
+    text-shadow: 0 2px 18px rgba(0,0,0,0.52) !important;
     animation: none !important;
 }
 
 [data-theme="light"] .hero-content p {
-    color: #3a3a3c !important;
-    text-shadow: none !important;
+    color: rgba(255,255,255,0.86) !important;
+    text-shadow: 0 1px 12px rgba(0,0,0,0.52) !important;
 }
 
 [data-theme="light"] .hero-subtitle {
-    color: #3a3a3c !important;
+    color: rgba(255,255,255,0.86) !important;
+}
+
+[data-theme="light"] .hero-brand-lockup {
+    background: rgba(17,17,19,0.62) !important;
+    border-color: rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+}
+
+[data-theme="light"] .hero-brand-mark {
+    filter: none !important;
 }
 
 [data-theme="light"] .hero-platforms__label {
@@ -219,6 +230,12 @@
     color: #0e4ca6 !important;
     border: 1.5px solid rgba(14,76,166,0.25) !important;
     border-radius: 8px !important;
+}
+
+[data-theme="light"] .hero-ctas .cta-secondary {
+    background: rgba(17,17,19,0.38) !important;
+    color: #fff !important;
+    border-color: rgba(255,255,255,0.26) !important;
 }
 
 [data-theme="light"] .cta-button.cta-secondary:hover,
@@ -397,10 +414,19 @@
     color: #86868b !important;
 }
 
-[data-theme="light"] .persona .avatar,
-[data-theme="light"] .team-member__avatar {
+[data-theme="light"] .team-member > a {
+    border-color: rgba(14,76,166,0.18) !important;
+    background: #e8eef7 !important;
+}
+
+[data-theme="light"] .persona .avatar {
     border-color: rgba(14,76,166,0.3) !important;
     background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0e4ca6, rgba(14,76,166,0.3)) !important;
+}
+
+[data-theme="light"] .team-member__avatar {
+    background: transparent !important;
+    background-image: none !important;
 }
 
 /* ── Contact Form ────────────────────────────── */
