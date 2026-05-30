@@ -34,6 +34,9 @@ const driversChart = document.getElementById('drivers-chart');
 const driversChartBars = document.getElementById('drivers-chart-bars');
 const constructorsChart = document.getElementById('constructors-chart');
 const constructorsChartBars = document.getElementById('constructors-chart-bars');
+const STANDINGS_ROW_HEIGHT = 62;
+const EXPECTED_DRIVER_ROWS = 22;
+const EXPECTED_CONSTRUCTOR_ROWS = 11;
 
 const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief', 'destructors'];
 const LIGHTWEIGHT_TABS = ['drivers', 'constructors'];
@@ -92,7 +95,7 @@ const tabModulePromises = Object.create(null);
 const tabModuleInstances = Object.create(null);
 
 function skelRows(n) {
-    const rowHeight = 84;
+    const rowHeight = STANDINGS_ROW_HEIGHT;
     let h = '<div style="min-height:' + (n * rowHeight) + 'px;">';
     for (let i = 0; i < n; i++) {
         h += '<div class="skeleton-row">'
@@ -1268,8 +1271,8 @@ function init() {
     pendingDebriefRound = initialURLState.debriefRound;
     pendingDebriefView = initialURLState.debriefView;
 
-    if (driversTable) driversTable.innerHTML = skelRows(20);
-    if (constructorsTable) constructorsTable.innerHTML = skelRows(10);
+    if (driversTable) driversTable.innerHTML = skelRows(EXPECTED_DRIVER_ROWS);
+    if (constructorsTable) constructorsTable.innerHTML = skelRows(EXPECTED_CONSTRUCTOR_ROWS);
     if (driversChart) driversChart.style.display = 'block';
     if (driversChartBars) driversChartBars.innerHTML = skelChartRows(10);
 

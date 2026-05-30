@@ -107,8 +107,10 @@ const FONT_PRELOADS = {
         'assets/fonts/roboto-700.woff2'
     ],
     'standings/index.html': [
+        'assets/fonts/roboto-400-greek.woff2',
+        'assets/fonts/roboto-700-greek.woff2',
         'assets/fonts/roboto-400.woff2',
-        'assets/fonts/outfit-700.woff2'
+        'assets/fonts/roboto-700.woff2'
     ],
     'blog-module/blog/index.html': [
         'assets/fonts/dm-sans-400.woff2',
@@ -576,7 +578,7 @@ function loadSprite() {
     return { svg, hash };
 }
 
-function asyncifyStylesheets(html) {
+function asyncifyStylesheets(html, relPath) {
     const conversions = [];
 
     // Match <link rel="stylesheet" ...> where href points to a .min.css (local
@@ -595,6 +597,7 @@ function asyncifyStylesheets(html) {
         const lastOpen = before.lastIndexOf('<noscript');
         const lastClose = before.lastIndexOf('</noscript>');
         if (lastOpen > lastClose) return match;
+        if (relPath === 'standings/index.html' && /(^|\/)standings\.min\.css\?v=/.test(href)) return match;
 
         conversions.push(href);
         return (
@@ -685,7 +688,7 @@ function main() {
             else if (inj.replaced) { criticalNote = 'refreshed'; totalCriticalOps++; }
             else criticalNote = 'skipped (no anchor)';
 
-            const out = asyncifyStylesheets(result);
+            const out = asyncifyStylesheets(result, rel);
             result = out.result;
             conversions = out.conversions;
             totalAsyncified += conversions.length;
