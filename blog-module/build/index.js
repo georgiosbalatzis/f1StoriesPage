@@ -160,11 +160,19 @@ function renderBlogCategoryFilters(categories) {
     return buttons.join('\n                    ');
 }
 
-function renderBlogIndexCard(post, idx) {
-    const categories = (post.categories || [])
+function renderBlogCardCategories(categories) {
+    const list = categories || [];
+    const chips = list
         .slice(0, 2)
-        .map(category => `<span class="article-card-cat">${escapeHtmlAttribute(category)}</span>`)
-        .join('');
+        .map(category => `<span class="article-card-cat">${escapeHtmlAttribute(category)}</span>`);
+    if (list.length > 2) {
+        chips.push(`<span class="article-card-cat article-card-cat-more">+${list.length - 2}</span>`);
+    }
+    return chips.join('');
+}
+
+function renderBlogIndexCard(post, idx) {
+    const categories = renderBlogCardCategories(post.categories);
     const url = post.url || `/blog-module/blog-entries/${post.id}/article.html`;
     const image = post.thumbnail || post.image || CONFIG.DEFAULT_BLOG_IMAGE;
     const author = post.author || 'F1 Stories';
@@ -191,7 +199,7 @@ function renderBlogIndexCard(post, idx) {
         + `<div class="article-card-img-wrap"><img class="${imageClass}" width="${imageWidth}" height="${imageHeight}"${imageAttrs} decoding="async" alt="${escapeHtmlAttribute(post.title)}" onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;"></div>`
         + '<div class="article-card-body">'
         + `<div class="article-card-meta"><span class="author-tag">${escapeHtmlAttribute(author)}</span><span>·</span><time class="article-card-date" datetime="${escapeHtmlAttribute(post.date || '')}">${escapeHtmlAttribute(formatBlogIndexDate(post))}</time>${readBadge}</div>`
-        + `<h3 class="article-card-title">${escapeHtmlAttribute(post.title)}</h3>`
+        + `<h2 class="article-card-title">${escapeHtmlAttribute(post.title)}</h2>`
         + `<p class="article-card-excerpt">${escapeHtmlAttribute(excerpt)}</p>`
         + '</div>'
         + `<div class="article-card-footer"><span class="article-card-read">Διαβάστε περισσότερα <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span><div class="article-card-cats">${categories}</div></div>`

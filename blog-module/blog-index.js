@@ -158,9 +158,19 @@ document.addEventListener('DOMContentLoaded', function() {
             renderPosts();
         }
     }
+    function renderCardCategories(categories) {
+        var list = categories || [];
+        var html = list.slice(0, 2).map(function(c) {
+            return '<span class="article-card-cat">' + escHtml(c) + '</span>';
+        }).join('');
+        if (list.length > 2) {
+            html += '<span class="article-card-cat article-card-cat-more">+' + (list.length - 2) + '</span>';
+        }
+        return html;
+    }
 
     function renderCard(post, idx) {
-        var cats = (post.categories || []).slice(0, 2).map(function(c) { return '<span class="article-card-cat">' + escHtml(c) + '</span>'; }).join('');
+        var cats = renderCardCategories(post.categories);
         var url = post.url || ('/blog-module/blog-entries/' + post.id + '/article.html');
         var img = post.thumbnail || post.image || '/blog-module/images/default-blog.jpg';
         var date = formatPostDate(post);
@@ -186,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
             + '<div class="article-card-img-wrap"><img class="' + imageClass + '" width="' + imageWidth + '" height="' + imageHeight + '"' + imageAttrs + ' decoding="async" alt="' + escHtml(post.title) + '" onerror="this.src=\'/blog-module/images/default-blog.jpg\';this.onerror=null;"></div>'
             + '<div class="article-card-body">'
             + '<div class="article-card-meta"><span class="author-tag">' + escHtml(author) + '</span><span>\u00b7</span><time class="article-card-date" datetime="' + escHtml(post.date || '') + '">' + escHtml(date) + '</time>' + readBadge + '</div>'
-            + '<h3 class="article-card-title">' + escHtml(post.title) + '</h3>'
+            + '<h2 class="article-card-title">' + escHtml(post.title) + '</h2>'
             + '<p class="article-card-excerpt">' + escHtml(excerpt) + '</p>'
             + '</div>'
             + '<div class="article-card-footer"><span class="article-card-read">Διαβάστε περισσότερα <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span><div class="article-card-cats">' + cats + '</div></div>'
