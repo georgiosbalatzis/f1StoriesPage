@@ -106,6 +106,29 @@ function minPathFor(rel) {
     return rel.slice(0, -ext.length) + '.min' + ext;
 }
 
+function shouldRewriteBrowserModuleSpecifiers(rel) {
+    return rel.startsWith('standings/') && rel.endsWith('.js');
+}
+
+function toMinModuleSpecifier(specifier) {
+    if (!specifier.startsWith('./') && !specifier.startsWith('../')) return specifier;
+    if (!specifier.endsWith('.js') || specifier.endsWith('.min.js')) return specifier;
+    return specifier.slice(0, -3) + '.min.js';
+}
+
+function rewriteBrowserModuleSpecifiers(code) {
+    return code
+        .replace(/(\bfrom\s*)(["'])(\.{1,2}\/[^"']+?\.js)\2/g, function (_, prefix, quote, specifier) {
+            return prefix + quote + toMinModuleSpecifier(specifier) + quote;
+        })
+        .replace(/(\bimport\s*)(["'])(\.{1,2}\/[^"']+?\.js)\2/g, function (_, prefix, quote, specifier) {
+            return prefix + quote + toMinModuleSpecifier(specifier) + quote;
+        })
+        .replace(/(\bimport\s*\(\s*)(["'])(\.{1,2}\/[^"']+?\.js)\2(\s*\))/g, function (_, prefix, quote, specifier, suffix) {
+            return prefix + quote + toMinModuleSpecifier(specifier) + quote + suffix;
+        });
+}
+
 async function minifyCss(rel) {
     const abs = path.join(REPO_ROOT, rel);
     const source = fs.readFileSync(abs);
@@ -132,8 +155,11 @@ async function minifyCss(rel) {
 async function minifyJs(rel) {
     const abs = path.join(REPO_ROOT, rel);
     const source = fs.readFileSync(abs, 'utf8');
+    const sourceForBuild = shouldRewriteBrowserModuleSpecifiers(rel)
+        ? rewriteBrowserModuleSpecifiers(source)
+        : source;
     const inlineSourceMap = rel !== 'scripts/perf/error-beacon.js';
-    const result = await esbuildTransform(source, {
+    const result = await esbuildTransform(sourceForBuild, {
         loader: 'js',
         minify: true,
         sourcemap: inlineSourceMap ? 'external' : false,
