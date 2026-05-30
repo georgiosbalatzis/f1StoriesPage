@@ -75,6 +75,25 @@ async function buildRelatedPostsHtml(relatedPosts) {
     return cards.join('');
 }
 
+function renderRelatedArticlesSection(relatedPostsHtml) {
+    return `        <div class="row mt-5">
+            <div class="col-12"><h2 class="mb-4 related-section-title">Related Articles</h2></div>
+            ${relatedPostsHtml || ''}
+        </div>`;
+}
+
+function extractRelatedArticleUrls(postHtml) {
+    return Array.from(postHtml.matchAll(/<a\b[^>]*\bhref="([^"]+)"[^>]*\bclass="[^"]*\brelated-card-link\b[^"]*"/gi))
+        .map(match => match[1]);
+}
+
+function relatedArticlesMatch(postHtml, relatedPosts) {
+    const currentUrls = extractRelatedArticleUrls(postHtml);
+    const expectedUrls = relatedPosts.map(post => post.url);
+    return currentUrls.length === expectedUrls.length
+        && currentUrls.every((url, index) => url === expectedUrls[index]);
+}
+
 async function injectRelatedArticles(blogPosts) {
     for (const [index, post] of blogPosts.entries()) {
         const postHtmlPath = path.join(CONFIG.BLOG_DIR, post.id, 'article.html');
@@ -82,13 +101,26 @@ async function injectRelatedArticles(blogPosts) {
 
         const relatedPosts = scoreRelatedPosts(blogPosts, post, index);
         const relatedPostsHtml = await buildRelatedPostsHtml(relatedPosts);
-        const postHtml = fs.readFileSync(postHtmlPath, 'utf8').replace(/RELATED_ARTICLES/g, relatedPostsHtml || '');
-        fs.writeFileSync(postHtmlPath, postHtml);
+        let postHtml = fs.readFileSync(postHtmlPath, 'utf8');
+        const originalHtml = postHtml;
+        if (postHtml.includes('RELATED_ARTICLES')) {
+            postHtml = postHtml.replace(/RELATED_ARTICLES/g, relatedPostsHtml || '');
+        } else {
+            if (relatedArticlesMatch(postHtml, relatedPosts)) continue;
+            postHtml = postHtml.replace(
+                /        <div class="row mt-5">\n\s*<div class="col-12"><h2 class="mb-4 related-section-title">Related Articles<\/h2><\/div>[\s\S]*?\n        <\/div>(?=\n    <\/div>\n<\/main>)/,
+                renderRelatedArticlesSection(relatedPostsHtml)
+            );
+        }
+        if (postHtml !== originalHtml) fs.writeFileSync(postHtmlPath, postHtml);
     }
 }
 
 module.exports = {
     scoreRelatedPosts,
     buildRelatedPostsHtml,
+    renderRelatedArticlesSection,
+    extractRelatedArticleUrls,
+    relatedArticlesMatch,
     injectRelatedArticles
 };
