@@ -90,23 +90,21 @@ async function buildIndexPosts(blogPosts) {
             title: post.title,
             author: post.author,
             date: post.date,
-            displayDate: post.displayDate,
-            image: post.image,
-            backgroundImage: post.backgroundImage,
             thumbnail,
-            imageWidth: post.imageWidth,
-            imageHeight: post.imageHeight,
-            backgroundImageWidth: post.backgroundImageWidth,
-            backgroundImageHeight: post.backgroundImageHeight,
             thumbnailWidth: thumbnailDimensions && thumbnailDimensions.width ? thumbnailDimensions.width : 400,
             thumbnailHeight: thumbnailDimensions && thumbnailDimensions.height ? thumbnailDimensions.height : 188,
-            excerpt: post.excerpt,
-            url: post.url,
-            wordCount: post.wordCount,
+            excerpt: compactExcerpt(post.excerpt),
             readingTime: post.readingTime,
             categories
         };
     }));
+}
+
+function compactExcerpt(value, maxLength = 140) {
+    const text = String(value || '').replace(/\s+/g, ' ').trim();
+    if (text.length <= maxLength) return text;
+    const clipped = text.slice(0, maxLength).replace(/\s+\S*$/, '').trim();
+    return `${clipped || text.slice(0, maxLength).trim()}...`;
 }
 
 function formatBlogIndexDate(post) {
@@ -124,6 +122,10 @@ function formatReadingTime(value) {
 
 function getBlogIndexSummary(count) {
     return `${count} ${count === 1 ? 'άρθρο' : 'άρθρα'}`;
+}
+
+function jsonKb(value) {
+    return Math.round(Buffer.byteLength(JSON.stringify(value)) / 1024);
 }
 
 function summarizeCategories(posts) {
@@ -523,7 +525,7 @@ async function processBlogEntries(options = {}) {
     const indexPosts = await buildIndexPosts(blogPosts);
     const indexPath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-data.json');
     fs.writeFileSync(indexPath, JSON.stringify({ posts: indexPosts }, null, 0));
-    console.log(`Blog index data saved to ${indexPath} (${Math.round(JSON.stringify({ posts: indexPosts }).length / 1024)} KB)`);
+    console.log(`Blog index data saved to ${indexPath} (${jsonKb({ posts: indexPosts })} KB)`);
 
     const pageOneData = {
         posts: indexPosts.slice(0, 12),
@@ -533,13 +535,13 @@ async function processBlogEntries(options = {}) {
     };
     const pageOnePath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-page-1.json');
     fs.writeFileSync(pageOnePath, JSON.stringify(pageOneData, null, 0));
-    console.log(`Blog first-page data saved to ${pageOnePath} (${Math.round(JSON.stringify(pageOneData).length / 1024)} KB)`);
+    console.log(`Blog first-page data saved to ${pageOnePath} (${jsonKb(pageOneData)} KB)`);
     injectBlogIndexFirstPage(indexPosts, pageOneData);
 
     const homeLatest = await buildHomeLatest(blogPosts);
     const homeLatestPath = path.join(CONFIG.BLOG_DIR, '..', 'home-latest.json');
     fs.writeFileSync(homeLatestPath, JSON.stringify(homeLatest, null, 0));
-    console.log(`Home latest data saved to ${homeLatestPath} (${Math.round(JSON.stringify(homeLatest).length / 1024)} KB)`);
+    console.log(`Home latest data saved to ${homeLatestPath} (${jsonKb(homeLatest)} KB)`);
 
     generateSitemap(blogPosts);
     await injectRelatedArticles(blogPosts);

@@ -39,5 +39,8 @@ jobs:
       - name: Check file-size budget
         run: npm run perf:budget
 
+      - name: Check public image budget
+        run: npm run perf:images
+
       - name: Run Lighthouse budgets
         run: npm run perf:lighthouse

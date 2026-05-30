@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v32
+   F1 Stories — Service Worker v33
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,10 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v33 bump: Phase 8 asset hygiene — the public artifact no longer ships
+   the 1.5MB source logo or unused hero backgrounds, and blog card images
+   are budgeted separately from full article-body media. Returning sessions
+   refresh onto the trimmed public image graph.
    v32 bump: Phase 2.2 blog first paint — the blog index now ships a
    static first page plus a small /blog-module/blog-index-page-1.json
    metadata payload. Returning sessions refresh onto the split data graph
@@ -34,7 +38,7 @@
    pinning the old runtime-only proxy waterfall.
    v27 bump: Phase 12 image hardening — the shell now precaches the
    optimized /images/logo-256.webp variant instead of the 1.5MB
-   /images/logo.png asset, and standings headshots/team logos are served
+   source logo asset, and standings headshots/team logos are served
    from committed local WebP copies under /images/. Returning sessions
    refresh onto the lighter image shell and the local-first standings
    image graph instead of pinning the external F1 CDN path.
@@ -122,11 +126,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v32';
-var CACHE_SHELL   = 'f1s-shell-v32';
-var CACHE_PAGES   = 'f1s-pages-v32';
-var CACHE_ASSETS  = 'f1s-assets-v32';
-var CACHE_DATA    = 'f1s-data-v32';
+var SW_VERSION    = 'v33';
+var CACHE_SHELL   = 'f1s-shell-v33';
+var CACHE_PAGES   = 'f1s-pages-v33';
+var CACHE_ASSETS  = 'f1s-assets-v33';
+var CACHE_DATA    = 'f1s-data-v33';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';

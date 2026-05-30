@@ -12,6 +12,7 @@ import { securityMetaHtml } from './security-policy.mjs';
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DIST_ROOT = path.join(REPO_ROOT, 'dist');
+const PUBLIC_LOGO_IMAGE = 'images/icons/icon-512.png';
 
 const ROOT_FILES = new Set([
     '.nojekyll',
@@ -52,6 +53,39 @@ const STANDINGS_ROOT_FILES = new Set([
     'standings/standings.min.js'
 ]);
 
+const HERO_BACKGROUND_FILES = new Set([
+    'images/bg/bg1.avif',
+    'images/bg/bg1.webp',
+    'images/bg/bg1-mobile.avif',
+    'images/bg/bg1-mobile.webp',
+    'images/bg/bg2.avif',
+    'images/bg/bg2.webp',
+    'images/bg/bg2-mobile.avif',
+    'images/bg/bg2-mobile.webp',
+    'images/bg/bg3.avif',
+    'images/bg/bg3.webp',
+    'images/bg/bg3-mobile.avif',
+    'images/bg/bg3-mobile.webp',
+    'images/bg/bg4.avif',
+    'images/bg/bg4.webp',
+    'images/bg/bg4-mobile.avif',
+    'images/bg/bg4-mobile.webp',
+    'images/bg/bg5.avif',
+    'images/bg/bg5.webp',
+    'images/bg/bg5-mobile.avif',
+    'images/bg/bg5-mobile.webp',
+    'images/bg/bg6.avif',
+    'images/bg/bg6.webp',
+    'images/bg/bg6-mobile.avif',
+    'images/bg/bg6-mobile.webp',
+    'images/bg/bg8.avif',
+    'images/bg/bg8.webp',
+    'images/bg/bg8-mobile.avif',
+    'images/bg/bg8-mobile.webp'
+]);
+
+const BLOG_ENTRY_PUBLIC_REFS = collectBlogEntryPublicRefs();
+
 function toPosix(relPath) {
     return relPath.split(path.sep).join('/');
 }
@@ -76,10 +110,110 @@ function isOptimizedImage(relPath) {
     return /\.(?:avif|webp)$/i.test(relPath);
 }
 
+function cleanPublicRef(ref) {
+    let clean = String(ref || '').split('#')[0].split('?')[0].trim();
+    if (!clean || clean.startsWith('#')) return '';
+    if (/^(?:mailto|tel|javascript|data):/i.test(clean)) return '';
+    if (/^(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(clean)) {
+        try {
+            const url = new URL(clean);
+            if (!/^(?:www\.)?f1stories\.gr$/i.test(url.hostname)) return '';
+            clean = url.pathname || '';
+        } catch (_) {
+            return '';
+        }
+    }
+    return clean;
+}
+
+function addBlogEntryRef(refs, ref, fromRelPath = '') {
+    const clean = cleanPublicRef(ref);
+    if (!clean) return;
+
+    let relPath = '';
+    if (clean.startsWith('/')) {
+        relPath = clean.slice(1);
+    } else if (fromRelPath) {
+        relPath = path.posix.normalize(path.posix.join(path.posix.dirname(fromRelPath), clean));
+    } else {
+        relPath = path.posix.normalize(clean);
+    }
+
+    if (!/^blog-module\/blog-entries\/[^/]+\/[^/]+$/i.test(relPath)) return;
+    refs.add(relPath);
+}
+
+function collectRefsFromJsonValue(refs, value) {
+    if (typeof value === 'string') {
+        addBlogEntryRef(refs, value);
+        return;
+    }
+    if (Array.isArray(value)) {
+        value.forEach(item => collectRefsFromJsonValue(refs, item));
+        return;
+    }
+    if (value && typeof value === 'object') {
+        Object.values(value).forEach(item => collectRefsFromJsonValue(refs, item));
+    }
+}
+
+function collectHtmlRefs(refs, html, relPath) {
+    const attrPattern = /\b(?:href|src|data-src|data-full-src|content)=["']([^"']+)["']/gi;
+    for (const match of String(html || '').matchAll(attrPattern)) {
+        addBlogEntryRef(refs, match[1], relPath);
+    }
+
+    const srcsetPattern = /\bsrcset=["']([^"']+)["']/gi;
+    for (const match of String(html || '').matchAll(srcsetPattern)) {
+        match[1].split(',').forEach(part => {
+            addBlogEntryRef(refs, part.trim().split(/\s+/)[0], relPath);
+        });
+    }
+
+    const publicPathPattern = /(?:https:\/\/f1stories\.gr)?\/blog-module\/blog-entries\/[^"'()\s<>]+/gi;
+    for (const match of String(html || '').matchAll(publicPathPattern)) {
+        addBlogEntryRef(refs, match[0], relPath);
+    }
+}
+
+function collectBlogEntryPublicRefs() {
+    const refs = new Set();
+    const dataSources = [
+        'blog-module/blog/index.html',
+        'blog-module/blog-index-data.json',
+        'blog-module/blog-index-page-1.json',
+        'blog-module/home-latest.json'
+    ];
+
+    dataSources.forEach(relPath => {
+        const abs = path.join(REPO_ROOT, relPath);
+        if (!fs.existsSync(abs)) return;
+        if (/\.json$/i.test(relPath)) {
+            collectRefsFromJsonValue(refs, JSON.parse(fs.readFileSync(abs, 'utf8')));
+        } else {
+            collectHtmlRefs(refs, fs.readFileSync(abs, 'utf8'), relPath);
+        }
+    });
+
+    const entriesRoot = path.join(REPO_ROOT, 'blog-module/blog-entries');
+    if (fs.existsSync(entriesRoot)) {
+        for (const entry of fs.readdirSync(entriesRoot, { withFileTypes: true })) {
+            if (!entry.isDirectory()) continue;
+            const relPath = `blog-module/blog-entries/${entry.name}/article.html`;
+            const abs = path.join(REPO_ROOT, relPath);
+            if (!fs.existsSync(abs)) continue;
+            collectHtmlRefs(refs, fs.readFileSync(abs, 'utf8'), relPath);
+        }
+    }
+
+    return refs;
+}
+
 function shouldCopyBlogEntry(relPath) {
     if (!relPath.startsWith('blog-module/blog-entries/')) return false;
     const name = path.posix.basename(relPath);
-    return name === 'article.html' || isOptimizedImage(relPath);
+    if (name === 'article.html') return true;
+    return isOptimizedImage(relPath) && BLOG_ENTRY_PUBLIC_REFS.has(relPath);
 }
 
 function shouldCopyStandings(relPath) {
@@ -91,6 +225,7 @@ function shouldCopyStandings(relPath) {
 
 function shouldCopy(relPath) {
     if (relPath.includes('/.DS_Store') || relPath.endsWith('/.DS_Store')) return false;
+    if (relPath === 'images/logo.png') return false;
     if (ROOT_FILES.has(relPath)) return true;
     if (BLOG_PUBLIC_FILES.has(relPath)) return true;
     if (shouldCopyBlogEntry(relPath)) return true;
@@ -102,6 +237,10 @@ function shouldCopy(relPath) {
 
     if (relPath.startsWith('assets/')) {
         return /\.(?:json|woff2)$/i.test(relPath);
+    }
+
+    if (relPath.startsWith('images/bg/')) {
+        return HERO_BACKGROUND_FILES.has(relPath);
     }
 
     if (relPath.startsWith('images/')) {
@@ -137,12 +276,16 @@ function injectSecurityMeta(html) {
     return nextHtml.replace(/(<head\b[^>]*>\s*)/i, `$1\n${block}\n`);
 }
 
+function rewritePublicLogoRefs(html) {
+    return String(html || '').replace(/https:\/\/f1stories\.gr\/images\/logo\.png/g, `https://f1stories.gr/${PUBLIC_LOGO_IMAGE}`);
+}
+
 function copyFile(relPath) {
     const src = path.join(REPO_ROOT, relPath);
     const dest = path.join(DIST_ROOT, relPath);
     ensureDir(path.dirname(dest));
     if (/\.html$/i.test(relPath)) {
-        fs.writeFileSync(dest, injectSecurityMeta(fs.readFileSync(src, 'utf8')), 'utf8');
+        fs.writeFileSync(dest, injectSecurityMeta(rewritePublicLogoRefs(fs.readFileSync(src, 'utf8'))), 'utf8');
         return;
     }
     fs.copyFileSync(src, dest);

@@ -26,8 +26,9 @@
     "test:blog": "node blog-module/build/__tests__/run-golden.js",
     "perf:budget": "node scripts/perf/size-guard.mjs",
     "perf:budget:update": "node scripts/perf/size-guard.mjs --update",
+    "perf:images": "node scripts/perf/public-image-guard.mjs",
     "perf:lighthouse": "node scripts/perf/lighthouse-guard.mjs",
-    "verify": "npm run build:public && npm run test:blog && npm run perf:budget && npm run perf:lighthouse"
+    "verify": "npm run build:public && npm run test:blog && npm run perf:budget && npm run perf:images && npm run perf:lighthouse"
   },
   "dependencies": {
     "adm-zip": "^0.5.12",

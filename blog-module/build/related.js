@@ -44,6 +44,7 @@ async function buildRelatedPostsHtml(relatedPosts) {
         const hoverMeta = relatedReadTime
             ? `<span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> ${relatedReadTime}</span>`
             : '';
+        const hoverMetaLine = hoverMeta ? `\n                                ${hoverMeta}` : '';
 
         return `
             <div class="col-md-4 mb-4">
@@ -56,8 +57,7 @@ async function buildRelatedPostsHtml(relatedPosts) {
                                  decoding="async"${widthAttr}${heightAttr}
                                  onerror="this.src='${CONFIG.DEFAULT_BLOG_IMAGE}';this.onerror=null;">
                             <div class="related-card-hover">
-                                <span class="related-card-hover-label">Περισσότερα</span>
-                                ${hoverMeta}
+                                <span class="related-card-hover-label">Περισσότερα</span>${hoverMetaLine}
                             </div>
                         </div>
                         <div class="card-body">
