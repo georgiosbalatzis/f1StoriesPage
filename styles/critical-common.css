@@ -231,10 +231,9 @@ body {
 #hero {
   position: relative;
   color: #fff;
-  text-align: center;
-  padding: 5.75rem 0 4.75rem;
+  padding: 6rem 0 4.75rem;
   margin-top: 70px;
-  min-height: clamp(520px, 70vh, 720px);
+  min-height: clamp(560px, 72vh, 720px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -256,35 +255,68 @@ body {
 }
 .hero-overlay.image-bg img {
   object-fit: cover;
+  object-position: var(--f1s-hero-position, center center);
   transform: scale(1.015);
 }
 #hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(7,9,13,0.84) 0%, rgba(12,16,22,0.66) 46%, rgba(9,10,14,0.78) 100%);
+  background: linear-gradient(90deg, rgba(5,7,10,0.94) 0%, rgba(8,11,16,0.82) 34%, rgba(8,10,14,0.42) 64%, rgba(5,6,8,0.3) 100%);
   z-index: -1;
 }
 .hero-content {
-  position: relative;
-  z-index: 1;
-  max-width: 800px;
+  max-width: 640px;
   padding: 0 var(--space-md);
 }
 .hero-content h1 {
-  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-size: clamp(2.35rem, 5.2vw, 4.15rem);
   margin: 0 0 var(--space-md);
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+  line-height: 1.03;
+  max-width: 10ch;
+  text-shadow: 0 3px 24px rgba(0,0,0,0.62);
 }
 .hero-content p {
   font-size: clamp(1rem, 2.5vw, 1.3rem);
   margin-bottom: var(--space-lg);
-  text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+  color: rgba(255,255,255,0.88);
+  text-shadow: 0 2px 18px rgba(0,0,0,0.6);
 }
 @media (max-width: 767.98px) {
-  .hero-content h1 { font-size: 2.125rem; }
+  #hero {
+    padding: 4.25rem 0 3.25rem;
+    min-height: 590px;
+  }
+  .hero-overlay.image-bg img {
+    object-position: var(--f1s-hero-mobile-position, var(--f1s-hero-position, center center));
+  }
+  .hero-content {
+    max-width: 540px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .hero-content h1 {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 2.125rem;
+  }
   .hero-content p { font-size: 1.125rem; }
-  #hero { padding: 4.25rem 0 3.25rem; min-height: 590px; }
+}
+@media (max-width: 575.98px) {
+  .hero-content {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    text-align: left;
+  }
+  .hero-content h1 {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .hero-content p {
+    max-width: 19rem;
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
 
 /* ── Light-mode overrides for the critical scope only ── */

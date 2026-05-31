@@ -8,48 +8,65 @@
 
 /* ── HERO — Branded, image-led first viewport ────────────────── */
 #hero {
-    padding: 5.75rem 0 4.75rem;
-    min-height: clamp(520px, 70vh, 720px);
+    padding: 6rem 0 4.75rem;
+    min-height: clamp(560px, 72vh, 720px);
     margin-top: 70px;
     clip-path: polygon(0 0, 100% 0, 100% 94%, 0 100%);
 }
-.hero-content { max-width: 700px; margin: 0 auto; }
+
+.hero-shell {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.hero-content {
+    max-width: 640px;
+    margin: 0;
+    text-align: left;
+    animation: none;
+}
+
 .hero-content h1 {
-    font-size: clamp(2rem, 5vw, 3.25rem);
-    margin-bottom: 0.75rem;
+    font-size: clamp(2.35rem, 5.2vw, 4.15rem);
+    margin-bottom: 0.9rem;
     letter-spacing: 0;
-    text-shadow: 0 2px 18px rgba(0,0,0,0.42);
+    line-height: 1.03;
+    max-width: 10ch;
+    color: #fff;
+    text-shadow: 0 3px 24px rgba(0,0,0,0.62);
     animation: none;
 }
 .hero-subtitle {
     font-size: clamp(1rem, 2.5vw, 1.3rem);
-    color: var(--text-secondary);
-    margin-bottom: 1.5rem;
+    color: rgba(255,255,255,0.88);
+    margin-bottom: 1.65rem;
     line-height: 1.5;
-    max-width: 540px;
-    margin-left: auto;
-    margin-right: auto;
-    text-shadow: 0 1px 12px rgba(0,0,0,0.42);
+    max-width: 480px;
+    margin-left: 0;
+    margin-right: 0;
+    text-shadow: 0 2px 18px rgba(0,0,0,0.6);
 }
 
 .hero-brand-lockup {
     display: inline-flex;
     align-items: center;
-    gap: 0.65rem;
-    margin-bottom: 0.95rem;
-    padding: 0.35rem 0.75rem 0.35rem 0.45rem;
-    border: 1px solid rgba(255,255,255,0.16);
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+    padding: 0.42rem 0.85rem 0.42rem 0.5rem;
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: var(--radius-full);
-    background: rgba(17,17,19,0.54);
-    color: rgba(255,255,255,0.92);
+    background: rgba(8,10,14,0.68);
+    color: rgba(255,255,255,0.94);
     font-size: var(--text-sm);
     font-weight: 800;
     letter-spacing: 0;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.2);
 }
 .hero-brand-mark {
     display: block;
-    width: 38px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
     object-fit: contain;
 }
 
@@ -57,7 +74,7 @@
 .hero-ctas {
     display: flex;
     gap: 0.75rem;
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
     margin-bottom: 0;
 }
@@ -70,6 +87,28 @@
     padding: 0.75rem 1.2rem;
     border-radius: var(--radius-sm);
     line-height: 1.2;
+}
+.hero-ctas .cta-primary {
+    background: #2563eb;
+    color: #fff;
+    border-color: rgba(255,255,255,0.14);
+    box-shadow: 0 10px 24px rgba(37,99,235,0.28);
+}
+.hero-ctas .cta-primary:hover {
+    background: #1d4ed8;
+    color: #fff;
+    transform: translateY(-2px);
+}
+.hero-ctas .cta-secondary {
+    background: rgba(255,255,255,0.09);
+    color: #fff;
+    border-color: rgba(255,255,255,0.28);
+}
+.hero-ctas .cta-secondary:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border-color: rgba(255,255,255,0.42);
+    transform: translateY(-2px);
 }
 /* Platform icons under CTAs */
 .hero-platforms {
@@ -564,13 +603,31 @@ a.ep-card:hover .ep-card__cta { gap: 0.55rem; }
 }
 @media (max-width: 767.98px) {
     #hero { min-height: 590px; padding: 4.25rem 0 3.25rem; clip-path: polygon(0 0, 100% 0, 100% 96%, 0 100%); }
+    .hero-shell { justify-content: center; }
+    .hero-content { max-width: 540px; margin: 0 auto; text-align: center; }
+    .hero-content h1 { margin-left: auto; margin-right: auto; }
+    .hero-subtitle { margin-left: auto; margin-right: auto; }
+    .hero-ctas { justify-content: center; }
     .team-row { gap: 1.5rem; }
     .team-member > a { width: 92px; height: 92px; }
     .team-member__avatar { width: 100%; height: 100%; }
 }
 @media (max-width: 575.98px) {
     #hero { min-height: 560px; padding: 3.5rem 0 3rem; margin-top: 70px; }
-    .hero-ctas { flex-direction: column; align-items: center; }
+    .hero-content {
+        text-align: left;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+    .hero-content h1 { font-size: 2.35rem; }
+    .hero-content h1,
+    .hero-subtitle {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .hero-subtitle { max-width: 19rem; }
+    .hero-brand-mark { width: 40px; height: 40px; }
+    .hero-ctas { flex-direction: column; align-items: flex-start; }
     .hero-ctas .cta-button { width: 100%; max-width: 260px; text-align: center; }
     .team-row { gap: 1.25rem; }
     .team-member > a { width: 88px; height: 88px; }

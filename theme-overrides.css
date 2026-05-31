@@ -151,7 +151,9 @@
 
 /* ── Hero ─────────────────────────────────────── */
 [data-theme="light"] #hero::before {
-    background: linear-gradient(90deg, rgba(7,9,13,0.86) 0%, rgba(12,16,22,0.68) 46%, rgba(9,10,14,0.8) 100%) !important;
+    background:
+        linear-gradient(90deg, rgba(5,7,10,0.94) 0%, rgba(8,11,16,0.82) 34%, rgba(8,10,14,0.42) 64%, rgba(5,6,8,0.3) 100%),
+        linear-gradient(180deg, rgba(0,0,0,0.14) 0%, rgba(0,0,0,0.22) 58%, rgba(17,17,19,0.92) 100%) !important;
 }
 
 [data-theme="light"] .hero-content h1 {
@@ -175,13 +177,21 @@
 }
 
 [data-theme="light"] .hero-brand-lockup {
-    background: rgba(17,17,19,0.62) !important;
-    border-color: rgba(255,255,255,0.18) !important;
+    background: rgba(8,10,14,0.68) !important;
+    border-color: rgba(255,255,255,0.2) !important;
     color: #fff !important;
 }
 
 [data-theme="light"] .hero-brand-mark {
     filter: none !important;
+}
+
+@media (max-width: 767.98px) {
+    [data-theme="light"] #hero::before {
+        background:
+            linear-gradient(180deg, rgba(5,7,10,0.18) 0%, rgba(5,7,10,0.55) 42%, rgba(9,10,14,0.92) 100%),
+            linear-gradient(90deg, rgba(5,7,10,0.45), rgba(5,7,10,0.22)) !important;
+    }
 }
 
 [data-theme="light"] .hero-platforms__label {

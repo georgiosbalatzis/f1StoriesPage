@@ -4,21 +4,21 @@
   "files": {
     "styles.css": {
       "min": "styles.min.css",
-      "hash": "85da5be3",
-      "bytes": 32029,
-      "sourceBytes": 39658
+      "hash": "bd26a204",
+      "bytes": 32396,
+      "sourceBytes": 40171
     },
     "home.css": {
       "min": "home.min.css",
-      "hash": "c113c8bc",
-      "bytes": 12550,
-      "sourceBytes": 17758
+      "hash": "95604391",
+      "bytes": 13527,
+      "sourceBytes": 19211
     },
     "theme-overrides.css": {
       "min": "theme-overrides.min.css",
-      "hash": "6dbd04f4",
-      "bytes": 16047,
-      "sourceBytes": 24258
+      "hash": "a921416c",
+      "bytes": 16300,
+      "sourceBytes": 24680
     },
     "styles/shared-nav.css": {
       "min": "styles/shared-nav.min.css",
@@ -28,9 +28,9 @@
     },
     "styles/critical-common.css": {
       "min": "styles/critical-common.min.css",
-      "hash": "9c491f35",
-      "bytes": 5103,
-      "sourceBytes": 8376
+      "hash": "40a54d47",
+      "bytes": 5588,
+      "sourceBytes": 9036
     },
     "styles/critical-standings.css": {
       "min": "styles/critical-standings.min.css",
