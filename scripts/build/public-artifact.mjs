@@ -80,18 +80,11 @@ const HERO_BACKGROUND_FILES = new Set([
     'images/bg/bg5.avif',
     'images/bg/bg5.webp',
     'images/bg/bg5-mobile.avif',
-    'images/bg/bg5-mobile.webp',
-    'images/bg/bg6.avif',
-    'images/bg/bg6.webp',
-    'images/bg/bg6-mobile.avif',
-    'images/bg/bg6-mobile.webp',
-    'images/bg/bg8.avif',
-    'images/bg/bg8.webp',
-    'images/bg/bg8-mobile.avif',
-    'images/bg/bg8-mobile.webp'
+    'images/bg/bg5-mobile.webp'
 ]);
 
 const BLOG_ENTRY_PUBLIC_REFS = collectBlogEntryPublicRefs();
+const PUBLIC_IMAGE_REFS = collectPublicImageRefs();
 
 function toPosix(relPath) {
     return relPath.split(path.sep).join('/');
@@ -154,6 +147,21 @@ function addBlogEntryRef(refs, ref, fromRelPath = '') {
     refs.add(relPath);
 }
 
+function addPublicImageRef(refs, ref, fromRelPath = '') {
+    const clean = cleanPublicRef(ref);
+    if (!clean) return;
+
+    const relPath = clean.startsWith('/')
+        ? clean.slice(1)
+        : fromRelPath
+            ? path.posix.normalize(path.posix.join(path.posix.dirname(fromRelPath), clean))
+            : path.posix.normalize(clean);
+
+    if (!/^images\/[^?#]+/i.test(relPath)) return;
+    if (!/\.(?:avif|webp|png|jpe?g|svg)$/i.test(relPath)) return;
+    refs.add(relPath);
+}
+
 function collectRefsFromJsonValue(refs, value) {
     if (typeof value === 'string') {
         addBlogEntryRef(refs, value);
@@ -184,6 +192,30 @@ function collectHtmlRefs(refs, html, relPath) {
     const publicPathPattern = /(?:https:\/\/f1stories\.gr)?\/blog-module\/blog-entries\/[^"'()\s<>]+/gi;
     for (const match of String(html || '').matchAll(publicPathPattern)) {
         addBlogEntryRef(refs, match[0], relPath);
+    }
+}
+
+function collectPublicImageRefsFromText(refs, text, relPath) {
+    const attrPattern = /\b(?:href|src|data-src|data-full-src|content)=["']([^"']+)["']/gi;
+    for (const match of String(text || '').matchAll(attrPattern)) {
+        addPublicImageRef(refs, match[1], relPath);
+    }
+
+    const srcsetPattern = /\bsrcset=["']([^"']+)["']/gi;
+    for (const match of String(text || '').matchAll(srcsetPattern)) {
+        match[1].split(',').forEach(part => {
+            addPublicImageRef(refs, part.trim().split(/\s+/)[0], relPath);
+        });
+    }
+
+    const cssUrlPattern = /url\((["']?)([^"')]+)\1\)/gi;
+    for (const match of String(text || '').matchAll(cssUrlPattern)) {
+        addPublicImageRef(refs, match[2], relPath);
+    }
+
+    const publicImagePattern = /(?:https:\/\/f1stories\.gr)?\/images\/[^"'()\s<>]+/gi;
+    for (const match of String(text || '').matchAll(publicImagePattern)) {
+        addPublicImageRef(refs, match[0], relPath);
     }
 }
 
@@ -220,6 +252,41 @@ function collectBlogEntryPublicRefs() {
     return refs;
 }
 
+function collectPublicImageRefs() {
+    const refs = new Set();
+    const sourceFiles = new Set([
+        ...ROOT_FILES,
+        ...BLOG_PUBLIC_FILES,
+        ...STANDINGS_ROOT_FILES
+    ]);
+
+    const entriesRoot = path.join(REPO_ROOT, 'blog-module/blog-entries');
+    if (fs.existsSync(entriesRoot)) {
+        for (const entry of fs.readdirSync(entriesRoot, { withFileTypes: true })) {
+            if (!entry.isDirectory()) continue;
+            sourceFiles.add(`blog-module/blog-entries/${entry.name}/article.html`);
+        }
+    }
+
+    ['ghostcar', 'f1telemetry', 'privacy'].forEach(dir => {
+        const absDir = path.join(REPO_ROOT, dir);
+        if (!fs.existsSync(absDir)) return;
+        for (const entry of fs.readdirSync(absDir, { withFileTypes: true })) {
+            if (entry.isFile() && /\.html$/i.test(entry.name)) {
+                sourceFiles.add(`${dir}/${entry.name}`);
+            }
+        }
+    });
+
+    for (const relPath of sourceFiles) {
+        const abs = path.join(REPO_ROOT, relPath);
+        if (!fs.existsSync(abs) || !fs.statSync(abs).isFile()) continue;
+        collectPublicImageRefsFromText(refs, fs.readFileSync(abs, 'utf8'), relPath);
+    }
+
+    return refs;
+}
+
 function shouldCopyBlogEntry(relPath) {
     if (!relPath.startsWith('blog-module/blog-entries/')) return false;
     const name = path.posix.basename(relPath);
@@ -231,6 +298,14 @@ function shouldCopyStandings(relPath) {
     if (STANDINGS_ROOT_FILES.has(relPath)) return true;
     if (/^standings\/core\/[^/]+\.min\.js$/i.test(relPath)) return true;
     if (/^standings\/tabs\/[^/]+\.min\.(?:css|js)$/i.test(relPath)) return true;
+    return false;
+}
+
+function shouldCopyPublicImage(relPath) {
+    if (!/\.(?:avif|webp|png|jpe?g|svg)$/i.test(relPath)) return false;
+    if (PUBLIC_IMAGE_REFS.has(relPath)) return true;
+    if (/^images\/drivers\/[^/]+\.webp$/i.test(relPath)) return true;
+    if (/^images\/teams\/[^/]+\.webp$/i.test(relPath)) return true;
     return false;
 }
 
@@ -251,11 +326,11 @@ function shouldCopy(relPath) {
     }
 
     if (relPath.startsWith('images/bg/')) {
-        return HERO_BACKGROUND_FILES.has(relPath);
+        return HERO_BACKGROUND_FILES.has(relPath) && PUBLIC_IMAGE_REFS.has(relPath);
     }
 
     if (relPath.startsWith('images/')) {
-        return /\.(?:avif|webp|png|jpe?g|svg)$/i.test(relPath);
+        return shouldCopyPublicImage(relPath);
     }
 
     if (relPath.startsWith('scripts/')) {

@@ -20,6 +20,7 @@ const FORBIDDEN_EXACT = new Set([
     'package-lock.json',
     'package.json',
     'README.md',
+    'test.sql',
     'blog-module/blog/template.html',
     'blog-module/blog-data.json',
     'scripts/build/asset-manifest.json'
@@ -69,11 +70,21 @@ function forbiddenReason(relPath) {
     const base = path.posix.basename(relPath);
     if (FORBIDDEN_EXACT.has(relPath) || FORBIDDEN_EXACT.has(base)) return 'internal file';
     if (/\.(?:bak|docx|map|odt)$/i.test(relPath)) return 'source/backup artifact';
+    if (/\.sql$/i.test(relPath)) return 'database/source artifact';
+    if (/\.txt$/i.test(relPath) && relPath !== 'robots.txt') return 'raw text artifact';
     if (/^blog-module\/blog-entries\/.*\/(?:source|gallery)\.txt$/i.test(relPath)) return 'raw article source';
     if (/^blog-module\/blog-entries\/.*\.(?:jpe?g|png)$/i.test(relPath)) return 'raw article image';
     if (/^scripts\/build\//.test(relPath)) return 'build script';
     if (/^blog-module\/build\//.test(relPath)) return 'blog build script';
     if (/\.min\.(?:css|js)\.map$/i.test(relPath)) return 'source map';
+    if (/^images\/bg\/bg(?:6|7|8|9)(?:-|\.|$)/i.test(relPath)) return 'unapproved hero background';
+    if (/^images\/bg\/.*\.sh$/i.test(relPath)) return 'image build helper';
+    if (/^images\/avatars\/(?:FA|FAAM|Poulikidis)\.webp$/i.test(relPath)) return 'unused home avatar';
+    if (/^images\/authors\/(?:CSW|FAAM)\.webp$/i.test(relPath)) return 'unused author image';
+    if (/^images\/icons\/.*\.webp$/i.test(relPath)) return 'unused icon variant';
+    if (relPath === 'images/icons/sprite.svg') return 'build-only icon sprite';
+    if (/^images\/sponsors\/.*\.avif$/i.test(relPath)) return 'unused sponsor image variant';
+    if (relPath === 'images/logo.png') return 'raw logo source';
     return '';
 }
 
