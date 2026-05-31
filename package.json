@@ -27,8 +27,9 @@
     "perf:budget": "node scripts/perf/size-guard.mjs",
     "perf:budget:update": "node scripts/perf/size-guard.mjs --update",
     "perf:images": "node scripts/perf/public-image-guard.mjs",
+    "test:consent": "node scripts/perf/consent-guard.mjs",
     "perf:lighthouse": "node scripts/perf/lighthouse-guard.mjs",
-    "verify": "npm run build:public && npm run test:blog && npm run perf:budget && npm run perf:images && npm run perf:lighthouse"
+    "verify": "npm run build:public && npm run test:blog && npm run perf:budget && npm run perf:images && npm run test:consent && npm run perf:lighthouse"
   },
   "dependencies": {
     "adm-zip": "^0.5.12",
@@ -41,10 +42,12 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^6.5.1",
     "bootstrap": "^5.3.8",
+    "chrome-launcher": "^1.2.1",
     "esbuild": "^0.25.12",
     "fast-xml-parser": "^5.7.1",
     "lighthouse": "^12.8.2",
     "lightningcss": "^1.32.0",
+    "puppeteer-core": "^24.43.1",
     "sass": "^1.99.0"
   }
 }

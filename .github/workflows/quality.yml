@@ -42,5 +42,8 @@ jobs:
       - name: Check public image budget
         run: npm run perf:images
 
+      - name: Check consent analytics behavior
+        run: npm run test:consent
+
       - name: Run Lighthouse budgets
         run: npm run perf:lighthouse

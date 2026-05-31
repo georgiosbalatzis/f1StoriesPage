@@ -154,15 +154,15 @@
     },
     "scripts/perf/error-beacon.js": {
       "min": "scripts/perf/error-beacon.min.js",
-      "hash": "ea43d064",
-      "bytes": 1753,
-      "sourceBytes": 3390
+      "hash": "59367e85",
+      "bytes": 1450,
+      "sourceBytes": 2969
     },
     "scripts/perf/web-vitals-beacon.js": {
       "min": "scripts/perf/web-vitals-beacon.min.js",
-      "hash": "de4e5b63",
-      "bytes": 1508,
-      "sourceBytes": 3423
+      "hash": "28a02312",
+      "bytes": 1301,
+      "sourceBytes": 2947
     },
     "blog-module/blog-loader.js": {
       "min": "blog-module/blog-loader.min.js",
