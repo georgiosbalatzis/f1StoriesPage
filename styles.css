@@ -444,14 +444,28 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
 
 @media (max-width: 767.98px) {
     .cookie-banner,
-    .cookie-consent { max-height: 28vh; border-radius: 0; }
-    .cookie-content { padding: 0.75rem 0.85rem; }
+    .cookie-consent { max-height: min(34vh, 280px); border-radius: 0; }
+    .cookie-content { max-width: 100%; padding: 0.75rem 0.85rem; }
     .cookie-header { margin-bottom: 0.35rem; }
     .cookie-intro,
     .cookie-content > p { font-size: 0.82rem; }
     .cookie-details { margin-top: 0.5rem; }
-    .cookie-actions { flex-direction: row; gap: 0.45rem; margin: 0.65rem 0 0; }
-    .cookie-btn { width: auto; flex: 1 1 0; padding: 0.55rem 0.45rem; font-size: clamp(0.72rem, 2.8vw, 0.82rem); }
+    .cookie-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.45rem;
+        margin: 0.65rem 0 0;
+        width: 100%;
+    }
+    .cookie-btn {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        padding: 0.55rem 0.45rem;
+        font-size: clamp(0.72rem, 2.8vw, 0.82rem);
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
     .cookie-footer { display: none; }
 }
 

@@ -228,8 +228,11 @@ a.related-card-link { color: inherit; }
 .blog-page-sub {
     color: var(--text-tertiary);
     font-size: 0.92rem;
+    line-height: 1.45;
+    max-width: min(100%, 44rem);
     margin-top: 0.4rem;
     font-weight: 400;
+    overflow-wrap: break-word;
 }
 
 /* Author chips strip */
@@ -417,6 +420,8 @@ a.related-card-link { color: inherit; }
 .category-filter-note {
     font-size: 0.8rem;
     color: var(--text-tertiary);
+    line-height: 1.35;
+    overflow-wrap: break-word;
 }
 
 .category-strip {
@@ -1130,6 +1135,12 @@ body {
 
 @media (max-width: 480px) {
     .blog-page-title { font-size: 1.5rem; }
+    .blog-page-sub { font-size: 0.88rem; }
+    .category-filter-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.3rem;
+    }
     .article-card-img-wrap { aspect-ratio: 3 / 2; }
     .article-card-footer {
         align-items: flex-start;

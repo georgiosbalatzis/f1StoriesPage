@@ -4,9 +4,9 @@
   "files": {
     "styles.css": {
       "min": "styles.min.css",
-      "hash": "81ae97c2",
-      "bytes": 31897,
-      "sourceBytes": 39407
+      "hash": "85da5be3",
+      "bytes": 32029,
+      "sourceBytes": 39658
     },
     "home.css": {
       "min": "home.min.css",
@@ -52,9 +52,9 @@
     },
     "blog-module/blog-styles.css": {
       "min": "blog-module/blog-styles.min.css",
-      "hash": "c1ad9b3b",
-      "bytes": 22352,
-      "sourceBytes": 37478
+      "hash": "25471a33",
+      "bytes": 22575,
+      "sourceBytes": 37787
     },
     "blog-module/blog/article-styles.css": {
       "min": "blog-module/blog/article-styles.min.css",
@@ -142,9 +142,9 @@
     },
     "scripts/f1-optimized.js": {
       "min": "scripts/f1-optimized.min.js",
-      "hash": "fb05a506",
-      "bytes": 12638,
-      "sourceBytes": 23737
+      "hash": "4d7023f1",
+      "bytes": 10528,
+      "sourceBytes": 18913
     },
     "scripts/background-randomizer.js": {
       "min": "scripts/background-randomizer.min.js",

@@ -10,19 +10,9 @@
     var panels = Array.prototype.slice.call(document.querySelectorAll('.latest-panel'));
     var videosRequested = false;
     var latestObserver = null;
-    var liveRefreshStarted = false;
 
     var VIDEO_SNAPSHOT_URL = '/assets/youtube-latest.json';
-    var LIVE_REFRESH_MAX_AGE = 12 * 60 * 60 * 1000;
-    var CHANNEL_ID = 'UCTSK8lbEiHJ10KVFrhNaL4g';
     var MAX_RESULTS = 3;
-    var RSS_URL = 'https://www.youtube.com/feeds/videos.xml?channel_id=' + CHANNEL_ID;
-    var RSS_PROXIES = [
-        'https://api.allorigins.win/raw?url=' + encodeURIComponent(RSS_URL),
-        'https://corsproxy.io/?url=' + encodeURIComponent(RSS_URL),
-        'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(RSS_URL),
-        'https://thingproxy.freeboard.io/fetch/' + encodeURIComponent(RSS_URL)
-    ];
     var GR_MONTHS = ['Ιαν', 'Φεβ', 'Μαρ', 'Απρ', 'Μαΐ', 'Ιουν', 'Ιουλ', 'Αυγ', 'Σεπ', 'Οκτ', 'Νοε', 'Δεκ'];
 
     function canEagerLoadContent() {
@@ -110,26 +100,8 @@
         };
     }
 
-    function snapshotTimestamp(snapshot) {
-        return videoTimestamp(snapshot && (snapshot.lastUpdated || snapshot.newestPublishedAt));
-    }
-
     function isSnapshotUsable(snapshot) {
         return !!(snapshot && Array.isArray(snapshot.videos) && snapshot.videos.length);
-    }
-
-    function isSnapshotStale(snapshot) {
-        var ts = snapshotTimestamp(snapshot);
-        if (!ts) return true;
-        return Date.now() - ts > LIVE_REFRESH_MAX_AGE;
-    }
-
-    function isSnapshotNewer(nextSnapshot, prevSnapshot) {
-        var nextPublishedTs = videoTimestamp(nextSnapshot && nextSnapshot.newestPublishedAt);
-        var prevPublishedTs = videoTimestamp(prevSnapshot && prevSnapshot.newestPublishedAt);
-
-        if (nextPublishedTs && prevPublishedTs) return nextPublishedTs > prevPublishedTs;
-        return snapshotTimestamp(nextSnapshot) > snapshotTimestamp(prevSnapshot);
     }
 
     function fetchSnapshot() {
@@ -433,78 +405,6 @@
         videoGrid.innerHTML = videos.map(buildVideoCard).join('');
     }
 
-    function loadViaRSS(proxyUrl) {
-        return fetchWithTimeout(proxyUrl, null, 8000)
-            .then(function (response) {
-                if (!response.ok) throw new Error('rss ' + response.status);
-                return response.text();
-            })
-            .then(function (xml) {
-                var doc = new DOMParser().parseFromString(xml, 'application/xml');
-                if (doc.querySelector('parsererror')) throw new Error('rss parse');
-                var entries = Array.prototype.slice.call(doc.getElementsByTagName('entry'), 0, MAX_RESULTS);
-
-                if (!entries.length) throw new Error('no entries');
-
-                var videos = entries.map(function (entry) {
-                    var id = entry.getElementsByTagName('yt:videoId')[0];
-                    var title = entry.getElementsByTagName('title')[0];
-                    var published = entry.getElementsByTagName('published')[0] || entry.getElementsByTagName('updated')[0];
-                    var thumbnail = entry.getElementsByTagName('media:thumbnail')[0] || entry.getElementsByTagName('thumbnail')[0];
-                    var links = Array.prototype.slice.call(entry.getElementsByTagName('link'));
-                    var alternate = links.find(function (node) {
-                        return node.getAttribute('rel') === 'alternate' && node.getAttribute('href');
-                    });
-
-                    if (!id) return null;
-
-                    return {
-                        id: id.textContent.trim(),
-                        title: title ? title.textContent.trim() : '',
-                        publishedAt: published ? published.textContent.trim() : '',
-                        thumbnail: thumbnail ? thumbnail.getAttribute('url') : '',
-                        url: alternate ? alternate.getAttribute('href') : ''
-                    };
-                }).filter(Boolean);
-
-                return normalizeSnapshot({
-                    lastUpdated: new Date().toISOString(),
-                    newestPublishedAt: pickNewestPublishedAt(videos),
-                    videos: videos
-                });
-        });
-    }
-
-    function fetchLiveSnapshot() {
-        var proxyIndex = 0;
-
-        function tryNextProxy() {
-            if (proxyIndex >= RSS_PROXIES.length) {
-                return Promise.reject(new Error('all proxies failed'));
-            }
-
-            var currentProxy = RSS_PROXIES[proxyIndex++];
-            return loadViaRSS(currentProxy).catch(tryNextProxy);
-        }
-
-        return tryNextProxy();
-    }
-
-    function maybeRefreshVideosInBackground(snapshot) {
-        if (liveRefreshStarted || !canEagerLoadContent() || !isSnapshotStale(snapshot)) return;
-        liveRefreshStarted = true;
-
-        fetchLiveSnapshot()
-            .then(function (freshSnapshot) {
-                if (!isSnapshotUsable(freshSnapshot) || !isSnapshotNewer(freshSnapshot, snapshot)) return;
-                writeVideoCache(freshSnapshot);
-                renderVideos(freshSnapshot.videos);
-            })
-            .catch(function (error) {
-                console.warn('Video refresh skipped:', error);
-            });
-    }
-
     function actuallyLoadVideos() {
         if (!videoGrid || videosRequested) return;
 
@@ -513,13 +413,6 @@
         fetchSnapshot()
             .then(function (snapshot) {
                 renderVideos(snapshot.videos);
-                maybeRefreshVideosInBackground(snapshot);
-            })
-            .catch(function () {
-                if (!canEagerLoadContent()) throw new Error('snapshot unavailable on constrained connection');
-                return fetchLiveSnapshot().then(function (snapshot) {
-                    renderVideos(snapshot.videos);
-                });
             })
             .catch(function (error) {
                 console.error('Video load error:', error);
