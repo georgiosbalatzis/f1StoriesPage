@@ -96,6 +96,18 @@ body { overflow-y: auto !important; }
 
 .standings-tab i { font-size: 0.78em; }
 
+@media (min-width: 1200px) {
+    .standings-tabs { gap: 0.22rem; padding: 5px; }
+
+    .standings-tab {
+        flex: 1 1 0;
+        min-width: 0;
+        gap: 0.32rem;
+        padding: 0.75rem 0.45rem;
+        font-size: 0.78rem;
+    }
+}
+
 .standings-panel { display: none; contain: layout; }
 .standings-panel[hidden] { display: none !important; }
 

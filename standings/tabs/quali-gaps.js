@@ -726,11 +726,12 @@ function renderQualifyingGapOverview(rows) {
             + '<div class="quali-dots">';
 
         row.dots.forEach(function(dot, dotIndex) {
-            const leftPct = 50 + (dot.signedGap / scale) * 50;
+            const leftPct = clampNumber(50 + (dot.signedGap / scale) * 50, 2, 98);
             const top = laneOffsets[dotIndex % laneOffsets.length];
             const gapLabel = formatSignedGap(dot.signedGap, true);
             const tooltipSide = top <= 34 ? ' tooltip-bottom' : '';
-            html += '<button type="button" class="quali-dot' + tooltipSide + '" aria-label="' + esc(dot.label + ' · ' + gapLabel) + '" aria-expanded="false" style="left:' + clampNumber(leftPct, 2, 98).toFixed(2) + '%;top:' + top + '%;--dot-color:' + esc(dot.winner === 'left' ? leftChannels : rightChannels) + ';">'
+            const tooltipAlign = leftPct <= 15 ? ' tooltip-align-left' : leftPct >= 85 ? ' tooltip-align-right' : '';
+            html += '<button type="button" class="quali-dot' + tooltipSide + tooltipAlign + '" aria-label="' + esc(dot.label + ' · ' + gapLabel) + '" aria-expanded="false" style="left:' + leftPct.toFixed(2) + '%;top:' + top + '%;--dot-color:' + esc(dot.winner === 'left' ? leftChannels : rightChannels) + ';">'
                 + '<span class="quali-dot-tooltip" role="tooltip"><span class="quali-dot-tooltip-gap">' + esc(gapLabel) + '</span><span class="quali-dot-tooltip-session">' + esc(dot.label) + '</span></span>'
                 + '</button>';
         });

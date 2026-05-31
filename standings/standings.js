@@ -384,6 +384,26 @@ function prefersReducedMotion() {
     return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 }
 
+function scrollStandingsTabIntoView(tabName, smooth) {
+    if (!standingsTablist) return;
+    const tab = standingsTabs.find(function(item) {
+        return item.getAttribute('data-tab') === tabName;
+    });
+    if (!tab) return;
+
+    window.requestAnimationFrame(function() {
+        const tabRect = tab.getBoundingClientRect();
+        const listRect = standingsTablist.getBoundingClientRect();
+        const isOutside = tabRect.left < listRect.left + 4 || tabRect.right > listRect.right - 4;
+        if (!isOutside) return;
+        tab.scrollIntoView({
+            behavior: smooth && !prefersReducedMotion() ? 'smooth' : 'auto',
+            block: 'nearest',
+            inline: 'center'
+        });
+    });
+}
+
 function copyTextToClipboard(text) {
     if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
         return navigator.clipboard.writeText(text);
@@ -744,6 +764,7 @@ function activateStandingsTab(tabName, options) {
         tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
         tab.setAttribute('tabindex', isActive ? '0' : '-1');
     });
+    scrollStandingsTabIntoView(nextTab, !options || !options.skipFocus);
 
     standingsPanels.forEach(function(panel) {
         const isActive = panel.id === 'panel-' + nextTab;

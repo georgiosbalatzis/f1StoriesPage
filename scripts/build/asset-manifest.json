@@ -64,15 +64,15 @@
     },
     "standings/standings.css": {
       "min": "standings/standings.min.css",
-      "hash": "9f0eb8a2",
-      "bytes": 16104,
-      "sourceBytes": 19562
+      "hash": "7aececf3",
+      "bytes": 16258,
+      "sourceBytes": 19801
     },
     "standings/tabs/quali-gaps.css": {
       "min": "standings/tabs/quali-gaps.min.css",
-      "hash": "63dceb71",
-      "bytes": 13836,
-      "sourceBytes": 16395
+      "hash": "af15728f",
+      "bytes": 14647,
+      "sourceBytes": 17262
     },
     "standings/tabs/lap1-gains.css": {
       "min": "standings/tabs/lap1-gains.min.css",
@@ -220,9 +220,9 @@
     },
     "standings/standings.js": {
       "min": "standings/standings.min.js",
-      "hash": "eaafe026",
-      "bytes": 32173,
-      "sourceBytes": 61050
+      "hash": "0bc0a5a4",
+      "bytes": 32526,
+      "sourceBytes": 61838
     },
     "standings/tabs/_shared.js": {
       "min": "standings/tabs/_shared.min.js",
@@ -262,9 +262,9 @@
     },
     "standings/tabs/quali-gaps.js": {
       "min": "standings/tabs/quali-gaps.min.js",
-      "hash": "00d62e84",
-      "bytes": 21839,
-      "sourceBytes": 40717
+      "hash": "17e6a7cc",
+      "bytes": 21905,
+      "sourceBytes": 40850
     },
     "standings/tabs/track-dominance.js": {
       "min": "standings/tabs/track-dominance.min.js",
