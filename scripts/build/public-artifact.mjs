@@ -7,12 +7,19 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
 import { securityMetaHtml } from './security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DIST_ROOT = path.join(REPO_ROOT, 'dist');
 const PUBLIC_LOGO_IMAGE = 'images/icons/icon-512.png';
+const PUBLIC_IMAGE_MAX_BYTES = Number(process.env.PUBLIC_IMAGE_MAX_BYTES || 300 * 1024);
+const PUBLIC_ARTICLE_IMAGE_MAX_WIDTH = Number(process.env.PUBLIC_ARTICLE_IMAGE_MAX_WIDTH || 1600);
+const PUBLIC_IMAGE_QUALITY = {
+    avif: [52, 48, 44, 40, 36, 32, 28, 24, 20],
+    webp: [82, 78, 74, 70, 66, 62, 58, 54, 50, 46, 42, 38, 34, 30, 26]
+};
 
 const ROOT_FILES = new Set([
     '.nojekyll',
@@ -108,6 +115,10 @@ function walk(absDir, visitor) {
 
 function isOptimizedImage(relPath) {
     return /\.(?:avif|webp)$/i.test(relPath);
+}
+
+function isPublicArticleImage(relPath) {
+    return /^blog-module\/blog-entries\/[^/]+\/[^/]+\.(?:avif|webp)$/i.test(relPath);
 }
 
 function cleanPublicRef(ref) {
@@ -280,31 +291,100 @@ function rewritePublicLogoRefs(html) {
     return String(html || '').replace(/https:\/\/f1stories\.gr\/images\/logo\.png/g, `https://f1stories.gr/${PUBLIC_LOGO_IMAGE}`);
 }
 
-function copyFile(relPath) {
+async function optimizePublicArticleImage(src, dest, relPath) {
+    if (!isPublicArticleImage(relPath)) return null;
+
+    const originalSize = fs.statSync(src).size;
+    if (originalSize <= PUBLIC_IMAGE_MAX_BYTES) return null;
+
+    const ext = path.extname(relPath).slice(1).toLowerCase();
+    const qualities = PUBLIC_IMAGE_QUALITY[ext];
+    if (!qualities) return null;
+
+    let best = null;
+    for (const quality of qualities) {
+        const pipeline = sharp(src)
+            .rotate()
+            .resize({
+                width: PUBLIC_ARTICLE_IMAGE_MAX_WIDTH,
+                withoutEnlargement: true
+            });
+
+        const buffer = ext === 'avif'
+            ? await pipeline.avif({ quality, effort: 6 }).toBuffer()
+            : await pipeline.webp({ quality, effort: 6 }).toBuffer();
+
+        if (!best || buffer.length < best.buffer.length) {
+            best = { buffer, quality };
+        }
+
+        if (buffer.length <= PUBLIC_IMAGE_MAX_BYTES) {
+            fs.writeFileSync(dest, buffer);
+            return {
+                relPath,
+                originalSize,
+                outputSize: buffer.length,
+                quality,
+                withinBudget: true
+            };
+        }
+    }
+
+    fs.writeFileSync(dest, best.buffer);
+    return {
+        relPath,
+        originalSize,
+        outputSize: best.buffer.length,
+        quality: best.quality,
+        withinBudget: best.buffer.length <= PUBLIC_IMAGE_MAX_BYTES
+    };
+}
+
+async function copyFile(relPath) {
     const src = path.join(REPO_ROOT, relPath);
     const dest = path.join(DIST_ROOT, relPath);
     ensureDir(path.dirname(dest));
     if (/\.html$/i.test(relPath)) {
         fs.writeFileSync(dest, injectSecurityMeta(rewritePublicLogoRefs(fs.readFileSync(src, 'utf8'))), 'utf8');
-        return;
+        return null;
     }
+    const optimized = await optimizePublicArticleImage(src, dest, relPath);
+    if (optimized) return optimized;
     fs.copyFileSync(src, dest);
+    return null;
 }
 
-function main() {
+async function main() {
     fs.rmSync(DIST_ROOT, { recursive: true, force: true });
     ensureDir(DIST_ROOT);
 
     const copied = [];
+    const optimizedImages = [];
     walk(REPO_ROOT, function (_, relPath) {
         if (!shouldCopy(relPath)) return;
-        copyFile(relPath);
         copied.push(relPath);
     });
 
+    for (const relPath of copied) {
+        const optimized = await copyFile(relPath);
+        if (optimized) optimizedImages.push(optimized);
+    }
+
     copied.sort();
     const bytes = copied.reduce((sum, relPath) => sum + fs.statSync(path.join(DIST_ROOT, relPath)).size, 0);
-    console.log(`✓ public artifact: ${copied.length} files, ${(bytes / 1024 / 1024).toFixed(2)} MB → dist/`);
+    const savings = optimizedImages.reduce((sum, image) => sum + image.originalSize - image.outputSize, 0);
+    const suffix = optimizedImages.length
+        ? `; optimized ${optimizedImages.length} article image(s), saved ${(savings / 1024 / 1024).toFixed(2)} MB`
+        : '';
+    console.log(`✓ public artifact: ${copied.length} files, ${(bytes / 1024 / 1024).toFixed(2)} MB → dist/${suffix}`);
+
+    const misses = optimizedImages.filter(image => !image.withinBudget);
+    if (misses.length) {
+        console.warn(`⚠ ${misses.length} optimized article image(s) still exceed ${(PUBLIC_IMAGE_MAX_BYTES / 1024).toFixed(0)} KB`);
+    }
 }
 
-main();
+main().catch(error => {
+    console.error(error);
+    process.exit(1);
+});

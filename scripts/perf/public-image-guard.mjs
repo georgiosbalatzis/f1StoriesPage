@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-// public-image-guard.mjs - report public images over 300 KB and fail
-// first-load/card regressions.
+// public-image-guard.mjs - fail public images over 300 KB.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -91,9 +90,13 @@ function main() {
         if (size > MAX_BYTES) {
             const row = { relPath, size, kind };
             oversized.push(row);
-            if (kind === 'article-card' && !CARD_ALLOWLIST.has(relPath)) {
+            if (kind === 'article-card' && CARD_ALLOWLIST.has(relPath)) {
+                return;
+            }
+
+            if (kind === 'article-card') {
                 errors.push(`${relPath}: card image ${fmtBytes(size)} exceeds ${fmtBytes(MAX_BYTES)}`);
-            } else if (kind !== 'article-body') {
+            } else {
                 errors.push(`${relPath}: ${kind} image ${fmtBytes(size)} exceeds ${fmtBytes(MAX_BYTES)}`);
             }
         }
@@ -109,11 +112,7 @@ function main() {
         process.exit(1);
     }
 
-    const largeArticleImages = oversized.filter(row => row.kind === 'article-body').length;
-    const suffix = largeArticleImages
-        ? `; ${largeArticleImages} full article image(s) listed for editorial optimization`
-        : '';
-    console.log(`public image budget passed: no card/global image exceeds ${fmtBytes(MAX_BYTES)}${suffix}`);
+    console.log(`public image budget passed: no public image exceeds ${fmtBytes(MAX_BYTES)}`);
 }
 
 main();

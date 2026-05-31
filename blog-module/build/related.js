@@ -1,4 +1,4 @@
-const { fs, path, CONFIG, escapeHtmlAttribute, getImageDimensionsForPublicPath } = require('./shared');
+const { fs, path, CONFIG, escapeHtmlAttribute, getCardThumbnailPath, getImageDimensionsForPublicPath } = require('./shared');
 
 function scoreRelatedPosts(blogPosts, post, index) {
     const scored = blogPosts
@@ -32,13 +32,14 @@ function scoreRelatedPosts(blogPosts, post, index) {
 
 async function buildRelatedPostsHtml(relatedPosts) {
     const cards = await Promise.all(relatedPosts.map(async related => {
-        const relatedImagePath = related.image.substring(related.image.lastIndexOf('/') + 1);
+        const relatedImage = getCardThumbnailPath(related.image);
+        const relatedImagePath = relatedImage.substring(relatedImage.lastIndexOf('/') + 1);
         const relDate = new Date(related.date);
         const relDateStr = relDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
         const relatedTitle = escapeHtmlAttribute(related.title);
         const relatedAuthor = escapeHtmlAttribute(related.author);
         const relatedReadTime = escapeHtmlAttribute(related.readingTime || '');
-        const imageDimensions = await getImageDimensionsForPublicPath(related.image);
+        const imageDimensions = await getImageDimensionsForPublicPath(relatedImage);
         const widthAttr = imageDimensions && imageDimensions.width ? ` width="${imageDimensions.width}"` : '';
         const heightAttr = imageDimensions && imageDimensions.height ? ` height="${imageDimensions.height}"` : '';
         const hoverMeta = relatedReadTime
@@ -77,21 +78,8 @@ async function buildRelatedPostsHtml(relatedPosts) {
 
 function renderRelatedArticlesSection(relatedPostsHtml) {
     return `        <div class="row mt-5">
-            <div class="col-12"><h2 class="mb-4 related-section-title">Related Articles</h2></div>
-            ${relatedPostsHtml || ''}
+            <div class="col-12"><h2 class="mb-4 related-section-title">Related Articles</h2></div>${relatedPostsHtml ? `\n${relatedPostsHtml}` : ''}
         </div>`;
-}
-
-function extractRelatedArticleUrls(postHtml) {
-    return Array.from(postHtml.matchAll(/<a\b[^>]*\bhref="([^"]+)"[^>]*\bclass="[^"]*\brelated-card-link\b[^"]*"/gi))
-        .map(match => match[1]);
-}
-
-function relatedArticlesMatch(postHtml, relatedPosts) {
-    const currentUrls = extractRelatedArticleUrls(postHtml);
-    const expectedUrls = relatedPosts.map(post => post.url);
-    return currentUrls.length === expectedUrls.length
-        && currentUrls.every((url, index) => url === expectedUrls[index]);
 }
 
 async function injectRelatedArticles(blogPosts) {
@@ -106,7 +94,6 @@ async function injectRelatedArticles(blogPosts) {
         if (postHtml.includes('RELATED_ARTICLES')) {
             postHtml = postHtml.replace(/RELATED_ARTICLES/g, relatedPostsHtml || '');
         } else {
-            if (relatedArticlesMatch(postHtml, relatedPosts)) continue;
             postHtml = postHtml.replace(
                 /        <div class="row mt-5">\n\s*<div class="col-12"><h2 class="mb-4 related-section-title">Related Articles<\/h2><\/div>[\s\S]*?\n        <\/div>(?=\n    <\/div>\n<\/main>)/,
                 renderRelatedArticlesSection(relatedPostsHtml)
@@ -120,7 +107,5 @@ module.exports = {
     scoreRelatedPosts,
     buildRelatedPostsHtml,
     renderRelatedArticlesSection,
-    extractRelatedArticleUrls,
-    relatedArticlesMatch,
     injectRelatedArticles
 };
