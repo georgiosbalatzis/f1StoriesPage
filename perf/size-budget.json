@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-30T19:26:56.286Z",
+  "updatedAt": "2026-05-31T18:20:56.000Z",
   "thresholdPercent": 10,
   "note": "Byte budgets for tracked JS/CSS/HTML assets. Run `npm run perf:budget` to check, `npm run perf:budget:update` to rewrite this file with current sizes. Threshold is the max % growth allowed before the check fails.",
   "files": {
@@ -67,7 +67,7 @@
     "blog-module/build/index.js": 24142,
     "blog-module/build/__tests__/golden.js": 11230,
     "blog-module/build/__tests__/run-golden.js": 778,
-    "scripts/build/fetch-youtube.mjs": 5358,
+    "scripts/build/fetch-youtube.mjs": 6167,
     "sw.js": 19224,
     "manifest.json": 2322,
     "assets/youtube-latest.json": 3329,

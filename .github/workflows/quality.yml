@@ -33,6 +33,9 @@ jobs:
       - name: Build public artifact
         run: npm run build:public
 
+      - name: Check generated artifact drift
+        run: npm run build:check
+
       - name: Run blog golden tests
         run: npm run test:blog
 
