@@ -145,7 +145,7 @@
 
 
 /* ── LATEST FROM F1 STORIES — Tab system ─────── */
-#latest { padding: var(--space-2xl) 0; }
+#latest { padding: var(--space-2xl) 0 var(--space-xl); }
 
 .latest-tabs {
     display: flex;
@@ -462,14 +462,14 @@ a.ep-card:hover .ep-card__cta { gap: 0.55rem; }
 
 
 /* ── TEAM — Compact avatar row ───────────────── */
-#about { padding: var(--space-xl) 0 var(--space-lg); }
+#about { padding: var(--space-lg) 0 var(--space-md); }
 
 .team-row {
     display: flex;
     justify-content: center;
-    gap: 2rem;
+    gap: 1.5rem;
     flex-wrap: wrap;
-    margin-bottom: 2rem;
+    margin-bottom: 0;
 }
 .team-member { text-align: center; max-width: 160px; }
 .team-member > a {
@@ -478,22 +478,25 @@ a.ep-card:hover .ep-card__cta { gap: 0.55rem; }
     justify-content: center;
     width: 112px;
     height: 112px;
-    margin-bottom: 0.75rem;
-    padding: 5px;
-    border: 1px solid rgba(59,130,246,0.28);
+    margin-bottom: 0.8rem;
+    padding: 7px;
+    border: 1px solid rgba(59,130,246,0.34);
     border-radius: 50%;
-    background: #202637;
+    background: #20283a;
     overflow: hidden;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.22);
     transition: transform var(--dur-base) var(--ease-out),
                 box-shadow var(--dur-base) var(--ease-out);
 }
 .team-member__avatar {
-    width: 100%; height: 100%;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
-    object-fit: cover;
+    object-fit: contain;
     border: 0;
     background: transparent;
-    mix-blend-mode: multiply;
+    mix-blend-mode: normal;
+    filter: drop-shadow(0 8px 10px rgba(0,0,0,0.35));
     transition: transform var(--dur-base) var(--ease-out);
     display: block;
     margin: 0;
@@ -521,13 +524,13 @@ a.ep-card:hover .ep-card__cta { gap: 0.55rem; }
 
 
 /* ── CONTACT ─────────────────────────────────── */
-#contact { padding: var(--space-lg) 0 var(--space-xl); }
+#contact { padding: var(--space-md) 0 var(--space-xl); }
 
 .contact-block {
     background: var(--bg-surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: var(--space-xl);
+    padding: var(--space-lg);
     position: relative;
     overflow: hidden;
 }
@@ -547,9 +550,9 @@ a.ep-card:hover .ep-card__cta { gap: 0.55rem; }
 .contact-block__intro {
     font-size: var(--text-sm);
     color: var(--text-secondary);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
-.contact-form .form-group { margin-bottom: 1.25rem; }
+.contact-form .form-group { margin-bottom: 1rem; }
 .contact-form label {
     display: block;
     font-size: var(--text-sm);
@@ -559,6 +562,10 @@ a.ep-card:hover .ep-card__cta { gap: 0.55rem; }
     transition: color var(--dur-fast) var(--ease-out);
 }
 .contact-form .form-group:focus-within label { color: var(--accent); }
+.contact-block textarea.form-control {
+    min-height: 112px;
+    height: 112px;
+}
 
 .form-alert {
     display: flex;
@@ -579,7 +586,9 @@ a.ep-card:hover .ep-card__cta { gap: 0.55rem; }
 .form-alert--error i { color: var(--danger); }
 .form-alert--error a { color: var(--accent); }
 
-.contact-submit { width: 100%; text-align: center; }
+.contact-submit { width: 100%; text-align: center; color: #fff; }
+.contact-submit:hover,
+.contact-submit:focus-visible { color: #fff; }
 .contact-submit .submit-spinner i { margin: 0; }
 .contact-block__micro {
     font-size: var(--text-xs);
@@ -608,8 +617,8 @@ a.ep-card:hover .ep-card__cta { gap: 0.55rem; }
     .hero-content h1 { margin-left: auto; margin-right: auto; }
     .hero-subtitle { margin-left: auto; margin-right: auto; }
     .hero-ctas { justify-content: center; }
-    .team-row { gap: 1.5rem; }
-    .team-member > a { width: 92px; height: 92px; }
+    .team-row { gap: 1.25rem; }
+    .team-member > a { width: 96px; height: 96px; }
     .team-member__avatar { width: 100%; height: 100%; }
 }
 @media (max-width: 575.98px) {
@@ -629,8 +638,8 @@ a.ep-card:hover .ep-card__cta { gap: 0.55rem; }
     .hero-brand-mark { width: 40px; height: 40px; }
     .hero-ctas { flex-direction: column; align-items: flex-start; }
     .hero-ctas .cta-button { width: 100%; max-width: 260px; text-align: center; }
-    .team-row { gap: 1.25rem; }
-    .team-member > a { width: 88px; height: 88px; }
+    .team-row { gap: 1rem; }
+    .team-member > a { width: 92px; height: 92px; }
 }
 
 
