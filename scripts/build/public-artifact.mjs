@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import { securityMetaHtml } from './security-policy.mjs';
+import { securityHeadersText, securityMetaHtml } from './security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -362,6 +362,12 @@ function injectSecurityMeta(html) {
     return nextHtml.replace(/(<head\b[^>]*>\s*)/i, `$1\n${block}\n`);
 }
 
+function writeSecurityHeadersFile() {
+    const relPath = '_headers';
+    fs.writeFileSync(path.join(DIST_ROOT, relPath), securityHeadersText(), 'utf8');
+    return relPath;
+}
+
 function rewritePublicLogoRefs(html) {
     return String(html || '').replace(/https:\/\/f1stories\.gr\/images\/logo\.png/g, `https://f1stories.gr/${PUBLIC_LOGO_IMAGE}`);
 }
@@ -445,13 +451,13 @@ async function main() {
         if (optimized) optimizedImages.push(optimized);
     }
 
-    copied.sort();
-    const bytes = copied.reduce((sum, relPath) => sum + fs.statSync(path.join(DIST_ROOT, relPath)).size, 0);
+    const publicFiles = copied.concat(writeSecurityHeadersFile()).sort();
+    const bytes = publicFiles.reduce((sum, relPath) => sum + fs.statSync(path.join(DIST_ROOT, relPath)).size, 0);
     const savings = optimizedImages.reduce((sum, image) => sum + image.originalSize - image.outputSize, 0);
     const suffix = optimizedImages.length
         ? `; optimized ${optimizedImages.length} article image(s), saved ${(savings / 1024 / 1024).toFixed(2)} MB`
         : '';
-    console.log(`✓ public artifact: ${copied.length} files, ${(bytes / 1024 / 1024).toFixed(2)} MB → dist/${suffix}`);
+    console.log(`✓ public artifact: ${publicFiles.length} files, ${(bytes / 1024 / 1024).toFixed(2)} MB → dist/${suffix}`);
 
     const misses = optimizedImages.filter(image => !image.withinBudget);
     if (misses.length) {

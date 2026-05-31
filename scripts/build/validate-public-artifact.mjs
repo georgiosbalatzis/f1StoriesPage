@@ -4,7 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CONTENT_SECURITY_POLICY, REFERRER_POLICY } from './security-policy.mjs';
+import { CONTENT_SECURITY_POLICY, REFERRER_POLICY, securityHeadersText } from './security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -28,6 +28,7 @@ const FORBIDDEN_EXACT = new Set([
 
 const REQUIRED_EXACT = [
     '.nojekyll',
+    '_headers',
     '404.html',
     'index.html',
     'manifest.json',
@@ -162,6 +163,17 @@ function validateHtmlSecurityMeta(errors, html, relPath) {
     }
 }
 
+function validateSecurityHeadersFile(errors) {
+    const relPath = '_headers';
+    const abs = path.join(DIST_ROOT, relPath);
+    if (!fs.existsSync(abs)) return;
+    const actual = fs.readFileSync(abs, 'utf8');
+    const expected = securityHeadersText();
+    if (actual !== expected) {
+        errors.push(`${relPath}: does not match scripts/build/security-policy.mjs`);
+    }
+}
+
 function main() {
     if (!fs.existsSync(DIST_ROOT)) {
         console.error('✗ dist/ does not exist. Run `node scripts/build/public-artifact.mjs` first.');
@@ -176,6 +188,8 @@ function main() {
             errors.push(`missing required public file: ${relPath}`);
         }
     }
+
+    validateSecurityHeadersFile(errors);
 
     walk(DIST_ROOT, function (abs, relPath) {
         files.push(relPath);

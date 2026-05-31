@@ -271,10 +271,20 @@ document.addEventListener('DOMContentLoaded', function() {
         paginationEl.innerHTML = html;
     }
 
+    function getFilteredPosts() {
+        return allPosts.filter(function(post) {
+            var matchesAuthor = activeAuthor === 'all' || post.author === activeAuthor;
+            var matchesCategory = activeCategory === 'all' || (post.categories || []).indexOf(activeCategory) !== -1;
+            var matchesQuery = !activeQuery || post.__searchIndex.indexOf(normalizeText(activeQuery)) !== -1;
+            return matchesAuthor && matchesCategory && matchesQuery;
+        });
+    }
+
     function goToPage(page, options) {
         if (!grid) return;
         if (!fullPostsLoaded && page > 1) {
             ensureFullPostsLoaded().then(function() {
+                filteredPosts = getFilteredPosts();
                 goToPage(page, options);
             }).catch(showLoadFailure);
             return;
@@ -316,12 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ensureFullPostsLoaded().then(renderPosts).catch(showLoadFailure);
             return;
         }
-        filteredPosts = allPosts.filter(function(post) {
-            var matchesAuthor = activeAuthor === 'all' || post.author === activeAuthor;
-            var matchesCategory = activeCategory === 'all' || (post.categories || []).indexOf(activeCategory) !== -1;
-            var matchesQuery = !activeQuery || post.__searchIndex.indexOf(normalizeText(activeQuery)) !== -1;
-            return matchesAuthor && matchesCategory && matchesQuery;
-        });
+        filteredPosts = getFilteredPosts();
         if (!fullPostsLoaded && activeAuthor === 'all' && activeCategory === 'all' && !activeQuery) {
             filteredPosts = pageOnePosts.length ? pageOnePosts : filteredPosts;
         }

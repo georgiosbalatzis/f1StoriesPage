@@ -1,5 +1,23 @@
 export const REFERRER_POLICY = 'strict-origin-when-cross-origin';
 
+export const PERMISSIONS_POLICY = [
+    'accelerometer=()',
+    'ambient-light-sensor=()',
+    'camera=()',
+    'display-capture=()',
+    'geolocation=()',
+    'gyroscope=()',
+    'magnetometer=()',
+    'microphone=()',
+    'midi=()',
+    'payment=()',
+    'usb=()'
+].join(', ');
+
+export const X_CONTENT_TYPE_OPTIONS = 'nosniff';
+
+export const STRICT_TRANSPORT_SECURITY = 'max-age=31536000; includeSubDomains';
+
 export const CONTENT_SECURITY_POLICY = [
     "default-src 'self'",
     "base-uri 'self'",
@@ -17,12 +35,27 @@ export const CONTENT_SECURITY_POLICY = [
     'upgrade-insecure-requests'
 ].join('; ');
 
+export const SECURITY_HEADERS = [
+    ['Content-Security-Policy', CONTENT_SECURITY_POLICY],
+    ['Referrer-Policy', REFERRER_POLICY],
+    ['Permissions-Policy', PERMISSIONS_POLICY],
+    ['X-Content-Type-Options', X_CONTENT_TYPE_OPTIONS],
+    ['Strict-Transport-Security', STRICT_TRANSPORT_SECURITY]
+];
+
 function escapeHtmlAttribute(value) {
     return String(value)
         .replace(/&/g, '&amp;')
         .replace(/"/g, '&quot;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
+}
+
+export function securityHeadersText() {
+    return [
+        '/*',
+        ...SECURITY_HEADERS.map(([name, value]) => `  ${name}: ${value}`)
+    ].join('\n') + '\n';
 }
 
 export function securityMetaHtml(indent = '') {

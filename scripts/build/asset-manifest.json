@@ -172,9 +172,9 @@
     },
     "blog-module/blog-index.js": {
       "min": "blog-module/blog-index.min.js",
-      "hash": "b0e0b748",
-      "bytes": 11033,
-      "sourceBytes": 21865
+      "hash": "13c1647b",
+      "bytes": 11065,
+      "sourceBytes": 21993
     },
     "blog-module/blog/article-script.js": {
       "min": "blog-module/blog/article-script.min.js",
