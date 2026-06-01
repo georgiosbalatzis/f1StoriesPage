@@ -151,26 +151,47 @@
 
 /* ── Hero ─────────────────────────────────────── */
 [data-theme="light"] #hero::before {
-    background: linear-gradient(to right, rgba(255,255,255,0.92), rgba(245,245,247,0.88)) !important;
+    background:
+        linear-gradient(90deg, rgba(5,7,10,0.94) 0%, rgba(8,11,16,0.82) 34%, rgba(8,10,14,0.42) 64%, rgba(5,6,8,0.3) 100%),
+        linear-gradient(180deg, rgba(0,0,0,0.14) 0%, rgba(0,0,0,0.22) 58%, rgba(17,17,19,0.92) 100%) !important;
 }
 
 [data-theme="light"] .hero-content h1 {
-    background: linear-gradient(135deg, #1d1d1f 30%, #0e4ca6) !important;
+    background: none !important;
     -webkit-background-clip: text !important;
     background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
+    -webkit-text-fill-color: #fff !important;
+    color: #fff !important;
     filter: none !important;
-    text-shadow: none !important;
+    text-shadow: 0 2px 18px rgba(0,0,0,0.52) !important;
     animation: none !important;
 }
 
 [data-theme="light"] .hero-content p {
-    color: #3a3a3c !important;
-    text-shadow: none !important;
+    color: rgba(255,255,255,0.86) !important;
+    text-shadow: 0 1px 12px rgba(0,0,0,0.52) !important;
 }
 
 [data-theme="light"] .hero-subtitle {
-    color: #3a3a3c !important;
+    color: rgba(255,255,255,0.86) !important;
+}
+
+[data-theme="light"] .hero-brand-lockup {
+    background: rgba(8,10,14,0.68) !important;
+    border-color: rgba(255,255,255,0.2) !important;
+    color: #fff !important;
+}
+
+[data-theme="light"] .hero-brand-mark {
+    filter: none !important;
+}
+
+@media (max-width: 767.98px) {
+    [data-theme="light"] #hero::before {
+        background:
+            linear-gradient(180deg, rgba(5,7,10,0.18) 0%, rgba(5,7,10,0.55) 42%, rgba(9,10,14,0.92) 100%),
+            linear-gradient(90deg, rgba(5,7,10,0.45), rgba(5,7,10,0.22)) !important;
+    }
 }
 
 [data-theme="light"] .hero-platforms__label {
@@ -221,6 +242,12 @@
     border-radius: 8px !important;
 }
 
+[data-theme="light"] .hero-ctas .cta-secondary {
+    background: rgba(17,17,19,0.38) !important;
+    color: #fff !important;
+    border-color: rgba(255,255,255,0.26) !important;
+}
+
 [data-theme="light"] .cta-button.cta-secondary:hover,
 [data-theme="light"] .cta-secondary:hover {
     background: rgba(14,76,166,0.05) !important;
@@ -255,7 +282,7 @@
 }
 
 [data-theme="light"] .latest-tab {
-    color: #86868b !important;
+    color: #5f5f67 !important;
     background: transparent !important;
 }
 
@@ -397,10 +424,25 @@
     color: #86868b !important;
 }
 
-[data-theme="light"] .persona .avatar,
-[data-theme="light"] .team-member__avatar {
+[data-theme="light"] .team-member > a {
+    border-color: rgba(14,76,166,0.2) !important;
+    background:
+        radial-gradient(circle at 50% 36%, rgba(255,255,255,0.78), transparent 42%),
+        linear-gradient(145deg, #eef4fb, #dfe9f5) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.82),
+        0 8px 20px rgba(14,76,166,0.1) !important;
+}
+
+[data-theme="light"] .persona .avatar {
     border-color: rgba(14,76,166,0.3) !important;
     background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #0e4ca6, rgba(14,76,166,0.3)) !important;
+}
+
+[data-theme="light"] .team-member__avatar {
+    background: transparent !important;
+    background-image: none !important;
+    filter: drop-shadow(0 8px 10px rgba(20,35,60,0.18)) !important;
 }
 
 /* ── Contact Form ────────────────────────────── */
@@ -764,7 +806,7 @@ h1, h2, h3, h4, p, a, span {
 }
 
 [data-theme="light"] .sponsor-strip-home .sponsor-strip-label {
-    color: #86868b;
+    color: #5f5f67;
 }
 
 [data-theme="light"] .sponsor-logo {
@@ -784,7 +826,7 @@ h1, h2, h3, h4, p, a, span {
 }
 
 [data-theme="light"] .sponsor-strip-label {
-    color: #86868b;
+    color: #5f5f67;
 }
 
 /* ── Episode (ep-card) — Light theme ─────────── */

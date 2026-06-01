@@ -1,0 +1,51 @@
+{
+  "description": "Route-level Lighthouse budgets for the public dist artifact. Scores are percentages; timings are milliseconds.",
+  "throttlingMethod": "provided",
+  "onlyCategories": [
+    "performance",
+    "accessibility",
+    "best-practices",
+    "seo"
+  ],
+  "routes": [
+    {
+      "name": "Home",
+      "path": "/",
+      "thresholds": {
+        "performance": 95,
+        "accessibility": 98,
+        "best-practices": 100,
+        "seo": 100,
+        "largest-contentful-paint": 2500,
+        "cumulative-layout-shift": 0.02,
+        "total-blocking-time": 100
+      }
+    },
+    {
+      "name": "Blog",
+      "path": "/blog-module/blog/index.html",
+      "thresholds": {
+        "performance": 95,
+        "accessibility": 98,
+        "best-practices": 100,
+        "seo": 100,
+        "largest-contentful-paint": 2500,
+        "cumulative-layout-shift": 0.02,
+        "total-blocking-time": 100
+      }
+    },
+    {
+      "name": "Standings",
+      "path": "/standings/",
+      "thresholds": {
+        "performance": 95,
+        "accessibility": 98,
+        "best-practices": 100,
+        "seo": 100,
+        "largest-contentful-paint": 2500,
+        "cumulative-layout-shift": 0.02,
+        "total-blocking-time": 100
+      }
+    }
+  ]
+}

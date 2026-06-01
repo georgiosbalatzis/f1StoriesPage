@@ -6,6 +6,16 @@
    - blog/article-styles.css .blog-nav section
    ═══════════════════════════════════════════════ */
 
+/* ── Shared Icons ─────────────────────────────── */
+.icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    flex-shrink: 0;
+    vertical-align: -0.125em;
+}
+
 /* ── Blog Navbar ──────────────────────────────── */
 .blog-nav {
     position: fixed;
@@ -265,6 +275,13 @@
 @media (max-width: 767px) {
     .blog-nav-countdown { display: none; }
     .blog-nav-countdown-mobile { display: flex; }
+}
+@media (max-width: 575.98px) {
+    .blog-nav-inner { gap: 0.75rem; }
+    .blog-nav-right { gap: 0.25rem; min-width: 0; }
+    .blog-nav-countdown-mobile { display: none; }
+    .blog-nav-hamburger { display: flex !important; position: fixed; top: 11px; right: 12px; z-index: 1062; border-radius: 8px; }
+    [data-theme="light"] .blog-nav-hamburger { background: #f5f5f7; }
 }
 
 /* ── Floating Utility Buttons ─────────────────── */

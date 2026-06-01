@@ -3,9 +3,18 @@
 
     if (location.protocol === 'file:') return;
 
-    var QUEUE_KEY = 'f1s-error-queue-v1';
     var COUNT_KEY = 'f1s-err-count';
+    var CONSENT_KEY = 'f1stories-cookie-consent-v1';
     var PRIVATE_PATH_RE = /\/(?:auth|login|session|token|oauth|pass)/i;
+
+    function hasAnalyticsConsent() {
+        try {
+            var consent = JSON.parse(localStorage.getItem(CONSENT_KEY));
+            return !!(consent && consent.analytics === true);
+        } catch (_) {
+            return false;
+        }
+    }
 
     function cleanUrl(value) {
         if (!value) return '';
@@ -34,24 +43,9 @@
     }
 
     function send(params) {
-        if (typeof gtag === 'function') {
-            try { return gtag('event', 'js_error', params); } catch (_) {}
-        }
-        try {
-            var queue = JSON.parse(sessionStorage.getItem(QUEUE_KEY) || '[]');
-            queue.push(params);
-            sessionStorage.setItem(QUEUE_KEY, JSON.stringify(queue.slice(-20)));
-        } catch (_) {}
-    }
-
-    function flushQueue() {
         if (typeof gtag !== 'function') return;
-        try {
-            JSON.parse(sessionStorage.getItem(QUEUE_KEY) || '[]').forEach(function (params) {
-                gtag('event', 'js_error', params);
-            });
-            sessionStorage.setItem(QUEUE_KEY, '[]');
-        } catch (_) {}
+        if (!hasAnalyticsConsent()) return;
+        try { gtag('event', 'js_error', params); } catch (_) {}
     }
 
     function report(message, source, lineno, colno, error) {
@@ -96,6 +90,4 @@
         );
     });
 
-    document.addEventListener('DOMContentLoaded', flushQueue, { once: true });
-    addEventListener('f1stories:cookie-consent-changed', flushQueue);
 })();

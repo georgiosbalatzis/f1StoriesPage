@@ -105,11 +105,23 @@
 
 [data-theme="light"] .quali-dot-tooltip { background: rgba(29,29,31,0.96); }
 
+.quali-dot.tooltip-align-left .quali-dot-tooltip { left: 0; transform: translate(0, 8px); text-align: left; }
+
+.quali-dot.tooltip-align-right .quali-dot-tooltip { left: 100%; transform: translate(-100%, 8px); text-align: right; }
+
 .quali-dot.tooltip-bottom .quali-dot-tooltip { top: calc(100% + 10px); bottom: auto; transform: translate(-50%, -8px); }
 
 .quali-dot:hover .quali-dot-tooltip, .quali-dot:focus-visible .quali-dot-tooltip, .quali-dot.is-active .quali-dot-tooltip { opacity: 1; transform: translate(-50%, 0); }
 
 .quali-dot.tooltip-bottom:hover .quali-dot-tooltip, .quali-dot.tooltip-bottom:focus-visible .quali-dot-tooltip, .quali-dot.tooltip-bottom.is-active .quali-dot-tooltip { transform: translate(-50%, 0); }
+
+.quali-dot.tooltip-bottom.tooltip-align-left .quali-dot-tooltip { transform: translate(0, -8px); }
+
+.quali-dot.tooltip-bottom.tooltip-align-right .quali-dot-tooltip { transform: translate(-100%, -8px); }
+
+.quali-dot.tooltip-align-left:hover .quali-dot-tooltip, .quali-dot.tooltip-align-left:focus-visible .quali-dot-tooltip, .quali-dot.tooltip-align-left.is-active .quali-dot-tooltip { transform: translate(0, 0); }
+
+.quali-dot.tooltip-align-right:hover .quali-dot-tooltip, .quali-dot.tooltip-align-right:focus-visible .quali-dot-tooltip, .quali-dot.tooltip-align-right.is-active .quali-dot-tooltip { transform: translate(-100%, 0); }
 
 .quali-dot-tooltip-gap { display: block; font-family: 'Outfit',sans-serif; font-size: 0.86rem; font-weight: 700; line-height: 1; }
 

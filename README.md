@@ -426,11 +426,36 @@ npm run perf:budget
 <a id="deployment"></a>
 ## Deployment λογική
 
-Η δομή του αποθετηρίου και τα routes δείχνουν ότι το project είναι προσανατολισμένο σε static hosting με root deployment, όπως:
+Το production deploy δεν γίνεται από το repository root. Το root περιέχει source files, editorial εργαλεία, build scripts, σημειώσεις εργασίας και raw article assets. Το public boundary είναι το generated artifact:
 
-- GitHub Pages
-- custom domain που σερβίρει το repository root
-- οποιοδήποτε static file host που διατηρεί ίδιες διαδρομές
+```bash
+npm run build:public
+```
+
+Το command παράγει καθαρό `dist/` και τρέχει validation πριν θεωρηθεί publishable. Το `dist/` περιέχει μόνο visitor-facing αρχεία:
+
+- public HTML pages
+- minified CSS και JavaScript
+- optimized article images
+- explicitly referenced public images
+- public JSON data, fonts, manifest, service worker, robots και sitemap
+
+Δεν πρέπει να σερβίρονται από production:
+
+- `nextsteps.txt`, `laststeps.txt`, `appdev.txt` ή άλλα task notes
+- `generate.html`, `housekeeping.html` ή admin/editorial tools χωρίς πραγματικό authentication
+- source maps
+- build scripts, tests, package files
+- raw `.docx`, draft `.txt`, `.sql`, backup files
+- original article `.png`, `.jpg`, `.jpeg` όταν υπάρχει optimized `.webp` ή `.avif`
+
+Το GitHub Pages deploy γίνεται μέσω Actions artifact deploy από το `dist/` directory:
+
+- `.github/workflows/deploy-pages.yml` κάνει `npm run build:public`
+- `actions/upload-pages-artifact` ανεβάζει μόνο `dist`
+- `actions/deploy-pages` δημοσιεύει το artifact
+
+Άρα το repository root μπορεί να παραμείνει πλήρες για development, αλλά δεν είναι δημόσιο artifact.
 
 Πριν από publish σε production, η ασφαλής ροή είναι:
 
@@ -438,9 +463,10 @@ npm run perf:budget
 2. εκτέλεση `npm run build:blog`
 3. εκτέλεση `npm run build` αν άλλαξαν shared partials, CSS, JS, icons ή stamped asset references
 4. έλεγχος ότι ενημερώθηκαν σωστά τα `blog-data.json`, `blog-index-data.json`, `home-latest.json`, `sitemap.xml` και τα cache bundles
-5. εκτέλεση `node blog-module/build/__tests__/run-golden.js` και `npm run perf:budget`
+5. εκτέλεση `npm run build:public`
 6. local preview του site
-7. deploy των static artifacts
+7. εκτέλεση `npm run verify` πριν από merge ή publish όταν η αλλαγή επηρεάζει UI, performance, public artifact ή analytics behavior
+8. deploy μόνο του `dist/` artifact
 
 <a id="maintainer-notes"></a>
 ## Πρακτικές σημειώσεις για maintainers

@@ -1,32 +1,25 @@
 // web-vitals-beacon.js — lightweight RUM reporter (LCP, INP, CLS, FCP, TTFB).
 //
-// Loads the web-vitals library from a CDN inside requestIdleCallback so it
-// never competes with the LCP candidate or main-thread hydration. Forwards
-// each vital to Google Analytics 4 via window.gtag (provided by analytics.js).
-// If gtag is not yet available, events are queued to sessionStorage and
-// flushed on the next page that sees a ready gtag.
-//
-// Zero impact if web-vitals fails to load: the fetch is fire-and-forget.
+// After analytics opt-in, loads the web-vitals library from a CDN inside
+// requestIdleCallback so it never competes with the LCP candidate or
+// main-thread hydration. Forwards each vital to GA4 through analytics.js.
 (function () {
     'use strict';
 
     if (!('performance' in window)) return;
     if (location.protocol === 'file:') return;
 
-    var QUEUE_KEY = 'f1s-vitals-queue-v1';
+    var CONSENT_KEY = 'f1stories-cookie-consent-v1';
     var CDN_URL = 'https://unpkg.com/web-vitals@4?module';
-    var MAX_QUEUE = 40;
+    var bootstrapped = false;
 
-    function readQueue() {
+    function hasAnalyticsConsent() {
         try {
-            var raw = sessionStorage.getItem(QUEUE_KEY);
-            return raw ? JSON.parse(raw) : [];
-        } catch (_) { return []; }
-    }
-
-    function writeQueue(q) {
-        try { sessionStorage.setItem(QUEUE_KEY, JSON.stringify(q.slice(-MAX_QUEUE))); }
-        catch (_) { /* quota; drop */ }
+            var consent = JSON.parse(localStorage.getItem(CONSENT_KEY));
+            return !!(consent && consent.analytics === true);
+        } catch (_) {
+            return false;
+        }
     }
 
     function buildParams(metric) {
@@ -43,28 +36,16 @@
     }
 
     function send(metric) {
+        if (!hasAnalyticsConsent()) return;
         var params = buildParams(metric);
         if (typeof window.gtag === 'function') {
-            try { window.gtag('event', 'web_vital', params); return; }
-            catch (_) { /* fall through to queue */ }
+            try { window.gtag('event', 'web_vital', params); } catch (_) {}
         }
-        var q = readQueue();
-        q.push({ t: Date.now(), params: params });
-        writeQueue(q);
-    }
-
-    function flushQueue() {
-        if (typeof window.gtag !== 'function') return;
-        var q = readQueue();
-        if (!q.length) return;
-        q.forEach(function (entry) {
-            try { window.gtag('event', 'web_vital', entry.params); } catch (_) {}
-        });
-        writeQueue([]);
     }
 
     function bootstrap() {
-        flushQueue();
+        if (bootstrapped || !hasAnalyticsConsent()) return;
+        bootstrapped = true;
 
         import(/* webpackIgnore: true */ CDN_URL).then(function (mod) {
             var hooks = [
@@ -90,11 +71,18 @@
         }
     }
 
-    if (document.readyState === 'complete') {
-        whenIdle(bootstrap);
-    } else {
-        window.addEventListener('load', function () { whenIdle(bootstrap); }, { once: true });
+    function scheduleBootstrap() {
+        if (!hasAnalyticsConsent()) return;
+        if (document.readyState === 'complete') {
+            whenIdle(bootstrap);
+        } else {
+            window.addEventListener('load', function () { whenIdle(bootstrap); }, { once: true });
+        }
     }
 
-    window.addEventListener('f1stories:cookie-consent-changed', flushQueue);
+    scheduleBootstrap();
+
+    window.addEventListener('f1stories:cookie-consent-changed', function () {
+        scheduleBootstrap();
+    });
 })();

@@ -1,4 +1,4 @@
-const { fs, path, CONFIG, escapeHtmlAttribute, getImageDimensionsForPublicPath } = require('./shared');
+const { fs, path, CONFIG, escapeHtmlAttribute, getCardThumbnailPath, getImageDimensionsForPublicPath } = require('./shared');
 
 function scoreRelatedPosts(blogPosts, post, index) {
     const scored = blogPosts
@@ -32,18 +32,20 @@ function scoreRelatedPosts(blogPosts, post, index) {
 
 async function buildRelatedPostsHtml(relatedPosts) {
     const cards = await Promise.all(relatedPosts.map(async related => {
-        const relatedImagePath = related.image.substring(related.image.lastIndexOf('/') + 1);
+        const relatedImage = getCardThumbnailPath(related.image);
+        const relatedImagePath = relatedImage.substring(relatedImage.lastIndexOf('/') + 1);
         const relDate = new Date(related.date);
         const relDateStr = relDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
         const relatedTitle = escapeHtmlAttribute(related.title);
         const relatedAuthor = escapeHtmlAttribute(related.author);
         const relatedReadTime = escapeHtmlAttribute(related.readingTime || '');
-        const imageDimensions = await getImageDimensionsForPublicPath(related.image);
+        const imageDimensions = await getImageDimensionsForPublicPath(relatedImage);
         const widthAttr = imageDimensions && imageDimensions.width ? ` width="${imageDimensions.width}"` : '';
         const heightAttr = imageDimensions && imageDimensions.height ? ` height="${imageDimensions.height}"` : '';
         const hoverMeta = relatedReadTime
             ? `<span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> ${relatedReadTime}</span>`
             : '';
+        const hoverMetaLine = hoverMeta ? `\n                                ${hoverMeta}` : '';
 
         return `
             <div class="col-md-4 mb-4">
@@ -56,8 +58,7 @@ async function buildRelatedPostsHtml(relatedPosts) {
                                  decoding="async"${widthAttr}${heightAttr}
                                  onerror="this.src='${CONFIG.DEFAULT_BLOG_IMAGE}';this.onerror=null;">
                             <div class="related-card-hover">
-                                <span class="related-card-hover-label">Περισσότερα</span>
-                                ${hoverMeta}
+                                <span class="related-card-hover-label">Περισσότερα</span>${hoverMetaLine}
                             </div>
                         </div>
                         <div class="card-body">
@@ -75,6 +76,12 @@ async function buildRelatedPostsHtml(relatedPosts) {
     return cards.join('');
 }
 
+function renderRelatedArticlesSection(relatedPostsHtml) {
+    return `        <div class="row mt-5">
+            <div class="col-12"><h2 class="mb-4 related-section-title">Related Articles</h2></div>${relatedPostsHtml ? `\n${relatedPostsHtml}` : ''}
+        </div>`;
+}
+
 async function injectRelatedArticles(blogPosts) {
     for (const [index, post] of blogPosts.entries()) {
         const postHtmlPath = path.join(CONFIG.BLOG_DIR, post.id, 'article.html');
@@ -82,13 +89,23 @@ async function injectRelatedArticles(blogPosts) {
 
         const relatedPosts = scoreRelatedPosts(blogPosts, post, index);
         const relatedPostsHtml = await buildRelatedPostsHtml(relatedPosts);
-        const postHtml = fs.readFileSync(postHtmlPath, 'utf8').replace(/RELATED_ARTICLES/g, relatedPostsHtml || '');
-        fs.writeFileSync(postHtmlPath, postHtml);
+        let postHtml = fs.readFileSync(postHtmlPath, 'utf8');
+        const originalHtml = postHtml;
+        if (postHtml.includes('RELATED_ARTICLES')) {
+            postHtml = postHtml.replace(/RELATED_ARTICLES/g, relatedPostsHtml || '');
+        } else {
+            postHtml = postHtml.replace(
+                /        <div class="row mt-5">\n\s*<div class="col-12"><h2 class="mb-4 related-section-title">Related Articles<\/h2><\/div>[\s\S]*?\n        <\/div>(?=\n    <\/div>\n<\/main>)/,
+                renderRelatedArticlesSection(relatedPostsHtml)
+            );
+        }
+        if (postHtml !== originalHtml) fs.writeFileSync(postHtmlPath, postHtml);
     }
 }
 
 module.exports = {
     scoreRelatedPosts,
     buildRelatedPostsHtml,
+    renderRelatedArticlesSection,
     injectRelatedArticles
 };

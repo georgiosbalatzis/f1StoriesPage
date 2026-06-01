@@ -120,6 +120,16 @@ function newestPublishedAt(videos) {
     return newest;
 }
 
+function snapshotKey(payload) {
+    return JSON.stringify([
+        payload?.channelId || '',
+        payload?.channelTitle || '',
+        payload?.source || '',
+        payload?.newestPublishedAt || '',
+        payload?.videos || []
+    ]);
+}
+
 async function main() {
     const xml = await fetchFeedXml();
     const feed = parser.parse(xml)?.feed || {};
@@ -132,19 +142,32 @@ async function main() {
         throw new Error('YouTube RSS snapshot contained no videos.');
     }
 
-    const payload = {
+    const nextSnapshot = {
         channelId: CHANNEL_ID,
         channelTitle: String(feed.title || '').trim(),
         source: RSS_URL,
-        lastUpdated: new Date().toISOString(),
         newestPublishedAt: newestPublishedAt(videos),
         videos
+    };
+    let existing = {};
+    try { existing = JSON.parse(fs.readFileSync(OUTPUT_PATH, 'utf8')); } catch (_) {}
+    const unchanged = existing
+        && existing.lastUpdated
+        && snapshotKey(existing) === snapshotKey(nextSnapshot);
+
+    const payload = {
+        channelId: nextSnapshot.channelId,
+        channelTitle: nextSnapshot.channelTitle,
+        source: nextSnapshot.source,
+        lastUpdated: unchanged ? existing.lastUpdated : new Date().toISOString(),
+        newestPublishedAt: nextSnapshot.newestPublishedAt,
+        videos: nextSnapshot.videos
     };
 
     fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
     fs.writeFileSync(OUTPUT_PATH, JSON.stringify(payload, null, 2) + '\n', 'utf8');
 
-    console.log(`Wrote ${path.relative(REPO_ROOT, OUTPUT_PATH)} with ${videos.length} video(s).`);
+    console.log(`Wrote ${path.relative(REPO_ROOT, OUTPUT_PATH)} with ${videos.length} video(s)${unchanged ? ' (unchanged)' : ''}.`);
 }
 
 main().catch(error => {

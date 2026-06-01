@@ -24,7 +24,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="F1 Stories">
     <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
-    <script src="/scripts/perf/error-beacon.min.js?v=ea43d064"></script>
+    <script src="/scripts/perf/error-beacon.min.js?v=59367e85"></script>
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -35,7 +35,7 @@
         "datePublished": "2025-08-05",
         "dateModified": "2025-08-05",
         "author": { "@type": "Person", "name": "Georgios Balatzis" },
-        "publisher": { "@type": "Organization", "name": "F1 Stories", "logo": { "@type": "ImageObject", "url": "https://f1stories.gr/images/logo.png" } },
+        "publisher": { "@type": "Organization", "name": "F1 Stories", "logo": { "@type": "ImageObject", "url": "https://f1stories.gr/images/icons/icon-512.png" } },
         "mainEntityOfPage": { "@type": "WebPage", "@id": "https://f1stories.gr/blog-module/blog-entries/20250805G/article.html" }
     }
     </script>
@@ -54,22 +54,21 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="preload" as="style" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f"></noscript>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
-    <link rel="stylesheet" href="/styles.css">
-    <link rel="stylesheet" href="/blog-module/blog-styles.css">
-    <link rel="stylesheet" href="/blog-module/blog/article-styles.css?v=20260403-5">
-    <link rel="stylesheet" href="/styles/shared-nav.css?v=20260403-2">
-    <link rel="stylesheet" href="/theme-overrides.css">
+    <link rel="stylesheet" href="/styles.min.css?v=bd26a204">
+    <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=25471a33">
+    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=f4030529">
+    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=486c9110">
+    <link rel="stylesheet" href="/theme-overrides.min.css?v=7ed91476">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" href="2.webp" fetchpriority="high">
 
-    <script defer src="/scripts/analytics.js"></script>
+    <script defer src="/scripts/analytics.min.js?v=98a1ee70"></script>
 
     <!-- Prevent FOUC -->
     <script>
@@ -285,25 +284,26 @@
 
         <div class="row mt-5">
             <div class="col-12"><h2 class="mb-4 related-section-title">Related Articles</h2></div>
-            
+
             <div class="col-md-4 mb-4">
                 <a href="/blog-module/blog-entries/20250901G/article.html" class="related-card-link" style="display:block;height:100%;">
                     <div class="related-article-card">
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20250901G/1.webp"
+                            <img src="/blog-module/blog-entries/20250901G/1-card.webp"
                                  alt="Ο Piastri Κατακτά το Zandvoort, η McLaren Θριαμβεύει στο Πορτοκαλί Χάος 🇳🇱🏆"
                                  loading="lazy"
-                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;" decoding="async" width="1255" height="1055">
+                                 decoding="async" width="400" height="336"
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                             <div class="related-card-hover">
                                 <span class="related-card-hover-label">Περισσότερα</span>
-                                <span class="related-card-hover-meta"><i class="far fa-clock"></i> 11 min</span>
+                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 11 min</span>
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 1 Sept 2025</div>
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 1 Sept 2025</div>
                             <h5>Ο Piastri Κατακτά το Zandvoort, η McLaren Θριαμβεύει στο Πορτοκαλί Χάος 🇳🇱🏆</h5>
                             <div class="related-card-footer">
-                                <span class="related-card-read">Read More <i class="fas fa-arrow-right"></i></span>
+                                <span class="related-card-read">Read More <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">Georgios Balatzis</span>
                             </div>
                         </div>
@@ -314,20 +314,21 @@
                 <a href="/blog-module/blog-entries/20250823G/article.html" class="related-card-link" style="display:block;height:100%;">
                     <div class="related-article-card">
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20250823G/1.webp"
+                            <img src="/blog-module/blog-entries/20250823G/1-card.webp"
                                  alt="Mercedes W16: Η Παράδοξη Σεζόν 2025"
                                  loading="lazy"
-                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;" decoding="async" width="1280" height="854">
+                                 decoding="async" width="400" height="267"
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                             <div class="related-card-hover">
                                 <span class="related-card-hover-label">Περισσότερα</span>
-                                <span class="related-card-hover-meta"><i class="far fa-clock"></i> 12 min</span>
+                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 12 min</span>
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 23 Aug 2025</div>
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 23 Aug 2025</div>
                             <h5>Mercedes W16: Η Παράδοξη Σεζόν 2025</h5>
                             <div class="related-card-footer">
-                                <span class="related-card-read">Read More <i class="fas fa-arrow-right"></i></span>
+                                <span class="related-card-read">Read More <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">Georgios Balatzis</span>
                             </div>
                         </div>
@@ -338,20 +339,21 @@
                 <a href="/blog-module/blog-entries/20250821G/article.html" class="related-card-link" style="display:block;height:100%;">
                     <div class="related-article-card">
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20250821G/1.webp"
+                            <img src="/blog-module/blog-entries/20250821G/1-card.webp"
                                  alt="Η Αυτοκρατορία της McLaren: Ανάλυση της Κυριαρχίας του 2025 και ο Εμφύλιος Πόλεμος για το Στέμμα"
                                  loading="lazy"
-                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;" decoding="async" width="1920" height="1280">
+                                 decoding="async" width="400" height="267"
+                                 onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;">
                             <div class="related-card-hover">
                                 <span class="related-card-hover-label">Περισσότερα</span>
-                                <span class="related-card-hover-meta"><i class="far fa-clock"></i> 11 min</span>
+                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 11 min</span>
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="related-date-badge"><i class="fas fa-calendar-alt"></i> 21 Aug 2025</div>
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 21 Aug 2025</div>
                             <h5>Η Αυτοκρατορία της McLaren: Ανάλυση της Κυριαρχίας του 2025 και ο Εμφύλιος Πόλεμος για το Στέμμα</h5>
                             <div class="related-card-footer">
-                                <span class="related-card-read">Read More <i class="fas fa-arrow-right"></i></span>
+                                <span class="related-card-read">Read More <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">Georgios Balatzis</span>
                             </div>
                         </div>
@@ -397,9 +399,9 @@
 </footer>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
-<script defer src="/blog-module/blog/article-script.min.js?v=40e91148"></script>
-<script defer src="/scripts/shared-nav.js"></script>
-<script defer src="/scripts/cookie-consent.js?v=20260403-2"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=8b3c45f9"></script>
+<script defer src="/scripts/shared-nav.min.js?v=73fe6e53"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=ce23959f"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=2c047015"></script>
 </body>
 </html>

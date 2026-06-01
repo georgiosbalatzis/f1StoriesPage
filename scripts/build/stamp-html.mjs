@@ -77,6 +77,9 @@ const CRITICAL_TARGETS = new Set([
 
 // Source path of the hand-crafted critical block (resolved against manifest).
 const CRITICAL_SOURCE = 'styles/critical-common.css';
+const ROUTE_CRITICAL_SOURCES = {
+    'standings/index.html': 'styles/critical-standings.css'
+};
 
 // Marker comments around the injected <style> block. Idempotent: the block
 // is replaced in place on every run so re-stamps produce stable output.
@@ -94,6 +97,17 @@ const FONTS_SOURCE = 'styles/fonts.css';
 const BOOTSTRAP_SOURCE = 'styles/vendor/bootstrap.slim.css';
 const ARTICLE_HTML_ROOT = 'blog-module/blog-entries';
 const ARTICLE_RUNTIME_SOURCES = new Set([
+    'styles.css',
+    'styles/fonts.css',
+    'styles/shared-nav.css',
+    'theme-overrides.css',
+    'blog-module/blog-styles.css',
+    'blog-module/blog/article-styles.css',
+    'scripts/analytics.js',
+    'scripts/cookie-consent.js',
+    'scripts/shared-nav.js',
+    'scripts/perf/error-beacon.js',
+    'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog/article-script.js',
     'blog-module/blog-fixes.js'
 ]);
@@ -106,10 +120,7 @@ const FONT_PRELOADS = {
         'assets/fonts/roboto-400.woff2',
         'assets/fonts/roboto-700.woff2'
     ],
-    'standings/index.html': [
-        'assets/fonts/roboto-400.woff2',
-        'assets/fonts/outfit-700.woff2'
-    ],
+    'standings/index.html': [],
     'blog-module/blog/index.html': [
         'assets/fonts/dm-sans-400.woff2',
         'assets/fonts/outfit-700.woff2'
@@ -236,6 +247,28 @@ function loadCriticalCss(manifest) {
         css: fs.readFileSync(abs, 'utf8'),
         hash: info.hash,
         bytes: info.bytes
+    };
+}
+
+function loadRouteCriticalCss(manifest, relPath, commonCritical) {
+    const routeSource = ROUTE_CRITICAL_SOURCES[relPath];
+    if (!routeSource) return commonCritical;
+
+    const info = manifest[routeSource];
+    if (!info) {
+        throw new Error(`manifest missing entry for ${routeSource} — run build:assets:minify`);
+    }
+    const abs = path.join(REPO_ROOT, info.min);
+    if (!fs.existsSync(abs)) {
+        throw new Error(`route critical CSS build missing at ${abs} — run build:assets:minify`);
+    }
+
+    const routeCss = fs.readFileSync(abs, 'utf8');
+    const css = `${commonCritical.css.trimEnd()}\n${routeCss.trimEnd()}`;
+    return {
+        css,
+        hash: crypto.createHash('sha256').update(css).digest('hex').slice(0, 8),
+        bytes: commonCritical.bytes + info.bytes
     };
 }
 
@@ -367,6 +400,12 @@ function swapFonts(html, relPath, fontsInfo, manifest) {
             }
             swaps.preloadsInjected = preloadList.length;
         }
+    } else {
+        const existing = new RegExp(
+            '\\n?[ \\t]*' + escapeRegex(FONTS_BEGIN) + '[\\s\\S]*?' + escapeRegex(FONTS_END) + '\\n?',
+            'g'
+        );
+        html = html.replace(existing, '\n');
     }
 
     return { result: html, swaps };
@@ -494,6 +533,24 @@ function stampArticleRuntimeScripts(patterns, dry) {
     return totals;
 }
 
+function stampArticleGtmDnsPrefetch(dry) {
+    const totals = { files: 0, dropped: 0 };
+    for (const rel of listArticleHtml()) {
+        const abs = path.join(REPO_ROOT, rel);
+        const original = fs.readFileSync(abs, 'utf8');
+        const { result, dropped } = dropGtmDnsPrefetch(original);
+        if (result === original) continue;
+
+        totals.files++;
+        totals.dropped += dropped;
+        if (!dry) {
+            fs.writeFileSync(abs, result, 'utf8');
+        }
+    }
+
+    return totals;
+}
+
 // Small sha256-short for font files (content hash based on path, since
 // fonts are woff2 binaries and we don't re-read them on every stamp).
 function sha256Short(input) {
@@ -528,6 +585,16 @@ function dropFontAwesomeCdn(html) {
         () => { dropped++; return ''; }
     );
 
+    return { result: html, dropped, changed: html !== before };
+}
+
+function dropGtmDnsPrefetch(html) {
+    let dropped = 0;
+    const before = html;
+    html = html.replace(
+        /^[ \t]*<link\s+rel="dns-prefetch"\s+href="https:\/\/www\.googletagmanager\.com"[^>]*>\n/gm,
+        () => { dropped++; return ''; }
+    );
     return { result: html, dropped, changed: html !== before };
 }
 
@@ -576,7 +643,7 @@ function loadSprite() {
     return { svg, hash };
 }
 
-function asyncifyStylesheets(html) {
+function asyncifyStylesheets(html, relPath) {
     const conversions = [];
 
     // Match <link rel="stylesheet" ...> where href points to a .min.css (local
@@ -632,6 +699,7 @@ function main() {
     let totalBootstrapJsDrops = 0;
     let totalBootstrapPreconnectDrops = 0;
     let totalArticleRuntimeHits = 0;
+    let totalGtmDnsDrops = 0;
 
     for (const rel of TARGET_HTML) {
         const abs = path.join(REPO_ROOT, rel);
@@ -675,17 +743,22 @@ function main() {
             else if (inj.replaced) { spriteNote = 'sprite refreshed'; totalSpriteOps++; }
         }
 
+        const gtmDnsDrop = dropGtmDnsPrefetch(result);
+        result = gtmDnsDrop.result;
+        totalGtmDnsDrops += gtmDnsDrop.dropped;
+
         // 3) inject/refresh critical-CSS block + asyncify local stylesheets
         let criticalNote = '';
         let conversions = [];
         if (CRITICAL_TARGETS.has(rel)) {
-            const inj = injectCritical(result, critical);
+            const routeCritical = loadRouteCriticalCss(manifest, rel, critical);
+            const inj = injectCritical(result, routeCritical);
             result = inj.result;
             if (inj.injected) { criticalNote = 'injected'; totalCriticalOps++; }
             else if (inj.replaced) { criticalNote = 'refreshed'; totalCriticalOps++; }
             else criticalNote = 'skipped (no anchor)';
 
-            const out = asyncifyStylesheets(result);
+            const out = asyncifyStylesheets(result, rel);
             result = out.result;
             conversions = out.conversions;
             totalAsyncified += conversions.length;
@@ -709,6 +782,7 @@ function main() {
         if (fontSwap.swaps.preconnectDropped) parts.push(`${fontSwap.swaps.preconnectDropped} preconnect drop`);
         if (fontSwap.swaps.preloadsInjected) parts.push(`${fontSwap.swaps.preloadsInjected} font preload`);
         if (faDropNote) parts.push(faDropNote);
+        if (gtmDnsDrop.dropped) parts.push(`${gtmDnsDrop.dropped} GTM dns-prefetch drop`);
         if (spriteNote) parts.push(spriteNote);
         console.log(`\n${rel}  →  ${parts.join(', ') || 'updated'}`);
         for (const h of hits) {
@@ -746,6 +820,15 @@ function main() {
         );
     }
 
+    const articleGtmDns = stampArticleGtmDnsPrefetch(dry);
+    totalGtmDnsDrops += articleGtmDns.dropped;
+    if (articleGtmDns.files) {
+        console.log(
+            `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleGtmDns.files} file(s), ` +
+            `${articleGtmDns.dropped} GTM dns-prefetch drop(s)`
+        );
+    }
+
     if (dry) {
         console.log(
             `\n(dry-run) ${totalHits} rewrite(s), ${totalCriticalOps} critical op(s), ` +
@@ -754,6 +837,7 @@ function main() {
             `${totalFaCdnDrops} FA CDN drop(s), ${totalBootstrapCssSwaps} Bootstrap CSS swap(s), ` +
             `${totalBootstrapCssDrops} Bootstrap CSS drop(s), ${totalBootstrapJsDrops} Bootstrap JS drop(s), ` +
             `${totalBootstrapPreconnectDrops} jsDelivr preconnect drop(s), ` +
+            `${totalGtmDnsDrops} GTM dns-prefetch drop(s), ` +
             `${totalArticleRuntimeHits} article runtime script stamp(s) planned.`
         );
     } else {
@@ -764,6 +848,7 @@ function main() {
             `${totalFaCdnDrops} FA CDN drop(s), ${totalBootstrapCssSwaps} Bootstrap CSS swap(s), ` +
             `${totalBootstrapCssDrops} Bootstrap CSS drop(s), ${totalBootstrapJsDrops} Bootstrap JS drop(s), ` +
             `${totalBootstrapPreconnectDrops} jsDelivr preconnect drop(s), ` +
+            `${totalGtmDnsDrops} GTM dns-prefetch drop(s), ` +
             `${totalArticleRuntimeHits} article runtime script stamp(s) across ${TARGET_HTML.length} shell file(s).`
         );
     }

@@ -286,16 +286,43 @@
     // ── Banner logic ────────────────────────────
     var deferredPrompt = null;
     var info = getInstruction();
+    var installQueued = false;
+    var installTimer = 0;
 
     window.addEventListener('beforeinstallprompt', function (e) {
         e.preventDefault();
         deferredPrompt = e;
-        showBanner();
+        queueInstallBanner();
     });
 
-    // Browsers without beforeinstallprompt: show after page load
     if (!info.hasNativePrompt && !info.noAction) {
-        onPageReady(showBanner, 2500);
+        onPageReady(queueInstallBanner, 2500);
+    }
+
+    function canShowInstallBanner() {
+        var banner = document.getElementById('cookie-consent');
+        return !(banner && banner.classList.contains('show') && banner.style.display !== 'none')
+            && (window.scrollY || document.documentElement.scrollTop || 0) >= Math.min(360, window.innerHeight);
+    }
+
+    function queueInstallBanner() {
+        if (installQueued || document.getElementById('pwa-install-banner')) return;
+        installQueued = true;
+        window.addEventListener('scroll', scheduleQueuedInstallBanner, { passive: true });
+        window.addEventListener('f1stories:cookie-consent-changed', scheduleQueuedInstallBanner);
+        scheduleQueuedInstallBanner();
+    }
+
+    function scheduleQueuedInstallBanner() {
+        if (!installQueued || installTimer || document.getElementById('pwa-install-banner')) return;
+        if (!canShowInstallBanner()) return;
+
+        installTimer = setTimeout(function () {
+            installTimer = 0;
+            if (!installQueued || !canShowInstallBanner()) return;
+            installQueued = false;
+            showBanner();
+        }, 8000);
     }
 
     function showBanner() {

@@ -10,7 +10,7 @@
     function getDefaultConsent() {
         return {
             essential: true,
-            analytics: true,
+            analytics: false,
             marketing: false
         };
     }
@@ -48,7 +48,7 @@
         var nextConsent = {
             ts: Date.now(),
             essential: true,
-            analytics: consent.analytics !== false,
+            analytics: consent.analytics === true,
             marketing: !!consent.marketing
         };
         writeConsent(nextConsent);
@@ -66,10 +66,10 @@
         if (accept && decline) {
             var text = banner.querySelector('.cookie-content p');
             if (text) {
-                text.innerHTML = 'Χρησιμοποιούμε μέτρηση επισκεψιμότητας από προεπιλογή. Αν επιλέξεις απενεργοποίηση, συνεχίζουμε μόνο με ανώνυμη μέτρηση χωρίς analytics cookies. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a>';
+                text.innerHTML = 'Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a>';
             }
-            accept.textContent = 'Συνέχεια';
-            decline.textContent = 'Ανώνυμη μέτρηση';
+            accept.textContent = 'Αποδοχή';
+            decline.textContent = 'Απόρριψη';
             return;
         }
 
@@ -79,25 +79,29 @@
         var analyticsDescription = banner.querySelectorAll('.cookie-section p')[1];
         var acceptSelected = document.getElementById('accept-selected');
         var acceptAll = document.getElementById('accept-all');
+        var rejectAll = document.getElementById('reject-all');
         var closeBtn = document.getElementById('close-cookie');
 
         if (intro) {
-            intro.textContent = 'Η μέτρηση επισκεψιμότητας είναι ενεργή από προεπιλογή. Μπορείς να την απενεργοποιήσεις για ανώνυμη μέτρηση χωρίς analytics cookies.';
+            intro.textContent = 'Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς.';
         }
         if (analyticsTitle) {
             analyticsTitle.textContent = 'Cookies Ανάλυσης';
         }
         if (analyticsDescription) {
-            analyticsDescription.textContent = 'Ενεργά από προεπιλογή. Αν τα απενεργοποιήσεις, το site θα συνεχίσει μόνο με ανώνυμη μέτρηση χωρίς analytics cookies.';
+            analyticsDescription.textContent = 'Αν τα αποδεχτείς, φορτώνουμε Google Analytics για μέτρηση επισκεψιμότητας. Χωρίς αποδοχή δεν φορτώνεται GA.';
         }
         if (acceptSelected) {
-            acceptSelected.textContent = existingConsent ? 'Αποθήκευση' : 'Αποθήκευση Επιλογής';
+            acceptSelected.textContent = 'Αποθήκευση';
         }
         if (acceptAll) {
-            acceptAll.textContent = 'Πλήρης Μέτρηση';
+            acceptAll.textContent = 'Αποδοχή';
+        }
+        if (rejectAll) {
+            rejectAll.textContent = 'Απόρριψη';
         }
         if (closeBtn) {
-            closeBtn.setAttribute('aria-label', 'Κλείσιμο και αποθήκευση επιλογών');
+            closeBtn.setAttribute('aria-label', 'Κλείσιμο χωρίς analytics');
         }
     }
 
@@ -127,7 +131,7 @@
         var marketing = document.getElementById('marketing-cookies');
         var defaults = getDefaultConsent();
 
-        if (analytics) analytics.checked = existingConsent ? existingConsent.analytics !== false : defaults.analytics;
+        if (analytics) analytics.checked = existingConsent ? existingConsent.analytics === true : defaults.analytics;
         if (marketing) marketing.checked = existingConsent ? !!existingConsent.marketing : defaults.marketing;
 
         if (acceptAll) {
@@ -157,10 +161,7 @@
 
         if (closeBtn) {
             closeBtn.addEventListener('click', function () {
-                saveConsent({
-                    analytics: analytics && analytics.checked,
-                    marketing: marketing && marketing.checked
-                });
+                saveConsent({ analytics: false, marketing: false });
             });
         }
     }
