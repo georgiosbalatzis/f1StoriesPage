@@ -41,6 +41,18 @@ document.addEventListener('DOMContentLoaded', function () {
         if (initialEl) initialEl.textContent = name.charAt(0).toUpperCase();
     }
 
+    function extractIndexPosts(data) {
+        if (data && data.v === 2 && Array.isArray(data.p)) {
+            return data.p.map(row => ({
+                id: row[0] || '',
+                title: row[1] || '',
+                date: row[3] || ''
+            }));
+        }
+        if (data && Array.isArray(data.posts)) return data.posts;
+        return Array.isArray(data) ? data : [];
+    }
+
     async function setupNavigation() {
         const prevLink = $('#prev-article-link');
         const nextLink = $('#next-article-link');
@@ -58,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
             let data = null;
             for (const p of paths) { try { const r = await fetch(p); if (r.ok) { data = await r.json(); break; } } catch (_) {} }
             if (!data) return;
-            const sorted = data.posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const sorted = extractIndexPosts(data).sort((a, b) => new Date(b.date) - new Date(a.date));
             const idx = sorted.findIndex(p => p.id === currentId);
             if (idx === -1) return;
             const base = window.location.pathname.includes('/blog-entries/') ? window.location.pathname.split('/blog-entries/')[0] + '/blog-entries/' : '/blog-module/blog-entries/';

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-31T18:20:56.000Z",
+  "updatedAt": "2026-06-01T04:40:20.509Z",
   "thresholdPercent": 10,
   "note": "Byte budgets for tracked JS/CSS/HTML assets. Run `npm run perf:budget` to check, `npm run perf:budget:update` to rewrite this file with current sizes. Threshold is the max % growth allowed before the check fails.",
   "files": {
@@ -48,7 +48,7 @@
     "blog-module/blog-loader.js": 8507,
     "blog-module/blog-index.js": 21865,
     "blog-module/blog-index-page-1.json": 8575,
-    "blog-module/blog-index-data.json": 133937,
+    "blog-module/blog-index-data.json": 89181,
     "blog-module/blog/article-script.js": 19419,
     "blog-module/blog-fixes.js": 13591,
     "blog-module/blog-processor.js": 236,

@@ -27,6 +27,29 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
+    function defaultThumbnail(id) {
+        return '/blog-module/blog-entries/' + encodeURIComponent(id || '') + '/1-card.webp';
+    }
+
+    function extractPosts(data) {
+        if (data && data.v === 2 && Array.isArray(data.p)) {
+            return data.p.map(row => {
+                const id = row[0] || '';
+                return {
+                    id: id,
+                    title: row[1] || '',
+                    date: row[3] || '',
+                    thumbnail: defaultThumbnail(id),
+                    thumbnailWidth: parseInt(row[4], 10) || 400,
+                    thumbnailHeight: parseInt(row[5], 10) || 188,
+                    excerpt: row[6] || ''
+                };
+            });
+        }
+        if (data && Array.isArray(data.posts)) return data.posts;
+        return Array.isArray(data) ? data : [];
+    }
+
     function escapeHtml(value) {
         return String(value || '')
             .replace(/&/g, '&amp;')
@@ -157,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         fetchBlogData()
             .then(function (data) {
-                var posts = (data.posts || data || []);
+                var posts = extractPosts(data);
                 var recent = posts.slice(0, 3);
                 if (!recent.length) {
                     container.innerHTML = '<div class="col-12 text-center"><p style="color:var(--bs-text-muted)">No blog posts yet.</p></div>';

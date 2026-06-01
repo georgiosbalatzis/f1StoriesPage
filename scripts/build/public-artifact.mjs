@@ -291,6 +291,7 @@ function shouldCopyBlogEntry(relPath) {
     if (!relPath.startsWith('blog-module/blog-entries/')) return false;
     const name = path.posix.basename(relPath);
     if (name === 'article.html') return true;
+    if (name === '1-card.webp') return true;
     return isOptimizedImage(relPath) && BLOG_ENTRY_PUBLIC_REFS.has(relPath);
 }
 

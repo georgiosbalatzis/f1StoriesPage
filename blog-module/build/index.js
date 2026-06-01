@@ -146,6 +146,28 @@ function summarizeCategories(posts) {
         .map(name => ({ name, count: counts[name] }));
 }
 
+function buildCompactIndexData(posts) {
+    const authors = Array.from(new Set(posts.map(post => post.author || 'F1 Stories')));
+    const categories = Array.from(new Set(posts.flatMap(post => post.categories || [])));
+
+    return {
+        v: 2,
+        a: authors,
+        c: categories,
+        p: posts.map(post => [
+            post.id,
+            post.title,
+            authors.indexOf(post.author || 'F1 Stories'),
+            post.date,
+            post.thumbnailWidth === 400 ? 0 : post.thumbnailWidth,
+            post.thumbnailHeight,
+            post.excerpt,
+            post.readingTime,
+            (post.categories || []).map(category => categories.indexOf(category))
+        ])
+    };
+}
+
 function renderBlogCategoryFilters(categories) {
     const buttons = [
         '<button class="category-chip active" data-category="all" aria-pressed="true">Όλες</button>'
@@ -524,8 +546,9 @@ async function processBlogEntries(options = {}) {
 
     const indexPosts = await buildIndexPosts(blogPosts);
     const indexPath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-data.json');
-    fs.writeFileSync(indexPath, JSON.stringify({ posts: indexPosts }, null, 0));
-    console.log(`Blog index data saved to ${indexPath} (${jsonKb({ posts: indexPosts })} KB)`);
+    const compactIndexData = buildCompactIndexData(indexPosts);
+    fs.writeFileSync(indexPath, JSON.stringify(compactIndexData, null, 0));
+    console.log(`Blog index data saved to ${indexPath} (${jsonKb(compactIndexData)} KB)`);
 
     const pageOneData = {
         posts: indexPosts.slice(0, 12),
@@ -594,6 +617,7 @@ module.exports = {
     fixMissingAuthors,
     buildIndexPosts,
     summarizeCategories,
+    buildCompactIndexData,
     renderBlogIndexCard,
     injectBlogIndexFirstPage,
     buildHomeLatest,

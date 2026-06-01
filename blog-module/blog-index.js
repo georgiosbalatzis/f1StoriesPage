@@ -58,6 +58,37 @@ document.addEventListener('DOMContentLoaded', function() {
             post.date
         ].join(' '));
     }
+    function defaultThumbnailForPost(id) {
+        return '/blog-module/blog-entries/' + encodeURIComponent(id || '') + '/1-card.webp';
+    }
+    function expandCompactPosts(data) {
+        if (!data || data.v !== 2 || !Array.isArray(data.p)) return null;
+        var authors = data.a || [];
+        var categories = data.c || [];
+        return data.p.map(function(row) {
+            var id = row[0] || '';
+            var categoryIndexes = Array.isArray(row[8]) ? row[8] : [];
+            var width = parseInt(row[4], 10) || 400;
+            return {
+                id: id,
+                title: row[1] || '',
+                author: authors[row[2]] || 'F1 Stories',
+                date: row[3] || '',
+                thumbnail: defaultThumbnailForPost(id),
+                thumbnailWidth: width,
+                thumbnailHeight: parseInt(row[5], 10) || 188,
+                excerpt: row[6] || '',
+                readingTime: row[7] || '',
+                categories: categoryIndexes.map(function(index) { return categories[index]; }).filter(Boolean)
+            };
+        });
+    }
+    function extractPosts(data) {
+        var compact = expandCompactPosts(data);
+        if (compact) return compact;
+        if (data && Array.isArray(data.posts)) return data.posts;
+        return Array.isArray(data) ? data : [];
+    }
     function getUniqueCategories(posts) {
         var counts = {};
         (posts || []).forEach(function(post) {
@@ -148,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderPosts();
     }
     function hydratePageOne(data) {
-        var posts = data && (data.posts || data) || [];
+        var posts = extractPosts(data);
         pageOnePosts = preparePosts(posts);
         if (!fullPostsLoaded) {
             allPosts = pageOnePosts.slice();
@@ -386,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return Promise.resolve(allPosts);
         }
         fullPostsPromise = fetchJson(FULL_DATA_PATHS).then(function(data) {
-            var posts = data.posts || data || [];
+            var posts = extractPosts(data);
             writeCachedPosts(posts);
             setFullPosts(posts);
             return allPosts;
