@@ -28,6 +28,7 @@
     "perf:budget": "node scripts/perf/size-guard.mjs",
     "perf:budget:update": "node scripts/perf/size-guard.mjs --update",
     "perf:images": "node scripts/perf/public-image-guard.mjs",
+    "qa:visual": "node scripts/perf/visual-qa.mjs",
     "test:consent": "node scripts/perf/consent-guard.mjs",
     "perf:lighthouse": "node scripts/perf/lighthouse-guard.mjs",
     "verify": "npm run build:public && npm run build:check && npm run test:blog && npm run perf:budget && npm run perf:images && npm run test:consent && npm run perf:lighthouse"

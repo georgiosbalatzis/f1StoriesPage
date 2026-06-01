@@ -6,6 +6,16 @@
    - blog/article-styles.css .blog-nav section
    ═══════════════════════════════════════════════ */
 
+/* ── Shared Icons ─────────────────────────────── */
+.icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    flex-shrink: 0;
+    vertical-align: -0.125em;
+}
+
 /* ── Blog Navbar ──────────────────────────────── */
 .blog-nav {
     position: fixed;
