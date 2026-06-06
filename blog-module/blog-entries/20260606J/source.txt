@@ -1,0 +1,20 @@
+F1 Racing
+
+Betcast #265 GP Monaco : Προβλέψεις - χάος στο Πριγκιπάτο
+
+Με το δεξί μπήκαμε στο GP του Μονακό και εδώ είναι οι προβλέψεις που έχουμε :
+
+#Κατατακτήριες
+1) Pole Position : Andrea Kimi Antoneli  Απόδοση - 6,00
+2)Pole Position : Lewis Hamilton  Απόδοση - 4,50
+3)Διαφορά νικήτή: 0,0 - 0,1  Απόδοση - 2,50
+4) Τοπ 3 : Max Verstappen  Απόδοση - 3,50
+
+#Αγώνας
+Τοπ 10 : Carlos Sainz  Απόδοση - 4,,50
+Τοπ 10 : Pierre Gasly  Απόδοση - 3,50
+VSC : ΝΑΙ  Απόδοση - 2,50
+ 
+Παρακάτω μπορείτε να δείτε αναλυτικά την καρτέλα του Betcast
+
+<iframe src="https://georgiosbalatzis.github.io/BetCastVisualisation/?viz=dataTable&week=6&embed=1" title="BetCast F1Stories" loading="lazy" style="width:100%;min-height:960px;border:0;"></iframe>
