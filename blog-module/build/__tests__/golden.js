@@ -57,16 +57,20 @@ function verifyClassificationGuards() {
     const blogData = JSON.parse(fs.readFileSync(BLOG_DATA_PATH, 'utf8'));
     const cachedPostsById = new Map((blogData.posts || []).map(post => [post.id, post]));
     const cases = [
-        { slug: '20260324W', expectedKind: 'cached-only', expectedAction: 'reuse-cached' },
-        { slug: '20260319W', expectedKind: 'cached-only', expectedAction: 'reuse-cached' },
-        { slug: '20260415', expectedKind: 'source-backed' },
-        { slug: '20260415G', expectedKind: 'ignored', expectedAction: 'ignore' }
+        { slug: '20260324W', entryFiles: [], expectedKind: 'cached-only', expectedAction: 'reuse-cached' },
+        { slug: '20260319W', entryFiles: [], expectedKind: 'cached-only', expectedAction: 'reuse-cached' },
+        { slug: '20260415', entryFiles: ['source.txt'], expectedKind: 'source-backed' },
+        { slug: '20260415G', entryFiles: [], expectedKind: 'ignored', expectedAction: 'ignore' }
     ];
 
     const failures = [];
 
     cases.forEach(testCase => {
-        const classification = classifyEntry(entryPath(testCase.slug), { cachedPostsById, forceRebuild: true });
+        const classification = classifyEntry(entryPath(testCase.slug), {
+            cachedPostsById,
+            entryFiles: testCase.entryFiles,
+            forceRebuild: true
+        });
         if (classification.kind !== testCase.expectedKind) {
             failures.push(
                 `${testCase.slug}: expected kind ${testCase.expectedKind}, got ${classification.kind}`
