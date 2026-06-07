@@ -77,8 +77,9 @@ async function buildRelatedPostsHtml(relatedPosts) {
 }
 
 function renderRelatedArticlesSection(relatedPostsHtml) {
+    const cardsHtml = relatedPostsHtml ? relatedPostsHtml.replace(/^\n/, '') : '';
     return `        <div class="row mt-5">
-            <div class="col-12"><h2 class="mb-4 related-section-title">Related Articles</h2></div>${relatedPostsHtml ? `\n${relatedPostsHtml}` : ''}
+            <div class="col-12"><h2 class="mb-4 related-section-title">Related Articles</h2></div>${cardsHtml ? `\n\n${cardsHtml}` : ''}
         </div>`;
 }
 
@@ -92,7 +93,7 @@ async function injectRelatedArticles(blogPosts) {
         let postHtml = fs.readFileSync(postHtmlPath, 'utf8');
         const originalHtml = postHtml;
         if (postHtml.includes('RELATED_ARTICLES')) {
-            postHtml = postHtml.replace(/RELATED_ARTICLES/g, relatedPostsHtml || '');
+            postHtml = postHtml.replace(/^[ \t]*RELATED_ARTICLES[ \t]*$/gm, relatedPostsHtml || '');
         } else {
             postHtml = postHtml.replace(
                 /        <div class="row mt-5">\n\s*<div class="col-12"><h2 class="mb-4 related-section-title">Related Articles<\/h2><\/div>[\s\S]*?\n        <\/div>(?=\n    <\/div>\n<\/main>)/,

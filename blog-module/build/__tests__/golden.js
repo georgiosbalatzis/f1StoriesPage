@@ -3,6 +3,7 @@ const os = require('os');
 const path = require('path');
 const { processBlogEntry } = require('../worker');
 const { classifyEntry } = require('../index');
+const { CONFIG } = require('../shared');
 const { convertTxtToHtml } = require('../parse-txt');
 const { createResponsiveTableFromCSV, enhancedExtractCSVTags } = require('../csv-to-table');
 const { buildEmbedHtml } = require('../embed-render');
@@ -32,16 +33,12 @@ function entryPath(slug) {
     return path.join(BLOG_ENTRIES_DIR, slug);
 }
 
-function articlePath(slug) {
-    return path.join(entryPath(slug), 'article.html');
+function articlePathIn(entriesDir, slug) {
+    return path.join(entriesDir, slug, 'article.html');
 }
 
 function goldenPath(name) {
     return path.join(GOLDEN_EXPECTED_DIR, `${name}.html`);
-}
-
-function readArticle(slug) {
-    return fs.readFileSync(articlePath(slug));
 }
 
 function readFixtureCsv() {
@@ -51,6 +48,24 @@ function readFixtureCsv() {
 function writeGoldenSnapshot(name, content) {
     ensureGoldenDir();
     fs.writeFileSync(goldenPath(name), content);
+}
+
+async function withGoldenWorkspace(callback) {
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-golden-'));
+    const entriesDir = path.join(tempRoot, 'blog-entries');
+    const originalBlogDir = CONFIG.BLOG_DIR;
+
+    try {
+        fs.mkdirSync(entriesDir, { recursive: true });
+        GOLDEN_ENTRIES.forEach(slug => {
+            fs.cpSync(entryPath(slug), path.join(entriesDir, slug), { recursive: true });
+        });
+        CONFIG.BLOG_DIR = entriesDir;
+        return await callback(entriesDir);
+    } finally {
+        CONFIG.BLOG_DIR = originalBlogDir;
+        fs.rmSync(tempRoot, { recursive: true, force: true });
+    }
 }
 
 function verifyClassificationGuards() {
@@ -222,16 +237,18 @@ async function updateGoldenSnapshots() {
         throw new Error(`Embed hardening guard failed:\n${embedGuardFailures.join('\n')}`);
     }
 
-    for (const slug of GOLDEN_ENTRIES) {
-        await processBlogEntry(entryPath(slug));
-    }
+    await withGoldenWorkspace(async entriesDir => {
+        for (const slug of GOLDEN_ENTRIES) {
+            await processBlogEntry(path.join(entriesDir, slug));
+        }
 
-    const blogData = JSON.parse(fs.readFileSync(BLOG_DATA_PATH, 'utf8'));
-    injectRelatedArticles(blogData.posts || []);
-    injectPrevNextLinks(blogData.posts || []);
+        const blogData = JSON.parse(fs.readFileSync(BLOG_DATA_PATH, 'utf8'));
+        await injectRelatedArticles(blogData.posts || []);
+        injectPrevNextLinks(blogData.posts || []);
 
-    GOLDEN_ENTRIES.forEach(slug => {
-        writeGoldenSnapshot(slug, readArticle(slug));
+        GOLDEN_ENTRIES.forEach(slug => {
+            writeGoldenSnapshot(slug, fs.readFileSync(articlePathIn(entriesDir, slug)));
+        });
     });
 
     const csvHtml = createResponsiveTableFromCSV(readFixtureCsv(), 'team-sample.csv');
@@ -271,24 +288,26 @@ async function verifyGoldenSnapshots() {
         });
     });
 
-    for (const slug of GOLDEN_ENTRIES) {
-        await processBlogEntry(entryPath(slug));
-    }
-
-    const blogData = JSON.parse(fs.readFileSync(BLOG_DATA_PATH, 'utf8'));
-    injectRelatedArticles(blogData.posts || []);
-    injectPrevNextLinks(blogData.posts || []);
-
-    GOLDEN_ENTRIES.forEach(slug => {
-        const actual = readArticle(slug);
-        const expected = fs.readFileSync(goldenPath(slug));
-        if (!actual.equals(expected)) {
-            failures.push({
-                name: slug,
-                expectedPath: goldenPath(slug),
-                actualPath: articlePath(slug)
-            });
+    await withGoldenWorkspace(async entriesDir => {
+        for (const slug of GOLDEN_ENTRIES) {
+            await processBlogEntry(path.join(entriesDir, slug));
         }
+
+        const blogData = JSON.parse(fs.readFileSync(BLOG_DATA_PATH, 'utf8'));
+        await injectRelatedArticles(blogData.posts || []);
+        injectPrevNextLinks(blogData.posts || []);
+
+        GOLDEN_ENTRIES.forEach(slug => {
+            const actual = fs.readFileSync(articlePathIn(entriesDir, slug));
+            const expected = fs.readFileSync(goldenPath(slug));
+            if (!actual.equals(expected)) {
+                failures.push({
+                    name: slug,
+                    expectedPath: goldenPath(slug),
+                    actualPath: articlePathIn(entriesDir, slug)
+                });
+            }
+        });
     });
 
     const csvActual = Buffer.from(createResponsiveTableFromCSV(readFixtureCsv(), 'team-sample.csv'), 'utf8');
@@ -314,7 +333,6 @@ module.exports = {
     GOLDEN_EXPECTED_DIR,
     CSV_FIXTURE_PATH,
     entryPath,
-    articlePath,
     goldenPath,
     verifyClassificationGuards,
     verifyCsvEscapingGuards,
