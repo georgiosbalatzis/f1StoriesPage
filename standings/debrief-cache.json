@@ -1,7 +1,7 @@
 {
   "version": 2,
   "season": 2026,
-  "generatedAt": "2026-06-07T18:43:35.090Z",
+  "generatedAt": "2026-06-08T07:03:53.850Z",
   "source": {
     "label": "OpenF1 Friday Debrief cache",
     "upstream": "https://api.openf1.org/v1",
