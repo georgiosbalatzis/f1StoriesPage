@@ -1,6 +1,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { execFileSync } = require('child_process');
 const { processBlogEntry } = require('../worker');
 const { classifyEntry } = require('../index');
 const { CONFIG } = require('../shared');
@@ -19,11 +20,11 @@ const CSV_FIXTURE_PATH = path.join(TEST_ROOT, 'fixtures', 'csv', 'team-sample.cs
 const BLOG_DATA_PATH = path.join(REPO_ROOT, 'blog-module', 'blog-data.json');
 
 const GOLDEN_ENTRIES = [
-    '20260403W',
-    '20260405G',
-    '20260408J',
     '20260415',
-    '20260416G'
+    '20260416G',
+    '20260422G',
+    '20260610-2J',
+    '20260610W'
 ];
 
 function ensureGoldenDir() {
@@ -51,6 +52,40 @@ function writeGoldenSnapshot(name, content) {
     fs.writeFileSync(goldenPath(name), content);
 }
 
+function listTrackedEntryFiles(slug) {
+    const relRoot = `blog-module/blog-entries/${slug}`;
+    const output = execFileSync('git', ['ls-files', '-z', '--', relRoot], {
+        cwd: REPO_ROOT
+    });
+
+    return output
+        .toString('utf8')
+        .split('\0')
+        .filter(Boolean)
+        .map(relPath => ({
+            relPath,
+            entryRelPath: relPath.slice(relRoot.length + 1)
+        }))
+        .filter(item => item.entryRelPath);
+}
+
+function copyTrackedEntry(slug, entriesDir) {
+    const trackedFiles = listTrackedEntryFiles(slug);
+    if (!trackedFiles.length) {
+        throw new Error(`Golden fixture ${slug} has no tracked files.`);
+    }
+
+    const targetDir = path.join(entriesDir, slug);
+    fs.mkdirSync(targetDir, { recursive: true });
+
+    trackedFiles.forEach(({ relPath, entryRelPath }) => {
+        const sourcePath = path.join(REPO_ROOT, ...relPath.split('/'));
+        const targetPath = path.join(targetDir, ...entryRelPath.split('/'));
+        fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+        fs.copyFileSync(sourcePath, targetPath);
+    });
+}
+
 async function withGoldenWorkspace(callback) {
     const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-golden-'));
     const entriesDir = path.join(tempRoot, 'blog-entries');
@@ -59,7 +94,7 @@ async function withGoldenWorkspace(callback) {
     try {
         fs.mkdirSync(entriesDir, { recursive: true });
         GOLDEN_ENTRIES.forEach(slug => {
-            fs.cpSync(entryPath(slug), path.join(entriesDir, slug), { recursive: true });
+            copyTrackedEntry(slug, entriesDir);
         });
         CONFIG.BLOG_DIR = entriesDir;
         return await callback(entriesDir);
