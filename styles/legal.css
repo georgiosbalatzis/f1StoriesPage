@@ -103,7 +103,7 @@
 }
 
 .legal-highlight {
-    background: rgba(59, 130, 246, 0.08);
+    background: rgba(65, 182, 230, 0.08);
 }
 
 .legal-note {
@@ -176,8 +176,8 @@
 }
 
 [data-theme="light"] .legal-highlight {
-    background: rgba(14, 76, 166, 0.08);
-    border-color: rgba(14, 76, 166, 0.12);
+    background: rgba(65, 182, 230, 0.08);
+    border-color: rgba(65, 182, 230, 0.12);
 }
 
 [data-theme="light"] .legal-table th {

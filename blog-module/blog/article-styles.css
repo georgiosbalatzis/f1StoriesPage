@@ -327,7 +327,7 @@
 }
 
 /* Meta icons */
-[data-theme="light"] .article-meta i { color: #5b9cf5; }
+[data-theme="light"] .article-meta i { color: #DB3EB1; }
 
 /* Page-level, footer, social icons, cookie consent:
    All handled by theme-overrides.css (loaded on every page). */

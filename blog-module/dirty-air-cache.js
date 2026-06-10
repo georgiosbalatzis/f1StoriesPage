@@ -673,7 +673,7 @@ function buildDirtyAirRows(sessionKey, drivers, results, driverLapMap) {
         const driver = driverLookup[driverNumber] || {};
         const result = resultLookup[driverNumber] || {};
         const teamName = driver.teamName || result.team_name || 'Team';
-        const teamColor = driver.teamColor || result.team_colour || '3b82f6';
+        const teamColor = driver.teamColor || result.team_colour || '41B6E6';
         const laps = (driverLapMap[driverNumber] || []).sort((a, b) => a.lapNumber - b.lapNumber);
         const completedLaps = laps.reduce((maxLap, lap) => Math.max(maxLap, lap.lapNumber || 0), 0);
         const summary = buildDirtyAirSummary(laps);

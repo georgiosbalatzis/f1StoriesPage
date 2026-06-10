@@ -37,7 +37,7 @@
 
 .tyre-pace-select:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; }
 
-.tyre-pace-summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; padding: 0.9rem 1rem; border-radius: 16px; background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(59,130,246,0.03)); border: 1px solid rgba(59,130,246,0.12); }
+.tyre-pace-summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; padding: 0.9rem 1rem; border-radius: 16px; background: linear-gradient(135deg, rgba(65,182,230,0.12), rgba(65,182,230,0.03)); border: 1px solid rgba(65,182,230,0.12); }
 
 .tyre-pace-summary-title { font-family: 'Outfit',sans-serif; font-size: 1rem; font-weight: 700; color: var(--st-text); line-height: 1.1; }
 
@@ -81,7 +81,7 @@
 
 .tyre-pace-plot { position: absolute; inset: 0 0 62px; border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); }
 
-[data-theme="light"] .tyre-pace-plot { background: linear-gradient(180deg, rgba(14,76,166,0.03), rgba(14,76,166,0)); }
+[data-theme="light"] .tyre-pace-plot { background: linear-gradient(180deg, rgba(65,182,230,0.03), rgba(65,182,230,0)); }
 
 .tyre-pace-svg { width: 100%; height: 100%; display: block; overflow: visible; }
 

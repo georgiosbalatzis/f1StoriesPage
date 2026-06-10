@@ -270,7 +270,7 @@ function buildLap1GainRows(sessions, drivers, positions, lapOneLaps, lapTwoLaps)
                 fullName: 'Οδηγός #' + record.driver_number,
                 headshot: '',
                 teamName: '',
-                teamColor: '3b82f6'
+                teamColor: '41B6E6'
             };
             const startPosition = normalizedStartMap[record.driver_number];
             const afterPosition = moves.length + 1;
@@ -333,7 +333,7 @@ function buildLap1AxisValues(maxGain) {
 }
 
 function renderLap1Bubble(driver, extraBadge) {
-    const winnerColor = hexToRgbChannels(driver.teamColor || '3b82f6');
+    const winnerColor = hexToRgbChannels(driver.teamColor || '41B6E6');
     const headshot = getCachedHeadshotResult('', driver.fullName, driver.headshot || '');
     return '<div class="lap1-bubble" style="--winner-color:' + esc(winnerColor) + ';">'
         + (headshot.url
@@ -345,7 +345,7 @@ function renderLap1Bubble(driver, extraBadge) {
 }
 
 function renderLap1DriverChip(driver) {
-    const winnerColor = hexToRgbChannels(driver.teamColor || '3b82f6');
+    const winnerColor = hexToRgbChannels(driver.teamColor || '41B6E6');
     const headshot = getCachedHeadshotResult('', driver.fullName, driver.headshot || '');
     return '<div class="lap1-driver-chip" style="--winner-color:' + esc(winnerColor) + ';">'
         + '<div class="lap1-driver-chip-avatar">'
@@ -384,7 +384,7 @@ function renderLap1OverviewContent(rows) {
     html += '<div class="lap1-chart-columns" style="grid-template-columns:repeat(' + rows.length + ', minmax(72px, 1fr));">';
 
     rows.forEach(function(row) {
-        const primaryColor = hexToRgbChannels(row.primaryWinner.teamColor || '3b82f6');
+        const primaryColor = hexToRgbChannels(row.primaryWinner.teamColor || '41B6E6');
         const bottom = maxGain > 0 ? (row.maxGain / maxGain) * 100 : 0;
         const tieBadge = row.winnerCount > 1 ? '+' + (row.winnerCount - 1) : '';
 
@@ -401,7 +401,7 @@ function renderLap1OverviewContent(rows) {
     html += '</div></div></div></div></div><div class="lap1-gains-cards">';
 
     rows.forEach(function(row) {
-        const primaryColor = hexToRgbChannels(row.primaryWinner.teamColor || '3b82f6');
+        const primaryColor = hexToRgbChannels(row.primaryWinner.teamColor || '41B6E6');
         html += '<article class="lap1-gain-card" style="--winner-color:' + esc(primaryColor) + ';">'
             + '<div class="lap1-gain-card-head"><div class="lap1-gain-card-session"><span class="lap1-gain-card-type">' + esc(row.sessionTypeShort) + '</span><div class="lap1-gain-card-name">' + esc(row.meetingName) + '</div><div class="lap1-gain-card-date">' + esc(row.dateLabel + ' · ' + row.sessionName) + '</div></div><div><div class="lap1-gain-card-value">' + esc(formatGainValue(row.maxGain)) + '</div><div class="lap1-gain-card-sub">lap 1 gain</div></div></div>'
             + '<div class="lap1-driver-cluster">' + row.winners.map(renderLap1DriverChip).join('') + '</div>'
@@ -416,7 +416,7 @@ function renderLap1OverviewContent(rows) {
 }
 
 function renderLap1RaceDriverRow(move, index) {
-    const winnerColor = hexToRgbChannels(move.teamColor || '3b82f6');
+    const winnerColor = hexToRgbChannels(move.teamColor || '41B6E6');
     const deltaTone = move.gain > 0 ? 'positive' : move.gain < 0 ? 'negative' : 'neutral';
     const headshot = getCachedHeadshotResult('', move.fullName, move.headshot || '');
 
@@ -436,7 +436,7 @@ function renderLap1RaceDriverRow(move, index) {
 }
 
 function renderLap1RaceDetailContent(rows, selectedRow) {
-    const summaryColor = hexToRgbChannels(selectedRow.primaryWinner.teamColor || '3b82f6');
+    const summaryColor = hexToRgbChannels(selectedRow.primaryWinner.teamColor || '41B6E6');
     const topMoverLabel = selectedRow.winnerCount > 1
         ? selectedRow.winners.map(function(driver) { return driver.acronym; }).join(', ')
         : selectedRow.primaryWinner.acronym;

@@ -80,40 +80,40 @@
 }
 .blog-nav-link i { font-size: 0.72rem; opacity: 0.7; }
 .blog-nav-link:hover { color: #f0f0f2; background: rgba(255,255,255,0.06); }
-.blog-nav-link.active { color: #3b82f6; background: rgba(59,130,246,0.1); font-weight: 600; }
+.blog-nav-link.active { color: #41B6E6; background: rgba(65,182,230,0.1); font-weight: 600; }
 [data-theme="light"] .blog-nav-link { color: #6e6e73; }
 [data-theme="light"] .blog-nav-link:hover { color: #1d1d1f; background: rgba(0,0,0,0.04); }
-[data-theme="light"] .blog-nav-link.active { color: #0e4ca6; background: rgba(14,76,166,0.06); }
+[data-theme="light"] .blog-nav-link.active { color: #41B6E6; background: rgba(65,182,230,0.06); }
 
 /* ── BetCast Nav Link — accent pill style ──── */
 .blog-nav-link.betcast-link {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    background: linear-gradient(135deg, #41B6E6, #DB3EB1);
     color: #fff !important;
     border-radius: 100px;
     padding: 0.4rem 0.95rem;
     font-weight: 600;
     font-size: 0.78rem;
     letter-spacing: 0.02em;
-    box-shadow: 0 1px 4px rgba(59,130,246,0.25);
+    box-shadow: 0 1px 4px rgba(65,182,230,0.25);
     transition: all 0.25s;
     gap: 0.35rem;
 }
 .blog-nav-link.betcast-link i { opacity: 1; font-size: 0.68rem; }
 .blog-nav-link.betcast-link:hover {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #DB3EB1, #DB3EB1);
     color: #fff !important;
-    box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+    box-shadow: 0 4px 14px rgba(65,182,230,0.35);
     transform: translateY(-1px);
 }
 [data-theme="light"] .blog-nav-link.betcast-link {
-    background: linear-gradient(135deg, #0e4ca6, #0a3d8f);
+    background: linear-gradient(135deg, #41B6E6, #DB3EB1);
     color: #fff !important;
-    box-shadow: 0 1px 4px rgba(14,76,166,0.2);
+    box-shadow: 0 1px 4px rgba(65,182,230,0.2);
 }
 [data-theme="light"] .blog-nav-link.betcast-link:hover {
-    background: linear-gradient(135deg, #0a3d8f, #083070) !important;
+    background: linear-gradient(135deg, #DB3EB1, #DB3EB1) !important;
     color: #fff !important;
-    box-shadow: 0 4px 14px rgba(14,76,166,0.3);
+    box-shadow: 0 4px 14px rgba(65,182,230,0.3);
 }
 
 /* ── Right Section ────────────────────────────── */
@@ -149,22 +149,22 @@
 [data-theme="light"] .countdown-race { color: #86868b; }
 .countdown-timer {
     font-size: 0.78rem;
-    color: #3b82f6;
+    color: #41B6E6;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.02em;
 }
-[data-theme="light"] .countdown-timer { color: #0e4ca6; }
+[data-theme="light"] .countdown-timer { color: #41B6E6; }
 
 .blog-nav-countdown-mobile {
     display: none;
     align-items: center;
     gap: 0.35rem;
     font-size: 0.78rem;
-    color: #3b82f6;
+    color: #41B6E6;
     font-weight: 600;
 }
-[data-theme="light"] .blog-nav-countdown-mobile { color: #0e4ca6; }
+[data-theme="light"] .blog-nav-countdown-mobile { color: #41B6E6; }
 .blog-nav-countdown-mobile i { font-size: 0.65rem; color: rgba(255,255,255,0.38); }
 [data-theme="light"] .blog-nav-countdown-mobile i { color: #86868b; }
 .blog-nav-countdown-mobile .countdown-flag-mobile {
@@ -238,33 +238,33 @@
 .blog-nav-mobile-link i { width: 18px; text-align: center; font-size: 0.82rem; opacity: 0.7; }
 .blog-nav-mobile-link:hover,
 .blog-nav-mobile-link:active { color: #f0f0f2; background: rgba(255,255,255,0.06); }
-.blog-nav-mobile-link.active { color: #3b82f6; background: rgba(59,130,246,0.1); font-weight: 600; }
+.blog-nav-mobile-link.active { color: #41B6E6; background: rgba(65,182,230,0.1); font-weight: 600; }
 [data-theme="light"] .blog-nav-mobile-link { color: #6e6e73; }
 [data-theme="light"] .blog-nav-mobile-link:hover { color: #1d1d1f; background: rgba(0,0,0,0.04); }
-[data-theme="light"] .blog-nav-mobile-link.active { color: #0e4ca6; background: rgba(14,76,166,0.06); }
+[data-theme="light"] .blog-nav-mobile-link.active { color: #41B6E6; background: rgba(65,182,230,0.06); }
 
 /* Mobile BetCast link */
 .blog-nav-mobile-link.betcast-link {
-    background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(37,99,235,0.08));
-    color: #3b82f6 !important;
-    border-left: 3px solid #3b82f6;
+    background: linear-gradient(135deg, rgba(65,182,230,0.12), rgba(219,62,177,0.08));
+    color: #41B6E6 !important;
+    border-left: 3px solid #41B6E6;
     border-radius: 0 8px 8px 0;
     font-weight: 600;
     margin-top: 0.25rem;
 }
 .blog-nav-mobile-link.betcast-link:hover,
 .blog-nav-mobile-link.betcast-link:active {
-    background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(37,99,235,0.12));
-    color: #2563eb !important;
+    background: linear-gradient(135deg, rgba(65,182,230,0.18), rgba(219,62,177,0.12));
+    color: #DB3EB1 !important;
 }
 [data-theme="light"] .blog-nav-mobile-link.betcast-link {
-    background: linear-gradient(135deg, rgba(14,76,166,0.06), rgba(10,61,143,0.04));
-    color: #0e4ca6 !important;
-    border-left-color: #0e4ca6;
+    background: linear-gradient(135deg, rgba(65,182,230,0.06), rgba(219,62,177,0.04));
+    color: #41B6E6 !important;
+    border-left-color: #41B6E6;
 }
 [data-theme="light"] .blog-nav-mobile-link.betcast-link:hover {
-    background: linear-gradient(135deg, rgba(14,76,166,0.1), rgba(10,61,143,0.06));
-    color: #0a3d8f !important;
+    background: linear-gradient(135deg, rgba(65,182,230,0.1), rgba(219,62,177,0.06));
+    color: #DB3EB1 !important;
 }
 
 @media (max-width: 991px) {
@@ -325,8 +325,8 @@
     will-change: transform;
 }
 .theme-toggle-btn:hover {
-    color: #3b82f6;
-    border-color: #3b82f6;
+    color: #41B6E6;
+    border-color: #41B6E6;
     transform: scale(1.08);
     box-shadow: 0 4px 16px rgba(0,0,0,0.5);
 }
@@ -338,7 +338,7 @@
     color: #86868b;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
-[data-theme="light"] .theme-toggle-btn:hover { color: #0e4ca6; border-color: #0e4ca6; }
+[data-theme="light"] .theme-toggle-btn:hover { color: #41B6E6; border-color: #41B6E6; }
 [data-theme="light"] .theme-toggle-btn .icon-sun { display: none; }
 [data-theme="light"] .theme-toggle-btn .icon-moon { display: inline; }
 
@@ -377,8 +377,8 @@
     transform: translateY(0) scale(1) !important;
 }
 .scroll-to-top-btn:hover {
-    color: #3b82f6 !important;
-    border-color: #3b82f6 !important;
+    color: #41B6E6 !important;
+    border-color: #41B6E6 !important;
     transform: scale(1.08) !important;
 }
 .scroll-to-top-btn::before { display: none !important; }
@@ -395,7 +395,7 @@
     color: #86868b !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
 }
-[data-theme="light"] .scroll-to-top-btn:hover { color: #0e4ca6 !important; border-color: #0e4ca6 !important; }
+[data-theme="light"] .scroll-to-top-btn:hover { color: #41B6E6 !important; border-color: #41B6E6 !important; }
 
 /* ── Hide old navbar if present ───────────────── */
 .theme-toggle-container { display: none !important; }

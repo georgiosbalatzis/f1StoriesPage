@@ -103,19 +103,6 @@ jobs:
             exit 0
           fi
 
-          if [ "${{ github.event_name }}" = "push" ]; then
-            # Fold the generated artifacts into the triggering commit so
-            # Pages only runs one deploy. --force-with-lease refuses if
-            # main moved since checkout, protecting against lost commits.
-            git commit --amend --no-edit
-            if git push --force-with-lease; then
-              echo "Amended triggering commit with build artifacts."
-              exit 0
-            fi
-            echo "Force-push rejected (main moved); falling back to fresh commit."
-            git reset --soft HEAD@{1}
-          fi
-
           git commit -m "chore(blog): auto-build generated artifacts [skip ci]"
           git push
 

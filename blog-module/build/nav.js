@@ -43,13 +43,13 @@ function injectPrevNextLinks(blogPosts) {
             if (prevPost) {
                 postHtml = postHtml.replace(/PREV_ARTICLE_URL/g, `/blog-module/blog-entries/${prevPost.id}/article.html`);
             } else {
-                postHtml = postHtml.replace(/<a href="PREV_ARTICLE_URL"[^>]*>[\s\S]*?<\/a>/g, '');
+                postHtml = postHtml.replace(/^[ \t]*<a href="PREV_ARTICLE_URL"[^>]*>[\s\S]*?<\/a>[ \t]*\r?\n?/gm, '');
             }
 
             if (nextPost) {
                 postHtml = postHtml.replace(/NEXT_ARTICLE_URL/g, `/blog-module/blog-entries/${nextPost.id}/article.html`);
             } else {
-                postHtml = postHtml.replace(/<a href="NEXT_ARTICLE_URL"[^>]*>[\s\S]*?<\/a>/g, '');
+                postHtml = postHtml.replace(/^[ \t]*<a href="NEXT_ARTICLE_URL"[^>]*>[\s\S]*?<\/a>[ \t]*\r?\n?/gm, '');
             }
         } else {
             if (articleNavigationMatches(postHtml, prevPost, nextPost)) return;

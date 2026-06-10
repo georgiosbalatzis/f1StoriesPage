@@ -1,14 +1,16 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { execFileSync } = require('child_process');
 const { processBlogEntry } = require('../worker');
 const { classifyEntry } = require('../index');
 const { CONFIG } = require('../shared');
 const { convertTxtToHtml } = require('../parse-txt');
 const { createResponsiveTableFromCSV, enhancedExtractCSVTags } = require('../csv-to-table');
-const { buildEmbedHtml } = require('../embed-render');
 const { injectRelatedArticles } = require('../related');
 const { injectPrevNextLinks } = require('../nav');
+const metaGuard = require('./metadata-escaping-guard');
+const embedGuard = require('./embed-hardening-guard');
 
 const TEST_ROOT = __dirname;
 const REPO_ROOT = path.resolve(TEST_ROOT, '..', '..', '..');
@@ -18,11 +20,11 @@ const CSV_FIXTURE_PATH = path.join(TEST_ROOT, 'fixtures', 'csv', 'team-sample.cs
 const BLOG_DATA_PATH = path.join(REPO_ROOT, 'blog-module', 'blog-data.json');
 
 const GOLDEN_ENTRIES = [
-    '20260403W',
-    '20260405G',
-    '20260408J',
     '20260415',
-    '20260416G'
+    '20260416G',
+    '20260422G',
+    '20260610-2J',
+    '20260610W'
 ];
 
 function ensureGoldenDir() {
@@ -50,6 +52,40 @@ function writeGoldenSnapshot(name, content) {
     fs.writeFileSync(goldenPath(name), content);
 }
 
+function listTrackedEntryFiles(slug) {
+    const relRoot = `blog-module/blog-entries/${slug}`;
+    const output = execFileSync('git', ['ls-files', '-z', '--', relRoot], {
+        cwd: REPO_ROOT
+    });
+
+    return output
+        .toString('utf8')
+        .split('\0')
+        .filter(Boolean)
+        .map(relPath => ({
+            relPath,
+            entryRelPath: relPath.slice(relRoot.length + 1)
+        }))
+        .filter(item => item.entryRelPath);
+}
+
+function copyTrackedEntry(slug, entriesDir) {
+    const trackedFiles = listTrackedEntryFiles(slug);
+    if (!trackedFiles.length) {
+        throw new Error(`Golden fixture ${slug} has no tracked files.`);
+    }
+
+    const targetDir = path.join(entriesDir, slug);
+    fs.mkdirSync(targetDir, { recursive: true });
+
+    trackedFiles.forEach(({ relPath, entryRelPath }) => {
+        const sourcePath = path.join(REPO_ROOT, ...relPath.split('/'));
+        const targetPath = path.join(targetDir, ...entryRelPath.split('/'));
+        fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+        fs.copyFileSync(sourcePath, targetPath);
+    });
+}
+
 async function withGoldenWorkspace(callback) {
     const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-golden-'));
     const entriesDir = path.join(tempRoot, 'blog-entries');
@@ -58,7 +94,7 @@ async function withGoldenWorkspace(callback) {
     try {
         fs.mkdirSync(entriesDir, { recursive: true });
         GOLDEN_ENTRIES.forEach(slug => {
-            fs.cpSync(entryPath(slug), path.join(entriesDir, slug), { recursive: true });
+            copyTrackedEntry(slug, entriesDir);
         });
         CONFIG.BLOG_DIR = entriesDir;
         return await callback(entriesDir);
@@ -174,48 +210,6 @@ function verifyCsvEscapingGuards() {
     return failures;
 }
 
-function verifyEmbedHardeningGuards() {
-    const failures = [];
-    const blockedWidget = buildEmbedHtml({
-        type: 'raw-widget',
-        value: '<div style="color:red" onclick="alert(1)">x</div>'
-    });
-    if (!blockedWidget.includes('Raw widget blocked') || blockedWidget.includes('onclick')) {
-        failures.push('raw widget without allowlist marker did not fail closed');
-    }
-
-    const allowedWidget = buildEmbedHtml({
-        type: 'raw-widget',
-        value: '<div data-f1s-raw-widget style="color:red">x</div>'
-    });
-    if (!allowedWidget.includes('data-f1s-raw-widget') || allowedWidget.includes('Raw widget blocked')) {
-        failures.push('allowlisted raw widget was not preserved');
-    }
-
-    const rawIframe = buildEmbedHtml({
-        type: 'raw-iframe',
-        src: 'https://www.youtube.com/embed/abcdefghijk',
-        value: '<iframe src="https://www.youtube.com/embed/abcdefghijk" onload="alert(1)" srcdoc="<script>alert(1)</script>" width="560"></iframe>'
-    });
-    if (!rawIframe.includes('https://www.youtube.com/embed/abcdefghijk')) {
-        failures.push('whitelisted raw iframe src was not preserved');
-    }
-    if (rawIframe.includes('onload') || rawIframe.includes('srcdoc') || rawIframe.includes('<script')) {
-        failures.push('raw iframe unsafe attributes were not stripped');
-    }
-
-    const blockedFile = buildEmbedHtml({
-        type: 'embed',
-        value: '../../index.html',
-        entryPath: BLOG_ENTRIES_DIR
-    });
-    if (!blockedFile.includes('Embed blocked') || blockedFile.includes('../../index.html')) {
-        failures.push('unsafe embed file path did not fail closed');
-    }
-
-    return failures;
-}
-
 async function updateGoldenSnapshots() {
     const classificationFailures = verifyClassificationGuards();
     if (classificationFailures.length) {
@@ -232,7 +226,7 @@ async function updateGoldenSnapshots() {
         throw new Error(`CSV escaping guard failed:\n${csvGuardFailures.join('\n')}`);
     }
 
-    const embedGuardFailures = verifyEmbedHardeningGuards();
+    const embedGuardFailures = embedGuard();
     if (embedGuardFailures.length) {
         throw new Error(`Embed hardening guard failed:\n${embedGuardFailures.join('\n')}`);
     }
@@ -280,13 +274,15 @@ async function verifyGoldenSnapshots() {
         });
     });
 
-    verifyEmbedHardeningGuards().forEach(message => {
+    embedGuard().forEach(message => {
         failures.push({
             name: `embed-hardening: ${message}`,
             expectedPath: fixtureLabel('embed-hardening'),
             actualPath: fixtureLabel('embed-hardening')
         });
     });
+
+    for (const message of await metaGuard()) failures.push({ name: `article-meta: ${message}`, expectedPath: TEST_ROOT, actualPath: TEST_ROOT });
 
     await withGoldenWorkspace(async entriesDir => {
         for (const slug of GOLDEN_ENTRIES) {
@@ -328,15 +324,6 @@ function fixtureLabel(name) {
 }
 
 module.exports = {
-    GOLDEN_ENTRIES,
-    BLOG_ENTRIES_DIR,
-    GOLDEN_EXPECTED_DIR,
-    CSV_FIXTURE_PATH,
-    entryPath,
-    goldenPath,
-    verifyClassificationGuards,
-    verifyCsvEscapingGuards,
-    verifyEmbedHardeningGuards,
     updateGoldenSnapshots,
     verifyGoldenSnapshots
 };

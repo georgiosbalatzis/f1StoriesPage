@@ -449,13 +449,16 @@ npm run build:public
 - raw `.docx`, draft `.txt`, `.sql`, backup files
 - original article `.png`, `.jpg`, `.jpeg` όταν υπάρχει optimized `.webp` ή `.avif`
 
-Το GitHub Pages deploy γίνεται μέσω Actions artifact deploy από το `dist/` directory:
+Το GitHub Pages deploy ανήκει στο `.github/workflows/deploy-pages.yml` και γίνεται αυτόματα μέσω Actions artifact deploy από το `dist/` directory. Το workflow τρέχει σε `push` στο `main`, σε manual `workflow_dispatch`, και μετά από επιτυχημένο `Site Maintenance`, ώστε scheduled generated-content updates με `[skip ci]` να δημοσιεύονται επίσης.
 
 - `.github/workflows/deploy-pages.yml` κάνει `npm run build:public`
+- το ίδιο workflow τρέχει τα quality gates πριν το deploy
 - `actions/upload-pages-artifact` ανεβάζει μόνο `dist`
 - `actions/deploy-pages` δημοσιεύει το artifact
 
-Άρα το repository root μπορεί να παραμείνει πλήρες για development, αλλά δεν είναι δημόσιο artifact.
+Το `.github/workflows/quality.yml` παραμένει PR/manual CI gate και δεν κάνει production deploy. Άρα το repository root μπορεί να παραμείνει πλήρες για development, αλλά δεν είναι δημόσιο artifact.
+
+Publishing από το `generate.html` παραμένει συμβατό με το GitHub build flow: το εργαλείο γράφει τα article source/assets στο `main`, το `Site Maintenance` workflow τρέχει τον blog processor και κάνει ξεχωριστό follow-up commit με τα generated artifacts. Το workflow δεν κάνει πλέον amend/force-push στο triggering commit. Το Pages deploy περιμένει το successful `Site Maintenance` run και δημοσιεύει το rebuilt `dist/` artifact.
 
 Πριν από publish σε production, η ασφαλής ροή είναι:
 
@@ -466,7 +469,7 @@ npm run build:public
 5. εκτέλεση `npm run build:public`
 6. local preview του site
 7. εκτέλεση `npm run verify` πριν από merge ή publish όταν η αλλαγή επηρεάζει UI, performance, public artifact ή analytics behavior
-8. deploy μόνο του `dist/` artifact
+8. merge ή push στο `main`, ώστε το automatic Pages workflow να κάνει deploy μόνο του `dist/` artifact
 
 <a id="maintainer-notes"></a>
 ## Πρακτικές σημειώσεις για maintainers

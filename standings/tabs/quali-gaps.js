@@ -423,7 +423,7 @@ function createPairRecord(teamName, teamKey, teamColor, driverA, driverB) {
     const pair = {
         teamName: teamName,
         teamKey: teamKey,
-        teamColor: normalizeHexColor(teamColor || '3b82f6'),
+        teamColor: normalizeHexColor(teamColor || '41B6E6'),
         drivers: {},
         sessions: [],
         totalGap: 0
@@ -475,7 +475,7 @@ function buildQualifyingSessionTeams(sessions, drivers, results) {
             acronym: sourceDriver.acronym || '',
             headshot: sourceDriver.headshot || '',
             teamName: sourceDriver.teamName || '',
-            teamColor: sourceDriver.teamColor || '3b82f6',
+            teamColor: sourceDriver.teamColor || '41B6E6',
             meetingKey: sourceDriver.meetingKey || ''
         };
         const driverKey = safeDriverNumber(driver);
@@ -616,7 +616,7 @@ function buildQualifyingGapRaceRows(sessionMap, sessionTeams) {
             const faster = comparison.fasterEntry.driver;
             const slower = comparison.slowerEntry.driver;
             const teamName = faster.teamName || slower.teamName || 'Team';
-            const teamColor = faster.teamColor || slower.teamColor || '3b82f6';
+            const teamColor = faster.teamColor || slower.teamColor || '41B6E6';
 
             pairs.push({
                 teamKey: teamKey,

@@ -1,0 +1,92 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'blog-module/blog-entries/**'
+      - 'blog-module/blog-processor.js'
+      - 'blog-module/blog/template.html'
+      - 'blog-module/dirty-air-cache.js'
+      - 'blog-module/destructors-cache.js'
+      - 'standings/debrief-cache.js'
+      - 'standings/debrief-cache.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/publish-blog.yml'
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['Site Maintenance']
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Pages artifact
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build public artifact
+        run: npm run build:public
+
+      - name: Check generated artifact drift
+        run: npm run build:check
+
+      - name: Run blog golden tests
+        run: npm run test:blog
+
+      - name: Check file-size budget
+        run: npm run perf:budget
+
+      - name: Check public image budget
+        run: npm run perf:images
+
+      - name: Check consent analytics behavior
+        run: npm run test:consent
+
+      - name: Run Lighthouse budgets
+        run: npm run perf:lighthouse
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy Pages artifact
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

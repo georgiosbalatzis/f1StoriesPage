@@ -1,138 +1,44 @@
-Last updated: 2026-06-10 09:48 Europe/Athens
-Repo: /Users/giorgos/PhpstormProjects/f1stories.github.io
-Branch: main
-Current local intent: consolidate GitHub Actions from four repo workflow files to two.
-
-Live GitHub state checked
-
-GitHub Pages is still configured as legacy branch publishing:
-
-- build_type: legacy
-- source: main:/
-- site: https://f1stories.gr/
-
-That means GitHub still creates the dynamic pages-build-deployment workflow outside this repo. Repo workflow edits cannot remove that dynamic workflow. It only goes away if Pages source changes in GitHub settings from branch publishing to GitHub Actions.
-
-Recent remote run summary
-
-Last 80 runs checked on 2026-06-10:
-
-- pages-build-deployment: 27 total, 26 success, 0 failure, dynamic events
-- Refresh YouTube Snapshot: 19 total, 19 success, schedule events
-- Publish Blog: 16 total, 16 success, push/schedule events
-- Quality Gates: 9 total, 8 failure, 1 cancelled, push events
-- Deploy Pages Artifact: 9 total, 8 success, 1 cancelled, push events
-
-Latest checked Quality Gates failure:
-
-- Run: 27236661951
-- Created: 2026-06-09T21:22:11Z
-- Commit: ff87c0fc
-- Title: publish(blog): Alain Prost...
-- Failed step: quality / Run blog golden tests
-- URL: https://github.com/georgiosbalatzis/f1StoriesPage/actions/runs/27236661951
-
-Conclusion from current data:
-
-- Deploy Pages Artifact is duplicate while Pages remains legacy branch publishing.
-- Quality Gates failures are still the known blog-publish sequencing problem: Quality runs on the source/content push before generated blog artifacts are folded back in by Publish Blog.
-- YouTube refresh is successful but creates scheduled run volume.
-
-Consolidation applied locally
-
-The repo now has two workflow files:
-
-1. .github/workflows/publish-blog.yml
-
-Workflow name: Site Maintenance
-
-This file now owns both content maintenance jobs:
-
-- publish_blog: publishes generated blog artifacts.
-- refresh_youtube: refreshes assets/youtube-latest.json.
-
-Triggers:
-
-- schedule: 17 5,17 * * * for blog publishing.
-- schedule: 17 0,12 * * * for YouTube refresh.
-- push to main for blog/build-source paths only.
-- workflow_dispatch with task choice: blog or youtube.
-
-Consolidation details:
-
-- The old Refresh YouTube Snapshot workflow was merged into Site Maintenance.
-- Job-level conditions decide which scheduled task runs.
-- Job-level concurrency keeps publish-blog and youtube-refresh separated.
-- Manual dispatch now chooses the task instead of needing separate workflows.
-
-2. .github/workflows/quality.yml
-
-Workflow name: Site Quality
-
-This file now owns quality checks and optional manual Pages artifact deploy.
-
-Triggers:
-
-- pull_request to main.
-- no automatic direct main push trigger; direct main publishing is handled by Site Maintenance and legacy Pages.
-- workflow_dispatch with deploy_pages boolean.
-
-Quality job still runs:
-
-- npm run build:public
-- npm run build:check
-- npm run test:blog
-- npm run perf:budget
-- npm run perf:images
-- npm run test:consent
-- npm run perf:lighthouse
-
-Optional manual Pages deploy:
-
-- If workflow_dispatch deploy_pages is true, Site Quality runs quality first.
-- After quality passes, it builds/uploads the Pages artifact and deploys it.
-- This preserves the manual artifact deploy functionality without keeping a separate Deploy Pages Artifact workflow.
-
-Workflow files removed locally
-
-- .github/workflows/deploy-pages.yml
-- .github/workflows/youtube-refresh.yml
-
-Expected reduction after push
-
-Automatic repo workflow runs should reduce from these repo workflows:
-
-- Deploy Pages Artifact: removed from automatic and standalone use.
-- Refresh YouTube Snapshot: no separate workflow; handled inside Site Maintenance.
-- Quality Gates: replaced by Site Quality, which now runs on PRs or manual dispatch only.
-- Publish Blog: replaced by Site Maintenance.
-
-Practical expected effect:
-
-- Direct main pushes should not run Site Quality; blog content pushes should run Site Maintenance.
-- Code/build-system changes should use pull requests or manual Site Quality dispatch for the full gate.
-- YouTube refresh still runs twice daily, but no longer as a separate workflow file.
-- Manual Pages artifact deploy remains available through Site Quality.
-- Dynamic pages-build-deployment will still appear until GitHub Pages source is changed away from legacy branch publishing.
-
-Verification run locally
-
-Passed:
-
-- Workflow YAML parse for .github/workflows/publish-blog.yml and .github/workflows/quality.yml.
-- npm run build:check.
-- npm run test:blog.
-- npm run build:public.
-- git diff --check.
-
-Not available locally:
-
-- actionlint is not installed, so GitHub-expression linting was not run.
-
-Build note
-
-During npm run build:public, the YouTube RSS fetch returned transient 500/404 responses. The script handled this by keeping the existing assets/youtube-latest.json snapshot and the public artifact still validated successfully.
-
-Remaining decision
-
-If the goal is to remove pages-build-deployment too, change GitHub Pages source from legacy branch publishing to GitHub Actions in repository settings. Do this only after confirming Site Quality manual deploy works on GitHub, because the current live site depends on branch publishing.
+Findings
+1.
+High - Blog metadata is injected without context-aware escaping. worker.js escapes only excerpt, then inserts raw title, author, tag, and category into HTML attributes, text nodes, JSON-LD, image alt text, and share URLs. See worker.js:177 and worker.js:183. The template sinks include template.html:19, template.html:21, template.html:36, and template.html:263. This is already visible in generated output: dist article:12 and dist article:171 have broken attributes from raw quotes. Impact is malformed SEO/social metadata today, and persistent HTML/JSON/script injection risk if metadata ever contains hostile characters.
+Fix at the builder layer with separate helpers for HTML text, HTML attributes, JSON-LD via JSON.stringify, and URL query params via encodeURIComponent. Add a golden test article containing ", ', &, <, and Greek text.
+2.
+High - Local EMBED:/WIDGET: files bypass the raw-widget sanitizer. The parser accepts local embed filenames at embeds.js:395. The renderer validates only basename and extension, then injects file contents directly at embed-render.js:312 and embed-render.js:351.
+The safer raw-widget path blocks scripts, iframes, event handlers, SVG, forms, and javascript: URLs at embed-render.js:221, but local embed files do not use that path. I found no current non-article .html, .htm, or .svg embed files in sampled corpus, so this is latent, but the first future use becomes a persistent injection surface.
+Fix by applying the same sanitizer/allowlist to local embed files, or by removing local HTML/SVG embeds and using sandboxed iframes for intentionally rich embeds.
+3.
+Medium/High - Production safety depends on always serving dist, but deployment/docs make that brittle. The public artifact flow is good: build:public chains build, artifact copy, and validation at package.json:25; dist excludes admin/editor tools via allowlist and forbidden-file checks at public-artifact.mjs:24 and validate-public-artifact.mjs:14.
+The risk is configuration drift. Root contains generate.html and housekeeping.html, both browser-side GitHub admin tools with PAT storage and direct GitHub API writes. See generate.html:1213, generate.html:1241, generate.html:1366, and housekeeping.html:566.
+README says deployment is handled by .github/workflows/deploy-pages.yml, but that file does not exist. The actual Pages deploy is manual-only through Site Quality with workflow_dispatch and deploy_pages: true, see quality.yml:6 and quality.yml:62. README mismatch is at README.md:452.
+Fix by adding a real deploy workflow for dist on main, updating README, and ideally moving admin tools outside the web root.
+4.
+Medium - The blog maintenance workflow rewrites main. On push, .github/workflows/publish-blog.yml stages all changes, amends the triggering commit, and force-pushes with lease. See publish-blog.yml:95, publish-blog.yml:106, and publish-blog.yml:110.
+This makes generated artifacts neat, but it mutates published history, breaks signed commit expectations, complicates collaborators’ local branches, and may conflict with branch protection. Prefer a follow-up bot commit, PR-based generated artifact update, or Pages artifact-only deployment.
+5.
+Medium - npm audit reports high-severity dependency issues. npm audit --omit=dev reports high issues in @xmldom/xmldom, pulled through mammoth. This matters because .docx processing is active at parse-docx.js:13. Lockfile refs: package-lock.json:2106 and package-lock.json:3615. Full audit also reports high issues in fast-xml-builder through fast-xml-parser, used by YouTube RSS ingestion at fetch-youtube.mjs:6. Lockfile refs: package-lock.json:2882 and package-lock.json:2898.
+Fix with dependency updates or overrides, then rerun both audits.
+6.
+Medium - YouTube snapshot URLs are trusted into homepage attributes. The RSS build script accepts link.href and thumbnail URLs from feed data at fetch-youtube.mjs:35 and fetch-youtube.mjs:41. The homepage renderer trims those values but inserts them into href and src without attribute escaping or host validation at f1-optimized.js:76 and f1-optimized.js:379.
+Fix by deriving canonical YouTube URLs from validated video IDs and allowlisting thumbnail hosts, then escaping attributes at render time.
+7.
+Low/Medium - CSP is useful but still allows inline script/style. The generated CSP includes 'unsafe-inline' for scripts and styles at security-policy.mjs:21. That reduces CSP’s value as a backstop for the metadata and embed issues. Tightening this will take refactoring because pages still rely on inline handlers/styles, but it should be on the hardening backlog after injection fixes.
+Validation Passed: npm run build:check
+npm run test:blog
+npm run perf:budget
+npm run perf:images
+npm run test:consent behavior passed on routes checked Failed: npm audit --omit=dev --json with 1 high vulnerability group
+npm audit --json with 2 high vulnerability groups Observed: npm run test:consent printed “Consent analytics guard passed.” but left a local node scripts/perf/consent-guard.mjs process alive. I terminated only that process. The script has cleanup logic at consent-guard.mjs:280, so I would reproduce this under CI before treating it as a main defect.
+What Looks Solid The dist artifact strategy is well designed: allowlisted copies, forbidden source/admin files, security meta injection, _headers, and image budget checks.
+The consent behavior itself looks correct in the tested routes: analytics is blocked before opt-in, reject keeps it blocked, accept loads gtag.
+Most visitor-facing list/index rendering paths use escaping. The main escaping gap is the article template generation path, not the whole frontend.
+Suggested Priority
+1.
+Fix article metadata escaping and add regression tests.
+2.
+Sanitize or remove local HTML/SVG embed files.
+3.
+Update dependency lockfile/overrides until npm audit is clean.
+4.
+Make dist deployment automatic and update README.
+5.
+Stop rewriting main in the blog maintenance workflow.

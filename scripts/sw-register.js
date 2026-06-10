@@ -161,8 +161,8 @@
     }
 
     // ── Build instruction text per browser + OS ─
-    var SHARE_ICON = '<svg width="14" height="14" viewBox="0 0 50 50" style="vertical-align:-2px;fill:var(--accent,#3b82f6)"><path d="M25 1.5l-1.8 1.7L25 5v22.3h-2V5l1.8 1.8L23.2 5 25 1.5zM30.6 12H38c2.2 0 4 1.8 4 4v28c0 2.2-1.8 4-4 4H12c-2.2 0-4-1.8-4-4V16c0-2.2 1.8-4 4-4h7.4v2H12c-1.1 0-2 .9-2 2v28c0 1.1.9 2 2 2h26c1.1 0 2-.9 2-2V16c0-1.1-.9-2-2-2h-7.4v-2z"/></svg>';
-    var MENU_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" style="vertical-align:-2px;fill:var(--accent,#3b82f6)"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
+    var SHARE_ICON = '<svg width="14" height="14" viewBox="0 0 50 50" style="vertical-align:-2px;fill:var(--accent,#41B6E6)"><path d="M25 1.5l-1.8 1.7L25 5v22.3h-2V5l1.8 1.8L23.2 5 25 1.5zM30.6 12H38c2.2 0 4 1.8 4 4v28c0 2.2-1.8 4-4 4H12c-2.2 0-4-1.8-4-4V16c0-2.2 1.8-4 4-4h7.4v2H12c-1.1 0-2 .9-2 2v28c0 1.1.9 2 2 2h26c1.1 0 2-.9 2-2V16c0-1.1-.9-2-2-2h-7.4v-2z"/></svg>';
+    var MENU_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" style="vertical-align:-2px;fill:var(--accent,#41B6E6)"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
 
     function getInstruction() {
         // iOS Safari
