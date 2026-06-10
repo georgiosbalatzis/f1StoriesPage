@@ -11,6 +11,8 @@ const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || 'UCTSK8lbEiHJ10KVFrhNaL4g';
 const MAX_RESULTS = Number(process.env.YOUTUBE_MAX_RESULTS || 10);
 const RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(CHANNEL_ID)}`;
 const OUTPUT_PATH = path.join(REPO_ROOT, 'assets', 'youtube-latest.json');
+const YOUTUBE_VIDEO_ID_RE = /^[A-Za-z0-9_-]{11}$/;
+const THUMBNAIL_HOSTS = new Set(['i.ytimg.com', 'img.youtube.com']);
 
 const parser = new XMLParser({
     ignoreAttributes: false,
@@ -23,26 +25,42 @@ function toArray(value) {
     return Array.isArray(value) ? value : [value];
 }
 
+function normalizeVideoId(value) {
+    const id = String(value || '').trim();
+    return YOUTUBE_VIDEO_ID_RE.test(id) ? id : '';
+}
+
+function canonicalVideoUrl(videoId) {
+    return `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+}
+
+function canonicalThumbnailUrl(videoId) {
+    return `https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg`;
+}
+
 function extractVideoId(entry) {
-    const directId = String(entry?.['yt:videoId'] || '').trim();
+    const directId = normalizeVideoId(entry?.['yt:videoId']);
     if (directId) return directId;
 
     const atomId = String(entry?.id || '').trim();
     const match = atomId.match(/yt:video:([^:\s]+)$/);
-    return match ? match[1] : '';
-}
-
-function pickVideoUrl(entry, videoId) {
-    const alternate = toArray(entry?.link).find(link => link?.rel === 'alternate' && link.href);
-    if (alternate?.href) return alternate.href;
-    return `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+    return match ? normalizeVideoId(match[1]) : '';
 }
 
 function pickThumbnail(entry, videoId) {
     const mediaGroup = entry?.['media:group'] || {};
     const thumbnail = toArray(mediaGroup['media:thumbnail']).find(item => item?.url);
-    if (thumbnail?.url) return thumbnail.url;
-    return `https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg`;
+    if (!thumbnail?.url) return canonicalThumbnailUrl(videoId);
+
+    try {
+        const parsed = new URL(thumbnail.url);
+        const expectedPrefix = `/vi/${videoId}/`;
+        if (parsed.protocol === 'https:' && THUMBNAIL_HOSTS.has(parsed.hostname.toLowerCase()) && parsed.pathname.startsWith(expectedPrefix)) {
+            return parsed.href;
+        }
+    } catch (_) {}
+
+    return canonicalThumbnailUrl(videoId);
 }
 
 function parseEntry(entry) {
@@ -58,7 +76,7 @@ function parseEntry(entry) {
         title,
         thumbnail: pickThumbnail(entry, id),
         publishedAt,
-        url: pickVideoUrl(entry, id)
+        url: canonicalVideoUrl(id)
     };
 }
 

@@ -458,6 +458,8 @@ npm run build:public
 
 Το `.github/workflows/quality.yml` παραμένει PR/manual CI gate και δεν κάνει production deploy. Άρα το repository root μπορεί να παραμείνει πλήρες για development, αλλά δεν είναι δημόσιο artifact.
 
+Publishing από το `generate.html` παραμένει συμβατό με το GitHub build flow: το εργαλείο γράφει τα article source/assets στο `main`, το `Site Maintenance` workflow τρέχει τον blog processor και κάνει ξεχωριστό follow-up commit με τα generated artifacts. Το workflow δεν κάνει πλέον amend/force-push στο triggering commit. Το Pages deploy περιμένει το successful `Site Maintenance` run και δημοσιεύει το rebuilt `dist/` artifact.
+
 Πριν από publish σε production, η ασφαλής ροή είναι:
 
 1. ενημέρωση ή προσθήκη περιεχομένου στο `blog-module/blog-entries/`

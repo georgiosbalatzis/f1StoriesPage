@@ -14,6 +14,7 @@
     var VIDEO_SNAPSHOT_URL = '/assets/youtube-latest.json';
     var MAX_RESULTS = 3;
     var GR_MONTHS = ['Ιαν', 'Φεβ', 'Μαρ', 'Απρ', 'Μαΐ', 'Ιουν', 'Ιουλ', 'Αυγ', 'Σεπ', 'Οκτ', 'Νοε', 'Δεκ'];
+    var YOUTUBE_ID_RE = /^[A-Za-z0-9_-]{11}$/;
 
     function canEagerLoadContent() {
         if (!navigator.connection) return true;
@@ -73,16 +74,43 @@
         return newest;
     }
 
+    function normalizeVideoId(value) {
+        var id = String(value || '').trim();
+        return YOUTUBE_ID_RE.test(id) ? id : '';
+    }
+
+    function canonicalVideoUrl(id) {
+        return 'https://www.youtube.com/watch?v=' + encodeURIComponent(id);
+    }
+
+    function canonicalThumbnailUrl(id) {
+        return 'https://i.ytimg.com/vi/' + encodeURIComponent(id) + '/hqdefault.jpg';
+    }
+
+    function normalizeThumbnailUrl(value, id) {
+        if (!value) return '';
+        try {
+            var parsed = new URL(String(value).trim());
+            var host = parsed.hostname.toLowerCase();
+            if (parsed.protocol !== 'https:') return '';
+            if (host !== 'i.ytimg.com' && host !== 'img.youtube.com') return '';
+            if (parsed.pathname.indexOf('/vi/' + id + '/') !== 0) return '';
+            return parsed.href;
+        } catch (_) {
+            return '';
+        }
+    }
+
     function normalizeVideo(video) {
-        var id = String(video && video.id || '').trim();
+        var id = normalizeVideoId(video && video.id);
         if (!id) return null;
 
         return {
             id: id,
             title: String(video && video.title || '').trim(),
             publishedAt: String(video && video.publishedAt || '').trim(),
-            thumbnail: String(video && video.thumbnail || '').trim() || ('https://i.ytimg.com/vi/' + encodeURIComponent(id) + '/hqdefault.jpg'),
-            url: String(video && video.url || '').trim() || ('https://www.youtube.com/watch?v=' + encodeURIComponent(id))
+            thumbnail: normalizeThumbnailUrl(video && video.thumbnail, id) || canonicalThumbnailUrl(id),
+            url: canonicalVideoUrl(id)
         };
     }
 
@@ -368,18 +396,20 @@
     }
 
     function buildVideoCard(video) {
+        var id = normalizeVideoId(video && video.id);
+        if (!id) return '';
         var title = escapeHtml(video.title || 'Χωρίς τίτλο');
         var date = video.publishedAt ? fmtDate(video.publishedAt) : '';
-        var url = video.url || ('https://www.youtube.com/watch?v=' + encodeURIComponent(video.id));
-        var thumb = video.thumbnail || ('https://i.ytimg.com/vi/' + encodeURIComponent(video.id) + '/hqdefault.jpg');
+        var url = canonicalVideoUrl(id);
+        var thumb = normalizeThumbnailUrl(video.thumbnail, id) || canonicalThumbnailUrl(id);
         var meta = [];
 
         if (date) meta.push('<svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ' + escapeHtml(date));
 
         return '<div class="col-md-6 col-lg-4">'
-            + '<a href="' + url + '" target="_blank" rel="noopener" class="ep-card" title="' + title + '">'
+            + '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener" class="ep-card" title="' + title + '">'
             + '<div class="ep-card__thumb">'
-            + '<img src="' + thumb + '" alt="' + title + '" loading="lazy" decoding="async" width="480" height="360">'
+            + '<img src="' + escapeHtml(thumb) + '" alt="' + title + '" loading="lazy" decoding="async" width="480" height="360">'
             + '<span class="ep-card__brand"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</span>'
             + '<div class="ep-card__play"><svg class="icon" aria-hidden="true"><use href="#fa-play"/></svg></div>'
             + '</div>'
