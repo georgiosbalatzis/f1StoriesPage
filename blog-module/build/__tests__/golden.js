@@ -9,6 +9,7 @@ const { createResponsiveTableFromCSV, enhancedExtractCSVTags } = require('../csv
 const { buildEmbedHtml } = require('../embed-render');
 const { injectRelatedArticles } = require('../related');
 const { injectPrevNextLinks } = require('../nav');
+const metaGuard = require('./metadata-escaping-guard');
 
 const TEST_ROOT = __dirname;
 const REPO_ROOT = path.resolve(TEST_ROOT, '..', '..', '..');
@@ -288,6 +289,8 @@ async function verifyGoldenSnapshots() {
         });
     });
 
+    for (const message of await metaGuard()) failures.push({ name: `article-meta: ${message}`, expectedPath: TEST_ROOT, actualPath: TEST_ROOT });
+
     await withGoldenWorkspace(async entriesDir => {
         for (const slug of GOLDEN_ENTRIES) {
             await processBlogEntry(path.join(entriesDir, slug));
@@ -328,15 +331,6 @@ function fixtureLabel(name) {
 }
 
 module.exports = {
-    GOLDEN_ENTRIES,
-    BLOG_ENTRIES_DIR,
-    GOLDEN_EXPECTED_DIR,
-    CSV_FIXTURE_PATH,
-    entryPath,
-    goldenPath,
-    verifyClassificationGuards,
-    verifyCsvEscapingGuards,
-    verifyEmbedHardeningGuards,
     updateGoldenSnapshots,
     verifyGoldenSnapshots
 };

@@ -15,6 +15,7 @@ const {
 const { generateSitemap } = require('./sitemap');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
+const { renderArticleHtml } = require('./article-render');
 
 function parseBuildOptions(argv = process.argv, env = process.env) {
     const forceRebuild = argv.includes('--force') || argv.includes('-f');
@@ -341,6 +342,20 @@ function loadExistingPosts() {
     }
 }
 
+async function renderCachedArticlePages(cachedPosts) {
+    let rendered = 0;
+    for (const post of cachedPosts) {
+        if (!post || !post.id) continue;
+        const entryPath = path.join(CONFIG.BLOG_DIR, post.id);
+        if (!fs.existsSync(entryPath)) continue;
+        await renderArticleHtml(post, entryPath, post.id);
+        rendered++;
+    }
+    if (rendered > 0) {
+        console.log(`♻️  Rendered ${rendered} cached article page${rendered === 1 ? '' : 's'} from blog-data.json`);
+    }
+}
+
 function classifyEntry(entryPath, options = {}) {
     const folderName = path.basename(entryPath);
     const entryFiles = options.entryFiles || fs.readdirSync(entryPath);
@@ -567,6 +582,7 @@ async function processBlogEntries(options = {}) {
     console.log(`Home latest data saved to ${homeLatestPath} (${jsonKb(homeLatest)} KB)`);
 
     generateSitemap(blogPosts);
+    await renderCachedArticlePages(cachedPosts);
     await injectRelatedArticles(blogPosts);
     injectPrevNextLinks(blogPosts);
 
@@ -622,6 +638,7 @@ module.exports = {
     injectBlogIndexFirstPage,
     buildHomeLatest,
     loadExistingPosts,
+    renderCachedArticlePages,
     classifyEntry,
     processBlogEntries
 };

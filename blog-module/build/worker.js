@@ -1,8 +1,17 @@
 const { parentPort, workerData, isMainThread } = require('worker_threads');
-const { fs, path, mammoth, CONFIG, utils, assertNoInlineDataImages, getImageDimensionsForPublicPath } = require('./shared');
+const {
+    fs,
+    path,
+    mammoth,
+    CONFIG,
+    utils,
+    assertNoInlineDataImages,
+    getImageDimensionsForPublicPath
+} = require('./shared');
 const { extractMetadata, stripLeadingArticleBoilerplate } = require('./metadata');
 const { convertDocxToHtml } = require('./parse-docx');
 const { convertTxtToHtml } = require('./parse-txt');
+const { renderArticleHtml } = require('./article-render');
 const {
     processImages,
     convertImage,
@@ -164,44 +173,7 @@ async function processBlogEntry(entryPath) {
         backgroundImageHeight: headerImageDimensions && headerImageDimensions.height ? headerImageDimensions.height : 400
     };
 
-    const bgImageFilename = postData.backgroundImage.includes('/')
-        ? postData.backgroundImage.substring(postData.backgroundImage.lastIndexOf('/') + 1)
-        : postData.backgroundImage;
-    const heroAvifFile = `${path.parse(bgImageFilename).name}.avif`;
-    const heroAvifSource = fs.existsSync(path.join(entryPath, heroAvifFile))
-        ? `<source type="image/avif" srcset="${heroAvifFile}">`
-        : '';
-    const authorImagePath = CONFIG.AUTHOR_AVATARS[postData.author] || CONFIG.AUTHOR_AVATARS.default;
-    const authorImageDimensions = await getImageDimensionsForPublicPath(`/images/authors/${authorImagePath}`);
-    const templateHtml = fs.readFileSync(CONFIG.TEMPLATE_PATH, 'utf8');
-    const safeExcerpt = postData.excerpt
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-
-    const blogHtml = templateHtml
-        .replace(/ARTICLE_TITLE/g, postData.title)
-        .replace(/ARTICLE_AUTHOR/g, postData.author)
-        .replace(/ARTICLE_DATE_ISO/g, postData.dateISO)
-        .replace(/ARTICLE_DATE/g, postData.displayDate)
-        .replace(/ARTICLE_EXCERPT/g, safeExcerpt)
-        .replace(/ARTICLE_COMMENTS/g, postData.comments)
-        .replace(/ARTICLE_IMAGE_WIDTH/g, String(postData.backgroundImageWidth || 848))
-        .replace(/ARTICLE_IMAGE_HEIGHT/g, String(postData.backgroundImageHeight || 400))
-        .replace(/ARTICLE_IMAGE/g, bgImageFilename)
-        .replace(/ARTICLE_HERO_AVIF_SOURCE/g, heroAvifSource)
-        .replace(/ARTICLE_ID/g, folderName)
-        .replace(/ARTICLE_TAG/g, postData.tag)
-        .replace(/ARTICLE_CATEGORY/g, postData.category)
-        .replace(/ARTICLE_CONTENT/g, postData.content)
-        .replace(/CURRENT_URL/g, `https://f1stories.gr/blog-module/blog-entries/${folderName}/article.html`)
-        .replace(/ARTICLE_AUTHOR_IMAGE_WIDTH/g, String(authorImageDimensions && authorImageDimensions.width ? authorImageDimensions.width : 474))
-        .replace(/ARTICLE_AUTHOR_IMAGE_HEIGHT/g, String(authorImageDimensions && authorImageDimensions.height ? authorImageDimensions.height : 474))
-        .replace(/src="\/images\/authors\/default\.webp"/, `src="/images/authors/${authorImagePath}"`);
-
-    if (!fs.existsSync(CONFIG.OUTPUT_HTML_DIR)) utils.ensureDirectory(CONFIG.OUTPUT_HTML_DIR);
-    fs.writeFileSync(path.join(entryPath, 'article.html'), blogHtml.replace(/[ \t]+$/gm, ''));
+    await renderArticleHtml(postData, entryPath, folderName);
 
     return postData;
 }
