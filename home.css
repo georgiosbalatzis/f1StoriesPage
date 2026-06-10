@@ -90,13 +90,13 @@
 }
 .hero-ctas .cta-primary {
     background: #DB3EB1;
-    color: #fff;
+    color: #0B0D12;
     border-color: rgba(255,255,255,0.14);
     box-shadow: 0 10px 24px rgba(219,62,177,0.28);
 }
 .hero-ctas .cta-primary:hover {
     background: #DB3EB1;
-    color: #fff;
+    color: #0B0D12;
     transform: translateY(-2px);
 }
 .hero-ctas .cta-secondary {

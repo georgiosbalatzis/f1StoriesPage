@@ -19,6 +19,8 @@
     --text-tertiary: #8a8a93;
     --accent: #41B6E6;
     --accent-hover: #DB3EB1;
+    --accent-contrast: #0B0D12;
+    --accent-readable: #41B6E6;
     --accent-muted: rgba(65,182,230,.10);
     --accent-glow: rgba(65,182,230,.20);
     --danger: #e2302a;
@@ -328,7 +330,7 @@ input:checked + .toggle-slider:before { transform: translateX(26px); }
 .reject-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-3px); }
 .accept-selected-btn { background: rgba(65,182,230,0.15); color: var(--text-primary); }
 .accept-selected-btn:hover { background: rgba(65,182,230,0.25); transform: translateY(-3px); }
-.accept-btn { background: var(--gradient-primary); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+.accept-btn { background: var(--gradient-primary); color: var(--accent-contrast); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 .accept-btn:hover { background: linear-gradient(45deg, #DB3EB1, #DB3EB1); transform: translateY(-3px) scale(1.05); }
 .cookie-footer { display: flex; justify-content: center; gap: 2rem; margin-top: 1rem; font-size: 0.9rem; }
 .cookie-footer a { color: var(--accent); text-decoration: none; }
@@ -502,7 +504,7 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
 .pwa-banner-text span { font-size: .78rem; color: var(--text-secondary, #a1a1a6); line-height: 1.4; }
 .pwa-banner-btn {
     flex-shrink: 0; padding: .45rem 1rem; border: none; border-radius: 8px;
-    background: var(--accent, #41B6E6); color: #fff;
+    background: var(--accent, #41B6E6); color: var(--accent-contrast, #0B0D12);
     font-family: 'Outfit', sans-serif; font-weight: 600; font-size: .82rem;
     cursor: pointer;
 }

@@ -27,6 +27,8 @@
     --accent: #41B6E6;
     --accent-hover: #DB3EB1;
     --accent-cyan: #41B6E6;
+    --accent-contrast: #0B0D12;
+    --accent-readable: #0A4F66;
     --accent-muted: rgba(65,182,230,0.08);
     --accent-glow: rgba(65,182,230,0.15);
 
@@ -221,7 +223,7 @@
 [data-theme="light"] .cta-primary {
     background: #41B6E6 !important;
     background-image: none !important;
-    color: #fff !important;
+    color: #0B0D12 !important;
     border: none !important;
     border-radius: 8px !important;
     box-shadow: 0 1px 3px rgba(65,182,230,0.2) !important;
@@ -237,7 +239,7 @@
 [data-theme="light"] .cta-button.cta-secondary,
 [data-theme="light"] .cta-secondary {
     background: transparent !important;
-    color: #41B6E6 !important;
+    color: #0A4F66 !important;
     border: 1.5px solid rgba(65,182,230,0.25) !important;
     border-radius: 8px !important;
 }
@@ -629,13 +631,13 @@
 
 [data-theme="light"] .accept-selected-btn {
     background: rgba(65,182,230,0.08) !important;
-    color: #41B6E6 !important;
+    color: #0A4F66 !important;
 }
 
 [data-theme="light"] .accept-btn {
     background: #41B6E6 !important;
     background-image: none !important;
-    color: #fff !important;
+    color: #0B0D12 !important;
     box-shadow: 0 1px 3px rgba(65,182,230,0.2) !important;
 }
 

@@ -72,7 +72,7 @@
     top: 0.75rem;
     left: 0.75rem;
     background: var(--accent);
-    color: #fff;
+    color: var(--accent-contrast, #0B0D12);
     padding: 0.3rem 0.65rem;
     border-radius: 8px;
     text-align: center;
@@ -86,7 +86,7 @@
     font-size: 1.1rem;
     font-weight: 700;
     line-height: 1;
-    color: #fff;
+    color: var(--accent-contrast, #0B0D12);
 }
 
 .blog-date .month {
@@ -629,6 +629,15 @@ a.related-card-link { color: inherit; }
 .article-card-cat-more {
     flex: 0 0 auto;
     max-width: none;
+}
+
+[data-theme="light"] .author-chip.active,
+[data-theme="light"] .author-chip-avatar,
+[data-theme="light"] .article-card-meta .author-tag,
+[data-theme="light"] .article-card-read,
+[data-theme="light"] .article-card-cat,
+[data-theme="light"] .blog-read-more {
+    color: var(--accent-readable, #0A4F66);
 }
 
 .article-card-reading-time {
