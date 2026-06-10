@@ -6,10 +6,10 @@ const { classifyEntry } = require('../index');
 const { CONFIG } = require('../shared');
 const { convertTxtToHtml } = require('../parse-txt');
 const { createResponsiveTableFromCSV, enhancedExtractCSVTags } = require('../csv-to-table');
-const { buildEmbedHtml } = require('../embed-render');
 const { injectRelatedArticles } = require('../related');
 const { injectPrevNextLinks } = require('../nav');
 const metaGuard = require('./metadata-escaping-guard');
+const embedGuard = require('./embed-hardening-guard');
 
 const TEST_ROOT = __dirname;
 const REPO_ROOT = path.resolve(TEST_ROOT, '..', '..', '..');
@@ -175,48 +175,6 @@ function verifyCsvEscapingGuards() {
     return failures;
 }
 
-function verifyEmbedHardeningGuards() {
-    const failures = [];
-    const blockedWidget = buildEmbedHtml({
-        type: 'raw-widget',
-        value: '<div style="color:red" onclick="alert(1)">x</div>'
-    });
-    if (!blockedWidget.includes('Raw widget blocked') || blockedWidget.includes('onclick')) {
-        failures.push('raw widget without allowlist marker did not fail closed');
-    }
-
-    const allowedWidget = buildEmbedHtml({
-        type: 'raw-widget',
-        value: '<div data-f1s-raw-widget style="color:red">x</div>'
-    });
-    if (!allowedWidget.includes('data-f1s-raw-widget') || allowedWidget.includes('Raw widget blocked')) {
-        failures.push('allowlisted raw widget was not preserved');
-    }
-
-    const rawIframe = buildEmbedHtml({
-        type: 'raw-iframe',
-        src: 'https://www.youtube.com/embed/abcdefghijk',
-        value: '<iframe src="https://www.youtube.com/embed/abcdefghijk" onload="alert(1)" srcdoc="<script>alert(1)</script>" width="560"></iframe>'
-    });
-    if (!rawIframe.includes('https://www.youtube.com/embed/abcdefghijk')) {
-        failures.push('whitelisted raw iframe src was not preserved');
-    }
-    if (rawIframe.includes('onload') || rawIframe.includes('srcdoc') || rawIframe.includes('<script')) {
-        failures.push('raw iframe unsafe attributes were not stripped');
-    }
-
-    const blockedFile = buildEmbedHtml({
-        type: 'embed',
-        value: '../../index.html',
-        entryPath: BLOG_ENTRIES_DIR
-    });
-    if (!blockedFile.includes('Embed blocked') || blockedFile.includes('../../index.html')) {
-        failures.push('unsafe embed file path did not fail closed');
-    }
-
-    return failures;
-}
-
 async function updateGoldenSnapshots() {
     const classificationFailures = verifyClassificationGuards();
     if (classificationFailures.length) {
@@ -233,7 +191,7 @@ async function updateGoldenSnapshots() {
         throw new Error(`CSV escaping guard failed:\n${csvGuardFailures.join('\n')}`);
     }
 
-    const embedGuardFailures = verifyEmbedHardeningGuards();
+    const embedGuardFailures = embedGuard();
     if (embedGuardFailures.length) {
         throw new Error(`Embed hardening guard failed:\n${embedGuardFailures.join('\n')}`);
     }
@@ -281,7 +239,7 @@ async function verifyGoldenSnapshots() {
         });
     });
 
-    verifyEmbedHardeningGuards().forEach(message => {
+    embedGuard().forEach(message => {
         failures.push({
             name: `embed-hardening: ${message}`,
             expectedPath: fixtureLabel('embed-hardening'),

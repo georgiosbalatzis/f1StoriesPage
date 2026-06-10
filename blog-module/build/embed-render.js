@@ -348,7 +348,14 @@ function buildEmbedHtml(info) {
             </div>`;
         }
 
-        return `<div class="embed-container embed-widget">\n${fileContent}\n</div>`;
+        const allowlist = isRawWidgetAllowed(fileContent);
+        if (!allowlist.ok) {
+            console.warn(`⚠️  EMBED blocked (${fileName}): ${allowlist.reason}`);
+            return buildEmbedError('Embed blocked', allowlist.reason);
+        }
+
+        const sanitized = stripUnsafeHtmlAttributes(fileContent);
+        return `<div class="embed-container embed-widget">\n${sanitized}\n</div>`;
     }
 
     if (info.type === 'raw-social') {

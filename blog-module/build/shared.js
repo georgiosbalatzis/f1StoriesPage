@@ -45,7 +45,7 @@ const CONFIG = {
         'sketchfab.com',
         'www.sketchfab.com'
     ],
-    EMBED_EXTENSIONS: ['.html', '.htm', '.svg']
+    EMBED_EXTENSIONS: ['.html', '.htm']
 };
 
 function hasInlineDataImageTag(html) {
