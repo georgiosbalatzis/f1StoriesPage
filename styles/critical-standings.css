@@ -7,8 +7,8 @@
   --st-text: #18181b;
   --st-text-secondary: #52525b;
   --st-text-muted: #71717a;
-  --st-accent: #2563eb;
-  --st-accent-soft: rgba(37,99,235,.1);
+  --st-accent: #DB3EB1;
+  --st-accent-soft: rgba(219,62,177,.1);
   --st-shadow-sm: 0 1px 3px rgba(0,0,0,.08);
   --st-shell-font: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
   --st-row-height: 62px;
@@ -23,8 +23,8 @@
   --st-text: #fafafa;
   --st-text-secondary: #a1a1aa;
   --st-text-muted: #71717a;
-  --st-accent: #3b82f6;
-  --st-accent-soft: rgba(59,130,246,.14);
+  --st-accent: #41B6E6;
+  --st-accent-soft: rgba(65,182,230,.14);
   --st-shadow-sm: 0 1px 3px rgba(0,0,0,.5);
 }
 .standings-wrapper {
@@ -126,7 +126,7 @@
 .standings-tab.active {
   background: var(--st-accent);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(37,99,235,.25);
+  box-shadow: 0 2px 8px rgba(219,62,177,.25);
 }
 .standings-panel { display: none; }
 .standings-panel.active { display: block; }

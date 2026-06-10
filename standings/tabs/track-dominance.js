@@ -498,8 +498,8 @@ function getTrackDominanceDriverShortLabel(driver) {
 }
 
 function buildTrackDominanceVisualPalette(leftDriver, rightDriver) {
-    const leftHex = normalizeHexColor(leftDriver && leftDriver.teamColor ? leftDriver.teamColor : '3b82f6');
-    let rightHex = normalizeHexColor(rightDriver && rightDriver.teamColor ? rightDriver.teamColor : '3b82f6');
+    const leftHex = normalizeHexColor(leftDriver && leftDriver.teamColor ? leftDriver.teamColor : '41B6E6');
+    let rightHex = normalizeHexColor(rightDriver && rightDriver.teamColor ? rightDriver.teamColor : '41B6E6');
     const sameTeam = !!(leftDriver && rightDriver && leftDriver.teamKey && rightDriver.teamKey && leftDriver.teamKey === rightDriver.teamKey);
     if (sameTeam || leftHex === rightHex) rightHex = adjustHexColor(rightHex, -34);
     return {

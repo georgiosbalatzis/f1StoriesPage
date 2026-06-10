@@ -260,7 +260,7 @@ function getCompoundMeta(compound) {
         'MEDIUM': { label: 'Medium', hex: 'FACC15' },
         'HARD': { label: 'Hard', hex: 'F5F5F7' },
         'INTERMEDIATE': { label: 'Intermediate', hex: '10B981' },
-        'WET': { label: 'Wet', hex: '3B82F6' }
+        'WET': { label: 'Wet', hex: '41B6E6' }
     };
     return map[key] || { label: key || 'Unknown', hex: 'A1A1AA' };
 }
@@ -354,8 +354,8 @@ function buildTyrePaceSvg(laps, minTime, maxTime, teamColor) {
     });
 
     const path = 'M ' + leftPoints.join(' L ') + ' L ' + rightPoints.join(' L ') + ' Z';
-    const fillChannels = hexToRgbChannels(adjustHexColor(teamColor || '3b82f6', 12));
-    const strokeChannels = hexToRgbChannels(teamColor || '3b82f6');
+    const fillChannels = hexToRgbChannels(adjustHexColor(teamColor || '41B6E6', 12));
+    const strokeChannels = hexToRgbChannels(teamColor || '41B6E6');
     let circles = '';
 
     bins.forEach(function(bin) {

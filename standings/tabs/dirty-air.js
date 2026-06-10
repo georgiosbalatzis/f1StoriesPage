@@ -437,7 +437,7 @@ function normalizeDirtyAirCacheSession(session) {
             fullName: row && row.fullName ? String(row.fullName) : '',
             headshot: row && row.headshot ? String(row.headshot) : '',
             teamName: row && row.teamName ? String(row.teamName) : 'Team',
-            teamColor: row && row.teamColor ? String(row.teamColor) : '3b82f6',
+            teamColor: row && row.teamColor ? String(row.teamColor) : '41B6E6',
             completedLaps: completedLaps,
             summary: normalizeDirtyAirSummaryData(row && row.summary, row && row.counts, row && row.totalCells, cachedLaps),
             timelineSegments: timelineSegments

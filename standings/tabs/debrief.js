@@ -177,7 +177,7 @@ function getDebriefDegClass(value) {
 
 function buildDebriefDriverCellHTML(entry) {
     const headshot = getCachedHeadshotResult(entry.driverId, entry.fullName, entry.headshot || '');
-    const teamColor = '#' + esc(entry.teamColor || '3b82f6');
+    const teamColor = '#' + esc(entry.teamColor || '41B6E6');
     return '<div class="debrief-driver-cell" style="--debrief-team-color:' + teamColor + ';">'
         + '<span class="debrief-team-bar" style="background:' + teamColor + ';"></span>'
         + (headshot.url

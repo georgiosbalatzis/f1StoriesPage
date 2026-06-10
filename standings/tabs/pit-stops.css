@@ -40,15 +40,15 @@
 
 .pit-stops-view-tab { appearance: none; -webkit-appearance: none; border: none; background: transparent; color: var(--st-text-secondary); min-height: 40px; padding: 0.55rem 0.95rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all var(--st-transition); }
 
-.pit-stops-view-tab:hover { color: var(--st-text); background: rgba(59,130,246,0.08); }
+.pit-stops-view-tab:hover { color: var(--st-text); background: rgba(65,182,230,0.08); }
 
 .pit-stops-view-tab:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; }
 
-.pit-stops-view-tab.active { color: #fff; background: linear-gradient(135deg, var(--st-accent), #4f8df3); box-shadow: 0 8px 18px rgba(59,130,246,0.24); }
+.pit-stops-view-tab.active { color: #fff; background: linear-gradient(135deg, var(--st-accent), #DB3EB1); box-shadow: 0 8px 18px rgba(65,182,230,0.24); }
 
-[data-theme="light"] .pit-stops-view-tab:hover { background: rgba(14,76,166,0.06); }
+[data-theme="light"] .pit-stops-view-tab:hover { background: rgba(65,182,230,0.06); }
 
-[data-theme="light"] .pit-stops-view-tab.active { box-shadow: 0 8px 18px rgba(14,76,166,0.18); }
+[data-theme="light"] .pit-stops-view-tab.active { box-shadow: 0 8px 18px rgba(65,182,230,0.18); }
 
 .pit-stops-view-panel { display: none; }
 

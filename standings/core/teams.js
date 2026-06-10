@@ -59,7 +59,7 @@ export function resolveTeamId(constructorId, teamName) {
 export function normalizeHexColor(hex) {
     let value = (hex || '').toString().replace(/[^0-9a-f]/gi, '');
     if (value.length === 3) value = value.replace(/(.)/g, '$1$1');
-    if (value.length !== 6) return '3b82f6';
+    if (value.length !== 6) return '41B6E6';
     return value.toLowerCase();
 }
 
@@ -75,7 +75,7 @@ export function hexToRgbChannels(hex) {
 export function getCanonicalTeamColor(constructorId, teamName, fallbackColor) {
     const teamId = resolveTeamId(constructorId, teamName);
     if (teamId && TEAMS[teamId]) return TEAMS[teamId].color;
-    return fallbackColor ? normalizeHexColor(fallbackColor) : '3b82f6';
+    return fallbackColor ? normalizeHexColor(fallbackColor) : '41B6E6';
 }
 
 export function getCanonicalTeamName(teamName) {
@@ -85,7 +85,7 @@ export function getCanonicalTeamName(teamName) {
 
 export function getTeamColor(constructorId) {
     const t = TEAMS[constructorId];
-    return t ? t.color : '3b82f6';
+    return t ? t.color : '41B6E6';
 }
 
 export function getTeamLogo(constructorId, teamName) {

@@ -28,7 +28,7 @@
   --bg-overlay: rgba(17,17,19,.92);
   --text-primary: #e5e5e7;
   --text-secondary: #a1a1a6;
-  --accent: #3b82f6;
+  --accent: #41B6E6;
   --border: rgba(255,255,255,.08);
   --font-body: 'Roboto', system-ui, -apple-system, sans-serif;
   --radius-lg: 14px;
@@ -159,7 +159,7 @@ body {
   font-weight: 500;
 }
 .countdown-timer {
-  color: #3b82f6;
+  color: #41B6E6;
   font-size: .78rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -172,7 +172,7 @@ body {
 .blog-nav-countdown-mobile {
   display: none;
   align-items: center;
-  color: #3b82f6;
+  color: #41B6E6;
   font-size: .78rem;
   font-weight: 600;
 }
@@ -326,7 +326,7 @@ body {
   --bg-overlay: rgba(255,255,255,.92);
   --text-primary: #1d1d1f;
   --text-secondary: #6e6e73;
-  --accent: #0e4ca6;
+  --accent: #41B6E6;
   --border: rgba(0,0,0,.08);
 }
 [data-theme="light"] body { background-color: #fff; color: #1d1d1f; }

@@ -99,7 +99,7 @@
 
 .track-dom-map-card { padding: 1rem; border-radius: 22px; border: 1px solid var(--st-border); background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)); }
 
-[data-theme="light"] .track-dom-map-card { background: linear-gradient(180deg, rgba(14,76,166,0.04), rgba(14,76,166,0.01)); }
+[data-theme="light"] .track-dom-map-card { background: linear-gradient(180deg, rgba(65,182,230,0.04), rgba(65,182,230,0.01)); }
 
 .track-dom-map-meta { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 0.85rem; }
 
@@ -109,13 +109,13 @@
 
 .track-dom-track-shell { position: relative; display: flex; align-items: center; justify-content: center; padding: clamp(0.9rem, 2.2vw, 1.35rem); min-height: clamp(320px, 52vw, 560px); border-radius: 24px; overflow: hidden; border: 1px solid var(--st-border); background: radial-gradient(circle at top, rgba(255,255,255,0.06), transparent 58%), linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)); }
 
-[data-theme="light"] .track-dom-track-shell { background: radial-gradient(circle at top, rgba(14,76,166,0.08), transparent 58%), linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0.92)); }
+[data-theme="light"] .track-dom-track-shell { background: radial-gradient(circle at top, rgba(65,182,230,0.08), transparent 58%), linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0.92)); }
 
 .track-dom-track-svg { width: min(100%, 760px); max-width: 100%; height: auto; aspect-ratio: 760 / 580; display: block; overflow: visible; margin: 0 auto; }
 
 .track-dom-track-base { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 22; stroke-linecap: round; stroke-linejoin: round; }
 
-[data-theme="light"] .track-dom-track-base { stroke: rgba(14,76,166,0.10); }
+[data-theme="light"] .track-dom-track-base { stroke: rgba(65,182,230,0.10); }
 
 .track-dom-segment { stroke: rgb(var(--team-color)); stroke-width: 13; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.18)); }
 
@@ -163,7 +163,7 @@
 
 .track-dom-map-empty { padding: 2rem 1rem; border-radius: 20px; border: 1px dashed var(--st-border); text-align: center; color: var(--st-text-muted); background: rgba(255,255,255,0.02); }
 
-[data-theme="light"] .track-dom-map-empty { background: rgba(14,76,166,0.02); }
+[data-theme="light"] .track-dom-map-empty { background: rgba(65,182,230,0.02); }
 
 .track-dom-map-empty i { display: block; font-size: 1.8rem; opacity: 0.4; margin-bottom: 0.7rem; }
 
