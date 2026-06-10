@@ -1,10 +1,15 @@
-name: Quality Gates
+name: Site Quality
 
 on:
   pull_request:
-  push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      deploy_pages:
+        description: 'Deploy the built Pages artifact after quality passes'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -15,8 +20,11 @@ concurrency:
 
 jobs:
   quality:
+    name: Quality gates
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -50,3 +58,53 @@ jobs:
 
       - name: Run Lighthouse budgets
         run: npm run perf:lighthouse
+
+  pages_artifact:
+    name: Build Pages artifact
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_pages }}
+    needs: quality
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build public artifact
+        run: npm run build:public
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy_pages:
+    name: Deploy Pages artifact
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_pages }}
+    needs: pages_artifact
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

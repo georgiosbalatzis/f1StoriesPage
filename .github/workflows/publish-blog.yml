@@ -1,18 +1,13 @@
-name: Publish Blog
+name: Site Maintenance
 
-# Runs the blog-processor whenever a new or modified article source lands on main,
-# then folds the generated article.html, feed JSONs, and sitemap into the same
-# commit via amend + force-with-lease. This keeps source + build as a single
-# commit so the dynamic pages-build-deployment workflow only fires once per
-# publish (otherwise two parallel Pages runs race the github-pages artifact
-# and the deploy step fails with "Multiple artifacts named github-pages").
-# Commits made by GITHUB_TOKEN do not re-trigger workflows, so there is no loop.
+# Owns generated content maintenance: blog artifacts and the YouTube snapshot.
+# Scheduled jobs are split by cron through job-level conditions. Push events
+# only run the blog publisher for article/build-source changes.
 
 on:
   schedule:
-    # GitHub schedules use UTC. These two runs keep generated blog artifacts
-    # refreshed at least morning and evening every day.
     - cron: '17 5,17 * * *'
+    - cron: '17 0,12 * * *'
   push:
     branches: [main]
     paths:
@@ -27,17 +22,32 @@ on:
       - 'package-lock.json'
       - '.github/workflows/publish-blog.yml'
   workflow_dispatch:
+    inputs:
+      task:
+        description: 'Maintenance task to run'
+        required: true
+        default: 'blog'
+        type: choice
+        options:
+          - blog
+          - youtube
 
 permissions:
   contents: write
 
-concurrency:
-  group: publish-blog
-  cancel-in-progress: false
-
 jobs:
-  build:
+  publish_blog:
+    name: Publish blog artifacts
+    if: >-
+      ${{
+        github.event_name == 'push' ||
+        (github.event_name == 'schedule' && github.event.schedule == '17 5,17 * * *') ||
+        (github.event_name == 'workflow_dispatch' && inputs.task == 'blog')
+      }}
     runs-on: ubuntu-latest
+    concurrency:
+      group: publish-blog
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -85,8 +95,8 @@ jobs:
       - name: Commit generated artifacts
         run: |
           set -eu
-          git config user.name  "f1stories-bot"
-          git config user.email "bot@users.noreply.github.com"
+          git config user.name  "Georgios Balatzis"
+          git config user.email "georgios.balatzis@gmail.com"
           git add -A
           if git diff --cached --quiet; then
             echo "No changes produced by blog-processor — nothing to commit."
@@ -108,3 +118,48 @@ jobs:
 
           git commit -m "chore(blog): auto-build generated artifacts [skip ci]"
           git push
+
+  refresh_youtube:
+    name: Refresh YouTube snapshot
+    if: >-
+      ${{
+        (github.event_name == 'schedule' && github.event.schedule == '17 0,12 * * *') ||
+        (github.event_name == 'workflow_dispatch' && inputs.task == 'youtube')
+      }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: youtube-refresh
+      cancel-in-progress: false
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Refresh YouTube snapshot
+        run: node scripts/build/fetch-youtube.mjs
+
+      - name: Commit updated snapshot
+        run: |
+          set -eu
+          git add assets/youtube-latest.json
+          if git diff --cached --quiet; then
+            echo "No YouTube snapshot changes."
+            exit 0
+          fi
+
+          git config user.name  "Georgios Balatzis"
+          git config user.email "georgios.balatzis@gmail.com"
+          git commit -m "chore(data): refresh youtube snapshot [skip ci]"
+          git push origin HEAD:main
