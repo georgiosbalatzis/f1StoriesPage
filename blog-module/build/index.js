@@ -81,9 +81,7 @@ function fixMissingAuthors(blogPosts) {
 
 async function buildIndexPosts(blogPosts) {
     return Promise.all(blogPosts.map(async post => {
-        const categories = [];
-        if (post.tag) categories.push(post.tag);
-        if (post.category && String(post.category) !== post.tag) categories.push(String(post.category));
+        const categories = normalizeCategoryList([post.tag, post.category]);
         const thumbnail = getCardThumbnailPath(post.image);
         const thumbnailDimensions = await getImageDimensionsForPublicPath(thumbnail);
         return {
@@ -99,6 +97,49 @@ async function buildIndexPosts(blogPosts) {
             categories
         };
     }));
+}
+
+function normalizeCategoryList(values) {
+    const categories = [];
+    const seen = new Set();
+
+    (Array.isArray(values) ? values : [values]).forEach(value => {
+        String(value || '')
+            .split(',')
+            .flatMap(part => part.split(/\s+-\s+/))
+            .map(part => part.replace(/^[\s,-]+|[\s,-]+$/g, '').trim())
+            .filter(Boolean)
+            .forEach(category => {
+                if (seen.has(category)) return;
+                seen.add(category);
+                categories.push(category);
+            });
+    });
+
+    return categories;
+}
+
+function formatCategoryToken(token) {
+    const value = String(token || '').trim();
+    const lower = value.toLowerCase();
+    const acronyms = {
+        f1: 'F1',
+        gp: 'GP',
+        amg: 'AMG',
+        rb: 'RB',
+        drs: 'DRS',
+        v12: 'V12'
+    };
+    if (acronyms[lower]) return acronyms[lower];
+    if (!value || /^\d/.test(value)) return value;
+    if (value !== lower && value !== value.toUpperCase()) return value;
+    return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+
+function formatCategoryLabel(value) {
+    const raw = String(value || '').replace(/^[\s,-]+|[\s,-]+$/g, '').trim();
+    if (!raw) return '';
+    return raw.split(/-+/).filter(Boolean).map(formatCategoryToken).join(' ');
 }
 
 function compactExcerpt(value, maxLength = 140) {
@@ -177,8 +218,9 @@ function renderBlogCategoryFilters(categories) {
     categories.forEach(category => {
         const name = typeof category === 'string' ? category : category.name;
         if (!name) return;
+        const label = formatCategoryLabel(name);
         buttons.push(
-            `<button class="category-chip" data-category="${escapeHtmlAttribute(name)}" aria-pressed="false">${escapeHtmlAttribute(name)}</button>`
+            `<button class="category-chip" data-category="${escapeHtmlAttribute(name)}" aria-pressed="false">${escapeHtmlAttribute(label)}</button>`
         );
     });
 
@@ -189,7 +231,7 @@ function renderBlogCardCategories(categories) {
     const list = categories || [];
     const chips = list
         .slice(0, 2)
-        .map(category => `<span class="article-card-cat">${escapeHtmlAttribute(category)}</span>`);
+        .map(category => `<span class="article-card-cat">${escapeHtmlAttribute(formatCategoryLabel(category))}</span>`);
     if (list.length > 2) {
         chips.push(`<span class="article-card-cat article-card-cat-more">+${list.length - 2}</span>`);
     }

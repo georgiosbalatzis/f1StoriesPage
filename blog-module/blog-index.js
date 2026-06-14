@@ -28,6 +28,20 @@ document.addEventListener('DOMContentLoaded', function() {
         : null;
 
     function escHtml(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+    function formatCategoryToken(token) {
+        var value = String(token || '').trim();
+        var lower = value.toLowerCase();
+        var acronyms = { f1: 'F1', gp: 'GP', amg: 'AMG', rb: 'RB', drs: 'DRS', v12: 'V12' };
+        if (acronyms[lower]) return acronyms[lower];
+        if (!value || /^\d/.test(value)) return value;
+        if (value !== lower && value !== value.toUpperCase()) return value;
+        return lower.charAt(0).toUpperCase() + lower.slice(1);
+    }
+    function formatCategoryLabel(value) {
+        var raw = String(value || '').replace(/^[\s,-]+|[\s,-]+$/g, '').trim();
+        if (!raw) return '';
+        return raw.split(/-+/).filter(Boolean).map(formatCategoryToken).join(' ');
+    }
     function normalizeText(value) {
         var text = String(value || '').toLowerCase();
         if (text.normalize) {
@@ -54,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
             post.excerpt,
             post.author,
             (post.categories || []).join(' '),
+            (post.categories || []).map(formatCategoryLabel).join(' '),
             post.displayDate,
             post.date
         ].join(' '));
@@ -89,10 +104,32 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data && Array.isArray(data.posts)) return data.posts;
         return Array.isArray(data) ? data : [];
     }
+    function splitCategoryValue(value) {
+        var parts = [];
+        String(value || '').split(',').forEach(function(part) {
+            part.split(/\s+-\s+/).forEach(function(piece) {
+                var category = piece.replace(/^[\s,-]+|[\s,-]+$/g, '').trim();
+                if (category) parts.push(category);
+            });
+        });
+        return parts;
+    }
+    function normalizePostCategories(categories) {
+        var normalized = [];
+        var seen = {};
+        (categories || []).forEach(function(category) {
+            splitCategoryValue(category).forEach(function(name) {
+                if (seen[name]) return;
+                seen[name] = true;
+                normalized.push(name);
+            });
+        });
+        return normalized;
+    }
     function getUniqueCategories(posts) {
         var counts = {};
         (posts || []).forEach(function(post) {
-            (post.categories || []).forEach(function(category) {
+            normalizePostCategories(post.categories).forEach(function(category) {
                 var key = String(category || '').trim();
                 if (!key) return;
                 counts[key] = (counts[key] || 0) + 1;
@@ -104,12 +141,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     function normalizeCategories(categories) {
-        return (categories || []).map(function(category) {
-            if (typeof category === 'string') return { name: category };
-            return category || {};
-        }).filter(function(category) {
-            return !!String(category.name || '').trim();
+        var normalized = [];
+        var seen = {};
+        (categories || []).forEach(function(category) {
+            var source = typeof category === 'string' ? { name: category } : category || {};
+            splitCategoryValue(source.name).forEach(function(name) {
+                if (seen[name]) return;
+                seen[name] = true;
+                normalized.push({ name: name, count: source.count });
+            });
         });
+        return normalized;
     }
     function syncChipState(container, selector, attribute, activeValue) {
         if (!container) return;
@@ -129,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var html = '<button class="category-chip' + (activeCategory === 'all' ? ' active' : '') + '" data-category="all" aria-pressed="' + (activeCategory === 'all' ? 'true' : 'false') + '">Όλες</button>';
         categories.forEach(function(category) {
             var name = typeof category === 'string' ? category : category.name;
-            html += '<button class="category-chip' + (name === activeCategory ? ' active' : '') + '" data-category="' + escHtml(name) + '" aria-pressed="' + (name === activeCategory ? 'true' : 'false') + '">' + escHtml(name) + '</button>';
+            html += '<button class="category-chip' + (name === activeCategory ? ' active' : '') + '" data-category="' + escHtml(name) + '" aria-pressed="' + (name === activeCategory ? 'true' : 'false') + '">' + escHtml(formatCategoryLabel(name)) + '</button>';
         });
         categoryStrip.innerHTML = html;
     }
@@ -159,6 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     function preparePosts(posts) {
         return (posts || []).slice().sort(function(a, b) { return new Date(b.date) - new Date(a.date); }).map(function(post) {
+            post.categories = normalizePostCategories(post.categories);
             post.__searchIndex = getSearchIndex(post);
             return post;
         });
@@ -192,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderCardCategories(categories) {
         var list = categories || [];
         var html = list.slice(0, 2).map(function(c) {
-            return '<span class="article-card-cat">' + escHtml(c) + '</span>';
+            return '<span class="article-card-cat">' + escHtml(formatCategoryLabel(c)) + '</span>';
         }).join('');
         if (list.length > 2) {
             html += '<span class="article-card-cat article-card-cat-more">+' + (list.length - 2) + '</span>';

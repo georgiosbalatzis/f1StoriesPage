@@ -72,6 +72,26 @@ function assertNoInlineDataImages(html, contextLabel) {
     throw new Error(`Inline data:image article image detected in ${contextLabel}: ${snippet}`);
 }
 
+function normalizeCategoryList(values) {
+    const categories = [];
+    const seen = new Set();
+
+    (Array.isArray(values) ? values : [values]).forEach(value => {
+        String(value || '')
+            .split(',')
+            .flatMap(part => part.split(/\s+-\s+/))
+            .map(part => part.replace(/^[\s,-]+|[\s,-]+$/g, '').trim())
+            .filter(Boolean)
+            .forEach(category => {
+                if (seen.has(category)) return;
+                seen.add(category);
+                categories.push(category);
+            });
+    });
+
+    return categories;
+}
+
 function escapeHtmlAttribute(value) {
     return String(value || '')
         .replace(/&/g, '&amp;')
@@ -2561,9 +2581,7 @@ if (!isMainThread) {
 
         // ── Generate slim index-only JSON (no content field) ─────────────────
         const indexPosts = blogPosts.map(p => {
-            const cats = [];
-            if (p.tag) cats.push(p.tag);
-            if (p.category && String(p.category) !== p.tag) cats.push(String(p.category));
+            const cats = normalizeCategoryList([p.tag, p.category]);
             return {
                 id: p.id, title: p.title, author: p.author,
                 date: p.date, displayDate: p.displayDate,
