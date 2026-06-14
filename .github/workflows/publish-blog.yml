@@ -1,6 +1,6 @@
 name: Site Maintenance
 
-# Owns generated content maintenance: blog artifacts and the YouTube snapshot.
+# Owns generated content maintenance: blog artifacts, standings data, and the YouTube snapshot.
 # Scheduled jobs are split by cron through job-level conditions. Push events
 # only run the blog publisher for article/build-source changes.
 
@@ -8,6 +8,13 @@ on:
   schedule:
     - cron: '17 5,17 * * *'
     - cron: '17 0,12 * * *'
+    # Standings refresh: Friday 23:59 and Saturday 07:01 Europe/Athens.
+    # GitHub cron is UTC, so both EET and EEST offsets are scheduled and
+    # the job gates them against the local Athens time window.
+    - cron: '59 20 * * 5'
+    - cron: '59 21 * * 5'
+    - cron: '1 4 * * 6'
+    - cron: '1 5 * * 6'
   push:
     branches: [main]
     paths:
@@ -30,6 +37,7 @@ on:
         type: choice
         options:
           - blog
+          - standings
           - youtube
 
 permissions:
@@ -149,4 +157,86 @@ jobs:
           git config user.name  "Georgios Balatzis"
           git config user.email "georgios.balatzis@gmail.com"
           git commit -m "chore(data): refresh youtube snapshot [skip ci]"
+          git push origin HEAD:main
+
+  refresh_standings_data:
+    name: Refresh standings data
+    if: >-
+      ${{
+        (github.event_name == 'schedule' && (
+          github.event.schedule == '59 20 * * 5' ||
+          github.event.schedule == '59 21 * * 5' ||
+          github.event.schedule == '1 4 * * 6' ||
+          github.event.schedule == '1 5 * * 6'
+        )) ||
+        (github.event_name == 'workflow_dispatch' && inputs.task == 'standings')
+      }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: standings-data-refresh
+      cancel-in-progress: false
+    steps:
+      - name: Check Athens schedule window
+        id: schedule_window
+        if: ${{ github.event_name == 'schedule' }}
+        shell: bash
+        run: |
+          set -eu
+          read -r weekday hour minute <<< "$(TZ=Europe/Athens date +'%u %H %M')"
+          minute_num=$((10#$minute))
+          should_run=false
+
+          if [ "$weekday" = "5" ] && [ "$hour" = "23" ] && [ "$minute_num" -ge 50 ]; then
+            should_run=true
+          fi
+          if [ "$weekday" = "6" ] && [ "$hour" = "00" ] && [ "$minute_num" -le 45 ]; then
+            should_run=true
+          fi
+          if [ "$weekday" = "6" ] && [ "$hour" = "07" ] && [ "$minute_num" -le 45 ]; then
+            should_run=true
+          fi
+
+          echo "Athens time: weekday=$weekday hour=$hour minute=$minute"
+          echo "run=$should_run" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout main
+        if: ${{ github.event_name != 'schedule' || steps.schedule_window.outputs.run == 'true' }}
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup Node
+        if: ${{ github.event_name != 'schedule' || steps.schedule_window.outputs.run == 'true' }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: ${{ github.event_name != 'schedule' || steps.schedule_window.outputs.run == 'true' }}
+        run: npm ci --no-audit --no-fund
+
+      - name: Refresh standings data
+        if: ${{ github.event_name != 'schedule' || steps.schedule_window.outputs.run == 'true' }}
+        run: npm run build:standings-data
+
+      - name: Commit updated standings data
+        if: ${{ github.event_name != 'schedule' || steps.schedule_window.outputs.run == 'true' }}
+        run: |
+          set -eu
+          git add \
+            standings/standings-cache.json \
+            standings/dirty-air-cache.json \
+            standings/destructors-cache.json \
+            standings/debrief-cache.json
+          if git diff --cached --quiet; then
+            echo "No standings data changes."
+            exit 0
+          fi
+
+          git config user.name  "Georgios Balatzis"
+          git config user.email "georgios.balatzis@gmail.com"
+          git commit -m "chore(data): refresh standings snapshots [skip ci]"
           git push origin HEAD:main

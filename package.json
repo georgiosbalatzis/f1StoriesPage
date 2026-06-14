@@ -12,6 +12,7 @@
     "build:driver-headshots": "node scripts/build/fetch-driver-headshots.mjs",
     "build:team-logos": "node scripts/build/fetch-team-logos.mjs",
     "build:youtube": "node scripts/build/fetch-youtube.mjs",
+    "build:standings-data": "node scripts/build/refresh-standings-data.mjs",
     "build:images": "npm run build:logo && npm run build:driver-headshots && npm run build:team-logos",
     "build:article-image-backfill": "node scripts/build/backfill-article-image-attrs.mjs",
     "build:image-variants": "node blog-module/generate-image-variants.js --run",
