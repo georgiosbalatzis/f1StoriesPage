@@ -227,6 +227,30 @@ body {
   .blog-nav-hamburger { display: flex !important; position: fixed; top: 11px; right: 12px; z-index: 1062; }
 }
 
+/* Keep the consent banner out of document flow before async CSS loads. */
+.cookie-banner,
+.cookie-consent {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  max-height: min(34vh, 320px);
+  overflow-y: auto;
+  transform: translateY(100%);
+  contain: layout style;
+}
+.cookie-banner.show,
+.cookie-consent.show {
+  transform: translateY(0);
+}
+@media (max-width: 767.98px) {
+  .cookie-banner,
+  .cookie-consent {
+    max-height: min(34vh, 280px);
+  }
+}
+
 /* ── Hero baseline (homepage/standings share this shape) ── */
 #hero {
   position: relative;
