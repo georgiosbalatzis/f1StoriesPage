@@ -104,6 +104,26 @@ async function withGoldenWorkspace(callback) {
     }
 }
 
+function sortGoldenPosts(posts) {
+    return posts.slice().sort((a, b) => {
+        const dateDiff = new Date(b.date) - new Date(a.date);
+        if (dateDiff !== 0) return dateDiff;
+        return String(b.id).localeCompare(String(a.id));
+    });
+}
+
+async function buildGoldenPostGraph(entriesDir) {
+    const posts = [];
+
+    for (const slug of GOLDEN_ENTRIES) {
+        const post = await processBlogEntry(path.join(entriesDir, slug));
+        if (!post) throw new Error(`Golden fixture ${slug} did not produce post metadata.`);
+        posts.push(post);
+    }
+
+    return sortGoldenPosts(posts);
+}
+
 function verifyClassificationGuards() {
     const blogData = JSON.parse(fs.readFileSync(BLOG_DATA_PATH, 'utf8'));
     const cachedPostsById = new Map((blogData.posts || []).map(post => [post.id, post]));
@@ -232,13 +252,9 @@ async function updateGoldenSnapshots() {
     }
 
     await withGoldenWorkspace(async entriesDir => {
-        for (const slug of GOLDEN_ENTRIES) {
-            await processBlogEntry(path.join(entriesDir, slug));
-        }
-
-        const blogData = JSON.parse(fs.readFileSync(BLOG_DATA_PATH, 'utf8'));
-        await injectRelatedArticles(blogData.posts || []);
-        injectPrevNextLinks(blogData.posts || []);
+        const goldenPosts = await buildGoldenPostGraph(entriesDir);
+        await injectRelatedArticles(goldenPosts);
+        injectPrevNextLinks(goldenPosts);
 
         GOLDEN_ENTRIES.forEach(slug => {
             writeGoldenSnapshot(slug, fs.readFileSync(articlePathIn(entriesDir, slug)));
@@ -285,13 +301,9 @@ async function verifyGoldenSnapshots() {
     for (const message of await metaGuard()) failures.push({ name: `article-meta: ${message}`, expectedPath: TEST_ROOT, actualPath: TEST_ROOT });
 
     await withGoldenWorkspace(async entriesDir => {
-        for (const slug of GOLDEN_ENTRIES) {
-            await processBlogEntry(path.join(entriesDir, slug));
-        }
-
-        const blogData = JSON.parse(fs.readFileSync(BLOG_DATA_PATH, 'utf8'));
-        await injectRelatedArticles(blogData.posts || []);
-        injectPrevNextLinks(blogData.posts || []);
+        const goldenPosts = await buildGoldenPostGraph(entriesDir);
+        await injectRelatedArticles(goldenPosts);
+        injectPrevNextLinks(goldenPosts);
 
         GOLDEN_ENTRIES.forEach(slug => {
             const actual = fs.readFileSync(articlePathIn(entriesDir, slug));
