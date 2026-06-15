@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-14T19:09:21.771Z",
+  "updatedAt": "2026-06-15T06:06:30.040Z",
   "thresholdPercent": 10,
   "note": "Byte budgets for tracked JS/CSS/HTML assets. Run `npm run perf:budget` to check, `npm run perf:budget:update` to rewrite this file with current sizes. Threshold is the max % growth allowed before the check fails.",
   "files": {
@@ -7,7 +7,7 @@
     "home.css": 19494,
     "theme-overrides.css": 25108,
     "styles/shared-nav.css": 15638,
-    "styles/critical-common.css": 9036,
+    "styles/critical-common.css": 11695,
     "styles/critical-standings.css": 10165,
     "styles/fonts.css": 11584,
     "styles/vendor/bootstrap.slim.css": 41976,
@@ -76,7 +76,7 @@
     "home.min.css": 13759,
     "theme-overrides.min.css": 16560,
     "styles/shared-nav.min.css": 10125,
-    "styles/critical-common.min.css": 5588,
+    "styles/critical-common.min.css": 7592,
     "styles/critical-standings.min.css": 8216,
     "styles/fonts.min.css": 8533,
     "styles/vendor/bootstrap.slim.min.css": 39627,

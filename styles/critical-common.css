@@ -237,18 +237,121 @@ body {
   z-index: 9999;
   max-height: min(34vh, 320px);
   overflow-y: auto;
+  color: var(--text-primary);
+  background: rgba(17,17,19,0.97);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
   transform: translateY(100%);
+  opacity: 0;
+  visibility: hidden;
   contain: layout style;
 }
 .cookie-banner.show,
 .cookie-consent.show {
   transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+.cookie-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
+  color: var(--text-primary);
+}
+.cookie-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.cookie-header h3 {
+  margin: 0;
+  color: var(--accent);
+  font-size: 1rem;
+}
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+}
+.cookie-intro,
+.cookie-content > p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.cookie-details {
+  margin: 0.65rem 0 0;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.cookie-settings-summary {
+  padding: 0.7rem 0.9rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+.cookie-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+}
+.cookie-btn {
+  min-width: 0;
+  padding: 0.6rem 1rem;
+  border: 0;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cookie-footer {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 0.65rem;
+  font-size: 0.8rem;
 }
 @media (max-width: 767.98px) {
   .cookie-banner,
   .cookie-consent {
     max-height: min(34vh, 280px);
+    border-radius: 0;
   }
+  .cookie-content {
+    max-width: 100%;
+    padding: 0.75rem 0.85rem;
+  }
+  .cookie-header { margin-bottom: 0.35rem; }
+  .cookie-intro,
+  .cookie-content > p { font-size: 0.82rem; }
+  .cookie-details { margin-top: 0.5rem; }
+  .cookie-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+    width: 100%;
+    margin: 0.65rem 0 0;
+  }
+  .cookie-btn {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.55rem 0.45rem;
+    overflow: hidden;
+    font-size: clamp(0.72rem, 2.8vw, 0.82rem);
+    text-overflow: ellipsis;
+  }
+  .cookie-footer { display: none; }
 }
 
 /* ── Hero baseline (homepage/standings share this shape) ── */
