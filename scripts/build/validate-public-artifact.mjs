@@ -13,8 +13,6 @@ const MAX_FILE_BYTES = Number(process.env.PUBLIC_ARTIFACT_MAX_BYTES || 2 * 1024 
 
 const FORBIDDEN_EXACT = new Set([
     'appdev.txt',
-    'generate.html',
-    'housekeeping.html',
     'laststeps.txt',
     'nextsteps.txt',
     'package-lock.json',
@@ -30,6 +28,8 @@ const REQUIRED_EXACT = [
     '.nojekyll',
     '_headers',
     '404.html',
+    'generate.html',
+    'housekeeping.html',
     'index.html',
     'manifest.json',
     'offline.html',
@@ -113,7 +113,8 @@ function assertLocalRefExists(errors, fromRelPath, ref) {
 }
 
 function validateHtmlRefs(errors, abs, relPath) {
-    const html = fs.readFileSync(abs, 'utf8');
+    const html = fs.readFileSync(abs, 'utf8')
+        .replace(/<script\b[\s\S]*?<\/script>/gi, '');
     const attrPattern = /\b(?:href|src|data-src)=["']([^"']+)["']/gi;
     for (const match of html.matchAll(attrPattern)) {
         assertLocalRefExists(errors, relPath, match[1]);

@@ -25,6 +25,8 @@ const ROOT_FILES = new Set([
     '.nojekyll',
     '404.html',
     'CNAME',
+    'generate.html',
+    'housekeeping.html',
     'index.html',
     'manifest.json',
     'offline.html',
