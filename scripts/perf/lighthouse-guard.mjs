@@ -6,12 +6,26 @@ import fs from 'node:fs';
 import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+
+const require = createRequire(import.meta.url);
+const puppeteer = require('puppeteer-core');
+const { Launcher, launch } = require('chrome-launcher');
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DEFAULT_ROOT = path.join(REPO_ROOT, 'dist');
 const DEFAULT_BUDGET = path.join(REPO_ROOT, 'perf', 'lighthouse-budget.json');
+const STORAGE_KEY = 'f1stories-cookie-consent-v1';
+// Fresh consent behavior is covered by consent-guard.mjs; Lighthouse budgets audit the settled page layout.
+const LIGHTHOUSE_CONSENT = {
+    ts: 0,
+    essential: true,
+    analytics: false,
+    marketing: false,
+    source: 'lighthouse'
+};
 const MIME_TYPES = new Map([
     ['.avif', 'image/avif'],
     ['.css', 'text/css; charset=utf-8'],
@@ -91,6 +105,14 @@ function sendFile(res, filePath) {
     fs.createReadStream(filePath).pipe(res);
 }
 
+function sendStorageSeedPage(res) {
+    res.writeHead(200, {
+        'cache-control': 'no-store',
+        'content-type': 'text/html; charset=utf-8'
+    });
+    res.end('<!doctype html><meta charset="utf-8"><title>Lighthouse storage seed</title>');
+}
+
 function startServer(root) {
     if (!fs.existsSync(path.join(root, 'index.html'))) {
         throw new Error(`Public artifact missing at ${path.relative(REPO_ROOT, root)}. Run npm run build:public first.`);
@@ -100,6 +122,12 @@ function startServer(root) {
         if (!req.url || !['GET', 'HEAD'].includes(req.method || '')) {
             res.writeHead(405);
             res.end('Method not allowed');
+            return;
+        }
+
+        const url = new URL(req.url, 'http://127.0.0.1');
+        if (url.pathname === '/__f1stories-lighthouse-storage.html') {
+            sendStorageSeedPage(res);
             return;
         }
 
@@ -130,6 +158,73 @@ function startServer(root) {
 function lighthouseBin() {
     const bin = process.platform === 'win32' ? 'lighthouse.cmd' : 'lighthouse';
     return path.join(REPO_ROOT, 'node_modules', '.bin', bin);
+}
+
+function splitChromeFlags(flags) {
+    return String(flags || '')
+        .split(/\s+/)
+        .map(flag => flag.trim())
+        .filter(Boolean);
+}
+
+function chromeFlags() {
+    if (process.env.LIGHTHOUSE_CHROME_FLAGS) {
+        return splitChromeFlags(process.env.LIGHTHOUSE_CHROME_FLAGS);
+    }
+    return ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage'];
+}
+
+function getChromePath() {
+    if (process.env.CHROME_PATH) return process.env.CHROME_PATH;
+    if (process.env.PUPPETEER_EXECUTABLE_PATH) return process.env.PUPPETEER_EXECUTABLE_PATH;
+    return Launcher.getFirstInstallation();
+}
+
+async function closeBrowser(browser) {
+    if (!browser) return;
+    try {
+        await browser.disconnect();
+    } catch (_) {}
+}
+
+async function closeChrome(chrome) {
+    if (!chrome) return;
+    try {
+        await chrome.kill();
+    } catch (_) {}
+}
+
+async function launchAuditChrome(userDataDir) {
+    const chromePath = getChromePath();
+    if (!chromePath) throw new Error('Chrome not found. Set CHROME_PATH or PUPPETEER_EXECUTABLE_PATH.');
+    return launch({
+        chromePath,
+        chromeFlags: chromeFlags(),
+        userDataDir,
+        logLevel: 'silent'
+    });
+}
+
+async function seedAuditConsent(chrome, origin) {
+    let browser;
+    let page;
+    try {
+        browser = await puppeteer.connect({ browserURL: `http://127.0.0.1:${chrome.port}` });
+        page = await browser.newPage();
+        await page.goto(new URL('/__f1stories-lighthouse-storage.html', origin).toString(), {
+            waitUntil: 'domcontentloaded'
+        });
+        await page.evaluate((key, consent) => {
+            localStorage.setItem(key, JSON.stringify(consent));
+        }, STORAGE_KEY, LIGHTHOUSE_CONSENT);
+    } finally {
+        if (page) {
+            try {
+                await page.close();
+            } catch (_) {}
+        }
+        await closeBrowser(browser);
+    }
 }
 
 function slug(value) {
@@ -163,23 +258,28 @@ function runCommand(command, args) {
     });
 }
 
-async function runLighthouse(route, origin, budget, outputDir) {
+async function runLighthouse(route, origin, budget, outputDir, chromePort) {
     const outputPath = path.join(outputDir, `${slug(route.name)}.json`);
     const routePath = String(route.path || '/').startsWith('/') ? route.path : `/${route.path}`;
     const url = new URL(routePath, origin).toString();
-    const chromeFlags = process.env.LIGHTHOUSE_CHROME_FLAGS || '--headless --no-sandbox --disable-dev-shm-usage';
     const categories = (budget.onlyCategories || ['performance', 'accessibility', 'best-practices', 'seo']).join(',');
     const throttlingMethod = process.env.LIGHTHOUSE_THROTTLING_METHOD || budget.throttlingMethod || 'provided';
-
-    await runCommand(lighthouseBin(), [
+    const args = [
         url,
         '--quiet',
-        `--chrome-flags=${chromeFlags}`,
         `--only-categories=${categories}`,
         `--throttling-method=${throttlingMethod}`,
         '--output=json',
         `--output-path=${outputPath}`
-    ]);
+    ];
+
+    if (chromePort) {
+        args.push(`--port=${chromePort}`, '--disable-storage-reset');
+    } else {
+        args.push(`--chrome-flags=${chromeFlags().join(' ')}`);
+    }
+
+    await runCommand(lighthouseBin(), args);
 
     return JSON.parse(fs.readFileSync(outputPath, 'utf8'));
 }
@@ -254,17 +354,21 @@ async function main() {
     const args = parseArgs(process.argv);
     const budget = loadBudget(args.budgetPath);
     const tempDir = args.outputDir || fs.mkdtempSync(path.join(os.tmpdir(), 'f1stories-lighthouse-'));
+    const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'f1stories-lighthouse-profile-'));
     fs.mkdirSync(tempDir, { recursive: true });
 
     let server;
+    let chrome;
     try {
         const started = await startServer(args.root);
         server = started.server;
         console.log(`Serving ${path.relative(REPO_ROOT, args.root)} at ${started.origin}`);
+        chrome = await launchAuditChrome(userDataDir);
+        await seedAuditConsent(chrome, started.origin);
 
         const rows = [];
         for (const route of budget.routes) {
-            const lhr = await runLighthouse(route, started.origin, budget, tempDir);
+            const lhr = await runLighthouse(route, started.origin, budget, tempDir, chrome.port);
             rows.push({ route, ...evaluateRoute(route, lhr) });
         }
 
@@ -278,7 +382,9 @@ async function main() {
             console.log('All Lighthouse budgets passed.');
         }
     } finally {
+        await closeChrome(chrome);
         if (server) await new Promise(resolve => server.close(resolve));
+        fs.rmSync(userDataDir, { recursive: true, force: true });
         if (!args.keepJson && !args.outputDir) {
             fs.rmSync(tempDir, { recursive: true, force: true });
         } else {
