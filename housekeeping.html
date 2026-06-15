@@ -938,22 +938,80 @@
 
     var posts = [];
     var rendered = [];
+    var INDEX_DATA_PATH = '/blog-module/blog-index-data.json';
+    var LEGACY_DATA_PATH = '/blog-module/blog-data.json';
+
+    function defaultThumbnailForPost(id) {
+        return '/blog-module/blog-entries/' + encodeURIComponent(id || '') + '/1-card.webp';
+    }
+
+    function expandCompactPosts(data) {
+        if (!data || data.v !== 2 || !Array.isArray(data.p)) return null;
+        var authors = data.a || [];
+        var categories = data.c || [];
+        return data.p.map(function (row) {
+            var id = row[0] || '';
+            var categoryIndexes = Array.isArray(row[8]) ? row[8] : [];
+            var categoryList = categoryIndexes.map(function (index) {
+                return categories[index];
+            }).filter(Boolean);
+            var tag = categoryList[0] || '';
+            var category = categoryList.slice(1).join(', ');
+            return {
+                id: id,
+                title: row[1] || '',
+                author: authors[row[2]] || 'F1 Stories Team',
+                date: row[3] || '',
+                dateISO: row[3] || '',
+                displayDate: row[3] || '',
+                image: defaultThumbnailForPost(id),
+                imageWidth: parseInt(row[4], 10) || 400,
+                imageHeight: parseInt(row[5], 10) || 188,
+                excerpt: row[6] || '',
+                readingTime: row[7] || '',
+                url: '/blog-module/blog-entries/' + encodeURIComponent(id) + '/article.html',
+                tag: tag,
+                category: category,
+                categories: categoryList
+            };
+        });
+    }
+
+    function extractPosts(data) {
+        var compact = expandCompactPosts(data);
+        if (compact) return compact;
+        if (data && Array.isArray(data.posts)) return data.posts;
+        return Array.isArray(data) ? data : [];
+    }
+
+    async function fetchPostsData() {
+        var paths = [INDEX_DATA_PATH, LEGACY_DATA_PATH];
+        var lastError = null;
+        for (var i = 0; i < paths.length; i++) {
+            try {
+                var resp = await fetch(paths[i], { cache: 'no-store' });
+                if (!resp.ok) throw new Error(paths[i] + ' HTTP ' + resp.status);
+                return await resp.json();
+            } catch (e) {
+                lastError = e;
+            }
+        }
+        throw lastError || new Error('No article index available');
+    }
 
     // ─── Fetch + render list ─────────────────────────────
     async function loadList() {
         listEl.innerHTML = '<div class="hk-empty"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Loading articles…</div>';
         try {
-            var resp = await fetch('/blog-module/blog-data.json', { cache: 'no-store' });
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            var data = await resp.json();
-            posts = (data.posts || []).slice();
+            var data = await fetchPostsData();
+            posts = extractPosts(data).slice();
             posts.sort(function (a, b) {
                 return (b.dateISO || b.date || '').localeCompare(a.dateISO || a.date || '');
             });
             populateFilters();
             applyFilters();
         } catch (e) {
-            listEl.innerHTML = '<div class="hk-error">Failed to load blog-data.json: ' + escapeHtml(e.message) + '</div>';
+            listEl.innerHTML = '<div class="hk-error">Failed to load article index: ' + escapeHtml(e.message) + '</div>';
         }
     }
 
