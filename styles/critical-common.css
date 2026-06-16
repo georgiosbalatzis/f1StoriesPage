@@ -169,12 +169,19 @@ body {
   line-height: 1;
   font-size: 1.1rem;
 }
+.countdown-flag-mobile {
+  line-height: 1;
+  color: currentColor;
+  font-size: 1rem;
+}
 .blog-nav-countdown-mobile {
   display: none;
   align-items: center;
+  gap: 0.35rem;
   color: #41B6E6;
   font-size: .78rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 .blog-nav-hamburger {
   display: none;
@@ -223,7 +230,9 @@ body {
   .blog-nav-countdown-mobile { display: flex; }
 }
 @media (max-width: 575.98px) {
-  .blog-nav-countdown-mobile { display: none; }
+  .blog-nav-inner { gap: 0.75rem; padding-right: calc(44px + 1.5rem); }
+  .blog-nav-right { min-width: 0; gap: 0.25rem; }
+  .blog-nav-countdown-mobile { display: flex; flex-shrink: 0; }
   .blog-nav-hamburger { display: flex !important; position: fixed; top: 11px; right: 12px; z-index: 1062; }
 }
 

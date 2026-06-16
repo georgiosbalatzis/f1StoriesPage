@@ -163,6 +163,8 @@
     font-size: 0.78rem;
     color: #41B6E6;
     font-weight: 600;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 [data-theme="light"] .blog-nav-countdown-mobile { color: #41B6E6; }
 .blog-nav-countdown-mobile i { font-size: 0.65rem; color: rgba(255,255,255,0.38); }
@@ -277,9 +279,9 @@
     .blog-nav-countdown-mobile { display: flex; }
 }
 @media (max-width: 575.98px) {
-    .blog-nav-inner { gap: 0.75rem; }
+    .blog-nav-inner { gap: 0.75rem; padding-right: calc(44px + 1.5rem); }
     .blog-nav-right { gap: 0.25rem; min-width: 0; }
-    .blog-nav-countdown-mobile { display: none; }
+    .blog-nav-countdown-mobile { display: flex; }
     .blog-nav-hamburger { display: flex !important; position: fixed; top: 11px; right: 12px; z-index: 1062; border-radius: 8px; }
     [data-theme="light"] .blog-nav-hamburger { background: #f5f5f7; }
 }
