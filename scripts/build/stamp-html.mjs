@@ -103,12 +103,14 @@ const ARTICLE_RUNTIME_SOURCES = new Set([
     'theme-overrides.css',
     'blog-module/blog-styles.css',
     'blog-module/blog/article-styles.css',
+    'scripts/theme-init.js',
     'scripts/analytics.js',
     'scripts/cookie-consent.js',
     'scripts/shared-nav.js',
     'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog/article-script.js',
+    'blog-module/blog/article-comments.js',
     'blog-module/blog-fixes.js'
 ]);
 
@@ -412,10 +414,7 @@ function swapFonts(html, relPath, fontsInfo, manifest) {
 }
 
 function bootstrapPreloadBlock(indent, href) {
-    return (
-        `${indent}<link rel="preload" as="style" href="${href}" onload="this.onload=null;this.rel='stylesheet'">\n` +
-        `${indent}<noscript><link rel="stylesheet" href="${href}"></noscript>\n`
-    );
+    return `${indent}<link rel="stylesheet" href="${href}">\n`;
 }
 
 function swapBootstrapCdn(html, bootstrapInfo) {
@@ -533,6 +532,41 @@ function stampArticleRuntimeScripts(patterns, dry) {
     return totals;
 }
 
+function dropInlineThemeBoot(html) {
+    return String(html || '').replace(
+        /^[ \t]*(?:<!-- Theme FOUC prevention -->\s*)?<script>\s*\(function\s*\(\)\s*\{[\s\S]*?sessionStorage\.getItem\(['"]f1stories-theme['"]\)[\s\S]*?\}\)\(\);\s*<\/script>\s*/gm,
+        ''
+    );
+}
+
+function ensureThemeInitScript(html, themeInfo) {
+    if (!themeInfo || !themeInfo.min || !themeInfo.hash) return html;
+    if (/\/scripts\/theme-init(?:\.min)?\.js(?:\?v=[a-f0-9]+)?/i.test(html)) return html;
+
+    const themeSrc = `/${themeInfo.min}?v=${themeInfo.hash}`;
+    return String(html || '').replace(
+        /(<script\s+src=["']\/scripts\/perf\/error-beacon(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["']><\/script>)/i,
+        `$1\n    <script src="${themeSrc}"></script>`
+    );
+}
+
+function stampArticleThemeInit(themeInfo, dry) {
+    const totals = { files: 0 };
+    for (const rel of listArticleHtml()) {
+        const abs = path.join(REPO_ROOT, rel);
+        const original = fs.readFileSync(abs, 'utf8');
+        let result = dropInlineThemeBoot(original);
+        result = ensureThemeInitScript(result, themeInfo);
+        if (result === original) continue;
+
+        totals.files++;
+        if (!dry) {
+            fs.writeFileSync(abs, result, 'utf8');
+        }
+    }
+    return totals;
+}
+
 function stampArticleGtmDnsPrefetch(dry) {
     const totals = { files: 0, dropped: 0 };
     for (const rel of listArticleHtml()) {
@@ -548,6 +582,71 @@ function stampArticleGtmDnsPrefetch(dry) {
         }
     }
 
+    return totals;
+}
+
+function articleIdFromRel(relPath) {
+    const parts = relPath.split('/');
+    return parts.length >= 3 ? parts[2] : '';
+}
+
+function dropLegacyArticleCommentsScript(html) {
+    return String(html || '').replace(
+        /\n?[ \t]*<script>\s*document\.addEventListener\(['"]DOMContentLoaded['"],\s*function\s*\(\)\s*\{[\s\S]*?observer\.observe\(disqusThread\);\s*\}\);\s*<\/script>\s*/g,
+        '\n'
+    );
+}
+
+function ensureArticleCommentsScript(html, commentsInfo) {
+    if (!commentsInfo || !commentsInfo.min || !commentsInfo.hash) return html;
+    if (!/id=["']disqus_thread["']/i.test(html)) return html;
+    if (/\/blog-module\/blog\/article-comments(?:\.min)?\.js(?:\?v=[a-f0-9]+)?/i.test(html)) return html;
+
+    const commentsSrc = `/${commentsInfo.min}?v=${commentsInfo.hash}`;
+    return String(html || '').replace(
+        /(<script\s+defer\s+src=["']\/blog-module\/blog\/article-script(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["']><\/script>)/i,
+        `$1\n<script defer src="${commentsSrc}"></script>`
+    );
+}
+
+function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo) {
+    const articleId = articleIdFromRel(relPath);
+    let result = String(html || '');
+    result = asyncifyStylesheets(result, relPath).result;
+    result = result.replace(
+        /\s+onerror="this\.src='\/blog-module\/images\/default-blog\.jpg';this\.onerror=null;"/g,
+        ' data-fallback-src="/blog-module/images/default-blog.jpg"'
+    );
+    result = result.replace(
+        /\s+onerror="this\.style\.display='none';document\.getElementById\('author-initial'\)\.style\.display='flex';"/g,
+        ' data-show-on-error="author-initial"'
+    );
+    result = result.replace(
+        /<div id="disqus_thread"(?:\s+data-article-id="[^"]*")?\s*><\/div>/g,
+        `<div id="disqus_thread" data-article-id="${articleId}"></div>`
+    );
+    result = dropLegacyArticleCommentsScript(result);
+    result = result.replace(
+        /<script>document\.write\(new Date\(\)\.getFullYear\(\)\)<\/script>/g,
+        '<span data-current-year>2026</span>'
+    );
+    result = ensureArticleCommentsScript(result, commentsInfo);
+    return result;
+}
+
+function stampArticleRuntimeMarkup(commentsInfo, dry) {
+    const totals = { files: 0 };
+    for (const rel of listArticleHtml()) {
+        const abs = path.join(REPO_ROOT, rel);
+        const original = fs.readFileSync(abs, 'utf8');
+        const result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo);
+        if (result === original) continue;
+
+        totals.files++;
+        if (!dry) {
+            fs.writeFileSync(abs, result, 'utf8');
+        }
+    }
     return totals;
 }
 
@@ -646,6 +745,14 @@ function loadSprite() {
 function asyncifyStylesheets(html, relPath) {
     const conversions = [];
 
+    html = html.replace(
+        /^([ \t]*)<link rel="preload" as="style" href="([^"]*\.min\.css\?v=[a-f0-9]+)" onload="this\.onload=null;this\.rel='stylesheet'">(?:\n\1<noscript><link rel="stylesheet" href="\2"><\/noscript>)?/gm,
+        function (_, indent, href) {
+            conversions.push(href);
+            return `${indent}<link rel="stylesheet" href="${href}">`;
+        }
+    );
+
     // Match <link rel="stylesheet" ...> where href points to a .min.css (local
     // post-stamp form). href may appear before or after rel. The attribute
     // order in stamped files is `rel="stylesheet" href="..."` so that's what
@@ -663,11 +770,7 @@ function asyncifyStylesheets(html, relPath) {
         const lastClose = before.lastIndexOf('</noscript>');
         if (lastOpen > lastClose) return match;
 
-        conversions.push(href);
-        return (
-            `${indent}<link rel="preload" as="style" href="${href}" onload="this.onload=null;this.rel='stylesheet'">\n` +
-            `${indent}<noscript><link rel="stylesheet" href="${href}"></noscript>`
-        );
+        return match;
     });
 
     return { result, conversions };
@@ -684,6 +787,14 @@ function main() {
     const bootstrapInfo = manifest[BOOTSTRAP_SOURCE];
     if (!bootstrapInfo) {
         throw new Error(`manifest missing entry for ${BOOTSTRAP_SOURCE} — run build:bootstrap then build:assets:minify`);
+    }
+    const themeInfo = manifest['scripts/theme-init.js'];
+    if (!themeInfo) {
+        throw new Error('manifest missing entry for scripts/theme-init.js — run build:assets:minify');
+    }
+    const articleCommentsInfo = manifest['blog-module/blog/article-comments.js'];
+    if (!articleCommentsInfo) {
+        throw new Error('manifest missing entry for blog-module/blog/article-comments.js — run build:assets:minify');
     }
     const sprite = loadSprite();
     const dry = process.argv.includes('--dry');
@@ -711,6 +822,7 @@ function main() {
 
         // 1) stamp local asset refs with content-hash query strings
         let { result, hits } = rewrite(original, patterns);
+        result = ensureThemeInitScript(dropInlineThemeBoot(result), themeInfo);
 
         // 1b) swap Bootstrap CDN CSS → local slim build and drop the unused
         //     Bootstrap JS bundle.
@@ -747,9 +859,8 @@ function main() {
         result = gtmDnsDrop.result;
         totalGtmDnsDrops += gtmDnsDrop.dropped;
 
-        // 3) inject/refresh critical-CSS block + asyncify local stylesheets
+        // 3) inject/refresh critical-CSS block + normalize local stylesheets
         let criticalNote = '';
-        let conversions = [];
         if (CRITICAL_TARGETS.has(rel)) {
             const routeCritical = loadRouteCriticalCss(manifest, rel, critical);
             const inj = injectCritical(result, routeCritical);
@@ -757,12 +868,11 @@ function main() {
             if (inj.injected) { criticalNote = 'injected'; totalCriticalOps++; }
             else if (inj.replaced) { criticalNote = 'refreshed'; totalCriticalOps++; }
             else criticalNote = 'skipped (no anchor)';
-
-            const out = asyncifyStylesheets(result, rel);
-            result = out.result;
-            conversions = out.conversions;
-            totalAsyncified += conversions.length;
         }
+        const out = asyncifyStylesheets(result, rel);
+        result = out.result;
+        const conversions = out.conversions;
+        totalAsyncified += conversions.length;
 
         totalHits += hits.length;
         const changed = result !== original;
@@ -817,6 +927,20 @@ function main() {
         console.log(
             `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleRuntime.files} file(s), ` +
             `${articleRuntime.hits} article runtime script stamp(s)`
+        );
+    }
+
+    const articleThemeInit = stampArticleThemeInit(themeInfo, dry);
+    if (articleThemeInit.files) {
+        console.log(
+            `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleThemeInit.files} file(s), theme boot externalized`
+        );
+    }
+
+    const articleRuntimeMarkup = stampArticleRuntimeMarkup(articleCommentsInfo, dry);
+    if (articleRuntimeMarkup.files) {
+        console.log(
+            `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleRuntimeMarkup.files} file(s), inline runtime markup migrated`
         );
     }
 

@@ -6,6 +6,7 @@ var OPENF1 = 'https://api.openf1.org/v1';
 var DEFAULT_YEAR = new Date().getFullYear();
 var OUTPUT_PATH = path.join(__dirname, 'debrief-cache.json');
 var MIN_LONG_RUN_LAPS = 5;
+var REQUEST_TIMEOUT_MS = 15000;
 var TEAM_CODES = {
     'mclaren': 'MCL',
     'red_bull': 'RBR',
@@ -181,16 +182,25 @@ async function fetchJSON(url, attempt) {
     var data;
     var retryAfter;
     var delay;
+    var controller;
+    var timeoutId;
 
     if (typeof fetch !== 'function') {
         throw new Error('This script requires a Node.js version with fetch support.');
     }
 
     try {
+        if (typeof AbortController === 'function') {
+            controller = new AbortController();
+            timeoutId = setTimeout(function() {
+                controller.abort();
+            }, REQUEST_TIMEOUT_MS);
+        }
         response = await fetch(url, {
             headers: {
                 'user-agent': 'f1stories-debrief-cache/1.0'
-            }
+            },
+            signal: controller ? controller.signal : undefined
         });
     } catch (error) {
         if (tries < 3) {
@@ -198,6 +208,8 @@ async function fetchJSON(url, attempt) {
             return fetchJSON(url, tries + 1);
         }
         throw error;
+    } finally {
+        if (timeoutId) clearTimeout(timeoutId);
     }
 
     if (response.status === 429 || response.status >= 500) {

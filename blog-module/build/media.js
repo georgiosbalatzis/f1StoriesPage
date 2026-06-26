@@ -67,7 +67,7 @@ async function buildPictureHtml(folderName, imageNumber, altText = '') {
                  class="article-content-img"
                  loading="lazy" decoding="async"${widthAttr}${heightAttr}
                  data-full-src="${webpFile}"
-                 onerror="this.src='${CONFIG.DEFAULT_BLOG_IMAGE}';this.onerror=null;">`;
+                 data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`;
 
     if (hasAvif || hasSmWebp) {
         let sources = '';

@@ -263,7 +263,7 @@ function renderBlogIndexCard(post, idx) {
 
     return '<article class="article-card-wrap">'
         + `<a href="${escapeHtmlAttribute(url)}" class="article-card" style="animation-delay:${animationDelay}s">`
-        + `<div class="article-card-img-wrap"><img class="${imageClass}" width="${imageWidth}" height="${imageHeight}"${imageAttrs} decoding="async" alt="${escapeHtmlAttribute(post.title)}" onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;"></div>`
+        + `<div class="article-card-img-wrap"><img class="${imageClass}" width="${imageWidth}" height="${imageHeight}"${imageAttrs} decoding="async" alt="${escapeHtmlAttribute(post.title)}" data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}"></div>`
         + '<div class="article-card-body">'
         + `<div class="article-card-meta"><span class="author-tag">${escapeHtmlAttribute(author)}</span><span>·</span><time class="article-card-date" datetime="${escapeHtmlAttribute(post.date || '')}">${escapeHtmlAttribute(formatBlogIndexDate(post))}</time>${readBadge}</div>`
         + `<h2 class="article-card-title">${escapeHtmlAttribute(post.title)}</h2>`

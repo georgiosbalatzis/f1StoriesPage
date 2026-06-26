@@ -206,7 +206,7 @@ async function run() {
             emittedCss.push(`  font-family: '${face.family}';`);
             emittedCss.push(`  font-style: ${style};`);
             emittedCss.push(`  font-weight: ${weight};`);
-            emittedCss.push(`  font-display: swap;`);
+            emittedCss.push(`  font-display: optional;`);
             emittedCss.push(`  src: url('/${relOut}') format('woff2');`);
             if (face.unicodeRange) emittedCss.push(`  unicode-range: ${face.unicodeRange};`);
             emittedCss.push(`}`);

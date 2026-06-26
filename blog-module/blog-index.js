@@ -28,6 +28,33 @@ document.addEventListener('DOMContentLoaded', function() {
         : null;
 
     function escHtml(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+    function bindImageFallbacks() {
+        if (!grid || grid.__f1sImageFallbacksBound) return;
+        grid.__f1sImageFallbacksBound = true;
+        grid.addEventListener('error', function(event) {
+            var img = event.target;
+            if (!img || img.tagName !== 'IMG') return;
+            var fallback = img.getAttribute('data-fallback-src');
+            if (!fallback) return;
+            img.removeAttribute('data-src');
+            img.removeAttribute('data-fallback-src');
+            img.src = fallback;
+            img.classList.add('loaded');
+        }, true);
+    }
+    function bindAuthorFallbacks() {
+        if (!strip || strip.__f1sAuthorFallbacksBound) return;
+        strip.__f1sAuthorFallbacksBound = true;
+        strip.addEventListener('error', function(event) {
+            var img = event.target;
+            if (!img || img.tagName !== 'IMG') return;
+            var fallback = img.getAttribute('data-fallback-label');
+            var parent = img.parentElement;
+            if (!fallback || !parent) return;
+            img.remove();
+            parent.textContent = fallback;
+        }, true);
+    }
     function formatCategoryToken(token) {
         var value = String(token || '').trim();
         var lower = value.toLowerCase();
@@ -267,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var animationDelay = Math.round(idx * stagger * 100) / 100;
         return '<article class="article-card-wrap">'
             + '<a href="' + escHtml(url) + '" class="article-card" style="animation-delay:' + animationDelay + 's">'
-            + '<div class="article-card-img-wrap"><img class="' + imageClass + '" width="' + imageWidth + '" height="' + imageHeight + '"' + imageAttrs + ' decoding="async" alt="' + escHtml(post.title) + '" onerror="this.src=\'/blog-module/images/default-blog.jpg\';this.onerror=null;"></div>'
+            + '<div class="article-card-img-wrap"><img class="' + imageClass + '" width="' + imageWidth + '" height="' + imageHeight + '"' + imageAttrs + ' decoding="async" alt="' + escHtml(post.title) + '" data-fallback-src="/blog-module/images/default-blog.jpg"></div>'
             + '<div class="article-card-body">'
             + '<div class="article-card-meta"><span class="author-tag">' + escHtml(author) + '</span><span>\u00b7</span><time class="article-card-date" datetime="' + escHtml(post.date || '') + '">' + escHtml(date) + '</time>' + readBadge + '</div>'
             + '<h2 class="article-card-title">' + escHtml(post.title) + '</h2>'
@@ -280,6 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function lazyLoadImages() {
         if (!grid) return;
+        bindImageFallbacks();
         var imgs = grid.querySelectorAll('img[data-src]');
         if (!imgs.length) return;
         if (imageObserver) {
@@ -305,6 +333,8 @@ document.addEventListener('DOMContentLoaded', function() {
             imgs.forEach(function(img) { imageObserver.observe(img); });
         } else { imgs.forEach(loadImg); }
     }
+    bindImageFallbacks();
+    bindAuthorFallbacks();
 
     var POSTS_PER_PAGE = 12;
     var currentPage = 1;

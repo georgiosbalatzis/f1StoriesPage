@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "updated": "2026-06-26",
+  "description": "Reviewed raw HTML rendering sink counts. Lower this baseline as sinks move to DOM construction or trusted rendering helpers.",
+  "ignoredPrefixes": [
+    "archive/",
+    "blog-module/blog-entries/",
+    "dist/",
+    "node_modules/"
+  ],
+  "ignoredFiles": [
+    "scripts/quality/rendering-sink-guard.mjs"
+  ],
+  "files": {
+    "blog-module/blog-index.js": {
+      "innerHTML": 7,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 7
+    },
+    "blog-module/blog-loader.js": {
+      "innerHTML": 4,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 4
+    },
+    "blog-module/blog/article-script.js": {
+      "innerHTML": 2,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 2
+    },
+    "scripts/author/dom-tools.js": {
+      "innerHTML": 1,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 1
+    },
+    "scripts/author/generate-page.js": {
+      "innerHTML": 14,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 14
+    },
+    "scripts/author/housekeeping-page.js": {
+      "innerHTML": 29,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 29
+    },
+    "scripts/cookie-consent.js": {
+      "innerHTML": 1,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 1
+    },
+    "scripts/f1-optimized.js": {
+      "innerHTML": 4,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 4
+    },
+    "scripts/sw-register.js": {
+      "innerHTML": 2,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 2
+    },
+    "standings/core/rendering.js": {
+      "innerHTML": 1,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 1
+    },
+    "standings/standings.js": {
+      "innerHTML": 15,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 15
+    },
+    "standings/tabs/debrief.js": {
+      "innerHTML": 3,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 3
+    },
+    "standings/tabs/destructors.js": {
+      "innerHTML": 3,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 3
+    },
+    "standings/tabs/dirty-air.js": {
+      "innerHTML": 5,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 5
+    },
+    "standings/tabs/lap1-gains.js": {
+      "innerHTML": 4,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 4
+    },
+    "standings/tabs/pit-stops.js": {
+      "innerHTML": 9,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 9
+    },
+    "standings/tabs/quali-gaps.js": {
+      "innerHTML": 4,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 4
+    },
+    "standings/tabs/track-dominance.js": {
+      "innerHTML": 5,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 5
+    },
+    "standings/tabs/tyre-pace.js": {
+      "innerHTML": 5,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 5
+    }
+  }
+}

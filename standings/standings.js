@@ -102,6 +102,19 @@ let standingsLazyImageObserver = null;
 const tabModulePromises = Object.create(null);
 const tabModuleInstances = Object.create(null);
 
+document.addEventListener('click', function(event) {
+    const button = event.target.closest('[data-standings-retry]');
+    if (!button) return;
+
+    event.preventDefault();
+    const action = button.getAttribute('data-standings-retry') || '';
+    if (action === 'reload') {
+        window.location.reload();
+        return;
+    }
+    if (typeof window[action] === 'function') window[action]();
+});
+
 function skelRows(n) {
     const rowHeight = STANDINGS_ROW_HEIGHT;
     let h = '<div style="min-height:' + (n * rowHeight) + 'px;">';
@@ -728,7 +741,7 @@ function showActivePanelError() {
     target.innerHTML = '<div class="standings-error">'
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση αυτής της ανάλυσης.</p>'
-        + '<button class="retry-btn" onclick="location.reload()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
+        + '<button class="retry-btn" type="button" data-standings-retry="reload"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
         + '</div>';
 }
 
@@ -804,7 +817,7 @@ function showError(el) {
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση των βαθμολογιών.</p>'
         + '<p style="font-size:0.8rem;">Η σεζόν μπορεί να μην έχει ξεκινήσει ακόμη ή το API να είναι προσωρινά μη διαθέσιμο.</p>'
-        + '<button class="retry-btn" onclick="location.reload()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
+        + '<button class="retry-btn" type="button" data-standings-retry="reload"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
         + '</div>';
     if (el === driversTable) finalizeRenderedPanel('drivers');
     if (el === constructorsTable) finalizeRenderedPanel('constructors');

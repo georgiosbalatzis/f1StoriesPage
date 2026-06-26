@@ -438,7 +438,7 @@ function showPitStopsError() {
     if (!pitStopsTable) return;
     pitStopsTable.innerHTML = '<div class="pit-stops-card"><div class="pit-stops-empty-card">'
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg><p>Αποτυχία φόρτωσης δεδομένων pit stop.</p>'
-        + '<button class="retry-btn" onclick="window.__retryPitStops&&window.__retryPitStops()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
+        + '<button class="retry-btn" type="button" data-standings-retry="__retryPitStops"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
         + '</div></div>';
     fireRendered();
 }

@@ -1,0 +1,61 @@
+{
+  "updatedAt": "2026-06-23T07:01:50.086Z",
+  "thresholdPercent": 5,
+  "note": "Repository-side article media budget. Public delivery size is checked separately by scripts/perf/public-image-guard.mjs. New raw article images should not appear unless this baseline is intentionally updated in review.",
+  "limits": {
+    "singleRawImageBytes": 3407872,
+    "singleOptimizedImageBytes": 1048576
+  },
+  "metrics": {
+    "totalFiles": 1808,
+    "totalBytes": 153781271,
+    "rawFiles": 14,
+    "rawBytes": 6720074,
+    "optimizedFiles": 1794,
+    "optimizedBytes": 147061197,
+    "cardFiles": 436,
+    "cardBytes": 5384678,
+    "smallFiles": 216,
+    "smallBytes": 8121950,
+    "largestRawBytes": 3158868,
+    "largestOptimizedBytes": 976520,
+    "byExtension": {
+      ".webp": {
+        "count": 1142,
+        "bytes": 96694160
+      },
+      ".avif": {
+        "count": 652,
+        "bytes": 50367037
+      },
+      ".png": {
+        "count": 3,
+        "bytes": 4542844
+      },
+      ".jpg": {
+        "count": 10,
+        "bytes": 2159117
+      },
+      ".jpeg": {
+        "count": 1,
+        "bytes": 18113
+      }
+    }
+  },
+  "rawPaths": [
+    "blog-module/blog-entries/20250403G/2.png",
+    "blog-module/blog-entries/20260403W/1.jpg",
+    "blog-module/blog-entries/20260405G/1.png",
+    "blog-module/blog-entries/20260407W/1.jpeg",
+    "blog-module/blog-entries/20260408J/1.jpg",
+    "blog-module/blog-entries/20260409W/1.jpg",
+    "blog-module/blog-entries/20260414W/1.jpg",
+    "blog-module/blog-entries/20260416G/1.jpg",
+    "blog-module/blog-entries/20260416W/1.jpg",
+    "blog-module/blog-entries/20260417W/1.jpg",
+    "blog-module/blog-entries/20260418W/1.jpg",
+    "blog-module/blog-entries/20260420W/1.jpg",
+    "blog-module/blog-entries/20260421-2J/1.jpg",
+    "blog-module/blog-entries/20260423G/1.png"
+  ]
+}

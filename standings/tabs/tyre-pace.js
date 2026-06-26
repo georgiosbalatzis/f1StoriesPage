@@ -564,7 +564,7 @@ function showTyrePaceError() {
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση του tyre pace chart.</p>'
         + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
-        + '<button class="retry-btn" type="button" onclick="window.__retryTyrePace && window.__retryTyrePace()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
+        + '<button class="retry-btn" type="button" data-standings-retry="__retryTyrePace"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
         + '</div>';
     fireRendered();
 }

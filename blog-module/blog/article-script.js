@@ -24,6 +24,27 @@ document.addEventListener('DOMContentLoaded', function () {
         el.textContent = `${mins} min read`;
     }
 
+    function setupImageFallbacks() {
+        document.addEventListener('error', function(event) {
+            const img = event.target;
+            if (!img || img.tagName !== 'IMG') return;
+
+            const fallbackSrc = img.getAttribute('data-fallback-src');
+            if (fallbackSrc) {
+                img.removeAttribute('data-fallback-src');
+                img.src = fallbackSrc;
+                return;
+            }
+
+            const showId = img.getAttribute('data-show-on-error');
+            if (showId) {
+                const fallbackEl = document.getElementById(showId);
+                img.style.display = 'none';
+                if (fallbackEl) fallbackEl.style.display = 'flex';
+            }
+        }, true);
+    }
+
     function populateAuthor() {
         const nameEl = $('#author-name');
         if (!nameEl) return;
@@ -424,6 +445,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }, { passive: true });
     }
 
+    setupImageFallbacks();
     calcReadingTime();
     populateAuthor();
     updateShareLinks();

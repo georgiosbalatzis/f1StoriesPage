@@ -517,8 +517,8 @@
 
 .gallery-carousel-thumbs {
     display: flex;
-    gap: 5px;
-    padding: 10px 0 4px;
+    gap: 8px;
+    padding: 12px 0 4px;
     overflow-x: auto;
     justify-content: center;
     flex-wrap: wrap;
@@ -532,20 +532,21 @@
 
 .gallery-thumb {
     flex-shrink: 0;
-    width: 44px;
-    height: 44px;
-    border-radius: 5px;
+    width: 84px;
+    height: 58px;
+    border-radius: 7px;
     overflow: hidden;
     border: 2px solid transparent;
-    padding: 0;
+    padding: 3px;
     background: #0d0d1a;
     cursor: pointer;
-    opacity: 0.5;
-    transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    opacity: 0.62;
+    transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
 }
 
 .gallery-thumb.active {
     border-color: var(--accent, #60a5fa);
+    background: rgba(96, 165, 250, 0.08);
     opacity: 1;
 }
 
@@ -557,7 +558,7 @@
 .gallery-thumb img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
     pointer-events: none;
     user-select: none;
@@ -567,7 +568,7 @@
 @media (max-width: 600px) {
     .gallery-carousel-prev,
     .gallery-carousel-next { width: 36px; height: 36px; font-size: 0.8rem; }
-    .gallery-thumb { width: 38px; height: 38px; }
+    .gallery-thumb { width: 68px; height: 48px; }
     .gallery-slide { padding: 0.5rem; }
 }
 

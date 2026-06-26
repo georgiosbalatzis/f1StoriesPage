@@ -859,7 +859,7 @@ function showQualifyingError() {
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση των teammate qualifying gaps.</p>'
         + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
-        + '<button class="retry-btn" type="button" onclick="window.__retryQualifyingGaps && window.__retryQualifyingGaps()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
+        + '<button class="retry-btn" type="button" data-standings-retry="__retryQualifyingGaps"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
         + '</div>';
     if (onRendered) onRendered('quali-gaps');
 }

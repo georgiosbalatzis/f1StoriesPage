@@ -56,7 +56,7 @@ async function buildRelatedPostsHtml(relatedPosts) {
                                  alt="${relatedTitle}"
                                  loading="lazy"
                                  decoding="async"${widthAttr}${heightAttr}
-                                 onerror="this.src='${CONFIG.DEFAULT_BLOG_IMAGE}';this.onerror=null;">
+                                 data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">
                             <div class="related-card-hover">
                                 <span class="related-card-hover-label">Περισσότερα</span>${hoverMetaLine}
                             </div>

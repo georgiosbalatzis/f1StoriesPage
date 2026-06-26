@@ -105,6 +105,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ── Render a single card ────────────────────────
+    document.addEventListener('error', function(event) {
+        var img = event.target;
+        if (!img || img.tagName !== 'IMG') return;
+        var fallback = img.getAttribute('data-fallback-src');
+        if (!fallback) return;
+        img.removeAttribute('data-fallback-src');
+        img.src = fallback;
+    }, true);
+
     function cardHTML(post) {
         const href = '/blog-module/blog-entries/' + encodeURIComponent(post.slug || post.id || '') + '/article.html';
         const img = escapeHtml(imgSrc(post.thumbnail || post.image));
@@ -124,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="blog-img-container">
                         <img src="${img}" alt="${title}" class="blog-img" loading="lazy"
                              decoding="async" width="${thumbWidth}" height="${thumbHeight}"
-                             onerror="this.src='${fallback}';this.onerror=null;">
+                             data-fallback-src="${fallback}">
                         <div class="blog-date">
                             <span class="day">${day}</span>
                             <span class="month">${month}</span>

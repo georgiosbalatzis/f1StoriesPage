@@ -1,8 +1,4 @@
-// web-vitals-beacon.js — lightweight RUM reporter (LCP, INP, CLS, FCP, TTFB).
-//
-// After analytics opt-in, loads the web-vitals library from a CDN inside
-// requestIdleCallback so it never competes with the LCP candidate or
-// main-thread hydration. Forwards each vital to GA4 through analytics.js.
+// web-vitals-beacon.js - lightweight consent-gated RUM reporter.
 (function () {
     'use strict';
 
@@ -10,8 +6,12 @@
     if (location.protocol === 'file:') return;
 
     var CONSENT_KEY = 'f1stories-cookie-consent-v1';
-    var CDN_URL = 'https://unpkg.com/web-vitals@4?module';
     var bootstrapped = false;
+    var sent = {};
+    var lcpValue = 0;
+    var clsValue = 0;
+    var inpValue = 0;
+    var observers = [];
 
     function hasAnalyticsConsent() {
         try {
@@ -22,24 +22,65 @@
         }
     }
 
-    function buildParams(metric) {
-        return {
-            metric_name: metric.name,
-            metric_value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
-            metric_delta: Math.round(metric.name === 'CLS' ? metric.delta * 1000 : (metric.delta || 0)),
-            metric_id: metric.id,
-            metric_rating: metric.rating || 'unknown',
-            nav_type: metric.navigationType || 'unknown',
-            page_path: location.pathname,
-            transport_type: 'beacon'
-        };
+    function rating(name, value) {
+        var thresholds = {
+            CLS: [0.1, 0.25],
+            FCP: [1800, 3000],
+            INP: [200, 500],
+            LCP: [2500, 4000],
+            TTFB: [800, 1800]
+        }[name] || [0, 0];
+        if (value <= thresholds[0]) return 'good';
+        if (value <= thresholds[1]) return 'needs-improvement';
+        return 'poor';
     }
 
-    function send(metric) {
-        if (!hasAnalyticsConsent()) return;
-        var params = buildParams(metric);
-        if (typeof window.gtag === 'function') {
-            try { window.gtag('event', 'web_vital', params); } catch (_) {}
+    function navigationType() {
+        var entries = performance.getEntriesByType && performance.getEntriesByType('navigation');
+        return entries && entries[0] && entries[0].type || 'unknown';
+    }
+
+    function sendMetric(name, value, delta) {
+        if (!hasAnalyticsConsent() || sent[name]) return;
+        if (typeof window.gtag !== 'function') return;
+
+        sent[name] = true;
+        try {
+            window.gtag('event', 'web_vital', {
+                metric_name: name,
+                metric_value: Math.round(name === 'CLS' ? value * 1000 : value),
+                metric_delta: Math.round(name === 'CLS' ? (delta || value) * 1000 : (delta || value || 0)),
+                metric_id: name.toLowerCase() + '-' + Date.now().toString(36),
+                metric_rating: rating(name, value),
+                nav_type: navigationType(),
+                page_path: location.pathname,
+                transport_type: 'beacon'
+            });
+        } catch (_) {}
+    }
+
+    function observe(type, callback) {
+        if (!('PerformanceObserver' in window)) return;
+        try {
+            var observer = new PerformanceObserver(function (list) {
+                list.getEntries().forEach(callback);
+            });
+            observer.observe({ type: type, buffered: true });
+            observers.push(observer);
+        } catch (_) {}
+    }
+
+    function reportPending() {
+        if (lcpValue) sendMetric('LCP', lcpValue, lcpValue);
+        if (clsValue) sendMetric('CLS', clsValue, clsValue);
+        if (inpValue) sendMetric('INP', inpValue, inpValue);
+    }
+
+    function reportTtfb() {
+        var entries = performance.getEntriesByType && performance.getEntriesByType('navigation');
+        var nav = entries && entries[0];
+        if (nav && nav.responseStart) {
+            sendMetric('TTFB', Math.max(0, nav.responseStart), Math.max(0, nav.responseStart - nav.requestStart));
         }
     }
 
@@ -47,42 +88,39 @@
         if (bootstrapped || !hasAnalyticsConsent()) return;
         bootstrapped = true;
 
-        import(/* webpackIgnore: true */ CDN_URL).then(function (mod) {
-            var hooks = [
-                ['onLCP', mod.onLCP],
-                ['onINP', mod.onINP],
-                ['onCLS', mod.onCLS],
-                ['onFCP', mod.onFCP],
-                ['onTTFB', mod.onTTFB]
-            ];
-            hooks.forEach(function (pair) {
-                if (typeof pair[1] === 'function') {
-                    try { pair[1](send); } catch (_) {}
-                }
-            });
-        }).catch(function () { /* web-vitals unavailable; no-op */ });
+        observe('paint', function (entry) {
+            if (entry.name === 'first-contentful-paint') sendMetric('FCP', entry.startTime, entry.startTime);
+        });
+        observe('largest-contentful-paint', function (entry) {
+            lcpValue = entry.startTime || entry.renderTime || entry.loadTime || 0;
+        });
+        observe('layout-shift', function (entry) {
+            if (!entry.hadRecentInput) clsValue += entry.value || 0;
+        });
+        observe('event', function (entry) {
+            if (entry.interactionId && entry.duration > inpValue) inpValue = entry.duration;
+        });
+
+        if (document.readyState === 'complete') reportTtfb();
+        else window.addEventListener('load', reportTtfb, { once: true });
+
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'hidden') reportPending();
+        });
+        window.addEventListener('pagehide', reportPending);
     }
 
     function whenIdle(fn) {
-        if ('requestIdleCallback' in window) {
-            window.requestIdleCallback(fn, { timeout: 3000 });
-        } else {
-            setTimeout(fn, 1);
-        }
+        if ('requestIdleCallback' in window) window.requestIdleCallback(fn, { timeout: 3000 });
+        else setTimeout(fn, 1);
     }
 
     function scheduleBootstrap() {
         if (!hasAnalyticsConsent()) return;
-        if (document.readyState === 'complete') {
-            whenIdle(bootstrap);
-        } else {
-            window.addEventListener('load', function () { whenIdle(bootstrap); }, { once: true });
-        }
+        if (document.readyState === 'complete') whenIdle(bootstrap);
+        else window.addEventListener('load', function () { whenIdle(bootstrap); }, { once: true });
     }
 
     scheduleBootstrap();
-
-    window.addEventListener('f1stories:cookie-consent-changed', function () {
-        scheduleBootstrap();
-    });
+    window.addEventListener('f1stories:cookie-consent-changed', scheduleBootstrap);
 })();

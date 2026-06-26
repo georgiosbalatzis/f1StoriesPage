@@ -51,10 +51,14 @@ const CSS_INPUTS = [
 ];
 
 const JS_INPUTS = [
+    'scripts/theme-init.js',
+    'scripts/hero-background-init.js',
+    'scripts/external-redirect.js',
     'scripts/analytics.js',
     'scripts/cookie-consent.js',
     'scripts/shared-nav.js',
     'scripts/sw-register.js',
+    'scripts/offline-page.js',
     'scripts/f1-optimized.js',
     'scripts/background-randomizer.js',
     'scripts/perf/error-beacon.js',
@@ -62,6 +66,7 @@ const JS_INPUTS = [
     'blog-module/blog-loader.js',
     'blog-module/blog-index.js',
     'blog-module/blog/article-script.js',
+    'blog-module/blog/article-comments.js',
     'blog-module/blog-fixes.js'
 ];
 

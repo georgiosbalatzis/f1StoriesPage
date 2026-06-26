@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>F1 Stories — Offline</title>
   <script src="/scripts/perf/error-beacon.min.js?v=59367e85"></script>
+    <script src="/scripts/theme-init.min.js?v=718dd2ec"></script>
   <style>
     :root { --bg: #111113; --surface: #161618; --accent: #41B6E6; --text: #e5e5e7; --sub: #a1a1a6; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -22,7 +23,8 @@
     <img src="/images/logo-256.webp" alt="F1 Stories" width="256" height="256" decoding="async">
     <h1>Δεν υπάρχει σύνδεση</h1>
     <p>Φαίνεται ότι είσαι offline. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.</p>
-    <a href="/" onclick="location.reload(); return false;">Δοκιμή ξανά</a>
+    <a href="/" data-reload-page>Δοκιμή ξανά</a>
   </div>
+  <script src="/scripts/offline-page.min.js?v=d0e7c7ce"></script>
 </body>
 </html>

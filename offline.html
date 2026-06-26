@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>F1 Stories — Offline</title>
   <script src="/scripts/perf/error-beacon.min.js?v=59367e85"></script>
+    <script src="/scripts/theme-init.min.js?v=718dd2ec"></script>
   <style>
     :root { --bg: #111113; --surface: #1c1c1e; --accent: #41B6E6; --text: #e5e5e7; --sub: #a1a1a6; --border: rgba(255,255,255,.08); }
     @media (prefers-color-scheme: light) {
@@ -56,7 +57,7 @@
     <img src="/images/logo-256.webp" alt="F1 Stories" class="logo" width="256" height="256" decoding="async">
     <h1>Offline</h1>
     <p class="sub">No internet connection. Check your network and try again.</p>
-    <button class="retry" onclick="location.reload()">Retry</button>
+    <button class="retry" data-reload-page>Retry</button>
   </div>
 
   <div class="cached-section" id="cached-section" style="display:none;">
@@ -65,53 +66,6 @@
     <p id="no-cached">No cached articles yet. Visit articles while online to save them.</p>
   </div>
 
-  <script>
-    (function () {
-      if (!('caches' in window)) return;
-      var section = document.getElementById('cached-section');
-      var list = document.getElementById('cached-list');
-      var noCached = document.getElementById('no-cached');
-      var pagesCache = 'f1s-pages-v12';
-
-      caches.open(pagesCache).then(function (cache) {
-        return cache.keys();
-      }).then(function (requests) {
-        var articles = requests.filter(function (r) {
-          return r.url.indexOf('/blog-entries/') !== -1 && r.url.indexOf('/article.html') !== -1;
-        });
-        if (!articles.length) {
-          section.style.display = 'block';
-          noCached.style.display = 'block';
-          return;
-        }
-        section.style.display = 'block';
-        articles.slice(0, 10).forEach(function (req) {
-          var url = new URL(req.url);
-          var parts = url.pathname.split('/');
-          var folder = parts[parts.length - 2] || 'Article';
-          var li = document.createElement('li');
-          var a = document.createElement('a');
-          a.href = url.pathname;
-          a.textContent = folder;
-          li.appendChild(a);
-          list.appendChild(li);
-
-          caches.open(pagesCache).then(function (cache) {
-            return cache.match(req);
-          }).then(function (resp) {
-            if (!resp) return;
-            return resp.text();
-          }).then(function (html) {
-            if (!html) return;
-            var m = html.match(/<title[^>]*>([^<]+)/i);
-            if (m && m[1]) {
-              var title = m[1].replace(/\s*[\|—–-]\s*F1 Stories.*$/i, '').trim();
-              if (title) a.textContent = title;
-            }
-          });
-        });
-      }).catch(function () {});
-    })();
-  </script>
+  <script src="/scripts/offline-page.min.js?v=d0e7c7ce"></script>
 </body>
 </html>
