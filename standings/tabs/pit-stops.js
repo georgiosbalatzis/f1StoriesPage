@@ -17,6 +17,16 @@ import {
 } from '../core/teams.js';
 import { getCachedHeadshotResult } from '../core/drivers-meta.js';
 import { fetchJSON, fetchJSONWithRetry, delay } from '../core/fetchers.js';
+import { runExclusiveLoad } from '../core/lifecycle.js';
+import {
+    loadingCardHTML,
+    renderMessage,
+    renderTrustedHtml
+} from '../core/rendering.js';
+import {
+    validateJolpicaRaceListPayload,
+    validateJolpicaRacePayload
+} from '../core/payloads.js';
 import { isFiniteNumber, parseTimeSeconds } from './_shared.js';
 
 const JOLPICA = 'https://api.jolpi.ca/ergast/f1';
@@ -82,34 +92,41 @@ export function setSelectedRound(round) {
 }
 
 export function ensureLoaded(forceReload) {
-    if (!pitStopsTable) return;
-    if (state.loading) return;
-    if (state.loaded && !forceReload) return;
+    if (!pitStopsTable) return Promise.resolve(false);
+    if (state.loaded && !forceReload) return Promise.resolve(true);
 
-    state.loading = true;
-    pitStopsTable.innerHTML = createPitStopsSkeleton();
-
-    loadPitStopRaces().then(function(races) {
-        state.races = races;
-        if (!races.length) {
-            pitStopsTable.innerHTML = '<div class="pit-stops-card"><div class="pit-stops-empty-card"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg><p>Δεν έχουν ολοκληρωθεί αγώνες ακόμη για το ' + YEAR + '.</p></div></div>';
-            state.loaded = true;
-            fireRendered();
-            return;
+    return runExclusiveLoad(state, {
+        target: pitStopsTable,
+        loadingHTML: createPitStopsSkeleton(),
+        loadingReason: 'pit stops loading skeleton',
+        load: loadPitStopRaces,
+        onSuccess: function(races) {
+            state.races = races;
+            if (!races.length) {
+                renderMessage(pitStopsTable, {
+                    wrapperClass: 'pit-stops-card',
+                    stateClass: 'pit-stops-empty-card',
+                    icon: 'fa-clock',
+                    message: 'Δεν έχουν ολοκληρωθεί αγώνες ακόμη για το ' + YEAR + '.'
+                }, 'pit stops no completed races state', fireRendered);
+                state.loaded = true;
+                return true;
+            }
+            if (!state.selectedRound || !races.some(function(r) { return String(r.round) === String(state.selectedRound); })) {
+                state.selectedRound = String(races[races.length - 1].round);
+            }
+            return loadPitStopRaceData(state.selectedRound).then(function(raceData) {
+                const race = races.filter(function(r) { return String(r.round) === String(state.selectedRound); })[0];
+                renderPitStops(raceData, race, races);
+                state.loaded = true;
+                return true;
+            });
+        },
+        onError: function(err) {
+            console.error('Pit stops error:', err);
+            showPitStopsError();
+            return false;
         }
-        if (!state.selectedRound || !races.some(function(r) { return String(r.round) === String(state.selectedRound); })) {
-            state.selectedRound = String(races[races.length - 1].round);
-        }
-        return loadPitStopRaceData(state.selectedRound).then(function(raceData) {
-            const race = races.filter(function(r) { return String(r.round) === String(state.selectedRound); })[0];
-            renderPitStops(raceData, race, races);
-            state.loaded = true;
-        });
-    }).catch(function(err) {
-        console.error('Pit stops error:', err);
-        showPitStopsError();
-    }).finally(function() {
-        state.loading = false;
     });
 }
 
@@ -119,7 +136,7 @@ function handleRoundChange(event) {
     event.stopImmediatePropagation();
     state.selectedRound = sel.value;
     state.activeView = 'race';
-    pitStopsTable.innerHTML = createPitStopsSkeleton();
+    renderTrustedHtml(pitStopsTable, createPitStopsSkeleton(), 'pit stops round-change loading skeleton');
     if (onRoundChange) onRoundChange(state.selectedRound);
 
     loadPitStopRaceData(state.selectedRound).then(function(raceData) {
@@ -150,21 +167,27 @@ function handleViewClick(event) {
     const seasonPanel = pitStopsTable.querySelector('[data-pitstop-panel="season"]');
     if (!seasonPanel) return;
     if (state.seasonCache) {
-        seasonPanel.innerHTML = renderPitStopsSeasonContent(state.seasonCache);
+        renderTrustedHtml(seasonPanel, renderPitStopsSeasonContent(state.seasonCache), 'pit stops cached season-best panel');
         return;
     }
 
-    seasonPanel.innerHTML = '<div class="pit-stops-season-loading"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-circle-notch"/></svg><p>Φόρτωση season data...</p></div>';
+    renderTrustedHtml(seasonPanel, createPitStopsSeasonLoading(), 'pit stops season-best loading state');
     loadSeasonPitStops(state.races).then(function() {
         state.seasonCache = buildSeasonBestCache(state.races);
         const panel = pitStopsTable ? pitStopsTable.querySelector('[data-pitstop-panel="season"]') : null;
         if (panel && state.activeView === 'season') {
-            panel.innerHTML = renderPitStopsSeasonContent(state.seasonCache);
+            renderTrustedHtml(panel, renderPitStopsSeasonContent(state.seasonCache), 'pit stops season-best panel');
         }
     }).catch(function(e) {
         console.error('Season pit stops error:', e);
         const panel = pitStopsTable ? pitStopsTable.querySelector('[data-pitstop-panel="season"]') : null;
-        if (panel) panel.innerHTML = '<div class="pit-stops-empty-card"><svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg><p>Αποτυχία φόρτωσης season data.</p></div>';
+        if (panel) {
+            renderMessage(panel, {
+                stateClass: 'pit-stops-empty-card',
+                icon: 'fa-exclamation-triangle',
+                message: 'Αποτυχία φόρτωσης season data.'
+            }, 'pit stops season-best error state');
+        }
     });
 }
 
@@ -185,6 +208,13 @@ function createPitStopsSkeleton() {
         + '</div>';
 }
 
+function createPitStopsSeasonLoading() {
+    return loadingCardHTML({
+        stateClass: 'pit-stops-season-loading',
+        message: 'Φόρτωση season data...'
+    });
+}
+
 function formatRaceDate(race) {
     const value = race && race.date ? race.date : race;
     let d;
@@ -199,6 +229,7 @@ function formatRaceDate(race) {
 
 function loadPitStopRaces() {
     return fetchJSON(JOLPICA + '/' + YEAR + '.json?limit=30').then(function(data) {
+        validateJolpicaRaceListPayload(data, 'pit stops race list payload');
         const now = new Date();
         return (data.MRData.RaceTable.Races || []).filter(function(r) {
             return new Date(r.date + 'T' + (r.time || '23:59:59Z')) < now;
@@ -214,6 +245,8 @@ function loadPitStopRaceData(round) {
         fetchJSONWithRetry(JOLPICA + '/' + YEAR + '/' + key + '/pitstops.json?limit=200', 0),
         fetchJSONWithRetry(JOLPICA + '/' + YEAR + '/' + key + '/results.json?limit=30', 0)
     ]).then(function(results) {
+        validateJolpicaRacePayload(results[0], 'pit stops payload');
+        validateJolpicaRacePayload(results[1], 'pit stop race results payload');
         const stops = ((results[0].MRData.RaceTable.Races || [])[0] || {}).PitStops || [];
         const raceResults = ((results[1].MRData.RaceTable.Races || [])[0] || {}).Results || [];
 
@@ -423,30 +456,31 @@ function renderPitStops(raceData, race, races) {
     if (state.activeView === 'season') {
         html += state.seasonCache
             ? renderPitStopsSeasonContent(state.seasonCache)
-            : '<div class="pit-stops-season-loading"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-circle-notch"/></svg><p>Φόρτωση season data...</p></div>';
+            : createPitStopsSeasonLoading();
     }
     html += '</div>';
 
     html += '<div class="pit-stops-footnote"><svg class="icon" aria-hidden="true" style="margin-right:0.3rem;opacity:0.6;"><use href="#fa-circle-info"/></svg>Οι χρόνοι αντικατοπτρίζουν τη <strong>συνολική διέλευση του pit lane</strong> (είσοδος–έξοδος), όχι τον χρόνο ακινησίας του αλλαγής ελαστικών. Δεδομένα: <a href="https://github.com/jolpica/jolpica-f1" target="_blank" rel="noopener">Jolpica F1</a></div>';
     html += '</div>';
 
-    pitStopsTable.innerHTML = html;
+    renderTrustedHtml(pitStopsTable, html, 'pit stops trusted race and season panels');
     fireRendered();
 }
 
 function showPitStopsError() {
     if (!pitStopsTable) return;
-    pitStopsTable.innerHTML = '<div class="pit-stops-card"><div class="pit-stops-empty-card">'
-        + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg><p>Αποτυχία φόρτωσης δεδομένων pit stop.</p>'
-        + '<button class="retry-btn" type="button" data-standings-retry="__retryPitStops"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
-        + '</div></div>';
-    fireRendered();
+    renderMessage(pitStopsTable, {
+        wrapperClass: 'pit-stops-card',
+        stateClass: 'pit-stops-empty-card',
+        icon: 'fa-exclamation-triangle',
+        message: 'Αποτυχία φόρτωσης δεδομένων pit stop.',
+        retryAction: '__retryPitStops',
+        retryLabel: 'Νέα προσπάθεια'
+    }, 'pit stops error state', fireRendered);
 }
 
-// The error card's retry button uses an inline onclick that references
-// window.__retryPitStops. We expose a single wrapper that resets the loaded
-// flag and re-runs the load so the orchestrator doesn't need to know the
-// internal state shape.
+// The shared standings retry delegate calls this named action from the error
+// card. Keep the state reset local to this module.
 if (typeof window !== 'undefined') {
     window.__retryPitStops = function() {
         state.loaded = false;

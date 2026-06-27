@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-06-26",
+  "updated": "2026-06-27",
   "description": "Reviewed raw HTML rendering sink counts. Lower this baseline as sinks move to DOM construction or trusted rendering helpers.",
   "ignoredPrefixes": [
     "archive/",
@@ -72,19 +72,7 @@
       "insertAdjacentHTML": 0,
       "total": 1
     },
-    "standings/standings.js": {
-      "innerHTML": 15,
-      "outerHTML": 0,
-      "insertAdjacentHTML": 0,
-      "total": 15
-    },
     "standings/tabs/debrief.js": {
-      "innerHTML": 3,
-      "outerHTML": 0,
-      "insertAdjacentHTML": 0,
-      "total": 3
-    },
-    "standings/tabs/destructors.js": {
       "innerHTML": 3,
       "outerHTML": 0,
       "insertAdjacentHTML": 0,
@@ -101,12 +89,6 @@
       "outerHTML": 0,
       "insertAdjacentHTML": 0,
       "total": 4
-    },
-    "standings/tabs/pit-stops.js": {
-      "innerHTML": 9,
-      "outerHTML": 0,
-      "insertAdjacentHTML": 0,
-      "total": 9
     },
     "standings/tabs/quali-gaps.js": {
       "innerHTML": 4,

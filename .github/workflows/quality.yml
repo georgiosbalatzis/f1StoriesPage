@@ -50,6 +50,9 @@ jobs:
       - name: Run author module tests
         run: npm run test:author
 
+      - name: Run standings module tests
+        run: npm run test:standings
+
       - name: Check file-size budget
         run: npm run perf:budget
 

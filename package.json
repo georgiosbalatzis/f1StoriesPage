@@ -27,6 +27,7 @@
     "build:check": "node scripts/build/generated-drift-guard.mjs",
     "test:blog": "node blog-module/build/__tests__/run-golden.js",
     "test:author": "node --test scripts/author/__tests__/*.test.mjs",
+    "test:standings": "node --test standings/core/__tests__/*.test.mjs",
     "pages:guard": "node scripts/build/pages-source-guard.mjs",
     "quality:rendering": "node scripts/quality/rendering-sink-guard.mjs",
     "quality:rendering:update": "node scripts/quality/rendering-sink-guard.mjs --update",
@@ -40,7 +41,7 @@
     "qa:visual": "node scripts/perf/visual-qa.mjs",
     "test:consent": "node scripts/perf/consent-guard.mjs",
     "perf:lighthouse": "node scripts/perf/lighthouse-guard.mjs",
-    "verify": "npm run build:public && npm run build:check && npm run quality:static && npm run audit:runtime && npm run test:blog && npm run test:author && npm run perf:budget && npm run perf:article-media && npm run perf:images && npm run test:consent && npm run perf:lighthouse"
+    "verify": "npm run build:public && npm run build:check && npm run quality:static && npm run audit:runtime && npm run test:blog && npm run test:author && npm run test:standings && npm run perf:budget && npm run perf:article-media && npm run perf:images && npm run test:consent && npm run perf:lighthouse"
   },
   "dependencies": {
     "adm-zip": "^0.5.12",

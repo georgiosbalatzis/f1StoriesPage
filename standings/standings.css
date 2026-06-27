@@ -248,6 +248,8 @@ body { overflow-y: auto !important; }
 
 .standings-error i, .standings-empty i { font-size: 2rem; margin-bottom: 0.75rem; display: block; opacity: 0.4; }
 
+.standings-error-detail { font-size: 0.8rem; }
+
 .retry-btn { margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1.1rem; background: var(--st-accent-soft); color: var(--st-accent); border: none; border-radius: var(--st-radius-sm); font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all var(--st-transition); }
 
 .retry-btn:hover { background: var(--st-accent); color: #fff; }

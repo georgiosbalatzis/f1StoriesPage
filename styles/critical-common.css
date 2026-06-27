@@ -29,6 +29,7 @@
   --text-primary: #e5e5e7;
   --text-secondary: #a1a1a6;
   --accent: #41B6E6;
+  --accent-readable: #41B6E6;
   --border: rgba(255,255,255,.08);
   --font-body: 'Roboto', system-ui, -apple-system, sans-serif;
   --f1s-hero-position: center center;
@@ -465,6 +466,7 @@ body {
   --text-primary: #1d1d1f;
   --text-secondary: #6e6e73;
   --accent: #41B6E6;
+  --accent-readable: #0A4F66;
   --border: rgba(0,0,0,.08);
 }
 [data-theme="light"] body { background-color: #fff; color: #1d1d1f; }
@@ -475,6 +477,8 @@ body {
   border-bottom-color: rgba(0,0,0,0.06);
 }
 [data-theme="light"] .blog-nav-link { color: #6e6e73; }
+[data-theme="light"] .countdown-timer,
+[data-theme="light"] .blog-nav-countdown-mobile { color: var(--accent-readable); }
 
 /* ── Icon sprite base (Phase 3b) ── */
 /* Replaces the Font Awesome <i> webfont glyphs. Sized to currentColor like

@@ -154,7 +154,7 @@
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.02em;
 }
-[data-theme="light"] .countdown-timer { color: #41B6E6; }
+[data-theme="light"] .countdown-timer { color: var(--accent-readable, #0A4F66); }
 
 .blog-nav-countdown-mobile {
     display: none;
@@ -166,7 +166,7 @@
     flex-shrink: 0;
     white-space: nowrap;
 }
-[data-theme="light"] .blog-nav-countdown-mobile { color: #41B6E6; }
+[data-theme="light"] .blog-nav-countdown-mobile { color: var(--accent-readable, #0A4F66); }
 .blog-nav-countdown-mobile i { font-size: 0.65rem; color: rgba(255,255,255,0.38); }
 [data-theme="light"] .blog-nav-countdown-mobile i { color: #86868b; }
 .blog-nav-countdown-mobile .countdown-flag-mobile {

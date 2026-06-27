@@ -595,6 +595,32 @@ Done when:
 
 Priority: P2
 
+Status: Completed on 2026-06-27 for the professional standings baseline. The later Step 10 data-contract work will broaden schema enforcement across every generated cache.
+
+Implemented:
+
+- Added `standings/core/lifecycle.js` to centralize one-load-at-a-time tab loading, busy-state handling, queued reloads, success callbacks, and controlled error rendering.
+- Expanded `standings/core/rendering.js` with escaped icon, loading, message, and trusted-render helpers so standings modules do not write raw HTML directly.
+- Added `standings/core/payloads.js` for lightweight structural checks before standings API, OpenF1, Jolpica, and destructors cache data reaches rendering code.
+- Migrated `standings/standings.js`, `standings/tabs/destructors.js`, and `standings/tabs/pit-stops.js` onto the shared lifecycle, rendering, loading, error, retry, and payload-validation helpers.
+- Removed those migrated standings modules from the raw rendering sink baseline.
+- Added `standings/core/__tests__/standings-core.test.mjs` to cover shared parsing helpers, rendering helpers, payload validators, and lifecycle success/error/busy paths.
+- Added `npm run test:standings`, included it in `npm run verify`, and added the standings test step to the quality workflow.
+- Updated the size guard inventory and budgets for the new standings core modules.
+- Fixed the light-theme countdown contrast issue surfaced by the Step 9 Lighthouse pass.
+
+Verified:
+
+- `node --check standings/core/rendering.js standings/core/lifecycle.js standings/core/payloads.js standings/core/__tests__/standings-core.test.mjs standings/standings.js standings/tabs/destructors.js standings/tabs/pit-stops.js`
+- `npm run test:standings`
+- `npm run quality:static`
+- `npm run build:public`
+- `npm run audit:runtime`
+- `npm run perf:budget`
+- `npm run perf:lighthouse`
+- `npm run test:blog -- --update`
+- `npm run test:blog`
+
 Problem:
 
 The standings area is valuable, but several modules are still large and blend fetching, caching, data transforms, rendering, empty states, charts, table behavior, and UI lifecycle work.
