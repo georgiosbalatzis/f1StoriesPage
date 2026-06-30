@@ -23,6 +23,24 @@ function parseBuildOptions(argv = process.argv, env = process.env) {
     return { forceRebuild, maxWorkers };
 }
 
+function readJsonIfExists(filePath) {
+    if (!fs.existsSync(filePath)) return null;
+    try {
+        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch (_) {
+        return null;
+    }
+}
+
+function sameJsonExceptKey(left, right, key) {
+    if (!left || !right) return false;
+    const a = { ...left };
+    const b = { ...right };
+    delete a[key];
+    delete b[key];
+    return JSON.stringify(a) === JSON.stringify(b);
+}
+
 function runWorker(entryPath) {
     return new Promise((resolve, reject) => {
         const worker = new Worker(path.join(__dirname, 'worker.js'), {
@@ -614,6 +632,10 @@ async function processBlogEntries(options = {}) {
         lastUpdated
     };
     const pageOnePath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-page-1.json');
+    const existingPageOneData = readJsonIfExists(pageOnePath);
+    if (sameJsonExceptKey(existingPageOneData, pageOneData, 'lastUpdated') && existingPageOneData.lastUpdated) {
+        pageOneData.lastUpdated = existingPageOneData.lastUpdated;
+    }
     fs.writeFileSync(pageOnePath, JSON.stringify(pageOneData, null, 0));
     console.log(`Blog first-page data saved to ${pageOnePath} (${jsonKb(pageOneData)} KB)`);
     injectBlogIndexFirstPage(indexPosts, pageOneData);

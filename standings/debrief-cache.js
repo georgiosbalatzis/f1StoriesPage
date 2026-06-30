@@ -170,6 +170,28 @@ function parseDateValue(value) {
     return isFiniteNumber(timestamp) ? timestamp : 0;
 }
 
+function readExistingCache(expectedYear) {
+    if (!fs.existsSync(OUTPUT_PATH)) return null;
+    try {
+        var parsed = JSON.parse(fs.readFileSync(OUTPUT_PATH, 'utf8'));
+        if (!parsed || parsed.version !== 2 || parseInt(parsed.season, 10) !== parseInt(expectedYear, 10)) {
+            return null;
+        }
+        return parsed;
+    } catch (_) {
+        return null;
+    }
+}
+
+function sameJsonExceptKey(left, right, key) {
+    if (!left || !right) return false;
+    var a = Object.assign({}, left);
+    var b = Object.assign({}, right);
+    delete a[key];
+    delete b[key];
+    return JSON.stringify(a) === JSON.stringify(b);
+}
+
 function isCompletedSession(session) {
     if (!session || session.is_cancelled) return false;
     var d = parseDateValue(session.date_end || session.date_start || session.date);
@@ -1168,6 +1190,7 @@ function parseCliOptions(argv) {
 
 async function updateDebriefCache(options) {
     var year = parseInt(options && options.year, 10) || DEFAULT_YEAR;
+    var existing = readExistingCache(year);
     var sessions = await fetchJSON(OPENF1 + '/sessions?year=' + encodeURIComponent(year));
     var meetings = buildMeetings(sessions);
     var rounds = [];
@@ -1189,6 +1212,9 @@ async function updateDebriefCache(options) {
         },
         rounds: rounds
     };
+    if (sameJsonExceptKey(existing, payload, 'generatedAt') && existing.generatedAt) {
+        payload.generatedAt = existing.generatedAt;
+    }
 
     fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
     fs.writeFileSync(OUTPUT_PATH, JSON.stringify(payload, null, 2) + '\n', 'utf8');
