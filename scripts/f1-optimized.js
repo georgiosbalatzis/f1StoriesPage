@@ -24,15 +24,6 @@
             navigator.connection.effectiveType !== '3g';
     }
 
-    function escapeHtml(value) {
-        return String(value || '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-    }
-
     function prefersReducedMotion() {
         return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     }
@@ -366,7 +357,16 @@
                         var msg = (data && data.errors && data.errors.length)
                             ? 'Δεν ήταν δυνατή η αποστολή του μηνύματος.'
                             : 'Παρουσιάστηκε σφάλμα κατά την αποστολή.';
-                        error.querySelector('span').innerHTML = msg + ' — ή στείλε email στο <a href="mailto:myf1stories@gmail.com">myf1stories@gmail.com</a>';
+                        var errorText = error.querySelector('span');
+                        if (errorText) {
+                            var emailLink = document.createElement('a');
+                            emailLink.href = 'mailto:myf1stories@gmail.com';
+                            emailLink.textContent = 'myf1stories@gmail.com';
+                            errorText.replaceChildren(
+                                document.createTextNode(msg + ' - ή στείλε email στο '),
+                                emailLink
+                            );
+                        }
                         error.style.display = 'flex';
                     }
                 });
@@ -395,31 +395,95 @@
         });
     }
 
-    function buildVideoCard(video) {
+    function createIcon(iconId) {
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'icon');
+        svg.setAttribute('aria-hidden', 'true');
+        var use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+        use.setAttribute('href', '#' + iconId);
+        svg.appendChild(use);
+        return svg;
+    }
+
+    function createVideoMessage(message, link) {
+        var col = document.createElement('div');
+        col.className = 'col-12 text-center';
+        var p = document.createElement('p');
+        p.style.color = 'var(--text-secondary)';
+        p.appendChild(document.createTextNode(message));
+        if (link) {
+            var anchor = document.createElement('a');
+            anchor.href = link.href;
+            anchor.target = '_blank';
+            anchor.rel = 'noopener';
+            anchor.style.color = 'var(--accent)';
+            anchor.textContent = link.text;
+            p.appendChild(anchor);
+            if (link.after) p.appendChild(document.createTextNode(link.after));
+        }
+        col.appendChild(p);
+        return col;
+    }
+
+    function createVideoCard(video) {
         var id = normalizeVideoId(video && video.id);
-        if (!id) return '';
-        var title = escapeHtml(video.title || 'Χωρίς τίτλο');
+        if (!id) return null;
+        var title = video.title || 'Χωρίς τίτλο';
         var date = video.publishedAt ? fmtDate(video.publishedAt) : '';
         var url = canonicalVideoUrl(id);
         var thumb = normalizeThumbnailUrl(video.thumbnail, id) || canonicalThumbnailUrl(id);
-        var meta = [];
 
-        if (date) meta.push('<svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ' + escapeHtml(date));
+        var col = document.createElement('div');
+        col.className = 'col-md-6 col-lg-4';
 
-        return '<div class="col-md-6 col-lg-4">'
-            + '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener" class="ep-card" title="' + title + '">'
-            + '<div class="ep-card__thumb">'
-            + '<img src="' + escapeHtml(thumb) + '" alt="' + title + '" loading="lazy" decoding="async" width="480" height="360">'
-            + '<span class="ep-card__brand"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</span>'
-            + '<div class="ep-card__play"><svg class="icon" aria-hidden="true"><use href="#fa-play"/></svg></div>'
-            + '</div>'
-            + '<div class="ep-card__body">'
-            + '<h3 class="ep-card__title">' + title + '</h3>'
-            + (meta.length ? '<div class="ep-card__meta">' + meta.join(' <span style="opacity:.4">·</span> ') + '</div>' : '')
-            + '<span class="ep-card__cta">Παρακολούθηση <svg class="icon" aria-hidden="true"><use href="#fa-play"/></svg></span>'
-            + '</div>'
-            + '</a>'
-            + '</div>';
+        var link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.className = 'ep-card';
+        link.title = title;
+
+        var thumbWrap = document.createElement('div');
+        thumbWrap.className = 'ep-card__thumb';
+        var img = document.createElement('img');
+        img.src = thumb;
+        img.alt = title;
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.width = 480;
+        img.height = 360;
+
+        var brand = document.createElement('span');
+        brand.className = 'ep-card__brand';
+        brand.append(createIcon('fa-youtube'), document.createTextNode(' YouTube'));
+
+        var play = document.createElement('div');
+        play.className = 'ep-card__play';
+        play.appendChild(createIcon('fa-play'));
+        thumbWrap.append(img, brand, play);
+
+        var body = document.createElement('div');
+        body.className = 'ep-card__body';
+        var titleEl = document.createElement('h3');
+        titleEl.className = 'ep-card__title';
+        titleEl.textContent = title;
+        body.appendChild(titleEl);
+
+        if (date) {
+            var meta = document.createElement('div');
+            meta.className = 'ep-card__meta';
+            meta.append(createIcon('fa-calendar-alt'), document.createTextNode(' ' + date));
+            body.appendChild(meta);
+        }
+
+        var cta = document.createElement('span');
+        cta.className = 'ep-card__cta';
+        cta.append(document.createTextNode('Παρακολούθηση '), createIcon('fa-play'));
+        body.appendChild(cta);
+
+        link.append(thumbWrap, body);
+        col.appendChild(link);
+        return col;
     }
 
     function renderVideos(videos) {
@@ -428,11 +492,12 @@
         removeVideoSkeletons();
 
         if (!videos || !videos.length) {
-            videoGrid.innerHTML = '<div class="col-12 text-center"><p style="color:var(--text-secondary)">Δεν βρέθηκαν βίντεο. Δοκίμασε αργότερα.</p></div>';
+            videoGrid.replaceChildren(createVideoMessage('Δεν βρέθηκαν βίντεο. Δοκίμασε αργότερα.'));
             return;
         }
 
-        videoGrid.innerHTML = videos.map(buildVideoCard).join('');
+        var cards = videos.map(createVideoCard).filter(Boolean);
+        videoGrid.replaceChildren.apply(videoGrid, cards);
     }
 
     function actuallyLoadVideos() {
@@ -447,7 +512,11 @@
             .catch(function (error) {
                 console.error('Video load error:', error);
                 removeVideoSkeletons();
-                videoGrid.innerHTML = '<div class="col-12 text-center"><p style="color:var(--text-secondary)">Δεν ήταν δυνατή η φόρτωση βίντεο. <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" style="color:var(--accent)">Δες το κανάλι μας στο YouTube</a>.</p></div>';
+                videoGrid.replaceChildren(createVideoMessage('Δεν ήταν δυνατή η φόρτωση βίντεο. ', {
+                    href: 'https://www.youtube.com/@f1_stories_original',
+                    text: 'Δες το κανάλι μας στο YouTube',
+                    after: '.'
+                }));
             });
     }
 

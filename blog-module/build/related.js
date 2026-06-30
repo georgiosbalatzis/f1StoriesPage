@@ -63,7 +63,7 @@ async function buildRelatedPostsHtml(relatedPosts) {
                         </div>
                         <div class="card-body">
                             <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ${relDateStr}</div>
-                            <h5>${relatedTitle}</h5>
+                            <h3>${relatedTitle}</h3>
                             <div class="related-card-footer">
                                 <span class="related-card-read">Read More <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">${relatedAuthor}</span>

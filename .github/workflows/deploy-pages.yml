@@ -75,6 +75,10 @@ jobs:
         timeout-minutes: 5
         run: npm run test:consent
 
+      - name: Run visual and accessibility smoke checks
+        timeout-minutes: 10
+        run: npm run qa:visual
+
       - name: Run Lighthouse budgets
         timeout-minutes: 10
         run: npm run perf:lighthouse

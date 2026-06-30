@@ -16,6 +16,7 @@ import { esc } from '../core/format.js';
 import { hexToRgbChannels, getCanonicalTeamColor } from '../core/teams.js';
 import { getCachedHeadshotResult } from '../core/drivers-meta.js';
 import { fetchJSON, fetchOpenF1BySessionKeys } from '../core/fetchers.js';
+import { setTrustedHtml } from '../core/rendering.js';
 import { isFiniteNumber } from './_shared.js';
 
 const OPENF1 = 'https://api.openf1.org/v1';
@@ -459,11 +460,11 @@ function renderLap1Gains(rows) {
     state.rows = rows || [];
 
     if (!rows || !rows.length) {
-        lap1GainsTable.innerHTML = '<div class="lap1-empty-card">'
+        setTrustedHtml(lap1GainsTable, '<div class="lap1-empty-card">'
             + '<svg class="icon" aria-hidden="true"><use href="#fa-arrow-trend-up"/></svg>'
             + '<p>Δεν υπάρχουν ακόμη διαθέσιμα δεδομένα για τα μεγαλύτερα gains μετά τον 1ο γύρο.</p>'
             + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed race ή sprint sessions με lap timing data.</p>'
-            + '</div>';
+            + '</div>', 'lap 1 gains empty state');
         if (onRendered) onRendered('lap1-gains');
         return;
     }
@@ -487,18 +488,18 @@ function renderLap1Gains(rows) {
         + '</div></div>'
         + viewContent;
 
-    lap1GainsTable.innerHTML = html;
+    setTrustedHtml(lap1GainsTable, html, 'lap 1 gains report template');
     if (onRendered) onRendered('lap1-gains');
 }
 
 function showLap1GainsError() {
     if (!lap1GainsTable) return;
-    lap1GainsTable.innerHTML = '<div class="lap1-empty-card">'
+    setTrustedHtml(lap1GainsTable, '<div class="lap1-empty-card">'
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση των Lap 1 gains.</p>'
         + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
         + '<button class="retry-btn" type="button" data-standings-retry="__retryLap1Gains"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
-        + '</div>';
+        + '</div>', 'lap 1 gains error state');
     if (onRendered) onRendered('lap1-gains');
 }
 
@@ -548,7 +549,7 @@ export function ensureLoaded(forceReload) {
     if (state.loaded && !forceReload) return;
 
     state.loading = true;
-    lap1GainsTable.innerHTML = createLap1SkeletonRows(4);
+    setTrustedHtml(lap1GainsTable, createLap1SkeletonRows(4), 'lap 1 gains skeleton');
 
     loadLap1GainRows().then(function(rows) {
         renderLap1Gains(rows);

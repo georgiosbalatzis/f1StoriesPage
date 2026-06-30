@@ -184,6 +184,11 @@ const BANNED_TEXT_PATTERNS = [
         reason: 'author tools must use local JSZip while handling GitHub tokens'
     },
     {
+        files: /^scripts\/author\/(?:generate-page|housekeeping-page)\.js$/,
+        pattern: /(^|[^.$\w])(?:alert|confirm|prompt)\s*\(/,
+        reason: 'author tools must use scripts/author/dialogs.js instead of native browser dialogs'
+    },
+    {
         files: /^blog-module\/build\/__tests__\/.*\.js$/,
         pattern: /\b(?:BLOG_DATA_PATH|CONFIG\.OUTPUT_JSON|OUTPUT_JSON)\b|blog-data\.json/i,
         reason: 'tests must use committed fixtures or blog-source-cache data instead of the ignored full blog-data.json artifact'

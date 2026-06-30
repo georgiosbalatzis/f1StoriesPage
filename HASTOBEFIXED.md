@@ -225,7 +225,7 @@ Done when:
 
 Priority: P1
 
-Status: Completed on 2026-06-23 for enforceable policy, guardrails, and author warnings. Historical raw-asset reduction remains a follow-up cleanup, not a blocker for the policy.
+Status: Completed on 2026-06-30, including historical raw-asset reduction.
 
 Implemented:
 
@@ -235,7 +235,9 @@ Implemented:
 - Added `npm run perf:article-media` to the full `npm run verify` chain.
 - Added `docs/article-media-policy.md` to define source-vs-generated article media expectations.
 - The media guard blocks silent new raw article image paths unless the baseline is intentionally updated.
-- The current baseline records 1,808 tracked article media files, 146.66 MB total, 1,794 optimized AVIF/WebP files, and 14 reviewed raw source images.
+- The initial baseline recorded 1,808 tracked article media files, 146.66 MB total, 1,794 optimized AVIF/WebP files, and 14 reviewed raw source images.
+- Removed the 14 historical raw JPG/JPEG/PNG article originals after confirming they were not referenced by article HTML or source metadata and had optimized AVIF/WebP siblings.
+- Lowered `perf/article-media-budget.json` to the current zero-raw baseline: 1,806 tracked article media files, 143.47 MB total, 1,806 optimized AVIF/WebP files, and 0 reviewed raw source images.
 - `generate.html` now warns authors when selected images are raw JPG/PNG/GIF inputs or larger than 1 MB before export/publish.
 - The author warning explains that the tool publishes WebP files and that raw originals should not be added to the PR.
 
@@ -244,11 +246,6 @@ Verified:
 - `npm run perf:article-media:update`
 - `npm run perf:article-media`
 - `npm run quality:static`
-
-Follow-up cleanup:
-
-- Review whether the 14 existing raw source images still need to stay in git.
-- Consider lowering the repo media budget after historical raw assets are removed or archived.
 
 Problem:
 
@@ -273,7 +270,7 @@ Done when:
 
 Priority: P1
 
-Status: Completed on 2026-06-27 for the maintainable static-author-tool baseline. The remaining native `alert`/`confirm`/`prompt` dialogs are behavior-preserving follow-up UX polish, not a blocker for source modularization.
+Status: Completed on 2026-06-30 for the maintainable static-author-tool baseline and native-dialog replacement.
 
 Implemented:
 
@@ -314,6 +311,9 @@ Implemented:
 - Extracted Housekeeping's page-local styles to `styles/author/housekeeping.css`.
 - `generate.html` and `housekeeping.html` are now small static shells that load shared author helpers and page-owned author assets.
 - Removed script `unsafe-inline` from both author-tool CSP declarations after externalizing their page scripts.
+- Added `scripts/author/dialogs.js` as a shared accessible in-page modal helper for alert, confirm, and prompt flows.
+- Replaced Generate and Housekeeping native `alert`, `confirm`, and `prompt` calls with queued in-page dialogs while preserving cancellation behavior in token, import, export, publish, delete, and edit-save flows.
+- Added a static source guard so `scripts/author/generate-page.js` and `scripts/author/housekeeping-page.js` cannot reintroduce native browser dialogs silently.
 
 Verified:
 
@@ -329,6 +329,7 @@ Verified:
 - `npm run test:author`
 - `node --check scripts/author/generate-page.js`
 - `node --check scripts/author/housekeeping-page.js`
+- `node --check scripts/author/dialogs.js`
 - `npm run quality:static`
 - `npm run pages:guard`
 - `npm run quality:rendering:update`
@@ -346,7 +347,7 @@ Change:
 - Move shared author styles into a dedicated source CSS file.
 - Create a shared GitHub API client for branch creation, file updates, PR creation, and status messages.
 - Create shared UI utilities for validation messages, confirmations, progress, and modal dialogs.
-- Keep remaining `alert`, `confirm`, and `prompt` flows behavior-preserving for this baseline, with a separate follow-up to replace them with accessible in-page dialogs.
+- Keep confirmation, token, and destructive flows behavior-preserving through accessible in-page dialogs.
 - Add tests for pure author-tool functions: slug creation, branch naming, file path generation, markdown/html extraction, GitHub payload shaping, and PR metadata.
 
 Done when:
@@ -355,13 +356,13 @@ Done when:
 - Common author flows behave the same or better than today.
 - Token handling remains local to the browser and is clearly documented.
 - New author features can be added without editing thousands of lines in one HTML file.
-- The remaining native browser dialogs are isolated as follow-up UX polish.
+- Native browser dialogs are not used by the active author page scripts.
 
 ### Step 7 - Add A Rendering Safety System
 
 Priority: P1
 
-Status: Completed for active source files on 2026-06-23. The baseline guard prevents new raw HTML sinks from being added silently, and remaining raw rendering is limited to named trusted helpers.
+Status: Completed for active source files on 2026-06-30. The baseline guard prevents new raw HTML sinks from being added silently, and remaining raw rendering is limited to the named trusted helpers in `scripts/author/dom-tools.js` and `standings/core/rendering.js`.
 
 Implemented:
 
@@ -644,6 +645,25 @@ Done when:
 
 Priority: P2
 
+Status: Completed on 2026-06-30.
+
+Implemented:
+
+- Added `scripts/build/validate-data-contracts.mjs` as a lightweight generated-data contract validator.
+- Added `npm run build:data-contracts`.
+- Wired `npm run build:data-contracts` into `npm run build:public` after the generated build and before `dist/` assembly.
+- Validates the compact blog index `v: 2`, first-page blog index payload, source cache, home-latest payload, YouTube snapshot, standings caches, app manifest, asset manifest, and sitemap.
+- Validates existing schema/version fields for `blog-index-data`, dirty-air, destructors, and debrief caches.
+- Added `docs/data-contracts.md` with current generated format notes and migration-note expectations.
+
+Verified:
+
+- `node --check scripts/build/validate-data-contracts.mjs`
+- `npm run build:data-contracts`
+- `npm run build:public`
+- `npm run quality:static`
+- `git diff --check`
+
 Problem:
 
 The static site depends on generated JSON and cache files, but their structure is not enforced as a stable contract. A malformed generated file can pass through until runtime.
@@ -666,6 +686,28 @@ Done when:
 
 Priority: P2
 
+Status: Completed on 2026-06-30.
+
+Implemented:
+
+- Extended `scripts/build/validate-public-artifact.mjs` to validate sitemap entries, canonical URLs, Open Graph URLs, same-origin JSON-LD URLs, social images, and output routes against `dist/`.
+- Added required artifact checks for `CNAME`, public icons, public JSON payloads, standings caches, service worker, manifest, and core runtime files.
+- Added manifest icon/shortcut reference validation.
+- Added service-worker precache and explicit `jsonFrom(...)` reference validation against files that actually exist in `dist/`.
+- Added representative static route checks for home/about/contact, blog index, current article, standings, and 404.
+- Kept author-only/private/source-map/unminified artifact bans in the same public validator.
+- Changed the blog index `og:image` to the shipped `images/icons/icon-512.png` asset so missing social images fail instead of being silently ignored.
+
+Verified:
+
+- `node --check scripts/build/validate-public-artifact.mjs`
+- `node scripts/build/public-artifact.mjs`
+- `node scripts/build/validate-public-artifact.mjs`
+- `npm run build:public`
+- `npm run quality:static`
+- `npm run test:blog`
+- `git diff --check`
+
 Problem:
 
 Public artifact validation already catches many bad files and references. The next polish layer is to validate page-level consistency and offline/deploy behavior.
@@ -686,6 +728,30 @@ Done when:
 ### Step 12 - Polish Visual, Accessibility, And Release Checks
 
 Priority: P2
+
+Status: Completed on 2026-06-30.
+
+Implemented:
+
+- Reworked `scripts/perf/visual-qa.mjs` into a Playwright-core smoke pass that serves `dist/`, captures ignored screenshots, and checks dark/light themes across mobile, tablet, desktop, and wide viewports.
+- Added critical route coverage for home, blog index, latest article, standings driver/constructor/quali/dirty-air tabs, privacy, offline, and a real missing-route 404 response.
+- Added assertions for page errors, HTTP status, horizontal overflow, broken visible images, visible image alt attributes, one visible `h1`, main/navigation/footer landmarks, heading order, labelled interactive controls, positive tabindex, focus traversal, control contrast, article readability, standings tab state, mobile navigation, cookie consent, and theme toggling.
+- Added `playwright-core` as a browser-smoke dependency while keeping existing Puppeteer-based Lighthouse and consent checks.
+- Wired `npm run qa:visual` into `npm run verify`, `.github/workflows/quality.yml`, and `.github/workflows/deploy-pages.yml`.
+- Added `docs/release-checklist.md` for subjective visual QA and confirmed `perf/visual-qa/` remains ignored.
+- Replaced the stale offline-copy `404.html` with a real not-found page and added a main landmark to `offline.html`.
+- Fixed contrast/readability/heading issues found by the new QA pass: light active tabs/chips/buttons, contact submit button text, article comment heading order, related-card headings, mobile article body size, and standings tab gradient fallbacks.
+- Updated blog golden fixtures for the intentional article heading markup changes.
+
+Verified:
+
+- `node --check scripts/perf/visual-qa.mjs`
+- `node --check blog-module/build/related.js`
+- `npm run build:public`
+- `npm run qa:visual`
+- `npm run quality:static`
+- `npm run test:blog`
+- `git diff --check`
 
 Problem:
 
@@ -708,6 +774,23 @@ Done when:
 ### Step 13 - Document The Static Publishing Model
 
 Priority: P2
+
+Status: Completed on 2026-06-30.
+
+Implemented:
+
+- Added `docs/static-publishing-model.md` as the maintainer guide for the static publishing model.
+- Documented source files, article content, generated-and-committed files, local-only files, and the `dist/` public boundary.
+- Documented the author flow through `generate.html`, `housekeeping.html`, local tool serving, GitHub token publishing, PR review, maintenance rebuilds, and Pages deploy.
+- Documented the build flow, deploy flow, and what each quality command protects.
+- Added short decision records for static hosting, no backend CMS, committed generated article output, `dist/` as the public boundary, local-only author tools, and browser-native public runtime code.
+- Linked the guide from `README.md`.
+
+Verified:
+
+- `git diff --check`
+- `rg -n "static-publishing-model|Static Publishing Model|DR-001" README.md docs/static-publishing-model.md HASTOBEFIXED.md`
+- `npm run quality:static`
 
 Problem:
 
@@ -743,6 +826,7 @@ npm run perf:budget
 npm run perf:article-media
 npm run perf:images
 npm run test:consent
+npm run qa:visual
 npm run perf:lighthouse
 ```
 

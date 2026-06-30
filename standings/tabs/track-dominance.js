@@ -23,6 +23,7 @@ import {
     fetchOpenF1BySessionKeys,
     fetchOpenF1ByDriverNumbers
 } from '../core/fetchers.js';
+import { setTrustedHtml } from '../core/rendering.js';
 import { parseNumberValue, isFiniteNumber, parseTimeSeconds } from './_shared.js';
 
 const OPENF1 = 'https://api.openf1.org/v1';
@@ -907,11 +908,11 @@ function renderTrackDominance(sessionData, pairData, session) {
     if (!trackDominanceTable) return;
 
     if (!sessionData || !session || !sessionData.drivers || sessionData.drivers.length < 2) {
-        trackDominanceTable.innerHTML = '<div class="track-dom-empty-card">'
+        setTrustedHtml(trackDominanceTable, '<div class="track-dom-empty-card">'
             + '<svg class="icon" aria-hidden="true"><use href="#fa-route"/></svg>'
             + '<p>Δεν υπάρχουν ακόμη αρκετά telemetry laps για driver comparison.</p>'
             + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed sessions με valid fastest laps για τουλάχιστον δύο οδηγούς.</p>'
-            + '</div>';
+            + '</div>', 'track dominance empty state');
         fireRendered();
         return;
     }
@@ -934,10 +935,10 @@ function renderTrackDominance(sessionData, pairData, session) {
     const leftDriver = sessionData.driverMap[state.leftDriverKey];
     const rightDriver = sessionData.driverMap[state.rightDriverKey];
     if (!leftDriver || !rightDriver) {
-        trackDominanceTable.innerHTML = '<div class="track-dom-empty-card">'
+        setTrustedHtml(trackDominanceTable, '<div class="track-dom-empty-card">'
             + '<svg class="icon" aria-hidden="true"><use href="#fa-route"/></svg>'
             + '<p>Δεν ήταν δυνατή η φόρτωση των selected drivers για το session.</p>'
-            + '</div>';
+            + '</div>', 'track dominance missing driver state');
         fireRendered();
         return;
     }
@@ -993,18 +994,18 @@ function renderTrackDominance(sessionData, pairData, session) {
 
     html += '<p class="track-dom-footnote">Source: OpenF1 `laps` + `location`. Κάθε selected driver εκπροσωπείται από το single fastest lap του στο session.</p></div>';
 
-    trackDominanceTable.innerHTML = html;
+    setTrustedHtml(trackDominanceTable, html, 'track dominance report template');
     fireRendered();
 }
 
 function showTrackDominanceError() {
     if (!trackDominanceTable) return;
-    trackDominanceTable.innerHTML = '<div class="track-dom-empty-card">'
+    setTrustedHtml(trackDominanceTable, '<div class="track-dom-empty-card">'
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση του track dominance chart.</p>'
         + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 telemetry endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
         + '<button class="retry-btn" type="button" data-standings-retry="__retryTrackDominance"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
-        + '</div>';
+        + '</div>', 'track dominance error state');
     fireRendered();
 }
 
@@ -1053,7 +1054,7 @@ function loadAndRenderTrackDominance(useSkeleton) {
 
     state.loading = true;
     state.pendingReload = false;
-    if (useSkeleton) trackDominanceTable.innerHTML = createTrackDominanceSkeleton();
+    if (useSkeleton) setTrustedHtml(trackDominanceTable, createTrackDominanceSkeleton(), 'track dominance skeleton');
 
     const sessionsPromise = state.sessions.length
         ? Promise.resolve(state.sessions)

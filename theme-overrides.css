@@ -294,8 +294,9 @@
 }
 
 [data-theme="light"] .latest-tab.active {
-    color: #fff !important;
-    background: linear-gradient(135deg, #41B6E6, #DB3EB1) !important;
+    color: #0B0D12 !important;
+    background-color: #41B6E6 !important;
+    background-image: linear-gradient(135deg, #41B6E6, #DB3EB1) !important;
     box-shadow: 0 10px 24px rgba(65,182,230,0.18) !important;
 }
 

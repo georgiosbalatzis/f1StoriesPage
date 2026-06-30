@@ -218,27 +218,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
         headings.forEach((h, i) => { if (!h.id) h.id = 'section-' + (i + 1); });
 
-        let tocItems = '';
-        headings.forEach(h => {
-            const level = h.tagName === 'H3' ? 'toc-sub' : '';
-            tocItems += `<a href="#${h.id}" class="toc-item ${level}">${h.textContent.trim()}</a>`;
-        });
+        function createIcon(iconId, className) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', className || 'icon');
+            svg.setAttribute('aria-hidden', 'true');
+            const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            use.setAttribute('href', '#' + iconId);
+            svg.appendChild(use);
+            return svg;
+        }
 
         const tocEl = document.createElement('nav');
         tocEl.className = 'article-toc';
-        tocEl.innerHTML = `
-            <button class="toc-toggle" id="toc-toggle" aria-label="Toggle table of contents">
-                <svg class="icon" aria-hidden="true"><use href="#fa-list-ul"/></svg>
-                <span>Περιεχόμενα / Contents</span>
-                <svg class="icon toc-chevron" aria-hidden="true"><use href="#fa-chevron-down"/></svg>
-            </button>
-            <div class="toc-body" id="toc-body">${tocItems}</div>
-        `;
+        const toggle = document.createElement('button');
+        toggle.className = 'toc-toggle';
+        toggle.id = 'toc-toggle';
+        toggle.type = 'button';
+        toggle.setAttribute('aria-label', 'Toggle table of contents');
+        const label = document.createElement('span');
+        label.textContent = 'Περιεχόμενα / Contents';
+        toggle.append(createIcon('fa-list-ul'), label, createIcon('fa-chevron-down', 'icon toc-chevron'));
+
+        const body = document.createElement('div');
+        body.className = 'toc-body';
+        body.id = 'toc-body';
+        headings.forEach(h => {
+            const link = document.createElement('a');
+            link.setAttribute('href', '#' + h.id);
+            link.className = h.tagName === 'H3' ? 'toc-item toc-sub' : 'toc-item';
+            link.textContent = h.textContent.trim();
+            body.appendChild(link);
+        });
+        tocEl.append(toggle, body);
 
         articleContent.parentNode.insertBefore(tocEl, articleContent);
 
-        const tocToggle = tocEl.querySelector('#toc-toggle');
-        const tocBody = tocEl.querySelector('#toc-body');
+        const tocToggle = toggle;
+        const tocBody = body;
         if (tocToggle && tocBody) {
             tocToggle.addEventListener('click', () => {
                 tocBody.classList.toggle('open');
@@ -335,27 +351,51 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!getImages().length) return;
 
+        function createIcon(iconId) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'icon');
+            svg.setAttribute('aria-hidden', 'true');
+            const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            use.setAttribute('href', '#' + iconId);
+            svg.appendChild(use);
+            return svg;
+        }
+
+        function createLightboxButton(className, label, iconId) {
+            const button = document.createElement('button');
+            button.className = className;
+            button.type = 'button';
+            button.setAttribute('aria-label', label);
+            button.appendChild(createIcon(iconId));
+            return button;
+        }
+
         // Build overlay DOM once
         const overlay = document.createElement('div');
         overlay.className = 'lb-overlay';
         overlay.setAttribute('role', 'dialog');
         overlay.setAttribute('aria-modal', 'true');
         overlay.setAttribute('aria-label', 'Image viewer');
-        overlay.innerHTML = `
-            <button class="lb-close" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#fa-times"/></svg></button>
-            <div class="lb-img-wrap">
-                <img class="lb-img" src="" alt="">
-            </div>
-            <button class="lb-prev" aria-label="Previous image"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-left"/></svg></button>
-            <button class="lb-next" aria-label="Next image"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-right"/></svg></button>
-            <div class="lb-counter"></div>`;
+        const closeButton = createLightboxButton('lb-close', 'Close', 'fa-times');
+        const imageWrap = document.createElement('div');
+        imageWrap.className = 'lb-img-wrap';
+        const image = document.createElement('img');
+        image.className = 'lb-img';
+        image.src = '';
+        image.alt = '';
+        imageWrap.appendChild(image);
+        const prevButton = createLightboxButton('lb-prev', 'Previous image', 'fa-chevron-left');
+        const nextButton = createLightboxButton('lb-next', 'Next image', 'fa-chevron-right');
+        const counter = document.createElement('div');
+        counter.className = 'lb-counter';
+        overlay.append(closeButton, imageWrap, prevButton, nextButton, counter);
         document.body.appendChild(overlay);
 
-        const lbImg = overlay.querySelector('.lb-img');
-        const lbClose = overlay.querySelector('.lb-close');
-        const lbPrev = overlay.querySelector('.lb-prev');
-        const lbNext = overlay.querySelector('.lb-next');
-        const lbCounter = overlay.querySelector('.lb-counter');
+        const lbImg = image;
+        const lbClose = closeButton;
+        const lbPrev = prevButton;
+        const lbNext = nextButton;
+        const lbCounter = counter;
 
         let current = 0;
         let touchStartX = 0;

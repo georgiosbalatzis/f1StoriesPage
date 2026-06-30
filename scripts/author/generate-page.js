@@ -39,6 +39,35 @@
     var backBtn       = document.getElementById('gen-back-btn');
     var editorPanel   = document.getElementById('editor-panel');
     var previewWrap   = document.getElementById('preview-wrapper');
+    var authorDom = window.F1S_AUTHOR_DOM_TOOLS;
+    var authorDialogs = window.F1S_AUTHOR_DIALOGS;
+
+    if (!authorDom) {
+        throw new Error('Author DOM helper failed to load.');
+    }
+    if (!authorDialogs) {
+        throw new Error('Author dialog helper failed to load.');
+    }
+
+    function showAlert(message, options) {
+        return authorDialogs.alert(message, options);
+    }
+
+    function showConfirm(message, options) {
+        return authorDialogs.confirm(message, options);
+    }
+
+    function showPrompt(message, defaultValue, options) {
+        return authorDialogs.prompt(message, defaultValue, options);
+    }
+
+    function setExportReady() {
+        authorDom.setIconText(exportBtn, 'fa-file-zipper', 'Εξαγωγή ZIP');
+    }
+
+    function setPublishReady() {
+        authorDom.setIconText(publishBtn, 'fa-rocket', 'Δημοσίευση');
+    }
 
     // Author → folder code (mirrors blog-processor.js AUTHOR_MAP)
     var AUTHOR_CODES = {
@@ -126,7 +155,7 @@
     function renderContentImagesList() {
         if (!contentImageFiles.length) {
             contentImagesList.style.display = 'none';
-            contentImagesList.innerHTML = '';
+            contentImagesList.replaceChildren();
             contentFileText.textContent = 'Εικόνες κειμένου';
             contentFileLabel.classList.remove('has-file');
             updateMarkerCount();
@@ -135,7 +164,7 @@
         contentImagesList.style.display = 'grid';
         contentImagesList.style.gridTemplateColumns = 'repeat(auto-fill, minmax(140px, 1fr))';
         contentImagesList.style.gap = '0.5rem';
-        contentImagesList.innerHTML = '';
+        contentImagesList.replaceChildren();
 
         contentImageFiles.forEach(function (item, idx) {
             var tile = document.createElement('div');
@@ -161,10 +190,10 @@
             controls.style.cssText =
                 'position:absolute;top:4px;right:4px;display:flex;gap:3px;';
 
-            function mkBtn(html, title, handler) {
+            function mkBtn(iconId, title, handler) {
                 var b = document.createElement('button');
                 b.type = 'button';
-                b.innerHTML = html;
+                b.appendChild(authorDom.createSvgIcon(iconId));
                 b.title = title;
                 b.style.cssText =
                     'width:22px;height:22px;padding:0;border:none;border-radius:50%;' +
@@ -176,7 +205,7 @@
 
             if (idx > 0) {
                 controls.appendChild(mkBtn(
-                    '<svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg>',
+                    'fa-arrow-left',
                     'Μετακίνηση αριστερά',
                     function () {
                         var tmp = contentImageFiles[idx - 1];
@@ -188,7 +217,7 @@
             }
             if (idx < contentImageFiles.length - 1) {
                 controls.appendChild(mkBtn(
-                    '<svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg>',
+                    'fa-arrow-right',
                     'Μετακίνηση δεξιά',
                     function () {
                         var tmp = contentImageFiles[idx + 1];
@@ -199,7 +228,7 @@
                 ));
             }
             controls.appendChild(mkBtn(
-                '<svg class="icon" aria-hidden="true"><use href="#fa-times"/></svg>',
+                'fa-times',
                 'Αφαίρεση',
                 function () {
                     URL.revokeObjectURL(item.url);
@@ -344,12 +373,12 @@
         if (!zipFile) return;
 
         if (typeof JSZip === 'undefined') {
-            alert('Η βιβλιοθήκη ZIP φορτώνει ακόμη — δοκίμασε ξανά σε λίγο.');
+            await showAlert('Η βιβλιοθήκη ZIP φορτώνει ακόμη - δοκίμασε ξανά σε λίγο.');
             return;
         }
 
         var dirty = titleInput.value.trim() || contentArea.value.trim() || contentImageFiles.length || heroObjectUrl || headerObjectUrl;
-        if (dirty && !confirm('Θα αντικατασταθούν τα τρέχοντα πεδία και οι εικόνες από το ZIP. Συνέχεια;')) {
+        if (dirty && !(await showConfirm('Θα αντικατασταθούν τα τρέχοντα πεδία και οι εικόνες από το ZIP. Συνέχεια;'))) {
             return;
         }
 
@@ -458,7 +487,7 @@
             importText.textContent = folderName;
         } catch (err) {
             console.error('Import failed', err);
-            alert('Η εισαγωγή απέτυχε: ' + (err && err.message ? err.message : err));
+            await showAlert('Η εισαγωγή απέτυχε: ' + (err && err.message ? err.message : err));
             importText.textContent = originalText;
         }
     });
@@ -563,15 +592,15 @@
 
     exportBtn.addEventListener('click', async function () {
         if (typeof JSZip === 'undefined') {
-            alert('Η βιβλιοθήκη ZIP φορτώνει ακόμη — δοκίμασε ξανά σε λίγο.');
+            await showAlert('Η βιβλιοθήκη ZIP φορτώνει ακόμη - δοκίμασε ξανά σε λίγο.');
             return;
         }
 
         var title = titleInput.value.trim();
-        if (!title) { alert('Συμπλήρωσε τίτλο πριν από την εξαγωγή.'); titleInput.focus(); return; }
+        if (!title) { await showAlert('Συμπλήρωσε τίτλο πριν από την εξαγωγή.'); titleInput.focus(); return; }
 
         var body = contentArea.value.trim();
-        if (!body) { alert('Γράψε το κείμενο του άρθρου πριν από την εξαγωγή.'); contentArea.focus(); return; }
+        if (!body) { await showAlert('Γράψε το κείμενο του άρθρου πριν από την εξαγωγή.'); contentArea.focus(); return; }
 
         var author = authorSelect.value;
         var tag = tagInput.value.trim() || 'F1';
@@ -582,13 +611,12 @@
         var heroFile = heroInput.files && heroInput.files[0];
         var headerFile = headerInput.files && headerInput.files[0];
         if (!heroFile) {
-            var proceed = confirm('Δεν έχει επισυναφθεί κεντρική εικόνα. Το άρθρο θα χρησιμοποιήσει την προεπιλεγμένη. Να συνεχίσω;');
+            var proceed = await showConfirm('Δεν έχει επισυναφθεί κεντρική εικόνα. Το άρθρο θα χρησιμοποιήσει την προεπιλεγμένη. Να συνεχίσω;');
             if (!proceed) return;
         }
 
         exportBtn.disabled = true;
-        var originalHtml = exportBtn.innerHTML;
-        exportBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Πακετάρισμα…';
+        authorDom.setBusyText(exportBtn, 'Πακετάρισμα…');
 
         try {
             var zip = new JSZip();
@@ -598,7 +626,7 @@
             var zippedContentFiles = [];
 
             for (var i = 0; i < contentImageFiles.length; i++) {
-                exportBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Μετατροπή εικόνων…';
+                authorDom.setBusyText(exportBtn, 'Μετατροπή εικόνων…');
                 zippedContentFiles.push(await ensureWebpFile(contentImageFiles[i].file, 'Content image ' + (i + 1)));
             }
 
@@ -646,10 +674,10 @@
             setTimeout(function () { URL.revokeObjectURL(link.href); }, 1000);
         } catch (err) {
             console.error('Export failed', err);
-            alert('Η εξαγωγή απέτυχε: ' + (err && err.message ? err.message : err));
+            await showAlert('Η εξαγωγή απέτυχε: ' + (err && err.message ? err.message : err));
         } finally {
             exportBtn.disabled = false;
-            exportBtn.innerHTML = originalHtml;
+            setExportReady();
         }
     });
 
@@ -745,7 +773,7 @@
         removeStorage(localStorage, TOKEN_REMEMBER_KEY);
     }
 
-    function promptForToken(hint) {
+    async function promptForToken(hint) {
         var msg =
             (hint ? hint + '\n\n' : '') +
             'GitHub Personal Access Token (fine-grained):\n\n' +
@@ -756,11 +784,15 @@
             '- Διάρκεια: όσο πιο σύντομη σε βολεύει\n\n' +
             'Επικόλλησε το token παρακάτω. Άφησέ το κενό για διαγραφή.\n' +
             'Προεπιλογή: χρήση μόνο για την τρέχουσα καρτέλα/session.';
-        var input = prompt(msg, '');
+        var input = await showPrompt(msg, '', {
+            title: 'GitHub Token',
+            inputLabel: 'GitHub Personal Access Token',
+            inputType: 'password'
+        });
         if (input === null) return null; // cancelled
         input = input.trim();
         if (input && !isAsciiToken(input)) {
-            alert('Το token περιέχει μη-ASCII χαρακτήρες. Επικόλλησε μόνο το αρχικό token από το GitHub.');
+            await showAlert('Το token περιέχει μη-ASCII χαρακτήρες. Επικόλλησε μόνο το αρχικό token από το GitHub.');
             return null;
         }
         if (!input) {
@@ -774,10 +806,10 @@
     // Migrate legacy persistent tokens into session storage as soon as this tool loads.
     getStoredToken();
 
-    tokenBtn.addEventListener('click', function () {
+    tokenBtn.addEventListener('click', async function () {
         var existing = getStoredToken();
         var storageScope = hasPersistentToken() ? 'μόνιμα σε αυτή τη συσκευή' : 'για την τρέχουσα session';
-        promptForToken(existing ? 'Υπάρχει ήδη token (' + storageScope + '). Επικόλλησε νέο για αντικατάσταση ή άφησε κενό για διαγραφή.' : '');
+        await promptForToken(existing ? 'Υπάρχει ήδη token (' + storageScope + '). Επικόλλησε νέο για αντικατάσταση ή άφησε κενό για διαγραφή.' : '');
     });
 
     function utf8ToBase64(str) {
@@ -925,15 +957,15 @@
 
     publishBtn.addEventListener('click', async function () {
         var title = titleInput.value.trim();
-        if (!title) { alert('Συμπλήρωσε τίτλο πριν από τη δημοσίευση.'); titleInput.focus(); return; }
+        if (!title) { await showAlert('Συμπλήρωσε τίτλο πριν από τη δημοσίευση.'); titleInput.focus(); return; }
 
         var body = contentArea.value.trim();
-        if (!body) { alert('Γράψε το κείμενο του άρθρου πριν από τη δημοσίευση.'); contentArea.focus(); return; }
+        if (!body) { await showAlert('Γράψε το κείμενο του άρθρου πριν από τη δημοσίευση.'); contentArea.focus(); return; }
 
         var token = getStoredToken();
         if (!token) {
-            token = promptForToken('');
-            if (!token) { alert('Δεν είναι δυνατή η δημοσίευση χωρίς token.'); return; }
+            token = await promptForToken('');
+            if (!token) { await showAlert('Δεν είναι δυνατή η δημοσίευση χωρίς token.'); return; }
         }
 
         var author = authorSelect.value;
@@ -947,28 +979,27 @@
         var replaceExisting = false;
 
         if (!heroFile) {
-            if (!confirm('Δεν έχει επισυναφθεί κεντρική εικόνα. Να γίνει δημοσίευση με την προεπιλεγμένη;')) return;
+            if (!(await showConfirm('Δεν έχει επισυναφθεί κεντρική εικόνα. Να γίνει δημοσίευση με την προεπιλεγμένη;'))) return;
         }
 
         publishBtn.disabled = true;
-        var originalHtml = publishBtn.innerHTML;
-        publishBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Έλεγχος…';
+        authorDom.setBusyText(publishBtn, 'Έλεγχος…');
 
         try {
             var exists = await folderExists(token, folderName);
             if (exists) {
                 // Two-step choice: new numbered version vs overwrite in place.
-                // confirm() returns true for OK (= new version), false for Cancel.
-                var wantNewVersion = confirm(
+                // The first modal accepts the new-version path; cancel chooses replacement.
+                var wantNewVersion = await showConfirm(
                     'Υπάρχει ήδη άρθρο για σήμερα:\n\n  blog-entries/' + folderName + '\n\n' +
                     '• Πάτα OK για ΝΕΑ έκδοση (θα πάρει επόμενο -N suffix)\n' +
                     '• Πάτα Cancel για να ΑΝΤΙΚΑΤΑΣΤΑΘΕΙ το υπάρχον'
                 );
                 if (wantNewVersion) {
-                    publishBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Εύρεση suffix…';
+                    authorDom.setBusyText(publishBtn, 'Εύρεση suffix…');
                     folderName = await nextNumberedFolder(token, baseDate, authorCode);
                 } else {
-                    if (!confirm('Σίγουρα να αντικατασταθούν τα αρχεία στο ' + folderName + ';')) return;
+                    if (!(await showConfirm('Σίγουρα να αντικατασταθούν τα αρχεία στο ' + folderName + ';'))) return;
                     replaceExisting = true;
                 }
             }
@@ -990,15 +1021,15 @@
                         ' χωρίς αντίστοιχη εικόνα — αυτές οι θέσεις θα μείνουν κενές.';
                 }
             }
-            if (!confirm(confirmMsg)) return;
+            if (!(await showConfirm(confirmMsg))) return;
 
-            publishBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Δημοσίευση…';
+            authorDom.setBusyText(publishBtn, 'Δημοσίευση…');
 
             var publishHeroFile = heroFile ? await ensureWebpFile(heroFile, 'Hero image') : null;
             var publishHeaderFile = headerFile ? await ensureWebpFile(headerFile, 'Header image') : null;
             var publishContentImages = [];
             for (var i = 0; i < contentImageFiles.length; i++) {
-                publishBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Μετατροπή εικόνων…';
+                authorDom.setBusyText(publishBtn, 'Μετατροπή εικόνων…');
                 publishContentImages.push({
                     file: await ensureWebpFile(contentImageFiles[i].file, 'Content image ' + (i + 1))
                 });
@@ -1008,12 +1039,12 @@
 
             var publishResult = await publishToGitHub(
                 token, folderName, sourceTxt, publishHeroFile, publishHeaderFile, publishContentImages, commitMessage,
-                function (msg) { publishBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> ' + msg; },
+                function (msg) { authorDom.setBusyText(publishBtn, msg); },
                 replaceExisting
             );
 
             var prUrl = publishResult.pullRequest && publishResult.pullRequest.html_url || window.F1S_AUTHOR_GITHUB.createClient({ owner: REPO_OWNER, repo: REPO_NAME }).pullRequestsUrl;
-            if (confirm('Δημιουργήθηκε Pull Request για το άρθρο.\n\nBranch: ' + publishResult.branchName + '\n\nΝα ανοίξει το Pull Request;')) {
+            if (await showConfirm('Δημιουργήθηκε Pull Request για το άρθρο.\n\nBranch: ' + publishResult.branchName + '\n\nΝα ανοίξει το Pull Request;')) {
                 window.open(prUrl, '_blank', 'noopener');
             }
         } catch (err) {
@@ -1022,10 +1053,10 @@
             if (err.status === 401 || err.status === 403) {
                 hint = '\n\nΈλεγξε το token — μπορεί να έχει λήξει, να λείπουν δικαιώματα ή να μην είναι σωστό για το repo. Πάτα το εικονίδιο κλειδί για ενημέρωση.';
             }
-            alert('Η δημοσίευση απέτυχε: ' + (err && err.message ? err.message : err) + hint);
+            await showAlert('Η δημοσίευση απέτυχε: ' + (err && err.message ? err.message : err) + hint);
         } finally {
             publishBtn.disabled = false;
-            publishBtn.innerHTML = originalHtml;
+            setPublishReady();
         }
     });
 
@@ -1056,7 +1087,7 @@
         applyImageMeta(heroImg, headerMeta || { width: 848, height: 400 }, 848, 400);
 
         var contentEl = document.getElementById('pv-content');
-        contentEl.innerHTML = html;
+        authorDom.setTrustedHtml(contentEl, html, 'Generate article preview HTML');
 
         var authorData = AUTHORS[author];
         document.getElementById('pv-author-name').textContent = author;
@@ -1662,12 +1693,26 @@
         overlay.className = 'lb-overlay open';
         var naturalWidth = img.naturalWidth || img.width || 1600;
         var naturalHeight = img.naturalHeight || img.height || 900;
-        overlay.innerHTML = '<button class="lb-close" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#fa-times"/></svg></button>' +
-            '<div class="lb-img-wrap"><img class="lb-img" src="' + (img.dataset.fullSrc || img.src) + '" alt="" decoding="async" width="' + naturalWidth + '" height="' + naturalHeight + '"></div>';
+        var closeBtn = document.createElement('button');
+        closeBtn.className = 'lb-close';
+        closeBtn.type = 'button';
+        closeBtn.setAttribute('aria-label', 'Close');
+        closeBtn.appendChild(authorDom.createSvgIcon('fa-times'));
+        var imageWrap = document.createElement('div');
+        imageWrap.className = 'lb-img-wrap';
+        var image = document.createElement('img');
+        image.className = 'lb-img';
+        image.src = img.dataset.fullSrc || img.src;
+        image.alt = '';
+        image.decoding = 'async';
+        image.width = naturalWidth;
+        image.height = naturalHeight;
+        imageWrap.appendChild(image);
+        overlay.append(closeBtn, imageWrap);
         document.body.appendChild(overlay);
         document.body.style.overflow = 'hidden';
         function close() { overlay.remove(); document.body.style.overflow = ''; }
-        overlay.querySelector('.lb-close').addEventListener('click', close);
+        closeBtn.addEventListener('click', close);
         overlay.addEventListener('click', function (ev) { if (ev.target === overlay) close(); });
         document.addEventListener('keydown', function handler(ev) {
             if (ev.key === 'Escape') { close(); document.removeEventListener('keydown', handler); }

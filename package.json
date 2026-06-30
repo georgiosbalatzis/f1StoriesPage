@@ -23,7 +23,8 @@
     "build:assets:minify": "node scripts/build/minify.mjs",
     "build:assets:stamp": "npm run build:html && node scripts/build/stamp-html.mjs",
     "build:assets:watch": "node scripts/build/minify.mjs --watch",
-    "build:public": "npm run pages:guard && npm run build && node scripts/build/public-artifact.mjs && node scripts/build/validate-public-artifact.mjs",
+    "build:public": "npm run pages:guard && npm run build && npm run build:data-contracts && node scripts/build/public-artifact.mjs && node scripts/build/validate-public-artifact.mjs",
+    "build:data-contracts": "node scripts/build/validate-data-contracts.mjs",
     "build:check": "node scripts/build/generated-drift-guard.mjs",
     "test:blog": "node blog-module/build/__tests__/run-golden.js",
     "test:author": "node --test scripts/author/__tests__/*.test.mjs",
@@ -41,7 +42,7 @@
     "qa:visual": "node scripts/perf/visual-qa.mjs",
     "test:consent": "node scripts/perf/consent-guard.mjs",
     "perf:lighthouse": "node scripts/perf/lighthouse-guard.mjs",
-    "verify": "npm run build:public && npm run build:check && npm run quality:static && npm run audit:runtime && npm run test:blog && npm run test:author && npm run test:standings && npm run perf:budget && npm run perf:article-media && npm run perf:images && npm run test:consent && npm run perf:lighthouse"
+    "verify": "npm run build:public && npm run build:check && npm run quality:static && npm run audit:runtime && npm run test:blog && npm run test:author && npm run test:standings && npm run perf:budget && npm run perf:article-media && npm run perf:images && npm run test:consent && npm run qa:visual && npm run perf:lighthouse"
   },
   "dependencies": {
     "adm-zip": "^0.5.12",
@@ -59,6 +60,7 @@
     "fast-xml-parser": "^5.7.1",
     "lighthouse": "^12.8.2",
     "lightningcss": "^1.32.0",
+    "playwright-core": "^1.61.1",
     "puppeteer-core": "^24.43.1",
     "sass": "^1.99.0"
   }

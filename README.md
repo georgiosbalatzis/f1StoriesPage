@@ -21,6 +21,7 @@
 - [Design και εμπειρία χρήστη](#design-and-ux)
 - [Εξωτερικές υπηρεσίες και integrations](#integrations)
 - [Deployment λογική](#deployment)
+- [Static publishing maintainer guide](#static-publishing-maintainer-guide)
 - [Πρακτικές σημειώσεις για maintainers](#maintainer-notes)
 - [Γιατί αυτό το repository έχει ενδιαφέρον](#why-this-repo-matters)
 
@@ -470,6 +471,11 @@ Publishing από το `generate.html` παραμένει συμβατό με τ
 6. local preview του site
 7. εκτέλεση `npm run verify` πριν από merge ή publish όταν η αλλαγή επηρεάζει UI, performance, public artifact ή analytics behavior
 8. merge ή push στο `main`, ώστε το automatic Pages workflow να κάνει deploy μόνο του `dist/` artifact
+
+<a id="static-publishing-maintainer-guide"></a>
+## Static publishing maintainer guide
+
+The operational source of truth for source ownership, generated files, author flow, deploy flow, quality gates, and static-publishing decisions is [docs/static-publishing-model.md](./docs/static-publishing-model.md).
 
 <a id="maintainer-notes"></a>
 ## Πρακτικές σημειώσεις για maintainers

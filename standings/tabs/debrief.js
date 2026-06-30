@@ -19,6 +19,7 @@ import {
     normalizeDriverLookupKey
 } from '../core/drivers-meta.js';
 import { fetchJSONNoCache } from '../core/fetchers.js';
+import { setTrustedHtml } from '../core/rendering.js';
 import { parseNumberValue, isFiniteNumber, parseTimeSeconds } from './_shared.js';
 
 const YEAR = new Date().getFullYear();
@@ -103,7 +104,7 @@ export function ensureLoaded(forceReload) {
     }
 
     state.loading = true;
-    debriefTable.innerHTML = '<div class="debrief-loading"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-circle-notch"/></svg><p>Loading Friday Debrief snapshot...</p></div>';
+    setTrustedHtml(debriefTable, '<div class="debrief-loading"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-circle-notch"/></svg><p>Loading Friday Debrief snapshot...</p></div>', 'debrief loading state');
 
     fetchJSONNoCache(DEBRIEF_CACHE_URL, 8000).then(function(payload) {
         state.snapshot = normalizeDebriefSnapshot(payload);
@@ -820,7 +821,7 @@ function renderDebrief(snapshot) {
         + '<div class="debrief-summary-stat"><div class="debrief-summary-label">Tyre Deg</div><div class="debrief-summary-value">' + selectedRound.tyreDeg.length + '</div></div>'
         + '</div></div>';
 
-    debriefTable.innerHTML = summaryHTML
+    setTrustedHtml(debriefTable, summaryHTML
         + buildDebriefRoundSelector(snapshot.rounds, state.selectedRound)
         + buildDebriefViewSwitch()
         + '<div class="debrief-view-panel' + (state.activeView === 'single-lap' ? ' active' : '') + '" data-debrief-panel="single-lap">' + buildDebriefSingleLapHTML(selectedRound) + '</div>'
@@ -828,14 +829,14 @@ function renderDebrief(snapshot) {
         + '<div class="debrief-view-panel' + (state.activeView === 'tyre-deg' ? ' active' : '') + '" data-debrief-panel="tyre-deg">' + buildDebriefTyreDegHTML(selectedRound) + '</div>'
         + '<div class="debrief-view-panel' + (state.activeView === 'team-ideal' ? ' active' : '') + '" data-debrief-panel="team-ideal">' + buildDebriefTeamIdealHTML(selectedRound) + '</div>'
         + '<div class="debrief-view-panel' + (state.activeView === 'corners' ? ' active' : '') + '" data-debrief-panel="corners">' + buildDebriefCornerPerfHTML(selectedRound) + '</div>'
-        + '<div class="debrief-view-panel' + (state.activeView === 'race-pace' ? ' active' : '') + '" data-debrief-panel="race-pace">' + buildDebriefRacePaceHTML(selectedRound) + '</div>';
+        + '<div class="debrief-view-panel' + (state.activeView === 'race-pace' ? ' active' : '') + '" data-debrief-panel="race-pace">' + buildDebriefRacePaceHTML(selectedRound) + '</div>', 'debrief report template');
 
     fireRendered();
 }
 
 function showDebriefError() {
     if (!debriefTable) return;
-    debriefTable.innerHTML = '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg><p>Failed to load the Friday Debrief snapshot.</p></div>';
+    setTrustedHtml(debriefTable, '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg><p>Failed to load the Friday Debrief snapshot.</p></div>', 'debrief error state');
     fireRendered();
 }
 

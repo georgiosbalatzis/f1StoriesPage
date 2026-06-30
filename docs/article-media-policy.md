@@ -39,11 +39,11 @@ npm run perf:images
 
 ## Current Baseline
 
-The first reviewed baseline was created on 2026-06-23:
+The raw-asset cleanup baseline was reviewed on 2026-06-30:
 
-- 1,808 tracked article media files.
-- 146.66 MB tracked article media.
-- 1,794 optimized AVIF/WebP files.
-- 14 reviewed raw source images.
+- 1,806 tracked article media files.
+- 143.47 MB tracked article media.
+- 1,806 optimized AVIF/WebP files.
+- 0 reviewed raw source images.
 
 New raw article image paths fail the guard until the baseline is intentionally updated.

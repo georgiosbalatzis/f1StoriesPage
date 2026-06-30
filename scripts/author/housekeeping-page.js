@@ -7,6 +7,35 @@
     var TOKEN_REMEMBER_KEY = TOKEN_KEY + '-remember';
     var tokenMemory = '';
     var ENTRIES_PATH = 'blog-module/blog-entries';
+    var authorDom = window.F1S_AUTHOR_DOM_TOOLS;
+    var authorDialogs = window.F1S_AUTHOR_DIALOGS;
+
+    if (!authorDom) {
+        throw new Error('Author DOM helper failed to load.');
+    }
+    if (!authorDialogs) {
+        throw new Error('Author dialog helper failed to load.');
+    }
+
+    function showAlert(message, options) {
+        return authorDialogs.alert(message, options);
+    }
+
+    function showConfirm(message, options) {
+        return authorDialogs.confirm(message, options);
+    }
+
+    function showPrompt(message, defaultValue, options) {
+        return authorDialogs.prompt(message, defaultValue, options);
+    }
+
+    function setImportReady() {
+        authorDom.setIconText(importBtn, 'fa-file-zipper', 'Import ZIP');
+    }
+
+    function setEditSaveReady() {
+        authorDom.setIconText(editSaveBtn, 'fa-check', 'Save changes');
+    }
 
     // ── Token helpers (shared with generate.html) ────────
     // Tokens must be ASCII-only. fetch() rejects header values with any
@@ -94,7 +123,7 @@
         removeStorage(localStorage, TOKEN_REMEMBER_KEY);
     }
 
-    function promptForToken(hint) {
+    async function promptForToken(hint) {
         var msg =
             (hint ? hint + '\n\n' : '') +
             'GitHub Personal Access Token (fine-grained):\n\n' +
@@ -105,11 +134,15 @@
             '- Expiration: as short as you are comfortable with\n\n' +
             'Paste the token below. Leave empty to clear.\n' +
             'Default: keep it only for the current tab/session.';
-        var input = prompt(msg, '');
+        var input = await showPrompt(msg, '', {
+            title: 'GitHub Token',
+            inputLabel: 'GitHub Personal Access Token',
+            inputType: 'password'
+        });
         if (input === null) return null;
         input = input.trim();
         if (input && !isAsciiToken(input)) {
-            alert('Token contains non-ASCII characters. Paste only the raw token from GitHub.');
+            await showAlert('Token contains non-ASCII characters. Paste only the raw token from GitHub.');
             return null;
         }
         if (!input) {
@@ -123,12 +156,12 @@
     // Migrate legacy persistent tokens into session storage as soon as this tool loads.
     getStoredToken();
 
-    function requireToken() {
+    async function requireToken() {
         var t = getStoredToken();
         if (!t) {
-            t = promptForToken('');
+            t = await promptForToken('');
             if (!t) {
-                alert('Cannot continue without a token.');
+                await showAlert('Cannot continue without a token.');
                 return null;
             }
         }
@@ -443,7 +476,7 @@
 
     // ─── Fetch + render list ─────────────────────────────
     async function loadList() {
-        listEl.innerHTML = '<div class="hk-empty"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Loading articles…</div>';
+        listEl.replaceChildren(authorDom.createStatusMessage('hk-empty', 'Loading articles...', 'fa-spinner', 'fa-spin'));
         try {
             var data = await fetchPostsData();
             posts = extractPosts(data).slice();
@@ -453,7 +486,7 @@
             populateFilters();
             applyFilters();
         } catch (e) {
-            listEl.innerHTML = '<div class="hk-error">Failed to load article index: ' + escapeHtml(e.message) + '</div>';
+            listEl.replaceChildren(authorDom.createStatusMessage('hk-error', 'Failed to load article index: ' + e.message));
         }
     }
 
@@ -466,7 +499,11 @@
         });
         function fill(sel, values) {
             var current = sel.value;
-            sel.innerHTML = '<option value="">All ' + sel.dataset.kind + '</option>';
+            sel.replaceChildren();
+            var all = document.createElement('option');
+            all.value = '';
+            all.textContent = 'All ' + sel.dataset.kind;
+            sel.appendChild(all);
             Array.from(values).sort().forEach(function (v) {
                 var o = document.createElement('option');
                 o.value = v; o.textContent = v;
@@ -501,15 +538,14 @@
     function renderList() {
         statsEl.textContent = rendered.length + ' of ' + posts.length + ' article' + (posts.length === 1 ? '' : 's');
         if (!rendered.length) {
-            listEl.innerHTML = '<div class="hk-empty">No articles match.</div>';
+            listEl.replaceChildren(authorDom.createStatusMessage('hk-empty', 'No articles match.'));
             return;
         }
         var frag = document.createDocumentFragment();
         rendered.forEach(function (p) {
             frag.appendChild(buildCard(p));
         });
-        listEl.innerHTML = '';
-        listEl.appendChild(frag);
+        listEl.replaceChildren(frag);
     }
 
     function buildCard(p) {
@@ -535,9 +571,8 @@
 
         var meta = document.createElement('div');
         meta.className = 'hk-card-meta';
-        meta.innerHTML =
-            '<span><svg class="icon" aria-hidden="true"><use href="#fa-user"/></svg> ' + escapeHtml(p.author || '—') + '</span>' +
-            '<span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ' + escapeHtml(p.displayDate || p.date || '—') + '</span>';
+        meta.appendChild(authorDom.createMetaItem('fa-user', p.author || '-'));
+        meta.appendChild(authorDom.createMetaItem('fa-calendar-alt', p.displayDate || p.date || '-'));
 
         var title = document.createElement('h3');
         title.className = 'hk-card-title';
@@ -566,7 +601,7 @@
         var previewBtn = document.createElement('button');
         previewBtn.className = 'hk-btn';
         previewBtn.title = 'Preview';
-        previewBtn.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#fa-eye"/></svg> Preview';
+        authorDom.setIconText(previewBtn, 'fa-eye', 'Preview');
         previewBtn.addEventListener('click', function () {
             window.open(p.url, '_blank', 'noopener');
         });
@@ -574,13 +609,13 @@
         var editBtn = document.createElement('button');
         editBtn.className = 'hk-btn hk-btn-primary';
         editBtn.title = 'Edit';
-        editBtn.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#fa-pen"/></svg> Edit';
+        authorDom.setIconText(editBtn, 'fa-pen', 'Edit');
         editBtn.addEventListener('click', function () { openEdit(p); });
 
         var delBtn = document.createElement('button');
         delBtn.className = 'hk-btn hk-btn-danger';
         delBtn.title = 'Delete';
-        delBtn.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#fa-trash"/></svg> Delete';
+        authorDom.setIconText(delBtn, 'fa-trash', 'Delete');
         delBtn.addEventListener('click', function () { deleteArticle(p, delBtn); });
 
         actions.appendChild(previewBtn);
@@ -598,12 +633,6 @@
         card.appendChild(body);
         card.appendChild(footer);
         return card;
-    }
-
-    function escapeHtml(str) {
-        return String(str == null ? '' : str)
-            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
     // ─── Source.txt parse / serialise ───────────────────
@@ -744,7 +773,7 @@
     }
 
     async function importGeneratedZip(zipFile) {
-        var token = requireToken();
+        var token = await requireToken();
         if (!token) return;
 
         var pkg = await parseGeneratedZipPackage(zipFile);
@@ -754,7 +783,7 @@
         var title = pkg.meta && pkg.meta.title ? pkg.meta.title : pkg.folderName;
 
         if (await folderExists(token, targetFolder)) {
-            var wantNewVersion = confirm(
+            var wantNewVersion = await showConfirm(
                 'ZIP targets an existing article:\n\n  ' + ENTRIES_PATH + '/' + targetFolder + '\n\n' +
                 '• OK: create a new article with the next free -N suffix\n' +
                 '• Cancel: replace the existing folder'
@@ -762,7 +791,7 @@
             if (wantNewVersion) {
                 targetFolder = await findNextFolderSuffix(token, parsedParts.date, parsedParts.authorCode);
             } else {
-                if (!confirm('Replace everything in ' + ENTRIES_PATH + '/' + targetFolder + '?\n\nThis removes the current source, generated article.html, and all image variants before the workflow rebuilds it.')) {
+                if (!(await showConfirm('Replace everything in ' + ENTRIES_PATH + '/' + targetFolder + '?\n\nThis removes the current source, generated article.html, and all image variants before the workflow rebuilds it.'))) {
                     return;
                 }
                 replaceExisting = true;
@@ -773,10 +802,9 @@
         if (pkg.images.length) {
             confirmMsg += '\n\n' + pkg.images.length + ' image file' + (pkg.images.length === 1 ? '' : 's') + ' will be normalized to .webp.';
         }
-        if (!confirm(confirmMsg)) return;
+        if (!(await showConfirm(confirmMsg))) return;
 
         importBtn.disabled = true;
-        var originalHtml = importBtn.innerHTML;
 
         try {
             var additions = [{
@@ -785,7 +813,7 @@
             }];
 
             for (var i = 0; i < pkg.images.length; i++) {
-                importBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Converting images…';
+                authorDom.setBusyText(importBtn, 'Converting images...');
                 additions.push({
                     path: targetFolder + '/' + pkg.images[i].slot + '.webp',
                     file: await ensureWebpFile(pkg.images[i].file, 'ZIP image slot ' + pkg.images[i].slot)
@@ -808,7 +836,7 @@
             var pathToSha = {};
             for (var j = 0; j < additions.length; j++) {
                 var a = additions[j];
-                importBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Uploading…';
+                authorDom.setBusyText(importBtn, 'Uploading...');
                 var contentB64 = (a.text != null) ? utf8ToBase64(a.text) : await blobToBase64(a.file);
                 var blob = await ghFetch('/git/blobs', token, {
                     method: 'POST',
@@ -817,7 +845,7 @@
                 pathToSha[a.path] = blob.sha;
             }
 
-            importBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Opening PR…';
+            authorDom.setBusyText(importBtn, 'Opening PR...');
             var tree = [];
             deletes.forEach(function (p) {
                 tree.push({ path: ENTRIES_PATH + '/' + p, mode: '100644', type: 'blob', sha: null });
@@ -835,37 +863,40 @@
                 commitMessage,
                 commitMessage,
                 'Author tool import for `' + ENTRIES_PATH + '/' + targetFolder + '`.',
-                function (msg) { importBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> ' + msg; }
+                function (msg) { authorDom.setBusyText(importBtn, msg); }
             );
             var prUrl = prResult.pullRequest && prResult.pullRequest.html_url;
-            if (confirm('Opened a Pull Request for ' + ENTRIES_PATH + '/' + targetFolder + '.\n\nBranch: ' + prResult.branchName + '\n\nOpen it now?')) {
+            if (await showConfirm('Opened a Pull Request for ' + ENTRIES_PATH + '/' + targetFolder + '.\n\nBranch: ' + prResult.branchName + '\n\nOpen it now?')) {
                 window.open(prUrl || window.F1S_AUTHOR_GITHUB.createClient({ owner: REPO_OWNER, repo: REPO_NAME }).pullRequestsUrl, '_blank', 'noopener');
             }
         } finally {
             importBtn.disabled = false;
-            importBtn.innerHTML = originalHtml;
+            setImportReady();
         }
     }
 
     // ─── Delete article ─────────────────────────────────
     async function deleteArticle(post, btn) {
-        if (!confirm('Delete article "' + post.title + '"?\n\nFolder: ' + ENTRIES_PATH + '/' + post.id + '\n\nThis removes source, generated article.html, and all image variants. The workflow will rebuild blog-data.json + sitemap.')) {
+        if (!(await showConfirm('Delete article "' + post.title + '"?\n\nFolder: ' + ENTRIES_PATH + '/' + post.id + '\n\nThis removes source, generated article.html, and all image variants. The workflow will rebuild blog-data.json + sitemap.'))) {
             return;
         }
-        var confirmation = prompt(
+        var confirmation = await showPrompt(
             'Type the article folder ID to confirm deletion:\n\n' + post.id,
-            ''
+            '',
+            {
+                title: 'Confirm Delete',
+                inputLabel: 'Article folder ID'
+            }
         );
         if (confirmation === null) return;
         if (confirmation.trim() !== post.id) {
-            alert('Delete cancelled. Folder ID did not match.');
+            await showAlert('Delete cancelled. Folder ID did not match.');
             return;
         }
-        var token = requireToken();
+        var token = await requireToken();
         if (!token) return;
         btn.disabled = true;
-        var originalHtml = btn.innerHTML;
-        btn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg>';
+        authorDom.setBusyText(btn, '');
         try {
             var files = await listFolder(token, post.id);
             if (!files.length) throw new Error('Folder is empty or missing.');
@@ -892,16 +923,16 @@
             posts = posts.filter(function (p) { return p.id !== post.id; });
             applyFilters();
             var prUrl = prResult.pullRequest && prResult.pullRequest.html_url;
-            if (confirm('Opened a Pull Request to delete this article.\n\nBranch: ' + prResult.branchName + '\n\nOpen it now?')) {
+            if (await showConfirm('Opened a Pull Request to delete this article.\n\nBranch: ' + prResult.branchName + '\n\nOpen it now?')) {
                 window.open(prUrl || window.F1S_AUTHOR_GITHUB.createClient({ owner: REPO_OWNER, repo: REPO_NAME }).pullRequestsUrl, '_blank', 'noopener');
             }
         } catch (e) {
             console.error('Delete failed', e);
             var hint = (e.status === 401 || e.status === 403)
                 ? '\n\nCheck your token — Contents: Read and write is required.' : '';
-            alert('Delete failed: ' + e.message + hint);
+            await showAlert('Delete failed: ' + e.message + hint);
             btn.disabled = false;
-            btn.innerHTML = originalHtml;
+            authorDom.setIconText(btn, 'fa-trash', 'Delete');
         }
     }
 
@@ -910,7 +941,7 @@
     var editState = null;
 
     async function openEdit(post) {
-        var token = requireToken();
+        var token = await requireToken();
         if (!token) return;
 
         editStatusEl.textContent = 'Loading source…';
@@ -920,7 +951,9 @@
         editCatEl.value = post.category || '';
         editTitleEl.value = post.title || '';
         editBodyEl.value = '';
-        editImagesEl.innerHTML = '<div class="hk-empty" style="padding:0.8rem;"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Loading…</div>';
+        var loading = authorDom.createStatusMessage('hk-empty', 'Loading...', 'fa-spinner', 'fa-spin');
+        loading.style.padding = '0.8rem';
+        editImagesEl.replaceChildren(loading);
 
         // Seed author + date from the folder name (single source of truth — the
         // processor derives both from the folder prefix). If the folder isn't
@@ -989,13 +1022,13 @@
             console.error('Load edit failed', e);
             editStatusEl.textContent = e.message;
             editStatusEl.classList.add('err');
-            editImagesEl.innerHTML = '';
+            editImagesEl.replaceChildren();
         }
     }
 
     function renderEditImages() {
         if (!editState) return;
-        editImagesEl.innerHTML = '';
+        editImagesEl.replaceChildren();
 
         var slots = Object.keys(editState.imageOps).map(Number).sort(function (a, b) { return a - b; });
 
@@ -1034,15 +1067,20 @@
             info.className = 'hk-image-slot-info';
             var isHero = (slot === 1);
             var label = (isHero ? 'Hero (slot 1)' : 'Content image slot ' + slot);
-            var opLabel = {
-                keep: '',
-                replace: '<span class="hk-slot-op hk-op-replace">Will replace</span>',
-                remove:  '<span class="hk-slot-op hk-op-remove">Will be removed</span>'
-            }[op.op] || '';
-            info.innerHTML =
-                '<strong>' + label + '</strong>' +
-                '<div class="hk-slot-files">' + files.map(function (f) { return escapeHtml(f.name); }).join(', ') + '</div>' +
-                opLabel;
+            var strong = document.createElement('strong');
+            strong.textContent = label;
+            var fileList = document.createElement('div');
+            fileList.className = 'hk-slot-files';
+            fileList.textContent = files.map(function (f) { return f.name; }).join(', ');
+            info.append(strong, fileList);
+            if (op.op === 'replace' || op.op === 'remove') {
+                var opLabel = document.createElement('span');
+                opLabel.className = op.op === 'replace'
+                    ? 'hk-slot-op hk-op-replace'
+                    : 'hk-slot-op hk-op-remove';
+                opLabel.textContent = op.op === 'replace' ? 'Will replace' : 'Will be removed';
+                info.appendChild(opLabel);
+            }
 
             var actions = document.createElement('div');
             actions.className = 'hk-image-slot-actions';
@@ -1050,7 +1088,7 @@
                 var replaceLabel = document.createElement('label');
                 replaceLabel.className = 'hk-btn';
                 replaceLabel.style.cursor = 'pointer';
-                replaceLabel.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#fa-rotate"/></svg> Replace';
+                authorDom.setIconText(replaceLabel, 'fa-rotate', 'Replace');
                 var replaceInput = document.createElement('input');
                 replaceInput.type = 'file';
                 replaceInput.accept = 'image/*';
@@ -1067,7 +1105,7 @@
             if (!isHero) {
                 var delBtn = document.createElement('button');
                 delBtn.className = 'hk-btn hk-btn-danger';
-                delBtn.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#fa-trash"/></svg> Remove';
+                authorDom.setIconText(delBtn, 'fa-trash', 'Remove');
                 delBtn.addEventListener('click', function () {
                     editState.imageOps[slot] = { op: 'remove' };
                     renderEditImages();
@@ -1077,7 +1115,7 @@
             if (op.op !== 'keep') {
                 var undoBtn = document.createElement('button');
                 undoBtn.className = 'hk-btn';
-                undoBtn.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#fa-undo"/></svg> Undo';
+                authorDom.setIconText(undoBtn, 'fa-undo', 'Undo');
                 undoBtn.addEventListener('click', function () {
                     editState.imageOps[slot] = { op: 'keep' };
                     renderEditImages();
@@ -1109,16 +1147,21 @@
 
             var info = document.createElement('div');
             info.className = 'hk-image-slot-info';
-            info.innerHTML =
-                '<strong>New content image</strong>' +
-                '<div class="hk-slot-files">' + escapeHtml(file.name) + '</div>' +
-                '<span class="hk-slot-op hk-op-add">Will be added</span>';
+            var strong = document.createElement('strong');
+            strong.textContent = 'New content image';
+            var fileList = document.createElement('div');
+            fileList.className = 'hk-slot-files';
+            fileList.textContent = file.name;
+            var opLabel = document.createElement('span');
+            opLabel.className = 'hk-slot-op hk-op-add';
+            opLabel.textContent = 'Will be added';
+            info.append(strong, fileList, opLabel);
 
             var actions = document.createElement('div');
             actions.className = 'hk-image-slot-actions';
             var rmBtn = document.createElement('button');
             rmBtn.className = 'hk-btn hk-btn-danger';
-            rmBtn.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#fa-times"/></svg>';
+            rmBtn.appendChild(authorDom.createSvgIcon('fa-times'));
             rmBtn.addEventListener('click', function () {
                 editState.addContent.splice(idx, 1);
                 renderEditImages();
@@ -1173,6 +1216,8 @@
     function closeEdit() {
         editBackdrop.classList.remove('open');
         document.body.style.overflow = '';
+        editSaveBtn.disabled = false;
+        setEditSaveReady();
         editState = null;
     }
 
@@ -1191,10 +1236,10 @@
         var authorCode = AUTHOR_CODES[authorName];
         if (authorCode === undefined) authorCode = '';
 
-        if (!title)   { alert('Title is required.'); editTitleEl.focus(); return; }
-        if (!body)    { alert('Body is required.');  editBodyEl.focus();  return; }
+        if (!title)   { await showAlert('Title is required.'); editTitleEl.focus(); return; }
+        if (!body)    { await showAlert('Body is required.');  editBodyEl.focus();  return; }
         if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) {
-            alert('Valid date (YYYY-MM-DD) is required.');
+            await showAlert('Valid date (YYYY-MM-DD) is required.');
             editDateEl.focus();
             return;
         }
@@ -1204,7 +1249,7 @@
         // don't collide with other same-day posts by the same author.
         var oldParts = folderParts(oldFolder) || { suffix: null, authorCode: authorCode, date: isoDate };
         var newFolder = buildFolderName(isoDate, authorCode, oldParts.suffix);
-        if (!newFolder) { alert('Could not build folder name from date/author.'); return; }
+        if (!newFolder) { await showAlert('Could not build folder name from date/author.'); return; }
 
         var isRename = (newFolder !== oldFolder);
 
@@ -1219,7 +1264,7 @@
                 if (e.status !== 404) throw e;
             }
             if (exists) {
-                var pickNext = confirm(
+                var pickNext = await showConfirm(
                     'Target folder already exists:\n\n  blog-entries/' + newFolder + '\n\n' +
                     '• OK: pick the next free -N suffix\n' +
                     '• Cancel: abort the save'
@@ -1293,16 +1338,15 @@
                '• ' + deletes.length + ' file(s) to delete\n' +
                '• ' + (newUploadCount - 1) + ' image upload(s)' +
                (editState.addContent.length ? ' (' + editState.addContent.length + ' new)' : ''));
-        if (!confirm(summary)) return;
+        if (!(await showConfirm(summary))) return;
 
         editSaveBtn.disabled = true;
-        var originalHtml = editSaveBtn.innerHTML;
         editStatusEl.classList.remove('err');
 
         try {
             // Phase 1: upload blobs once. These are global by SHA, so we can
             // reuse them if a retry is needed below.
-            editSaveBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Uploading…';
+            authorDom.setBusyText(editSaveBtn, 'Uploading...');
             var pathToSha = {};
             for (var i = 0; i < additions.length; i++) {
                 var a = additions[i];
@@ -1323,7 +1367,7 @@
                 pathToSha[a.path] = blob.sha;
             }
 
-            editSaveBtn.innerHTML = '<svg class="icon fa-spin" aria-hidden="true"><use href="#fa-spinner"/></svg> Opening PR…';
+            authorDom.setBusyText(editSaveBtn, 'Opening PR...');
             editStatusEl.textContent = 'Opening Pull Request…';
             var tree = [];
             deletes.forEach(function (p) {
@@ -1349,7 +1393,7 @@
 
             editStatusEl.textContent = 'Pull Request opened.';
             var prUrl = prResult.pullRequest && prResult.pullRequest.html_url;
-            if (confirm('Opened a Pull Request for this edit.\n\nBranch: ' + prResult.branchName + '\n\nOpen it now?')) {
+            if (await showConfirm('Opened a Pull Request for this edit.\n\nBranch: ' + prResult.branchName + '\n\nOpen it now?')) {
                 window.open(prUrl || window.F1S_AUTHOR_GITHUB.createClient({ owner: REPO_OWNER, repo: REPO_NAME }).pullRequestsUrl, '_blank', 'noopener');
             }
             closeEdit();
@@ -1360,15 +1404,15 @@
                 ? ' — check token (Contents: Read and write required).' : '';
             editStatusEl.textContent = 'Save failed: ' + e.message + hint;
             editSaveBtn.disabled = false;
-            editSaveBtn.innerHTML = originalHtml;
+            setEditSaveReady();
         }
     });
 
     // ─── Events ──────────────────────────────────────────
-    tokenBtn.addEventListener('click', function () {
+    tokenBtn.addEventListener('click', async function () {
         var existing = getStoredToken();
         var storageScope = hasPersistentToken() ? 'persistently on this device' : 'for the current session';
-        promptForToken(existing ? 'Token already available (' + storageScope + '). Paste a new one to replace, or leave empty to clear.' : '');
+        await promptForToken(existing ? 'Token already available (' + storageScope + '). Paste a new one to replace, or leave empty to clear.' : '');
     });
     importBtn.addEventListener('click', function () { importInput.click(); });
     importInput.addEventListener('change', async function () {
@@ -1381,9 +1425,9 @@
             console.error('ZIP import failed', e);
             var hint = (e.status === 401 || e.status === 403)
                 ? '\n\nCheck your token — Contents: Read and write is required.' : '';
-            alert('ZIP import failed: ' + e.message + hint);
+            await showAlert('ZIP import failed: ' + e.message + hint);
             importBtn.disabled = false;
-            importBtn.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#fa-file-zipper"/></svg> Import ZIP';
+            setImportReady();
         }
     });
     refreshBtn.addEventListener('click', function () { loadList(); });

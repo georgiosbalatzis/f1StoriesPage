@@ -15,6 +15,7 @@ import {
     getCanonicalTeamColor
 } from '../core/teams.js';
 import { fetchJSON, fetchOpenF1BySessionKeys } from '../core/fetchers.js';
+import { setTrustedHtml } from '../core/rendering.js';
 import { isFiniteNumber, parseTimeSeconds } from './_shared.js';
 
 const OPENF1 = 'https://api.openf1.org/v1';
@@ -68,7 +69,7 @@ export function ensureLoaded(forceReload) {
     }
 
     state.loading = true;
-    tyrePaceTable.innerHTML = createTyrePaceSkeleton();
+    setTrustedHtml(tyrePaceTable, createTyrePaceSkeleton(), 'tyre pace skeleton');
 
     getCompletedRaceAndSprintSessions().then(function(sessions) {
         state.sessions = sessions || [];
@@ -130,7 +131,7 @@ function renderSelectedSession(showSkeleton) {
     }
 
     state.loading = true;
-    if (showSkeleton && tyrePaceTable) tyrePaceTable.innerHTML = createTyrePaceSkeleton();
+    if (showSkeleton && tyrePaceTable) setTrustedHtml(tyrePaceTable, createTyrePaceSkeleton(), 'tyre pace reload skeleton');
 
     loadTyrePaceSessionData(cacheKey).then(function(data) {
         const currentSession = getSelectedSessionRecord();
@@ -491,11 +492,11 @@ function renderTyrePace(data, session) {
     if (!tyrePaceTable) return;
 
     if (!data || !session || !data.rows || !data.rows.length) {
-        tyrePaceTable.innerHTML = '<div class="tyre-pace-empty-card">'
+        setTrustedHtml(tyrePaceTable, '<div class="tyre-pace-empty-card">'
             + '<svg class="icon" aria-hidden="true"><use href="#fa-wave-square"/></svg>'
             + '<p>Δεν υπάρχουν ακόμη διαθέσιμα lap distributions για το επιλεγμένο session.</p>'
             + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν race ή sprint laps μαζί με stint data.</p>'
-            + '</div>';
+            + '</div>', 'tyre pace empty state');
         fireRendered();
         return;
     }
@@ -554,18 +555,18 @@ function renderTyrePace(data, session) {
 
     html += '</div></div></div></div><p class="tyre-pace-footnote">Source: OpenF1 `laps` + `stints`. Compounds are mapped from stint ranges to each valid race lap.</p></div>';
 
-    tyrePaceTable.innerHTML = html;
+    setTrustedHtml(tyrePaceTable, html, 'tyre pace report template');
     fireRendered();
 }
 
 function showTyrePaceError() {
     if (!tyrePaceTable) return;
-    tyrePaceTable.innerHTML = '<div class="tyre-pace-empty-card">'
+    setTrustedHtml(tyrePaceTable, '<div class="tyre-pace-empty-card">'
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση του tyre pace chart.</p>'
         + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
         + '<button class="retry-btn" type="button" data-standings-retry="__retryTyrePace"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
-        + '</div>';
+        + '</div>', 'tyre pace error state');
     fireRendered();
 }
 

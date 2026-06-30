@@ -191,9 +191,10 @@
     box-shadow: 0 0 0 4px rgba(65,182,230,0.15);
 }
 .latest-tab.active {
-    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    background-color: var(--accent);
+    background-image: linear-gradient(135deg, var(--accent), var(--accent-hover));
     border-color: rgba(255,255,255,0.08);
-    color: #fff;
+    color: #0B0D12;
     box-shadow: 0 10px 24px rgba(65,182,230,0.25);
     transform: translateY(-1px);
 }
@@ -586,9 +587,9 @@ a.ep-card:hover .ep-card__cta { gap: 0.55rem; }
 .form-alert--error i { color: var(--danger); }
 .form-alert--error a { color: var(--accent); }
 
-.contact-submit { width: 100%; text-align: center; color: #fff; }
+.contact-submit { width: 100%; text-align: center; color: var(--bg-base); }
 .contact-submit:hover,
-.contact-submit:focus-visible { color: #fff; }
+.contact-submit:focus-visible { color: var(--bg-base); }
 .contact-submit .submit-spinner i { margin: 0; }
 .contact-block__micro {
     font-size: var(--text-xs);

@@ -162,7 +162,7 @@
 
 /* ── Comments + Navigation ───────────────────── */
 .article-comments { max-width: 820px; margin: 2rem auto 0; padding: 1.5rem 2rem; background: var(--blog-surface-raised); border-radius: var(--blog-radius); border: 1px solid var(--blog-border); }
-.article-comments h3 { font-family: 'Outfit','DM Sans',sans-serif; color: var(--blog-text-primary); font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--blog-accent-soft); }
+.article-comments h2 { font-family: 'Outfit','DM Sans',sans-serif; color: var(--blog-text-primary); font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--blog-accent-soft); }
 .article-navigation { max-width: 820px; margin: 1.5rem auto 0; display: flex; justify-content: space-between; gap: 1rem; }
 .article-nav-link { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.65rem 1.2rem; background: var(--blog-surface-raised); color: var(--blog-text-secondary); text-decoration: none; border-radius: var(--blog-radius-sm); border: 1px solid var(--blog-border); font-size: 0.85rem; font-weight: 500; transition: all var(--blog-transition); min-height: 44px; }
 .article-nav-link:hover { background: var(--blog-accent-soft); color: var(--blog-accent); border-color: var(--blog-accent); transform: translateY(-2px); }
@@ -228,7 +228,7 @@
 }
 .related-article-card:hover img { transform: scale(1.04); }
 .related-article-card .card-body { padding: 1rem 1.1rem; }
-.related-article-card h5 { color: var(--blog-text-primary); font-size: 0.92rem; margin-bottom: 0.5rem; line-height: 1.35; font-weight: 600; }
+.related-article-card h3 { color: var(--blog-text-primary); font-size: 0.92rem; margin-bottom: 0.5rem; line-height: 1.35; font-weight: 600; }
 .related-date-badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; color: var(--blog-text-tertiary); font-weight: 500; }
 .related-date-badge i { font-size: 0.62rem; color: var(--blog-accent); }
 .related-card-footer {
@@ -288,7 +288,7 @@
 @media (max-width: 480px) {
     .article-header-img { height: 240px; }
     .article-title { font-size: 1.3rem; }
-    .article-content { padding: 1.2rem 1rem; font-size: 0.95rem; line-height: 1.75; }
+    .article-content { padding: 1.2rem 1rem; font-size: 1rem; line-height: 1.75; }
     .author-header { flex-direction: column; text-align: center; }
     .author-avatar { width: 46px; height: 46px; }
 }

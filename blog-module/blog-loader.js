@@ -50,15 +50,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return Array.isArray(data) ? data : [];
     }
 
-    function escapeHtml(value) {
-        return String(value || '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-    }
-
     // ── Fetch home-latest.json with fallback paths ────────
     function readCachedBlogData() {
         try {
@@ -114,39 +105,96 @@ document.addEventListener('DOMContentLoaded', function () {
         img.src = fallback;
     }, true);
 
-    function cardHTML(post) {
+    function createIcon(iconId) {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'icon');
+        svg.setAttribute('aria-hidden', 'true');
+        const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+        use.setAttribute('href', '#' + iconId);
+        svg.appendChild(use);
+        return svg;
+    }
+
+    function createMessageColumn(text, className) {
+        const col = document.createElement('div');
+        col.className = className || 'col-12 text-center';
+        const p = document.createElement('p');
+        p.style.color = 'var(--bs-text-muted)';
+        p.textContent = text;
+        col.appendChild(p);
+        return col;
+    }
+
+    function createLoadingColumn() {
+        const col = document.createElement('div');
+        col.className = 'col-12 text-center py-4';
+        const spinner = document.createElement('div');
+        spinner.className = 'spinner-border text-light';
+        spinner.setAttribute('role', 'status');
+        const hidden = document.createElement('span');
+        hidden.className = 'visually-hidden';
+        hidden.textContent = 'Loading blog posts...';
+        spinner.appendChild(hidden);
+        col.appendChild(spinner);
+        return col;
+    }
+
+    function createBlogCard(post) {
         const href = '/blog-module/blog-entries/' + encodeURIComponent(post.slug || post.id || '') + '/article.html';
-        const img = escapeHtml(imgSrc(post.thumbnail || post.image));
+        const img = imgSrc(post.thumbnail || post.image);
         const fallback = '/blog-module/images/default-blog.jpg';
         const parts = dateParts(post.date);
-        const month = parts.month;
-        const day = parts.day;
-        const title = escapeHtml(post.title || '');
-        const excerpt = escapeHtml(post.excerpt || '');
         const thumbWidth = parseInt(post.thumbnailWidth, 10) || 400;
         const thumbHeight = parseInt(post.thumbnailHeight, 10) || 188;
 
-        return `
-        <div class="col-md-4">
-            <a href="${href}" class="blog-card-link">
-                <div class="blog-card">
-                    <div class="blog-img-container">
-                        <img src="${img}" alt="${title}" class="blog-img" loading="lazy"
-                             decoding="async" width="${thumbWidth}" height="${thumbHeight}"
-                             data-fallback-src="${fallback}">
-                        <div class="blog-date">
-                            <span class="day">${day}</span>
-                            <span class="month">${month}</span>
-                        </div>
-                    </div>
-                    <div class="blog-content">
-                        <h3 class="blog-title">${title}</h3>
-                        <p class="blog-excerpt">${excerpt}</p>
-                        <span class="blog-read-more">Read More <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
-                    </div>
-                </div>
-            </a>
-        </div>`;
+        const col = document.createElement('div');
+        col.className = 'col-md-4';
+        const link = document.createElement('a');
+        link.href = href;
+        link.className = 'blog-card-link';
+        const card = document.createElement('div');
+        card.className = 'blog-card';
+
+        const media = document.createElement('div');
+        media.className = 'blog-img-container';
+        const image = document.createElement('img');
+        image.src = img;
+        image.alt = post.title || '';
+        image.className = 'blog-img';
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        image.width = thumbWidth;
+        image.height = thumbHeight;
+        image.setAttribute('data-fallback-src', fallback);
+
+        const date = document.createElement('div');
+        date.className = 'blog-date';
+        const day = document.createElement('span');
+        day.className = 'day';
+        day.textContent = parts.day;
+        const month = document.createElement('span');
+        month.className = 'month';
+        month.textContent = parts.month;
+        date.append(day, month);
+        media.append(image, date);
+
+        const body = document.createElement('div');
+        body.className = 'blog-content';
+        const title = document.createElement('h3');
+        title.className = 'blog-title';
+        title.textContent = post.title || '';
+        const excerpt = document.createElement('p');
+        excerpt.className = 'blog-excerpt';
+        excerpt.textContent = post.excerpt || '';
+        const readMore = document.createElement('span');
+        readMore.className = 'blog-read-more';
+        readMore.append(document.createTextNode('Read More '), createIcon('fa-arrow-right'));
+        body.append(title, excerpt, readMore);
+
+        card.append(media, body);
+        link.appendChild(card);
+        col.appendChild(link);
+        return col;
     }
 
     // ── Load homepage blog posts ────────────────────
@@ -180,25 +228,26 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!container) return;
 
         // Show loading state
-        container.innerHTML = `
-            <div class="col-12 text-center py-4">
-                <div class="spinner-border text-light" role="status">
-                    <span class="visually-hidden">Loading blog posts…</span>
-                </div>
-            </div>`;
+        container.replaceChildren(createLoadingColumn());
 
         fetchBlogData()
             .then(function (data) {
                 var posts = extractPosts(data);
                 var recent = posts.slice(0, 3);
                 if (!recent.length) {
-                    container.innerHTML = '<div class="col-12 text-center"><p style="color:var(--bs-text-muted)">No blog posts yet.</p></div>';
+                    container.replaceChildren(createMessageColumn('No blog posts yet.'));
                     return;
                 }
-                container.innerHTML = recent.map(cardHTML).join('');
+                container.replaceChildren.apply(container, recent.map(createBlogCard));
             })
             .catch(function () {
-                container.innerHTML = '<div class="col-12"><div class="alert alert-danger">Unable to load blog posts.</div></div>';
+                var col = document.createElement('div');
+                col.className = 'col-12';
+                var alert = document.createElement('div');
+                alert.className = 'alert alert-danger';
+                alert.textContent = 'Unable to load blog posts.';
+                col.appendChild(alert);
+                container.replaceChildren(col);
             });
     }
 
