@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var fullPostsLoaded = false;
     var fullPostsPromise = null;
     var staticFirstPageReady = !!(grid && grid.querySelector('.article-card') && !grid.querySelector('.skeleton-card'));
+    var MAX_VISIBLE_CATEGORIES = 10;
     var DATE_FORMATTER = typeof Intl !== 'undefined'
         ? new Intl.DateTimeFormat('el-GR', { day: 'numeric', month: 'long', year: 'numeric' })
         : null;
@@ -105,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return post.displayDate || post.date || '';
     }
     function formatReadingTime(value) {
-        return String(value || '').replace(/\bmin\b/gi, 'λεπ');
+        return String(value || '').replace(/\bmin\b/gi, 'λεπτά ανάγνωσης');
     }
     function getSearchIndex(post) {
         return normalizeText([
@@ -198,6 +199,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         return normalized;
     }
+    function getVisibleCategories(categories) {
+        var list = normalizeCategories(categories);
+        var visible = list.slice(0, MAX_VISIBLE_CATEGORIES);
+        if (activeCategory !== 'all' && !visible.some(function(item) { return item.name === activeCategory; })) {
+            var activeItem = list.find(function(item) { return item.name === activeCategory; });
+            if (activeItem) visible.push(activeItem);
+        }
+        return visible;
+    }
     function syncChipState(container, selector, attribute, activeValue) {
         if (!container) return;
         Array.prototype.forEach.call(container.querySelectorAll(selector), function(chip) {
@@ -212,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     function renderCategoryFilters() {
         if (!categoryStrip) return;
-        var categories = categoryOptions.length ? categoryOptions : normalizeCategories(getUniqueCategories(allPosts));
+        var categories = getVisibleCategories(categoryOptions.length ? categoryOptions : getUniqueCategories(allPosts));
         var nodes = [];
         var allButton = document.createElement('button');
         allButton.className = 'category-chip' + (activeCategory === 'all' ? ' active' : '');
@@ -236,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function getResultsSummary(count) {
         var parts = [];
         if (activeAuthor !== 'all') parts.push('Αρθρογράφος: ' + activeAuthor);
-        if (activeCategory !== 'all') parts.push('Κατηγορία: ' + activeCategory);
+        if (activeCategory !== 'all') parts.push('Θέμα: ' + formatCategoryLabel(activeCategory));
         if (activeQuery) parts.push('Αναζήτηση: "' + activeQuery + '"');
         return count + ' ' + (count === 1 ? 'άρθρο' : 'άρθρα') + (parts.length ? ' · ' + parts.join(' · ') : '');
     }
@@ -395,6 +405,9 @@ document.addEventListener('DOMContentLoaded', function() {
         article.appendChild(link);
         return article;
     }
+    function isDefaultCuratedState() {
+        return activeAuthor === 'all' && activeCategory === 'all' && !activeQuery && currentPage === 1;
+    }
 
     function lazyLoadImages() {
         if (!grid) return;
@@ -512,6 +525,7 @@ document.addEventListener('DOMContentLoaded', function() {
             : filteredPosts.length;
         var totalPages = Math.max(1, Math.ceil(totalItems / POSTS_PER_PAGE));
         currentPage = Math.max(1, Math.min(page, totalPages));
+        grid.classList.toggle('is-curated-default', isDefaultCuratedState());
         var start = (currentPage - 1) * POSTS_PER_PAGE;
         var pagePosts = filteredPosts.slice(start, start + POSTS_PER_PAGE);
         if (options && options.preserveStatic && currentPage === 1 && staticFirstPageReady) {

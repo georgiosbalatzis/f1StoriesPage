@@ -20,21 +20,21 @@
     --text-secondary: #6e6e73;
     --text-tertiary: #5f5f67;
 
-    /* Accent — cyan primary with magenta hover/gradient pair */
-    --primary: #41B6E6;
-    --primary-blue: #41B6E6;
-    --secondary-blue: #DB3EB1;
-    --accent: #41B6E6;
-    --accent-hover: #DB3EB1;
-    --accent-cyan: #41B6E6;
-    --accent-contrast: #0B0D12;
-    --accent-readable: #0A4F66;
-    --accent-muted: rgba(65,182,230,0.08);
-    --accent-glow: rgba(65,182,230,0.15);
+    /* Accent — restrained editorial blue */
+    --primary: #5f87a1;
+    --primary-blue: #5f87a1;
+    --secondary-blue: #49697e;
+    --accent: #5f87a1;
+    --accent-hover: #49697e;
+    --accent-cyan: #5f87a1;
+    --accent-contrast: #ffffff;
+    --accent-readable: #355264;
+    --accent-muted: rgba(95,135,161,0.08);
+    --accent-glow: rgba(95,135,161,0.10);
 
-    /* Gradients — subtle, not flashy */
-    --gradient-primary: linear-gradient(135deg, #41B6E6, #DB3EB1);
-    --gradient-accent: linear-gradient(90deg, #41B6E6, #DB3EB1);
+    /* Gradients — kept flat to reduce visual noise */
+    --gradient-primary: linear-gradient(135deg, #5f87a1, #49697e);
+    --gradient-accent: linear-gradient(90deg, #5f87a1, #49697e);
     --gradient-surface: linear-gradient(135deg, #ffffff, #f5f5f7);
 
     /* Surfaces */
@@ -45,7 +45,7 @@
 
     /* Borders — slightly stronger for definition */
     --border: rgba(0,0,0,0.08);
-    --border-accent: rgba(65,182,230,0.2);
+    --border-accent: rgba(95,135,161,0.18);
     --border-subtle: 1px solid rgba(0,0,0,0.08);
     --border-white: 1px solid rgba(0,0,0,0.06);
 
@@ -53,7 +53,7 @@
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
     --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
     --shadow-lg: 0 12px 28px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
-    --shadow-glow: 0 0 0 3px rgba(65,182,230,0.12);
+    --shadow-glow: 0 0 0 3px rgba(95,135,161,0.10);
 
     /* Status colors */
     --danger: #d63031;
@@ -97,11 +97,11 @@
 
 [data-theme="light"] .navbar-dark .navbar-nav .nav-link:hover,
 [data-theme="light"] .navbar-dark .navbar-nav .nav-link.active {
-    color: #41B6E6 !important;
+    color: #355264 !important;
 }
 
 [data-theme="light"] .navbar-dark .navbar-nav .nav-link::after {
-    background: linear-gradient(90deg, #41B6E6, #DB3EB1) !important;
+    background: #5f87a1 !important;
 }
 
 [data-theme="light"] .navbar-toggler-icon {
@@ -125,12 +125,12 @@
 
 [data-theme="light"] .dropdown-item:hover,
 [data-theme="light"] .dropdown-item:focus {
-    color: #41B6E6 !important;
-    background-color: rgba(65,182,230,0.05) !important;
+    color: #355264 !important;
+    background-color: rgba(95,135,161,0.05) !important;
 }
 
 [data-theme="light"] .dropdown-item:hover::before {
-    background: #41B6E6 !important;
+    background: #5f87a1 !important;
 }
 
 [data-theme="light"] .dropdown-icon {
@@ -146,16 +146,14 @@
 
     [data-theme="light"] .custom-dropdown-menu {
         background: #f5f5f7 !important;
-        border-left: 2px solid #41B6E6 !important;
+        border-left: 2px solid #5f87a1 !important;
         box-shadow: none !important;
     }
 }
 
 /* ── Hero ─────────────────────────────────────── */
 [data-theme="light"] #hero::before {
-    background:
-        linear-gradient(90deg, rgba(5,7,10,0.94) 0%, rgba(8,11,16,0.82) 34%, rgba(8,10,14,0.42) 64%, rgba(5,6,8,0.3) 100%),
-        linear-gradient(180deg, rgba(0,0,0,0.14) 0%, rgba(0,0,0,0.22) 58%, rgba(17,17,19,0.92) 100%) !important;
+    background: linear-gradient(180deg, rgba(8,10,14,0.34) 0%, rgba(8,10,14,0.42) 44%, rgba(8,10,14,0.62) 100%) !important;
 }
 
 [data-theme="light"] .hero-content h1 {
@@ -165,13 +163,13 @@
     -webkit-text-fill-color: #fff !important;
     color: #fff !important;
     filter: none !important;
-    text-shadow: 0 2px 18px rgba(0,0,0,0.52) !important;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.32) !important;
     animation: none !important;
 }
 
 [data-theme="light"] .hero-content p {
     color: rgba(255,255,255,0.86) !important;
-    text-shadow: 0 1px 12px rgba(0,0,0,0.52) !important;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.24) !important;
 }
 
 [data-theme="light"] .hero-subtitle {
@@ -190,9 +188,7 @@
 
 @media (max-width: 767.98px) {
     [data-theme="light"] #hero::before {
-        background:
-            linear-gradient(180deg, rgba(5,7,10,0.18) 0%, rgba(5,7,10,0.55) 42%, rgba(9,10,14,0.92) 100%),
-            linear-gradient(90deg, rgba(5,7,10,0.45), rgba(5,7,10,0.22)) !important;
+        background: linear-gradient(180deg, rgba(8,10,14,0.18) 0%, rgba(8,10,14,0.46) 42%, rgba(8,10,14,0.72) 100%) !important;
     }
 }
 
@@ -206,8 +202,8 @@
 }
 
 [data-theme="light"] .platform-icon:hover {
-    color: #41B6E6 !important;
-    background: rgba(65,182,230,0.08) !important;
+    color: #355264 !important;
+    background: rgba(95,135,161,0.08) !important;
 }
 
 /* ── CTA Buttons ─────────────────────────────── */
@@ -788,7 +784,7 @@ h1, h2, h3, h4, p, a, span {
    APPEND THIS TO THE BOTTOM OF theme-overrides.css
    ═══════════════════════════════════════════════ */
 
-/* ── Sponsors — show only in light mode ──────── */
+/* ── Sponsors — light theme refinement ──────── */
 [data-theme="light"] .sponsor-strip-home {
     display: block;
 }

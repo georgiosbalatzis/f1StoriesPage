@@ -133,10 +133,26 @@ document.addEventListener('DOMContentLoaded', function () {
         spinner.setAttribute('role', 'status');
         const hidden = document.createElement('span');
         hidden.className = 'visually-hidden';
-        hidden.textContent = 'Loading blog posts...';
+        hidden.textContent = 'Φόρτωση άρθρων...';
         spinner.appendChild(hidden);
         col.appendChild(spinner);
         return col;
+    }
+
+    function createStoryMeta(label, date) {
+        const meta = document.createElement('div');
+        meta.className = 'home-story-meta';
+
+        const labelEl = document.createElement('span');
+        labelEl.className = 'home-story-meta__label';
+        labelEl.textContent = label;
+
+        const dateEl = document.createElement('span');
+        dateEl.className = 'home-story-meta__date';
+        dateEl.textContent = date || '';
+
+        meta.append(labelEl, dateEl);
+        return meta;
     }
 
     function createBlogCard(post) {
@@ -188,13 +204,133 @@ document.addEventListener('DOMContentLoaded', function () {
         excerpt.textContent = post.excerpt || '';
         const readMore = document.createElement('span');
         readMore.className = 'blog-read-more';
-        readMore.append(document.createTextNode('Read More '), createIcon('fa-arrow-right'));
+        readMore.append(document.createTextNode('Συνέχεια ανάγνωσης '), createIcon('fa-arrow-right'));
         body.append(title, excerpt, readMore);
 
         card.append(media, body);
         link.appendChild(card);
         col.appendChild(link);
         return col;
+    }
+
+    function createHomeLeadStory(post) {
+        const href = '/blog-module/blog-entries/' + encodeURIComponent(post.slug || post.id || '') + '/article.html';
+        const img = imgSrc(post.thumbnail || post.image);
+        const fallback = '/blog-module/images/default-blog.jpg';
+        const thumbWidth = parseInt(post.thumbnailWidth, 10) || 400;
+        const thumbHeight = parseInt(post.thumbnailHeight, 10) || 188;
+
+        const article = document.createElement('article');
+        article.className = 'home-lead-story';
+
+        const link = document.createElement('a');
+        link.href = href;
+        link.className = 'home-lead-story__link';
+
+        const media = document.createElement('div');
+        media.className = 'home-lead-story__media';
+        const image = document.createElement('img');
+        image.src = img;
+        image.alt = post.title || '';
+        image.className = 'home-lead-story__image';
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        image.width = thumbWidth;
+        image.height = thumbHeight;
+        image.setAttribute('data-fallback-src', fallback);
+        media.appendChild(image);
+
+        const body = document.createElement('div');
+        body.className = 'home-lead-story__body';
+        body.appendChild(createStoryMeta('Κύριο θέμα', post.date));
+
+        const title = document.createElement('h3');
+        title.className = 'home-lead-story__title';
+        title.textContent = post.title || '';
+
+        const excerpt = document.createElement('p');
+        excerpt.className = 'home-lead-story__excerpt';
+        excerpt.textContent = post.excerpt || '';
+
+        const cta = document.createElement('span');
+        cta.className = 'home-lead-story__cta';
+        cta.append(document.createTextNode('Συνέχεια ανάγνωσης '), createIcon('fa-arrow-right'));
+
+        body.append(title, excerpt, cta);
+        link.append(media, body);
+        article.appendChild(link);
+        return article;
+    }
+
+    function createHomeSecondaryStory(post) {
+        const href = '/blog-module/blog-entries/' + encodeURIComponent(post.slug || post.id || '') + '/article.html';
+        const img = imgSrc(post.thumbnail || post.image);
+        const fallback = '/blog-module/images/default-blog.jpg';
+        const thumbWidth = parseInt(post.thumbnailWidth, 10) || 400;
+        const thumbHeight = parseInt(post.thumbnailHeight, 10) || 188;
+
+        const article = document.createElement('article');
+        article.className = 'home-secondary-story';
+
+        const link = document.createElement('a');
+        link.href = href;
+        link.className = 'home-secondary-story__link';
+
+        const media = document.createElement('div');
+        media.className = 'home-secondary-story__media';
+        const image = document.createElement('img');
+        image.src = img;
+        image.alt = post.title || '';
+        image.className = 'home-secondary-story__image';
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        image.width = thumbWidth;
+        image.height = thumbHeight;
+        image.setAttribute('data-fallback-src', fallback);
+        media.appendChild(image);
+
+        const body = document.createElement('div');
+        body.className = 'home-secondary-story__body';
+        body.appendChild(createStoryMeta('Επόμενο θέμα', post.date));
+
+        const title = document.createElement('h3');
+        title.className = 'home-secondary-story__title';
+        title.textContent = post.title || '';
+
+        const excerpt = document.createElement('p');
+        excerpt.className = 'home-secondary-story__excerpt';
+        excerpt.textContent = post.excerpt || '';
+
+        body.append(title, excerpt);
+        link.append(media, body);
+        article.appendChild(link);
+        return article;
+    }
+
+    function renderHomepageFeed(container, posts) {
+        const recent = posts.slice(0, 3);
+        if (!recent.length) {
+            container.replaceChildren(createMessageColumn('Δεν υπάρχουν διαθέσιμα άρθρα αυτή τη στιγμή.', 'text-center'));
+            return;
+        }
+
+        const shell = document.createElement('div');
+        shell.className = 'home-stories-shell';
+
+        const lead = document.createElement('div');
+        lead.className = 'home-stories-shell__lead';
+        lead.appendChild(createHomeLeadStory(recent[0]));
+
+        shell.appendChild(lead);
+
+        if (recent.length > 1) {
+            const rail = document.createElement('div');
+            rail.className = 'home-stories-shell__rail';
+            recent.slice(1).forEach(post => rail.appendChild(createHomeSecondaryStory(post)));
+            shell.appendChild(rail);
+        }
+
+        container.replaceChildren(shell);
     }
 
     // ── Load homepage blog posts ────────────────────
@@ -233,9 +369,14 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchBlogData()
             .then(function (data) {
                 var posts = extractPosts(data);
+                if (container.closest('#latest')) {
+                    renderHomepageFeed(container, posts);
+                    return;
+                }
+
                 var recent = posts.slice(0, 3);
                 if (!recent.length) {
-                    container.replaceChildren(createMessageColumn('No blog posts yet.'));
+                    container.replaceChildren(createMessageColumn('Δεν υπάρχουν διαθέσιμα άρθρα αυτή τη στιγμή.'));
                     return;
                 }
                 container.replaceChildren.apply(container, recent.map(createBlogCard));
@@ -245,7 +386,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 col.className = 'col-12';
                 var alert = document.createElement('div');
                 alert.className = 'alert alert-danger';
-                alert.textContent = 'Unable to load blog posts.';
+                alert.textContent = 'Δεν ήταν δυνατή η φόρτωση των άρθρων.';
                 col.appendChild(alert);
                 container.replaceChildren(col);
             });

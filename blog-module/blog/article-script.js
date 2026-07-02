@@ -9,11 +9,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Author data ─────────────────────────────────────────
     const AUTHORS = {
-        'Georgios Balatzis':  { image: '/images/authors/georgios.webp', title: 'Founder & Host', bio: 'Ο Γιώργος είναι ο ιδρυτής του F1 Stories podcast. Μοιράζεται αναλύσεις, ιστορίες και insights από τον κόσμο της Formula 1.' },
-        'Giannis Poulikidis': { image: '/images/authors/giannis.webp', title: 'Co-Host & Analyst', bio: 'Ο Γιάννης φέρνει αναλυτική ματιά στα τεχνικά θέματα και τις στρατηγικές αγώνων της F1.' },
-        'Thanasis Batalas':   { image: '/images/authors/thanasis.webp', title: 'Contributor', bio: 'Ο Θανάσης συνεισφέρει με ιστορίες από τα παρασκήνια και ανασκοπήσεις αγώνων.' },
-        'Themis Charvalis':       { image: '/images/authors/2fast.webp', title: 'Sim Racing Expert', bio: 'Ο Themis Charvalis είναι ειδικός στο sim racing, φέρνοντας τον κόσμο του virtual motorsport στο F1 Stories.' },
-        'Dimitris Keramidiotis': { image: '/images/authors/dimitris.webp', title: 'Contributor', bio: 'Ο Δημήτρης μοιράζεται θεματικά άρθρα, rankings και opinion pieces.' }
+        'Georgios Balatzis':  { image: '/images/authors/georgios.webp', title: 'Ιδρυτής και παρουσιαστής', bio: 'Γράφει για στρατηγική, απόδοση και όσα αλλάζουν την ισορροπία ενός αγώνα.' },
+        'Giannis Poulikidis': { image: '/images/authors/giannis.webp', title: 'Συμπαρουσιαστής και αναλυτής', bio: 'Εστιάζει στην τεχνική πλευρά της F1 και στις αποφάσεις που κρίνουν ένα Grand Prix.' },
+        'Thanasis Batalas':   { image: '/images/authors/thanasis.webp', title: 'Συντάκτης', bio: 'Καλύπτει ιστορίες, πρόσωπα και στιγμές από την αγωνιστική πλευρά της Formula 1.' },
+        'Themis Charvalis':       { image: '/images/authors/2fast.webp', title: 'Sim racing και ψηφιακοί αγώνες', bio: 'Παρακολουθεί το sim racing και τη σχέση του με τον σύγχρονο μηχανοκίνητο αθλητισμό.' },
+        'Dimitris Keramidiotis': { image: '/images/authors/dimitris.webp', title: 'Συντάκτης', bio: 'Γράφει θεματικά άρθρα, αξιολογήσεις και σχόλια γύρω από τη σεζόν.' }
     };
 
     function calcReadingTime() {
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!articleContent || !el) return;
         const words = articleContent.textContent.trim().split(/\s+/).length;
         const mins = Math.max(1, Math.ceil(words / 200));
-        el.textContent = `${mins} min read`;
+        el.textContent = `${mins} λεπτά ανάγνωσης`;
     }
 
     function setupImageFallbacks() {
