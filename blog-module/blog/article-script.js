@@ -289,6 +289,47 @@ document.addEventListener('DOMContentLoaded', function () {
         headings.forEach(h => headingObserver.observe(h));
     }
 
+    function setupResponsiveTables() {
+        if (!articleContent) return;
+
+        const tableIds = new Set();
+        articleContent.querySelectorAll('.view-toggle-btn[data-table]').forEach(button => {
+            const tableId = button.getAttribute('data-table');
+            if (tableId) tableIds.add(tableId);
+        });
+
+        tableIds.forEach(tableId => {
+            const toggleButtons = Array.from(articleContent.querySelectorAll('.view-toggle-btn[data-table]'))
+                .filter(button => button.getAttribute('data-table') === tableId);
+            const scrollContainer = document.getElementById(`${tableId}-scroll`);
+            const cardContainer = document.getElementById(`${tableId}-card`);
+
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const viewType = this.getAttribute('data-view');
+                    toggleButtons.forEach(toggle => toggle.classList.remove('active'));
+                    this.classList.add('active');
+
+                    if (scrollContainer) scrollContainer.classList.toggle('active', viewType === 'scroll');
+                    if (cardContainer) cardContainer.classList.toggle('active', viewType === 'card');
+                });
+            });
+
+            if (!scrollContainer) return;
+            const table = scrollContainer.querySelector('table');
+            const indicator = scrollContainer.querySelector('.table-scroll-indicator');
+            if (!table || !indicator) return;
+
+            if (table.offsetWidth > scrollContainer.offsetWidth) {
+                scrollContainer.classList.add('has-scroll');
+                indicator.style.display = '';
+            } else {
+                scrollContainer.classList.remove('has-scroll');
+                indicator.style.display = 'none';
+            }
+        });
+    }
+
     // ── Gallery Carousel ────────────────────────────────────
     function setupGalleryCarousel() {
         const carousel = document.querySelector('.gallery-carousel');
@@ -490,6 +531,7 @@ document.addEventListener('DOMContentLoaded', function () {
     populateAuthor();
     updateShareLinks();
     buildTableOfContents();
+    setupResponsiveTables();
     setupNavigation();
     setupSocialEmbeds();
     setupGalleryCarousel();

@@ -609,10 +609,28 @@ function ensureArticleCommentsScript(html, commentsInfo) {
     );
 }
 
+function dropLegacyCsvTableScripts(html) {
+    return String(html || '').replace(
+        /\s*<script\b[^>]*>([\s\S]*?)<\/script>/gi,
+        (match, body) => {
+            const script = String(body || '');
+            if (
+                script.includes('view-toggle-btn[data-table=') &&
+                script.includes('table-scroll-indicator') &&
+                script.includes('DOMContentLoaded')
+            ) {
+                return '';
+            }
+            return match;
+        }
+    );
+}
+
 function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo) {
     const articleId = articleIdFromRel(relPath);
     let result = String(html || '');
     result = asyncifyStylesheets(result, relPath).result;
+    result = dropLegacyCsvTableScripts(result);
     result = result.replace(
         /\s+onerror="this\.src='\/blog-module\/images\/default-blog\.jpg';this\.onerror=null;"/g,
         ' data-fallback-src="/blog-module/images/default-blog.jpg"'
