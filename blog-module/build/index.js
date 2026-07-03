@@ -397,18 +397,26 @@ async function buildHomeLatest(blogPosts) {
 }
 
 function loadExistingPosts() {
-    if (!fs.existsSync(CONFIG.OUTPUT_JSON)) return [];
+    loadExistingPosts.hasFullContent = false;
+    const cachePath = fs.existsSync(CONFIG.OUTPUT_JSON)
+        ? CONFIG.OUTPUT_JSON
+        : CONFIG.SOURCE_CACHE_JSON;
+
+    if (!cachePath || !fs.existsSync(cachePath)) return [];
 
     try {
-        const existing = JSON.parse(fs.readFileSync(CONFIG.OUTPUT_JSON, 'utf8'));
+        const existing = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+        loadExistingPosts.hasFullContent = cachePath === CONFIG.OUTPUT_JSON;
         return existing.posts || [];
     } catch (_) {
-        console.warn('⚠️  Could not read cached blog-data.json, continuing without cached post metadata');
+        console.warn(`⚠️  Could not read cached blog metadata from ${path.basename(cachePath)}, continuing without cached post metadata`);
         return [];
     }
 }
 
 async function renderCachedArticlePages(cachedPosts) {
+    if (!loadExistingPosts.hasFullContent) return;
+
     let rendered = 0;
     for (const post of cachedPosts) {
         if (!post || !post.id) continue;
@@ -418,7 +426,7 @@ async function renderCachedArticlePages(cachedPosts) {
         rendered++;
     }
     if (rendered > 0) {
-        console.log(`♻️  Rendered ${rendered} cached article page${rendered === 1 ? '' : 's'} from blog-data.json`);
+        console.log(`♻️  Rendered ${rendered} cached article page${rendered === 1 ? '' : 's'} from cached blog metadata`);
     }
 }
 
@@ -563,7 +571,7 @@ async function processBlogEntries(options = {}) {
     const cachedFolderNames = new Set(skipped.concat(reusedCached));
     if (cachedFolderNames.size > 0 && existingPosts.length > 0) {
         cachedPosts = existingPosts.filter(post => cachedFolderNames.has(post.id));
-        console.log(`📦 Loaded ${cachedPosts.length} cached entries from blog-data.json`);
+        console.log(`📦 Loaded ${cachedPosts.length} cached entries from blog metadata`);
     }
 
     let rebuiltSkippedPosts = [];
