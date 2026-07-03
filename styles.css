@@ -265,7 +265,8 @@ footer::before { display: none; }
 .episode-card:hover .video-duration { background-color: rgba(65,182,230,0.8); }
 
 /* ── Scroll Animations ── */
-.fade-in { opacity: 0; transition: all 0.8s var(--ease-bounce); transform: translateY(30px); }
+.fade-in { opacity: 1; transition: transform 0.8s var(--ease-bounce); transform: translateY(0); }
+.fade-in:not(.visible) { transform: translateY(0); }
 .fade-in.visible { opacity: 1; transform: translateY(0); }
 
 

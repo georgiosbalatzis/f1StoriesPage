@@ -259,7 +259,11 @@ function renderBlogCardCategories(categories) {
 function renderBlogIndexCard(post, idx) {
     const categories = renderBlogCardCategories(post.categories);
     const url = post.url || `/blog-module/blog-entries/${post.id}/article.html`;
-    const image = post.thumbnail || post.image || CONFIG.DEFAULT_BLOG_IMAGE;
+    const image = post.thumbnail || post.image || '';
+    const imagePath = image && image.startsWith('/blog-module/blog-entries/')
+        ? path.join(CONFIG.BLOG_DIR, post.id, path.posix.basename(image))
+        : null;
+    const hasImage = Boolean(image && (!imagePath || fs.existsSync(imagePath)));
     const author = post.author || 'F1 Stories';
     const excerpt = post.excerpt || '';
     let readingTime = post.readingTime || post.readTime || '';
@@ -271,17 +275,19 @@ function renderBlogIndexCard(post, idx) {
         : '';
     const imageWidth = parseInt(post.thumbnailWidth, 10) || 400;
     const imageHeight = parseInt(post.thumbnailHeight, 10) || 188;
-    const isLcpImage = idx === 0;
+    const isLcpImage = idx === 0 && hasImage;
     const imageClass = `article-card-img${isLcpImage ? ' loaded' : ''}`;
-    const imageAttrs = isLcpImage
+    const imageAttrs = !hasImage
+        ? ' hidden'
+        : isLcpImage
         ? ` src="${escapeHtmlAttribute(image)}" loading="eager" fetchpriority="high"`
         : ` data-src="${escapeHtmlAttribute(image)}" loading="lazy"`;
     const stagger = 0.06;
     const animationDelay = Math.round(idx * stagger * 100) / 100;
 
     return '<article class="article-card-wrap">'
-        + `<a href="${escapeHtmlAttribute(url)}" class="article-card" style="animation-delay:${animationDelay}s">`
-        + `<div class="article-card-img-wrap"><img class="${imageClass}" width="${imageWidth}" height="${imageHeight}"${imageAttrs} decoding="async" alt="${escapeHtmlAttribute(post.title)}" data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}"></div>`
+        + `<a href="${escapeHtmlAttribute(url)}" class="article-card${hasImage ? '' : ' article-card--no-image'}" style="animation-delay:${animationDelay}s">`
+        + `<div class="article-card-img-wrap${hasImage ? '' : ' img-ready'}"><img class="${imageClass}" width="${imageWidth}" height="${imageHeight}"${imageAttrs} decoding="async" alt="${escapeHtmlAttribute(post.title)}" data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}"></div>`
         + '<div class="article-card-body">'
         + `<div class="article-card-meta"><span class="author-tag">${escapeHtmlAttribute(author)}</span><span>·</span><time class="article-card-date" datetime="${escapeHtmlAttribute(post.date || '')}">${escapeHtmlAttribute(formatBlogIndexDate(post))}</time>${readBadge}</div>`
         + `<h2 class="article-card-title">${escapeHtmlAttribute(post.title)}</h2>`

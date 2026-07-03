@@ -30,7 +30,7 @@ function processImages(entryPath, folderName) {
     return processedImages;
 }
 
-async function buildPictureHtml(folderName, imageNumber, altText = '') {
+async function buildPictureHtml(folderName, imageNumber, altText = '', options = {}) {
     const entryPath = path.join(CONFIG.BLOG_DIR, folderName);
     const webpFile = `${imageNumber}.webp`;
     const avifFile = `${imageNumber}.avif`;
@@ -60,12 +60,14 @@ async function buildPictureHtml(folderName, imageNumber, altText = '') {
         } catch (_) {}
     }
 
+    const loading = options.loading || 'lazy';
+    const fetchPriority = options.fetchPriority ? ` fetchpriority="${options.fetchPriority}"` : '';
     const imgTag = `<img src="${webpFile}"
                  srcset="${webpSrcset}"
                  sizes="${sizes}"
                  alt="${altText}"
                  class="article-content-img"
-                 loading="lazy" decoding="async"${widthAttr}${heightAttr}
+                 loading="${loading}"${fetchPriority} decoding="async"${widthAttr}${heightAttr}
                  data-full-src="${webpFile}"
                  data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`;
 
@@ -200,7 +202,7 @@ async function buildImageCarousel(folderName, imageNumbers, options = {}) {
 
         slidesHtml += `
             <div class="gallery-slide${isActive}" data-index="${i}">
-                ${await buildPictureHtml(folderName, imageNumber, `Gallery image ${i + 1}`)}
+                ${await buildPictureHtml(folderName, imageNumber, `Gallery image ${i + 1}`, i === 0 ? { loading: 'eager', fetchPriority: 'low' } : {})}
             </div>`;
 
         const smWebp = `${imageNumber}-sm.webp`;

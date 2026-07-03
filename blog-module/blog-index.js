@@ -53,12 +53,14 @@ document.addEventListener('DOMContentLoaded', function() {
         grid.addEventListener('error', function(event) {
             var img = event.target;
             if (!img || img.tagName !== 'IMG') return;
-            var fallback = img.getAttribute('data-fallback-src');
-            if (!fallback) return;
+            var card = img.closest('.article-card');
+            var wrap = img.closest('.article-card-img-wrap');
+            if (card) card.classList.add('article-card--no-image');
+            if (wrap) wrap.classList.add('img-ready');
             img.removeAttribute('data-src');
             img.removeAttribute('data-fallback-src');
-            img.src = fallback;
-            img.classList.add('loaded');
+            img.removeAttribute('src');
+            img.hidden = true;
         }, true);
     }
     function bindAuthorFallbacks() {
@@ -321,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function createArticleCard(post, idx) {
         var url = post.url || ('/blog-module/blog-entries/' + post.id + '/article.html');
-        var img = post.thumbnail || post.image || '/blog-module/images/default-blog.jpg';
+        var img = post.thumbnail || post.image || '';
         var date = formatPostDate(post);
         var author = post.author || 'F1 Stories';
         var excerpt = post.excerpt || '';
@@ -343,6 +345,7 @@ document.addEventListener('DOMContentLoaded', function() {
         link.href = url;
         link.className = 'article-card';
         link.style.animationDelay = animationDelay + 's';
+        if (!img) link.classList.add('article-card--no-image');
 
         var imageWrap = document.createElement('div');
         imageWrap.className = 'article-card-img-wrap';
@@ -350,13 +353,16 @@ document.addEventListener('DOMContentLoaded', function() {
         image.className = imageClass;
         image.width = imageWidth;
         image.height = imageHeight;
-        if (isLcpImage) {
+        if (img && isLcpImage) {
             image.src = img;
             image.loading = 'eager';
             image.fetchPriority = 'high';
-        } else {
+        } else if (img) {
             image.setAttribute('data-src', img);
             image.loading = 'lazy';
+        } else {
+            image.hidden = true;
+            imageWrap.classList.add('img-ready');
         }
         image.decoding = 'async';
         image.alt = post.title || '';

@@ -238,7 +238,17 @@ document.addEventListener('DOMContentLoaded', function () {
         image.width = thumbWidth;
         image.height = thumbHeight;
         image.setAttribute('data-fallback-src', fallback);
-        media.appendChild(image);
+
+        const imageOverlay = document.createElement('div');
+        imageOverlay.className = 'home-lead-story__overlay';
+        const overlayMeta = document.createElement('span');
+        overlayMeta.className = 'home-lead-story__overlay-kicker';
+        overlayMeta.textContent = 'Κύριο θέμα';
+        const overlayTitle = document.createElement('span');
+        overlayTitle.className = 'home-lead-story__overlay-title';
+        overlayTitle.textContent = post.title || '';
+        imageOverlay.append(overlayMeta, overlayTitle);
+        media.append(image, imageOverlay);
 
         const body = document.createElement('div');
         body.className = 'home-lead-story__body';
