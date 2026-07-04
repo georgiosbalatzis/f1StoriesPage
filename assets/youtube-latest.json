@@ -2,9 +2,16 @@
   "channelId": "UCTSK8lbEiHJ10KVFrhNaL4g",
   "channelTitle": "F1 Stories",
   "source": "https://www.youtube.com/feeds/videos.xml?channel_id=UCTSK8lbEiHJ10KVFrhNaL4g",
-  "lastUpdated": "2026-06-14T05:07:23.902Z",
-  "newestPublishedAt": "2026-06-14T01:26:28.000Z",
+  "lastUpdated": "2026-07-04T04:02:01.225Z",
+  "newestPublishedAt": "2026-07-03T19:40:58.000Z",
   "videos": [
+    {
+      "id": "Q_SQJqa6CMU",
+      "title": "BetCast #268  British",
+      "thumbnail": "https://i.ytimg.com/vi/Q_SQJqa6CMU/hqdefault.jpg",
+      "publishedAt": "2026-07-03T19:40:58+00:00",
+      "url": "https://www.youtube.com/watch?v=Q_SQJqa6CMU"
+    },
     {
       "id": "iXCGUUeM-ag",
       "title": "BetCast #266  Barcelona",
@@ -67,13 +74,6 @@
       "thumbnail": "https://i.ytimg.com/vi/BIX2arG1N6A/hqdefault.jpg",
       "publishedAt": "2026-03-15T19:08:29+00:00",
       "url": "https://www.youtube.com/watch?v=BIX2arG1N6A"
-    },
-    {
-      "id": "T0HEjj4CJtk",
-      "title": "🤔 Μικρό πρόβλημα, μεγάλες συνέπειες! Τι νομίζετε για την νίκη του Αντωνέλη; 🏁 #F1Drama",
-      "thumbnail": "https://i.ytimg.com/vi/T0HEjj4CJtk/hqdefault.jpg",
-      "publishedAt": "2026-03-15T19:07:49+00:00",
-      "url": "https://www.youtube.com/watch?v=T0HEjj4CJtk"
     }
   ]
 }
