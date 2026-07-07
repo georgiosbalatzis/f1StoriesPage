@@ -535,6 +535,38 @@ a.related-card-link { color: inherit; }
     grid-column: 1 / -1;
 }
 
+@media (min-width: 768px) {
+    .articles-grid.is-curated-default > .article-card-wrap:last-child {
+        grid-column: span 2;
+    }
+
+    .articles-grid.is-curated-default > .article-card-wrap:last-child .article-card {
+        display: grid;
+        grid-template-columns: minmax(0, 0.96fr) minmax(280px, 1.04fr);
+        grid-template-rows: minmax(0, 1fr) auto;
+    }
+
+    .articles-grid.is-curated-default > .article-card-wrap:last-child .article-card-img-wrap {
+        aspect-ratio: auto;
+        grid-row: 1 / span 2;
+        height: 100%;
+        min-height: 0;
+    }
+
+    .articles-grid.is-curated-default > .article-card-wrap:last-child .article-card-body,
+    .articles-grid.is-curated-default > .article-card-wrap:last-child .article-card-footer {
+        grid-column: 2;
+    }
+
+    .articles-grid.is-curated-default > .article-card-wrap:last-child .article-card-title {
+        -webkit-line-clamp: 2;
+    }
+
+    .articles-grid.is-curated-default > .article-card-wrap:last-child .article-card-excerpt {
+        -webkit-line-clamp: 3;
+    }
+}
+
 .article-card-wrap {
     display: flex;
     min-width: 0;
