@@ -420,7 +420,7 @@
 }
 
 [data-theme="light"] .team-member__role {
-    color: #86868b !important;
+    color: #5f6068 !important;
 }
 
 [data-theme="light"] .team-member > a {
@@ -500,7 +500,7 @@
 }
 
 [data-theme="light"] .contact-block__micro {
-    color: #86868b !important;
+    color: #5f6068 !important;
 }
 
 [data-theme="light"] .contact-form label::before {

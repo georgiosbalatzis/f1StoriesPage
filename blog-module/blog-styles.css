@@ -507,6 +507,12 @@ a.related-card-link { color: inherit; }
     box-shadow: none;
 }
 
+[data-theme="light"] .category-chip.active {
+    border-color: #355264;
+    background-color: #355264;
+    color: #fff;
+}
+
 .post-count {
     color: var(--text-secondary);
     font-size: 0.88rem;
