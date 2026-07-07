@@ -53,6 +53,18 @@ document.addEventListener('DOMContentLoaded', function() {
         grid.addEventListener('error', function(event) {
             var img = event.target;
             if (!img || img.tagName !== 'IMG') return;
+            var currentSrc = img.getAttribute('src') || img.getAttribute('data-src') || '';
+            var fallbackSrc = img.getAttribute('data-fallback-src') || '';
+            if (/-card\.webp(?:\?.*)?$/i.test(currentSrc)) {
+                img.removeAttribute('data-src');
+                img.src = currentSrc.replace(/-card\.webp(\?.*)?$/i, '.webp$1');
+                return;
+            }
+            if (fallbackSrc && currentSrc !== fallbackSrc) {
+                img.removeAttribute('data-src');
+                img.src = fallbackSrc;
+                return;
+            }
             var card = img.closest('.article-card');
             var wrap = img.closest('.article-card-img-wrap');
             if (card) card.classList.add('article-card--no-image');

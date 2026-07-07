@@ -535,6 +535,38 @@ a.related-card-link { color: inherit; }
     grid-column: 1 / -1;
 }
 
+@media (min-width: 768px) {
+    .articles-grid.is-curated-default > .article-card-wrap:last-child {
+        grid-column: span 2;
+    }
+
+    .articles-grid.is-curated-default > .article-card-wrap:last-child .article-card {
+        display: grid;
+        grid-template-columns: minmax(0, 0.96fr) minmax(280px, 1.04fr);
+        grid-template-rows: minmax(0, 1fr) auto;
+    }
+
+    .articles-grid.is-curated-default > .article-card-wrap:last-child .article-card-img-wrap {
+        aspect-ratio: auto;
+        grid-row: 1 / span 2;
+        height: 100%;
+        min-height: 0;
+    }
+
+    .articles-grid.is-curated-default > .article-card-wrap:last-child .article-card-body,
+    .articles-grid.is-curated-default > .article-card-wrap:last-child .article-card-footer {
+        grid-column: 2;
+    }
+
+    .articles-grid.is-curated-default > .article-card-wrap:last-child .article-card-title {
+        -webkit-line-clamp: 2;
+    }
+
+    .articles-grid.is-curated-default > .article-card-wrap:last-child .article-card-excerpt {
+        -webkit-line-clamp: 3;
+    }
+}
+
 .article-card-wrap {
     display: flex;
     min-width: 0;
@@ -674,7 +706,7 @@ a.related-card-link { color: inherit; }
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     min-height: 48px;
 }
 
@@ -726,38 +758,47 @@ a.related-card-link { color: inherit; }
 
 .articles-grid.is-curated-default > .article-card-wrap:first-child .article-card {
     display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr);
-    min-height: 420px;
+    grid-template-columns: minmax(0, 1.08fr) minmax(300px, 0.92fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    height: 340px;
+    min-height: 0;
 }
 
 .articles-grid.is-curated-default > .article-card-wrap:first-child .article-card--no-image {
     display: flex;
-    min-height: 300px;
+    min-height: 260px;
 }
 
 .articles-grid.is-curated-default > .article-card-wrap:first-child .article-card-img-wrap {
     aspect-ratio: auto;
-    min-height: 100%;
+    grid-row: 1 / span 2;
+    height: 100%;
+    min-height: 0;
+}
+
+.articles-grid.is-curated-default > .article-card-wrap:first-child .article-card-body,
+.articles-grid.is-curated-default > .article-card-wrap:first-child .article-card-footer {
+    grid-column: 2;
 }
 
 .articles-grid.is-curated-default > .article-card-wrap:first-child .article-card-body {
-    padding: 1.6rem 1.6rem 1rem;
+    padding: 1.28rem 1.35rem 0.85rem;
 }
 
 .articles-grid.is-curated-default > .article-card-wrap:first-child .article-card-title {
-    font-size: clamp(1.7rem, 2.2vw, 2.25rem);
-    line-height: 1.12;
-    -webkit-line-clamp: 4;
+    font-size: clamp(1.45rem, 1.85vw, 1.92rem);
+    line-height: 1.16;
+    -webkit-line-clamp: 3;
 }
 
 .articles-grid.is-curated-default > .article-card-wrap:first-child .article-card-excerpt {
-    font-size: 0.98rem;
-    -webkit-line-clamp: 5;
-    max-width: 52ch;
+    font-size: 0.93rem;
+    -webkit-line-clamp: 3;
+    max-width: 48ch;
 }
 
 .articles-grid.is-curated-default > .article-card-wrap:first-child .article-card-footer {
-    padding: 0 1.6rem 1.35rem;
+    padding: 0 1.35rem 1.05rem;
     border-top: 0;
     align-self: end;
 }
@@ -1086,11 +1127,20 @@ body {
 @media (max-width: 991px) {
     .articles-grid.is-curated-default > .article-card-wrap:first-child .article-card {
         grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        height: auto;
         min-height: 0;
     }
 
     .articles-grid.is-curated-default > .article-card-wrap:first-child .article-card-img-wrap {
         aspect-ratio: 16 / 9;
+        grid-row: auto;
+        height: auto;
+    }
+
+    .articles-grid.is-curated-default > .article-card-wrap:first-child .article-card-body,
+    .articles-grid.is-curated-default > .article-card-wrap:first-child .article-card-footer {
+        grid-column: auto;
     }
 
     .articles-grid.is-curated-default > .article-card-wrap:first-child .article-card-body {
