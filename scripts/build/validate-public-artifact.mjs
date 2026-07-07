@@ -4,15 +4,19 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { XMLParser } from 'fast-xml-parser';
 import { CONTENT_SECURITY_POLICY, REFERRER_POLICY, securityHeadersText } from './security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DIST_ROOT = path.join(REPO_ROOT, 'dist');
+const SITE_ORIGIN = 'https://f1stories.gr';
 const MAX_FILE_BYTES = Number(process.env.PUBLIC_ARTIFACT_MAX_BYTES || 2 * 1024 * 1024);
 
 const FORBIDDEN_EXACT = new Set([
     'appdev.txt',
+    'generate.html',
+    'housekeeping.html',
     'laststeps.txt',
     'nextsteps.txt',
     'package-lock.json',
@@ -28,17 +32,51 @@ const REQUIRED_EXACT = [
     '.nojekyll',
     '_headers',
     '404.html',
-    'generate.html',
-    'housekeeping.html',
+    'CNAME',
     'index.html',
     'manifest.json',
     'offline.html',
     'robots.txt',
     'sitemap.xml',
     'sw.js',
+    'assets/youtube-latest.json',
+    'blog-module/blog-index-data.json',
+    'blog-module/blog-index-page-1.json',
+    'blog-module/home-latest.json',
     'blog-module/blog/index.html',
+    'images/favicon.png',
+    'images/icons/apple-touch-icon.png',
+    'images/icons/favicon-16.png',
+    'images/icons/favicon-32.png',
+    'images/icons/icon-192.png',
+    'images/icons/icon-512.png',
+    'images/bg/bg1.avif',
+    'images/bg/bg1.webp',
+    'images/bg/bg1-mobile.avif',
+    'images/bg/bg1-mobile.webp',
+    'images/bg/bg2.avif',
+    'images/bg/bg2.webp',
+    'images/bg/bg2-mobile.avif',
+    'images/bg/bg2-mobile.webp',
+    'images/bg/bg3.avif',
+    'images/bg/bg3.webp',
+    'images/bg/bg3-mobile.avif',
+    'images/bg/bg3-mobile.webp',
+    'images/bg/bg4.avif',
+    'images/bg/bg4.webp',
+    'images/bg/bg4-mobile.avif',
+    'images/bg/bg4-mobile.webp',
+    'images/bg/bg5.avif',
+    'images/bg/bg5.webp',
+    'images/bg/bg5-mobile.avif',
+    'images/bg/bg5-mobile.webp',
     'standings/index.html',
+    'standings/debrief-cache.json',
+    'standings/destructors-cache.json',
+    'standings/dirty-air-cache.json',
+    'standings/standings-cache.json',
     'styles.min.css',
+    'scripts/perf/error-beacon.min.js',
     'scripts/sw-register.min.js'
 ];
 
@@ -103,6 +141,50 @@ function resolvePublicPath(fromRelPath, ref) {
     return rel.endsWith('/') ? rel + 'index.html' : rel;
 }
 
+function publicPathFromSiteUrl(value) {
+    try {
+        const url = new URL(value);
+        if (url.origin !== SITE_ORIGIN) return '';
+        let pathname = decodeURI(url.pathname || '/');
+        if (pathname === '/') return 'index.html';
+        pathname = pathname.replace(/^\/+/, '');
+        if (pathname.endsWith('/')) return pathname + 'index.html';
+        return pathname;
+    } catch (_) {
+        return '';
+    }
+}
+
+function normalizeSiteUrl(value) {
+    try {
+        const url = new URL(value, SITE_ORIGIN);
+        if (url.origin !== SITE_ORIGIN) return '';
+        let pathname = decodeURI(url.pathname || '/');
+        if (pathname.endsWith('/index.html')) {
+            pathname = pathname.slice(0, -'index.html'.length);
+        }
+        if (!pathname.startsWith('/')) pathname = '/' + pathname;
+        return SITE_ORIGIN + pathname;
+    } catch (_) {
+        return '';
+    }
+}
+
+function expectedRouteUrl(relPath) {
+    if (relPath === 'index.html') return `${SITE_ORIGIN}/`;
+    if (relPath.endsWith('/index.html')) {
+        return `${SITE_ORIGIN}/${relPath.slice(0, -'index.html'.length)}`;
+    }
+    return `${SITE_ORIGIN}/${relPath}`;
+}
+
+function distPathExistsForPublicPath(relPath) {
+    if (!relPath) return false;
+    if (fs.existsSync(path.join(DIST_ROOT, relPath))) return true;
+    if (!path.posix.extname(relPath) && fs.existsSync(path.join(DIST_ROOT, relPath, 'index.html'))) return true;
+    return false;
+}
+
 function assertLocalRefExists(errors, fromRelPath, ref) {
     const rel = resolvePublicPath(fromRelPath, ref);
     if (!rel) return;
@@ -110,6 +192,17 @@ function assertLocalRefExists(errors, fromRelPath, ref) {
     if (fs.existsSync(abs)) return;
     if (!path.posix.extname(rel) && fs.existsSync(path.join(DIST_ROOT, rel, 'index.html'))) return;
     errors.push(`${fromRelPath}: missing local reference ${ref}`);
+}
+
+function assertSiteUrlExists(errors, fromRelPath, value, label) {
+    const rel = publicPathFromSiteUrl(value);
+    if (!rel) {
+        errors.push(`${fromRelPath}: ${label} must use ${SITE_ORIGIN}`);
+        return;
+    }
+    if (!distPathExistsForPublicPath(rel)) {
+        errors.push(`${fromRelPath}: ${label} points to missing public path ${value}`);
+    }
 }
 
 function validateHtmlRefs(errors, abs, relPath) {
@@ -148,6 +241,113 @@ function findMetaTags(html, attrName, attrValueExpected) {
         .filter(tag => attrValue(tag, attrName).toLowerCase() === attrValueExpected.toLowerCase());
 }
 
+function findLinkTags(html, relExpected) {
+    return Array.from(String(html).matchAll(/<link\b[^>]*>/gi))
+        .map(match => match[0])
+        .filter(tag => {
+            const rel = attrValue(tag, 'rel').toLowerCase().split(/\s+/);
+            return rel.includes(relExpected.toLowerCase());
+        });
+}
+
+function firstMetaContent(html, attrName, attrValueExpected) {
+    const tags = findMetaTags(html, attrName, attrValueExpected);
+    return tags.length ? attrValue(tags[0], 'content') : '';
+}
+
+function sameOriginUrl(value) {
+    try {
+        return new URL(value).origin === SITE_ORIGIN;
+    } catch (_) {
+        return false;
+    }
+}
+
+function collectJsonLdUrls(value, urls) {
+    if (Array.isArray(value)) {
+        value.forEach(item => collectJsonLdUrls(item, urls));
+        return;
+    }
+    if (!value || typeof value !== 'object') return;
+
+    Object.entries(value).forEach(([key, item]) => {
+        if (typeof item === 'string' && /^(?:@id|url|item|image|contentUrl|embedUrl|thumbnailUrl)$/i.test(key)) {
+            urls.push(item);
+        }
+        collectJsonLdUrls(item, urls);
+    });
+}
+
+function validateJsonLd(errors, html, relPath, canonicalUrl) {
+    const blocks = Array.from(String(html).matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi));
+    const allUrls = [];
+    blocks.forEach((match, index) => {
+        let parsed;
+        try {
+            parsed = JSON.parse(match[1].trim());
+        } catch (error) {
+            errors.push(`${relPath}: JSON-LD block ${index + 1} is invalid JSON (${error.message})`);
+            return;
+        }
+
+        const urls = [];
+        collectJsonLdUrls(parsed, urls);
+        urls.forEach(value => allUrls.push(value));
+        urls.forEach(value => {
+            if (!sameOriginUrl(value)) return;
+            assertSiteUrlExists(errors, relPath, value, 'JSON-LD URL');
+        });
+    });
+
+    const mainEntityUrl = allUrls.find(value => normalizeSiteUrl(value) === normalizeSiteUrl(canonicalUrl));
+    if (canonicalUrl && blocks.length && /blog-module\/blog-entries\/[^/]+\/article\.html$/i.test(relPath)) {
+        if (!mainEntityUrl) errors.push(`${relPath}: JSON-LD does not reference the canonical article URL`);
+    }
+}
+
+function validateHtmlMetadata(errors, html, relPath, sitemapUrls, indexedArticleUrls) {
+    const canonicalTags = findLinkTags(html, 'canonical');
+    const canonicalUrl = canonicalTags.length ? attrValue(canonicalTags[0], 'href') : '';
+    const normalizedExpected = normalizeSiteUrl(expectedRouteUrl(relPath));
+
+    if (canonicalTags.length > 1) {
+        errors.push(`${relPath}: expected at most one canonical link`);
+    }
+
+    if (canonicalUrl && sameOriginUrl(canonicalUrl)) {
+        const normalizedCanonical = normalizeSiteUrl(canonicalUrl);
+        if (normalizedCanonical !== normalizedExpected) {
+            errors.push(`${relPath}: canonical ${canonicalUrl} does not match output route ${expectedRouteUrl(relPath)}`);
+        }
+        const isArticle = /blog-module\/blog-entries\/[^/]+\/article\.html$/i.test(relPath);
+        const shouldBeInSitemap = !isArticle || indexedArticleUrls.has(normalizedCanonical);
+        if (shouldBeInSitemap && sitemapUrls && !sitemapUrls.has(normalizedCanonical)) {
+            errors.push(`${relPath}: canonical ${canonicalUrl} is missing from sitemap.xml`);
+        }
+        assertSiteUrlExists(errors, relPath, canonicalUrl, 'canonical URL');
+    }
+
+    const ogUrl = firstMetaContent(html, 'property', 'og:url');
+    if (ogUrl && sameOriginUrl(ogUrl)) {
+        const normalizedOg = normalizeSiteUrl(ogUrl);
+        const comparisonUrl = canonicalUrl && sameOriginUrl(canonicalUrl) ? normalizeSiteUrl(canonicalUrl) : normalizedExpected;
+        if (normalizedOg !== comparisonUrl) {
+            errors.push(`${relPath}: og:url ${ogUrl} does not match canonical/output route`);
+        }
+        assertSiteUrlExists(errors, relPath, ogUrl, 'og:url');
+    }
+
+    ['og:image', 'twitter:image'].forEach(metaName => {
+        const attrName = metaName.startsWith('og:') ? 'property' : 'name';
+        const imageUrl = firstMetaContent(html, attrName, metaName);
+        if (imageUrl && sameOriginUrl(imageUrl)) {
+            assertSiteUrlExists(errors, relPath, imageUrl, metaName);
+        }
+    });
+
+    validateJsonLd(errors, html, relPath, canonicalUrl);
+}
+
 function validateHtmlSecurityMeta(errors, html, relPath) {
     const cspTags = findMetaTags(html, 'http-equiv', 'Content-Security-Policy');
     if (cspTags.length !== 1) {
@@ -175,6 +375,215 @@ function validateSecurityHeadersFile(errors) {
     }
 }
 
+function loadSitemapUrls(errors) {
+    const relPath = 'sitemap.xml';
+    const abs = path.join(DIST_ROOT, relPath);
+    const urls = new Set();
+    if (!fs.existsSync(abs)) return urls;
+
+    let parsed;
+    try {
+        parsed = new XMLParser({ ignoreAttributes: false }).parse(fs.readFileSync(abs, 'utf8'));
+    } catch (error) {
+        errors.push(`${relPath}: invalid XML (${error.message})`);
+        return urls;
+    }
+
+    const entries = parsed?.urlset?.url;
+    const list = Array.isArray(entries) ? entries : entries ? [entries] : [];
+    if (!list.length) errors.push(`${relPath}: must contain at least one URL`);
+
+    list.forEach((entry, index) => {
+        const loc = entry && entry.loc ? String(entry.loc) : '';
+        if (!loc) {
+            errors.push(`${relPath}: url[${index}] missing loc`);
+            return;
+        }
+        if (!sameOriginUrl(loc)) {
+            errors.push(`${relPath}: url[${index}] loc must use ${SITE_ORIGIN}`);
+            return;
+        }
+        const normalized = normalizeSiteUrl(loc);
+        if (urls.has(normalized)) errors.push(`${relPath}: duplicate loc ${loc}`);
+        urls.add(normalized);
+        assertSiteUrlExists(errors, relPath, loc, 'sitemap loc');
+
+        if (entry.lastmod && !/^\d{4}-\d{2}-\d{2}$/.test(String(entry.lastmod))) {
+            errors.push(`${relPath}: url[${index}] lastmod must be YYYY-MM-DD`);
+        }
+    });
+
+    return urls;
+}
+
+function loadIndexedArticleUrls(errors) {
+    const relPath = 'blog-module/blog-index-data.json';
+    const abs = path.join(DIST_ROOT, relPath);
+    const urls = new Set();
+    if (!fs.existsSync(abs)) return urls;
+
+    let data;
+    try {
+        data = JSON.parse(fs.readFileSync(abs, 'utf8'));
+    } catch (error) {
+        errors.push(`${relPath}: invalid JSON while loading indexed article routes (${error.message})`);
+        return urls;
+    }
+
+    if (data && data.v === 2 && Array.isArray(data.p)) {
+        data.p.forEach(row => {
+            const id = row && row[0];
+            if (!id) return;
+            urls.add(normalizeSiteUrl(`${SITE_ORIGIN}/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`));
+        });
+        return urls;
+    }
+
+    const posts = data && Array.isArray(data.posts) ? data.posts : [];
+    posts.forEach(post => {
+        const id = post && (post.id || post.slug);
+        const url = post && post.url ? post.url : id ? `/blog-module/blog-entries/${encodeURIComponent(id)}/article.html` : '';
+        if (url) urls.add(normalizeSiteUrl(new URL(url, SITE_ORIGIN).href));
+    });
+
+    return urls;
+}
+
+function validateRobots(errors) {
+    const relPath = 'robots.txt';
+    const abs = path.join(DIST_ROOT, relPath);
+    if (!fs.existsSync(abs)) return;
+    const text = fs.readFileSync(abs, 'utf8');
+    if (!new RegExp(`^Sitemap:\\s*${SITE_ORIGIN.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\/sitemap\\.xml\\s*$`, 'mi').test(text)) {
+        errors.push(`${relPath}: missing production sitemap declaration`);
+    }
+}
+
+function validateCname(errors) {
+    const relPath = 'CNAME';
+    const abs = path.join(DIST_ROOT, relPath);
+    if (!fs.existsSync(abs)) return;
+    const value = fs.readFileSync(abs, 'utf8').trim();
+    if (value !== 'f1stories.gr') errors.push(`${relPath}: expected f1stories.gr`);
+}
+
+function validateManifestRefs(errors) {
+    const relPath = 'manifest.json';
+    const abs = path.join(DIST_ROOT, relPath);
+    if (!fs.existsSync(abs)) return;
+    let manifest;
+    try {
+        manifest = JSON.parse(fs.readFileSync(abs, 'utf8'));
+    } catch (error) {
+        errors.push(`${relPath}: invalid JSON (${error.message})`);
+        return;
+    }
+
+    if (!manifest.name || !manifest.short_name || !manifest.start_url || !manifest.scope) {
+        errors.push(`${relPath}: missing required app manifest fields`);
+    }
+
+    (Array.isArray(manifest.icons) ? manifest.icons : []).forEach((icon, index) => {
+        if (!icon || !icon.src) {
+            errors.push(`${relPath}: icons[${index}] missing src`);
+            return;
+        }
+        assertLocalRefExists(errors, relPath, icon.src);
+    });
+
+    (Array.isArray(manifest.shortcuts) ? manifest.shortcuts : []).forEach((shortcut, index) => {
+        if (!shortcut || !shortcut.url) {
+            errors.push(`${relPath}: shortcuts[${index}] missing url`);
+        } else {
+            assertLocalRefExists(errors, relPath, shortcut.url);
+        }
+        (Array.isArray(shortcut?.icons) ? shortcut.icons : []).forEach((icon, iconIndex) => {
+            if (!icon || !icon.src) {
+                errors.push(`${relPath}: shortcuts[${index}].icons[${iconIndex}] missing src`);
+                return;
+            }
+            assertLocalRefExists(errors, relPath, icon.src);
+        });
+    });
+}
+
+function collectStringArrayValues(js, name) {
+    const match = js.match(new RegExp(`var\\s+${name}\\s*=\\s*\\[([\\s\\S]*?)\\];`));
+    if (!match) return [];
+    return Array.from(match[1].matchAll(/'([^']+)'/g)).map(item => item[1]);
+}
+
+function validateServiceWorkerRefs(errors) {
+    const relPath = 'sw.js';
+    const abs = path.join(DIST_ROOT, relPath);
+    if (!fs.existsSync(abs)) return;
+    const js = fs.readFileSync(abs, 'utf8');
+    const refs = new Set();
+
+    const offlineMatch = js.match(/var\s+OFFLINE_URL\s*=\s*'([^']+)'/);
+    if (offlineMatch) refs.add(offlineMatch[1]);
+    collectStringArrayValues(js, 'SHELL_ASSETS').forEach(ref => refs.add(ref));
+    collectStringArrayValues(js, 'STANDINGS_DATA_ASSETS').forEach(ref => refs.add(ref));
+    Array.from(js.matchAll(/jsonFrom\('([^']+)'\)/g)).forEach(match => refs.add(match[1]));
+
+    refs.forEach(ref => assertLocalRefExists(errors, relPath, ref));
+}
+
+function validateRouteMarkers(errors) {
+    const checks = [
+        {
+            relPath: 'index.html',
+            label: 'home',
+            patterns: [/<main\b/i, /id=["']about["']/i, /id=["']contact["']/i, /id=["']contact-form["']/i]
+        },
+        {
+            relPath: 'blog-module/blog/index.html',
+            label: 'blog index',
+            patterns: [/<main\b/i, /id=["']articles-grid["']/i, /article-card/i]
+        },
+        {
+            relPath: 'standings/index.html',
+            label: 'standings',
+            patterns: [/<main\b/i, /class=["'][^"']*standings-wrapper/i, /id=["']tab-drivers["']/i]
+        },
+        {
+            relPath: '404.html',
+            label: '404',
+            patterns: [/<h1\b/i, /href=["']\//i]
+        }
+    ];
+
+    const pageOnePath = path.join(DIST_ROOT, 'blog-module/blog-index-page-1.json');
+    if (fs.existsSync(pageOnePath)) {
+        try {
+            const pageOne = JSON.parse(fs.readFileSync(pageOnePath, 'utf8'));
+            const first = Array.isArray(pageOne.posts) ? pageOne.posts[0] : null;
+            const id = first && (first.id || first.slug);
+            if (id) {
+                checks.push({
+                    relPath: `blog-module/blog-entries/${encodeURIComponent(id)}/article.html`,
+                    label: 'article',
+                    patterns: [/<main\b/i, /class=["'][^"']*article-content/i, /rel=["']canonical["']/i]
+                });
+            }
+        } catch (error) {
+            errors.push(`blog-module/blog-index-page-1.json: invalid JSON for route crawl (${error.message})`);
+        }
+    }
+
+    checks.forEach(check => {
+        const abs = path.join(DIST_ROOT, check.relPath);
+        if (!fs.existsSync(abs)) {
+            errors.push(`route crawl ${check.label}: missing ${check.relPath}`);
+            return;
+        }
+        const html = fs.readFileSync(abs, 'utf8');
+        check.patterns.forEach(pattern => {
+            if (!pattern.test(html)) errors.push(`route crawl ${check.label}: ${check.relPath} missing ${pattern}`);
+        });
+    });
+}
+
 function main() {
     if (!fs.existsSync(DIST_ROOT)) {
         console.error('✗ dist/ does not exist. Run `node scripts/build/public-artifact.mjs` first.');
@@ -183,6 +592,8 @@ function main() {
 
     const errors = [];
     const files = [];
+    const sitemapUrls = loadSitemapUrls(errors);
+    const indexedArticleUrls = loadIndexedArticleUrls(errors);
 
     for (const relPath of REQUIRED_EXACT) {
         if (!fs.existsSync(path.join(DIST_ROOT, relPath))) {
@@ -191,6 +602,11 @@ function main() {
     }
 
     validateSecurityHeadersFile(errors);
+    validateRobots(errors);
+    validateCname(errors);
+    validateManifestRefs(errors);
+    validateServiceWorkerRefs(errors);
+    validateRouteMarkers(errors);
 
     walk(DIST_ROOT, function (abs, relPath) {
         files.push(relPath);
@@ -207,6 +623,7 @@ function main() {
         if (/\.html$/i.test(relPath)) {
             const html = fs.readFileSync(abs, 'utf8');
             validateHtmlSecurityMeta(errors, html, relPath);
+            validateHtmlMetadata(errors, html, relPath, sitemapUrls, indexedArticleUrls);
             validateHtmlRefs(errors, abs, relPath);
         }
         if (/\.css$/i.test(relPath)) validateCssRefs(errors, abs, relPath);

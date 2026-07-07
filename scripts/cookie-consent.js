@@ -66,7 +66,13 @@
         if (accept && decline) {
             var text = banner.querySelector('.cookie-content p');
             if (text) {
-                text.innerHTML = 'Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a>';
+                var privacyLink = document.createElement('a');
+                privacyLink.href = '/privacy/privacy.html';
+                privacyLink.textContent = 'Πολιτική Απορρήτου';
+                text.replaceChildren(
+                    document.createTextNode('Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. '),
+                    privacyLink
+                );
             }
             accept.textContent = 'Αποδοχή';
             decline.textContent = 'Απόρριψη';

@@ -301,4 +301,8 @@
             tickCountdown();
         });
     }
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-current-year]'), function (node) {
+        node.textContent = String(new Date().getFullYear());
+    });
 })();

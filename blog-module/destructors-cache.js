@@ -393,12 +393,14 @@ async function updateDestructorsCache(options) {
 
     const activeTeams = new Set(drivers.map(driver => driver.teamKey));
     const zeroTeams = TEAM_ORDER.filter(teamKey => !activeTeams.has(teamKey));
-    const generatedAt = new Date().toISOString();
     const unchanged = !!(
         existing
         && sameDrivers(existing.drivers, drivers)
         && sameStringArray(existing.zeroTeams, zeroTeams)
     );
+    const generatedAt = unchanged && existing && existing.generatedAt
+        ? existing.generatedAt
+        : new Date().toISOString();
 
     const payload = {
         version: CACHE_VERSION,

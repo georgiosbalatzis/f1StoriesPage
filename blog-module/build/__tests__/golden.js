@@ -17,7 +17,7 @@ const REPO_ROOT = path.resolve(TEST_ROOT, '..', '..', '..');
 const BLOG_ENTRIES_DIR = path.join(REPO_ROOT, 'blog-module', 'blog-entries');
 const GOLDEN_EXPECTED_DIR = path.join(TEST_ROOT, 'golden-expected');
 const CSV_FIXTURE_PATH = path.join(TEST_ROOT, 'fixtures', 'csv', 'team-sample.csv');
-const BLOG_DATA_PATH = path.join(REPO_ROOT, 'blog-module', 'blog-data.json');
+const CLASSIFICATION_CACHE_PATH = path.join(TEST_ROOT, 'fixtures', 'classification-cache.json');
 
 const GOLDEN_ENTRIES = [
     '20260415',
@@ -125,7 +125,7 @@ async function buildGoldenPostGraph(entriesDir) {
 }
 
 function verifyClassificationGuards() {
-    const blogData = JSON.parse(fs.readFileSync(BLOG_DATA_PATH, 'utf8'));
+    const blogData = JSON.parse(fs.readFileSync(CLASSIFICATION_CACHE_PATH, 'utf8'));
     const cachedPostsById = new Map((blogData.posts || []).map(post => [post.id, post]));
     const cases = [
         { slug: '20260324W', entryFiles: [], expectedKind: 'cached-only', expectedAction: 'reuse-cached' },
@@ -269,7 +269,7 @@ async function verifyGoldenSnapshots() {
     ensureGoldenDir();
     const failures = verifyClassificationGuards().map(message => ({
         name: `classification: ${message}`,
-        expectedPath: BLOG_DATA_PATH,
+        expectedPath: CLASSIFICATION_CACHE_PATH,
         actualPath: BLOG_ENTRIES_DIR
     }));
 

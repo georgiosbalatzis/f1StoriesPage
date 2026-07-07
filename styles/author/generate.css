@@ -1,0 +1,223 @@
+/* ── Editor panel ──────────────────────────────────── */
+.gen-panel {
+    position: relative;
+    max-width: 820px;
+    margin: 100px auto 0;
+    padding: 1.5rem;
+    background: var(--bg-surface, #1a1a2e);
+    border: 1px solid var(--border, rgba(255,255,255,0.08));
+    border-radius: var(--radius-lg, 14px);
+    box-shadow: var(--shadow-md);
+}
+.gen-panel h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+    color: var(--text-primary);
+}
+.gen-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+.gen-field {
+    flex: 1;
+    min-width: 140px;
+}
+.gen-field label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary, rgba(255,255,255,0.45));
+    margin-bottom: 4px;
+}
+.gen-field input,
+.gen-field select {
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    border-radius: 8px;
+    border: 1px solid var(--border, rgba(255,255,255,0.1));
+    background: var(--bg-base, #111113);
+    color: var(--text-primary, #fff);
+    font-size: 0.88rem;
+    font-family: 'DM Sans', sans-serif;
+}
+.gen-textarea {
+    width: 100%;
+    min-height: 260px;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--border, rgba(255,255,255,0.1));
+    background: var(--bg-base, #111113);
+    color: var(--text-primary, #fff);
+    font-size: 0.88rem;
+    font-family: 'DM Sans', monospace;
+    line-height: 1.6;
+    resize: vertical;
+    tab-size: 4;
+}
+.gen-textarea::placeholder { color: var(--text-tertiary, rgba(255,255,255,0.3)); }
+.gen-textarea:focus-visible,
+.gen-field input:focus-visible,
+.gen-field select:focus-visible {
+    outline: 2px solid var(--accent, #60a5fa);
+    outline-offset: 2px;
+    border-color: var(--accent, #60a5fa);
+    box-shadow: 0 0 0 2px rgba(96,165,250,0.15);
+}
+
+.gen-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+}
+.gen-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.6rem 1.4rem;
+    border-radius: 8px;
+    border: none;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+.gen-btn:active { transform: scale(0.97); }
+.gen-btn-primary {
+    background: var(--accent, #60a5fa);
+    color: #fff;
+}
+.gen-btn-primary:hover { background: #4e94e8; }
+.gen-btn-secondary {
+    background: var(--bg-surface-alt, rgba(255,255,255,0.06));
+    color: var(--text-primary, #fff);
+    border: 1px solid var(--border, rgba(255,255,255,0.1));
+}
+.gen-btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+.gen-file-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    border: 1px dashed var(--border, rgba(255,255,255,0.15));
+    background: var(--bg-surface-alt, rgba(255,255,255,0.03));
+    color: var(--text-secondary, rgba(255,255,255,0.7));
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+.gen-file-label:hover {
+    border-color: var(--accent, #60a5fa);
+    background: rgba(96,165,250,0.06);
+}
+.gen-file-label.has-file {
+    border-style: solid;
+    border-color: var(--accent, #60a5fa);
+    color: var(--accent, #60a5fa);
+}
+.gen-file-input { display: none; }
+.gen-file-name {
+    font-size: 0.78rem;
+    color: var(--text-tertiary);
+    margin-left: 0.25rem;
+}
+
+.gen-hint {
+    font-size: 0.72rem;
+    color: var(--text-tertiary, rgba(255,255,255,0.35));
+    margin-top: 0.5rem;
+    line-height: 1.5;
+}
+.gen-hint code {
+    background: rgba(255,255,255,0.06);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+}
+
+/* ── Preview wrapper ───────────────────────────────── */
+#preview-wrapper {
+    display: none;
+}
+#preview-wrapper.visible {
+    display: block;
+}
+.gen-preview-bar {
+    max-width: 820px;
+    margin: 100px auto 0;
+    padding: 0.6rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-surface, #1a1a2e);
+    border: 1px solid var(--border, rgba(255,255,255,0.08));
+    border-radius: 10px;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+.gen-preview-bar i { color: var(--accent, #60a5fa); }
+
+/* ── Split view (desktop only) ─────────────────────── */
+@media (min-width: 1200px) {
+    .gen-split {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 1.25rem;
+        max-width: 1720px;
+        margin: 100px auto 0;
+        padding: 0 1rem;
+        align-items: start;
+    }
+    .gen-split > #editor-panel {
+        margin: 0;
+        max-width: none;
+        position: sticky;
+        top: 90px;
+        max-height: calc(100vh - 110px);
+        overflow-y: auto;
+    }
+    .gen-split > #preview-wrapper {
+        display: block;
+    }
+    .gen-split > #preview-wrapper .gen-preview-bar {
+        margin: 0 0 0.5rem 0;
+        max-width: none;
+        position: sticky;
+        top: 90px;
+        z-index: 2;
+    }
+    .gen-split > #preview-wrapper .article-page-wrapper {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+    .gen-split > #preview-wrapper .container {
+        max-width: none;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .gen-split > #preview-wrapper .article-container {
+        max-width: none;
+    }
+    .gen-split > #preview-wrapper .article-header-img {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+    }
+    /* In split view the Preview / Back toggle is meaningless */
+    .gen-split #gen-preview-btn,
+    .gen-split #gen-back-btn {
+        display: none;
+    }
+}

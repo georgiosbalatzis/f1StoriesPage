@@ -9,6 +9,7 @@ const BLOG_MODULE_DIR = path.join(__dirname, '..');
 const CONFIG = {
     BLOG_DIR: path.join(BLOG_MODULE_DIR, 'blog-entries'),
     OUTPUT_JSON: path.join(BLOG_MODULE_DIR, 'blog-data.json'),
+    SOURCE_CACHE_JSON: path.join(BLOG_MODULE_DIR, 'blog-source-cache.json'),
     OUTPUT_HTML_DIR: path.join(BLOG_MODULE_DIR, 'blog'),
     TEMPLATE_PATH: path.join(BLOG_MODULE_DIR, 'blog', 'template.html'),
     SITEMAP_PATH: path.join(BLOG_MODULE_DIR, '..', 'sitemap.xml'),

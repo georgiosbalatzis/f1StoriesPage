@@ -16,6 +16,7 @@ import {
     fetchOpenF1BySessionKeys,
     fetchOpenF1ByDriverNumbers
 } from '../core/fetchers.js';
+import { setTrustedHtml } from '../core/rendering.js';
 import { parseNumberValue, isFiniteNumber, parseTimeSeconds } from './_shared.js';
 
 const OPENF1 = 'https://api.openf1.org/v1';
@@ -1116,17 +1117,17 @@ function renderDirtyAir(sessionData, session) {
     }).join('');
 
     if (!sessionData || !session) {
-        dirtyAirTable.innerHTML = '<div class="dirty-air-empty-card">'
+        setTrustedHtml(dirtyAirTable, '<div class="dirty-air-empty-card">'
             + '<svg class="icon" aria-hidden="true"><use href="#fa-wind"/></svg>'
             + '<p>Δεν υπάρχουν ακόμη completed races για dirty air analysis.</p>'
             + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρχουν διαθέσιμα race telemetry samples.</p>'
-            + '</div>';
+            + '</div>', 'dirty air empty state');
         fireRendered();
         return;
     }
 
     if (!hasRenderableDirtyAirRows(sessionData)) {
-        dirtyAirTable.innerHTML = '<div class="dirty-air-card">'
+        setTrustedHtml(dirtyAirTable, '<div class="dirty-air-card">'
             + '<div class="dirty-air-head"><div class="dirty-air-head-copy"><h3 class="dirty-air-head-title">Dirty Air Proximity Breakdown</h3><p class="dirty-air-head-note">Clean air σημαίνει ότι δεν υπάρχει κανένα μονοθέσιο μπροστά μέσα σε 4.0s στο ίδιο minisector. Τα backmarkers που ετοιμάζονται να δεχτούν γύρο μετρούν κανονικά ως traffic.</p></div><label class="dirty-air-controls"><span class="dirty-air-controls-label">Available races</span><select class="dirty-air-select" data-dirty-air-select aria-label="Επιλογή αγώνα για dirty air analysis">' + sessionOptions + '</select></label></div>'
             + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || 'Race')) + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Drivers</span><span class="dirty-air-summary-value">0</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">MiniSectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div></div></div>'
             + '<div class="dirty-air-empty-card">'
@@ -1134,7 +1135,7 @@ function renderDirtyAir(sessionData, session) {
             + '<p>Δεν υπάρχουν ακόμη αρκετά race telemetry samples για το συγκεκριμένο race.</p>'
             + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Διάλεξε άλλο completed Grand Prix ή δοκίμασε ξανά αργότερα όταν το OpenF1 έχει περισσότερα location samples.</p>'
             + '</div>'
-            + '</div>';
+            + '</div>', 'dirty air no-data report state');
         fireRendered();
         return;
     }
@@ -1218,18 +1219,18 @@ function renderDirtyAir(sessionData, session) {
         + '<p class="dirty-air-footnote">Source: OpenF1 `location`, `laps`, `session_result` και `race_control`. Το nearest car ahead μετριέται ανά minisector χρησιμοποιώντας το πιο πρόσφατο crossing στο ίδιο κομμάτι της πίστας.</p>'
         + '</div>';
 
-    dirtyAirTable.innerHTML = html;
+    setTrustedHtml(dirtyAirTable, html, 'dirty air report template');
     fireRendered();
 }
 
 function showDirtyAirError() {
     if (!dirtyAirTable) return;
-    dirtyAirTable.innerHTML = '<div class="dirty-air-empty-card">'
+    setTrustedHtml(dirtyAirTable, '<div class="dirty-air-empty-card">'
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση του dirty air analysis.</p>'
         + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 telemetry endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
-        + '<button class="retry-btn" type="button" onclick="window.__retryDirtyAir && window.__retryDirtyAir()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
-        + '</div>';
+        + '<button class="retry-btn" type="button" data-standings-retry="__retryDirtyAir"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
+        + '</div>', 'dirty air error state');
     fireRendered();
 }
 
@@ -1273,7 +1274,7 @@ function loadAndRenderDirtyAir(useSkeleton) {
 
     state.loading = true;
     state.pendingReload = false;
-    if (useSkeleton) dirtyAirTable.innerHTML = createDirtyAirSkeleton();
+    if (useSkeleton) setTrustedHtml(dirtyAirTable, createDirtyAirSkeleton(), 'dirty air skeleton');
 
     const sessionsPromise = state.sessions.length
         ? Promise.resolve(state.sessions)

@@ -23,6 +23,46 @@
         }, 400);
     }
 
+    function createBannerButton(className, label, id) {
+        var button = document.createElement('button');
+        button.className = className;
+        button.type = 'button';
+        if (id) button.id = id;
+        button.textContent = label;
+        return button;
+    }
+
+    function appendBannerContent(banner, title, text, action) {
+        var inner = document.createElement('div');
+        inner.className = 'pwa-banner-inner';
+
+        var icon = document.createElement('img');
+        icon.src = '/images/logo-256.webp';
+        icon.alt = '';
+        icon.className = 'pwa-banner-icon';
+        icon.width = 256;
+        icon.height = 256;
+        icon.decoding = 'async';
+
+        var copy = document.createElement('div');
+        copy.className = 'pwa-banner-text';
+        var strong = document.createElement('strong');
+        strong.textContent = title;
+        var span = document.createElement('span');
+        span.textContent = text;
+        copy.append(strong, span);
+
+        inner.append(icon, copy);
+        if (action) {
+            inner.appendChild(createBannerButton('pwa-banner-btn', action.label, action.id));
+        }
+
+        var close = createBannerButton('pwa-banner-close', '×');
+        close.setAttribute('aria-label', 'Close');
+        inner.appendChild(close);
+        banner.replaceChildren(inner);
+    }
+
     function showUpdateBanner(reg, worker) {
         if (document.getElementById('sw-update-banner')) return;
         if (!document.body) {
@@ -33,16 +73,10 @@
         var banner = document.createElement('div');
         banner.id = 'sw-update-banner';
         banner.setAttribute('role', 'alert');
-        banner.innerHTML =
-            '<div class="pwa-banner-inner">' +
-                '<img src="/images/logo-256.webp" alt="" class="pwa-banner-icon" width="256" height="256" decoding="async">' +
-                '<div class="pwa-banner-text">' +
-                    '<strong>New version available</strong>' +
-                    '<span>Reload to use the latest F1 Stories updates.</span>' +
-                '</div>' +
-                '<button class="pwa-banner-btn" id="sw-update-reload">Reload</button>' +
-                '<button class="pwa-banner-close" aria-label="Close">&times;</button>' +
-            '</div>';
+        appendBannerContent(banner, 'New version available', 'Reload to use the latest F1 Stories updates.', {
+            id: 'sw-update-reload',
+            label: 'Reload'
+        });
 
         document.body.appendChild(banner);
         requestAnimationFrame(function () {
@@ -333,18 +367,12 @@
         var banner = document.createElement('div');
         banner.id = 'pwa-install-banner';
         banner.setAttribute('role', 'alert');
-        banner.innerHTML =
-            '<div class="pwa-banner-inner">' +
-                '<img src="/images/logo-256.webp" alt="" class="pwa-banner-icon" width="256" height="256" decoding="async">' +
-                '<div class="pwa-banner-text">' +
-                    '<strong>F1 Stories</strong>' +
-                    '<span>' + info.text + '</span>' +
-                '</div>' +
-                (showInstallBtn
-                    ? '<button class="pwa-banner-btn" id="pwa-install-btn">Install</button>'
-                    : '') +
-                '<button class="pwa-banner-close" aria-label="Close">&times;</button>' +
-            '</div>';
+        appendBannerContent(
+            banner,
+            'F1 Stories',
+            info.text,
+            showInstallBtn ? { id: 'pwa-install-btn', label: 'Install' } : null
+        );
 
         document.body.appendChild(banner);
         requestAnimationFrame(function () {

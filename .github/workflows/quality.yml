@@ -35,20 +35,39 @@ jobs:
       - name: Build public artifact
         run: npm run build:public
 
+      - name: Run static source guard
+        run: npm run quality:static
+
+      - name: Audit runtime dependencies
+        run: npm run audit:runtime
+
       - name: Check generated artifact drift
         run: npm run build:check
 
       - name: Run blog golden tests
         run: npm run test:blog
 
+      - name: Run author module tests
+        run: npm run test:author
+
+      - name: Run standings module tests
+        run: npm run test:standings
+
       - name: Check file-size budget
         run: npm run perf:budget
+
+      - name: Check article media budget
+        run: npm run perf:article-media
 
       - name: Check public image budget
         run: npm run perf:images
 
       - name: Check consent analytics behavior
         run: npm run test:consent
+
+      - name: Run visual and accessibility smoke checks
+        timeout-minutes: 10
+        run: npm run qa:visual
 
       - name: Run Lighthouse budgets
         run: npm run perf:lighthouse

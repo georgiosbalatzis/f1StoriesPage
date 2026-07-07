@@ -23,6 +23,7 @@ import {
     fetchOpenF1BySessionKeys,
     fetchOpenF1ByDriverNumbers
 } from '../core/fetchers.js';
+import { setTrustedHtml } from '../core/rendering.js';
 import { parseNumberValue, isFiniteNumber, parseTimeSeconds } from './_shared.js';
 
 const OPENF1 = 'https://api.openf1.org/v1';
@@ -125,7 +126,8 @@ function ensureSelectedSessionExists() {
         return String(item.session_key) === String(state.selectedSessionKey);
     });
     if (!state.selectedSessionKey || !hasSelected) {
-        state.selectedSessionKey = String(state.sessions[state.sessions.length - 1].session_key);
+        const defaultSession = pickDefaultTrackDominanceSession(state.sessions);
+        state.selectedSessionKey = defaultSession ? String(defaultSession.session_key) : '';
     }
     return state.selectedSessionKey;
 }
@@ -242,6 +244,26 @@ function isCompletedSession(session) {
     if (!session || session.is_cancelled) return false;
     const dateValue = session.date_end || session.date_start || session.date;
     return dateValue ? new Date(dateValue) <= new Date() : false;
+}
+
+function getTrackDominanceSessionRank(session) {
+    const text = [
+        session && session.session_name,
+        session && session.session_type
+    ].join(' ').toLowerCase();
+    if (text.indexOf('race') !== -1) return 5;
+    if (text.indexOf('qualifying') !== -1 || text.indexOf('shootout') !== -1) return 4;
+    if (text.indexOf('sprint') !== -1) return 3;
+    if (text.indexOf('practice') !== -1) return 1;
+    return 2;
+}
+
+function pickDefaultTrackDominanceSession(sessions) {
+    const candidates = (sessions || []).filter(function(session) {
+        return getTrackDominanceSessionRank(session) > 1;
+    });
+    const source = candidates.length ? candidates : (sessions || []);
+    return source.length ? source[source.length - 1] : null;
 }
 
 function formatSessionDateShort(session) {
@@ -907,11 +929,11 @@ function renderTrackDominance(sessionData, pairData, session) {
     if (!trackDominanceTable) return;
 
     if (!sessionData || !session || !sessionData.drivers || sessionData.drivers.length < 2) {
-        trackDominanceTable.innerHTML = '<div class="track-dom-empty-card">'
+        setTrustedHtml(trackDominanceTable, '<div class="track-dom-empty-card">'
             + '<svg class="icon" aria-hidden="true"><use href="#fa-route"/></svg>'
             + '<p>Δεν υπάρχουν ακόμη αρκετά telemetry laps για driver comparison.</p>'
             + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed sessions με valid fastest laps για τουλάχιστον δύο οδηγούς.</p>'
-            + '</div>';
+            + '</div>', 'track dominance empty state');
         fireRendered();
         return;
     }
@@ -934,10 +956,10 @@ function renderTrackDominance(sessionData, pairData, session) {
     const leftDriver = sessionData.driverMap[state.leftDriverKey];
     const rightDriver = sessionData.driverMap[state.rightDriverKey];
     if (!leftDriver || !rightDriver) {
-        trackDominanceTable.innerHTML = '<div class="track-dom-empty-card">'
+        setTrustedHtml(trackDominanceTable, '<div class="track-dom-empty-card">'
             + '<svg class="icon" aria-hidden="true"><use href="#fa-route"/></svg>'
             + '<p>Δεν ήταν δυνατή η φόρτωση των selected drivers για το session.</p>'
-            + '</div>';
+            + '</div>', 'track dominance missing driver state');
         fireRendered();
         return;
     }
@@ -993,18 +1015,24 @@ function renderTrackDominance(sessionData, pairData, session) {
 
     html += '<p class="track-dom-footnote">Source: OpenF1 `laps` + `location`. Κάθε selected driver εκπροσωπείται από το single fastest lap του στο session.</p></div>';
 
-    trackDominanceTable.innerHTML = html;
+    setTrustedHtml(trackDominanceTable, html, 'track dominance report template');
     fireRendered();
 }
 
 function showTrackDominanceError() {
     if (!trackDominanceTable) return;
-    trackDominanceTable.innerHTML = '<div class="track-dom-empty-card">'
+    const sessionOptions = state.sessions.slice().reverse().map(function(item) {
+        return '<option value="' + esc(item.session_key) + '"' + (String(item.session_key) === String(state.selectedSessionKey) ? ' selected' : '') + '>' + esc((item.meeting_name || item.circuit_short_name || item.location || 'Session') + ' · ' + (item.session_name || item.session_type || 'Session') + (formatSessionDateShort(item) ? ' · ' + formatSessionDateShort(item) : '')) + '</option>';
+    }).join('');
+
+    setTrustedHtml(trackDominanceTable, '<div class="track-dom-card">'
+        + '<div class="track-dom-head"><div class="track-dom-head-copy"><h3 class="track-dom-head-title">Fastest-Lap Track Dominance</h3><p class="track-dom-head-note">Δεν υπάρχει διαθέσιμο telemetry map για το selected session αυτή τη στιγμή. Διάλεξε άλλο session ή ξαναδοκίμασε όταν το OpenF1 δώσει location samples.</p></div><label class="track-dom-controls"><span class="track-dom-controls-label">Available sessions</span><select class="track-dom-select" data-track-dom-session aria-label="Επιλογή session για track dominance">' + sessionOptions + '</select></label></div>'
+        + '<div class="track-dom-empty-card">'
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
-        + '<p>Δεν ήταν δυνατή η φόρτωση του track dominance chart.</p>'
-        + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 telemetry endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
-        + '<button class="retry-btn" type="button" onclick="window.__retryTrackDominance && window.__retryTrackDominance()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
-        + '</div>';
+        + '<p>Δεν ήταν δυνατή η φόρτωση του track dominance report για αυτό το session.</p>'
+        + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Τα πιο πρόσφατα practice sessions συχνά δεν έχουν ακόμη πλήρη OpenF1 location telemetry. Το report παραμένει διαθέσιμο για προηγούμενα completed sessions.</p>'
+        + '<button class="retry-btn" type="button" data-standings-retry="__retryTrackDominance"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
+        + '</div></div>', 'track dominance error state');
     fireRendered();
 }
 
@@ -1053,7 +1081,7 @@ function loadAndRenderTrackDominance(useSkeleton) {
 
     state.loading = true;
     state.pendingReload = false;
-    if (useSkeleton) trackDominanceTable.innerHTML = createTrackDominanceSkeleton();
+    if (useSkeleton) setTrustedHtml(trackDominanceTable, createTrackDominanceSkeleton(), 'track dominance skeleton');
 
     const sessionsPromise = state.sessions.length
         ? Promise.resolve(state.sessions)
@@ -1066,7 +1094,8 @@ function loadAndRenderTrackDominance(useSkeleton) {
         if (!sessions.length) return { session: null, sessionData: null, pairData: null };
 
         if (!state.selectedSessionKey || !sessions.some(function(item) { return String(item.session_key) === String(state.selectedSessionKey); })) {
-            state.selectedSessionKey = String(sessions[sessions.length - 1].session_key);
+            const defaultSession = pickDefaultTrackDominanceSession(sessions);
+            state.selectedSessionKey = defaultSession ? String(defaultSession.session_key) : '';
         }
 
         const selectedSession = sessions.filter(function(item) {

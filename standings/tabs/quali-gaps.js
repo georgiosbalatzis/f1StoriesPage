@@ -16,6 +16,7 @@ import {
 } from '../core/teams.js';
 import { getCachedHeadshotResult } from '../core/drivers-meta.js';
 import { fetchJSON, fetchOpenF1BySessionKeys } from '../core/fetchers.js';
+import { setTrustedHtml } from '../core/rendering.js';
 import { isFiniteNumber, parseTimeSeconds } from './_shared.js';
 
 const OPENF1 = 'https://api.openf1.org/v1';
@@ -90,7 +91,7 @@ export function ensureLoaded(forceReload) {
     if (state.loaded && !forceReload) return;
 
     state.loading = true;
-    qualifyingGapsTable.innerHTML = createQualifyingSkeletonRows(6);
+    setTrustedHtml(qualifyingGapsTable, createQualifyingSkeletonRows(6), 'qualifying gaps skeleton');
 
     loadQualifyingGapRows().then(function(data) {
         renderQualifyingGaps(data);
@@ -816,11 +817,11 @@ function renderQualifyingGaps(data) {
     const raceRows = state.raceRows;
 
     if ((!overviewRows || !overviewRows.length) && (!raceRows || !raceRows.length)) {
-        qualifyingGapsTable.innerHTML = '<div class="quali-empty-card">'
+        setTrustedHtml(qualifyingGapsTable, '<div class="quali-empty-card">'
             + '<svg class="icon" aria-hidden="true"><use href="#fa-stopwatch"/></svg>'
             + '<p>Δεν υπάρχουν ακόμη αρκετά qualifying δεδομένα για teammate gaps.</p>'
             + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed qualifying ή sprint shootout sessions.</p>'
-            + '</div>';
+            + '</div>', 'qualifying gaps empty state');
         if (onRendered) onRendered('quali-gaps');
         return;
     }
@@ -850,17 +851,17 @@ function renderQualifyingGaps(data) {
             + '</div></div>';
     }
 
-    qualifyingGapsTable.innerHTML = html + viewContent;
+    setTrustedHtml(qualifyingGapsTable, html + viewContent, 'qualifying gaps report template');
     if (onRendered) onRendered('quali-gaps');
 }
 
 function showQualifyingError() {
-    qualifyingGapsTable.innerHTML = '<div class="quali-empty-card">'
+    setTrustedHtml(qualifyingGapsTable, '<div class="quali-empty-card">'
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση των teammate qualifying gaps.</p>'
         + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
-        + '<button class="retry-btn" type="button" onclick="window.__retryQualifyingGaps && window.__retryQualifyingGaps()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
-        + '</div>';
+        + '<button class="retry-btn" type="button" data-standings-retry="__retryQualifyingGaps"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
+        + '</div>', 'qualifying gaps error state');
     if (onRendered) onRendered('quali-gaps');
 }
 

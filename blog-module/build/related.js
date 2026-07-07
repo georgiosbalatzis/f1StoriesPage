@@ -40,6 +40,7 @@ async function buildRelatedPostsHtml(relatedPosts) {
         const relatedAuthor = escapeHtmlAttribute(related.author);
         const relatedReadTime = escapeHtmlAttribute(related.readingTime || '');
         const imageDimensions = await getImageDimensionsForPublicPath(relatedImage);
+        const hasImage = Boolean(relatedImage && relatedImage !== CONFIG.DEFAULT_BLOG_IMAGE && imageDimensions);
         const widthAttr = imageDimensions && imageDimensions.width ? ` width="${imageDimensions.width}"` : '';
         const heightAttr = imageDimensions && imageDimensions.height ? ` height="${imageDimensions.height}"` : '';
         const hoverMeta = relatedReadTime
@@ -50,20 +51,21 @@ async function buildRelatedPostsHtml(relatedPosts) {
         return `
             <div class="col-md-4 mb-4">
                 <a href="${related.url}" class="related-card-link" style="display:block;height:100%;">
-                    <div class="related-article-card">
+                    <div class="related-article-card${hasImage ? '' : ' related-article-card--no-image'}">
+                        ${hasImage ? `
                         <div class="related-card-media">
                             <img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}"
                                  alt="${relatedTitle}"
                                  loading="lazy"
                                  decoding="async"${widthAttr}${heightAttr}
-                                 onerror="this.src='${CONFIG.DEFAULT_BLOG_IMAGE}';this.onerror=null;">
+                                 data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">
                             <div class="related-card-hover">
                                 <span class="related-card-hover-label">Περισσότερα</span>${hoverMetaLine}
                             </div>
-                        </div>
+                        </div>` : ''}
                         <div class="card-body">
                             <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ${relDateStr}</div>
-                            <h5>${relatedTitle}</h5>
+                            <h3>${relatedTitle}</h3>
                             <div class="related-card-footer">
                                 <span class="related-card-read">Read More <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">${relatedAuthor}</span>

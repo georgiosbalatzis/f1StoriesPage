@@ -12,6 +12,13 @@ import {
     getCanonicalTeamName
 } from '../core/teams.js';
 import { fetchJSONNoCache } from '../core/fetchers.js';
+import { runExclusiveLoad } from '../core/lifecycle.js';
+import {
+    loadingCardHTML,
+    renderMessage,
+    renderTrustedHtml
+} from '../core/rendering.js';
+import { validateDestructorsSnapshotPayload } from '../core/payloads.js';
 import { parseNumberValue } from './_shared.js';
 
 const DESTRUCTORS_CACHE_URL = 'destructors-cache.json';
@@ -78,25 +85,34 @@ export function setActiveView(view) {
 }
 
 export function ensureLoaded(forceReload) {
-    if (!destructorsTable) return;
-    if (state.loading) return;
+    if (!destructorsTable) return Promise.resolve(false);
     if (state.loaded && state.snapshot && !forceReload) {
         renderDestructors(state.snapshot);
-        return;
+        return Promise.resolve(true);
     }
 
-    state.loading = true;
-    destructorsTable.innerHTML = '<div class="destructors-card"><div class="destructors-loading"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-circle-notch"/></svg><p>Loading destructors snapshot...</p></div></div>';
-
-    fetchJSONNoCache(DESTRUCTORS_CACHE_URL, 8000).then(function(payload) {
-        state.snapshot = normalizeSnapshot(payload);
-        state.loaded = true;
-        renderDestructors(state.snapshot);
-    }).catch(function(error) {
-        console.error('Destructors error:', error);
-        showDestructorsError();
-    }).finally(function() {
-        state.loading = false;
+    return runExclusiveLoad(state, {
+        target: destructorsTable,
+        loadingHTML: loadingCardHTML({
+            wrapperClass: 'destructors-card',
+            stateClass: 'destructors-loading',
+            message: 'Loading destructors snapshot...'
+        }),
+        loadingReason: 'destructors snapshot loading state',
+        load: function() {
+            return fetchJSONNoCache(DESTRUCTORS_CACHE_URL, 8000).then(validateDestructorsSnapshotPayload);
+        },
+        onSuccess: function(payload) {
+            state.snapshot = normalizeSnapshot(payload);
+            state.loaded = true;
+            renderDestructors(state.snapshot);
+            return true;
+        },
+        onError: function(error) {
+            console.error('Destructors error:', error);
+            showDestructorsError();
+            return false;
+        }
     });
 }
 
@@ -395,19 +411,21 @@ function renderDestructors(snapshot) {
         + '<button class="destructors-view-tab' + (state.activeView === 'flow' ? ' active' : '') + '" type="button" data-destructors-view="flow" role="tab" aria-selected="' + (state.activeView === 'flow' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-diagram-project"/></svg> Driver Flow</button>'
         + '</div></div>';
 
-    destructorsTable.innerHTML = summaryHTML
+    renderTrustedHtml(destructorsTable, summaryHTML
         + switchHTML
         + '<div class="destructors-view-panel' + (state.activeView === 'teams' ? ' active' : '') + '" data-destructors-panel="teams">' + buildTeamChartHTML(snapshot) + '</div>'
         + '<div class="destructors-view-panel' + (state.activeView === 'flow' ? ' active' : '') + '" data-destructors-panel="flow">' + buildFlowChartHTML(snapshot) + '</div>'
-        + buildSourceHTML(snapshot.source);
+        + buildSourceHTML(snapshot.source), 'destructors trusted local chart template');
 
     fireRendered();
 }
 
 function showDestructorsError() {
     if (!destructorsTable) return;
-    destructorsTable.innerHTML = '<div class="destructors-card"><div class="destructors-empty">'
-        + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg><p>Failed to load the destructors snapshot.</p>'
-        + '</div></div>';
-    fireRendered();
+    renderMessage(destructorsTable, {
+        wrapperClass: 'destructors-card',
+        stateClass: 'destructors-empty',
+        icon: 'fa-exclamation-triangle',
+        message: 'Failed to load the destructors snapshot.'
+    }, 'destructors error state', fireRendered);
 }

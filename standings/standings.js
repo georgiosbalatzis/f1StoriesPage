@@ -18,6 +18,15 @@ import {
 } from './core/drivers-meta.js';
 import { cacheClear, cachePurgeExpired } from './core/cache.js';
 import { fetchJSON, fetchJSONNoCache } from './core/fetchers.js';
+import {
+    renderMessage,
+    renderTrustedHtml
+} from './core/rendering.js';
+import {
+    validateJolpicaStandingsPayload,
+    validateOpenF1ArrayPayload,
+    validateStandingsSnapshotPayload
+} from './core/payloads.js';
 
 const JOLPICA = 'https://api.jolpi.ca/ergast/f1';
 const OPENF1  = 'https://api.openf1.org/v1';
@@ -101,6 +110,19 @@ let liveStandingsRefreshTimer = 0;
 let standingsLazyImageObserver = null;
 const tabModulePromises = Object.create(null);
 const tabModuleInstances = Object.create(null);
+
+document.addEventListener('click', function(event) {
+    const button = event.target.closest('[data-standings-retry]');
+    if (!button) return;
+
+    event.preventDefault();
+    const action = button.getAttribute('data-standings-retry') || '';
+    if (action === 'reload') {
+        window.location.reload();
+        return;
+    }
+    if (typeof window[action] === 'function') window[action]();
+});
 
 function skelRows(n) {
     const rowHeight = STANDINGS_ROW_HEIGHT;
@@ -725,11 +747,13 @@ function showActivePanelError() {
     const activePanel = document.getElementById('panel-' + activeStandingsTab);
     const target = activePanel && activePanel.querySelector('[aria-live="polite"], .standings-table-wrap, .quali-gaps-wrap, .tyre-pace-wrap, .dirty-air-wrap, .track-dom-wrap, .debrief-wrap');
     if (!target) return;
-    target.innerHTML = '<div class="standings-error">'
-        + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
-        + '<p>Δεν ήταν δυνατή η φόρτωση αυτής της ανάλυσης.</p>'
-        + '<button class="retry-btn" onclick="location.reload()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
-        + '</div>';
+    renderMessage(target, {
+        stateClass: 'standings-error',
+        icon: 'fa-exclamation-triangle',
+        message: 'Δεν ήταν δυνατή η φόρτωση αυτής της ανάλυσης.',
+        retryAction: 'reload',
+        retryLabel: 'Νέα προσπάθεια'
+    }, 'standings active tab module error');
 }
 
 function scheduleStandingsModuleActivation(tabName) {
@@ -800,12 +824,15 @@ function finalizeRenderedPanel(tabName) {
 }
 
 function showError(el) {
-    el.innerHTML = '<div class="standings-error">'
-        + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
-        + '<p>Δεν ήταν δυνατή η φόρτωση των βαθμολογιών.</p>'
-        + '<p style="font-size:0.8rem;">Η σεζόν μπορεί να μην έχει ξεκινήσει ακόμη ή το API να είναι προσωρινά μη διαθέσιμο.</p>'
-        + '<button class="retry-btn" onclick="location.reload()"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
-        + '</div>';
+    renderMessage(el, {
+        stateClass: 'standings-error',
+        icon: 'fa-exclamation-triangle',
+        message: 'Δεν ήταν δυνατή η φόρτωση των βαθμολογιών.',
+        detail: 'Η σεζόν μπορεί να μην έχει ξεκινήσει ακόμη ή το API να είναι προσωρινά μη διαθέσιμο.',
+        detailClass: 'standings-error-detail',
+        retryAction: 'reload',
+        retryLabel: 'Νέα προσπάθεια'
+    }, 'standings table error');
     if (el === driversTable) finalizeRenderedPanel('drivers');
     if (el === constructorsTable) finalizeRenderedPanel('constructors');
 }
@@ -924,9 +951,13 @@ function fetchPrimaryStandings() {
     return Promise.all([
         fetchJSON(driverUrl).catch(function() {
             return fetchJSON(JOLPICA + '/current/driverstandings.json?limit=30');
+        }).then(function(payload) {
+            return validateJolpicaStandingsPayload(payload, 'driver standings API payload');
         }),
         fetchJSON(constructorUrl).catch(function() {
             return fetchJSON(JOLPICA + '/current/constructorstandings.json?limit=30');
+        }).then(function(payload) {
+            return validateJolpicaStandingsPayload(payload, 'constructor standings API payload');
         })
     ]).then(function(results) {
         return {
@@ -959,9 +990,7 @@ function scheduleLiveStandingsRefresh() {
 
 function loadStandingsSnapshot() {
     return fetchJSONNoCache(STANDINGS_SNAPSHOT_URL, 4500).then(function(snapshot) {
-        if (!snapshot || !snapshot.driverStandings || !snapshot.constructorStandings) {
-            throw new Error('Invalid standings snapshot');
-        }
+        validateStandingsSnapshotPayload(snapshot);
         renderStandingsPayload(snapshot.driverStandings, snapshot.constructorStandings);
         scheduleLiveStandingsRefresh();
     });
@@ -981,6 +1010,7 @@ function loadStandings() {
 function loadFromOpenF1Fallback() {
     return fetchJSON(OPENF1 + '/sessions?session_type=Race&year=' + YEAR)
         .then(function(sessions) {
+            validateOpenF1ArrayPayload(sessions, 'OpenF1 race sessions');
             if (!sessions || !sessions.length) throw new Error('No sessions');
             sessions.sort(function(a, b) { return new Date(b.date_start || b.date) - new Date(a.date_start || a.date); });
             const now = new Date();
@@ -996,6 +1026,9 @@ function loadFromOpenF1Fallback() {
             ]);
         })
         .then(function(r) {
+            validateOpenF1ArrayPayload(r[0], 'OpenF1 championship drivers');
+            validateOpenF1ArrayPayload(r[1], 'OpenF1 championship teams');
+            validateOpenF1ArrayPayload(r[2], 'OpenF1 drivers');
             renderDriversFromOpenF1(r[0], r[2]);
             renderConstructorsFromOpenF1(r[1], r[2]);
         })
@@ -1008,7 +1041,11 @@ function loadFromOpenF1Fallback() {
 
 function renderDrivers(standings, openf1Map) {
     if (!standings || !standings.length) {
-        driversTable.innerHTML = '<div class="standings-empty"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg><p>Δεν υπάρχουν ακόμη διαθέσιμες βαθμολογίες οδηγών.</p></div>';
+        renderMessage(driversTable, {
+            stateClass: 'standings-empty',
+            icon: 'fa-flag-checkered',
+            message: 'Δεν υπάρχουν ακόμη διαθέσιμες βαθμολογίες οδηγών.'
+        }, 'empty driver standings table');
         finalizeRenderedPanel('drivers');
         return;
     }
@@ -1047,7 +1084,7 @@ function renderDrivers(standings, openf1Map) {
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
             + '</div>';
     });
-    driversTable.innerHTML = html;
+    renderTrustedHtml(driversTable, html, 'driver standings rows from validated standings payload');
     hydrateStandingsLazyImages(driversTable);
 
     const top10 = standings.slice(0, 10);
@@ -1064,14 +1101,18 @@ function renderDrivers(standings, openf1Map) {
         chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
             + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
     });
-    if (driversChartBars) driversChartBars.innerHTML = chartHTML;
+    if (driversChartBars) renderTrustedHtml(driversChartBars, chartHTML, 'driver standings chart rows');
     if (driversChart) driversChart.style.display = 'block';
     finalizeRenderedPanel('drivers');
 }
 
 function renderConstructors(standings, driverStandings) {
     if (!standings || !standings.length) {
-        constructorsTable.innerHTML = '<div class="standings-empty"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg><p>Δεν υπάρχουν ακόμη διαθέσιμες βαθμολογίες κατασκευαστών.</p></div>';
+        renderMessage(constructorsTable, {
+            stateClass: 'standings-empty',
+            icon: 'fa-flag-checkered',
+            message: 'Δεν υπάρχουν ακόμη διαθέσιμες βαθμολογίες κατασκευαστών.'
+        }, 'empty constructor standings table');
         finalizeRenderedPanel('constructors');
         return;
     }
@@ -1118,7 +1159,7 @@ function renderConstructors(standings, driverStandings) {
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
             + '</div>';
     });
-    constructorsTable.innerHTML = html;
+    renderTrustedHtml(constructorsTable, html, 'constructor standings rows from validated standings payload');
     hydrateStandingsLazyImages(constructorsTable);
 
     let chartHTML = '';
@@ -1132,7 +1173,7 @@ function renderConstructors(standings, driverStandings) {
         chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
             + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + pts + '</span></div></div></div>';
     });
-    if (constructorsChartBars) constructorsChartBars.innerHTML = chartHTML;
+    if (constructorsChartBars) renderTrustedHtml(constructorsChartBars, chartHTML, 'constructor standings chart rows');
     if (constructorsChart) constructorsChart.style.display = 'block';
     finalizeRenderedPanel('constructors');
 }
@@ -1166,7 +1207,7 @@ function renderDriversFromOpenF1(standings, driverInfo) {
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
             + '</div>';
     });
-    driversTable.innerHTML = html;
+    renderTrustedHtml(driversTable, html, 'OpenF1 fallback driver standings rows');
     hydrateStandingsLazyImages(driversTable);
 
     let chartHTML = '';
@@ -1178,7 +1219,7 @@ function renderDriversFromOpenF1(standings, driverInfo) {
         chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
             + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + s.points_current + '</span></div></div></div>';
     });
-    if (driversChartBars) driversChartBars.innerHTML = chartHTML;
+    if (driversChartBars) renderTrustedHtml(driversChartBars, chartHTML, 'OpenF1 fallback driver chart rows');
     if (driversChart) driversChart.style.display = 'block';
     finalizeRenderedPanel('drivers');
 }
@@ -1212,7 +1253,7 @@ function renderConstructorsFromOpenF1(standings, driverInfo) {
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
             + '</div>';
     });
-    constructorsTable.innerHTML = html;
+    renderTrustedHtml(constructorsTable, html, 'OpenF1 fallback constructor standings rows');
 
     let chartHTML = '';
     standings.forEach(function(s) {
@@ -1222,7 +1263,7 @@ function renderConstructorsFromOpenF1(standings, driverInfo) {
         chartHTML += '<div class="chart-bar-row"><span class="chart-label">' + esc(label) + '</span>'
             + '<div class="chart-track"><div class="chart-fill" style="width:' + pct + '%;background:#' + esc(tc) + ';"><span class="chart-pts-label">' + s.points_current + '</span></div></div></div>';
     });
-    if (constructorsChartBars) constructorsChartBars.innerHTML = chartHTML;
+    if (constructorsChartBars) renderTrustedHtml(constructorsChartBars, chartHTML, 'OpenF1 fallback constructor chart rows');
     if (constructorsChart) constructorsChart.style.display = 'block';
     finalizeRenderedPanel('constructors');
 }
@@ -1393,10 +1434,10 @@ function init() {
     pendingDebriefRound = initialURLState.debriefRound;
     pendingDebriefView = initialURLState.debriefView;
 
-    if (driversTable) driversTable.innerHTML = skelRows(EXPECTED_DRIVER_ROWS);
-    if (constructorsTable) constructorsTable.innerHTML = skelRows(EXPECTED_CONSTRUCTOR_ROWS);
+    if (driversTable) renderTrustedHtml(driversTable, skelRows(EXPECTED_DRIVER_ROWS), 'initial driver standings skeleton rows');
+    if (constructorsTable) renderTrustedHtml(constructorsTable, skelRows(EXPECTED_CONSTRUCTOR_ROWS), 'initial constructor standings skeleton rows');
     if (driversChart) driversChart.style.display = 'block';
-    if (driversChartBars) driversChartBars.innerHTML = skelChartRows(10);
+    if (driversChartBars) renderTrustedHtml(driversChartBars, skelChartRows(10), 'initial driver standings chart skeleton rows');
 
     ['qualifying-gaps-year', 'lap1-gains-year', 'tyre-pace-year', 'dirty-air-year', 'track-dominance-year', 'pit-stops-year', 'debrief-year', 'destructors-year'].forEach(function(id) {
         const el = document.getElementById(id);

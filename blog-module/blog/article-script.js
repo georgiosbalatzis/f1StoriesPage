@@ -9,11 +9,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Author data ─────────────────────────────────────────
     const AUTHORS = {
-        'Georgios Balatzis':  { image: '/images/authors/georgios.webp', title: 'Founder & Host', bio: 'Ο Γιώργος είναι ο ιδρυτής του F1 Stories podcast. Μοιράζεται αναλύσεις, ιστορίες και insights από τον κόσμο της Formula 1.' },
-        'Giannis Poulikidis': { image: '/images/authors/giannis.webp', title: 'Co-Host & Analyst', bio: 'Ο Γιάννης φέρνει αναλυτική ματιά στα τεχνικά θέματα και τις στρατηγικές αγώνων της F1.' },
-        'Thanasis Batalas':   { image: '/images/authors/thanasis.webp', title: 'Contributor', bio: 'Ο Θανάσης συνεισφέρει με ιστορίες από τα παρασκήνια και ανασκοπήσεις αγώνων.' },
-        'Themis Charvalis':       { image: '/images/authors/2fast.webp', title: 'Sim Racing Expert', bio: 'Ο Themis Charvalis είναι ειδικός στο sim racing, φέρνοντας τον κόσμο του virtual motorsport στο F1 Stories.' },
-        'Dimitris Keramidiotis': { image: '/images/authors/dimitris.webp', title: 'Contributor', bio: 'Ο Δημήτρης μοιράζεται θεματικά άρθρα, rankings και opinion pieces.' }
+        'Georgios Balatzis':  { image: '/images/authors/georgios.webp', title: 'Ιδρυτής και παρουσιαστής', bio: 'Γράφει για στρατηγική, απόδοση και όσα αλλάζουν την ισορροπία ενός αγώνα.' },
+        'Giannis Poulikidis': { image: '/images/authors/giannis.webp', title: 'Συμπαρουσιαστής και αναλυτής', bio: 'Εστιάζει στην τεχνική πλευρά της F1 και στις αποφάσεις που κρίνουν ένα Grand Prix.' },
+        'Thanasis Batalas':   { image: '/images/authors/thanasis.webp', title: 'Συντάκτης', bio: 'Καλύπτει ιστορίες, πρόσωπα και στιγμές από την αγωνιστική πλευρά της Formula 1.' },
+        'Themis Charvalis':       { image: '/images/authors/2fast.webp', title: 'Sim racing και ψηφιακοί αγώνες', bio: 'Παρακολουθεί το sim racing και τη σχέση του με τον σύγχρονο μηχανοκίνητο αθλητισμό.' },
+        'Dimitris Keramidiotis': { image: '/images/authors/dimitris.webp', title: 'Συντάκτης', bio: 'Γράφει θεματικά άρθρα, αξιολογήσεις και σχόλια γύρω από τη σεζόν.' }
     };
 
     function calcReadingTime() {
@@ -21,7 +21,28 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!articleContent || !el) return;
         const words = articleContent.textContent.trim().split(/\s+/).length;
         const mins = Math.max(1, Math.ceil(words / 200));
-        el.textContent = `${mins} min read`;
+        el.textContent = `${mins} λεπτά ανάγνωσης`;
+    }
+
+    function setupImageFallbacks() {
+        document.addEventListener('error', function(event) {
+            const img = event.target;
+            if (!img || img.tagName !== 'IMG') return;
+
+            const fallbackSrc = img.getAttribute('data-fallback-src');
+            if (fallbackSrc) {
+                img.removeAttribute('data-fallback-src');
+                img.src = fallbackSrc;
+                return;
+            }
+
+            const showId = img.getAttribute('data-show-on-error');
+            if (showId) {
+                const fallbackEl = document.getElementById(showId);
+                img.style.display = 'none';
+                if (fallbackEl) fallbackEl.style.display = 'flex';
+            }
+        }, true);
     }
 
     function populateAuthor() {
@@ -197,27 +218,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
         headings.forEach((h, i) => { if (!h.id) h.id = 'section-' + (i + 1); });
 
-        let tocItems = '';
-        headings.forEach(h => {
-            const level = h.tagName === 'H3' ? 'toc-sub' : '';
-            tocItems += `<a href="#${h.id}" class="toc-item ${level}">${h.textContent.trim()}</a>`;
-        });
+        function createIcon(iconId, className) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', className || 'icon');
+            svg.setAttribute('aria-hidden', 'true');
+            const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            use.setAttribute('href', '#' + iconId);
+            svg.appendChild(use);
+            return svg;
+        }
 
         const tocEl = document.createElement('nav');
         tocEl.className = 'article-toc';
-        tocEl.innerHTML = `
-            <button class="toc-toggle" id="toc-toggle" aria-label="Toggle table of contents">
-                <svg class="icon" aria-hidden="true"><use href="#fa-list-ul"/></svg>
-                <span>Περιεχόμενα / Contents</span>
-                <svg class="icon toc-chevron" aria-hidden="true"><use href="#fa-chevron-down"/></svg>
-            </button>
-            <div class="toc-body" id="toc-body">${tocItems}</div>
-        `;
+        const toggle = document.createElement('button');
+        toggle.className = 'toc-toggle';
+        toggle.id = 'toc-toggle';
+        toggle.type = 'button';
+        toggle.setAttribute('aria-label', 'Toggle table of contents');
+        const label = document.createElement('span');
+        label.textContent = 'Περιεχόμενα / Contents';
+        toggle.append(createIcon('fa-list-ul'), label, createIcon('fa-chevron-down', 'icon toc-chevron'));
+
+        const body = document.createElement('div');
+        body.className = 'toc-body';
+        body.id = 'toc-body';
+        headings.forEach(h => {
+            const link = document.createElement('a');
+            link.setAttribute('href', '#' + h.id);
+            link.className = h.tagName === 'H3' ? 'toc-item toc-sub' : 'toc-item';
+            link.textContent = h.textContent.trim();
+            body.appendChild(link);
+        });
+        tocEl.append(toggle, body);
 
         articleContent.parentNode.insertBefore(tocEl, articleContent);
 
-        const tocToggle = tocEl.querySelector('#toc-toggle');
-        const tocBody = tocEl.querySelector('#toc-body');
+        const tocToggle = toggle;
+        const tocBody = body;
         if (tocToggle && tocBody) {
             tocToggle.addEventListener('click', () => {
                 tocBody.classList.toggle('open');
@@ -250,6 +287,47 @@ document.addEventListener('DOMContentLoaded', function () {
         }, { rootMargin: '-10% 0px -80% 0px', threshold: 0 });
 
         headings.forEach(h => headingObserver.observe(h));
+    }
+
+    function setupResponsiveTables() {
+        if (!articleContent) return;
+
+        const tableIds = new Set();
+        articleContent.querySelectorAll('.view-toggle-btn[data-table]').forEach(button => {
+            const tableId = button.getAttribute('data-table');
+            if (tableId) tableIds.add(tableId);
+        });
+
+        tableIds.forEach(tableId => {
+            const toggleButtons = Array.from(articleContent.querySelectorAll('.view-toggle-btn[data-table]'))
+                .filter(button => button.getAttribute('data-table') === tableId);
+            const scrollContainer = document.getElementById(`${tableId}-scroll`);
+            const cardContainer = document.getElementById(`${tableId}-card`);
+
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const viewType = this.getAttribute('data-view');
+                    toggleButtons.forEach(toggle => toggle.classList.remove('active'));
+                    this.classList.add('active');
+
+                    if (scrollContainer) scrollContainer.classList.toggle('active', viewType === 'scroll');
+                    if (cardContainer) cardContainer.classList.toggle('active', viewType === 'card');
+                });
+            });
+
+            if (!scrollContainer) return;
+            const table = scrollContainer.querySelector('table');
+            const indicator = scrollContainer.querySelector('.table-scroll-indicator');
+            if (!table || !indicator) return;
+
+            if (table.offsetWidth > scrollContainer.offsetWidth) {
+                scrollContainer.classList.add('has-scroll');
+                indicator.style.display = '';
+            } else {
+                scrollContainer.classList.remove('has-scroll');
+                indicator.style.display = 'none';
+            }
+        });
     }
 
     // ── Gallery Carousel ────────────────────────────────────
@@ -314,27 +392,51 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!getImages().length) return;
 
+        function createIcon(iconId) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'icon');
+            svg.setAttribute('aria-hidden', 'true');
+            const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            use.setAttribute('href', '#' + iconId);
+            svg.appendChild(use);
+            return svg;
+        }
+
+        function createLightboxButton(className, label, iconId) {
+            const button = document.createElement('button');
+            button.className = className;
+            button.type = 'button';
+            button.setAttribute('aria-label', label);
+            button.appendChild(createIcon(iconId));
+            return button;
+        }
+
         // Build overlay DOM once
         const overlay = document.createElement('div');
         overlay.className = 'lb-overlay';
         overlay.setAttribute('role', 'dialog');
         overlay.setAttribute('aria-modal', 'true');
         overlay.setAttribute('aria-label', 'Image viewer');
-        overlay.innerHTML = `
-            <button class="lb-close" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#fa-times"/></svg></button>
-            <div class="lb-img-wrap">
-                <img class="lb-img" src="" alt="">
-            </div>
-            <button class="lb-prev" aria-label="Previous image"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-left"/></svg></button>
-            <button class="lb-next" aria-label="Next image"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-right"/></svg></button>
-            <div class="lb-counter"></div>`;
+        const closeButton = createLightboxButton('lb-close', 'Close', 'fa-times');
+        const imageWrap = document.createElement('div');
+        imageWrap.className = 'lb-img-wrap';
+        const image = document.createElement('img');
+        image.className = 'lb-img';
+        image.src = '';
+        image.alt = '';
+        imageWrap.appendChild(image);
+        const prevButton = createLightboxButton('lb-prev', 'Previous image', 'fa-chevron-left');
+        const nextButton = createLightboxButton('lb-next', 'Next image', 'fa-chevron-right');
+        const counter = document.createElement('div');
+        counter.className = 'lb-counter';
+        overlay.append(closeButton, imageWrap, prevButton, nextButton, counter);
         document.body.appendChild(overlay);
 
-        const lbImg = overlay.querySelector('.lb-img');
-        const lbClose = overlay.querySelector('.lb-close');
-        const lbPrev = overlay.querySelector('.lb-prev');
-        const lbNext = overlay.querySelector('.lb-next');
-        const lbCounter = overlay.querySelector('.lb-counter');
+        const lbImg = image;
+        const lbClose = closeButton;
+        const lbPrev = prevButton;
+        const lbNext = nextButton;
+        const lbCounter = counter;
 
         let current = 0;
         let touchStartX = 0;
@@ -424,10 +526,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }, { passive: true });
     }
 
+    setupImageFallbacks();
     calcReadingTime();
     populateAuthor();
     updateShareLinks();
     buildTableOfContents();
+    setupResponsiveTables();
     setupNavigation();
     setupSocialEmbeds();
     setupGalleryCarousel();

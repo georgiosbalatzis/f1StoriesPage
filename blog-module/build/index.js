@@ -23,6 +23,24 @@ function parseBuildOptions(argv = process.argv, env = process.env) {
     return { forceRebuild, maxWorkers };
 }
 
+function readJsonIfExists(filePath) {
+    if (!fs.existsSync(filePath)) return null;
+    try {
+        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch (_) {
+        return null;
+    }
+}
+
+function sameJsonExceptKey(left, right, key) {
+    if (!left || !right) return false;
+    const a = { ...left };
+    const b = { ...right };
+    delete a[key];
+    delete b[key];
+    return JSON.stringify(a) === JSON.stringify(b);
+}
+
 function runWorker(entryPath) {
     return new Promise((resolve, reject) => {
         const worker = new Worker(path.join(__dirname, 'worker.js'), {
@@ -241,7 +259,11 @@ function renderBlogCardCategories(categories) {
 function renderBlogIndexCard(post, idx) {
     const categories = renderBlogCardCategories(post.categories);
     const url = post.url || `/blog-module/blog-entries/${post.id}/article.html`;
-    const image = post.thumbnail || post.image || CONFIG.DEFAULT_BLOG_IMAGE;
+    const image = post.thumbnail || post.image || '';
+    const imagePath = image && image.startsWith('/blog-module/blog-entries/')
+        ? path.join(CONFIG.BLOG_DIR, post.id, path.posix.basename(image))
+        : null;
+    const hasImage = Boolean(image && (!imagePath || fs.existsSync(imagePath)));
     const author = post.author || 'F1 Stories';
     const excerpt = post.excerpt || '';
     let readingTime = post.readingTime || post.readTime || '';
@@ -253,17 +275,19 @@ function renderBlogIndexCard(post, idx) {
         : '';
     const imageWidth = parseInt(post.thumbnailWidth, 10) || 400;
     const imageHeight = parseInt(post.thumbnailHeight, 10) || 188;
-    const isLcpImage = idx === 0;
+    const isLcpImage = idx === 0 && hasImage;
     const imageClass = `article-card-img${isLcpImage ? ' loaded' : ''}`;
-    const imageAttrs = isLcpImage
+    const imageAttrs = !hasImage
+        ? ' hidden'
+        : isLcpImage
         ? ` src="${escapeHtmlAttribute(image)}" loading="eager" fetchpriority="high"`
         : ` data-src="${escapeHtmlAttribute(image)}" loading="lazy"`;
     const stagger = 0.06;
     const animationDelay = Math.round(idx * stagger * 100) / 100;
 
     return '<article class="article-card-wrap">'
-        + `<a href="${escapeHtmlAttribute(url)}" class="article-card" style="animation-delay:${animationDelay}s">`
-        + `<div class="article-card-img-wrap"><img class="${imageClass}" width="${imageWidth}" height="${imageHeight}"${imageAttrs} decoding="async" alt="${escapeHtmlAttribute(post.title)}" onerror="this.src='/blog-module/images/default-blog.jpg';this.onerror=null;"></div>`
+        + `<a href="${escapeHtmlAttribute(url)}" class="article-card${hasImage ? '' : ' article-card--no-image'}" style="animation-delay:${animationDelay}s">`
+        + `<div class="article-card-img-wrap${hasImage ? '' : ' img-ready'}"><img class="${imageClass}" width="${imageWidth}" height="${imageHeight}"${imageAttrs} decoding="async" alt="${escapeHtmlAttribute(post.title)}" data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}"></div>`
         + '<div class="article-card-body">'
         + `<div class="article-card-meta"><span class="author-tag">${escapeHtmlAttribute(author)}</span><span>·</span><time class="article-card-date" datetime="${escapeHtmlAttribute(post.date || '')}">${escapeHtmlAttribute(formatBlogIndexDate(post))}</time>${readBadge}</div>`
         + `<h2 class="article-card-title">${escapeHtmlAttribute(post.title)}</h2>`
@@ -373,18 +397,26 @@ async function buildHomeLatest(blogPosts) {
 }
 
 function loadExistingPosts() {
-    if (!fs.existsSync(CONFIG.OUTPUT_JSON)) return [];
+    loadExistingPosts.hasFullContent = false;
+    const cachePath = fs.existsSync(CONFIG.OUTPUT_JSON)
+        ? CONFIG.OUTPUT_JSON
+        : CONFIG.SOURCE_CACHE_JSON;
+
+    if (!cachePath || !fs.existsSync(cachePath)) return [];
 
     try {
-        const existing = JSON.parse(fs.readFileSync(CONFIG.OUTPUT_JSON, 'utf8'));
+        const existing = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+        loadExistingPosts.hasFullContent = cachePath === CONFIG.OUTPUT_JSON;
         return existing.posts || [];
     } catch (_) {
-        console.warn('⚠️  Could not read cached blog-data.json, continuing without cached post metadata');
+        console.warn(`⚠️  Could not read cached blog metadata from ${path.basename(cachePath)}, continuing without cached post metadata`);
         return [];
     }
 }
 
 async function renderCachedArticlePages(cachedPosts) {
+    if (!loadExistingPosts.hasFullContent) return;
+
     let rendered = 0;
     for (const post of cachedPosts) {
         if (!post || !post.id) continue;
@@ -394,7 +426,7 @@ async function renderCachedArticlePages(cachedPosts) {
         rendered++;
     }
     if (rendered > 0) {
-        console.log(`♻️  Rendered ${rendered} cached article page${rendered === 1 ? '' : 's'} from blog-data.json`);
+        console.log(`♻️  Rendered ${rendered} cached article page${rendered === 1 ? '' : 's'} from cached blog metadata`);
     }
 }
 
@@ -539,7 +571,7 @@ async function processBlogEntries(options = {}) {
     const cachedFolderNames = new Set(skipped.concat(reusedCached));
     if (cachedFolderNames.size > 0 && existingPosts.length > 0) {
         cachedPosts = existingPosts.filter(post => cachedFolderNames.has(post.id));
-        console.log(`📦 Loaded ${cachedPosts.length} cached entries from blog-data.json`);
+        console.log(`📦 Loaded ${cachedPosts.length} cached entries from blog metadata`);
     }
 
     let rebuiltSkippedPosts = [];
@@ -614,6 +646,10 @@ async function processBlogEntries(options = {}) {
         lastUpdated
     };
     const pageOnePath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-page-1.json');
+    const existingPageOneData = readJsonIfExists(pageOnePath);
+    if (sameJsonExceptKey(existingPageOneData, pageOneData, 'lastUpdated') && existingPageOneData.lastUpdated) {
+        pageOneData.lastUpdated = existingPageOneData.lastUpdated;
+    }
     fs.writeFileSync(pageOnePath, JSON.stringify(pageOneData, null, 0));
     console.log(`Blog first-page data saved to ${pageOnePath} (${jsonKb(pageOneData)} KB)`);
     injectBlogIndexFirstPage(indexPosts, pageOneData);

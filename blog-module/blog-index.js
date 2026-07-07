@@ -23,11 +23,59 @@ document.addEventListener('DOMContentLoaded', function() {
     var fullPostsLoaded = false;
     var fullPostsPromise = null;
     var staticFirstPageReady = !!(grid && grid.querySelector('.article-card') && !grid.querySelector('.skeleton-card'));
+    var MAX_VISIBLE_CATEGORIES = 10;
     var DATE_FORMATTER = typeof Intl !== 'undefined'
         ? new Intl.DateTimeFormat('el-GR', { day: 'numeric', month: 'long', year: 'numeric' })
         : null;
 
-    function escHtml(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+    function createIcon(iconId) {
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'icon');
+        svg.setAttribute('aria-hidden', 'true');
+        var use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+        use.setAttribute('href', '#' + iconId);
+        svg.appendChild(use);
+        return svg;
+    }
+
+    function createEmptyState(iconId, text) {
+        var empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.appendChild(createIcon(iconId));
+        var p = document.createElement('p');
+        p.textContent = text;
+        empty.appendChild(p);
+        return empty;
+    }
+    function bindImageFallbacks() {
+        if (!grid || grid.__f1sImageFallbacksBound) return;
+        grid.__f1sImageFallbacksBound = true;
+        grid.addEventListener('error', function(event) {
+            var img = event.target;
+            if (!img || img.tagName !== 'IMG') return;
+            var card = img.closest('.article-card');
+            var wrap = img.closest('.article-card-img-wrap');
+            if (card) card.classList.add('article-card--no-image');
+            if (wrap) wrap.classList.add('img-ready');
+            img.removeAttribute('data-src');
+            img.removeAttribute('data-fallback-src');
+            img.removeAttribute('src');
+            img.hidden = true;
+        }, true);
+    }
+    function bindAuthorFallbacks() {
+        if (!strip || strip.__f1sAuthorFallbacksBound) return;
+        strip.__f1sAuthorFallbacksBound = true;
+        strip.addEventListener('error', function(event) {
+            var img = event.target;
+            if (!img || img.tagName !== 'IMG') return;
+            var fallback = img.getAttribute('data-fallback-label');
+            var parent = img.parentElement;
+            if (!fallback || !parent) return;
+            img.remove();
+            parent.textContent = fallback;
+        }, true);
+    }
     function formatCategoryToken(token) {
         var value = String(token || '').trim();
         var lower = value.toLowerCase();
@@ -60,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return post.displayDate || post.date || '';
     }
     function formatReadingTime(value) {
-        return String(value || '').replace(/\bmin\b/gi, 'λεπ');
+        return String(value || '').replace(/\bmin\b/gi, 'λεπτά ανάγνωσης');
     }
     function getSearchIndex(post) {
         return normalizeText([
@@ -153,6 +201,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         return normalized;
     }
+    function getVisibleCategories(categories) {
+        var list = normalizeCategories(categories);
+        var visible = list.slice(0, MAX_VISIBLE_CATEGORIES);
+        if (activeCategory !== 'all' && !visible.some(function(item) { return item.name === activeCategory; })) {
+            var activeItem = list.find(function(item) { return item.name === activeCategory; });
+            if (activeItem) visible.push(activeItem);
+        }
+        return visible;
+    }
     function syncChipState(container, selector, attribute, activeValue) {
         if (!container) return;
         Array.prototype.forEach.call(container.querySelectorAll(selector), function(chip) {
@@ -167,18 +224,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     function renderCategoryFilters() {
         if (!categoryStrip) return;
-        var categories = categoryOptions.length ? categoryOptions : normalizeCategories(getUniqueCategories(allPosts));
-        var html = '<button class="category-chip' + (activeCategory === 'all' ? ' active' : '') + '" data-category="all" aria-pressed="' + (activeCategory === 'all' ? 'true' : 'false') + '">Όλες</button>';
+        var categories = getVisibleCategories(categoryOptions.length ? categoryOptions : getUniqueCategories(allPosts));
+        var nodes = [];
+        var allButton = document.createElement('button');
+        allButton.className = 'category-chip' + (activeCategory === 'all' ? ' active' : '');
+        allButton.type = 'button';
+        allButton.setAttribute('data-category', 'all');
+        allButton.setAttribute('aria-pressed', activeCategory === 'all' ? 'true' : 'false');
+        allButton.textContent = 'Όλες';
+        nodes.push(allButton);
         categories.forEach(function(category) {
             var name = typeof category === 'string' ? category : category.name;
-            html += '<button class="category-chip' + (name === activeCategory ? ' active' : '') + '" data-category="' + escHtml(name) + '" aria-pressed="' + (name === activeCategory ? 'true' : 'false') + '">' + escHtml(formatCategoryLabel(name)) + '</button>';
+            var button = document.createElement('button');
+            button.className = 'category-chip' + (name === activeCategory ? ' active' : '');
+            button.type = 'button';
+            button.setAttribute('data-category', name);
+            button.setAttribute('aria-pressed', name === activeCategory ? 'true' : 'false');
+            button.textContent = formatCategoryLabel(name);
+            nodes.push(button);
         });
-        categoryStrip.innerHTML = html;
+        categoryStrip.replaceChildren.apply(categoryStrip, nodes);
     }
     function getResultsSummary(count) {
         var parts = [];
         if (activeAuthor !== 'all') parts.push('Αρθρογράφος: ' + activeAuthor);
-        if (activeCategory !== 'all') parts.push('Κατηγορία: ' + activeCategory);
+        if (activeCategory !== 'all') parts.push('Θέμα: ' + formatCategoryLabel(activeCategory));
         if (activeQuery) parts.push('Αναζήτηση: "' + activeQuery + '"');
         return count + ' ' + (count === 1 ? 'άρθρο' : 'άρθρα') + (parts.length ? ' · ' + parts.join(' · ') : '');
     }
@@ -232,21 +302,28 @@ document.addEventListener('DOMContentLoaded', function() {
             renderPosts();
         }
     }
-    function renderCardCategories(categories) {
+    function createCardCategories(categories) {
+        var container = document.createElement('div');
+        container.className = 'article-card-cats';
         var list = categories || [];
-        var html = list.slice(0, 2).map(function(c) {
-            return '<span class="article-card-cat">' + escHtml(formatCategoryLabel(c)) + '</span>';
-        }).join('');
+        list.slice(0, 2).forEach(function(c) {
+            var span = document.createElement('span');
+            span.className = 'article-card-cat';
+            span.textContent = formatCategoryLabel(c);
+            container.appendChild(span);
+        });
         if (list.length > 2) {
-            html += '<span class="article-card-cat article-card-cat-more">+' + (list.length - 2) + '</span>';
+            var more = document.createElement('span');
+            more.className = 'article-card-cat article-card-cat-more';
+            more.textContent = '+' + (list.length - 2);
+            container.appendChild(more);
         }
-        return html;
+        return container;
     }
 
-    function renderCard(post, idx) {
-        var cats = renderCardCategories(post.categories);
+    function createArticleCard(post, idx) {
         var url = post.url || ('/blog-module/blog-entries/' + post.id + '/article.html');
-        var img = post.thumbnail || post.image || '/blog-module/images/default-blog.jpg';
+        var img = post.thumbnail || post.image || '';
         var date = formatPostDate(post);
         var author = post.author || 'F1 Stories';
         var excerpt = post.excerpt || '';
@@ -255,31 +332,92 @@ document.addEventListener('DOMContentLoaded', function() {
         var imageHeight = parseInt(post.thumbnailHeight, 10) || 188;
         var isLcpImage = idx === 0;
         var imageClass = 'article-card-img' + (isLcpImage ? ' loaded' : '');
-        var imageAttrs = isLcpImage
-            ? ' src="' + escHtml(img) + '" loading="eager" fetchpriority="high"'
-            : ' data-src="' + escHtml(img) + '" loading="lazy"';
         if (!readMins && post.wordCount) { readMins = Math.max(1, Math.ceil(post.wordCount / 200)) + ' min'; }
         if (!readMins && excerpt) { readMins = Math.max(2, Math.ceil(Math.round(excerpt.split(/\s+/).length * 10) / 200)) + ' min'; }
         readMins = formatReadingTime(readMins);
-        var readBadge = readMins ? '<span>\u00b7</span><span class="article-card-reading-time"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> ' + escHtml(readMins) + '</span>' : '';
 
         var stagger = window.innerWidth < 768 ? 0.03 : 0.06;
         var animationDelay = Math.round(idx * stagger * 100) / 100;
-        return '<article class="article-card-wrap">'
-            + '<a href="' + escHtml(url) + '" class="article-card" style="animation-delay:' + animationDelay + 's">'
-            + '<div class="article-card-img-wrap"><img class="' + imageClass + '" width="' + imageWidth + '" height="' + imageHeight + '"' + imageAttrs + ' decoding="async" alt="' + escHtml(post.title) + '" onerror="this.src=\'/blog-module/images/default-blog.jpg\';this.onerror=null;"></div>'
-            + '<div class="article-card-body">'
-            + '<div class="article-card-meta"><span class="author-tag">' + escHtml(author) + '</span><span>\u00b7</span><time class="article-card-date" datetime="' + escHtml(post.date || '') + '">' + escHtml(date) + '</time>' + readBadge + '</div>'
-            + '<h2 class="article-card-title">' + escHtml(post.title) + '</h2>'
-            + '<p class="article-card-excerpt">' + escHtml(excerpt) + '</p>'
-            + '</div>'
-            + '<div class="article-card-footer"><span class="article-card-read">Διαβάστε περισσότερα <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span><div class="article-card-cats">' + cats + '</div></div>'
-            + '</a>'
-            + '</article>';
+
+        var article = document.createElement('article');
+        article.className = 'article-card-wrap';
+        var link = document.createElement('a');
+        link.href = url;
+        link.className = 'article-card';
+        link.style.animationDelay = animationDelay + 's';
+        if (!img) link.classList.add('article-card--no-image');
+
+        var imageWrap = document.createElement('div');
+        imageWrap.className = 'article-card-img-wrap';
+        var image = document.createElement('img');
+        image.className = imageClass;
+        image.width = imageWidth;
+        image.height = imageHeight;
+        if (img && isLcpImage) {
+            image.src = img;
+            image.loading = 'eager';
+            image.fetchPriority = 'high';
+        } else if (img) {
+            image.setAttribute('data-src', img);
+            image.loading = 'lazy';
+        } else {
+            image.hidden = true;
+            imageWrap.classList.add('img-ready');
+        }
+        image.decoding = 'async';
+        image.alt = post.title || '';
+        image.setAttribute('data-fallback-src', '/blog-module/images/default-blog.jpg');
+        imageWrap.appendChild(image);
+
+        var body = document.createElement('div');
+        body.className = 'article-card-body';
+        var meta = document.createElement('div');
+        meta.className = 'article-card-meta';
+        var authorTag = document.createElement('span');
+        authorTag.className = 'author-tag';
+        authorTag.textContent = author;
+        var dot = document.createElement('span');
+        dot.textContent = '\u00b7';
+        var time = document.createElement('time');
+        time.className = 'article-card-date';
+        time.dateTime = post.date || '';
+        time.textContent = date;
+        meta.append(authorTag, dot, time);
+        if (readMins) {
+            var readDot = document.createElement('span');
+            readDot.textContent = '\u00b7';
+            var readTime = document.createElement('span');
+            readTime.className = 'article-card-reading-time';
+            readTime.append(createIcon('fa-clock'), document.createTextNode(' ' + readMins));
+            meta.append(readDot, readTime);
+        }
+
+        var title = document.createElement('h2');
+        title.className = 'article-card-title';
+        title.textContent = post.title || '';
+        var excerptEl = document.createElement('p');
+        excerptEl.className = 'article-card-excerpt';
+        excerptEl.textContent = excerpt;
+        body.append(meta, title, excerptEl);
+
+        var footer = document.createElement('div');
+        footer.className = 'article-card-footer';
+        var readMore = document.createElement('span');
+        readMore.className = 'article-card-read';
+        readMore.append(document.createTextNode('Διαβάστε περισσότερα '), createIcon('fa-arrow-right'));
+        footer.append(readMore, createCardCategories(post.categories));
+
+        link.append(imageWrap, body, footer);
+        article.appendChild(link);
+        return article;
+    }
+    function isDefaultCuratedState() {
+        return activeAuthor === 'all' && activeCategory === 'all' && !activeQuery && currentPage === 1;
     }
 
     function lazyLoadImages() {
         if (!grid) return;
+        bindImageFallbacks();
         var imgs = grid.querySelectorAll('img[data-src]');
         if (!imgs.length) return;
         if (imageObserver) {
@@ -305,6 +443,8 @@ document.addEventListener('DOMContentLoaded', function() {
             imgs.forEach(function(img) { imageObserver.observe(img); });
         } else { imgs.forEach(loadImg); }
     }
+    bindImageFallbacks();
+    bindAuthorFallbacks();
 
     var POSTS_PER_PAGE = 12;
     var currentPage = 1;
@@ -331,18 +471,41 @@ document.addEventListener('DOMContentLoaded', function() {
             ? (totalPostCount || filteredPosts.length)
             : filteredPosts.length;
         var totalPages = Math.ceil(totalItems / POSTS_PER_PAGE);
-        if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
+        if (totalPages <= 1) { paginationEl.replaceChildren(); return; }
         var range = getPageRange(currentPage, totalPages);
-        var html = '<button class="page-btn page-prev" aria-label="Προηγούμενη σελίδα"' + (currentPage === 1 ? ' disabled' : '') + '><svg class="icon" aria-hidden="true"><use href="#fa-chevron-left"/></svg></button>';
+        var nodes = [];
+        var prev = document.createElement('button');
+        prev.className = 'page-btn page-prev';
+        prev.type = 'button';
+        prev.setAttribute('aria-label', 'Προηγούμενη σελίδα');
+        prev.disabled = currentPage === 1;
+        prev.appendChild(createIcon('fa-chevron-left'));
+        nodes.push(prev);
         range.forEach(function(item) {
             if (item === '…') {
-                html += '<span class="page-ellipsis">&hellip;</span>';
+                var ellipsis = document.createElement('span');
+                ellipsis.className = 'page-ellipsis';
+                ellipsis.textContent = '...';
+                nodes.push(ellipsis);
             } else {
-                html += '<button class="page-btn page-num' + (item === currentPage ? ' active' : '') + '" data-page="' + item + '" aria-label="Σελίδα ' + item + '"' + (item === currentPage ? ' aria-current="page"' : '') + '>' + item + '</button>';
+                var pageButton = document.createElement('button');
+                pageButton.className = 'page-btn page-num' + (item === currentPage ? ' active' : '');
+                pageButton.type = 'button';
+                pageButton.setAttribute('data-page', item);
+                pageButton.setAttribute('aria-label', 'Σελίδα ' + item);
+                if (item === currentPage) pageButton.setAttribute('aria-current', 'page');
+                pageButton.textContent = item;
+                nodes.push(pageButton);
             }
         });
-        html += '<button class="page-btn page-next" aria-label="Επόμενη σελίδα"' + (currentPage === totalPages ? ' disabled' : '') + '><svg class="icon" aria-hidden="true"><use href="#fa-chevron-right"/></svg></button>';
-        paginationEl.innerHTML = html;
+        var next = document.createElement('button');
+        next.className = 'page-btn page-next';
+        next.type = 'button';
+        next.setAttribute('aria-label', 'Επόμενη σελίδα');
+        next.disabled = currentPage === totalPages;
+        next.appendChild(createIcon('fa-chevron-right'));
+        nodes.push(next);
+        paginationEl.replaceChildren.apply(paginationEl, nodes);
     }
 
     function getFilteredPosts() {
@@ -368,6 +531,7 @@ document.addEventListener('DOMContentLoaded', function() {
             : filteredPosts.length;
         var totalPages = Math.max(1, Math.ceil(totalItems / POSTS_PER_PAGE));
         currentPage = Math.max(1, Math.min(page, totalPages));
+        grid.classList.toggle('is-curated-default', isDefaultCuratedState());
         var start = (currentPage - 1) * POSTS_PER_PAGE;
         var pagePosts = filteredPosts.slice(start, start + POSTS_PER_PAGE);
         if (options && options.preserveStatic && currentPage === 1 && staticFirstPageReady) {
@@ -375,7 +539,7 @@ document.addEventListener('DOMContentLoaded', function() {
             renderPagination();
             return;
         }
-        grid.innerHTML = pagePosts.map(function(p, i) { return renderCard(p, i); }).join('');
+        grid.replaceChildren.apply(grid, pagePosts.map(function(p, i) { return createArticleCard(p, i); }));
         lazyLoadImages();
         renderPagination();
         if (!options || options.scroll !== false) {
@@ -413,9 +577,9 @@ document.addEventListener('DOMContentLoaded', function() {
         updateSearchControls();
         if (!filteredPosts.length) {
             if (!staticFirstPageReady) {
-                grid.innerHTML = '<div class="empty-state"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg><p>Δεν βρέθηκαν άρθρα για τα επιλεγμένα φίλτρα.</p></div>';
+                grid.replaceChildren(createEmptyState('fa-newspaper', 'Δεν βρέθηκαν άρθρα για τα επιλεγμένα φίλτρα.'));
             }
-            if (paginationEl) paginationEl.innerHTML = '';
+            if (paginationEl) paginationEl.replaceChildren();
             return;
         }
         goToPage(1, { scroll: false, preserveStatic: !fullPostsLoaded });
@@ -448,7 +612,7 @@ document.addEventListener('DOMContentLoaded', function() {
             lazyLoadImages();
             return;
         }
-        if (grid) grid.innerHTML = '<div class="empty-state"><svg class="icon" aria-hidden="true"><use href="#fa-exclamation-circle"/></svg><p>Δεν ήταν δυνατή η φόρτωση των άρθρων.</p></div>';
+        if (grid) grid.replaceChildren(createEmptyState('fa-exclamation-circle', 'Δεν ήταν δυνατή η φόρτωση των άρθρων.'));
     }
 
     function ensureFullPostsLoaded() {

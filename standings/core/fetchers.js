@@ -114,6 +114,13 @@ export function fetchOpenF1BySessionKeys(baseUrl, endpoint, sessionKeys, extraQu
 
             return fetchJSONWithRetry(baseUrl + '/' + endpoint + '?' + query, 0).then(function(chunk) {
                 results = results.concat(chunk || []);
+            }).catch(function(error) {
+                const message = error && error.message ? error.message : String(error);
+                if (message.indexOf('HTTP 429') !== -1 || message.indexOf('AbortError') !== -1) {
+                    console.warn('Skipping OpenF1 ' + endpoint + ' chunk after retries: ' + message);
+                    return;
+                }
+                throw error;
             });
         }).then(function() {
             if (index < chunks.length - 1) return delay(120);

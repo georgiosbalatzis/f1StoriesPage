@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>F1 Stories — Offline</title>
+  <title>F1 Stories - Offline</title>
   <script src="/scripts/perf/error-beacon.min.js?v=59367e85"></script>
+    <script src="/scripts/theme-init.min.js?v=718dd2ec"></script>
   <style>
-    :root { --bg: #111113; --surface: #1c1c1e; --accent: #41B6E6; --text: #e5e5e7; --sub: #a1a1a6; --border: rgba(255,255,255,.08); }
+    :root { --bg: #111113; --surface: #1c1c1e; --accent: #41B6E6; --accent-text: #071014; --text: #e5e5e7; --sub: #a1a1a6; --border: rgba(255,255,255,.08); }
     @media (prefers-color-scheme: light) {
-      :root { --bg: #f5f5f7; --surface: #fff; --accent: #41B6E6; --text: #1d1d1f; --sub: #6e6e73; --border: rgba(0,0,0,.08); }
+      :root { --bg: #f5f5f7; --surface: #fff; --accent: #41B6E6; --accent-text: #071014; --text: #1d1d1f; --sub: #6e6e73; --border: rgba(0,0,0,.08); }
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -27,7 +28,7 @@
     h1 { font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: .4rem; }
     .sub { font-size: .9rem; color: var(--sub); line-height: 1.55; margin-bottom: 1.5rem; }
     .retry {
-      display: inline-block; background: var(--accent); color: #fff;
+      display: inline-block; background: var(--accent); color: var(--accent-text);
       text-decoration: none; padding: .65rem 1.75rem; border-radius: 10px;
       font-weight: 600; font-size: .88rem; border: none; cursor: pointer;
       font-family: 'Outfit', sans-serif; transition: opacity .15s;
@@ -52,12 +53,12 @@
   </style>
 </head>
 <body>
-  <div class="card">
+  <main class="card" aria-labelledby="offline-title">
     <img src="/images/logo-256.webp" alt="F1 Stories" class="logo" width="256" height="256" decoding="async">
-    <h1>Offline</h1>
+    <h1 id="offline-title">Offline</h1>
     <p class="sub">No internet connection. Check your network and try again.</p>
-    <button class="retry" onclick="location.reload()">Retry</button>
-  </div>
+    <button class="retry" data-reload-page>Retry</button>
+  </main>
 
   <div class="cached-section" id="cached-section" style="display:none;">
     <div class="cached-title">Cached articles</div>
@@ -65,53 +66,6 @@
     <p id="no-cached">No cached articles yet. Visit articles while online to save them.</p>
   </div>
 
-  <script>
-    (function () {
-      if (!('caches' in window)) return;
-      var section = document.getElementById('cached-section');
-      var list = document.getElementById('cached-list');
-      var noCached = document.getElementById('no-cached');
-      var pagesCache = 'f1s-pages-v12';
-
-      caches.open(pagesCache).then(function (cache) {
-        return cache.keys();
-      }).then(function (requests) {
-        var articles = requests.filter(function (r) {
-          return r.url.indexOf('/blog-entries/') !== -1 && r.url.indexOf('/article.html') !== -1;
-        });
-        if (!articles.length) {
-          section.style.display = 'block';
-          noCached.style.display = 'block';
-          return;
-        }
-        section.style.display = 'block';
-        articles.slice(0, 10).forEach(function (req) {
-          var url = new URL(req.url);
-          var parts = url.pathname.split('/');
-          var folder = parts[parts.length - 2] || 'Article';
-          var li = document.createElement('li');
-          var a = document.createElement('a');
-          a.href = url.pathname;
-          a.textContent = folder;
-          li.appendChild(a);
-          list.appendChild(li);
-
-          caches.open(pagesCache).then(function (cache) {
-            return cache.match(req);
-          }).then(function (resp) {
-            if (!resp) return;
-            return resp.text();
-          }).then(function (html) {
-            if (!html) return;
-            var m = html.match(/<title[^>]*>([^<]+)/i);
-            if (m && m[1]) {
-              var title = m[1].replace(/\s*[\|—–-]\s*F1 Stories.*$/i, '').trim();
-              if (title) a.textContent = title;
-            }
-          });
-        });
-      }).catch(function () {});
-    })();
-  </script>
+  <script src="/scripts/offline-page.min.js?v=d0e7c7ce"></script>
 </body>
 </html>

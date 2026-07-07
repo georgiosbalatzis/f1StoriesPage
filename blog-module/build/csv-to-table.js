@@ -292,36 +292,7 @@ function createResponsiveTableFromCSV(csvContent, csvFileName, options = {}) {
             <div class="table-footer">
                 <div class="table-source">Πηγή: ${safeCsvFileName}</div>
             </div>
-        </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const tableId = '${tableId}';
-                const toggleButtons = document.querySelectorAll(\`.view-toggle-btn[data-table="\${tableId}"]\`);
-
-                toggleButtons.forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const viewType = this.getAttribute('data-view');
-                        const tableContainers = document.querySelectorAll(\`#\${tableId}-scroll, #\${tableId}-card\`);
-
-                        toggleButtons.forEach(button => button.classList.remove('active'));
-                        this.classList.add('active');
-
-                        tableContainers.forEach(container => {
-                            container.classList.toggle('active', container.id === \`\${tableId}-\${viewType}\`);
-                        });
-                    });
-                });
-
-                const tableContainer = document.getElementById(\`\${tableId}-scroll\`);
-                const table = tableContainer.querySelector('table');
-
-                if (table.offsetWidth > tableContainer.offsetWidth) {
-                    tableContainer.classList.add('has-scroll');
-                } else {
-                    tableContainer.querySelector('.table-scroll-indicator').style.display = 'none';
-                }
-            });
-        </script>`;
+        </div>`;
 
         return html;
     } catch (error) {

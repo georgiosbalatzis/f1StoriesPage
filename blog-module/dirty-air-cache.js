@@ -775,6 +775,15 @@ function readExistingCache(expectedYear) {
     }
 }
 
+function sameJsonExceptKey(left, right, key) {
+    if (!left || !right) return false;
+    const a = { ...left };
+    const b = { ...right };
+    delete a[key];
+    delete b[key];
+    return JSON.stringify(a) === JSON.stringify(b);
+}
+
 async function buildDirtyAirSession(session) {
     const basePayload = [];
     basePayload[0] = await fetchOpenF1BySessionKeys('drivers', [session.session_key]);
@@ -847,6 +856,9 @@ async function updateDirtyAirCache(options) {
         minisectors: DIRTY_AIR_MINISECTORS,
         sessions: outputSessions.sort((a, b) => new Date(a.date_start || 0) - new Date(b.date_start || 0))
     };
+    if (sameJsonExceptKey(existing, bundle, 'generatedAt') && existing.generatedAt) {
+        bundle.generatedAt = existing.generatedAt;
+    }
 
     fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
     fs.writeFileSync(OUTPUT_PATH, JSON.stringify(bundle));

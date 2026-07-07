@@ -6,6 +6,7 @@ var OPENF1 = 'https://api.openf1.org/v1';
 var DEFAULT_YEAR = new Date().getFullYear();
 var OUTPUT_PATH = path.join(__dirname, 'debrief-cache.json');
 var MIN_LONG_RUN_LAPS = 5;
+var REQUEST_TIMEOUT_MS = 15000;
 var TEAM_CODES = {
     'mclaren': 'MCL',
     'red_bull': 'RBR',
@@ -169,6 +170,28 @@ function parseDateValue(value) {
     return isFiniteNumber(timestamp) ? timestamp : 0;
 }
 
+function readExistingCache(expectedYear) {
+    if (!fs.existsSync(OUTPUT_PATH)) return null;
+    try {
+        var parsed = JSON.parse(fs.readFileSync(OUTPUT_PATH, 'utf8'));
+        if (!parsed || parsed.version !== 2 || parseInt(parsed.season, 10) !== parseInt(expectedYear, 10)) {
+            return null;
+        }
+        return parsed;
+    } catch (_) {
+        return null;
+    }
+}
+
+function sameJsonExceptKey(left, right, key) {
+    if (!left || !right) return false;
+    var a = Object.assign({}, left);
+    var b = Object.assign({}, right);
+    delete a[key];
+    delete b[key];
+    return JSON.stringify(a) === JSON.stringify(b);
+}
+
 function isCompletedSession(session) {
     if (!session || session.is_cancelled) return false;
     var d = parseDateValue(session.date_end || session.date_start || session.date);
@@ -181,16 +204,25 @@ async function fetchJSON(url, attempt) {
     var data;
     var retryAfter;
     var delay;
+    var controller;
+    var timeoutId;
 
     if (typeof fetch !== 'function') {
         throw new Error('This script requires a Node.js version with fetch support.');
     }
 
     try {
+        if (typeof AbortController === 'function') {
+            controller = new AbortController();
+            timeoutId = setTimeout(function() {
+                controller.abort();
+            }, REQUEST_TIMEOUT_MS);
+        }
         response = await fetch(url, {
             headers: {
                 'user-agent': 'f1stories-debrief-cache/1.0'
-            }
+            },
+            signal: controller ? controller.signal : undefined
         });
     } catch (error) {
         if (tries < 3) {
@@ -198,6 +230,8 @@ async function fetchJSON(url, attempt) {
             return fetchJSON(url, tries + 1);
         }
         throw error;
+    } finally {
+        if (timeoutId) clearTimeout(timeoutId);
     }
 
     if (response.status === 429 || response.status >= 500) {
@@ -1156,6 +1190,7 @@ function parseCliOptions(argv) {
 
 async function updateDebriefCache(options) {
     var year = parseInt(options && options.year, 10) || DEFAULT_YEAR;
+    var existing = readExistingCache(year);
     var sessions = await fetchJSON(OPENF1 + '/sessions?year=' + encodeURIComponent(year));
     var meetings = buildMeetings(sessions);
     var rounds = [];
@@ -1177,6 +1212,9 @@ async function updateDebriefCache(options) {
         },
         rounds: rounds
     };
+    if (sameJsonExceptKey(existing, payload, 'generatedAt') && existing.generatedAt) {
+        payload.generatedAt = existing.generatedAt;
+    }
 
     fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
     fs.writeFileSync(OUTPUT_PATH, JSON.stringify(payload, null, 2) + '\n', 'utf8');

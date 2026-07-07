@@ -16,7 +16,7 @@ const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DEFAULT_ROOT = path.join(REPO_ROOT, 'dist');
 const STORAGE_KEY = 'f1stories-cookie-consent-v1';
-const ANALYTICS_HOST_RE = /(?:^|\.)googletagmanager\.com$|(?:^|\.)google-analytics\.com$|^analytics\.google\.com$|^region1\.google-analytics\.com$|(?:^|\.)stats\.g\.doubleclick\.net$|^unpkg\.com$/i;
+const ANALYTICS_HOST_RE = /(?:^|\.)googletagmanager\.com$|(?:^|\.)google-analytics\.com$|^analytics\.google\.com$|^region1\.google-analytics\.com$|(?:^|\.)stats\.g\.doubleclick\.net$/i;
 const CORE_ROUTES = ['/', '/blog-module/blog/index.html', '/standings/'];
 const MIME_TYPES = new Map([
     ['.avif', 'image/avif'],
@@ -163,9 +163,7 @@ function getChromePath() {
 function isAnalyticsUrl(rawUrl) {
     try {
         const url = new URL(rawUrl);
-        if (!ANALYTICS_HOST_RE.test(url.hostname)) return false;
-        if (url.hostname === 'unpkg.com' && !/\/web-vitals(?:@|\/|$)/.test(url.pathname)) return false;
-        return true;
+        return ANALYTICS_HOST_RE.test(url.hostname);
     } catch (_) {
         return false;
     }
