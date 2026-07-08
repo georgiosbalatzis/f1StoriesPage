@@ -398,16 +398,18 @@ async function buildHomeLatest(blogPosts) {
 
 function loadExistingPosts() {
     loadExistingPosts.hasFullContent = false;
-    const cachePath = fs.existsSync(CONFIG.OUTPUT_JSON)
-        ? CONFIG.OUTPUT_JSON
-        : CONFIG.SOURCE_CACHE_JSON;
+    const cachePath = fs.existsSync(CONFIG.SOURCE_CACHE_JSON)
+        ? CONFIG.SOURCE_CACHE_JSON
+        : CONFIG.OUTPUT_JSON;
 
     if (!cachePath || !fs.existsSync(cachePath)) return [];
 
     try {
         const existing = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
-        loadExistingPosts.hasFullContent = cachePath === CONFIG.OUTPUT_JSON;
-        return existing.posts || [];
+        const posts = existing.posts || [];
+        loadExistingPosts.hasFullContent =
+            cachePath === CONFIG.OUTPUT_JSON && posts.some(post => typeof post.content === 'string' && post.content.trim());
+        return posts;
     } catch (_) {
         console.warn(`⚠️  Could not read cached blog metadata from ${path.basename(cachePath)}, continuing without cached post metadata`);
         return [];
@@ -420,6 +422,7 @@ async function renderCachedArticlePages(cachedPosts) {
     let rendered = 0;
     for (const post of cachedPosts) {
         if (!post || !post.id) continue;
+        if (typeof post.content !== 'string' || !post.content.trim()) continue;
         const entryPath = path.join(CONFIG.BLOG_DIR, post.id);
         if (!fs.existsSync(entryPath)) continue;
         await renderArticleHtml(post, entryPath, post.id);
