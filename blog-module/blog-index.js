@@ -7,6 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var searchInput = document.getElementById('blog-search');
     var searchClearBtn = document.getElementById('blog-search-clear');
     var filterResetBtn = document.getElementById('blog-filter-reset');
+    var filterToolbar = document.querySelector('.blog-filter-toolbar');
+    var filterToggleBtn = document.getElementById('blog-filter-toggle');
+    var activeFilterSummary = document.getElementById('active-filter-summary');
+    var archiveMiniBar = document.getElementById('blog-archive-mini-bar');
+    var archiveMiniCount = document.getElementById('blog-archive-mini-count');
+    var archiveMiniFilter = document.getElementById('blog-archive-mini-filter');
     var categoryStrip = document.getElementById('category-strip');
     var strip = document.getElementById('author-strip');
     var imageObserver = null;
@@ -233,6 +239,27 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateSearchControls() {
         if (searchClearBtn) searchClearBtn.hidden = !activeQuery;
         if (filterResetBtn) filterResetBtn.hidden = !(activeAuthor !== 'all' || activeCategory !== 'all' || activeQuery);
+    }
+    function updateActiveFilterSummary() {
+        if (!activeFilterSummary) return;
+        var parts = [];
+        if (activeAuthor !== 'all') parts.push('Συντάκτης: ' + activeAuthor);
+        if (activeCategory !== 'all') parts.push('Θέμα: ' + formatCategoryLabel(activeCategory));
+        if (activeQuery) parts.push('Αναζήτηση: ' + activeQuery);
+        activeFilterSummary.replaceChildren.apply(activeFilterSummary, parts.map(function(text) {
+            var chip = document.createElement('span');
+            chip.className = 'active-filter-chip';
+            chip.textContent = text;
+            return chip;
+        }));
+    }
+    function setFiltersOpen(open) {
+        if (!filterToolbar) return;
+        filterToolbar.classList.toggle('is-open', open);
+    }
+    function syncArchiveMiniBar() {
+        if (!archiveMiniBar || !filterToolbar) return;
+        archiveMiniBar.classList.toggle('is-visible', window.innerWidth <= 767 && filterToolbar.getBoundingClientRect().bottom < 70);
     }
     function renderCategoryFilters() {
         if (!categoryStrip) return;
@@ -585,8 +612,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 ? (totalPostCount || filteredPosts.length)
                 : filteredPosts.length;
             countEl.textContent = getResultsSummary(count);
+            if (archiveMiniCount) archiveMiniCount.textContent = getResultsSummary(count);
         }
         updateSearchControls();
+        updateActiveFilterSummary();
+        syncArchiveMiniBar();
         if (!filteredPosts.length) {
             if (!staticFirstPageReady) {
                 grid.replaceChildren(createEmptyState('fa-newspaper', 'Δεν βρέθηκαν άρθρα για τα επιλεγμένα φίλτρα.'));
@@ -719,4 +749,16 @@ document.addEventListener('DOMContentLoaded', function() {
             renderPosts();
         });
     }
+    if (filterToggleBtn) {
+        filterToggleBtn.addEventListener('click', function() {
+            setFiltersOpen(!(filterToolbar && filterToolbar.classList.contains('is-open')));
+        });
+    }
+    if (archiveMiniFilter) {
+        archiveMiniFilter.addEventListener('click', function() {
+            setFiltersOpen(true);
+            filterToolbar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    }
+    window.addEventListener('scroll', syncArchiveMiniBar, { passive: true });
 });

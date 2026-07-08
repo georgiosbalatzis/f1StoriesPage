@@ -584,7 +584,9 @@
 [data-theme="light"] .cookie-consent {
     background: rgba(255,255,255,0.98) !important;
     border-top: 1px solid rgba(0,0,0,0.08) !important;
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.06) !important;
+    border-right: 1px solid rgba(0,0,0,0.08) !important;
+    border-left: 1px solid rgba(0,0,0,0.08) !important;
+    box-shadow: 0 -12px 30px rgba(0,0,0,0.08) !important;
 }
 
 [data-theme="light"] .cookie-content,
@@ -593,7 +595,7 @@
 }
 
 [data-theme="light"] .cookie-header {
-    background: rgba(255,255,255,0.98) !important;
+    background: transparent !important;
     border-bottom-color: rgba(0,0,0,0.06) !important;
 }
 
@@ -615,10 +617,12 @@
 
 [data-theme="light"] .cookie-details {
     border-color: rgba(0,0,0,0.08) !important;
+    background: #f5f5f7 !important;
 }
 
 [data-theme="light"] .reject-btn {
-    background: #f5f5f7 !important;
+    background: transparent !important;
+    border-color: rgba(0,0,0,0.1) !important;
     color: #6e6e73 !important;
 }
 
@@ -628,6 +632,7 @@
 
 [data-theme="light"] .accept-selected-btn {
     background: rgba(65,182,230,0.08) !important;
+    border-color: rgba(65,182,230,0.22) !important;
     color: #0A4F66 !important;
 }
 
@@ -639,7 +644,7 @@
 }
 
 [data-theme="light"] .accept-btn:hover {
-    background: #DB3EB1 !important;
+    background: #2f9dcc !important;
 }
 
 [data-theme="light"] .close-btn {
@@ -647,7 +652,16 @@
 }
 
 [data-theme="light"] .close-btn:hover {
-    color: #41B6E6 !important;
+    background: rgba(0,0,0,0.05) !important;
+    color: #1d1d1f !important;
+}
+
+@media (max-width: 767.98px) {
+    [data-theme="light"] .cookie-banner,
+    [data-theme="light"] .cookie-consent {
+        border-right: 0 !important;
+        border-left: 0 !important;
+    }
 }
 
 [data-theme="light"] .toggle-slider {

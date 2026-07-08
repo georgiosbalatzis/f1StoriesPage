@@ -37,6 +37,8 @@ const driversTable = document.getElementById('drivers-table');
 const constructorsTable = document.getElementById('constructors-table');
 const standingsTablist = document.querySelector('.standings-tabs');
 const standingsTabs = Array.prototype.slice.call(document.querySelectorAll('.standings-tab'));
+const standingsReportSelector = document.getElementById('standings-report-selector');
+const standingsReportMetaStatus = document.getElementById('standings-report-meta-status');
 const standingsPanels = Array.prototype.slice.call(document.querySelectorAll('.standings-panel'));
 const shareFeedback = document.getElementById('share-feedback');
 const clearCacheButton = document.getElementById('standings-clear-cache');
@@ -788,6 +790,9 @@ function activateStandingsTab(tabName, options) {
         tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
         tab.setAttribute('tabindex', isActive ? '0' : '-1');
     });
+    if (standingsReportSelector && standingsReportSelector.value !== nextTab) {
+        standingsReportSelector.value = nextTab;
+    }
     scrollStandingsTabIntoView(nextTab, !options || !options.skipFocus);
 
     standingsPanels.forEach(function(panel) {
@@ -937,6 +942,9 @@ function renderStandingsPayload(driverData, constructorData) {
     if (round) {
         document.getElementById('round-badge').classList.add('is-visible');
         document.getElementById('round-num').textContent = round;
+    }
+    if (standingsReportMetaStatus) {
+        standingsReportMetaStatus.textContent = 'Σεζόν ' + (season || YEAR) + (round ? ' · Μετά τον γύρο ' + round : ' · Ενημέρωση μετά από κάθε αγώνα');
     }
 
     renderDrivers(dStandings, {});
@@ -1331,6 +1339,14 @@ function bindEvents() {
                 event.preventDefault();
                 activateStandingsTab(standingsTabs[current].getAttribute('data-tab'));
             }
+        });
+    }
+
+    if (standingsReportSelector) {
+        standingsReportSelector.addEventListener('change', function(event) {
+            const tabName = event.target.value;
+            ensureTabStylesheet(tabName);
+            activateStandingsTab(tabName);
         });
     }
 

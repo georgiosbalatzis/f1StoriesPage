@@ -370,9 +370,9 @@ body {
 #hero {
   position: relative;
   color: #fff;
-  padding: 6rem 0 4.75rem;
+  padding: 4.8rem 0 3.8rem;
   margin-top: 70px;
-  min-height: clamp(560px, 72vh, 720px);
+  min-height: clamp(480px, 56vh, 580px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -423,8 +423,9 @@ body {
 }
 @media (max-width: 767.98px) {
   #hero {
-    padding: 4.25rem 0 3.25rem;
-    min-height: 590px;
+    padding: 3rem 0 2.25rem;
+    min-height: 450px;
+    clip-path: none;
   }
   .hero-overlay.image-bg img {
     object-position: var(--f1s-hero-mobile-position, var(--f1s-hero-position, center center));
@@ -442,6 +443,10 @@ body {
   .hero-content p { font-size: 1.125rem; }
 }
 @media (max-width: 575.98px) {
+  #hero {
+    padding: 2.35rem 0 1.8rem;
+    min-height: 410px;
+  }
   .hero-content {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
@@ -452,9 +457,10 @@ body {
     margin-right: 0;
   }
   .hero-content p {
-    max-width: 19rem;
+    max-width: 18rem;
     margin-left: 0;
     margin-right: 0;
+    font-size: 0.94rem;
   }
 }
 

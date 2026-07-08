@@ -609,6 +609,45 @@ function ensureArticleCommentsScript(html, commentsInfo) {
     );
 }
 
+function stripInlineHtml(value) {
+    return String(value || '')
+        .replace(/<[^>]+>/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function extractArticleMiniBarText(html, pattern, fallback = '') {
+    const match = String(html || '').match(pattern);
+    return stripInlineHtml(match ? match[1] : fallback);
+}
+
+function ensureArticleMiniBar(html) {
+    const source = String(html || '');
+    if (/class=["']article-mini-bar["']/.test(source)) return source;
+
+    const title = extractArticleMiniBarText(source, /<h1\s+class=["']article-title["'][^>]*>([\s\S]*?)<\/h1>/i);
+    if (!title) return source;
+
+    const category = extractArticleMiniBarText(
+        source,
+        /<span\s+class=["']article-category-pill["'][^>]*>([\s\S]*?)<\/span>/i,
+        'Blog'
+    ) || 'Blog';
+
+    const miniBar =
+        '<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true">\n' +
+        '    <div class="article-mini-bar__text">\n' +
+        `        <span class="article-mini-bar__category">${category}</span>\n` +
+        `        <span class="article-mini-bar__title">${title}</span>\n` +
+        '    </div>\n' +
+        '    <button class="article-mini-bar__share" id="article-mini-share" type="button" aria-label="Κοινοποίηση άρθρου">\n' +
+        '        <svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg>\n' +
+        '    </button>\n' +
+        '</div>';
+
+    return source.replace(/<\/header>\s*/i, `</header>\n\n${miniBar}\n\n`);
+}
+
 function dropLegacyCsvTableScripts(html) {
     return String(html || '').replace(
         /\s*<script\b[^>]*>([\s\S]*?)<\/script>/gi,
@@ -648,6 +687,7 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo) {
         /<script>document\.write\(new Date\(\)\.getFullYear\(\)\)<\/script>/g,
         '<span data-current-year>2026</span>'
     );
+    result = ensureArticleMiniBar(result);
     result = ensureArticleCommentsScript(result, commentsInfo);
     return result;
 }
