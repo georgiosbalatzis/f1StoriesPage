@@ -11,10 +11,9 @@ const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DIST_ROOT = path.join(REPO_ROOT, 'dist');
 
 const FORBIDDEN_DIST_PATHS = [
-    /^generate\.html$/,
-    /^housekeeping\.html$/,
-    /^node_modules(?:\/|$)/,
-    /^scripts\/author(?:\/|$)/,
+    /^node_modules\/(?!jszip\/dist\/jszip\.min\.js$)/,
+    /^scripts\/author\/__tests__(?:\/|$)/,
+    /^scripts\/author\/serve-tools\.mjs$/,
     /^context\.md$/,
     /^appdev\.txt$/,
     /(?:^|\/)(?:nextsteps|laststeps)\.txt$/,
@@ -147,7 +146,7 @@ function main() {
         process.exit(1);
     }
 
-    console.log('Runtime audit passed: dist/ contains no author tools, inline handlers, executable inline scripts, or banned remote runtime dependencies.');
+    console.log('Runtime audit passed: dist/ contains only approved author tools, no inline handlers, executable inline scripts, or banned remote runtime dependencies.');
 }
 
 main();

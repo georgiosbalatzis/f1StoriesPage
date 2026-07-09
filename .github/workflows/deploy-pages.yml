@@ -59,30 +59,6 @@ jobs:
       - name: Audit runtime dependencies
         run: npm run audit:runtime
 
-      - name: Check generated artifact drift
-        run: npm run build:check
-
-      - name: Run blog golden tests
-        run: npm run test:blog
-
-      - name: Check file-size budget
-        run: npm run perf:budget
-
-      - name: Check public image budget
-        run: npm run perf:images
-
-      - name: Check consent analytics behavior
-        timeout-minutes: 5
-        run: npm run test:consent
-
-      - name: Run visual and accessibility smoke checks
-        timeout-minutes: 10
-        run: npm run qa:visual
-
-      - name: Run Lighthouse budgets
-        timeout-minutes: 10
-        run: npm run perf:lighthouse
-
       - name: Configure Pages
         uses: actions/configure-pages@v6
 

@@ -52,12 +52,12 @@ function main() {
 
     const publicArtifact = readText(PUBLIC_ARTIFACT_SCRIPT);
     for (const file of AUTHOR_TOOL_FILES) {
-        assertNoPattern(PUBLIC_ARTIFACT_SCRIPT, publicArtifact, new RegExp(`['"]${file.replace('.', '\\.')}['"]`), `${file} must not be copied into dist/`);
+        assertPattern(PUBLIC_ARTIFACT_SCRIPT, publicArtifact, new RegExp(`['"]${file.replace('.', '\\.')}['"]`), `${file} must be copied into dist/`);
     }
 
     const validator = readText(PUBLIC_VALIDATOR_SCRIPT);
     for (const file of AUTHOR_TOOL_FILES) {
-        assertPattern(PUBLIC_VALIDATOR_SCRIPT, validator, new RegExp(`['"]${file.replace('.', '\\.')}['"]`), `${file} must be explicitly forbidden from dist/`);
+        assertPattern(PUBLIC_VALIDATOR_SCRIPT, validator, new RegExp(`['"]${file.replace('.', '\\.')}['"]`), `${file} must be explicitly required in dist/`);
     }
 
     for (const file of AUTHOR_TOOL_FILES) {
@@ -74,7 +74,7 @@ function main() {
         process.exit(1);
     }
 
-    console.log('Pages source guard passed: GitHub Pages deploys the validated dist/ artifact.');
+    console.log('Pages source guard passed: GitHub Pages deploys the validated dist/ artifact with author tools.');
 }
 
 main();
