@@ -131,6 +131,7 @@
             '- Resource owner: ' + REPO_OWNER + '\n' +
             '- Only select repository: ' + REPO_NAME + '\n' +
             '- Repository permissions -> Contents: Read and write\n' +
+            '- Repository permissions -> Pull requests: Read and write\n' +
             '- Expiration: as short as you are comfortable with\n\n' +
             'Paste the token below. Leave empty to clear.\n' +
             'Default: keep it only for the current tab/session.';
@@ -190,6 +191,16 @@
         }
         if (resp.status === 204) return null;
         return resp.json();
+    }
+
+    function githubErrorHint(err) {
+        if (!err || !err.status) {
+            return '\n\nCheck your connection and that the live site allows requests to api.github.com. If this only happens on the deployed site, the likely cause is Content-Security-Policy.';
+        }
+        if (err.status === 401 || err.status === 403) {
+            return '\n\nCheck your token — repo access needs Contents: Read and write and Pull requests: Read and write.';
+        }
+        return '';
     }
 
     function createAuthorPullRequest(token, kind, identifier, tree, commitMessage, prTitle, prBody, progress) {
@@ -928,8 +939,7 @@
             }
         } catch (e) {
             console.error('Delete failed', e);
-            var hint = (e.status === 401 || e.status === 403)
-                ? '\n\nCheck your token — Contents: Read and write is required.' : '';
+            var hint = githubErrorHint(e);
             await showAlert('Delete failed: ' + e.message + hint);
             btn.disabled = false;
             authorDom.setIconText(btn, 'fa-trash', 'Delete');
@@ -1400,8 +1410,7 @@
         } catch (e) {
             console.error('Save failed', e);
             editStatusEl.classList.add('err');
-            var hint = (e.status === 401 || e.status === 403)
-                ? ' — check token (Contents: Read and write required).' : '';
+            var hint = githubErrorHint(e).replace(/\n+/g, ' ');
             editStatusEl.textContent = 'Save failed: ' + e.message + hint;
             editSaveBtn.disabled = false;
             setEditSaveReady();
@@ -1423,8 +1432,7 @@
             await importGeneratedZip(zipFile);
         } catch (e) {
             console.error('ZIP import failed', e);
-            var hint = (e.status === 401 || e.status === 403)
-                ? '\n\nCheck your token — Contents: Read and write is required.' : '';
+            var hint = githubErrorHint(e);
             await showAlert('ZIP import failed: ' + e.message + hint);
             importBtn.disabled = false;
             setImportReady();
