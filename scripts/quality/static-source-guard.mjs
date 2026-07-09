@@ -215,6 +215,7 @@ const APPROVED_CSP_EXTERNAL_SOURCES = new Set([
     'https://*.twitter.com',
     'https://*.x.com',
     'https://analytics.google.com',
+    'https://api.github.com',
     'https://api.jolpi.ca',
     'https://api.openf1.org',
     'https://codepen.io',

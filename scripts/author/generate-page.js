@@ -781,6 +781,7 @@
             '- Resource owner: ' + REPO_OWNER + '\n' +
             '- Only select repository: ' + REPO_NAME + '\n' +
             '- Repository permissions -> Contents: Read and write\n' +
+            '- Repository permissions -> Pull requests: Read and write\n' +
             '- Διάρκεια: όσο πιο σύντομη σε βολεύει\n\n' +
             'Επικόλλησε το token παρακάτω. Άφησέ το κενό για διαγραφή.\n' +
             'Προεπιλογή: χρήση μόνο για την τρέχουσα καρτέλα/session.';
@@ -849,6 +850,16 @@
         }
         if (resp.status === 204) return null;
         return resp.json();
+    }
+
+    function githubErrorHint(err) {
+        if (!err || !err.status) {
+            return '\n\nΈλεγξε τη σύνδεση και ότι το site επιτρέπει requests προς api.github.com. Αν το πρόβλημα εμφανίζεται μόνο στο live site, πιθανό αίτιο είναι το Content-Security-Policy.';
+        }
+        if (err.status === 401 || err.status === 403) {
+            return '\n\nΈλεγξε το token — χρειάζεται πρόσβαση στο repo ' + REPO_OWNER + '/' + REPO_NAME + ' με Contents: Read and write και Pull requests: Read and write.';
+        }
+        return '';
     }
 
     async function folderExists(token, folderName) {
@@ -1049,10 +1060,7 @@
             }
         } catch (err) {
             console.error('Publish failed', err);
-            var hint = '';
-            if (err.status === 401 || err.status === 403) {
-                hint = '\n\nΈλεγξε το token — μπορεί να έχει λήξει, να λείπουν δικαιώματα ή να μην είναι σωστό για το repo. Πάτα το εικονίδιο κλειδί για ενημέρωση.';
-            }
+            var hint = githubErrorHint(err);
             await showAlert('Η δημοσίευση απέτυχε: ' + (err && err.message ? err.message : err) + hint);
         } finally {
             publishBtn.disabled = false;
