@@ -43,12 +43,12 @@
 }
 
 .article-page-shell {
-    max-width: 1120px;
+    max-width: 1180px;
 }
 
 /* ── Article shell ───────────────────────────── */
 .article-container {
-    max-width: 920px;
+    max-width: 1120px;
     margin: 0 auto;
     background: transparent;
     border: 0;
@@ -66,16 +66,16 @@
 .article-header {
     position: relative;
     width: 100%;
-    min-height: 460px;
+    min-height: 400px;
     overflow: hidden;
     border-radius: 8px;
     border: 1px solid var(--blog-border);
-    box-shadow: var(--blog-shadow-lg);
+    box-shadow: 0 16px 42px rgba(0,0,0,0.24);
 }
 
 .article-header-img {
     width: 100%;
-    height: 500px;
+    height: 430px;
     object-fit: cover;
     display: block;
     filter: brightness(0.62) saturate(0.95);
@@ -89,7 +89,7 @@
 .article-header-overlay {
     position: absolute;
     inset: auto 0 0 0;
-    padding: 2.75rem 2.75rem 2.4rem;
+    padding: 2.35rem 2.5rem 2.1rem;
     background: linear-gradient(to top, rgba(6,8,12,0.97) 0%, rgba(6,8,12,0.78) 38%, rgba(6,8,12,0.18) 100%);
 }
 
@@ -157,22 +157,22 @@
 
 .article-title {
     font-family: 'Outfit','DM Sans',sans-serif;
-    font-size: clamp(2.25rem, 4vw, 3.35rem);
+    font-size: clamp(2.1rem, 3.7vw, 3rem);
     font-weight: 700;
     color: #fff;
     margin-bottom: 1rem;
     line-height: 1.08;
     letter-spacing: -0.03em;
     text-shadow: 0 2px 12px rgba(0,0,0,0.42);
-    max-width: 14ch;
+    max-width: 16ch;
 }
 
 .article-header-overlay .article-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.9rem 1.1rem;
-    font-size: 0.84rem;
-    color: rgba(255,255,255,0.78);
+    gap: 0.55rem;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.86);
 }
 
 .article-meta span {
@@ -191,13 +191,70 @@
     align-items: center;
     gap: 0.4rem;
     color: rgba(255,255,255,0.92);
-    padding: 0;
-    margin: 0;
-    background: transparent;
-    border-radius: 0;
     font-size: 0.82rem;
     font-weight: 600;
 }
+
+.article-mini-bar {
+    position: fixed;
+    inset: 58px 0 auto;
+    z-index: 1055;
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 54px;
+    padding: 0.48rem 0.92rem;
+    background: var(--blog-surface);
+    border-bottom: 1px solid var(--blog-border);
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
+    transition: opacity .18s ease, transform .18s ease;
+}
+
+.article-mini-bar.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.article-mini-bar__text {
+    display: grid;
+    min-width: 0;
+}
+
+.article-mini-bar__category {
+    color: var(--blog-accent);
+    font-size: 0.64rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.article-mini-bar__title {
+    color: var(--blog-text-primary);
+    font-size: 0.9rem;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.article-mini-bar__share {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--blog-border);
+    border-radius: 999px;
+    background: var(--blog-accent-soft);
+    color: var(--blog-accent);
+    cursor: pointer;
+}
+
+.article-mini-bar__share:hover { background: var(--blog-accent); color: var(--accent-contrast); }
 
 /* ── Toolbar / TOC ───────────────────────────── */
 .article-toolbar,
@@ -1103,33 +1160,84 @@
 }
 
 @media (max-width: 767px) {
+    .article-mini-bar {
+        display: flex;
+    }
+
     .article-header {
-        min-height: 280px;
+        min-height: 248px;
         border-radius: 0;
         margin-left: calc(50% - 50vw);
         margin-right: calc(50% - 50vw);
     }
 
     .article-header-img {
-        height: 320px;
+        height: 286px;
     }
 
     .article-title {
-        font-size: 1.75rem;
+        font-size: clamp(1.42rem, 6.2vw, 1.74rem);
+        line-height: 1.12;
+        margin-bottom: 0.72rem;
         max-width: 100%;
     }
 
     .article-header-overlay {
-        padding: 2rem 1.25rem 1.2rem;
+        padding: 1.55rem 1.15rem 1.08rem;
+    }
+
+    .article-header-kicker-row {
+        gap: 0.55rem;
+        margin-bottom: 0.78rem;
+    }
+
+    .back-link,
+    .article-category-pill {
+        min-height: 36px;
+        padding: 0.42rem 0.68rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.03em;
+    }
+
+    .article-header-overlay .article-meta {
+        gap: 0.48rem 0.76rem;
+        font-size: 0.76rem;
+        line-height: 1.25;
+    }
+
+    .reading-time-badge {
+        font-size: 0.76rem;
     }
 
     .article-content {
-        padding: 1.5rem 0 1.2rem;
+        padding: 1.12rem 0 1rem;
         font-size: 1rem;
+        line-height: 1.72;
     }
 
     .article-content h2 {
-        font-size: 1.3rem;
+        font-size: 1.22rem;
+        margin: 2.05rem 0 0.65rem;
+        line-height: 1.25;
+    }
+
+    .article-content h3 {
+        font-size: 1.08rem;
+        margin: 1.55rem 0 0.55rem;
+        line-height: 1.3;
+    }
+
+    .article-content p {
+        margin-bottom: 1rem;
+    }
+
+    .article-content img {
+        margin: 1.25rem 0;
+    }
+
+    .article-figure,
+    .social-embed {
+        margin: 1.25rem 0;
     }
 
     .article-author-footer {
@@ -1139,17 +1247,28 @@
     .article-toolbar,
     .social-share-bar {
         flex-wrap: wrap;
-        padding: 0.8rem 0 1rem;
+        gap: 0.68rem;
+        padding: 0.78rem 0 0.95rem;
     }
 
     .share-label span {
         display: none;
     }
 
+    .share-label {
+        min-height: 44px;
+    }
+
+    .share-buttons {
+        gap: 0.48rem;
+        flex: 1 1 auto;
+        justify-content: flex-end;
+    }
+
     .share-btn {
-        width: 30px;
-        height: 30px;
-        font-size: 0.72rem;
+        width: 44px;
+        height: 44px;
+        font-size: 0.92rem;
     }
 
     .article-navigation {
@@ -1184,17 +1303,21 @@
 
 @media (max-width: 480px) {
     .article-header-img {
-        height: 260px;
+        height: 238px;
     }
 
     .article-title {
-        font-size: 1.3rem;
+        font-size: clamp(1.28rem, 5.9vw, 1.52rem);
     }
 
     .article-content {
-        padding: 1.2rem 0 1rem;
+        padding: 1rem 0 0.95rem;
         font-size: 1rem;
-        line-height: 1.75;
+        line-height: 1.68;
+    }
+
+    .article-content p {
+        margin-bottom: 0.92rem;
     }
 
     .author-header {

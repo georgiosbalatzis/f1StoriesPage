@@ -502,9 +502,14 @@ async function scanPage(page, routeSlug) {
 
         if (currentRouteSlug.startsWith('standings')) {
             const tablist = document.querySelector('.standings-tabs[role="tablist"]');
+            const reportSelector = document.querySelector('#standings-report-selector');
             const tabs = tablist ? Array.from(tablist.querySelectorAll('[role="tab"]')) : [];
             const selectedTabs = tabs.filter(tab => tab.getAttribute('aria-selected') === 'true');
-            if (!tablist || !isVisible(tablist)) issues.push({ type: 'standings-tabs', detail: 'tablist is not visible' });
+            const hasVisibleTabNavigation = tablist && isVisible(tablist);
+            const hasVisibleReportSelector = reportSelector && isVisible(reportSelector);
+            if (!hasVisibleTabNavigation && !hasVisibleReportSelector) {
+                issues.push({ type: 'standings-tabs', detail: 'tablist or report selector is not visible' });
+            }
             if (selectedTabs.length !== 1) issues.push({ type: 'standings-tabs', detail: `expected 1 selected tab, found ${selectedTabs.length}` });
             tabs.forEach(tab => {
                 const controls = tab.getAttribute('aria-controls');

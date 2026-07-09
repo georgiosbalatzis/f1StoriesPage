@@ -687,14 +687,18 @@ async function processBlogEntries(options = {}) {
         console.warn(`⚠️  Destructors cache update skipped: ${error.message}`);
     }
 
-    try {
-        const debriefResult = await updateDebriefCache({ force: forceRebuild });
-        console.log(
-            `Debrief cache saved to ${debriefResult.outputPath} ` +
-            `(${debriefResult.roundCount} rounds, season ${debriefResult.season})`
-        );
-    } catch (error) {
-        console.warn(`⚠️  Debrief cache update skipped: ${error.message}`);
+    if (process.env.BLOG_BUILD_REFRESH_DEBRIEF === '1') {
+        try {
+            const debriefResult = await updateDebriefCache({ force: forceRebuild });
+            console.log(
+                `Debrief cache saved to ${debriefResult.outputPath} ` +
+                `(${debriefResult.roundCount} rounds, season ${debriefResult.season})`
+            );
+        } catch (error) {
+            console.warn(`⚠️  Debrief cache update skipped: ${error.message}`);
+        }
+    } else {
+        console.log('Debrief cache refresh skipped during blog build; set BLOG_BUILD_REFRESH_DEBRIEF=1 to refresh it.');
     }
 
     console.log('Blog processing complete');

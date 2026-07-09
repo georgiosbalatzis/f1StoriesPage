@@ -32,19 +32,32 @@
     }
 
     // ── Theme Toggle ─────────────────────────────
-    var themeBtn = document.getElementById('theme-toggle');
-    if (themeBtn) {
-        themeBtn.addEventListener('click', function () {
-            var html = document.documentElement;
-            var isLight = html.getAttribute('data-theme') === 'light';
-            if (isLight) {
-                html.removeAttribute('data-theme');
-                sessionStorage.setItem('f1stories-theme', 'dark');
-            } else {
-                html.setAttribute('data-theme', 'light');
-                sessionStorage.setItem('f1stories-theme', 'light');
-            }
+    var themeButtons = Array.prototype.slice.call(document.querySelectorAll('.theme-toggle-btn'));
+    if (themeButtons.length) {
+        themeButtons.forEach(function (themeBtn) {
+            themeBtn.addEventListener('click', function () {
+                var html = document.documentElement;
+                var isLight = html.getAttribute('data-theme') === 'light';
+                if (isLight) {
+                    html.removeAttribute('data-theme');
+                    sessionStorage.setItem('f1stories-theme', 'dark');
+                } else {
+                    html.setAttribute('data-theme', 'light');
+                    sessionStorage.setItem('f1stories-theme', 'light');
+                }
+            });
         });
+    }
+
+    function getScrollTopThreshold() {
+        var isMobile = window.matchMedia && window.matchMedia('(max-width: 767.98px)').matches;
+        if (isMobile) return Math.max(900, Math.round(window.innerHeight * 1.2));
+        return 400;
+    }
+
+    function updateScrollTopButton(scrollY) {
+        if (!scrollBtn) return;
+        scrollBtn.classList.toggle('visible', scrollY > getScrollTopThreshold());
     }
 
     // ── Reading Progress Bar (article pages only) ─
@@ -77,9 +90,7 @@
                 if (blogNav) {
                     blogNav.classList.toggle('scrolled', scrollY > 20);
                 }
-                if (scrollBtn) {
-                    scrollBtn.classList.toggle('visible', scrollY > 400);
-                }
+                updateScrollTopButton(scrollY);
                 if (progressBar && articleEl) {
                     var scrolled = scrollY - articleTop + window.innerHeight * 0.3;
                     var pct = Math.max(0, Math.min(100, (scrolled / articleHeight) * 100));

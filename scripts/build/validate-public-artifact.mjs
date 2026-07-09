@@ -15,8 +15,6 @@ const MAX_FILE_BYTES = Number(process.env.PUBLIC_ARTIFACT_MAX_BYTES || 2 * 1024 
 
 const FORBIDDEN_EXACT = new Set([
     'appdev.txt',
-    'generate.html',
-    'housekeeping.html',
     'laststeps.txt',
     'nextsteps.txt',
     'package-lock.json',
@@ -33,6 +31,8 @@ const REQUIRED_EXACT = [
     '_headers',
     '404.html',
     'CNAME',
+    'generate.html',
+    'housekeeping.html',
     'index.html',
     'manifest.json',
     'offline.html',
@@ -77,7 +77,21 @@ const REQUIRED_EXACT = [
     'standings/standings-cache.json',
     'styles.min.css',
     'scripts/perf/error-beacon.min.js',
-    'scripts/sw-register.min.js'
+    'scripts/sw-register.min.js',
+    'node_modules/jszip/dist/jszip.min.js',
+    'scripts/author/article-folder.js',
+    'scripts/author/article-index.js',
+    'scripts/author/article-source.js',
+    'scripts/author/dialogs.js',
+    'scripts/author/dom-tools.js',
+    'scripts/author/generate-page.js',
+    'scripts/author/github-client.js',
+    'scripts/author/housekeeping-page.js',
+    'scripts/author/image-tools.js',
+    'scripts/author/media-policy.js',
+    'scripts/author/session-token.js',
+    'styles/author/generate.css',
+    'styles/author/housekeeping.css'
 ];
 
 const SIZE_ALLOWLIST = new Set([

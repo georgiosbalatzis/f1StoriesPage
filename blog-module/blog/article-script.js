@@ -21,7 +21,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!articleContent || !el) return;
         const words = articleContent.textContent.trim().split(/\s+/).length;
         const mins = Math.max(1, Math.ceil(words / 200));
-        el.textContent = `${mins} λεπτά ανάγνωσης`;
+        const label = `${mins} λεπτά ανάγνωσης`;
+        el.textContent = label;
+        $$('[data-reading-time]').forEach(node => { node.textContent = label; });
     }
 
     function setupImageFallbacks() {
@@ -107,6 +109,42 @@ document.addEventListener('DOMContentLoaded', function () {
             let href = a.getAttribute('href');
             if (href) { href = href.replace(/CURRENT_URL/g, url).replace(/ARTICLE_TITLE/g, title); a.setAttribute('href', href); }
         });
+    }
+
+    function setupArticleMiniBar() {
+        const miniBar = $('#article-mini-bar');
+        if (!miniBar) return;
+
+        const header = $('.article-header');
+        const shareButton = $('#article-mini-share');
+        const titleEl = $('.article-title');
+        const triggerShare = () => {
+            const webShare = $('#web-share-btn');
+            const copyLink = $('#copy-link-btn');
+            if (webShare && typeof navigator.share === 'function') {
+                webShare.click();
+                return;
+            }
+            if (copyLink) copyLink.click();
+        };
+
+        if (shareButton) shareButton.addEventListener('click', triggerShare);
+
+        const update = () => {
+            if (!header) return;
+            const headerBottom = header.getBoundingClientRect().bottom;
+            const shouldShow = window.innerWidth <= 767 && headerBottom < 82;
+            miniBar.classList.toggle('is-visible', shouldShow);
+            miniBar.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+        };
+
+        update();
+        window.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+
+        if (titleEl && !miniBar.querySelector('.article-mini-bar__title')?.textContent.trim()) {
+            miniBar.querySelector('.article-mini-bar__title').textContent = titleEl.textContent.trim();
+        }
     }
 
     function loadScriptOnce(src, attrs = {}) {
@@ -530,6 +568,7 @@ document.addEventListener('DOMContentLoaded', function () {
     calcReadingTime();
     populateAuthor();
     updateShareLinks();
+    setupArticleMiniBar();
     buildTableOfContents();
     setupResponsiveTables();
     setupNavigation();

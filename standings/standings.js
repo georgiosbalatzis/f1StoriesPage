@@ -27,6 +27,15 @@ import {
     validateOpenF1ArrayPayload,
     validateStandingsSnapshotPayload
 } from './core/payloads.js';
+import {
+    detailRowHTML,
+    initStandingsPolish,
+    normalizePoints,
+    pointsText,
+    renderConstructorStandingsPolish,
+    renderDriverStandingsPolish,
+    tableHeadHTML
+} from './standings-polish.js';
 
 const JOLPICA = 'https://api.jolpi.ca/ergast/f1';
 const OPENF1  = 'https://api.openf1.org/v1';
@@ -37,6 +46,8 @@ const driversTable = document.getElementById('drivers-table');
 const constructorsTable = document.getElementById('constructors-table');
 const standingsTablist = document.querySelector('.standings-tabs');
 const standingsTabs = Array.prototype.slice.call(document.querySelectorAll('.standings-tab'));
+const standingsReportSelector = document.getElementById('standings-report-selector');
+const standingsReportMetaStatus = document.getElementById('standings-report-meta-status');
 const standingsPanels = Array.prototype.slice.call(document.querySelectorAll('.standings-panel'));
 const shareFeedback = document.getElementById('share-feedback');
 const clearCacheButton = document.getElementById('standings-clear-cache');
@@ -106,6 +117,10 @@ let pendingDebriefView = 'single-lap';
 let scheduledModuleFrame = 0;
 let scheduledModuleTab = '';
 let latestStandingsSignature = '';
+let latestStandingsMeta = {
+    updatedAt: '',
+    source: 'Jolpica F1'
+};
 let liveStandingsRefreshTimer = 0;
 let standingsLazyImageObserver = null;
 const tabModulePromises = Object.create(null);
@@ -123,6 +138,8 @@ document.addEventListener('click', function(event) {
     }
     if (typeof window[action] === 'function') window[action]();
 });
+
+initStandingsPolish();
 
 function skelRows(n) {
     const rowHeight = STANDINGS_ROW_HEIGHT;
@@ -788,6 +805,9 @@ function activateStandingsTab(tabName, options) {
         tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
         tab.setAttribute('tabindex', isActive ? '0' : '-1');
     });
+    if (standingsReportSelector && standingsReportSelector.value !== nextTab) {
+        standingsReportSelector.value = nextTab;
+    }
     scrollStandingsTabIntoView(nextTab, !options || !options.skipFocus);
 
     standingsPanels.forEach(function(panel) {
@@ -918,7 +938,7 @@ function standingsSignature(season, round, driverStandings, constructorStandings
     return [season || '', round || '', drivers, constructors].join('::');
 }
 
-function renderStandingsPayload(driverData, constructorData) {
+function renderStandingsPayload(driverData, constructorData, meta) {
     const dList = getStandingsLists(driverData);
     const cList = getStandingsLists(constructorData);
 
@@ -932,11 +952,18 @@ function renderStandingsPayload(driverData, constructorData) {
 
     if (signature && signature === latestStandingsSignature) return false;
     latestStandingsSignature = signature;
+    latestStandingsMeta = {
+        updatedAt: meta && meta.updatedAt ? meta.updatedAt : latestStandingsMeta.updatedAt,
+        source: meta && meta.source ? meta.source : 'Jolpica F1'
+    };
 
     document.getElementById('season-year').textContent = season || YEAR;
     if (round) {
         document.getElementById('round-badge').classList.add('is-visible');
         document.getElementById('round-num').textContent = round;
+    }
+    if (standingsReportMetaStatus) {
+        standingsReportMetaStatus.textContent = 'Σεζόν ' + (season || YEAR) + (round ? ' · Μετά τον γύρο ' + round : ' · Ενημέρωση μετά από κάθε αγώνα');
     }
 
     renderDrivers(dStandings, {});
@@ -969,7 +996,10 @@ function fetchPrimaryStandings() {
 
 function renderPrimaryStandings(useFallback) {
     return fetchPrimaryStandings().then(function(payload) {
-        renderStandingsPayload(payload.driverStandings, payload.constructorStandings);
+        renderStandingsPayload(payload.driverStandings, payload.constructorStandings, {
+            updatedAt: new Date().toISOString(),
+            source: 'Jolpica F1 live'
+        });
     }).catch(function(err) {
         if (!useFallback) {
             console.warn('Live standings refresh skipped:', err);
@@ -991,7 +1021,10 @@ function scheduleLiveStandingsRefresh() {
 function loadStandingsSnapshot() {
     return fetchJSONNoCache(STANDINGS_SNAPSHOT_URL, 4500).then(function(snapshot) {
         validateStandingsSnapshotPayload(snapshot);
-        renderStandingsPayload(snapshot.driverStandings, snapshot.constructorStandings);
+        renderStandingsPayload(snapshot.driverStandings, snapshot.constructorStandings, {
+            updatedAt: snapshot.generatedAt || '',
+            source: snapshot.source && snapshot.source.name ? snapshot.source.name : 'Jolpica F1 snapshot'
+        });
         scheduleLiveStandingsRefresh();
     });
 }
@@ -1051,7 +1084,8 @@ function renderDrivers(standings, openf1Map) {
     }
 
     const maxPts = parseFloat(standings[0].points) || 1;
-    let html = '';
+    renderDriverStandingsPolish(standings, latestStandingsMeta, document.getElementById('season-year').textContent || YEAR);
+    let html = tableHeadHTML('Driver / Team');
 
     standings.forEach(function(s, index) {
         const driver = s.Driver;
@@ -1065,13 +1099,18 @@ function renderDrivers(standings, openf1Map) {
         const pts = parseFloat(s.points) || 0;
         const wins = parseInt(s.wins) || 0;
         const pos = s.position;
+        const prev = index > 0 ? standings[index - 1] : null;
+        const next = standings[index + 1] || null;
+        const gapAhead = prev ? Math.max(0, normalizePoints(prev.points) - pts) : 0;
+        const gapBehind = next ? Math.max(0, pts - normalizePoints(next.points)) : 0;
         const barPct = Math.max(2, (pts / maxPts) * 100);
         const of1 = openf1Map[lastName] || {};
         const hs = getCachedHeadshotResult(driverId, name, of1.headshot);
         const acr = of1.acronym || (driver.code || driverId.substring(0, 3)).toUpperCase();
         const imgAttrs = hs.url ? imageSourceAttrs(hs.url, index, ABOVE_FOLD_DRIVER_IMAGES, index === 0) : '';
+        const detailId = 'driver-detail-' + escAttr(driverId || index);
 
-        html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
+        html += '<div class="st-row st-rank-' + esc(pos) + '" role="button" tabindex="0" aria-expanded="false" aria-controls="' + detailId + '" data-detail-target="' + detailId + '" style="--team-color:#' + esc(tc) + ';">'
             + '<div class="st-pos">' + pos + '</div>'
             + '<div class="st-info">'
             + (hs.url ? '<img class="st-headshot" alt="' + esc(name) + '" width="40" height="40"' + hs.style + imgAttrs + '>'
@@ -1082,7 +1121,13 @@ function renderDrivers(standings, openf1Map) {
             + (wins > 0 ? '<div class="st-wins">' + formatWinsLabel(wins) + '</div>' : '')
             + '</div>'
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
-            + '</div>';
+            + '</div>'
+            + detailRowHTML(detailId, [
+                { label: 'Form', value: wins > 0 ? formatWinsLabel(wins) : 'No wins yet' },
+                { label: 'Team', value: teamName || 'Unknown' },
+                { label: 'Gap ahead', value: index === 0 ? 'Leader' : '+' + pointsText(gapAhead) + ' pts' },
+                { label: 'Gap behind', value: next ? pointsText(gapBehind) + ' pts' : 'Last classified' }
+            ]);
     });
     renderTrustedHtml(driversTable, html, 'driver standings rows from validated standings payload');
     hydrateStandingsLazyImages(driversTable);
@@ -1128,7 +1173,8 @@ function renderConstructors(standings, driverStandings) {
     });
 
     const maxPts = parseFloat(standings[0].points) || 1;
-    let html = '';
+    renderConstructorStandingsPolish(standings, teamDrivers, latestStandingsMeta, document.getElementById('season-year').textContent || YEAR);
+    let html = tableHeadHTML('Constructor / Drivers');
 
     standings.forEach(function(s, index) {
         const c = s.Constructor;
@@ -1140,12 +1186,17 @@ function renderConstructors(standings, driverStandings) {
         const pts = parseFloat(s.points) || 0;
         const wins = parseInt(s.wins) || 0;
         const pos = s.position;
+        const prev = index > 0 ? standings[index - 1] : null;
+        const next = standings[index + 1] || null;
+        const gapAhead = prev ? Math.max(0, normalizePoints(prev.points) - pts) : 0;
+        const gapBehind = next ? Math.max(0, pts - normalizePoints(next.points)) : 0;
         const barPct = Math.max(2, (pts / maxPts) * 100);
         const shortName = teamName.substring(0, 3).toUpperCase();
         const eagerLimit = activeStandingsTab === 'constructors' ? ABOVE_FOLD_CONSTRUCTOR_LOGOS : 0;
         const imgAttrs = logo ? imageSourceAttrs(logo, index, eagerLimit, activeStandingsTab === 'constructors' && index === 0) : '';
+        const detailId = 'constructor-detail-' + escAttr(cId || index);
 
-        html += '<div class="st-row" style="--team-color:#' + esc(tc) + ';">'
+        html += '<div class="st-row st-rank-' + esc(pos) + '" role="button" tabindex="0" aria-expanded="false" aria-controls="' + detailId + '" data-detail-target="' + detailId + '" style="--team-color:#' + esc(tc) + ';">'
             + '<div class="st-pos">' + pos + '</div>'
             + '<div class="st-info">'
             + '<div class="st-team-swatch" data-team-short="' + escAttr(shortName) + '" style="border-color:#' + esc(tc) + '60;">'
@@ -1157,7 +1208,13 @@ function renderConstructors(standings, driverStandings) {
             + (wins > 0 ? '<div class="st-wins">' + formatWinsLabel(wins) + '</div>' : '')
             + '</div>'
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
-            + '</div>';
+            + '</div>'
+            + detailRowHTML(detailId, [
+                { label: 'Form', value: wins > 0 ? formatWinsLabel(wins) : 'No wins yet' },
+                { label: 'Drivers', value: drivers.length ? drivers.join(' / ') : 'TBD' },
+                { label: 'Gap ahead', value: index === 0 ? 'Leader' : '+' + pointsText(gapAhead) + ' pts' },
+                { label: 'Gap behind', value: next ? pointsText(gapBehind) + ' pts' : 'Last classified' }
+            ]);
     });
     renderTrustedHtml(constructorsTable, html, 'constructor standings rows from validated standings payload');
     hydrateStandingsLazyImages(constructorsTable);
@@ -1331,6 +1388,14 @@ function bindEvents() {
                 event.preventDefault();
                 activateStandingsTab(standingsTabs[current].getAttribute('data-tab'));
             }
+        });
+    }
+
+    if (standingsReportSelector) {
+        standingsReportSelector.addEventListener('change', function(event) {
+            const tabName = event.target.value;
+            ensureTabStylesheet(tabName);
+            activateStandingsTab(tabName);
         });
     }
 

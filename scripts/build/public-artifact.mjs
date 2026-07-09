@@ -25,6 +25,8 @@ const ROOT_FILES = new Set([
     '.nojekyll',
     '404.html',
     'CNAME',
+    'generate.html',
+    'housekeeping.html',
     'index.html',
     'manifest.json',
     'offline.html',
@@ -36,9 +38,28 @@ const ROOT_FILES = new Set([
     'theme-overrides.min.css'
 ]);
 
+const AUTHOR_TOOL_FILES = new Set([
+    'node_modules/jszip/dist/jszip.min.js',
+    'scripts/author/article-folder.js',
+    'scripts/author/article-index.js',
+    'scripts/author/article-source.js',
+    'scripts/author/dialogs.js',
+    'scripts/author/dom-tools.js',
+    'scripts/author/generate-page.js',
+    'scripts/author/github-client.js',
+    'scripts/author/housekeeping-page.js',
+    'scripts/author/image-tools.js',
+    'scripts/author/media-policy.js',
+    'scripts/author/session-token.js',
+    'styles/author/generate.css',
+    'styles/author/housekeeping.css'
+]);
+
 const BLOG_PUBLIC_FILES = new Set([
     'blog-module/blog/index.html',
     'blog-module/blog/article-comments.min.js',
+    'blog-module/blog/article-rail.min.css',
+    'blog-module/blog/article-rail.min.js',
     'blog-module/blog/article-script.min.js',
     'blog-module/blog/article-styles.min.css',
     'blog-module/blog-fixes.min.js',
@@ -58,6 +79,8 @@ const STANDINGS_ROOT_FILES = new Set([
     'standings/index.html',
     'standings/standings-cache.json',
     'standings/standings.min.css',
+    'standings/standings-polish.min.css',
+    'standings/standings-polish.min.js',
     'standings/standings.min.js'
 ]);
 
@@ -315,6 +338,7 @@ function shouldCopy(relPath) {
     if (relPath.includes('/.DS_Store') || relPath.endsWith('/.DS_Store')) return false;
     if (relPath === 'images/logo.png') return false;
     if (ROOT_FILES.has(relPath)) return true;
+    if (AUTHOR_TOOL_FILES.has(relPath)) return true;
     if (BLOG_PUBLIC_FILES.has(relPath)) return true;
     if (shouldCopyBlogEntry(relPath)) return true;
     if (shouldCopyStandings(relPath)) return true;
@@ -446,6 +470,10 @@ async function main() {
     walk(REPO_ROOT, function (_, relPath) {
         if (!shouldCopy(relPath)) return;
         copied.push(relPath);
+    });
+    AUTHOR_TOOL_FILES.forEach(relPath => {
+        if (copied.includes(relPath)) return;
+        if (fs.existsSync(path.join(REPO_ROOT, relPath))) copied.push(relPath);
     });
 
     for (const relPath of copied) {

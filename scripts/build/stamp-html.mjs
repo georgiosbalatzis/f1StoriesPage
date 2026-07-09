@@ -102,6 +102,7 @@ const ARTICLE_RUNTIME_SOURCES = new Set([
     'styles/shared-nav.css',
     'theme-overrides.css',
     'blog-module/blog-styles.css',
+    'blog-module/blog/article-rail.css',
     'blog-module/blog/article-styles.css',
     'scripts/theme-init.js',
     'scripts/analytics.js',
@@ -109,6 +110,7 @@ const ARTICLE_RUNTIME_SOURCES = new Set([
     'scripts/shared-nav.js',
     'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',
+    'blog-module/blog/article-rail.js',
     'blog-module/blog/article-script.js',
     'blog-module/blog/article-comments.js',
     'blog-module/blog-fixes.js'
@@ -609,6 +611,67 @@ function ensureArticleCommentsScript(html, commentsInfo) {
     );
 }
 
+function ensureArticleRailAssets(html, railCssInfo, railJsInfo) {
+    let result = String(html || '');
+
+    if (railCssInfo && railCssInfo.min && railCssInfo.hash && !/\/blog-module\/blog\/article-rail(?:\.min)?\.css(?:\?v=[a-f0-9]+)?/i.test(result)) {
+        const railCssHref = `/${railCssInfo.min}?v=${railCssInfo.hash}`;
+        result = result.replace(
+            /(<link\s+rel=["']stylesheet["']\s+href=["']\/blog-module\/blog\/article-styles(?:\.min)?\.css(?:\?v=[a-f0-9]+)?["']>)/i,
+            `$1\n    <link rel="stylesheet" href="${railCssHref}">`
+        );
+    }
+
+    if (railJsInfo && railJsInfo.min && railJsInfo.hash && !/\/blog-module\/blog\/article-rail(?:\.min)?\.js(?:\?v=[a-f0-9]+)?/i.test(result)) {
+        const railJsSrc = `/${railJsInfo.min}?v=${railJsInfo.hash}`;
+        result = result.replace(
+            /(<script\s+defer\s+src=["']\/blog-module\/blog\/article-script(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["']><\/script>)/i,
+            `$1\n<script defer src="${railJsSrc}"></script>`
+        );
+    }
+
+    return result;
+}
+
+function stripInlineHtml(value) {
+    return String(value || '')
+        .replace(/<[^>]+>/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function extractArticleMiniBarText(html, pattern, fallback = '') {
+    const match = String(html || '').match(pattern);
+    return stripInlineHtml(match ? match[1] : fallback);
+}
+
+function ensureArticleMiniBar(html) {
+    const source = String(html || '');
+    if (/class=["']article-mini-bar["']/.test(source)) return source;
+
+    const title = extractArticleMiniBarText(source, /<h1\s+class=["']article-title["'][^>]*>([\s\S]*?)<\/h1>/i);
+    if (!title) return source;
+
+    const category = extractArticleMiniBarText(
+        source,
+        /<span\s+class=["']article-category-pill["'][^>]*>([\s\S]*?)<\/span>/i,
+        'Blog'
+    ) || 'Blog';
+
+    const miniBar =
+        '<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true">\n' +
+        '    <div class="article-mini-bar__text">\n' +
+        `        <span class="article-mini-bar__category">${category}</span>\n` +
+        `        <span class="article-mini-bar__title">${title}</span>\n` +
+        '    </div>\n' +
+        '    <button class="article-mini-bar__share" id="article-mini-share" type="button" aria-label="Κοινοποίηση άρθρου">\n' +
+        '        <svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg>\n' +
+        '    </button>\n' +
+        '</div>';
+
+    return source.replace(/<\/header>\s*/i, `</header>\n\n${miniBar}\n\n`);
+}
+
 function dropLegacyCsvTableScripts(html) {
     return String(html || '').replace(
         /\s*<script\b[^>]*>([\s\S]*?)<\/script>/gi,
@@ -626,7 +689,7 @@ function dropLegacyCsvTableScripts(html) {
     );
 }
 
-function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo) {
+function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo, railJsInfo) {
     const articleId = articleIdFromRel(relPath);
     let result = String(html || '');
     result = asyncifyStylesheets(result, relPath).result;
@@ -648,16 +711,18 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo) {
         /<script>document\.write\(new Date\(\)\.getFullYear\(\)\)<\/script>/g,
         '<span data-current-year>2026</span>'
     );
+    result = ensureArticleMiniBar(result);
+    result = ensureArticleRailAssets(result, railCssInfo, railJsInfo);
     result = ensureArticleCommentsScript(result, commentsInfo);
     return result;
 }
 
-function stampArticleRuntimeMarkup(commentsInfo, dry) {
+function stampArticleRuntimeMarkup(commentsInfo, railCssInfo, railJsInfo, dry) {
     const totals = { files: 0 };
     for (const rel of listArticleHtml()) {
         const abs = path.join(REPO_ROOT, rel);
         const original = fs.readFileSync(abs, 'utf8');
-        const result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo);
+        const result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, railCssInfo, railJsInfo);
         if (result === original) continue;
 
         totals.files++;
@@ -814,6 +879,14 @@ function main() {
     if (!articleCommentsInfo) {
         throw new Error('manifest missing entry for blog-module/blog/article-comments.js — run build:assets:minify');
     }
+    const articleRailCssInfo = manifest['blog-module/blog/article-rail.css'];
+    if (!articleRailCssInfo) {
+        throw new Error('manifest missing entry for blog-module/blog/article-rail.css — run build:assets:minify');
+    }
+    const articleRailJsInfo = manifest['blog-module/blog/article-rail.js'];
+    if (!articleRailJsInfo) {
+        throw new Error('manifest missing entry for blog-module/blog/article-rail.js — run build:assets:minify');
+    }
     const sprite = loadSprite();
     const dry = process.argv.includes('--dry');
     let totalHits = 0;
@@ -955,7 +1028,7 @@ function main() {
         );
     }
 
-    const articleRuntimeMarkup = stampArticleRuntimeMarkup(articleCommentsInfo, dry);
+    const articleRuntimeMarkup = stampArticleRuntimeMarkup(articleCommentsInfo, articleRailCssInfo, articleRailJsInfo, dry);
     if (articleRuntimeMarkup.files) {
         console.log(
             `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleRuntimeMarkup.files} file(s), inline runtime markup migrated`
