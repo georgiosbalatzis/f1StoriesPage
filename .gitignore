@@ -39,6 +39,12 @@ blog-module/blog-entries/**/*.docx
 *.min.css
 *.min.js.map
 *.min.css.map
+!blog-module/blog/article-rail.min.css
+!blog-module/blog/article-rail.min.js
+!blog-module/blog/article-rail.min.js.map
+!standings/standings-polish.min.css
+!standings/standings-polish.min.js
+!standings/standings-polish.min.js.map
 styles/vendor/bootstrap.slim.css
 images/icons/sprite.svg
 scripts/build/asset-manifest.json

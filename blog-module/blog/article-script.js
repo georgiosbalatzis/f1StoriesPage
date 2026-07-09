@@ -21,7 +21,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!articleContent || !el) return;
         const words = articleContent.textContent.trim().split(/\s+/).length;
         const mins = Math.max(1, Math.ceil(words / 200));
-        el.textContent = `${mins} λεπτά ανάγνωσης`;
+        const label = `${mins} λεπτά ανάγνωσης`;
+        el.textContent = label;
+        $$('[data-reading-time]').forEach(node => { node.textContent = label; });
     }
 
     function setupImageFallbacks() {

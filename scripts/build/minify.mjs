@@ -37,8 +37,10 @@ const CSS_INPUTS = [
     'styles/fonts.css',
     'styles/vendor/bootstrap.slim.css',
     'blog-module/blog-styles.css',
+    'blog-module/blog/article-rail.css',
     'blog-module/blog/article-styles.css',
     'standings/standings.css',
+    'standings/standings-polish.css',
     // Phase 7: per-tab stylesheets lazily injected by standings.js.
     'standings/tabs/quali-gaps.css',
     'standings/tabs/lap1-gains.css',
@@ -65,6 +67,7 @@ const JS_INPUTS = [
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog-loader.js',
     'blog-module/blog-index.js',
+    'blog-module/blog/article-rail.js',
     'blog-module/blog/article-script.js',
     'blog-module/blog/article-comments.js',
     'blog-module/blog-fixes.js'

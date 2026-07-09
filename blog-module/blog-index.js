@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var countEl = document.getElementById('post-count');
     var searchInput = document.getElementById('blog-search');
     var searchClearBtn = document.getElementById('blog-search-clear');
+    var sortSelect = document.getElementById('blog-sort-select');
     var filterResetBtn = document.getElementById('blog-filter-reset');
     var filterToolbar = document.querySelector('.blog-filter-toolbar');
     var filterToggleBtn = document.getElementById('blog-filter-toggle');
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var FULL_DATA_PATHS = ['/blog-module/blog-index-data.json', '../blog-index-data.json', '../../blog-index-data.json'];
     var activeCategory = 'all';
     var activeQuery = '';
+    var sortDir = -1;
     var searchTimer = null;
     var pageOnePosts = [];
     var categoryOptions = [];
@@ -450,8 +452,11 @@ document.addEventListener('DOMContentLoaded', function() {
         article.appendChild(link);
         return article;
     }
+    function isUnfiltered() {
+        return activeAuthor === 'all' && activeCategory === 'all' && !activeQuery;
+    }
     function isDefaultCuratedState() {
-        return activeAuthor === 'all' && activeCategory === 'all' && !activeQuery && currentPage === 1;
+        return isUnfiltered() && currentPage === 1;
     }
 
     function lazyLoadImages() {
@@ -506,7 +511,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderPagination() {
         if (!paginationEl) return;
-        var totalItems = (!fullPostsLoaded && activeAuthor === 'all' && activeCategory === 'all' && !activeQuery)
+        var totalItems = (!fullPostsLoaded && isUnfiltered())
             ? (totalPostCount || filteredPosts.length)
             : filteredPosts.length;
         var totalPages = Math.ceil(totalItems / POSTS_PER_PAGE);
@@ -553,7 +558,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var matchesCategory = activeCategory === 'all' || (post.categories || []).indexOf(activeCategory) !== -1;
             var matchesQuery = !activeQuery || post.__searchIndex.indexOf(normalizeText(activeQuery)) !== -1;
             return matchesAuthor && matchesCategory && matchesQuery;
-        });
+        }).sort(function(a, b) { return sortDir * (new Date(a.date) - new Date(b.date)); });
     }
 
     function goToPage(page, options) {
@@ -565,7 +570,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }).catch(showLoadFailure);
             return;
         }
-        var totalItems = (!fullPostsLoaded && activeAuthor === 'all' && activeCategory === 'all' && !activeQuery)
+        var totalItems = (!fullPostsLoaded && isUnfiltered())
             ? (totalPostCount || filteredPosts.length)
             : filteredPosts.length;
         var totalPages = Math.max(1, Math.ceil(totalItems / POSTS_PER_PAGE));
@@ -599,16 +604,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderPosts() {
         if (!grid) return;
-        if (!fullPostsLoaded && !(activeAuthor === 'all' && activeCategory === 'all' && !activeQuery)) {
-            ensureFullPostsLoaded().then(renderPosts).catch(showLoadFailure);
+        if (!fullPostsLoaded && !isUnfiltered()) {
+            loadAndRender();
             return;
         }
         filteredPosts = getFilteredPosts();
-        if (!fullPostsLoaded && activeAuthor === 'all' && activeCategory === 'all' && !activeQuery) {
+        if (!fullPostsLoaded && isUnfiltered()) {
             filteredPosts = pageOnePosts.length ? pageOnePosts : filteredPosts;
         }
         if (countEl) {
-            var count = (!fullPostsLoaded && activeAuthor === 'all' && activeCategory === 'all' && !activeQuery)
+            var count = (!fullPostsLoaded && isUnfiltered())
                 ? (totalPostCount || filteredPosts.length)
                 : filteredPosts.length;
             countEl.textContent = getResultsSummary(count);
@@ -676,6 +681,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         return fullPostsPromise;
     }
+    function loadAndRender() { ensureFullPostsLoaded().then(renderPosts, showLoadFailure); }
 
     if (staticFirstPageReady) lazyLoadImages();
 
@@ -687,19 +693,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (strip) {
         syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
-        var lastChipTap = 0;
         function handleChipActivate(e) {
-            var now = Date.now();
-            if (now - lastChipTap < 300) return;
-            lastChipTap = now;
             var chip = e.target.closest('.author-chip');
             if (!chip) return;
             e.preventDefault();
             activeAuthor = chip.getAttribute('data-author');
             syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
-            ensureFullPostsLoaded().then(renderPosts).catch(showLoadFailure);
+            loadAndRender();
         }
-        strip.addEventListener('touchend', handleChipActivate, { passive: false });
         strip.addEventListener('click', handleChipActivate);
     }
 
@@ -709,7 +710,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!chip) return;
             activeCategory = chip.getAttribute('data-category') || 'all';
             syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
-            ensureFullPostsLoaded().then(renderPosts).catch(showLoadFailure);
+            loadAndRender();
         });
     }
 
@@ -719,7 +720,7 @@ document.addEventListener('DOMContentLoaded', function() {
             searchTimer = setTimeout(function() {
                 activeQuery = searchInput.value.trim();
                 if (activeQuery) {
-                    ensureFullPostsLoaded().then(renderPosts).catch(showLoadFailure);
+                    loadAndRender();
                 } else {
                     renderPosts();
                 }
@@ -737,6 +738,10 @@ document.addEventListener('DOMContentLoaded', function() {
             renderPosts();
         });
     }
+    if (sortSelect) sortSelect.addEventListener('change', function() {
+        sortDir = sortSelect.value === 'oldest' ? 1 : -1;
+        loadAndRender();
+    });
 
     if (filterResetBtn) {
         filterResetBtn.addEventListener('click', function() {

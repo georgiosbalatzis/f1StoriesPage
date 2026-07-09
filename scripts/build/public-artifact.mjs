@@ -39,6 +39,8 @@ const ROOT_FILES = new Set([
 const BLOG_PUBLIC_FILES = new Set([
     'blog-module/blog/index.html',
     'blog-module/blog/article-comments.min.js',
+    'blog-module/blog/article-rail.min.css',
+    'blog-module/blog/article-rail.min.js',
     'blog-module/blog/article-script.min.js',
     'blog-module/blog/article-styles.min.css',
     'blog-module/blog-fixes.min.js',
@@ -58,6 +60,8 @@ const STANDINGS_ROOT_FILES = new Set([
     'standings/index.html',
     'standings/standings-cache.json',
     'standings/standings.min.css',
+    'standings/standings-polish.min.css',
+    'standings/standings-polish.min.js',
     'standings/standings.min.js'
 ]);
 

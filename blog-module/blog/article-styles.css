@@ -43,12 +43,12 @@
 }
 
 .article-page-shell {
-    max-width: 1120px;
+    max-width: 1180px;
 }
 
 /* ── Article shell ───────────────────────────── */
 .article-container {
-    max-width: 920px;
+    max-width: 1120px;
     margin: 0 auto;
     background: transparent;
     border: 0;
@@ -66,16 +66,16 @@
 .article-header {
     position: relative;
     width: 100%;
-    min-height: 460px;
+    min-height: 400px;
     overflow: hidden;
     border-radius: 8px;
     border: 1px solid var(--blog-border);
-    box-shadow: var(--blog-shadow-lg);
+    box-shadow: 0 16px 42px rgba(0,0,0,0.24);
 }
 
 .article-header-img {
     width: 100%;
-    height: 500px;
+    height: 430px;
     object-fit: cover;
     display: block;
     filter: brightness(0.62) saturate(0.95);
@@ -89,7 +89,7 @@
 .article-header-overlay {
     position: absolute;
     inset: auto 0 0 0;
-    padding: 2.75rem 2.75rem 2.4rem;
+    padding: 2.35rem 2.5rem 2.1rem;
     background: linear-gradient(to top, rgba(6,8,12,0.97) 0%, rgba(6,8,12,0.78) 38%, rgba(6,8,12,0.18) 100%);
 }
 
@@ -157,22 +157,22 @@
 
 .article-title {
     font-family: 'Outfit','DM Sans',sans-serif;
-    font-size: clamp(2.25rem, 4vw, 3.35rem);
+    font-size: clamp(2.1rem, 3.7vw, 3rem);
     font-weight: 700;
     color: #fff;
     margin-bottom: 1rem;
     line-height: 1.08;
     letter-spacing: -0.03em;
     text-shadow: 0 2px 12px rgba(0,0,0,0.42);
-    max-width: 14ch;
+    max-width: 16ch;
 }
 
 .article-header-overlay .article-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.9rem 1.1rem;
-    font-size: 0.84rem;
-    color: rgba(255,255,255,0.78);
+    gap: 0.55rem;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.86);
 }
 
 .article-meta span {
@@ -191,10 +191,6 @@
     align-items: center;
     gap: 0.4rem;
     color: rgba(255,255,255,0.92);
-    padding: 0;
-    margin: 0;
-    background: transparent;
-    border-radius: 0;
     font-size: 0.82rem;
     font-weight: 600;
 }
