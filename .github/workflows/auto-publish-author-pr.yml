@@ -1,0 +1,151 @@
+name: Auto Publish Author PR
+
+on:
+  workflow_run:
+    workflows: ['Site Quality']
+    types: [completed]
+
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: auto-publish-author-${{ github.event.workflow_run.pull_requests[0].number || github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Merge author PR and publish artifacts
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Resolve trusted author PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -eu
+
+          pr_number="$(jq -r '.workflow_run.pull_requests[0].number // empty' "$GITHUB_EVENT_PATH")"
+          if [ -z "$pr_number" ]; then
+            echo "No pull request attached to the completed quality run."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          pr_json="$(gh api "repos/$REPO/pulls/$pr_number")"
+          state="$(printf '%s' "$pr_json" | jq -r '.state')"
+          draft="$(printf '%s' "$pr_json" | jq -r '.draft')"
+          base_ref="$(printf '%s' "$pr_json" | jq -r '.base.ref')"
+          head_ref="$(printf '%s' "$pr_json" | jq -r '.head.ref')"
+          head_repo="$(printf '%s' "$pr_json" | jq -r '.head.repo.full_name')"
+
+          if [ "$state" != "open" ] || [ "$draft" != "false" ] || [ "$base_ref" != "main" ]; then
+            echo "PR #$pr_number is not an open, ready PR to main."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "$head_repo" != "$REPO" ]; then
+            echo "PR #$pr_number comes from $head_repo, not $REPO."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          case "$head_ref" in
+            author/blog/*|author/import/*|author/delete/*|author/edit/*) ;;
+            *)
+              echo "PR #$pr_number is not an author-tool branch: $head_ref"
+              echo "publish=false" >> "$GITHUB_OUTPUT"
+              exit 0
+              ;;
+          esac
+
+          files="$(gh api --paginate "repos/$REPO/pulls/$pr_number/files" --jq '.[].filename')"
+          if [ -z "$files" ]; then
+            echo "PR #$pr_number has no changed files."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          invalid_files="$(printf '%s\n' "$files" | awk 'NF && $0 !~ /^blog-module\/blog-entries\//')"
+          if [ -n "$invalid_files" ]; then
+            echo "PR #$pr_number contains files outside blog entries:"
+            printf '%s\n' "$invalid_files"
+            exit 1
+          fi
+
+          echo "number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$head_ref" >> "$GITHUB_OUTPUT"
+          echo "publish=true" >> "$GITHUB_OUTPUT"
+
+      - name: Merge author PR
+        if: ${{ steps.pr.outputs.publish == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          gh pr merge "${{ steps.pr.outputs.number }}" --merge --delete-branch
+
+      - name: Checkout main
+        if: ${{ steps.pr.outputs.publish == 'true' }}
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup Node
+        if: ${{ steps.pr.outputs.publish == 'true' }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: ${{ steps.pr.outputs.publish == 'true' }}
+        run: npm ci --no-audit --no-fund
+
+      - name: Restore git mtimes for blog entries
+        if: ${{ steps.pr.outputs.publish == 'true' }}
+        run: |
+          set -eu
+          git log --pretty=tformat:'@%at' --name-only -- 'blog-module/blog-entries/' \
+            | awk '
+                /^@[0-9]+$/ { ts = substr($0, 2); next }
+                NF == 0 { next }
+                !seen[$0]++ { printf "%s\t%s\n", ts, $0 }
+              ' \
+            | while IFS=$'\t' read -r ts file; do
+                if [ -e "$file" ]; then
+                  touch -m -d "@$ts" "$file"
+                fi
+              done
+
+      - name: Run blog processor
+        if: ${{ steps.pr.outputs.publish == 'true' }}
+        run: node blog-module/blog-processor.js
+
+      - name: Commit generated artifacts
+        if: ${{ steps.pr.outputs.publish == 'true' }}
+        run: |
+          set -eu
+          git config user.name  "Georgios Balatzis"
+          git config user.email "georgios.balatzis@gmail.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No generated artifact changes."
+            exit 0
+          fi
+
+          git commit -m "chore(blog): auto-build generated artifacts [skip ci]"
+          git push
+
+      - name: Trigger Pages deploy
+        if: ${{ steps.pr.outputs.publish == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run "Deploy Pages" --ref main

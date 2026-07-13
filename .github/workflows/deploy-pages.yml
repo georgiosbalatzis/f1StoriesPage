@@ -16,7 +16,7 @@ on:
       - '.github/workflows/publish-blog.yml'
   workflow_dispatch:
   workflow_run:
-    workflows: ['Site Maintenance']
+    workflows: ['Site Maintenance', 'Auto Publish Author PR']
     types: [completed]
     branches: [main]
 

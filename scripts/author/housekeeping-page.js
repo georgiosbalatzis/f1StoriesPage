@@ -876,10 +876,7 @@
                 'Author tool import for `' + ENTRIES_PATH + '/' + targetFolder + '`.',
                 function (msg) { authorDom.setBusyText(importBtn, msg); }
             );
-            var prUrl = prResult.pullRequest && prResult.pullRequest.html_url;
-            if (await showConfirm('Opened a Pull Request for ' + ENTRIES_PATH + '/' + targetFolder + '.\n\nBranch: ' + prResult.branchName + '\n\nOpen it now?')) {
-                window.open(prUrl || window.F1S_AUTHOR_GITHUB.createClient({ owner: REPO_OWNER, repo: REPO_NAME }).pullRequestsUrl, '_blank', 'noopener');
-            }
+            await showAlert('Queued automatic publish for ' + ENTRIES_PATH + '/' + targetFolder + '.\n\nBranch: ' + prResult.branchName + '\n\nGitHub Actions will validate, merge, rebuild, and deploy it.');
         } finally {
             importBtn.disabled = false;
             setImportReady();
@@ -933,10 +930,7 @@
 
             posts = posts.filter(function (p) { return p.id !== post.id; });
             applyFilters();
-            var prUrl = prResult.pullRequest && prResult.pullRequest.html_url;
-            if (await showConfirm('Opened a Pull Request to delete this article.\n\nBranch: ' + prResult.branchName + '\n\nOpen it now?')) {
-                window.open(prUrl || window.F1S_AUTHOR_GITHUB.createClient({ owner: REPO_OWNER, repo: REPO_NAME }).pullRequestsUrl, '_blank', 'noopener');
-            }
+            await showAlert('Queued automatic deletion for this article.\n\nBranch: ' + prResult.branchName + '\n\nGitHub Actions will validate, merge, rebuild, and deploy it.');
         } catch (e) {
             console.error('Delete failed', e);
             var hint = githubErrorHint(e);
@@ -1401,11 +1395,8 @@
                 function (msg) { editStatusEl.textContent = msg; }
             );
 
-            editStatusEl.textContent = 'Pull Request opened.';
-            var prUrl = prResult.pullRequest && prResult.pullRequest.html_url;
-            if (await showConfirm('Opened a Pull Request for this edit.\n\nBranch: ' + prResult.branchName + '\n\nOpen it now?')) {
-                window.open(prUrl || window.F1S_AUTHOR_GITHUB.createClient({ owner: REPO_OWNER, repo: REPO_NAME }).pullRequestsUrl, '_blank', 'noopener');
-            }
+            editStatusEl.textContent = 'Queued automatic publish.';
+            await showAlert('Queued automatic publish for this edit.\n\nBranch: ' + prResult.branchName + '\n\nGitHub Actions will validate, merge, rebuild, and deploy it.');
             closeEdit();
         } catch (e) {
             console.error('Save failed', e);
