@@ -1054,10 +1054,7 @@
                 replaceExisting
             );
 
-            var prUrl = publishResult.pullRequest && publishResult.pullRequest.html_url || window.F1S_AUTHOR_GITHUB.createClient({ owner: REPO_OWNER, repo: REPO_NAME }).pullRequestsUrl;
-            if (await showConfirm('Δημιουργήθηκε Pull Request για το άρθρο.\n\nBranch: ' + publishResult.branchName + '\n\nΝα ανοίξει το Pull Request;')) {
-                window.open(prUrl, '_blank', 'noopener');
-            }
+            await showAlert('Το άρθρο μπήκε στην ουρά για αυτόματη δημοσίευση.\n\nBranch: ' + publishResult.branchName + '\n\nΤο GitHub Actions θα κάνει έλεγχο, merge, δημιουργία αρχείων και deploy χωρίς άλλο βήμα.');
         } catch (err) {
             console.error('Publish failed', err);
             var hint = githubErrorHint(err);
