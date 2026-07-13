@@ -370,56 +370,58 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Gallery Carousel ────────────────────────────────────
     function setupGalleryCarousel() {
-        const carousel = document.querySelector('.gallery-carousel');
-        if (!carousel) return;
+        document.querySelectorAll('.gallery-carousel').forEach(function (carousel) {
+            const slides = carousel.querySelectorAll('.gallery-slide');
+            const thumbs = carousel.querySelectorAll('.gallery-thumb');
+            const prevBtn = carousel.querySelector('.gallery-carousel-prev');
+            const nextBtn = carousel.querySelector('.gallery-carousel-next');
+            const counter = carousel.querySelector('.gallery-carousel-counter');
 
-        const slides = carousel.querySelectorAll('.gallery-slide');
-        const thumbs = carousel.querySelectorAll('.gallery-thumb');
-        const prevBtn = carousel.querySelector('.gallery-carousel-prev');
-        const nextBtn = carousel.querySelector('.gallery-carousel-next');
-        const counter = carousel.querySelector('.gallery-carousel-counter');
+            if (!slides.length || !prevBtn || !nextBtn || !counter) return;
 
-        if (!slides.length) return;
+            let current = Math.max(0, Array.from(slides).findIndex(slide => slide.classList.contains('active')));
 
-        let current = 0;
-
-        function goTo(index) {
-            if (index < 0 || index >= slides.length) return;
-            slides[current].classList.remove('active');
-            thumbs[current].classList.remove('active');
-            current = index;
-            slides[current].classList.add('active');
-            thumbs[current].classList.add('active');
-            counter.textContent = (current + 1) + ' / ' + slides.length;
-            prevBtn.disabled = current === 0;
-            nextBtn.disabled = current === slides.length - 1;
-            thumbs[current].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }
-
-        prevBtn.addEventListener('click', function (e) { e.stopPropagation(); goTo(current - 1); });
-        nextBtn.addEventListener('click', function (e) { e.stopPropagation(); goTo(current + 1); });
-
-        thumbs.forEach(function (thumb, i) {
-            thumb.addEventListener('click', function () { goTo(i); });
-        });
-
-        carousel.setAttribute('tabindex', '0');
-        carousel.addEventListener('keydown', function (e) {
-            if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
-            if (e.key === 'ArrowRight') { e.preventDefault(); goTo(current + 1); }
-        });
-
-        var stage = carousel.querySelector('.gallery-carousel-stage');
-        var touchStartX = 0;
-        stage.addEventListener('touchstart', function (e) {
-            touchStartX = e.touches[0].clientX;
-        }, { passive: true });
-        stage.addEventListener('touchend', function (e) {
-            var dx = e.changedTouches[0].clientX - touchStartX;
-            if (Math.abs(dx) > 40) {
-                if (dx < 0) goTo(current + 1); else goTo(current - 1);
+            function goTo(index) {
+                if (index < 0 || index >= slides.length || index === current) return;
+                slides[current].classList.remove('active');
+                if (thumbs[current]) thumbs[current].classList.remove('active');
+                current = index;
+                slides[current].classList.add('active');
+                if (thumbs[current]) {
+                    thumbs[current].classList.add('active');
+                    thumbs[current].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+                counter.textContent = (current + 1) + ' / ' + slides.length;
+                prevBtn.disabled = current === 0;
+                nextBtn.disabled = current === slides.length - 1;
             }
-        }, { passive: true });
+
+            prevBtn.addEventListener('click', function (e) { e.stopPropagation(); goTo(current - 1); });
+            nextBtn.addEventListener('click', function (e) { e.stopPropagation(); goTo(current + 1); });
+
+            thumbs.forEach(function (thumb, i) {
+                thumb.addEventListener('click', function () { goTo(i); });
+            });
+
+            carousel.setAttribute('tabindex', '0');
+            carousel.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
+                if (e.key === 'ArrowRight') { e.preventDefault(); goTo(current + 1); }
+            });
+
+            var stage = carousel.querySelector('.gallery-carousel-stage');
+            if (!stage) return;
+            var touchStartX = 0;
+            stage.addEventListener('touchstart', function (e) {
+                touchStartX = e.touches[0].clientX;
+            }, { passive: true });
+            stage.addEventListener('touchend', function (e) {
+                var dx = e.changedTouches[0].clientX - touchStartX;
+                if (Math.abs(dx) > 40) {
+                    if (dx < 0) goTo(current + 1); else goTo(current - 1);
+                }
+            }, { passive: true });
+        });
     }
 
     // ── Image Lightbox ───────────────────────────────────────
