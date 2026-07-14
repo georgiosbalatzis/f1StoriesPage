@@ -118,6 +118,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const header = $('.article-header');
         const shareButton = $('#article-mini-share');
         const titleEl = $('.article-title');
+        const miniTitle = miniBar.querySelector('.article-mini-bar__title');
+        const getShortTitle = text => {
+            const clean = String(text || '').replace(/\s+/g, ' ').trim();
+            if (!clean) return '';
+            const split = clean.split(/[:;·–—-]/).map(part => part.trim()).filter(Boolean);
+            const candidate = split[0] && split[0].length >= 12 ? split[0] : clean;
+            return candidate.length > 64 ? `${candidate.slice(0, 61).trim()}…` : candidate;
+        };
         const triggerShare = () => {
             const webShare = $('#web-share-btn');
             const copyLink = $('#copy-link-btn');
@@ -142,8 +150,8 @@ document.addEventListener('DOMContentLoaded', function () {
         window.addEventListener('scroll', update, { passive: true });
         window.addEventListener('resize', update);
 
-        if (titleEl && !miniBar.querySelector('.article-mini-bar__title')?.textContent.trim()) {
-            miniBar.querySelector('.article-mini-bar__title').textContent = titleEl.textContent.trim();
+        if (titleEl && miniTitle) {
+            miniTitle.textContent = getShortTitle(titleEl.textContent);
         }
     }
 
