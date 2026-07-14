@@ -79,7 +79,8 @@ export function renderDriverStandingsPolish(standings, meta, year) {
     });
     const topTeam = leader && leader.Constructors && leader.Constructors[0] ? leader.Constructors[0].name : '';
     renderTrustedHtml(driversSidePanel,
-        sideCardHTML('Closest gaps to car ahead', sideItems)
+        sidePanelHeaderHTML('Race desk', 'Drivers championship context')
+        + sideCardHTML('Closest gaps to car ahead', sideItems)
         + sideCardHTML('Context', [
             { label: 'Leading team', value: topTeam || 'TBD' },
             { label: 'Classified drivers', value: String((standings || []).length) },
@@ -125,7 +126,8 @@ export function renderConstructorStandingsPolish(standings, teamDrivers, meta, y
         };
     });
     renderTrustedHtml(constructorsSidePanel,
-        sideCardHTML('Closest gaps to team ahead', sideItems)
+        sidePanelHeaderHTML('Race desk', 'Constructors championship context')
+        + sideCardHTML('Closest gaps to team ahead', sideItems)
         + sideCardHTML('Team split', driverSplit)
         + sideCardHTML('Source', [
             { label: 'Provider', value: meta && meta.source ? meta.source : 'Jolpica F1' },
@@ -168,6 +170,13 @@ function renderSummaryCards(target, items) {
             + '</div>';
     }).join('');
     renderTrustedHtml(target, html, 'standings summary cards');
+}
+
+function sidePanelHeaderHTML(label, title) {
+    return '<div class="standings-side-head">'
+        + '<div class="standings-side-kicker">' + esc(label) + '</div>'
+        + '<div class="standings-side-title">' + esc(title) + '</div>'
+        + '</div>';
 }
 
 function sideCardHTML(label, items) {

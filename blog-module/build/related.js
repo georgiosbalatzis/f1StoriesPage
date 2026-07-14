@@ -31,6 +31,7 @@ function scoreRelatedPosts(blogPosts, post, index) {
 }
 
 async function buildRelatedPostsHtml(relatedPosts) {
+    const icon = name => `<svg class="icon" aria-hidden="true"><use href="#${name}"/></svg>`;
     const cards = await Promise.all(relatedPosts.map(async related => {
         const relatedImage = getCardThumbnailPath(related.image);
         const relatedImagePath = relatedImage.substring(relatedImage.lastIndexOf('/') + 1);
@@ -44,30 +45,34 @@ async function buildRelatedPostsHtml(relatedPosts) {
         const widthAttr = imageDimensions && imageDimensions.width ? ` width="${imageDimensions.width}"` : '';
         const heightAttr = imageDimensions && imageDimensions.height ? ` height="${imageDimensions.height}"` : '';
         const hoverMeta = relatedReadTime
-            ? `<span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> ${relatedReadTime}</span>`
+            ? `<span class="related-card-hover-meta">${icon('fa-clock')} ${relatedReadTime}</span>`
             : '';
-        const hoverMetaLine = hoverMeta ? `\n                                ${hoverMeta}` : '';
+        const hover = `<div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>${hoverMeta ? `\n                                ${hoverMeta}` : ''}</div>`;
 
-        return `
-            <div class="col-md-4 mb-4">
-                <a href="${related.url}" class="related-card-link" style="display:block;height:100%;">
-                    <div class="related-article-card${hasImage ? '' : ' related-article-card--no-image'}">
-                        ${hasImage ? `
+        const mediaHtml = hasImage ? `
                         <div class="related-card-media">
                             <img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}"
                                  alt="${relatedTitle}"
                                  loading="lazy"
                                  decoding="async"${widthAttr}${heightAttr}
                                  data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">
-                            <div class="related-card-hover">
-                                <span class="related-card-hover-label">Περισσότερα</span>${hoverMetaLine}
-                            </div>
-                        </div>` : ''}
+                            ${hover}
+                        </div>` : `
+                        <div class="related-card-media related-card-media--placeholder" aria-hidden="true">
+                            <span class="related-card-placeholder">F1 Stories</span>
+                            ${hover}
+                        </div>`;
+
+        return `
+            <div class="col-md-4 mb-4">
+                <a href="${related.url}" class="related-card-link" style="display:block;height:100%;">
+                    <div class="related-article-card${hasImage ? '' : ' related-article-card--no-image'}">
+                        ${mediaHtml}
                         <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ${relDateStr}</div>
+                            <div class="related-date-badge">${icon('fa-calendar-alt')} ${relDateStr}</div>
                             <h3>${relatedTitle}</h3>
                             <div class="related-card-footer">
-                                <span class="related-card-read">Read More <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
+                                <span class="related-card-read">Διαβάστε ${icon('fa-arrow-right')}</span>
                                 <span class="related-card-author">${relatedAuthor}</span>
                             </div>
                         </div>
@@ -80,8 +85,8 @@ async function buildRelatedPostsHtml(relatedPosts) {
 
 function renderRelatedArticlesSection(relatedPostsHtml) {
     const cardsHtml = relatedPostsHtml ? relatedPostsHtml.replace(/^\n/, '') : '';
-    return `        <div class="row mt-5">
-            <div class="col-12"><h2 class="mb-4 related-section-title">Related Articles</h2></div>${cardsHtml ? `\n\n${cardsHtml}` : ''}
+    return `        <div class="row article-related-section">
+            <div class="col-12 related-section-head"><span class="related-section-eyebrow">Επόμενη ανάγνωση</span><h2 class="related-section-title">Σχετικά άρθρα</h2></div>${cardsHtml ? `\n\n${cardsHtml}` : ''}
         </div>`;
 }
 
@@ -98,7 +103,7 @@ async function injectRelatedArticles(blogPosts) {
             postHtml = postHtml.replace(/^[ \t]*RELATED_ARTICLES[ \t]*$/gm, relatedPostsHtml || '');
         } else {
             postHtml = postHtml.replace(
-                /        <div class="row mt-5">\n\s*<div class="col-12"><h2 class="mb-4 related-section-title">Related Articles<\/h2><\/div>[\s\S]*?\n        <\/div>(?=\n    <\/div>\n<\/main>)/,
+                /        <div class="row(?: mt-5| article-related-section)">\n\s*<div class="col-12(?: related-section-head)?">[\s\S]*?related-section-title">(?:Related Articles|Σχετικά άρθρα)<\/h2><\/div>[\s\S]*?\n        <\/div>(?=\n    <\/div>\n<\/main>)/,
                 renderRelatedArticlesSection(relatedPostsHtml)
             );
         }

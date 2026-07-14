@@ -18,7 +18,7 @@
     "build:image-variants": "node blog-module/generate-image-variants.js --run",
     "build:fonts": "node scripts/build/download-fonts.mjs",
     "build:icons": "node scripts/build/build-icon-sprite.mjs",
-    "build:bootstrap": "sass styles/vendor/bootstrap.slim.scss styles/vendor/bootstrap.slim.css --style=compressed --no-source-map",
+    "build:bootstrap": "sass styles/vendor/bootstrap.slim.scss styles/vendor/bootstrap.slim.css --style=compressed --no-source-map --quiet-deps --silence-deprecation=import,global-builtin,color-functions,if-function",
     "build:assets": "node scripts/build/build-icon-sprite.mjs && npm run build:bootstrap && node scripts/build/minify.mjs && node scripts/build/stamp-html.mjs",
     "build:assets:minify": "node scripts/build/minify.mjs",
     "build:assets:stamp": "npm run build:html && node scripts/build/stamp-html.mjs",

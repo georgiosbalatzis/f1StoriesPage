@@ -30,24 +30,25 @@
     position: sticky;
     top: 86px;
     display: grid;
-    gap: 0.75rem;
+    gap: 1rem;
     padding-top: 1rem;
 }
 
 .article-rail-card {
-    padding: 0.85rem;
-    border: 1px solid var(--blog-border);
-    border-radius: 10px;
-    background: var(--blog-surface);
+    padding: 0.1rem 0 0.95rem;
+    border: 0;
+    border-bottom: 1px solid var(--blog-border);
+    border-radius: 0;
+    background: transparent;
 }
 
 .article-rail-label {
     display: block;
-    margin-bottom: 0.55rem;
+    margin-bottom: 0.62rem;
     color: var(--blog-text-tertiary);
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.11em;
     text-transform: uppercase;
 }
 
@@ -60,10 +61,10 @@
 .article-rail-meta-list span,
 .article-rail-related-item {
     display: inline-flex;
-    gap: 0.42rem;
+    gap: 0.46rem;
     color: var(--blog-text-secondary);
-    font-size: 0.8rem;
-    line-height: 1.35;
+    font-size: 0.78rem;
+    line-height: 1.4;
 }
 
 .article-rail-meta-list .icon {
@@ -80,23 +81,26 @@
 
 .article-tag-chip {
     max-width: 100%;
-    padding: 0.28rem 0.52rem;
+    padding: 0.24rem 0.5rem;
     border: 1px solid var(--blog-border);
     border-radius: 999px;
-    background: var(--blog-surface-raised);
+    background: transparent;
     color: var(--blog-text-secondary);
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
     overflow-wrap: anywhere;
 }
 
 .article-rail-related-item {
     text-decoration: none;
-    font-weight: 700;
+    font-weight: 650;
+    border-left: 2px solid transparent;
+    padding-left: 0.56rem;
 }
 
 .article-rail-related-item:hover {
     color: var(--blog-accent);
+    border-left-color: var(--blog-accent);
 }
 
 @media (min-width: 992px) {
@@ -106,10 +110,11 @@
         justify-content: flex-start;
         max-width: none;
         margin: 0;
-        padding: 0.95rem;
-        border: 1px solid var(--blog-border);
-        border-radius: 10px;
-        background: var(--blog-surface);
+        padding: 0.1rem 0 1rem;
+        border: 0;
+        border-bottom: 1px solid var(--blog-border);
+        border-radius: 0;
+        background: transparent;
     }
 
     .article-side-rail .share-buttons {
@@ -137,6 +142,18 @@
     .article-rail-sticky {
         position: static;
         padding-top: 0;
+    }
+
+    .article-side-rail .article-toolbar {
+        justify-content: center;
+    }
+
+    .article-side-rail .share-label {
+        display: none;
+    }
+
+    .article-side-rail .share-buttons {
+        justify-content: center;
     }
 
     .article-rail-card {

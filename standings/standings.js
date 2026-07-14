@@ -65,6 +65,18 @@ const LAZY_IMAGE_PLACEHOLDER = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///y
 
 const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief', 'destructors'];
 const LIGHTWEIGHT_TABS = ['drivers', 'constructors'];
+const REPORT_DETAILS = {
+    'drivers': { label: 'Οδηγοί', note: 'Championship table · Jolpica F1' },
+    'constructors': { label: 'Κατασκευαστές', note: 'Team standings · Jolpica F1' },
+    'quali-gaps': { label: 'Quali Gaps', note: 'Teammate pace comparison · Jolpica F1' },
+    'lap1-gains': { label: 'Lap 1 Gains', note: 'Race start movement · OpenF1' },
+    'tyre-pace': { label: 'Tyre Pace', note: 'Race pace distributions · OpenF1' },
+    'dirty-air': { label: 'Dirty Air', note: 'Traffic and proximity analysis · OpenF1' },
+    'track-dominance': { label: 'Track Dominance', note: 'Fastest-lap sector comparison · OpenF1' },
+    'pit-stops': { label: 'Pit Stops', note: 'Stop time rankings · OpenF1' },
+    'debrief': { label: 'Debrief', note: 'Friday practice analysis · FIA / OpenF1' },
+    'destructors': { label: 'Destructors', note: 'Damage cost snapshot · F1 Stories' }
+};
 // Phase 6C: every heavy tab now lives in its own module while the
 // drivers/constructors tables keep rendering from this shell.
 const TAB_MODULES = {
@@ -443,6 +455,21 @@ function scrollStandingsTabIntoView(tabName, smooth) {
     });
 }
 
+function updateStandingsReportContext(tabName) {
+    const detail = REPORT_DETAILS[sanitizeStandingsTab(tabName)] || REPORT_DETAILS.drivers;
+    const selectorShell = standingsReportSelector ? standingsReportSelector.closest('.standings-report-select') : null;
+    if (selectorShell) {
+        selectorShell.setAttribute('data-active-report', detail.label);
+        selectorShell.setAttribute('aria-label', 'Active report: ' + detail.label);
+    }
+    if (!standingsReportMetaStatus) return;
+    const seasonEl = document.getElementById('season-year');
+    const roundEl = document.getElementById('round-num');
+    const season = seasonEl && seasonEl.textContent ? seasonEl.textContent : String(YEAR);
+    const round = roundEl && roundEl.textContent ? roundEl.textContent : '';
+    standingsReportMetaStatus.textContent = detail.note + ' · Σεζόν ' + season + (round ? ' · Γύρος ' + round : '');
+}
+
 function copyTextToClipboard(text) {
     if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
         return navigator.clipboard.writeText(text);
@@ -808,6 +835,7 @@ function activateStandingsTab(tabName, options) {
     if (standingsReportSelector && standingsReportSelector.value !== nextTab) {
         standingsReportSelector.value = nextTab;
     }
+    updateStandingsReportContext(nextTab);
     scrollStandingsTabIntoView(nextTab, !options || !options.skipFocus);
 
     standingsPanels.forEach(function(panel) {
@@ -962,9 +990,7 @@ function renderStandingsPayload(driverData, constructorData, meta) {
         document.getElementById('round-badge').classList.add('is-visible');
         document.getElementById('round-num').textContent = round;
     }
-    if (standingsReportMetaStatus) {
-        standingsReportMetaStatus.textContent = 'Σεζόν ' + (season || YEAR) + (round ? ' · Μετά τον γύρο ' + round : ' · Ενημέρωση μετά από κάθε αγώνα');
-    }
+    updateStandingsReportContext(activeStandingsTab);
 
     renderDrivers(dStandings, {});
     renderConstructors(cStandings, dStandings);

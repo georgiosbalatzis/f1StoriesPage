@@ -3,6 +3,18 @@
 (function () {
     'use strict';
 
+    var THEME_KEY = 'f1stories-theme';
+
+    function storeTheme(theme) {
+        try {
+            localStorage.setItem(THEME_KEY, theme);
+        } catch (_) {}
+
+        try {
+            sessionStorage.removeItem(THEME_KEY);
+        } catch (_) {}
+    }
+
     // ── Navbar Hamburger & Scroll ────────────────
     var hamburger = document.getElementById('nav-hamburger');
     var mobileMenu = document.getElementById('nav-mobile');
@@ -40,10 +52,10 @@
                 var isLight = html.getAttribute('data-theme') === 'light';
                 if (isLight) {
                     html.removeAttribute('data-theme');
-                    sessionStorage.setItem('f1stories-theme', 'dark');
+                    storeTheme('dark');
                 } else {
                     html.setAttribute('data-theme', 'light');
-                    sessionStorage.setItem('f1stories-theme', 'light');
+                    storeTheme('light');
                 }
             });
         });

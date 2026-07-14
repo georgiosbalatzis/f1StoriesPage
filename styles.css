@@ -278,7 +278,7 @@ footer::before { display: none; }
 
 /* ── Scroll Animations ── */
 .fade-in { opacity: 1; transition: transform 0.8s var(--ease-bounce); transform: translateY(0); }
-.fade-in:not(.visible) { transform: translateY(0); }
+.fade-in.is-observed:not(.visible) { transform: translateY(10px); }
 .fade-in.visible { opacity: 1; transform: translateY(0); }
 
 
