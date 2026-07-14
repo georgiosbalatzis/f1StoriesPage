@@ -160,6 +160,7 @@
         });
 
         sections.forEach(function (section) {
+            section.classList.add('is-observed');
             observer.observe(section);
         });
     }

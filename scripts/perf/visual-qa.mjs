@@ -186,7 +186,8 @@ async function preparePage(browser, viewport, theme, options = {}) {
     await page.emulateMedia({ colorScheme: theme });
     await page.addInitScript(({ themeName, cookieKey, consentJson, allowCookieBanner }) => {
         try {
-            sessionStorage.setItem('f1stories-theme', themeName);
+            localStorage.setItem('f1stories-theme', themeName);
+            sessionStorage.removeItem('f1stories-theme');
             if (allowCookieBanner) {
                 localStorage.removeItem(cookieKey);
             } else {

@@ -9,6 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || 'UCTSK8lbEiHJ10KVFrhNaL4g';
 const MAX_RESULTS = Number(process.env.YOUTUBE_MAX_RESULTS || 10);
+const REQUEST_TIMEOUT_MS = Number(process.env.YOUTUBE_RSS_TIMEOUT_MS || 10000);
 const RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(CHANNEL_ID)}`;
 const OUTPUT_PATH = path.join(REPO_ROOT, 'assets', 'youtube-latest.json');
 const YOUTUBE_VIDEO_ID_RE = /^[A-Za-z0-9_-]{11}$/;
@@ -92,11 +93,17 @@ async function fetchFeedXml() {
     let lastError = null;
 
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        const controller = typeof AbortController === 'function' ? new AbortController() : null;
+        const timeout = controller
+            ? setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+            : null;
+
         try {
             const response = await fetch(RSS_URL, {
                 headers: {
                     'user-agent': 'f1stories-youtube-snapshot/1.0 (+https://f1stories.gr)'
-                }
+                },
+                signal: controller?.signal
             });
 
             if (response.ok) {
@@ -110,8 +117,12 @@ async function fetchFeedXml() {
                 throw lastError;
             }
         } catch (err) {
-            lastError = err;
-            if (attempt === MAX_ATTEMPTS) throw err;
+            lastError = err?.name === 'AbortError'
+                ? new Error(`YouTube RSS fetch timed out after ${REQUEST_TIMEOUT_MS}ms`)
+                : err;
+            if (attempt === MAX_ATTEMPTS) throw lastError;
+        } finally {
+            if (timeout) clearTimeout(timeout);
         }
 
         const backoffMs = 1000 * 2 ** attempt; // 2s, 4s, 8s
