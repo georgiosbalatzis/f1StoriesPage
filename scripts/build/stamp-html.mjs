@@ -17,6 +17,8 @@
 // Usage:
 //   node scripts/build/stamp-html.mjs
 //   node scripts/build/stamp-html.mjs --dry   # print planned edits only
+//   node scripts/build/stamp-html.mjs --stamp-articles
+//       Full article restamp for runtime hash migration work.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -513,7 +515,18 @@ function stampArticleBootstrap(bootstrapInfo, dry) {
     return totals;
 }
 
-function stampArticleRuntimeScripts(patterns, dry) {
+function needsArticleRuntimeMigration(html) {
+    const source = String(html || '');
+    for (const rel of ARTICLE_RUNTIME_SOURCES) {
+        const ref = escapeRegex(rel);
+        if (new RegExp(`(?:href|src)=["']/?${ref}(?:[?#"'])`).test(source)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function stampArticleRuntimeScripts(patterns, dry, options = {}) {
     const articlePatterns = patterns.filter(pattern => ARTICLE_RUNTIME_SOURCES.has(pattern.source));
     const totals = { files: 0, hits: 0 };
     if (!articlePatterns.length) return totals;
@@ -521,6 +534,8 @@ function stampArticleRuntimeScripts(patterns, dry) {
     for (const rel of listArticleHtml()) {
         const abs = path.join(REPO_ROOT, rel);
         const original = fs.readFileSync(abs, 'utf8');
+        if (options.migrationOnly && !needsArticleRuntimeMigration(original)) continue;
+
         const { result, hits } = rewrite(original, articlePatterns);
         if (result === original) continue;
 
@@ -889,6 +904,7 @@ function main() {
     }
     const sprite = loadSprite();
     const dry = process.argv.includes('--dry');
+    const stampArticles = process.argv.includes('--stamp-articles') || process.env.F1S_STAMP_ARTICLES === '1';
     let totalHits = 0;
     let totalCriticalOps = 0;
     let totalAsyncified = 0;
@@ -1012,13 +1028,16 @@ function main() {
         );
     }
 
-    const articleRuntime = stampArticleRuntimeScripts(patterns, dry);
+    const articleRuntime = stampArticleRuntimeScripts(patterns, dry, { migrationOnly: !stampArticles });
     totalArticleRuntimeHits += articleRuntime.hits;
     if (articleRuntime.files) {
+        const mode = stampArticles ? 'article runtime script stamp(s)' : 'article runtime migration stamp(s)';
         console.log(
             `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleRuntime.files} file(s), ` +
-            `${articleRuntime.hits} article runtime script stamp(s)`
+            `${articleRuntime.hits} ${mode}`
         );
+    } else if (dry && !stampArticles) {
+        console.log(`\n${ARTICLE_HTML_ROOT}/**/article.html  →  no obsolete article runtime refs found (use --stamp-articles for full migration work)`);
     }
 
     const articleThemeInit = stampArticleThemeInit(themeInfo, dry);
