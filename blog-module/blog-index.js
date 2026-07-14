@@ -258,10 +258,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function setFiltersOpen(open) {
         if (!filterToolbar) return;
         filterToolbar.classList.toggle('is-open', open);
+        if (filterToggleBtn) filterToggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
     }
     function syncArchiveMiniBar() {
         if (!archiveMiniBar || !filterToolbar) return;
-        archiveMiniBar.classList.toggle('is-visible', window.innerWidth <= 767 && filterToolbar.getBoundingClientRect().bottom < 70);
+        var visible = window.innerWidth <= 767 && filterToolbar.getBoundingClientRect().bottom < 64;
+        archiveMiniBar.classList.toggle('is-visible', visible);
+        archiveMiniBar.setAttribute('aria-hidden', visible ? 'false' : 'true');
     }
     function renderCategoryFilters() {
         if (!categoryStrip) return;
