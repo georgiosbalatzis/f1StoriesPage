@@ -194,7 +194,7 @@ async function minifyJs(rel) {
     if (inlineSourceMap) {
         fs.writeFileSync(path.join(REPO_ROOT, sourcemapRel), result.map);
     }
-    return { outRel, sourceBytes: Buffer.byteLength(source, 'utf8'), bytes: outputCode.length };
+    return { outRel, sourceBytes: Buffer.byteLength(source, 'utf8'), bytes: Buffer.byteLength(outputCode, 'utf8') };
 }
 
 async function buildOnce() {
