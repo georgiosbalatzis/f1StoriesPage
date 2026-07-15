@@ -45,13 +45,13 @@
   padding-left: 12px;
 }
 .standings-header {
-  padding: 2rem 0 .5rem;
-  min-height: 112px;
+  padding: 1.55rem 0 .35rem;
+  min-height: 92px;
 }
 .standings-title {
   color: var(--st-text);
   font-family: var(--st-shell-font);
-  font-size: 2.4rem;
+  font-size: 2.2rem;
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: 0;
@@ -59,10 +59,10 @@
 }
 .standings-sub {
   color: var(--st-text-muted);
-  font-size: .88rem;
+  font-size: .84rem;
   line-height: 1.45;
-  margin-top: .35rem;
-  min-height: 1.5rem;
+  margin-top: .3rem;
+  min-height: 1.35rem;
 }
 .live-dot {
   display: inline-block;
@@ -378,8 +378,8 @@
     padding-left: 16px;
     padding-right: 16px;
   }
-  .standings-header { padding: 1.45rem 0 .35rem; }
-  .standings-title { font-size: 2rem; }
+  .standings-header { padding: 1rem 0 .18rem; }
+  .standings-title { font-size: 1.88rem; }
   .standings-tabs {
     margin: 1.15rem 0 1.35rem;
     scroll-snap-type: x proximity;
@@ -398,7 +398,13 @@
 }
 @media (max-width: 767.98px) {
   body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn) { display: none; }
-  .standings-title { font-size: 1.8rem; }
+  .standings-header { padding: .62rem 0 .05rem; min-height: 0; }
+  .standings-title { font-size: 1.46rem; }
+  .standings-sub {
+    font-size: .76rem;
+    margin-top: .25rem;
+    min-height: 1rem;
+  }
   .standings-tabs {
     max-width: 100%;
     -webkit-mask-image: linear-gradient(to right, transparent 0, black 8px, black calc(100% - 24px), transparent 100%);
