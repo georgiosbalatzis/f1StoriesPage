@@ -444,8 +444,8 @@ body {
 }
 @media (max-width: 767.98px) {
   #hero {
-    padding: 2.45rem 0 1.95rem;
-    min-height: 390px;
+    padding: 2rem 0 1.55rem;
+    min-height: 350px;
     clip-path: none;
   }
   .hero-overlay.image-bg img {
@@ -459,14 +459,14 @@ body {
   .hero-content h1 {
     margin-left: auto;
     margin-right: auto;
-    font-size: 1.86rem;
+    font-size: 1.68rem;
   }
-  .hero-content p { font-size: 0.94rem; }
+  .hero-content p { font-size: 0.88rem; }
 }
 @media (max-width: 575.98px) {
   #hero {
-    padding: 1.95rem 0 1.42rem;
-    min-height: 350px;
+    padding: 1.45rem 0 0.98rem;
+    min-height: 310px;
   }
   .hero-content {
     padding-left: 1.5rem;
@@ -478,10 +478,11 @@ body {
     margin-right: 0;
   }
   .hero-content p {
-    max-width: 18rem;
+    max-width: 17.5rem;
     margin-left: 0;
     margin-right: 0;
-    font-size: 0.94rem;
+    font-size: 0.88rem;
+    line-height: 1.36;
   }
 }
 
