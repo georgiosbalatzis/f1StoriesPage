@@ -186,6 +186,9 @@ body {
   font-weight: 600;
   white-space: nowrap;
 }
+body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn):not(.theme-toggle-nav-btn) {
+  display: none;
+}
 .blog-nav-hamburger {
   display: none;
   width: 44px;
