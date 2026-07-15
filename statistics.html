@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="/theme-overrides.min.css?v=a6310352">
     <link rel="stylesheet" href="/styles/author/statistics.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="/scripts/author/statistics-config.js"></script>
 </head>
 <body class="statistics-page">
 <!-- f1s:icon-sprite:begin -->
@@ -146,16 +147,12 @@
             <p>Google Analytics dashboard για clicks, reading time, traffic, articles και engagement.</p>
         </div>
         <div class="stats-hero-panel">
-            <div class="stats-status" id="stats-status">Demo data loaded</div>
+            <div class="stats-status" id="stats-status">GA not connected</div>
             <a class="stats-ga-link" href="https://analytics.google.com/analytics/web/?authuser=1#/a352199716p485678890/reports/intelligenthome" target="_blank" rel="noopener">Open GA</a>
         </div>
     </section>
 
     <section class="stats-connect" aria-label="Google Analytics connection">
-        <div class="stats-field stats-field-grow">
-            <label for="stats-client-id">OAuth Client ID</label>
-            <input id="stats-client-id" type="text" autocomplete="off" spellcheck="false" placeholder="Google OAuth Web Client ID">
-        </div>
         <div class="stats-field">
             <label for="stats-range">Range</label>
             <select id="stats-range">
@@ -170,9 +167,6 @@
         </button>
         <button class="stats-btn" id="stats-refresh-btn" type="button">
             <svg class="icon" aria-hidden="true"><use href="#fa-rotate"/></svg> Refresh
-        </button>
-        <button class="stats-btn" id="stats-demo-btn" type="button">
-            <svg class="icon" aria-hidden="true"><use href="#fa-chart-bar"/></svg> Demo
         </button>
     </section>
 

@@ -91,6 +91,7 @@ const REQUIRED_EXACT = [
     'scripts/author/image-tools.js',
     'scripts/author/media-policy.js',
     'scripts/author/session-token.js',
+    'scripts/author/statistics-config.js',
     'scripts/author/statistics-page.js',
     'styles/author/generate.css',
     'styles/author/housekeeping.css',

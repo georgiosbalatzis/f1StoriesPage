@@ -133,6 +133,11 @@ body.statistics-page {
     color: #06131b;
 }
 
+.stats-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.52;
+}
+
 .stats-connect {
     position: sticky;
     top: 70px;
@@ -147,6 +152,10 @@ body.statistics-page {
     border-radius: 10px;
     background: color-mix(in srgb, var(--bg-overlay) 94%, transparent);
     backdrop-filter: blur(18px);
+}
+
+body.stats-ga-missing .stats-connect {
+    display: none;
 }
 
 .stats-field {
@@ -347,6 +356,15 @@ body.statistics-page {
     min-width: 760px;
 }
 
+.stats-table-wrap.is-empty .stats-table {
+    min-width: 100%;
+}
+
+.stats-table-wrap.is-empty .stats-table th:nth-child(n+4),
+.stats-table-wrap.is-empty .stats-table td:nth-child(n+4) {
+    display: none;
+}
+
 .stats-table th,
 .stats-table td {
     padding: 0.72rem 0.82rem;
@@ -497,7 +515,7 @@ body.statistics-page {
     .stats-connect {
         position: static;
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         align-items: stretch;
         gap: 0.42rem;
         margin-bottom: 0.75rem;
