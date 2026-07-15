@@ -397,7 +397,7 @@
   .share-tools { justify-content: flex-start; }
 }
 @media (max-width: 767.98px) {
-  body:not(.standings-embed) .theme-toggle-btn { display: none; }
+  body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn) { display: none; }
   .standings-title { font-size: 1.8rem; }
   .standings-tabs {
     max-width: 100%;

@@ -498,7 +498,7 @@ body.standings-embed .standings-panel.active { display: block !important; animat
 body.standings-embed [data-embed-hidden="true"] { display: none !important; }
 
 @media (max-width: 767.98px) {
-    body:not(.standings-embed) .theme-toggle-btn { display: none; }
+    body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn) { display: none; }
 }
 
 @media (max-width: 1024px) {
