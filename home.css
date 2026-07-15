@@ -411,8 +411,8 @@
 
 .home-lead-story,
 .home-lead-story {
-    height: 100%;
-    min-height: 100%;
+    height: auto;
+    min-height: 0;
 }
 
 .home-secondary-story {
@@ -429,7 +429,7 @@
 
 .home-lead-story__link {
     grid-template-columns: 1fr;
-    min-height: 100%;
+    min-height: 0;
     background: transparent;
     border: 0;
     border-radius: 0;
@@ -453,8 +453,9 @@
 }
 
 .home-lead-story__media {
-    min-height: 100%;
-    aspect-ratio: 16 / 8.8;
+    min-height: 0;
+    height: clamp(260px, 26vw, 360px);
+    aspect-ratio: 16 / 8.2;
     border-radius: 8px;
 }
 
@@ -485,13 +486,13 @@
 
 .home-lead-story__overlay {
     position: absolute;
-    inset: auto 1rem 0.95rem;
+    inset: auto 1rem 1.35rem;
     z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.55rem;
-    max-width: min(88%, 24rem);
+    gap: 0.48rem;
+    max-width: min(86%, 25rem);
 }
 
 .home-lead-story__overlay-kicker {
@@ -512,10 +513,14 @@
 
 .home-lead-story__overlay-title {
     color: #fff;
-    font-size: clamp(1.18rem, 2.15vw, 1.72rem);
+    font-size: clamp(1.12rem, 1.9vw, 1.56rem);
     font-weight: 800;
-    line-height: 1.08;
+    line-height: 1.1;
     text-shadow: 0 3px 18px rgba(0,0,0,0.56);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .home-lead-story__body {
@@ -1043,6 +1048,22 @@ a.ep-card:hover .ep-card__cta { gap: 0.55rem; }
         padding: 0.78rem 0;
     }
 
+    .home-lead-story__media {
+        height: clamp(214px, 48vw, 292px);
+        aspect-ratio: 16 / 8.7;
+    }
+
+    .home-lead-story__overlay {
+        inset: auto 0.9rem 1.25rem;
+        max-width: min(88%, 22rem);
+    }
+
+    .home-lead-story__overlay-title {
+        font-size: clamp(1.04rem, 3.4vw, 1.24rem);
+        line-height: 1.12;
+        -webkit-line-clamp: 2;
+    }
+
     .team-row {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -1077,8 +1098,13 @@ a.ep-card:hover .ep-card__cta { gap: 0.55rem; }
     }
 
     .home-lead-story__media {
-        aspect-ratio: 16 / 8.8;
+        height: clamp(250px, 38vw, 330px);
+        aspect-ratio: 16 / 8.4;
         min-height: 0;
+    }
+
+    .home-lead-story__overlay {
+        inset: auto 1rem 1.18rem;
     }
 
     .home-lead-story__body {
@@ -1499,15 +1525,18 @@ a.ep-card:hover .ep-card__cta { gap: 0.55rem; }
     }
 
     .home-lead-story__media {
-        aspect-ratio: 16 / 9.4;
+        height: clamp(190px, 51vw, 238px);
+        aspect-ratio: 16 / 8.9;
     }
 
     .home-lead-story__overlay {
-        inset: auto 0.82rem 0.82rem;
+        inset: auto 0.82rem 1.18rem;
+        gap: 0.38rem;
     }
 
     .home-lead-story__overlay-title {
-        font-size: 1.05rem;
+        font-size: 1rem;
+        line-height: 1.12;
         -webkit-line-clamp: 2;
     }
 
