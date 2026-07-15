@@ -27,6 +27,7 @@ const ROOT_FILES = new Set([
     'CNAME',
     'generate.html',
     'housekeeping.html',
+    'statistics.html',
     'index.html',
     'manifest.json',
     'offline.html',
@@ -51,8 +52,10 @@ const AUTHOR_TOOL_FILES = new Set([
     'scripts/author/image-tools.js',
     'scripts/author/media-policy.js',
     'scripts/author/session-token.js',
+    'scripts/author/statistics-page.js',
     'styles/author/generate.css',
-    'styles/author/housekeeping.css'
+    'styles/author/housekeeping.css',
+    'styles/author/statistics.css'
 ]);
 
 const BLOG_PUBLIC_FILES = new Set([

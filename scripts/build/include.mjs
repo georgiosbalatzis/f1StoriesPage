@@ -16,6 +16,7 @@ const TARGET_HTML = [
   'privacy/privacy.html',
   'privacy/terms.html',
   'generate.html',
+  'statistics.html',
   '404.html',
 ];
 

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Article Preview | F1 Stories</title>
+    <title>Statistics | F1 Stories</title>
     <meta name="robots" content="noindex, nofollow">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; script-src 'self' https://cdn.jsdelivr.net https://platform.twitter.com https://www.instagram.com https://www.threads.net https://threads.net https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://api.github.com https://twitter.com https://*.twitter.com https://x.com https://*.x.com https://instagram.com https://*.instagram.com https://threads.net https://*.threads.net https://threads.com https://*.threads.com https://facebook.com https://*.facebook.com; frame-src 'self' https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://open.spotify.com https://player.vimeo.com https://codepen.io https://datawrapper.dwcdn.net https://sketchfab.com https://www.sketchfab.com https://facebook.com https://www.facebook.com https://platform.twitter.com https://syndication.twitter.com https://instagram.com https://www.instagram.com https://threads.net https://www.threads.net https://threads.com https://www.threads.com https://f1stories.gr https://www.f1stories.gr https://georgiosbalatzis.github.io; worker-src 'self' blob:; upgrade-insecure-requests">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; script-src 'self' https://accounts.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://analyticsdata.googleapis.com https://oauth2.googleapis.com; frame-src 'self' https://accounts.google.com; worker-src 'self' blob:; upgrade-insecure-requests">
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <script src="/scripts/perf/error-beacon.min.js?v=59367e85"></script>
     <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
@@ -20,20 +20,12 @@
     <link rel="stylesheet" href="/styles/fonts.min.css?v=2397fa86">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
     <link rel="stylesheet" href="/styles.min.css?v=048802d2">
-    <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=263620f1">
-    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=0783bd3b">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=93b1f6a3">
     <link rel="stylesheet" href="/theme-overrides.min.css?v=a6310352">
-
-    <script src="/node_modules/jszip/dist/jszip.min.js" defer></script>
-    <script src="/scripts/author/session-token.js"></script>
-    <script src="/scripts/author/github-client.js"></script>
-    <script src="/scripts/author/dom-tools.js"></script>
-    <script src="/scripts/author/dialogs.js"></script>
-
-    <link rel="stylesheet" href="/styles/author/generate.css">
+    <link rel="stylesheet" href="/styles/author/statistics.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
-<body>
+<body class="statistics-page">
 <!-- f1s:icon-sprite:begin -->
 <div hidden data-hash="94e0743f"><svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
   <symbol id="fa-arrow-left" viewBox="0 0 448 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></symbol>
@@ -110,13 +102,11 @@
 <div class="background"></div>
 <div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
 
-<!-- Theme Toggle -->
 <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle theme">
     <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
     <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
 </button>
 
-<!-- Navbar -->
 <header>
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
@@ -124,10 +114,9 @@
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
-                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/generate.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-pen-nib"/></svg> Generate</a>
                 <a href="/housekeeping.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-broom"/></svg> Housekeeping</a>
-                <a href="/statistics.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Statistics</a>
+                <a href="/statistics.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Statistics</a>
             </div>
             <div class="blog-nav-right">
                 <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
@@ -136,10 +125,9 @@
         <div class="blog-nav-mobile" id="nav-mobile">
             <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
             <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
-            <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/generate.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-pen-nib"/></svg> Generate</a>
             <a href="/housekeeping.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-broom"/></svg> Housekeeping</a>
-            <a href="/statistics.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Statistics</a>
+            <a href="/statistics.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Statistics</a>
             <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
                 <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
                 <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
@@ -150,173 +138,124 @@
     </nav>
 </header>
 
-<!-- ═══ Editor + Live Preview (split view on desktop) ═════ -->
-<div class="gen-split">
-<div class="gen-panel" id="editor-panel">
-    <h2><svg class="icon" aria-hidden="true" style="color:var(--accent);margin-right:0.4rem;"><use href="#fa-pen-nib"/></svg> Γεννήτρια Άρθρων</h2>
-
-    <div class="gen-row">
-        <div class="gen-field">
-            <label>Τίτλος</label>
-            <input type="text" id="gen-title" placeholder="Τίτλος άρθρου…">
+<main class="stats-wrap">
+    <section class="stats-hero" aria-labelledby="stats-title">
+        <div>
+            <span class="stats-kicker">Shadow analytics</span>
+            <h1 id="stats-title">Statistics</h1>
+            <p>Google Analytics dashboard για clicks, reading time, traffic, articles και engagement.</p>
         </div>
-        <div class="gen-field" style="max-width:160px;">
-            <label>Συντάκτης</label>
-            <select id="gen-author">
-                <option value="Georgios Balatzis">Georgios Balatzis</option>
-                <option value="Giannis Poulikidis">Giannis Poulikidis</option>
-                <option value="Thanasis Batalas">Thanasis Batalas</option>
-                <option value="Themis Charvalis">Themis Charvalis</option>
-                <option value="Dimitris Keramidiotis">Dimitris Keramidiotis</option>
-                <option value="F1 Stories Team">F1 Stories Team</option>
-            </select>
-        </div>
-    </div>
-    <div class="gen-row">
-        <div class="gen-field" style="max-width:180px;">
-            <label>Ετικέτα</label>
-            <input type="text" id="gen-tag" placeholder="π.χ. Historical" value="F1">
-        </div>
-        <div class="gen-field" style="max-width:180px;">
-            <label>Κατηγορία</label>
-            <input type="text" id="gen-category" placeholder="π.χ. Ferrari" value="Racing">
-        </div>
-    </div>
-
-    <div style="display:flex;gap:0.5rem;margin-bottom:4px;align-items:center;flex-wrap:wrap;">
-        <button class="gen-btn gen-btn-secondary" id="gen-insert-img-marker" type="button" style="padding:0.35rem 0.8rem;font-size:0.78rem;">
-            <svg class="icon" aria-hidden="true"><use href="#fa-image"/></svg> Εισαγωγή δείκτη εικόνας
-        </button>
-        <span class="gen-hint" style="margin:0;" id="gen-marker-count">0 δείκτες • 0 εικόνες</span>
-    </div>
-
-    <textarea class="gen-textarea" id="gen-content" placeholder="Γράψε ή επικόλλησε εδώ το κείμενο του άρθρου…
-
-Υποστηρίζονται:
-# Επικεφαλίδα 2
-## Επικεφαλίδα 3
-- Στοιχεία λίστας
-**έντονα** και *πλάγια*
-[img-instert-tag]  ← δείκτης εικόνας (η γεννήτρια τον αντικαθιστά με 3.*, 4.*, …)
-
-Οι σύνδεσμοι YouTube / X / Instagram / Threads ενσωματώνονται αυτόματα.
-Οι κενές γραμμές χωρίζουν παραγράφους."></textarea>
-
-    <div class="gen-actions">
-        <button class="gen-btn gen-btn-primary" id="gen-preview-btn">
-            <svg class="icon" aria-hidden="true"><use href="#fa-eye"/></svg> Προεπισκόπηση
-        </button>
-        <button class="gen-btn gen-btn-primary" id="gen-publish-btn" style="background:#ef4444;">
-            <svg class="icon" aria-hidden="true"><use href="#fa-rocket"/></svg> Δημοσίευση
-        </button>
-        <button class="gen-btn gen-btn-primary" id="gen-export-btn" style="background:#22c55e;">
-            <svg class="icon" aria-hidden="true"><use href="#fa-file-zipper"/></svg> Εξαγωγή ZIP
-        </button>
-        <label class="gen-file-label" id="gen-import-label" title="Φόρτωση άρθρου από ZIP που εξήχθη προηγουμένως">
-            <svg class="icon" aria-hidden="true"><use href="#fa-folder-open"/></svg> <span id="gen-import-text">Εισαγωγή ZIP</span>
-            <input type="file" accept=".zip,application/zip" class="gen-file-input" id="gen-import-input">
-        </label>
-        <label class="gen-file-label" id="gen-file-label" title="Εικόνα 1 — thumbnail κάρτας + fallback για header">
-            <svg class="icon" aria-hidden="true"><use href="#fa-image"/></svg> <span id="gen-file-text">Κεντρική / thumbnail</span>
-            <input type="file" accept="image/*" class="gen-file-input" id="gen-hero-input">
-        </label>
-        <label class="gen-file-label" id="gen-header-label" title="Εικόνα 2 — banner στην κορυφή του άρθρου (προαιρετικό, προεπιλογή: η κεντρική)">
-            <svg class="icon" aria-hidden="true"><use href="#fa-layer-group"/></svg> <span id="gen-header-text">Banner άρθρου</span>
-            <input type="file" accept="image/*" class="gen-file-input" id="gen-header-input">
-        </label>
-        <label class="gen-file-label" id="gen-content-file-label">
-            <svg class="icon" aria-hidden="true"><use href="#fa-images"/></svg> <span id="gen-content-file-text">Εικόνες κειμένου</span>
-            <input type="file" accept="image/*" multiple class="gen-file-input" id="gen-content-input">
-        </label>
-        <button class="gen-btn gen-btn-secondary" id="gen-clear-btn">
-            <svg class="icon" aria-hidden="true"><use href="#fa-eraser"/></svg> Καθαρισμός
-        </button>
-        <button class="gen-btn gen-btn-secondary" id="gen-token-btn" title="Διαχείριση token δημοσίευσης">
-            <svg class="icon" aria-hidden="true"><use href="#fa-key"/></svg>
-        </button>
-    </div>
-
-    <div id="gen-content-images-list" style="margin-top:0.75rem;display:none;"></div>
-
-    <div class="gen-hint">
-        Μορφή: απλό κείμενο με επικεφαλίδες σε στυλ markdown. Οι σύνδεσμοι σε YouTube, X, Instagram, Threads και Facebook ενσωματώνονται αυτόματα.<br>
-        <strong>Κεντρική / thumbnail</strong> (εικόνα <code>1</code>): εμφανίζεται στις κάρτες του blog και, αν δεν έχει οριστεί banner, και ως header του άρθρου. <strong>Banner άρθρου</strong> (εικόνα <code>2</code>, προαιρετικό): εμφανίζεται στην κορυφή του άρθρου· αν λείπει, χρησιμοποιείται η κεντρική. Όλες οι εικόνες μετατρέπονται αυτόματα σε <code>.webp</code> κατά το export/publish.<br>
-        <strong>Εικόνες κειμένου</strong>: πρόσθεσε <code>[img-instert-tag]</code> εκεί που θέλεις μια εικόνα και επισύναψε τις εικόνες με την ίδια σειρά. <em>2+ δείκτες σε συνεχόμενες σειρές γίνονται carousel· μεμονωμένοι δείκτες παραμένουν ως μεμονωμένες εικόνες.</em><br>
-        <strong>Χωρίς δείκτες;</strong> Οι επισυναπτόμενες εικόνες εμφανίζονται ως carousel στο τέλος του άρθρου.<br>
-        <strong>Δημοσίευση</strong>: δημιουργεί branch και Pull Request μέσω GitHub API — το workflow χτίζει μετά το merge.
-        <strong>Εξαγωγή ZIP</strong> είναι το χειροκίνητο εναλλακτικό.
-        <strong>Εισαγωγή ZIP</strong>: φορτώνει πίσω στη φόρμα ένα ZIP που έχεις ήδη εξάγει, για να συνεχίσεις την επεξεργασία.
-        Πάτα το <svg class="icon" aria-hidden="true"><use href="#fa-key"/></svg> για να ορίσεις το token δημοσίευσης.
-    </div>
-</div>
-
-<!-- ═══ Preview ════════════════════════════════════════════ -->
-<div id="preview-wrapper">
-    <div class="gen-preview-bar">
-        <span><svg class="icon" aria-hidden="true"><use href="#fa-eye"/></svg> Preview Mode</span>
-        <button class="gen-btn gen-btn-secondary" id="gen-back-btn" style="padding:0.35rem 0.9rem;font-size:0.78rem;">
-            <svg class="icon" aria-hidden="true"><use href="#fa-pen"/></svg> Back to Editor
-        </button>
-    </div>
-
-    <section class="article-page-wrapper py-5 mt-3">
-        <div class="container">
-            <article class="article-container">
-                <div class="article-header" id="pv-header">
-                    <picture>
-                        <img src="/blog-module/images/default-blog.jpg" alt="" class="article-header-img" id="pv-hero-img"
-                             loading="eager" decoding="sync" width="848" height="400">
-                    </picture>
-                    <div class="article-header-overlay">
-                        <h1 class="article-title" id="pv-title"></h1>
-                        <div class="article-meta">
-                            <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> <span id="pv-date"></span></span>
-                            <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <span id="pv-tag"></span></span>
-                            <span><svg class="icon" aria-hidden="true"><use href="#fa-folder-open"/></svg> <span id="pv-category"></span></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="social-share-bar">
-                    <div class="share-label"><svg class="icon" aria-hidden="true"><use href="#fa-share-alt"/></svg> <span>Share</span></div>
-                    <div class="share-buttons">
-                        <span class="share-btn facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></span>
-                        <span class="share-btn threads"><svg class="icon" aria-hidden="true"><use href="#fa-threads"/></svg></span>
-                        <span class="share-btn instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></span>
-                        <span class="share-btn whatsapp"><svg class="icon" aria-hidden="true"><use href="#fa-whatsapp"/></svg></span>
-                        <span class="share-btn telegram"><svg class="icon" aria-hidden="true"><use href="#fa-telegram-plane"/></svg></span>
-                        <span class="share-btn web-share"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg></span>
-                        <span class="share-btn copy-link"><svg class="icon" aria-hidden="true"><use href="#fa-link"/></svg></span>
-                    </div>
-                </div>
-
-                <div class="article-content" id="pv-content"></div>
-
-                <div class="article-author-footer">
-                    <div class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="pv-reading-time">1 min read</span></div>
-                    <div class="author-box">
-                        <div class="author-header">
-                            <div class="author-avatar">
-                                <img id="pv-author-img" src="/images/authors/default.webp" alt="Author" loading="lazy" decoding="async" width="474" height="474">
-                                <span class="avatar-text" id="pv-author-initial">A</span>
-                            </div>
-                            <div class="author-info">
-                                <h4 class="author-name" id="pv-author-name"></h4>
-                                <div class="author-title" id="pv-author-title">F1 Stories Contributor</div>
-                            </div>
-                        </div>
-                        <div class="author-bio" id="pv-author-bio"></div>
-                    </div>
-                </div>
-            </article>
+        <div class="stats-hero-panel">
+            <div class="stats-status" id="stats-status">Demo data loaded</div>
+            <a class="stats-ga-link" href="https://analytics.google.com/analytics/web/?authuser=1#/a352199716p485678890/reports/intelligenthome" target="_blank" rel="noopener">Open GA</a>
         </div>
     </section>
-</div>
-</div><!-- /.gen-split -->
 
-<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Scroll to top"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
+    <section class="stats-connect" aria-label="Google Analytics connection">
+        <div class="stats-field stats-field-grow">
+            <label for="stats-client-id">OAuth Client ID</label>
+            <input id="stats-client-id" type="text" autocomplete="off" spellcheck="false" placeholder="Google OAuth Web Client ID">
+        </div>
+        <div class="stats-field">
+            <label for="stats-range">Range</label>
+            <select id="stats-range">
+                <option value="7daysAgo">Last 7 days</option>
+                <option value="28daysAgo" selected>Last 28 days</option>
+                <option value="90daysAgo">Last 90 days</option>
+                <option value="365daysAgo">Last 12 months</option>
+            </select>
+        </div>
+        <button class="stats-btn stats-btn-primary" id="stats-connect-btn" type="button">
+            <svg class="icon" aria-hidden="true"><use href="#fa-key"/></svg> Connect GA
+        </button>
+        <button class="stats-btn" id="stats-refresh-btn" type="button">
+            <svg class="icon" aria-hidden="true"><use href="#fa-rotate"/></svg> Refresh
+        </button>
+        <button class="stats-btn" id="stats-demo-btn" type="button">
+            <svg class="icon" aria-hidden="true"><use href="#fa-chart-bar"/></svg> Demo
+        </button>
+    </section>
+
+    <section class="stats-grid stats-grid-kpis" id="stats-kpis" aria-label="Key metrics"></section>
+
+    <section class="stats-dashboard">
+        <article class="stats-card stats-card-wide">
+            <div class="stats-card-head">
+                <div>
+                    <span class="stats-card-kicker">Traffic</span>
+                    <h2>Views over time</h2>
+                </div>
+                <span class="stats-card-note" id="stats-trend-note">Daily page views</span>
+            </div>
+            <div class="stats-chart stats-chart-line" id="stats-line-chart"></div>
+        </article>
+
+        <article class="stats-card">
+            <div class="stats-card-head">
+                <div>
+                    <span class="stats-card-kicker">Acquisition</span>
+                    <h2>Channels</h2>
+                </div>
+            </div>
+            <div class="stats-chart" id="stats-channel-chart"></div>
+        </article>
+
+        <article class="stats-card">
+            <div class="stats-card-head">
+                <div>
+                    <span class="stats-card-kicker">Device split</span>
+                    <h2>Devices</h2>
+                </div>
+            </div>
+            <div class="stats-chart" id="stats-device-chart"></div>
+        </article>
+
+        <article class="stats-card stats-card-wide">
+            <div class="stats-card-head">
+                <div>
+                    <span class="stats-card-kicker">Content</span>
+                    <h2>Top pages and articles</h2>
+                </div>
+            </div>
+            <div class="stats-table-wrap">
+                <table class="stats-table">
+                    <thead>
+                    <tr>
+                        <th>Page</th>
+                        <th>Views</th>
+                        <th>Users</th>
+                        <th>Avg reading</th>
+                        <th>Engagement</th>
+                    </tr>
+                    </thead>
+                    <tbody id="stats-pages-table"></tbody>
+                </table>
+            </div>
+        </article>
+
+        <article class="stats-card">
+            <div class="stats-card-head">
+                <div>
+                    <span class="stats-card-kicker">Clicks</span>
+                    <h2>Internal click paths</h2>
+                </div>
+            </div>
+            <div class="stats-list" id="stats-click-list"></div>
+        </article>
+
+        <article class="stats-card">
+            <div class="stats-card-head">
+                <div>
+                    <span class="stats-card-kicker">Reading quality</span>
+                    <h2>Engagement signals</h2>
+                </div>
+            </div>
+            <div class="stats-list" id="stats-reading-list"></div>
+        </article>
+    </section>
+</main>
 
 <script defer src="/scripts/shared-nav.min.js?v=82e4e5cd"></script>
-<script defer src="/scripts/author/generate-page.js"></script>
+<script defer src="/scripts/author/statistics-page.js"></script>
 </body>
 </html>
