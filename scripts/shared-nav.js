@@ -30,6 +30,9 @@
         var button = source.cloneNode(true);
         button.removeAttribute('id');
         button.className = 'theme-toggle-btn theme-toggle-nav-btn';
+        button.querySelectorAll('span').forEach(function (label) {
+            label.remove();
+        });
 
         if (hamburger && hamburger.parentNode === navRight) {
             navRight.insertBefore(button, hamburger);

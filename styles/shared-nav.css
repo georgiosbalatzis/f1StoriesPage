@@ -313,6 +313,9 @@
     flex: 0 0 auto;
     font-size: 0.9rem;
 }
+.blog-nav .theme-toggle-nav-btn span {
+    display: none !important;
+}
 .blog-nav .theme-toggle-nav-btn:hover,
 .blog-nav .theme-toggle-nav-btn:focus-visible {
     color: #41B6E6;
