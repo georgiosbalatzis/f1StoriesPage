@@ -1,7 +1,8 @@
 (function () {
     'use strict';
 
-    var PROPERTY_ID = '485678890';
+    var CONFIG = window.F1S_GA_CONFIG || {};
+    var PROPERTY_ID = CONFIG.propertyId || '485678890';
     var CLIENT_ID_KEY = 'f1stories-ga-oauth-client-id';
     var SCOPE = 'https://www.googleapis.com/auth/analytics.readonly';
     var GA_ENDPOINT = 'https://analyticsdata.googleapis.com/v1beta/properties/' + PROPERTY_ID + ':runReport';
@@ -10,11 +11,9 @@
     var loading = false;
 
     var els = {
-        clientId: document.getElementById('stats-client-id'),
         range: document.getElementById('stats-range'),
         connect: document.getElementById('stats-connect-btn'),
         refresh: document.getElementById('stats-refresh-btn'),
-        demo: document.getElementById('stats-demo-btn'),
         status: document.getElementById('stats-status'),
         kpis: document.getElementById('stats-kpis'),
         line: document.getElementById('stats-line-chart'),
@@ -71,6 +70,21 @@
             ['Strongest section', 'Standings', '3m 34s'],
             ['Returning-reader sessions', 'Returning users', '41%'],
             ['Internal click rate', 'Tracked page clicks / sessions', '27%']
+        ]
+    };
+
+    var emptyData = {
+        source: 'Waiting for GA connection',
+        kpis: { empty: true },
+        timeline: [],
+        channels: [],
+        devices: [],
+        pages: [],
+        clicks: [],
+        reading: [
+            ['GA connection', 'Configure the public OAuth client ID once, then sign in with Google.', 'Required'],
+            ['Property', 'GA4 property ' + PROPERTY_ID, 'Ready'],
+            ['Source', 'Google Analytics Data API', 'Live data']
         ]
     };
 
@@ -299,13 +313,13 @@
 
     function setLoading(next) {
         loading = next;
-        [els.connect, els.refresh, els.demo].forEach(function (button) {
+        [els.connect, els.refresh].forEach(function (button) {
             if (button) button.disabled = loading;
         });
     }
 
     function render(data) {
-        if (!data) data = demoData;
+        if (!data) data = emptyData;
         renderKpis(data.kpis || {});
         renderLineChart(data.timeline || []);
         renderBars(els.channels, data.channels || [], 'sessions');
@@ -322,14 +336,22 @@
 
     function renderKpis(kpis) {
         clear(els.kpis);
-        [
+        var items = kpis.empty ? [
+            ['Users', '—', 'GA not connected'],
+            ['Page views', '—', 'Waiting for Analytics'],
+            ['Sessions', '—', 'Waiting for Analytics'],
+            ['Avg reading', '—', 'Engagement / view'],
+            ['Engagement', '—', 'Engaged sessions'],
+            ['Clicks', '—', 'internal_page_click']
+        ] : [
             ['Users', formatNumber(kpis.users), 'Active users'],
             ['Page views', formatNumber(kpis.views), 'screenPageViews'],
             ['Sessions', formatNumber(kpis.sessions), 'GA sessions'],
             ['Avg reading', formatDuration(kpis.avgEngagement), 'Engagement / view'],
             ['Engagement', formatPercent(kpis.engagementRate), 'Engaged sessions'],
             ['Clicks', formatNumber(kpis.clicks), 'internal_page_click']
-        ].forEach(function (item) {
+        ];
+        items.forEach(function (item) {
             var card = el('article', 'stats-kpi');
             card.appendChild(el('p', 'stats-kpi-label', item[0]));
             card.appendChild(el('p', 'stats-kpi-value', item[1]));
@@ -416,6 +438,8 @@
 
     function renderPages(rows) {
         clear(els.pages);
+        var tableWrap = els.pages && els.pages.closest ? els.pages.closest('.stats-table-wrap') : null;
+        if (tableWrap) tableWrap.classList.toggle('is-empty', !rows.length);
         rows.forEach(function (row) {
             var tr = document.createElement('tr');
             var title = el('div', 'stats-page-title', row[1] || row[0]);
@@ -462,9 +486,9 @@
     }
 
     function connect() {
-        var clientId = (els.clientId && els.clientId.value || '').trim();
+        var clientId = resolveClientId();
         if (!clientId) {
-            setStatus('Paste a Google OAuth Client ID first.');
+            setStatus('GA OAuth client is not configured.');
             return;
         }
         try {
@@ -489,27 +513,33 @@
         tokenClient.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
     }
 
-    function init() {
+    function resolveClientId() {
+        var configured = String(CONFIG.clientId || '').trim();
+        if (configured) return configured;
         try {
-            var storedClientId = localStorage.getItem(CLIENT_ID_KEY);
-            if (storedClientId && els.clientId) els.clientId.value = storedClientId;
-        } catch (_) {}
+            return (localStorage.getItem(CLIENT_ID_KEY) || '').trim();
+        } catch (_) {
+            return '';
+        }
+    }
 
+    function init() {
         if (els.connect) els.connect.addEventListener('click', connect);
         if (els.refresh) els.refresh.addEventListener('click', function () {
             if (accessToken) fetchAnalytics();
-            else render(demoData);
-        });
-        if (els.demo) els.demo.addEventListener('click', function () {
-            accessToken = '';
-            setStatus('Demo data loaded');
-            render(demoData);
+            else setStatus(resolveClientId() ? 'Connect Google Analytics first.' : 'GA OAuth client is not configured.');
         });
         if (els.range) els.range.addEventListener('change', function () {
             if (accessToken) fetchAnalytics();
-            else render(demoData);
         });
-        render(demoData);
+        if (!resolveClientId()) {
+            document.body.classList.add('stats-ga-missing');
+            if (els.connect) els.connect.disabled = true;
+            setStatus('GA OAuth client is not configured.');
+        } else {
+            document.body.classList.add('stats-ga-configured');
+        }
+        render(emptyData);
     }
 
     init();
