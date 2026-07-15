@@ -31,6 +31,7 @@
 
     function hideBanner() {
         banner.classList.remove('show');
+        banner.classList.remove('is-ready');
         banner.style.display = 'none';
         banner.setAttribute('aria-hidden', 'true');
     }
@@ -41,7 +42,29 @@
         banner.setAttribute('aria-hidden', 'false');
         requestAnimationFrame(function () {
             banner.classList.add('show');
+            banner.classList.add('is-ready');
         });
+    }
+
+    function scheduleBanner() {
+        var shown = false;
+        var timer = null;
+
+        function reveal() {
+            if (shown) return;
+            shown = true;
+            if (timer) window.clearTimeout(timer);
+            window.removeEventListener('scroll', onScroll);
+            showBanner();
+        }
+
+        function onScroll() {
+            var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+            if (scrollY > 80) reveal();
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        timer = window.setTimeout(reveal, 3600);
     }
 
     function saveConsent(consent) {
@@ -177,7 +200,8 @@
     if (existingConsent) {
         hideBanner();
     } else {
-        showBanner();
+        banner.classList.remove('is-ready');
+        scheduleBanner();
     }
 
     bindSimpleBanner();
