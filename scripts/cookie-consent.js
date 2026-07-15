@@ -70,7 +70,7 @@
                 privacyLink.href = '/privacy/privacy.html';
                 privacyLink.textContent = 'Πολιτική Απορρήτου';
                 text.replaceChildren(
-                    document.createTextNode('Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. '),
+                    document.createTextNode('Απαραίτητα cookies. Προαιρετικά analytics μόνο με αποδοχή. '),
                     privacyLink
                 );
             }
@@ -89,7 +89,7 @@
         var closeBtn = document.getElementById('close-cookie');
 
         if (intro) {
-            intro.textContent = 'Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς.';
+            intro.textContent = 'Απαραίτητα cookies. Προαιρετικά analytics μόνο με αποδοχή.';
         }
         if (analyticsTitle) {
             analyticsTitle.textContent = 'Cookies Ανάλυσης';

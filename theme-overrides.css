@@ -616,6 +616,11 @@
 }
 
 [data-theme="light"] .cookie-details {
+    border-color: transparent !important;
+    background: transparent !important;
+}
+
+[data-theme="light"] .cookie-details[open] {
     border-color: rgba(0,0,0,0.08) !important;
     background: #f5f5f7 !important;
 }
@@ -626,8 +631,19 @@
     color: #6e6e73 !important;
 }
 
+[data-theme="light"] .decline {
+    background: transparent !important;
+    border-color: transparent !important;
+    color: #5f5f67 !important;
+}
+
 [data-theme="light"] .reject-btn:hover {
     background: rgba(0,0,0,0.06) !important;
+}
+
+[data-theme="light"] .decline:hover {
+    background: transparent !important;
+    color: #0A4F66 !important;
 }
 
 [data-theme="light"] .accept-selected-btn {
