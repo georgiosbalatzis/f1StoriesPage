@@ -20,6 +20,29 @@
     var mobileMenu = document.getElementById('nav-mobile');
     var blogNav = document.getElementById('blog-nav');
 
+    function ensureNavThemeButton() {
+        var navRight = document.querySelector('.blog-nav-right');
+        if (!navRight || navRight.querySelector('.theme-toggle-nav-btn')) return;
+
+        var source = document.querySelector('.theme-toggle-menu-btn, body > .theme-toggle-btn');
+        if (!source) return;
+
+        var button = source.cloneNode(true);
+        button.removeAttribute('id');
+        button.className = 'theme-toggle-btn theme-toggle-nav-btn';
+        button.querySelectorAll('span').forEach(function (label) {
+            label.remove();
+        });
+
+        if (hamburger && hamburger.parentNode === navRight) {
+            navRight.insertBefore(button, hamburger);
+        } else {
+            navRight.appendChild(button);
+        }
+    }
+
+    ensureNavThemeButton();
+
     if (hamburger && mobileMenu) {
         hamburger.addEventListener('click', function () {
             hamburger.classList.toggle('open');

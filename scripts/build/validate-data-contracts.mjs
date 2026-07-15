@@ -564,7 +564,7 @@ function validateAssetManifest() {
         assertCondition(fs.existsSync(relAbs(sourcePath)), label, `source file missing: ${sourcePath}`);
         assertCondition(fs.existsSync(relAbs(minPath)), label, `minified file missing: ${minPath}`);
         if (fs.existsSync(relAbs(minPath)) && isInteger(info.bytes)) {
-            const generatedLength = fs.readFileSync(relAbs(minPath), 'utf8').length;
+            const generatedLength = fs.statSync(relAbs(minPath)).size;
             assertCondition(generatedLength === info.bytes, label, 'bytes must match minified output length');
         }
     });

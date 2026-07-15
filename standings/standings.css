@@ -82,14 +82,14 @@ body { overflow-y: visible !important; }
 .standings-wrapper h2 { border-bottom: none; display: block; padding-bottom: 0; }
 
 .standings-header {
-    padding: 2rem 0 0.5rem;
-    min-height: 112px;
+    padding: 1.55rem 0 0.35rem;
+    min-height: 92px;
     text-align: left !important;
 }
 
 .standings-title {
     font-family: var(--st-display-font);
-    font-size: clamp(2.2rem, 4vw, 3.35rem);
+    font-size: clamp(2rem, 3.4vw, 3rem);
     font-weight: 800;
     letter-spacing: -0.025em;
     color: var(--st-text);
@@ -99,10 +99,10 @@ body { overflow-y: visible !important; }
 
 .standings-sub {
     color: var(--st-text-muted);
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     line-height: 1.45;
-    margin-top: 0.55rem;
-    min-height: 1.5rem;
+    margin-top: 0.42rem;
+    min-height: 1.35rem;
 }
 
 .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #10b981; margin-right: 0.4rem; animation: livePulse 1.8s ease-in-out infinite; vertical-align: middle; will-change: opacity; }
@@ -498,14 +498,14 @@ body.standings-embed .standings-panel.active { display: block !important; animat
 body.standings-embed [data-embed-hidden="true"] { display: none !important; }
 
 @media (max-width: 767.98px) {
-    body:not(.standings-embed) .theme-toggle-btn { display: none; }
+    body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn) { display: none; }
 }
 
 @media (max-width: 1024px) {
     .standings-wrapper { padding-top: 3.85rem; padding-bottom: 2rem; }
     .standings-wrapper .container { padding-left: 16px; padding-right: 16px; }
-    .standings-header { padding: 1.25rem 0 0.25rem; }
-    .standings-title { font-size: 2rem; }
+    .standings-header { padding: 1rem 0 0.18rem; }
+    .standings-title { font-size: 1.88rem; }
     .standings-tabs { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; padding: 6px; margin: 1rem 0 1.15rem; scrollbar-width: none; }
     .standings-tabs::-webkit-scrollbar { display: none; }
     .standings-tab { flex: 0 0 auto; min-width: 138px; scroll-snap-align: start; }
@@ -526,16 +526,16 @@ body.standings-embed [data-embed-hidden="true"] { display: none !important; }
     .standings-wrapper .container { overflow: visible; }
     .standings-header {
         min-height: 0;
-        padding: 0.9rem 0 0.1rem;
+        padding: 0.62rem 0 0.05rem;
     }
     .standings-title {
-        font-size: 1.58rem;
+        font-size: 1.46rem;
         max-width: 18ch;
     }
     .standings-sub {
-        font-size: 0.8rem;
-        margin-top: 0.35rem;
-        min-height: 1.1rem;
+        font-size: 0.76rem;
+        margin-top: 0.25rem;
+        min-height: 1rem;
     }
     .round-badge {
         margin-left: 0;
@@ -544,10 +544,10 @@ body.standings-embed [data-embed-hidden="true"] { display: none !important; }
     .standings-report-select {
         display: block;
         position: sticky;
-        top: 68px;
+        top: 58px;
         z-index: 1040;
-        margin: 0.7rem 0 0.85rem;
-        padding: 0.5rem 0 0.6rem;
+        margin: 0.58rem 0 0.72rem;
+        padding: 0.42rem 0 0.5rem;
         background: var(--st-bg);
         text-align: left;
     }

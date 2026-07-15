@@ -44,6 +44,7 @@ const TARGET_HTML = [
     'privacy/privacy.html',
     'privacy/terms.html',
     'generate.html',
+    'statistics.html',
     '404.html'
 ];
 
@@ -58,7 +59,8 @@ const SPRITE_TARGETS = new Set([
     'housekeeping.html',
     'privacy/privacy.html',
     'privacy/terms.html',
-    'generate.html'
+    'generate.html',
+    'statistics.html'
 ]);
 
 const SPRITE_SOURCE = 'images/icons/sprite.svg';
@@ -74,7 +76,8 @@ const CRITICAL_TARGETS = new Set([
     'blog-module/blog/index.html',
     'blog-module/blog/template.html',
     'generate.html',
-    'housekeeping.html'
+    'housekeeping.html',
+    'statistics.html'
 ]);
 
 // Source path of the hand-crafted critical block (resolved against manifest).
@@ -140,6 +143,10 @@ const FONT_PRELOADS = {
         'assets/fonts/outfit-700.woff2'
     ],
     'housekeeping.html': [
+        'assets/fonts/dm-sans-400.woff2',
+        'assets/fonts/outfit-700.woff2'
+    ],
+    'statistics.html': [
         'assets/fonts/dm-sans-400.woff2',
         'assets/fonts/outfit-700.woff2'
     ]

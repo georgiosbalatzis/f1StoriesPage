@@ -582,11 +582,11 @@
 /* ── Cookie Banner ───────────────────────────── */
 [data-theme="light"] .cookie-banner,
 [data-theme="light"] .cookie-consent {
-    background: rgba(255,255,255,0.98) !important;
+    background: rgba(255,255,255,0.9) !important;
     border: 1px solid rgba(0,0,0,0.08) !important;
     border-right: 1px solid rgba(0,0,0,0.08) !important;
     border-left: 1px solid rgba(0,0,0,0.08) !important;
-    box-shadow: 0 18px 44px rgba(0,0,0,0.12) !important;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1) !important;
 }
 
 [data-theme="light"] .cookie-content,
@@ -616,6 +616,11 @@
 }
 
 [data-theme="light"] .cookie-details {
+    border-color: transparent !important;
+    background: transparent !important;
+}
+
+[data-theme="light"] .cookie-details[open] {
     border-color: rgba(0,0,0,0.08) !important;
     background: #f5f5f7 !important;
 }
@@ -626,8 +631,19 @@
     color: #6e6e73 !important;
 }
 
+[data-theme="light"] .decline {
+    background: transparent !important;
+    border-color: transparent !important;
+    color: #5f5f67 !important;
+}
+
 [data-theme="light"] .reject-btn:hover {
     background: rgba(0,0,0,0.06) !important;
+}
+
+[data-theme="light"] .decline:hover {
+    background: transparent !important;
+    color: #0A4F66 !important;
 }
 
 [data-theme="light"] .accept-selected-btn {

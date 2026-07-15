@@ -13,33 +13,33 @@
 .standings-context-row {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.7rem;
-    margin: 0 0 0.9rem;
+    gap: 0.55rem;
+    margin: 0 0 0.72rem;
 }
 
 .standings-context-card {
     min-width: 0;
-    padding: 0.82rem 0.9rem;
-    border: 1px solid var(--st-border);
-    border-radius: 10px;
-    background: color-mix(in srgb, var(--st-surface-raised) 82%, transparent);
-    box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset;
+    padding: 0.62rem 0.72rem;
+    border: 1px solid color-mix(in srgb, var(--st-border) 72%, transparent);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--st-surface-raised) 46%, transparent);
+    box-shadow: none;
 }
 
 .standings-context-label,
 .standings-side-label,
 .st-table-head {
     color: var(--st-text-muted);
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
 .standings-context-value {
-    margin-top: 0.18rem;
+    margin-top: 0.14rem;
     color: var(--st-text);
-    font-size: 0.94rem;
+    font-size: 0.88rem;
     font-weight: 800;
     line-height: 1.25;
     overflow: hidden;
@@ -48,9 +48,9 @@
 }
 
 .standings-context-note {
-    margin-top: 0.18rem;
+    margin-top: 0.14rem;
     color: var(--st-text-muted);
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     line-height: 1.35;
 }
 
@@ -210,11 +210,12 @@
     border: 1px solid var(--st-border);
     border-radius: 999px;
     background: color-mix(in srgb, var(--st-surface-raised) 78%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--st-accent) 0%, transparent);
     font-size: 0.72rem;
     font-weight: 800;
     line-height: 1;
     transform: translateY(-50%);
-    transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+    transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 
 .st-row[data-detail-target]:hover::after,
@@ -222,6 +223,8 @@
     color: var(--st-accent-readable);
     border-color: color-mix(in srgb, var(--st-accent) 36%, var(--st-border));
     background: var(--st-accent-soft);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--st-accent) 10%, transparent);
+    transform: translateY(-50%) scale(1.04);
 }
 
 .st-row.is-expanded::after {
@@ -281,14 +284,14 @@
         position: sticky;
         top: 58px;
         z-index: 1040;
-        margin: 0.85rem 0 1rem;
-        padding: 0.58rem 0.64rem 0.62rem;
-        border: 1px solid var(--st-border);
-        border-radius: 12px;
+        margin: 0.7rem 0 0.82rem;
+        padding: 0.48rem 0.56rem 0.52rem;
+        border: 1px solid color-mix(in srgb, var(--st-border) 72%, transparent);
+        border-radius: 10px;
         background: color-mix(in srgb, var(--st-bg) 96%, var(--st-surface-raised));
         backdrop-filter: blur(18px) saturate(1.16);
         -webkit-backdrop-filter: blur(18px) saturate(1.16);
-        box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     }
 
     .standings-report-select::before {
@@ -317,10 +320,11 @@
     }
 
     .standings-report-select {
-        margin-top: 0.68rem;
-        padding: 0.44rem 0.5rem 0.48rem;
-        border-radius: 10px;
-        box-shadow: 0 10px 22px rgba(0,0,0,0.1);
+        top: 56px;
+        margin-top: 0.52rem;
+        padding: 0.38rem 0.42rem 0.42rem;
+        border-radius: 9px;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.08);
     }
 
     .standings-report-select::before {
@@ -341,15 +345,15 @@
     }
 
     .standings-context-card {
-        padding: 0.68rem 0.72rem;
+        padding: 0.52rem 0.58rem;
     }
 
     .standings-context-value {
-        font-size: 0.86rem;
+        font-size: 0.82rem;
     }
 
     .standings-context-note {
-        font-size: 0.68rem;
+        font-size: 0.64rem;
     }
 
     .st-table-head {
@@ -362,14 +366,34 @@
     }
 
     .st-row::after {
-        right: 0.28rem;
-        width: 1.08rem;
-        height: 1.08rem;
-        font-size: 0.66rem;
+        right: 0.34rem;
+        width: 1.42rem;
+        height: 1.42rem;
+        color: var(--st-accent-readable);
+        border-color: color-mix(in srgb, var(--st-accent) 30%, var(--st-border));
+        background: var(--st-accent-soft);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--st-accent) 8%, transparent);
+        font-size: 0.78rem;
     }
 
     .st-row[data-detail-target] .st-points-area {
-        padding-right: 0.88rem;
+        padding-right: 1.16rem;
+    }
+
+    .st-row[data-detail-target] .st-points-area::after {
+        content: 'details';
+        margin-top: 0.02rem;
+        color: var(--st-text-muted);
+        font-size: 0.54rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        line-height: 1;
+        text-transform: uppercase;
+    }
+
+    .st-row[data-detail-target].is-expanded .st-points-area::after {
+        content: 'open';
+        color: var(--st-accent-readable);
     }
 }
 

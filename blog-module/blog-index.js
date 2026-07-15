@@ -259,9 +259,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!filterToolbar) return;
         filterToolbar.classList.toggle('is-open', open);
         if (filterToggleBtn) filterToggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (archiveMiniFilter) archiveMiniFilter.setAttribute('aria-expanded', open ? 'true' : 'false');
+        document.documentElement.classList.toggle('blog-filters-open', open && window.innerWidth <= 767);
     }
     function syncArchiveMiniBar() {
         if (!archiveMiniBar || !filterToolbar) return;
+        if (window.innerWidth <= 767) {
+            archiveMiniBar.classList.add('is-visible');
+            archiveMiniBar.setAttribute('aria-hidden', 'false');
+            return;
+        }
+        archiveMiniBar.classList.remove('is-visible');
+        archiveMiniBar.setAttribute('aria-hidden', 'true');
+        document.documentElement.classList.remove('blog-filters-open');
+        filterToolbar.classList.remove('is-open');
         var visible = window.innerWidth <= 767 && filterToolbar.getBoundingClientRect().bottom < 64;
         archiveMiniBar.classList.toggle('is-visible', visible);
         archiveMiniBar.setAttribute('aria-hidden', visible ? 'false' : 'true');
@@ -762,11 +773,23 @@ document.addEventListener('DOMContentLoaded', function() {
             setFiltersOpen(!(filterToolbar && filterToolbar.classList.contains('is-open')));
         });
     }
-    if (archiveMiniFilter) {
-        archiveMiniFilter.addEventListener('click', function() {
-            setFiltersOpen(true);
-            filterToolbar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (filterToolbar) {
+        filterToolbar.addEventListener('click', function(e) {
+            if (e.target === filterToolbar && filterToolbar.classList.contains('is-open')) {
+                setFiltersOpen(false);
+            }
         });
     }
+    if (archiveMiniFilter) {
+        archiveMiniFilter.setAttribute('aria-controls', 'blog-filter-panel');
+        archiveMiniFilter.setAttribute('aria-expanded', 'false');
+        archiveMiniFilter.addEventListener('click', function() {
+            setFiltersOpen(!(filterToolbar && filterToolbar.classList.contains('is-open')));
+        });
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') setFiltersOpen(false);
+    });
+    window.addEventListener('resize', syncArchiveMiniBar, { passive: true });
     window.addEventListener('scroll', syncArchiveMiniBar, { passive: true });
 });

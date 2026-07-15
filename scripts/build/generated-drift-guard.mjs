@@ -25,6 +25,7 @@ const GENERATED_EXACT = new Set([
     'offline.html',
     'privacy/privacy.html',
     'privacy/terms.html',
+    'statistics.html',
     'scripts/build/asset-manifest.json',
     'standings/index.html',
     'styles.min.css',
