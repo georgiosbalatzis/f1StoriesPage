@@ -73,10 +73,12 @@ function escapeHtmlAttribute(value) {
 }
 
 export function securityHeadersText() {
-    return [
+    const visitor = [
         '/*',
         ...SECURITY_HEADERS.map(([name, value]) => `  ${name}: ${value}`)
     ].join('\n') + '\n';
+    const author = AUTHOR_CONTENT_SECURITY_POLICY;
+    return visitor + ['/generate.html', '/housekeeping.html', '/statistics.html'].map(route => `${route}\n  Content-Security-Policy: ${author}`).join('\n') + '\n';
 }
 
 export function securityMetaHtml(indent = '') {
@@ -89,5 +91,8 @@ export function securityMetaHtml(indent = '') {
 }
 
 export function authorSecurityMetaHtml(indent = '') {
-    return `${indent}<meta http-equiv="Content-Security-Policy" content="${escapeHtmlAttribute(AUTHOR_CONTENT_SECURITY_POLICY)}">`;
+    return [
+        `${indent}<meta http-equiv="Content-Security-Policy" content="${escapeHtmlAttribute(AUTHOR_CONTENT_SECURITY_POLICY)}">`,
+        `${indent}<meta name="referrer" content="${escapeHtmlAttribute(REFERRER_POLICY)}">`
+    ].join('\n');
 }

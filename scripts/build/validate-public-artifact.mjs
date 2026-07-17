@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { XMLParser } from 'fast-xml-parser';
-import { CONTENT_SECURITY_POLICY, REFERRER_POLICY, securityHeadersText } from './security-policy.mjs';
+import { AUTHOR_CONTENT_SECURITY_POLICY, CONTENT_SECURITY_POLICY, REFERRER_POLICY, securityHeadersText } from './security-policy.mjs';
 import siteConfig from '../../config/site-config.mjs';
 import { normalizeSiteUrl as normalizeReferenceUrl } from './reference-utils.mjs';
 
@@ -26,10 +26,7 @@ const FORBIDDEN_EXACT = new Set([
     'blog-module/blog/template.html',
     'blog-module/blog-data.json',
     'scripts/build/asset-manifest.json',
-    'generate.html',
-    'housekeeping.html',
-    'statistics.html',
-    'scripts/author'
+    'scripts/author/__tests__'
 ]);
 
 const REQUIRED_EXACT = [
@@ -85,6 +82,10 @@ const REQUIRED_EXACT = [
     'scripts/site-config.js'
 ];
 
+REQUIRED_EXACT.push('generate.html', 'housekeeping.html', 'statistics.html',
+    'scripts/author/generate-page.js', 'scripts/author/housekeeping-page.js', 'scripts/author/statistics-page.js',
+    'node_modules/jszip/dist/jszip.min.js');
+
 for (const route of siteConfig.routes.public) {
     const rel = route.replace(/^\//, '').replace(/\/$/, '') || 'index.html';
     const candidate = rel.endsWith('.html') ? rel : `${rel}/index.html`;
@@ -118,6 +119,7 @@ function fmtBytes(bytes) {
 
 function forbiddenReason(relPath) {
     const base = path.posix.basename(relPath);
+    if (relPath === 'node_modules/jszip/dist/jszip.min.js') return '';
     if (FORBIDDEN_EXACT.has(relPath) || FORBIDDEN_EXACT.has(base)) return 'internal file';
     if (/\.(?:bak|docx|map|odt)$/i.test(relPath)) return 'source/backup artifact';
     if (/\.sql$/i.test(relPath)) return 'database/source artifact';
@@ -125,7 +127,6 @@ function forbiddenReason(relPath) {
     if (/^blog-module\/blog-entries\/.*\/(?:source|gallery)\.txt$/i.test(relPath)) return 'raw article source';
     if (/^blog-module\/blog-entries\/.*\.(?:jpe?g|png)$/i.test(relPath)) return 'raw article image';
     if (/^scripts\/build\//.test(relPath)) return 'build script';
-    if (/^scripts\/author\//.test(relPath)) return 'author tool';
     if (/^node_modules\//.test(relPath)) return 'dependency artifact';
     if (/^blog-module\/build\//.test(relPath)) return 'blog build script';
     if (/\.min\.(?:css|js)\.map$/i.test(relPath)) return 'source map';
@@ -209,9 +210,6 @@ function assertSiteUrlExists(errors, fromRelPath, value, label) {
 
 function validateHtmlRefs(errors, abs, relPath) {
     const source = fs.readFileSync(abs, 'utf8');
-    if (/\bhref=["']\/(?:generate|housekeeping|statistics)\.html(?:[?#][^"']*)?["']/i.test(source)) {
-        errors.push(`${relPath}: visitor HTML must not link to local author tools`);
-    }
     const html = source
         .replace(/<script\b[\s\S]*?<\/script>/gi, '');
     const attrPattern = /\b(?:href|src|data-src)=["']([^"']+)["']/gi;
@@ -358,7 +356,7 @@ function validateHtmlSecurityMeta(errors, html, relPath) {
     const cspTags = findMetaTags(html, 'http-equiv', 'Content-Security-Policy');
     if (cspTags.length !== 1) {
         errors.push(`${relPath}: expected exactly one Content-Security-Policy meta tag`);
-    } else if (attrValue(cspTags[0], 'content') !== CONTENT_SECURITY_POLICY) {
+    } else if (attrValue(cspTags[0], 'content') !== (/^(?:generate|housekeeping|statistics)\.html$/.test(relPath) ? AUTHOR_CONTENT_SECURITY_POLICY : CONTENT_SECURITY_POLICY)) {
         errors.push(`${relPath}: Content-Security-Policy meta does not match scripts/build/security-policy.mjs`);
     }
 

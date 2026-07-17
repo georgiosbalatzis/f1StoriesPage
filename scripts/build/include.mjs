@@ -27,7 +27,14 @@ const TARGET_HTML = [
 
 const DEFAULT_CONTEXT = {
   footerEmailHref: 'mailto:myf1stories@gmail.com',
-  footerExtraLinks: '',
+  footerExtraLinks:
+    '\n' +
+    '                    <span class="footer-separator">|</span>\n' +
+    '                    <a href="/generate.html" class="footer-link">Generate</a>\n' +
+    '                    <span class="footer-separator">|</span>\n' +
+    '                    <a href="/housekeeping.html" class="footer-link">Housekeeping</a>\n' +
+    '                    <span class="footer-separator">|</span>\n' +
+    '                    <a href="/statistics.html" class="footer-link">Statistics</a>',
 };
 
 const PAGE_CONTEXT = {

@@ -8,13 +8,13 @@ This document is the current architectural source of truth. Historical cleanup n
 
 **Consequences:** Runtime behavior must use browser JavaScript, public APIs, build-time generation, or committed snapshots. The public artifact is allowlisted and validated before upload. A root-level local preview is not evidence of what production contains.
 
-## ADR-002: Author tools are local-only
+## ADR-002: Author tools are publicly reachable but independently governed
 
-**Decision:** `generate.html`, `housekeeping.html`, and `statistics.html` are local editorial tools. They are served with `node scripts/author/serve-tools.mjs` and are excluded from `dist/`.
+**Decision:** `generate.html`, `housekeeping.html`, and `statistics.html` are public routes included in `dist/`, protected by a separate author CSP and session-only token policy. The local server remains available for development.
 
-**Reason:** The tools handle GitHub write tokens and editorial operations. GitHub Pages provides no authentication or server-side authorization, so publishing these pages would create an unauthenticated administration surface.
+**Reason:** The pages are intentionally reachable, but GitHub Pages still provides no authentication. They therefore never ship credentials, never persist tokens in localStorage, and can publish only through branch-plus-PR workflows.
 
-**Consequences:** Visitor navigation and visitor CSP do not include author-tool dependencies. Author publishing continues through branches and pull requests. Changes to the author tools are tested locally and never become part of the Pages artifact. The privileged auto-publish workflow additionally requires a current quality run, an in-repository author branch, blog-entry-only changes, and either the `author-publish` label or the configured trusted maintainer account.
+**Consequences:** Author dependencies and permissions are isolated from the visitor CSP. The privileged auto-publish workflow additionally requires a current quality run, an in-repository author branch, blog-entry-only changes, and either the `author-publish` label or the configured trusted maintainer account.
 
 ## ADR-003: Tracked generated files
 

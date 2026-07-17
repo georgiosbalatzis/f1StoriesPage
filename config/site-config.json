@@ -82,7 +82,10 @@
       "/privacy/privacy.html",
       "/privacy/terms.html",
       "/ghostcar/",
-      "/f1telemetry/"
+      "/f1telemetry/",
+      "/generate.html",
+      "/housekeeping.html",
+      "/statistics.html"
     ],
     "author": ["/generate.html", "/housekeeping.html", "/statistics.html"]
   },

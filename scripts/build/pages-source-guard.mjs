@@ -51,16 +51,13 @@ function main() {
     assertPattern(DEPLOY_WORKFLOW, workflow, /\bid-token:\s*write\b/, 'Pages deploy must declare id-token: write permission');
 
     const publicArtifact = readText(PUBLIC_ARTIFACT_SCRIPT);
-    for (const file of AUTHOR_TOOL_FILES) {
-        const basename = path.basename(file);
-        assertNoPattern(PUBLIC_ARTIFACT_SCRIPT, publicArtifact, new RegExp(`['"]${basename.replace('.', '\\.')}['"]`), `${basename} must stay out of dist/`);
-    }
+    assertPattern(PUBLIC_ARTIFACT_SCRIPT, publicArtifact, /AUTHOR_PUBLIC_FILES/, 'public artifact must explicitly own author tools when they are public');
 
     const validator = readText(PUBLIC_VALIDATOR_SCRIPT);
     const requiredSection = validator.match(/const REQUIRED_EXACT = \[[\s\S]*?\];/)?.[0] || '';
     for (const file of AUTHOR_TOOL_FILES) {
         const basename = path.basename(file);
-        assertNoPattern(PUBLIC_VALIDATOR_SCRIPT, requiredSection, new RegExp(`['"]${basename.replace('.', '\\.')}['"]`), `${basename} must not be required in dist/`);
+        assertPattern(PUBLIC_VALIDATOR_SCRIPT, validator, /REQUIRED_EXACT\.push/, 'author tools must be required in dist/');
     }
 
     for (const file of AUTHOR_TOOL_FILES) {
@@ -71,13 +68,16 @@ function main() {
         assertNoPattern(file, html, /\/git\/refs\/heads\/main/i, 'author tools must not patch main directly; use branch + PR publishing');
     }
 
+    assertPattern(PUBLIC_ARTIFACT_SCRIPT, publicArtifact, /authorSecurityMetaHtml/, 'public author pages must receive the author CSP');
+    assertPattern(PUBLIC_VALIDATOR_SCRIPT, validator, /AUTHOR_CONTENT_SECURITY_POLICY/, 'validator must check the author security policy');
+
     if (errors.length) {
         console.error('Pages source guard failed:');
         errors.forEach(error => console.error(`- ${error}`));
         process.exit(1);
     }
 
-    console.log('Pages source guard passed: GitHub Pages deploys the validated dist/ artifact without author tools.');
+    console.log('Pages source guard passed: GitHub Pages deploys the validated dist/ artifact, including explicitly owned author tools.');
 }
 
 main();

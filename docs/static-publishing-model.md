@@ -82,7 +82,7 @@ The public artifact validator blocks many of these from `dist/`.
 
 ## Author Flow
 
-Use `generate.html` for new article creation and `housekeeping.html` for edit/delete workflows. These pages are local-only and must be served with `node scripts/author/serve-tools.mjs`; they are never copied into `dist/`. Serve the repo locally instead of opening files with `file://`, because the tools and site use absolute paths.
+Use `generate.html` for new article creation and `housekeeping.html` for edit/delete workflows. These pages are public routes with an author-specific CSP and session-only token policy; `node scripts/author/serve-tools.mjs` remains available for local development. Serve the repo locally instead of opening files with `file://`, because the tools and site use absolute paths.
 
 ```bash
 node scripts/author/serve-tools.mjs

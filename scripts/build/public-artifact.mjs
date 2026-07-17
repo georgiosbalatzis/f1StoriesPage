@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import { securityHeadersText, securityMetaHtml } from './security-policy.mjs';
+import { securityHeadersText, securityMetaHtml, authorSecurityMetaHtml } from './security-policy.mjs';
 import siteConfig from '../../config/site-config.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -65,12 +65,24 @@ const STANDINGS_ROOT_FILES = new Set([
     'standings/standings-polish.min.js',
     'standings/standings.min.js'
 ]);
+const AUTHOR_PAGE_FILES = new Set(['generate.html', 'housekeeping.html', 'statistics.html']);
+const AUTHOR_PUBLIC_FILES = new Set([
+    ...AUTHOR_PAGE_FILES,
+    'scripts/author/session-token.js', 'scripts/author/github-client.js', 'scripts/author/dom-tools.js',
+    'scripts/author/dialogs.js', 'scripts/author/generate-page.js', 'scripts/author/housekeeping-page.js',
+    'scripts/author/statistics-config.js', 'scripts/author/statistics-page.js', 'scripts/author/image-tools.js',
+    'scripts/author/media-policy.js', 'scripts/author/article-folder.js', 'scripts/author/article-index.js',
+    'scripts/author/article-source.js', 'scripts/author/generate-page.css',
+    'styles/author/generate.css', 'styles/author/housekeeping.css', 'styles/author/statistics.css',
+    'node_modules/jszip/dist/jszip.min.js'
+]);
 
 const PAGE_OUTPUT_ROOT = path.join(REPO_ROOT, '.build', 'pages');
 const PAGE_SHELL_FILES = new Set([
     ...siteConfig.artifact.owners.shell,
     'blog-module/blog/index.html',
-    'standings/index.html'
+    'standings/index.html',
+    ...AUTHOR_PAGE_FILES
 ]);
 
 const HERO_BACKGROUND_FILES = new Set([
@@ -323,6 +335,7 @@ function shouldCopy(relPath) {
     if (relPath.includes('/.DS_Store') || relPath.endsWith('/.DS_Store')) return false;
     if (relPath === 'images/logo.png') return false;
     if (ROOT_FILES.has(relPath)) return true;
+    if (AUTHOR_PUBLIC_FILES.has(relPath)) return true;
     if (BLOG_PUBLIC_FILES.has(relPath)) return true;
     if (shouldCopyBlogEntry(relPath)) return true;
     if (shouldCopyStandings(relPath)) return true;
@@ -371,6 +384,14 @@ function injectSecurityMeta(html) {
     }
 
     return nextHtml.replace(/(<head\b[^>]*>\s*)/i, `$1\n${block}\n`);
+}
+
+function injectAuthorSecurityMeta(html) {
+    const nextHtml = stripSecurityMeta(html);
+    const block = authorSecurityMetaHtml('    ');
+    return /<meta\s+charset=["'][^"']+["']>/i.test(nextHtml)
+        ? nextHtml.replace(/(<meta\s+charset=["'][^"']+["']>)/i, `$1\n${block}`)
+        : nextHtml.replace(/(<head\b[^>]*>\s*)/i, `$1\n${block}\n`);
 }
 
 function writeSecurityHeadersFile() {
@@ -438,7 +459,8 @@ async function copyFile(relPath) {
     const dest = path.join(DIST_ROOT, relPath);
     ensureDir(path.dirname(dest));
     if (/\.html$/i.test(relPath)) {
-        fs.writeFileSync(dest, injectSecurityMeta(rewritePublicLogoRefs(fs.readFileSync(src, 'utf8'))), 'utf8');
+        const html = rewritePublicLogoRefs(fs.readFileSync(src, 'utf8'));
+        fs.writeFileSync(dest, AUTHOR_PAGE_FILES.has(relPath) ? injectAuthorSecurityMeta(html) : injectSecurityMeta(html), 'utf8');
         return null;
     }
     const optimized = await optimizePublicArticleImage(src, dest, relPath);
@@ -460,6 +482,10 @@ async function main() {
     PAGE_SHELL_FILES.forEach(relPath => {
         if (copied.includes(relPath)) return;
         if (fs.existsSync(sourcePathFor(relPath))) copied.push(relPath);
+    });
+    AUTHOR_PUBLIC_FILES.forEach(relPath => {
+        if (copied.includes(relPath)) return;
+        if (fs.existsSync(path.join(REPO_ROOT, relPath))) copied.push(relPath);
     });
     for (const relPath of copied) {
         const optimized = await copyFile(relPath);

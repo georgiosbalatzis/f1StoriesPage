@@ -11,9 +11,8 @@ const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DIST_ROOT = path.join(REPO_ROOT, 'dist');
 
 const FORBIDDEN_DIST_PATHS = [
-    /^node_modules\//,
-    /^(?:generate|housekeeping|statistics)\.html$/,
-    /^scripts\/author\//,
+    /^(?!node_modules\/jszip\/dist\/jszip\.min\.js$)node_modules\//,
+    /^scripts\/author\/(?:__tests__|serve-tools\.mjs)/,
     /^scripts\/author\/__tests__(?:\/|$)/,
     /^scripts\/author\/serve-tools\.mjs$/,
     /^context\.md$/,

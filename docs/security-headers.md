@@ -25,4 +25,4 @@ The author policy is intentionally separate because local tools require GitHub A
 - Run `npm run build:public`, `npm run audit:runtime`, and `npm run quality:static` after policy changes.
 - Keep `script-src-attr 'none'` and do not add `script-src 'unsafe-inline'`.
 - Keep third-party script, frame, and connect origins explicit. Avoid broadening `https:` except for image sources that genuinely require changing CDN hosts.
-- Do not serve author tools from a public host without a separate threat model and an authenticated server boundary.
+- Public author pages are not an authenticated repository gateway: tokens are user-supplied, session-only, never stored in localStorage, and publishing is restricted to branch-plus-PR flows.
