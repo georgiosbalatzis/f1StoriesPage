@@ -1,8 +1,11 @@
 (function () {
     'use strict';
 
-    var REPO_OWNER = 'georgiosbalatzis';
-    var REPO_NAME  = 'f1StoriesPage';
+    var SITE_CONFIG = window.F1S_SITE_CONFIG || {};
+    var REPOSITORY = SITE_CONFIG.repository || {};
+    var REPO_OWNER = REPOSITORY.owner || 'georgiosbalatzis';
+    var REPO_NAME  = REPOSITORY.name || 'f1StoriesPage';
+    var GITHUB_API_ORIGIN = (SITE_CONFIG.externalOrigins || {}).githubApi || 'https://api.github.com';
     var TOKEN_KEY  = 'f1stories-gh-token';
     var TOKEN_REMEMBER_KEY = TOKEN_KEY + '-remember';
     var tokenMemory = '';
@@ -172,7 +175,7 @@
     // ── GitHub API wrapper ───────────────────────────────
     async function ghFetch(path, token, opts) {
         opts = opts || {};
-        var url = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + path;
+        var url = GITHUB_API_ORIGIN + '/repos/' + REPO_OWNER + '/' + REPO_NAME + path;
         var headers = Object.assign({
             'Authorization': 'Bearer ' + token,
             'Accept': 'application/vnd.github+json',

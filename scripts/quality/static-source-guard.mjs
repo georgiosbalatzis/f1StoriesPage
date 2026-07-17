@@ -164,22 +164,22 @@ const DUPLICATE_ASSET_EXTENSIONS = new Set([
 
 const BANNED_TEXT_PATTERNS = [
     {
-        files: /^generate\.html$|^housekeeping\.html$/,
+        files: /^(?:src\/pages\/)?(?:generate|housekeeping)\.html$/,
         pattern: /writeStorage\(\s*localStorage\s*,\s*TOKEN_KEY/i,
         reason: 'author tools must not persist GitHub tokens to localStorage'
     },
     {
-        files: /^generate\.html$|^housekeeping\.html$/,
+        files: /^(?:src\/pages\/)?(?:generate|housekeeping)\.html$/,
         pattern: /localStorage\.setItem\(\s*TOKEN_KEY/i,
         reason: 'author tools must not persist GitHub tokens to localStorage'
     },
     {
-        files: /^generate\.html$|^housekeeping\.html$/,
+        files: /^(?:src\/pages\/)?(?:generate|housekeeping)\.html$/,
         pattern: /\/git\/refs\/heads\/main/i,
         reason: 'author tools must use branch + PR publishing instead of patching main'
     },
     {
-        files: /^generate\.html$|^housekeeping\.html$/,
+        files: /^(?:src\/pages\/)?(?:generate|housekeeping)\.html$/,
         pattern: /cdn\.jsdelivr\.net\/npm\/jszip/i,
         reason: 'author tools must use local JSZip while handling GitHub tokens'
     },

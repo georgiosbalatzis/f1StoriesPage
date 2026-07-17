@@ -1,179 +1,96 @@
-/* ============================================================
-   F1 Stories — Service Worker v33
-   ─────────────────────────────────────────────────────────────
-   Shell assets          → pre-cached on install (minified variants)
-   Static assets         → cache-first, background revalidate
-   HTML pages            → network-first, cached fallback, then offline.html
-   Blog JSON data        → network-first, cached fallback
-   Blog article pages    → network-first, recent/previsited cache fallback
-   External APIs         → network-only (OpenF1, Jolpica, etc.)
+importScripts('/scripts/site-config.js');
 
-   v33 bump: Phase 8 asset hygiene — the public artifact no longer ships
-   the 1.5MB source logo or unused hero backgrounds, and blog card images
-   are budgeted separately from full article-body media. Returning sessions
-   refresh onto the trimmed public image graph.
-   v32 bump: Phase 2.2 blog first paint — the blog index now ships a
-   static first page plus a small /blog-module/blog-index-page-1.json
-   metadata payload. Returning sessions refresh onto the split data graph
-   instead of pinning the old full-feed preload path.
-   v31 bump: Phase 1.3 standings first paint — the drivers/constructors
-   route now has a committed standings snapshot cached as data, so returning
-   sessions can render the default dashboard before standings Jolpica/OpenF1
-   endpoints are touched. The live API refresh remains network-backed and
-   happens after first paint.
-   v30 bump: Blog freshness — blog feed JSON and article HTML now bypass the
-   browser HTTP cache before falling back to Cache Storage, so returning
-   sessions see newly published articles on the first load instead of waiting
-   for a stale-while-revalidate refresh or a second reload.
-   v29 bump: Phase 15 accessibility + CWV polish — homepage hero image
-   preloading now resolves before the randomizer runs, shell pages expose
-   consistent skip links and main landmarks, and tab UIs on home/standings
-   now manage hidden state, roving tabindex, and keyboard activation
-   without pinning stale shell markup or JS in returning sessions.
-   v28 bump: Phase 13 YouTube snapshot — the homepage latest-videos rail
-   now reads a committed /assets/youtube-latest.json snapshot before any
-   live proxy refresh. Precache ensures the section renders from the local
-   shell/data graph even when the legacy RSS proxy chain is slow or down.
-   Returning sessions refresh onto the local-first video rail instead of
-   pinning the old runtime-only proxy waterfall.
-   v27 bump: Phase 12 image hardening — the shell now precaches the
-   optimized /images/logo-256.webp variant instead of the 1.5MB
-   source logo asset, and standings headshots/team logos are served
-   from committed local WebP copies under /images/. Returning sessions
-   refresh onto the lighter image shell and the local-first standings
-   image graph instead of pinning the external F1 CDN path.
-   v26 bump: retire article race-radio narration and remove the
-   article-audio data path. Returning sessions refresh onto the
-   audio-free article shell/runtime instead of serving the v25 player
-   markup, player script branch, or stale data-cache routing.
-   v25 bump: Phase 10 groundwork — blog article audio could switch via
-   a public audio manifest JSON, and that data was treated like
-   the other blog data feeds so a future CDN cutover was not pinned
-   behind a stale static-asset cache entry.
-   v24 bump: Phase 8 (standings IndexedDB cache) — standings/core/cache.js
-   now writes OpenF1/Jolpica response payloads into IndexedDB with a
-   sessionStorage fallback and lazy migration for old warm-tab entries.
-   The standings footer also exposes a cache-clear action. Bump ensures
-   returning sessions refresh the standings shell, fetchers wrapper, and
-   the new core/cache module instead of serving the pre-IDB v23 shell.
-   v23 bump: Phase 6C step 9 (retire legacy runtime path) — all standings
-   tabs are now module-backed, so the shell no longer lazy-imports
-   standings.legacy.js at runtime. The preserved source stays in-repo for
-   manual rollback, but the live asset graph now only ships the slim shell
-   plus per-tab modules. Bump ensures returning sessions drop the old v22
-   shell cache and fetch the legacy-free standings entry from f1s-assets-v23.
-   v18 bump: Phase 6C step 3 (quali-gaps per-tab module) — quali-gaps now
-   lives in /standings/tabs/quali-gaps.min.js instead of the legacy bundle.
-   The orchestrator owns its URL state (qualiView + qualiSession) end-to-end,
-   and core/fetchers.js grew chunkArray() + fetchOpenF1BySessionKeys() so the
-   remaining heavy tabs can reuse the 8-key fan-out helper as they get split.
-   Bump ensures returning sessions pick up the new module, the extended
-   fetchers helpers, and the updated slim entry from f1s-assets-v18.
-   v17 bump: Phase 6C step 2 (pit-stops per-tab module) — pit-stops now
-   lives in /standings/tabs/pit-stops.min.js instead of the legacy bundle.
-   The orchestrator owns its URL state (pitView + pitRound) end-to-end,
-   and core/fetchers.js grew delay() + fetchJSONWithRetry() so the module
-   can rate-limit its season-best sweep without a legacy round-trip.
-   Bump ensures the updated slim entry + new tab module are fetched on
-   returning sessions instead of serving v16 from f1s-assets-v16.
-   v16 bump: Phase 6C step 1 (destructors per-tab module) — destructors is
-   the first tab that no longer routes through the legacy bundle. The
-   orchestrator dynamic-imports /standings/tabs/destructors.min.js on first
-   activation, and landings on the destructors tab skip the ~180KB legacy
-   chunk entirely. Cache bump ensures returning users fetch the new module
-   plus the updated core/teams.js helpers (getCanonicalTeamName / getTeamColor)
-   instead of serving the stale v15 bundle from f1s-assets-v15.
-   v15 bump: Phase 7 (standings CSS code-splitting) — the monolithic
-   standings.css has been split into a slim shell (layout + drivers/
-   constructors primitives) plus 8 per-tab stylesheets under
-   /standings/tabs/. The shell is still precached; per-tab files are
-   fetched on demand by standings.js when a tab activates and cached
-   via the static-asset rule. Bumping the cache names forces returning
-   users to drop the old 120KB monolith from CACHE_SHELL.
-   v14 bump: Phase 6B (standings core modules) — the slim standings entry
-   now imports its TEAMS map, driver headshot catalog, sessionStorage cache
-   and format helpers from /standings/core/*.js. Those four modules join
-   the precache so repeat visitors warm them alongside the entry module
-   instead of re-fetching on first paint.
-   v13 bump: Phase 6A (standings module entry) — the standings shell now
-   loads a lightweight ES module entry and lazy-loads the preserved legacy
-   chunk only when a heavy analysis tab is requested.
-   v12 bump: Phase 5 (navigation preload + update UX) — navigation
-   requests use preloadResponse before falling back to network/cache,
-   the latest article pages are precached during install, successful
-   navigations are cached in f1s-pages, and waiting SWs activate only
-   after the user accepts the update banner.
-   v11 bump: Phase 4 (Bootstrap slim build) — shell and article HTML no
-   longer reference jsDelivr for Bootstrap CSS, and the unused Bootstrap JS
-   bundle is removed. /styles/vendor/bootstrap.slim.min.css is precached so
-   returning users get the self-hosted grid/utilities subset immediately.
-   v10 bump: Phase 3b (icon sprite) — shell HTML no longer references
-   cdnjs.cloudflare.com for Font Awesome. An SVG sprite is inlined into
-   each shell page at build time, so `<svg><use href="#fa-*"/>` renders
-   without a network hop. Bumping cache names forces returning users to
-   re-precache the updated shell and drop the FA CDN entry.
-   v9 bump: Phase 3a (Google Fonts self-host) — shell HTML no longer
-   references fonts.googleapis.com or fonts.gstatic.com. Primary woff2
-   weights + /styles/fonts.min.css are precached so the first load can
-   serve them from cache on repeat visits. Bumping cache names forces
-   the shell refresh so returning users stop hitting Google's CDN.
-   v8 bump: Phase 2 (critical CSS) — shell HTML now carries an inlined
-   critical-CSS <style> block + rel="preload" async-loads the rest of the
-   stylesheets. Bumping cache names forces returning users to re-precache
-   the updated shell so they get the new above-the-fold render path.
-   v7 bump: Phase 1 (deployment hygiene) — shell precache points at .min.*
-   files produced by scripts/build/minify.mjs. Older non-min shell entries
-   are removed; legacy cache names (v6) are cleaned up on activate.
-   ============================================================ */
+// f1s:precache:begin
+var CACHE_REVISION = '6296ffd16ea8';
+var SHELL_ASSETS = [
+  "/",
+  "/assets/youtube-latest.json",
+  "/blog-module/blog-fixes.min.js",
+  "/blog-module/blog-index.min.js",
+  "/blog-module/blog-loader.min.js",
+  "/blog-module/blog-styles.min.css",
+  "/blog-module/blog/article-comments.min.js",
+  "/blog-module/blog/article-rail.min.css",
+  "/blog-module/blog/article-rail.min.js",
+  "/blog-module/blog/article-script.min.js",
+  "/blog-module/blog/article-styles.min.css",
+  "/home.min.css",
+  "/offline.html",
+  "/scripts/analytics.min.js",
+  "/scripts/background-randomizer.min.js",
+  "/scripts/cookie-consent.min.js",
+  "/scripts/external-redirect.min.js",
+  "/scripts/f1-optimized.min.js",
+  "/scripts/hero-background-init.min.js",
+  "/scripts/offline-page.min.js",
+  "/scripts/perf/error-beacon.min.js",
+  "/scripts/perf/web-vitals-beacon.min.js",
+  "/scripts/runtime/index.min.js",
+  "/scripts/shared-nav.min.js",
+  "/scripts/site-config.js",
+  "/scripts/sw-register.min.js",
+  "/scripts/theme-init.min.js",
+  "/standings/core/cache.min.js",
+  "/standings/core/championship-service.min.js",
+  "/standings/core/drivers-meta.min.js",
+  "/standings/core/fetchers.min.js",
+  "/standings/core/format.min.js",
+  "/standings/core/lifecycle.min.js",
+  "/standings/core/payloads.min.js",
+  "/standings/core/rendering.min.js",
+  "/standings/core/tab-registry.min.js",
+  "/standings/core/teams.min.js",
+  "/standings/core/url-state.min.js",
+  "/standings/core/view-models.min.js",
+  "/standings/standings-cache.json",
+  "/standings/standings-nomodule.min.js",
+  "/standings/standings-polish.min.css",
+  "/standings/standings-polish.min.js",
+  "/standings/standings.min.css",
+  "/standings/standings.min.js",
+  "/standings/tabs/_shared.min.js",
+  "/standings/tabs/debrief.min.css",
+  "/standings/tabs/debrief.min.js",
+  "/standings/tabs/destructors.min.css",
+  "/standings/tabs/destructors.min.js",
+  "/standings/tabs/dirty-air.min.css",
+  "/standings/tabs/dirty-air.min.js",
+  "/standings/tabs/lap1-gains.min.css",
+  "/standings/tabs/lap1-gains.min.js",
+  "/standings/tabs/pit-stops.min.css",
+  "/standings/tabs/pit-stops.min.js",
+  "/standings/tabs/quali-gaps.min.css",
+  "/standings/tabs/quali-gaps.min.js",
+  "/standings/tabs/track-dominance.min.css",
+  "/standings/tabs/track-dominance.min.js",
+  "/standings/tabs/tyre-pace.min.css",
+  "/standings/tabs/tyre-pace.min.js",
+  "/styles.min.css",
+  "/styles/critical-common.min.css",
+  "/styles/critical-standings.min.css",
+  "/styles/fonts.min.css",
+  "/styles/layers.min.css",
+  "/styles/shared-nav.min.css",
+  "/styles/vendor/bootstrap.slim.min.css",
+  "/theme-overrides.min.css"
+];
+// f1s:precache:end
 
-var SW_VERSION    = 'v33';
-var CACHE_SHELL   = 'f1s-shell-v33';
-var CACHE_PAGES   = 'f1s-pages-v33';
-var CACHE_ASSETS  = 'f1s-assets-v33';
-var CACHE_DATA    = 'f1s-data-v33';
+var SW_VERSION    = CACHE_REVISION;
+var CACHE_SHELL   = 'f1s-shell-' + CACHE_REVISION;
+var CACHE_PAGES   = 'f1s-pages-' + CACHE_REVISION;
+var CACHE_ASSETS  = 'f1s-assets-' + CACHE_REVISION;
+var CACHE_DATA    = 'f1s-data-' + CACHE_REVISION;
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
-var OFFLINE_URL   = '/offline.html';
+var F1S_CONFIG     = self.F1S_SITE_CONFIG || {};
+var OFFLINE_URL   = ((F1S_CONFIG.routes || {}).public || []).indexOf('/offline.html') !== -1 ? '/offline.html' : '/';
 var BROADCAST_CHANNEL = 'f1s-sw';
 var RECENT_ARTICLE_COUNT = 10;
 
-var SHELL_ASSETS = [
-  OFFLINE_URL,
-  '/',
-  '/styles.min.css',
-  '/theme-overrides.min.css',
-  '/styles/shared-nav.min.css',
-  '/styles/fonts.min.css',
-  '/styles/vendor/bootstrap.slim.min.css',
-  '/scripts/shared-nav.min.js',
-  '/scripts/sw-register.min.js',
-  '/scripts/analytics.min.js',
-  '/scripts/cookie-consent.min.js',
-  '/scripts/perf/web-vitals-beacon.min.js',
-  '/assets/youtube-latest.json',
-  '/images/logo-256.webp',
-  '/images/icons/icon-192.png',
-  '/blog-module/blog/index.html',
-  '/blog-module/blog-index-page-1.json',
-  '/blog-module/blog-styles.min.css',
-  '/standings/index.html',
-  '/standings/standings.min.css',
-  '/standings/standings.min.js',
-  '/standings/core/format.min.js',
-  '/standings/core/teams.min.js',
-  '/standings/core/drivers-meta.min.js',
-  '/standings/core/cache.min.js',
-  '/standings/core/fetchers.min.js',
-  // Primary font weights — matched to FONT_PRELOADS in stamp-html.mjs.
-  // Kept deliberately narrow: Roboto 400/700 (homepage), DM Sans 400 +
-  // Outfit 700 (blog/standings). Other subsets fetch on demand.
-  '/assets/fonts/roboto-400.woff2',
-  '/assets/fonts/roboto-700.woff2',
-  '/assets/fonts/dm-sans-400.woff2',
-  '/assets/fonts/outfit-700.woff2'
-];
+/* generated precache contents are inserted above */
 
 var STANDINGS_DATA_ASSETS = [
-  '/standings/standings-cache.json'
+  ((F1S_CONFIG.standings || {}).snapshot || '/standings/standings-cache.json')
 ];
 
 // ── Install ─────────────────────────────────────

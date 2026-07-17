@@ -1,9 +1,12 @@
 (function (global) {
     'use strict';
 
-    var DEFAULT_OWNER = 'georgiosbalatzis';
-    var DEFAULT_REPO = 'f1StoriesPage';
-    var DEFAULT_BASE_BRANCH = 'main';
+    var SITE_CONFIG = window.F1S_SITE_CONFIG || {};
+    var REPOSITORY = SITE_CONFIG.repository || {};
+    var DEFAULT_OWNER = REPOSITORY.owner || 'georgiosbalatzis';
+    var DEFAULT_REPO = REPOSITORY.name || 'f1StoriesPage';
+    var DEFAULT_BASE_BRANCH = REPOSITORY.baseBranch || 'main';
+    var GITHUB_API_ORIGIN = (SITE_CONFIG.externalOrigins || {}).githubApi || 'https://api.github.com';
     var DEFAULT_MESSAGES = {
         readBase: 'Reading main...',
         createBranch: 'Creating branch...',
@@ -66,7 +69,7 @@
 
         async function fetchRepo(apiPath, token, opts) {
             opts = opts || {};
-            var url = 'https://api.github.com/repos/' + owner + '/' + repo + apiPath;
+            var url = GITHUB_API_ORIGIN + '/repos/' + owner + '/' + repo + apiPath;
             var headers = Object.assign({
                 'Authorization': 'Bearer ' + token,
                 'Accept': 'application/vnd.github+json',

@@ -109,7 +109,7 @@
 
 ### Standings και data dashboards
 
-Το route `/standings/`, με entry τα [standings/index.html](./standings/index.html), αποτελεί ξεχωριστό analytics surface για τη σεζόν της Formula 1.
+Το route `/standings/`, με source template το [src/pages/standings/index.html](./src/pages/standings/index.html), αποτελεί ξεχωριστό analytics surface για τη σεζόν της Formula 1.
 
 Το subsystem αυτό δεν περιορίζεται μόνο σε κλασικές βαθμολογίες. Περιλαμβάνει πολλαπλές όψεις και custom visual analyses όπως:
 
@@ -347,11 +347,13 @@ npm ci
 npm run build
 ```
 
-Το full build επεκτείνει HTML partials, ανανεώνει το YouTube snapshot και ξαναχτίζει/stamp-άρει τα browser assets. Για επιμέρους βήματα:
+Το full build επεκτείνει HTML partials, ξαναχτίζει από τα τοπικά snapshots και stamp-άρει τα browser assets. Δεν κάνει network refresh. Το incremental blog build χρησιμοποιεί content hashes των inputs, template και builder dependencies. Για επιμέρους βήματα:
+
+Το `config/site-config.json` είναι το μοναδικό Node-owned manifest για identity, repository, authors, origins, standings tabs, routes και artifact ownership. Το `build:html` παράγει το secret-free `scripts/site-config.js` για browser author tools, standings και service worker.
 
 ```bash
 npm run build:html
-npm run build:youtube
+npm run refresh:data
 npm run build:assets
 npm run build:assets:minify
 npm run build:assets:stamp
@@ -444,7 +446,7 @@ npm run build:public
 Δεν πρέπει να σερβίρονται από production:
 
 - `nextsteps.txt`, `laststeps.txt`, `appdev.txt` ή άλλα task notes
-- `generate.html`, `housekeeping.html` ή admin/editorial tools χωρίς πραγματικό authentication
+- `generate.html`, `housekeeping.html`, `statistics.html` ή άλλα admin/editorial tools
 - source maps
 - build scripts, tests, package files
 - raw `.docx`, draft `.txt`, `.sql`, backup files
@@ -453,13 +455,13 @@ npm run build:public
 Το GitHub Pages deploy ανήκει στο `.github/workflows/deploy-pages.yml` και γίνεται αυτόματα μέσω Actions artifact deploy από το `dist/` directory. Το workflow τρέχει σε `push` στο `main`, σε manual `workflow_dispatch`, και μετά από επιτυχημένο `Site Maintenance`, ώστε scheduled generated-content updates με `[skip ci]` να δημοσιεύονται επίσης.
 
 - `.github/workflows/deploy-pages.yml` κάνει `npm run build:public`
-- το ίδιο workflow τρέχει τα quality gates πριν το deploy
+- το ίδιο workflow τρέχει `npm run quality:static` και `npm run audit:runtime` πριν το deploy
 - `actions/upload-pages-artifact` ανεβάζει μόνο `dist`
 - `actions/deploy-pages` δημοσιεύει το artifact
 
 Το `.github/workflows/quality.yml` παραμένει PR/manual CI gate και δεν κάνει production deploy. Άρα το repository root μπορεί να παραμείνει πλήρες για development, αλλά δεν είναι δημόσιο artifact.
 
-Publishing από το `generate.html` παραμένει συμβατό με το GitHub build flow: το εργαλείο γράφει τα article source/assets στο `main`, το `Site Maintenance` workflow τρέχει τον blog processor και κάνει ξεχωριστό follow-up commit με τα generated artifacts. Το workflow δεν κάνει πλέον amend/force-push στο triggering commit. Το Pages deploy περιμένει το successful `Site Maintenance` run και δημοσιεύει το rebuilt `dist/` artifact.
+Το `generate.html` και το `housekeeping.html` σερβίρονται μόνο τοπικά μέσω `node scripts/author/serve-tools.mjs`. Το εργαλείο δημιουργεί branch και pull request μέσω GitHub API· το `Site Maintenance` workflow ανανεώνει τα generated artifacts σε ξεχωριστό follow-up commit. Τα author pages δεν αντιγράφονται στο `dist/` και δεν είναι public routes.
 
 Πριν από publish σε production, η ασφαλής ροή είναι:
 
@@ -475,7 +477,7 @@ Publishing από το `generate.html` παραμένει συμβατό με τ
 <a id="static-publishing-maintainer-guide"></a>
 ## Static publishing maintainer guide
 
-The operational source of truth for source ownership, generated files, author flow, deploy flow, quality gates, and static-publishing decisions is [docs/static-publishing-model.md](./docs/static-publishing-model.md).
+The operational source of truth for source ownership, generated files, author flow, deploy flow, quality gates, and static-publishing decisions is [docs/static-publishing-model.md](./docs/static-publishing-model.md). Editable page templates live under `src/pages/`. The concise architecture decisions are recorded in [docs/architecture-decisions.md](./docs/architecture-decisions.md); historical cleanup notes are archived under `docs/archive/`.
 
 <a id="maintainer-notes"></a>
 ## Πρακτικές σημειώσεις για maintainers
@@ -502,25 +504,24 @@ The operational source of truth for source ownership, generated files, author fl
 <a id="build-assets"></a>
 ## Build assets (minification pipeline)
 
-Κάθε browser-delivered CSS/JS έχει δίπλα του ένα `.min` sibling (π.χ. `styles.css` + `styles.min.css`). Το production HTML φορτώνει τα minified αρχεία με content-hash query string για σωστό cache-busting, ενώ τα sources παραμένουν commit-ed ως πηγή αλήθειας για diff/review. Node-only build/test modules μπορούν να είναι budgeted χωρίς να απαιτούν minified sibling.
+Κάθε browser-delivered CSS/JS έχει source και παράγεται σε minified asset κατά το public build. Το production HTML φορτώνει τα minified αρχεία με content-hash query string για σωστό cache-busting, ενώ τα sources παραμένουν η πηγή αλήθειας για diff/review. Τα minified αρχεία και τα manifests είναι build output, όχι tracked source.
 
-- `npm run build` — full shell rebuild: expanded HTML partials first, then refresh of `assets/youtube-latest.json`, then asset minify/stamp.
+- `npm run build` — offline-capable full shell rebuild: expanded HTML partials, local snapshots, then asset minify/stamp. Δεν κάνει external refresh.
 - `npm run build:html` — επεκτείνει τα `<!-- @include ... -->` markers στα shared shell pages (`partials/head-meta.html`, `partials/footer.html`) με idempotent generated blocks.
-- `npm run build:youtube` — τραβά το YouTube channel RSS στο build-time και ξαναγράφει το local snapshot `assets/youtube-latest.json` που χρησιμοποιεί η homepage videos rail.
+- `npm run refresh:data` — network-backed maintenance command that refreshes the YouTube and standings snapshots. It is intentionally separate from the deterministic offline build.
 - `npm run build:assets` — χτίζει icon sprite + slim Bootstrap CSS, τρέχει minify (`lightningcss` για CSS, `esbuild` για JS) και μετά stamp (rewrite HTML references σε `.min.<ext>?v=<hash>`).
 - `npm run build:bootstrap` — παράγει το self-hosted `styles/vendor/bootstrap.slim.css` από το scoped SCSS subset.
 - `npm run build:assets:watch` — rebuild σε κάθε αλλαγή source.
 - `npm run build:assets:minify` / `build:assets:stamp` — τα δύο βήματα ξεχωριστά. Το `build:assets:stamp` περνά πρώτα από το include expansion ώστε footer/head partial edits να γράφονται στα shell HTML πριν το stamping.
-- Χειροκίνητα source edits σε `.css` / `.js`: τρέξε `npm run build:assets` πριν το commit, ώστε να commit-αριστούν μαζί με το `.min` sibling και το ενημερωμένο HTML reference.
+- Χειροκίνητα source edits σε `.css` / `.js`: τρέξε `npm run build:assets` πριν το commit, ώστε να ελεγχθούν τα generated public assets και τα HTML references.
 - Χειροκίνητα edits σε `partials/*.html`: τρέξε `npm run build` ή τουλάχιστον `npm run build:html && npm run build:assets:stamp` πριν το commit.
 
 Τα generated artifacts που commit-άρονται:
 
-- `*.min.css` / `*.min.js` δίπλα στα sources
-- `scripts/build/asset-manifest.json` (path → `{ min, hash, bytes, sourceBytes }`)
-- τα rewritten HTML refs στα tracked landing pages (βλ. `TARGET_HTML` στο `stamp-html.mjs`)
+- article HTML και τα tracked blog/standings/data snapshots
+- τα rewritten HTML refs στα staged landing pages under `.build/pages/` (βλ. `TARGET_HTML` στο `stamp-html.mjs`)
 
-Τα sourcemaps (`*.min.js.map`, `*.min.css.map`) είναι στο `.gitignore`.
+Τα minified siblings, asset manifest και sourcemaps (`*.min.js.map`, `*.min.css.map`) είναι build output και παραμένουν στο `.gitignore`.
 
 Το `stamp-html.mjs` stamp-άρει τα maintained shell pages και τα article runtime refs σε committed `blog-module/blog-entries/*/article.html`, ώστε τα article pages να δείχνουν στα minified `article-script` / `blog-fixes` assets χωρίς να απαιτείται full content rebuild. Για αλλαγές στο ίδιο το article template ή στο generated content, το source of truth παραμένει το `npm run build:blog` / `npm run build:blog:force`.
 

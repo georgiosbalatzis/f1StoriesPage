@@ -9,6 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { securityHeadersText, securityMetaHtml } from './security-policy.mjs';
+import siteConfig from '../../config/site-config.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -25,9 +26,6 @@ const ROOT_FILES = new Set([
     '.nojekyll',
     '404.html',
     'CNAME',
-    'generate.html',
-    'housekeeping.html',
-    'statistics.html',
     'index.html',
     'manifest.json',
     'offline.html',
@@ -37,26 +35,6 @@ const ROOT_FILES = new Set([
     'home.min.css',
     'styles.min.css',
     'theme-overrides.min.css'
-]);
-
-const AUTHOR_TOOL_FILES = new Set([
-    'node_modules/jszip/dist/jszip.min.js',
-    'scripts/author/article-folder.js',
-    'scripts/author/article-index.js',
-    'scripts/author/article-source.js',
-    'scripts/author/dialogs.js',
-    'scripts/author/dom-tools.js',
-    'scripts/author/generate-page.js',
-    'scripts/author/github-client.js',
-    'scripts/author/housekeeping-page.js',
-    'scripts/author/image-tools.js',
-    'scripts/author/media-policy.js',
-    'scripts/author/session-token.js',
-    'scripts/author/statistics-config.js',
-    'scripts/author/statistics-page.js',
-    'styles/author/generate.css',
-    'styles/author/housekeeping.css',
-    'styles/author/statistics.css'
 ]);
 
 const BLOG_PUBLIC_FILES = new Set([
@@ -88,6 +66,13 @@ const STANDINGS_ROOT_FILES = new Set([
     'standings/standings.min.js'
 ]);
 
+const PAGE_OUTPUT_ROOT = path.join(REPO_ROOT, '.build', 'pages');
+const PAGE_SHELL_FILES = new Set([
+    ...siteConfig.artifact.owners.shell,
+    'blog-module/blog/index.html',
+    'standings/index.html'
+]);
+
 const HERO_BACKGROUND_FILES = new Set([
     'images/bg/bg1.avif',
     'images/bg/bg1.webp',
@@ -113,6 +98,12 @@ const HERO_BACKGROUND_FILES = new Set([
 
 const BLOG_ENTRY_PUBLIC_REFS = collectBlogEntryPublicRefs();
 const PUBLIC_IMAGE_REFS = collectPublicImageRefs();
+
+function sourcePathFor(relPath) {
+    return PAGE_SHELL_FILES.has(relPath)
+        ? path.join(PAGE_OUTPUT_ROOT, relPath)
+        : path.join(REPO_ROOT, relPath);
+}
 
 function toPosix(relPath) {
     return relPath.split(path.sep).join('/');
@@ -257,7 +248,7 @@ function collectBlogEntryPublicRefs() {
     ];
 
     dataSources.forEach(relPath => {
-        const abs = path.join(REPO_ROOT, relPath);
+        const abs = sourcePathFor(relPath);
         if (!fs.existsSync(abs)) return;
         if (/\.json$/i.test(relPath)) {
             collectRefsFromJsonValue(refs, JSON.parse(fs.readFileSync(abs, 'utf8')));
@@ -283,9 +274,9 @@ function collectBlogEntryPublicRefs() {
 function collectPublicImageRefs() {
     const refs = new Set();
     const sourceFiles = new Set([
-        ...ROOT_FILES,
-        ...BLOG_PUBLIC_FILES,
-        ...STANDINGS_ROOT_FILES
+        ...PAGE_SHELL_FILES,
+        'manifest.json',
+        'sw.js'
     ]);
 
     const entriesRoot = path.join(REPO_ROOT, 'blog-module/blog-entries');
@@ -296,18 +287,8 @@ function collectPublicImageRefs() {
         }
     }
 
-    ['ghostcar', 'f1telemetry', 'privacy'].forEach(dir => {
-        const absDir = path.join(REPO_ROOT, dir);
-        if (!fs.existsSync(absDir)) return;
-        for (const entry of fs.readdirSync(absDir, { withFileTypes: true })) {
-            if (entry.isFile() && /\.html$/i.test(entry.name)) {
-                sourceFiles.add(`${dir}/${entry.name}`);
-            }
-        }
-    });
-
     for (const relPath of sourceFiles) {
-        const abs = path.join(REPO_ROOT, relPath);
+        const abs = sourcePathFor(relPath);
         if (!fs.existsSync(abs) || !fs.statSync(abs).isFile()) continue;
         collectPublicImageRefsFromText(refs, fs.readFileSync(abs, 'utf8'), relPath);
     }
@@ -342,7 +323,6 @@ function shouldCopy(relPath) {
     if (relPath.includes('/.DS_Store') || relPath.endsWith('/.DS_Store')) return false;
     if (relPath === 'images/logo.png') return false;
     if (ROOT_FILES.has(relPath)) return true;
-    if (AUTHOR_TOOL_FILES.has(relPath)) return true;
     if (BLOG_PUBLIC_FILES.has(relPath)) return true;
     if (shouldCopyBlogEntry(relPath)) return true;
     if (shouldCopyStandings(relPath)) return true;
@@ -364,6 +344,7 @@ function shouldCopy(relPath) {
     }
 
     if (relPath.startsWith('scripts/')) {
+        if (relPath === 'scripts/site-config.js') return true;
         return /\.min\.js$/i.test(relPath);
     }
 
@@ -399,7 +380,8 @@ function writeSecurityHeadersFile() {
 }
 
 function rewritePublicLogoRefs(html) {
-    return String(html || '').replace(/https:\/\/f1stories\.gr\/images\/logo\.png/g, `https://f1stories.gr/${PUBLIC_LOGO_IMAGE}`);
+    const origin = siteConfig.site.origin.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return String(html || '').replace(new RegExp(`${origin}\\/images\\/logo\\.png`, 'g'), `${siteConfig.site.origin}/${PUBLIC_LOGO_IMAGE}`);
 }
 
 async function optimizePublicArticleImage(src, dest, relPath) {
@@ -452,7 +434,7 @@ async function optimizePublicArticleImage(src, dest, relPath) {
 }
 
 async function copyFile(relPath) {
-    const src = path.join(REPO_ROOT, relPath);
+    const src = sourcePathFor(relPath);
     const dest = path.join(DIST_ROOT, relPath);
     ensureDir(path.dirname(dest));
     if (/\.html$/i.test(relPath)) {
@@ -475,11 +457,10 @@ async function main() {
         if (!shouldCopy(relPath)) return;
         copied.push(relPath);
     });
-    AUTHOR_TOOL_FILES.forEach(relPath => {
+    PAGE_SHELL_FILES.forEach(relPath => {
         if (copied.includes(relPath)) return;
-        if (fs.existsSync(path.join(REPO_ROOT, relPath))) copied.push(relPath);
+        if (fs.existsSync(sourcePathFor(relPath))) copied.push(relPath);
     });
-
     for (const relPath of copied) {
         const optimized = await copyFile(relPath);
         if (optimized) optimizedImages.push(optimized);

@@ -1,0 +1,115 @@
+{
+  "site": {
+    "name": "F1 Stories",
+    "origin": "https://f1stories.gr",
+    "defaultLocale": "el-GR"
+  },
+  "repository": {
+    "owner": "georgiosbalatzis",
+    "name": "f1StoriesPage",
+    "baseBranch": "main"
+  },
+  "authors": [
+    {
+      "code": "G",
+      "name": "Georgios Balatzis",
+      "title": "Founder & Host",
+      "bio": "Ο Γιώργος είναι ο ιδρυτής του F1 Stories podcast. Μοιράζεται αναλύσεις, ιστορίες και insights από τον κόσμο της Formula 1.",
+      "image": "/images/authors/georgios.webp"
+    },
+    {
+      "code": "J",
+      "name": "Giannis Poulikidis",
+      "title": "Co-Host & Analyst",
+      "bio": "Ο Γιάννης φέρνει αναλυτική ματιά στα τεχνικά θέματα και τις στρατηγικές αγώνων της F1.",
+      "image": "/images/authors/giannis.webp"
+    },
+    {
+      "code": "T",
+      "name": "Thanasis Batalas",
+      "title": "Contributor",
+      "bio": "Ο Θανάσης συνεισφέρει με ιστορίες από τα παρασκήνια και ανασκοπήσεις αγώνων.",
+      "image": "/images/authors/thanasis.webp"
+    },
+    {
+      "code": "W",
+      "name": "Themis Charvalis",
+      "title": "Sim Racing Expert",
+      "bio": "Ο Themis Charvalis είναι ειδικός στο sim racing, φέρνοντας τον κόσμο του virtual motorsport στο F1 Stories.",
+      "image": "/images/authors/2fast.webp"
+    },
+    {
+      "code": "D",
+      "name": "Dimitris Keramidiotis",
+      "title": "Contributor",
+      "bio": "Ο Δημήτρης μοιράζεται θεματικά άρθρα, rankings και opinion pieces.",
+      "image": "/images/authors/dimitris.webp"
+    }
+  ],
+  "externalOrigins": {
+    "githubApi": "https://api.github.com",
+    "jolpicaApi": "https://api.jolpi.ca/ergast/f1",
+    "openF1Api": "https://api.openf1.org/v1",
+    "youtubeRss": "https://www.youtube.com"
+  },
+  "standings": {
+    "snapshot": "/standings/standings-cache.json",
+    "tabs": [
+      { "id": "drivers", "label": "Οδηγοί", "source": "Jolpica F1", "lightweight": true },
+      {
+        "id": "constructors",
+        "label": "Κατασκευαστές",
+        "source": "Jolpica F1",
+        "lightweight": true
+      },
+      { "id": "quali-gaps", "label": "Quali Gaps", "source": "Jolpica F1" },
+      { "id": "lap1-gains", "label": "Lap 1 Gains", "source": "OpenF1" },
+      { "id": "tyre-pace", "label": "Tyre Pace", "source": "OpenF1" },
+      { "id": "dirty-air", "label": "Dirty Air", "source": "OpenF1" },
+      { "id": "track-dominance", "label": "Track Dominance", "source": "OpenF1" },
+      { "id": "pit-stops", "label": "Pit Stops", "source": "Jolpica F1" },
+      { "id": "debrief", "label": "Debrief", "source": "FIA / OpenF1" },
+      { "id": "destructors", "label": "Destructors", "source": "F1 Stories" }
+    ]
+  },
+  "routes": {
+    "public": [
+      "/",
+      "/offline.html",
+      "/404.html",
+      "/blog-module/blog/",
+      "/standings/",
+      "/privacy/privacy.html",
+      "/privacy/terms.html",
+      "/ghostcar/",
+      "/f1telemetry/"
+    ],
+    "author": ["/generate.html", "/housekeeping.html", "/statistics.html"]
+  },
+  "artifact": {
+    "owners": {
+      "shell": [
+        "index.html",
+        "offline.html",
+        "404.html",
+        "ghostcar/index.html",
+        "f1telemetry/index.html",
+        "privacy/privacy.html",
+        "privacy/terms.html"
+      ],
+      "blog": ["blog-module/blog/index.html", "blog-module/blog/*.min.*", "blog-module/*.json"],
+      "standings": [
+        "standings/index.html",
+        "standings/*.min.*",
+        "standings/core/*.min.*",
+        "standings/tabs/*.min.*"
+      ]
+    }
+  },
+  "schemas": {
+    "blog": 1,
+    "standings": 1,
+    "youtube": 1,
+    "browserConfig": 1
+  }
+}

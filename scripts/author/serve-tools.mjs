@@ -5,9 +5,14 @@ import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+    AUTHOR_CONTENT_SECURITY_POLICY,
+    authorSecurityMetaHtml
+} from '../build/security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
+const PAGE_SOURCE_ROOT = path.join(REPO_ROOT, 'src', 'pages');
 const HOST = process.env.AUTHOR_HOST || '127.0.0.1';
 const PORT = Number(process.env.AUTHOR_PORT || 4179);
 
@@ -57,10 +62,18 @@ function isBlocked(relPath) {
     return BLOCKED_ROOTS.has(first) || first === 'node_modules';
 }
 
+function resolveSourcePath(relPath) {
+    const pagePath = path.join(PAGE_SOURCE_ROOT, relPath);
+    if (fs.existsSync(pagePath)) return pagePath;
+    return path.join(REPO_ROOT, relPath);
+}
+
 function sendText(res, status, body, contentType = 'text/plain; charset=utf-8') {
     res.writeHead(status, {
         'Content-Type': contentType,
-        'Cache-Control': 'no-store'
+        'Cache-Control': 'no-store',
+        'X-Content-Type-Options': 'nosniff',
+        'Content-Security-Policy': AUTHOR_CONTENT_SECURITY_POLICY
     });
     res.end(body);
 }
@@ -108,7 +121,7 @@ function serveFile(req, res) {
         return;
     }
 
-    const absPath = path.resolve(REPO_ROOT, relPath);
+    const absPath = path.resolve(resolveSourcePath(relPath));
     if (!absPath.startsWith(REPO_ROOT + path.sep)) {
         sendText(res, 403, 'Forbidden');
         return;
@@ -120,11 +133,23 @@ function serveFile(req, res) {
     }
 
     const ext = path.extname(absPath).toLowerCase();
-    res.writeHead(200, {
+    let body = fs.readFileSync(absPath, 'utf8');
+    const headers = {
         'Content-Type': MIME_TYPES.get(ext) || 'application/octet-stream',
         'Cache-Control': 'no-store',
         'X-Content-Type-Options': 'nosniff'
-    });
+    };
+    if (ext === '.html') {
+        body = body.replace(
+            /<meta\s+http-equiv=["']Content-Security-Policy["'][^>]*>/i,
+            authorSecurityMetaHtml('  ')
+        );
+        headers['Content-Security-Policy'] = AUTHOR_CONTENT_SECURITY_POLICY;
+        res.writeHead(200, headers);
+        res.end(body);
+        return;
+    }
+    res.writeHead(200, headers);
     fs.createReadStream(absPath).pipe(res);
 }
 

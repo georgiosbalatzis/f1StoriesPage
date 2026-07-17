@@ -1,35 +1,29 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const mammoth = require('mammoth');
 const sharp = require('sharp');
 const AdmZip = require('adm-zip');
 
 const BLOG_MODULE_DIR = path.join(__dirname, '..');
+const ROOT = path.join(BLOG_MODULE_DIR, '..');
+const SITE_CONFIG = JSON.parse(fs.readFileSync(path.join(ROOT, 'config', 'site-config.json'), 'utf8'));
+const BUILD_HASH_VERSION = 'blog-input-hash-v1';
 
 const CONFIG = {
     BLOG_DIR: path.join(BLOG_MODULE_DIR, 'blog-entries'),
     OUTPUT_JSON: path.join(BLOG_MODULE_DIR, 'blog-data.json'),
     SOURCE_CACHE_JSON: path.join(BLOG_MODULE_DIR, 'blog-source-cache.json'),
-    OUTPUT_HTML_DIR: path.join(BLOG_MODULE_DIR, 'blog'),
-    TEMPLATE_PATH: path.join(BLOG_MODULE_DIR, 'blog', 'template.html'),
+    OUTPUT_HTML_DIR: path.join(ROOT, '.build', 'pages', 'blog-module', 'blog'),
+    TEMPLATE_PATH: path.join(BLOG_MODULE_DIR, '..', 'src', 'pages', 'blog-module', 'blog', 'template.html'),
     SITEMAP_PATH: path.join(BLOG_MODULE_DIR, '..', 'sitemap.xml'),
     DEFAULT_BLOG_IMAGE: '/blog-module/images/default-blog.jpg',
     IMAGE_FORMATS: ['webp', 'jpg', 'jpeg', 'png', 'gif'],
     IMAGE_EXTENSIONS: ['.jpg', '.jpeg', '.png', '.webp', '.gif'],
-    AUTHOR_MAP: {
-        'G': 'Georgios Balatzis',
-        'J': 'Giannis Poulikidis',
-        'T': 'Thanasis Batalas',
-        'W': 'Themis Charvalis',
-        'D': 'Dimitris Keramidiotis'
-    },
+    AUTHOR_MAP: Object.fromEntries(SITE_CONFIG.authors.map(author => [author.code, author.name])),
     AUTHOR_AVATARS: {
-        'Georgios Balatzis': 'georgios.webp',
-        'Giannis Poulikidis': 'giannis.webp',
-        'Thanasis Batalas': 'thanasis.webp',
-        'Themis Charvalis': '2fast.webp',
-        'Dimitris Keramidiotis': 'dimitris.webp',
-        'default': 'default.webp'
+        ...Object.fromEntries(SITE_CONFIG.authors.map(author => [author.name, author.image.split('/').pop()])),
+        default: 'default.webp'
     },
     IFRAME_WHITELIST: [
         'georgiosbalatzis.github.io',
@@ -48,6 +42,55 @@ const CONFIG = {
     ],
     EMBED_EXTENSIONS: ['.html', '.htm']
 };
+
+function walkBuildInputs(dirPath, prefix = '') {
+    if (!fs.existsSync(dirPath)) return [];
+    return fs.readdirSync(dirPath, { withFileTypes: true }).flatMap(entry => {
+        const relPath = prefix ? path.join(prefix, entry.name) : entry.name;
+        const absPath = path.join(dirPath, entry.name);
+        if (entry.isDirectory()) {
+            if (entry.name === '__tests__') return [];
+            return walkBuildInputs(absPath, relPath);
+        }
+        return entry.isFile() && /\.js$/i.test(entry.name) ? [absPath] : [];
+    });
+}
+
+function hashFile(hash, absPath, label) {
+    hash.update(label);
+    hash.update('\0');
+    hash.update(fs.readFileSync(absPath));
+    hash.update('\0');
+}
+
+function entryBuildHash(entryPath, entryFiles = fs.readdirSync(entryPath)) {
+    const hash = crypto.createHash('sha256');
+    hash.update(BUILD_HASH_VERSION);
+    hash.update('\0');
+    hash.update(JSON.stringify({
+        imageFormats: CONFIG.IMAGE_FORMATS,
+        imageExtensions: CONFIG.IMAGE_EXTENSIONS,
+        embedExtensions: CONFIG.EMBED_EXTENSIONS,
+        authorMap: CONFIG.AUTHOR_MAP,
+        authorAvatars: CONFIG.AUTHOR_AVATARS,
+        iframeWhitelist: CONFIG.IFRAME_WHITELIST
+    }));
+    hash.update('\0');
+
+    entryFiles
+        .filter(fileName => fileName !== 'article.html' && fileName !== '.DS_Store' && fileName !== 'extracted')
+        .sort()
+        .forEach(fileName => {
+            const absPath = path.join(entryPath, fileName);
+            if (fs.existsSync(absPath) && fs.statSync(absPath).isFile()) hashFile(hash, absPath, `entry/${fileName}`);
+        });
+
+    const dependencyFiles = [CONFIG.TEMPLATE_PATH, ...walkBuildInputs(path.join(BLOG_MODULE_DIR, 'build'))]
+        .filter((absPath, index, all) => all.indexOf(absPath) === index)
+        .sort();
+    dependencyFiles.forEach(absPath => hashFile(hash, absPath, path.relative(BLOG_MODULE_DIR, absPath)));
+    return hash.digest('hex');
+}
 
 function hasInlineDataImageTag(html) {
     return /<img\b[^>]*src="data:image\/[^"]+"[^>]*>/i.test(String(html || ''));
@@ -123,6 +166,8 @@ function getCardThumbnailPath(imagePath) {
 }
 
 const utils = {
+    entryBuildHash,
+
     isSourceDocument(fileName) {
         if (!fileName || fileName.startsWith('~$') || fileName.startsWith('.')) return false;
         const ext = path.extname(fileName).toLowerCase();
@@ -208,7 +253,7 @@ const utils = {
         return Boolean(utils.findSourceDocument(folderFiles) || utils.hasGalleryImages(entryPath, folderFiles));
     },
 
-    shouldSkip(entryPath, forceRebuild) {
+    shouldSkip(entryPath, forceRebuild, cachedHash, currentHash) {
         if (forceRebuild) return false;
 
         const folderFiles = fs.readdirSync(entryPath);
@@ -222,11 +267,7 @@ const utils = {
             } catch (_) {
                 return false;
             }
-            const htmlMtime = fs.statSync(articlePath).mtimeMs;
-            return !folderFiles.some(fileName => {
-                if (!CONFIG.IMAGE_EXTENSIONS.some(ext => fileName.toLowerCase().endsWith(ext))) return false;
-                return fs.statSync(path.join(entryPath, fileName)).mtimeMs > htmlMtime;
-            });
+            return Boolean(cachedHash && currentHash && cachedHash === currentHash);
         }
 
         const articlePath = path.join(entryPath, 'article.html');
@@ -239,27 +280,7 @@ const utils = {
             return false;
         }
 
-        const docMtime = fs.statSync(path.join(entryPath, docFile)).mtimeMs;
-        const htmlMtime = fs.statSync(articlePath).mtimeMs;
-
-        const anyImageNewer = folderFiles.some(fileName => {
-            if (!CONFIG.IMAGE_EXTENSIONS.some(ext => fileName.toLowerCase().endsWith(ext))) return false;
-            return fs.statSync(path.join(entryPath, fileName)).mtimeMs > htmlMtime;
-        });
-
-        const anyCsvNewer = folderFiles.some(fileName => {
-            if (!fileName.toLowerCase().endsWith('.csv')) return false;
-            return fs.statSync(path.join(entryPath, fileName)).mtimeMs > htmlMtime;
-        });
-
-        const anyEmbedNewer = folderFiles.some(fileName => {
-            const ext = path.extname(fileName).toLowerCase();
-            if (!CONFIG.EMBED_EXTENSIONS.includes(ext)) return false;
-            if (fileName === 'article.html') return false;
-            return fs.statSync(path.join(entryPath, fileName)).mtimeMs > htmlMtime;
-        });
-
-        return docMtime <= htmlMtime && !anyImageNewer && !anyCsvNewer && !anyEmbedNewer;
+        return Boolean(cachedHash && currentHash && cachedHash === currentHash);
     }
 };
 
@@ -274,6 +295,8 @@ module.exports = {
     assertNoInlineDataImages,
     escapeHtmlAttribute,
     escapeXml,
+    BUILD_HASH_VERSION,
+    entryBuildHash,
     getImageDimensions,
     getImageDimensionsForPublicPath,
     getCardThumbnailPath,

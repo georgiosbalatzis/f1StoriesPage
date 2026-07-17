@@ -12,6 +12,7 @@ nextsteps.txt
 # Generated build output — images are served directly from blog-entries/
 blog-module/blog/images/
 dist/
+.build/
 
 # Node
 node_modules/

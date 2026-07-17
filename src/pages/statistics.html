@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Housekeeping | F1 Stories</title>
+    <title>Statistics | F1 Stories</title>
     <meta name="robots" content="noindex, nofollow">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; script-src 'self' https://cdn.jsdelivr.net https://platform.twitter.com https://www.instagram.com https://www.threads.net https://threads.net https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://api.github.com https://twitter.com https://*.twitter.com https://x.com https://*.x.com https://instagram.com https://*.instagram.com https://threads.net https://*.threads.net https://threads.com https://*.threads.com https://facebook.com https://*.facebook.com; frame-src 'self' https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://open.spotify.com https://player.vimeo.com https://codepen.io https://datawrapper.dwcdn.net https://sketchfab.com https://www.sketchfab.com https://facebook.com https://www.facebook.com https://platform.twitter.com https://syndication.twitter.com https://instagram.com https://www.instagram.com https://threads.net https://www.threads.net https://threads.com https://www.threads.com https://f1stories.gr https://www.f1stories.gr https://georgiosbalatzis.github.io; worker-src 'self' blob:; upgrade-insecure-requests">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; script-src 'self' https://accounts.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://analyticsdata.googleapis.com https://oauth2.googleapis.com; frame-src 'self' https://accounts.google.com; worker-src 'self' blob:; upgrade-insecure-requests">
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <script src="/scripts/perf/error-beacon.min.js?v=59367e85"></script>
     <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
+    <script src="/scripts/site-config.js"></script>
 
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/dm-sans-400.woff2?v=468d56b6" crossorigin>
@@ -20,18 +21,13 @@
     <link rel="stylesheet" href="/styles/fonts.min.css?v=2397fa86">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
     <link rel="stylesheet" href="/styles.min.css?v=048802d2">
-    <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=ddc0d19c">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=93b1f6a3">
     <link rel="stylesheet" href="/theme-overrides.min.css?v=a6310352">
-    <script src="/node_modules/jszip/dist/jszip.min.js" defer></script>
-    <script src="/scripts/author/session-token.js"></script>
-    <script src="/scripts/author/github-client.js"></script>
-    <script src="/scripts/author/dom-tools.js"></script>
-    <script src="/scripts/author/dialogs.js"></script>
-
-    <link rel="stylesheet" href="/styles/author/housekeeping.css">
+    <link rel="stylesheet" href="/styles/author/statistics.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="/scripts/author/statistics-config.js"></script>
 </head>
-<body>
+<body class="statistics-page">
 <!-- f1s:icon-sprite:begin -->
 <div hidden data-hash="94e0743f"><svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
   <symbol id="fa-arrow-left" viewBox="0 0 448 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></symbol>
@@ -121,8 +117,8 @@
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
                 <a href="/generate.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-pen-nib"/></svg> Generate</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
-                <a href="/statistics.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Statistics</a>
+                <a href="/housekeeping.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-broom"/></svg> Housekeeping</a>
+                <a href="/statistics.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Statistics</a>
             </div>
             <div class="blog-nav-right">
                 <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
@@ -132,8 +128,8 @@
             <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
             <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
             <a href="/generate.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-pen-nib"/></svg> Generate</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
-            <a href="/statistics.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Statistics</a>
+            <a href="/housekeeping.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-broom"/></svg> Housekeeping</a>
+            <a href="/statistics.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Statistics</a>
             <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
                 <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
                 <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
@@ -144,102 +140,117 @@
     </nav>
 </header>
 
-<main class="hk-wrap">
-    <div class="hk-head">
-        <h1><svg class="icon" aria-hidden="true"><use href="#fa-broom"/></svg> Housekeeping</h1>
+<main class="stats-wrap">
+    <section class="stats-hero" aria-labelledby="stats-title">
         <div>
-            <button class="hk-btn hk-btn-primary" id="hk-import-btn" title="Import ZIP from Generate">
-                <svg class="icon" aria-hidden="true"><use href="#fa-file-zipper"/></svg> Import ZIP
-            </button>
-            <input type="file" accept=".zip,application/zip" id="hk-import-input" class="hk-sr">
-            <button class="hk-btn" id="hk-refresh-btn" title="Refresh list">
-                <svg class="icon" aria-hidden="true"><use href="#fa-rotate"/></svg> Refresh
-            </button>
-            <button class="hk-btn" id="hk-token-btn" title="Manage publishing token">
-                <svg class="icon" aria-hidden="true"><use href="#fa-key"/></svg> Token
-            </button>
+            <span class="stats-kicker">Shadow analytics</span>
+            <h1 id="stats-title">Statistics</h1>
+            <p>Google Analytics dashboard για clicks, reading time, traffic, articles και engagement.</p>
         </div>
-    </div>
+        <div class="stats-hero-panel">
+            <div class="stats-status" id="stats-status">GA not connected</div>
+            <a class="stats-ga-link" href="https://analytics.google.com/analytics/web/?authuser=1#/a352199716p485678890/reports/intelligenthome" target="_blank" rel="noopener">Open GA</a>
+        </div>
+    </section>
 
-    <div class="hk-toolbar">
-        <input type="search" id="hk-search" placeholder="Search title, author, tag…">
-        <select id="hk-filter-tag"><option value="">All tags</option></select>
-        <select id="hk-filter-cat"><option value="">All categories</option></select>
-        <select id="hk-filter-author"><option value="">All authors</option></select>
-        <span class="hk-stats" id="hk-stats">—</span>
-    </div>
+    <section class="stats-connect" aria-label="Google Analytics connection">
+        <div class="stats-field">
+            <label for="stats-range">Range</label>
+            <select id="stats-range">
+                <option value="7daysAgo">Last 7 days</option>
+                <option value="28daysAgo" selected>Last 28 days</option>
+                <option value="90daysAgo">Last 90 days</option>
+                <option value="365daysAgo">Last 12 months</option>
+            </select>
+        </div>
+        <button class="stats-btn stats-btn-primary" id="stats-connect-btn" type="button">
+            <svg class="icon" aria-hidden="true"><use href="#fa-key"/></svg> Connect GA
+        </button>
+        <button class="stats-btn" id="stats-refresh-btn" type="button">
+            <svg class="icon" aria-hidden="true"><use href="#fa-rotate"/></svg> Refresh
+        </button>
+    </section>
 
-    <div id="hk-list" class="hk-grid"></div>
+    <section class="stats-grid stats-grid-kpis" id="stats-kpis" aria-label="Key metrics"></section>
+
+    <section class="stats-dashboard">
+        <article class="stats-card stats-card-wide">
+            <div class="stats-card-head">
+                <div>
+                    <span class="stats-card-kicker">Traffic</span>
+                    <h2>Views over time</h2>
+                </div>
+                <span class="stats-card-note" id="stats-trend-note">Daily page views</span>
+            </div>
+            <div class="stats-chart stats-chart-line" id="stats-line-chart"></div>
+        </article>
+
+        <article class="stats-card">
+            <div class="stats-card-head">
+                <div>
+                    <span class="stats-card-kicker">Acquisition</span>
+                    <h2>Channels</h2>
+                </div>
+            </div>
+            <div class="stats-chart" id="stats-channel-chart"></div>
+        </article>
+
+        <article class="stats-card">
+            <div class="stats-card-head">
+                <div>
+                    <span class="stats-card-kicker">Device split</span>
+                    <h2>Devices</h2>
+                </div>
+            </div>
+            <div class="stats-chart" id="stats-device-chart"></div>
+        </article>
+
+        <article class="stats-card stats-card-wide">
+            <div class="stats-card-head">
+                <div>
+                    <span class="stats-card-kicker">Content</span>
+                    <h2>Top pages and articles</h2>
+                </div>
+            </div>
+            <div class="stats-table-wrap">
+                <table class="stats-table">
+                    <thead>
+                    <tr>
+                        <th>Page</th>
+                        <th>Views</th>
+                        <th>Users</th>
+                        <th>Avg reading</th>
+                        <th>Engagement</th>
+                    </tr>
+                    </thead>
+                    <tbody id="stats-pages-table"></tbody>
+                </table>
+            </div>
+        </article>
+
+        <article class="stats-card">
+            <div class="stats-card-head">
+                <div>
+                    <span class="stats-card-kicker">Clicks</span>
+                    <h2>Internal click paths</h2>
+                </div>
+            </div>
+            <div class="stats-list" id="stats-click-list"></div>
+        </article>
+
+        <article class="stats-card">
+            <div class="stats-card-head">
+                <div>
+                    <span class="stats-card-kicker">Reading quality</span>
+                    <h2>Engagement signals</h2>
+                </div>
+            </div>
+            <div class="stats-list" id="stats-reading-list"></div>
+        </article>
+    </section>
 </main>
 
-<!-- Edit modal -->
-<div class="hk-modal-backdrop" id="hk-edit-backdrop">
-    <div class="hk-modal" role="dialog" aria-labelledby="hk-edit-title">
-        <h2 id="hk-edit-title"><svg class="icon" aria-hidden="true"><use href="#fa-pen"/></svg> Edit Article</h2>
-        <div class="hk-modal-sub" id="hk-edit-folder"></div>
-
-        <div class="hk-field-row">
-            <div class="hk-field">
-                <label>Tag</label>
-                <input type="text" id="hk-edit-tag">
-            </div>
-            <div class="hk-field">
-                <label>Category</label>
-                <input type="text" id="hk-edit-category">
-            </div>
-        </div>
-        <div class="hk-field-row">
-            <div class="hk-field">
-                <label>Author</label>
-                <select id="hk-edit-author">
-                    <option value="Georgios Balatzis">Georgios Balatzis</option>
-                    <option value="Giannis Poulikidis">Giannis Poulikidis</option>
-                    <option value="Thanasis Batalas">Thanasis Batalas</option>
-                    <option value="Themis Charvalis">Themis Charvalis</option>
-                    <option value="Dimitris Keramidiotis">Dimitris Keramidiotis</option>
-                    <option value="F1 Stories Team">F1 Stories Team</option>
-                </select>
-            </div>
-            <div class="hk-field">
-                <label>Date</label>
-                <input type="date" id="hk-edit-date">
-            </div>
-        </div>
-        <div class="hk-field">
-            <label>Title</label>
-            <input type="text" id="hk-edit-title-input">
-        </div>
-        <div class="hk-field">
-            <label>Body (paragraphs separated by blank lines — use <code>[img-instert-tag]</code> for inline images)</label>
-            <textarea id="hk-edit-body" spellcheck="false"></textarea>
-        </div>
-
-        <div class="hk-field">
-            <label>Images</label>
-            <div id="hk-edit-images"></div>
-            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.35rem;">
-                <label class="hk-btn" style="cursor:pointer;">
-                    <svg class="icon" aria-hidden="true"><use href="#fa-star"/></svg> Replace hero
-                    <input type="file" accept="image/*" id="hk-edit-hero-input" class="hk-sr">
-                </label>
-                <label class="hk-btn" style="cursor:pointer;">
-                    <svg class="icon" aria-hidden="true"><use href="#fa-images"/></svg> Add content images
-                    <input type="file" accept="image/*" multiple id="hk-edit-content-input" class="hk-sr">
-                </label>
-            </div>
-        </div>
-
-        <div class="hk-modal-foot">
-            <span class="hk-modal-status" id="hk-edit-status"></span>
-            <button class="hk-btn" id="hk-edit-cancel"><svg class="icon" aria-hidden="true"><use href="#fa-times"/></svg> Cancel</button>
-            <button class="hk-btn hk-btn-primary" id="hk-edit-save"><svg class="icon" aria-hidden="true"><use href="#fa-check"/></svg> Save changes</button>
-        </div>
-    </div>
-</div>
-
-<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Scroll to top"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
-
 <script defer src="/scripts/shared-nav.min.js?v=82e4e5cd"></script>
-<script defer src="/scripts/author/housekeeping-page.js"></script>
+<script defer src="/scripts/author/statistics-page.js"></script>
 </body>
 </html>

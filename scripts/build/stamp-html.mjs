@@ -27,6 +27,7 @@ import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
+const PAGE_ROOT = path.join(REPO_ROOT, '.build', 'pages');
 const MANIFEST_PATH = path.join(REPO_ROOT, 'scripts', 'build', 'asset-manifest.json');
 
 // HTML files whose asset references we rewrite. Add to this list with care
@@ -927,7 +928,7 @@ function main() {
     let totalGtmDnsDrops = 0;
 
     for (const rel of TARGET_HTML) {
-        const abs = path.join(REPO_ROOT, rel);
+        const abs = path.join(PAGE_ROOT, rel);
         if (!fs.existsSync(abs)) {
             console.warn(`skip (missing): ${rel}`);
             continue;

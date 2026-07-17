@@ -3,12 +3,17 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import siteConfig from '../../config/site-config.mjs';
 
 const ROOT = process.cwd();
+const SOURCE_ROOT = path.join(ROOT, 'src', 'pages');
+const OUTPUT_ROOT = path.join(ROOT, '.build', 'pages');
 
 const TARGET_HTML = [
   'index.html',
   'offline.html',
+  'ghostcar/index.html',
+  'f1telemetry/index.html',
   'standings/index.html',
   'blog-module/blog/index.html',
   'blog-module/blog/template.html',
@@ -112,23 +117,24 @@ async function main() {
   let changedFiles = 0;
 
   for (const relativePath of TARGET_HTML) {
-    const absolutePath = path.join(ROOT, relativePath);
-    const original = await fs.readFile(absolutePath, 'utf8');
+    const sourcePath = path.join(SOURCE_ROOT, relativePath);
+    const outputPath = path.join(OUTPUT_ROOT, relativePath);
+    const original = await fs.readFile(sourcePath, 'utf8');
     const context = {
       ...DEFAULT_CONTEXT,
       ...(PAGE_CONTEXT[relativePath] || {}),
     };
-    const expanded = await expandIncludes(
+    const expandedIncludes = await expandIncludes(
       original,
-      path.dirname(absolutePath),
+      path.dirname(sourcePath),
       context,
-      [absolutePath]
+      [sourcePath]
     );
+    const expanded = expandedIncludes.replaceAll('https://f1stories.gr', siteConfig.site.origin);
 
-    if (expanded !== original) {
-      await fs.writeFile(absolutePath, expanded, 'utf8');
-      changedFiles += 1;
-    }
+    await fs.mkdir(path.dirname(outputPath), { recursive: true });
+    await fs.writeFile(outputPath, expanded, 'utf8');
+    if (expanded !== original) changedFiles += 1;
   }
 
   console.log(`Expanded HTML includes in ${changedFiles} file${changedFiles === 1 ? '' : 's'}.`);

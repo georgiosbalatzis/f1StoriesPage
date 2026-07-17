@@ -8,6 +8,7 @@ import { XMLParser } from 'fast-xml-parser';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
+const PAGE_OUTPUT_ROOT = path.join(REPO_ROOT, '.build', 'pages');
 const SITE_ORIGIN = 'https://f1stories.gr';
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -31,6 +32,8 @@ let compactBlogPostCount = 0;
 let compactBlogFirstPostId = '';
 
 function relAbs(relPath) {
+    const staged = path.join(PAGE_OUTPUT_ROOT, relPath);
+    if (fs.existsSync(staged)) return staged;
     return path.join(REPO_ROOT, relPath);
 }
 

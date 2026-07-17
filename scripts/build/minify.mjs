@@ -20,7 +20,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { transform as esbuildTransform } from 'esbuild';
+import { build as esbuildBuild, transform as esbuildTransform } from 'esbuild';
 import { transform as lightningTransform, Features } from 'lightningcss';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -28,6 +28,7 @@ const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const MANIFEST_PATH = path.join(REPO_ROOT, 'scripts', 'build', 'asset-manifest.json');
 
 const CSS_INPUTS = [
+    'styles/layers.css',
     'styles.css',
     'home.css',
     'theme-overrides.css',
@@ -53,6 +54,7 @@ const CSS_INPUTS = [
 ];
 
 const JS_INPUTS = [
+    'scripts/runtime/index.js',
     'scripts/theme-init.js',
     'scripts/hero-background-init.js',
     'scripts/external-redirect.js',
@@ -123,29 +125,6 @@ function minPathFor(rel) {
     return rel.slice(0, -ext.length) + '.min' + ext;
 }
 
-function shouldRewriteBrowserModuleSpecifiers(rel) {
-    return rel.startsWith('standings/') && rel.endsWith('.js');
-}
-
-function toMinModuleSpecifier(specifier) {
-    if (!specifier.startsWith('./') && !specifier.startsWith('../')) return specifier;
-    if (!specifier.endsWith('.js') || specifier.endsWith('.min.js')) return specifier;
-    return specifier.slice(0, -3) + '.min.js';
-}
-
-function rewriteBrowserModuleSpecifiers(code) {
-    return code
-        .replace(/(\bfrom\s*)(["'])(\.{1,2}\/[^"']+?\.js)\2/g, function (_, prefix, quote, specifier) {
-            return prefix + quote + toMinModuleSpecifier(specifier) + quote;
-        })
-        .replace(/(\bimport\s*)(["'])(\.{1,2}\/[^"']+?\.js)\2/g, function (_, prefix, quote, specifier) {
-            return prefix + quote + toMinModuleSpecifier(specifier) + quote;
-        })
-        .replace(/(\bimport\s*\(\s*)(["'])(\.{1,2}\/[^"']+?\.js)\2(\s*\))/g, function (_, prefix, quote, specifier, suffix) {
-            return prefix + quote + toMinModuleSpecifier(specifier) + quote + suffix;
-        });
-}
-
 async function minifyCss(rel) {
     const abs = path.join(REPO_ROOT, rel);
     const source = fs.readFileSync(abs);
@@ -172,11 +151,14 @@ async function minifyCss(rel) {
 async function minifyJs(rel) {
     const abs = path.join(REPO_ROOT, rel);
     const source = fs.readFileSync(abs, 'utf8');
-    const sourceForBuild = shouldRewriteBrowserModuleSpecifiers(rel)
-        ? rewriteBrowserModuleSpecifiers(source)
-        : source;
+    if (rel.startsWith('standings/') && rel.endsWith('.js') || rel === 'scripts/runtime/index.js') {
+        const bundled = await esbuildBuild({ entryPoints: [abs], bundle: true, write: false, format: 'esm', platform: 'browser', minify: true, target: ['es2019'], legalComments: 'none', sourcemap: false, absWorkingDir: REPO_ROOT });
+        const outRel = minPathFor(rel);
+        fs.writeFileSync(path.join(REPO_ROOT, outRel), bundled.outputFiles[0].contents);
+        return { outRel, sourceBytes: Buffer.byteLength(source, 'utf8'), bytes: bundled.outputFiles[0].contents.length };
+    }
     const inlineSourceMap = rel !== 'scripts/perf/error-beacon.js';
-    const result = await esbuildTransform(sourceForBuild, {
+    const result = await esbuildTransform(source, {
         loader: 'js',
         minify: true,
         sourcemap: inlineSourceMap ? 'external' : false,

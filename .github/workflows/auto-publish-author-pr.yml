@@ -1,5 +1,9 @@
 name: Auto Publish Author PR
 
+# This workflow has write permissions and may merge a pull request. It is
+# restricted to local author branches, blog-entry-only diffs, and either the
+# explicit `author-publish` label or a trusted maintainer.
+
 on:
   workflow_run:
     workflows: ['Site Quality']
@@ -42,6 +46,16 @@ jobs:
           base_ref="$(printf '%s' "$pr_json" | jq -r '.base.ref')"
           head_ref="$(printf '%s' "$pr_json" | jq -r '.head.ref')"
           head_repo="$(printf '%s' "$pr_json" | jq -r '.head.repo.full_name')"
+          head_sha="$(printf '%s' "$pr_json" | jq -r '.head.sha')"
+          workflow_sha="$(jq -r '.workflow_run.head_sha // empty' "$GITHUB_EVENT_PATH")"
+          pr_author="$(printf '%s' "$pr_json" | jq -r '.user.login')"
+          has_publish_label="$(printf '%s' "$pr_json" | jq -r '[.labels[]?.name] | any(. == "author-publish")')"
+
+          if [ -n "$workflow_sha" ] && [ "$workflow_sha" != "$head_sha" ]; then
+            echo "Quality run SHA $workflow_sha is stale for PR head $head_sha."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
           if [ "$state" != "open" ] || [ "$draft" != "false" ] || [ "$base_ref" != "main" ]; then
             echo "PR #$pr_number is not an open, ready PR to main."
@@ -63,6 +77,16 @@ jobs:
               exit 0
               ;;
           esac
+
+          trusted_actor=false
+          case "$pr_author" in
+            georgiosbalatzis) trusted_actor=true ;;
+          esac
+          if [ "$has_publish_label" != "true" ] && [ "$trusted_actor" != "true" ]; then
+            echo "PR #$pr_number requires the author-publish label or a trusted maintainer author."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
           files="$(gh api --paginate "repos/$REPO/pulls/$pr_number/files" --jq '.[].filename')"
           if [ -z "$files" ]; then
@@ -108,22 +132,6 @@ jobs:
       - name: Install dependencies
         if: ${{ steps.pr.outputs.publish == 'true' }}
         run: npm ci --no-audit --no-fund
-
-      - name: Restore git mtimes for blog entries
-        if: ${{ steps.pr.outputs.publish == 'true' }}
-        run: |
-          set -eu
-          git log --pretty=tformat:'@%at' --name-only -- 'blog-module/blog-entries/' \
-            | awk '
-                /^@[0-9]+$/ { ts = substr($0, 2); next }
-                NF == 0 { next }
-                !seen[$0]++ { printf "%s\t%s\n", ts, $0 }
-              ' \
-            | while IFS=$'\t' read -r ts file; do
-                if [ -e "$file" ]; then
-                  touch -m -d "@$ts" "$file"
-                fi
-              done
 
       - name: Run blog processor
         if: ${{ steps.pr.outputs.publish == 'true' }}

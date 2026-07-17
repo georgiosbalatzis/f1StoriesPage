@@ -12,7 +12,7 @@ const DEPLOY_WORKFLOW = '.github/workflows/deploy-pages.yml';
 const PUBLIC_ARTIFACT_SCRIPT = 'scripts/build/public-artifact.mjs';
 const PUBLIC_VALIDATOR_SCRIPT = 'scripts/build/validate-public-artifact.mjs';
 const PACKAGE_JSON = 'package.json';
-const AUTHOR_TOOL_FILES = ['generate.html', 'housekeeping.html', 'statistics.html'];
+const AUTHOR_TOOL_FILES = ['src/pages/generate.html', 'src/pages/housekeeping.html', 'src/pages/statistics.html'];
 
 const errors = [];
 
@@ -52,12 +52,15 @@ function main() {
 
     const publicArtifact = readText(PUBLIC_ARTIFACT_SCRIPT);
     for (const file of AUTHOR_TOOL_FILES) {
-        assertPattern(PUBLIC_ARTIFACT_SCRIPT, publicArtifact, new RegExp(`['"]${file.replace('.', '\\.')}['"]`), `${file} must be copied into dist/`);
+        const basename = path.basename(file);
+        assertNoPattern(PUBLIC_ARTIFACT_SCRIPT, publicArtifact, new RegExp(`['"]${basename.replace('.', '\\.')}['"]`), `${basename} must stay out of dist/`);
     }
 
     const validator = readText(PUBLIC_VALIDATOR_SCRIPT);
+    const requiredSection = validator.match(/const REQUIRED_EXACT = \[[\s\S]*?\];/)?.[0] || '';
     for (const file of AUTHOR_TOOL_FILES) {
-        assertPattern(PUBLIC_VALIDATOR_SCRIPT, validator, new RegExp(`['"]${file.replace('.', '\\.')}['"]`), `${file} must be explicitly required in dist/`);
+        const basename = path.basename(file);
+        assertNoPattern(PUBLIC_VALIDATOR_SCRIPT, requiredSection, new RegExp(`['"]${basename.replace('.', '\\.')}['"]`), `${basename} must not be required in dist/`);
     }
 
     for (const file of AUTHOR_TOOL_FILES) {
@@ -74,7 +77,7 @@ function main() {
         process.exit(1);
     }
 
-    console.log('Pages source guard passed: GitHub Pages deploys the validated dist/ artifact with author tools.');
+    console.log('Pages source guard passed: GitHub Pages deploys the validated dist/ artifact without author tools.');
 }
 
 main();

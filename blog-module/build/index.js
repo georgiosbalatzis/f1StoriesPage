@@ -19,8 +19,9 @@ const { renderArticleHtml } = require('./article-render');
 
 function parseBuildOptions(argv = process.argv, env = process.env) {
     const forceRebuild = argv.includes('--force') || argv.includes('-f');
+    const skipDataRefresh = argv.includes('--skip-data-refresh') || env.BLOG_BUILD_SKIP_DATA_REFRESH === '1';
     const maxWorkers = Math.min(parseInt(env.BLOG_WORKERS || '0', 10) || os.cpus().length, os.cpus().length);
-    return { forceRebuild, maxWorkers };
+    return { forceRebuild, maxWorkers, skipDataRefresh };
 }
 
 function readJsonIfExists(filePath) {
@@ -438,6 +439,8 @@ function classifyEntry(entryPath, options = {}) {
     const entryFiles = options.entryFiles || fs.readdirSync(entryPath);
     const cachedPostsById = options.cachedPostsById || new Map();
     const forceRebuild = Boolean(options.forceRebuild);
+    const cachedPost = cachedPostsById.get(folderName);
+    const entryHash = utils.entryBuildHash(entryPath, entryFiles);
     const docFile = utils.findSourceDocument(entryFiles);
     const hasGalleryImages = utils.hasGalleryImages(entryPath, entryFiles);
 
@@ -445,10 +448,11 @@ function classifyEntry(entryPath, options = {}) {
         return {
             folderName,
             kind: 'source-backed',
-            action: utils.shouldSkip(entryPath, forceRebuild) ? 'skip' : 'build',
+            action: utils.shouldSkip(entryPath, forceRebuild, cachedPost && cachedPost._buildHash, entryHash) ? 'skip' : 'build',
             hasSourceDocument: true,
             hasGalleryImages,
-            cached: cachedPostsById.has(folderName)
+            cached: cachedPostsById.has(folderName),
+            entryHash
         };
     }
 
@@ -456,10 +460,11 @@ function classifyEntry(entryPath, options = {}) {
         return {
             folderName,
             kind: 'image-only-gallery',
-            action: utils.shouldSkip(entryPath, forceRebuild) ? 'skip' : 'build',
+            action: utils.shouldSkip(entryPath, forceRebuild, cachedPost && cachedPost._buildHash, entryHash) ? 'skip' : 'build',
             hasSourceDocument: false,
             hasGalleryImages: true,
-            cached: false
+            cached: false,
+            entryHash
         };
     }
 
@@ -470,7 +475,8 @@ function classifyEntry(entryPath, options = {}) {
             action: 'reuse-cached',
             hasSourceDocument: false,
             hasGalleryImages,
-            cached: true
+            cached: true,
+            entryHash
         };
     }
 
@@ -486,7 +492,7 @@ function classifyEntry(entryPath, options = {}) {
 
 async function processBlogEntries(options = {}) {
     const resolvedOptions = Object.assign(parseBuildOptions(), options);
-    const { forceRebuild, maxWorkers } = resolvedOptions;
+    const { forceRebuild, maxWorkers, skipDataRefresh } = resolvedOptions;
 
     if (!fs.existsSync(CONFIG.BLOG_DIR)) {
         console.error(`Blog entries directory not found: ${CONFIG.BLOG_DIR}`);
@@ -604,6 +610,10 @@ async function processBlogEntries(options = {}) {
     ];
 
     fixMissingAuthors(blogPosts);
+    blogPosts.forEach(post => {
+        const classification = classifications.get(post.id);
+        if (classification && classification.entryHash) post._buildHash = classification.entryHash;
+    });
     console.log(`\n✅ Total: ${blogPosts.length} posts (${freshPosts.length} built, ${rebuiltSkippedPosts.length} rebuilt from skipped, ${cachedPosts.length} cached)`);
 
     if (blogPosts.length === 0) {
@@ -628,13 +638,24 @@ async function processBlogEntries(options = {}) {
         return String(b.id).localeCompare(String(a.id));
     });
 
-    const lastUpdated = new Date().toISOString();
+    const latestPostDate = blogPosts[0]?.dateISO || blogPosts[0]?.date || '1970-01-01';
+    const lastUpdated = new Date(`${latestPostDate}T00:00:00.000Z`).toISOString();
     const blogData = {
         posts: blogPosts,
         lastUpdated
     };
     fs.writeFileSync(CONFIG.OUTPUT_JSON, JSON.stringify(blogData, null, 2));
     console.log(`Blog data saved to ${CONFIG.OUTPUT_JSON}`);
+
+    const sourceCache = {
+        lastUpdated,
+        posts: blogPosts.map(post => {
+            const { content, ...metadata } = post;
+            return metadata;
+        })
+    };
+    fs.writeFileSync(CONFIG.SOURCE_CACHE_JSON, JSON.stringify(sourceCache, null, 2) + '\n');
+    console.log(`Blog source cache saved to ${CONFIG.SOURCE_CACHE_JSON}`);
 
     const indexPosts = await buildIndexPosts(blogPosts);
     const indexPath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-data.json');
@@ -667,7 +688,9 @@ async function processBlogEntries(options = {}) {
     await injectRelatedArticles(blogPosts);
     injectPrevNextLinks(blogPosts);
 
-    try {
+    if (skipDataRefresh) {
+        console.log('Data cache refresh skipped during deterministic blog build.');
+    } else try {
         const dirtyAirResult = await updateDirtyAirCache({ force: forceRebuild });
         console.log(
             `Dirty air cache saved to ${dirtyAirResult.outputPath} ` +
@@ -677,7 +700,9 @@ async function processBlogEntries(options = {}) {
         console.warn(`⚠️  Dirty air cache update skipped: ${error.message}`);
     }
 
-    try {
+    if (skipDataRefresh) {
+        console.log('Destructors cache refresh skipped during deterministic blog build.');
+    } else try {
         const destructorsResult = await updateDestructorsCache({ force: forceRebuild });
         console.log(
             `Destructors cache saved to ${destructorsResult.outputPath} ` +
@@ -687,7 +712,7 @@ async function processBlogEntries(options = {}) {
         console.warn(`⚠️  Destructors cache update skipped: ${error.message}`);
     }
 
-    if (process.env.BLOG_BUILD_REFRESH_DEBRIEF === '1') {
+    if (!skipDataRefresh && process.env.BLOG_BUILD_REFRESH_DEBRIEF === '1') {
         try {
             const debriefResult = await updateDebriefCache({ force: forceRebuild });
             console.log(

@@ -6,7 +6,8 @@ on:
     paths-ignore:
       - 'blog-module/blog-entries/**'
       - 'blog-module/blog-processor.js'
-      - 'blog-module/blog/template.html'
+      - 'blog-module/build/**'
+      - 'src/pages/blog-module/blog/template.html'
       - 'blog-module/dirty-air-cache.js'
       - 'blog-module/destructors-cache.js'
       - 'standings/debrief-cache.js'
@@ -52,6 +53,9 @@ jobs:
 
       - name: Build public artifact
         run: npm run build:public
+
+      - name: Verify generated output is clean
+        run: npm run build:check
 
       - name: Run static source guard
         run: npm run quality:static

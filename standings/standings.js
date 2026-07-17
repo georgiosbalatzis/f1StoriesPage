@@ -36,9 +36,13 @@ import {
     renderDriverStandingsPolish,
     tableHeadHTML
 } from './standings-polish.js';
+import { createTabRegistry } from './core/tab-registry.js';
+import { createUrlState } from './core/url-state.js';
+import { createChampionshipService } from './core/championship-service.js';
 
-const JOLPICA = 'https://api.jolpi.ca/ergast/f1';
-const OPENF1  = 'https://api.openf1.org/v1';
+const SITE_CONFIG = globalThis.F1S_SITE_CONFIG || {};
+const JOLPICA = SITE_CONFIG.externalOrigins?.jolpicaApi || 'https://api.jolpi.ca/ergast/f1';
+const OPENF1  = SITE_CONFIG.externalOrigins?.openF1Api || 'https://api.openf1.org/v1';
 const YEAR    = new Date().getFullYear();
 const STANDINGS_SNAPSHOT_URL = 'standings-cache.json';
 
@@ -63,9 +67,11 @@ const ABOVE_FOLD_CONSTRUCTOR_LOGOS = 8;
 const LIVE_STANDINGS_REFRESH_DELAY_MS = 3500;
 const LAZY_IMAGE_PLACEHOLDER = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 
-const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief', 'destructors'];
-const LIGHTWEIGHT_TABS = ['drivers', 'constructors'];
-const REPORT_DETAILS = {
+const CONFIGURED_TABS = SITE_CONFIG.standings?.tabs || [];
+const VALID_STANDINGS_TABS = CONFIGURED_TABS.map(tab => tab.id);
+const LIGHTWEIGHT_TABS = CONFIGURED_TABS.filter(tab => tab.lightweight).map(tab => tab.id);
+/* Legacy labels remain only as a fallback for older cached shells. */
+const REPORT_DETAILS_FALLBACK = {
     'drivers': { label: 'Οδηγοί', note: 'Championship table · Jolpica F1' },
     'constructors': { label: 'Κατασκευαστές', note: 'Team standings · Jolpica F1' },
     'quali-gaps': { label: 'Quali Gaps', note: 'Teammate pace comparison · Jolpica F1' },
@@ -77,6 +83,10 @@ const REPORT_DETAILS = {
     'debrief': { label: 'Debrief', note: 'Friday practice analysis · FIA / OpenF1' },
     'destructors': { label: 'Destructors', note: 'Damage cost snapshot · F1 Stories' }
 };
+const REPORT_DETAILS = Object.fromEntries(CONFIGURED_TABS.map(tab => [tab.id, {
+    label: tab.label,
+    note: tab.label + ' · ' + tab.source
+}]));
 // Phase 6C: every heavy tab now lives in its own module while the
 // drivers/constructors tables keep rendering from this shell.
 const TAB_MODULES = {
@@ -105,6 +115,9 @@ const SHARE_TARGETS = {
     'panel-debrief': { tab: 'debrief', title: 'Friday Debrief analysis', height: 1200 },
     'panel-destructors': { tab: 'destructors', title: 'Destructors championship', height: 1260 }
 };
+const tabRegistry = createTabRegistry({ tabs: CONFIGURED_TABS, modules: TAB_MODULES });
+const urlState = createUrlState({ tabs: VALID_STANDINGS_TABS, shareTargets: SHARE_TARGETS });
+const championshipService = createChampionshipService({ jolpica: JOLPICA, year: YEAR, snapshot: STANDINGS_SNAPSHOT_URL });
 
 let activeStandingsTab = 'drivers';
 let currentFocusTarget = '';
@@ -646,7 +659,7 @@ function loadTabModule(tabName) {
     const modulePath = TAB_MODULES[tabName];
     if (!modulePath) return Promise.resolve(null);
 
-    tabModulePromises[tabName] = import(resolveModulePath(modulePath)).then(function(mod) {
+    tabModulePromises[tabName] = tabRegistry.load(tabName).then(function(mod) {
         tabModuleInstances[tabName] = mod;
         if (tabName === 'destructors') {
             if (typeof mod.initDestructors === 'function') {
@@ -998,16 +1011,13 @@ function renderStandingsPayload(driverData, constructorData, meta) {
 }
 
 function fetchPrimaryStandings() {
-    const driverUrl = JOLPICA + '/' + YEAR + '/driverstandings.json?limit=30';
-    const constructorUrl = JOLPICA + '/' + YEAR + '/constructorstandings.json?limit=30';
-
     return Promise.all([
-        fetchJSON(driverUrl).catch(function() {
+        championshipService.drivers().catch(function() {
             return fetchJSON(JOLPICA + '/current/driverstandings.json?limit=30');
         }).then(function(payload) {
             return validateJolpicaStandingsPayload(payload, 'driver standings API payload');
         }),
-        fetchJSON(constructorUrl).catch(function() {
+        championshipService.constructors().catch(function() {
             return fetchJSON(JOLPICA + '/current/constructorstandings.json?limit=30');
         }).then(function(payload) {
             return validateJolpicaStandingsPayload(payload, 'constructor standings API payload');

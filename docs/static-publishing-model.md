@@ -6,11 +6,11 @@ This is the maintainer guide for the F1 Stories repository. It documents how sou
 
 The repository is a static-first publishing system.
 
-- Source and tooling live in the repository root.
-- Some generated files are committed because GitHub Pages, local preview, and review workflows need deterministic browser assets and article output.
+- Editable page templates live under `src/pages/`; shared tooling, styles, assets, and data sources remain in their dedicated repository directories.
+- Some generated files are committed because local preview and review workflows need reviewable article output and data snapshots. Browser minification output is generated locally/publicly and is not tracked.
 - Production is not served from the repository root. It is served from `dist/`, produced by `npm run build:public`.
 - `dist/` is generated, validated, ignored by git, and uploaded as the GitHub Pages artifact.
-- Author tools are local/editorial surfaces. They create content changes and pull requests, but they are not part of the production artifact.
+- Author tools are local/editorial surfaces. They create content changes and pull requests, but they are not part of the production artifact or visitor navigation.
 
 When in doubt, treat `npm run build:public` as the public boundary. Anything that reaches `dist/` must be intentional and visitor-facing.
 
@@ -23,11 +23,11 @@ These files are edited by maintainers or author tooling and should be reviewed a
 - `package.json` and `package-lock.json`
 - `.github/workflows/*.yml`
 - `partials/*.html`
-- root page shells such as `index.html`, `404.html`, and `offline.html`
+- page templates under `src/pages/`, including `index.html`, `404.html`, and `offline.html`
 - source CSS and JavaScript such as `home.css`, `theme-overrides.css`, `scripts/*.js`, `styles/*.css`, and `standings/**/*.js`
 - blog build modules in `blog-module/build/`
 - article template and runtime files in `blog-module/blog/`
-- author-tool source in `generate.html`, `housekeeping.html`, `scripts/author/`, and `styles/author/`
+- author-tool source in `src/pages/generate.html`, `src/pages/housekeeping.html`, `src/pages/statistics.html`, `scripts/author/`, and `styles/author/`
 - public artifact and quality scripts in `scripts/build/`, `scripts/perf/`, and `scripts/quality/`
 - policy docs in `docs/`
 
@@ -48,8 +48,6 @@ Raw JPG, JPEG, PNG, and GIF article originals are not default source assets. The
 
 These files are generated but intentionally committed:
 
-- `*.min.css` and `*.min.js` siblings for browser-delivered assets
-- `scripts/build/asset-manifest.json`
 - stamped HTML references in maintained shell pages
 - `blog-module/blog-entries/*/article.html`
 - `blog-module/blog-index-data.json`
@@ -62,6 +60,8 @@ These files are generated but intentionally committed:
 - `standings/destructors-cache.json`
 - `standings/debrief-cache.json`
 - `sitemap.xml`
+
+Minified siblings, source maps, compiled vendor CSS, and the asset manifest are generated into the local/public build graph and are intentionally ignored; they are not source-of-truth files.
 
 Generated data contracts are documented in `docs/data-contracts.md` and checked by `npm run build:data-contracts`.
 
@@ -82,7 +82,7 @@ The public artifact validator blocks many of these from `dist/`.
 
 ## Author Flow
 
-Use `generate.html` for new article creation and `housekeeping.html` for edit/delete workflows. Serve the repo locally instead of opening files with `file://`, because the tools and site use absolute paths.
+Use `generate.html` for new article creation and `housekeeping.html` for edit/delete workflows. These pages are local-only and must be served with `node scripts/author/serve-tools.mjs`; they are never copied into `dist/`. Serve the repo locally instead of opening files with `file://`, because the tools and site use absolute paths.
 
 ```bash
 node scripts/author/serve-tools.mjs
@@ -120,13 +120,33 @@ npm run test:blog
 
 ## Build Flow
 
-The normal full build is:
+`config/site-config.json` is the single Node-owned manifest for site identity, repository metadata, authors, external origins, standings tabs, public routes, artifact ownership, and data-schema versions. `build:html` projects its secret-free browser subset to `scripts/site-config.js`; browser tools and the service worker consume that projection.
+
+The documented local acceptance gate is:
+
+```bash
+npm run acceptance
+```
+
+It is the same logical sequence enforced by CI before an artifact can be deployed.
+
+Author controllers are progressively decomposed around `scripts/author/core/`: draft state/validation, marker and image planning, preview rendering, ZIP import/export, and GitHub publishing. DOM controllers remain compatibility shells while each pure module gains focused tests.
+
+The normal offline-capable build is:
 
 ```bash
 npm run build
 ```
 
-It expands shared HTML, refreshes the local YouTube snapshot, rebuilds the blog, builds icons and Bootstrap, minifies browser assets, and stamps HTML references.
+It expands shared HTML into the ignored `.build/pages/` staging tree, rebuilds the blog from local sources and snapshots, builds icons and Bootstrap, minifies browser assets, and stamps staged HTML references. It must not require network access. Blog rebuild selection uses content hashes over entry inputs, templates, builder code, and configuration.
+
+Network-backed snapshot maintenance is explicit:
+
+```bash
+npm run refresh:data
+```
+
+`refresh:data` updates the YouTube and standings snapshots only; it is never part of `build`.
 
 The publishable artifact build is:
 
@@ -142,21 +162,21 @@ That command runs:
 4. `node scripts/build/public-artifact.mjs`
 5. `node scripts/build/validate-public-artifact.mjs`
 
-`public-artifact.mjs` assembles `dist/` from allowlisted public files and referenced article/media assets. `validate-public-artifact.mjs` rejects private files, source files, stale references, missing required files, broken metadata URLs, bad sitemap links, stale service worker references, missing security policy output, and representative route failures.
+`public-artifact.mjs` assembles `dist/` from staged page shells, allowlisted public files, and referenced article/media assets. `validate-public-artifact.mjs` rejects private files, source files, stale references, missing required files, broken metadata URLs, bad sitemap links, stale service worker references, missing security policy output, and representative route failures.
 
 ## Deploy Flow
 
 Production deploys use GitHub Actions.
 
 - `.github/workflows/quality.yml` runs on pull requests and manual dispatch. It builds and validates, but it does not deploy.
-- `.github/workflows/publish-blog.yml` owns generated content maintenance for blog artifacts, standings data, and the YouTube snapshot.
+- `.github/workflows/publish-blog.yml` owns generated content maintenance for blog artifacts, standings data, and the YouTube snapshot. It is the only workflow allowed to refresh external snapshots and commit their results.
 - `.github/workflows/deploy-pages.yml` builds `dist/`, runs the deploy gate, uploads the Pages artifact, and deploys through `actions/deploy-pages`.
 
 The deploy sequence is:
 
 1. Source or generated maintenance changes land on `main`.
 2. If article/build-source paths changed, `Site Maintenance` may rebuild generated artifacts and push a follow-up commit with `[skip ci]`.
-3. `Deploy Pages` runs `npm run build:public` and the quality/performance smoke checks.
+3. `Deploy Pages` runs `npm run build:public`, `npm run quality:static`, and `npm run audit:runtime` against visitor-facing output. The broader performance and browser-interaction suite remains the release/quality workflow gate.
 4. Only `dist/` is uploaded with `actions/upload-pages-artifact`.
 5. GitHub Pages serves the uploaded artifact.
 
@@ -240,11 +260,11 @@ Consequence: Public file ownership must be allowlisted and validated. New public
 
 ### DR-005: Author Tools Stay Local
 
-Decision: `generate.html` and `housekeeping.html` remain local/editorial tools, not production pages.
+Decision: `generate.html`, `housekeeping.html`, and `statistics.html` remain local/editorial tools, not production pages.
 
 Reason: They require a GitHub token and perform repository write operations. Static hosting does not provide authentication or server-side authorization.
 
-Consequence: Author pages can exist in the repo for local use, but `build:public` must exclude them from `dist/`.
+Consequence: Author pages can exist in the repo for local use, but `build:public` must exclude them, their scripts/styles, and their dependencies from `dist/`.
 
 ### DR-006: Public Runtime Uses Browser-Native Code
 
@@ -260,3 +280,4 @@ Consequence: Shared behavior must be kept modular through local helper files and
 - `docs/data-contracts.md`
 - `docs/release-checklist.md`
 - `docs/security-headers.md`
+- `docs/architecture-decisions.md`

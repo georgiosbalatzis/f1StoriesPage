@@ -56,6 +56,7 @@ const SCAN_GLOBS = [
 // means the regeneration pass needs no further sprite updates.
 const SCAN_EXCLUDES = [
     /\/node_modules\//,
+    /\/\.build\//,
     /\/blog-module\/generated\//,
     /\.min\.(js|css)$/,
     /\/dist\//

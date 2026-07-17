@@ -2,13 +2,9 @@
     'use strict';
 
     // ── Author data (mirrors article-script.js) ──────────
-    var AUTHORS = {
-        'Georgios Balatzis':    { image: '/images/authors/georgios.webp',  title: 'Founder & Host',       bio: 'Ο Γιώργος είναι ο ιδρυτής του F1 Stories podcast. Μοιράζεται αναλύσεις, ιστορίες και insights από τον κόσμο της Formula 1.' },
-        'Giannis Poulikidis':   { image: '/images/authors/giannis.webp',  title: 'Co-Host & Analyst',    bio: 'Ο Γιάννης φέρνει αναλυτική ματιά στα τεχνικά θέματα και τις στρατηγικές αγώνων της F1.' },
-        'Thanasis Batalas':     { image: '/images/authors/thanasis.webp', title: 'Contributor',          bio: 'Ο Θανάσης συνεισφέρει με ιστορίες από τα παρασκήνια και ανασκοπήσεις αγώνων.' },
-        'Themis Charvalis':         { image: '/images/authors/2fast.webp',    title: 'Sim Racing Expert',    bio: 'Ο Themis Charvalis είναι ειδικός στο sim racing, φέρνοντας τον κόσμο του virtual motorsport στο F1 Stories.' },
-        'Dimitris Keramidiotis':{ image: '/images/authors/dimitris.webp', title: 'Contributor',          bio: 'Ο Δημήτρης μοιράζεται θεματικά άρθρα, rankings και opinion pieces.' }
-    };
+    var AUTHORS = Object.fromEntries(((window.F1S_SITE_CONFIG || {}).authors || []).map(function (author) {
+        return [author.name, { image: author.image, title: author.title, bio: author.bio }];
+    }));
 
     // ── DOM refs ──────────────────────────────────────────
     var titleInput    = document.getElementById('gen-title');
@@ -70,14 +66,10 @@
     }
 
     // Author → folder code (mirrors blog-processor.js AUTHOR_MAP)
-    var AUTHOR_CODES = {
-        'Georgios Balatzis':    'G',
-        'Giannis Poulikidis':   'J',
-        'Thanasis Batalas':     'T',
-        'Themis Charvalis':         'W',
-        'Dimitris Keramidiotis':'D',
-        'F1 Stories Team':      ''
-    };
+    var AUTHOR_CODES = Object.fromEntries(((window.F1S_SITE_CONFIG || {}).authors || []).map(function (author) {
+        return [author.name, author.code];
+    }));
+    AUTHOR_CODES['F1 Stories Team'] = '';
 
     var heroObjectUrl = null;
     var heroImageMeta = { width: 848, height: 400 };
@@ -154,23 +146,19 @@
 
     function renderContentImagesList() {
         if (!contentImageFiles.length) {
-            contentImagesList.style.display = 'none';
+            contentImagesList.classList.remove('is-visible');
             contentImagesList.replaceChildren();
             contentFileText.textContent = 'Εικόνες κειμένου';
             contentFileLabel.classList.remove('has-file');
             updateMarkerCount();
             return;
         }
-        contentImagesList.style.display = 'grid';
-        contentImagesList.style.gridTemplateColumns = 'repeat(auto-fill, minmax(140px, 1fr))';
-        contentImagesList.style.gap = '0.5rem';
+        contentImagesList.classList.add('is-visible');
         contentImagesList.replaceChildren();
 
         contentImageFiles.forEach(function (item, idx) {
             var tile = document.createElement('div');
-            tile.style.cssText =
-                'position:relative;border:1px solid var(--border,rgba(255,255,255,0.1));' +
-                'border-radius:8px;overflow:hidden;background:var(--bg-base,#111113);';
+            tile.className = 'author-image-tile';
 
             var img = document.createElement('img');
             img.src = item.url;
@@ -178,27 +166,21 @@
             img.loading = 'lazy';
             img.decoding = 'async';
             applyImageMeta(img, item, 1600, 900);
-            img.style.cssText = 'width:100%;height:90px;object-fit:cover;display:block;';
+            img.className = 'author-image-preview';
 
             var label = document.createElement('div');
             label.textContent = (idx + 3) + '.webp · ' + item.file.name;
-            label.style.cssText =
-                'padding:4px 6px;font-size:0.7rem;color:var(--text-tertiary);' +
-                'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+            label.className = 'author-image-label';
 
             var controls = document.createElement('div');
-            controls.style.cssText =
-                'position:absolute;top:4px;right:4px;display:flex;gap:3px;';
+            controls.className = 'author-image-controls';
 
             function mkBtn(iconId, title, handler) {
                 var b = document.createElement('button');
                 b.type = 'button';
                 b.appendChild(authorDom.createSvgIcon(iconId));
                 b.title = title;
-                b.style.cssText =
-                    'width:22px;height:22px;padding:0;border:none;border-radius:50%;' +
-                    'background:rgba(0,0,0,0.65);color:#fff;cursor:pointer;font-size:0.65rem;' +
-                    'display:flex;align-items:center;justify-content:center;';
+                b.className = 'author-image-control';
                 b.addEventListener('click', handler);
                 return b;
             }
@@ -682,8 +664,10 @@
     });
 
     // ── Publish directly to GitHub ────────────────────────
-    var REPO_OWNER = 'georgiosbalatzis';
-    var REPO_NAME  = 'f1StoriesPage';
+    var REPOSITORY = (window.F1S_SITE_CONFIG || {}).repository || {};
+    var REPO_OWNER = REPOSITORY.owner || 'georgiosbalatzis';
+    var REPO_NAME  = REPOSITORY.name || 'f1StoriesPage';
+    var GITHUB_API_ORIGIN = ((window.F1S_SITE_CONFIG || {}).externalOrigins || {}).githubApi || 'https://api.github.com';
     var TOKEN_KEY  = 'f1stories-gh-token';
     var TOKEN_REMEMBER_KEY = TOKEN_KEY + '-remember';
     var tokenMemory = '';
@@ -831,7 +815,7 @@
 
     async function ghFetch(path, token, opts) {
         opts = opts || {};
-        var url = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + path;
+        var url = GITHUB_API_ORIGIN + '/repos/' + REPO_OWNER + '/' + REPO_NAME + path;
         var headers = Object.assign({
             'Authorization': 'Bearer ' + token,
             'Accept': 'application/vnd.github+json',

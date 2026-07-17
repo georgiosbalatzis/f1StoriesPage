@@ -7,7 +7,9 @@
    Load LAST after all other stylesheets.
    ═══════════════════════════════════════════════ */
 
-/* ── Design Tokens ───────────────────────────── */
+/* ── Design Tokens ─────────────────────────────
+   Theme changes belong here as semantic token overrides. Component-specific
+   exceptions must be documented below rather than duplicated wholesale. */
 [data-theme="light"] {
     /* Backgrounds */
     --dark-bg: #FFFFFF;

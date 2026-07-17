@@ -11,7 +11,9 @@ const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DIST_ROOT = path.join(REPO_ROOT, 'dist');
 
 const FORBIDDEN_DIST_PATHS = [
-    /^node_modules\/(?!jszip\/dist\/jszip\.min\.js$)/,
+    /^node_modules\//,
+    /^(?:generate|housekeeping|statistics)\.html$/,
+    /^scripts\/author\//,
     /^scripts\/author\/__tests__(?:\/|$)/,
     /^scripts\/author\/serve-tools\.mjs$/,
     /^context\.md$/,
@@ -98,6 +100,18 @@ function checkCsp() {
     if ((directives.get('script-src-attr') || []).join(' ') !== "'none'") {
         errors.push('scripts/build/security-policy.mjs: script-src-attr must stay none');
     }
+
+    [
+        'https://api.github.com',
+        'https://accounts.google.com',
+        'https://analyticsdata.googleapis.com',
+        'https://oauth2.googleapis.com',
+        'blob:'
+    ].forEach(source => {
+        if (CONTENT_SECURITY_POLICY.includes(source)) {
+            errors.push(`scripts/build/security-policy.mjs: visitor CSP must not include author-only source ${source}`);
+        }
+    });
 }
 
 function checkHtml(relPath, html) {
@@ -146,7 +160,7 @@ function main() {
         process.exit(1);
     }
 
-    console.log('Runtime audit passed: dist/ contains only approved author tools, no inline handlers, executable inline scripts, or banned remote runtime dependencies.');
+    console.log('Runtime audit passed: dist/ contains only visitor-facing files, no inline handlers, executable inline scripts, or banned remote runtime dependencies.');
 }
 
 main();

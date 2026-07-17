@@ -20,7 +20,8 @@ on:
     paths:
       - 'blog-module/blog-entries/**'
       - 'blog-module/blog-processor.js'
-      - 'blog-module/blog/template.html'
+      - 'blog-module/build/**'
+      - 'src/pages/blog-module/blog/template.html'
       - 'blog-module/dirty-air-cache.js'
       - 'blog-module/destructors-cache.js'
       - 'standings/debrief-cache.js'
@@ -71,31 +72,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
-
-      - name: Restore git mtimes for blog entries
-        # actions/checkout sets every file's mtime to the checkout time, so the
-        # blog processor's mtime-based skip check can't tell that source.txt was
-        # edited in a later commit than article.html — and silently skips the
-        # rebuild. Restore each tracked file's mtime to the latest commit that
-        # touched it so the skip check matches local-dev behaviour.
-        run: |
-          set -eu
-          git log --pretty=tformat:'@%at' --name-only -- 'blog-module/blog-entries/' \
-            | awk '
-                /^@[0-9]+$/ { ts = substr($0, 2); next }
-                NF == 0 { next }
-                !seen[$0]++ { printf "%s\t%s\n", ts, $0 }
-              ' \
-            | while IFS=$'\t' read -r ts file; do
-                # `git log` includes deleted/renamed files; skip them.
-                # An `if` is used (not `&& touch`) so the loop body returns 0
-                # even when the file is missing — otherwise the whole `while`
-                # exits non-zero on the last skipped iteration and `set -e`
-                # aborts the step.
-                if [ -e "$file" ]; then
-                  touch -m -d "@$ts" "$file"
-                fi
-              done
 
       - name: Run blog processor
         run: node blog-module/blog-processor.js

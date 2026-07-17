@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Quality gates
+    name: Fast contract (lint, schemas, security, unit)
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
@@ -32,8 +32,8 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Build public artifact
-        run: npm run build:public
+      - name: Run engineering baseline
+        run: npm run check
 
       - name: Run static source guard
         run: npm run quality:static
@@ -46,3 +46,62 @@ jobs:
 
       - name: Run standings module tests
         run: npm run test:standings
+
+  build:
+    name: Deterministic public build
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build:public
+      - run: npm run build:check
+      - uses: actions/upload-artifact@v4
+        with:
+          name: public-dist-${{ github.sha }}
+          path: dist
+          if-no-files-found: error
+
+  browser:
+    name: Browser interactions and accessibility
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - uses: actions/download-artifact@v4
+        with:
+          name: public-dist-${{ github.sha }}
+          path: dist
+      - run: npm run test:consent
+      - run: npm run qa:visual
+
+  performance:
+    name: Performance budgets
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - uses: actions/download-artifact@v4
+        with:
+          name: public-dist-${{ github.sha }}
+          path: dist
+      - run: npm run perf:budget
+      - run: npm run perf:images
+      - run: npm run perf:lighthouse

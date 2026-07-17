@@ -4,6 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
+import { createUrlState } from '../url-state.js';
+import { championshipViewModel } from '../view-models.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..', '..');
@@ -143,5 +145,11 @@ const busyResult = await lifecycle.runExclusiveLoad(busyState, {
 });
 assert.equal(busyResult, false);
 assert.equal(busyState.pendingReload, true);
+
+const urlState = createUrlState({ tabs: ['drivers', 'constructors'], shareTargets: { panel: { tab: 'constructors' } } });
+assert.deepEqual(urlState.read('?tab=drivers&focus=panel'), { tab: 'constructors', focus: 'panel', embed: false });
+assert.equal(urlState.write('https://f1stories.gr/standings/', { tab: 'drivers', embed: true }), 'https://f1stories.gr/standings/?tab=drivers&embed=1');
+const vmModel = championshipViewModel({ MRData: { StandingsTable: { StandingsLists: [{ DriverStandings: [{ points: '25', Driver: { driverId: 'x', givenName: 'A', familyName: 'B' } }], ConstructorStandings: [] }] } } });
+assert.equal(vmModel.drivers[0].points, 25);
 
 console.log('standings core tests passed.');

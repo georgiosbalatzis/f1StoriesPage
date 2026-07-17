@@ -6,11 +6,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { XMLParser } from 'fast-xml-parser';
 import { CONTENT_SECURITY_POLICY, REFERRER_POLICY, securityHeadersText } from './security-policy.mjs';
+import siteConfig from '../../config/site-config.mjs';
+import { normalizeSiteUrl as normalizeReferenceUrl } from './reference-utils.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DIST_ROOT = path.join(REPO_ROOT, 'dist');
-const SITE_ORIGIN = 'https://f1stories.gr';
+const SITE_ORIGIN = siteConfig.site.origin;
 const MAX_FILE_BYTES = Number(process.env.PUBLIC_ARTIFACT_MAX_BYTES || 2 * 1024 * 1024);
 
 const FORBIDDEN_EXACT = new Set([
@@ -23,7 +25,11 @@ const FORBIDDEN_EXACT = new Set([
     'test.sql',
     'blog-module/blog/template.html',
     'blog-module/blog-data.json',
-    'scripts/build/asset-manifest.json'
+    'scripts/build/asset-manifest.json',
+    'generate.html',
+    'housekeeping.html',
+    'statistics.html',
+    'scripts/author'
 ]);
 
 const REQUIRED_EXACT = [
@@ -31,9 +37,6 @@ const REQUIRED_EXACT = [
     '_headers',
     '404.html',
     'CNAME',
-    'generate.html',
-    'housekeeping.html',
-    'statistics.html',
     'index.html',
     'manifest.json',
     'offline.html',
@@ -79,24 +82,14 @@ const REQUIRED_EXACT = [
     'styles.min.css',
     'scripts/perf/error-beacon.min.js',
     'scripts/sw-register.min.js',
-    'node_modules/jszip/dist/jszip.min.js',
-    'scripts/author/article-folder.js',
-    'scripts/author/article-index.js',
-    'scripts/author/article-source.js',
-    'scripts/author/dialogs.js',
-    'scripts/author/dom-tools.js',
-    'scripts/author/generate-page.js',
-    'scripts/author/github-client.js',
-    'scripts/author/housekeeping-page.js',
-    'scripts/author/image-tools.js',
-    'scripts/author/media-policy.js',
-    'scripts/author/session-token.js',
-    'scripts/author/statistics-config.js',
-    'scripts/author/statistics-page.js',
-    'styles/author/generate.css',
-    'styles/author/housekeeping.css',
-    'styles/author/statistics.css'
+    'scripts/site-config.js'
 ];
+
+for (const route of siteConfig.routes.public) {
+    const rel = route.replace(/^\//, '').replace(/\/$/, '') || 'index.html';
+    const candidate = rel.endsWith('.html') ? rel : `${rel}/index.html`;
+    if (!REQUIRED_EXACT.includes(candidate)) REQUIRED_EXACT.push(candidate);
+}
 
 const SIZE_ALLOWLIST = new Set([
     // Keep intentional large files explicit if one is ever needed.
@@ -132,6 +125,8 @@ function forbiddenReason(relPath) {
     if (/^blog-module\/blog-entries\/.*\/(?:source|gallery)\.txt$/i.test(relPath)) return 'raw article source';
     if (/^blog-module\/blog-entries\/.*\.(?:jpe?g|png)$/i.test(relPath)) return 'raw article image';
     if (/^scripts\/build\//.test(relPath)) return 'build script';
+    if (/^scripts\/author\//.test(relPath)) return 'author tool';
+    if (/^node_modules\//.test(relPath)) return 'dependency artifact';
     if (/^blog-module\/build\//.test(relPath)) return 'blog build script';
     if (/\.min\.(?:css|js)\.map$/i.test(relPath)) return 'source map';
     if (/^images\/bg\/bg(?:6|7|8|9)(?:-|\.|$)/i.test(relPath)) return 'unapproved hero background';
@@ -174,18 +169,7 @@ function publicPathFromSiteUrl(value) {
 }
 
 function normalizeSiteUrl(value) {
-    try {
-        const url = new URL(value, SITE_ORIGIN);
-        if (url.origin !== SITE_ORIGIN) return '';
-        let pathname = decodeURI(url.pathname || '/');
-        if (pathname.endsWith('/index.html')) {
-            pathname = pathname.slice(0, -'index.html'.length);
-        }
-        if (!pathname.startsWith('/')) pathname = '/' + pathname;
-        return SITE_ORIGIN + pathname;
-    } catch (_) {
-        return '';
-    }
+    return normalizeReferenceUrl(value, SITE_ORIGIN) || '';
 }
 
 function expectedRouteUrl(relPath) {
@@ -224,7 +208,11 @@ function assertSiteUrlExists(errors, fromRelPath, value, label) {
 }
 
 function validateHtmlRefs(errors, abs, relPath) {
-    const html = fs.readFileSync(abs, 'utf8')
+    const source = fs.readFileSync(abs, 'utf8');
+    if (/\bhref=["']\/(?:generate|housekeeping|statistics)\.html(?:[?#][^"']*)?["']/i.test(source)) {
+        errors.push(`${relPath}: visitor HTML must not link to local author tools`);
+    }
+    const html = source
         .replace(/<script\b[\s\S]*?<\/script>/gi, '');
     const attrPattern = /\b(?:href|src|data-src)=["']([^"']+)["']/gi;
     for (const match of html.matchAll(attrPattern)) {
