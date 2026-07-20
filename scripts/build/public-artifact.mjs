@@ -368,7 +368,9 @@ function shouldCopy(relPath) {
     }
 
     if (relPath.startsWith('styles/')) {
-        return /\.min\.css$/i.test(relPath) || relPath === 'styles/legal.css';
+        return /\.min\.css$/i.test(relPath)
+            || relPath === 'styles/legal.css'
+            || relPath === 'styles/layers.css';
     }
 
     return false;

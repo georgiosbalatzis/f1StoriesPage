@@ -77,6 +77,7 @@ const REQUIRED_EXACT = [
     'standings/dirty-air-cache.json',
     'standings/standings-cache.json',
     'styles.min.css',
+    'styles/layers.css',
     'scripts/perf/error-beacon.min.js',
     'scripts/sw-register.min.js',
     'node_modules/jszip/dist/jszip.min.js',

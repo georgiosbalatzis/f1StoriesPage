@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v33
+   F1 Stories — Service Worker v34
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,9 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v34 bump: CSS recovery — publish and precache the cascade-layer fallback
+   after repairing the main stylesheet import order. Returning sessions move
+   off the previous shell cache instead of retaining a partially styled page.
    v33 bump: Phase 8 asset hygiene — the public artifact no longer ships
    the 1.5MB source logo or unused hero backgrounds, and blog card images
    are budgeted separately from full article-body media. Returning sessions
@@ -126,11 +129,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v33';
-var CACHE_SHELL   = 'f1s-shell-v33';
-var CACHE_PAGES   = 'f1s-pages-v33';
-var CACHE_ASSETS  = 'f1s-assets-v33';
-var CACHE_DATA    = 'f1s-data-v33';
+var SW_VERSION    = 'v34';
+var CACHE_SHELL   = 'f1s-shell-v34';
+var CACHE_PAGES   = 'f1s-pages-v34';
+var CACHE_ASSETS  = 'f1s-assets-v34';
+var CACHE_DATA    = 'f1s-data-v34';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
@@ -140,6 +143,7 @@ var SHELL_ASSETS = [
   OFFLINE_URL,
   '/',
   '/styles.min.css',
+  '/styles/layers.css',
   '/theme-overrides.min.css',
   '/styles/shared-nav.min.css',
   '/styles/fonts.min.css',
