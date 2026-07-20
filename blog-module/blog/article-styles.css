@@ -297,8 +297,8 @@
 }
 
 .share-btn {
-    width: 34px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
     border-radius: 999px;
     display: flex;
     align-items: center;
@@ -1546,4 +1546,17 @@
 
 [data-theme="light"] .article-meta i {
     color: #DB3EB1;
+}
+
+/* Mobile reading controls remain reachable without covering article content. */
+@media (max-width: 767px) {
+    .article-title { max-width: 22ch; margin-bottom: 1rem; }
+    .article-header-overlay { padding-bottom: 1.25rem; }
+    .article-mini-bar { padding-left: max(0.75rem, env(safe-area-inset-left)); padding-right: max(0.75rem, env(safe-area-inset-right)); }
+    .article-mini-bar__share { width: 44px; height: 44px; }
+    .social-share-bar { justify-content: flex-start; max-width: 100%; overflow: hidden; }
+    .social-share-bar .share-buttons { flex: 0 0 auto; max-width: 100%; overflow-x: auto; flex-wrap: nowrap; justify-content: flex-start; padding: 0.15rem 0.1rem 0.3rem; scrollbar-width: none; }
+    .social-share-bar .share-buttons::-webkit-scrollbar { display: none; }
+    .share-btn { flex: 0 0 44px; width: 44px; height: 44px; }
+    .article-content img, .article-figure img, .article-header-img { height: auto; }
 }

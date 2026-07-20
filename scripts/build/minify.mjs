@@ -20,8 +20,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { transform as esbuildTransform } from 'esbuild';
-import { transform as lightningTransform, Features } from 'lightningcss';
+import { build as esbuildBuild, transform as esbuildTransform } from 'esbuild';
+import { bundle as lightningBundle, transform as lightningTransform, Features } from 'lightningcss';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -52,6 +52,14 @@ const CSS_INPUTS = [
     'standings/tabs/destructors.css'
 ];
 
+const CSS_BUNDLE_INPUTS = new Set([
+    'styles.css'
+]);
+
+const CSS_DEPENDENCIES = [
+    'styles/layers.css'
+];
+
 const JS_INPUTS = [
     'scripts/theme-init.js',
     'scripts/hero-background-init.js',
@@ -73,31 +81,64 @@ const JS_INPUTS = [
     'blog-module/blog-fixes.js'
 ];
 
-function discoverStandingsBrowserJs() {
-    const out = [];
-    const allowDirs = new Set([
-        path.join(REPO_ROOT, 'standings'),
-        path.join(REPO_ROOT, 'standings', 'core'),
-        path.join(REPO_ROOT, 'standings', 'tabs')
-    ]);
+const STANDINGS_TAB_ENTRIES = [
+    'destructors', 'pit-stops', 'quali-gaps', 'lap1-gains',
+    'tyre-pace', 'dirty-air', 'track-dominance', 'debrief'
+];
 
-    function walk(absDir) {
-        if (!fs.existsSync(absDir)) return;
-        for (const entry of fs.readdirSync(absDir, { withFileTypes: true })) {
-            const abs = path.join(absDir, entry.name);
-            if (entry.isDirectory()) {
-                if (allowDirs.has(abs)) walk(abs);
-                continue;
-            }
-            if (!entry.isFile() || !entry.name.endsWith('.js') || entry.name.endsWith('.min.js')) continue;
-            if (entry.name === 'debrief-cache.js') continue;
-            if (entry.name === 'standings.legacy.js') continue;
-            out.push(path.relative(REPO_ROOT, abs).replace(/\\/g, '/'));
+function standingsEntryPoints() {
+    return Object.fromEntries([
+        ['standings', path.join(REPO_ROOT, 'standings', 'standings.js')],
+        ...STANDINGS_TAB_ENTRIES.map(name => [
+            `tabs/${name}`, path.join(REPO_ROOT, 'standings', 'tabs', `${name}.js`)
+        ])
+    ]);
+}
+
+function cleanStandingsGeneratedOutputs() {
+    for (const dir of ['core', 'tabs']) {
+        const absDir = path.join(REPO_ROOT, 'standings', dir);
+        if (!fs.existsSync(absDir)) continue;
+        for (const name of fs.readdirSync(absDir)) {
+            if (/\.min\.js(?:\.map)?$/i.test(name)) fs.rmSync(path.join(absDir, name), { force: true });
         }
     }
+    fs.rmSync(path.join(REPO_ROOT, 'standings', 'chunks'), { recursive: true, force: true });
+}
 
-    walk(path.join(REPO_ROOT, 'standings'));
-    return out.sort();
+async function buildStandingsGraph() {
+    cleanStandingsGeneratedOutputs();
+    const result = await esbuildBuild({
+        absWorkingDir: REPO_ROOT,
+        entryPoints: Object.values(standingsEntryPoints()),
+        outdir: REPO_ROOT,
+        outbase: REPO_ROOT,
+        entryNames: '[dir]/[name].min',
+        chunkNames: 'standings/chunks/[name]-[hash].min',
+        bundle: true,
+        splitting: true,
+        format: 'esm',
+        platform: 'browser',
+        target: ['es2019'],
+        minify: true,
+        legalComments: 'none',
+        sourcemap: 'external',
+        metafile: true,
+        logLevel: 'silent'
+    });
+
+    const rows = [];
+    const outputs = result.metafile?.outputs || {};
+    for (const [outputPath, meta] of Object.entries(outputs)) {
+        const relOut = path.relative(REPO_ROOT, outputPath).replace(/\\/g, '/');
+        if (!relOut.endsWith('.min.js')) continue;
+        const bytes = fs.statSync(outputPath).size;
+        if (meta.entryPoint) {
+            const relSource = path.relative(REPO_ROOT, meta.entryPoint).replace(/\\/g, '/');
+            rows.push({ rel: relSource, outRel: relOut, sourceBytes: fs.statSync(meta.entryPoint).size, bytes });
+        }
+    }
+    return rows;
 }
 
 function sha256Short(buf) {
@@ -123,35 +164,11 @@ function minPathFor(rel) {
     return rel.slice(0, -ext.length) + '.min' + ext;
 }
 
-function shouldRewriteBrowserModuleSpecifiers(rel) {
-    return rel.startsWith('standings/') && rel.endsWith('.js');
-}
-
-function toMinModuleSpecifier(specifier) {
-    if (!specifier.startsWith('./') && !specifier.startsWith('../')) return specifier;
-    if (!specifier.endsWith('.js') || specifier.endsWith('.min.js')) return specifier;
-    return specifier.slice(0, -3) + '.min.js';
-}
-
-function rewriteBrowserModuleSpecifiers(code) {
-    return code
-        .replace(/(\bfrom\s*)(["'])(\.{1,2}\/[^"']+?\.js)\2/g, function (_, prefix, quote, specifier) {
-            return prefix + quote + toMinModuleSpecifier(specifier) + quote;
-        })
-        .replace(/(\bimport\s*)(["'])(\.{1,2}\/[^"']+?\.js)\2/g, function (_, prefix, quote, specifier) {
-            return prefix + quote + toMinModuleSpecifier(specifier) + quote;
-        })
-        .replace(/(\bimport\s*\(\s*)(["'])(\.{1,2}\/[^"']+?\.js)\2(\s*\))/g, function (_, prefix, quote, specifier, suffix) {
-            return prefix + quote + toMinModuleSpecifier(specifier) + quote + suffix;
-        });
-}
-
 async function minifyCss(rel) {
     const abs = path.join(REPO_ROOT, rel);
     const source = fs.readFileSync(abs);
-    const { code } = lightningTransform({
-        filename: rel,
-        code: source,
+    const options = {
+        filename: CSS_BUNDLE_INPUTS.has(rel) ? abs : rel,
         minify: true,
         sourceMap: false,
         include: Features.Nesting | Features.MediaQueries,
@@ -162,7 +179,10 @@ async function minifyCss(rel) {
             safari: 15 << 16,
             edge: 90 << 16
         }
-    });
+    };
+    const { code } = CSS_BUNDLE_INPUTS.has(rel)
+        ? lightningBundle(options)
+        : lightningTransform({ ...options, code: source });
     const outRel = minPathFor(rel);
     const outAbs = path.join(REPO_ROOT, outRel);
     fs.writeFileSync(outAbs, code);
@@ -172,11 +192,8 @@ async function minifyCss(rel) {
 async function minifyJs(rel) {
     const abs = path.join(REPO_ROOT, rel);
     const source = fs.readFileSync(abs, 'utf8');
-    const sourceForBuild = shouldRewriteBrowserModuleSpecifiers(rel)
-        ? rewriteBrowserModuleSpecifiers(source)
-        : source;
     const inlineSourceMap = rel !== 'scripts/perf/error-beacon.js';
-    const result = await esbuildTransform(sourceForBuild, {
+    const result = await esbuildTransform(source, {
         loader: 'js',
         minify: true,
         sourcemap: inlineSourceMap ? 'external' : false,
@@ -212,7 +229,7 @@ async function buildOnce() {
         rows.push({ rel, outRel, sourceBytes, bytes });
     }
 
-    for (const rel of [...JS_INPUTS, ...discoverStandingsBrowserJs()]) {
+    for (const rel of JS_INPUTS) {
         if (!fs.existsSync(path.join(REPO_ROOT, rel))) {
             console.warn(`skip (missing): ${rel}`);
             continue;
@@ -221,6 +238,12 @@ async function buildOnce() {
         const hash = sha256Short(fs.readFileSync(path.join(REPO_ROOT, outRel)));
         manifest[rel] = { min: outRel, hash, bytes, sourceBytes };
         rows.push({ rel, outRel, sourceBytes, bytes });
+    }
+
+    for (const row of await buildStandingsGraph()) {
+        const hash = sha256Short(fs.readFileSync(path.join(REPO_ROOT, row.outRel)));
+        manifest[row.rel] = { min: row.outRel, hash, bytes: row.bytes, sourceBytes: row.sourceBytes };
+        rows.push(row);
     }
 
     const existingManifest = readExistingManifest();
@@ -260,7 +283,9 @@ async function buildOnce() {
 async function watch() {
     console.log('watching…');
     await buildOnce();
-    const srcs = [...CSS_INPUTS, ...JS_INPUTS].map(r => path.join(REPO_ROOT, r)).filter(fs.existsSync);
+    const srcs = [...CSS_INPUTS, ...CSS_DEPENDENCIES, ...JS_INPUTS]
+        .map(r => path.join(REPO_ROOT, r))
+        .filter(fs.existsSync);
     for (const s of srcs) {
         fs.watch(s, { persistent: true }, async (ev) => {
             if (ev !== 'change' && ev !== 'rename') return;

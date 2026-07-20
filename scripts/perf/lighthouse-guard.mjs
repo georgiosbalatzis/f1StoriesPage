@@ -272,6 +272,7 @@ async function runLighthouse(route, origin, budget, outputDir, chromePort) {
         '--output=json',
         `--output-path=${outputPath}`
     ];
+    if (budget.preset) args.push(`--preset=${budget.preset}`);
 
     if (chromePort) {
         args.push(`--port=${chromePort}`, '--disable-storage-reset');
@@ -298,6 +299,11 @@ function fmtMs(value) {
     return value == null ? '-' : `${Math.round(value)}ms`;
 }
 
+function fmtBytes(value) {
+    if (value == null) return '-';
+    return value < 1024 ? `${Math.round(value)}B` : `${(value / 1024).toFixed(1)}KB`;
+}
+
 function fmtScore(value) {
     return value == null ? '-' : String(value);
 }
@@ -315,8 +321,14 @@ function evaluateRoute(route, lhr) {
         seo: score(lhr, 'seo'),
         'largest-contentful-paint': auditValue(lhr, 'largest-contentful-paint'),
         'cumulative-layout-shift': auditValue(lhr, 'cumulative-layout-shift'),
-        'total-blocking-time': auditValue(lhr, 'total-blocking-time')
+        'total-blocking-time': auditValue(lhr, 'total-blocking-time'),
+        'dom-size': auditValue(lhr, 'dom-size'),
+        'lcp-image-bytes': auditValue(lhr, 'largest-contentful-paint-element')
     };
+    const resources = lhr.audits?.['resource-summary']?.details?.items || [];
+    metrics['initial-js-bytes'] = resources.filter(item => item.resourceType === 'Script').reduce((sum, item) => sum + (item.transferSize || 0), 0);
+    metrics['route-css-bytes'] = resources.filter(item => item.resourceType === 'Stylesheet').reduce((sum, item) => sum + (item.transferSize || 0), 0);
+    metrics['third-party-requests'] = (lhr.audits?.['network-requests']?.details?.items || []).filter(item => item.entity?.isUnrecognized).length;
 
     const failures = [];
     for (const [id, threshold] of Object.entries(thresholds)) {
@@ -327,7 +339,11 @@ function evaluateRoute(route, lhr) {
         }
         const maxMetric = id === 'largest-contentful-paint'
             || id === 'cumulative-layout-shift'
-            || id === 'total-blocking-time';
+            || id === 'total-blocking-time'
+            || id === 'dom-size'
+            || id === 'initial-js-bytes'
+            || id === 'route-css-bytes'
+            || id === 'third-party-requests';
         if (maxMetric && actual > threshold) failures.push(`${id}: ${actual.toFixed(3)} > ${threshold}`);
         if (!maxMetric && actual < threshold) failures.push(`${id}: ${actual} < ${threshold}`);
     }
@@ -346,6 +362,7 @@ function printTable(rows) {
         console.log(
             `${row.route.name.padEnd(nameW)}  ${fmtScore(m.performance).padStart(4)}  ${fmtScore(m.accessibility).padStart(4)}  ${fmtScore(m['best-practices']).padStart(4)}  ${fmtScore(m.seo).padStart(4)}  ${fmtMs(m['largest-contentful-paint']).padStart(7)}  ${fmtCls(m['cumulative-layout-shift']).padStart(6)}  ${fmtMs(m['total-blocking-time']).padStart(7)}  ${status}`
         );
+        console.log(`  ${row.route.name} resources: JS ${fmtBytes(m['initial-js-bytes'])}, CSS ${fmtBytes(m['route-css-bytes'])}, DOM ${m['dom-size'] == null ? '-' : Math.round(m['dom-size'])}, 3P ${m['third-party-requests'] == null ? '-' : m['third-party-requests']}`);
     });
     console.log('');
 }

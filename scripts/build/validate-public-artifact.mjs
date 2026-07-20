@@ -242,6 +242,15 @@ function validateHtmlRefs(errors, abs, relPath) {
 
 function validateCssRefs(errors, abs, relPath) {
     const css = fs.readFileSync(abs, 'utf8');
+    if (relPath === 'styles.min.css' && /@import\b/i.test(css)) {
+        errors.push(`${relPath}: local dependencies must be bundled; @import would add a render-blocking request`);
+    }
+
+    const importStringPattern = /@import\s+(["'])([^"']+)\1/gi;
+    for (const match of css.matchAll(importStringPattern)) {
+        assertLocalRefExists(errors, relPath, match[2]);
+    }
+
     const urlPattern = /url\((["']?)([^"')]+)\1\)/gi;
     for (const match of css.matchAll(urlPattern)) {
         assertLocalRefExists(errors, relPath, match[2]);

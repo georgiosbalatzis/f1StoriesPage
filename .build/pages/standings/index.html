@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <script src="/scripts/perf/error-beacon.min.js?v=59367e85"></script>
+    <script type="module" src="/scripts/runtime/index.min.js?v=0efbbf8a"></script>
     <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
@@ -17,68 +18,40 @@
     <meta name="apple-mobile-web-app-title" content="F1 Stories">
     <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
     <!-- @include:end partials/head-meta.html -->
-    <title>ARTICLE_TITLE_TEXT | F1 Stories</title>
-    <meta name="description" content="ARTICLE_EXCERPT_ATTR">
-    <meta property="og:title" content="ARTICLE_TITLE_ATTR | F1 Stories">
-    <meta property="og:description" content="ARTICLE_EXCERPT_ATTR">
-    <meta property="og:image" content="ARTICLE_IMAGE_URL_ATTR">
-    <meta property="og:url" content="ARTICLE_URL_ATTR">
-    <meta property="og:type" content="article">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="ARTICLE_TITLE_ATTR | F1 Stories">
-    <meta name="twitter:description" content="ARTICLE_EXCERPT_ATTR">
-    <meta name="twitter:image" content="ARTICLE_IMAGE_URL_ATTR">
-    <link rel="canonical" href="ARTICLE_URL_ATTR">
+    <title>F1 Stories — Βαθμολογίες Πρωταθλήματος</title>
+    <meta name="description" content="Βαθμολογίες Formula 1 από το F1 Stories με live standings οδηγών και κατασκευαστών, plus quali gaps, tyre pace, dirty air και pit stop analysis.">
+    <meta property="og:title" content="F1 Stories — Βαθμολογίες Πρωταθλήματος">
+    <meta property="og:description" content="Βαθμολογίες Formula 1 από το F1 Stories με live standings οδηγών και κατασκευαστών, plus quali gaps, tyre pace, dirty air και pit stop analysis.">
+    <meta property="og:url" content="https://f1stories.gr/standings/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://f1stories.gr/images/icons/icon-512.png">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="1024">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="F1 Stories — Βαθμολογίες Πρωταθλήματος">
+    <meta name="twitter:description" content="Βαθμολογίες Formula 1 από το F1 Stories με live standings οδηγών και κατασκευαστών.">
+    <meta name="twitter:image" content="https://f1stories.gr/images/icons/icon-512.png">
+    <link rel="canonical" href="https://f1stories.gr/standings/">
 
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": ARTICLE_TITLE_JSON,
-        "description": ARTICLE_EXCERPT_JSON,
-        "image": ARTICLE_IMAGE_URL_JSON,
-        "datePublished": ARTICLE_DATE_ISO_JSON,
-        "dateModified": ARTICLE_DATE_ISO_JSON,
-        "author": { "@type": "Person", "name": ARTICLE_AUTHOR_JSON },
-        "publisher": { "@type": "Organization", "name": "F1 Stories", "logo": { "@type": "ImageObject", "url": "https://f1stories.gr/images/icons/icon-512.png" } },
-        "mainEntityOfPage": { "@type": "WebPage", "@id": ARTICLE_URL_JSON }
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "F1 Stories", "item": "https://f1stories.gr/" },
-            { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://f1stories.gr/blog-module/blog/index.html" },
-            { "@type": "ListItem", "position": 3, "name": ARTICLE_TITLE_JSON }
-        ]
-    }
-    </script>
-
+    <link rel="dns-prefetch" href="https://api.jolpi.ca">
+    <link rel="dns-prefetch" href="https://api.openf1.org">
+    <link rel="modulepreload" href="/standings/standings.min.js?v=27ec3880">
     <link rel="stylesheet" href="/styles/fonts.min.css?v=2397fa86">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
-    <!-- f1s:fonts-preload:begin -->
-    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/dm-sans-400.woff2?v=468d56b6" crossorigin>
-    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/outfit-700.woff2?v=92684e4a" crossorigin>
-    <!-- f1s:fonts-preload:end -->
     <!-- f1s:critical-css:begin -->
-    <style id="f1s-critical" data-hash="b8b48682">:root{--bg-base:#111113;--bg-surface:#161618;--bg-overlay:#111113eb;--text-primary:#e5e5e7;--text-secondary:#a1a1a6;--accent:#41b6e6;--accent-readable:#41b6e6;--border:#ffffff14;--font-body:"Roboto", system-ui, -apple-system, sans-serif;--f1s-hero-position:center center;--f1s-hero-mobile-position:center center;--radius-lg:14px;--space-md:1rem;--space-lg:1.5rem}*{box-sizing:border-box}html{-moz-text-size-adjust:100%;text-size-adjust:100%}body{font-family:var(--font-body);color:var(--text-primary);background-color:var(--bg-base);min-height:100svh;margin:0;padding:0;position:relative;overflow-x:hidden}.background{background:var(--bg-base);z-index:-2;width:100%;height:100%;position:fixed;top:0;left:0}.streak{z-index:-1;opacity:0;position:fixed}@media (min-width:769px){.streak{opacity:.5}}.skip-link{background:var(--accent);color:var(--bg-base);z-index:10000;border-radius:0 0 6px 6px;padding:.5rem 1.5rem;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,Arial,sans-serif;font-size:.875rem;font-weight:700;text-decoration:none;position:absolute;top:-100%;left:50%;transform:translate(-50%)}.skip-link:focus{top:0}.blog-nav{z-index:1060;-webkit-backdrop-filter:blur(20px)saturate(1.4);backdrop-filter:blur(20px)saturate(1.4);border-bottom:1px solid var(--border);background:#111113d9;position:fixed;top:0;left:0;right:0}.blog-nav-inner{align-items:center;gap:1.5rem;min-height:58px;padding:.6rem 0;display:flex}.blog-nav-brand img{object-fit:contain;width:38px;height:38px;display:block}.blog-nav-links{align-items:center;gap:.25rem;margin-left:.5rem;display:flex}.blog-nav-link{color:#fff9;white-space:nowrap;border-radius:8px;align-items:center;gap:.4rem;padding:.45rem .85rem;font-size:.82rem;font-weight:500;text-decoration:none;display:flex}.blog-nav-right{align-items:center;gap:.5rem;margin-left:auto;display:flex}.blog-nav-countdown{background:#ffffff0a;border:1px solid #ffffff14;border-radius:10px;align-items:center;gap:.5rem;padding:.35rem .75rem;display:flex}.countdown-info{flex-direction:column;line-height:1.2;display:flex}.countdown-race{color:#ffffff61;white-space:nowrap;text-overflow:ellipsis;max-width:140px;font-size:.68rem;font-weight:500;overflow:hidden}.countdown-timer{color:#41b6e6;font-variant-numeric:tabular-nums;letter-spacing:.02em;font-size:.78rem;font-weight:700}.countdown-flag{font-size:1.1rem;line-height:1}.countdown-flag-mobile{color:currentColor;font-size:1rem;line-height:1}.blog-nav-countdown-mobile{color:#41b6e6;white-space:nowrap;align-items:center;gap:.35rem;font-size:.78rem;font-weight:600;display:none}body:not(.standings-embed)>.theme-toggle-btn:not(.theme-toggle-menu-btn):not(.theme-toggle-nav-btn){display:none}.blog-nav-hamburger{background:0 0;border:0;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:44px;height:44px;padding:8px;display:none}.blog-nav-hamburger span{background:#fff9;border-radius:2px;width:22px;height:2px;display:block}[data-theme=light] .blog-nav-hamburger span{background:#6e6e73}.blog-nav-mobile{background:#111113f7;border-top:1px solid #0000;max-height:0;padding:0 1rem;display:none;overflow:hidden}.blog-nav-mobile-link{color:#fff9;border-radius:8px;align-items:center;gap:.6rem;padding:.75rem .85rem;text-decoration:none;display:flex}@media (max-width:991px){.blog-nav-links{display:none}.blog-nav-hamburger{display:flex}.blog-nav-mobile{display:block}}@media (max-width:767px){.blog-nav-countdown{display:none}.blog-nav-countdown-mobile{display:flex}}@media (max-width:575.98px){.blog-nav-inner{gap:.75rem;padding-right:calc(44px + 1.5rem)}.blog-nav-right{gap:.25rem;min-width:0}.blog-nav-countdown-mobile{flex-shrink:0;display:flex}.blog-nav-hamburger{z-index:1062;position:fixed;top:11px;right:12px;display:flex!important}}.cookie-banner,.cookie-consent{z-index:9999;width:100%;max-height:min(28vh,240px);color:var(--text-primary);opacity:0;visibility:hidden;contain:layout style;background:#111113e6;border-top:1px solid #ffffff14;border-radius:12px 12px 0 0;position:fixed;bottom:0;left:0;overflow-y:auto;transform:translateY(100%);box-shadow:0 -4px 16px #00000052}.cookie-banner.show,.cookie-consent.show{opacity:1;visibility:visible;transform:translateY(0)}.cookie-banner.show:not(.is-ready),.cookie-consent.show:not(.is-ready){opacity:0;visibility:hidden;transform:translateY(100%)}.cookie-content{max-width:1200px;color:var(--text-primary);margin:0 auto;padding:.56rem .74rem .62rem}.cookie-header{border-bottom:0;justify-content:space-between;align-items:center;margin-bottom:0;padding-bottom:0;display:flex}.cookie-header h3{color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin:0;font-size:.76rem}.close-btn{width:32px;height:32px;color:var(--text-secondary);background:0 0;border:0;justify-content:center;align-items:center;display:flex}.cookie-intro,.cookie-content>p{margin:0;font-size:.76rem;line-height:1.3}.cookie-details{border:0;border-radius:8px;margin:0;overflow:hidden}.cookie-details[open]{border:1px solid #ffffff14;margin-top:.12rem;padding:.52rem}.cookie-settings-summary{width:max-content;max-width:100%;color:var(--accent);padding:.18rem 0;font-size:.76rem;font-weight:700}.cookie-actions{flex-wrap:wrap;justify-content:flex-end;gap:.42rem;margin:0;display:flex}.cookie-btn{white-space:nowrap;border:0;border-radius:5px;min-width:0;padding:.46rem .68rem;font-size:.85rem;font-weight:700}.decline{min-height:auto;color:var(--text-secondary);background:0 0;border-color:#0000;padding:.35rem .2rem}.cookie-details:not([open])~.cookie-actions .reject-btn,.cookie-details:not([open])~.cookie-actions .accept-selected-btn{display:none}.cookie-footer{justify-content:center;gap:2rem;margin-top:.65rem;font-size:.8rem;display:flex}@media (max-width:767.98px){.cookie-banner,.cookie-consent{border-radius:12px 12px 0 0;max-height:min(22vh,156px)}.cookie-content{max-width:100%;padding:.48rem .76rem max(.56rem, env(safe-area-inset-bottom))}.cookie-header{margin-bottom:0}.cookie-intro,.cookie-content>p{font-size:.72rem}.cookie-details{margin-top:0}.cookie-actions{flex-direction:row;gap:.38rem;width:100%;margin:0;display:flex}.cookie-btn{text-overflow:ellipsis;width:100%;max-width:100%;padding:.46rem .5rem;font-size:clamp(.7rem,2.45vw,.78rem);overflow:hidden}.cookie-footer{display:none}}#hero{color:#fff;clip-path:polygon(0 0,100% 0,100% 94%,0 100%);justify-content:center;align-items:center;min-height:clamp(410px,45vh,470px);margin-top:70px;padding:3.35rem 0 2.65rem;display:flex;position:relative;overflow:hidden}.hero-overlay{z-index:-1;opacity:.92;position:absolute;inset:0;overflow:hidden}.hero-overlay picture,.hero-overlay img{width:100%;height:100%;display:block}.hero-overlay.image-bg img{object-fit:cover;object-position:var(--f1s-hero-position,center center);transform:scale(1.015)}#hero:before{content:"";z-index:-1;background:linear-gradient(90deg,#05070af0 0%,#080b10d1 34%,#080a0e6b 64%,#0506084d 100%);position:absolute;inset:0}.hero-content{max-width:640px;padding:0 var(--space-md)}.hero-content h1{margin:0 0 var(--space-md);text-shadow:0 3px 24px #0000009e;max-width:10ch;font-size:clamp(2.15rem,3.45vw,3.35rem);line-height:1.03}.hero-content p{margin-bottom:var(--space-lg);color:#ffffffe0;text-shadow:0 2px 18px #0009;font-size:clamp(.96rem,1.45vw,1.08rem)}@media (max-width:767.98px){#hero{clip-path:none;min-height:350px;padding:2rem 0 1.55rem}.hero-overlay.image-bg img{object-position:var(--f1s-hero-mobile-position,var(--f1s-hero-position,center center))}.hero-content{text-align:center;max-width:540px;margin:0 auto}.hero-content h1{margin-left:auto;margin-right:auto;font-size:1.68rem}.hero-content p{font-size:.88rem}}@media (max-width:575.98px){#hero{min-height:310px;padding:1.45rem 0 .98rem}.hero-content{text-align:left;padding-left:1.5rem;padding-right:1.5rem}.hero-content h1{margin-left:0;margin-right:0}.hero-content p{max-width:17.5rem;margin-left:0;margin-right:0;font-size:.88rem;line-height:1.36}}[data-theme=light]{--bg-base:#fff;--bg-surface:#f5f5f7;--bg-overlay:#ffffffeb;--text-primary:#1d1d1f;--text-secondary:#6e6e73;--accent:#41b6e6;--accent-readable:#0a4f66;--border:#00000014}[data-theme=light] body{color:#1d1d1f;background-color:#fff}[data-theme=light] .background{background:#fff}[data-theme=light] .streak{display:none}[data-theme=light] .blog-nav{background:#ffffffd1;border-bottom-color:#0000000f}[data-theme=light] .blog-nav-link{color:#6e6e73}[data-theme=light] .countdown-timer,[data-theme=light] .blog-nav-countdown-mobile{color:var(--accent-readable)}.icon{fill:currentColor;vertical-align:-.125em;flex-shrink:0;width:1em;height:1em;display:inline-block}.fa-spin{animation:2s linear infinite fa-spin}@keyframes fa-spin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}</style>
+    <style id="f1s-critical" data-hash="2ff77849">:root{--bg-base:#111113;--bg-surface:#161618;--bg-overlay:#111113eb;--text-primary:#e5e5e7;--text-secondary:#a1a1a6;--accent:#41b6e6;--accent-readable:#41b6e6;--border:#ffffff14;--font-body:"Roboto", system-ui, -apple-system, sans-serif;--f1s-hero-position:center center;--f1s-hero-mobile-position:center center;--radius-lg:14px;--space-md:1rem;--space-lg:1.5rem}*{box-sizing:border-box}html{-moz-text-size-adjust:100%;text-size-adjust:100%}body{font-family:var(--font-body);color:var(--text-primary);background-color:var(--bg-base);min-height:100svh;margin:0;padding:0;position:relative;overflow-x:hidden}.background{background:var(--bg-base);z-index:-2;width:100%;height:100%;position:fixed;top:0;left:0}.streak{z-index:-1;opacity:0;position:fixed}@media (min-width:769px){.streak{opacity:.5}}.skip-link{background:var(--accent);color:var(--bg-base);z-index:10000;border-radius:0 0 6px 6px;padding:.5rem 1.5rem;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,Arial,sans-serif;font-size:.875rem;font-weight:700;text-decoration:none;position:absolute;top:-100%;left:50%;transform:translate(-50%)}.skip-link:focus{top:0}.blog-nav{z-index:1060;-webkit-backdrop-filter:blur(20px)saturate(1.4);backdrop-filter:blur(20px)saturate(1.4);border-bottom:1px solid var(--border);background:#111113d9;position:fixed;top:0;left:0;right:0}.blog-nav-inner{align-items:center;gap:1.5rem;min-height:58px;padding:.6rem 0;display:flex}.blog-nav-brand img{object-fit:contain;width:38px;height:38px;display:block}.blog-nav-links{align-items:center;gap:.25rem;margin-left:.5rem;display:flex}.blog-nav-link{color:#fff9;white-space:nowrap;border-radius:8px;align-items:center;gap:.4rem;padding:.45rem .85rem;font-size:.82rem;font-weight:500;text-decoration:none;display:flex}.blog-nav-right{align-items:center;gap:.5rem;margin-left:auto;display:flex}.blog-nav-countdown{background:#ffffff0a;border:1px solid #ffffff14;border-radius:10px;align-items:center;gap:.5rem;padding:.35rem .75rem;display:flex}.countdown-info{flex-direction:column;line-height:1.2;display:flex}.countdown-race{color:#ffffff61;white-space:nowrap;text-overflow:ellipsis;max-width:140px;font-size:.68rem;font-weight:500;overflow:hidden}.countdown-timer{color:#41b6e6;font-variant-numeric:tabular-nums;letter-spacing:.02em;font-size:.78rem;font-weight:700}.countdown-flag{font-size:1.1rem;line-height:1}.countdown-flag-mobile{color:currentColor;font-size:1rem;line-height:1}.blog-nav-countdown-mobile{color:#41b6e6;white-space:nowrap;align-items:center;gap:.35rem;font-size:.78rem;font-weight:600;display:none}body:not(.standings-embed)>.theme-toggle-btn:not(.theme-toggle-menu-btn):not(.theme-toggle-nav-btn){display:none}.blog-nav-hamburger{background:0 0;border:0;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:44px;height:44px;padding:8px;display:none}.blog-nav-hamburger span{background:#fff9;border-radius:2px;width:22px;height:2px;display:block}[data-theme=light] .blog-nav-hamburger span{background:#6e6e73}.blog-nav-mobile{background:#111113f7;border-top:1px solid #0000;max-height:0;padding:0 1rem;display:none;overflow:hidden}.blog-nav-mobile-link{color:#fff9;border-radius:8px;align-items:center;gap:.6rem;padding:.75rem .85rem;text-decoration:none;display:flex}@media (max-width:991px){.blog-nav-links{display:none}.blog-nav-hamburger{display:flex}.blog-nav-mobile{display:block}}@media (max-width:767px){.blog-nav-countdown{display:none}.blog-nav-countdown-mobile{display:flex}}@media (max-width:575.98px){.blog-nav-inner{gap:.75rem;padding-right:calc(44px + 1.5rem)}.blog-nav-right{gap:.25rem;min-width:0}.blog-nav-countdown-mobile{flex-shrink:0;display:flex}.blog-nav-hamburger{z-index:1062;position:fixed;top:11px;right:12px;display:flex!important}}.cookie-banner,.cookie-consent{z-index:9999;width:100%;max-height:min(28vh,240px);color:var(--text-primary);opacity:0;visibility:hidden;contain:layout style;background:#111113e6;border-top:1px solid #ffffff14;border-radius:12px 12px 0 0;position:fixed;bottom:0;left:0;overflow-y:auto;transform:translateY(100%);box-shadow:0 -4px 16px #00000052}.cookie-banner.show,.cookie-consent.show{opacity:1;visibility:visible;transform:translateY(0)}.cookie-banner.show:not(.is-ready),.cookie-consent.show:not(.is-ready){opacity:0;visibility:hidden;transform:translateY(100%)}.cookie-content{max-width:1200px;color:var(--text-primary);margin:0 auto;padding:.56rem .74rem .62rem}.cookie-header{border-bottom:0;justify-content:space-between;align-items:center;margin-bottom:0;padding-bottom:0;display:flex}.cookie-header h3{color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin:0;font-size:.76rem}.close-btn{width:32px;height:32px;color:var(--text-secondary);background:0 0;border:0;justify-content:center;align-items:center;display:flex}.cookie-intro,.cookie-content>p{margin:0;font-size:.76rem;line-height:1.3}.cookie-details{border:0;border-radius:8px;margin:0;overflow:hidden}.cookie-details[open]{border:1px solid #ffffff14;margin-top:.12rem;padding:.52rem}.cookie-settings-summary{width:max-content;max-width:100%;color:var(--accent);padding:.18rem 0;font-size:.76rem;font-weight:700}.cookie-actions{flex-wrap:wrap;justify-content:flex-end;gap:.42rem;margin:0;display:flex}.cookie-btn{white-space:nowrap;border:0;border-radius:5px;min-width:0;padding:.46rem .68rem;font-size:.85rem;font-weight:700}.decline{min-height:auto;color:var(--text-secondary);background:0 0;border-color:#0000;padding:.35rem .2rem}.cookie-details:not([open])~.cookie-actions .reject-btn,.cookie-details:not([open])~.cookie-actions .accept-selected-btn{display:none}.cookie-footer{justify-content:center;gap:2rem;margin-top:.65rem;font-size:.8rem;display:flex}@media (max-width:767.98px){.cookie-banner,.cookie-consent{border-radius:12px 12px 0 0;max-height:min(22vh,156px)}.cookie-content{max-width:100%;padding:.48rem .76rem max(.56rem, env(safe-area-inset-bottom))}.cookie-header{margin-bottom:0}.cookie-intro,.cookie-content>p{font-size:.72rem}.cookie-details{margin-top:0}.cookie-actions{flex-direction:row;gap:.38rem;width:100%;margin:0;display:flex}.cookie-btn{text-overflow:ellipsis;width:100%;max-width:100%;padding:.46rem .5rem;font-size:clamp(.7rem,2.45vw,.78rem);overflow:hidden}.cookie-footer{display:none}}#hero{color:#fff;clip-path:polygon(0 0,100% 0,100% 94%,0 100%);justify-content:center;align-items:center;min-height:clamp(410px,45vh,470px);margin-top:70px;padding:3.35rem 0 2.65rem;display:flex;position:relative;overflow:hidden}.hero-overlay{z-index:-1;opacity:.92;position:absolute;inset:0;overflow:hidden}.hero-overlay picture,.hero-overlay img{width:100%;height:100%;display:block}.hero-overlay.image-bg img{object-fit:cover;object-position:var(--f1s-hero-position,center center);transform:scale(1.015)}#hero:before{content:"";z-index:-1;background:linear-gradient(90deg,#05070af0 0%,#080b10d1 34%,#080a0e6b 64%,#0506084d 100%);position:absolute;inset:0}.hero-content{max-width:640px;padding:0 var(--space-md)}.hero-content h1{margin:0 0 var(--space-md);text-shadow:0 3px 24px #0000009e;max-width:10ch;font-size:clamp(2.15rem,3.45vw,3.35rem);line-height:1.03}.hero-content p{margin-bottom:var(--space-lg);color:#ffffffe0;text-shadow:0 2px 18px #0009;font-size:clamp(.96rem,1.45vw,1.08rem)}@media (max-width:767.98px){#hero{clip-path:none;min-height:350px;padding:2rem 0 1.55rem}.hero-overlay.image-bg img{object-position:var(--f1s-hero-mobile-position,var(--f1s-hero-position,center center))}.hero-content{text-align:center;max-width:540px;margin:0 auto}.hero-content h1{margin-left:auto;margin-right:auto;font-size:1.68rem}.hero-content p{font-size:.88rem}}@media (max-width:575.98px){#hero{min-height:310px;padding:1.45rem 0 .98rem}.hero-content{text-align:left;padding-left:1.5rem;padding-right:1.5rem}.hero-content h1{margin-left:0;margin-right:0}.hero-content p{max-width:17.5rem;margin-left:0;margin-right:0;font-size:.88rem;line-height:1.36}}[data-theme=light]{--bg-base:#fff;--bg-surface:#f5f5f7;--bg-overlay:#ffffffeb;--text-primary:#1d1d1f;--text-secondary:#6e6e73;--accent:#41b6e6;--accent-readable:#0a4f66;--border:#00000014}[data-theme=light] body{color:#1d1d1f;background-color:#fff}[data-theme=light] .background{background:#fff}[data-theme=light] .streak{display:none}[data-theme=light] .blog-nav{background:#ffffffd1;border-bottom-color:#0000000f}[data-theme=light] .blog-nav-link{color:#6e6e73}[data-theme=light] .countdown-timer,[data-theme=light] .blog-nav-countdown-mobile{color:var(--accent-readable)}.icon{fill:currentColor;vertical-align:-.125em;flex-shrink:0;width:1em;height:1em;display:inline-block}.fa-spin{animation:2s linear infinite fa-spin}@keyframes fa-spin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}
+:root{--st-bg:#f5f6f8;--st-surface:#fff;--st-surface-2:#f7f8fb;--st-border:#e5e7eb;--st-text:#18181b;--st-text-secondary:#52525b;--st-text-muted:#71717a;--st-accent:#db3eb1;--st-accent-soft:#db3eb11a;--st-accent-readable:#0a4f66;--st-shadow-sm:0 1px 3px #00000014;--st-shell-font:system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;--st-row-height:62px;--st-driver-rows:22;--st-constructor-rows:11}[data-theme=dark]{--st-bg:#111113;--st-surface:#18181b;--st-surface-2:#27272a;--st-border:#27272a;--st-text:#fafafa;--st-text-secondary:#a1a1aa;--st-text-muted:#71717a;--st-accent:#41b6e6;--st-accent-soft:#41b6e624;--st-accent-readable:#41b6e6;--st-shadow-sm:0 1px 3px #00000080}.standings-wrapper{font-family:var(--st-shell-font);color:var(--st-text);-webkit-font-smoothing:antialiased;margin-top:0;padding:6rem 0 3rem}.standings-wrapper .container{width:100%;max-width:1320px;margin-left:auto;margin-right:auto;padding-left:12px;padding-right:12px}.standings-header{min-height:92px;padding:1.55rem 0 .35rem}.standings-title{color:var(--st-text);font-family:var(--st-shell-font);letter-spacing:0;margin:0;font-size:2.2rem;font-weight:700;line-height:1.1}.standings-sub{color:var(--st-text-muted);min-height:1.35rem;margin-top:.3rem;font-size:.84rem;line-height:1.45}.live-dot{vertical-align:middle;background:#10b981;border-radius:50%;width:7px;height:7px;margin-right:.4rem;display:inline-block}.round-badge{background:var(--st-accent-soft);min-width:9.8rem;color:var(--st-accent-readable);visibility:hidden;opacity:0;border-radius:100px;justify-content:center;align-items:center;gap:.3rem;margin-left:.5rem;padding:.2rem .6rem;font-size:.72rem;font-weight:700;line-height:1.25;display:inline-flex}.round-badge.is-visible{visibility:visible;opacity:1}.standings-tabs{border:1px solid var(--st-border);background:var(--st-surface);overscroll-behavior-x:contain;scrollbar-width:none;border-radius:14px;flex-wrap:nowrap;justify-content:flex-start;gap:.4rem;width:100%;min-height:66px;margin:1.5rem auto 1.8rem;padding:6px;display:flex;overflow-x:auto}.standings-tabs::-webkit-scrollbar{display:none}.standings-tab{min-height:52px;color:var(--st-text-secondary);white-space:nowrap;background:0 0;border:1px solid #0000;border-radius:10px;flex:140px;justify-content:center;align-items:center;gap:.45rem;padding:.8rem .95rem;font-size:.88rem;font-weight:700;line-height:1.1;display:inline-flex}.standings-tab.active{background:var(--st-accent);color:#fff;box-shadow:0 2px 8px #db3eb140}.standings-panel{display:none}.standings-panel.active{display:block}.standings-panel[hidden]{display:none!important}.standings-table-wrap{background:var(--st-surface);border:1px solid var(--st-border);min-width:0;box-shadow:var(--st-shadow-sm);border-radius:16px;overflow:hidden}#drivers-table{min-height:calc(var(--st-row-height) * var(--st-driver-rows))}#constructors-table{min-height:calc(var(--st-row-height) * var(--st-constructor-rows))}#drivers-chart{min-height:362px}#drivers-chart-bars:empty{min-height:284px}.chart-section{background:var(--st-surface);border:1px solid var(--st-border);min-width:0;box-shadow:var(--st-shadow-sm);border-radius:16px;margin-top:2rem;padding:1.5rem}.chart-head{justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1.2rem;display:flex}.chart-copy{min-width:0}.chart-title{color:var(--st-text);font-family:var(--st-shell-font);margin:0;font-size:1.05rem;font-weight:700;line-height:1.2}.chart-note{min-height:1rem;color:var(--st-text-muted);margin-top:.22rem;font-size:.72rem;line-height:1.35}.share-tools{flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:.45rem;display:flex}.share-btn{-webkit-appearance:none;appearance:none;min-height:38px;color:var(--st-text);background:var(--st-surface);border:1px solid var(--st-border);border-radius:999px;justify-content:center;align-items:center;gap:.42rem;padding:.52rem .78rem;font-size:.76rem;font-weight:700;line-height:1.2;display:inline-flex}.chart-bar-row{align-items:center;gap:.6rem;margin-bottom:.4rem;display:flex}.chart-label{width:42px;color:var(--st-text-secondary);text-align:right;flex-shrink:0;font-size:.7rem;font-weight:700}.chart-track{background:var(--st-surface-2);border-radius:4px;flex:1;height:22px;overflow:hidden}.chart-fill{border-radius:4px;justify-content:flex-end;align-items:center;min-width:30px;height:100%;padding-right:.5rem;display:flex}.chart-pts-label{color:#fff;min-width:1.45rem;text-shadow:none;background:#111113c7;border-radius:999px;justify-content:center;align-items:center;padding:.08rem .32rem;font-size:.62rem;font-weight:700;line-height:1.25;display:inline-flex}.st-row,.skeleton-row{min-height:var(--st-row-height);border-bottom:1px solid var(--st-border);contain:layout;grid-template-columns:48px minmax(0,1fr) minmax(3.5rem,auto);align-items:center;gap:.7rem;padding:.65rem 1.2rem;display:grid;position:relative}.st-row:last-child,.skeleton-row:last-child{border-bottom:none}.st-row:before{content:"";background:var(--team-color,var(--st-accent));width:3px;position:absolute;top:0;bottom:0;left:0}.st-pos{color:var(--st-text);text-align:center;font-size:1.1rem;font-weight:700;line-height:1}.st-info{align-items:center;gap:.7rem;min-width:0;display:flex}.st-headshot,.st-avatar-fallback,.st-team-swatch,.skel-circle{border-radius:50%;flex-shrink:0;width:40px;height:40px}.st-headshot{object-fit:cover;border:2px solid var(--team-color,var(--st-accent));background:var(--st-surface-2)}.st-avatar-fallback,.st-team-swatch{background:var(--st-surface-2);justify-content:center;align-items:center;display:flex}.st-team-swatch img{object-fit:contain;width:100%;height:100%;padding:5px}.st-name-block{min-width:0}.st-name{color:var(--st-text);white-space:nowrap;text-overflow:ellipsis;font-size:.92rem;font-weight:700;line-height:1.25;overflow:hidden}.st-team-label,.st-drivers-list{color:var(--st-text-muted);white-space:nowrap;text-overflow:ellipsis;font-size:.7rem;overflow:hidden}.st-points-area{text-align:right;flex-direction:column;align-items:flex-end;gap:.12rem;display:flex}.st-points{color:var(--st-text);font-size:1.15rem;font-weight:700;line-height:1}.st-wins{color:var(--st-text-muted);font-size:.68rem}.st-bar-wrap{background:var(--st-surface-2);grid-column:2/4;height:2px;overflow:hidden}.st-bar{opacity:.28;height:100%}.skel{background:var(--st-surface-2);border-radius:6px}@media (max-width:1399.98px) and (min-width:1200px){.standings-wrapper .container{max-width:1140px}}@media (max-width:1199.98px) and (min-width:992px){.standings-wrapper .container{max-width:960px}}@media (max-width:991.98px) and (min-width:768px){.standings-wrapper .container{max-width:720px}}@media (max-width:767.98px) and (min-width:576px){.standings-wrapper .container{max-width:540px}}@media (max-width:1024px){.standings-wrapper{padding-top:3.85rem;padding-bottom:2rem}.standings-wrapper .container{padding-left:16px;padding-right:16px}.standings-header{padding:1rem 0 .18rem}.standings-title{font-size:1.88rem}.standings-tabs{scroll-snap-type:x proximity;margin:1.15rem 0 1.35rem}.standings-tab{scroll-snap-align:start;flex:none;min-width:152px}.chart-section{padding:1.1rem}.chart-head{flex-direction:column;align-items:flex-start}.share-tools{justify-content:flex-start}}@media (max-width:767.98px){body:not(.standings-embed)>.theme-toggle-btn:not(.theme-toggle-menu-btn){display:none}.standings-header{min-height:0;padding:.62rem 0 .05rem}.standings-title{font-size:1.46rem}.standings-sub{min-height:1rem;margin-top:.25rem;font-size:.76rem}.standings-tabs{max-width:100%;-webkit-mask-image:linear-gradient(90deg,#0000 0,#000 8px calc(100% - 24px),#0000 100%);mask-image:linear-gradient(90deg,#0000 0,#000 8px calc(100% - 24px),#0000 100%)}.standings-tab{min-width:144px;min-height:50px;padding:.75rem 1rem}.st-row,.skeleton-row{grid-template-columns:38px minmax(0,1fr) minmax(3.2rem,auto);padding:.55rem .8rem}.st-headshot,.st-avatar-fallback,.st-team-swatch,.skel-circle{width:34px;height:34px}.st-name{font-size:.85rem}.st-points{font-size:1rem}.st-info{gap:.55rem}.chart-section{padding:1rem}.chart-label{width:38px}}@media (max-width:480px){.standings-title{font-size:1.5rem}.standings-tabs{gap:.25rem;padding:4px}.standings-tab{gap:.35rem;min-width:128px;padding:.7rem .65rem;font-size:.78rem}.share-tools{grid-template-columns:1fr 1fr;gap:.4rem;display:grid}.share-btn{justify-content:center;width:auto}}</style>
     <!-- f1s:critical-css:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=47d874df">
-    <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
-    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
-    <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
-    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=b7ef430e">
+    <link rel="stylesheet" href="/styles.min.css?v=9998de30">
+    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=93b1f6a3">
     <link rel="stylesheet" href="/theme-overrides.min.css?v=a6310352">
-
-    <!-- Preload hero image for LCP -->
-    <link rel="preload" as="image" href="ARTICLE_IMAGE_ATTR" fetchpriority="high">
 
     <script defer src="/scripts/analytics.min.js?v=98a1ee70"></script>
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
 
-    <!-- Prevent FOUC -->
+<link rel="stylesheet" href="standings.min.css?v=2e522c93">
+<link rel="stylesheet" href="standings-polish.min.css?v=feddf245">
+    <noscript><link rel="stylesheet" href="standings.min.css?v=2e522c93"></noscript>
 </head>
 <body>
 <!-- f1s:icon-sprite:begin -->
@@ -158,27 +131,20 @@
 <div class="background"></div>
 <div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
 
-<!-- Reading Progress Bar -->
-<div class="reading-progress-track" aria-hidden="true">
-    <div class="reading-progress-fill" id="reading-progress"></div>
-</div>
-
-<!-- Theme Toggle -->
 <button class="theme-toggle-btn" id="theme-toggle" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
     <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
     <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
 </button>
 
-<!-- Navbar -->
 <header>
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
-            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"></a>
+            <a class="blog-nav-brand" href="/" aria-label="F1 Stories home"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"></a>
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -190,7 +156,7 @@
                     </div>
                 </div>
                 <div class="blog-nav-countdown-mobile" id="nav-countdown-mobile">
-                    <span class="countdown-flag-mobile" data-race-flag-mobile aria-hidden="true">🏁</span>
+                    <svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg>
                     <span id="race-countdown-mobile">--</span>
                 </div>
                 <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
@@ -198,9 +164,9 @@
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
             <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
                 <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
@@ -212,155 +178,270 @@
     </nav>
 </header>
 
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true">
-    <div class="article-mini-bar__text">
-        <span class="article-mini-bar__category">ARTICLE_TAG_TEXT</span>
-        <span class="article-mini-bar__title">ARTICLE_TITLE_TEXT</span>
-    </div>
-    <button class="article-mini-bar__share" id="article-mini-share" type="button" aria-label="Κοινοποίηση άρθρου">
-        <svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg>
-    </button>
-</div>
-
-<!-- Article -->
-<main id="main" class="article-page-wrapper py-5 mt-5">
-    <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
-                <picture>
-                    ARTICLE_HERO_AVIF_SOURCE
-                    <img src="ARTICLE_IMAGE_ATTR" alt="ARTICLE_TITLE_ATTR" class="article-header-img"
-                         loading="eager" fetchpriority="high" decoding="sync"
-                         width="ARTICLE_IMAGE_WIDTH" height="ARTICLE_IMAGE_HEIGHT"
-                         data-fallback-src="/blog-module/images/default-blog.jpg">
-                </picture>
-                <div class="article-header-overlay">
-                    <div class="article-header-kicker-row">
-                        <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
-                        <span class="article-category-pill">ARTICLE_TAG_TEXT</span>
-                    </div>
-                    <h1 class="article-title">ARTICLE_TITLE_TEXT</h1>
-                    <div class="article-meta">
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ARTICLE_DATE</span>
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> ARTICLE_CATEGORY_TEXT</span>
-                        <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="article-body-grid">
-                <aside class="article-side-rail" aria-label="Πληροφορίες άρθρου">
-                    <div class="article-rail-sticky">
-                        <div class="article-toolbar">
-                            <div class="share-label"><svg class="icon" aria-hidden="true"><use href="#fa-share-alt"/></svg> <span>Κοινοποίηση</span></div>
-                            <div class="share-buttons">
-                                <a href="https://www.facebook.com/sharer/sharer.php?u=ARTICLE_URL_PARAM" target="_blank" rel="noopener" class="share-btn facebook" aria-label="Κοινοποίηση στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
-                                <a href="https://www.addtoany.com/add_to/threads?linkurl=ARTICLE_URL_PARAM&linkname=ARTICLE_TITLE_PARAM" target="_blank" rel="noopener" class="share-btn threads" aria-label="Κοινοποίηση στο Threads"><svg class="icon" aria-hidden="true"><use href="#fa-threads"/></svg></a>
-                                <button id="instagram-dm-btn" class="share-btn instagram" aria-label="Κοινοποίηση μέσω Instagram DM"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></button>
-                                <a href="https://api.whatsapp.com/send?text=ARTICLE_TITLE_PARAM%20ARTICLE_URL_PARAM" target="_blank" rel="noopener" class="share-btn whatsapp" aria-label="Κοινοποίηση στο WhatsApp"><svg class="icon" aria-hidden="true"><use href="#fa-whatsapp"/></svg></a>
-                                <a href="https://t.me/share/url?url=ARTICLE_URL_PARAM&text=ARTICLE_TITLE_PARAM" target="_blank" rel="noopener" class="share-btn telegram" aria-label="Κοινοποίηση στο Telegram"><svg class="icon" aria-hidden="true"><use href="#fa-telegram-plane"/></svg></a>
-                                <button id="web-share-btn" class="share-btn web-share" aria-label="Κοινοποίηση άρθρου"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg></button>
-                                <button class="share-btn copy-link" id="copy-link-btn" aria-label="Αντιγραφή συνδέσμου"><svg class="icon" aria-hidden="true"><use href="#fa-link"/></svg></button>
-                            </div>
-                        </div>
-
-                        <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
-                            <div class="article-rail-meta-list">
-                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> ARTICLE_TAG_TEXT</span>
-                                <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ARTICLE_DATE</span>
-                                <span><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span data-reading-time>5 λεπτά ανάγνωσης</span></span>
-                            </div>
-                        </div>
-
-                        <div class="article-rail-card article-rail-tags" data-tags="ARTICLE_CATEGORY_TEXT">
-                            <span class="article-rail-label">Tags</span>
-                            <div class="article-tag-list" data-tag-list></div>
-                        </div>
-
-                        <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
-                            <div class="article-rail-related-list" data-rail-related></div>
-                        </div>
-                    </div>
-                </aside>
-
-                <div class="article-main-column">
-                    <div class="article-content">ARTICLE_CONTENT</div>
-
-                    <div class="article-author-footer">
-                        <div class="author-box">
-                            <div class="author-header">
-                                <div class="author-avatar">
-                                    <img id="author-image" src="/images/authors/default.webp" alt="ARTICLE_AUTHOR_ATTR"
-                                         loading="lazy" decoding="async" width="ARTICLE_AUTHOR_IMAGE_WIDTH" height="ARTICLE_AUTHOR_IMAGE_HEIGHT"
-                                         data-show-on-error="author-initial">
-                                    <span class="avatar-text" id="author-initial">A</span>
-                                </div>
-                                <div class="author-info">
-                                    <p class="author-name" id="author-name">ARTICLE_AUTHOR_TEXT</p>
-                                    <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
-                                </div>
-                            </div>
-                            <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
-                        </div>
-                    </div>
-
-                    <div class="sponsor-strip">
-                        <div class="sponsor-strip-label">Υποστηρίζουν το F1 Stories</div>
-                        <div class="sponsor-logos">
-                            <a href="https://georgiosbalatzis.github.io/excavatorsPage/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Χωματουργικά">
-                                <img src="/images/sponsors/Balatzis.webp" alt="Μπαλατζής Χωματουργικά" loading="lazy" decoding="async" width="612" height="408">
-                            </a>
-                            <a href="https://pourtsidisgenerators.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Πουρτσίδης Γεννήτριες">
-                                <img src="/images/sponsors/ps.webp" alt="Πουρτσίδης Γεννήτριες" loading="lazy" decoding="async" width="612" height="408">
-                            </a>
-                            <a href="https://georgiosbalatzis.github.io/excavatorsPage/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Δομικά">
-                                <img src="/images/sponsors/BalatzisDomika.webp" alt="Μπαλατζής Δομικά" loading="lazy" decoding="async" width="612" height="408">
-                            </a>
-                            <a href="https://ambrosiadis.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Αμβροσιάδης">
-                                <img src="/images/sponsors/am.webp" alt="Αμβροσιάδης" loading="lazy" decoding="async" width="612" height="408">
-                            </a>
-                            <a href="https://www.bedandhome.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Bed and Home">
-                                <img src="/images/sponsors/bedhome.webp" alt="Bed and Home" loading="lazy" decoding="async" width="612" height="408">
-                            </a>
-                            <a href="https://www.grandrealm.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Grand Realm">
-                                <img src="/images/sponsors/GrandRealm.webp" alt="Grand Realm" loading="lazy" decoding="async" width="1536" height="1024">
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </article>
-
-        <div class="article-comments">
-            <h2><svg class="icon" aria-hidden="true" style="margin-right:0.5rem;font-size:0.95em;"><use href="#fa-comments"/></svg>Σχόλια</h2>
-            <div id="disqus_thread" data-article-id="ARTICLE_ID"></div>
+<main id="main" class="standings-wrapper">
+    <div class="container">
+        <div class="standings-header text-center">
+            <h1 class="standings-title">Βαθμολογίες Πρωταθλήματος</h1>
+            <p class="standings-sub"><span class="live-dot"></span>Live δεδομένα · Σεζόν <span id="season-year">2026</span> <span class="round-badge" id="round-badge">Μετά τον γύρο <span id="round-num"></span></span></p>
         </div>
 
-        <div class="article-navigation">
-            <a href="PREV_ARTICLE_URL" id="prev-article-link" class="article-nav-link prev"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Προηγούμενο</a>
-            <a href="NEXT_ARTICLE_URL" id="next-article-link" class="article-nav-link next">Επόμενο <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></a>
+        <div class="standings-report-select" aria-label="Επιλογή αναφοράς">
+            <label class="standings-report-label" for="standings-report-selector">Report</label>
+            <div class="standings-report-control">
+                <span class="standings-report-icon" aria-hidden="true"><svg class="icon"><use href="#fa-table"/></svg></span>
+                <select id="standings-report-selector" class="standings-report-native">
+                    <option value="drivers">Οδηγοί</option>
+                    <option value="constructors">Κατασκευαστές</option>
+                    <option value="quali-gaps">Quali Gaps</option>
+                    <option value="lap1-gains">Lap 1 Gains</option>
+                    <option value="tyre-pace">Tyre Pace</option>
+                    <option value="dirty-air">Dirty Air</option>
+                    <option value="track-dominance">Track Dominance</option>
+                    <option value="pit-stops">Pit Stops</option>
+                    <option value="debrief">Debrief</option>
+                    <option value="destructors">Destructors</option>
+                </select>
+            </div>
+            <div class="standings-report-meta" id="standings-report-meta">
+                <span id="standings-report-meta-status">Ενημέρωση μετά από κάθε αγώνα</span> · Πηγές: <a href="https://github.com/jolpica/jolpica-f1" target="_blank" rel="noopener">Jolpica F1</a> / <a href="https://openf1.org" target="_blank" rel="noopener">OpenF1</a>
+            </div>
         </div>
 
-        <div class="row article-related-section">
-            <div class="col-12 related-section-head"><span class="related-section-eyebrow">Επόμενη ανάγνωση</span><h2 class="related-section-title">Σχετικά άρθρα</h2></div>
-            RELATED_ARTICLES
+        <div class="standings-tabs" role="tablist" aria-label="Ενότητες βαθμολογιών και ανάλυσης">
+            <button class="standings-tab active" id="tab-drivers" data-tab="drivers" role="tab" aria-controls="panel-drivers" aria-selected="true" tabindex="0"><svg class="icon" aria-hidden="true"><use href="#fa-helmet-safety"/></svg> Οδηγοί</button>
+            <button class="standings-tab" id="tab-constructors" data-tab="constructors" role="tab" aria-controls="panel-constructors" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg> Κατασκευαστές</button>
+            <button class="standings-tab" id="tab-quali-gaps" data-tab="quali-gaps" role="tab" aria-controls="panel-quali-gaps" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-stopwatch"/></svg> Quali Gaps</button>
+            <button class="standings-tab" id="tab-lap1-gains" data-tab="lap1-gains" role="tab" aria-controls="panel-lap1-gains" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-trend-up"/></svg> Lap 1 Gains</button>
+            <button class="standings-tab" id="tab-tyre-pace" data-tab="tyre-pace" role="tab" aria-controls="panel-tyre-pace" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-wave-square"/></svg> Tyre Pace</button>
+            <button class="standings-tab" id="tab-dirty-air" data-tab="dirty-air" role="tab" aria-controls="panel-dirty-air" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-wind"/></svg> Dirty Air</button>
+            <button class="standings-tab" id="tab-track-dominance" data-tab="track-dominance" role="tab" aria-controls="panel-track-dominance" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-route"/></svg> Track Dominance</button>
+            <button class="standings-tab" id="tab-pit-stops" data-tab="pit-stops" role="tab" aria-controls="panel-pit-stops" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-wrench"/></svg> Pit Stops</button>
+            <button class="standings-tab" id="tab-debrief" data-tab="debrief" role="tab" aria-controls="panel-debrief" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-clipboard-list"/></svg> Debrief</button>
+            <button class="standings-tab" id="tab-destructors" data-tab="destructors" role="tab" aria-controls="panel-destructors" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-car-burst"/></svg> Destructors</button>
+        </div>
+
+        <div class="standings-panel active" id="panel-drivers" role="tabpanel" aria-labelledby="tab-drivers" tabindex="0">
+            <div class="standings-context-row" id="drivers-summary-row" aria-live="polite"></div>
+            <div class="standings-layout">
+                <div class="standings-main-column">
+                    <div class="standings-table-wrap" id="drivers-table" aria-live="polite"></div>
+                    <div class="chart-section" id="drivers-chart">
+                        <div class="chart-head">
+                            <div class="chart-copy">
+                                <h2 class="chart-title"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.6;font-size:0.9em;"><use href="#fa-chart-bar"/></svg>Κατανομή βαθμών — Top 10</h2>
+                                <div class="chart-note">Share or embed just the current drivers points chart.</div>
+                            </div>
+                            <div class="share-tools">
+                                <button class="share-btn" type="button" data-share-kind="share" data-share-target="drivers-chart"><svg class="icon" aria-hidden="true"><use href="#fa-link"/></svg> Share chart</button>
+                                <button class="share-btn" type="button" data-share-kind="embed" data-share-target="drivers-chart"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed chart</button>
+                            </div>
+                        </div>
+                        <div id="drivers-chart-bars"></div>
+                    </div>
+                </div>
+                <aside class="standings-side-panel" id="drivers-side-panel" aria-label="Driver standings context"></aside>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-constructors" role="tabpanel" aria-labelledby="tab-constructors" hidden>
+            <div class="standings-context-row" id="constructors-summary-row" aria-live="polite"></div>
+            <div class="standings-layout">
+                <div class="standings-main-column">
+                    <div class="standings-table-wrap" id="constructors-table" aria-live="polite"></div>
+                    <div class="chart-section" id="constructors-chart" style="display:none">
+                        <div class="chart-head">
+                            <div class="chart-copy">
+                                <h2 class="chart-title"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.6;font-size:0.9em;"><use href="#fa-chart-bar"/></svg>Κατανομή βαθμών</h2>
+                                <div class="chart-note">Share or embed the constructors points distribution card on its own.</div>
+                            </div>
+                            <div class="share-tools">
+                                <button class="share-btn" type="button" data-share-kind="share" data-share-target="constructors-chart"><svg class="icon" aria-hidden="true"><use href="#fa-link"/></svg> Share chart</button>
+                                <button class="share-btn" type="button" data-share-kind="embed" data-share-target="constructors-chart"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed chart</button>
+                            </div>
+                        </div>
+                        <div id="constructors-chart-bars"></div>
+                    </div>
+                </div>
+                <aside class="standings-side-panel" id="constructors-side-panel" aria-label="Constructor standings context"></aside>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-quali-gaps" role="tabpanel" aria-labelledby="tab-quali-gaps" hidden>
+            <div class="quali-gaps-wrap">
+                <div class="quali-gaps-intro">
+                    <div class="quali-kicker">Teammate H2H · <span id="qualifying-gaps-year">2026</span></div>
+                    <h2 class="quali-title">Teammate Qualifying Gaps</h2>
+                    <p class="quali-sub">Q + Sprint Shootout. Ο συνολικά ταχύτερος teammate εμφανίζεται αριστερά και τα rows ταξινομούνται από το μικρότερο στο μεγαλύτερο average gap.</p>
+                </div>
+                <div class="panel-tools">
+                    <div class="panel-tools-copy">
+                        <div class="panel-tools-title">Qualifying Gaps Tab</div>
+                        <div class="panel-tools-note">The shared link keeps the active sub-view and selected qualifying session.</div>
+                    </div>
+                    <div class="share-tools">
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-quali-gaps"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Share tab</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-quali-gaps"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed tab</button>
+                    </div>
+                </div>
+                <div id="qualifying-gaps-table" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-lap1-gains" role="tabpanel" aria-labelledby="tab-lap1-gains" hidden>
+            <div class="lap1-gains-wrap">
+                <div class="lap1-gains-intro">
+                    <div class="lap1-kicker">Race Starts · <span id="lap1-gains-year">2026</span></div>
+                    <h2 class="lap1-title">Who Gains Most on Lap 1?</h2>
+                    <p class="lap1-sub">Για κάθε completed Grand Prix race ή sprint, υπολογίζεται ποιος κέρδισε τις περισσότερες θέσεις μέχρι το τέλος του πρώτου γύρου.</p>
+                </div>
+                <div class="panel-tools">
+                    <div class="panel-tools-copy">
+                        <div class="panel-tools-title">Lap 1 Gains Tab</div>
+                        <div class="panel-tools-note">The shared URL keeps the selected overview or session view and the active race or sprint.</div>
+                    </div>
+                    <div class="share-tools">
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-lap1-gains"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Share tab</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-lap1-gains"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed tab</button>
+                    </div>
+                </div>
+                <div id="lap1-gains-table" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-tyre-pace" role="tabpanel" aria-labelledby="tab-tyre-pace" hidden>
+            <div class="tyre-pace-wrap">
+                <div class="tyre-pace-intro">
+                    <div class="tyre-pace-kicker">Race Pace · <span id="tyre-pace-year">2026</span></div>
+                    <h2 class="tyre-pace-title">Race & Sprint Lap Time Distributions</h2>
+                    <p class="tyre-pace-sub">Για κάθε completed Grand Prix race ή sprint, βλέπεις όλους τους οδηγούς ταξινομημένους από τον ταχύτερο προς τον πιο αργό καλύτερο lap pace, με χρωματισμό ανά γόμα.</p>
+                </div>
+                <div class="panel-tools">
+                    <div class="panel-tools-copy">
+                        <div class="panel-tools-title">Tyre Pace Tab</div>
+                        <div class="panel-tools-note">The shared link keeps the currently selected race or sprint lap distribution chart.</div>
+                    </div>
+                    <div class="share-tools">
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-tyre-pace"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Share tab</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-tyre-pace"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed tab</button>
+                    </div>
+                </div>
+                <div id="tyre-pace-table" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-dirty-air" role="tabpanel" aria-labelledby="tab-dirty-air" hidden>
+            <div class="dirty-air-wrap">
+                <div class="dirty-air-intro">
+                    <div class="dirty-air-kicker">Race Traffic · <span id="dirty-air-year">2026</span></div>
+                    <h2 class="dirty-air-title">Dirty Air Analysis</h2>
+                    <p class="dirty-air-sub">Κάθε race lap χωρίζεται σε 30 ίσα minisectors. Για κάθε minisector μετράμε πόσο κοντά ήταν το πλησιέστερο μονοθέσιο μπροστά στην πίστα, ακόμη κι αν επρόκειτο για backmarker που δεχόταν γύρο.</p>
+                </div>
+                <div class="panel-tools">
+                    <div class="panel-tools-copy">
+                        <div class="panel-tools-title">Dirty Air Tab</div>
+                        <div class="panel-tools-note">The shared link keeps the selected race and embeds both charts together.</div>
+                    </div>
+                    <div class="share-tools">
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-dirty-air"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Share tab</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-dirty-air"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed tab</button>
+                    </div>
+                </div>
+                <div id="dirty-air-table" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-track-dominance" role="tabpanel" aria-labelledby="tab-track-dominance" hidden>
+            <div class="track-dom-wrap">
+                <div class="track-dom-intro">
+                    <div class="track-dom-kicker">Telemetry · <span id="track-dominance-year">2026</span></div>
+                    <h2 class="track-dom-title">Track Dominance</h2>
+                    <p class="track-dom-sub">Σύγκρινε το fastest lap δύο οδηγών από το ίδιο completed session και δες πού κερδίζει χρόνο ο καθένας πάνω στην πίστα.</p>
+                </div>
+                <div class="panel-tools">
+                    <div class="panel-tools-copy">
+                        <div class="panel-tools-title">Track Dominance Tab</div>
+                        <div class="panel-tools-note">The shared link keeps the selected session and both drivers.</div>
+                    </div>
+                    <div class="share-tools">
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-track-dominance"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Share tab</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-track-dominance"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed tab</button>
+                    </div>
+                </div>
+                <div id="track-dominance-table" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-pit-stops" role="tabpanel" aria-labelledby="tab-pit-stops" hidden>
+            <div class="pit-stops-wrap">
+                <div class="pit-stops-intro">
+                    <div class="pit-stops-kicker">Pit Stops · <span id="pit-stops-year">2026</span></div>
+                    <h2 class="pit-stops-title">Fastest Pit Stops</h2>
+                    <p class="pit-stops-sub">Ταχύτερο pit stop ανά οδηγό και ομάδα — ανά αγώνα ή season-best ranking.</p>
+                </div>
+                <div class="panel-tools">
+                    <div class="panel-tools-copy">
+                        <div class="panel-tools-title">Pit Stops Tab</div>
+                        <div class="panel-tools-note">Share the fastest pit stop analysis or embed it in your page.</div>
+                    </div>
+                    <div class="share-tools">
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-pit-stops"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Share tab</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-pit-stops"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed tab</button>
+                    </div>
+                </div>
+                <div id="pit-stops-table" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-debrief" role="tabpanel" aria-labelledby="tab-debrief" hidden>
+            <div class="debrief-wrap">
+                <div class="debrief-intro">
+                    <div class="debrief-kicker">Friday Practice · <span id="debrief-year">2026</span></div>
+                    <h2 class="debrief-title">Friday Debrief</h2>
+                    <p class="debrief-sub">Ανάλυση δεδομένων FP1/FP2: single-lap pace, long-run pace και tyre degradation ανά Grand Prix, βασισμένα στο FIA Friday Debrief.</p>
+                </div>
+                <div class="panel-tools">
+                    <div class="panel-tools-copy">
+                        <div class="panel-tools-title">Debrief Tab</div>
+                        <div class="panel-tools-note">The shared link preserves the selected GP round and sub-view.</div>
+                    </div>
+                    <div class="share-tools">
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-debrief"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Share tab</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-debrief"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed tab</button>
+                    </div>
+                </div>
+                <div id="debrief-table" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <div class="standings-panel" id="panel-destructors" role="tabpanel" aria-labelledby="tab-destructors" hidden>
+            <div class="destructors-wrap">
+                <div class="destructors-intro">
+                    <div class="destructors-kicker">Crash Costs · <span id="destructors-year">2026</span></div>
+                    <h2 class="destructors-title">Destructors Championship</h2>
+                    <p class="destructors-sub">Team damage bars και driver-to-team flow chart σε ένα tabbed view, βασισμένα στο destructors snapshot των εικόνων.</p>
+                </div>
+                <div class="panel-tools">
+                    <div class="panel-tools-copy">
+                        <div class="panel-tools-title">Destructors Tab</div>
+                        <div class="panel-tools-note">The shared link keeps the active destructors chart view.</div>
+                    </div>
+                    <div class="share-tools">
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-destructors"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Share tab</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-destructors"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed tab</button>
+                    </div>
+                </div>
+                <div id="destructors-table" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <div class="data-source">
+            Δεδομένα από <a href="https://github.com/jolpica/jolpica-f1" target="_blank" rel="noopener">Jolpica F1</a> &amp; <a href="https://openf1.org" target="_blank" rel="noopener">OpenF1</a> · Ενημέρωση μετά από κάθε αγώνα
         </div>
     </div>
 </main>
 
 <button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Επιστροφή στην κορυφή"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
-
-<div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
-    <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
-        <div class="cookie-actions">
-            <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
-            <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
-        </div>
-    </div>
-</div>
+<div class="share-feedback" id="share-feedback" aria-live="polite"></div>
 
 <!-- @include partials/footer.html -->
 <!-- @include:begin partials/footer.html -->
@@ -380,17 +461,19 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" id="standings-clear-cache">Εκκαθάριση cache</button>
                 </div>
             </div>
         </div>
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
-<script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
 <script defer src="/scripts/shared-nav.min.js?v=82e4e5cd"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
-<script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
+<script defer src="/scripts/sw-register.min.js?v=c4974617"></script>
+
+<script type="module" src="standings.min.js?v=27ec3880"></script>
+<script nomodule src="standings-nomodule.min.js?v=895b387e"></script>
 </body>
 </html>

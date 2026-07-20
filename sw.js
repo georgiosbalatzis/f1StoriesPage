@@ -158,11 +158,6 @@ var SHELL_ASSETS = [
   '/standings/index.html',
   '/standings/standings.min.css',
   '/standings/standings.min.js',
-  '/standings/core/format.min.js',
-  '/standings/core/teams.min.js',
-  '/standings/core/drivers-meta.min.js',
-  '/standings/core/cache.min.js',
-  '/standings/core/fetchers.min.js',
   // Primary font weights — matched to FONT_PRELOADS in stamp-html.mjs.
   // Kept deliberately narrow: Roboto 400/700 (homepage), DM Sans 400 +
   // Outfit 700 (blog/standings). Other subsets fetch on demand.

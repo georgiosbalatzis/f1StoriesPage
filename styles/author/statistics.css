@@ -155,8 +155,24 @@ body.statistics-page {
 }
 
 body.stats-ga-missing .stats-connect {
-    display: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    max-width: 620px;
+    margin: 1rem auto;
+    padding: 1.25rem;
 }
+body.stats-ga-missing #stats-kpis,
+body.stats-ga-missing .stats-dashboard { display: none; }
+body.stats-ga-missing .stats-connect .stats-field,
+body.stats-ga-missing #stats-refresh-btn { display: none; }
+body.stats-ga-missing .stats-connect::before {
+    content: 'Σύνδεσε το Google Analytics για να εμφανιστούν τα στατιστικά επισκεψιμότητας.';
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+body.stats-ga-missing .stats-connect #stats-connect-btn { width: 100%; min-height: 48px; }
 
 .stats-field {
     display: grid;

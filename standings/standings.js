@@ -79,15 +79,17 @@ const REPORT_DETAILS = {
 };
 // Phase 6C: every heavy tab now lives in its own module while the
 // drivers/constructors tables keep rendering from this shell.
-const TAB_MODULES = {
-    'destructors': './tabs/destructors.js',
-    'pit-stops': './tabs/pit-stops.js',
-    'quali-gaps': './tabs/quali-gaps.js',
-    'lap1-gains': './tabs/lap1-gains.js',
-    'tyre-pace': './tabs/tyre-pace.js',
-    'dirty-air': './tabs/dirty-air.js',
-    'track-dominance': './tabs/track-dominance.js',
-    'debrief': './tabs/debrief.js'
+// Keep each lazy import as a literal so esbuild can place every tab in its
+// own split chunk and hoist shared core utilities into common chunks.
+const TAB_LOADERS = {
+    'destructors': function() { return import('./tabs/destructors.js'); },
+    'pit-stops': function() { return import('./tabs/pit-stops.js'); },
+    'quali-gaps': function() { return import('./tabs/quali-gaps.js'); },
+    'lap1-gains': function() { return import('./tabs/lap1-gains.js'); },
+    'tyre-pace': function() { return import('./tabs/tyre-pace.js'); },
+    'dirty-air': function() { return import('./tabs/dirty-air.js'); },
+    'track-dominance': function() { return import('./tabs/track-dominance.js'); },
+    'debrief': function() { return import('./tabs/debrief.js'); }
 };
 const SHARE_TARGETS = {
     'panel-drivers': { tab: 'drivers', title: 'Driver standings tab', height: 980 },
@@ -601,10 +603,6 @@ function isLightweightTab(tabName) {
     return LIGHTWEIGHT_TABS.indexOf(tabName) !== -1;
 }
 
-function resolveModulePath(path) {
-    return path.replace(/\.js$/, '.min.js');
-}
-
 // Phase 7: per-tab stylesheets are lazily injected. Drivers + constructors
 // render against the shell (standings.min.css) alone; the other eight tabs
 // each live in /standings/tabs/<id>.min.css and load on first activation.
@@ -643,10 +641,10 @@ function ensureTabStylesheet(tabName) {
 
 function loadTabModule(tabName) {
     if (tabModulePromises[tabName]) return tabModulePromises[tabName];
-    const modulePath = TAB_MODULES[tabName];
-    if (!modulePath) return Promise.resolve(null);
+    const loadModule = TAB_LOADERS[tabName];
+    if (!loadModule) return Promise.resolve(null);
 
-    tabModulePromises[tabName] = import(resolveModulePath(modulePath)).then(function(mod) {
+    tabModulePromises[tabName] = loadModule().then(function(mod) {
         tabModuleInstances[tabName] = mod;
         if (tabName === 'destructors') {
             if (typeof mod.initDestructors === 'function') {
@@ -821,7 +819,7 @@ function activateStandingsTab(tabName, options) {
     // Heavy analysis tabs are all module-backed after Phase 6C. The
     // orchestrator owns every tab switch; drivers/constructors still render
     // inline from this shell.
-    const hasModule = !!TAB_MODULES[nextTab];
+    const hasModule = !!TAB_LOADERS[nextTab];
 
     ensureTabStylesheet(nextTab);
     activeStandingsTab = nextTab;
@@ -1525,10 +1523,12 @@ function init() {
     pendingDebriefRound = initialURLState.debriefRound;
     pendingDebriefView = initialURLState.debriefView;
 
-    if (driversTable) renderTrustedHtml(driversTable, skelRows(EXPECTED_DRIVER_ROWS), 'initial driver standings skeleton rows');
-    if (constructorsTable) renderTrustedHtml(constructorsTable, skelRows(EXPECTED_CONSTRUCTOR_ROWS), 'initial constructor standings skeleton rows');
+    // Keep the first viewport useful while the tracked snapshot is fetched;
+    // only the rows currently affected by the refresh need a placeholder.
+    if (driversTable) renderTrustedHtml(driversTable, skelRows(3), 'loading driver standings rows');
+    if (constructorsTable) renderTrustedHtml(constructorsTable, skelRows(3), 'loading constructor standings rows');
     if (driversChart) driversChart.style.display = 'block';
-    if (driversChartBars) renderTrustedHtml(driversChartBars, skelChartRows(10), 'initial driver standings chart skeleton rows');
+    if (driversChartBars) renderTrustedHtml(driversChartBars, skelChartRows(2), 'loading driver standings chart rows');
 
     ['qualifying-gaps-year', 'lap1-gains-year', 'tyre-pace-year', 'dirty-air-year', 'track-dominance-year', 'pit-stops-year', 'debrief-year', 'destructors-year'].forEach(function(id) {
         const el = document.getElementById(id);

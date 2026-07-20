@@ -60,6 +60,12 @@
     box-shadow: var(--shadow-md);
 }
 
+.legal-toc { position: sticky; top: 72px; z-index: 12; display: flex; align-items: center; gap: .45rem; max-width: 100%; margin: 0 0 1rem; padding: .55rem .7rem; overflow-x: auto; white-space: nowrap; background: color-mix(in srgb, var(--bg-overlay) 94%, transparent); border: 1px solid var(--border); border-radius: 10px; backdrop-filter: blur(14px); scrollbar-width: none; }
+.legal-toc::-webkit-scrollbar { display: none; }
+.legal-toc span { color: var(--text-tertiary); font-size: .72rem; font-weight: 800; }
+.legal-toc a { color: var(--text-secondary); font-size: .78rem; text-decoration: none; padding: .35rem .55rem; border-radius: 999px; }
+.legal-toc a:hover, .legal-toc a:focus-visible { color: var(--accent-readable); background: var(--accent-muted); text-decoration: underline; }
+
 .legal-section + .legal-section {
     margin-top: 2rem;
     padding-top: 2rem;
@@ -185,6 +191,7 @@
 }
 
 @media (max-width: 767.98px) {
+    .legal-toc { top: 58px; margin-inline: -0.2rem; }
     .legal-card {
         border-radius: 18px;
         padding: 1.2rem;

@@ -32,7 +32,7 @@
     "pages:guard": "node scripts/build/pages-source-guard.mjs",
     "quality:rendering": "node scripts/quality/rendering-sink-guard.mjs",
     "quality:rendering:update": "node scripts/quality/rendering-sink-guard.mjs --update",
-    "quality:static": "node scripts/quality/static-source-guard.mjs && npm run quality:rendering",
+    "quality:static": "node scripts/quality/static-source-guard.mjs && node scripts/quality/important-guard.mjs && npm run quality:rendering",
     "audit:runtime": "node scripts/quality/runtime-audit.mjs",
     "perf:budget": "node scripts/perf/size-guard.mjs",
     "perf:budget:update": "node scripts/perf/size-guard.mjs --update",

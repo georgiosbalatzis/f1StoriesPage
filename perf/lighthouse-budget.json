@@ -1,6 +1,7 @@
 {
   "description": "Route-level Lighthouse budgets for the public dist artifact. Scores are percentages; timings are milliseconds.",
-  "throttlingMethod": "provided",
+  "preset": "mobile",
+  "throttlingMethod": "simulate",
   "onlyCategories": [
     "performance",
     "accessibility",
@@ -19,6 +20,10 @@
         "largest-contentful-paint": 2500,
         "cumulative-layout-shift": 0.02,
         "total-blocking-time": 100
+        ,"dom-size": 1400,
+        "initial-js-bytes": 180000,
+        "route-css-bytes": 180000,
+        "third-party-requests": 8
       }
     },
     {
@@ -32,6 +37,10 @@
         "largest-contentful-paint": 2500,
         "cumulative-layout-shift": 0.02,
         "total-blocking-time": 100
+        ,"dom-size": 1800,
+        "initial-js-bytes": 220000,
+        "route-css-bytes": 220000,
+        "third-party-requests": 8
       }
     },
     {
@@ -45,6 +54,10 @@
         "largest-contentful-paint": 2500,
         "cumulative-layout-shift": 0.02,
         "total-blocking-time": 100
+        ,"dom-size": 1800,
+        "initial-js-bytes": 180000,
+        "route-css-bytes": 220000,
+        "third-party-requests": 8
       }
     }
   ]

@@ -98,15 +98,6 @@ const SOURCE_FILES = [
 
 const MINIFIED_JS_SOURCES = new Set([
     'standings/standings.js',
-    'standings/core/format.js',
-    'standings/core/teams.js',
-    'standings/core/drivers-meta.js',
-    'standings/core/cache.js',
-    'standings/core/fetchers.js',
-    'standings/core/lifecycle.js',
-    'standings/core/payloads.js',
-    'standings/core/rendering.js',
-    'standings/tabs/_shared.js',
     'standings/tabs/destructors.js',
     'standings/tabs/pit-stops.js',
     'standings/tabs/quali-gaps.js',
@@ -168,6 +159,52 @@ function fmtBytes(b) {
 function loadBudget() {
     if (!fs.existsSync(BUDGET_PATH)) return null;
     return JSON.parse(fs.readFileSync(BUDGET_PATH, 'utf8'));
+}
+
+// Standings is an ESM graph: the shell and every tab entry are emitted once,
+// while shared code lives in hashed chunks. Keep route budgets independent of
+// the content hash so a new chunk cannot silently regress page startup.
+const STANDINGS_BUNDLE_BUDGET = {
+    shellBytes: 45 * 1024,
+    initialGraphBytes: 68 * 1024,
+    lazyEntryBytes: 34 * 1024,
+    sharedChunkBytes: 12 * 1024,
+    lazyTotalBytes: 190 * 1024
+};
+
+function checkStandingsBundleBudgets() {
+    const standingsDir = path.join(REPO_ROOT, 'standings');
+    const shellRel = 'standings/standings.min.js';
+    const shell = fileSize(shellRel);
+    if (shell == null) return [];
+    const files = fs.readdirSync(path.join(standingsDir, 'tabs'), { withFileTypes: true })
+        .filter(entry => entry.isFile() && entry.name.endsWith('.min.js'))
+        .map(entry => `standings/tabs/${entry.name}`);
+    const chunksDir = path.join(standingsDir, 'chunks');
+    const chunks = fs.existsSync(chunksDir)
+        ? fs.readdirSync(chunksDir, { withFileTypes: true })
+            .filter(entry => entry.isFile() && entry.name.endsWith('.min.js'))
+            .map(entry => `standings/chunks/${entry.name}`)
+        : [];
+    const directImports = fs.readFileSync(path.join(REPO_ROOT, shellRel), 'utf8')
+        .match(/(?:\.\/)?chunks\/[^"']+\.min\.js/g) || [];
+    const initialGraph = shell + [...new Set(directImports)].reduce((sum, spec) => {
+        return sum + fileSize(`standings/${spec.replace(/^\.\//, '')}`);
+    }, 0);
+    const violations = [];
+    if (shell > STANDINGS_BUNDLE_BUDGET.shellBytes) violations.push(`${shellRel} ${fmtBytes(shell)} > ${fmtBytes(STANDINGS_BUNDLE_BUDGET.shellBytes)}`);
+    if (initialGraph > STANDINGS_BUNDLE_BUDGET.initialGraphBytes) violations.push(`standings initial graph ${fmtBytes(initialGraph)} > ${fmtBytes(STANDINGS_BUNDLE_BUDGET.initialGraphBytes)}`);
+    for (const rel of files) {
+        const bytes = fileSize(rel);
+        if (bytes > STANDINGS_BUNDLE_BUDGET.lazyEntryBytes) violations.push(`${rel} ${fmtBytes(bytes)} > ${fmtBytes(STANDINGS_BUNDLE_BUDGET.lazyEntryBytes)}`);
+    }
+    for (const rel of chunks) {
+        const bytes = fileSize(rel);
+        if (bytes > STANDINGS_BUNDLE_BUDGET.sharedChunkBytes) violations.push(`${rel} ${fmtBytes(bytes)} > ${fmtBytes(STANDINGS_BUNDLE_BUDGET.sharedChunkBytes)}`);
+    }
+    const lazyTotal = [...files, ...chunks].reduce((sum, rel) => sum + fileSize(rel), 0);
+    if (lazyTotal > STANDINGS_BUNDLE_BUDGET.lazyTotalBytes) violations.push(`standings lazy total ${fmtBytes(lazyTotal)} > ${fmtBytes(STANDINGS_BUNDLE_BUDGET.lazyTotalBytes)}`);
+    return violations;
 }
 
 function writeBudget(budget) {
@@ -245,6 +282,12 @@ function main() {
     }
     if (newFiles > 0) {
         console.log(`ℹ ${newFiles} new file(s) not in budget yet. Run: npm run perf:budget:update`);
+    }
+    const standingsViolations = checkStandingsBundleBudgets();
+    if (standingsViolations.length) {
+        console.error('✗ standings bundle budget exceeded:');
+        standingsViolations.forEach(message => console.error(`  - ${message}`));
+        process.exit(1);
     }
     console.log('✓ all tracked files within budget.');
 }

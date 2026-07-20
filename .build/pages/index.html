@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <script src="/scripts/perf/error-beacon.min.js?v=59367e85"></script>
+    <script type="module" src="/scripts/runtime/index.min.js?v=0efbbf8a"></script>
     <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
@@ -17,68 +18,67 @@
     <meta name="apple-mobile-web-app-title" content="F1 Stories">
     <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
     <!-- @include:end partials/head-meta.html -->
-    <title>ARTICLE_TITLE_TEXT | F1 Stories</title>
-    <meta name="description" content="ARTICLE_EXCERPT_ATTR">
-    <meta property="og:title" content="ARTICLE_TITLE_ATTR | F1 Stories">
-    <meta property="og:description" content="ARTICLE_EXCERPT_ATTR">
-    <meta property="og:image" content="ARTICLE_IMAGE_URL_ATTR">
-    <meta property="og:url" content="ARTICLE_URL_ATTR">
-    <meta property="og:type" content="article">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="ARTICLE_TITLE_ATTR | F1 Stories">
-    <meta name="twitter:description" content="ARTICLE_EXCERPT_ATTR">
-    <meta name="twitter:image" content="ARTICLE_IMAGE_URL_ATTR">
-    <link rel="canonical" href="ARTICLE_URL_ATTR">
-
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": ARTICLE_TITLE_JSON,
-        "description": ARTICLE_EXCERPT_JSON,
-        "image": ARTICLE_IMAGE_URL_JSON,
-        "datePublished": ARTICLE_DATE_ISO_JSON,
-        "dateModified": ARTICLE_DATE_ISO_JSON,
-        "author": { "@type": "Person", "name": ARTICLE_AUTHOR_JSON },
-        "publisher": { "@type": "Organization", "name": "F1 Stories", "logo": { "@type": "ImageObject", "url": "https://f1stories.gr/images/icons/icon-512.png" } },
-        "mainEntityOfPage": { "@type": "WebPage", "@id": ARTICLE_URL_JSON }
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "F1 Stories", "item": "https://f1stories.gr/" },
-            { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://f1stories.gr/blog-module/blog/index.html" },
-            { "@type": "ListItem", "position": 3, "name": ARTICLE_TITLE_JSON }
-        ]
-    }
-    </script>
-
-    <link rel="stylesheet" href="/styles/fonts.min.css?v=2397fa86">
+    <title>F1 Stories</title>
+    <meta name="description" content="Το F1 Stories συγκεντρώνει αναλύσεις αγώνων, τεχνικά άρθρα, ιστορίες από το paddock, podcast επεισόδια και data-driven εργαλεία για τη Formula 1.">
+    <meta property="og:title" content="F1 Stories">
+    <meta property="og:description" content="Το F1 Stories συγκεντρώνει αναλύσεις αγώνων, τεχνικά άρθρα, ιστορίες από το paddock, podcast επεισόδια και data-driven εργαλεία για τη Formula 1.">
+    <meta property="og:url" content="https://f1stories.gr/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://f1stories.gr/images/icons/icon-512.png">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="1024">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="F1 Stories">
+    <meta name="twitter:description" content="Το F1 Stories συγκεντρώνει αναλύσεις αγώνων, τεχνικά άρθρα, ιστορίες από το paddock, podcast επεισόδια και data-driven εργαλεία για τη Formula 1.">
+    <meta name="twitter:image" content="https://f1stories.gr/images/icons/icon-512.png">
+    <link rel="canonical" href="https://f1stories.gr/">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/icons/favicon-16.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link id="hero-image-preload" rel="preload" as="image" fetchpriority="high" imagesizes="100vw">
+    <script src="/scripts/hero-background-init.min.js?v=f0de6eba"></script>
+    <link rel="preload" href="/blog-module/home-latest.json" as="fetch" crossorigin>
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
     <!-- f1s:fonts-preload:begin -->
-    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/dm-sans-400.woff2?v=468d56b6" crossorigin>
-    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/outfit-700.woff2?v=92684e4a" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/roboto-400.woff2?v=0a44e0bb" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/roboto-700.woff2?v=0a44e0bb" crossorigin>
     <!-- f1s:fonts-preload:end -->
     <!-- f1s:critical-css:begin -->
     <style id="f1s-critical" data-hash="b8b48682">:root{--bg-base:#111113;--bg-surface:#161618;--bg-overlay:#111113eb;--text-primary:#e5e5e7;--text-secondary:#a1a1a6;--accent:#41b6e6;--accent-readable:#41b6e6;--border:#ffffff14;--font-body:"Roboto", system-ui, -apple-system, sans-serif;--f1s-hero-position:center center;--f1s-hero-mobile-position:center center;--radius-lg:14px;--space-md:1rem;--space-lg:1.5rem}*{box-sizing:border-box}html{-moz-text-size-adjust:100%;text-size-adjust:100%}body{font-family:var(--font-body);color:var(--text-primary);background-color:var(--bg-base);min-height:100svh;margin:0;padding:0;position:relative;overflow-x:hidden}.background{background:var(--bg-base);z-index:-2;width:100%;height:100%;position:fixed;top:0;left:0}.streak{z-index:-1;opacity:0;position:fixed}@media (min-width:769px){.streak{opacity:.5}}.skip-link{background:var(--accent);color:var(--bg-base);z-index:10000;border-radius:0 0 6px 6px;padding:.5rem 1.5rem;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,Arial,sans-serif;font-size:.875rem;font-weight:700;text-decoration:none;position:absolute;top:-100%;left:50%;transform:translate(-50%)}.skip-link:focus{top:0}.blog-nav{z-index:1060;-webkit-backdrop-filter:blur(20px)saturate(1.4);backdrop-filter:blur(20px)saturate(1.4);border-bottom:1px solid var(--border);background:#111113d9;position:fixed;top:0;left:0;right:0}.blog-nav-inner{align-items:center;gap:1.5rem;min-height:58px;padding:.6rem 0;display:flex}.blog-nav-brand img{object-fit:contain;width:38px;height:38px;display:block}.blog-nav-links{align-items:center;gap:.25rem;margin-left:.5rem;display:flex}.blog-nav-link{color:#fff9;white-space:nowrap;border-radius:8px;align-items:center;gap:.4rem;padding:.45rem .85rem;font-size:.82rem;font-weight:500;text-decoration:none;display:flex}.blog-nav-right{align-items:center;gap:.5rem;margin-left:auto;display:flex}.blog-nav-countdown{background:#ffffff0a;border:1px solid #ffffff14;border-radius:10px;align-items:center;gap:.5rem;padding:.35rem .75rem;display:flex}.countdown-info{flex-direction:column;line-height:1.2;display:flex}.countdown-race{color:#ffffff61;white-space:nowrap;text-overflow:ellipsis;max-width:140px;font-size:.68rem;font-weight:500;overflow:hidden}.countdown-timer{color:#41b6e6;font-variant-numeric:tabular-nums;letter-spacing:.02em;font-size:.78rem;font-weight:700}.countdown-flag{font-size:1.1rem;line-height:1}.countdown-flag-mobile{color:currentColor;font-size:1rem;line-height:1}.blog-nav-countdown-mobile{color:#41b6e6;white-space:nowrap;align-items:center;gap:.35rem;font-size:.78rem;font-weight:600;display:none}body:not(.standings-embed)>.theme-toggle-btn:not(.theme-toggle-menu-btn):not(.theme-toggle-nav-btn){display:none}.blog-nav-hamburger{background:0 0;border:0;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:44px;height:44px;padding:8px;display:none}.blog-nav-hamburger span{background:#fff9;border-radius:2px;width:22px;height:2px;display:block}[data-theme=light] .blog-nav-hamburger span{background:#6e6e73}.blog-nav-mobile{background:#111113f7;border-top:1px solid #0000;max-height:0;padding:0 1rem;display:none;overflow:hidden}.blog-nav-mobile-link{color:#fff9;border-radius:8px;align-items:center;gap:.6rem;padding:.75rem .85rem;text-decoration:none;display:flex}@media (max-width:991px){.blog-nav-links{display:none}.blog-nav-hamburger{display:flex}.blog-nav-mobile{display:block}}@media (max-width:767px){.blog-nav-countdown{display:none}.blog-nav-countdown-mobile{display:flex}}@media (max-width:575.98px){.blog-nav-inner{gap:.75rem;padding-right:calc(44px + 1.5rem)}.blog-nav-right{gap:.25rem;min-width:0}.blog-nav-countdown-mobile{flex-shrink:0;display:flex}.blog-nav-hamburger{z-index:1062;position:fixed;top:11px;right:12px;display:flex!important}}.cookie-banner,.cookie-consent{z-index:9999;width:100%;max-height:min(28vh,240px);color:var(--text-primary);opacity:0;visibility:hidden;contain:layout style;background:#111113e6;border-top:1px solid #ffffff14;border-radius:12px 12px 0 0;position:fixed;bottom:0;left:0;overflow-y:auto;transform:translateY(100%);box-shadow:0 -4px 16px #00000052}.cookie-banner.show,.cookie-consent.show{opacity:1;visibility:visible;transform:translateY(0)}.cookie-banner.show:not(.is-ready),.cookie-consent.show:not(.is-ready){opacity:0;visibility:hidden;transform:translateY(100%)}.cookie-content{max-width:1200px;color:var(--text-primary);margin:0 auto;padding:.56rem .74rem .62rem}.cookie-header{border-bottom:0;justify-content:space-between;align-items:center;margin-bottom:0;padding-bottom:0;display:flex}.cookie-header h3{color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin:0;font-size:.76rem}.close-btn{width:32px;height:32px;color:var(--text-secondary);background:0 0;border:0;justify-content:center;align-items:center;display:flex}.cookie-intro,.cookie-content>p{margin:0;font-size:.76rem;line-height:1.3}.cookie-details{border:0;border-radius:8px;margin:0;overflow:hidden}.cookie-details[open]{border:1px solid #ffffff14;margin-top:.12rem;padding:.52rem}.cookie-settings-summary{width:max-content;max-width:100%;color:var(--accent);padding:.18rem 0;font-size:.76rem;font-weight:700}.cookie-actions{flex-wrap:wrap;justify-content:flex-end;gap:.42rem;margin:0;display:flex}.cookie-btn{white-space:nowrap;border:0;border-radius:5px;min-width:0;padding:.46rem .68rem;font-size:.85rem;font-weight:700}.decline{min-height:auto;color:var(--text-secondary);background:0 0;border-color:#0000;padding:.35rem .2rem}.cookie-details:not([open])~.cookie-actions .reject-btn,.cookie-details:not([open])~.cookie-actions .accept-selected-btn{display:none}.cookie-footer{justify-content:center;gap:2rem;margin-top:.65rem;font-size:.8rem;display:flex}@media (max-width:767.98px){.cookie-banner,.cookie-consent{border-radius:12px 12px 0 0;max-height:min(22vh,156px)}.cookie-content{max-width:100%;padding:.48rem .76rem max(.56rem, env(safe-area-inset-bottom))}.cookie-header{margin-bottom:0}.cookie-intro,.cookie-content>p{font-size:.72rem}.cookie-details{margin-top:0}.cookie-actions{flex-direction:row;gap:.38rem;width:100%;margin:0;display:flex}.cookie-btn{text-overflow:ellipsis;width:100%;max-width:100%;padding:.46rem .5rem;font-size:clamp(.7rem,2.45vw,.78rem);overflow:hidden}.cookie-footer{display:none}}#hero{color:#fff;clip-path:polygon(0 0,100% 0,100% 94%,0 100%);justify-content:center;align-items:center;min-height:clamp(410px,45vh,470px);margin-top:70px;padding:3.35rem 0 2.65rem;display:flex;position:relative;overflow:hidden}.hero-overlay{z-index:-1;opacity:.92;position:absolute;inset:0;overflow:hidden}.hero-overlay picture,.hero-overlay img{width:100%;height:100%;display:block}.hero-overlay.image-bg img{object-fit:cover;object-position:var(--f1s-hero-position,center center);transform:scale(1.015)}#hero:before{content:"";z-index:-1;background:linear-gradient(90deg,#05070af0 0%,#080b10d1 34%,#080a0e6b 64%,#0506084d 100%);position:absolute;inset:0}.hero-content{max-width:640px;padding:0 var(--space-md)}.hero-content h1{margin:0 0 var(--space-md);text-shadow:0 3px 24px #0000009e;max-width:10ch;font-size:clamp(2.15rem,3.45vw,3.35rem);line-height:1.03}.hero-content p{margin-bottom:var(--space-lg);color:#ffffffe0;text-shadow:0 2px 18px #0009;font-size:clamp(.96rem,1.45vw,1.08rem)}@media (max-width:767.98px){#hero{clip-path:none;min-height:350px;padding:2rem 0 1.55rem}.hero-overlay.image-bg img{object-position:var(--f1s-hero-mobile-position,var(--f1s-hero-position,center center))}.hero-content{text-align:center;max-width:540px;margin:0 auto}.hero-content h1{margin-left:auto;margin-right:auto;font-size:1.68rem}.hero-content p{font-size:.88rem}}@media (max-width:575.98px){#hero{min-height:310px;padding:1.45rem 0 .98rem}.hero-content{text-align:left;padding-left:1.5rem;padding-right:1.5rem}.hero-content h1{margin-left:0;margin-right:0}.hero-content p{max-width:17.5rem;margin-left:0;margin-right:0;font-size:.88rem;line-height:1.36}}[data-theme=light]{--bg-base:#fff;--bg-surface:#f5f5f7;--bg-overlay:#ffffffeb;--text-primary:#1d1d1f;--text-secondary:#6e6e73;--accent:#41b6e6;--accent-readable:#0a4f66;--border:#00000014}[data-theme=light] body{color:#1d1d1f;background-color:#fff}[data-theme=light] .background{background:#fff}[data-theme=light] .streak{display:none}[data-theme=light] .blog-nav{background:#ffffffd1;border-bottom-color:#0000000f}[data-theme=light] .blog-nav-link{color:#6e6e73}[data-theme=light] .countdown-timer,[data-theme=light] .blog-nav-countdown-mobile{color:var(--accent-readable)}.icon{fill:currentColor;vertical-align:-.125em;flex-shrink:0;width:1em;height:1em;display:inline-block}.fa-spin{animation:2s linear infinite fa-spin}@keyframes fa-spin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}</style>
     <!-- f1s:critical-css:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=47d874df">
-    <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
-    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
-    <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
-    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=b7ef430e">
-    <link rel="stylesheet" href="/theme-overrides.min.css?v=a6310352">
-
-    <!-- Preload hero image for LCP -->
-    <link rel="preload" as="image" href="ARTICLE_IMAGE_ATTR" fetchpriority="high">
-
+    <link rel="stylesheet" href="styles.min.css?v=9998de30">
+    <link rel="stylesheet" href="home.min.css?v=99f47cde">
+    <link rel="stylesheet" href="theme-overrides.min.css?v=a6310352">
+    <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=ddc0d19c">
+    <link rel="stylesheet" href="styles/shared-nav.min.css?v=93b1f6a3">
+    <link rel="stylesheet" href="/styles/fonts.min.css?v=2397fa86">
     <script defer src="/scripts/analytics.min.js?v=98a1ee70"></script>
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
-
-    <!-- Prevent FOUC -->
+<script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "F1 Stories",
+            "alternateName": "F1 Stories",
+            "url": "https://f1stories.gr/",
+            "description": "Το F1 Stories συγκεντρώνει αναλύσεις αγώνων, τεχνικά άρθρα, ιστορίες από το paddock, podcast επεισόδια και data-driven εργαλεία για τη Formula 1.",
+            "inLanguage": "el",
+            "publisher": {
+                "@type": "Organization",
+                "name": "F1 Stories",
+                "url": "https://f1stories.gr/",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://f1stories.gr/images/icons/icon-512.png"
+                },
+                "sameAs": [
+                    "https://www.youtube.com/@f1_stories_original",
+                    "https://www.facebook.com/f1storiess",
+                    "https://www.instagram.com/myf1stories/",
+                    "https://www.tiktok.com/@f1stories6"
+                ]
+            }
+        }
+    </script>
 </head>
 <body>
 <!-- f1s:icon-sprite:begin -->
@@ -158,209 +158,238 @@
 <div class="background"></div>
 <div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
 
-<!-- Reading Progress Bar -->
-<div class="reading-progress-track" aria-hidden="true">
-    <div class="reading-progress-fill" id="reading-progress"></div>
-</div>
-
-<!-- Theme Toggle -->
-<button class="theme-toggle-btn" id="theme-toggle" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
-    <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
-    <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
-</button>
-
-<!-- Navbar -->
-<header>
-    <nav class="blog-nav" id="blog-nav">
-        <div class="container blog-nav-inner">
-            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"></a>
-            <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
-                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
-                <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
+<!-- ═══ NAVBAR — stays in English ═══ -->
+<nav class="blog-nav" id="blog-nav">
+    <div class="container blog-nav-inner">
+        <a class="blog-nav-brand" href="/" aria-label="Αρχική σελίδα F1 Stories"><img src="/images/logo-nav.webp" alt="Λογότυπο F1 Stories" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"></a>
+        <div class="blog-nav-links" id="nav-links">
+            <a href="/" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
+            <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
+        </div>
+        <div class="blog-nav-right">
+            <div class="blog-nav-countdown" id="nav-countdown">
+                <span class="countdown-flag" id="race-flag-emoji">🏁</span>
+                <div class="countdown-info">
+                    <span class="countdown-race" id="next-race-name">Φόρτωση...</span>
+                    <span class="countdown-timer" id="race-countdown">--</span>
+                </div>
             </div>
-            <div class="blog-nav-right">
-                <div class="blog-nav-countdown" id="nav-countdown">
-                    <span class="countdown-flag" id="race-flag-emoji">🏁</span>
-                    <div class="countdown-info">
-                        <span class="countdown-race" id="next-race-name">Φόρτωση...</span>
-                        <span class="countdown-timer" id="race-countdown">--</span>
+            <div class="blog-nav-countdown-mobile" id="nav-countdown-mobile">
+                <svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg>
+                <span id="race-countdown-mobile">--</span>
+            </div>
+            <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
+        </div>
+    </div>
+    <div class="blog-nav-mobile" id="nav-mobile">
+        <a href="/" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
+        <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+        <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
+        <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+        <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
+        <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
+            <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
+            <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
+            <span class="theme-toggle-label-dark">Light mode</span>
+            <span class="theme-toggle-label-light">Dark mode</span>
+        </button>
+    </div>
+</nav>
+
+<main id="main">
+<!-- ═══ HERO — Greek text ═══ -->
+<section id="hero">
+    <div class="hero-overlay image-bg" aria-hidden="true">
+        <picture id="hero-picture">
+            <source id="hero-source-avif" type="image/avif">
+            <source id="hero-source-webp" type="image/webp">
+            <img id="hero-image" src="/images/bg/bg3.webp" alt="" loading="eager" fetchpriority="high" decoding="async" width="1920" height="1080" sizes="100vw">
+        </picture>
+    </div>
+    <div class="container hero-shell"><div class="hero-content">
+        <div class="hero-brand-lockup" aria-label="F1 Stories">
+            <img class="hero-brand-mark" src="/images/logo-nav.webp" alt="" loading="eager" decoding="async" width="96" height="96">
+            <span>F1 Stories</span>
+        </div>
+        <h1>F1stories</h1>
+        <p class="hero-subtitle">Οι δικές μας απόψεις για τον μαγικό κόσμο της F1.</p>
+        <div class="hero-ctas" aria-label="Κύριες ενέργειες">
+            <a href="/blog-module/blog/index.html" class="cta-button cta-primary"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Τελευταία άρθρα</a>
+            <a href="/standings/" class="cta-button cta-secondary"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+        </div>
+    </div></div>
+</section>
+
+<!-- ═══ LATEST SECTION — Greek ═══ -->
+<section id="latest" class="fade-in">
+    <div class="container">
+        <div class="latest-layout">
+            <div class="latest-main">
+                <div class="section-intro">
+                    <span class="section-kicker">Τελευταία</span>
+                    <h2>Περιεχόμενα</h2>
+                    <p class="section-intro__text">Στρατηγική, ρυθμός, λάθη, αποφάσεις και πρόσωπα. Όσα μένουν όταν πέσει η καρό σημαία.</p>
+                </div>
+                <div class="latest-panel active" id="panel-articles" role="tabpanel" aria-labelledby="tab-articles">
+                    <div class="latest-panel-visual latest-panel-visual--articles" aria-hidden="true">
+                        <svg class="icon"><use href="#fa-newspaper"/></svg>
+                        <span class="latest-visual-label">Blog</span>
+                        <span class="latest-panel-visual__lines"><span></span><span></span><span></span></span>
                     </div>
+                    <div class="blog-posts latest-stories-feed"><div class="col-12 text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Φόρτωση...</span></div></div></div>
+                    <div class="latest-footer-actions"><a href="/blog-module/blog/index.html" class="cta-button cta-secondary cta-sm">Όλα τα άρθρα <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></a></div>
                 </div>
-                <div class="blog-nav-countdown-mobile" id="nav-countdown-mobile">
-                    <span class="countdown-flag-mobile" data-race-flag-mobile aria-hidden="true">🏁</span>
-                    <span id="race-countdown-mobile">--</span>
+            </div>
+            <aside class="latest-aside" aria-label="Δευτερεύουσες διαδρομές">
+                <div class="latest-aside-card">
+                    <div class="latest-aside-visual latest-aside-visual--podcast" aria-hidden="true">
+                        <svg class="icon"><use href="#fa-youtube"/></svg>
+                        <span class="latest-visual-label">Media</span>
+                        <span class="latest-aside-visual__pulse"><span></span><span></span><span></span><span></span></span>
+                    </div>
+                    <span class="section-kicker">Podcast</span>
+                    <h3>Απολογισμός αγώνα σε βίντεο</h3>
+                    <p>Σχόλια, διαφωνίες και συμπεράσματα μετά το Grand Prix, με τη λογική της παρέας αλλά χωρίς εύκολες υπερβολές.</p>
+                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="cta-button cta-secondary cta-sm latest-aside-button">Δείτε στο YouTube <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></a>
                 </div>
-                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
+                <div class="latest-aside-card latest-aside-card--muted">
+                    <div class="latest-aside-visual latest-aside-visual--data" aria-hidden="true">
+                        <svg class="icon"><use href="#fa-chart-line"/></svg>
+                        <span class="latest-visual-label">Statistics</span>
+                        <span class="latest-aside-visual__grid"><span></span><span></span><span></span><span></span></span>
+                    </div>
+                    <span class="section-kicker">Data</span>
+                    <h3>Βαθμολογία και ρυθμός σε ένα σημείο</h3>
+                    <p>Ποιος κερδίζει έδαφος, ποιος χάνει, και τι δείχνουν οι αριθμοί πέρα από το τελικό αποτέλεσμα.</p>
+                    <a href="/standings/" class="cta-button cta-secondary cta-sm latest-aside-button">Δείτε τα Δεδομένα <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></a>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ PARTNERS ═══ -->
+<section id="home-sponsors" class="sponsor-strip-home">
+    <div class="container">
+        <div class="sponsor-strip-heading">
+            <div class="sponsor-strip-label">Συνεργάτες</div>
+        </div>
+        <div class="sponsor-logos">
+            <a href="https://georgiosbalatzis.github.io/excavatorsPage/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Χωματουργικά">
+                <img src="/images/sponsors/Balatzis.webp" alt="Μπαλατζής Χωματουργικά" loading="lazy" decoding="async" width="612" height="408">
+            </a>
+            <a href="https://pourtsidisgenerators.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Πουρτσίδης Γεννήτριες">
+                <img src="/images/sponsors/ps.webp" alt="Πουρτσίδης Γεννήτριες" loading="lazy" decoding="async" width="612" height="408">
+            </a>
+            <a href="https://georgiosbalatzis.github.io/excavatorsPage/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Δομικά">
+                <img src="/images/sponsors/BalatzisDomika.webp" alt="Μπαλατζής Δομικά" loading="lazy" decoding="async" width="612" height="408">
+            </a>
+            <a href="https://ambrosiadis.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Αμβροσιάδης">
+                <img src="/images/sponsors/am.webp" alt="Αμβροσιάδης" loading="lazy" decoding="async" width="612" height="408">
+            </a>
+            <a href="https://www.bedandhome.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Bed and Home">
+                <img src="/images/sponsors/bedhome.webp" alt="Bed and Home" loading="lazy" decoding="async" width="612" height="408">
+            </a>
+            <a href="https://www.grandrealm.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Grand Realm">
+                <img src="/images/sponsors/GrandRealm.webp" alt="Grand Realm" loading="lazy" decoding="async" width="1536" height="1024">
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ TEAM SECTION — Greek ═══ -->
+<section id="about" class="fade-in">
+    <div class="container">
+        <div class="section-intro section-intro--center">
+            <h2 class="text-center">Η Ομάδα</h2>
+            <p class="section-intro__text">Πέντε φωνές, διαφορετικές αφετηρίες, κοινή αγάπη για τη Formula 1.</p>
+        </div>
+        <div class="team-row">
+            <div class="team-member">
+                <a href="https://www.instagram.com/dimkeram/" target="_blank" rel="noopener">
+                    <img src="images/avatars/dr3R.webp" alt="Δημήτρης Κεραμιδιώτης" class="team-member__avatar" loading="lazy" decoding="async" width="240" height="240">
+                </a>
+                <h3 class="team-member__name">Δημήτρης Κεραμιδιώτης</h3>
+                <span class="team-member__role">Παρουσιαστής</span>
+            </div>
+            <div class="team-member">
+                <a href="https://www.instagram.com/john_pouliks/" target="_blank" rel="noopener">
+                    <img src="images/avatars/SV.webp" alt="Γιάννης Πουλικίδης" class="team-member__avatar" loading="lazy" decoding="async" width="240" height="240">
+                </a>
+                <h3 class="team-member__name">Γιάννης Πουλικίδης</h3>
+                <span class="team-member__role">Παρουσιαστής · Στοιχηματική Ανάλυση</span>
+            </div>
+            <div class="team-member">
+                <a href="https://www.instagram.com/borgos_gialatzis/" target="_blank" rel="noopener">
+                    <img src="images/avatars/CSW.webp" alt="Γιώργος Μπαλατζής" class="team-member__avatar" loading="lazy" decoding="async" width="240" height="240">
+                </a>
+                <h3 class="team-member__name">Γιώργος Μπαλατζής</h3>
+                <span class="team-member__role">Παρουσιαστής · Τεχνικός Αναλυτής</span>
+            </div>
+            <div class="team-member">
+                <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener">
+                    <img src="images/avatars/AS.webp" alt="2 Fast" class="team-member__avatar" loading="lazy" decoding="async" width="240" height="240">
+                </a>
+                <h3 class="team-member__name">2 Fast</h3>
+                <span class="team-member__role">Παρουσιαστής</span>
+            </div>
+            <div class="team-member">
+                <a href="https://www.instagram.com/thanasismpatalas/" target="_blank" rel="noopener">
+                    <img src="images/avatars/LN.webp" alt="Θανάσης Μπαταλάς" class="team-member__avatar" loading="lazy" decoding="async" width="240" height="240">
+                </a>
+                <h3 class="team-member__name">Θανάσης Μπαταλάς</h3>
+                <span class="team-member__role">Παρουσιαστής · Ιστορική Αναδρομή</span>
             </div>
         </div>
-        <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
-            <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
-            <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
-            <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
-                <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
-                <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
-                <span class="theme-toggle-label-dark">Light mode</span>
-                <span class="theme-toggle-label-light">Dark mode</span>
+    </div>
+</section>
+
+<!-- ═══ CONTACT SECTION — Greek ═══ -->
+<section id="contact" class="fade-in">
+    <div class="container"><div class="row justify-content-center"><div class="col-lg-6"><div class="contact-block">
+        <h2>Επικοινωνήστε μαζί μας</h2>
+        <p class="contact-block__intro">Για συνεργασίες, ιδέες θεμάτων ή μήνυμα προς την ομάδα.</p>
+        <form id="contact-form" action="https://formspree.io/f/xjkyeazq" method="POST" class="contact-form">
+            <div class="form-group">
+                <label for="name">Όνομα</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="Το ονοματεπώνυμό σας" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="onoma@paradeigma.gr" inputmode="email" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Μήνυμα</label>
+                <textarea id="message" name="message" class="form-control" placeholder="Γράψτε το μήνυμά σας" rows="4" required></textarea>
+            </div>
+            <div id="form-status" style="display:none">
+                <div id="form-success" class="form-alert form-alert--success" style="display:none">
+                    <svg class="icon" aria-hidden="true"><use href="#fa-check-circle"/></svg>
+                    <span>Το μήνυμα στάλθηκε. Θα επικοινωνήσουμε σύντομα.</span>
+                </div>
+                <div id="form-info" class="form-alert form-alert--info" style="display:none">
+                    <svg class="icon" aria-hidden="true"><use href="#fa-circle-info"/></svg>
+                    <span>Απαιτείται σύντομη επαλήθευση anti-spam. Μεταφέρεσαι σε ασφαλή σελίδα επιβεβαίωσης για να ολοκληρωθεί η αποστολή.</span>
+                </div>
+                <div id="form-error" class="form-alert form-alert--error" style="display:none">
+                    <svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>
+                    <span>Κάτι πήγε στραβά. Δοκίμασε ξανά ή στείλε email στο <a href="mailto:myf1stories@gmail.com">myf1stories@gmail.com</a></span>
+                </div>
+            </div>
+            <label for="contact-gotcha" class="visually-hidden">Μην συμπληρώσετε αυτό το πεδίο</label>
+            <input type="text" id="contact-gotcha" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
+            <button type="submit" class="cta-button cta-primary contact-submit">
+                <span class="submit-text">Αποστολή Μηνύματος</span>
+                <span class="submit-spinner" style="display:none"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-circle-notch"/></svg></span>
             </button>
-        </div>
-    </nav>
-</header>
-
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true">
-    <div class="article-mini-bar__text">
-        <span class="article-mini-bar__category">ARTICLE_TAG_TEXT</span>
-        <span class="article-mini-bar__title">ARTICLE_TITLE_TEXT</span>
-    </div>
-    <button class="article-mini-bar__share" id="article-mini-share" type="button" aria-label="Κοινοποίηση άρθρου">
-        <svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg>
-    </button>
-</div>
-
-<!-- Article -->
-<main id="main" class="article-page-wrapper py-5 mt-5">
-    <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
-                <picture>
-                    ARTICLE_HERO_AVIF_SOURCE
-                    <img src="ARTICLE_IMAGE_ATTR" alt="ARTICLE_TITLE_ATTR" class="article-header-img"
-                         loading="eager" fetchpriority="high" decoding="sync"
-                         width="ARTICLE_IMAGE_WIDTH" height="ARTICLE_IMAGE_HEIGHT"
-                         data-fallback-src="/blog-module/images/default-blog.jpg">
-                </picture>
-                <div class="article-header-overlay">
-                    <div class="article-header-kicker-row">
-                        <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
-                        <span class="article-category-pill">ARTICLE_TAG_TEXT</span>
-                    </div>
-                    <h1 class="article-title">ARTICLE_TITLE_TEXT</h1>
-                    <div class="article-meta">
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ARTICLE_DATE</span>
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> ARTICLE_CATEGORY_TEXT</span>
-                        <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="article-body-grid">
-                <aside class="article-side-rail" aria-label="Πληροφορίες άρθρου">
-                    <div class="article-rail-sticky">
-                        <div class="article-toolbar">
-                            <div class="share-label"><svg class="icon" aria-hidden="true"><use href="#fa-share-alt"/></svg> <span>Κοινοποίηση</span></div>
-                            <div class="share-buttons">
-                                <a href="https://www.facebook.com/sharer/sharer.php?u=ARTICLE_URL_PARAM" target="_blank" rel="noopener" class="share-btn facebook" aria-label="Κοινοποίηση στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
-                                <a href="https://www.addtoany.com/add_to/threads?linkurl=ARTICLE_URL_PARAM&linkname=ARTICLE_TITLE_PARAM" target="_blank" rel="noopener" class="share-btn threads" aria-label="Κοινοποίηση στο Threads"><svg class="icon" aria-hidden="true"><use href="#fa-threads"/></svg></a>
-                                <button id="instagram-dm-btn" class="share-btn instagram" aria-label="Κοινοποίηση μέσω Instagram DM"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></button>
-                                <a href="https://api.whatsapp.com/send?text=ARTICLE_TITLE_PARAM%20ARTICLE_URL_PARAM" target="_blank" rel="noopener" class="share-btn whatsapp" aria-label="Κοινοποίηση στο WhatsApp"><svg class="icon" aria-hidden="true"><use href="#fa-whatsapp"/></svg></a>
-                                <a href="https://t.me/share/url?url=ARTICLE_URL_PARAM&text=ARTICLE_TITLE_PARAM" target="_blank" rel="noopener" class="share-btn telegram" aria-label="Κοινοποίηση στο Telegram"><svg class="icon" aria-hidden="true"><use href="#fa-telegram-plane"/></svg></a>
-                                <button id="web-share-btn" class="share-btn web-share" aria-label="Κοινοποίηση άρθρου"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg></button>
-                                <button class="share-btn copy-link" id="copy-link-btn" aria-label="Αντιγραφή συνδέσμου"><svg class="icon" aria-hidden="true"><use href="#fa-link"/></svg></button>
-                            </div>
-                        </div>
-
-                        <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
-                            <div class="article-rail-meta-list">
-                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> ARTICLE_TAG_TEXT</span>
-                                <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ARTICLE_DATE</span>
-                                <span><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span data-reading-time>5 λεπτά ανάγνωσης</span></span>
-                            </div>
-                        </div>
-
-                        <div class="article-rail-card article-rail-tags" data-tags="ARTICLE_CATEGORY_TEXT">
-                            <span class="article-rail-label">Tags</span>
-                            <div class="article-tag-list" data-tag-list></div>
-                        </div>
-
-                        <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
-                            <div class="article-rail-related-list" data-rail-related></div>
-                        </div>
-                    </div>
-                </aside>
-
-                <div class="article-main-column">
-                    <div class="article-content">ARTICLE_CONTENT</div>
-
-                    <div class="article-author-footer">
-                        <div class="author-box">
-                            <div class="author-header">
-                                <div class="author-avatar">
-                                    <img id="author-image" src="/images/authors/default.webp" alt="ARTICLE_AUTHOR_ATTR"
-                                         loading="lazy" decoding="async" width="ARTICLE_AUTHOR_IMAGE_WIDTH" height="ARTICLE_AUTHOR_IMAGE_HEIGHT"
-                                         data-show-on-error="author-initial">
-                                    <span class="avatar-text" id="author-initial">A</span>
-                                </div>
-                                <div class="author-info">
-                                    <p class="author-name" id="author-name">ARTICLE_AUTHOR_TEXT</p>
-                                    <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
-                                </div>
-                            </div>
-                            <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
-                        </div>
-                    </div>
-
-                    <div class="sponsor-strip">
-                        <div class="sponsor-strip-label">Υποστηρίζουν το F1 Stories</div>
-                        <div class="sponsor-logos">
-                            <a href="https://georgiosbalatzis.github.io/excavatorsPage/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Χωματουργικά">
-                                <img src="/images/sponsors/Balatzis.webp" alt="Μπαλατζής Χωματουργικά" loading="lazy" decoding="async" width="612" height="408">
-                            </a>
-                            <a href="https://pourtsidisgenerators.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Πουρτσίδης Γεννήτριες">
-                                <img src="/images/sponsors/ps.webp" alt="Πουρτσίδης Γεννήτριες" loading="lazy" decoding="async" width="612" height="408">
-                            </a>
-                            <a href="https://georgiosbalatzis.github.io/excavatorsPage/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Δομικά">
-                                <img src="/images/sponsors/BalatzisDomika.webp" alt="Μπαλατζής Δομικά" loading="lazy" decoding="async" width="612" height="408">
-                            </a>
-                            <a href="https://ambrosiadis.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Αμβροσιάδης">
-                                <img src="/images/sponsors/am.webp" alt="Αμβροσιάδης" loading="lazy" decoding="async" width="612" height="408">
-                            </a>
-                            <a href="https://www.bedandhome.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Bed and Home">
-                                <img src="/images/sponsors/bedhome.webp" alt="Bed and Home" loading="lazy" decoding="async" width="612" height="408">
-                            </a>
-                            <a href="https://www.grandrealm.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Grand Realm">
-                                <img src="/images/sponsors/GrandRealm.webp" alt="Grand Realm" loading="lazy" decoding="async" width="1536" height="1024">
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </article>
-
-        <div class="article-comments">
-            <h2><svg class="icon" aria-hidden="true" style="margin-right:0.5rem;font-size:0.95em;"><use href="#fa-comments"/></svg>Σχόλια</h2>
-            <div id="disqus_thread" data-article-id="ARTICLE_ID"></div>
-        </div>
-
-        <div class="article-navigation">
-            <a href="PREV_ARTICLE_URL" id="prev-article-link" class="article-nav-link prev"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Προηγούμενο</a>
-            <a href="NEXT_ARTICLE_URL" id="next-article-link" class="article-nav-link next">Επόμενο <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></a>
-        </div>
-
-        <div class="row article-related-section">
-            <div class="col-12 related-section-head"><span class="related-section-eyebrow">Επόμενη ανάγνωση</span><h2 class="related-section-title">Σχετικά άρθρα</h2></div>
-            RELATED_ARTICLES
-        </div>
-    </div>
+            <p class="contact-block__micro">Απαντάμε συνήθως εντός 48 ωρών.</p>
+        </form>
+    </div></div></div></div>
+</section>
 </main>
-
-<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Επιστροφή στην κορυφή"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
-
-<div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
-    <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
-        <div class="cookie-actions">
-            <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
-            <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
-        </div>
-    </div>
-</div>
 
 <!-- @include partials/footer.html -->
 <!-- @include:begin partials/footer.html -->
@@ -380,17 +409,69 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <a href="/generate.html" class="footer-link">Generate</a>
+                    <span class="footer-separator">|</span>
+                    <a href="/housekeeping.html" class="footer-link">Housekeeping</a>
+                    <span class="footer-separator">|</span>
+                    <a href="/statistics.html" class="footer-link">Statistics</a>
                 </div>
             </div>
         </div>
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
-<script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=82e4e5cd"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
-<script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
+<!-- ═══ COOKIE BANNER — Greek ═══ -->
+<div id="cookie-consent" class="cookie-banner show" aria-hidden="false">
+    <div class="cookie-content">
+        <div class="cookie-header">
+            <h3>Cookies</h3>
+            <button id="close-cookie" class="close-btn" aria-label="Κλείσιμο ρυθμίσεων cookies"><svg class="icon" aria-hidden="true"><use href="#fa-times"/></svg></button>
+        </div>
+        <p class="cookie-intro">Απαραίτητα cookies. Προαιρετικά analytics μόνο με αποδοχή.</p>
+        <details class="cookie-details">
+            <summary class="cookie-settings-summary">Ρυθμίσεις</summary>
+            <div class="cookie-section">
+                <h4>Απαραίτητα Cookies <span class="badge-essential">Πάντα Ενεργά</span></h4>
+                <p>Απαραίτητα για τη βασική λειτουργία του ιστότοπου.</p>
+            </div>
+            <div class="cookie-section">
+                <div class="cookie-toggle">
+                    <h4>Cookies Ανάλυσης</h4>
+                    <label class="visually-hidden" for="analytics-cookies">Cookies Ανάλυσης</label>
+                    <label class="toggle-switch"><input type="checkbox" id="analytics-cookies"><span class="toggle-slider"></span></label>
+                </div>
+                <p>Αν τα αποδεχτείς, φορτώνουμε Google Analytics για μέτρηση επισκεψιμότητας. Χωρίς αποδοχή δεν φορτώνεται GA.</p>
+            </div>
+            <div class="cookie-section">
+                <div class="cookie-toggle">
+                    <h4>Cookies Μάρκετινγκ</h4>
+                    <label class="visually-hidden" for="marketing-cookies">Cookies Μάρκετινγκ</label>
+                    <label class="toggle-switch"><input type="checkbox" id="marketing-cookies"><span class="toggle-slider"></span></label>
+                </div>
+                <p>Επιτρέπουν εξατομικευμένο περιεχόμενο και διαφημίσεις.</p>
+            </div>
+        </details>
+        <div class="cookie-actions">
+            <button id="reject-all" class="cookie-btn reject-btn">Απόρριψη</button>
+            <button id="accept-selected" class="cookie-btn accept-selected-btn">Αποθήκευση</button>
+            <button id="accept-all" class="cookie-btn accept-btn">Αποδοχή</button>
+        </div>
+        <div class="cookie-footer">
+            <a href="/privacy/privacy.html" target="_blank">Πολιτική Απορρήτου</a>
+            <a href="/privacy/terms.html" target="_blank">Όροι Χρήσης</a>
+        </div>
+    </div>
+</div>
+
+<button class="theme-toggle-btn" id="theme-toggle" aria-label="Εναλλαγή φωτεινού/σκοτεινού θέματος"><svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg><svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg></button>
+<button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Επιστροφή στην κορυφή"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
+
+<script src="/scripts/cookie-consent.min.js?v=0dd8bd8a" defer></script>
+<script src="/blog-module/blog-loader.min.js?v=05194a26" defer></script>
+<script src="scripts/background-randomizer.min.js?v=6f8cace4" defer></script>
+<script src="scripts/f1-optimized.min.js?v=94ca6401" defer></script>
+<script src="scripts/shared-nav.min.js?v=82e4e5cd" defer></script>
+<script src="/scripts/sw-register.min.js?v=c4974617" defer></script>
 </body>
 </html>

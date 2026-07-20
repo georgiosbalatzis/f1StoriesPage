@@ -221,7 +221,10 @@
         });
     }
 
-    // ── 11. PREFETCH NEXT PAGES ─────────────────
+    // ── 11. INTENT-BASED ARTICLE PREFETCH ───────
+    // Do not fetch full article documents while an archive is merely loading,
+    // especially on touch devices. Fetch only after keyboard focus or a
+    // genuine pointer hover gives the reader intent.
     function prefetchNextPages() {
         if (navigator.connection) {
             var conn = navigator.connection;
@@ -239,11 +242,14 @@
             document.head.appendChild(link);
         }
 
-        // Blog index: first two article cards
         var cards = document.querySelectorAll('.article-card[href]');
-        for (var i = 0; i < Math.min(2, cards.length); i++) {
-            addPrefetch(cards[i].getAttribute('href'));
-        }
+        cards.forEach(function (card) {
+            var prefetch = function () { addPrefetch(card.getAttribute('href')); };
+            card.addEventListener('focusin', prefetch, { once: true });
+            if (window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+                card.addEventListener('pointerenter', prefetch, { once: true });
+            }
+        });
     }
 
     // ── 12. FADE-IN OBSERVER ────────────────────
@@ -315,12 +321,8 @@
         setupFadeInObserver();
         watchBlogGrid();
 
-        // Delay non-critical work
-        if ('requestIdleCallback' in window) {
-            requestIdleCallback(prefetchNextPages);
-        } else {
-            setTimeout(prefetchNextPages, 2000);
-        }
+        // Install intent listeners without issuing an eager document fetch.
+        prefetchNextPages();
     }
 
     if (document.readyState === 'loading') {

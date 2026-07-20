@@ -325,8 +325,8 @@ function shouldCopyBlogEntry(relPath) {
 
 function shouldCopyStandings(relPath) {
     if (STANDINGS_ROOT_FILES.has(relPath)) return true;
-    if (/^standings\/core\/[^/]+\.min\.js$/i.test(relPath)) return true;
     if (/^standings\/tabs\/[^/]+\.min\.(?:css|js)$/i.test(relPath)) return true;
+    if (/^standings\/chunks\/[^/]+\.min\.js$/i.test(relPath)) return true;
     return false;
 }
 

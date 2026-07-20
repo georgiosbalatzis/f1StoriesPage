@@ -1,0 +1,4 @@
+{
+  "max": 100,
+  "note": "Ratchet source CSS !important usage downward. Mark only intentional utility exceptions with /* utility-important */."
+}

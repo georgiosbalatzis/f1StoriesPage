@@ -19,9 +19,9 @@
     <!-- f1s:critical-css:end -->
     <link rel="stylesheet" href="/styles/fonts.min.css?v=2397fa86">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
-    <link rel="stylesheet" href="/styles.min.css?v=048802d2">
-    <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=ddc0d19c">
-    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=93b1f6a3">
+    <link rel="stylesheet" href="/styles.min.css?v=47d874df">
+    <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
+    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=b7ef430e">
     <link rel="stylesheet" href="/theme-overrides.min.css?v=a6310352">
     <script src="/node_modules/jszip/dist/jszip.min.js" defer></script>
     <script src="/scripts/author/session-token.js"></script>
@@ -162,14 +162,56 @@
     </div>
 
     <div class="hk-toolbar">
-        <input type="search" id="hk-search" placeholder="Search title, author, tag…">
-        <select id="hk-filter-tag"><option value="">All tags</option></select>
-        <select id="hk-filter-cat"><option value="">All categories</option></select>
-        <select id="hk-filter-author"><option value="">All authors</option></select>
-        <span class="hk-stats" id="hk-stats">—</span>
-    </div>
+        <div class="hk-search-row">
+            <label class="hk-sr" for="hk-search">Search articles</label>
+            <input type="search" id="hk-search" placeholder="Search title, author, tag…" autocomplete="off">
+            <button type="button" class="hk-btn hk-filter-toggle" id="hk-filter-toggle"
+                    aria-expanded="false" aria-controls="hk-filter-panel">Filters</button>
+        </div>
 
-    <div id="hk-list" class="hk-grid"></div>
+        <div class="hk-filter-panel" id="hk-filter-panel" aria-label="Article filters">
+            <div class="hk-filter-sheet-head">
+                <h2 id="hk-filter-heading">Filters</h2>
+                <button type="button" class="hk-icon-btn" id="hk-filter-close" aria-label="Close filters">×</button>
+            </div>
+            <label class="hk-filter-field">
+                <span>Tag</span>
+                <select id="hk-filter-tag"><option value="">All tags</option></select>
+            </label>
+            <label class="hk-filter-field">
+                <span>Category</span>
+                <select id="hk-filter-cat"><option value="">All categories</option></select>
+            </label>
+            <label class="hk-filter-field">
+                <span>Author</span>
+                <select id="hk-filter-author"><option value="">All authors</option></select>
+            </label>
+            <div class="hk-filter-sheet-foot">
+                <button type="button" class="hk-btn" id="hk-filter-reset">Reset</button>
+                <button type="button" class="hk-btn hk-btn-primary" id="hk-filter-done">Show results</button>
+            </div>
+        </div>
+
+        <div class="hk-toolbar-end">
+            <div class="hk-density-switch" role="group" aria-label="Article layout">
+                <button type="button" class="hk-icon-btn" id="hk-density-grid" aria-label="Grid view"
+                        aria-pressed="true" title="Grid view">
+                    <svg class="icon" aria-hidden="true"><use href="#fa-th-large"/></svg>
+                </button>
+                <button type="button" class="hk-icon-btn" id="hk-density-list" aria-label="List view"
+                        aria-pressed="false" title="List view">
+                    <svg class="icon" aria-hidden="true"><use href="#fa-table"/></svg>
+                </button>
+            </div>
+            <span class="hk-stats" id="hk-stats" aria-live="polite">—</span>
+        </div>
+    </div>
+    <button type="button" class="hk-filter-scrim" id="hk-filter-scrim" aria-label="Close filters" hidden></button>
+
+    <div id="hk-list" class="hk-grid hk-density-grid"></div>
+    <div class="hk-list-foot" id="hk-list-foot" hidden>
+        <button type="button" class="hk-btn hk-load-more" id="hk-load-more">Load more</button>
+    </div>
 </main>
 
 <!-- Edit modal -->

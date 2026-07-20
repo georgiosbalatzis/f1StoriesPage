@@ -1810,6 +1810,20 @@ body {
     .author-chip { padding-right: 0.8rem; }
 }
 
+/* Final mobile archive pass: one filter sheet, compact cards, readable type. */
+@media (max-width: 767px) {
+    .blog-filter-toolbar:not(.is-open) .blog-filter-block,
+    .blog-filter-toolbar:not(.is-open) .category-filter-block,
+    .blog-filter-toolbar:not(.is-open) .blog-sort-control { display: none; }
+    .blog-filter-toolbar:not(.is-open) .active-filter-summary { display: flex; min-height: 44px; }
+    .article-card-meta { font-size: 0.75rem; min-height: 1.55rem; margin-bottom: 0.4rem; }
+    .article-card-excerpt { display: none; }
+    .article-card-cats { display: none; }
+    .article-card-title { -webkit-line-clamp: 2; font-size: 1rem; }
+    .article-card-body { padding: 0.82rem 0.9rem 0.62rem; }
+    .article-card-footer { padding: 0.52rem 0.9rem 0.62rem; }
+}
+
 
 /* ═══════════════════════════════════════════════
    § 22  PAGINATION
