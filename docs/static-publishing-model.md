@@ -94,10 +94,12 @@ The local author flow is:
 2. Create or edit the article.
 3. Add a fine-grained GitHub token when publishing.
 4. Publish from the tool. The tool creates an `author/...` branch and opens a pull request through the GitHub API.
-5. Review the PR like normal source work.
-6. Merge to `main`.
-7. The `Site Maintenance` workflow rebuilds generated blog artifacts and commits them back with `[skip ci]` when needed.
-8. The Pages workflow deploys a validated `dist/` artifact after the maintenance run succeeds.
+5. `Site Quality` builds and validates the pull request with read-only permissions.
+6. After the quality run succeeds, `Publish Article` verifies that the PR is a trusted author-tool change and merges it to `main`.
+7. The same publish run rebuilds generated blog artifacts and commits them back with `[skip ci]` when needed.
+8. `Publish Article` calls the reusable Pages deployment as its final job, which builds and deploys the validated `dist/` artifact.
+
+The expected Actions history for one author-tool publish is therefore two top-level runs: `Site Quality` and `Publish Article`. The Pages build and deployment are jobs inside `Publish Article`, not a second downstream workflow run. Non-author pull requests keep the normal manual review and merge flow.
 
 For manual local article work:
 
@@ -149,16 +151,19 @@ That command runs:
 Production deploys use GitHub Actions.
 
 - `.github/workflows/quality.yml` runs on pull requests and manual dispatch. It builds and validates, but it does not deploy.
-- `.github/workflows/publish-blog.yml` owns generated content maintenance for blog artifacts, standings data, and the YouTube snapshot.
-- `.github/workflows/deploy-pages.yml` builds `dist/`, runs the deploy gate, uploads the Pages artifact, and deploys through `actions/deploy-pages`.
+- `.github/workflows/auto-publish-author-pr.yml` owns the trusted author PR merge, generated blog artifacts, and the article deployment call.
+- `.github/workflows/publish-blog.yml` owns scheduled/manual generated-content maintenance for blog artifacts, standings data, and the YouTube snapshot. It calls deployment only after committing a real change.
+- `.github/workflows/deploy-pages.yml` is both the reusable deployment called by publishing workflows and the direct `push`/manual deployment entry point. It builds `dist/`, runs the deploy gate, uploads the Pages artifact, and deploys through `actions/deploy-pages`.
+- Repository Pages settings must use **GitHub Actions** as the publishing source. Branch/root (`legacy`) publishing is not part of this model.
 
-The deploy sequence is:
+The author-article deploy sequence is:
 
-1. Source or generated maintenance changes land on `main`.
-2. If article/build-source paths changed, `Site Maintenance` may rebuild generated artifacts and push a follow-up commit with `[skip ci]`.
-3. `Deploy Pages` runs `npm run build:public` and the quality/performance smoke checks.
-4. Only `dist/` is uploaded with `actions/upload-pages-artifact`.
-5. GitHub Pages serves the uploaded artifact.
+1. `Site Quality` validates the author pull request.
+2. `Publish Article` verifies and merges the PR, rebuilds generated artifacts, and pushes a follow-up `[skip ci]` commit.
+3. Its reusable deployment job runs `npm run build:public` and the quality/runtime gates.
+4. Only `dist/` is uploaded with `actions/upload-pages-artifact` and deployed.
+
+For ordinary source pushes, `Deploy Pages` runs directly once. For scheduled or manual maintenance, `Site Maintenance` calls the same reusable deployment only when its selected task committed a change. Workflow-authored `[skip ci]` commits do not depend on another push-triggered workflow.
 
 Never treat a root-level preview as proof that production will include the same files. Production includes what `dist/` includes.
 

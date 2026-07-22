@@ -1,6 +1,7 @@
 name: Deploy Pages
 
 on:
+  workflow_call:
   push:
     branches: [main]
     paths-ignore:
@@ -15,10 +16,6 @@ on:
       - 'package-lock.json'
       - '.github/workflows/publish-blog.yml'
   workflow_dispatch:
-  workflow_run:
-    workflows: ['Site Maintenance', 'Auto Publish Author PR']
-    types: [completed]
-    branches: [main]
 
 permissions:
   contents: read
@@ -27,12 +24,11 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  queue: max
 
 jobs:
   build:
     name: Build Pages artifact
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:

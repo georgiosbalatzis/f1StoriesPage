@@ -450,16 +450,16 @@ npm run build:public
 - raw `.docx`, draft `.txt`, `.sql`, backup files
 - original article `.png`, `.jpg`, `.jpeg` όταν υπάρχει optimized `.webp` ή `.avif`
 
-Το GitHub Pages deploy ανήκει στο `.github/workflows/deploy-pages.yml` και γίνεται αυτόματα μέσω Actions artifact deploy από το `dist/` directory. Το workflow τρέχει σε `push` στο `main`, σε manual `workflow_dispatch`, και μετά από επιτυχημένο `Site Maintenance`, ώστε scheduled generated-content updates με `[skip ci]` να δημοσιεύονται επίσης.
+Το GitHub Pages deploy ανήκει στο `.github/workflows/deploy-pages.yml` και γίνεται αυτόματα μέσω Actions artifact deploy από το `dist/` directory. Το workflow τρέχει απευθείας σε `push` στο `main` και σε manual `workflow_dispatch`, ενώ χρησιμοποιείται ως reusable job από τα `Publish Article` και `Site Maintenance`. Το maintenance καλεί deploy μόνο όταν έχει κάνει πραγματικό commit αλλαγών.
 
 - `.github/workflows/deploy-pages.yml` κάνει `npm run build:public`
 - το ίδιο workflow τρέχει τα quality gates πριν το deploy
 - `actions/upload-pages-artifact` ανεβάζει μόνο `dist`
 - `actions/deploy-pages` δημοσιεύει το artifact
 
-Το `.github/workflows/quality.yml` παραμένει PR/manual CI gate και δεν κάνει production deploy. Άρα το repository root μπορεί να παραμείνει πλήρες για development, αλλά δεν είναι δημόσιο artifact.
+Το `.github/workflows/quality.yml` παραμένει PR/manual CI gate και δεν κάνει production deploy. Το Pages setting του repository πρέπει να είναι **GitHub Actions**, όχι legacy publish από `main:/`. Άρα το repository root μπορεί να παραμείνει πλήρες για development, αλλά δεν είναι το production artifact.
 
-Publishing από το `generate.html` παραμένει συμβατό με το GitHub build flow: το εργαλείο γράφει τα article source/assets στο `main`, το `Site Maintenance` workflow τρέχει τον blog processor και κάνει ξεχωριστό follow-up commit με τα generated artifacts. Το workflow δεν κάνει πλέον amend/force-push στο triggering commit. Το Pages deploy περιμένει το successful `Site Maintenance` run και δημοσιεύει το rebuilt `dist/` artifact.
+Publishing από το `generate.html` δημιουργεί branch και Pull Request. Το read-only `Site Quality` κάνει validation και, όταν περάσει, το `Publish Article` ελέγχει ότι πρόκειται αποκλειστικά για trusted author-tool αλλαγές, κάνει merge, τρέχει τον blog processor και δημιουργεί ξεχωριστό follow-up commit με τα generated artifacts. Στο τέλος του ίδιου workflow καλείται το reusable Pages deploy και δημοσιεύεται το rebuilt `dist/` artifact. Έτσι ένα άρθρο εμφανίζεται στο Actions ως δύο top-level runs (`Site Quality` → `Publish Article`) και μόνο ένα production deployment.
 
 Πριν από publish σε production, η ασφαλής ροή είναι:
 

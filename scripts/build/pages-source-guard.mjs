@@ -9,6 +9,8 @@ const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 
 const DEPLOY_WORKFLOW = '.github/workflows/deploy-pages.yml';
+const ARTICLE_PUBLISH_WORKFLOW = '.github/workflows/auto-publish-author-pr.yml';
+const MAINTENANCE_WORKFLOW = '.github/workflows/publish-blog.yml';
 const PUBLIC_ARTIFACT_SCRIPT = 'scripts/build/public-artifact.mjs';
 const PUBLIC_VALIDATOR_SCRIPT = 'scripts/build/validate-public-artifact.mjs';
 const PACKAGE_JSON = 'package.json';
@@ -49,6 +51,16 @@ function main() {
     assertPattern(DEPLOY_WORKFLOW, workflow, /uses:\s*actions\/deploy-pages@/i, 'Pages deploy must use actions/deploy-pages');
     assertPattern(DEPLOY_WORKFLOW, workflow, /\bpages:\s*write\b/, 'Pages deploy must declare pages: write permission');
     assertPattern(DEPLOY_WORKFLOW, workflow, /\bid-token:\s*write\b/, 'Pages deploy must declare id-token: write permission');
+    assertPattern(DEPLOY_WORKFLOW, workflow, /\bworkflow_call:\s*$/m, 'Pages deploy must remain reusable by publishing workflows');
+    assertNoPattern(DEPLOY_WORKFLOW, workflow, /\bworkflow_run:\s*$/m, 'Pages deploy must not fan out from completed workflows');
+
+    const articleWorkflow = readText(ARTICLE_PUBLISH_WORKFLOW);
+    assertPattern(ARTICLE_PUBLISH_WORKFLOW, articleWorkflow, /uses:\s*\.\/\.github\/workflows\/deploy-pages\.yml\b/, 'article publishing must call the reusable Pages deploy in the same run');
+    assertNoPattern(ARTICLE_PUBLISH_WORKFLOW, articleWorkflow, /gh\s+workflow\s+run\s+["']?Deploy Pages/i, 'article publishing must not dispatch a second Pages workflow run');
+
+    const maintenanceWorkflow = readText(MAINTENANCE_WORKFLOW);
+    assertPattern(MAINTENANCE_WORKFLOW, maintenanceWorkflow, /uses:\s*\.\/\.github\/workflows\/deploy-pages\.yml\b/, 'maintenance must call the reusable Pages deploy in the same run');
+    assertPattern(MAINTENANCE_WORKFLOW, maintenanceWorkflow, /outputs:\s*\n\s+changed:/, 'maintenance jobs must expose whether they committed a change');
 
     const publicArtifact = readText(PUBLIC_ARTIFACT_SCRIPT);
     for (const file of AUTHOR_TOOL_FILES) {

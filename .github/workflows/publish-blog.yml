@@ -54,8 +54,10 @@ jobs:
       }}
     runs-on: ubuntu-latest
     concurrency:
-      group: publish-blog
-      cancel-in-progress: false
+      group: content-publishing
+      queue: max
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -101,8 +103,10 @@ jobs:
         run: node blog-module/blog-processor.js
 
       - name: Commit generated artifacts
+        id: commit
         run: |
           set -eu
+          echo "changed=false" >> "$GITHUB_OUTPUT"
           git config user.name  "Georgios Balatzis"
           git config user.email "georgios.balatzis@gmail.com"
           git add -A
@@ -113,6 +117,7 @@ jobs:
 
           git commit -m "chore(blog): auto-build generated artifacts [skip ci]"
           git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
 
   refresh_youtube:
     name: Refresh YouTube snapshot
@@ -123,8 +128,10 @@ jobs:
       }}
     runs-on: ubuntu-latest
     concurrency:
-      group: youtube-refresh
-      cancel-in-progress: false
+      group: content-publishing
+      queue: max
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v5
@@ -146,8 +153,10 @@ jobs:
         run: node scripts/build/fetch-youtube.mjs
 
       - name: Commit updated snapshot
+        id: commit
         run: |
           set -eu
+          echo "changed=false" >> "$GITHUB_OUTPUT"
           git add assets/youtube-latest.json
           if git diff --cached --quiet; then
             echo "No YouTube snapshot changes."
@@ -158,6 +167,7 @@ jobs:
           git config user.email "georgios.balatzis@gmail.com"
           git commit -m "chore(data): refresh youtube snapshot [skip ci]"
           git push origin HEAD:main
+          echo "changed=true" >> "$GITHUB_OUTPUT"
 
   refresh_standings_data:
     name: Refresh standings data
@@ -173,8 +183,10 @@ jobs:
       }}
     runs-on: ubuntu-latest
     concurrency:
-      group: standings-data-refresh
-      cancel-in-progress: false
+      group: content-publishing
+      queue: max
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
     steps:
       - name: Check Athens schedule window
         id: schedule_window
@@ -223,9 +235,11 @@ jobs:
         run: npm run build:standings-data
 
       - name: Commit updated standings data
+        id: commit
         if: ${{ github.event_name != 'schedule' || steps.schedule_window.outputs.run == 'true' }}
         run: |
           set -eu
+          echo "changed=false" >> "$GITHUB_OUTPUT"
           git add \
             standings/standings-cache.json \
             standings/dirty-air-cache.json \
@@ -240,3 +254,22 @@ jobs:
           git config user.email "georgios.balatzis@gmail.com"
           git commit -m "chore(data): refresh standings snapshots [skip ci]"
           git push origin HEAD:main
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    name: Deploy changed maintenance content
+    needs: [publish_blog, refresh_youtube, refresh_standings_data]
+    if: >-
+      ${{
+        always() &&
+        (
+          (needs.publish_blog.result == 'success' && needs.publish_blog.outputs.changed == 'true') ||
+          (needs.refresh_youtube.result == 'success' && needs.refresh_youtube.outputs.changed == 'true') ||
+          (needs.refresh_standings_data.result == 'success' && needs.refresh_standings_data.outputs.changed == 'true')
+        )
+      }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy-pages.yml

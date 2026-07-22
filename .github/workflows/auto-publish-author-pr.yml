@@ -1,18 +1,20 @@
-name: Auto Publish Author PR
+name: Publish Article
 
 on:
   workflow_run:
     workflows: ['Site Quality']
     types: [completed]
+    branches:
+      - 'author/blog/**'
+      - 'author/import/**'
+      - 'author/delete/**'
+      - 'author/edit/**'
 
-permissions:
-  actions: write
-  contents: write
-  pull-requests: write
+permissions: {}
 
 concurrency:
-  group: auto-publish-author-${{ github.event.workflow_run.pull_requests[0].number || github.event.workflow_run.head_branch }}
-  cancel-in-progress: false
+  group: content-publishing
+  queue: max
 
 jobs:
   publish:
@@ -20,6 +22,11 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      published: ${{ steps.pr.outputs.publish }}
     steps:
       - name: Resolve trusted author PR
         id: pr
@@ -145,8 +152,12 @@ jobs:
           git commit -m "chore(blog): auto-build generated artifacts [skip ci]"
           git push
 
-      - name: Trigger Pages deploy
-        if: ${{ steps.pr.outputs.publish == 'true' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run "Deploy Pages" --ref main
+  deploy:
+    name: Deploy published article
+    needs: publish
+    if: ${{ needs.publish.outputs.published == 'true' }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy-pages.yml
