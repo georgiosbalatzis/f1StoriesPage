@@ -86,9 +86,10 @@ jobs:
         if: ${{ steps.pr.outputs.publish == 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
         run: |
           set -eu
-          gh pr merge "${{ steps.pr.outputs.number }}" --merge --delete-branch
+          gh pr merge "${{ steps.pr.outputs.number }}" --repo "$REPO" --merge --delete-branch
 
       - name: Checkout main
         if: ${{ steps.pr.outputs.publish == 'true' }}
