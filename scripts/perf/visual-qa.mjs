@@ -737,8 +737,12 @@ async function runCookieInteraction(browser, origin, outputDir) {
             result.status = 'fail';
             result.detail = `cookie banner occupies ${(banner.ratio * 100).toFixed(1)}% of mobile viewport`;
         } else {
-            const rejectSelector = '#reject-all, #cookie-decline';
-            await page.click(rejectSelector);
+            const rejectSelector = '#reject-all:visible, #cookie-decline:visible';
+            if (await page.locator(rejectSelector).count() === 0) {
+                const settings = page.locator('.cookie-settings-summary:visible');
+                if (await settings.count()) await settings.first().click();
+            }
+            await page.locator(rejectSelector).first().click();
             await page.waitForTimeout(300);
             const saved = await page.evaluate(key => ({
                 stored: localStorage.getItem(key),
@@ -771,10 +775,11 @@ async function runThemeInteraction(browser, origin) {
         await page.goto(origin + '/', { waitUntil: 'domcontentloaded', timeout: 30000 });
         await waitForPageReady(page, 'home');
         const before = await page.evaluate(() => document.documentElement.getAttribute('data-theme') || 'default');
-        await page.click('#theme-toggle');
+        const toggleSelector = '.theme-toggle-nav-btn:visible, .theme-toggle-menu-btn:visible, #theme-toggle:visible';
+        await page.click(toggleSelector);
         await page.waitForTimeout(250);
         const afterFirst = await page.evaluate(() => document.documentElement.getAttribute('data-theme') || 'default');
-        await page.click('#theme-toggle');
+        await page.click(toggleSelector);
         await page.waitForTimeout(250);
         const afterSecond = await page.evaluate(() => document.documentElement.getAttribute('data-theme') || 'default');
 

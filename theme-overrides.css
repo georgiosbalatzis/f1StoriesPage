@@ -881,3 +881,177 @@ h1, h2, h3, h4, p, a, span {
 [data-theme="light"] .ep-card__meta .icon { color: #41B6E6; }
 
 [data-theme="light"] .ep-card__cta { color: #41B6E6; }
+
+
+/* ═══════════════════════════════════════════════
+   HOMEPAGE — Flat editorial light theme
+   Mirrors the responsive treatment in home.css.
+   ═══════════════════════════════════════════════ */
+@media (min-width: 0) {
+    [data-theme="light"] .social-media a,
+    [data-theme="light"] .social-media a:hover {
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
+    [data-theme="light"] .hero-ctas .cta-button.cta-primary,
+    [data-theme="light"] .hero-ctas .cta-button.cta-primary:hover,
+    [data-theme="light"] .hero-ctas .cta-button.cta-primary:active {
+        background: #DB3EB1 !important;
+        border: 1px solid #DB3EB1 !important;
+        border-radius: 0 !important;
+        color: #0b0d12 !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
+    [data-theme="light"] .hero-ctas .cta-button.cta-primary:hover {
+        background: #e955c2 !important;
+        border-color: #e955c2 !important;
+    }
+
+    [data-theme="light"] .hero-ctas .cta-button.cta-secondary,
+    [data-theme="light"] .hero-ctas .cta-button.cta-secondary:hover,
+    [data-theme="light"] .hero-ctas .cta-button.cta-secondary:active {
+        background: transparent !important;
+        border: 0 !important;
+        border-bottom: 1px solid rgba(255,255,255,0.5) !important;
+        border-radius: 0 !important;
+        color: #fff !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
+    [data-theme="light"] .hero-ctas .cta-button.cta-secondary:hover {
+        border-bottom-color: #fff !important;
+    }
+
+    [data-theme="light"] #latest .latest-footer-actions .cta-button,
+    [data-theme="light"] #latest .latest-aside-card .latest-aside-button,
+    [data-theme="light"] #latest .latest-footer-actions .cta-button:hover,
+    [data-theme="light"] #latest .latest-aside-card .latest-aside-button:hover {
+        background: transparent !important;
+        border: 0 !important;
+        border-bottom: 1px solid rgba(29,29,31,0.34) !important;
+        border-radius: 0 !important;
+        color: #1d1d1f !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
+    [data-theme="light"] #latest .latest-footer-actions .cta-button:hover,
+    [data-theme="light"] #latest .latest-aside-card .latest-aside-button:hover {
+        border-bottom-color: #0A7FA8 !important;
+        color: #0A5F80 !important;
+    }
+
+    [data-theme="light"] .sponsor-strip-home {
+        background: transparent;
+    }
+
+    [data-theme="light"] .sponsor-strip-heading,
+    [data-theme="light"] .sponsor-strip-home .sponsor-logos {
+        border-top-color: rgba(29,29,31,0.12);
+        border-bottom-color: rgba(29,29,31,0.12);
+    }
+
+    [data-theme="light"] .sponsor-strip-home .sponsor-strip-label {
+        background: transparent;
+        color: #5f6068;
+    }
+
+    [data-theme="light"] .sponsor-strip-home .sponsor-logo,
+    [data-theme="light"] .sponsor-strip-home .sponsor-logo:hover {
+        background: transparent;
+        border: 0;
+        border-left: 1px solid rgba(29,29,31,0.12);
+        border-radius: 0;
+        box-shadow: none;
+        transform: none;
+    }
+
+    [data-theme="light"] .team-row {
+        border-top-color: rgba(29,29,31,0.12);
+        border-bottom-color: rgba(29,29,31,0.12);
+    }
+
+    [data-theme="light"] .team-member {
+        border-color: rgba(29,29,31,0.12);
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    [data-theme="light"] .team-member:first-child {
+        border-left: 0;
+    }
+
+    [data-theme="light"] .team-row .team-member > a,
+    [data-theme="light"] .team-row .team-member:hover > a {
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
+    [data-theme="light"] .team-row .team-member__avatar,
+    [data-theme="light"] .team-row .team-member:hover .team-member__avatar {
+        border-radius: 0 !important;
+        filter: none !important;
+        transform: none !important;
+    }
+
+    [data-theme="light"] .contact-block {
+        background: transparent !important;
+        border: 0 !important;
+        border-top: 1px solid rgba(29,29,31,0.16) !important;
+        border-bottom: 1px solid rgba(29,29,31,0.16) !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    [data-theme="light"] .contact-block .form-control {
+        background: transparent !important;
+        border: 0 !important;
+        border-bottom: 1px solid rgba(29,29,31,0.28) !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
+    [data-theme="light"] .contact-block .form-control:focus,
+    [data-theme="light"] .contact-block .form-control:focus-visible {
+        background: transparent !important;
+        border-bottom-color: #0A7FA8 !important;
+        outline: 2px solid #0A7FA8 !important;
+        outline-offset: 3px !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
+    [data-theme="light"] .contact-block .cta-button.contact-submit,
+    [data-theme="light"] .contact-block .cta-button.contact-submit:hover,
+    [data-theme="light"] .contact-block .cta-button.contact-submit:active {
+        background: #41B6E6 !important;
+        border: 1px solid #41B6E6 !important;
+        border-radius: 0 !important;
+        color: #0b0d12 !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+}
+
+@media (max-width: 1199.98px) {
+    [data-theme="light"] .sponsor-strip-home .sponsor-logos {
+        background: rgba(29,29,31,0.12);
+    }
+
+    [data-theme="light"] .sponsor-strip-home .sponsor-logo,
+    [data-theme="light"] .sponsor-strip-home .sponsor-logo:hover {
+        border: 0;
+        background: #fff;
+    }
+}
