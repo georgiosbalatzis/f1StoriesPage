@@ -1,0 +1,8 @@
+F1 BetCast
+
+BetCast #270.  Αλλαγή στο Hungaroring!
+
+Προς το παρόν όλα δείχνουν κόκκινα και η Ferrari έχει την ευκαιρία . Θα τα καταφέρει...;
+Εδώ οι δικές μας προβλέψεις, με τις καλύτερες αποδόσεις που μπορέσαμε να βρούμε. 
+
+<iframe src="https://georgiosbalatzis.github.io/BetCastVisualisation/?viz=dataTable&from=11&embed=1" title="BetCast F1Stories" loading="lazy" style="width:100%;min-height:960px;border:0;"></iframe>
