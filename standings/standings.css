@@ -30,21 +30,21 @@ html, body { -webkit-overflow-scrolling: touch; overflow: visible; overflow-x: c
 
 body { overflow-y: visible !important; }
 
-[data-theme="light"] body { background-color: #FFFFFF !important; }
+[data-theme="light"] body:not(.editorial-page) { background-color: #FFFFFF !important; }
 
-[data-theme="light"] .background { background: #FFFFFF !important; opacity: 1 !important; }
+[data-theme="light"] body:not(.editorial-page) .background { background: #FFFFFF !important; opacity: 1 !important; }
 
 [data-theme="light"] .streak { display: none !important; }
 
-[data-theme="light"] footer { background-color: #f5f5f7 !important; }
+[data-theme="light"] body:not(.editorial-page) footer { background-color: #f5f5f7 !important; }
 
-[data-theme="light"] footer p, [data-theme="light"] footer a, [data-theme="light"] footer .footer-link, [data-theme="light"] footer .footer-separator { color: #5f5f67 !important; }
+[data-theme="light"] body:not(.editorial-page) footer p, [data-theme="light"] body:not(.editorial-page) footer a, [data-theme="light"] body:not(.editorial-page) footer .footer-link, [data-theme="light"] body:not(.editorial-page) footer .footer-separator { color: #5f5f67 !important; }
 
-[data-theme="light"] footer a:hover, [data-theme="light"] footer .footer-link:hover { color: #41B6E6 !important; }
+[data-theme="light"] body:not(.editorial-page) footer a:hover, [data-theme="light"] body:not(.editorial-page) footer .footer-link:hover { color: #41B6E6 !important; }
 
-[data-theme="light"] .social-media a, [data-theme="light"] .social-media a i { color: #5f5f67 !important; }
+[data-theme="light"] body:not(.editorial-page) .social-media a, [data-theme="light"] body:not(.editorial-page) .social-media a i { color: #5f5f67 !important; }
 
-[data-theme="light"] .social-media a:hover, [data-theme="light"] .social-media a:hover i { color: #41B6E6 !important; }
+[data-theme="light"] body:not(.editorial-page) .social-media a:hover, [data-theme="light"] body:not(.editorial-page) .social-media a:hover i { color: #41B6E6 !important; }
 
 .footer-link-button { appearance: none; -webkit-appearance: none; background: none; border: 0; padding: 0; font: inherit; line-height: inherit; cursor: pointer; }
 

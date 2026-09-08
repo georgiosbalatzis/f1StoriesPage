@@ -214,7 +214,7 @@ async function assertAcceptLoadsAnalytics(browser, origin) {
         if (opened.analyticsRequests.length) {
             throw new Error(`/: analytics request before accept: ${opened.analyticsRequests.join(', ')}`);
         }
-        await opened.page.click('#accept-all');
+        await opened.page.locator('#accept-all').click();
         await waitFor(() => opened.analyticsRequests.some(url => url.includes('googletagmanager.com/gtag/js')), 5000);
         const consent = await opened.page.evaluate(key => JSON.parse(localStorage.getItem(key) || 'null'), STORAGE_KEY);
         if (!consent || consent.analytics !== true) {
@@ -229,11 +229,14 @@ async function assertAcceptLoadsAnalytics(browser, origin) {
 async function assertRejectKeepsAnalyticsBlocked(browser, origin) {
     const opened = await openGuardedPage(browser, origin, '/');
     try {
+        // The compact banner exposes rejection inside its settings disclosure.
+        await opened.page.waitForSelector('.cookie-settings-summary', { visible: true, timeout: 10000 });
+        await opened.page.locator('.cookie-settings-summary').click();
         await opened.page.waitForSelector('#reject-all', { visible: true, timeout: 10000 });
         if (opened.analyticsRequests.length) {
             throw new Error(`/: analytics request before reject: ${opened.analyticsRequests.join(', ')}`);
         }
-        await opened.page.click('#reject-all');
+        await opened.page.locator('#reject-all').click();
         await sleep(1200);
         const consent = await opened.page.evaluate(key => JSON.parse(localStorage.getItem(key) || 'null'), STORAGE_KEY);
         if (!consent || consent.analytics !== false) {

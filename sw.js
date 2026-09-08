@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v34
+   F1 Stories — Service Worker v35
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,10 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v35 bump: Editorial system — precache the paper/ink route styles and their
+   self-hosted Barlow Condensed, GFS Didot, and IBM Plex Sans font files so
+   the redesigned home, journal, standings, and recent articles keep their
+   intended typography and layout offline.
    v34 bump: CSS recovery — publish and precache the cascade-layer fallback
    after repairing the main stylesheet import order. Returning sessions move
    off the previous shell cache instead of retaining a partially styled page.
@@ -129,11 +133,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v34';
-var CACHE_SHELL   = 'f1s-shell-v34';
-var CACHE_PAGES   = 'f1s-pages-v34';
-var CACHE_ASSETS  = 'f1s-assets-v34';
-var CACHE_DATA    = 'f1s-data-v34';
+var SW_VERSION    = 'v35';
+var CACHE_SHELL   = 'f1s-shell-v35';
+var CACHE_PAGES   = 'f1s-pages-v35';
+var CACHE_ASSETS  = 'f1s-assets-v35';
+var CACHE_DATA    = 'f1s-data-v35';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
@@ -144,10 +148,11 @@ var SHELL_ASSETS = [
   '/',
   '/styles.min.css',
   '/styles/layers.css',
-  '/theme-overrides.min.css',
   '/styles/shared-nav.min.css',
-  '/styles/fonts.min.css',
+  '/styles/editorial.min.css',
+  '/styles/home-fonts.min.css',
   '/styles/vendor/bootstrap.slim.min.css',
+  '/home.min.css',
   '/scripts/shared-nav.min.js',
   '/scripts/sw-register.min.js',
   '/scripts/analytics.min.js',
@@ -156,19 +161,27 @@ var SHELL_ASSETS = [
   '/assets/youtube-latest.json',
   '/images/logo-256.webp',
   '/images/icons/icon-192.png',
+  '/blog-module/blog/',
   '/blog-module/blog/index.html',
   '/blog-module/blog-index-page-1.json',
   '/blog-module/blog-styles.min.css',
+  '/blog-module/blog/archive-editorial.min.css',
+  '/blog-module/blog/article-styles.min.css',
+  '/blog-module/blog/article-rail.min.css',
+  '/blog-module/blog/article-editorial.min.css',
+  '/standings/',
   '/standings/index.html',
   '/standings/standings.min.css',
+  '/standings/standings-editorial.min.css',
   '/standings/standings.min.js',
-  // Primary font weights — matched to FONT_PRELOADS in stamp-html.mjs.
-  // Kept deliberately narrow: Roboto 400/700 (homepage), DM Sans 400 +
-  // Outfit 700 (blog/standings). Other subsets fetch on demand.
-  '/assets/fonts/roboto-400.woff2',
-  '/assets/fonts/roboto-700.woff2',
-  '/assets/fonts/dm-sans-400.woff2',
-  '/assets/fonts/outfit-700.woff2'
+  // Complete editorial subsets, matched to styles/home-fonts.css.
+  '/assets/fonts/barlow-condensed-700.woff2',
+  '/assets/fonts/gfs-didot-400.woff2',
+  '/assets/fonts/gfs-didot-400-greek.woff2',
+  '/assets/fonts/gfs-didot-400-greek-ext.woff2',
+  '/assets/fonts/ibm-plex-sans-400-600.woff2',
+  '/assets/fonts/ibm-plex-sans-400-600-latin-ext.woff2',
+  '/assets/fonts/ibm-plex-sans-400-600-greek.woff2'
 ];
 
 var STANDINGS_DATA_ASSETS = [
@@ -322,9 +335,12 @@ function precacheStandingsData() {
 }
 
 // Cache-first with background revalidation
-function staleWhileRevalidate(request, cacheName) {
+function staleWhileRevalidate(request, cacheName, matchShellAsset) {
   return caches.open(cacheName).then(function (cache) {
-    return cache.match(request).then(function (cached) {
+    var cachedResponse = matchShellAsset
+      ? caches.match(request, { ignoreSearch: true })
+      : cache.match(request);
+    return cachedResponse.then(function (cached) {
       var fetched = fetch(request).then(function (response) {
         if (response.ok) cache.put(request, response.clone());
         return response;
@@ -440,7 +456,10 @@ self.addEventListener('fetch', function (e) {
 
   // Static assets (CSS, JS, images, fonts) → cache-first, background update
   if (isStaticAsset(pathname)) {
-    e.respondWith(staleWhileRevalidate(e.request, CACHE_ASSETS));
+    // Shell files are precached without their build hash query. Search all
+    // current caches by pathname so a cold offline load can satisfy the
+    // stamped `?v=` request from CACHE_SHELL.
+    e.respondWith(staleWhileRevalidate(e.request, CACHE_ASSETS, true));
     return;
   }
 

@@ -637,9 +637,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateActiveFilterSummary();
         syncArchiveMiniBar();
         if (!filteredPosts.length) {
-            if (!staticFirstPageReady) {
-                grid.replaceChildren(createEmptyState('fa-newspaper', 'Δεν βρέθηκαν άρθρα για τα επιλεγμένα φίλτρα.'));
-            }
+            grid.replaceChildren(createEmptyState('fa-newspaper', 'Δεν βρέθηκαν άρθρα για τα επιλεγμένα φίλτρα.'));
             if (paginationEl) paginationEl.replaceChildren();
             return;
         }

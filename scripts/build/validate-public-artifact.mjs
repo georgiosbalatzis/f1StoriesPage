@@ -10,6 +10,7 @@ import { CONTENT_SECURITY_POLICY, REFERRER_POLICY, securityHeadersText } from '.
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DIST_ROOT = path.join(REPO_ROOT, 'dist');
+const BUILD_MANIFEST_PATH = path.join(REPO_ROOT, 'scripts', 'build', 'asset-manifest.json');
 const SITE_ORIGIN = 'https://f1stories.gr';
 const MAX_FILE_BYTES = Number(process.env.PUBLIC_ARTIFACT_MAX_BYTES || 2 * 1024 * 1024);
 
@@ -77,6 +78,11 @@ const REQUIRED_EXACT = [
     'standings/dirty-air-cache.json',
     'standings/standings-cache.json',
     'styles.min.css',
+    'styles/editorial.min.css',
+    'styles/home-fonts.min.css',
+    'blog-module/blog/archive-editorial.min.css',
+    'blog-module/blog/article-editorial.min.css',
+    'standings/standings-editorial.min.css',
     'styles/layers.css',
     'scripts/perf/error-beacon.min.js',
     'scripts/sw-register.min.js',
@@ -129,7 +135,8 @@ function forbiddenReason(relPath) {
     if (FORBIDDEN_EXACT.has(relPath) || FORBIDDEN_EXACT.has(base)) return 'internal file';
     if (/\.(?:bak|docx|map|odt)$/i.test(relPath)) return 'source/backup artifact';
     if (/\.sql$/i.test(relPath)) return 'database/source artifact';
-    if (/\.txt$/i.test(relPath) && relPath !== 'robots.txt') return 'raw text artifact';
+    const isFontLicense = /^assets\/fonts\/licenses\/(?:barlowcondensed|gfsdidot|ibmplexsans)-OFL\.txt$/.test(relPath);
+    if (/\.txt$/i.test(relPath) && relPath !== 'robots.txt' && !isFontLicense) return 'raw text artifact';
     if (/^blog-module\/blog-entries\/.*\/(?:source|gallery)\.txt$/i.test(relPath)) return 'raw article source';
     if (/^blog-module\/blog-entries\/.*\.(?:jpe?g|png)$/i.test(relPath)) return 'raw article image';
     if (/^scripts\/build\//.test(relPath)) return 'build script';
@@ -541,6 +548,51 @@ function collectStringArrayValues(js, name) {
     return Array.from(match[1].matchAll(/'([^']+)'/g)).map(item => item[1]);
 }
 
+function loadEditorialAssetRefs(errors) {
+    let files;
+    try {
+        files = JSON.parse(fs.readFileSync(BUILD_MANIFEST_PATH, 'utf8')).files;
+    } catch (error) {
+        errors.push(`asset manifest unavailable for editorial route validation (${error.message})`);
+        return {};
+    }
+
+    const sources = [
+        'home.css',
+        'styles/home-fonts.css',
+        'styles/editorial.css',
+        'blog-module/blog/archive-editorial.css',
+        'blog-module/blog/article-editorial.css',
+        'standings/standings-editorial.css'
+    ];
+    return Object.fromEntries(sources.map(source => {
+        const entry = files?.[source];
+        if (!entry?.min || !entry?.hash) {
+            errors.push(`asset manifest missing editorial source ${source}`);
+            return [source, ''];
+        }
+        return [source, `/${entry.min}?v=${entry.hash}`];
+    }));
+}
+
+function countLiteral(text, value) {
+    if (!value) return 0;
+    return String(text).split(value).length - 1;
+}
+
+function validateEditorialRefs(errors, html, relPath, sources, editorialRefs) {
+    sources.forEach(source => {
+        const ref = editorialRefs[source];
+        if (!ref) return;
+        const rooted = `href="${ref}"`;
+        const relative = `href="${ref.slice(1)}"`;
+        const count = countLiteral(html, rooted) + countLiteral(html, relative);
+        if (count !== 1) {
+            errors.push(`${relPath}: expected one current ${source} reference, found ${count}`);
+        }
+    });
+}
+
 function validateServiceWorkerRefs(errors) {
     const relPath = 'sw.js';
     const abs = path.join(DIST_ROOT, relPath);
@@ -557,22 +609,25 @@ function validateServiceWorkerRefs(errors) {
     refs.forEach(ref => assertLocalRefExists(errors, relPath, ref));
 }
 
-function validateRouteMarkers(errors) {
+function validateRouteMarkers(errors, editorialRefs) {
     const checks = [
         {
             relPath: 'index.html',
             label: 'home',
-            patterns: [/<main\b/i, /id=["']about["']/i, /id=["']contact["']/i, /id=["']contact-form["']/i]
+            patterns: [/<main\b/i, /<body\b[^>]*class=["'][^"']*\beditorial-page\b/i, /<body\b[^>]*class=["'][^"']*\bhome-page\b/i, /id=["']about["']/i, /id=["']contact["']/i, /id=["']contact-form["']/i],
+            editorialSources: ['styles/home-fonts.css', 'styles/editorial.css', 'home.css']
         },
         {
             relPath: 'blog-module/blog/index.html',
             label: 'blog index',
-            patterns: [/<main\b/i, /id=["']articles-grid["']/i, /article-card/i]
+            patterns: [/<main\b/i, /<body\b[^>]*class=["'][^"']*\beditorial-page\b/i, /<body\b[^>]*class=["'][^"']*\barchive-page\b/i, /id=["']articles-grid["']/i, /article-card/i],
+            editorialSources: ['styles/home-fonts.css', 'styles/editorial.css', 'blog-module/blog/archive-editorial.css']
         },
         {
             relPath: 'standings/index.html',
             label: 'standings',
-            patterns: [/<main\b/i, /class=["'][^"']*standings-wrapper/i, /id=["']tab-drivers["']/i]
+            patterns: [/<main\b/i, /<body\b[^>]*class=["'][^"']*\beditorial-page\b/i, /<body\b[^>]*class=["'][^"']*\bstandings-page\b/i, /class=["'][^"']*standings-wrapper/i, /id=["']tab-drivers["']/i],
+            editorialSources: ['styles/home-fonts.css', 'styles/editorial.css', 'standings/standings-editorial.css']
         },
         {
             relPath: '404.html',
@@ -591,7 +646,8 @@ function validateRouteMarkers(errors) {
                 checks.push({
                     relPath: `blog-module/blog-entries/${encodeURIComponent(id)}/article.html`,
                     label: 'article',
-                    patterns: [/<main\b/i, /class=["'][^"']*article-content/i, /rel=["']canonical["']/i]
+                    patterns: [/<main\b/i, /<body\b[^>]*class=["'][^"']*\beditorial-page\b/i, /<body\b[^>]*class=["'][^"']*\barticle-page\b/i, /class=["'][^"']*article-content/i, /rel=["']canonical["']/i],
+                    editorialSources: ['styles/home-fonts.css', 'styles/editorial.css', 'blog-module/blog/article-editorial.css']
                 });
             }
         } catch (error) {
@@ -609,7 +665,28 @@ function validateRouteMarkers(errors) {
         check.patterns.forEach(pattern => {
             if (!pattern.test(html)) errors.push(`route crawl ${check.label}: ${check.relPath} missing ${pattern}`);
         });
+        validateEditorialRefs(errors, html, check.relPath, check.editorialSources || [], editorialRefs);
     });
+}
+
+function validateEditorialArticle(errors, html, relPath, editorialRefs) {
+    if (!/^blog-module\/blog-entries\/[^/]+\/article\.html$/i.test(relPath)) return;
+    if (!/<body\b[^>]*class=["'][^"']*\beditorial-page\b/i.test(html)
+        || !/<body\b[^>]*class=["'][^"']*\barticle-page\b/i.test(html)) {
+        errors.push(`${relPath}: missing editorial article body classes`);
+    }
+    validateEditorialRefs(errors, html, relPath, [
+        'styles/home-fonts.css',
+        'styles/editorial.css',
+        'blog-module/blog/article-editorial.css'
+    ], editorialRefs);
+    if (countLiteral(html, '<!-- f1s:article-editorial:begin -->') !== 1
+        || countLiteral(html, '<!-- f1s:article-editorial:end -->') !== 1) {
+        errors.push(`${relPath}: expected one editorial marker pair`);
+    }
+    if (/<!-- f1s:critical-css:(?:begin|end) -->/.test(html)) {
+        errors.push(`${relPath}: retains retired critical CSS`);
+    }
 }
 
 function main() {
@@ -620,6 +697,7 @@ function main() {
 
     const errors = [];
     const files = [];
+    const editorialRefs = loadEditorialAssetRefs(errors);
     const sitemapUrls = loadSitemapUrls(errors);
     const indexedArticleUrls = loadIndexedArticleUrls(errors);
 
@@ -634,7 +712,7 @@ function main() {
     validateCname(errors);
     validateManifestRefs(errors);
     validateServiceWorkerRefs(errors);
-    validateRouteMarkers(errors);
+    validateRouteMarkers(errors, editorialRefs);
 
     walk(DIST_ROOT, function (abs, relPath) {
         files.push(relPath);
@@ -650,6 +728,7 @@ function main() {
 
         if (/\.html$/i.test(relPath)) {
             const html = fs.readFileSync(abs, 'utf8');
+            validateEditorialArticle(errors, html, relPath, editorialRefs);
             validateHtmlSecurityMeta(errors, html, relPath);
             validateHtmlMetadata(errors, html, relPath, sitemapUrls, indexedArticleUrls);
             validateHtmlRefs(errors, abs, relPath);

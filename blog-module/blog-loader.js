@@ -373,6 +373,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!container) return;
 
+        container.setAttribute('aria-busy', 'true');
+
         // Show loading state
         container.replaceChildren(createLoadingColumn());
 
@@ -381,24 +383,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 var posts = extractPosts(data);
                 if (container.closest('#latest')) {
                     renderHomepageFeed(container, posts);
+                    container.setAttribute('aria-busy', 'false');
                     return;
                 }
 
                 var recent = posts.slice(0, 3);
                 if (!recent.length) {
                     container.replaceChildren(createMessageColumn('Δεν υπάρχουν διαθέσιμα άρθρα αυτή τη στιγμή.'));
+                    container.setAttribute('aria-busy', 'false');
                     return;
                 }
                 container.replaceChildren.apply(container, recent.map(createBlogCard));
+                container.setAttribute('aria-busy', 'false');
             })
             .catch(function () {
                 var col = document.createElement('div');
                 col.className = 'col-12';
                 var alert = document.createElement('div');
                 alert.className = 'alert alert-danger';
+                alert.setAttribute('role', 'alert');
                 alert.textContent = 'Δεν ήταν δυνατή η φόρτωση των άρθρων.';
                 col.appendChild(alert);
                 container.replaceChildren(col);
+                container.setAttribute('aria-busy', 'false');
             });
     }
 

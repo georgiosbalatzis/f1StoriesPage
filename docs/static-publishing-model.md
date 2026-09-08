@@ -65,6 +65,8 @@ These files are generated but intentionally committed:
 
 Generated data contracts are documented in `docs/data-contracts.md` and checked by `npm run build:data-contracts`.
 
+The editorial shell is shared by the home, blog archive, standings, and article routes through `styles/editorial.css`, the self-hosted `styles/home-fonts.css`, and route stylesheets. `scripts/build/article-editorial.mjs` migrates archived article shells through the normal asset stamping step without reparsing or replacing article bodies. New posts inherit the same shell from `blog-module/blog/template.html`. Every normal asset stamp refreshes the marker-wrapped article stylesheet URLs from the current manifest, so shared style changes propagate without a content rebuild. The public artifact and service-worker shell explicitly include the archive, article and standings editorial stylesheets and font subsets.
+
 ### Local Or Ignored Files
 
 These files should not be reviewed as source and should not reach production:

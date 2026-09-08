@@ -10,6 +10,7 @@
 // committed content artifacts that will be regenerated on the next blog
 // rebuild via the (already-stamped) blog-module/blog/template.html. The narrow
 // exceptions are:
+//   - An idempotent editorial shell migration for archived articles without source documents.
 //   - Bootstrap CDN swap, so no live HTML keeps loading Bootstrap from jsDelivr.
 //   - Article runtime script refs, so committed articles can move to minified
 //     stamped JS without a full content rebuild.
@@ -24,6 +25,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { applyArticleEditorial } from './article-editorial.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -71,13 +73,19 @@ const SPRITE_END   = '<!-- f1s:icon-sprite:end -->';
 // async-preload for local stylesheets). Excluded: offline.html and 404.html
 // which already inline all their CSS and have no external refs.
 const CRITICAL_TARGETS = new Set([
-    'index.html',
-    'standings/index.html',
-    'blog-module/blog/index.html',
-    'blog-module/blog/template.html',
     'generate.html',
     'housekeeping.html',
     'statistics.html'
+]);
+
+// Editorial routes load their complete stylesheets synchronously. Their old
+// critical block described the retired dark/blue system and could briefly
+// paint the wrong palette and generic typography before the new CSS arrived.
+const EDITORIAL_TARGETS = new Set([
+    'index.html',
+    'standings/index.html',
+    'blog-module/blog/index.html',
+    'blog-module/blog/template.html'
 ]);
 
 // Source path of the hand-crafted critical block (resolved against manifest).
@@ -95,6 +103,12 @@ const CRITICAL_END   = '<!-- f1s:critical-css:end -->';
 // fonts.googleapis.com <link> reference and is inserted into the preload
 // section for the primary weight.
 const FONTS_SOURCE = 'styles/fonts.css';
+const ROUTE_FONTS_SOURCES = {
+    'index.html': 'styles/home-fonts.css',
+    'blog-module/blog/index.html': 'styles/home-fonts.css',
+    'blog-module/blog/template.html': 'styles/home-fonts.css',
+    'standings/index.html': 'styles/home-fonts.css'
+};
 
 // Phase 4: self-hosted Bootstrap subset. Replaces the Bootstrap CDN CSS with
 // the minified local subset and drops Bootstrap's JS bundle after the repo
@@ -104,6 +118,9 @@ const ARTICLE_HTML_ROOT = 'blog-module/blog-entries';
 const ARTICLE_RUNTIME_SOURCES = new Set([
     'styles.css',
     'styles/fonts.css',
+    'styles/home-fonts.css',
+    'styles/editorial.css',
+    'blog-module/blog/article-editorial.css',
     'styles/shared-nav.css',
     'theme-overrides.css',
     'blog-module/blog-styles.css',
@@ -126,17 +143,17 @@ const ARTICLE_RUNTIME_SOURCES = new Set([
 // repo root; stamp-html looks it up in assets/fonts/ literally.
 const FONT_PRELOADS = {
     'index.html': [
-        'assets/fonts/roboto-400.woff2',
-        'assets/fonts/roboto-700.woff2'
+        'assets/fonts/barlow-condensed-700.woff2',
+        'assets/fonts/ibm-plex-sans-400-600-greek.woff2'
     ],
-    'standings/index.html': [],
+    'standings/index.html': ['assets/fonts/barlow-condensed-700.woff2', 'assets/fonts/ibm-plex-sans-400-600-greek.woff2'],
     'blog-module/blog/index.html': [
-        'assets/fonts/dm-sans-400.woff2',
-        'assets/fonts/outfit-700.woff2'
+        'assets/fonts/barlow-condensed-700.woff2',
+        'assets/fonts/ibm-plex-sans-400-600-greek.woff2'
     ],
     'blog-module/blog/template.html': [
-        'assets/fonts/dm-sans-400.woff2',
-        'assets/fonts/outfit-700.woff2'
+        'assets/fonts/gfs-didot-400-greek.woff2',
+        'assets/fonts/ibm-plex-sans-400-600-greek.woff2'
     ],
     'generate.html': [
         'assets/fonts/dm-sans-400.woff2',
@@ -315,6 +332,14 @@ function injectCritical(html, critical) {
     const insertion = `${indent}${block}\n`;
     const result = html.slice(0, m.index) + insertion + html.slice(m.index);
     return { result, injected: true, replaced: false };
+}
+
+function stripCritical(html) {
+    const existing = new RegExp(
+        `^[ \\t]*${escapeRegex(CRITICAL_BEGIN)}[\\s\\S]*?^[ \\t]*${escapeRegex(CRITICAL_END)}[ \\t]*\\r?\\n?`,
+        'gm'
+    );
+    return html.replace(existing, '').replace(/^<link rel="stylesheet"/gm, '    <link rel="stylesheet"');
 }
 
 // Convert a local stylesheet link to the async-preload pattern. External
@@ -739,12 +764,27 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo,
     return result;
 }
 
-function stampArticleRuntimeMarkup(commentsInfo, railCssInfo, railJsInfo, dry) {
+function stampArticleRuntimeMarkup(commentsInfo, railCssInfo, railJsInfo, dry, manifest) {
+    const assetHref = source => {
+        const entry = manifest[source];
+        if (!entry) throw new Error(`Editorial asset missing: ${source}`);
+        return `/${entry.min}?v=${entry.hash}`;
+    };
+    const editorialAssets = {
+        fonts: assetHref('styles/home-fonts.css'),
+        shared: assetHref('styles/editorial.css'),
+        article: assetHref('blog-module/blog/article-editorial.css')
+    };
     const totals = { files: 0 };
     for (const rel of listArticleHtml()) {
         const abs = path.join(REPO_ROOT, rel);
         const original = fs.readFileSync(abs, 'utf8');
-        const result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, railCssInfo, railJsInfo);
+        let result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, railCssInfo, railJsInfo);
+        // Refresh the marker block on every stamp. applyArticleEditorial is
+        // byte-stable when hashes are current and updates archived pages when
+        // any shared editorial stylesheet changes.
+        result = applyArticleEditorial(result, editorialAssets);
+        result = swapFonts(result, 'blog-module/blog/template.html', manifest['styles/home-fonts.css'], manifest).result;
         if (result === original) continue;
 
         totals.files++;
@@ -948,7 +988,12 @@ function main() {
         totalBootstrapPreconnectDrops += bootstrapSwap.swaps.preconnectDropped;
 
         // 2) swap Google Fonts → self-hosted (only on pages that had them)
-        const fontSwap = swapFonts(result, rel, fontsInfo, manifest);
+        const routeFontsSource = ROUTE_FONTS_SOURCES[rel] || FONTS_SOURCE;
+        const routeFontsInfo = manifest[routeFontsSource];
+        if (!routeFontsInfo) {
+            throw new Error(`manifest missing entry for ${routeFontsSource} — run build:assets:minify`);
+        }
+        const fontSwap = swapFonts(result, rel, routeFontsInfo, manifest);
         result = fontSwap.result;
         totalFontSwaps += fontSwap.swaps.googleLinksSwapped;
         totalPreconnectDrops += fontSwap.swaps.preconnectDropped;
@@ -973,9 +1018,14 @@ function main() {
         result = gtmDnsDrop.result;
         totalGtmDnsDrops += gtmDnsDrop.dropped;
 
-        // 3) inject/refresh critical-CSS block + normalize local stylesheets
+        // 3) inject/refresh legacy critical CSS, or remove it from editorial
+        //    pages whose complete route stylesheets are render-blocking.
         let criticalNote = '';
-        if (CRITICAL_TARGETS.has(rel)) {
+        if (EDITORIAL_TARGETS.has(rel)) {
+            const stripped = stripCritical(result);
+            if (stripped !== result) criticalNote = 'removed';
+            result = stripped;
+        } else if (CRITICAL_TARGETS.has(rel)) {
             const routeCritical = loadRouteCriticalCss(manifest, rel, critical);
             const inj = injectCritical(result, routeCritical);
             result = inj.result;
@@ -1054,7 +1104,7 @@ function main() {
         );
     }
 
-    const articleRuntimeMarkup = stampArticleRuntimeMarkup(articleCommentsInfo, articleRailCssInfo, articleRailJsInfo, dry);
+    const articleRuntimeMarkup = stampArticleRuntimeMarkup(articleCommentsInfo, articleRailCssInfo, articleRailJsInfo, dry, manifest);
     if (articleRuntimeMarkup.files) {
         console.log(
             `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleRuntimeMarkup.files} file(s), inline runtime markup migrated`

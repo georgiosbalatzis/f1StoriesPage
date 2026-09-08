@@ -61,6 +61,8 @@ const AUTHOR_TOOL_FILES = new Set([
 
 const BLOG_PUBLIC_FILES = new Set([
     'blog-module/blog/index.html',
+    'blog-module/blog/archive-editorial.min.css',
+    'blog-module/blog/article-editorial.min.css',
     'blog-module/blog/article-comments.min.js',
     'blog-module/blog/article-rail.min.css',
     'blog-module/blog/article-rail.min.js',
@@ -83,6 +85,7 @@ const STANDINGS_ROOT_FILES = new Set([
     'standings/index.html',
     'standings/standings-cache.json',
     'standings/standings.min.css',
+    'standings/standings-editorial.min.css',
     'standings/standings-polish.min.css',
     'standings/standings-polish.min.js',
     'standings/standings.min.js'
@@ -352,6 +355,7 @@ function shouldCopy(relPath) {
     }
 
     if (relPath.startsWith('assets/')) {
+        if (/^assets\/fonts\/licenses\/(?:barlowcondensed|gfsdidot|ibmplexsans)-OFL\.txt$/.test(relPath)) return true;
         return /\.(?:json|woff2)$/i.test(relPath);
     }
 

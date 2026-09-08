@@ -44,17 +44,24 @@
     ensureNavThemeButton();
 
     if (hamburger && mobileMenu) {
+        function closeMobileMenu() {
+            hamburger.classList.remove('open');
+            mobileMenu.classList.remove('open');
+            hamburger.setAttribute('aria-expanded', 'false');
+        }
+
         hamburger.addEventListener('click', function () {
             hamburger.classList.toggle('open');
             mobileMenu.classList.toggle('open');
             hamburger.setAttribute('aria-expanded', mobileMenu.classList.contains('open') ? 'true' : 'false');
         });
         mobileMenu.querySelectorAll('a').forEach(function (link) {
-            link.addEventListener('click', function () {
-                hamburger.classList.remove('open');
-                mobileMenu.classList.remove('open');
-                hamburger.setAttribute('aria-expanded', 'false');
-            });
+            link.addEventListener('click', closeMobileMenu);
+        });
+        document.addEventListener('keydown', function (event) {
+            if (event.key !== 'Escape' || !mobileMenu.classList.contains('open')) return;
+            closeMobileMenu();
+            hamburger.focus();
         });
     }
 
@@ -68,7 +75,17 @@
 
     // ── Theme Toggle ─────────────────────────────
     var themeButtons = Array.prototype.slice.call(document.querySelectorAll('.theme-toggle-btn'));
+
+    function syncThemeToggleState() {
+        var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        themeButtons.forEach(function (themeBtn) {
+            themeBtn.setAttribute('aria-pressed', String(isLight));
+            themeBtn.setAttribute('aria-label', 'Φωτεινό θέμα');
+        });
+    }
+
     if (themeButtons.length) {
+        syncThemeToggleState();
         themeButtons.forEach(function (themeBtn) {
             themeBtn.addEventListener('click', function () {
                 var html = document.documentElement;
@@ -80,6 +97,7 @@
                     html.setAttribute('data-theme', 'light');
                     storeTheme('light');
                 }
+                syncThemeToggleState();
             });
         });
     }
