@@ -77,7 +77,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -93,7 +93,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -191,10 +191,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -213,10 +213,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -235,8 +235,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--news" data-article-kind="news">
+            <div class="article-header" data-article-dossier="ΡΕΠΟΡΤΑΖ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Παλιά κοιμόμασταν με ανοιχτά παράθυρα" class="article-header-img"
@@ -245,13 +245,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΡΕΠΟΡΤΑΖ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">News</span>
                     </div>
                     <h1 class="article-title">Παλιά κοιμόμασταν με ανοιχτά παράθυρα</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Thanasis Batalas</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=thanasis-batalas" class="article-author-link">Thanasis Batalas</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> February 22, 2026</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
@@ -277,7 +277,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΡΕΠΟΡΤΑΖ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> News</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> February 22, 2026</span>
@@ -291,18 +291,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Thanasis Batalas</strong><span>Δημοσίευση: 22 Φεβρουαρίου 2026 · Ενημέρωση: 22 Φεβρουαρίου 2026</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span>Συντακτικό άρθρο και επιβεβαίωση στοιχείων από τις επίσημες ανακοινώσεις του πρωταθλήματος.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=thanasis-batalas">Thanasis Batalas</a></strong><span>Δημοσίευση: <time datetime="2026-02-22">22 Φεβρουαρίου 2026</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><p>Έχω ακούσει κι έχω ακούσει… Έχω πει κι έχω πει… Θα πεις όλοι μας. Ναι, αλλά θα δεις και που το πάω… Έλληνες είμαστε, εδώ ζούμε. Και τι λέμε συνέχεια; Ε, παλιά ήταν αλλιώς τα πράγματα, πιο όμορφα, πιο αγνά. Κάπως έτσι δε λέμε και για τη Φόρμουλα 1;</p><p>Παλιά ήταν ωραία, βλέπαμε μάχες και και και· Θα σου συμφωνήσω σε όλα! Αλλά, μάγκα μου, θα σου πω και θετικά που βλέπω τώρα και δεν τα σκέφτηκες γιατί έχεις ιδανικοποιήσει το παρελθόν (κάνε υπομονή, άλλη μια δύσκολη λέξη θα πω μόνο). Ορμώμενος —η δεύτερη λέξη— από το press conference των αφεντικών των ομάδων (οι οδηγοί τα ίδια λένε, δεν έχει ψωμί), σου λέω ότι γουστάρω να τους ακούω.</p><p>Θα σταθώ στον Τότο, αλλά θα πω, ρε φίλε, πόσο βοήθησε η τεχνολογία και τα social media στην εξέλιξη του αθλήματος. Γιατί με ρωτάς; (ή όχι, αλλά πρέπει να συνεχίσω το άρθρο). Γιατί έφυγε από το άθλημα η εσωστρέφεια και το κόμπλεξ. Ναι, έφυγε, ή έστω, τους κρατάει σε εγρήγορση.</p><p>Στο προκείμενο. Πες τα καλά που γίνονταν παλιά, αλλά θυμήσου και τον Ρον Ντένις να μας ζαλίζει τα, να μας ζαλίζει, ότι «δε θέλουν οι αντίπαλοι να είναι καλοί, αλλά μόνο να μας αντιγράφουν ξέρουν και να γκρινιάζουν στην FIA…» κι έσερνε ο στόμας του. Όχι μόνο αυτός, αλλά ξέρεις που το πάω. Στον Τότο… που τον ακούς να μιλάει ήρεμα για πράγματα που ήταν πάντα αυτονόητα, αλλά στο μυαλό των παλιών δεν ίσχυαν.</p><p>Του λένε για τον κινητήρα της Μερσέντες και για ενστάσεις των άλλων ομάδων σε τεχνικά κλπ… (Εδώ ακούς τον Γιώργο για τα τεχνικά, εγώ δεν τα διάβασα, είχαμε κόσμο στο σπίτι) και λέει ο mr. Mercedes προσωποποιημένος:</p><p>«Είναι λογικό να παίζουμε στα όρια με την εξέλιξη και τους κανόνες. Μπορεί να βρήκαμε κάτι που, αν δουλέψει, προφανώς θα μας αντιγράψουν. Προφανώς και θα κάνουν ένσταση οι υπόλοιποι. Δεν έχει να κάνει με το αν μου αρέσει ή όχι. Έτσι συμβαίνει τα τελευταία 50 χρόνια στην F1 και θα συνεχίσει να συμβαίνει.»</p><p>Και θέλεις και να σε ξεφτιλίσω κακοπροαίρετε; (σε ξέρω, γιατί όμοιος ομοίω…) Όχι, ο Βολφ δεν έπαιξε εκ του ασφαλούς, τύπου, είμαι καβάλα λόγω καινοτομίας. Ήταν σαφής:</p><p>«Σήμερα είμαστε εμείς που μας ψάχνουν τι κάναμε, αύριο μπορεί να ψαχτούμε εμείς να βρούμε λάθη στους άλλους και να διαμαρτυρηθούμε».</p><p>Σε γλέντησε; Σε γλέντησε. Ναι, ναι, εσένα, τον ίδιο, που ξεχνάς τεχνηέντως (άντε και μια τρίτη δύσκολη λέξη) τι έλεγες… Ότι ξεφτιλίζεται το άθλημα που ο Μπαρικέλο αφήνει τον Σούμι στην Αυστρία με team orders.</p><p>Πέρυσι δεν έλεγες το ίδιο με Λάντο και Όσκαρ. Έλεγες πω πω, φαντάζεσαι να μην «συνεννοούνταν η ομάδα; Θα έχαναν το πρωτάθλημα!»</p><p>Αλλά ξέχασα, η Μακλάρεν δε χρησιμοποίησε ποτέ team orders. Απλά μη ρωτήσεις τον Βιλνέβ, μπορεί να θυμηθεί κάτι.</p><p>Μην ψαρώνεις.</p></div>
 
                                 <div class="article-author-footer">
@@ -315,11 +315,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Thanasis Batalas</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=thanasis-batalas">Thanasis Batalas</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=thanasis-batalas">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -443,7 +444,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -469,6 +470,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -476,10 +479,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

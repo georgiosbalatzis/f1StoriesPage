@@ -77,7 +77,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -93,7 +93,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -191,10 +191,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -213,10 +213,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -235,8 +235,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--news" data-article-kind="news">
+            <div class="article-header" data-article-dossier="ΡΕΠΟΡΤΑΖ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Μονακό 2025: Η Ονειρεμένη Νίκη του Νόρις Εν μέσω Στρατηγικού Χάους και Ένος Κανονιστικού Πυρός" class="article-header-img"
@@ -245,13 +245,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΡΕΠΟΡΤΑΖ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">News</span>
                     </div>
                     <h1 class="article-title">Μονακό 2025: Η Ονειρεμένη Νίκη του Νόρις Εν μέσω Στρατηγικού Χάους και Ένος Κανονιστικού Πυρός</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Georgios Balatzis</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Georgios Balatzis</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> May 30, 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
@@ -277,7 +277,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΡΕΠΟΡΤΑΖ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> News</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> May 30, 2025</span>
@@ -291,18 +291,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Georgios Balatzis</strong><span>Δημοσίευση: 30 Μαΐου 2025 · Ενημέρωση: 30 Μαΐου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span>Συντακτικό άρθρο και επιβεβαίωση στοιχείων από τις επίσημες ανακοινώσεις του πρωταθλήματος.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></strong><span>Δημοσίευση: <time datetime="2025-05-30">30 Μαΐου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><h2>0. TL;DR: Μονακό 2025 – Μια Νίκη, Ένας Κανόνας, Πολλές Συζητήσεις</h2><p>Το Grand Prix του Μονακό 🇲🇨, το «κόσμημα του στέμματος» 👑 της Formula 1, είναι γνωστό για την ιστορική του αίγλη, αλλά και για το ότι είναι η πιο αργή πίστα 🐌 στο ημερολόγιο, καθιστώντας τις προσπεράσεις σχεδόν αδύνατες για τα σύγχρονα μονοθέσια. Αυτό συχνά οδηγεί σε «βαρετούς» 😴 αγώνες, ωθώντας τη FIA να αναζητήσει τρόπους να τους «ζωντανέψει» ✨.</p><p>Ο αγώνας του 2025 είδε τον Λάντο Νόρις της McLaren να εξασφαλίζει μια «ονειρεμένη» 🏆 νίκη από την pole position, την πρώτη του στο Μονακό και τη δεύτερη της σεζόν. Αυτή η νίκη τον έφερε μόλις τρεις βαθμούς πίσω από τον teammate του, Όσκαρ Πιάστρι, στην κορυφή της βαθμολογίας των οδηγών, ενώ η McLaren διατηρεί ένα συντριπτικό προβάδισμα στο πρωτάθλημα κατασκευαστών.</p><p>Ωστόσο, ο αγώνας επισκιάστηκε από έναν αμφιλεγόμενο νέο υποχρεωτικό κανόνα δύο pit stop 🚦, που εισήχθη για να προσδώσει στρατηγική και ενθουσιασμό. Ο κανόνας επικρίθηκε έντονα από οδηγούς όπως ο Νόρις («το μίσησε» 😡) και ο Μαξ Φερστάπεν («Mario Kart» 🍄🏎️), οι οποίοι τον χαρακτήρισαν «κατασκευασμένο» και «άσχημο» θέαμα.</p><p>Η εφαρμογή του κανόνα οδήγησε σε τακτικές «αργής οδήγησης» 🐢, όπου ομάδες όπως η Racing Bulls και η Williams επιβράδυναν σκόπιμα έναν οδηγό για να δημιουργήσουν κενό για τον teammate τους να κάνει pit stop χωρίς να χάσει θέση. Αυτή η «χειραγώγηση» 😈 των αποτελεσμάτων, αν και εντός των κανόνων, προκάλεσε απογοήτευση στους οδηγούς και τους οπαδούς, αναδεικνύοντας τα θεμελιώδη προβλήματα προσπέρασης στην πίστα.</p><p>Η συζήτηση μετά τον αγώνα επικεντρώθηκε στο μέλλον του Μονακό στην F1, με προτάσεις για αλλαγές στη διάταξη της πίστας, στους κανονισμούς των μονοθεσίων του 2026 (μικρότερα μονοθέσια 🤏) ή ακόμη και στην μετατροπή του σε αγώνα κατατακτήριων 🏁.<sup>1</sup> </p><p>Το Grand Prix του Μονακό του 2025 υπογράμμισε την ένταση μεταξύ της διατήρησης της παράδοσης και της ανάγκης για συναρπαστικούς, ανταγωνιστικούς αγώνες 🏎️💨 στη σύγχρονη εποχή της Formula 1.<sup>1</sup></p><h2>I. Εισαγωγή: Το Κόσμημα του Στέμματος, Επανεφευρεμένο</h2><p>Το Grand Prix του Μονακό αποτελεί ένα από τα πιο εμβληματικά γεγονότα στο ημερολόγιο της Formula 1, βαθιά ριζωμένο στην ιστορία του μηχανοκίνητου αθλητισμού. Διεξάγεται από το 1929 και εντάχθηκε στο πρώτο Παγκόσμιο Πρωτάθλημα το 1950, αποτελώντας ένα από τα τρία κορυφαία γεγονότα του μηχανοκίνητου αθλητισμού, μαζί με το Indianapolis 500 και τις 24 Ώρες του Le Mans.<sup>6</sup> Γνωστό ως «το κόσμημα του στέμματος» 👑 της F1, το Μονακό διατηρεί την παλιάς σχολής αίγλη του, με πολυτελή γιοτ 🛥️ να γεμίζουν το λιμάνι, προσφέροντας μια αναδρομή στις απαρχές του σπορ τη δεκαετία του 1950.<sup>7</sup></p><p>Ωστόσο, παρά το αδιαμφισβήτητο κύρος του, το Μονακό είναι μακράν η πιο αργή πίστα της χρονιάς 🐌 και δεν είναι πραγματικά κατάλληλο για τα σύγχρονα μονοθέσια της F1, καθιστώντας τις προσπεράσεις εξαιρετικά δύσκολες.<sup>7</sup> Αυτή η εγγενής πρόκληση συχνά οδηγεί σε έναν «βαρετό» 😴 αγώνα, ωθώντας τη Formula 1 και τη FIA να αναζητήσουν αλλαγές στους κανονισμούς για να τον «ζωντανέψουν» ✨.<sup>7</sup></p><p>Το Grand Prix του Μονακό του 2025 αποτέλεσε ένα χαρακτηριστικό παράδειγμα αυτής της αντίφασης. Ο Λάντο Νόρις της McLaren εξασφάλισε την πρώτη του νίκη στο Πριγκιπάτο, ένα όνειρο που έγινε πραγματικότητα για τον νεαρό Βρετανό 🏆✨.<sup>9</sup> Αυτή η νίκη εκτυλίχθηκε στο παρασκήνιο ενός αμφιλεγόμενου νέου υποχρεωτικού κανόνα δύο pit stop 🚦, που εισήχθη για να προσδώσει ενθουσιασμό στον παραδοσιακά μονότονο αγώνα.<sup>7</sup> Ο κανόνας είχε ως στόχο να επιβάλει περισσότερη στρατηγική στα pit stop και να ανατρέψει ένα γεγονός όπου οι κατατακτήριες δοκιμές είναι συχνά πιο σημαντικές από την ημέρα του αγώνα.<sup>8</sup> Ωστόσο, η εφαρμογή του κανόνα οδήγησε σε απροσδόκητες τακτικές «αργής οδήγησης» 🐢 και κατηγορίες για «χειραγωγημένο αγώνα» 😠 από οδηγούς και σχολιαστές, πυροδοτώντας μια σημαντική συζήτηση για το μέλλον των αγώνων σε αυτόν τον εμβληματικό χώρο.<sup>13</sup></p><p>Η κατάσταση στο Μονακό αποκαλύπτει μια θεμελιώδη ένταση: η ιστορική αξία της πίστας συγκρούεται με τη σύγχρονη απαίτηση για ανταγωνιστικούς, γεμάτους δράση αγώνες 💥. Η Formula 1 αγωνίζεται να συμβιβάσει την κληρονομιά της με το εξελισσόμενο αγωνιστικό της προϊόν. Αυτό δεν αφορά μόνο το Μονακό, αλλά αντανακλά μια ευρύτερη πρόκληση για τη Formula 1 στο να ισορροπήσει την πλούσια ιστορία και τους εμβληματικούς της χώρους με την ανάγκη για σύγχρονο θέαμα και γνήσιο ανταγωνισμό, ειδικά καθώς οι σχεδιασμοί των μονοθεσίων εξελίσσονται. Η επιθυμία του χρήστη για ένα λιγότερο «ξερό και βαρετό» άρθρο πηγάζει άμεσα από αυτή την υποκείμενη ένταση.</p><h2>II. Η Απόλυτη Πρόκληση των Κατατακτήριων: Εκεί που Κερδίζεται ο Αγώνας</h2><p>Στο Μονακό, η περίοδος των κατατακτήριων δοκιμών του Σαββάτου είναι αναμφισβήτητα πιο σημαντική από τον ίδιο τον αγώνα, λόγω της ακραίας δυσκολίας των προσπεράσεων 🤯 στην στενή, στριφτή πίστα με τους φράχτες κοντά στην διαδρομή.<sup>7</sup> Ακόμη και το μικρότερο λάθος μπορεί να σημαίνει σύγκρουση 💥.<sup>7</sup> Αυτό καθιστά την επίτευξη ενός τέλειου γύρου μια άσκηση στην επιδίωξη της τελειότητας, απαιτώντας απόλυτη συγκέντρωση και ακρίβεια 🎯 από τους οδηγούς.<sup>10</sup></p><h3>Η Pole Position του Λάντο Νόρις: Ένας Γύρος που Καθόρισε την Καριέρα</h3><p>Ο Λάντο Νόρις της McLaren σημείωσε χρόνο ρεκόρ πίστας ⏱️ στην τελευταία του προσπάθεια, ξεπερνώντας τον τοπικό ήρωα Σαρλ Λεκλέρ για την pole position 🥇.<sup>7</sup> Αυτή ήταν η πρώτη pole του Νόρις από το εναρκτήριο Grand Prix της Αυστραλίας και η πρώτη του στο Μονακό.<sup>7</sup> Εξέφρασε τεράστια ανακούφιση 😮‍💨, δηλώνοντας πόσο καλά ένιωθε μετά από «αρκετές δυσκολίες τους τελευταίους μήνες» 😩 και την τάση του να κάνει λάθη στις κατατακτήριες.<sup>7</sup> Ο Νόρις αναγνώρισε τη δυσκολία, χαρακτηρίζοντας το Μονακό «ίσως την πιο δύσκολη πίστα για να το πετύχεις», και δήλωσε περήφανος που το κατάφερε απέναντι στον «τοπικό ήρωα» 💪.<sup>7</sup> Ο επικεφαλής της ομάδας του, Αντρέα Στέλλα, σημείωσε ότι η ανάκαμψη του Νόρις ήταν τόσο μια μηχανολογική όσο και μια προσωπική πρόκληση, και ότι το Μονακό ήταν ένα σχετικό πεδίο δοκιμών για την ταχύτητα και τη συνέπειά του.<sup>10</sup></p><h3>Οι Ηρωικές Προσπάθειες του Σαρλ Λεκλέρ: Η Παραλίγο Νίκη και οι Ειλικρινείς Σκέψεις</h3><p>Ο Σαρλ Λεκλέρ, ο τοπικός ήρωας 🇲🇨, προκρίθηκε δεύτερος, μόλις 0,109 δευτερόλεπτα πίσω από τον Νόρις.<sup>3</sup> Είχε προηγηθεί στο FP3, υποδηλώνοντας ότι η McLaren πάλευε ρεαλιστικά για τη δεύτερη θέση, αλλά το μονοθέσιο της McLaren «ζωντάνεψε» στις κατατακτήριες.<sup>17</sup> Η ετυμηγορία του Λεκλέρ μετά τον αγώνα ήταν αποκαλυπτική: «Χάσαμε τον αγώνα χθες», αναφερόμενος στην κρίσιμη σημασία της pole position στο Μονακό.<sup>9</sup> Αργότερα εξέφρασε την απογοήτευσή του για τη δεύτερη θέση 😔, αλλά αναγνώρισε ότι ο Νόρις έκανε καλύτερη δουλειά.<sup>11</sup> Το μονοθέσιο της Ferrari αποδείχθηκε εκπληκτικά ανταγωνιστικό 🚀 στο Μονακό, επωφελούμενο από το ισχυρό μηχανικό του πακέτο στην αντιμετώπιση των ανωμαλιών και των κερμπ, κάτι που αποτελεί πλεονέκτημα σε αυτή την «ακραία, εκτός προδιαγραφών πίστα».<sup>11</sup></p><h3>Η Ισχυρή Εμφάνιση του Όσκαρ Πιάστρι και οι Δυσκολίες στις Κατατακτήριες</h3><p>Ο Όσκαρ Πιάστρι προκρίθηκε τρίτος, ακριβώς πίσω από τον teammate του, Νόρις.<sup>7</sup> Παραδέχτηκε ότι ήταν ένα «κάπως πιο χαοτικό Σαββατοκύριακο» 🌪️ για αυτόν, έχοντας «χτυπήσει τους φράχτες σε ένα σημείο» 🚧.<sup>17</sup> Ομολόγησε ότι χτύπησε τον τοίχο περισσότερες φορές σε αυτή την περίοδο κατατακτήριων από ό,τι σε ολόκληρη την καριέρα του.<sup>18</sup> Παρά αυτές τις αναποδιές, η τρίτη του θέση στις κατατακτήριες ήταν ένα «αξιοπρεπές αποτέλεσμα» 👍.<sup>17</sup></p><h3>Ποινές στην Εκκίνηση και ο Αντίκτυπός τους</h3><p>Ο Λιούις Χάμιλτον (Ferrari) προκρίθηκε 4ος, αλλά δέχτηκε ποινή τριών θέσεων ⬇️ για παρεμπόδιση κατά τη διάρκεια των κατατακτήριων, πέφτοντας στην 7η θέση στην εκκίνηση.<sup>7</sup> Ο Λανς Στρολ (Aston Martin) δέχτηκε ποινή μιας θέσης για πρόκληση σύγκρουσης κατά τη διάρκεια των δοκιμών και επιπλέον τρεις θέσεις στην εκκίνηση για παρεμπόδιση κατά τη διάρκεια των κατατακτήριων, ξεκινώντας 19ος.<sup>3</sup> Ο Όλιβερ Μπέρμαν (Haas Ferrari) δέχτηκε ποινή 10 θέσεων για προσπέραση υπό κόκκινες σημαίες στις δοκιμές, ξεκινώντας 20ος.<sup>3</sup></p><p>Η ασυγχώρητη φύση της πίστας του Μονακό σημαίνει ότι οποιοδήποτε λάθος, είτε πρόκειται για οδηγικό σφάλμα είτε για παραβίαση κανονισμών, έχει δυσανάλογα μεγάλο αντίκτυπο στο τελικό αποτέλεσμα του αγώνα σε σύγκριση με άλλες πίστες. Αυτό ενισχύει την πίεση στους οδηγούς και τις ομάδες κατά τη διάρκεια των κατατακτήριων. Οδηγεί επίσης στο συμπέρασμα ότι οι ακραίες απαιτήσεις ακρίβειας και διαχείρισης κινδύνου σε έναν μόνο γύρο είναι πιο σημαντικές από την αγωνιστική ικανότητα. Επιπλέον, τα στενά περιθώρια και η έλλειψη ευκαιριών για προσπέραση καθιστούν οποιαδήποτε ποινή στην εκκίνηση ένα σημαντικό μειονέκτημα 📉, διαμορφώνοντας ουσιαστικά τον αγώνα πριν καν ξεκινήσει.</p><p><strong>FORMULA 1 TAG HEUER GRAND PRIX DE MONACO 2025 - Εκκίνηση</strong></p>
                             <div class="table-responsive-container docx-table-container">
                                 <div class="table-container scroll-view active" id="docx-table-0-scroll">
@@ -357,11 +357,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Georgios Balatzis</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -485,7 +486,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -511,6 +512,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -518,10 +521,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

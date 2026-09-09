@@ -17,6 +17,49 @@ document.addEventListener('DOMContentLoaded', function () {
         return src.startsWith('/') ? src : '/' + src;
     }
 
+    function heroSrc(post) {
+        const candidate = post && (post.heroImage || post.image || post.thumbnail);
+        if (!candidate) return '';
+        return imgSrc(candidate).replace(/-(?:card|sm)(?=\.[^.]+$)/i, '');
+    }
+
+    function setOptionalSrcset(element, value) {
+        if (!element) return;
+        if (value) element.setAttribute('srcset', value);
+        else element.removeAttribute('srcset');
+    }
+
+    function syncHeroMedia(post) {
+        const imageEl = document.getElementById('hero-image');
+        const avifSource = document.getElementById('hero-source-avif');
+        const webpSource = document.getElementById('hero-source-webp');
+        const preload = document.getElementById('hero-image-preload');
+        const image = heroSrc(post);
+        const avif = post && post.heroAvif ? imgSrc(post.heroAvif) : '';
+        const webp = /\.webp(?:\?.*)?$/i.test(image) ? image : '';
+
+        if (!imageEl || !image) return;
+
+        // A background rotation script used to leave an AVIF/srcset behind
+        // after the story metadata changed. Clear every responsive source
+        // before assigning the lead story so all browsers render the same
+        // image as the headline and preload.
+        setOptionalSrcset(avifSource, avif);
+        setOptionalSrcset(webpSource, webp);
+        imageEl.removeAttribute('srcset');
+        imageEl.src = image;
+        imageEl.alt = post.title || 'F1 Stories';
+        imageEl.sizes = '(max-width: 767px) 100vw, 55vw';
+        if (post.heroImageWidth || post.imageWidth) imageEl.width = parseInt(post.heroImageWidth || post.imageWidth, 10) || imageEl.width;
+        if (post.heroImageHeight || post.imageHeight) imageEl.height = parseInt(post.heroImageHeight || post.imageHeight, 10) || imageEl.height;
+
+        if (preload) {
+            preload.href = avif || image;
+            preload.removeAttribute('imagesrcset');
+            preload.setAttribute('imagesizes', '(max-width: 767px) 100vw, 55vw');
+        }
+    }
+
     function dateParts(value) {
         const match = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
         if (!match) return { day: '', month: '' };
@@ -175,16 +218,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const excerptEl = document.getElementById('hero-story-excerpt');
         const bylineEl = document.getElementById('hero-story-byline');
         const linkEl = document.getElementById('hero-story-link');
-        const imageEl = document.getElementById('hero-image');
         if (categoryEl) categoryEl.textContent = category.toUpperCase();
-        if (titleEl) titleEl.textContent = post.title || '';
+        if (titleEl) {
+            const periodEl = titleEl.querySelector('.hero-period');
+            titleEl.textContent = post.title || '';
+            if (periodEl) {
+                periodEl.textContent = '.';
+                titleEl.appendChild(periodEl);
+            }
+        }
         if (excerptEl) excerptEl.textContent = post.excerpt || '';
         if (bylineEl) bylineEl.textContent = (post.author || 'F1 Stories') + ' · ' + (post.date || '');
         if (linkEl) linkEl.href = href;
-        if (imageEl && (post.thumbnail || post.image)) {
-            imageEl.src = imgSrc(post.thumbnail || post.image);
-            imageEl.alt = post.title || 'F1 Stories';
-        }
+        syncHeroMedia(post);
     }
 
     function createBlogCard(post) {

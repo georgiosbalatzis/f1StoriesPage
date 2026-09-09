@@ -77,7 +77,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -93,7 +93,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -191,10 +191,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -213,10 +213,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -235,8 +235,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--news" data-article-kind="news">
+            <div class="article-header" data-article-dossier="ΡΕΠΟΡΤΑΖ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;" class="article-header-img"
@@ -245,13 +245,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΡΕΠΟΡΤΑΖ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">News</span>
                     </div>
                     <h1 class="article-title">Η Ανατομία μιας Κρίσης: Τι Πήγε Στραβά για την Alpine το 2025;</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Georgios Balatzis</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Georgios Balatzis</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> August 17, 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
@@ -277,7 +277,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΡΕΠΟΡΤΑΖ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> News</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> August 17, 2025</span>
@@ -291,18 +291,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Georgios Balatzis</strong><span>Δημοσίευση: 17 Αυγούστου 2025 · Ενημέρωση: 17 Αυγούστου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span>Συντακτικό άρθρο και επιβεβαίωση στοιχείων από τις επίσημες ανακοινώσεις του πρωταθλήματος.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></strong><span>Δημοσίευση: <time datetime="2025-08-17">17 Αυγούστου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><h2>Εισαγωγή: Η Αγωνιώδης Πτώση της Ομάδας του Enstone</h2><p>Οι τοίχοι του εργοστασίου στο Enstone της Αγγλίας είναι εμποτισμένοι με την ιστορία της Formula 1. Εδώ, σε αυτό το τεχνολογικό λίκνο, σφυρηλατήθηκαν μονοθέσια που κατέκτησαν τον κόσμο. Εδώ, ο Michael Schumacher και η Benetton αψήφησαν τις καθιερωμένες δυνάμεις για να κερδίσουν δύο παγκόσμια πρωταθλήματα. Εδώ, ο Fernando Alonso και η Renault, με το χαρακτηριστικό μπλε και κίτρινο χρώμα, έβαλαν τέλος στην παντοκρατορία της Ferrari, κατακτώντας δύο συνεχόμενους τίτλους οδηγών και κατασκευαστών. Οι ήχοι των κινητήρων V10 και V8 που πανηγύριζαν νίκες έχουν πλέον σιγήσει, και στη θέση τους αντηχεί η σκληρή, απογοητευτική πραγματικότητα της σεζόν του 2025.</p><p>Σε πίστες όπως το Hungaroring, τα άλλοτε περήφανα γαλλικά μονοθέσια, βαμμένα τώρα σε ένα μείγμα μπλε και ροζ, δεν μάχονται για το βάθρο, αλλά για να αποφύγουν την τελευταία θέση. Δέχονται γύρους, παλεύουν με την πρόσφυση και την ταχύτητα, αποτελώντας μια σκιά του ένδοξου παρελθόντος τους. Η εικόνα είναι οδυνηρή για οποιονδήποτε θυμάται την κληρονομιά αυτής της ομάδας. Η Alpine F1 Team, η εργοστασιακή εκπροσώπηση ενός γίγαντα της αυτοκινητοβιομηχανίας όπως η Renault, βρίσκεται σε ελεύθερη πτώση.</p><p>Πώς έφτασε όμως μια ομάδα με τέτοια ιστορία, πόρους και φιλοδοξίες να καταρρεύσει, μετατρεπόμενη από διεκδικήτρια της τέταρτης θέσης σε ουραγό του grid; Η απάντηση δεν είναι απλή. Δεν πρόκειται για ένα μεμονωμένο λάθος, ένα ελαττωματικό εξάρτημα ή μια κακή στρατηγική σε έναν αγώνα. Είναι το αποτέλεσμα μιας αλυσιδωτής αντίδρασης αποτυχιών που διαπερνά κάθε πτυχή της ομάδας: από τον σχεδιασμό του μονοθεσίου και τη διαχείριση στην κορυφή, μέχρι τις επιλογές των οδηγών και τη μακροπρόθεσμη στρατηγική. Το παρόν άρθρο αποτελεί μια ενδελεχή έρευνα, μια ανατομία της κρίσης που μαστίζει την Alpine. Θα αναλύσουμε τα δεδομένα, θα αποκωδικοποιήσουμε τις τεχνικές αδυναμίες, θα εξετάσουμε το χάος στη διοίκηση και θα προσπαθήσουμε να απαντήσουμε στο βασανιστικό ερώτημα: τι πήγε τόσο στραβά για την Alpine το 2025;</p><h2>Η Πραγματικότητα - Η Απόδοση της Alpine το 2025 μέσα από Αριθμούς</h2><p>Πριν αναζητήσουμε τα αίτια της κρίσης, είναι επιτακτικό να κατανοήσουμε το μέγεθός της. Οι αριθμοί για την Alpine στη σεζόν του 2025 είναι αμείλικτοι και ζωγραφίζουν μια εικόνα απόλυτης αποτυχίας. Δεν πρόκειται απλώς για μια κακή χρονιά· πρόκειται για μια κατάρρευση που τοποθετεί την ομάδα στο χαμηλότερο σημείο της σύγχρονης ιστορίας της.</p><h3>Η Στατιστική Ελεύθερη Πτώση</h3><p>Στο μέσο της σεζόν, μετά το Grand Prix της Ουγγαρίας, η BWT Alpine F1 Team βρίσκεται στην 10η και τελευταία θέση της βαθμολογίας των κατασκευαστών. Έχοντας συγκεντρώσει μόλις 20 βαθμούς, η ομάδα όχι μόνο είναι ουραγός, αλλά απέχει και μια σημαντική απόσταση 15 βαθμών από την 9η Haas. Αυτό το χάσμα από την προτελευταία ομάδα είναι ενδεικτικό του πόσο πίσω έχει μείνει η Alpine σε σχέση με τον ανταγωνισμό του midfield.</p><p>Η εικόνα γίνεται ακόμα πιο ζοφερή όταν εξετάζουμε τη βαθμολογία των οδηγών. Ο Pierre Gasly, με μια σειρά από ηρωικές προσπάθειες, έχει συγκεντρώσει και τους 20 βαθμούς της ομάδας, καταλαμβάνοντας την 14η θέση. Οι δύο οδηγοί που μοιράστηκαν το δεύτερο μονοθέσιο, ο Jack Doohan και ο Franco Colapinto, βρίσκονται στις δύο τελευταίες θέσεις της κατάταξης (20ή και 21η αντίστοιχα), χωρίς να έχουν καταφέρει να σκοράρουν ούτε έναν βαθμό. Αυτό το στατιστικό στοιχείο από μόνο του αποκαλύπτει ένα από τα θεμελιώδη προβλήματα: η Alpine λειτουργεί ουσιαστικά ως ομάδα του ενός μονοθεσίου.</p><p>Η συγκομιδή των βαθμών είναι σποραδική και αναιμική. Η ομάδα κατάφερε να βαθμολογηθεί μόλις σε πέντε από τους 14 πρώτους αγώνες της σεζόν: 6 βαθμοί στο Μπαχρέιν, 1 στο Μαϊάμι, 4 στην Ισπανία, 8 στη Μεγάλη Βρετανία και 1 στο Βέλγιο. Στους υπόλοιπους εννέα αγώνες, το αποτέλεσμα ήταν μηδενικό. Επιπλέον, η ομάδα έχει καταγράψει τέσσερις εγκαταλείψεις (DNF) σε αυτούς τους 14 αγώνες, υπογραμμίζοντας προβλήματα όχι μόνο ταχύτητας αλλά και αξιοπιστίας.</p><h3>Η Καθοδική Πορεία</h3><p>Η καταστροφική σεζόν του 2025 δεν αποτελεί ένα μεμονωμένο γεγονός, αλλά το αποκορύφωμα μιας σταθερής καθοδικής πορείας τα τελευταία χρόνια. Η σύγκριση με τις προηγούμενες σεζόν είναι αποκαλυπτική για μια ομάδα που όχι απλώς στάθηκε στάσιμη, αλλά οπισθοχώρησε δραματικά.</p>
                             <div class="table-responsive-container docx-table-container">
                                 <div class="table-container scroll-view active" id="docx-table-0-scroll">
@@ -357,11 +357,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Georgios Balatzis</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -485,7 +486,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -511,6 +512,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -518,10 +521,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

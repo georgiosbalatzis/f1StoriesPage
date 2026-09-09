@@ -33,13 +33,18 @@ export function applyArticleEditorial(html, assets) {
             '$1<span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span>$2');
     }
     if (!/class="article-edition"/.test(result)) {
-        result = result.replace('<div class="article-header-overlay">', '<div class="article-header-overlay">\n                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>');
+        result = result.replace('<div class="article-header-overlay">', '<div class="article-header-overlay">\n                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>F1 STORIES JOURNAL</span></div>');
     }
     if (!/class="article-header-byline"/.test(result)) {
         const author = result.match(/<[^>]+\bclass="author-name"[^>]*>([\s\S]*?)<\/[a-z0-9]+>/i)?.[1]
             ?.replace(/<[^>]*>/g, '').trim();
         if (author) result = result.replace(/(<h1\b[^>]*\bclass="article-title"[^>]*>[\s\S]*?<\/h1>)/i,
             (_match, title) => `${title}\n                    <p class="article-header-byline"><span>Γράφει</span> ${author}</p>`);
+    }
+    if (!/class="author-profile-link"/.test(result)) {
+        const authorHref = result.match(/<[^>]+\bclass="author-name"[^>]*>[\s\S]*?<a\s+href="([^"]+)"/i)?.[1] || '/authors/';
+        const profileLink = `<a class="author-profile-link" href="${authorHref}">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>`;
+        result = result.replace(/(<div\b[^>]*\bclass="author-bio"[^>]*>[\s\S]*?<\/div>)/i, `$1\n                            ${profileLink}`);
     }
     return result;
 }

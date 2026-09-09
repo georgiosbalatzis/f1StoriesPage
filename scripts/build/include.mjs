@@ -12,6 +12,7 @@ const TARGET_HTML = [
   'standings/index.html',
   'blog-module/blog/index.html',
   'blog-module/blog/template.html',
+  'authors/index.html',
   'housekeeping.html',
   'privacy/privacy.html',
   'privacy/terms.html',

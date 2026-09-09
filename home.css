@@ -205,6 +205,8 @@
 .home-page .team-member__avatar { width: 100%; height: 100%; object-fit: cover; filter: saturate(.45); transition: filter .5s, transform .6s var(--ease-editorial); }
 .home-page .team-member > a:hover .team-member__avatar { filter: saturate(1); transform: scale(1.055); }
 .home-page .team-member__name { font: 500 .9rem/1.35 var(--font-body); margin: 17px 0 7px; }
+.home-page .team-member__name a { color: inherit; text-decoration: none; }
+.home-page .team-member__name a:hover { color: var(--accent); }
 .home-page .team-member__role { display: block; color: var(--text-secondary); font-size: .62rem; line-height: 1.5; }
 
 /* Team radio: open margin on the left, underlined fields on the right. */

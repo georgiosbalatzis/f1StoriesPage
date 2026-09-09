@@ -77,7 +77,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -93,7 +93,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -191,10 +191,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -213,10 +213,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -235,8 +235,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--news" data-article-kind="news">
+            <div class="article-header" data-article-dossier="ΡΕΠΟΡΤΑΖ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="🏁 GP Emilia-Romagna 2025 – Τεχνική Ανασκόπηση &amp; Αγωνιστική Ανάλυση 🏁" class="article-header-img"
@@ -245,7 +245,7 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΡΕΠΟΡΤΑΖ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">News</span>
@@ -277,7 +277,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΡΕΠΟΡΤΑΖ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> News</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> May 19, 2025</span>
@@ -291,18 +291,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>F1 Stories Team</strong><span>Δημοσίευση: 19 Μαΐου 2025 · Ενημέρωση: 19 Μαΐου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span>Συντακτικό άρθρο και επιβεβαίωση στοιχείων από τις επίσημες ανακοινώσεις του πρωταθλήματος.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/">F1 Stories Team</a></strong><span>Δημοσίευση: <time datetime="2025-05-19">19 Μαΐου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><p>📍 Imola, Ιταλία – 18 Μαΐου 2025<br />Πίστα: Autodromo Internazionale Enzo e Dino Ferrari | Μήκος: 4.909 km | Γύροι: 63 | DRS Zones: 2 </p><h2><a id="_bbf6xlv5xn0s"></a><strong>1. Αγωνιστική Επιστροφή &amp; Σημασία Αγώνα</strong></h2><p>Το GP Εμιλία-Ρομάνα στην ιστορική πίστα της Imola επιστρέφει δυναμικά, προσφέροντας έναν από τους πιο εμβληματικούς αγώνες του πρωταθλήματος. Με τέσσερις συνεχόμενες νίκες του Verstappen εδώ, κάθε γύρος αποκτά ιδιαίτερο χρώμα και καθοριστική σημασία για τη μάχη τίτλου, σε μια πίστα όπου η ιστορία και η τεχνική πρόκληση συνυπάρχουν αρμονικά 😊 </p><h2><a id="_ye19q3rthjdh"></a><strong>2. Παρασκευή – Δοκιμές &amp; Τεχνική Ενσωμάτωση</strong></h2><p><strong>FP1</strong></p><ul><li>1ος Oscar Piastri (McLaren) 1:16.545 | 2ος Lando Norris +0.032 | 3ος Carlos Sainz (Williams).<a href="https://racingnews365.com/2025-f1-emilia-romagna-grand-prix-imola-free-practice-1-results?utm_source=chatgpt.com"><br /></a></li><li>Στεγνές συνθήκες, η McLaren κυριάρχησε με 1-2, ενώ Leclerc αντιμετώπισε πρόβλημα στην εφαρμογή του κράνους και έχασε πολύτιμο χρόνο.</li></ul><p><strong>FP2</strong></p><ul><li>1ος Oscar Piastri 1:15.293 | 2ος Lando Norris +0.025 | Σπινάρισμα Hadjar και κόκκινη σημαία στο τέλος.<a href="https://www.formula1.com/en/latest/article/fp2-piastri-leads-another-mclaren-1-2-at-imola-as-hadjar-brings-out-red.5mH2gEjNCEAGwl8zBl3olG?utm_source=chatgpt.com"><br /></a></li><li>Οι ομάδες ρύθμισαν πιο σφιχτό πτερύγιο για τις γρήγορες δεξιές, Δοκιμή ERS mapping και brake duct cooling.<br /></li></ul><p>📌 <strong>Τεχνικά Highlights:</strong></p><ul><li>Θερμοκρασία αέρα ~21 °C</li><li>Συμπεριφορά μονοθεσίων: McLaren εξαιρετική στα long runs, Red Bull δουλειά στο ERS<br /></li><li>Ενεργοποίηση ERS στις αργές στροφές και DRS στις ευθείες<br /></li></ul><p><br /></p><h2><a id="_3uv8p9v1h8mw"></a><strong>3. Σάββατο – Προκριματικά &amp; FP3</strong></h2><p>Ο Oscar Piastri κατέκτησε την pole position με εξαιρετικό 1:14.670, αφήνοντας πίσω του τον Verstappen και τον Russell.</p><h3><a id="_oco99uvstjo2"></a><strong>Κατατακτήριες (Q3):</strong></h3><p>
                             <div class="table-responsive-container">
                                 <div class="table-controls">
@@ -1806,6 +1806,7 @@
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="https://georgiosbalatzis.github.io/excavatorsPage/">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -1929,7 +1930,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -1955,6 +1956,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -1962,10 +1965,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

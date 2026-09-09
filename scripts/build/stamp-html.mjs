@@ -14,6 +14,8 @@
 //   - Bootstrap CDN swap, so no live HTML keeps loading Bootstrap from jsDelivr.
 //   - Article runtime script refs, so committed articles can move to minified
 //     stamped JS without a full content rebuild.
+//   - The shared consent summary/settings control, so archived article pages
+//     keep privacy copy and the cookie-settings entry point current.
 //
 // Usage:
 //   node scripts/build/stamp-html.mjs
@@ -59,6 +61,7 @@ const SPRITE_TARGETS = new Set([
     'standings/index.html',
     'blog-module/blog/index.html',
     'blog-module/blog/template.html',
+    'authors/index.html',
     'housekeeping.html',
     'privacy/privacy.html',
     'privacy/terms.html',
@@ -687,6 +690,36 @@ function ensureArticleRailAssets(html, railCssInfo, railJsInfo) {
     return result;
 }
 
+// Keep the consent summary in committed article pages in sync with the
+// shared banner. Source-less articles are not rendered from the template on
+// every build, so their static copy needs the same small migration as their
+// runtime asset references.
+function normalizeArticleConsentCopy(html) {
+    const canonical = '<p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>';
+    return String(html || '').replace(
+        /(<div id=["']cookie-consent["'][\s\S]*?<div class=["']cookie-content["'][^>]*>\s*)<p>[\s\S]*?<\/p>/i,
+        `$1${canonical}`
+    );
+}
+
+// Public navigation is Greek. Keep the theme control in the same language in
+// the static HTML as well, rather than relying on a client-side translation
+// after a crawler or a slow connection has already seen the old labels.
+function normalizeThemeToggleCopy(html) {
+    return String(html || '')
+        .replace(/(<span\b[^>]*\bclass=(["'])[^"']*\btheme-toggle-label-dark\b[^"']*\2[^>]*>)[\s\S]*?(<\/span>)/gi, '$1Φωτεινό θέμα$3')
+        .replace(/(<span\b[^>]*\bclass=(["'])[^"']*\btheme-toggle-label-light\b[^"']*\2[^>]*>)[\s\S]*?(<\/span>)/gi, '$1Σκούρο θέμα$3');
+}
+
+function ensureArticleCookieSettings(html) {
+    const source = String(html || '');
+    if (/data-cookie-settings/i.test(source)) return source;
+    return source.replace(
+        /(<div class=["']footer-links\s+mt-3["'][\s\S]*?<a\s+href=["']\/privacy\/terms\.html["'][^>]*>[\s\S]*?<\/a>)(\s*<\/div>)/i,
+        '$1\n                    <span class="footer-separator">|</span>\n                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>$2'
+    );
+}
+
 function stripInlineHtml(value) {
     return String(value || '')
         .replace(/<[^>]+>/g, '')
@@ -768,6 +801,9 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo,
     result = ensureArticleMiniBar(result);
     result = ensureArticleRailAssets(result, railCssInfo, railJsInfo);
     result = ensureArticleCommentsScript(result, commentsInfo);
+    result = normalizeArticleConsentCopy(result);
+    result = ensureArticleCookieSettings(result);
+    result = normalizeThemeToggleCopy(result);
     return result;
 }
 
@@ -984,6 +1020,7 @@ function main() {
         // 1) stamp local asset refs with content-hash query strings
         let { result, hits } = rewrite(original, patterns);
         result = ensureThemeInitScript(dropInlineThemeBoot(result), themeInfo);
+        result = normalizeThemeToggleCopy(result);
 
         // 1b) swap Bootstrap CDN CSS → local slim build and drop the unused
         //     Bootstrap JS bundle.

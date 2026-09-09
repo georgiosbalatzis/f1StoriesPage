@@ -77,7 +77,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -93,7 +93,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -191,10 +191,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -213,10 +213,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -235,8 +235,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--news" data-article-kind="news">
+            <div class="article-header" data-article-dossier="ΡΕΠΟΡΤΑΖ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025" class="article-header-img"
@@ -245,13 +245,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΡΕΠΟΡΤΑΖ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">News</span>
                     </div>
                     <h1 class="article-title">Η Μάχη των Ουραγών: Μια Τεχνική Ανάλυση της Stake Kick Sauber, των Racing Bulls και της Haas για το 2025</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Georgios Balatzis</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Georgios Balatzis</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> August 20, 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
@@ -277,7 +277,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΡΕΠΟΡΤΑΖ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> News</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> August 20, 2025</span>
@@ -291,18 +291,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Georgios Balatzis</strong><span>Δημοσίευση: 20 Αυγούστου 2025 · Ενημέρωση: 20 Αυγούστου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span>Συντακτικό άρθρο και επιβεβαίωση στοιχείων από τις επίσημες ανακοινώσεις του πρωταθλήματος.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></strong><span>Δημοσίευση: <time datetime="2025-08-20">20 Αυγούστου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><h2>Ο Αθέατος Πόλεμος για τους Βαθμούς</h2><p>Στον εκτυφλωτικό κόσμο της Formula 1, όπου οι κάμερες εστιάζουν σχεδόν αποκλειστικά στη μάχη για το παγκόσμιο πρωτάθλημα, εκτυλίσσεται ένας εξίσου έντονος, αν και πιο σιωπηλός, πόλεμος. Είναι ο πόλεμος για έναν βαθμό, για μια θέση στην πρώτη δεκάδα, για την επιβίωση και την πρόοδο. Στην καρδιά αυτής της μάχης για τη σεζόν του 2025 βρίσκονται τρεις ομάδες με διακριτές ιστορίες και φιλοδοξίες: η Stake Kick Sauber, η Visa Cash App Racing Bulls και η MoneyGram Haas F1. Η θέση τους στο κάτω μισό της κατάταξης δεν είναι απλώς μια ένδειξη αποτυχίας, αλλά το σύνθετο αποτέλεσμα μιας σειράς αλληλένδετων παραγόντων — από τη φιλοσοφία του αεροδυναμικού σχεδιασμού και την επιχειρησιακή εκτέλεση μέχρι τη δυναμική των οδηγών και το μακροπρόθεσμο στρατηγικό όραμα.</p><p>Καθώς η σεζόν φτάνει στο καλοκαιρινό της διάλειμμα, η κατάταξη των κατασκευαστών προσφέρει το αρχικό πλαίσιο για την ανάλυσή μας: η Sauber βρίσκεται στην 7η θέση με 51 βαθμούς, ακολουθούμενη από τη Racing Bulls στην 8η με 45 βαθμούς και τη Haas στην 9η με 35 βαθμούς. Αυτοί οι αριθμοί, ωστόσο, λένε μόνο ένα μέρος της ιστορίας. Αυτό το άρθρο θα βουτήξει βαθιά στα δεδομένα, τις στρατηγικές και τις εσωτερικές προκλήσεις κάθε ομάδας, αποκαλύπτοντας πώς η καθεμία πλοηγείται στα ταραγμένα νερά του midfield, με το βλέμμα στραμμένο όχι μόνο στον επόμενο αγώνα, αλλά και στη ριζική αλλαγή κανονισμών του 2026.</p><h2>Stake Kick Sauber - Η Αυγή της Εποχής Audi</h2><p>Η πορεία της Sauber στη σεζόν του 2025 είναι μια ιστορία μεταμόρφωσης. Από την τελευταία θέση του 2024, η ομάδα του Hinwil έχει αναδειχθεί σε έναν υπολογίσιμο αντίπαλο στο midfield, προσφέροντας την πρώτη απτή απόδειξη ότι η επερχόμενη μετατροπή της σε εργοστασιακή ομάδα της Audi δεν είναι απλώς ένα μακρινό όνειρο, αλλά μια πραγματικότητα που ήδη διαμορφώνει το παρόν της.</p><h3>1.1 Από την Τελευταία Θέση στο Βάθρο: Μια Σεζόν Μεταμόρφωσης</h3><p>Η αντίθεση με την προηγούμενη χρονιά είναι εκκωφαντική. Το 2024, η ομάδα τερμάτισε στην 10η και τελευταία θέση της κατάταξης, συγκεντρώνοντας μόλις τέσσερις βαθμούς σε ολόκληρη τη σεζόν. Φέτος, στα μισά του πρωταθλήματος, έχει ήδη συγκεντρώσει 51 βαθμούς και κατέχει την 7η θέση. Η κορυφαία στιγμή αυτής της αναγέννησης ήρθε στο Βρετανικό Grand Prix, όπου ο Nico Hülkenberg, σε συνθήκες βροχής, κατέκτησε ένα παραμυθένιο βάθρο. Ήταν το πρώτο του σε 239 εκκινήσεις και το πρώτο της ομάδας από το 2012, ένα αποτέλεσμα που δεν ήταν απλώς προϊόν τύχης, αλλά η κορύφωση μιας γνήσιας αλλαγής στην απόδοση.</p><p>Ωστόσο, η πορεία δεν ήταν ανέφελη. Η σεζόν ξεκίνησε με δυσκολίες, συμπεριλαμβανομένης μιας περιόδου επτά αγώνων χωρίς βαθμούς (από τον 2ο έως τον 8ο γύρο) και ενός απογοητευτικού αποκλεισμού του Hülkenberg στο Μπαχρέιν λόγω υπερβολικής φθοράς του skid block, ένα γεγονός που υπογράμμισε τις αρχικές προκλήσεις που έπρεπε να ξεπεραστούν.</p><h3>1.2 Η Μεταμόρφωση της C45: Μια Τεχνική Βουτιά</h3><p>Η επιτυχία της Sauber βασίζεται στη δραματική βελτίωση του μονοθεσίου της, της C45. Η πορεία της από ένα προβληματικό όχημα σε έναν ανταγωνιστικό παίκτη του midfield είναι μια μελέτη περίπτωσης αποτελεσματικής μηχανικής εξέλιξης.</p><h4>Αρχικά Ελαττώματα</h4><p>Στην αρχή της σεζόν, η C45 ήταν, κατά μέσο όρο, το πιο αργό μονοθέσιο του grid. Τα κύρια μειονεκτήματά της ήταν η θεμελιώδης έλλειψη αεροδυναμικής πίεσης (downforce) και η έντονη υποστροφή, χαρακτηριστικά που την καθιστούσαν «νευρική» (peaky) και εξαιρετικά ευαίσθητη στις αναταράξεις του αέρα από τα προπορευόμενα μονοθέσια. Αυτό σήμαινε ότι οι οδηγοί δυσκολεύονταν να εκμεταλλευτούν το πλήρες δυναμικό του μονοθεσίου, ειδικά σε συνθήκες αγώνα.</p><h4>Η Αναβάθμιση της Ισπανίας</h4><p>Το σημείο καμπής ήρθε στο Ισπανικό Grand Prix, όπου η ομάδα εισήγαγε ένα ολοκληρωμένο πακέτο αναβαθμίσεων. Αυτό περιλάμβανε ένα νέο πάτωμα, ανασχεδιασμένο κάλυμμα κινητήρα και νέα εμπρός αεροτομή. Ο στόχος δεν ήταν απλώς η προσθήκη κάθετης δύναμης, αλλά η αντιμετώπιση βασικών αδυναμιών: η σταθεροποίηση της αεροδυναμικής πλατφόρμας και η μείωση της ευαισθησίας της στον «βρώμικο αέρα». Αυτό θα διεύρυνε το λειτουργικό παράθυρο του μονοθεσίου, καθιστώντας το πιο προβλέψιμο και οδηγήσιμο.</p><h4>Απόδοση μετά την Αναβάθμιση</h4><p>Τα αποτελέσματα ήταν άμεσα και εντυπωσιακά. Στην Ισπανία, ο Hülkenberg ανέβηκε από την 15η θέση στην 5η, προσπερνώντας μάλιστα μια Ferrari στους τελευταίους γύρους. Στους αγώνες που ακολούθησαν τη Βαρκελώνη, η Sauber αναδείχθηκε τέταρτη πιο παραγωγική ομάδα σε συγκομιδή βαθμών, αποδεικνύοντας μια άμεση αιτιώδη σχέση μεταξύ μιας συγκεκριμένης μηχανολογικής εξέλιξης και μιας δραματικής αλλαγής στην ανταγωνιστική της θέση.</p><p>Η επιτυχία και η πολυπλοκότητα αυτής της αναβάθμισης δεν είναι απλώς έργο της υπάρχουσας δομής της Sauber. Αντιθέτως, αποτελεί την πρώτη σαφή απόδειξη της «επίδρασης Audi» — του αντίκτυπου της νέας, υψηλού επιπέδου διοίκησης και της αυξημένης επένδυσης στο πλαίσιο της προετοιμασίας για την εξαγορά του 2026. Το 2024, η ομάδα βρισκόταν σε «κατάσταση επιβίωσης» με περιορισμένους πόρους. Η φετινή ομάδα, ωστόσο, διοικείται από πρόσωπα όπως ο Mattia Binotto (πρώην επικεφαλής της Ferrari) και ο Jonathan Wheatley (πρώην Αθλητικός Διευθυντής της Red Bull), οι οποίοι διαθέτουν την εμπειρία για τον εντοπισμό θεμελιωδών αδυναμιών και τη διαχείριση εξελιγμένων προγραμμάτων ανάπτυξης. Η εστίαση της αναβάθμισης σε ένα σύνθετο αεροδυναμικό πρόβλημα, αντί για την απλή προσθήκη downforce, υποδηλώνει μια πιο ώριμη διαγνωστική και εξελικτική διαδικασία. Επομένως, η C45 του 2025 δεν είναι απλώς ένα βελτιωμένο μονοθέσιο· είναι το πρώτο πρωτότυπο της μεθοδολογίας της εργοστασιακής ομάδας της Audi.</p><h3>1.3 Σύγκρουση Στυλ: Η Εμπειρία του Hülkenberg εναντίον της Φλόγας του Bortoleto</h3><p>Η εσωτερική μάχη μεταξύ του βετεράνου Nico Hülkenberg και του πολλά υποσχόμενου rookie Gabriel Bortoleto είναι συναρπαστική.</p><h4>Hülkenberg</h4><p>Ο Hülkenberg διανύει μια σεζόν εξιλέωσης. Παρά το γεγονός ότι συχνά υστερεί του teammate του στις κατατακτήριες δοκιμές, η εξαιρετική του αγωνιστική οξυδέρκεια, η διαχείριση των ελαστικών και η ικανότητά του να εκμεταλλεύεται χαοτικές συνθήκες τον έχουν καταστήσει τον κύριο πάροχο βαθμών της ομάδας. Οι εμφανίσεις του στην Αυστραλία (7ος από 17ος), την Ισπανία (5ος από 15ος) και τη Βρετανία (3ος από 19ος) αποτελούν παραδείγματα της κλάσης ενός έμπειρου οδηγού.</p><h4>Η Πρώτη Χρονιά του Bortoleto</h4><p>Η σεζόν του Bortoleto χαρακτηρίζεται από την εκπληκτική του ταχύτητα σε έναν γύρο, που τον έχει δει να κερδίζει συχνά τον Hülkenberg το Σάββατο. Η 7η θέση του στις κατατακτήριες της Ουγγαρίας ήταν ένα από τα highlights του.<sup>3</sup> Ωστόσο, αυτή η ταχύτητα έχει μετριαστεί από λάθη ενός πρωτοεμφανιζόμενου, όπως το ατύχημά του στην Αυστραλία και το στρατηγικό του λάθος που οδήγησε σε εγκατάλειψη στο Silverstone. Η άνοδός του προς το τέλος του πρώτου μισού της σεζόν, με βαθμούς στην Αυστρία, το Βέλγιο και μια εντυπωσιακή 6η θέση στην Ουγγαρία, δείχνει μια απότομη και ελπιδοφόρα καμπύλη μάθησης.</p><h4>Δυναμική Ομάδας</h4><p>Η δυναμική μεταξύ των δύο οδηγών είναι συμβιωτική. Η ταχύτητα του Bortoleto ωθεί την εξέλιξη του set-up και αποκαλύπτει το απόλυτο δυναμικό του μονοθεσίου, ενώ η συνέπεια του Hülkenberg φέρνει τους κρίσιμους βαθμούς. Δεν υπάρχουν ενδείξεις σύγκρουσης· αντίθετα, ο Bortoleto έσπευσε να συγχαρεί τον Hülkenberg μετά το βάθρο του, μια εικόνα που υποδηλώνει υγιή συνεργασία.</p>
                             <div class="table-responsive-container docx-table-container">
                                 <div class="table-container scroll-view active" id="docx-table-0-scroll">
@@ -357,11 +357,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Georgios Balatzis</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -485,7 +486,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -511,6 +512,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -518,10 +521,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

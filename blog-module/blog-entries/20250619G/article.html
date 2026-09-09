@@ -77,7 +77,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -93,7 +93,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -191,10 +191,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -213,10 +213,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -235,8 +235,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--news" data-article-kind="news">
+            <div class="article-header" data-article-dossier="ΡΕΠΟΡΤΑΖ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Η Στρατηγική των Pit Stop στην F1: Ο Αγώνας Μέσα στον Αγώνα 🧠⏱️" class="article-header-img"
@@ -245,13 +245,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΡΕΠΟΡΤΑΖ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">News</span>
                     </div>
                     <h1 class="article-title">Η Στρατηγική των Pit Stop στην F1: Ο Αγώνας Μέσα στον Αγώνα 🧠⏱️</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Georgios Balatzis</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Georgios Balatzis</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> June 19, 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
@@ -277,7 +277,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΡΕΠΟΡΤΑΖ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> News</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> June 19, 2025</span>
@@ -291,18 +291,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Georgios Balatzis</strong><span>Δημοσίευση: 19 Ιουνίου 2025 · Ενημέρωση: 19 Ιουνίου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span>Συντακτικό άρθρο και επιβεβαίωση στοιχείων από τις επίσημες ανακοινώσεις του πρωταθλήματος.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></strong><span>Δημοσίευση: <time datetime="2025-06-19">19 Ιουνίου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><p>Καλώς ήρθατε ξανά στο blog μας, F1 fanatics! 🏎️ Σήμερα θα μιλήσουμε για κάτι που διαρκεί μόλις 2 δευτερόλεπτα, αλλά μπορεί να καθορίσει την έκβαση ενός ολόκληρου Grand Prix: τα pit stops. Δεν είναι απλώς μια αλλαγή ελαστικών. Είναι ένα μπαλέτο ακριβείας, μια παρτίδα σκάκι υψηλής ταχύτητας και ένα από τα πιο συναρπαστικά στοιχεία της Formula 1. Ας βουτήξουμε στα βαθιά του pit wall!</p><h3>Τα Θεμέλια: Γιατί κάνουν Pit Stop; 🤔</h3><p>Η απάντηση είναι απλή: <strong>ελαστικά</strong>. Τα ελαστικά της F1 είναι σχεδιασμένα για μέγιστη απόδοση, όχι για μακροζωία. Φθείρονται γρήγορα (η γνωστή "πτώση απόδοσης" ή degradation), και ένα φθαρμένο σετ ελαστικών μπορεί να κοστίσει δευτερόλεπτα στον γύρο. Οι ομάδες πρέπει να καλέσουν τους οδηγούς τους στα πιτς για να αλλάξουν σε φρέσκα ελαστικά.</p><p>Οι βασικές γόμες είναι τρεις:</p><ul><li><strong>Μαλακή (Soft 🔴):</strong> Πολύ γρήγορη, αλλά φθείρεται αμέσως.</li><li><strong>Μέση (Medium 🟡):</strong> Μια καλή ισορροπία μεταξύ ταχύτητας και αντοχής.</li><li><strong>Σκληρή (Hard ⚪️):</strong> Πιο αργή, αλλά αντέχει τους περισσότερους γύρους.</li></ul><p>Η στρατηγική ξεκινά με την επιλογή του πότε θα γίνει η αλλαγή και ποια γόμα θα χρησιμοποιηθεί.</p><h3>Οι Κυρίαρχες Στρατηγικές: Undercut vs Overcut</h3><p>Εδώ αρχίζει το παιχνίδι μυαλού! 🤯 Αυτοί οι δύο όροι είναι το Α και το Ω της στρατηγικής των πιτς.</p><h4>Το Undercut (Η "Υποσκαφή") 📉➡️📈</h4><p>Το undercut είναι η πιο συνηθισμένη επιθετική κίνηση. Ας το δούμε με ένα παράδειγμα:</p><ol><li>Ο Οδηγός Α κυνηγάει τον Οδηγό Β.</li><li>Η ομάδα του Οδηγού Α τον καλεί στα πιτς <strong>πριν</strong> από τον Οδηγό Β.</li><li>Ο Οδηγός Α βγαίνει από τα πιτς με φρέσκα, πολύ πιο γρήγορα ελαστικά.</li><li>Για 1-2 γύρους, ο Οδηγός Α οδηγεί στο απόλυτο όριο (ονομάζεται "out-lap"), ενώ ο Οδηγός Β συνεχίζει με τα παλιά, αργά ελαστικά του.</li><li>Όταν ο Οδηγός Β μπει τελικά για τη δική του αλλαγή, ο χρόνος που έχει κερδίσει ο Οδηγός Α είναι αρκετός για να τον βγάλει μπροστά! 🚀</li></ol><p>Πότε λειτουργεί: Σε πίστες όπου τα φρέσκα ελαστικά δίνουν μεγάλο πλεονέκτημα ταχύτητας.</p><p>Ρίσκο: Μπορεί να βγεις σε κίνηση ή να φθείρεις τα νέα σου ελαστικά πολύ γρήγορα.</p><h4>Το Overcut (Η "Υπερκάλυψη") 📈➡️📉</h4><p>Το overcut είναι το ακριβώς αντίθετο και πιο σπάνιο.</p><ol><li>Ο Οδηγός Α κυνηγάει τον Οδηγό Β.</li><li>Ο Οδηγός Β μπαίνει στα πιτς.</li><li>Ο Οδηγός Α <strong>μένει έξω</strong> και προσπαθεί να κάνει έναν ή δύο πολύ γρήγορους γύρους με καθαρό αέρα μπροστά του, εκμεταλλευόμενος τα ελαστικά του που έχουν ήδη φτάσει στη σωστή θερμοκρασία λειτουργίας (ονομάζεται "in-lap").</li><li>Ελπίζει ότι ο Οδηγός Β θα έχει αργό "out-lap" (π.χ. τα ελαστικά του δεν έχουν πιάσει θερμοκρασία ή θα κολλήσει πίσω από άλλα μονοθέσια).</li><li>Ο Οδηγός Α μπαίνει στα πιτς και βγαίνει μπροστά από τον Οδηγό Β. 💨</li></ol><p><strong>Πότε λειτουργεί:</strong> Σε πίστες όπως το Μονακό όπου η θέση στην πίστα (track position) είναι βασιλιάς και το ζέσταμα των ελαστικών είναι δύσκολο.</p><h3>Ένα ή Δύο Pit Stops; Η Μεγάλη Απόφαση</h3><p>Πριν τον αγώνα, οι στρατηγιστές τρέχουν χιλιάδες προσομοιώσεις. Η απόφαση για το αν θα ακολουθήσουν στρατηγική ενός ή δύο πιτ στοπ εξαρτάται από:</p><ul><li><strong>Τον χρόνο που χάνεται στο pit lane:</strong> Συνήθως 20-25 δευτερόλεπτα.</li><li><strong>Τη φθορά των ελαστικών:</strong> Πόσο γρήγορα πέφτει η απόδοσή τους;</li><li><strong>Την ευκολία προσπέρασης:</strong> Αν είναι δύσκολο να προσπεράσεις, μια στρατηγική ενός στοπ είναι πιο ασφαλής για να κρατήσεις τη θέση σου. Αν είναι εύκολο, μπορείς να ρισκάρεις με δύο στοπ για να έχεις πλεονέκτημα ταχύτητας.</li></ul><h3>Οι "Τυχεροί" Παράγοντες: Αυτοκίνητο Ασφαλείας &amp; VSC 🎲</h3><p>Εδώ η στρατηγική μπορεί να πάει από τον θρίαμβο στην καταστροφή. Ένα Αυτοκίνητο Ασφαλείας (Safety Car) ή Εικονικό Αυτοκίνητο Ασφαλείας (VSC) επιβραδύνει όλα τα μονοθέσια στην πίστα.</p><p>Αυτό σημαίνει ότι αν ένας οδηγός κάνει pit stop εκείνη τη στιγμή, χάνει πολύ λιγότερο χρόνο σε σχέση με τους αντιπάλους του. Είναι ένα "δωρεάν" ή "φθηνό" pit stop που μπορεί να αλλάξει τις ισορροπίες του αγώνα. Οι ομάδες προσεύχονται να συμβεί τη σωστή στιγμή! 🙏</p><h3>Ο Ανθρώπινος Παράγοντας: Η Ομάδα των Μηχανικών 🔧💪</h3><p>Όλη η στρατηγική του κόσμου είναι άχρηστη χωρίς την τέλεια εκτέλεση. Οι 20+ μηχανικοί της pit crew είναι αθλητές. Προπονούνται ασταμάτητα για να αλλάξουν τέσσερα λάστιχα σε λιγότερο από 2.5 δευτερόλεπτα. Ένα κόλλημα στο παξιμάδι (wheel nut) ή μια μικρή καθυστέρηση μπορεί να καταστρέψει το καλύτερο σχέδιο.</p><p>Έτσι, την επόμενη φορά που θα δείτε έναν οδηγό να μπαίνει στα πιτς, μην κοιτάτε απλά τα ρολόγια. Δείτε το σκάκι που παίζεται. Είναι μια μάχη ταχύτητας, ευφυΐας και ομαδικής δουλειάς που κάνει την F1 το κορυφαίο μηχανοκίνητο άθλημα στον κόσμο. 🏆</p></div>
 
                                 <div class="article-author-footer">
@@ -315,11 +315,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Georgios Balatzis</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -443,7 +444,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -469,6 +470,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -476,10 +479,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

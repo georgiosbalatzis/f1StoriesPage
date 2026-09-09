@@ -161,6 +161,10 @@ async function processBlogEntry(entryPath) {
         image: primaryImage,
         backgroundImage: headerImage,
         excerpt: metadata.excerpt || generatedExcerpt,
+        // Optional front matter contract for transparent article citations:
+        // `sources: Label | https://example.com; Another source | https://…`
+        // The renderer validates URLs before anything reaches public HTML.
+        sources: metadata.sources || '',
         comments: 0,
         url: `/blog-module/blog-entries/${folderName}/article.html`,
         ...getPostTaxonomy({ ...metadata, id: folderName }),

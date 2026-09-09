@@ -639,6 +639,18 @@ function ensureTabStylesheet(tabName) {
     ensureStyle(TAB_STYLESHEET_BASE + filename);
 }
 
+function syncSectionNavigation(tabName) {
+    const isDataTab = tabName !== 'drivers' && tabName !== 'constructors';
+    document.querySelectorAll('.blog-nav-link, .blog-nav-mobile-link').forEach(function (link) {
+        const href = link.getAttribute('href') || '';
+        if (href !== '/standings/' && href !== '/standings/?tab=tyre-pace') return;
+        const active = isDataTab ? href !== '/standings/' : href === '/standings/';
+        link.classList.toggle('active', active);
+        if (active) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+    });
+}
+
 function loadTabModule(tabName) {
     if (tabModulePromises[tabName]) return tabModulePromises[tabName];
     const loadModule = TAB_LOADERS[tabName];
@@ -823,6 +835,7 @@ function activateStandingsTab(tabName, options) {
 
     ensureTabStylesheet(nextTab);
     activeStandingsTab = nextTab;
+    syncSectionNavigation(nextTab);
 
     standingsTabs.forEach(function(tab) {
         const isActive = tab.getAttribute('data-tab') === nextTab;

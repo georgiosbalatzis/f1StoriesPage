@@ -77,7 +77,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -93,7 +93,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -191,10 +191,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -213,10 +213,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -235,8 +235,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--news" data-article-kind="news">
+            <div class="article-header" data-article-dossier="ΡΕΠΟΡΤΑΖ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Grand Prix Ισπανίας 2025: - Τεχνικό Report Αναβαθμίσεων Όλων των Ομάδων!  🏁🇪🇸" class="article-header-img"
@@ -245,13 +245,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΡΕΠΟΡΤΑΖ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">News</span>
                     </div>
                     <h1 class="article-title">Grand Prix Ισπανίας 2025: - Τεχνικό Report Αναβαθμίσεων Όλων των Ομάδων!  🏁🇪🇸</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Georgios Balatzis</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Georgios Balatzis</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> May 30, 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
@@ -277,7 +277,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΡΕΠΟΡΤΑΖ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> News</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> May 30, 2025</span>
@@ -291,18 +291,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Georgios Balatzis</strong><span>Δημοσίευση: 30 Μαΐου 2025 · Ενημέρωση: 30 Μαΐου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span>Συντακτικό άρθρο και επιβεβαίωση στοιχείων από τις επίσημες ανακοινώσεις του πρωταθλήματος.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></strong><span>Δημοσίευση: <time datetime="2025-05-30">30 Μαΐου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><h2><a id="_696kdrz1qtkt"></a>0. TL;DR (3 λεπτά ανάγνωσης) ⏱️</h2><p>Το Grand Prix της Ισπανίας 2025 (30 Μαΐου - 1 Ιουνίου) αναμένεται με μεγάλο ενδιαφέρον! Οι ομάδες φέρνουν πληθώρα τεχνικών αναβαθμίσεων, με έμφαση στις μπροστινές πτέρυγες, τα δάπεδα και τα συστήματα ψύξης. Η πίστα της Βαρκελώνης, γνωστή για την πολυπλοκότητά της και τις δύσκολες προσπεράσεις, φέτος με το νέο lay-out χωρίς το τελικό σικέιν, αναμένεται να είναι ταχύτερη και ίσως να διευκολύνει τις μάχες. Η στρατηγική ελαστικών προβλέπεται χαοτική, με το μαλακό ελαστικό (C3) να είναι γρήγορο αλλά να φθείρεται έντονα, οδηγώντας πιθανώς σε πολλαπλά pit-stops. Ο καιρός αναμένεται ξηρός και ηλιόλουστος. Στη βαθμολογία οδηγών, ο Oscar Piastri προηγείται, με τον Lando Norris και τον Max Verstappen να ακολουθούν στενά. Στους κατασκευαστές, η McLaren έχει ένα άνετο προβάδισμα. Η McLaren φαντάζει ως φαβορί, αλλά ο Verstappen αναζητά εκδίκηση, και οι Ferrari και Mercedes είναι πάντα απειλητικές. Ετοιμαστείτε για ένα GP γεμάτο δράση! 🏎️💨</p><h2><a id="_prw614inge7e"></a>1. Τεχνικές Αναβαθμίσεις Ομάδων 🛠️</h2><p>Οι ομάδες έφεραν ειδικά «πακέτα» για το Circuit de Catalunya, όπως φαίνεται στο επίσημο έγγραφο Car Presentation Submissions.</p><ul><li><strong>Scuderia Ferrari HP</strong> 🐎: Ξεχωρίζουν νέα γεωμετρία εμπρός φτερού (ανακατανομή φορτίων, αναθεωρημένα άκρα πτέρυγας) και ένα τροποποιημένο πίσω φτερό υψηλής κάθετης δύναμης. Η μπροστινή πτέρυγα αναβαθμίστηκε για απόδοση (τοπικό φορτίο), με αναθεωρημένη κατανομή φορτίου και τελικό πτερύγιο. Η πίσω πτέρυγα αναβαθμίστηκε για το εύρος οπισθέλκουσας που είναι ειδικό για την πίστα, βελτιώνοντας τα τοπικά χαρακτηριστικά ροής και αυξάνοντας αποτελεσματικά το φορτίο.</li><li><strong>Red Bull Racing</strong> 🐃: Εισήγαγε ανασχεδιασμό στο εμπρός φτερό για αυξημένη ακαμψία και βελτίωση της αεροδυναμικής φόρτωσης, ώστε να συμμορφωθεί με τους νέους κανονισμούς. Τα πρώτο και δεύτερο στοιχεία αναθεωρήθηκαν κυρίως στην τομή.</li><li><strong>Mercedes-AMG PETRONAS F1 Team</strong> 🌟: Αναβάθμισε το δάπεδο με μεγαλύτερα πτερύγια και φράγματα, ενώ και το πίσω φτερό απέκτησε περισσότερη καμπύλη για τοπική πρόσφυση. Το πλαϊνό δάπεδο αναβαθμίστηκε για απόδοση (τοπικό φορτίο) με αυξημένη χορδή και πρόσθετα πτερύγια, αυξάνοντας τη ροή μάζας και ενισχύοντας τη δίνη και το φορτίο. Οι φράκτες δαπέδου αναβαθμίστηκαν για βελτίωση ροής, βελτιώνοντας την τοπική κατανομή πίεσης και τη θέση της δίνης. Το πίσω φτερό αναβαθμίστηκε για απόδοση (τοπικό φορτίο) με επανασχεδιασμένα κύρια στοιχεία και στοιχεία πτερυγίου, κατάλληλο για τη Βαρκελώνη.</li><li><strong>Aston Martin Aramco F1 Team</strong> 🌳: Επανασχεδίασε λεπτομέρειες στις απολήξεις του μπροστινού φτερού, ώστε να βελτιωθεί η ροή στο εξωτερικό άκρο. Η μπροστινή πτέρυγα αναθεωρήθηκε επίσης για δομικούς λόγους και συμμόρφωση με το TD018H.</li><li><strong>BWT Alpine F1 Team</strong> 🏔️: Βελτίωσε τα φράγματα του δαπέδου και το ίδιο το σχήμα του δαπέδου, για ομοιόμορφη αεροδυναμική και μεγαλύτερο φορτίο. Οι φράκτες δαπέδου βελτιστοποιήθηκαν για να βελτιώσουν την ποιότητα των υποδαπέδιων δομών. Το σώμα δαπέδου τροποποιήθηκε για να μεγιστοποιήσει το αποτέλεσμα των αναβαθμισμένων φρακτών.</li><li><strong>MONEYGRAM HAAS F1 TEAM</strong> 🇺🇸: Εφαρμόστηκε νέο μπροστινό φτερό ώστε να πληροί τους αυστηρούς νέους κανονισμούς περί ανελαστικότητας των πτερυγίων, που ισχύουν από τις 28 Μαΐου.</li><li><strong>Visa Cash App Racing Bulls</strong> 🐂: Προχώρησε σε σημαντικές αλλαγές στο μπροστινό μέρος, περιλαμβάνοντας νέο κεντρικό κομμάτι εμπρός φτερού, ανασχεδιασμένα άκρα πτέρυγας και χαμηλωμένη μυτούλα για βελτίωση της ροής. Η μπροστινή πτέρυγα και το τελικό πτερύγιο αναβαθμίστηκαν για βελτίωση ροής και μείωση απωλειών. Η μύτη ανασηκώθηκε/χαμήλωσε για να συναντήσει τα νέα τμήματα FW και να αυξήσει το φορτίο.</li><li><strong>ATLASSIAN Williams Racing</strong> 💙: Τροποποίησε το εμπρός φτερό (για συμμόρφωση στους κανονισμούς κάμψης) και βελτίωσε τη διαχείριση ψύξης στα πίσω φρένα, ενώ προστέθηκαν και νέες σχάρες ψύξης. Η μπροστινή πτέρυγα αναβαθμίστηκε για να ικανοποιήσει τους νέους κανονισμούς απόκλισης, αλλάζοντας το πρότυπο ροής. Η πίσω γωνία έχει αναθεωρημένη γεωμετρία εξόδου για τον πίσω αγωγό φρένων, επηρεάζοντας την ψύξη. Ένα νέο προαιρετικό πάνελ σχαρών ψύξης αυξάνει τη ροή μέσω των ψυγείων.</li><li><strong>KICK Sauber F1 Team</strong> 💚: Ενίσχυσε το δάπεδο (φράγματα, εξωτερική ακμή, διαχύτη), αναμόρφωσε το κάλυμμα κινητήρα για πιο αποδοτική ροή, καθώς και μικρές αλλαγές στο μπροστινό φτερό. Οι τροποποιήσεις στο δάπεδο στοχεύουν σε βελτιωμένες συνθήκες πεδίου ροής. Οι επιφάνειες των πλαϊνών δοχείων ενημερώθηκαν για να προσαρμοστούν στις νέες εξελίξεις του δαπέδου. Οι εξελίξεις στο τελικό πτερύγιο της μπροστινής πτέρυγας βελτιώνουν την απόδοση.</li><li><strong>McLaren Formula 1 Team</strong> 🧡: Δεν κατέθεσε νέες αναβαθμίσεις για αυτή την πίστα.</li></ul><h2><a id="_kuslbipqtfrv"></a>2. Πίστα Βαρκελώνης – Χαρακτηριστικά &amp; Προσπεράσεις 🗺️💨</h2><p>Η πίστα της Βαρκελώνης (Circuit de Catalunya) είναι από τα πιο «all-rounder» circuit του θεσμού: 4.675 χλμ με γρήγορες ευθείες και ποικιλία στροφών. Οι μακρές στροφές (ιδίως 3–4 και 9) καταπονούν ιδιαίτερα το εμπρός αριστερό ελαστικό λόγω του τραχέος οδοστρώματος. Γενικά, οι προσπεράσεις είναι δύσκολες παρά τις μεγάλες ευθείες – το Turn 1 παραμένει το κύριο σημείο μάχης για τα προσπεράσματα. Το φετινό νέο lay‑out (χωρίς το παλιό τελικό σικέιν) αυξάνει την ταχύτητα στα τελευταία μέτρα της ευθείας και θεωρητικά διευκολύνει τις προσπεράσεις. Υπάρχουν δύο ζώνες DRS: η πρώτη μετά την έξοδο της στροφής 9 (ενεργοποιείται πάνω στην ευθεία) και η δεύτερη στην κεντρική ευθεία (ανενεργοποιείται μόλις μετά τη στροφή 16). Έτσι περιμένουμε ανταγωνισμό κυρίως στις ευθείες (με βοήθεια DRS) και στις στροφές 1–2, όπου οι οδηγοί θα ψάχνουν καλύτερη γραμμή φρεναρίσματος.</p><h2><a id="_ng1z0gi5hi8z"></a>3. Στρατηγικές Προβλέψεις 📊💡</h2><p>Η στρατηγική στο Ισπανικό GP αναμένεται… χαοτική! Το «πακέτο» ελαστικών περιλαμβάνει σκληρό (C1), μέσο (C2) και μαλακό (C3). Ωστόσο, όπως δείχνουν τα τελευταία στοιχεία, το μαλακό ελαστικό (C3) προσφέρει σημαντικό πλεονέκτημα ρυθμού (έως ~1,2 δλ./γύρο καλύτερο από το μέσο), αν και φθείρεται έντονα. Αυτό σημαίνει ότι οι ομάδες δύσκολα θα βασιστούν στο σκληρό, και οι επιλογές ποικίλλουν: πολλοί αναμένουν έναν ευέλικτο αγώνα με πολλαπλά pit-stops και «ευρύ» χρονικό παράθυρο για αλλαγή ελαστικών. Όπως παρατηρεί το επίσημο οδηγό στρατηγικής, πρόκειται για αγώνα «όπου οτιδήποτε μπορεί να συμβεί»: wide pit windows, ευκαιρίες για undercut/overcut και ίσως έως και δύο ή τρεις αλλαγές ελαστικών. Για παράδειγμα, ένας οδηγός θα μπορούσε να βγει με Soft αρχικά, να μπει γρήγορα με στόχο undercut, και μετά να βάλει Medium/Hard για το τέλος.</p><p>Παράλληλα, πρέπει να έχουμε κατά νου την δύο ζώνες DRS για προσπεράσματα: ειδικά η ευθεία εκκίνησης και η ευθεία μετά το Turn 9 θα δώσουν εναύσματα μάχης. Τέλος, καιρικά οι πιθανότητες βροχής είναι σχετικά μικρές. Ο Μάιος στη Βαρκελώνη είναι συνήθως ξηρός, με μέση θερμοκρασία γύρω στους 20°C (μέγιστη ~24°C), ενώ οι βροχερές ημέρες είναι μόλις περίπου 9 σε ολόκληρο τον μήνα. Όμως ένα ξαφνικό καλοκαιρινό μπουρίνι δεν αποκλείεται εντελώς, οπότε οι ομάδες θα έχουν και αυτό στο back‑up πρόγραμμα.</p><h2><a id="_twvhmza3syaj"></a>4. Καιρικές Συνθήκες ☀️🌡️</h2><p>Ο καιρός στο GP της Βαρκελώνης συνήθως ευνοεί τον ήλιο! Τέλος Μαΐου περιμένουμε ηλιοφάνεια, με θερμοκρασίες στα 20–24°C. Η υγρασία είναι μέτρια και οι βροχές απίθανες (στατιστικά μόνο ~41 mm βροχής/μήνα, 9 ημερών), οπότε ελάχιστη ανατροπή από τον καιρό. Γενικά, μάλλον ξηρός καιρός με καθαρό ουρανό και αρκετό φως είναι το σενάριο.</p><h2><a id="_sxbd0nx1zlzz"></a>5. Βαθμολογίες Πρωταθλήματος 🏆🔢</h2><p>Μετά τον τελευταίο αγώνα του Μονακό το πρωτάθλημα είναι θρίλερ. Στους οδηγούς προηγείται ο Oscar Piastri (McLaren) με 161 βαθμούς, πολύ κοντά του ο Lando Norris με 158, και τρίτος ο Max Verstappen (Red Bull) με 136. Αυτοί οι τρεις έχουν ανοίξει μικρή διαφορά από τους υπόλοιπους – ο George Russell (Mercedes) είναι στους 99, ακολουθούν ο Charles Leclerc (79) και ο Lewis Hamilton (63). Στους κατασκευαστές, η McLaren πρωτοπορεί άνετα με 319 β. – σχεδόν διπλάσιους από τη Mercedes (147) – ενώ Red Bull (143) και Ferrari (142) είναι σχεδόν στο πόντο μεταξύ τους. Στην ουρά της κατάταξης, ομάδες όπως Williams, Haas και η νέα Racing Bulls φαίνονται πιο πίσω, αλλά με το διπλό άθροισμα των οδηγών (π.χ. Williams 54 β.) μπορούν να παίξουν ρόλο βαθμολογικά στον αγώνα.</p><h2><a id="_ad8ya6lpkrh9"></a>6. Προσδοκίες &amp; Δυνατοί Πρωταγωνιστές 🤩🏎️</h2><p>Με βάση τα παραπάνω, McLaren φαίνεται ως το φαβορί: ο Norris τρέχει με φορμάρισμα μετά το ξεκίνημα της σεζόν και ο Piastri έχει σταθερή απόδοση. 🤩 Ο Verstappen (Red Bull) δεν θα μπορούσε να λείπει από την εξίσωση – αναζητά εκδίκηση μετά το στραβό αποτέλεσμα στο Μονακό. Ο Charles Leclerc και ο Lewis Hamilton (Ferrari) βάζουν την πίεση, ειδικά ο Leclerc που θέλει να δείξει δυναμική εντός έδρας. Ο George Russell (Mercedes) είναι επίσης απειλητικός στο βάθρο. Παράλληλα, θα προσέξουμε τους ανερχόμενους – π.χ. τον Κimi Antonelli (Mercedes), τον Albon (Williams) και τον Isack Hadjar (Racing Bulls) – που ήδη έχουν εντυπωσιάσει νωρίς στη σεζόν. 🔥</p><p>Στο τέλος, το Barcelona GP αναμένεται να προσφέρει έντονο ανταγωνισμό, καθώς η κλειστή μάχη των κορυφαίων ομάδων και οι ευκαιρίες προσπεράσματος (DRS) στους ανοικτούς χώρους, σε συνδυασμό με τις πολλαπλές επιλογές στρατηγικής, υπόσχονται θέαμα. ⏱️🏎️ </p><h2><a id="_ftq8abc7ollm"></a>7. Συνοψίζοντας τις Αναβαθμίσεις του Πίνακα 📝</h2><p>Συνοψίζοντας τις τεχνικές αναβαθμίσεις που υποβλήθηκαν για το Grand Prix της Ισπανίας 2025, παρατηρούμε μια σαφή τάση των ομάδων να επικεντρώνονται σε αεροδυναμικές βελτιώσεις, ιδίως στις μπροστινές πτέρυγες και τα δάπεδα. Πολλές ομάδες, όπως η Ferrari, Red Bull, Aston Martin, Haas, Racing Bulls και Williams, παρουσίασαν τροποποιήσεις στις μπροστινές τους πτέρυγες, συχνά με στόχο την αύξηση της ακαμψίας λόγω νέων κανονισμών ή τη βελτίωση της ροής και του τοπικού φορτίου.</p><p>Το <strong>δάπεδο</strong> και οι σχετικές δομές του, όπως οι φράκτες δαπέδου και το πλαϊνό δάπεδο, αποτελούν επίσης βασικούς τομείς βελτίωσης για ομάδες όπως η Mercedes, Alpine και Sauber, με στόχο την ενίσχυση της κάθετης δύναμης και τη βελτιστοποίηση της ροής κάτω από το μονοθέσιο.</p><p>Επιπλέον, βλέπουμε <strong>προσαρμογές ειδικά για την πίστα</strong>, όπως το πίσω φτερό της Ferrari και της Mercedes που σχεδιάστηκαν για τις απαιτήσεις κάθετης δύναμης της Βαρκελώνης. Η Williams και η Sauber προχώρησαν σε αλλαγές σε συστήματα <strong>ψύξης</strong> και στο κάλυμμα κινητήρα αντίστοιχα, για να βελτιώσουν τη διαχείριση της θερμοκρασίας και την αεροδυναμική αλληλεπίδραση. Είναι αξιοσημείωτο ότι η McLaren δεν υπέβαλε καμία αναβάθμιση για αυτό το Grand Prix. Συνολικά, οι αναβαθμίσεις υπογραμμίζουν τη συνεχή προσπάθεια των ομάδων να βελτιστοποιήσουν την αεροδυναμική απόδοση και να προσαρμοστούν στους εξελισσόμενους τεχνικούς κανονισμούς.</p>
                             <div class="table-responsive-container">
                                 <div class="table-controls">
@@ -589,11 +589,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Georgios Balatzis</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -717,7 +718,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -743,6 +744,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -750,10 +753,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

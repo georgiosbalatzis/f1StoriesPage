@@ -73,6 +73,7 @@ const BLOG_PUBLIC_FILES = new Set([
     'blog-module/blog-index-page-1.json',
     'blog-module/blog-index.min.js',
     'blog-module/blog-loader.min.js',
+    'blog-module/taxonomy.min.js',
     'blog-module/blog-styles.min.css',
     'blog-module/home-latest.json',
     'blog-module/images/default-blog.jpg'
@@ -326,6 +327,15 @@ function shouldCopyBlogEntry(relPath) {
     if (!relPath.startsWith('blog-module/blog-entries/')) return false;
     const name = path.posix.basename(relPath);
     if (name === 'article.html') return true;
+    // Compact archive cards advertise the smaller variant through their
+    // thumbnail run map. Entries without that variant still need their first
+    // source image available when the archive reconstructs the card. Article
+    // pages may also use 1.webp as their hero, so retain explicitly referenced
+    // originals even when a card variant exists.
+    if (name === '1.webp') {
+        return BLOG_ENTRY_PUBLIC_REFS.has(relPath)
+            || !fs.existsSync(path.join(path.dirname(path.join(REPO_ROOT, relPath)), '1-card.webp'));
+    }
     if (name === '1-card.webp') return true;
     return isOptimizedImage(relPath) && BLOG_ENTRY_PUBLIC_REFS.has(relPath);
 }

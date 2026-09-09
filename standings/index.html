@@ -34,7 +34,7 @@
 
     <link rel="dns-prefetch" href="https://api.jolpi.ca">
     <link rel="dns-prefetch" href="https://api.openf1.org">
-    <link rel="modulepreload" href="/standings/standings.min.js?v=899ed144">
+    <link rel="modulepreload" href="/standings/standings.min.js?v=18337583">
     <link rel="preload" href="/standings/standings-cache.json" as="fetch" crossorigin="anonymous">
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
@@ -42,7 +42,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/barlow-condensed-700.woff2?v=e3e520cb" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=22d9c4c9">
 
     <script defer src="/scripts/analytics.min.js?v=98a1ee70"></script>
@@ -145,7 +145,7 @@
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+                <a href="/standings/" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -167,13 +167,13 @@
             <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
             <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+            <a href="/standings/" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
                 <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
                 <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
-                <span class="theme-toggle-label-dark">Light mode</span>
-                <span class="theme-toggle-label-light">Dark mode</span>
+                <span class="theme-toggle-label-dark">Φωτεινό θέμα</span>
+                <span class="theme-toggle-label-light">Σκούρο θέμα</span>
             </button>
         </div>
     </nav>
@@ -479,6 +479,8 @@
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
                     <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
+                    <span class="footer-separator">|</span>
                     <button type="button" class="footer-link footer-link-button" id="standings-clear-cache">Εκκαθάριση cache</button>
                 </div>
             </div>
@@ -487,10 +489,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=4bccf2c7"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/scripts/sw-register.min.js?v=c4974617"></script>
 
-<script type="module" src="standings.min.js?v=899ed144"></script>
+<script type="module" src="standings.min.js?v=18337583"></script>
 <script nomodule src="standings-nomodule.min.js?v=c06e53db"></script>
 </body>
 </html>

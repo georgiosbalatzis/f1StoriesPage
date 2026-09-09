@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     var allPosts = [];
-    var activeAuthor = 'all';
+    var activeAuthor = getAuthorFromUrl();
     var grid = document.getElementById('articles-grid');
     var countEl = document.getElementById('post-count');
     var searchInput = document.getElementById('blog-search');
@@ -99,6 +99,24 @@ document.addEventListener('DOMContentLoaded', function() {
         var requested = new URL(window.location.href).searchParams.get('category');
         return taxonomy.normalizeCategories(requested ? [requested] : [])[0] || 'all';
     }
+    function slugifyAuthor(value) {
+        return String(value || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+    function getAuthorFromUrl() {
+        var requested = new URL(window.location.href).searchParams.get('author');
+        return requested ? String(requested).trim() : 'all';
+    }
+    function updateAuthorUrl() {
+        var url = new URL(window.location.href);
+        if (activeAuthor === 'all') url.searchParams.delete('author');
+        else url.searchParams.set('author', slugifyAuthor(activeAuthor));
+        if (url.href !== window.location.href) window.history.pushState(null, '', url.href);
+    }
     function updateCategoryUrl() {
         var url = new URL(window.location.href);
         if (activeCategory === 'all') url.searchParams.delete('category');
@@ -125,6 +143,28 @@ document.addEventListener('DOMContentLoaded', function() {
     function formatReadingTime(value) {
         return String(value || '').replace(/\bmin\b/gi, 'λεπτά ανάγνωσης');
     }
+
+    // Keep archive cards recognisable at a glance while the public taxonomy
+    // stays deliberately small. The class is visual metadata only; filtering
+    // continues to use the canonical category values above.
+    function editorialCardKind(categories) {
+        var list = Array.isArray(categories) ? categories : [];
+        var order = [
+            ['Technical', 'technical'],
+            ['Analysis', 'analysis'],
+            ['History', 'history'],
+            ['Opinion', 'opinion'],
+            ['Betting', 'betting'],
+            ['Drivers', 'drivers'],
+            ['Teams', 'teams'],
+            ['2026', 'season'],
+            ['News', 'news']
+        ];
+        for (var i = 0; i < order.length; i += 1) {
+            if (list.indexOf(order[i][0]) !== -1) return order[i][1];
+        }
+        return 'journal';
+    }
     function getSearchIndex(post) {
         return normalizeText([
             post.title,
@@ -137,14 +177,34 @@ document.addEventListener('DOMContentLoaded', function() {
         ].join(' '));
     }
     function defaultThumbnailForPost(id) {
-        return '/blog-module/blog-entries/' + encodeURIComponent(id || '') + '/1-card.webp';
+        // Older compact payloads do not carry an explicit thumbnail. Fall
+        // back to the guaranteed first source image for those payloads.
+        return '/blog-module/blog-entries/' + encodeURIComponent(id || '') + '/1.webp';
+    }
+    function decodeThumbnailFlags(flags, maxPosts) {
+        var variants = [];
+        if (!flags) return variants;
+        var runs = flags.split(',');
+        for (var runIndex = 0; runIndex < runs.length; runIndex += 1) {
+            var run = runs[runIndex];
+            var marker = run.charAt(0);
+            if (marker !== '0' && marker !== '1') return [];
+            var runLength = parseInt(run.slice(1), 36);
+            if (!runLength) return [];
+            if (runLength > maxPosts - variants.length) return [];
+            for (var offset = 0; offset < runLength; offset += 1) {
+                variants.push(marker === '1');
+            }
+        }
+        return variants;
     }
     function expandCompactPosts(data) {
         if (!data || data.v !== 2 || !Array.isArray(data.p)) return null;
         var authors = data.a || [];
         var categories = data.c || [];
         var tags = data.t || [];
-        return data.p.map(function(row) {
+        var thumbnailFlags = typeof data.h === 'string' ? decodeThumbnailFlags(data.h, data.p.length) : [];
+        return data.p.map(function(row, postIndex) {
             var id = row[0] || '';
             var categoryIndexes = Array.isArray(row[8]) ? row[8] : [];
             var width = parseInt(row[4], 10) || 400;
@@ -153,7 +213,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 title: row[1] || '',
                 author: authors[row[2]] || 'F1 Stories',
                 date: row[3] || '',
-                thumbnail: defaultThumbnailForPost(id),
+                thumbnail: thumbnailFlags[postIndex]
+                    ? '/blog-module/blog-entries/' + encodeURIComponent(id || '') + '/1-card.webp'
+                    : defaultThumbnailForPost(id),
                 thumbnailWidth: width,
                 thumbnailHeight: parseInt(row[5], 10) || 188,
                 excerpt: row[6] || '',
@@ -276,10 +338,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     function setFullPosts(posts) {
         allPosts = preparePosts(posts);
+        if (activeAuthor !== 'all') {
+            var requestedAuthor = activeAuthor;
+            var matchedAuthor = allPosts.find(function (post) {
+                return post.author === requestedAuthor || slugifyAuthor(post.author) === slugifyAuthor(requestedAuthor);
+            });
+            activeAuthor = matchedAuthor ? matchedAuthor.author : 'all';
+        }
         pageOnePosts = allPosts.slice(0, POSTS_PER_PAGE);
         totalPostCount = allPosts.length;
         fullPostsLoaded = true;
         renderCategoryFilters();
+        syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
     }
     function hydratePosts(posts) {
         setFullPosts(posts);
@@ -316,6 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function createArticleCard(post, idx) {
         var url = post.url || ('/blog-module/blog-entries/' + post.id + '/article.html');
+        var cardKind = editorialCardKind(post.categories);
         var img = post.thumbnail || post.image || '';
         var date = formatPostDate(post);
         var author = post.author || 'F1 Stories';
@@ -333,10 +404,12 @@ document.addEventListener('DOMContentLoaded', function() {
         var animationDelay = Math.round(idx * stagger * 100) / 100;
 
         var article = document.createElement('article');
-        article.className = 'article-card-wrap';
+        article.className = 'article-card-wrap article-card-wrap--' + cardKind;
+        article.setAttribute('data-card-kind', cardKind);
         var link = document.createElement('a');
         link.href = url;
-        link.className = 'article-card';
+        link.className = 'article-card article-card--' + cardKind;
+        link.setAttribute('data-card-kind', cardKind);
         link.style.animationDelay = animationDelay + 's';
         if (!img) link.classList.add('article-card--no-image');
 
@@ -584,6 +657,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.__blogFilterByAuthor = function(author) {
         activeAuthor = author;
+        updateAuthorUrl();
         currentPage = 1;
         syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
         renderPosts();
@@ -657,6 +731,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!chip) return;
             e.preventDefault();
             activeAuthor = chip.getAttribute('data-author');
+            updateAuthorUrl();
             syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
             loadAndRender();
         }
@@ -710,6 +785,7 @@ document.addEventListener('DOMContentLoaded', function() {
             clearTimeout(searchTimer);
             activeAuthor = 'all';
             activeCategory = 'all';
+            updateAuthorUrl();
             updateCategoryUrl();
             activeQuery = '';
             if (searchInput) searchInput.value = '';
@@ -741,9 +817,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Escape') setFiltersOpen(false);
     });
     window.addEventListener('popstate', function() {
+        activeAuthor = getAuthorFromUrl();
         activeCategory = getCategoryFromUrl();
+        currentPage = 1;
+        syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
         syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
-        renderPosts();
+        loadAndRender();
     });
     window.addEventListener('resize', syncArchiveMiniBar, { passive: true });
     window.addEventListener('scroll', syncArchiveMiniBar, { passive: true });

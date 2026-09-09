@@ -77,7 +77,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -93,7 +93,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -191,10 +191,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -213,10 +213,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -235,8 +235,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--news" data-article-kind="news">
+            <div class="article-header" data-article-dossier="ΡΕΠΟΡΤΑΖ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Ο Norris Βασιλεύει στη Βροχή, καθώς το Παραμυθένιο Βάθρο του Hülkenberg Κλέβει την Παράσταση 🇬🇧🏆" class="article-header-img"
@@ -245,13 +245,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΡΕΠΟΡΤΑΖ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">News</span>
                     </div>
                     <h1 class="article-title">Ο Norris Βασιλεύει στη Βροχή, καθώς το Παραμυθένιο Βάθρο του Hülkenberg Κλέβει την Παράσταση 🇬🇧🏆</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Georgios Balatzis</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Georgios Balatzis</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> July 7, 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
@@ -277,7 +277,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΡΕΠΟΡΤΑΖ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> News</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> July 7, 2025</span>
@@ -291,18 +291,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Georgios Balatzis</strong><span>Δημοσίευση: 7 Ιουλίου 2025 · Ενημέρωση: 7 Ιουλίου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span>Συντακτικό άρθρο και επιβεβαίωση στοιχείων από τις επίσημες ανακοινώσεις του πρωταθλήματος.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></strong><span>Δημοσίευση: <time datetime="2025-07-07">7 Ιουλίου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><p><strong>Από τον Ειδικό Αναλυτή F1 του f1stories.gr</strong></p><p>Καλώς ήρθατε στο Silverstone. Υπάρχουν πίστες, και υπάρχει το Silverstone. Δεν είναι απλώς ένα κομμάτι ασφάλτου αλλά ένα ζωντανό κομμάτι της ψυχής της Formula 1. Είναι ο τόπος όπου φιλοξενήθηκε ο πρώτος αγώνας του Παγκοσμίου Πρωταθλήματος το 1950. Αυτός ο ναός της ταχύτητας, μια κορδέλα 5.891 χιλιομέτρων με 18 στροφές, απλώνεται στην ύπαιθρο του Northamptonshire, απαιτώντας απόλυτη αφοσίωση και θάρρος. Το να παρακολουθείς ένα μονοθέσιο να διασχίζει με τέρμα γκάζι το θρυλικό σύμπλεγμα των Maggotts, Becketts και Chapel είναι μια εμπειρία που κόβει την ανάσα. Όπως το έθεσε κάποτε ο Lewis Hamilton, ένας γύρος στο όριο εδώ μοιάζει με το να πιλοτάρεις ένα μαχητικό αεροσκάφος. </p><h2>Το Καζάνι του Πρωταθλήματος: Ένας Εμφύλιος Πόλεμος στα Χρώματα της Παπάγιας</h2><p>Η ατμόσφαιρα ήταν ήδη ηλεκτρισμένη πριν καν ανάψουν οι κινητήρες. Το πρωτάθλημα του 2025 είχε μετατραπεί σε έναν αδυσώπητο εμφύλιο πόλεμο εντός των τειχών της McLaren. Μετά από μια τεταμένη μάχη στην Αυστρία που κατέληξε σε ένα 1-2 για την ομάδα, ο Oscar Piastri έφτασε στο Silverstone κρατώντας μια εύθραυστη πρωτοπορία 15 βαθμών από τον teammate του, Lando Norris. Για τον Norris, αυτός δεν ήταν απλώς ένας ακόμη αγώνας. Ήταν ο εντός έδρας αγώνας του, μπροστά σε δεκάδες χιλιάδες παθιασμένους οπαδούς στη δική του κερκίδα, την "Landostand".<sup>7</sup> Η ευκαιρία να αρπάξει την πρωτοπορία του πρωταθλήματος για πρώτη φορά στην καριέρα του, και μάλιστα στην πατρίδα του, δημιουργούσε μια ατμόσφαιρα τεράστιας πίεσης και προσδοκίας.</p><h2>Η Παγίδα του Καιρού: Μια Κλασική Βρετανική Ενέδρα 🌦️</h2><p>Και σαν να μην έφτανε η πίεση του πρωταθλήματος, οι θεοί του καιρού είχαν τα δικά τους σχέδια. Το Σαββατοκύριακο εξελίχθηκε σε μια κλασική βρετανική παγίδα. Η Παρασκευή ήταν παραπλανητικά ζεστή, ξηρή και με ισχυρούς ανέμους, παρασύροντας τις ομάδες σε μια ψευδαίσθηση ασφάλειας καθώς συνέλεγαν δεδομένα για έναν αγώνα που δεν θα ερχόταν ποτέ.</p><p>Το Σάββατο και η Κυριακή, το σκηνικό άλλαξε δραματικά. Οι προβλέψεις έκαναν λόγο για σημαντική πτώση της θερμοκρασίας και υψηλή πιθανότητα βροχής, ειδικά την ημέρα του αγώνα. Οι τελευταίες προγνώσεις έδειχναν ότι η βροχή θα συνεχιζόταν μέχρι τις 2 το μεσημέρι της Κυριακής, υποσχόμενη μια εκκίνηση σε βρεγμένη πίστα που σταδιακά θα στέγνωνε. Αυτή η πρόβλεψη ήταν η συνταγή για στρατηγικό εφιάλτη και χάος. Ο καιρός δεν ήταν απλώς ένας παράγοντας· ήταν ο μεγάλος εξισορροπητής, έτοιμος να ακυρώσει κάθε προβάδισμα που βασιζόταν στην καθαρή απόδοση του μονοθεσίου και να ανταμείψει την τόλμη, την προσαρμοστικότητα και την οδηγική μαεστρία. Η απόφαση μιας ομάδας όπως η Red Bull να επιλέξει ένα στήσιμο χαμηλής αεροδυναμικής πίεσης, βασισμένη στα δεδομένα της Παρασκευής, μετατράπηκε ξαφνικά σε ένα τεράστιο ρίσκο.</p><h2>Η Παραπλανητική Ηρεμία της Παρασκευής FP1: </h2><h2>Παρέλαση Τοπικών Ηρώων και Πρωτοεμφανιζόμενων</h2><p>Η πρώτη περίοδος ελεύθερων δοκιμών ξεκίνησε με τους Βρετανούς οπαδούς να πανηγυρίζουν, καθώς ο τοπικός ήρωας Lewis Hamilton, στο τιμόνι της Ferrari του, σημείωσε τον ταχύτερο χρόνο, ελάχιστα μπροστά από το δίδυμο της McLaren, Lando Norris και Oscar Piastri. Η ατμόσφαιρα ήταν γιορτινή, αλλά η περίοδος ήταν εξίσου σημαντική για την επόμενη γενιά οδηγών. Μια σειρά από rookies πήραν πολύτιμο χρόνο στην πίστα, συμπεριλαμβανομένων των Arvid Lindblad (Red Bull), Isack Hadjar (Racing Bulls), Franco Colapinto (Alpine), Paul Aron (Alpine), Ollie Bearman (Haas) και Gabriel Bortoleto (Kick Sauber), δίνοντας μια γεύση από το μέλλον του αθλήματος.</p><h2>FP2: Η Προειδοποιητική Βολή της McLaren 🔫</h2><p>Καθώς η μέρα προχωρούσε, η McLaren έστειλε ένα ξεκάθαρο μήνυμα. Στη δεύτερη περίοδο, η ομάδα από το Woking επέδειξε την ωμή της ταχύτητα σε στεγνές συνθήκες, κατακτώντας ένα εμφατικό 1-2 με τον Norris να ηγείται του Piastri. Αυτή η επίδοση τους καθιέρωσε ως το απόλυτο φαβορί, τουλάχιστον όσο η πίστα παρέμενε στεγνή. Αντίθετα, ο Max Verstappen τερμάτισε μόλις έβδομος, με τον Hamilton έκτο, υποδηλώνοντας ότι οι αντίπαλοί τους είχαν πολλή δουλειά μπροστά τους. Οι ισχυροί άνεμοι έκαναν τα μονοθέσια απρόβλεπτα, προσθέτοντας μια επιπλέον πρόκληση για τους οδηγούς.</p><h2>Αρχικές Τεχνικές Παρατηρήσεις</h2><p>Η Παρασκευή αποδείχθηκε μια στρατηγική παρτίδα σκάκι, με τις περισσότερες ομάδες να επικεντρώνονται σε προσομοιώσεις αγώνα με τη μεσαία και τη σκληρή γόμα ελαστικών. Ωστόσο, κάτω από την επιφάνεια, διαμορφωνόταν μια κρίσιμη στρατηγική απόκλιση. Ενώ η McLaren έδειχνε να έχει το ταχύτερο πακέτο, η Red Bull έπαιζε ένα διαφορετικό παιχνίδι. Η έβδομη θέση του Verstappen δεν αντικατόπτριζε την πραγματική τους δυναμική. Η ομάδα είχε επιλέξει συνειδητά ένα στήσιμο χαμηλότερης αεροδυναμικής πίεσης. Αυτή η απόφαση τους έκανε πιο αργούς στις γρήγορες καμπές, αλλά τους χάριζε μια τρομακτική τελική ταχύτητα στις ευθείες. Ήταν ένα υπολογισμένο ρίσκο, μια προσπάθεια να αντισταθμίσουν την υπεροχή της McLaren στις στροφές με ένα όπλο για τις προσπεράσεις. Αυτή η στρατηγική επιλογή, που βασίστηκε στις στεγνές συνθήκες της Παρασκευής, θα αποδεικνυόταν καθοριστική, τόσο για την επιτυχία τους στις κατατακτήριες όσο και για την ευπάθειά τους στον βροχερό αγώνα που θα ακολουθούσε.</p><h2>Η Καταιγίδα του Σαββάτου: Δράμα, Ατυχήματα και μια Ληστεία στην Pole Position</h2><h2>FP3: Η Πρώτη Γεύση του Χάους</h2><p>Η τελευταία περίοδος δοκιμών το πρωί του Σαββάτου ήταν ένας προάγγελος του δράματος που θα ακολουθούσε. Ο καιρός είχε ήδη αλλάξει, με τις συνθήκες να είναι πιο ψυχρές, συννεφιασμένες και υγρές. Η πίστα έγινε αμέσως πιο απαιτητική, και τα λάθη δεν άργησαν να έρθουν.</p><p>Η περίοδος διακόπηκε δύο φορές με κόκκινη σημαία. Πρώτα, ο rookie της Haas, Ollie Bearman, έχασε ένα κομμάτι από το αμάξωμά του στην πίστα, αναγκάζοντας τους κριτές να σταματήσουν τη διαδικασία για να το απομακρύνουν. Λίγο αργότερα, ο Gabriel Bortoleto της Kick Sauber έχασε τον έλεγχο του μονοθεσίου του στο απαιτητικό σύμπλεγμα Maggotts/Becketts, καταλήγοντας στην αμμοπαγίδα και προκαλώντας τη δεύτερη διακοπή. Το δράμα για τον Bearman κορυφώθηκε όταν, κατά την επιστροφή του στα pits υπό καθεστώς κόκκινης σημαίας, έχασε τον έλεγχο στην είσοδο του pit lane και προσέκρουσε στις μπαριέρες, καταστρέφοντας την μπροστινή του αεροτομή. Ήταν ένα «ανόητο, χαζό λάθος», όπως το χαρακτήρισε ο ίδιος, που θα του κόστιζε ακριβά.</p><p>Στην κορυφή των χρόνων, ο Charles Leclerc της Ferrari έδειξε τη δύναμή του, με τους τέσσερις πρώτους (Leclerc, Piastri, Verstappen, Norris) να χωρίζονται από μόλις 0.108 δευτερόλεπτα, προμηνύοντας μια απίστευτα αμφίρροπη μάχη για την pole position.</p><h2>Ανάλυση Κατατακτήριων Δοκιμών: Μια Μάχη Χιλιοστών του Δευτερολέπτου</h2><p>Οι κατατακτήριες δοκιμές εξελίχθηκαν σε ένα θρίλερ, με την κατάταξη να αλλάζει συνεχώς και τις διαφορές να είναι απειροελάχιστες.</p><ul><li><strong>Q1:</strong> Ο Max Verstappen έθεσε τον ταχύτερο χρόνο, αλλά η περίοδος σημαδεύτηκε από την κόκκινη σημαία που προκάλεσε ο Franco Colapinto της Alpine, ο οποίος συνετρίβη. Η μεγαλύτερη έκπληξη ήταν ο διπλός αποκλεισμός των Kick Sauber, με τους Nico Hülkenberg και Gabriel Bortoleto να μένουν εκτός συνέχειας, καταδικασμένοι να εκκινήσουν από τις τελευταίες θέσεις.</li><li><strong>Q2:</strong> Η μάχη εντάθηκε, με τις Ferrari να δείχνουν τα δόντια τους στο τέλος της περιόδου. Ο Charles Leclerc και ο Lewis Hamilton έκαναν επιπλέον γρήγορους γύρους για να εξασφαλίσουν την πρόκριση, ανεβαίνοντας στην κορυφή των χρόνων.</li><li><strong>Q3 - Η Τελική Αναμέτρηση:</strong> Η μάχη για την pole position ήταν μια επίδειξη στρατηγικής και ωμής ταχύτητας. Στην πρώτη προσπάθεια, ο Oscar Piastri έκανε έναν εκπληκτικό γύρο και πήρε την προσωρινή pole. Όλα έδειχναν ότι η McLaren είχε το πάνω χέρι. Όμως, στην τελευταία, κρίσιμη προσπάθεια, ο Piastri έκανε ένα μικρό λάθος και δεν κατάφερε να βελτιώσει τον χρόνο του. Αυτό άφησε την πόρτα ανοιχτή, και ο Max Verstappen, αξιοποιώντας στο έπακρο το στήσιμο χαμηλής αεροδυναμικής πίεσης της Red Bull, έκανε έναν σχεδόν τέλειο γύρο. Με χρόνο <strong>1:24.892</strong>, έκλεψε την pole position από τον Αυστραλό για μόλις <strong>0.103 δευτερόλεπτα</strong>. Ο Lando Norris ακολούθησε στην τρίτη θέση, μόλις 0.015 δευτερόλεπτα πίσω από τον teammate του, σε μια από τις πιο κλειστές μάχες της σεζόν.</li></ul><h2>Αναλυτικά Αποτελέσματα Κατατακτήριων Δοκιμών</h2><p><strong>
                             <div class="table-responsive-container">
                                 <div class="table-controls">
@@ -1881,11 +1881,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Georgios Balatzis</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -2009,7 +2010,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -2035,6 +2036,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -2042,10 +2045,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

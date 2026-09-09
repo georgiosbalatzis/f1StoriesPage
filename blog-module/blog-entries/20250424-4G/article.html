@@ -77,7 +77,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -93,7 +93,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -191,10 +191,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -213,10 +213,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -235,8 +235,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--technical" data-article-kind="technical">
+            <div class="article-header" data-article-dossier="ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="🔧 Mercedes W16 – Μέρος 1ο: «Καρδιά &amp; Νευρικό Σύστημα»" class="article-header-img"
@@ -245,13 +245,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">Technical</span>
                     </div>
                     <h1 class="article-title">🔧 Mercedes W16 – Μέρος 1ο: «Καρδιά &amp; Νευρικό Σύστημα»</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Georgios Balatzis</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Georgios Balatzis</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> April 24, 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=Technical" class="article-category-link">Technical</a></span>
@@ -277,7 +277,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> Technical</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> April 24, 2025</span>
@@ -291,18 +291,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Georgios Balatzis</strong><span>Δημοσίευση: 24 Απριλίου 2025 · Ενημέρωση: 24 Απριλίου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span><a href="https://www.fia.com/regulation/category/110" target="_blank" rel="noopener">FIA κανονισμοί</a> · <a href="https://www.formula1.com/en/results.html" target="_blank" rel="noopener">επίσημα αποτελέσματα και timing</a> · ανακοινώσεις ομάδων όπου αναφέρονται.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></strong><span>Δημοσίευση: <time datetime="2025-04-24">24 Απριλίου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><h2><a id="_kh5rldoyw31k"></a><strong>Ο υβριδικός κινητήρας, το ERS, η μετάδοση και το φρενάρισμα μιας σύγχρονης πολεμικής μηχανής</strong></h2><p>Η Mercedes-AMG W16 του 2025 δεν είναι απλώς ένα αγωνιστικό αυτοκίνητο. Είναι μια κινητή επιστημονική δήλωση. Στο πρώτο μας άρθρο, βουτάμε βαθιά στην τεχνολογική καρδιά του μονοθεσίου – τον κινητήρα, το υβριδικό σύστημα, το κιβώτιο ταχυτήτων και τα φρένα – δηλαδή το απόλυτο <strong>powertrain</strong> και το «νευρικό σύστημα» του αυτοκινήτου.</p><h2><a id="_ywgn4v4y22kw"></a><strong>🧩 Mercedes-AMG F1 M16 E Performance – Ο εγκέφαλος του θηρίου</strong></h2><p>Ο V6 turbo κινητήρας 1.6 λίτρων με υβριδικό σύστημα της W16 είναι ίσως η πιο εξελιγμένη εκδοχή του συγκεκριμένου αρχιτεκτονικού τύπου στην ιστορία της Formula 1. Αν και οι κανονισμοί παραμένουν σταθεροί πριν τη μεγάλη αλλαγή του 2026, η Mercedes έκανε <strong>λεπτομερείς βελτιώσεις</strong> παντού.</p><p>🔬 <strong>Τεχνικά στοιχεία:</strong></p><ul><li>1.6L V6 turbo, έως 15.000 rpm<br /></li><li>Άμεσος ψεκασμός καυσίμου με πίεση έως 500 bar<br /></li><li>ERS με MGU-K (ανάκτηση κινητικής ενέργειας) και MGU-H (από θερμότητα εξάτμισης)<br /></li><li>Ενεργειακή απόδοση άνω του 50% – επιδόσεις που ξεπερνούν ακόμη και αγωνιστικά πρωτότυπα Le Mans<br /></li></ul><p>Η <strong>MGU-K</strong> προσφέρει ως και 160 ίππους επιπλέον για ~33 δευτερόλεπτα, ενώ η <strong>MGU-H</strong> κρατά το turbo μόνιμα φορτισμένο, εξαλείφοντας το turbo lag. Η ενέργεια είτε αποθηκεύεται είτε μεταφέρεται μεταξύ μονάδων, επιτρέποντας στη Mercedes να έχει <strong>εξαιρετικά ευέλικτη απόδοση ισχύος</strong> ανάλογα με τις απαιτήσεις κάθε πίστας.</p><p>⚡ Το υβριδικό σύστημα έχει ρυθμιστεί για <strong>απόλυτη ισορροπία ανάμεσα σε επιθετικότητα και διαχειρισιμότητα</strong>, με εντυπωσιακή απόδοση στις εξόδους στροφών αλλά και σε ενεργειακή ανάκτηση στο φρενάρισμα.</p><h2><a id="_k6hf3gdbuq50"></a><strong>🔋 Petronas: Καύσιμο και λιπαντικά υψηλής απόδοσης</strong></h2><p>Ο κινητήρας τροφοδοτείται από καύσιμο Petronas Primax με 10% βιοαιθανόλη (E10), το οποίο είναι ειδικά σχεδιασμένο για μέγιστη απόδοση και καθαρό κάψιμο. Η συνεργασία με την Petronas φέρνει εξελιγμένα λιπαντικά (Syntium) που μειώνουν την τριβή και συμβάλλουν στην ενεργειακή απόδοση και την αξιοπιστία 💧</p><h2><a id="_fzi3sfdv3h5g"></a><strong>⚙️ Κιβώτιο ταχυτήτων – Ο μαέστρος της μετάδοσης</strong></h2><p>Η W16 χρησιμοποιεί <strong>8 τάχυτο σειριακό κιβώτιο ταχυτήτων</strong> από ανθρακονήματα με υδραυλική ενεργοποίηση. Η Mercedes επέλεξε να συνεχίσει με το κιβώτιο της W15, με ορισμένες εσωτερικές ενισχύσεις.</p><p>💡 Το κιβώτιο είναι:</p><ul><li><strong>ultra-compact</strong>: για μέγιστη αεροδυναμική απόδοση στο πίσω μέρος<br /></li><li><strong>καρβονικό</strong>: για μειωμένο βάρος και αυξημένη στρεπτική ακαμψία<br /></li><li><strong>αναπόσπαστο με την ανάρτηση</strong>: τα σημεία στήριξης της πίσω ανάρτησης είναι ενσωματωμένα στο κιβώτιο!<br /></li></ul><p>Ο επιλογέας ταχυτήτων επιτρέπει <strong>ακαριαίες αλλαγές χωρίς απώλεια ισχύος</strong>, με την υποβοήθηση υδραυλικών και ηλεκτρονικών συστημάτων. Η Mercedes εκμεταλλεύεται πλήρως το seamless-shift σύστημα για να διατηρεί αδιάσπαστη τη ροή ισχύος και να αποφεύγει μετατοπίσεις φορτίου που διαταράσσουν την αεροδυναμική.</p><h2><a id="_bb3i3kl27sih"></a><strong>🛑 Φρένα &amp; Brake-by-wire – Απόλυτος έλεγχος</strong></h2><p>Τα φρένα είναι <strong>καρβονικά</strong> (δίσκοι και τακάκια) με εξαεριζόμενες οπές, από την Carbon Industrie. Συνδυάζονται με <strong>Brembo 6-πίστονες δαγκάνες</strong> για ακριβέστατο φρενάρισμα.</p><p>Το πίσω φρενάρισμα γίνεται με <strong>Brake-by-Wire (BBW)</strong>, δηλαδή ηλεκτρονικά ελεγχόμενο σύστημα που συνεργάζεται με την MGU-K για ανάκτηση ενέργειας χωρίς να αλλάζει η αίσθηση στο πεντάλ. Το σύστημα εξισορροπεί υδραυλική και ηλεκτρική πέδηση – απαραίτητο για προβλέψιμο και δυνατό φρενάρισμα.</p><p>🔥 Οι δίσκοι λειτουργούν σε θερμοκρασίες έως και 1000°C και μπορούν να επιβραδύνουν το μονοθέσιο από 320 km/h σε σχεδόν 0 μέσα σε 130 μέτρα!</p><h2><a id="_ndkn8brzad54"></a><strong>✅ Συνοπτικά – Το πακέτο ισχύος της W16 είναι:</strong></h2><ul><li><strong>Εξαιρετικά εξελιγμένο</strong>, χωρίς να είναι ριζικά νέο<br /></li><li><strong>Αποδοτικό και ευέλικτο</strong>, προσφέροντας σταθερότητα και δύναμη σε κάθε πίστα<br /></li><li><strong>Αξιόπιστο</strong>, ώστε οι οδηγοί να εκμεταλλεύονται κάθε γύρο στο όριο χωρίς ανησυχία για θερμοκρασίες ή φθορά<br /></li></ul><p>Με λίγα λόγια, η W16 είναι μια καλοκουρδισμένη powertrain-ορχήστρα, που παίζει τη συμφωνία της με ακρίβεια… και θόρυβο turbo 🎶🔥</p><p>🚀 <strong>Έπεται συνέχεια!</strong> Στο επόμενο μέρος: <em>Η Αεροδυναμική Τέχνη – Όταν το σώμα φτιάχνει την ταχύτητα.<br /></em> </p></div>
 
                                 <div class="article-author-footer">
@@ -315,11 +315,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Georgios Balatzis</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -443,7 +444,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -469,6 +470,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -476,10 +479,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

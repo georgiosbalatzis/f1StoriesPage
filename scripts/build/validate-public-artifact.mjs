@@ -45,6 +45,7 @@ const REQUIRED_EXACT = [
     'blog-module/blog-index-data.json',
     'blog-module/blog-index-page-1.json',
     'blog-module/home-latest.json',
+    'blog-module/taxonomy.min.js',
     'blog-module/blog/index.html',
     'images/favicon.png',
     'images/icons/apple-touch-icon.png',
@@ -612,6 +613,92 @@ function validateServiceWorkerRefs(errors) {
     refs.forEach(ref => assertLocalRefExists(errors, relPath, ref));
 }
 
+function validateArchiveRuntime(errors) {
+    const relPath = 'blog-module/blog/index.html';
+    const abs = path.join(DIST_ROOT, relPath);
+    if (!fs.existsSync(abs)) return;
+    const html = fs.readFileSync(abs, 'utf8');
+    const taxonomyRef = html.indexOf('/blog-module/taxonomy.min.js');
+    const archiveRef = html.indexOf('/blog-module/blog-index.min.js');
+    if (taxonomyRef === -1) {
+        errors.push(`${relPath}: missing taxonomy runtime asset`);
+    } else if (archiveRef === -1) {
+        errors.push(`${relPath}: missing archive runtime asset`);
+    } else if (taxonomyRef > archiveRef) {
+        errors.push(`${relPath}: taxonomy runtime must load before the archive runtime`);
+    }
+}
+
+function normalizeHeroRef(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    try {
+        const url = new URL(raw, SITE_ORIGIN);
+        if (url.origin !== SITE_ORIGIN) return raw.split('#')[0].split('?')[0];
+        return url.pathname;
+    } catch (_) {
+        return raw.split('#')[0].split('?')[0];
+    }
+}
+
+function extractElementAttribute(html, tagName, id, attribute) {
+    const tag = String(tagName).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const idPattern = String(id).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const attr = String(attribute).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const match = html.match(new RegExp(
+        `<${tag}\\b(?=[^>]*\\bid=["']${idPattern}["'])(?:[^>]*?)\\b${attr}=["']([^"']*)["'][^>]*>`,
+        'i'
+    ));
+    return match ? match[1] : '';
+}
+
+function validateHomepageHero(errors) {
+    const relPath = 'index.html';
+    const htmlPath = path.join(DIST_ROOT, relPath);
+    const dataPath = path.join(DIST_ROOT, 'blog-module/home-latest.json');
+    if (!fs.existsSync(htmlPath) || !fs.existsSync(dataPath)) return;
+    const html = fs.readFileSync(htmlPath, 'utf8');
+
+    let latest;
+    try {
+        const posts = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+        latest = Array.isArray(posts) ? posts[0] : null;
+    } catch (error) {
+        errors.push(`${relPath}: cannot read home-latest.json for hero validation (${error.message})`);
+        return;
+    }
+    if (!latest) {
+        errors.push(`${relPath}: home-latest.json has no lead story for hero validation`);
+        return;
+    }
+
+    const expectedImage = normalizeHeroRef(latest.heroImage || latest.image || latest.thumbnail);
+    const allowedImages = new Set([expectedImage, normalizeHeroRef(latest.heroAvif)]);
+    allowedImages.delete('');
+    const image = normalizeHeroRef(extractElementAttribute(html, 'img', 'hero-image', 'src'));
+    const webp = normalizeHeroRef(extractElementAttribute(html, 'source', 'hero-source-webp', 'srcset').split(/\s+/)[0]);
+    const avif = normalizeHeroRef(extractElementAttribute(html, 'source', 'hero-source-avif', 'srcset').split(/\s+/)[0]);
+    const preload = normalizeHeroRef(extractElementAttribute(html, 'link', 'hero-image-preload', 'href'));
+    const link = normalizeHeroRef(extractElementAttribute(html, 'a', 'hero-story-link', 'href'));
+    const expectedLink = `/blog-module/blog-entries/${encodeURIComponent(latest.slug || latest.id || '')}/article.html`;
+    const titleMatch = html.match(/<h1\b[^>]*\bid=["']hero-title["'][^>]*>([\s\S]*?)<\/h1>/i);
+    const title = titleMatch
+        ? titleMatch[1].replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+        : '';
+
+    if (!image || image !== expectedImage) errors.push(`${relPath}: hero image does not match the latest story image`);
+    if (webp && !allowedImages.has(webp)) errors.push(`${relPath}: hero WebP source does not match the latest story image`);
+    if (avif && !allowedImages.has(avif)) errors.push(`${relPath}: hero AVIF source does not match the latest story image`);
+    if (preload && !allowedImages.has(preload)) errors.push(`${relPath}: hero preload does not match the latest story image`);
+    if (!link || link !== expectedLink) errors.push(`${relPath}: hero story link does not match the latest story`);
+    if (!title || !title.startsWith(String(latest.title || '').trim())) errors.push(`${relPath}: hero headline does not match the latest story`);
+
+    const pictureMatch = html.match(/<picture\b[^>]*\bid=["']hero-picture["'][^>]*>([\s\S]*?)<\/picture>/i);
+    if (pictureMatch && /\/images\/bg\//i.test(pictureMatch[1])) {
+        errors.push(`${relPath}: hero picture still references a rotating background`);
+    }
+}
+
 function validateRouteMarkers(errors, editorialRefs) {
     const checks = [
         {
@@ -721,6 +808,8 @@ function main() {
     validateCname(errors);
     validateManifestRefs(errors);
     validateServiceWorkerRefs(errors);
+    validateArchiveRuntime(errors);
+    validateHomepageHero(errors);
     validateRouteMarkers(errors, editorialRefs);
 
     walk(DIST_ROOT, function (abs, relPath) {

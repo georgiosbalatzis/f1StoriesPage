@@ -77,7 +77,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -93,7 +93,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -191,10 +191,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -213,10 +213,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -235,8 +235,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--drivers" data-article-kind="drivers">
+            <div class="article-header" data-article-dossier="ΠΡΟΣΩΠΟ ΤΟΥ GRID">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Όταν ο Μαθητής Γίνεται ο Δάσκαλος: Η Μαγεία της VCARB στο Μονακό &amp; οι Πονοκέφαλοι της Red Bull! 🤯" class="article-header-img"
@@ -245,13 +245,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΠΡΟΣΩΠΟ ΤΟΥ GRID</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">Drivers</span>
                     </div>
                     <h1 class="article-title">Όταν ο Μαθητής Γίνεται ο Δάσκαλος: Η Μαγεία της VCARB στο Μονακό &amp; οι Πονοκέφαλοι της Red Bull! 🤯</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Georgios Balatzis</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Georgios Balatzis</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> May 28, 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=Drivers" class="article-category-link">Drivers</a></span>
@@ -277,7 +277,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΠΡΟΣΩΠΟ ΤΟΥ GRID</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> Drivers</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> May 28, 2025</span>
@@ -291,18 +291,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Georgios Balatzis</strong><span>Δημοσίευση: 28 Μαΐου 2025 · Ενημέρωση: 28 Μαΐου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span>Συντακτικό άρθρο και επιβεβαίωση στοιχείων από τις επίσημες ανακοινώσεις του πρωταθλήματος.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></strong><span>Δημοσίευση: <time datetime="2025-05-28">28 Μαΐου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><h2><a id="_7imc2z621zz8"></a>0. TL;DR: VCARB "Έσπασε" τη Red Bull στο Μονακό!</h2><p>Στο <strong>GP Μονακό 2025</strong>, η <strong>VCARB (Visa Cash App Racing Bulls)</strong> έκλεψε την παράσταση, αφήνοντας άναυδη τη μητρική ομάδα <strong>Red Bull Racing</strong>. Με τους <strong>Isack Hadjar</strong> (P6) και <strong>Liam Lawson</strong> (P8) να φέρνουν <strong>διπλή βαθμολογία</strong>, η VCARB έδειξε πώς το "εύκολο στην οδήγηση" μονοθέσιό της (VCARB 02) και η έξυπνη στρατηγική της (όπως το "μπλοκάρισμα") μπορούν να φέρουν αποτελέσματα.</p><p>Από την άλλη, η <strong>Red Bull</strong> με τον <strong>Max Verstappen</strong> (P4) και τον <strong>Yuki Tsunoda</strong> (P17) αντιμετώπισε προβλήματα. Το RB21 δυσκολεύεται σε αργές στροφές και κερμπ, ενώ η θέση του δεύτερου οδηγού παραμένει ένα "δηλητηριώδες δισκοπότηρο", με το μονοθέσιο να είναι <strong>εξειδικευμένο για τον Max</strong>. Επιπλέον, η ομάδα παλεύει με τεχνικά ζητήματα στην αεροδυναμική σήραγγα και τη διαχείριση ελαστικών.</p><p>Ουσιαστικά, η <strong>VCARB</strong> διδάσκει ότι η <strong>ευκολία στην οδήγηση</strong> και η <strong>υποστήριξη των οδηγών</strong> μπορεί να είναι πιο αποτελεσματική από ένα εξειδικευμένο, δύσκολο μονοθέσιο, αναδεικνύοντας τις αδυναμίες της Red Bull στον τομέα αυτό. Μια "πικάντικη" ανατροπή που αφήνει πολλά ερωτήματα για το μέλλον των δύο ομάδων!</p><h2>I. Εισαγωγή: Η Σοκαριστική Ανατροπή Ρόλων στο Πριγκιπάτο</h2><p>Το Grand Prix του Μονακό 2025 προσέφερε μια πραγματικά απροσδόκητη τροπή στην ιστορία της οικογένειας της Red Bull. Ενώ η κύρια ομάδα, η Oracle Red Bull Racing, δυσκολεύτηκε να βρει το ρυθμό της στην απαιτητική πίστα της πόλης, η θυγατρική της, η Visa Cash App Racing Bulls (VCARB), πέτυχε ένα εντυπωσιακό διπλό πλασάρισμα στους βαθμούς. Αυτή δεν ήταν απλώς μια καλή μέρα για την VCARB· ήταν μια δήλωση. Ο Isack Hadjar της VCARB τερμάτισε στην 6η θέση και ο Liam Lawson στην 8η, ένα αξιοσημείωτο επίτευγμα για μια ομάδα του μέσου του grid.<sup>1</sup> Σε έντονη αντίθεση, ο Max Verstappen, ο εν ενεργεία πρωταθλητής, κατάφερε μόλις την 4η θέση, και ο Yuki Tsunoda, με το μονοθέσιο της ανώτερης ομάδας της Red Bull, τερμάτισε στην απογοητευτική 17η θέση μετά από μια σύγκρουση και στρατηγικά προβλήματα.<sup>1</sup> Η παραδοσιακή ιεραρχία ανατράπηκε, αφήνοντας πολλούς να ξύνουν το κεφάλι τους και κάποιους να αναρωτιούνται αν η «B-ομάδα» είχε κρυφά ξεκλειδώσει τους κωδικούς εξαπάτησης.</p><p>Αυτή η αναπάντεχη εξέλιξη στο Μονακό δεν αποτελεί απλώς μια μεμονωμένη κακή μέρα για τη Red Bull, αλλά υποδηλώνει μια πιθανή μετατόπιση στις εσωτερικές δυναμικές ισχύος εντός του οικοσυστήματος της Red Bull. Η απόδοση της VCARB, η οποία ξεπέρασε την προβλεπόμενη κυριαρχία της μητρικής της ομάδας, ειδικά δεδομένου του πρωταθληματικού βιογραφικού του Verstappen, υπογραμμίζει μια συστημική διαφορά στον τρόπο με τον οποίο οι δύο ομάδες προσεγγίζουν την ανάπτυξη του μονοθεσίου τους, την αξιοποίηση των οδηγών και τη στρατηγική αγώνων, ιδιαίτερα σε μια μοναδική πίστα όπως το Μονακό. Το γεγονός ότι η «B-ομάδα» ξεπέρασε την «A-ομάδα» υποδηλώνει μια σημαντική απόκλιση στα αποτελεσματικά επιχειρησιακά μοντέλα.</p><p>Το Μονακό, με τα στενά, στριφτά, χαμηλής ταχύτητας και ανελέητα χαρακτηριστικά του <sup>4</sup>, λειτουργεί ως μια κρίσιμη δοκιμασία για την ευελιξία του μονοθεσίου και την προσαρμοστικότητα του οδηγού. Ένα μονοθέσιο που διαπρέπει εδώ συχνά δυσκολεύεται αλλού και το αντίστροφο. Το RB21 της Red Bull είναι γνωστό για την ικανότητά του στις γρήγορες στροφές <sup>5</sup>, αλλά έχει δείξει αστάθεια σε ανώμαλα τμήματα και επιθετικά κερμπ.<sup>6</sup> </p><p>Αντίθετα, το VCARB 02 περιγράφεται ως «αρκετά εύκολο στην οδήγηση».<sup>5</sup> Τα αποτελέσματα του Μονακό, επομένως, παρέχουν μια κρίσιμη ένδειξη για το ποια φιλοσοφία μονοθεσίου –και η αντίστοιχη προσέγγιση του οδηγού– είναι πιο ευέλικτη ή προσαρμόσιμη σε ακραία χαρακτηριστικά πίστας. Η επιτυχία της VCARB υποδηλώνει ότι η πιο «ήπια» φύση του μονοθεσίου της αποτελεί σημαντικό πλεονέκτημα σε τέτοιες πίστες, ενώ ο εξαιρετικά εξειδικευμένος σχεδιασμός της Red Bull μετατρέπεται σε μειονέκτημα.</p><h2>II. Η Μαεστρία της VCARB στο Μονακό: Όταν τα Αουτσάιντερ Αντεπιτίθενται! 🐕‍🦺</h2><h3>Διπλή Απόλαυση Βαθμών: Η Εξαιρετική Απόδοση των Hadjar και Lawson</h3><p>Το Μονακό ήταν ένα όνειρο που έγινε πραγματικότητα για την VCARB. Τόσο ο Isack Hadjar όσο και ο Liam Lawson έφεραν τα μονοθέσια τους εντός των βαθμών, εξασφαλίζοντας την 6η και 8η θέση αντίστοιχα.<sup>1</sup> Για μια ομάδα του μέσου του grid, αυτό είναι σαν να κερδίζεις το λαχείο. Ο Hadjar, ειδικότερα, έδειξε τεράστια υποσχέσεις με τον ρυθμό του τόσο στις κατατακτήριες δοκιμές όσο και στον κύριο αγώνα, αποδεικνύοντας ότι δεν είναι απλώς ένας συμπληρωματικός οδηγός.<sup>1</sup> Ο Lawson, μετά από μια «άθλια θητεία» στη Red Bull <sup>8</sup>, βρήκε τον ρυθμό του, αποδεικνύοντας ότι μερικές φορές, ένα οικείο, λιγότερο πιεστικό περιβάλλον είναι ακριβώς αυτό που χρειάζεται ένας οδηγός για να ευδοκιμήσει.</p><p>Αυτά τα αποτελέσματα επιβεβαιώνουν μια σημαντική διαπίστωση: η ήπια φύση του μονοθεσίου της VCARB, που περιγράφεται ως «αρκετά εύκολο στην οδήγηση», μετατρέπεται σε ένα τεράστιο πλεονέκτημα σε μια τόσο μοναδική και απαιτητική πίστα όπως το Μονακό.<sup>5</sup> Ένα «εύκολο» μονοθέσιο επιτρέπει στους οδηγούς να βρουν γρήγορα το όριο και να χτίσουν αυτοπεποίθηση, κάτι που είναι ζωτικής σημασίας σε πίστες πόλης όπου τα λάθη τιμωρούνται αυστηρά. Αυτό έρχεται σε αντίθεση με ένα «δύσκολο» ή «ευαίσθητο» μονοθέσιο, το οποίο μπορεί να είναι ταχύτερο όταν βρίσκεται στο στενό παράθυρο λειτουργίας του, αλλά τιμωρεί τους οδηγούς αυστηρά όταν βρίσκεται εκτός αυτού. Η επιτυχία της VCARB υποδηλώνει ότι μια πιο συγχωρητική φιλοσοφία μονοθεσίου μπορεί να αποτελέσει ανταγωνιστικό πλεονέκτημα, ειδικά σε πίστες-εξαιρέσεις.</p><p><strong>Αποτελέσματα Αγώνα Grand Prix Μονακό 2025 (Κορυφαία 10, με έμφαση σε VCARB &amp; Red Bull)</strong></p><p><strong>
                             <div class="table-responsive-container">
                                 <div class="table-controls">
@@ -795,11 +795,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Georgios Balatzis</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -923,7 +924,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -949,6 +950,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -956,10 +959,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

@@ -77,7 +77,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -93,7 +93,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -191,10 +191,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -213,10 +213,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -235,8 +235,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--news" data-article-kind="news">
+            <div class="article-header" data-article-dossier="ΡΕΠΟΡΤΑΖ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Το Κρυφό Όπλο: Μια Βαθιά «Βουτιά» στο Πάτωμα των Μονοθεσίων της F1" class="article-header-img"
@@ -245,13 +245,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΡΕΠΟΡΤΑΖ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">News</span>
                     </div>
                     <h1 class="article-title">Το Κρυφό Όπλο: Μια Βαθιά «Βουτιά» στο Πάτωμα των Μονοθεσίων της F1</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Georgios Balatzis</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Georgios Balatzis</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> July 6, 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
@@ -277,7 +277,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΡΕΠΟΡΤΑΖ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> News</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> July 6, 2025</span>
@@ -291,18 +291,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Georgios Balatzis</strong><span>Δημοσίευση: 6 Ιουλίου 2025 · Ενημέρωση: 6 Ιουλίου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span>Συντακτικό άρθρο και επιβεβαίωση στοιχείων από τις επίσημες ανακοινώσεις του πρωταθλήματος.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></strong><span>Δημοσίευση: <time datetime="2025-07-06">6 Ιουλίου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><h1>Εισαγωγή: Γιατί το Πάτωμα Είναι ο Βασιλιάς της Σύγχρονης F1 👑</h1><p>Αν παρακολουθείτε τη Formula 1 τα τελευταία χρόνια, σίγουρα θα έχετε ακούσει σχολιαστές, οδηγούς και επικεφαλείς ομάδων να μιλούν σχεδόν με θρησκευτική ευλάβεια για ένα εξάρτημα, που παραδόξως σπάνια βλέπουμε, το πάτωμα του μονοθεσίου. Γιατί τόση συζήτηση για την «κοιλιά» του αυτοκινήτου; Η απάντηση είναι απλή! Από το 2022, το πάτωμα δεν είναι απλώς ένα δομικό στοιχείο. Είναι ο Βασιλιάς. Είναι η καρδιά της αεροδυναμικής απόδοσης, το εξάρτημα που μπορεί να μετατρέψει έναν διεκδικητή σε πρωταθλητή. 🏎️💨</p><p>Οι τεχνικοί κανονισμοί του 2022 έφεραν μια επανάσταση, γυρίζοντας το σχεδιαστικό εγχειρίδιο της F1 σχεδόν ανάποδα. Η κύρια πηγή παραγωγής κάθετης δύναμης (downforce) μεταφέρθηκε από τις περίπλοκες εμπρός και πίσω αεροτομές που κυριαρχούσαν για δεκαετίες, στο κάτω μέρος του μονοθεσίου. Αυτό επιτεύχθηκε με την επιστροφή μιας θρυλικής, σχεδόν μυθικής αεροδυναμικής φιλοσοφίας, του <strong>"Ground Effect"</strong> (Επίδραση Εδάφους). Αυτή η ιδέα δεν είναι καινούργια. Έκανε την εμφάνισή της στα τέλη της δεκαετίας του '70, με εμβληματικά μονοθέσια όπως η Lotus 79 να κυριαρχούν, «ρουφώντας» κυριολεκτικά τον εαυτό τους στην άσφαλτο. Ωστόσο, οι ανησυχίες για την ασφάλεια οδήγησαν στην απαγόρευσή του το 1983, καθώς τα τεράστια ποσά κάθετης δύναμης που παρήγαγε το έκαναν επικίνδυνα απρόβλεπτο με την τεχνολογία της εποχής.</p><p>Σήμερα, με την πρόοδο στην υπολογιστική ρευστοδυναμική (CFD) και την κατανόηση των αεροδυναμικών φαινομένων, το ground effect επέστρεψε με συγκεκριμένο στόχο. Η FIA δεν έκανε αυτή την αλλαγή τυχαία. Ο σκοπός της ήταν να λυθεί ένα χρόνιο πρόβλημα του αθλήματος: ο «ακάθαρτος αέρας» (dirty air). Τα παλαιότερα μονοθέσια, με τις τεράστιες αεροτομές τους, δημιουργούσαν έναν τόσο τυρβώδη απόηχο που το μονοθέσιο που ακολουθούσε έχανε δραματικά την αεροδυναμική του απόδοση, κάνοντας τις προσπεράσεις εξαιρετικά δύσκολες. Το πάτωμα που βασίζεται στο ground effect παράγει κάθετη δύναμη πολύ πιο «καθαρά», επιτρέποντας στα μονοθέσια να αγωνίζονται πιο κοντά το ένα στο άλλο, βελτιώνοντας το θέαμα.</p><p>Η σημασία του είναι αδιαμφισβήτητη και ποσοτικοποιήσιμη. Πριν το 2022, το πάτωμα και ο διαχύτης συνεισέφεραν περίπου το 33% της συνολικής κάθετης δύναμης. Σήμερα, αυτό το ποσοστό έχει εκτοξευθεί, με το πάτωμα να είναι υπεύθυνο έως και για το <strong>60-65%</strong> της συνολικής αεροδυναμικής απόδοσης ενός μονοθεσίου. Αυτό το κρυφό όπλο, που λειτουργεί εκατοστά από την άσφαλτο, είναι πλέον το κύριο πεδίο μάχης για τους αεροδυναμιστές. Σε αυτό το άρθρο, θα κάνουμε μια βαθιά «βουτιά» στα μυστικά του, χρησιμοποιώντας ως οδηγό τις αποκλειστικές εικόνες που συγκρίνουν τις φιλοσοφίες των (φανταστικών αλλά αντιπροσωπευτικών)  <strong>Red Bull RB21</strong> και <strong>Ferrari SF25</strong>. 🕵️‍♂️</p><h1>Ανατομία του «Τέρατος»: Τα Μέρη που Αποτελούν το Πάτωμα 🛠️</h1><p>Για να κατανοήσουμε πώς λειτουργεί αυτή η «μαύρη μαγεία» της αεροδυναμικής, πρέπει πρώτα να αναλύσουμε το πάτωμα στα βασικά του σημεία. Κάθε κομμάτι παίζει έναν κρίσιμο και αλληλένδετο ρόλο, δημιουργώντας ένα εξαιρετικά ενσωματωμένο και συμβιωτικό σύστημα όπου η απόδοση του ενός εξαρτάται άμεσα από την απόδοση του άλλου.</p><h2>Οι Σήραγγες Venturi (The Venturi Tunnels)</h2><p>Η καρδιά του ground effect βρίσκεται στις δύο τεράστιες σήραγγες που διατρέχουν το κάτω μέρος του μονοθεσίου, γνωστές ως <strong>σήραγγες Venturi</strong>. Η λειτουργία τους βασίζεται σε μια θεμελιώδη αρχή της φυσικής, την </p><p><strong>Αρχή του Bernoulli</strong>, η οποία λέει ότι καθώς η ταχύτητα ενός ρευστού (στην περίπτωσή μας, του αέρα) αυξάνεται, η πίεσή του μειώνεται.</p><p>Φανταστείτε ότι πιέζετε το άκρο ενός λάστιχου κήπου. Το νερό επιταχύνει και εκτοξεύεται πιο μακριά. Οι σήραγγες Venturi κάνουν ακριβώς το ίδιο με τον αέρα. Έχουν χαρακτηριστική μορφή, με μια φαρδιά είσοδο κάτω από τα sidepods που σταδιακά στενεύει σε ένα σημείο που ονομάζεται «λαιμός» (throat) και στη συνέχεια διαστέλλεται ξανά προς την έξοδο στο πίσω μέρος του αυτοκινήτου.</p><p>Καθώς το μονοθέσιο κινείται με υψηλή ταχύτητα, ο αέρας αναγκάζεται να περάσει μέσα από αυτόν τον στενό «λαιμό». Για να διατηρηθεί η ίδια ποσότητα ροής, ο αέρας πρέπει να επιταχυνθεί δραματικά. Αυτή η επιτάχυνση προκαλεί μια τεράστια πτώση της πίεσης κάτω από το μονοθέσιο. Δεδομένου ότι η πίεση του αέρα πάνω από το μονοθέσιο παραμένει υψηλότερη (ατμοσφαιρική), αυτή η διαφορά δημιουργεί μια ισχυρή κατακόρυφη δύναμη που κυριολεκτικά «ρουφάει» το αυτοκίνητο προς την άσφαλτο. Αυτή είναι και η ουσία του ground effect.</p><h2>Ο Διαχύτης (The Diffuser)</h2><p>Αν οι σήραγγες Venturi είναι η καρδιά του συστήματος, ο <strong>διαχύτης</strong> (diffuser) είναι οι πνεύμονές του. Ο διαχύτης είναι το τελευταίο, ανοδικά κεκλιμένο τμήμα των σηράγγων Venturi στο πίσω μέρος του μονοθεσίου. Η δουλειά του είναι να διαχειριστεί την έξοδο αυτού του εξαιρετικά γρήγορου, χαμηλής πίεσης αέρα και να τον επαναφέρει ομαλά στην ατμοσφαιρική πίεση του περιβάλλοντος.</p><p>Καθώς ο αέρας εισέρχεται στον διαχύτη, ο χώρος διαστέλλεται, επιτρέποντας στον αέρα να επιβραδύνει και την πίεσή του να αυξηθεί. Αυτή η διαδικασία εκτόνωσης δημιουργεί ένα φαινόμενο «έλξης» ή «εξαγωγής» (extraction), τραβώντας ακόμα περισσότερο αέρα από τις σήραγγες Venturi και ενισχύοντας τη συνολική τους απόδοση. Όσο πιο αποτελεσματικά μπορεί ένας διαχύτης να διαχειριστεί αυτή την εκτόνωση, τόσο πιο ισχυρό είναι το ground effect.</p><p>Εδώ μπαίνει στο παιχνίδι ένα άλλο κρίσιμο εξάρτημα: η <strong>πτέρυγα δοκού</strong> (beam wing). Αυτή η μικρότερη πτέρυγα, που βρίσκεται κάτω από την κύρια πίσω αεροτομή και ακριβώς πάνω από την έξοδο του διαχύτη, παίζει έναν κρίσιμο συμβιωτικό ρόλο. Δημιουργεί τη δική της περιοχή χαμηλής πίεσης, η οποία βοηθά να «τραβήξει» τον αέρα προς τα πάνω και έξω από τον διαχύτη. Αυτή η αλληλεπίδραση επιτρέπει στους μηχανικούς να σχεδιάζουν πιο επιθετικές γωνίες ράμπας στον διαχύτη, αυξάνοντας την απόδοσή του χωρίς ο αέρας να «στολάρει» (stall), δηλαδή να αποκολλάται από την επιφάνεια.</p><h2>Η «Σανίδα» και τα Skid Blocks (The Plank and Skid Blocks)</h2><p>Κάτω ακριβώς από το κέντρο του πατώματος, υπάρχει ένα εξάρτημα που μοιάζει με ξύλινη σανίδα. Αυτή είναι η <strong>σανίδα</strong> (plank), ένα υποχρεωτικό εξάρτημα που επιβάλλεται από τους κανονισμούς της FIA. Είναι σημαντικό να καταλάβουμε ότι η σανίδα δεν είναι αεροδυναμικό βοήθημα αλλά ένα <strong>εργαλείο ελέγχου και ασφάλειας</strong>.</p><p>Εισήχθη το 1994, μετά τον τραγικό θάνατο του Ayrton Senna, με σκοπό να επιβάλει μια ελάχιστη απόσταση του μονοθεσίου από το έδαφος (ride height) και να περιορίσει την ακραία κάθετη δύναμη που μπορούσαν να παράγουν τα μονοθέσια τρέχοντας υπερβολικά χαμηλά. Η σανίδα, κατασκευασμένη από ένα συνθετικό υλικό με βάση το ξύλο (Jabroc) ή πιο σύγχρονα υαλοβάμβακα (permaglass), έχει πάχος 10 mm όταν είναι καινούργια. Οι κανονισμοί επιτρέπουν φθορά μόνο κατά 1 mm. Αν μετά τον αγώνα η φθορά είναι μεγαλύτερη, το μονοθέσιο αποκλείεται, όπως συνέβη με τους Lewis Hamilton και Charles Leclerc, στο Grand Prix της Shanghai, το 2025.</p><p>Τότε, από πού προέρχονται οι εντυπωσιακοί σπινθήρες ✨ που βλέπουμε; Όχι από τη σανίδα! Οι ομάδες, στην προσπάθειά τους να τρέξουν όσο το δυνατόν πιο χαμηλά χωρίς να φθείρουν παράνομα τη σανίδα, τοποθετούν στρατηγικά, <strong>μεταλλικά μπλοκ από τιτάνιο</strong> (skid blocks) σε διάφορα σημεία της. Αυτά τα μπλοκ είναι σχεδιασμένα να έρχονται σε επαφή με την άσφαλτο πρώτα, προστατεύοντας τη σανίδα από τη φθορά. Η τριβή του τιτανίου με την άσφαλτο σε υψηλές ταχύτητες είναι αυτή που δημιουργεί τους θεαματικούς σπινθήρες που όλοι αγαπάμε να βλέπουμε, ειδικά σε νυχτερινούς αγώνες. Είναι η οπτική απόδειξη του πόσο στο όριο λειτουργούν αυτά τα μονοθέσια.</p><h2>Οι Πλευρικές Ακμές &amp; τα "Strakes" (The Floor Edges &amp; Strakes)</h2><p>Για να λειτουργήσει αποτελεσματικά το ground effect, η περιοχή χαμηλής πίεσης κάτω από το μονοθέσιο πρέπει να είναι όσο το δυνατόν πιο «σφραγισμένη» από τον αέρα υψηλότερης πίεσης που βρίσκεται στα πλάγια. Στα αυθεντικά ground effect cars της δεκαετίας του '70, αυτό γινόταν με φυσικές «ποδιές» (skirts) που σχεδόν ακουμπούσαν την άσφαλτο. Σήμερα οι ποδιές απαγορεύονται, οπότε οι ομάδες έχουν αναπτύξει μια πολύ πιο εξελιγμένη λύση, την <strong>αεροδυναμική σφράγιση</strong> (aerodynamic sealing).</p><p>Αυτό επιτυγχάνεται μέσω του εξαιρετικά περίπλοκου σχεδιασμού των πλευρικών ακμών του πατώματος. Τα διάφορα κοψίματα, τα μικρά πτερύγια και οι κάθετες λωρίδες (γνωστές ως <strong>strakes</strong>) είναι όλα σχεδιασμένα για να δημιουργούν ισχυρούς, ελεγχόμενους στροβίλους (vortices). Αυτοί οι στρόβιλοι λειτουργούν σαν «αόρατες κουρτίνες αέρα». Περιστρέφονται με τεράστια ταχύτητα κατά μήκος του πατώματος, δημιουργώντας ένα ενεργειακό φράγμα που εμποδίζει τον αέρα υψηλής πίεσης να «τρυπώσει» κάτω από το αυτοκίνητο και να καταστρέψει την πολύτιμη χαμηλή πίεση που δημιουργούν οι σήραγγες Venturi.<sup>9</sup> Η αποτελεσματικότητα αυτής της αεροδυναμικής σφράγισης είναι ένας από τους μεγαλύτερους παράγοντες που διαφοροποιούν την απόδοση των πατωμάτων από ομάδα σε ομάδα.</p><h1>Η Μάχη του Grid: Ανάλυση των Φιλοσοφιών Πατώματος για το 2025 🥊</h1><p>Τώρα που κατανοήσαμε τα βασικά μέρη, είναι σαφές ότι δεν υπάρχει ένας μοναδικός δρόμος προς την αεροδυναμική επιτυχία. Κάθε ομάδα στο grid του 2025 ερμηνεύει τους κανονισμούς με τον δικό της, μοναδικό τρόπο, οδηγώντας σε μια συναρπαστική ποικιλία σχεδιαστικών φιλοσοφιών. Από την επιθετική εξέλιξη της McLaren μέχρι τις ριζικές αναθεωρήσεις της Ferrari και τις στοχευμένες αλλαγές των υπολοίπων, η μάχη για την κυριαρχία του πατώματος είναι πιο έντονη από ποτέ, ειδικά καθώς οι ομάδες προετοιμάζονται για τη μεγάλη αλλαγή κανονισμών του 2026. Η οπτική πολυπλοκότητα (ή η απλότητα) δεν είναι ποτέ τυχαία στη Formula 1· είναι η φυσική εκδήλωση της αεροδυναμικής στρατηγικής κάθε ομάδας. Ο παρακάτω πίνακας αναλύει τις βασικές φιλοσοφίες και τα σχεδιαστικά στοιχεία για κάθε ομάδα του grid, αποκαλύπτοντας τις διαφορετικές προσεγγίσεις σε αυτό το κρίσιμο πεδίο μάχης.</p><p><strong>Πίνακας 1: Συγκριτική Ανάλυση Φιλοσοφιών Πατώματος Grid 2025</strong></p>
                             <div class="table-responsive-container">
                                 <div class="table-controls">
@@ -469,11 +469,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Georgios Balatzis</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -597,7 +598,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -623,6 +624,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -630,10 +633,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

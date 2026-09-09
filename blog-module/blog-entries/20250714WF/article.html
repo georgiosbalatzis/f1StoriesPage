@@ -78,7 +78,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -94,7 +94,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -192,10 +192,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -214,10 +214,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -236,8 +236,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--history" data-article-kind="history">
+            <div class="article-header" data-article-dossier="ΑΠΟ ΤΟ ΑΡΧΕΙΟ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Ο Πρίγκιπας των Τροχών" class="article-header-img"
@@ -246,7 +246,7 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΑΠΟ ΤΟ ΑΡΧΕΙΟ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">Drivers</span>
@@ -278,7 +278,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΑΠΟ ΤΟ ΑΡΧΕΙΟ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> Drivers</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> July 14, 2025</span>
@@ -292,18 +292,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>F1 Stories Team</strong><span>Δημοσίευση: 14 Ιουλίου 2025 · Ενημέρωση: 14 Ιουλίου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span><a href="https://www.fia.com/regulation/category/110" target="_blank" rel="noopener">FIA κανονισμοί</a> · <a href="https://www.formula1.com/en/results.html" target="_blank" rel="noopener">επίσημα αποτελέσματα και timing</a> · ανακοινώσεις ομάδων όπου αναφέρονται.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/">F1 Stories Team</a></strong><span>Δημοσίευση: <time datetime="2025-07-14">14 Ιουλίου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><p><strong>Κάποτε, στην καρδιά της Ευρώπης, σ’ ένα ήσυχο χωριουδάκι της Γερμανίας, γεννήθηκε ένα παιδί με ασυνήθιστα γρήγορα όνειρα. Ενώ τα άλλα παιδιά έπαιζαν με ξύλινα σπαθιά, εκείνος έπαιζε με τιμόνια από φαντασία και ρόδες από προορισμό. Ο Σεμπάστιαν, όπως τον ονόμασαν, δεν ήταν σαν τους αλλά παιδιά.</strong></p><p><strong>Το Βάπτισμα στον Θρύλο</strong></p><p><strong>Ο νεαρός αυτός ήρωας μπήκε στον σκληρό κόσμο των μονοθεσίων, όχι με τη βοήθεια μαγικών φίλτρων, αλλά με ιδρώτα και πείσμα. Πέρασε από το βασίλειο της Toro Rosso, κι εκεί, μια βροχερή μέρα στη Μόντσα, ύψωσε για πρώτη φορά το σπαθί του απέναντι στους γίγαντες. Και τους νίκησε. Στα 21 του χρόνια, έγινε ο νεότερος βασιλιάς ενός Grand Prix.</strong></p><p><strong>Αυτό δεν ήταν παρά μόνο η αρχή.</strong></p><p><strong>Η Χρυσή Τετραετία</strong></p><p><strong>Το βασίλειο της Red Bull Racing τον δέχτηκε με τιμές, και ο Σεμπάστιαν αντάμειψε την εμπιστοσύνη με μια δυναστεία. Τέσσερα διαδοχικά στέμματα 2010, 2011, 2012, 2013,  χρόνια όπου η ταχύτητα και η στρατηγική έγιναν ένας ενιαίος παλμός κάτω από την κόκκινη σημαία του ταύρου.</strong></p><p><strong>Κανείς δεν τον σταματούσε. Κανείς δεν τον αμφισβητούσε. Μα όπως κάθε ήρωας που κοιτά ψηλά, ένιωσε την ανάγκη για κάτι περισσότερο από νίκες. Έψαξε το νόημα, όχι μόνο το πώς κερδίζει, αλλά και το γιατί.</strong></p><p><strong>Ο Πόλεμος με τους Δαίμονες</strong></p><p><strong>Η Ferrari τον κάλεσε. Ο θρύλος του Σουμάχερ τον στοίχειωνε, και ο Φέτελ είδε στο κάλεσμα αυτό όχι απλώς μια μετάβαση, αλλά ένα κάλεσμα μοίρας. Πέντε χρόνια πολέμησε με το άλογο της Maranello ενάντια σε νεότερους αντιπάλους και αδυσώπητες μηχανές. Δεν φόρεσε τον κόκκινο θρόνο. Μα δεν γονάτισε.</strong></p><p><strong>Η ήττα δεν τον λύγισε τον έκανε σοφότερο. Εκείνος, που κάποτε έβγαζε κραυγές θριάμβου στον ασύρματο, τώρα μιλούσε με λόγια σοφίας, για δικαιοσύνη, για τη γη, για τη ζωή έξω από τα paddock.</strong></p><p><strong>Ο Αντάρτης της Συνείδησης</strong></p><p><strong>Ο Σεμπάστιαν σταμάτησε να είναι απλώς οδηγός. Έγινε φωνή. Έβαλε λουλούδια στο κράνος του και σήκωσε πανό για την ελπίδα. Δεν τον ένοιαζε πλέον το βάθρο,  τον ένοιαζε να είναι σωστός και ανθρώπινος.</strong></p><p><strong>Στα τελευταία του χρόνια στους αγώνες, έμοιαζε με ήρωα που είχε ολοκληρώσει την αποστολή του και δίδασκε. Κάποιοι έλεγαν ότι ο παλιός του εαυτός χάθηκε. Οι πιο ψαγμενοι, όμως, ήξεραν ο Σεμπάστιαν δεν έχασε τίποτα,  βρήκε τον αληθινό του προορισμό.</strong></p><p><strong> Η Σιγή του Θρύλου</strong></p><p><strong>Όταν έκλεισε το κράνος του για τελευταία φορά, δεν ακούστηκε πανηγυρισμός. Ακούστηκε μια σιγή.</strong></p><p><strong>Σαν όταν φεύγει ένας μεγάλος βασιλιάς από την αίθουσα και όλοι σκύβουν το κεφάλι, όχι γιατί πρέπει, αλλά γιατί το νιώθουν.</strong></p><p><strong>Ο Φέτελ δεν είναι πια στις πίστες, μα ζει στα βλέμματα κάθε νεαρού οδηγού που ονειρεύεται καθαρότητα, σε κάθε φιλάθλο που νοσταλγεί πάθος με αρχές.</strong></p><p><strong>Και όταν ρωτήθηκαν: “Ποιος ήταν ο Σεμπάστιαν Φέτελ;”</strong></p><p><strong>Η απάντηση δεν ήταν "ο τέσσερις φορές παγκόσμιος πρωταθλητής".</strong></p><p><strong>«Ήταν ο ιππότης των τροχών. Ο ήσυχος επαναστάτης. Ο άνθρωπος που μας δίδαξε ότι μπορείς να τρέχεις με 300 χλμ/ώρα και να έχεις ακόμα καρδιά.»</strong></p></div>
 
                                 <div class="article-author-footer">
@@ -321,6 +321,7 @@
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="https://georgiosbalatzis.github.io/excavatorsPage/">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -444,7 +445,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -470,6 +471,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -477,10 +480,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

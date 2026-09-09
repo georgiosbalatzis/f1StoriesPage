@@ -1,36 +1,36 @@
 # F1Stories.gr — AI-Look Cleanup Checklist
 
-- [ ] **Fix the category and tag architecture**
+- [x] **Fix the category and tag architecture**
   - Remove malformed labels such as `Racing,-2026,-Lewis-Hamilton,-Ferrari-F1`.
   - Keep a small, deliberate public taxonomy.
   - Move detailed keywords into internal tags.
 
-- [ ] **Stop exposing raw tags in article listings**
+- [x] **Stop exposing raw tags in article listings**
   - Show one primary editorial category.
   - Limit visible tags to 2–3 clean, human-readable labels.
 
-- [ ] **Remove visible loading placeholders**
+- [x] **Remove visible loading placeholders**
   - Eliminate states such as `Φόρτωση... --`.
   - Use proper skeleton loading, fallback states, or server-rendered data.
 
-- [ ] **Make navigation language consistent**
+- [x] **Make navigation language consistent**
   - Use either Greek or English consistently.
   - Avoid mixtures such as `Home / Blog / Standings / Media / Statistics / Data`.
 
-- [ ] **Replace the homepage intro with a real editorial hero**
+- [x] **Replace the homepage intro with a real editorial hero**
   - Feature one dominant lead story.
   - Include a large image, category, headline, author, and publication date.
   - Add 2–3 supporting stories beside or below it.
 
-- [ ] **Remove generic AI-style marketing copy**
+- [x] **Remove generic AI-style marketing copy**
   - Replace abstract phrases and symmetrical noun lists with concrete editorial messaging.
   - Explain exactly what F1Stories offers.
 
-- [ ] **Define a clear editorial positioning**
+- [x] **Define a clear editorial positioning**
   - Establish the publication around a specific identity.
   - Suggested direction: technical analysis + opinion + Greek F1 community.
 
-- [ ] **Create multiple article-card layouts**
+- [x] **Create multiple article-card layouts**
   - Add distinct treatments for:
     - Feature stories
     - Breaking/news articles
@@ -55,7 +55,7 @@
   - Define tone and subject ownership for each contributor.
   - Avoid making articles from different authors sound structurally identical.
 
-- [ ] **Build proper author profile pages**
+- [x] **Build proper author profile pages**
   - Include:
     - Photo
     - Short biography
@@ -64,18 +64,18 @@
     - Latest articles
     - Recurring columns or series
 
-- [ ] **Rename vague navigation and content sections**
+- [x] **Rename vague navigation and content sections**
   - Replace labels such as `Statistics → Data`.
   - Prefer clear names such as:
     - `Βαθμολογία & Στατιστικά`
     - `F1 Data Hub`
 
-- [ ] **Integrate YouTube content directly into the site**
+- [x] **Integrate YouTube content directly into the site**
   - Embed the latest video.
   - Show thumbnail, title, runtime, participants, and episode description.
   - Avoid treating YouTube only as an external CTA.
 
-- [ ] **Clean up the partner/sponsor section**
+- [x] **Clean up the partner/sponsor section**
   - Standardize logo sizes and cards.
   - Remove duplicate or unclear links.
   - Label each relationship clearly:
@@ -84,17 +84,17 @@
     - Advertising partner
     - Powered by
 
-- [ ] **Make the cookie interface match the site's actual tracking**
+- [x] **Make the cookie interface match the site's actual tracking**
   - Audit the actual cookies and scripts used.
   - Remove categories that are not actually needed.
   - Ensure banner copy and detailed settings describe the same behavior.
 
-- [ ] **Rewrite the privacy policy specifically for F1Stories.gr**
+- [x] **Rewrite the privacy policy specifically for F1Stories.gr**
   - Remove generic template language.
   - Document only the services actually used.
   - Cover analytics, embedded media, hosting, contact forms, advertising, and cookies accurately.
 
-- [ ] **Improve editorial typography**
+- [x] **Improve editorial typography**
   - Establish stronger hierarchy between:
     - Headlines
     - Deck/subheading
@@ -103,7 +103,7 @@
     - Captions
   - Use typography suitable for long-form motorsport journalism.
 
-- [ ] **Create an F1-specific design language**
+- [x] **Create an F1-specific design language**
   - Reduce reliance on generic SaaS-style cards.
   - Introduce subtle motorsport cues such as:
     - Timing-tower typography

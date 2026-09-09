@@ -78,7 +78,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -94,7 +94,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -192,10 +192,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -214,10 +214,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -236,8 +236,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--analysis" data-article-kind="analysis">
+            <div class="article-header" data-article-dossier="ΑΝΑΛΥΣΗ ΑΓΩΝΑ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Leclerc vs Sainz: Μια ανάλυση σε μια μεταβατική Formula 1" class="article-header-img"
@@ -246,13 +246,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΑΝΑΛΥΣΗ ΑΓΩΝΑ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">Drivers</span>
                     </div>
                     <h1 class="article-title">Leclerc vs Sainz: Μια ανάλυση σε μια μεταβατική Formula 1</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Giannis Poulikidis</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=giannis-poulikidis" class="article-author-link">Giannis Poulikidis</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> June 17, 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=Analysis" class="article-category-link">Analysis</a> <a href="/blog-module/blog/index.html?category=Drivers" class="article-category-link">Drivers</a></span>
@@ -278,7 +278,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΑΝΑΛΥΣΗ ΑΓΩΝΑ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> Drivers</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> June 17, 2025</span>
@@ -292,18 +292,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Giannis Poulikidis</strong><span>Δημοσίευση: 17 Ιουνίου 2025 · Ενημέρωση: 17 Ιουνίου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span><a href="https://www.fia.com/regulation/category/110" target="_blank" rel="noopener">FIA κανονισμοί</a> · <a href="https://www.formula1.com/en/results.html" target="_blank" rel="noopener">επίσημα αποτελέσματα και timing</a> · ανακοινώσεις ομάδων όπου αναφέρονται.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=giannis-poulikidis">Giannis Poulikidis</a></strong><span>Δημοσίευση: <time datetime="2025-06-17">17 Ιουνίου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><p>Σε μία περίοδο για τη Formula 1, η οποία είναι μεταβατική, βλέπουμε μεγάλες διαφορές ανάμεσα στην απόδοση των οδηγών. Παραδείγματα υπάρχουν πολλά, όπως ο Carlos Sainz με τον Alexander Albon, ο Charles Leclerc με τον Lewis Hamilton, να πούμε και τον Max, άντε να πούμε, Max Verstappen με τον Yuki Tsunoda.</p><p>Είναι όντως τόσο μεγάλη και χαοτική η δυναμική των οδηγών ή υπάρχει κάποιος παράγοντας, κάποια μεταβλητή πίσω από τις επιδόσεις; Σε αυτόν τον παράγοντα θα επικεντρωθούμε και θα αναλύσουμε τις διαφορές ανάμεσα στους δύο παλιούς teammates, τον Charles Leclerc και τον Carlos Sainz.</p><p>Η μεταγραφή του Ισπανού στη Scuderia ήρθε το 2021. Η μεταφορά του από τη McLaren έδειξε να είναι επιτυχημένη, αφού στην πρώτη του χρονιά στα κόκκινα κατάφερε να τερματίσει πιο πάνω από το «παιδί των Ιταλών», τον Charles Leclerc. Η διαφορά τους ήταν μόλις 5,5 βαθμοί, όμως ήταν ένα δυνατό ξεκίνημα για τον Carlos.</p><p>Προτού εμβαθύνουμε περισσότερο, ας δούμε λίγο τις λεπτομέρειες των δύο οδηγών.</p><h3> <strong>Carlos Sainz – Οδηγικό Στυλ και Τεχνικές</strong></h3><h4> <strong>Οδηγικό Στυλ:</strong></h4><ul><li><strong>Σταθερότητα και στρατηγική:</strong> Ο Carlos είναι γνωστός για την <strong>σταθερότητά</strong> του και την <strong>πολύ καλή διαχείριση των ελαστικών</strong>. Σπάνια κάνει λάθη και προτιμά να ακολουθεί στρατηγικές που τον επιτρέπουν να εκμεταλλευτεί τις ευκαιρίες.</li><li><strong>Αναλυτικός και προσεκτικός:</strong> Συνήθως ο Sainz είναι πιο «ψύχραιμος» και πιο αναλυτικός στον τρόπο που προσεγγίζει τις καταστάσεις στον αγώνα. Αυτός ο χαρακτήρας τον βοηθάει σε δύσκολες καταστάσεις, όπως σε καιρικές συνθήκες που αλλάζουν.</li><li><strong>Διαχείριση του μονοθεσίου:</strong> Είναι πολύ καλός στο να εξασφαλίσει την <strong>ισχυρή αίσθηση του μονοθεσίου</strong> και να βρει τη βέλτιστη ισορροπία στο set-up του. Επικεντρώνεται περισσότερο στο να διατηρεί τη <strong>συνεχιζόμενη ταχύτητα</strong> και να εκμεταλλεύεται την πορεία του αγώνα.</li></ul><h4> <strong>Τεχνικές:</strong></h4><ul><li><strong>Εξαιρετική διαχείριση ελαστικών:</strong> Έχει την ικανότητα να πιέσει τους <strong>ελαστικούς τύπους</strong> για περισσότερο χρόνο από ό,τι άλλοι οδηγοί, πράγμα που του επιτρέπει να κάνει στρατηγικές με πιο ευνοϊκή αλλαγή ελαστικών.</li><li><strong>Ανάλυση των δεδομένων:</strong> Ο Sainz προσπαθεί να κατανοήσει σε βάθος το feedback από το μονοθέσιο και τα δεδομένα της ομάδας, επισημαίνοντας συχνά μικρές βελτιώσεις στο set-up για να βελτιώσει την απόδοση.</li><li><strong>Εξαιρετικός στις δύσκολες συνθήκες:</strong> Σε δύσκολες καταστάσεις, όπως σε έναν αγώνα με δυνατούς ανέμους ή συνθήκες οδήγησης με χαμηλή πρόσφυση, ο Sainz έχει δείξει την ικανότητα να προσαρμόζεται γρήγορα.</li></ul><h4> <strong>Feedback στην ομάδα:</strong></h4><ul><li>Ο Sainz είναι πολύ <strong>αναλυτικός και ακριβής</strong> όταν αναφέρει τις ανάγκες του σχετικά με το μονοθέσιο.</li><li>Δίνει πληροφορίες για τη <strong>συμπεριφορά του μονοθεσίου</strong> σε συγκεκριμένες συνθήκες και ζητά βελτιώσεις στις περιοχές όπου αισθάνεται ότι το μονοθέσιο μπορεί να βελτιωθεί, όπως στον τομέα της <strong>πρόσφυσης.</strong></li></ul><h3><strong>Charles Leclerc – Οδηγικό Στυλ και Τεχνικές</strong></h3><h4> <strong>Οδηγικό Στυλ:</strong></h4><ul><li><strong>Σκληρός και επιθετικός:</strong> Ο Leclerc είναι ένας από τους πιο <strong>επιθετικούς</strong> οδηγούς στη Formula 1. Ειδικά όταν πρόκειται για <strong>γρήγορους γύρους</strong>, έχει μια φυσική ικανότητα να πιέσει το μονοθέσιο στο όριο.</li><li><strong>Άριστη αίσθηση του μονοθεσίου:</strong> Η <strong>εκρηκτικότητα</strong> στην οδήγησή του είναι εξαιρετική. Ο Leclerc εκμεταλλεύεται κάθε δυνατότητα για να βελτιώσει την απόδοση του μονοθεσίου και είναι γνωστός για τις <strong>μεγάλες επιδόσεις του στις κατατακτήριες</strong>.</li><li><strong>Προτίμηση one lap pace:</strong> Ο Charles τείνει να ζητά ένα μονοθέσιο που να έχει πιο <strong>υψηλές δυνατότητες σε γρήγορο γύρο</strong>, κάτι που τον καθιστά άψογο στις κατατακτήριες και στους πρώτους γύρους των αγώνων.</li></ul><h4> <strong>Τεχνικές:</strong></h4><ul><li><strong>Απίστευτη ταχύτητα στο μονοθέσιο:</strong> Ο Leclerc έχει εξαιρετική αίσθηση της <strong>ταχύτητας</strong> και την ικανότητα να εκμεταλλεύεται τις <strong>γωνίες</strong> και την <strong>πρόσφυση</strong> του αυτοκινήτου σε κάθε στροφή.</li><li><strong>Γρήγορες καμπες:</strong> Συνήθως, προτιμά να έχει το μονοθέσιο ρυθμισμένο για να είναι πιο ευαίσθητο στις γρήγορες <strong>στροφές</strong>, ενώ συνήθως έχει την τάση να πιέζει το μονοθέσιο στο όριο.</li><li><strong>Αξιοποιεί τη φρέσκια πρόσφυση:</strong> Παρά την επιθετικότητα του, ο Leclerc ξέρει να <strong>διαχειρίζεται την πρόσφυση των ελαστικών</strong> στις κρίσιμες στιγμές και να βγάζει τον μέγιστο χρόνο από το μονοθέσιο στις κατατακτήριες και τους πρώτους γύρους.</li></ul><h4> <strong>Feedback στην ομάδα:</strong></h4><ul><li>Ο Leclerc δίνει <strong>άμεσο και γρήγορο feedback</strong> στην ομάδα σχετικά με το πώς το μονοθέσιο συμπεριφέρεται σε διαφορετικές συνθήκες. Επικεντρώνεται κυρίως στη <strong>σταθερότητα του πίσω άξονα</strong> και τη <strong>γενική ισορροπία του μονοθεσίου</strong>.</li><li>Επίσης, είναι πιο επιρρεπής σε <strong>προτιμήσεις που αφορούν τη γωνία της στροφής</strong> και τις ρυθμίσεις της <strong>αναρτησης</strong> του μονοθεσίου, ώστε να μεγιστοποιήσει την <strong>ακρίβεια και τη γωνία διεύθυνσης</strong>.</li></ul><p>Η συνέχεια για τον Carlos Sainz στη Scuderia δεν ήταν άσχημη, ωστόσο δεν ήταν και η καλύτερη δυνατή. Άτυπα και χωρίς κάποια συγκεκριμένη δήλωση, ο Μονεγάσκος είχε ηγετικό ρόλο στην ιταλική ομάδα. Αυτό φάνηκε από τα πρώτα του βήματα και το μεγάλο συμβόλαιο που ήρθε από νωρίς. Ο άθλος του Carlos για την προσαρμογή του στη Ferrari δεν ήταν τόσο εύκολος όσο νομίζουν μερικοί, βλέποντας τα αποτελέσματα της πρώτης χρονιάς. Το 2021 ήταν μια χρονιά όπου η τεχνολογία των συγκεκριμένων μονοθεσίων είχε ήδη αρκετά χρόνια στην “πιάτσα”. Επίσης, τότε οι αυξημένες αεροδυναμικές δυνατότητες των μονοθεσίων έκαναν πιο εύκολο το έργο των οδηγών. Με τις λεγόμενες «παθογένειες» και τα μειονεκτήματα των μονοθεσίων να είναι αμελητέα, το setup και οι κατάλληλες ενέργειες για την προσαρμογή του οδηγού ήταν πιο εύκολα. Ωστόσο, ακόμα και εκείνες τις χρονιές, οι προσαρμογές των οδηγών στις αλλαγές ήταν κάπως πιο εύκολες στη μετάβασή τους.</p><p>Από το 2022 και μετά, ο Carlos Sainz αντιμετώπισε αρκετές δυσκολίες, κυρίως όσον αφορά το setup και την ισορροπία. Συνολικά, αν και οι δύο οδηγοί είχαν διαφορετικό στυλ οδήγησης, η συνεργασία τους στη Ferrari δημιούργησε μια συμπληρωματική δυναμική. Ο Leclerc ήταν σχεδόν πάντα πιο γρήγορος στις κατατακτήριες και πιο επιθετικός, ενώ ο Sainz ήταν πιο στρατηγικός και σταθερός στον αγώνα, με σημαντικά αποτελέσματα όταν οι συνθήκες δεν ήταν ιδανικές.</p><p>Αυτές οι διαφορές προσέφεραν στη Ferrari το καλύτερο και από τους δύο κόσμους, αλλά η ομάδα αντιμετώπισε προκλήσεις σε θέματα στρατηγικής και αξιοπιστίας, που μείωσαν τις δυνατότητές της να ανταγωνιστεί τη Red Bull.</p><p>Στην τελευταία του χρονιά, ο Ισπανός δεν έφυγε με το κεφάλι κατεβασμένο. Αντιθέτως, έκανε μία φανταστική ρεβάνς και από τον πρώτο του αγώνα έδειξε στον Leclerc ότι γνωρίζει το μονοθέσιο, ότι έχει την ταχύτητα και ότι το feedback του ήταν παρόν για την εξέλιξη του μονοθεσίου. Φέτος, το μονοθέσιο είναι προσαρμοσμένο περισσότερο στα μέτρα του Μονεγάσκου, με αρκετούς πειραματισμούς. Ωστόσο, ο Leclerc δεν δείχνει ακόμα να μπορεί να βρει τη χρυσή τομή για μια καλή συνεργασία. Σε αυτό το κομμάτι δεν φταίει μόνο η μία πλευρά. Έχουν γίνει αλλαγές και στη θέση του μηχανικού του, ωστόσο δεν βλέπουμε ιδιαίτερη βελτίωση.</p><p>Φέτος, τα μονοθέσια με τους συγκεκριμένους κανονισμούς φτάνουν στους τελευταίους τους αγώνες, με τη FIA να αλλάζει την ιδιοσυγκρασία τους από την επόμενη χρονιά. Σε αυτό το σημείο “κουμπώνει” και ο παράγοντας που αναφέραμε στην αρχή σχετικά με τη διαφορά των teammates. Φέτος, με τις ομάδες να προχωρούν σε διάφορους πειραματισμούς, οι «παλιότεροι» οδηγοί γνωρίζουν τις παθογένειες των μονοθεσίων. Αυτό τους καθιστά γνώστες των προβλημάτων που έχουν να αντιμετωπίσουν αλλά και του πώς να τα διαχειριστούν. Εδώ μπορεί να δικαιολογηθεί σε μεγάλο βαθμό η αδυναμία των καινούργιων οδηγών, όπως και του Carlos Sainz στο νέο του περιβάλλον να μπορέσουν να ανταπεξέλθουν στον ρυθμό οδηγών όπως ο Alexander Albon. Όπως ανέφερε και ο ίδιος, χρειάζεται αρκετός χρόνος προσαρμογής, τόσο από τον ίδιο όσο και από την ομάδα</p></div>
 
                                 <div class="article-author-footer">
@@ -316,11 +316,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Giannis Poulikidis</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=giannis-poulikidis">Giannis Poulikidis</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=giannis-poulikidis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -444,7 +445,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -470,6 +471,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -477,10 +480,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

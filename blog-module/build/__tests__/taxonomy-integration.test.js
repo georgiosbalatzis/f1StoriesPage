@@ -4,8 +4,8 @@ const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 const { PUBLIC_CATEGORIES, getPostTaxonomy } = require('../../taxonomy');
-const { buildIndexPosts, buildCompactIndexData, summarizeCategories } = require('../index');
-const { refreshArticleTaxonomy } = require('../article-render');
+const { buildIndexPosts, buildCompactIndexData, summarizeCategories, editorialCardKind, renderBlogIndexCard } = require('../index');
+const { refreshArticleTaxonomy, getEditorialProfile, renderArticleSources } = require('../article-render');
 const { extractMetadata } = require('../metadata');
 const { convertTxtToHtml } = require('../parse-txt');
 const { scoreRelatedPosts } = require('../related');
@@ -25,6 +25,16 @@ test('archive data separates public categories from searchable detail tags', asy
     assert.deepEqual(compact.p[0][9].map(index => compact.t[index]), posts[0].tags);
     assert.deepEqual(summarizeCategories(posts).map(category => category.name), PUBLIC_CATEGORIES);
     assert.equal(summarizeCategories(posts).find(category => category.name === '2026').count, 1);
+});
+
+test('compact archive thumbnail variants use an unambiguous run map', () => {
+    const compact = buildCompactIndexData([
+        { id: 'a', title: 'A', author: 'Author', date: '2026-09-03', thumbnail: '/blog-module/blog-entries/a/1.webp', thumbnailWidth: 400, thumbnailHeight: 225, excerpt: '', readingTime: '1 min', categories: ['News'], tags: [] },
+        { id: 'b', title: 'B', author: 'Author', date: '2026-09-02', thumbnail: '/blog-module/blog-entries/b/1-card.webp', thumbnailWidth: 400, thumbnailHeight: 225, excerpt: '', readingTime: '1 min', categories: ['News'], tags: [] },
+        { id: 'c', title: 'C', author: 'Author', date: '2026-09-01', thumbnail: '/blog-module/blog-entries/c/1-card.webp', thumbnailWidth: 400, thumbnailHeight: 225, excerpt: '', readingTime: '1 min', categories: ['News'], tags: [] },
+        { id: 'd', title: 'D', author: 'Author', date: '2026-08-31', thumbnail: '/blog-module/blog-entries/d/1.webp', thumbnailWidth: 400, thumbnailHeight: 225, excerpt: '', readingTime: '1 min', categories: ['News'], tags: [] }
+    ]);
+    assert.equal(compact.h, '01,12,01');
 });
 
 test('source-less article taxonomy migration leaves body bytes intact and is idempotent', () => {
@@ -64,6 +74,32 @@ test('explicit source category survives detailed tags and front matter preserves
     } finally {
         fs.rmSync(directory, { recursive: true, force: true });
     }
+});
+
+test('editorial dossiers use a readable section label and only render safe explicit sources', () => {
+    assert.deepEqual(getEditorialProfile(['Technical']), { category: 'Technical', kind: 'technical', label: 'ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ' });
+    assert.equal(getEditorialProfile(['Unknown']).kind, 'journal');
+
+    const sources = renderArticleSources(
+        'FIA Technical Regulations | https://www.fia.com/regulation/category/110; Unsafe | javascript:alert(1); Formula 1 timing | https://www.formula1.com/en/results.html',
+        getEditorialProfile(['Technical'])
+    );
+    assert.match(sources, /FIA Technical Regulations/);
+    assert.match(sources, /Formula 1 timing/);
+    assert.match(sources, /noopener noreferrer/);
+    assert.doesNotMatch(sources, /javascript:/i);
+});
+
+test('archive cards expose a visual treatment for their public section', () => {
+    assert.equal(editorialCardKind(['Technical', '2026']), 'technical');
+    assert.equal(editorialCardKind(['History']), 'history');
+    const html = renderBlogIndexCard({
+        id: '20260901W', title: 'A technical story', author: 'Author', date: '2026-09-01',
+        categories: ['Technical'], tags: [], excerpt: 'A story.', thumbnail: ''
+    }, 0);
+    assert.match(html, /article-card-wrap--technical/);
+    assert.match(html, /article-card--technical/);
+    assert.match(html, /data-card-kind="technical"/);
 });
 
 test('related articles use specific internal tags without rewarding generic F1 labels', () => {

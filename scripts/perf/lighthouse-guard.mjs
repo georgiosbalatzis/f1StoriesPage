@@ -22,9 +22,7 @@ const STORAGE_KEY = 'f1stories-cookie-consent-v1';
 const LIGHTHOUSE_CONSENT = {
     ts: 0,
     essential: true,
-    analytics: false,
-    marketing: false,
-    source: 'lighthouse'
+    analytics: false
 };
 const MIME_TYPES = new Map([
     ['.avif', 'image/avif'],

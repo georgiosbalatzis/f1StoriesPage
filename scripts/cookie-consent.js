@@ -1,4 +1,4 @@
-// cookie-consent.js — Lightweight banner controller for home/blog pages.
+// cookie-consent.js — Consent controller shared by the public site.
 (function () {
     'use strict';
 
@@ -14,12 +14,34 @@
         };
     }
 
+    function normalizeConsent(value) {
+        if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+        return {
+            ts: Number(value.ts) || 0,
+            essential: true,
+            analytics: value.analytics === true
+        };
+    }
+
     function readConsent() {
+        var raw;
         try {
-            return JSON.parse(localStorage.getItem(STORAGE_KEY));
+            raw = JSON.parse(localStorage.getItem(STORAGE_KEY));
         } catch (_) {
             return null;
         }
+
+        var consent = normalizeConsent(raw);
+        if (!consent) return null;
+
+        // Migrate older records and remove unsupported categories. The runtime
+        // only supports essential + analytics.
+        try {
+            if (JSON.stringify(raw) !== JSON.stringify(consent)) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(consent));
+            }
+        } catch (_) {}
+        return consent;
     }
 
     function writeConsent(consent) {
@@ -31,14 +53,24 @@
     function hideBanner() {
         banner.classList.remove('show');
         banner.classList.remove('is-ready');
+        banner.classList.remove('is-settings-open');
         banner.style.display = 'none';
         banner.setAttribute('aria-hidden', 'true');
     }
 
-    function showBanner() {
+    function syncControls(consent) {
+        var analytics = document.getElementById('analytics-cookies');
+        if (analytics) analytics.checked = !!(consent && consent.analytics === true);
+    }
+
+    function showBanner(openSettings) {
         banner.classList.add('cookie-banner');
+        banner.classList.toggle('is-settings-open', openSettings === true);
         banner.style.display = 'block';
         banner.setAttribute('aria-hidden', 'false');
+        syncControls(readConsent());
+        var details = banner.querySelector('.cookie-details');
+        if (details) details.open = openSettings === true;
         requestAnimationFrame(function () {
             banner.classList.add('show');
             banner.classList.add('is-ready');
@@ -91,7 +123,7 @@
                 privacyLink.href = '/privacy/privacy.html';
                 privacyLink.textContent = 'Πολιτική Απορρήτου';
                 text.replaceChildren(
-                    document.createTextNode('Απαραίτητα cookies. Προαιρετικά analytics μόνο με αποδοχή. '),
+                    document.createTextNode('Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. '),
                     privacyLink
                 );
             }
@@ -110,13 +142,13 @@
         var closeBtn = document.getElementById('close-cookie');
 
         if (intro) {
-            intro.textContent = 'Απαραίτητα cookies. Προαιρετικά analytics μόνο με αποδοχή.';
+            intro.textContent = 'Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics είναι προαιρετικό και ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης.';
         }
         if (analyticsTitle) {
-            analyticsTitle.textContent = 'Cookies Ανάλυσης';
+            analyticsTitle.textContent = 'Google Analytics';
         }
         if (analyticsDescription) {
-            analyticsDescription.textContent = 'Αν τα αποδεχτείς, φορτώνουμε Google Analytics για μέτρηση επισκεψιμότητας. Χωρίς αποδοχή δεν φορτώνεται GA.';
+            analyticsDescription.textContent = 'Μόνο με αποδοχή φορτώνουμε GA4 για μέτρηση επισκεψιμότητας. Χωρίς αποδοχή δεν φορτώνεται κανένα Google Analytics script.';
         }
         if (acceptSelected) {
             acceptSelected.textContent = 'Αποθήκευση';
@@ -186,8 +218,26 @@
         }
     }
 
+    function bindSettingsTriggers() {
+        var details = banner.querySelector('.cookie-details');
+        if (details) {
+            details.addEventListener('toggle', function () {
+                banner.classList.toggle('is-settings-open', details.open);
+            });
+        }
+        document.addEventListener('click', function (event) {
+            var trigger = event.target && event.target.closest
+                ? event.target.closest('[data-cookie-settings]')
+                : null;
+            if (!trigger) return;
+            event.preventDefault();
+            showBanner(true);
+        });
+    }
+
     var existingConsent = readConsent();
     updateBannerCopy(existingConsent);
+    syncControls(existingConsent);
     if (existingConsent) {
         hideBanner();
     } else {
@@ -197,4 +247,11 @@
 
     bindSimpleBanner();
     bindAdvancedBanner(existingConsent);
+    bindSettingsTriggers();
+
+    window.f1storiesCookieConsent = {
+        key: STORAGE_KEY,
+        get: readConsent,
+        openSettings: function () { showBanner(true); }
+    };
 })();

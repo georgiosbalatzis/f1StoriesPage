@@ -9,11 +9,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Author data ─────────────────────────────────────────
     const AUTHORS = {
-        'Georgios Balatzis':  { image: '/images/authors/georgios.webp', title: 'Ιδρυτής και παρουσιαστής', bio: 'Γράφει για στρατηγική, απόδοση και όσα αλλάζουν την ισορροπία ενός αγώνα.' },
-        'Giannis Poulikidis': { image: '/images/authors/giannis.webp', title: 'Συμπαρουσιαστής και αναλυτής', bio: 'Εστιάζει στην τεχνική πλευρά της F1 και στις αποφάσεις που κρίνουν ένα Grand Prix.' },
-        'Thanasis Batalas':   { image: '/images/authors/thanasis.webp', title: 'Συντάκτης', bio: 'Καλύπτει ιστορίες, πρόσωπα και στιγμές από την αγωνιστική πλευρά της Formula 1.' },
-        'Themis Charvalis':       { image: '/images/authors/2fast.webp', title: 'Sim racing και ψηφιακοί αγώνες', bio: 'Παρακολουθεί το sim racing και τη σχέση του με τον σύγχρονο μηχανοκίνητο αθλητισμό.' },
-        'Dimitris Keramidiotis': { image: '/images/authors/dimitris.webp', title: 'Συντάκτης', bio: 'Γράφει θεματικά άρθρα, αξιολογήσεις και σχόλια γύρω από τη σεζόν.' }
+        'Georgios Balatzis': {
+            image: '/images/authors/georgios.webp',
+            title: 'Τεχνική ανάλυση & F1 Data',
+            bio: 'Μετράει upgrades, ελαστικά, ρυθμό και τις αποφάσεις που κρίνουν έναν αγώνα.'
+        },
+        'Giannis Poulikidis': {
+            image: '/images/authors/giannis.webp',
+            title: 'Αγωνιστική άποψη & BetCast',
+            bio: 'Γράφει άμεσα, με χιούμορ και θέση, μετατρέποντας το αγωνιστικό τριήμερο σε κουβέντα.'
+        },
+        'Thanasis Batalas': {
+            image: '/images/authors/thanasis.webp',
+            title: 'Ιστορία, πρόσωπα & ψυχολογία',
+            bio: 'Συνδέει τις εποχές της Formula 1 με τις σημερινές μάχες και όσα μένουν πίσω από τα νούμερα.'
+        },
+        'Themis Charvalis': {
+            image: '/images/authors/2fast.webp',
+            title: 'Ιστορίες οδηγών & θρύλων',
+            bio: 'Αναζητά το ανθρώπινο κομμάτι πίσω από τα αποτελέσματα, από τα πρώτα kart μέχρι το σημερινό grid.'
+        },
+        'Dimitris Keramidiotis': {
+            image: '/images/authors/dimitris.webp',
+            title: 'Στήλη γνώμης',
+            bio: 'Κοιτάζει το αγωνιστικό τριήμερο από την κερκίδα, το paddock και όλα όσα συμβαίνουν ανάμεσα στις γραμμές.'
+        }
     };
 
     function calcReadingTime() {

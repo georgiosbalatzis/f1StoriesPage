@@ -175,8 +175,7 @@ function consentValue() {
     return JSON.stringify({
         ts: Date.now(),
         essential: true,
-        analytics: false,
-        marketing: false
+        analytics: false
     });
 }
 

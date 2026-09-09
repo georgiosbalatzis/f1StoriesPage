@@ -78,7 +78,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -94,7 +94,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -192,10 +192,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -214,10 +214,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -236,8 +236,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--analysis" data-article-kind="analysis">
+            <div class="article-header" data-article-dossier="ΑΝΑΛΥΣΗ ΑΓΩΝΑ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="🌟 Rookies 2025: Η Νέα Φουρνιά που Αλλάζει το Grid" class="article-header-img"
@@ -246,13 +246,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΑΝΑΛΥΣΗ ΑΓΩΝΑ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">Drivers</span>
                     </div>
                     <h1 class="article-title">🌟 Rookies 2025: Η Νέα Φουρνιά που Αλλάζει το Grid</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Georgios Balatzis</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Georgios Balatzis</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> March 29, 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=Analysis" class="article-category-link">Analysis</a> <a href="/blog-module/blog/index.html?category=Drivers" class="article-category-link">Drivers</a></span>
@@ -278,7 +278,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΑΝΑΛΥΣΗ ΑΓΩΝΑ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> Drivers</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> March 29, 2025</span>
@@ -292,18 +292,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Georgios Balatzis</strong><span>Δημοσίευση: 29 Μαρτίου 2025 · Ενημέρωση: 29 Μαρτίου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span><a href="https://www.fia.com/regulation/category/110" target="_blank" rel="noopener">FIA κανονισμοί</a> · <a href="https://www.formula1.com/en/results.html" target="_blank" rel="noopener">επίσημα αποτελέσματα και timing</a> · ανακοινώσεις ομάδων όπου αναφέρονται.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></strong><span>Δημοσίευση: <time datetime="2025-03-29">29 Μαρτίου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><p>Η σεζόν του 2025 έχει ξεκινήσει με μια από τις πιο <strong>ριζικές ανανεώσεις</strong> των τελευταίων ετών στη Formula 1: <strong>πέντε rookies</strong> κατέχουν το 25% των θέσεων στο grid. Και δεν ήρθαν για να "μάθουν". Ήρθαν για να <strong>κάνουν τη διαφορά από την Day 1</strong>. 🏁</p><p>Σε μια εποχή όπου τα μονοθέσια γίνονται πιο σύνθετα και η στρατηγική πιο απαιτητική, η νέα γενιά δείχνει πως μπορεί όχι μόνο να σταθεί στο grid — αλλά και να το επαναπροσδιορίσει.</p><h3><a id="_yomhi9nk9ss1"></a><strong>🇮🇹 Andrea Kimi Antonelli – Το Ρίσκο της Mercedes που Πληρώνει</strong></h3><p>Η επιλογή της Mercedes να φέρει τον <strong>18χρονο Antonelli</strong> στη θέση του Lewis Hamilton δεν ήταν απλώς γενναία – ήταν στρατηγική επένδυση στο μέλλον. 💡</p><ul><li><strong>Αυστραλία</strong>: Ξεκίνησε 16ος λόγω ζημιάς στο πάτωμα του W15, αλλά με εξαιρετικό tire management και δεξιοτεχνία στο βρεγμένο, τερμάτισε <strong>4ος</strong>.<br /></li><li><strong>Κίνα</strong>: Παρότι είχε ζημιές από συντρίμμια, κατέληξε <strong>6ος</strong> – επιβεβαιώνοντας ωριμότητα και ταχύτητα.<br /></li></ul><p>Ο Antonelli <strong>δεν χρειάζεται "χρόνο προσαρμογής"</strong>. Ήδη οδηγεί σαν... έτοιμος πρωταθλητής. 🔧</p><h3><a id="_n616j0ytewfo"></a><strong>🇬🇧 Oliver Bearman – Η Νεανική Ελπίδα της Haas</strong></h3><p>Ο <strong>Oliver Bearman</strong>, με δυνατό background από τη F2, καλείται να τραβήξει τη Haas <strong>έξω από τη ζώνη αφάνειας</strong>.</p><ul><li><strong>Αυστραλία</strong>: Πήρε <strong>τον πρώτο του βαθμό</strong> (10η θέση) με σταθερή, καθαρή οδήγηση.<br /></li><li><strong>Κίνα</strong>: Εγκατέλειψε από μηχανικό πρόβλημα, αλλά είχε εντυπωσιακή παρουσία σε FP και Quali.<br /></li></ul><p>Ο Bearman <strong>συνδυάζει ωριμότητα, τεχνική κατανόηση και ικανότητα εξέλιξης</strong> — στοιχεία που λείπουν από τη Haas εδώ και καιρό.</p><h3><a id="_3jvfjhwd63dz"></a><strong>🇫🇷 Isack Hadjar – Ο Μαθητής της Red Bull Κάνει Βήματα</strong></h3><p>Ο <strong>Isack Hadjar</strong> δεν μπήκε με fanfare στη Racing Bulls, αλλά <strong>κέρδισε τις εντυπώσεις με σταθερή πρόοδο</strong>.</p><ul><li><strong>Αυστραλία</strong>: 12ος – συγκρατημένος αλλά καθαρός.<br /></li><li><strong>Κίνα</strong>: <strong>9ος με βαθμούς</strong>, δυνατό stint με υψηλή φθορά, ωραίο διάβασμα συνθηκών.<br /></li></ul><p>Ο Hadjar εξελίσσεται ως <strong>“έξυπνος οδηγός αγώνα”</strong>: γρήγορος όταν χρειάζεται, προσεκτικός όταν πρέπει. Το ιδανικό προφίλ για το πρόγραμμα της Red Bull.</p><h3><a id="_1ue11suutnup"></a><strong>🇧🇷 Gabriel Bortoleto – Το Μακροπρόθεσμο Στοίχημα της Audi</strong></h3><p>Ο <strong>πρωταθλητής της F3</strong> ανέλαβε θέση στη Williams ως μέρος του μελλοντικού project της Audi. Τα πρώτα του αποτελέσματα μπορεί να μην έφεραν βαθμούς, αλλά ο ρυθμός δείχνει συνέπεια.</p><ul><li>Πολύ καλή <strong>διαχείριση ενέργειας</strong>, καθαρές γραμμές φρεναρίσματος, εξαιρετικό telemetry footprint.<br /></li><li>Η Kick ποντάρει στο <strong>long-term potential</strong> και δείχνει ήδη ότι δεν διάλεξε τυχαία.<br /></li></ul><h3><a id="_oxjwqu48qlwb"></a><strong>🇦🇺 Jack Doohan – Το “Μυστικό Όπλο” της Alpine;</strong></h3><p>Ο <strong>Jack Doohan</strong>, γιος του θρύλου των δύο τροχών Mick Doohan, κάνει κάτι σπάνιο: <strong>επιβάλλεται αθόρυβα</strong>.</p><ul><li><strong>Αυστραλία</strong>: 11ος – μάχη με έμπειρους, αξιοπρεπής διαχείριση ελαστικών.<br /></li><li><strong>Κίνα</strong>: <strong>8ος</strong>, οι πρώτοι του βαθμοί με <strong>στρατηγικά άψογη οδήγηση</strong>.<br /></li></ul><p>Η Alpine δείχνει να βρήκε αυτό που της έλειπε: <strong>τεχνική συνέπεια με δόση επιθετικότητας</strong>. Και ο Doohan τα έχει και τα δύο.</p><h3><a id="_wjt5oxihbtlk"></a><strong>🔁 Επιστροφή Tsunoda, Αλλαγή Ρόλων για Lawson</strong></h3><p>Μόλις στον δεύτερο αγώνα, η Red Bull <strong>αποφάσισε να ανακατέψει τα χαρτιά</strong>:</p><ul><li><strong>Ο Liam Lawson</strong>, αν και υποσχόμενος, δεν έπεισε. Πέρασε στη Racing Bulls.<br /></li><li><strong>Ο Yuki Tsunoda</strong> επέστρεψε στην “main” ομάδα δίπλα στον Verstappen, φέρνοντας <strong>δοκιμασμένη σταθερότητα</strong> και εσωτερικό ανταγωνισμό.<br /></li></ul><p>Η αλλαγή δείχνει πως <strong>η υπομονή στην F1 είναι περιορισμένη</strong> – ακόμη και για τους πιο ταλαντούχους rookies.</p><h3><a id="_vgcwrp1ebaf4"></a><strong>⚙️ Η Τεχνική Πρόκληση για τους Νέους</strong></h3><p>Το 2025 δεν είναι εύκολη χρονιά για κανέναν — ειδικά για rookies.</p><ul><li>❌ Καταργήθηκε ο βαθμός ταχύτερου γύρου μετα την 10η θεση.<br /></li><li>🧱 Περιορίστηκε η χρήση του DRS σε ορισμενες πιστες<br /></li><li>🚗 Τα μονοθέσια έχουν <strong>περισσότερη κάθετη δύναμη</strong> και απαιτούν <strong>χειρουργική διαχείριση θερμοκρασιών και φθοράς<br /></strong></li></ul><p>Και όμως, <strong>οι περισσότεροι rookies δείχνουν ικανοί να ανταποκριθούν ήδη από τις πρώτες τους μάχες</strong> – συχνά καλύτερα από πιο έμπειρους συναθλητές.</p><h3><a id="_9vhex1dansoi"></a><strong>🏁 Συμπέρασμα: Μια Νέα Ενέργεια στο Grid</strong></h3><p>Η νέα γενιά <strong>δεν ήρθε για να κάνει γύρους μαθητείας</strong>. Ήρθε για να αλλάξει το τοπίο.</p><p>Κάθε ένας από τους πέντε rookies του 2025 έχει διαφορετικό προφίλ, αλλά όλοι μοιράζονται κάτι κοινό: <strong>την απόφαση να αφήσουν το στίγμα τους από την πρώτη σεζόν</strong>.</p><p>Και όπως όλα δείχνουν — το κάνουν ήδη.</p><p></p></div>
 
                                 <div class="article-author-footer">
@@ -316,11 +316,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Georgios Balatzis</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -444,7 +445,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -470,6 +471,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -477,10 +480,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

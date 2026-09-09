@@ -188,7 +188,34 @@
 
 /* The first three stories form a spread. The rest settle into a reading list. */
 .archive-page .archive-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 28px 32px; scroll-margin-top: 95px; }
-.archive-page .article-card-wrap { grid-column: 3 / -1; height: auto; border-top: 1px solid var(--border); padding-top: 28px; }
+.archive-page .article-card-wrap {
+    --card-signal: var(--accent);
+    --card-wash: var(--border);
+    grid-column: 3 / -1;
+    height: auto;
+    border-top: 1px solid var(--card-wash);
+    padding-top: 28px;
+}
+.archive-page .article-card-wrap--technical { --card-signal: #16736c; --card-wash: #16736c66; }
+.archive-page .article-card-wrap--analysis { --card-signal: #a82e1c; --card-wash: #a82e1c66; }
+.archive-page .article-card-wrap--history { --card-signal: #8e6b2f; --card-wash: #8e6b2f66; }
+.archive-page .article-card-wrap--opinion { --card-signal: #694634; --card-wash: #69463466; }
+.archive-page .article-card-wrap--betting { --card-signal: #287a55; --card-wash: #287a5566; }
+.archive-page .article-card-wrap--drivers { --card-signal: #486a8f; --card-wash: #486a8f66; }
+.archive-page .article-card-wrap--teams { --card-signal: #5e4c86; --card-wash: #5e4c8666; }
+.archive-page .article-card-wrap--season { --card-signal: #a07e1e; --card-wash: #a07e1e66; }
+.archive-page .article-card-wrap--news { --card-signal: var(--accent); --card-wash: #a82e1c66; }
+.archive-page .article-card-wrap--journal { --card-signal: var(--accent); }
+.archive-page .article-card-wrap :is(.article-card-meta .author-tag, .article-card-read .icon) { color: var(--card-signal); }
+.archive-page .article-card-wrap--technical .article-card-img-wrap { border-left: 4px solid var(--card-signal); }
+.archive-page .article-card-wrap--technical .article-card-title,
+.archive-page .article-card-wrap--analysis .article-card-title { font-family: var(--font-display); letter-spacing: -.025em; }
+.archive-page .article-card-wrap--opinion .article-card-body { border-left: 2px solid var(--card-signal); padding-left: 15px; }
+.archive-page .article-card-wrap--opinion .article-card-title { font-style: italic; }
+.archive-page .article-card-wrap--history .article-card-img-wrap { border-radius: 0 0 38px 0; }
+.archive-page .article-card-wrap--history .article-card-img { filter: sepia(.16) saturate(.78); }
+.archive-page .article-card-wrap--betting .article-card-footer { border-top: 2px solid var(--card-signal); padding-top: 9px; }
+.archive-page .article-card-wrap--season .article-card-title { text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: var(--card-signal); text-underline-offset: .12em; }
 .archive-page .article-card {
     display: grid;
     grid-template-columns: minmax(140px, .72fr) minmax(0, 1.7fr);
@@ -223,7 +250,7 @@
 .archive-page .article-card:hover .article-card-read .icon { transform: translateX(5px); }
 .archive-page .article-card-cats { display: flex; flex: 1 1 auto; gap: 8px; }
 .archive-page .article-card-cat { color: var(--text-secondary); border: 0; border-bottom: 1px solid var(--border); border-radius: 0; background: none; padding: 2px 0; font-size: .58rem; }
-.archive-page .article-card--no-image { grid-template-columns: 1fr; padding: 22px; border-left: 3px solid var(--signal); background: var(--bg-surface); }
+.archive-page .article-card--no-image { grid-template-columns: 1fr; padding: 22px; border-left: 3px solid var(--card-signal, var(--signal)); background: var(--bg-surface); }
 .archive-page .article-card--no-image :is(.article-card-body, .article-card-footer) { grid-column: 1; }
 .archive-page .archive-grid.is-curated-default > .article-card-wrap:nth-child(-n+3) { border: 0; padding-top: 0; }
 .archive-page .archive-grid.is-curated-default > .article-card-wrap:first-child { grid-column: 1 / 8; grid-row: 1 / 3; }

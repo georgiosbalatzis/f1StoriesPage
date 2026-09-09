@@ -77,7 +77,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -93,7 +93,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -191,10 +191,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -213,10 +213,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -235,8 +235,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--news" data-article-kind="news">
+            <div class="article-header" data-article-dossier="ΡΕΠΟΡΤΑΖ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Δαμάζοντας το Θερμικό Τέρας σε ένα Μονοθέσιο της Formula 1" class="article-header-img"
@@ -245,13 +245,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΡΕΠΟΡΤΑΖ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">News</span>
                     </div>
                     <h1 class="article-title">Δαμάζοντας το Θερμικό Τέρας σε ένα Μονοθέσιο της Formula 1</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Georgios Balatzis</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Georgios Balatzis</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> July 12, 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
@@ -277,7 +277,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΡΕΠΟΡΤΑΖ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> News</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> July 12, 2025</span>
@@ -291,18 +291,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Georgios Balatzis</strong><span>Δημοσίευση: 12 Ιουλίου 2025 · Ενημέρωση: 12 Ιουλίου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span>Συντακτικό άρθρο και επιβεβαίωση στοιχείων από τις επίσημες ανακοινώσεις του πρωταθλήματος.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></strong><span>Δημοσίευση: <time datetime="2025-07-12">12 Ιουλίου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><p>Αν παρακολουθείτε Formula 1, πιθανότατα θα έχετε συνηθίσει να ακούτε για την κάθετη δύναμη, την αεροδυναμική απόδοση και τις περίπλοκες στρατηγικές ελαστικών. Όμως, βαθιά μέσα στα σωθικά από ανθρακόνημα κάθε μονοθεσίου, μαίνεται μια άλλη, εξίσου κρίσιμη μάχη: ένας αδιάκοπος πόλεμος ενάντια στη θερμότητα. Αυτή η μάχη δεν κερδίζει πρωτοσέλιδα, αλλά κρίνει πρωταθλήματα. Η ψύξη σε ένα μονοθέσιο της F1 δεν είναι απλώς ένα σύστημα αξιοπιστίας για την αποφυγή της υπερθέρμανσης. Είναι ένα ενεργό, δυναμικό σύστημα απόδοσης, ένας θεμελιώδης πυλώνας του σχεδιασμού που βρίσκεται σε συνεχή σύγκρουση με τον βασιλιά της σύγχρονης F1, την αεροδυναμική.</p><p>Η κεντρική σύγκρουση είναι απλή στη σύλληψή της αλλά διαβολικά περίπλοκη στην επίλυσή της. Κάθε άνοιγμα που δημιουργείται για να εισέλθει ψυχρός αέρας και να ψύξει τα ζωτικά όργανα του αυτοκινήτου, αποτελεί μια πηγή αεροδυναμικής οπισθέλκουσας (drag). Κάθε ψυγείο που τοποθετείται στην πορεία του αέρα είναι ένα εμπόδιο που διαταράσσει την πολύτιμη, ενεργειακά φορτισμένη ροή που οι αεροδυναμιστές προσπαθούν με ευλάβεια να κατευθύνουν προς το πάτωμα και τις αεροτομές. Η πρόκληση είναι κολοσσιαία. Η στιγμιαία θερμοκρασία καύσης μέσα σε έναν σύγχρονο κινητήρα της F1 μπορεί να φτάσει τους 2.600°C, τη μισή θερμοκρασία από την επιφάνεια του ήλιου. Με μια θερμική απόδοση που αγγίζει το εντυπωσιακό 40%, το υπόλοιπο 60% της ενέργειας του καυσίμου μετατρέπεται σε άχρηστη θερμότητα που πρέπει να αποβληθεί στο περιβάλλον.Αυτό το τεράστιο θερμικό φορτίο πρέπει να διαχειριστεί ένα σύστημα που είναι ταυτόχρονα ελαφρύ, συμπαγές και πάνω απ' όλα, αεροδυναμικά αποδοτικό.</p><p>Σε αυτό το άρθρο, θα βουτήξουμε βαθιά στον αθέατο κόσμο της θερμικής διαχείρισης της F1. Θα αναλύσουμε την ανατομία αυτού του πολύπλοκου οικοσυστήματος, θα εξετάσουμε πώς η σύγκρουση μεταξύ ψύξης και αεροδυναμικής γέννησε τις διαφορετικές σχεδιαστικές φιλοσοφίες των sidepods, θα εξερευνήσουμε την επιστήμη πίσω από τα ψυκτικά υγρά και τα ψυγεία και, τέλος, θα δούμε πώς οι περιβαλλοντικές συνθήκες, από το αραιό οξυγόνο της Πόλης του Μεξικού μέχρι τη σάουνα της Σιγκαπούρης, μετατρέπουν τη θερμοκρασία σε όπλο που μπορεί να καθορίσει την έκβαση ενός αγώνα.</p><h2>Ανατομία: Μια Περιήγηση στο Θερμικό Οικοσύστημα της F1</h2><p>Ένα σύγχρονο μονοθέσιο της F1 δεν διαθέτει ένα ενιαίο σύστημα ψύξης, αλλά ένα περίπλοκο δίκτυο από ανεξάρτητα, εξειδικευμένα κυκλώματα. Κάθε ένα είναι σχεδιασμένο για να εξυπηρετεί τις μοναδικές απαιτήσεις διαφορετικών εξαρτημάτων, με διαφορετικά ψυκτικά υγρά και δραστικά διαφορετικές θερμοκρασίες λειτουργίας. Αυτή η πολυπλοκότητα αποτελεί έναν τεράστιο πονοκέφαλο για τους μηχανικούς όσον αφορά την ενσωμάτωση όλων αυτών των συστημάτων στο ήδη ασφυκτικά γεμάτο σασί.</p><h3>Η Καρδιά της Μονάδας Ισχύος (ICE, Turbo, Intercooler)</h3><p>Η κύρια πηγή θερμότητας είναι, αναμενόμενα, η μονάδα ισχύος.</p><ul><li><strong>Κινητήρας Εσωτερικής Καύσης (ICE):</strong> Το κύριο κύκλωμα ψύξης για τον V6 κινητήρα των 1.6 λίτρων χρησιμοποιεί ένα μείγμα νερού και γλυκόλης. Το σύστημα λειτουργεί υπό υψηλή πίεση, πάνω από 2.5 bar, για να αυξήσει το σημείο βρασμού του ψυκτικού υγρού στους περίπου 120°C. Αυτή είναι μια συνειδητή απόφαση που επιτρέπει στις ομάδες να χρησιμοποιούν μικρότερα ψυγεία, μειώνοντας το αεροδυναμικό κόστος. Κάθε 5°C αύξησης της θερμοκρασίας του νερού κοστίζει περίπου 1 ίππο στον κινητήρα, αλλά το κέρδος στην αεροδυναμική απόδοση είναι πολύ μεγαλύτερο. Αυτό το κύκλωμα αποβάλλει περίπου 90 έως 160 kW ενέργειας.</li><li><strong>Κύκλωμα Λαδιού Κινητήρα:</strong> Το λάδι επιτελεί διπλό ρόλο: λίπανση και ψύξη. Το υψηλής απόδοσης συνθετικό λάδι κυκλοφορεί μέσα στον κινητήρα, απομακρύνοντας τη θερμότητα από κρίσιμα εξαρτήματα. Η βέλτιστη θερμοκρασία λειτουργίας του κυμαίνεται μεταξύ 100°C και 150°C, με τις τυπικές τιμές στην F1 να είναι γύρω στους +100°C.Το σύστημα λαδιού αποβάλλει από 30 έως 120 kW θερμότητας. Ορισμένες ομάδες ενδέχεται να χρησιμοποιούν ξεχωριστό κύκλωμα λαδιού για τον στροβιλοσυμπιεστή (turbo), ώστε να διαχειρίζονται διαφορετικές θερμοκρασίες και πιέσεις.</li><li><strong>Στροβιλοσυμπιεστής &amp; Intercooler:</strong> Ο στροβιλοσυμπιεστής συμπιέζει τον αέρα εισαγωγής για να αυξήσει την ισχύ, αλλά αυτή η διαδικασία τον θερμαίνει δραματικά. Η ψύξη αυτού του πεπιεσμένου αέρα (για να γίνει πιο πυκνός) είναι ζωτικής σημασίας για την απόδοση του κινητήρα και αποτελεί το έργο του intercooler (ή Charge Air Cooler - CAC).</li></ul><h3>Το Ηλεκτρικό Νευρικό Σύστημα (Ψύξη ERS)</h3><p>Το Υβριδικό Σύστημα Ανάκτησης Ενέργειας (ERS) αποτελεί μια μοναδική πρόκληση ψύξης.</p><ul><li><strong>Εξαρτήματα:</strong> Τα βασικά εξαρτήματα του ERS που απαιτούν εξειδικευμένη ψύξη είναι η Μονάδα Αποθήκευσης Ενέργειας (ES, η μπαταρία), οι δύο ηλεκτροκινητήρες-γεννήτριες (MGU-K και MGU-H) και τα Ηλεκτρονικά Ελέγχου (CE).</li><li><strong>Η Πρόκληση:</strong> Αυτά τα εξαρτήματα λειτουργούν σε πολύ χαμηλότερες θερμοκρασίες από τον ICE, περίπου στους 50°C, και είναι εξαιρετικά ευαίσθητα στις μεταβολές της περιβαλλοντικής θερμοκρασίας.<sup>6</sup> Η μπαταρία, ειδικότερα, πρέπει να διατηρείται σε ένα πολύ στενό θερμοκρασιακό εύρος για να διασφαλιστεί η μέγιστη απόδοση τόσο κατά την αποθήκευση όσο και κατά την παροχή ενέργειας.</li><li><strong>Ψυκτικό Υγρό:</strong> Η ψύξη του ERS επιτυγχάνεται με ένα μη αγώγιμο <strong>διηλεκτρικό υγρό</strong> (ένας τύπος λαδιού). Αυτό είναι ένα κρίσιμο χαρακτηριστικό ασφαλείας, καθώς αποτρέπει τον κίνδυνο ηλεκτροπληξίας σε περίπτωση διαρροής. Οι ομάδες χρησιμοποιούν πολλαπλά, ξεχωριστά κυκλώματα ψύξης για το ERS, ώστε να διαχειρίζονται τα διαφορετικά υγρά και τις απαιτήσεις θερμοκρασίας.</li></ul><h3>Οι Δευτερεύοντες Ρόλοι (Φρένα, Κιβώτιο Ταχυτήτων, Υδραυλικά)</h3><ul><li><strong>Φρένα:</strong> Τα φρένα από ανθρακονήματα παράγουν τεράστια ποσά θερμότητας, φτάνοντας σε σημειακές θερμοκρασίες άνω των 1000°C. Ψύχονται από αέρα που διοχετεύεται μέσω των αεραγωγών των φρένων, οι οποίοι αποτελούν από μόνοι τους ένα πεδίο αεροδυναμικού πολέμου, καθώς χρησιμοποιούνται και για τη δημιουργία αεροδυναμικών φαινομένων. Οι κανονισμοί του 2022 αύξησαν το μέγεθος των δίσκων των φρένων και περιόρισαν την αεροδυναμική ελευθερία αυτών των αεραγωγών.</li><li><strong>Κιβώτιο Ταχυτήτων:</strong> Το 8-τάχυτο κιβώτιο ταχυτήτων απαιτεί επίσης το δικό του ψυγείο λαδιού, το οποίο συνήθως τοποθετείται στο πίσω μέρος του μονοθεσίου. Οι θερμοκρασίες λειτουργίας του μπορεί να ξεπεράσουν τους 150°C λόγω της τριβής και της εγγύτητας με την εξάτμιση του κινητήρα.</li><li><strong>Υδραυλικά:</strong> Ένα μικρότερο κύκλωμα ψύχει το υδραυλικό υγρό που χρησιμοποιείται για συστήματα όπως το υδραυλικό τιμόνι και οι αλλαγές ταχυτήτων, διατηρώντας το σε θερμοκρασία περίπου 100°C.</li></ul><p><strong>Πίνακας 1: Επισκόπηση Εξαρτημάτων Συστήματος Ψύξης F1</strong></p><p><strong>
                             <div class="table-responsive-container">
                                 <div class="table-controls">
@@ -721,11 +721,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Georgios Balatzis</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -849,7 +850,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -875,6 +876,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -882,10 +885,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

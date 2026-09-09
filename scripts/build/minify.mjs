@@ -73,6 +73,7 @@ const JS_INPUTS = [
     'scripts/analytics.js',
     'scripts/cookie-consent.js',
     'scripts/shared-nav.js',
+    'scripts/authors.js',
     'scripts/sw-register.js',
     'scripts/offline-page.js',
     'scripts/f1-optimized.js',

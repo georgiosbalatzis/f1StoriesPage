@@ -77,7 +77,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -93,7 +93,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -191,10 +191,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -213,10 +213,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -235,8 +235,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--technical" data-article-kind="technical">
+            <div class="article-header" data-article-dossier="ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Aston Martin F1: Γιατί οι Οδηγοί της «Δουλεύουν» Περισσότερο το Τιμόνι; 🤔🏎️" class="article-header-img"
@@ -245,13 +245,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">Technical</span>
                     </div>
                     <h1 class="article-title">Aston Martin F1: Γιατί οι Οδηγοί της «Δουλεύουν» Περισσότερο το Τιμόνι; 🤔🏎️</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Georgios Balatzis</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Georgios Balatzis</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> June 2, 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=Technical" class="article-category-link">Technical</a></span>
@@ -277,7 +277,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> Technical</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> June 2, 2025</span>
@@ -291,18 +291,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Georgios Balatzis</strong><span>Δημοσίευση: 2 Ιουνίου 2025 · Ενημέρωση: 2 Ιουνίου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span><a href="https://www.fia.com/regulation/category/110" target="_blank" rel="noopener">FIA κανονισμοί</a> · <a href="https://www.formula1.com/en/results.html" target="_blank" rel="noopener">επίσημα αποτελέσματα και timing</a> · ανακοινώσεις ομάδων όπου αναφέρονται.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></strong><span>Δημοσίευση: <time datetime="2025-06-02">2 Ιουνίου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><p>Εάν παρακολουθείτε στενά τη Formula 1, ίσως έχετε παρατηρήσει κάτι περίεργο στις κάμερες εντός των μονοθεσίων της Aston Martin. Φαίνεται πως τόσο ο Fernando Alonso όσο και ο Lance Stroll χρησιμοποιούν περισσότερες μοίρες στο τιμόνι τους σε σύγκριση με άλλους οδηγούς, ειδικά στις στροφές. 🧐 Αυτή η παρατήρηση δεν είναι καινούργια και έχει αναφερθεί ακόμα και για προηγούμενα μοντέλα της ομάδας.<sup>1</sup> Το γεγονός ότι αυτή η τάση είναι εμφανής και στους δύο οδηγούς και διατηρείται qua χρόνου υποδηλώνει πως δεν πρόκειται απλώς για μια προτίμηση του ενός ή του άλλου οδηγού, ή για μια τυχαία ρύθμιση, αλλά μάλλον για μια συνειδητή επιλογή μηχανικής ή μια ευρύτερη φιλοσοφία από πλευράς της ομάδας. Ας βουτήξουμε λοιπόν στα τεχνικά νερά για να καταλάβουμε τι συμβαίνει! 🌊👇</p><p><strong>Μέρος 1: Τα Βασικά – Πώς Λειτουργεί το Τιμόνι σε ένα Μονοθέσιο F1; ⚙️</strong></p><p>Πριν βουτήξουμε στα βαθιά νερά της Aston Martin, ας κάνουμε μια γρήγορη επανάληψη στο πώς λειτουργεί το σύστημα διεύθυνσης ενός μονοθεσίου F1. Φανταστείτε το σαν μια πιο εξελιγμένη έκδοση του αυτοκινήτου σας, αλλά με απίστευτη ακρίβεια και απόκριση! 🚀💨</p><p>Ο οδηγός γυρίζει το τιμόνι, το οποίο είναι συνδεδεμένο με την κολόνα του τιμονιού. Ένα μικρό γρανάζι (πινιόν) βρίσκεται στο άλλο άκρο αυτής της κολόνας και εφάπτεται στην κρεμαγιέρα, η οποία με τη σειρά της συνδέεται με τις μπάρες (track rods) που κατευθύνουν τους μπροστινούς τροχούς.<sup>2</sup> Ακούγεται απλό, ε; Όχι ακριβώς όταν μιλάμε για την κορωνίδα του μηχανοκίνητου αθλητισμού! 😉 Και ναι, υπάρχει υδραυλική υποβοήθηση (power steering), αλλά είναι εξαιρετικά εξελιγμένη και ρυθμισμένη ώστε να παρέχει στον οδηγό ακριβέστατη πληροφόρηση και αίσθηση από τον δρόμο και τους τροχούς.<sup>1</sup> 🛣️</p><p>Ένα σημαντικό στοιχείο είναι η συνολική περιστροφή του τιμονιού. Σε αντίθεση με τα αυτοκίνητα δρόμου που μπορεί να χρειάζονται 900° ή και περισσότερες μοίρες για πλήρη περιστροφή από άκρη σε άκρη (lock-to-lock), στη Formula 1 μιλάμε συνήθως για περίπου 360°.<sup>3</sup> 🔄 Μάλιστα, ορισμένοι οδηγοί σε εξομοιωτές (simulators) χρησιμοποιούν ακόμα και 300° ή 330°.<sup>4</sup> Αυτή η περιορισμένη συνολική περιστροφή σημαίνει ότι οποιαδήποτε παρατηρούμενη «περισσότερη κίνηση» στο τιμόνι των οδηγών της Aston Martin για μια δεδομένη στροφή, αντιπροσωπεύει ένα σημαντικό ποσοστό της συνολικά διαθέσιμης κίνησης. Κατά συνέπεια, ακόμα και μικρές διαφορές στις μοίρες του τιμονιού μπορούν να υποδηλώνουν μια πιο ουσιαστική διαφορά στον τρόπο που ο οδηγός αλληλεπιδρά με το σύστημα διεύθυνσης και καθοδηγεί το μονοθέσιο, επηρεάζοντας δυνητικά τις γωνίες ολίσθησης των ελαστικών 🏎️💨, την αεροδυναμική σταθερότητα στη στροφή και την ενέργεια που καταβάλλει ο οδηγός. 💪</p><p><strong>Μέρος 2: Οι Πιθανές Εξηγήσεις – Ξετυλίγοντας το Κουβάρι της Aston Martin 🕵️‍♂️</strong></p><p>Γιατί λοιπόν οι οδηγοί της Aston Martin φαίνεται να χρησιμοποιούν περισσότερο το τιμόνι; Υπάρχουν αρκετές θεωρίες που προσπαθούν να εξηγήσουν αυτό το φαινόμενο. 🤔❓</p><p><strong>Θεωρία #1: Η Κρεμαγιέρα – Η Καρδιά του Συστήματος Διεύθυνσης ❤️🔩</strong></p><p>Εδώ μπαίνει στο παιχνίδι η «μαγική» λέξη: <strong>σχέση μετάδοσης κρεμαγιέρας (steering ratio)</strong>. Αυτή η σχέση καθορίζει πόσο μοίρες γυρίζουν οι τροχοί για κάθε μοίρα που περιστρέφεται το τιμόνι.<sup>5</sup></p><ul><li>Μια <strong>μεγαλύτερη σχέση μετάδοσης (higher steering ratio ή πιο «αργή» κρεμαγιέρα - slower rack)</strong> σημαίνει ότι ο οδηγός πρέπει να γυρίσει περισσότερο το τιμόνι για να επιτύχει την ίδια γωνία στους τροχούς. Θεωρητικά, χωρίς υποβοήθηση, αυτό θα έκανε το τιμόνι πιο ελαφρύ. ⚖️</li><li>Αντίθετα, μια <strong>μικρότερη σχέση μετάδοσης (lower steering ratio ή πιο «γρήγορη» κρεμαγιέρα - faster rack)</strong> σημαίνει ότι απαιτείται λιγότερη κίνηση στο τιμόνι για την ίδια αλλαγή γωνίας των τροχών, αλλά το τιμόνι θα ήταν πιο βαρύ.<sup>5</sup> 🏋️‍♂️</li></ul><p>Πολλοί χρήστες σε διαδικτυακές συζητήσεις, όπως στο Reddit, υποθέτουν ότι η Aston Martin ίσως χρησιμοποιεί μια πιο «αργή» κρεμαγιέρα.<sup>1</sup> Ένας πιθανός λόγος είναι η γνωστή προτίμηση του Fernando Alonso για λιγότερη υποβοήθηση στο σύστημα διεύθυνσης, ώστε να λαμβάνει καλύτερη αίσθηση και πληροφόρηση από το μονοθέσιο.<sup>1</sup> 🖐️👂 Μια πιο αργή κρεμαγιέρα θα μπορούσε να μετριάσει την επιπλέον σωματική προσπάθεια που θα απαιτούνταν λόγω της μειωμένης υποβοήθησης, κάνοντας τις κινήσεις του τιμονιού πιο διαχειρίσιμες.</p><p>Από την άλλη πλευρά, ορισμένοι υποστηρίζουν ότι με τα σύγχρονα και εξελιγμένα συστήματα υποβοήθησης της F1, η προσπάθεια του οδηγού δεν αποτελεί τόσο σημαντικό παράγοντα στην επιλογή της σχέσης μετάδοσης. Αντ' αυτού, μια πιο «αργή» κρεμαγιέρα (που απαιτεί περισσότερες μοίρες περιστροφής του τιμονιού για την ίδια γωνία των τροχών) μπορεί να προσφέρει <strong>μεγαλύτερη ακρίβεια</strong> στις εντολές του οδηγού. Είναι σαν να έχει ο οδηγός μεγαλύτερη «ανάλυση» στην κίνησή του, επιτρέποντας πιο λεπτές διορθώσεις.<sup>1</sup> 🎯</p><p>Είναι κρίσιμο να αναφερθεί ότι τα μονοθέσια της F1 χρησιμοποιούν <strong>κρεμαγιέρες μεταβλητής σχέσης (variable ratio steering racks)</strong>.<sup>1</sup> Αυτό σημαίνει ότι η σχέση μετάδοσης δεν είναι σταθερή, αλλά αλλάζει καθώς ο οδηγός στρίβει το τιμόνι. Συνήθως, η σχέση είναι πιο «αργή» κοντά στην ευθεία θέση του τιμονιού (παρέχοντας σταθερότητα στις υψηλές ταχύτητες 💨 και τις γρήγορες καμπές) και γίνεται προοδευτικά πιο «γρήγορη» καθώς ο οδηγός πλησιάζει στο μέγιστο σημείο περιστροφής του τιμονιού (lock).<sup>5</sup> Η Aston Martin θα μπορούσε, λοιπόν, να έχει επιλέξει μια διαφορετική «καμπύλη» σε αυτή τη μεταβλητή σχέση, η οποία να είναι σχετικά πιο «αργή» στο εύρος των γωνιών τιμονιού που χρησιμοποιούνται συχνότερα στις στροφές. Έρευνες δείχνουν ότι η τεχνολογία μεταβλητής σχέσης στην F1 μπορεί να μειώσει τη μέγιστη ροπή που απαιτείται στο τιμόνι σε στροφές υψηλής ταχύτητας και να βελτιστοποιήσει την απόκριση του μονοθεσίου στις αλλαγές κατεύθυνσης (yaw response), μειώνοντας έτσι το φορτίο στον οδηγό.<sup>6</sup> 📉 Επομένως, "περισσότερες μοίρες" στο τιμόνι δεν σημαίνουν απαραίτητα και "περισσότερη δουλειά" για τον οδηγό, εάν το σύστημα είναι βελτιστοποιημένο. Αυτή η επιλογή μιας πιο "αργής" αποτελεσματικής σχέσης διεύθυνσης θα μπορούσε να είναι μια σκόπιμη στρατηγική για την ενίσχυση του ελέγχου και της πληροφόρησης του οδηγού, ιδιαίτερα για έναν οδηγό όπως ο Alonso. Αυτό θα μπορούσε να επιτρέπει λεπτότερες προσαρμογές μέσα στη στροφή, ειδικά εάν το αυτοκίνητο έχει συγκεκριμένα αεροδυναμικά ή μηχανικά χαρακτηριστικά πρόσφυσης που επωφελούνται από πιο αποχρωματισμένες εισόδους στο τιμόνι. ✨</p><p><strong>Θεωρία #2: Ο Παράγοντας «Οδηγός» – Alonso, Stroll και το Στυλ τους 🏎️💨</strong></p><p>Ο Fernando Alonso δεν είναι απλά ένας οδηγός· είναι ένας θρύλος της Formula 1. 🏆 Και οι θρύλοι, ως γνωστόν, έχουν τις δικές τους, πολύ συγκεκριμένες προτιμήσεις! Είναι ευρέως γνωστό ότι ο Alonso προτιμά μονοθέσια που έχουν μια φυσική τάση προς την <strong>υποστροφή (understeer)</strong>.<sup>1</sup> Ένα μονοθέσιο που υποστρέφει (δηλαδή, το μπροστινό μέρος τείνει να «γλιστράει» ↔️ προς την εξωτερική πλευρά της στροφής) απαιτεί εκ φύσεως περισσότερη γωνία στο τιμόνι για να ακολουθήσει την επιθυμητή τροχιά.</p><p>Ο Alonso φαίνεται να εκμεταλλεύεται αυτό το χαρακτηριστικό. Υπάρχουν αναλύσεις που δείχνουν ότι χρησιμοποιεί μια επιθετική αρχική κίνηση στο τιμόνι για να «τοποθετήσει» το μονοθέσιο στην είσοδο της στροφής, δημιουργώντας ένα επιθυμητό επίπεδο υποστροφής, και στη συνέχεια χρησιμοποιεί το γκάζι για να βοηθήσει στην περιστροφή του μονοθεσίου γύρω από τον κινητήρα του και να εξέλθει από τη στροφή με ταχύτητα.<sup>8</sup> 🌪️ Αυτό το ιδιαίτερο στυλ οδήγησης μπορεί να είναι πιο φιλικό προς τα πίσω ελαστικά 🛞 και να προσφέρει καλύτερη πρόσφυση στην έξοδο της στροφής.<sup>7</sup> Ο ίδιος ο Alonso έχει δηλώσει στο παρελθόν ότι του αρέσει να είναι «επιθετικός» με το τιμόνι.<sup>1</sup> 💥 Επομένως, οι περισσότερες μοίρες στο τιμόνι δεν είναι απλώς μια παθητική συνέπεια, αλλά ένα ενεργό εργαλείο για το οδηγικό του στυλ. 🛠️</p><p>Και ο Lance Stroll; Είναι πιθανό ο Καναδός οδηγός να έχει υιοθετήσει παρόμοιες ρυθμίσεις στο μονοθέσιό του, είτε επειδή του ταιριάζουν είτε προσπαθώντας να μάθει και να μιμηθεί το στυλ του πολύπειρου team-mate του.<sup>1</sup> 🧑‍🎓 Μια άλλη πιθανότητα είναι το μονοθέσιο της Aston Martin να είναι σχεδιασμένο και ρυθμισμένο με έναν συγκεκριμένο τρόπο που να οδηγεί φυσικά και τους δύο οδηγούς σε αυτό το στυλ οδήγησης. 🚗💨</p><p><strong>Θεωρία #3: Φιλοσοφία Μονοθεσίου και Αλληλεπιδράσεις 🛠️⚙️</strong></p><p>Στη Formula 1, σπάνια μια ιδιαιτερότητα οφείλεται σε έναν μόνο παράγοντα. Η αεροδυναμική 🌬️, η ανάρτηση 🔩, η γεωμετρία του μονοθεσίου – όλα παίζουν τον ρόλο τους και αλληλεπιδρούν. 🤝</p><p>Η σχεδίαση της ανάρτησης, για παράδειγμα, πρέπει να επιτρέπει τις απαιτούμενες γωνίες στους τροχούς, ειδικά σε πολύ κλειστές στροφές όπως το διάσημο hairpin (φουρκέτα) του Monaco. 🇲🇨 Σε τέτοιες περιπτώσεις, οι ομάδες συχνά φέρνουν ειδικά σχεδιασμένες αναρτήσεις που επιτρέπουν μεγαλύτερη γωνία στροφής των τροχών.<sup>9</sup> Για παράδειγμα, η Mercedes είχε αναφέρει ότι για το hairpin του Monaco χρειαζόταν περίπου 40% περισσότερη γωνία κλειδώματος του τιμονιού σε σύγκριση με άλλες πίστες, και χωρίς ειδική ανάρτηση, οι οδηγοί είτε θα περιορίζονταν στην επιλογή γραμμής είτε θα έπρεπε να γυρίσουν το τιμόνι πολλές φορές.<sup>9</sup> 🔄🔄</p><p>Ο γνωστός τεχνικός αναλυτής Gary Anderson, εξετάζοντας την AMR25 (το μονοθέσιο της Aston Martin για το 2025, αν και οι παρατηρήσεις για το τιμόνι αφορούν και προηγούμενα μοντέλα), σημείωσε ότι το κενό μεταξύ του μπροστινού τροχού και του πίσω άκρου της τελικής πλάκας της μπροστινής αεροτομής (front wing endplate) φαινόταν μεγαλύτερο από το συνηθισμένο. Υπέθεσε ότι αυτό, αν ισχύει, θα αύξανε την εκτροπή του αέρα προς τα έξω (outwash), κάτι που θα μπορούσε δυνητικά να βοηθήσει την απόδοση της μπροστινής αεροτομής όταν εφαρμόζονται μεγαλύτερες γωνίες τιμονιού σε αργές στροφές.<sup>10</sup> 💨💨 Αυτή η παρατήρηση είναι σημαντική καθώς συνδέει την ανάγκη ή την επιλογή για μεγαλύτερη γωνία τιμονιού με συγκεκριμένες αεροδυναμικές σχεδιαστικές επιλογές.</p><p>Η ίδια η Aston Martin έχει παραδεχτεί στο παρελθόν ότι υπήρχαν αδυναμίες στην πρόσφυση του μπροστινού μέρους του μονοθεσίου σε αργές στροφές, και με την AMR25 (και τις εξελίξεις των προηγούμενων μοντέλων) στόχευαν σε ένα πιο «οδηγήσιμο» και ισορροπημένο μονοθέσιο.<sup>11</sup> ⚖️🚗 Μια ρύθμιση που επιτρέπει ή ακόμα και απαιτεί περισσότερη χρήση του τιμονιού μπορεί να αποτελεί μέρος αυτής της προσπάθειας για βελτίωση της συμπεριφοράς του μονοθεσίου σε αυτές τις συνθήκες. Εάν το μονοθέσιο έχει σχεδιαστεί με μια πολύ σταθερή πίσω ανάρτηση (κάτι που υπονοείται από αναφορές για "εκπληκτική πίσω πρόσφυση σε στροφές υψηλής ταχύτητας" <sup>12</sup> και την προτίμηση του Alonso για καλή πίσω πρόσφυση <sup>7</sup>), αυτό μπορεί να οδηγήσει σε μια τάση υποστροφής στις πιο αργές στροφές, την οποία οι οδηγοί αντισταθμίζουν με περισσότερη γωνία στο τιμόνι.</p><p>Επιπλέον, υπάρχουν αναφορές ότι παλαιότερα μοντέλα της Aston Martin είχαν εξαιρετική πλευρική πρόσφυση (lateral grip).<sup>12</sup> 💪↔️ Ένα μονοθέσιο με υψηλά επίπεδα πλευρικής πρόσφυσης μπορεί να «αντέξει» ή ακόμα και να απαιτεί διαφορετικές εισόδους στο τιμόνι από τον οδηγό για να φτάσει στα όριά του.</p>
                             <div class="table-responsive-container">
                                 <div class="table-controls">
@@ -385,11 +385,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Georgios Balatzis</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -513,7 +514,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -539,6 +540,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -546,10 +549,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

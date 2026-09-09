@@ -240,9 +240,19 @@ function validateCompactBlogIndex() {
     assertCondition(new Set(tags).size === tags.length, relPath, 'internal tag dictionary must be unique');
     authors.forEach((author, index) => requireString({ author }, 'author', `${relPath}.a[${index}]`, { maxLength: 120 }));
     categories.forEach((category, index) => requireString({ category }, 'category', `${relPath}.c[${index}]`, { maxLength: 120 }));
+    let thumbnailFlags = null;
+    if (data.h !== undefined) {
+        thumbnailFlags = requireString({ thumbnailFlags: data.h }, 'thumbnailFlags', `${relPath}.h`, { maxLength: 4096 });
+        assertCondition(/^(?:[01][0-9a-z]+)(?:,(?:[01][0-9a-z]+))*$/.test(thumbnailFlags), `${relPath}.h`, 'thumbnail flags must use alternating 0/1 markers and base36 run lengths');
+    }
 
     const rows = requireArray(data.p, `${relPath}.p`, { maxLength: 1000 });
     compactBlogPostCount = rows.length;
+    if (thumbnailFlags !== null && /^(?:[01][0-9a-z]+)(?:,(?:[01][0-9a-z]+))*$/.test(thumbnailFlags)) {
+        let flagCount = 0;
+        thumbnailFlags.split(',').forEach(run => { flagCount += parseInt(run.slice(1), 36); });
+        assertCondition(flagCount === rows.length, `${relPath}.h`, `thumbnail flags describe ${flagCount} posts, expected ${rows.length}`);
+    }
     const seen = new Set();
     let previousDate = '';
 
@@ -299,6 +309,12 @@ function validateIndexPost(post, label, options = {}) {
     requireInteger(post, 'thumbnailWidth', label, { min: 1, max: 8000 });
     requireInteger(post, 'thumbnailHeight', label, { min: 1, max: 8000 });
     requireString(post, 'excerpt', label, { maxLength: 320 });
+    if (options.homeLatest) {
+        validatePublicPath(`${label}.heroImage`, requireString(post, 'heroImage', label, { maxLength: 240 }));
+        requireInteger(post, 'heroImageWidth', label, { min: 1, max: 8000 });
+        requireInteger(post, 'heroImageHeight', label, { min: 1, max: 8000 });
+        if (post.heroAvif) validatePublicPath(`${label}.heroAvif`, post.heroAvif);
+    }
     if (!options.homeLatest) {
         validateReadingTime(`${label}.readingTime`, requireString(post, 'readingTime', label, { maxLength: 20 }));
         validateCategories(post.categories, `${label}.categories`);

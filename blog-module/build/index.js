@@ -15,7 +15,7 @@ const {
 const { generateSitemap } = require('./sitemap');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
-const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
+const { renderArticleHtml, refreshArticleTaxonomy, getEditorialProfile } = require('./article-render');
 const { PUBLIC_CATEGORIES, getPostTaxonomy } = require('../taxonomy');
 
 function parseBuildOptions(argv = process.argv, env = process.env) {
@@ -187,12 +187,36 @@ function buildCompactIndexData(posts) {
     const authors = Array.from(new Set(posts.map(post => post.author || 'F1 Stories')));
     const categories = PUBLIC_CATEGORIES;
     const tags = Array.from(new Set(posts.flatMap(post => post.tags || [])));
+    const thumbnailRuns = [];
+    let previousThumbnailVariant = null;
+    let thumbnailRunLength = 0;
+    posts.forEach(post => {
+        const hasCardThumbnail = !!(post.thumbnail && /-card\.webp(?:\?.*)?$/i.test(post.thumbnail));
+        if (previousThumbnailVariant !== null && hasCardThumbnail === previousThumbnailVariant) {
+            thumbnailRunLength += 1;
+            return;
+        }
+        if (previousThumbnailVariant !== null) {
+            thumbnailRuns.push((previousThumbnailVariant ? '1' : '0') + thumbnailRunLength.toString(36));
+        }
+        previousThumbnailVariant = hasCardThumbnail;
+        thumbnailRunLength = 1;
+    });
+    if (previousThumbnailVariant !== null) {
+        thumbnailRuns.push((previousThumbnailVariant ? '1' : '0') + thumbnailRunLength.toString(36));
+    }
+    const thumbnailFlags = thumbnailRuns.join(',');
 
     return {
         v: 2,
         a: authors,
         c: categories,
         t: tags,
+        // Run-length encoded thumbnail variants. Each comma-separated run is
+        // a 0/1 marker followed by its length in base36; 1 means the smaller
+        // -card.webp file exists. Keeping this as a top-level field preserves
+        // the 10-field post row and the compact feed budget.
+        h: thumbnailFlags,
         p: posts.map(post => [
             post.id,
             post.title,
@@ -236,8 +260,13 @@ function renderBlogCardCategories(categories) {
     return chips.join('');
 }
 
+function editorialCardKind(categories) {
+    return getEditorialProfile(Array.isArray(categories) ? categories : []).kind;
+}
+
 function renderBlogIndexCard(post, idx) {
     const categories = renderBlogCardCategories(post.categories);
+    const cardKind = editorialCardKind(post.categories);
     const url = post.url || `/blog-module/blog-entries/${post.id}/article.html`;
     const image = post.thumbnail || post.image || '';
     const imagePath = image && image.startsWith('/blog-module/blog-entries/')
@@ -265,8 +294,8 @@ function renderBlogIndexCard(post, idx) {
     const stagger = 0.06;
     const animationDelay = Math.round(idx * stagger * 100) / 100;
 
-    return '<article class="article-card-wrap">'
-        + `<a href="${escapeHtmlAttribute(url)}" class="article-card${hasImage ? '' : ' article-card--no-image'}" style="animation-delay:${animationDelay}s">`
+    return `<article class="article-card-wrap article-card-wrap--${escapeHtmlAttribute(cardKind)}" data-card-kind="${escapeHtmlAttribute(cardKind)}">`
+        + `<a href="${escapeHtmlAttribute(url)}" class="article-card article-card--${escapeHtmlAttribute(cardKind)}${hasImage ? '' : ' article-card--no-image'}" data-card-kind="${escapeHtmlAttribute(cardKind)}" style="animation-delay:${animationDelay}s">`
         + `<div class="article-card-img-wrap${hasImage ? '' : ' img-ready'}"><img class="${imageClass}" width="${imageWidth}" height="${imageHeight}"${imageAttrs} decoding="async" alt="${escapeHtmlAttribute(post.title)}" data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}"></div>`
         + '<div class="article-card-body">'
         + `<div class="article-card-meta"><span class="author-tag">${escapeHtmlAttribute(author)}</span><span>·</span><time class="article-card-date" datetime="${escapeHtmlAttribute(post.date || '')}">${escapeHtmlAttribute(formatBlogIndexDate(post))}</time>${readBadge}</div>`
@@ -291,6 +320,176 @@ function replaceMarkedBlock(html, begin, end, innerHtml) {
         + '\n'
         + indent
         + html.slice(finish);
+}
+
+function replaceInlineMarkedBlock(html, begin, end, value) {
+    const start = html.indexOf(begin);
+    const finish = html.indexOf(end, start + begin.length);
+    if (start === -1 || finish === -1 || finish < start) return html;
+    return html.slice(0, start + begin.length) + value + html.slice(finish);
+}
+
+function escapeRegExp(value) {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function setHtmlAttribute(attributes, name, value) {
+    const pattern = new RegExp(`\\s${escapeRegExp(name)}\\s*=\\s*"[^"]*"`, 'i');
+    const replacement = ` ${name}="${escapeHtmlAttribute(value)}"`;
+    return pattern.test(attributes)
+        ? attributes.replace(pattern, replacement)
+        : attributes + replacement;
+}
+
+function removeHtmlAttribute(attributes, name) {
+    return attributes.replace(new RegExp(`\\s${escapeRegExp(name)}\\s*=\\s*"[^"]*"`, 'i'), '');
+}
+
+function updateElementById(html, id, update) {
+    const idPattern = escapeRegExp(id);
+    const elementPattern = new RegExp(
+        `(<(?:img|source|link)\\b(?=[^>]*\\bid="${idPattern}"[^>]*>)[^>]*)(\\/?>)`,
+        'i'
+    );
+    return html.replace(elementPattern, (match, attributes, closing) => update(attributes) + closing);
+}
+
+function updateMetaContent(html, attributeName, attributeValue, value) {
+    const attributeNamePattern = escapeRegExp(attributeName);
+    const attributeValuePattern = escapeRegExp(attributeValue);
+    const metaPattern = new RegExp(
+        `(<meta\\b[^>]*\\b${attributeNamePattern}="${attributeValuePattern}"[^>]*\\bcontent=")[^"]*(")`,
+        'i'
+    );
+    return html.replace(metaPattern, `$1${escapeHtmlAttribute(value)}$2`);
+}
+
+function getHomepageHeroVariant(image, extension) {
+    const marker = '/blog-module/blog-entries/';
+    if (!image || !image.startsWith(marker)) return '';
+    const relative = image.slice(marker.length).split('?')[0];
+    const parts = relative.split('/');
+    if (parts.length < 2) return '';
+    const entryId = parts.shift();
+    const imageName = parts.pop();
+    const variantName = `${path.parse(imageName).name}.${extension}`;
+    const entryPath = path.join(CONFIG.BLOG_DIR, entryId);
+    if (!fs.existsSync(path.join(entryPath, variantName))) return '';
+    return `${marker}${entryId}/${variantName}`;
+}
+
+async function buildHomepageHeroData(post) {
+    const image = post && (post.image || post.backgroundImage) || CONFIG.DEFAULT_BLOG_IMAGE;
+    const dimensions = await getImageDimensionsForPublicPath(image);
+    return {
+        image,
+        avif: getHomepageHeroVariant(image, 'avif'),
+        width: dimensions && dimensions.width ? dimensions.width : 1920,
+        height: dimensions && dimensions.height ? dimensions.height : 1080
+    };
+}
+
+function replaceHomepageTextSlot(html, id, begin, end, value) {
+    const hasMarkers = html.indexOf(begin) !== -1 && html.indexOf(end) !== -1;
+    const updated = replaceInlineMarkedBlock(html, begin, end, value);
+    if (hasMarkers) return updated;
+    const idPattern = escapeRegExp(id);
+    const tagName = id === 'hero-title' ? 'h1' : id === 'hero-category' ? 'span' : 'p';
+    const elementPattern = new RegExp(
+        `(<${tagName}\\b[^>]*\\bid="${idPattern}"[^>]*>)[\\s\\S]*?(</${tagName}>)`,
+        'i'
+    );
+    return html.replace(elementPattern, (match, open, close) => open + value + close);
+}
+
+function injectHomepageHero(hero) {
+    const indexHtmlPath = path.join(CONFIG.BLOG_DIR, '..', '..', 'index.html');
+    if (!fs.existsSync(indexHtmlPath) || !hero) {
+        console.warn(`⚠️  Homepage HTML not found, static lead render skipped: ${indexHtmlPath}`);
+        return false;
+    }
+
+    const image = hero.heroImage || hero.image || CONFIG.DEFAULT_BLOG_IMAGE;
+    const avif = hero.heroAvif || '';
+    const webp = /\.webp(?:\?.*)?$/i.test(image) ? image : '';
+    const title = escapeHtmlAttribute(hero.title || 'F1 Stories');
+    const category = escapeHtmlAttribute(String(hero.category || 'News').toUpperCase());
+    const excerpt = escapeHtmlAttribute(hero.excerpt || '');
+    const byline = escapeHtmlAttribute(`${hero.author || 'F1 Stories'} · ${hero.date || ''}`);
+    const storyId = hero.slug || hero.id || '';
+    const href = `/blog-module/blog-entries/${encodeURIComponent(storyId)}/article.html`;
+    const width = parseInt(hero.heroImageWidth, 10) || 1920;
+    const height = parseInt(hero.heroImageHeight, 10) || 1080;
+    const imageSizes = '(max-width: 767px) 100vw, 55vw';
+    const imageUrl = /^https?:\/\//i.test(image) ? image : `https://f1stories.gr${image}`;
+    let html = fs.readFileSync(indexHtmlPath, 'utf8');
+    const original = html;
+
+    html = replaceHomepageTextSlot(
+        html,
+        'hero-category',
+        '<!-- f1s:hero-category:begin -->',
+        '<!-- f1s:hero-category:end -->',
+        category
+    );
+    html = replaceHomepageTextSlot(
+        html,
+        'hero-title',
+        '<!-- f1s:hero-title:begin -->',
+        '<!-- f1s:hero-title:end -->',
+        title
+    );
+    html = replaceHomepageTextSlot(
+        html,
+        'hero-story-excerpt',
+        '<!-- f1s:hero-excerpt:begin -->',
+        '<!-- f1s:hero-excerpt:end -->',
+        excerpt
+    );
+    html = replaceHomepageTextSlot(
+        html,
+        'hero-story-byline',
+        '<!-- f1s:hero-byline:begin -->',
+        '<!-- f1s:hero-byline:end -->',
+        byline
+    );
+
+    html = html.replace(
+        /(<a\b[^>]*\bid="hero-story-link"[^>]*\bhref=")[^"]*(")/i,
+        `$1${escapeHtmlAttribute(href)}$2`
+    );
+    html = updateElementById(html, 'hero-source-avif', attributes => {
+        return avif ? setHtmlAttribute(attributes, 'srcset', avif) : removeHtmlAttribute(attributes, 'srcset');
+    });
+    html = updateElementById(html, 'hero-source-webp', attributes => {
+        return webp ? setHtmlAttribute(attributes, 'srcset', webp) : removeHtmlAttribute(attributes, 'srcset');
+    });
+    html = updateElementById(html, 'hero-image', attributes => {
+        let updated = setHtmlAttribute(attributes, 'src', image);
+        updated = removeHtmlAttribute(updated, 'srcset');
+        updated = setHtmlAttribute(updated, 'alt', hero.title || 'F1 Stories');
+        updated = setHtmlAttribute(updated, 'width', width);
+        updated = setHtmlAttribute(updated, 'height', height);
+        updated = setHtmlAttribute(updated, 'sizes', imageSizes);
+        return updated;
+    });
+    html = updateElementById(html, 'hero-image-preload', attributes => {
+        let updated = setHtmlAttribute(attributes, 'href', avif || image);
+        updated = removeHtmlAttribute(updated, 'imagesrcset');
+        updated = setHtmlAttribute(updated, 'imagesizes', imageSizes);
+        return updated;
+    });
+    html = updateMetaContent(html, 'property', 'og:image', imageUrl);
+    html = updateMetaContent(html, 'name', 'twitter:image', imageUrl);
+    html = updateMetaContent(html, 'property', 'og:image:width', width);
+    html = updateMetaContent(html, 'property', 'og:image:height', height);
+
+    if (html !== original) {
+        fs.writeFileSync(indexHtmlPath, html);
+        console.log(`Homepage lead story rendered into ${indexHtmlPath}`);
+        return true;
+    }
+    return false;
 }
 
 function injectBlogIndexFirstPage(indexPosts, pageOneData) {
@@ -340,6 +539,15 @@ function injectBlogIndexFirstPage(indexPosts, pageOneData) {
         `$1<!-- f1s:blog-count:begin -->${escapeHtmlAttribute(count)}<!-- f1s:blog-count:end -->$3`
     );
 
+    // Keep the compact count in the mobile archive bar in sync with the
+    // server-rendered total. It is visible before the archive script hydrates
+    // the page, so a stale value is misleading even when the main count is
+    // correct.
+    html = html.replace(
+        /(<span id="blog-archive-mini-count">)([\s\S]*?)(<\/span>)/,
+        `$1<!-- f1s:blog-mini-count:begin -->${escapeHtmlAttribute(count)}<!-- f1s:blog-mini-count:end -->$3`
+    );
+
     html = html.replace(
         /(<div class="articles-grid" id="articles-grid">)([\s\S]*?)(\n\s*<\/div>\n\s*<nav class="blog-pagination" id="blog-pagination")/,
         `$1\n            <!-- f1s:blog-first-page:begin -->\n            ${cards}\n            <!-- f1s:blog-first-page:end -->$3`
@@ -364,18 +572,23 @@ async function buildHomeLatest(blogPosts) {
     return Promise.all(blogPosts.slice(0, 3).map(async post => {
         const thumbnail = getCardThumbnailPath(post.image);
         const thumbnailDimensions = await getImageDimensionsForPublicPath(thumbnail);
+        const hero = await buildHomepageHeroData(post);
         return {
-        title: post.title,
-        slug: post.id,
-        date: post.date,
-        author: post.author || 'F1 Stories',
-        category: (post.categories && post.categories[0]) || 'News',
-        categories: post.categories || ['News'],
-        excerpt: post.excerpt,
-        thumbnail,
-        thumbnailWidth: thumbnailDimensions && thumbnailDimensions.width ? thumbnailDimensions.width : 400,
-        thumbnailHeight: thumbnailDimensions && thumbnailDimensions.height ? thumbnailDimensions.height : 188
-    };
+            title: post.title,
+            slug: post.id,
+            date: post.date,
+            author: post.author || 'F1 Stories',
+            category: (post.categories && post.categories[0]) || 'News',
+            categories: post.categories || ['News'],
+            excerpt: post.excerpt,
+            thumbnail,
+            thumbnailWidth: thumbnailDimensions && thumbnailDimensions.width ? thumbnailDimensions.width : 400,
+            thumbnailHeight: thumbnailDimensions && thumbnailDimensions.height ? thumbnailDimensions.height : 188,
+            heroImage: hero.image,
+            ...(hero.avif ? { heroAvif: hero.avif } : {}),
+            heroImageWidth: hero.width,
+            heroImageHeight: hero.height
+        };
     }));
 }
 
@@ -666,6 +879,7 @@ async function processBlogEntries(options = {}) {
     const homeLatestPath = path.join(CONFIG.BLOG_DIR, '..', 'home-latest.json');
     fs.writeFileSync(homeLatestPath, JSON.stringify(homeLatest, null, 0));
     console.log(`Home latest data saved to ${homeLatestPath} (${jsonKb(homeLatest)} KB)`);
+    injectHomepageHero(homeLatest[0]);
 
     generateSitemap(blogPosts);
     await renderCachedArticlePages(cachedPosts);
@@ -725,6 +939,7 @@ module.exports = {
     summarizeCategories,
     buildCompactIndexData,
     renderBlogIndexCard,
+    editorialCardKind,
     injectBlogIndexFirstPage,
     buildHomeLatest,
     loadExistingPosts,

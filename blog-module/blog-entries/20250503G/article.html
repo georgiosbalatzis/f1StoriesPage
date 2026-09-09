@@ -77,7 +77,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=a8ad454a">
+    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
     <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=698874d6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
@@ -93,7 +93,7 @@
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ae3816b3">
     <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
@@ -191,10 +191,10 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -213,10 +213,10 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
         </div>
     </nav>
@@ -235,8 +235,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container">
-            <div class="article-header">
+        <article class="article-container article-container--technical" data-article-kind="technical">
+            <div class="article-header" data-article-dossier="ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Μέρος 7: «Η Μάχη με την Τριβή – Φρένα, Ελαστικά και Κατανομή Βάρους στη FW47»" class="article-header-img"
@@ -245,13 +245,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">Technical</span>
                     </div>
                     <h1 class="article-title">Μέρος 7: «Η Μάχη με την Τριβή – Φρένα, Ελαστικά και Κατανομή Βάρους στη FW47»</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> Georgios Balatzis</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Georgios Balatzis</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> May 3, 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=Technical" class="article-category-link">Technical</a></span>
@@ -277,7 +277,7 @@
                                     </div>
 
                         <div class="article-rail-card article-rail-meta">
-                            <span class="article-rail-label">Article</span>
+                            <span class="article-rail-label">ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ</span>
                             <div class="article-rail-meta-list">
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> Technical</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> May 3, 2025</span>
@@ -291,18 +291,18 @@
                         </div>
 
                         <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">Related</span>
+                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
                             <div class="article-rail-related-list" data-rail-related></div>
                         </div>
                     </div>
                 </aside>
 
                 <div class="article-main-column">
-                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
-                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>Georgios Balatzis</strong><span>Δημοσίευση: 3 Μαΐου 2025 · Ενημέρωση: 3 Μαΐου 2025</span></div>
-                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span><a href="https://www.fia.com/regulation/category/110" target="_blank" rel="noopener">FIA κανονισμοί</a> · <a href="https://www.formula1.com/en/results.html" target="_blank" rel="noopener">επίσημα αποτελέσματα και timing</a> · ανακοινώσεις ομάδων όπου αναφέρονται.</span></div>
-                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </div>
+                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                        <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></strong><span>Δημοσίευση: <time datetime="2025-05-03">3 Μαΐου 2025</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
+                        <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.</span></div>
+                        <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </section>
                     <div class="article-content"><p><em>Διαχείριση πέδησης, συμπεριφορά ελαστικών και ισορροπία μονοθεσίου</em></p><p>Τα φρένα και τα ελαστικά στη Formula 1 είναι τα μόνα συστήματα που έρχονται <strong>σε άμεση επαφή με τον δρόμο</strong>. Δεν υπάρχει “απόδοση” χωρίς πρόσφυση, και δεν υπάρχει πρόσφυση χωρίς <strong>σωστή ισορροπία βάρους</strong> και <strong>σωστή θερμική διαχείριση</strong>. Η <strong>FW47</strong> έχει κάνει σημαντικά βήματα προόδου και σε αυτόν τον τομέα.</p><h3><a id="_w1vhu1dgr6vh"></a><strong>🛞 Pirelli 18" – Νέα προσέγγιση στην εργονομία των ελαστικών</strong></h3><p>Η Williams αντιμετώπισε πρόβλημα τα προηγούμενα χρόνια με την υπερθέρμανση και τη φθορά των ελαστικών. Στην FW47:</p><ul><li>Η γεωμετρία της ανάρτησης και η κατανομή βάρους <strong>συνεργάζονται</strong> ώστε να διατηρούν <strong>συμμετρικές θερμοκρασίες</strong> ανά άξονα.<br /></li><li>Το τιμόνι διαθέτει <strong>on-the-fly ελέγχους για tyre energy mapping</strong>, επιτρέποντας στον οδηγό να αλλάζει τη “βία” με την οποία στρίβει ή φρενάρει.<br /></li><li>Οι νέες <strong>καμπύλες απόκρισης στις αλλαγές camber/toe</strong> επιτρέπουν στα ελαστικά να “δουλεύουν” σε μεγαλύτερο εύρος θερμοκρασιών χωρίς απώλεια πρόσφυσης.<br /></li></ul><p>Ειδικά σε αγώνες με υψηλή φθορά (π.χ. Βαρκελώνη, Μόντρεαλ), η FW47 μπορεί να διατηρεί τα ελαστικά <strong>εντός λειτουργικού παραθύρου (working window)</strong> για περισσότερους γύρους.</p><h3><a id="_7ipp7bqe92kd"></a><strong>🛑 Πέδηση – Πλήρης ενσωμάτωση και αξιοπιστία</strong></h3><p>Το σύστημα φρένων της FW47 είναι πλήρως προσαρμοσμένο στις <strong>ιδιαιτερότητες των 18” τροχών</strong> και των carbon-κεραμικών δίσκων:</p><ul><li><strong>Carbon-carbon δίσκοι Brembo 6-piston</strong> με μεγαλύτερη επιφάνεια επαφής<br /></li><li>Βελτιωμένο <strong>ducting για αεροδυναμική ψύξη χωρίς drag penalty<br /></strong></li><li>Δυνατότητα αλλαγής <strong>brake balance</strong> κατά τον γύρο, ανάλογα με τις φάσεις φόρτισης/εκφόρτισης της MGU-K<br /></li></ul><p>Η σταθερότητα του φρεναρίσματος είναι κρίσιμη για τον έλεγχο της θερμοκρασίας των εμπρός ελαστικών — κάτι στο οποίο η Williams υστερούσε τα προηγούμενα χρόνια. Η FW47 πλέον <strong>δεν υπερθερμαίνει τα εμπρός ελαστικά μετά από συνεχόμενα βαριά φρεναρίσματα</strong>.</p><h3><a id="_62937angnh53"></a><strong>⚖️ Κατανομή βάρους – Εργαλείο στρατηγικής</strong></h3><p>Η Williams κατάφερε φέτος <strong>να πιάσει το ελάχιστο επιτρεπόμενο βάρος</strong> (796 kg), κάτι που της επιτρέπει να χρησιμοποιήσει <strong>έως και 7-9 kg ballast</strong> για προσαρμογή:</p><ul><li>Η θέση του έρματος επηρεάζει το <strong>yaw και pitch balance<br /></strong></li><li>Η μεταφορά βάρους εμπρός/πίσω επηρεάζει τη διαχείριση των ελαστικών σε stint<br /></li><li>Η θέση του έρματος μπορεί να μεταβληθεί μεταξύ αγώνων, προσφέροντας μοναδική προσαρμοστικότητα<br /></li></ul><p>Η FW47 είναι πλέον <strong>ενεργό εργαλείο στρατηγικής</strong> – και όχι μονοθέσιο με σταθερή, μη ελεγχόμενη κατανομή μάζας όπως παλαιότερα.</p><h3><a id="_9cuexzctgplq"></a><strong>🔍 Σύνοψη τεχνικής προσέγγισης</strong></h3><ul><li><strong>Φρένα + ERS + MGU-K</strong> συνεργάζονται σε κάθε φάση πέδησης<br /></li><li><strong>Θερμική διαχείριση των ελαστικών</strong> παρακολουθείται σε πραγματικό χρόνο και επηρεάζεται από το στήσιμο<br /></li><li><strong>Κατανομή βάρους</strong> χρησιμοποιείται πλέον ως μέσο fine-tuning για κάθε πίστα<br /></li></ul><h3><a id="_r2hdx1e08hpo"></a><strong>🏁 Συμπέρασμα</strong></h3><p>Η FW47 δεν φθείρει, δεν υπερθερμαίνει, δεν υποφέρει — και όλα αυτά ξεκινούν από τη <strong>διαχείριση της επαφής με την άσφαλτο</strong>. Φρένα, ελαστικά και βάρος δεν είναι πλέον “παθητικές μεταβλητές” — είναι <strong>ενεργά εργαλεία ελέγχου και ρύθμισης</strong>.</p><p>Η Williams έχει πλέον ένα μονοθέσιο που μπορεί <strong>να ανταποκριθεί δυναμικά</strong> σε κάθε σενάριο αγώνα — και όχι απλώς να επιβιώσει σε αυτό.</p><p>Κλείνουμε τη σειρά με το <strong>Μέρος 8: Συγκρίσεις, Καινοτομίες &amp; Συμπεράσματα</strong></p></div>
 
                                 <div class="article-author-footer">
@@ -315,11 +315,12 @@
                                                 <span class="avatar-text" id="author-initial">A</span>
                                             </div>
                                             <div class="author-info">
-                                                <p class="author-name" id="author-name">Georgios Balatzis</p>
+                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></p>
                                                 <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                             </div>
                                         </div>
                                         <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
+                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
                                     </div>
                                 </div>
 
@@ -443,7 +444,7 @@
 
 <div id="cookie-consent" class="cookie-banner cookie-consent" aria-hidden="true">
     <div class="cookie-content">
-        <p>Χρησιμοποιούμε μόνο απαραίτητα cookies. Η μέτρηση επισκεψιμότητας ενεργοποιείται μόνο αν την αποδεχτείς. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
+        <p>Η επιλογή σου αποθηκεύεται τοπικά. Το Google Analytics ενεργοποιείται μόνο με αποδοχή. Δεν χρησιμοποιούμε δικά μας cookies διαφήμισης. <a href="/privacy/privacy.html">Πολιτική Απορρήτου</a></p>
         <div class="cookie-actions">
             <button id="cookie-accept" class="cookie-btn accept">Αποδοχή</button>
             <button id="cookie-decline" class="cookie-btn decline">Απόρριψη</button>
@@ -469,6 +470,8 @@
                     <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
                     <span class="footer-separator">|</span>
                     <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                    <span class="footer-separator">|</span>
+                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                 </div>
             </div>
         </div>
@@ -476,10 +479,10 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
-<script defer src="/scripts/shared-nav.min.js?v=bbf3fe49"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

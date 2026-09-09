@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v35
+   F1 Stories — Service Worker v40
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,17 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v40 bump: Data navigation — keep the active standings/data section in sync
+   as readers move between championship tables and analysis tabs.
+   v39 bump: Author profiles/data navigation — precache the contributor
+   directory and its focused profile runtime alongside the shared shell.
+   v38 bump: Consent/privacy accuracy — refresh the cached shell after
+   aligning the two first-party consent choices, migrating legacy records,
+   and adding the cookie-settings control.
+   v37 bump: Homepage hero correctness — refresh the cached shell after
+   replacing the rotating background with the current lead story image.
+   v36 bump: Archive runtime — precache the taxonomy and archive scripts so
+   category filters, search and pagination work on a cold/offline visit.
    v35 bump: Editorial system — precache the paper/ink route styles and their
    self-hosted Barlow Condensed, GFS Didot, and IBM Plex Sans font files so
    the redesigned home, journal, standings, and recent articles keep their
@@ -133,11 +144,11 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v35';
-var CACHE_SHELL   = 'f1s-shell-v35';
-var CACHE_PAGES   = 'f1s-pages-v35';
-var CACHE_ASSETS  = 'f1s-assets-v35';
-var CACHE_DATA    = 'f1s-data-v35';
+var SW_VERSION    = 'v40';
+var CACHE_SHELL   = 'f1s-shell-v40';
+var CACHE_PAGES   = 'f1s-pages-v40';
+var CACHE_ASSETS  = 'f1s-assets-v40';
+var CACHE_DATA    = 'f1s-data-v40';
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
@@ -158,6 +169,9 @@ var SHELL_ASSETS = [
   '/scripts/analytics.min.js',
   '/scripts/cookie-consent.min.js',
   '/scripts/perf/web-vitals-beacon.min.js',
+  '/blog-module/blog-fixes.min.js',
+  '/blog-module/taxonomy.min.js',
+  '/blog-module/blog-index.min.js',
   '/assets/youtube-latest.json',
   '/images/logo-256.webp',
   '/images/icons/icon-192.png',
@@ -174,6 +188,10 @@ var SHELL_ASSETS = [
   '/standings/standings.min.css',
   '/standings/standings-editorial.min.css',
   '/standings/standings.min.js',
+  '/authors/',
+  '/authors/index.html',
+  '/styles/authors.min.css',
+  '/scripts/authors.min.js',
   // Complete editorial subsets, matched to styles/home-fonts.css.
   '/assets/fonts/barlow-condensed-700.woff2',
   '/assets/fonts/gfs-didot-400.woff2',
