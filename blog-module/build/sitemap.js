@@ -22,6 +22,7 @@ function generateSitemap(articles) {
         sitemapUrl('https://f1stories.gr/', 'daily', '1.0'),
         sitemapUrl('https://f1stories.gr/blog-module/blog/index.html', 'daily', '0.9'),
         sitemapUrl('https://f1stories.gr/standings/', 'weekly', '0.8'),
+        sitemapUrl('https://f1stories.gr/authors/', 'monthly', '0.5'),
         sitemapUrl('https://f1stories.gr/privacy/privacy.html', 'yearly', '0.2'),
         sitemapUrl('https://f1stories.gr/privacy/terms.html', 'yearly', '0.2')
     ];

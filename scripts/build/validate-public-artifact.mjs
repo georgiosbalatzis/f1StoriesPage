@@ -73,6 +73,7 @@ const REQUIRED_EXACT = [
     'images/bg/bg5-mobile.avif',
     'images/bg/bg5-mobile.webp',
     'standings/index.html',
+    'authors/index.html',
     'standings/debrief-cache.json',
     'standings/destructors-cache.json',
     'standings/dirty-air-cache.json',
@@ -80,6 +81,7 @@ const REQUIRED_EXACT = [
     'styles.min.css',
     'styles/editorial.min.css',
     'styles/home-fonts.min.css',
+    'styles/authors.min.css',
     'blog-module/blog/archive-editorial.min.css',
     'blog-module/blog/article-editorial.min.css',
     'standings/standings-editorial.min.css',
@@ -561,6 +563,7 @@ function loadEditorialAssetRefs(errors) {
         'home.css',
         'styles/home-fonts.css',
         'styles/editorial.css',
+        'styles/authors.css',
         'blog-module/blog/archive-editorial.css',
         'blog-module/blog/article-editorial.css',
         'standings/standings-editorial.css'
@@ -628,6 +631,12 @@ function validateRouteMarkers(errors, editorialRefs) {
             label: 'standings',
             patterns: [/<main\b/i, /<body\b[^>]*class=["'][^"']*\beditorial-page\b/i, /<body\b[^>]*class=["'][^"']*\bstandings-page\b/i, /class=["'][^"']*standings-wrapper/i, /id=["']tab-drivers["']/i],
             editorialSources: ['styles/home-fonts.css', 'styles/editorial.css', 'standings/standings-editorial.css']
+        },
+        {
+            relPath: 'authors/index.html',
+            label: 'authors',
+            patterns: [/<main\b/i, /<body\b[^>]*class=["'][^"']*\beditorial-page\b/i, /<body\b[^>]*class=["'][^"']*\bauthors-page\b/i, /class=["'][^"']*author-profile/i],
+            editorialSources: ['styles/home-fonts.css', 'styles/editorial.css', 'styles/authors.css']
         },
         {
             relPath: '404.html',

@@ -78,6 +78,10 @@ const BLOG_PUBLIC_FILES = new Set([
     'blog-module/images/default-blog.jpg'
 ]);
 
+const AUTHORS_PUBLIC_FILES = new Set([
+    'authors/index.html'
+]);
+
 const STANDINGS_ROOT_FILES = new Set([
     'standings/debrief-cache.json',
     'standings/destructors-cache.json',
@@ -299,7 +303,7 @@ function collectPublicImageRefs() {
         }
     }
 
-    ['ghostcar', 'f1telemetry', 'privacy'].forEach(dir => {
+    ['authors', 'ghostcar', 'f1telemetry', 'privacy'].forEach(dir => {
         const absDir = path.join(REPO_ROOT, dir);
         if (!fs.existsSync(absDir)) return;
         for (const entry of fs.readdirSync(absDir, { withFileTypes: true })) {
@@ -346,6 +350,7 @@ function shouldCopy(relPath) {
     if (relPath === 'images/logo.png') return false;
     if (ROOT_FILES.has(relPath)) return true;
     if (AUTHOR_TOOL_FILES.has(relPath)) return true;
+    if (AUTHORS_PUBLIC_FILES.has(relPath)) return true;
     if (BLOG_PUBLIC_FILES.has(relPath)) return true;
     if (shouldCopyBlogEntry(relPath)) return true;
     if (shouldCopyStandings(relPath)) return true;

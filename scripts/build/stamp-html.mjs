@@ -39,6 +39,7 @@ const TARGET_HTML = [
     'offline.html',
     'ghostcar/index.html',
     'f1telemetry/index.html',
+    'authors/index.html',
     'standings/index.html',
     'blog-module/blog/index.html',
     'blog-module/blog/template.html',
@@ -85,7 +86,8 @@ const EDITORIAL_TARGETS = new Set([
     'index.html',
     'standings/index.html',
     'blog-module/blog/index.html',
-    'blog-module/blog/template.html'
+    'blog-module/blog/template.html',
+    'authors/index.html'
 ]);
 
 // Source path of the hand-crafted critical block (resolved against manifest).
@@ -107,6 +109,7 @@ const ROUTE_FONTS_SOURCES = {
     'index.html': 'styles/home-fonts.css',
     'blog-module/blog/index.html': 'styles/home-fonts.css',
     'blog-module/blog/template.html': 'styles/home-fonts.css',
+    'authors/index.html': 'styles/home-fonts.css',
     'standings/index.html': 'styles/home-fonts.css'
 };
 
@@ -148,6 +151,10 @@ const FONT_PRELOADS = {
     ],
     'standings/index.html': ['assets/fonts/barlow-condensed-700.woff2', 'assets/fonts/ibm-plex-sans-400-600-greek.woff2'],
     'blog-module/blog/index.html': [
+        'assets/fonts/barlow-condensed-700.woff2',
+        'assets/fonts/ibm-plex-sans-400-600-greek.woff2'
+    ],
+    'authors/index.html': [
         'assets/fonts/barlow-condensed-700.woff2',
         'assets/fonts/ibm-plex-sans-400-600-greek.woff2'
     ],

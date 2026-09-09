@@ -37,6 +37,7 @@ const CSS_INPUTS = [
     'styles/fonts.css',
     'styles/home-fonts.css',
     'styles/editorial.css',
+    'styles/authors.css',
     'blog-module/blog/archive-editorial.css',
     'blog-module/blog/article-editorial.css',
     'standings/standings-editorial.css',
