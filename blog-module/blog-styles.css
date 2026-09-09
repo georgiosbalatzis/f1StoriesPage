@@ -565,7 +565,7 @@ a.related-card-link { color: inherit; }
 
 .blog-sort-control select {
     min-height: 40px;
-    max-width: 9.6rem;
+    max-width: none;
     padding: 0 1.85rem 0 0.7rem;
     color: var(--text-primary);
     background: transparent;
@@ -1760,7 +1760,7 @@ body {
 
     .blog-archive-mini-bar { position: sticky; top: 58px; z-index: 1048; display: flex; align-items: center; justify-content: flex-start; gap: 0.34rem; min-height: 34px; margin: 0 0 0.72rem; padding: 0.16rem 0.58rem; color: var(--text-primary); background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; opacity: 1; pointer-events: auto; transform: none; backdrop-filter: blur(14px); }
     .blog-archive-mini-bar span { min-width: 0; overflow: hidden; color: var(--text-secondary); font-size: 0.76rem; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
-    .blog-archive-mini-bar span::after { content: "·"; margin-left: 0.34rem; color: var(--text-tertiary); }
+    .blog-archive-mini-bar > span::after { content: "·"; margin-left: 0.34rem; color: var(--text-tertiary); }
     .blog-archive-mini-filter { min-height: 30px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--accent-readable, var(--accent)); font-size: 0.74rem; font-weight: 800; }
     .blog-archive-mini-filter[aria-expanded="true"] { color: var(--accent); }
     .blog-results-row { margin-bottom: 0.72rem; padding-bottom: 0; border-bottom: 0; }

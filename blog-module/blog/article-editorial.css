@@ -10,16 +10,19 @@
     margin: 0;
     animation: none;
     --article-signal: var(--accent);
+    --article-signal-readable: var(--article-signal);
     --article-signal-wash: #a82e1c10;
 }
 .article-page .article-container--technical { --article-signal: #16736c; --article-signal-wash: #16736c14; }
 .article-page .article-container--analysis { --article-signal: #a82e1c; --article-signal-wash: #a82e1c12; }
-.article-page .article-container--history { --article-signal: #9a5b1d; --article-signal-wash: #9a5b1d14; }
+.article-page .article-container--history { --article-signal: #9a5b1d; --article-signal-readable: #d4a55e; --article-signal-wash: #9a5b1d14; }
 .article-page .article-container--opinion { --article-signal: #80522c; --article-signal-wash: #80522c14; }
-.article-page .article-container--betting { --article-signal: #4f713a; --article-signal-wash: #4f713a14; }
+.article-page .article-container--betting { --article-signal: #4f713a; --article-signal-readable: #88c979; --article-signal-wash: #4f713a14; }
 .article-page .article-container--drivers,
 .article-page .article-container--teams,
 .article-page .article-container--season { --article-signal: #6f5d39; --article-signal-wash: #6f5d3914; }
+[data-theme="light"] .article-page .article-container--history { --article-signal-readable: #805a20; }
+[data-theme="light"] .article-page .article-container--betting { --article-signal-readable: #236a4a; }
 
 /* The cover reads like the opening spread of a journal. */
 .article-page .article-header {
@@ -190,7 +193,18 @@
         height: 60%;
     }
     .article-page .article-header-img { height: 100%; aspect-ratio: auto; }
-    .article-page .article-header::after { grid-row: 1; }
+    .article-page .article-header::after {
+        position: absolute;
+        z-index: 3;
+        left: 16px;
+        top: 50%;
+        grid-column: auto;
+        grid-row: auto;
+        align-self: auto;
+        justify-self: auto;
+        transform: translateY(-50%) rotate(180deg);
+        pointer-events: none;
+    }
 }
 
 /* A generous reading measure with notes held in the outer margin. */
@@ -215,7 +229,7 @@
 .article-page .article-trust > div { min-height: 112px; padding: 16px 20px 18px 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; font-size: .72rem; line-height: 1.55; color: var(--text-secondary); }
 .article-page .article-trust > div + div { padding-left: 20px; }
 .article-page .article-trust > div:last-child { border-right: 0; padding-right: 0; }
-.article-page .article-trust__label { color: var(--article-signal); font: 700 .56rem/1 var(--font-display); letter-spacing: .14em; }
+.article-page .article-trust__label { color: var(--article-signal-readable); font: 700 .75rem/1.15 var(--font-display); letter-spacing: .1em; }
 .article-page .article-trust strong { color: var(--text-primary); font: 500 1.05rem/1.2 var(--font-editorial); }
 .article-page .article-trust strong a { color: inherit; }
 .article-page .article-trust a { color: var(--accent-readable); text-decoration: underline; text-underline-offset: 3px; }

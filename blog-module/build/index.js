@@ -264,9 +264,16 @@ function editorialCardKind(categories) {
     return getEditorialProfile(Array.isArray(categories) ? categories : []).kind;
 }
 
+function editorialCardMediaClasses(post) {
+    const id = String(post && post.id || '');
+    if (id !== '20260905J' && id !== '20260909J') return '';
+    return ` article-card--preserve-composition${id === '20260909J' ? ' article-card--preserve-composition-banner' : ''}`;
+}
+
 function renderBlogIndexCard(post, idx) {
     const categories = renderBlogCardCategories(post.categories);
     const cardKind = editorialCardKind(post.categories);
+    const mediaClasses = editorialCardMediaClasses(post);
     const url = post.url || `/blog-module/blog-entries/${post.id}/article.html`;
     const image = post.thumbnail || post.image || '';
     const imagePath = image && image.startsWith('/blog-module/blog-entries/')
@@ -295,14 +302,14 @@ function renderBlogIndexCard(post, idx) {
     const animationDelay = Math.round(idx * stagger * 100) / 100;
 
     return `<article class="article-card-wrap article-card-wrap--${escapeHtmlAttribute(cardKind)}" data-card-kind="${escapeHtmlAttribute(cardKind)}">`
-        + `<a href="${escapeHtmlAttribute(url)}" class="article-card article-card--${escapeHtmlAttribute(cardKind)}${hasImage ? '' : ' article-card--no-image'}" data-card-kind="${escapeHtmlAttribute(cardKind)}" style="animation-delay:${animationDelay}s">`
+        + `<a href="${escapeHtmlAttribute(url)}" class="article-card article-card--${escapeHtmlAttribute(cardKind)}${mediaClasses}${hasImage ? '' : ' article-card--no-image'}" data-card-kind="${escapeHtmlAttribute(cardKind)}" style="animation-delay:${animationDelay}s">`
         + `<div class="article-card-img-wrap${hasImage ? '' : ' img-ready'}"><img class="${imageClass}" width="${imageWidth}" height="${imageHeight}"${imageAttrs} decoding="async" alt="${escapeHtmlAttribute(post.title)}" data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}"></div>`
-        + '<div class="article-card-body">'
+        + '<div class="article-card-content"><div class="article-card-body">'
         + `<div class="article-card-meta"><span class="author-tag">${escapeHtmlAttribute(author)}</span><span>·</span><time class="article-card-date" datetime="${escapeHtmlAttribute(post.date || '')}">${escapeHtmlAttribute(formatBlogIndexDate(post))}</time>${readBadge}</div>`
         + `<h2 class="article-card-title">${escapeHtmlAttribute(post.title)}</h2>`
         + `<p class="article-card-excerpt">${escapeHtmlAttribute(excerpt)}</p>`
         + '</div>'
-        + `<div class="article-card-footer"><span class="article-card-read">Διαβάστε περισσότερα <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span><div class="article-card-cats">${categories}</div></div>`
+        + `<div class="article-card-footer"><span class="article-card-read">Διαβάστε περισσότερα <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span><div class="article-card-cats">${categories}</div></div></div>`
         + '</a>'
         + '</article>';
 }

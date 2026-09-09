@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var archiveMiniFilter = document.getElementById('blog-archive-mini-filter');
     var categoryStrip = document.getElementById('category-strip');
     var strip = document.getElementById('author-strip');
+    var filterDetails = filterToolbar ? filterToolbar.querySelectorAll('details') : [];
     var imageObserver = null;
     var taxonomy = window.F1S_TAXONOMY;
     var CACHE_KEY = 'f1s-blog-index-v3-taxonomy';
@@ -141,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return post.displayDate || post.date || '';
     }
     function formatReadingTime(value) {
-        return String(value || '').replace(/\bmin\b/gi, 'λεπτά ανάγνωσης');
+        return String(value || '').replace(/\bmin\b/gi, 'λεπ');
     }
 
     // Keep archive cards recognisable at a glance while the public taxonomy
@@ -242,8 +243,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     function updateSearchControls() {
-        if (searchClearBtn) searchClearBtn.hidden = !activeQuery;
-        if (filterResetBtn) filterResetBtn.hidden = !(activeAuthor !== 'all' || activeCategory !== 'all' || activeQuery);
+        var hasQuery = activeQuery || (searchInput && searchInput.value.trim());
+        if (searchClearBtn) searchClearBtn.hidden = !hasQuery;
+        if (filterResetBtn) filterResetBtn.hidden = !(activeAuthor !== 'all' || activeCategory !== 'all' || hasQuery);
     }
     function updateActiveFilterSummary() {
         if (!activeFilterSummary) return;
@@ -383,10 +385,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return container;
     }
+    function editorialCardMediaClasses(post) {
+        var id = String(post && post.id || '');
+        if (id !== '20260905J' && id !== '20260909J') return '';
+        return ' article-card--preserve-composition' + (id === '20260909J' ? ' article-card--preserve-composition-banner' : '');
+    }
 
     function createArticleCard(post, idx) {
         var url = post.url || ('/blog-module/blog-entries/' + post.id + '/article.html');
         var cardKind = editorialCardKind(post.categories);
+        var mediaClasses = editorialCardMediaClasses(post);
         var img = post.thumbnail || post.image || '';
         var date = formatPostDate(post);
         var author = post.author || 'F1 Stories';
@@ -408,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
         article.setAttribute('data-card-kind', cardKind);
         var link = document.createElement('a');
         link.href = url;
-        link.className = 'article-card article-card--' + cardKind;
+        link.className = 'article-card article-card--' + cardKind + mediaClasses;
         link.setAttribute('data-card-kind', cardKind);
         link.style.animationDelay = animationDelay + 's';
         if (!img) link.classList.add('article-card--no-image');
@@ -473,7 +481,10 @@ document.addEventListener('DOMContentLoaded', function() {
         readMore.append(document.createTextNode('Διαβάστε περισσότερα '), createIcon('fa-arrow-right'));
         footer.append(readMore, createCardCategories(post.categories));
 
-        link.append(imageWrap, body, footer);
+        var content = document.createElement('div');
+        content.className = 'article-card-content';
+        content.append(body, footer);
+        link.append(imageWrap, content);
         article.appendChild(link);
         return article;
     }
@@ -752,6 +763,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (searchInput) {
         searchInput.addEventListener('input', function() {
+            updateSearchControls();
             clearTimeout(searchTimer);
             searchTimer = setTimeout(function() {
                 activeQuery = searchInput.value.trim();
@@ -806,6 +818,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    filterDetails.forEach(function(details) {
+        details.addEventListener('toggle', function() {
+            if (!details.open) return;
+            filterDetails.forEach(function(sibling) {
+                if (sibling !== details) sibling.open = false;
+            });
+        });
+    });
+    document.addEventListener('click', function(e) {
+        if (filterToolbar && !filterToolbar.contains(e.target) && (!archiveMiniBar || !archiveMiniBar.contains(e.target))) {
+            filterDetails.forEach(function(details) { details.open = false; });
+            setFiltersOpen(false);
+        }
+    });
     if (archiveMiniFilter) {
         archiveMiniFilter.setAttribute('aria-controls', 'blog-filter-panel');
         archiveMiniFilter.setAttribute('aria-expanded', 'false');
@@ -814,7 +840,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') setFiltersOpen(false);
+        if (e.key === 'Escape') {
+            filterDetails.forEach(function(details) { details.open = false; });
+            setFiltersOpen(false);
+        }
     });
     window.addEventListener('popstate', function() {
         activeAuthor = getAuthorFromUrl();
