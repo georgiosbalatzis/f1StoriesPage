@@ -39,7 +39,7 @@
         "articleSection": ARTICLE_CATEGORIES_JSON,
         "image": ARTICLE_IMAGE_URL_JSON,
         "datePublished": ARTICLE_DATE_ISO_JSON,
-        "dateModified": ARTICLE_DATE_ISO_JSON,
+        "dateModified": ARTICLE_UPDATED_DATE_ISO_JSON,
         "author": { "@type": "Person", "name": ARTICLE_AUTHOR_JSON },
         "publisher": { "@type": "Organization", "name": "F1 Stories", "logo": { "@type": "ImageObject", "url": "https://f1stories.gr/images/icons/icon-512.png" } },
         "mainEntityOfPage": { "@type": "WebPage", "@id": ARTICLE_URL_JSON }
@@ -51,7 +51,7 @@
         "@type": "BreadcrumbList",
         "itemListElement": [
             { "@type": "ListItem", "position": 1, "name": "F1 Stories", "item": "https://f1stories.gr/" },
-            { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://f1stories.gr/blog-module/blog/index.html" },
+            { "@type": "ListItem", "position": 2, "name": "Άρθρα", "item": "https://f1stories.gr/blog-module/blog/index.html" },
             { "@type": "ListItem", "position": 3, "name": ARTICLE_TITLE_JSON }
         ]
     }
@@ -69,7 +69,7 @@
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=22d9c4c9">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=28f86755">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=3d1899ff">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" href="ARTICLE_IMAGE_ATTR" fetchpriority="high">
@@ -240,9 +240,9 @@
                         <span class="article-category-pill">ARTICLE_CATEGORY_TEXT</span>
                     </div>
                     <h1 class="article-title">ARTICLE_TITLE_TEXT</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> ARTICLE_AUTHOR_TEXT</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/" class="article-author-link">ARTICLE_AUTHOR_TEXT</a></p>
                     <div class="article-meta">
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ARTICLE_DATE</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> Δημοσίευση: ARTICLE_DATE</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> ARTICLE_CATEGORY_LINKS</span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
@@ -284,6 +284,11 @@
                 </aside>
 
                 <div class="article-main-column">
+                    <div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
+                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>ARTICLE_AUTHOR_TEXT</strong><span>Δημοσίευση: ARTICLE_DATE · Ενημέρωση: ARTICLE_UPDATED_DATE</span></div>
+                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span>ARTICLE_SOURCES_HTML</span></div>
+                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </div>
                     <div class="article-content">ARTICLE_CONTENT</div>
 
                     <div class="article-author-footer">
@@ -296,7 +301,7 @@
                                     <span class="avatar-text" id="author-initial">A</span>
                                 </div>
                                 <div class="author-info">
-                                    <p class="author-name" id="author-name">ARTICLE_AUTHOR_TEXT</p>
+                                    <p class="author-name" id="author-name"><a href="/authors/">ARTICLE_AUTHOR_TEXT</a></p>
                                     <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
                                 </div>
                             </div>
@@ -388,7 +393,7 @@
 <script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
 <script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
-<script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>
+<script defer src="/scripts/cookie-consent.min.js?v=4bccf2c7"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=60ca5a42"></script>
 </body>
 </html>

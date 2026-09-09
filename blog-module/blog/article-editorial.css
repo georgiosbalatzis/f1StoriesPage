@@ -85,7 +85,7 @@
     max-width: 23ch;
     margin: 0 0 24px;
     color: var(--ink);
-    font: 400 clamp(2.9rem, 4.55vw, 4.75rem)/1.1 var(--font-editorial);
+    font: 700 clamp(3.15rem, 5vw, 5.35rem)/.94 var(--font-display);
     letter-spacing: -.04em;
     text-shadow: none;
     text-wrap: balance;
@@ -97,12 +97,18 @@
     font-weight: 600;
     color: var(--ink);
 }
+.article-page .article-header::before { content: 'SECTOR 01  /  F1 STORIES'; position: absolute; z-index: 2; right: 22px; top: 28px; color: var(--ink); writing-mode: vertical-rl; font: 700 .55rem/1 var(--font-display); letter-spacing: .16em; opacity: .72; }
 .article-page .article-header-byline > span { margin-right: 5px; font-weight: 400; color: #51584c; }
+.article-page .article-author-link { color: inherit; text-decoration: underline; text-decoration-color: #a82e1c66; text-underline-offset: 4px; }
+.article-page .article-author-link:hover { color: #a82e1c; }
 .article-page .article-header-overlay .article-meta {
     gap: 8px 22px;
     color: #51584c;
     font-size: .71rem;
     line-height: 1.6;
+    margin-top: 18px;
+    padding-top: 15px;
+    border-top: 1px solid #20251f45;
 }
 .article-page .article-meta span {
     min-height: 0;
@@ -195,6 +201,13 @@
     overflow-wrap: break-word;
     counter-reset: editorial-section;
 }
+.article-page .article-trust { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, .8fr); gap: 0; margin: 58px 0 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.article-page .article-trust > div { min-height: 112px; padding: 16px 20px 18px 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; font-size: .72rem; line-height: 1.55; color: var(--text-secondary); }
+.article-page .article-trust > div + div { padding-left: 20px; }
+.article-page .article-trust > div:last-child { border-right: 0; padding-right: 0; }
+.article-page .article-trust__label { color: var(--accent); font: 700 .56rem/1 var(--font-display); letter-spacing: .14em; }
+.article-page .article-trust strong { color: var(--text-primary); font: 500 1.05rem/1.2 var(--font-editorial); }
+.article-page .article-trust a { color: var(--accent-readable); text-decoration: underline; text-underline-offset: 3px; }
 .article-page .article-content :is(p, li) { color: var(--text-primary); }
 .article-page .article-content p { margin-bottom: 1.5em; }
 .article-page .article-content > p:first-of-type {
@@ -525,17 +538,21 @@
     .article-page .article-header-kicker-row { gap: 14px; margin-bottom: 17px; }
     .article-page .back-link { font-size: .62rem; }
     .article-page .article-category-pill { padding-left: 12px; font-size: .61rem; }
-    .article-page .article-title { max-width: none; font-size: clamp(2.05rem, 6.2vw, 3rem); margin-bottom: 24px; line-height: 1.16; letter-spacing: -.035em; }
+    .article-page .article-title { max-width: none; font-size: clamp(2.2rem, 8vw, 3.7rem); margin-bottom: 24px; line-height: .98; letter-spacing: -.035em; }
     .article-page .article-header-byline { font-size: .77rem; }
     .article-page .article-header-overlay .article-meta { gap: 8px 15px; font-size: .66rem; }
     .article-page .article-header > picture { border-radius: 0 0 38px 0; }
     .article-page .article-header-img { height: auto; aspect-ratio: 1.5; }
     .article-page .article-header::after { font-size: .42rem; letter-spacing: .08em; }
+    .article-page .article-header::before { right: 12px; top: 19px; font-size: .48rem; }
     .article-page .article-body-grid { margin-top: 24px; }
     .article-page .article-side-rail .article-toolbar { display: block; padding-bottom: 20px; }
     .article-page .article-side-rail .share-label { margin-bottom: 12px; }
     .article-page .share-buttons { gap: 6px; flex-wrap: wrap; }
     .article-page .article-content { padding-top: 24px; font-size: 1.0625rem; line-height: 1.85; }
+    .article-page .article-trust { grid-template-columns: 1fr; margin-top: 34px; }
+    .article-page .article-trust > div, .article-page .article-trust > div + div { min-height: 0; padding: 14px 0; border-right: 0; border-bottom: 1px solid var(--border); }
+    .article-page .article-trust > div:last-child { border-bottom: 0; }
     .article-page .article-content > p:first-of-type { font-size: 1.12em; }
     .article-page .article-content p { margin-bottom: 1.4em; }
     .article-page .article-content h2 { font-size: 1.85rem; line-height: 1.25; }

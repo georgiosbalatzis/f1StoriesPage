@@ -10,8 +10,7 @@
     function getDefaultConsent() {
         return {
             essential: true,
-            analytics: false,
-            marketing: false
+            analytics: false
         };
     }
 
@@ -71,8 +70,7 @@
         var nextConsent = {
             ts: Date.now(),
             essential: true,
-            analytics: consent.analytics === true,
-            marketing: !!consent.marketing
+            analytics: consent.analytics === true
         };
         writeConsent(nextConsent);
         window.dispatchEvent(new CustomEvent('f1stories:cookie-consent-changed', {
@@ -140,13 +138,13 @@
 
         if (accept) {
             accept.addEventListener('click', function () {
-                saveConsent({ analytics: true, marketing: false });
+                saveConsent({ analytics: true });
             });
         }
 
         if (decline) {
             decline.addEventListener('click', function () {
-                saveConsent({ analytics: false, marketing: false });
+                saveConsent({ analytics: false });
             });
         }
     }
@@ -157,40 +155,33 @@
         var acceptSelected = document.getElementById('accept-selected');
         var closeBtn = document.getElementById('close-cookie');
         var analytics = document.getElementById('analytics-cookies');
-        var marketing = document.getElementById('marketing-cookies');
         var defaults = getDefaultConsent();
 
         if (analytics) analytics.checked = existingConsent ? existingConsent.analytics === true : defaults.analytics;
-        if (marketing) marketing.checked = existingConsent ? !!existingConsent.marketing : defaults.marketing;
 
         if (acceptAll) {
             acceptAll.addEventListener('click', function () {
                 if (analytics) analytics.checked = true;
-                if (marketing) marketing.checked = true;
-                saveConsent({ analytics: true, marketing: true });
+                saveConsent({ analytics: true });
             });
         }
 
         if (rejectAll) {
             rejectAll.addEventListener('click', function () {
                 if (analytics) analytics.checked = false;
-                if (marketing) marketing.checked = false;
-                saveConsent({ analytics: false, marketing: false });
+                saveConsent({ analytics: false });
             });
         }
 
         if (acceptSelected) {
             acceptSelected.addEventListener('click', function () {
-                saveConsent({
-                    analytics: analytics && analytics.checked,
-                    marketing: marketing && marketing.checked
-                });
+                saveConsent({ analytics: analytics && analytics.checked });
             });
         }
 
         if (closeBtn) {
             closeBtn.addEventListener('click', function () {
-                saveConsent({ analytics: false, marketing: false });
+                saveConsent({ analytics: false });
             });
         }
     }

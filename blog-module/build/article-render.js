@@ -41,6 +41,24 @@ function renderCategoryRail(categories) {
                         </div>`;
 }
 
+function renderArticleSources(categories) {
+    const evidenceCategories = new Set(['Technical', 'Analysis', 'History']);
+    if (!categories.some(category => evidenceCategories.has(category))) {
+        return 'Συντακτικό άρθρο και επιβεβαίωση στοιχείων από τις επίσημες ανακοινώσεις του πρωταθλήματος.';
+    }
+    return '<a href="https://www.fia.com/regulation/category/110" target="_blank" rel="noopener">FIA κανονισμοί</a> · ' +
+        '<a href="https://www.formula1.com/en/results.html" target="_blank" rel="noopener">επίσημα αποτελέσματα και timing</a> · ' +
+        'ανακοινώσεις ομάδων όπου αναφέρονται.';
+}
+
+function formatArticleDate(post) {
+    const value = post && (post.dateISO || post.date);
+    const parsed = value ? new Date(`${value}T00:00:00Z`) : null;
+    return parsed && !Number.isNaN(parsed.getTime())
+        ? parsed.toLocaleDateString('el-GR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+        : String(post && (post.displayDate || value) || '');
+}
+
 // Older entries can lack source documents. Update only template-owned metadata
 // slots so their body, embedded media, and editorial changes remain byte intact.
 function refreshArticleTaxonomy(html, post) {
@@ -49,18 +67,31 @@ function refreshArticleTaxonomy(html, post) {
         .replace(/(<span id="race-countdown-mobile">)--(<\/span>)/g, '$1Σύντομα$2');
     const { category, categories } = getPostTaxonomy(post);
     const primary = escapeHtmlText(category);
+    const articleDate = escapeHtmlText(formatArticleDate(post));
+    const sources = renderArticleSources(categories);
+    const trustPanel = `<div class="article-trust" aria-label="Συντακτική ταυτότητα και πηγές">
+                        <div><span class="article-trust__label">ΣΥΝΤΑΚΤΙΚΗ ΚΑΡΤΕΛΑ</span><strong>${escapeHtmlText(post.author || 'F1 Stories')}</strong><span>Δημοσίευση: ${articleDate} · Ενημέρωση: ${articleDate}</span></div>
+                        <div><span class="article-trust__label">ΠΗΓΕΣ</span><span>${sources}</span></div>
+                        <div><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια factual λάθη. <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
+                    </div>`;
     let updated = html
         .replace(/(<span class="article-mini-bar__category">)[\s\S]*?(<\/span>)/, `$1${primary}$2`)
         .replace(/(<span class="article-category-pill">)[\s\S]*?(<\/span>)/, `$1${primary}$2`)
         .replace(/(<div class="article-meta">[\s\S]*?<span><svg class="icon" aria-hidden="true"><use href="#fa-tag"\/><\/svg> )[\s\S]*?(<\/span>)/, `$1${renderCategoryLinks(categories)}$2`)
         .replace(/(<div class="article-rail-meta-list">\s*<span><svg class="icon" aria-hidden="true"><use href="#fa-tag"\/><\/svg> )[\s\S]*?(<\/span>)/, `$1${primary}$2`)
-        .replace(/<div class="article-rail-card article-rail-tags"[^>]*>[\s\S]*?<div class="article-tag-list"[^>]*>[\s\S]*?<\/div>\s*<\/div>/, renderCategoryRail(categories));
+        .replace(/<div class="article-rail-card article-rail-tags"[^>]*>[\s\S]*?<div class="article-tag-list"[^>]*>[\s\S]*?<\/div>\s*<\/div>/, renderCategoryRail(categories))
+        .replace(/(<span class="article-mini-bar__category">)[\s\S]*?(<\/span>)/, `$1${primary}$2`);
+
+    if (!updated.includes('class="article-trust"')) {
+        updated = updated.replace(/(<div class="article-content">)/, `${trustPanel}\n                    $1`);
+    }
 
     updated = updated.replace(/(<script type="application\/ld\+json">)\s*([\s\S]*?)\s*(<\/script>)/g, (block, open, source, close) => {
         const data = JSON.parse(source);
         if (!['Article', 'NewsArticle', 'BlogPosting'].includes(data['@type'])) return block;
-        if (JSON.stringify(data.articleSection) === JSON.stringify(categories)) return block;
+        if (JSON.stringify(data.articleSection) === JSON.stringify(categories) && !post.updatedDateISO) return block;
         data.articleSection = categories;
+        data.dateModified = post.updatedDateISO || post.dateISO || post.date || data.dateModified;
         const json = JSON.stringify(data, null, 4).replace(/[<>&\u2028\u2029]/g, character => `\\u${character.charCodeAt(0).toString(16).padStart(4, '0')}`);
         return `${open}\n${json}\n    ${close}`;
     });
@@ -96,7 +127,10 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_AUTHOR_JSON: jsonScriptLiteral(postData.author),
         ARTICLE_DATE_ISO_JSON: jsonScriptLiteral(postData.dateISO),
         ARTICLE_DATE_ISO: escapeHtmlAttribute(postData.dateISO),
-        ARTICLE_DATE: escapeHtmlText(postData.displayDate),
+        ARTICLE_DATE: escapeHtmlText(formatArticleDate(postData)),
+        ARTICLE_UPDATED_DATE_ISO_JSON: jsonScriptLiteral(postData.updatedDateISO || postData.dateISO),
+        ARTICLE_UPDATED_DATE: escapeHtmlText(formatArticleDate({ dateISO: postData.updatedDateISO || postData.dateISO, date: postData.date, displayDate: postData.displayDate })),
+        ARTICLE_SOURCES_HTML: renderArticleSources(taxonomy.categories),
         ARTICLE_EXCERPT_ATTR: escapeHtmlAttribute(postData.excerpt),
         ARTICLE_EXCERPT_JSON: jsonScriptLiteral(postData.excerpt),
         ARTICLE_COMMENTS: String(postData.comments || 0),

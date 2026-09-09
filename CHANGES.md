@@ -1,105 +1,124 @@
-# Changes Against Main
+# F1Stories.gr — AI-Look Cleanup Checklist
 
-Comparison point: `origin/main` at `361771ac` (`chore(blog): auto-build generated artifacts [skip ci]`), fetched on 2026-07-01.
+- [ ] **Fix the category and tag architecture**
+  - Remove malformed labels such as `Racing,-2026,-Lewis-Hamilton,-Ferrari-F1`.
+  - Keep a small, deliberate public taxonomy.
+  - Move detailed keywords into internal tags.
 
-Current branch: `development`, including the article sync described below.
+- [ ] **Stop exposing raw tags in article listings**
+  - Show one primary editorial category.
+  - Limit visible tags to 2–3 clean, human-readable labels.
 
-Before this file was added, the working tree differed from `origin/main` by 489 tracked files: 48 added, 345 modified, and 96 deleted, with 20,621 insertions and 58,752 deletions.
+- [ ] **Remove visible loading placeholders**
+  - Eliminate states such as `Φόρτωση... --`.
+  - Use proper skeleton loading, fallback states, or server-rendered data.
 
-## Latest Main Articles Integrated
+- [ ] **Make navigation language consistent**
+  - Use either Greek or English consistently.
+  - Avoid mixtures such as `Home / Blog / Standings / Media / Statistics / Data`.
 
-The latest article folders from `origin/main` were imported and rebuilt through this branch's blog pipeline:
+- [ ] **Replace the homepage intro with a real editorial hero**
+  - Feature one dominant lead story.
+  - Include a large image, category, headline, author, and publication date.
+  - Add 2–3 supporting stories beside or below it.
 
-| Entry | Title | Source from main | Current difference from main |
-| --- | --- | --- | --- |
-| `20260627G` | Cadillac και Audi: Η F1 γίνεται ξανά πόλεμος κατασκευαστών | `source.txt`, `1.webp` | `article.html` regenerated with this branch's hardened template |
-| `20260627J` | Betcast: 267 Austria GP: Προβλέπουμε χαμό ; .. | `source.txt`, `1.webp` | `article.html` regenerated with this branch's hardened template |
-| `20260628W` | O Ai Ogura και μια νίκη που δεν ήρθε από τύχη | `source.txt`, `1.webp`, `2.webp`, `3.webp` | `article.html` regenerated with this branch's hardened template |
-| `20260630W` | Επιστρέφει η Red Bull στη μάχη της κορυφής | `source.txt`, `1.webp`, `2.webp`, `3.webp`, `4.webp` | `article.html` regenerated with this branch's hardened template |
-| `20260701D` | Μέσα από το F1λτρο μου | `source.txt`, `1.webp` | `article.html` regenerated with this branch's hardened template |
+- [ ] **Remove generic AI-style marketing copy**
+  - Replace abstract phrases and symmetrical noun lists with concrete editorial messaging.
+  - Explain exactly what F1Stories offers.
 
-Generated blog surfaces were refreshed after the import:
+- [ ] **Define a clear editorial positioning**
+  - Establish the publication around a specific identity.
+  - Suggested direction: technical analysis + opinion + Greek F1 community.
 
-- `blog-module/blog/index.html`
-- `blog-module/blog-index-data.json`
-- `blog-module/blog-index-page-1.json`
-- `blog-module/home-latest.json`
-- `sitemap.xml`
+- [ ] **Create multiple article-card layouts**
+  - Add distinct treatments for:
+    - Feature stories
+    - Breaking/news articles
+    - Technical analysis
+    - Opinion
+    - Historical features
 
-The visible blog count changed from 91 to 96 posts. Recent article pages also changed where prev/next navigation and related article cards now include the imported posts.
+- [ ] **Create a dedicated visual system for technical articles**
+  - Add diagrams.
+  - Add annotated images.
+  - Add charts and telemetry-style visualizations.
+  - Make technical content visually recognizable.
 
-Two existing optimized media files remain intentionally different from `main`: `blog-module/blog-entries/20260622W/3.webp` and `blog-module/blog-entries/20260626W/1.webp`. The `main` versions are larger, while this branch keeps the optimized media policy.
+- [ ] **Remove repetitive article-opening formulas**
+  - Avoid repeated intros such as:
+    - “Υπάρχουν στιγμές...”
+    - “Λίγοι θα περίμεναν...”
+    - “Υπήρχε μια εποχή...”
+  - Start articles with facts, claims, events, data, or specific anecdotes.
 
-## Site Build And Deployment
+- [ ] **Differentiate each author's writing voice**
+  - Define tone and subject ownership for each contributor.
+  - Avoid making articles from different authors sound structurally identical.
 
-- Adds a validated GitHub Pages artifact flow through `.github/workflows/deploy-pages.yml`.
-- Expands `.github/workflows/quality.yml` so pull requests exercise the static build and quality gates.
-- Introduces `npm run build:public` as the production boundary for `dist/` generation and validation.
-- Adds public artifact validation, source ownership checks, generated drift checks, and data contract validation.
-- Removes editor/project-local files from source control, including `.idea/*`.
+- [ ] **Build proper author profile pages**
+  - Include:
+    - Photo
+    - Short biography
+    - Area of expertise
+    - Social links
+    - Latest articles
+    - Recurring columns or series
 
-## Blog Publishing Pipeline
+- [ ] **Rename vague navigation and content sections**
+  - Replace labels such as `Statistics → Data`.
+  - Prefer clear names such as:
+    - `Βαθμολογία & Στατιστικά`
+    - `F1 Data Hub`
 
-- Reworks the blog generator around modular build code in `blog-module/build/`.
-- Adds hardened article rendering for safer embeds, related links, prev/next links, image fallbacks, heading structure, and article metadata.
-- Adds committed compact index payloads and source-cache handling for deterministic article output.
-- Deletes legacy generated source such as `blog-module/blog-data.json`, `blog-module/blog-processor.legacy.js`, and checked-in minified browser outputs from `main`.
-- Removes raw article image files that violate the media policy, while keeping optimized WebP/AVIF article media.
-- Updates golden fixtures and blog tests for the new article output.
+- [ ] **Integrate YouTube content directly into the site**
+  - Embed the latest video.
+  - Show thumbnail, title, runtime, participants, and episode description.
+  - Avoid treating YouTube only as an external CTA.
 
-## Author Tools
+- [ ] **Clean up the partner/sponsor section**
+  - Standardize logo sizes and cards.
+  - Remove duplicate or unclear links.
+  - Label each relationship clearly:
+    - Sponsor
+    - Partner
+    - Advertising partner
+    - Powered by
 
-- Converts `generate.html` and `housekeeping.html` into generated shells backed by modules under `scripts/author/`.
-- Adds author helper modules for article folders, article source parsing, DOM helpers, image handling, media policy checks, GitHub publishing, dialogs, and session tokens.
-- Adds focused Node test coverage for the author helper modules.
-- Adds dedicated author styles in `styles/author/`.
+- [ ] **Make the cookie interface match the site's actual tracking**
+  - Audit the actual cookies and scripts used.
+  - Remove categories that are not actually needed.
+  - Ensure banner copy and detailed settings describe the same behavior.
 
-## Standings
+- [ ] **Rewrite the privacy policy specifically for F1Stories.gr**
+  - Remove generic template language.
+  - Document only the services actually used.
+  - Cover analytics, embedded media, hosting, contact forms, advertising, and cookies accurately.
 
-- Replaces the monolithic legacy standings script with smaller runtime modules and core helpers.
-- Adds `standings/core/lifecycle.js`, `standings/core/payloads.js`, and `standings/core/rendering.js`.
-- Adds `standings/standings-nomodule.js` for fallback loading.
-- Updates standings tabs for safer rendering, payload handling, and cache reuse.
-- Adds standings core tests.
-- Keeps generated cache timestamps stable when cache content is unchanged.
+- [ ] **Improve editorial typography**
+  - Establish stronger hierarchy between:
+    - Headlines
+    - Deck/subheading
+    - Body copy
+    - Metadata
+    - Captions
+  - Use typography suitable for long-form motorsport journalism.
 
-## Runtime, Accessibility, And Performance
+- [ ] **Create an F1-specific design language**
+  - Reduce reliance on generic SaaS-style cards.
+  - Introduce subtle motorsport cues such as:
+    - Timing-tower typography
+    - Sector indicators
+    - Circuit outlines
+    - Race-number treatments
+    - Telemetry ticks
+    - Tyre-compound markers
+    - Contextual team-color accents
 
-- Updates root, blog, standings, privacy, offline, and 404 page shells for the current static build model.
-- Adds theme initialization, offline-page behavior, external redirect handling, and hero background initialization.
-- Tightens cookie consent, service worker registration, shared navigation, and performance beacon behavior.
-- Adds static rendering-sink checks, runtime audits, visual QA, article media budgets, public image checks, and Lighthouse guards.
-- Updates size and media budgets in `perf/`.
-
-## Documentation
-
-- Adds `HASTOBEFIXED.md` as the completed roadmap record.
-- Adds maintainer documentation:
-  - `docs/static-publishing-model.md`
-  - `docs/release-checklist.md`
-  - `docs/data-contracts.md`
-  - `docs/article-media-policy.md`
-- Updates `README.md` and `docs/security-headers.md` for the new static publishing model.
-
-## Removed Or Reclassified Assets
-
-- Removes tracked local notes such as `appdev.txt` and `laststeps.txt`.
-- Removes old raw background/logo/avatar assets from tracked source where they are no longer part of the validated public artifact.
-- Removes checked-in minified JS/CSS artifacts that `main` tracked directly; this branch treats generated browser assets as build output.
-- Removes the old SVG icon sprite in favor of the current generated asset flow.
-
-## Verification Status
-
-The article sync was rebuilt with:
-
-```bash
-npm run build:blog
-```
-
-The previous full roadmap state on this branch passed:
-
-```bash
-npm run verify
-```
-
-After the article sync, the focused blog build completed successfully and refreshed derived blog, sitemap, dirty-air, destructors, and debrief cache outputs.
+- [ ] **Add strong editorial trust signals**
+  - Every serious article should expose:
+    - Author
+    - Publication date
+    - Last updated date
+    - Sources
+    - Corrections policy
+  - Technical and historical articles should cite FIA documents, team releases, official timing data, regulations, or primary sources where applicable.
