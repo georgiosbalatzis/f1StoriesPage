@@ -44,6 +44,9 @@ function renderCategoryRail(categories) {
 // Older entries can lack source documents. Update only template-owned metadata
 // slots so their body, embedded media, and editorial changes remain byte intact.
 function refreshArticleTaxonomy(html, post) {
+    html = html.replace(/Φόρτωση\.\.\./g, 'Επόμενο GP')
+        .replace(/(<span class="countdown-timer" id="race-countdown">)--(<\/span>)/g, '$1Σύντομα$2')
+        .replace(/(<span id="race-countdown-mobile">)--(<\/span>)/g, '$1Σύντομα$2');
     const { category, categories } = getPostTaxonomy(post);
     const primary = escapeHtmlText(category);
     let updated = html

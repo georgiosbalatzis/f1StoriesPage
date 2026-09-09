@@ -131,7 +131,16 @@ document.addEventListener('DOMContentLoaded', function () {
             const card = document.createElement('div');
             card.className = 'skeleton-card';
             card.setAttribute('aria-hidden', 'true');
-            card.innerHTML = '<div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w40"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div>';
+            const image = document.createElement('div');
+            image.className = 'skeleton-img';
+            const body = document.createElement('div');
+            body.className = 'skeleton-body';
+            ['w40', 'w80', 'w60'].forEach(function (width) {
+                const line = document.createElement('div');
+                line.className = 'skeleton-line ' + width;
+                body.appendChild(line);
+            });
+            card.append(image, body);
             fragment.appendChild(card);
         }
         return fragment;

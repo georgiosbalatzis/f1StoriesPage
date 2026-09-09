@@ -1,6 +1,63 @@
 {
   "posts": [
     {
+      "id": "20260909W",
+      "title": "Τζιανκάρλο Φισικέλα: Ο οδηγός που άγγιξε την κορυφή, χωρίς ποτέ να του ανήκει",
+      "author": "Themis Charvalis",
+      "date": "2026-09-09",
+      "dateISO": "2026-09-09",
+      "displayDate": "September 9, 2026",
+      "image": "/blog-module/blog-entries/20260909W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260909W/2.webp",
+      "excerpt": "Ο Τζιανκάρλο Φισικέλα γεννήθηκε στη Ρώμη το 1973 και από μικρός έδειξε πως η ταχύτητα ήταν το φυσικό του περιβάλλον. Ξεκίνησε από τα καρτ και το 1994 κατέκτησε το ιταλικό πρωτάθλημα Formula 3, πριν πε...",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260909W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "F1",
+        "Racing",
+        "Fisichella",
+        "Racing history",
+        "F1 legends"
+      ],
+      "wordCount": 1012,
+      "readingTime": "6 min",
+      "imageWidth": 1572,
+      "imageHeight": 980,
+      "backgroundImageWidth": 547,
+      "backgroundImageHeight": 365
+    },
+    {
+      "id": "20260909J",
+      "title": "Τροφή για σκέψη: Russell, σημειώσατε διπλό",
+      "author": "Giannis Poulikidis",
+      "date": "2026-09-09",
+      "dateISO": "2026-09-09",
+      "displayDate": "September 9, 2026",
+      "image": "/blog-module/blog-entries/20260909J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260909J/1.webp",
+      "excerpt": "Δέκα αγώνες έμειναν. Δέκα αγώνες ακόμα για να κλείσει το κεφάλαιο του 2026. Το οποίο, αναμεταξύ μας... οκ, χρήζει μεγάλης βελτίωσης για να πούμε ότι «ναι ρε, τα καινούργια regs, γαμ...ε!» Ναι, είχαμε ...",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260909J/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "F1",
+        "Racing"
+      ],
+      "wordCount": 575,
+      "readingTime": "3 min",
+      "imageWidth": 1672,
+      "imageHeight": 940,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 940
+    },
+    {
       "id": "20260906W",
       "title": "CHARLES LECLERC  Ο αιώνιος διάδοχος ή ένας πρωταθλητής που δεν έχει ακόμη φανεί;",
       "author": "Themis Charvalis",
@@ -1974,12 +2031,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260626W/article.html",
       "category": "News",
-      "wordCount": 473,
-      "readingTime": "3 min",
-      "imageWidth": 3840,
-      "imageHeight": 2558,
-      "backgroundImageWidth": 3392,
-      "backgroundImageHeight": 2261,
       "categories": [
         "News"
       ],
@@ -1990,7 +2041,13 @@
         "Red bull ring",
         "Fp1",
         "Fp2"
-      ]
+      ],
+      "wordCount": 473,
+      "readingTime": "3 min",
+      "imageWidth": 3840,
+      "imageHeight": 2558,
+      "backgroundImageWidth": 3392,
+      "backgroundImageHeight": 2261
     },
     {
       "id": "20260624W",
@@ -2005,12 +2062,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260624W/article.html",
       "category": "News",
-      "wordCount": 480,
-      "readingTime": "3 min",
-      "imageWidth": 1080,
-      "imageHeight": 720,
-      "backgroundImageWidth": 642,
-      "backgroundImageHeight": 360,
       "categories": [
         "News"
       ],
@@ -2020,7 +2071,13 @@
         "Jules Bianchi",
         "Marussia f1",
         "Monaco 2014"
-      ]
+      ],
+      "wordCount": 480,
+      "readingTime": "3 min",
+      "imageWidth": 1080,
+      "imageHeight": 720,
+      "backgroundImageWidth": 642,
+      "backgroundImageHeight": 360
     },
     {
       "id": "20260624G",
@@ -2035,18 +2092,18 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260624G/article.html",
       "category": "2026",
-      "wordCount": 3344,
-      "readingTime": "17 min",
-      "imageWidth": 1672,
-      "imageHeight": 941,
-      "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941,
       "categories": [
         "2026"
       ],
       "tags": [
         "F1"
-      ]
+      ],
+      "wordCount": 3344,
+      "readingTime": "17 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
     },
     {
       "id": "20260622W",
@@ -2061,12 +2118,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260622W/article.html",
       "category": "News",
-      "wordCount": 408,
-      "readingTime": "3 min",
-      "imageWidth": 460,
-      "imageHeight": 276,
-      "backgroundImageWidth": 3392,
-      "backgroundImageHeight": 2262,
       "categories": [
         "News"
       ],
@@ -2076,7 +2127,13 @@
         "BrawnGp",
         "Jenson Button",
         "2009 season"
-      ]
+      ],
+      "wordCount": 408,
+      "readingTime": "3 min",
+      "imageWidth": 460,
+      "imageHeight": 276,
+      "backgroundImageWidth": 3392,
+      "backgroundImageHeight": 2262
     },
     {
       "id": "20260621W",
@@ -2091,13 +2148,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260621W/article.html",
       "category": "2026",
-      "wordCount": 326,
-      "readingTime": "2 min",
-      "imageWidth": 739,
-      "imageHeight": 415,
-      "backgroundImageWidth": 739,
-      "backgroundImageHeight": 415,
-      "_buildHash": "0733f4718dee4996836b39faa84da19625b2f495c4b99c9b9a664c6a834536cd",
       "categories": [
         "2026"
       ],
@@ -2108,7 +2158,13 @@
         "Ducati",
         "Brno",
         "2026 season"
-      ]
+      ],
+      "wordCount": 326,
+      "readingTime": "2 min",
+      "imageWidth": 739,
+      "imageHeight": 415,
+      "backgroundImageWidth": 739,
+      "backgroundImageHeight": 415
     },
     {
       "id": "20260620W",
@@ -2123,13 +2179,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260620W/article.html",
       "category": "2026",
-      "wordCount": 330,
-      "readingTime": "2 min",
-      "imageWidth": 1506,
-      "imageHeight": 786,
-      "backgroundImageWidth": 678,
-      "backgroundImageHeight": 452,
-      "_buildHash": "7a7461bf5b35b46d3ea70ba69a5ea8bd6ca34db5ce71f57c1c739168a53e4b30",
       "categories": [
         "2026"
       ],
@@ -2140,7 +2189,13 @@
         "Ducati",
         "Brno",
         "2026 season"
-      ]
+      ],
+      "wordCount": 330,
+      "readingTime": "2 min",
+      "imageWidth": 1506,
+      "imageHeight": 786,
+      "backgroundImageWidth": 678,
+      "backgroundImageHeight": 452
     },
     {
       "id": "20260620J",
@@ -2155,20 +2210,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260620J/article.html",
       "category": "Drivers",
-      "wordCount": 665,
-      "readingTime": "4 min",
-      "imageWidth": 1536,
-      "imageHeight": 1024,
-      "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024,
-      "_buildHash": "854f937cd80354bbe43a32212a2f778bf6935db0423afec5a58817cec6c52338",
       "categories": [
         "Drivers"
       ],
       "tags": [
         "F1",
         "Driver"
-      ]
+      ],
+      "wordCount": 665,
+      "readingTime": "4 min",
+      "imageWidth": 1536,
+      "imageHeight": 1024,
+      "backgroundImageWidth": 1536,
+      "backgroundImageHeight": 1024
     },
     {
       "id": "20260619W",
@@ -2183,13 +2237,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260619W/article.html",
       "category": "2026",
-      "wordCount": 722,
-      "readingTime": "4 min",
-      "imageWidth": 739,
-      "imageHeight": 415,
-      "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 904,
-      "_buildHash": "2c92c0130699d68e337924096310a40108ce0ef0252f0e893d7fe5fdbfa71bff",
       "categories": [
         "2026"
       ],
@@ -2200,7 +2247,13 @@
         "Lewis Hamilton",
         "2026 season",
         "Carlo Santi"
-      ]
+      ],
+      "wordCount": 722,
+      "readingTime": "4 min",
+      "imageWidth": 739,
+      "imageHeight": 415,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 904
     },
     {
       "id": "20260618W",
@@ -2215,13 +2268,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260618W/article.html",
       "category": "History",
-      "wordCount": 388,
-      "readingTime": "2 min",
-      "imageWidth": 635,
-      "imageHeight": 381,
-      "backgroundImageWidth": 640,
-      "backgroundImageHeight": 639,
-      "_buildHash": "f0ff927cf5aa33c74f3a77a3152b4eee9e249399c3f2ae9e0b60b60d80cdb803",
       "categories": [
         "History"
       ],
@@ -2232,7 +2278,13 @@
         "00s",
         "Michael Schumacher",
         "Mika Hakkinen"
-      ]
+      ],
+      "wordCount": 388,
+      "readingTime": "2 min",
+      "imageWidth": 635,
+      "imageHeight": 381,
+      "backgroundImageWidth": 640,
+      "backgroundImageHeight": 639
     },
     {
       "id": "20260616W",
@@ -2247,13 +2299,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260616W/article.html",
       "category": "History",
-      "wordCount": 422,
-      "readingTime": "3 min",
-      "imageWidth": 437,
-      "imageHeight": 575,
-      "backgroundImageWidth": 2491,
-      "backgroundImageHeight": 1619,
-      "_buildHash": "65b956cea6e2efab4d90c2ad70e9a482413c68925e9260bbbd884b215e3a62b7",
       "categories": [
         "History"
       ],
@@ -2264,7 +2309,13 @@
         "Legends",
         "Prost",
         "Senna"
-      ]
+      ],
+      "wordCount": 422,
+      "readingTime": "3 min",
+      "imageWidth": 437,
+      "imageHeight": 575,
+      "backgroundImageWidth": 2491,
+      "backgroundImageHeight": 1619
     },
     {
       "id": "20260614W",
@@ -2279,13 +2330,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260614W/article.html",
       "category": "2026",
-      "wordCount": 742,
-      "readingTime": "4 min",
-      "imageWidth": 1092,
-      "imageHeight": 683,
-      "backgroundImageWidth": 3392,
-      "backgroundImageHeight": 1908,
-      "_buildHash": "f4414b8c99032010576cf90f43377681ad784d75d5afd38ffdf48ce63b260280",
       "categories": [
         "2026"
       ],
@@ -2294,7 +2338,13 @@
         "Racing",
         "Kimi Antonelli",
         "2026 Championship"
-      ]
+      ],
+      "wordCount": 742,
+      "readingTime": "4 min",
+      "imageWidth": 1092,
+      "imageHeight": 683,
+      "backgroundImageWidth": 3392,
+      "backgroundImageHeight": 1908
     },
     {
       "id": "20260613J",
@@ -2309,20 +2359,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260613J/article.html",
       "category": "Betting",
-      "wordCount": 92,
-      "readingTime": "1 min",
-      "imageWidth": 1672,
-      "imageHeight": 941,
-      "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941,
-      "_buildHash": "ed262d7f4d7f060e26fd6fd343af10da11bf52a18209f2c1b26731556702c63d",
       "categories": [
         "Betting"
       ],
       "tags": [
         "F1",
         "Betcast"
-      ]
+      ],
+      "wordCount": 92,
+      "readingTime": "1 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
     },
     {
       "id": "20260612W",
@@ -2337,13 +2386,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260612W/article.html",
       "category": "History",
-      "wordCount": 638,
-      "readingTime": "4 min",
-      "imageWidth": 1600,
-      "imageHeight": 1050,
-      "backgroundImageWidth": 620,
-      "backgroundImageHeight": 462,
-      "_buildHash": "f8c73fbcaf0be3909d105c0771efa2ffe9418d07375ff0accacc45b9a5b11457",
       "categories": [
         "History"
       ],
@@ -2353,7 +2395,13 @@
         "Le mans legends",
         "Jochen Rindt",
         "F1 Champions"
-      ]
+      ],
+      "wordCount": 638,
+      "readingTime": "4 min",
+      "imageWidth": 1600,
+      "imageHeight": 1050,
+      "backgroundImageWidth": 620,
+      "backgroundImageHeight": 462
     },
     {
       "id": "20260611W",
@@ -2368,13 +2416,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260611W/article.html",
       "category": "History",
-      "wordCount": 789,
-      "readingTime": "4 min",
-      "imageWidth": 1080,
-      "imageHeight": 709,
-      "backgroundImageWidth": 1080,
-      "backgroundImageHeight": 1405,
-      "_buildHash": "506c7c6de0e03735bae52a2fcc431bc8914c66542eca159b6f5f446f6c129a74",
       "categories": [
         "History"
       ],
@@ -2383,7 +2424,13 @@
         "Racing",
         "Le mans",
         "Racing History"
-      ]
+      ],
+      "wordCount": 789,
+      "readingTime": "4 min",
+      "imageWidth": 1080,
+      "imageHeight": 709,
+      "backgroundImageWidth": 1080,
+      "backgroundImageHeight": 1405
     },
     {
       "id": "20260610W",
@@ -2398,13 +2445,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260610W/article.html",
       "category": "History",
-      "wordCount": 174,
-      "readingTime": "1 min",
-      "imageWidth": 470,
-      "imageHeight": 287,
-      "backgroundImageWidth": 2400,
-      "backgroundImageHeight": 1350,
-      "_buildHash": "19bdb4e3166777187d80fe2780963c87ec0918c877f4e8b604ce3ef0e7a93130",
       "categories": [
         "History"
       ],
@@ -2413,7 +2453,13 @@
         "Racing",
         "Alain Prost",
         "F1 legends"
-      ]
+      ],
+      "wordCount": 174,
+      "readingTime": "1 min",
+      "imageWidth": 470,
+      "imageHeight": 287,
+      "backgroundImageWidth": 2400,
+      "backgroundImageHeight": 1350
     },
     {
       "id": "20260610G",
@@ -2428,20 +2474,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260610G/article.html",
       "category": "News",
-      "wordCount": 2645,
-      "readingTime": "14 min",
-      "imageWidth": 1672,
-      "imageHeight": 941,
-      "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941,
-      "_buildHash": "a86adb2a16011ed76819fc42e153daf18e92e150fdb14b5a35e526faa3e0c48f",
       "categories": [
         "News"
       ],
       "tags": [
         "F1",
         "Racing"
-      ]
+      ],
+      "wordCount": 2645,
+      "readingTime": "14 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
     },
     {
       "id": "20260610-2J",
@@ -2456,20 +2501,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260610-2J/article.html",
       "category": "Drivers",
-      "wordCount": 883,
-      "readingTime": "5 min",
-      "imageWidth": 1536,
-      "imageHeight": 1024,
-      "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024,
-      "_buildHash": "a39672ba8352db8986100c7ca8601cab68bdd3b5a92926e4c1d2e16ace4a98d1",
       "categories": [
         "Drivers"
       ],
       "tags": [
         "F1",
         "Driver"
-      ]
+      ],
+      "wordCount": 883,
+      "readingTime": "5 min",
+      "imageWidth": 1536,
+      "imageHeight": 1024,
+      "backgroundImageWidth": 1536,
+      "backgroundImageHeight": 1024
     },
     {
       "id": "20260608W",
@@ -2484,13 +2528,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260608W/article.html",
       "category": "2026",
-      "wordCount": 630,
-      "readingTime": "4 min",
-      "imageWidth": 1920,
-      "imageHeight": 1080,
-      "backgroundImageWidth": 864,
-      "backgroundImageHeight": 486,
-      "_buildHash": "97981cc9cf1c71b161bf7f6e4ce0110502fe6af031a5b4b89834aef1612cee83",
       "categories": [
         "2026"
       ],
@@ -2499,7 +2536,13 @@
         "Racing",
         "Lewis Hamilton",
         "Ferrari F1"
-      ]
+      ],
+      "wordCount": 630,
+      "readingTime": "4 min",
+      "imageWidth": 1920,
+      "imageHeight": 1080,
+      "backgroundImageWidth": 864,
+      "backgroundImageHeight": 486
     },
     {
       "id": "20260607D",
@@ -2514,20 +2557,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260607D/article.html",
       "category": "Opinion",
-      "wordCount": 607,
-      "readingTime": "4 min",
-      "imageWidth": 533,
-      "imageHeight": 717,
-      "backgroundImageWidth": 533,
-      "backgroundImageHeight": 717,
-      "_buildHash": "ec177384eba1bd36baf2174368a7195eaf2caec416257062690de2fa49220382",
       "categories": [
         "Opinion"
       ],
       "tags": [
         "F1",
         "Racing"
-      ]
+      ],
+      "wordCount": 607,
+      "readingTime": "4 min",
+      "imageWidth": 533,
+      "imageHeight": 717,
+      "backgroundImageWidth": 533,
+      "backgroundImageHeight": 717
     },
     {
       "id": "20260606J",
@@ -2542,20 +2584,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260606J/article.html",
       "category": "Betting",
-      "wordCount": 84,
-      "readingTime": "1 min",
-      "imageWidth": 1536,
-      "imageHeight": 1024,
-      "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024,
-      "_buildHash": "951854a7809c0395a50f02dd57b42fd4c2c4d70ac72f6023a4213755287bb03b",
       "categories": [
         "Betting"
       ],
       "tags": [
         "F1",
         "Racing"
-      ]
+      ],
+      "wordCount": 84,
+      "readingTime": "1 min",
+      "imageWidth": 1536,
+      "imageHeight": 1024,
+      "backgroundImageWidth": 1536,
+      "backgroundImageHeight": 1024
     },
     {
       "id": "20260605W",
@@ -2570,13 +2611,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260605W/article.html",
       "category": "History",
-      "wordCount": 526,
-      "readingTime": "3 min",
-      "imageWidth": 1080,
-      "imageHeight": 738,
-      "backgroundImageWidth": 1080,
-      "backgroundImageHeight": 726,
-      "_buildHash": "6f91854e67c13a9a17747bbc100ad41f554246f5dc62fac61f30bb404e7a9d73",
       "categories": [
         "History"
       ],
@@ -2588,7 +2622,13 @@
         "Fittipaldi",
         "Lotus",
         "McLaren"
-      ]
+      ],
+      "wordCount": 526,
+      "readingTime": "3 min",
+      "imageWidth": 1080,
+      "imageHeight": 738,
+      "backgroundImageWidth": 1080,
+      "backgroundImageHeight": 726
     },
     {
       "id": "20260605G",
@@ -2603,19 +2643,18 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260605G/article.html",
       "category": "2026",
-      "wordCount": 2968,
-      "readingTime": "15 min",
-      "imageWidth": 1672,
-      "imageHeight": 941,
-      "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941,
-      "_buildHash": "6f660ba0756f81c1a22e4e4d5586cd7a3903d15a69bed6ea30fd77baa5b71ff8",
       "categories": [
         "2026"
       ],
       "tags": [
         "F1"
-      ]
+      ],
+      "wordCount": 2968,
+      "readingTime": "15 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
     },
     {
       "id": "20260605-2W",
@@ -2630,13 +2669,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260605-2W/article.html",
       "category": "History",
-      "wordCount": 750,
-      "readingTime": "4 min",
-      "imageWidth": 2560,
-      "imageHeight": 1440,
-      "backgroundImageWidth": 1200,
-      "backgroundImageHeight": 795,
-      "_buildHash": "5a37851ea3ef9ebbffeeb35dc71237a75981f3f4a8984d2e265c30703d4e5ea1",
       "categories": [
         "History"
       ],
@@ -2644,7 +2676,13 @@
         "F1",
         "Racing",
         "Gp Monaco"
-      ]
+      ],
+      "wordCount": 750,
+      "readingTime": "4 min",
+      "imageWidth": 2560,
+      "imageHeight": 1440,
+      "backgroundImageWidth": 1200,
+      "backgroundImageHeight": 795
     },
     {
       "id": "20260605",
@@ -2659,19 +2697,18 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260605/article.html",
       "category": "2026",
-      "wordCount": 2857,
-      "readingTime": "15 min",
-      "imageWidth": 1672,
-      "imageHeight": 941,
-      "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941,
-      "_buildHash": "8fe27ca8812c2eef0913d20c21447f312430b35bfdf00fc0debf8c1f024cbb65",
       "categories": [
         "2026"
       ],
       "tags": [
         "F1"
-      ]
+      ],
+      "wordCount": 2857,
+      "readingTime": "15 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
     },
     {
       "id": "20260604T",
@@ -2686,19 +2723,18 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260604T/article.html",
       "category": "2026",
-      "wordCount": 2470,
-      "readingTime": "13 min",
-      "imageWidth": 1672,
-      "imageHeight": 941,
-      "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941,
-      "_buildHash": "47a173f857e322bbd49295e6e924a6e5f9f71b90f32fe719fe52a483e90a706e",
       "categories": [
         "2026"
       ],
       "tags": [
         "F1"
-      ]
+      ],
+      "wordCount": 2470,
+      "readingTime": "13 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
     },
     {
       "id": "20260604G",
@@ -2713,19 +2749,18 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260604G/article.html",
       "category": "2026",
-      "wordCount": 2216,
-      "readingTime": "12 min",
-      "imageWidth": 1672,
-      "imageHeight": 941,
-      "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941,
-      "_buildHash": "37f3363c3575cda4ddfa4dbc394787e9b325fac413cc0935a53832cbca9f6e51",
       "categories": [
         "2026"
       ],
       "tags": [
         "F1"
-      ]
+      ],
+      "wordCount": 2216,
+      "readingTime": "12 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
     },
     {
       "id": "20260604",
@@ -2740,19 +2775,18 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260604/article.html",
       "category": "2026",
-      "wordCount": 2614,
-      "readingTime": "14 min",
-      "imageWidth": 1672,
-      "imageHeight": 941,
-      "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941,
-      "_buildHash": "21a4bdae0f5251f62a4d7cc0c2cab328fb5c3765a23d60791b73053b842d7117",
       "categories": [
         "2026"
       ],
       "tags": [
         "F1"
-      ]
+      ],
+      "wordCount": 2614,
+      "readingTime": "14 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
     },
     {
       "id": "20260603W",
@@ -2767,13 +2801,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260603W/article.html",
       "category": "News",
-      "wordCount": 264,
-      "readingTime": "2 min",
-      "imageWidth": 739,
-      "imageHeight": 415,
-      "backgroundImageWidth": 3840,
-      "backgroundImageHeight": 2586,
-      "_buildHash": "75655f0a1c9d748cb3390ec50a6666c89edb3c25e8f2d83e86cc6d9188472270",
       "categories": [
         "News"
       ],
@@ -2784,7 +2811,13 @@
         "Ayrton Senna",
         "80s",
         "Monaco"
-      ]
+      ],
+      "wordCount": 264,
+      "readingTime": "2 min",
+      "imageWidth": 739,
+      "imageHeight": 415,
+      "backgroundImageWidth": 3840,
+      "backgroundImageHeight": 2586
     },
     {
       "id": "20260602W",
@@ -2799,13 +2832,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260602W/article.html",
       "category": "News",
-      "wordCount": 352,
-      "readingTime": "2 min",
-      "imageWidth": 3392,
-      "imageHeight": 1908,
-      "backgroundImageWidth": 2048,
-      "backgroundImageHeight": 1152,
-      "_buildHash": "74cd3a26429be8d7d07c04bf214406444a1db3b4de872afe570422c611304691",
       "categories": [
         "News"
       ],
@@ -2814,7 +2840,13 @@
         "Racing",
         "Mercedes AMG Petronas",
         "2022 season"
-      ]
+      ],
+      "wordCount": 352,
+      "readingTime": "2 min",
+      "imageWidth": 3392,
+      "imageHeight": 1908,
+      "backgroundImageWidth": 2048,
+      "backgroundImageHeight": 1152
     },
     {
       "id": "20260601W",
@@ -2829,13 +2861,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260601W/article.html",
       "category": "History",
-      "wordCount": 284,
-      "readingTime": "2 min",
-      "imageWidth": 720,
-      "imageHeight": 1043,
-      "backgroundImageWidth": 1500,
-      "backgroundImageHeight": 1000,
-      "_buildHash": "4907d1331882bd93b773dd1031394dcc8b857278275044c7da9f286cb00c1e4c",
       "categories": [
         "History"
       ],
@@ -2845,7 +2870,13 @@
         "Racing",
         "Racing legend",
         "80s"
-      ]
+      ],
+      "wordCount": 284,
+      "readingTime": "2 min",
+      "imageWidth": 720,
+      "imageHeight": 1043,
+      "backgroundImageWidth": 1500,
+      "backgroundImageHeight": 1000
     },
     {
       "id": "20260531W",
@@ -2860,13 +2891,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260531W/article.html",
       "category": "News",
-      "wordCount": 509,
-      "readingTime": "3 min",
-      "imageWidth": 1600,
-      "imageHeight": 900,
-      "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900,
-      "_buildHash": "ad72c67a24be3b56e569aa840cbda04630df3084736589f5c1dc0265f07fc66f",
       "categories": [
         "News"
       ],
@@ -2875,7 +2899,13 @@
         "Racing",
         "Muggello",
         "Aprillia"
-      ]
+      ],
+      "wordCount": 509,
+      "readingTime": "3 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
     },
     {
       "id": "20260530W",
@@ -2890,20 +2920,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260530W/article.html",
       "category": "News",
-      "wordCount": 590,
-      "readingTime": "3 min",
-      "imageWidth": 441,
-      "imageHeight": 453,
-      "backgroundImageWidth": 596,
-      "backgroundImageHeight": 335,
-      "_buildHash": "ca5f34f6a28698fb206140a6911298644068ad8961e9f719113d8ea120f238df",
       "categories": [
         "News"
       ],
       "tags": [
         "F1",
         "Racing"
-      ]
+      ],
+      "wordCount": 590,
+      "readingTime": "3 min",
+      "imageWidth": 441,
+      "imageHeight": 453,
+      "backgroundImageWidth": 596,
+      "backgroundImageHeight": 335
     },
     {
       "id": "20260526D",
@@ -2918,20 +2947,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260526D/article.html",
       "category": "Opinion",
-      "wordCount": 756,
-      "readingTime": "4 min",
-      "imageWidth": 1536,
-      "imageHeight": 1024,
-      "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024,
-      "_buildHash": "ad2e059dd5d0b180979da7a44a5eb787d9b8d8c9325a300b41abe3e7a35c4ac5",
       "categories": [
         "Opinion"
       ],
       "tags": [
         "F1",
         "Racing"
-      ]
+      ],
+      "wordCount": 756,
+      "readingTime": "4 min",
+      "imageWidth": 1536,
+      "imageHeight": 1024,
+      "backgroundImageWidth": 1536,
+      "backgroundImageHeight": 1024
     },
     {
       "id": "20260525W",
@@ -2946,13 +2974,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260525W/article.html",
       "category": "News",
-      "wordCount": 605,
-      "readingTime": "4 min",
-      "imageWidth": 720,
-      "imageHeight": 405,
-      "backgroundImageWidth": 1280,
-      "backgroundImageHeight": 720,
-      "_buildHash": "e52b911af704b99d85d11db98d2cd18d1e4469bbc2ac4baa2b925df09978efb5",
       "categories": [
         "News"
       ],
@@ -2961,7 +2982,13 @@
         "Racing",
         "Kimi Antonelli",
         "Mercedes f1"
-      ]
+      ],
+      "wordCount": 605,
+      "readingTime": "4 min",
+      "imageWidth": 720,
+      "imageHeight": 405,
+      "backgroundImageWidth": 1280,
+      "backgroundImageHeight": 720
     },
     {
       "id": "20260525-2W",
@@ -2976,13 +3003,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260525-2W/article.html",
       "category": "News",
-      "wordCount": 362,
-      "readingTime": "2 min",
-      "imageWidth": 2550,
-      "imageHeight": 1435,
-      "backgroundImageWidth": 800,
-      "backgroundImageHeight": 533,
-      "_buildHash": "b0f1779dbfd810dcfa572aecda56dbefb946c7b91b06483b6fb5bc085ba72349",
       "categories": [
         "News"
       ],
@@ -2992,7 +3012,13 @@
         "Patrick Tambay",
         "80s",
         "Ferrari"
-      ]
+      ],
+      "wordCount": 362,
+      "readingTime": "2 min",
+      "imageWidth": 2550,
+      "imageHeight": 1435,
+      "backgroundImageWidth": 800,
+      "backgroundImageHeight": 533
     },
     {
       "id": "20260523J",
@@ -3007,20 +3033,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260523J/article.html",
       "category": "Betting",
-      "wordCount": 52,
-      "readingTime": "1 min",
-      "imageWidth": 1536,
-      "imageHeight": 1024,
-      "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024,
-      "_buildHash": "e827eeb0a6f8528345745bd512750a794f83147d6c011f1ecead3d91356ceea1",
       "categories": [
         "Betting"
       ],
       "tags": [
         "F1",
         "Racing"
-      ]
+      ],
+      "wordCount": 52,
+      "readingTime": "1 min",
+      "imageWidth": 1536,
+      "imageHeight": 1024,
+      "backgroundImageWidth": 1536,
+      "backgroundImageHeight": 1024
     },
     {
       "id": "20260515W",
@@ -3035,13 +3060,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260515W/article.html",
       "category": "History",
-      "wordCount": 495,
-      "readingTime": "3 min",
-      "imageWidth": 678,
-      "imageHeight": 452,
-      "backgroundImageWidth": 681,
-      "backgroundImageHeight": 450,
-      "_buildHash": "78dc21591a7d814fca5e4cef7f624298d475650e0ea033a9c8108826c677d89a",
       "categories": [
         "History"
       ],
@@ -3051,7 +3069,13 @@
         "Helmut Marko",
         "Red bull",
         "F1 legend"
-      ]
+      ],
+      "wordCount": 495,
+      "readingTime": "3 min",
+      "imageWidth": 678,
+      "imageHeight": 452,
+      "backgroundImageWidth": 681,
+      "backgroundImageHeight": 450
     },
     {
       "id": "20260513W",
@@ -3066,13 +3090,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260513W/article.html",
       "category": "News",
-      "wordCount": 363,
-      "readingTime": "2 min",
-      "imageWidth": 1920,
-      "imageHeight": 1280,
-      "backgroundImageWidth": 1920,
-      "backgroundImageHeight": 1358,
-      "_buildHash": "2cbd5f9186df24536c7d0a336ef5c368952225b63dfcffdf545015936319a07b",
       "categories": [
         "News"
       ],
@@ -3082,7 +3099,13 @@
         "Miami gp",
         "Bortoleto",
         "Audi F1"
-      ]
+      ],
+      "wordCount": 363,
+      "readingTime": "2 min",
+      "imageWidth": 1920,
+      "imageHeight": 1280,
+      "backgroundImageWidth": 1920,
+      "backgroundImageHeight": 1358
     },
     {
       "id": "20260513J",
@@ -3097,20 +3120,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260513J/article.html",
       "category": "News",
-      "wordCount": 425,
-      "readingTime": "3 min",
-      "imageWidth": 1672,
-      "imageHeight": 941,
-      "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941,
-      "_buildHash": "e6a4389263a9fb5291dd106fe12900ee3c4dd3582dd74b43523005d49352cfe4",
       "categories": [
         "News"
       ],
       "tags": [
         "F1",
         "Racing"
-      ]
+      ],
+      "wordCount": 425,
+      "readingTime": "3 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
     },
     {
       "id": "20260511W",
@@ -3125,13 +3147,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260511W/article.html",
       "category": "News",
-      "wordCount": 818,
-      "readingTime": "5 min",
-      "imageWidth": 693,
-      "imageHeight": 442,
-      "backgroundImageWidth": 1500,
-      "backgroundImageHeight": 1034,
-      "_buildHash": "1136f037dc9ef56aa94721a5a00e63aaf738c9c4e0cde3cfbc8367c907f45912",
       "categories": [
         "News"
       ],
@@ -3142,7 +3157,13 @@
         "Lewis Hamilton",
         "Mercedes Amg F1",
         "Red bull Racing"
-      ]
+      ],
+      "wordCount": 818,
+      "readingTime": "5 min",
+      "imageWidth": 693,
+      "imageHeight": 442,
+      "backgroundImageWidth": 1500,
+      "backgroundImageHeight": 1034
     },
     {
       "id": "20260508W",
@@ -3157,13 +3178,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260508W/article.html",
       "category": "History",
-      "wordCount": 194,
-      "readingTime": "1 min",
-      "imageWidth": 1080,
-      "imageHeight": 687,
-      "backgroundImageWidth": 1080,
-      "backgroundImageHeight": 701,
-      "_buildHash": "80f2f2f6cfbee3ab3c93cd597ffec23f97b4d9df1c8e2b4a406cccb1d1d674a7",
       "categories": [
         "History"
       ],
@@ -3173,7 +3187,13 @@
         "80ς",
         "McLaren",
         "Turbo era"
-      ]
+      ],
+      "wordCount": 194,
+      "readingTime": "1 min",
+      "imageWidth": 1080,
+      "imageHeight": 687,
+      "backgroundImageWidth": 1080,
+      "backgroundImageHeight": 701
     },
     {
       "id": "20260507D",
@@ -3188,20 +3208,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260507D/article.html",
       "category": "Opinion",
-      "wordCount": 387,
-      "readingTime": "2 min",
-      "imageWidth": 1536,
-      "imageHeight": 1024,
-      "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024,
-      "_buildHash": "41a1423098e2bdd3310cec0b51d4df38edd3e5d6ce4252e0b132cf73d9291721",
       "categories": [
         "Opinion"
       ],
       "tags": [
         "F1",
         "Racing"
-      ]
+      ],
+      "wordCount": 387,
+      "readingTime": "2 min",
+      "imageWidth": 1536,
+      "imageHeight": 1024,
+      "backgroundImageWidth": 1536,
+      "backgroundImageHeight": 1024
     },
     {
       "id": "20260506J",
@@ -3216,20 +3235,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260506J/article.html",
       "category": "News",
-      "wordCount": 680,
-      "readingTime": "4 min",
-      "imageWidth": 1672,
-      "imageHeight": 941,
-      "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941,
-      "_buildHash": "da7edd11c3e25bc7da8cbeab061e1cfce1ff5303ad7db42874917b05595c2fa3",
       "categories": [
         "News"
       ],
       "tags": [
         "F1",
         "Racing"
-      ]
+      ],
+      "wordCount": 680,
+      "readingTime": "4 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
     },
     {
       "id": "20260506-2W",
@@ -3244,13 +3262,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260506-2W/article.html",
       "category": "News",
-      "wordCount": 386,
-      "readingTime": "2 min",
-      "imageWidth": 596,
-      "imageHeight": 335,
-      "backgroundImageWidth": 635,
-      "backgroundImageHeight": 381,
-      "_buildHash": "8f841980010be4ca12af9a975f266aafcb373719824a2ed002ffbd3c54cda0ba",
       "categories": [
         "News"
       ],
@@ -3260,7 +3271,13 @@
         "Ferrari",
         "Sebastian Vettel",
         "Hungaroring"
-      ]
+      ],
+      "wordCount": 386,
+      "readingTime": "2 min",
+      "imageWidth": 596,
+      "imageHeight": 335,
+      "backgroundImageWidth": 635,
+      "backgroundImageHeight": 381
     },
     {
       "id": "20260502W",
@@ -3275,13 +3292,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260502W/article.html",
       "category": "History",
-      "wordCount": 289,
-      "readingTime": "2 min",
-      "imageWidth": 955,
-      "imageHeight": 617,
-      "backgroundImageWidth": 671,
-      "backgroundImageHeight": 457,
-      "_buildHash": "f6b53c535b67f762fd344da2d0cb79c5d0c1c088a032ad598168f027f46cd264",
       "categories": [
         "History"
       ],
@@ -3291,7 +3301,13 @@
         "Zanardi",
         "legend",
         "Historical"
-      ]
+      ],
+      "wordCount": 289,
+      "readingTime": "2 min",
+      "imageWidth": 955,
+      "imageHeight": 617,
+      "backgroundImageWidth": 671,
+      "backgroundImageHeight": 457
     },
     {
       "id": "20260502J",
@@ -3306,20 +3322,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260502J/article.html",
       "category": "Betting",
-      "wordCount": 0,
-      "readingTime": "1 min",
-      "imageWidth": 1536,
-      "imageHeight": 1024,
-      "backgroundImageWidth": 1536,
-      "backgroundImageHeight": 1024,
-      "_buildHash": "6d3b5c0a2207d67ea9cd644de617c5dffc787684094147dfc2f644957b003755",
       "categories": [
         "Betting"
       ],
       "tags": [
         "F1",
         "BetCast"
-      ]
+      ],
+      "wordCount": 0,
+      "readingTime": "1 min",
+      "imageWidth": 1536,
+      "imageHeight": 1024,
+      "backgroundImageWidth": 1536,
+      "backgroundImageHeight": 1024
     },
     {
       "id": "20260430W",
@@ -3334,13 +3349,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260430W/article.html",
       "category": "News",
-      "wordCount": 289,
-      "readingTime": "2 min",
-      "imageWidth": 1024,
-      "imageHeight": 682,
-      "backgroundImageWidth": 800,
-      "backgroundImageHeight": 533,
-      "_buildHash": "27e3ddc860028625949ddcaf8df529ea96f7b6cb2f5121fd2eb265433cf23e6b",
       "categories": [
         "News"
       ],
@@ -3350,7 +3358,13 @@
         "90ς",
         "Imola",
         "Simtek"
-      ]
+      ],
+      "wordCount": 289,
+      "readingTime": "2 min",
+      "imageWidth": 1024,
+      "imageHeight": 682,
+      "backgroundImageWidth": 800,
+      "backgroundImageHeight": 533
     },
     {
       "id": "20260429W",
@@ -3365,13 +3379,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260429W/article.html",
       "category": "History",
-      "wordCount": 273,
-      "readingTime": "2 min",
-      "imageWidth": 800,
-      "imageHeight": 450,
-      "backgroundImageWidth": 447,
-      "backgroundImageHeight": 447,
-      "_buildHash": "d53f3088fb777d7169c4633fb029fd667b9b97b481553bf8557b7c107c564b96",
       "categories": [
         "History"
       ],
@@ -3380,7 +3387,13 @@
         "Racing",
         "70ς",
         "F1 Legends"
-      ]
+      ],
+      "wordCount": 273,
+      "readingTime": "2 min",
+      "imageWidth": 800,
+      "imageHeight": 450,
+      "backgroundImageWidth": 447,
+      "backgroundImageHeight": 447
     },
     {
       "id": "20260428J",
@@ -3395,19 +3408,18 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260428J/article.html",
       "category": "Opinion",
-      "wordCount": 369,
-      "readingTime": "2 min",
-      "imageWidth": 753,
-      "imageHeight": 494,
-      "backgroundImageWidth": 753,
-      "backgroundImageHeight": 494,
-      "_buildHash": "66d63a37478818d0cd3f4e7fe9f61fb68a9e130ae7cb55bb71a89d893584db00",
       "categories": [
         "Opinion"
       ],
       "tags": [
         "F1"
-      ]
+      ],
+      "wordCount": 369,
+      "readingTime": "2 min",
+      "imageWidth": 753,
+      "imageHeight": 494,
+      "backgroundImageWidth": 753,
+      "backgroundImageHeight": 494
     },
     {
       "id": "20260427G",
@@ -3422,20 +3434,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260427G/article.html",
       "category": "Teams",
-      "wordCount": 831,
-      "readingTime": "5 min",
-      "imageWidth": 528,
-      "imageHeight": 352,
-      "backgroundImageWidth": 528,
-      "backgroundImageHeight": 352,
-      "_buildHash": "29a33e9a687635cb5c0c8aecdba7706081659fd7ff67a7dd943211f9ade7751b",
       "categories": [
         "Teams"
       ],
       "tags": [
         "F1",
         "McLaren"
-      ]
+      ],
+      "wordCount": 831,
+      "readingTime": "5 min",
+      "imageWidth": 528,
+      "imageHeight": 352,
+      "backgroundImageWidth": 528,
+      "backgroundImageHeight": 352
     },
     {
       "id": "20260425-2W",
@@ -3450,13 +3461,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260425-2W/article.html",
       "category": "History",
-      "wordCount": 263,
-      "readingTime": "2 min",
-      "imageWidth": 1080,
-      "imageHeight": 1604,
-      "backgroundImageWidth": 1080,
-      "backgroundImageHeight": 1604,
-      "_buildHash": "72ab12f3329800da3db6d8fa0131e9ce4899391a12c840d172ec46dad831565c",
       "categories": [
         "History"
       ],
@@ -3464,7 +3468,13 @@
         "F1",
         "Racing",
         "90ς"
-      ]
+      ],
+      "wordCount": 263,
+      "readingTime": "2 min",
+      "imageWidth": 1080,
+      "imageHeight": 1604,
+      "backgroundImageWidth": 1080,
+      "backgroundImageHeight": 1604
     },
     {
       "id": "20260423G",
@@ -3479,20 +3489,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260423G/article.html",
       "category": "Teams",
-      "wordCount": 966,
-      "readingTime": "5 min",
-      "imageWidth": 1600,
-      "imageHeight": 899,
-      "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 899,
-      "_buildHash": "853d64a1e4b1ca445b0019a19c28e4b50bee405fa2709d69b0d308366a87a4b9",
       "categories": [
         "Teams"
       ],
       "tags": [
         "F1",
         "Mercedes"
-      ]
+      ],
+      "wordCount": 966,
+      "readingTime": "5 min",
+      "imageWidth": 1600,
+      "imageHeight": 899,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 899
     },
     {
       "id": "20260422G",
@@ -3507,20 +3516,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260422G/article.html",
       "category": "Technical",
-      "wordCount": 1268,
-      "readingTime": "7 min",
-      "imageWidth": 1544,
-      "imageHeight": 1030,
-      "backgroundImageWidth": 1544,
-      "backgroundImageHeight": 1030,
-      "_buildHash": "7bfc29b05d1d931fff43880fec8f1a75424a705e1c4de3ea57e27a300ee2bdd7",
       "categories": [
         "Technical",
         "Teams"
       ],
       "tags": [
         "Ferrari"
-      ]
+      ],
+      "wordCount": 1268,
+      "readingTime": "7 min",
+      "imageWidth": 1544,
+      "imageHeight": 1030,
+      "backgroundImageWidth": 1544,
+      "backgroundImageHeight": 1030
     },
     {
       "id": "20260421-2J",
@@ -3535,20 +3543,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260421-2J/article.html",
       "category": "Drivers",
-      "wordCount": 572,
-      "readingTime": "3 min",
-      "imageWidth": 590,
-      "imageHeight": 393,
-      "backgroundImageWidth": 590,
-      "backgroundImageHeight": 393,
-      "_buildHash": "e2cb185794861e13fdb1a52edd7080ece4225019e8d5865b4ea76a7275e6098d",
       "categories": [
         "Drivers"
       ],
       "tags": [
         "F1",
         "Driver"
-      ]
+      ],
+      "wordCount": 572,
+      "readingTime": "3 min",
+      "imageWidth": 590,
+      "imageHeight": 393,
+      "backgroundImageWidth": 590,
+      "backgroundImageHeight": 393
     },
     {
       "id": "20260420W",
@@ -3563,13 +3570,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260420W/article.html",
       "category": "History",
-      "wordCount": 326,
-      "readingTime": "2 min",
-      "imageWidth": 1080,
-      "imageHeight": 565,
-      "backgroundImageWidth": 1080,
-      "backgroundImageHeight": 565,
-      "_buildHash": "e46c83fa517a34634a62205284ed092a86538897e4ef0e6df36c52b7156db9eb",
       "categories": [
         "History"
       ],
@@ -3578,7 +3578,13 @@
         "Racing",
         "90ς",
         "V12"
-      ]
+      ],
+      "wordCount": 326,
+      "readingTime": "2 min",
+      "imageWidth": 1080,
+      "imageHeight": 565,
+      "backgroundImageWidth": 1080,
+      "backgroundImageHeight": 565
     },
     {
       "id": "20260418W",
@@ -3593,13 +3599,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260418W/article.html",
       "category": "News",
-      "wordCount": 254,
-      "readingTime": "2 min",
-      "imageWidth": 1024,
-      "imageHeight": 676,
-      "backgroundImageWidth": 1024,
-      "backgroundImageHeight": 676,
-      "_buildHash": "63add5d4a12cd6e37ec07bb2d7f694a5e42fff4c7c49476017fd302176429911",
       "categories": [
         "News"
       ],
@@ -3609,7 +3608,13 @@
         "Benetton",
         "Spa",
         "Racing"
-      ]
+      ],
+      "wordCount": 254,
+      "readingTime": "2 min",
+      "imageWidth": 1024,
+      "imageHeight": 676,
+      "backgroundImageWidth": 1024,
+      "backgroundImageHeight": 676
     },
     {
       "id": "20260417W",
@@ -3624,20 +3629,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260417W/article.html",
       "category": "News",
-      "wordCount": 341,
-      "readingTime": "2 min",
-      "imageWidth": 1200,
-      "imageHeight": 900,
-      "backgroundImageWidth": 1200,
-      "backgroundImageHeight": 900,
-      "_buildHash": "a1edffb02ceb3c17191374a026727e91329aa84109314823f060fcfa3e933f68",
       "categories": [
         "News"
       ],
       "tags": [
         "F1",
         "Racing"
-      ]
+      ],
+      "wordCount": 341,
+      "readingTime": "2 min",
+      "imageWidth": 1200,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1200,
+      "backgroundImageHeight": 900
     },
     {
       "id": "20260416W",
@@ -3652,13 +3656,6 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260416W/article.html",
       "category": "History",
-      "wordCount": 410,
-      "readingTime": "3 min",
-      "imageWidth": 1600,
-      "imageHeight": 1067,
-      "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 1067,
-      "_buildHash": "05026b4d95c97cb8dcdd6ccab9687eb5bab11688c7f80a41257641b431058f68",
       "categories": [
         "History",
         "Teams"
@@ -3666,7 +3663,13 @@
       "tags": [
         "Historical",
         "RedBull"
-      ]
+      ],
+      "wordCount": 410,
+      "readingTime": "3 min",
+      "imageWidth": 1600,
+      "imageHeight": 1067,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 1067
     },
     {
       "id": "20260416G",
@@ -3681,18 +3684,17 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260416G/article.html",
       "category": "2026",
+      "categories": [
+        "Drivers",
+        "2026"
+      ],
+      "tags": [],
       "wordCount": 480,
       "readingTime": "3 min",
       "imageWidth": 800,
       "imageHeight": 450,
       "backgroundImageWidth": 800,
-      "backgroundImageHeight": 450,
-      "_buildHash": "984d79ebe936121255d4d968d3a70d94bcfde66647693f3375a6286b738bd784",
-      "categories": [
-        "Drivers",
-        "2026"
-      ],
-      "tags": []
+      "backgroundImageHeight": 450
     },
     {
       "id": "20260415",
@@ -3707,20 +3709,19 @@
       "comments": 0,
       "url": "/blog-module/blog-entries/20260415/article.html",
       "category": "2026",
-      "wordCount": 8,
-      "readingTime": "1 min",
-      "imageWidth": 1080,
-      "imageHeight": 1349,
-      "backgroundImageWidth": 1080,
-      "backgroundImageHeight": 1350,
-      "_buildHash": "17e615b9775de50a57ac4ac2cad04b11b8fff348a94520c1782868b1f0895bc3",
       "categories": [
         "History",
         "2026"
       ],
       "tags": [
         "Historical"
-      ]
+      ],
+      "wordCount": 8,
+      "readingTime": "1 min",
+      "imageWidth": 1080,
+      "imageHeight": 1349,
+      "backgroundImageWidth": 1080,
+      "backgroundImageHeight": 1350
     },
     {
       "id": "20260414W",
@@ -8399,5 +8400,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-09T04:55:30.208Z"
+  "lastUpdated": "2026-09-09T09:57:12.381Z"
 }
