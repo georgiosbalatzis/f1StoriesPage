@@ -43,7 +43,7 @@
     <!-- f1s:fonts-preload:end -->
     <link rel="stylesheet" href="styles.min.css?v=a8ad454a">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="home.min.css?v=a834e394">
+    <link rel="stylesheet" href="home.min.css?v=abdb1ed2">
     <link rel="stylesheet" href="styles/shared-nav.min.css?v=22d9c4c9">
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <script defer src="/scripts/analytics.min.js?v=98a1ee70"></script>
@@ -245,10 +245,12 @@
             <aside class="latest-aside" aria-label="Δευτερεύουσες διαδρομές">
                 <div class="latest-aside-card">
                     <div class="podcast-masthead" aria-hidden="true"><span>ON<br>AIR<span class="editorial-accent">.</span></span><svg class="podcast-wave" viewBox="0 0 100 60" fill="none"><path d="M4 25v10m10-20v30m10-35v40m10-48v56m10-42v28m10-38v48m10-54v60m10-45v30m10-36v42m10-27v12" stroke="currentColor" stroke-width="3"/></svg></div>
-                    <span class="section-kicker">02 / ΤΟ PODCAST</span>
-                    <h3>Η F1 ακούγεται<br>καλύτερα με παρέα.</h3>
-                    <p>Σχόλια, διαφωνίες και συμπεράσματα μετά το Grand Prix, με τη λογική της παρέας αλλά χωρίς εύκολες υπερβολές.</p>
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="cta-button cta-secondary cta-sm latest-aside-button">Δείτε στο YouTube <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></a>
+                    <span class="section-kicker">02 / ΤΟ F1 STORIES ΣΤΟ YOUTUBE</span>
+                    <div class="home-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/l0vNNK6FO3g" title="BetCast #270 Hungaroring — F1 Stories" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+                    <h3>BetCast #270: Hungaroring</h3>
+                    <p class="home-video-meta">Γιάννης Πουλικίδης · Γιώργος Μπαλατζής · πλήρες επεισόδιο</p>
+                    <p>Αγωνιστική πρόβλεψη, ρυθμός και επιλογές πριν από το Grand Prix.</p>
+                    <a href="https://www.youtube.com/watch?v=l0vNNK6FO3g" target="_blank" rel="noopener" class="cta-button cta-secondary cta-sm latest-aside-button">Άνοιξε το επεισόδιο ↗</a>
                 </div>
                 <div class="latest-aside-card latest-aside-card--muted">
                     <div class="data-masthead" aria-hidden="true"><span>THE<br>NUMBERS</span><span>↗</span></div>
@@ -270,21 +272,27 @@
         </div>
         <div class="sponsor-logos">
             <a href="https://georgiosbalatzis.github.io/excavatorsPage/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Χωματουργικά">
+                <span class="sponsor-logo__relation">Χορηγός</span>
                 <img src="/images/sponsors/Balatzis.webp" alt="Μπαλατζής Χωματουργικά" loading="lazy" decoding="async" width="612" height="408">
             </a>
             <a href="https://pourtsidisgenerators.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Πουρτσίδης Γεννήτριες">
+                <span class="sponsor-logo__relation">Συνεργάτης</span>
                 <img src="/images/sponsors/ps.webp" alt="Πουρτσίδης Γεννήτριες" loading="lazy" decoding="async" width="612" height="408">
             </a>
-            <a href="https://georgiosbalatzis.github.io/excavatorsPage/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Δομικά">
+            <a href="https://georgiosbalatzis.github.io/excavatorsPage/#domika" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Δομικά">
+                <span class="sponsor-logo__relation">Powered by</span>
                 <img src="/images/sponsors/BalatzisDomika.webp" alt="Μπαλατζής Δομικά" loading="lazy" decoding="async" width="612" height="408">
             </a>
             <a href="https://ambrosiadis.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Αμβροσιάδης">
+                <span class="sponsor-logo__relation">Συνεργάτης</span>
                 <img src="/images/sponsors/am.webp" alt="Αμβροσιάδης" loading="lazy" decoding="async" width="612" height="408">
             </a>
             <a href="https://www.bedandhome.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Bed and Home">
+                <span class="sponsor-logo__relation">Advertising partner</span>
                 <img src="/images/sponsors/bedhome.webp" alt="Bed and Home" loading="lazy" decoding="async" width="612" height="408">
             </a>
             <a href="https://www.grandrealm.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Grand Realm">
+                <span class="sponsor-logo__relation">Συνεργάτης</span>
                 <img src="/images/sponsors/GrandRealm.webp" alt="Grand Realm" loading="lazy" decoding="async" width="1536" height="1024">
             </a>
         </div>
@@ -297,7 +305,8 @@
         <div class="section-intro team-intro">
             <span class="section-kicker">04 / Η ΠΑΡΕΑ</span>
             <h2>Εκτός πίστας.<br>Εντός θέματος<span class="editorial-accent">.</span></h2>
-            <p class="section-intro__text">Πέντε φωνές, διαφορετικές αφετηρίες, κοινή αγάπη για τη Formula 1.</p>
+            <p class="section-intro__text">Πέντε συντάκτες, πέντε συγκεκριμένες ματιές: τεχνική ανάλυση, άποψη και ιστορία για την ελληνική F1 κοινότητα.</p>
+            <a class="authors-directory-link" href="/authors/">Γνώρισε την ομάδα ↗</a>
         </div>
         <div class="team-row">
             <div class="team-member">
