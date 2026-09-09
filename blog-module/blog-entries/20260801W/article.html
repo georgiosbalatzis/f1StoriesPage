@@ -36,6 +36,7 @@
         "@type": "Article",
         "headline": "Ayrton Senna Ο άνθρωπος που μετέτρεψε την ταχύτητα σε συναίσθημα",
         "description": "Υπάρχουν οδηγοί που κατακτούν Παγκόσμια Πρωταθλήματα. Υπάρχουν οδηγοί που σπάνε ρεκόρ. Και υπάρχουν ελάχιστοι που κατορθώνουν να ξεπεράσουν το ίδιο το άθλημά τους. Ο Ayrton Senna ήταν ένας από αυτούς....",
+        "articleSection": ["History"],
         "image": "https://f1stories.gr/blog-module/blog-entries/20260801W/2.webp",
         "datePublished": "2026-08-01",
         "dateModified": "2026-08-01",
@@ -56,7 +57,6 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
@@ -67,8 +67,6 @@
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=22d9c4c9">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=b5be626c">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" href="2.webp" fetchpriority="high">
@@ -77,6 +75,11 @@
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
 
     <!-- Prevent FOUC -->
+    <!-- f1s:article-editorial:begin -->
+    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=28f86755">
+    <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
 <!-- f1s:icon-sprite:begin -->
@@ -212,7 +215,7 @@
 
 <div class="article-mini-bar" id="article-mini-bar" aria-hidden="true">
     <div class="article-mini-bar__text">
-        <span class="article-mini-bar__category">F1</span>
+        <span class="article-mini-bar__category">History</span>
         <span class="article-mini-bar__title">Ayrton Senna Ο άνθρωπος που μετέτρεψε την ταχύτητα σε συναίσθημα</span>
     </div>
     <button class="article-mini-bar__share" id="article-mini-share" type="button" aria-label="Κοινοποίηση άρθρου">
@@ -236,13 +239,13 @@
                     <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
-                        <span class="article-category-pill">F1</span>
+                        <span class="article-category-pill">History</span>
                     </div>
                     <h1 class="article-title">Ayrton Senna Ο άνθρωπος που μετέτρεψε την ταχύτητα σε συναίσθημα</h1>
                     <p class="article-header-byline"><span>Γράφει</span> Themis Charvalis</p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> August 1, 2026</span>
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> Racing,-F1-legends,-Ayrton-Senna</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=History" class="article-category-link">History</a></span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
                 </div>
@@ -267,15 +270,15 @@
                         <div class="article-rail-card article-rail-meta">
                             <span class="article-rail-label">Article</span>
                             <div class="article-rail-meta-list">
-                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> F1</span>
+                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> History</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> August 1, 2026</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span data-reading-time>5 λεπτά ανάγνωσης</span></span>
                             </div>
                         </div>
 
-                        <div class="article-rail-card article-rail-tags" data-tags="Racing,-F1-legends,-Ayrton-Senna">
-                            <span class="article-rail-label">Tags</span>
-                            <div class="article-tag-list" data-tag-list></div>
+                        <div class="article-rail-card article-rail-tags">
+                            <span class="article-rail-label">Κατηγορίες</span>
+                            <div class="article-tag-list"><a href="/blog-module/blog/index.html?category=History" class="article-tag-chip">History</a></div>
                         </div>
 
                         <div class="article-rail-card article-rail-related">
@@ -418,45 +421,21 @@
             <div class="col-12 related-section-head"><span class="related-section-eyebrow">Επόμενη ανάγνωση</span><h2 class="related-section-title">Σχετικά άρθρα</h2></div>
 
             <div class="col-md-4 mb-4">
-                <a href="/blog-module/blog-entries/20260829W/article.html" class="related-card-link" style="display:block;height:100%;">
+                <a href="/blog-module/blog-entries/20260825W/article.html" class="related-card-link" style="display:block;height:100%;">
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260829W/1.webp"
-                                 alt="RP20 εναντίον R.S.20 Η μάχη για την κορυφή του midfield το 2020"
+                            <img src="/blog-module/blog-entries/20260825W/1.webp"
+                                 alt="Μια μέρα στη Ρουέν"
                                  loading="lazy"
-                                 decoding="async" width="678" height="452"
-                                 data-fallback-src="/blog-module/images/default-blog.jpg">
-                            <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
-                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 5 min</span></div>
-                        </div>
-                        <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 29 Aug 2026</div>
-                            <h3>RP20 εναντίον R.S.20 Η μάχη για την κορυφή του midfield το 2020</h3>
-                            <div class="related-card-footer">
-                                <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
-                                <span class="related-card-author">Themis Charvalis</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 mb-4">
-                <a href="/blog-module/blog-entries/20260828W/article.html" class="related-card-link" style="display:block;height:100%;">
-                    <div class="related-article-card">
-                        
-                        <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260828W/1.webp"
-                                 alt="Phil Hill — Ο Αμερικανός που νίκησε τους φόβους του"
-                                 loading="lazy"
-                                 decoding="async" width="3392" height="1908"
+                                 decoding="async" width="2560" height="1440"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 4 min</span></div>
                         </div>
                         <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 28 Aug 2026</div>
-                            <h3>Phil Hill — Ο Αμερικανός που νίκησε τους φόβους του</h3>
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 25 Aug 2026</div>
+                            <h3>Μια μέρα στη Ρουέν</h3>
                             <div class="related-card-footer">
                                 <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">Themis Charvalis</span>
@@ -466,21 +445,45 @@
                 </a>
             </div>
             <div class="col-md-4 mb-4">
-                <a href="/blog-module/blog-entries/20260827W/article.html" class="related-card-link" style="display:block;height:100%;">
+                <a href="/blog-module/blog-entries/20260716W/article.html" class="related-card-link" style="display:block;height:100%;">
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260827W/1.webp"
-                                 alt="Damon Hill — Ο γιος που χρειάστηκε να γίνει ο ίδιος θρύλος"
+                            <img src="/blog-module/blog-entries/20260716W/1.webp"
+                                 alt="Jonathan Palmer: Ο άνθρωπος που απέδειξε ότι η προσφορά στη Formula 1 δεν μετριέται μόνο με νίκες"
                                  loading="lazy"
-                                 decoding="async" width="1200" height="800"
+                                 decoding="async" width="501" height="399"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
-                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 6 min</span></div>
+                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 4 min</span></div>
                         </div>
                         <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 27 Aug 2026</div>
-                            <h3>Damon Hill — Ο γιος που χρειάστηκε να γίνει ο ίδιος θρύλος</h3>
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 16 Jul 2026</div>
+                            <h3>Jonathan Palmer: Ο άνθρωπος που απέδειξε ότι η προσφορά στη Formula 1 δεν μετριέται μόνο με νίκες</h3>
+                            <div class="related-card-footer">
+                                <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
+                                <span class="related-card-author">Themis Charvalis</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <a href="/blog-module/blog-entries/20260702W/article.html" class="related-card-link" style="display:block;height:100%;">
+                    <div class="related-article-card">
+                        
+                        <div class="related-card-media">
+                            <img src="/blog-module/blog-entries/20260702W/1.webp"
+                                 alt="Silverstone: Εκεί που ξεκίνησαν όλα"
+                                 loading="lazy"
+                                 decoding="async" width="480" height="288"
+                                 data-fallback-src="/blog-module/images/default-blog.jpg">
+                            <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
+                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 4 min</span></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 2 Jul 2026</div>
+                            <h3>Silverstone: Εκεί που ξεκίνησαν όλα</h3>
                             <div class="related-card-footer">
                                 <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">Themis Charvalis</span>

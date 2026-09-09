@@ -1,4 +1,5 @@
 const { path } = require('./shared');
+const { normalizeCategories, isPublicCategory } = require('../taxonomy');
 
 function decodeHtmlEntities(str) {
     return String(str || '')
@@ -28,26 +29,31 @@ function normalizeComparisonText(value) {
 }
 
 function extractMetadata(filename, content) {
+    content = String(content || '').replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n').trimStart();
     const metadata = {};
     const metadataMatch = content.match(/^---\n([\s\S]*?)\n---/);
 
     if (metadataMatch) {
         metadataMatch[1].split('\n').forEach(line => {
-            const parts = line.split(':').map(part => part.trim());
-            if (parts.length >= 2) {
-                const key = parts[0];
-                const value = parts.slice(1).join(':').trim();
+            const separator = line.indexOf(':');
+            if (separator !== -1) {
+                const key = line.slice(0, separator).trim();
+                const value = line.slice(separator + 1).trim();
                 if (key && value) metadata[key] = value;
             }
         });
+        // Explicit front matter is the current authoring contract. A selected
+        // public category is authoritative; detailed tags cannot override it.
+        const categories = metadata.categories
+            ? normalizeCategories(metadata.categories)
+            : isPublicCategory(metadata.category) ? [metadata.category] : [];
+        if (categories.length) metadata.categories = categories;
     } else {
         const cleanContent = content.replace(/^\s+/, '').replace(/\r\n/g, '\n');
-        const allWords = cleanContent.split(/\s+/);
-
-        if (allWords.length >= 1) metadata.tag = allWords[0];
-        if (allWords.length >= 2) metadata.category = allWords[1];
-
         const lines = cleanContent.split('\n');
+        const header = lines[0].match(/^(\S+)(?:\s+([\s\S]*))?$/) || [];
+        metadata.tag = header[1] || '';
+        metadata.category = header[2] || '';
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
             if (!line) continue;

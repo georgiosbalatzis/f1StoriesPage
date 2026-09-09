@@ -36,6 +36,7 @@
         "@type": "Article",
         "headline": "Riccardo Patrese: Περιμένοντας να του χαμογελάσει η τύχη",
         "description": "Υπάρχουν οδηγοί που μοιάζουν προορισμένοι να γίνουν παγκόσμιοι πρωταθλητές από την πρώτη στιγμή που φορούν κράνος. Και υπάρχουν κι εκείνοι που περνούν μια ολόκληρη καριέρα περιμένοντας, υπομένοντας κα...",
+        "articleSection": ["News"],
         "image": "https://f1stories.gr/blog-module/blog-entries/20260708W/2.webp",
         "datePublished": "2026-07-08",
         "dateModified": "2026-07-08",
@@ -56,7 +57,6 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
@@ -67,8 +67,6 @@
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=22d9c4c9">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=b5be626c">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" href="2.webp" fetchpriority="high">
@@ -77,6 +75,11 @@
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
 
     <!-- Prevent FOUC -->
+    <!-- f1s:article-editorial:begin -->
+    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=28f86755">
+    <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
 <!-- f1s:icon-sprite:begin -->
@@ -212,7 +215,7 @@
 
 <div class="article-mini-bar" id="article-mini-bar" aria-hidden="true">
     <div class="article-mini-bar__text">
-        <span class="article-mini-bar__category">F1</span>
+        <span class="article-mini-bar__category">News</span>
         <span class="article-mini-bar__title">Riccardo Patrese: Περιμένοντας να του χαμογελάσει η τύχη</span>
     </div>
     <button class="article-mini-bar__share" id="article-mini-share" type="button" aria-label="Κοινοποίηση άρθρου">
@@ -236,13 +239,13 @@
                     <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
-                        <span class="article-category-pill">F1</span>
+                        <span class="article-category-pill">News</span>
                     </div>
                     <h1 class="article-title">Riccardo Patrese: Περιμένοντας να του χαμογελάσει η τύχη</h1>
                     <p class="article-header-byline"><span>Γράφει</span> Themis Charvalis</p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> July 8, 2026</span>
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> Racing,-Ricardo-Patrese,-Williams-F1,-V10</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
                 </div>
@@ -267,15 +270,15 @@
                         <div class="article-rail-card article-rail-meta">
                             <span class="article-rail-label">Article</span>
                             <div class="article-rail-meta-list">
-                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> F1</span>
+                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> News</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> July 8, 2026</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span data-reading-time>5 λεπτά ανάγνωσης</span></span>
                             </div>
                         </div>
 
-                        <div class="article-rail-card article-rail-tags" data-tags="Racing,-Ricardo-Patrese,-Williams-F1,-V10">
-                            <span class="article-rail-label">Tags</span>
-                            <div class="article-tag-list" data-tag-list></div>
+                        <div class="article-rail-card article-rail-tags">
+                            <span class="article-rail-label">Κατηγορίες</span>
+                            <div class="article-tag-list"><a href="/blog-module/blog/index.html?category=News" class="article-tag-chip">News</a></div>
                         </div>
 
                         <div class="article-rail-card article-rail-related">
@@ -388,6 +391,30 @@
             <div class="col-12 related-section-head"><span class="related-section-eyebrow">Επόμενη ανάγνωση</span><h2 class="related-section-title">Σχετικά άρθρα</h2></div>
 
             <div class="col-md-4 mb-4">
+                <a href="/blog-module/blog-entries/20260715W/article.html" class="related-card-link" style="display:block;height:100%;">
+                    <div class="related-article-card">
+                        
+                        <div class="related-card-media">
+                            <img src="/blog-module/blog-entries/20260715W/1.webp"
+                                 alt="Williams FW16 και Benetton B194: Όταν δύο ιδιοφυΐες συγκρούστηκαν"
+                                 loading="lazy"
+                                 decoding="async" width="1500" height="1500"
+                                 data-fallback-src="/blog-module/images/default-blog.jpg">
+                            <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
+                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 3 min</span></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 15 Jul 2026</div>
+                            <h3>Williams FW16 και Benetton B194: Όταν δύο ιδιοφυΐες συγκρούστηκαν</h3>
+                            <div class="related-card-footer">
+                                <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
+                                <span class="related-card-author">Themis Charvalis</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
                 <a href="/blog-module/blog-entries/20260803W/article.html" class="related-card-link" style="display:block;height:100%;">
                     <div class="related-article-card">
                         
@@ -427,30 +454,6 @@
                         <div class="card-body">
                             <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 2 Aug 2026</div>
                             <h3>Toleman TG184 εναντίον Alfa Romeo 184T</h3>
-                            <div class="related-card-footer">
-                                <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
-                                <span class="related-card-author">Themis Charvalis</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 mb-4">
-                <a href="/blog-module/blog-entries/20260801W/article.html" class="related-card-link" style="display:block;height:100%;">
-                    <div class="related-article-card">
-                        
-                        <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260801W/1.webp"
-                                 alt="Ayrton Senna Ο άνθρωπος που μετέτρεψε την ταχύτητα σε συναίσθημα"
-                                 loading="lazy"
-                                 decoding="async" width="3392" height="1908"
-                                 data-fallback-src="/blog-module/images/default-blog.jpg">
-                            <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
-                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 4 min</span></div>
-                        </div>
-                        <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 1 Aug 2026</div>
-                            <h3>Ayrton Senna Ο άνθρωπος που μετέτρεψε την ταχύτητα σε συναίσθημα</h3>
                             <div class="related-card-footer">
                                 <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">Themis Charvalis</span>

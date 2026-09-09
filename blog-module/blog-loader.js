@@ -126,17 +126,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function createLoadingColumn() {
-        const col = document.createElement('div');
-        col.className = 'col-12 text-center py-4';
-        const spinner = document.createElement('div');
-        spinner.className = 'spinner-border text-light';
-        spinner.setAttribute('role', 'status');
-        const hidden = document.createElement('span');
-        hidden.className = 'visually-hidden';
-        hidden.textContent = 'Φόρτωση άρθρων...';
-        spinner.appendChild(hidden);
-        col.appendChild(spinner);
-        return col;
+        const fragment = document.createDocumentFragment();
+        for (let i = 0; i < 3; i += 1) {
+            const card = document.createElement('div');
+            card.className = 'skeleton-card';
+            card.setAttribute('aria-hidden', 'true');
+            card.innerHTML = '<div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w40"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div>';
+            fragment.appendChild(card);
+        }
+        return fragment;
     }
 
     function createStoryMeta(label, date) {

@@ -218,6 +218,28 @@ YYYYMMDD-1X
 
 όπου το τελικό γράμμα χρησιμοποιείται ως author code.
 
+### Public categories and internal tags
+
+The public taxonomy is defined once in [`blog-module/taxonomy.js`](./blog-module/taxonomy.js): **News / Analysis / Technical / History / Opinion / Betting / Drivers / Teams / 2026**. Archive filters, article labels and links, structured article metadata, and authoring selectors use these exact names. Category links use `/blog-module/blog/index.html?category=History` (substitute any canonical category).
+
+Public `categories` and the primary `category` are separate from `tags`. Driver names, team names, race names, series labels, other seasons, and other detailed terms remain normalized internal tags. They support keyword search and related-article scoring without becoming public category chips. Compact index rows store public category indexes at position 8 and internal search tag indexes at position 9. The `c` dictionary always contains the nine public categories in their defined order; `t` holds the internal search tag dictionary.
+
+New source files use explicit front matter, which the editor writes automatically:
+
+```text
+---
+category: Analysis
+tags: Lewis Hamilton, Ferrari F1
+title: The article title
+---
+
+The article body starts here.
+```
+
+An explicit selected category is authoritative. Legacy two-token headers remain readable; their comma-separated labels are normalized during the build, with aliases such as `Historical` mapped to `History`. The `2026` category comes from explicit metadata, never an article's publication year. Reviewed exceptions for legacy series live alongside the taxonomy rules. Unknown metadata is retained internally, with `News` as the public fallback.
+
+Each blog build refreshes `blog-source-cache.json` with normalized metadata for all articles. Entries without source documents receive taxonomy updates in their existing HTML while retaining the article body and media. `npm run test:taxonomy` checks migration, source round trips, category contracts, and related-article behavior; it also runs as part of `npm run test:blog`.
+
 ### Αναμενόμενα αρχεία ανά post
 
 Ένα folder άρθρου μπορεί να περιλαμβάνει:

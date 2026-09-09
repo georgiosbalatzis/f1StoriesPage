@@ -36,6 +36,7 @@
         "@type": "Article",
         "headline": "Επιστρέφει η Red Bull στη μάχη της κορυφής",
         "description": "Το Grand Prix της Αυστρίας ήταν το πιο σημαντικό αγωνιστικό Σαββατοκύριακο της Red Bull μέχρι στιγμής στη φετινή σεζόν. Στον εντός έδρας αγώνα, η αυστριακή ομάδα παρουσίασε ένα αισθητά βελτιωμένο πρόσ...",
+        "articleSection": ["News"],
         "image": "https://f1stories.gr/blog-module/blog-entries/20260630W/2.webp",
         "datePublished": "2026-06-30",
         "dateModified": "2026-06-30",
@@ -56,7 +57,6 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
@@ -67,8 +67,6 @@
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=22d9c4c9">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=b5be626c">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" href="2.webp" fetchpriority="high">
@@ -77,6 +75,11 @@
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
 
     <!-- Prevent FOUC -->
+    <!-- f1s:article-editorial:begin -->
+    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=28f86755">
+    <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
 <!-- f1s:icon-sprite:begin -->
@@ -212,7 +215,7 @@
 
 <div class="article-mini-bar" id="article-mini-bar" aria-hidden="true">
     <div class="article-mini-bar__text">
-        <span class="article-mini-bar__category">F1</span>
+        <span class="article-mini-bar__category">News</span>
         <span class="article-mini-bar__title">Επιστρέφει η Red Bull στη μάχη της κορυφής</span>
     </div>
     <button class="article-mini-bar__share" id="article-mini-share" type="button" aria-label="Κοινοποίηση άρθρου">
@@ -236,13 +239,13 @@
                     <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
-                        <span class="article-category-pill">F1</span>
+                        <span class="article-category-pill">News</span>
                     </div>
                     <h1 class="article-title">Επιστρέφει η Red Bull στη μάχη της κορυφής</h1>
                     <p class="article-header-byline"><span>Γράφει</span> Themis Charvalis</p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> June 30, 2026</span>
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> Racing,Red-bull,-Max-Verstappen,-Isack-Hadjar</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
                 </div>
@@ -267,15 +270,15 @@
                         <div class="article-rail-card article-rail-meta">
                             <span class="article-rail-label">Article</span>
                             <div class="article-rail-meta-list">
-                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> F1</span>
+                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> News</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> June 30, 2026</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span data-reading-time>5 λεπτά ανάγνωσης</span></span>
                             </div>
                         </div>
 
-                        <div class="article-rail-card article-rail-tags" data-tags="Racing,Red-bull,-Max-Verstappen,-Isack-Hadjar">
-                            <span class="article-rail-label">Tags</span>
-                            <div class="article-tag-list" data-tag-list></div>
+                        <div class="article-rail-card article-rail-tags">
+                            <span class="article-rail-label">Κατηγορίες</span>
+                            <div class="article-tag-list"><a href="/blog-module/blog/index.html?category=News" class="article-tag-chip">News</a></div>
                         </div>
 
                         <div class="article-rail-card article-rail-related">
@@ -398,45 +401,21 @@
             <div class="col-12 related-section-head"><span class="related-section-eyebrow">Επόμενη ανάγνωση</span><h2 class="related-section-title">Σχετικά άρθρα</h2></div>
 
             <div class="col-md-4 mb-4">
-                <a href="/blog-module/blog-entries/20260730W/article.html" class="related-card-link" style="display:block;height:100%;">
+                <a href="/blog-module/blog-entries/20260721W/article.html" class="related-card-link" style="display:block;height:100%;">
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260730W/1.webp"
-                                 alt="Ο ατρόμητος Γάλλος που έκανε τη Formula 1 να ερωτευτεί τις μονομαχίες"
-                                 loading="lazy"
-                                 decoding="async" width="424" height="471"
-                                 data-fallback-src="/blog-module/images/default-blog.jpg">
-                            <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
-                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 4 min</span></div>
-                        </div>
-                        <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 30 Jul 2026</div>
-                            <h3>Ο ατρόμητος Γάλλος που έκανε τη Formula 1 να ερωτευτεί τις μονομαχίες</h3>
-                            <div class="related-card-footer">
-                                <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
-                                <span class="related-card-author">Themis Charvalis</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 mb-4">
-                <a href="/blog-module/blog-entries/20260729W/article.html" class="related-card-link" style="display:block;height:100%;">
-                    <div class="related-article-card">
-                        
-                        <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260729W/1.webp"
-                                 alt="Nino Farina &amp; Tazio Nuvolari"
+                            <img src="/blog-module/blog-entries/20260721W/1.webp"
+                                 alt="Brawn BGP 001 vs Red Bull RB5: Η μάχη δύο αριστουργημάτων της Formula 1"
                                  loading="lazy"
                                  decoding="async" width="640" height="480"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
-                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 4 min</span></div>
+                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 3 min</span></div>
                         </div>
                         <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 29 Jul 2026</div>
-                            <h3>Nino Farina &amp; Tazio Nuvolari</h3>
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 21 Jul 2026</div>
+                            <h3>Brawn BGP 001 vs Red Bull RB5: Η μάχη δύο αριστουργημάτων της Formula 1</h3>
                             <div class="related-card-footer">
                                 <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">Themis Charvalis</span>
@@ -446,21 +425,45 @@
                 </a>
             </div>
             <div class="col-md-4 mb-4">
-                <a href="/blog-module/blog-entries/20260726W/article.html" class="related-card-link" style="display:block;height:100%;">
+                <a href="/blog-module/blog-entries/20260712W/article.html" class="related-card-link" style="display:block;height:100%;">
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260726W/1.webp"
-                                 alt="Ουγγαρία 2026: Το 4-5 της Ferrari ίσως να ήταν η στιγμή που κρίθηκε το πρωτάθλημα"
+                            <img src="/blog-module/blog-entries/20260712W/1.webp"
+                                 alt="Pierre Gasly: Η δεύτερη ευκαιρία που έγινε σύμβολο επιμονής"
                                  loading="lazy"
-                                 decoding="async" width="737" height="416"
+                                 decoding="async" width="1200" height="800"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
-                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 4 min</span></div>
+                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 6 min</span></div>
                         </div>
                         <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 26 Jul 2026</div>
-                            <h3>Ουγγαρία 2026: Το 4-5 της Ferrari ίσως να ήταν η στιγμή που κρίθηκε το πρωτάθλημα</h3>
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 12 Jul 2026</div>
+                            <h3>Pierre Gasly: Η δεύτερη ευκαιρία που έγινε σύμβολο επιμονής</h3>
+                            <div class="related-card-footer">
+                                <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
+                                <span class="related-card-author">Themis Charvalis</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <a href="/blog-module/blog-entries/20260511W/article.html" class="related-card-link" style="display:block;height:100%;">
+                    <div class="related-article-card">
+                        
+                        <div class="related-card-media">
+                            <img src="/blog-module/blog-entries/20260511W/1-card.webp"
+                                 alt="Η Μονομαχία των Τιτάνων"
+                                 loading="lazy"
+                                 decoding="async" width="400" height="255"
+                                 data-fallback-src="/blog-module/images/default-blog.jpg">
+                            <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
+                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 5 min</span></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 11 May 2026</div>
+                            <h3>Η Μονομαχία των Τιτάνων</h3>
                             <div class="related-card-footer">
                                 <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">Themis Charvalis</span>

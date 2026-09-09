@@ -5,6 +5,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { XMLParser } from 'fast-xml-parser';
+import taxonomy from '../../blog-module/taxonomy.js';
+
+const { PUBLIC_CATEGORIES, isPublicCategory, normalizeTags } = taxonomy;
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -212,13 +215,29 @@ function validateReadingTime(label, value) {
     assertCondition(/^\d+\s+min$/i.test(String(value || '')), label, 'readingTime must look like "3 min"');
 }
 
+function validateCategories(value, label) {
+    const categories = requireArray(value, label, { maxLength: PUBLIC_CATEGORIES.length });
+    categories.forEach(category => assertCondition(isPublicCategory(category), label, `unknown public category ${category}`));
+    assertCondition(new Set(categories).size === categories.length, label, 'categories must be unique');
+}
+
+function validateTags(value, label) {
+    const tags = requireArray(value, label, { allowEmpty: true, maxLength: 50 });
+    tags.forEach(tag => requireString({ tag }, 'tag', label, { maxLength: 200 }));
+    assertCondition(JSON.stringify(tags) === JSON.stringify(normalizeTags(tags)), label, 'internal tags must be normalized and unique');
+}
+
 function validateCompactBlogIndex() {
     const relPath = 'blog-module/blog-index-data.json';
     const data = requireObject(readJson(relPath), relPath);
     assertCondition(data.v === 2, relPath, 'v must be 2');
 
     const authors = requireArray(data.a, `${relPath}.a`, { maxLength: 100 });
-    const categories = requireArray(data.c, `${relPath}.c`, { maxLength: 500 });
+    const categories = requireArray(data.c, `${relPath}.c`, { maxLength: PUBLIC_CATEGORIES.length });
+    assertCondition(JSON.stringify(categories) === JSON.stringify(PUBLIC_CATEGORIES), relPath, 'category dictionary must match the ordered public taxonomy');
+    const tags = requireArray(data.t, `${relPath}.t`, { allowEmpty: true, maxLength: 2000 });
+    tags.forEach((tag, index) => requireString({ tag }, 'tag', `${relPath}.t[${index}]`, { maxLength: 200 }));
+    assertCondition(new Set(tags).size === tags.length, relPath, 'internal tag dictionary must be unique');
     authors.forEach((author, index) => requireString({ author }, 'author', `${relPath}.a[${index}]`, { maxLength: 120 }));
     categories.forEach((category, index) => requireString({ category }, 'category', `${relPath}.c[${index}]`, { maxLength: 120 }));
 
@@ -231,7 +250,7 @@ function validateCompactBlogIndex() {
         const label = `${relPath}.p[${index}]`;
         assertCondition(Array.isArray(row), label, 'row must be an array');
         if (!Array.isArray(row)) return;
-        assertCondition(row.length === 9, label, 'row must contain 9 fields');
+        assertCondition(row.length === 10, label, 'row must contain 10 fields (public categories and separate internal search tags)');
 
         const id = row[0];
         if (index === 0) compactBlogFirstPostId = String(id || '');
@@ -258,6 +277,10 @@ function validateCompactBlogIndex() {
                 'category index out of range'
             );
         });
+        assertCondition(new Set(categoryIndexes).size === categoryIndexes.length, label, 'category indexes must be unique');
+        const tagIndexes = requireArray(row[9], `${label}[9]`, { allowEmpty: true, maxLength: 50 });
+        tagIndexes.forEach(tagIndex => assertCondition(isInteger(tagIndex) && tagIndex >= 0 && tagIndex < tags.length, `${label}[9]`, 'internal tag index out of range'));
+        validateTags(tagIndexes.map(tagIndex => tags[tagIndex]), `${label}.tags`);
 
         validatePublicPath(`${label}.article`, `/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`);
     });
@@ -278,8 +301,8 @@ function validateIndexPost(post, label, options = {}) {
     requireString(post, 'excerpt', label, { maxLength: 320 });
     if (!options.homeLatest) {
         validateReadingTime(`${label}.readingTime`, requireString(post, 'readingTime', label, { maxLength: 20 }));
-        const categories = requireArray(post.categories, `${label}.categories`, { maxLength: 20 });
-        categories.forEach((category, index) => requireString({ category }, 'category', `${label}.categories[${index}]`, { maxLength: 120 }));
+        validateCategories(post.categories, `${label}.categories`);
+        validateTags(post.tags, `${label}.tags`);
     }
 }
 
@@ -296,12 +319,13 @@ function validateBlogFirstPage() {
         assertCondition(totalCount === compactBlogPostCount, relPath, 'totalCount must match compact index post count');
     }
     validateDateTimeString(`${relPath}.lastUpdated`, requireString(data, 'lastUpdated', relPath, { maxLength: 40 }));
-    const categories = requireArray(data.categories, `${relPath}.categories`, { allowEmpty: true, maxLength: 500 });
+    const categories = requireArray(data.categories, `${relPath}.categories`, { maxLength: PUBLIC_CATEGORIES.length });
+    assertCondition(JSON.stringify(categories.map(category => category.name)) === JSON.stringify(PUBLIC_CATEGORIES), relPath, 'filter order must match the public taxonomy');
     categories.forEach((category, index) => {
         const label = `${relPath}.categories[${index}]`;
         requireObject(category, label);
         requireString(category, 'name', label, { maxLength: 120 });
-        requireInteger(category, 'count', label, { min: 1, max: 1000 });
+        requireInteger(category, 'count', label, { min: 0, max: 1000 });
     });
 }
 
@@ -327,6 +351,9 @@ function validateBlogSourceCache() {
         seen.add(id);
         requireString(post, 'title', label, { maxLength: 260 });
         requireString(post, 'author', label, { maxLength: 120 });
+        validateCategories(post.categories, `${label}.categories`);
+        assertCondition(Array.isArray(post.categories) && post.categories.includes(post.category), label, 'primary category must belong to public categories');
+        validateTags(post.tags, `${label}.tags`);
         validateDateString(`${label}.date`, requireString(post, 'date', label, { maxLength: 10 }));
         validateDateString(`${label}.dateISO`, requireString(post, 'dateISO', label, { maxLength: 10 }));
         validatePublicPath(`${label}.url`, requireString(post, 'url', label, { maxLength: 240 }));

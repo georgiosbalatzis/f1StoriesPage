@@ -15,7 +15,8 @@ const {
 const { generateSitemap } = require('./sitemap');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
-const { renderArticleHtml } = require('./article-render');
+const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
+const { PUBLIC_CATEGORIES, getPostTaxonomy } = require('../taxonomy');
 
 function parseBuildOptions(argv = process.argv, env = process.env) {
     const forceRebuild = argv.includes('--force') || argv.includes('-f');
@@ -99,7 +100,7 @@ function fixMissingAuthors(blogPosts) {
 
 async function buildIndexPosts(blogPosts) {
     return Promise.all(blogPosts.map(async post => {
-        const categories = normalizeCategoryList([post.tag, post.category]);
+        const { categories, tags } = getPostTaxonomy(post);
         const thumbnail = getCardThumbnailPath(post.image);
         const thumbnailDimensions = await getImageDimensionsForPublicPath(thumbnail);
         return {
@@ -112,29 +113,10 @@ async function buildIndexPosts(blogPosts) {
             thumbnailHeight: thumbnailDimensions && thumbnailDimensions.height ? thumbnailDimensions.height : 188,
             excerpt: compactExcerpt(post.excerpt),
             readingTime: post.readingTime,
-            categories
+            categories,
+            tags
         };
     }));
-}
-
-function normalizeCategoryList(values) {
-    const categories = [];
-    const seen = new Set();
-
-    (Array.isArray(values) ? values : [values]).forEach(value => {
-        String(value || '')
-            .split(',')
-            .flatMap(part => part.split(/\s+-\s+/))
-            .map(part => part.replace(/^[\s,-]+|[\s,-]+$/g, '').trim())
-            .filter(Boolean)
-            .forEach(category => {
-                if (seen.has(category)) return;
-                seen.add(category);
-                categories.push(category);
-            });
-    });
-
-    return categories;
 }
 
 function formatCategoryToken(token) {
@@ -198,22 +180,19 @@ function summarizeCategories(posts) {
         });
     });
 
-    return Object.keys(counts)
-        .sort((a, b) => {
-            const diff = counts[b] - counts[a];
-            return diff || a.localeCompare(b, 'el');
-        })
-        .map(name => ({ name, count: counts[name] }));
+    return PUBLIC_CATEGORIES.map(name => ({ name, count: counts[name] || 0 }));
 }
 
 function buildCompactIndexData(posts) {
     const authors = Array.from(new Set(posts.map(post => post.author || 'F1 Stories')));
-    const categories = Array.from(new Set(posts.flatMap(post => post.categories || [])));
+    const categories = PUBLIC_CATEGORIES;
+    const tags = Array.from(new Set(posts.flatMap(post => post.tags || [])));
 
     return {
         v: 2,
         a: authors,
         c: categories,
+        t: tags,
         p: posts.map(post => [
             post.id,
             post.title,
@@ -223,7 +202,8 @@ function buildCompactIndexData(posts) {
             post.thumbnailHeight,
             post.excerpt,
             post.readingTime,
-            (post.categories || []).map(category => categories.indexOf(category))
+            (post.categories || []).map(category => categories.indexOf(category)),
+            (post.tags || []).map(tag => tags.indexOf(tag))
         ])
     };
 }
@@ -417,15 +397,23 @@ function loadExistingPosts() {
 }
 
 async function renderCachedArticlePages(cachedPosts) {
-    if (!loadExistingPosts.hasFullContent) return;
-
     let rendered = 0;
     for (const post of cachedPosts) {
         if (!post || !post.id) continue;
-        if (typeof post.content !== 'string' || !post.content.trim()) continue;
         const entryPath = path.join(CONFIG.BLOG_DIR, post.id);
         if (!fs.existsSync(entryPath)) continue;
-        await renderArticleHtml(post, entryPath, post.id);
+        if (typeof post.content === 'string' && post.content.trim()) {
+            await renderArticleHtml(post, entryPath, post.id);
+        } else {
+            // Source-less articles retain their existing body and media. Only owned
+            // taxonomy slots are migrated, including their structured metadata.
+            const articlePath = path.join(entryPath, 'article.html');
+            if (!fs.existsSync(articlePath)) continue;
+            const html = fs.readFileSync(articlePath, 'utf8');
+            const updated = refreshArticleTaxonomy(html, post);
+            if (updated === html) continue;
+            fs.writeFileSync(articlePath, updated);
+        }
         rendered++;
     }
     if (rendered > 0) {
@@ -604,6 +592,10 @@ async function processBlogEntries(options = {}) {
     ];
 
     fixMissingAuthors(blogPosts);
+    blogPosts.forEach(post => {
+        Object.assign(post, getPostTaxonomy(post));
+        delete post.tag;
+    });
     console.log(`\n✅ Total: ${blogPosts.length} posts (${freshPosts.length} built, ${rebuiltSkippedPosts.length} rebuilt from skipped, ${cachedPosts.length} cached)`);
 
     if (blogPosts.length === 0) {
@@ -635,6 +627,16 @@ async function processBlogEntries(options = {}) {
     };
     fs.writeFileSync(CONFIG.OUTPUT_JSON, JSON.stringify(blogData, null, 2));
     console.log(`Blog data saved to ${CONFIG.OUTPUT_JSON}`);
+
+    const sourceCache = {
+        posts: blogPosts.map(({ content, ...metadata }) => metadata),
+        lastUpdated
+    };
+    const previousCache = readJsonIfExists(CONFIG.SOURCE_CACHE_JSON);
+    if (sameJsonExceptKey(previousCache, sourceCache, 'lastUpdated') && previousCache.lastUpdated) {
+        sourceCache.lastUpdated = previousCache.lastUpdated;
+    }
+    fs.writeFileSync(CONFIG.SOURCE_CACHE_JSON, JSON.stringify(sourceCache, null, 2));
 
     const indexPosts = await buildIndexPosts(blogPosts);
     const indexPath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-data.json');

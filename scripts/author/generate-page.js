@@ -41,6 +41,9 @@
     var previewWrap   = document.getElementById('preview-wrapper');
     var authorDom = window.F1S_AUTHOR_DOM_TOOLS;
     var authorDialogs = window.F1S_AUTHOR_DIALOGS;
+    var articleSource = window.F1S_AUTHOR_ARTICLE_SOURCE;
+    var taxonomy = window.F1S_TAXONOMY;
+    var sourceMetadata = {};
 
     if (!authorDom) {
         throw new Error('Author DOM helper failed to load.');
@@ -48,6 +51,15 @@
     if (!authorDialogs) {
         throw new Error('Author dialog helper failed to load.');
     }
+    if (!articleSource || !taxonomy) {
+        throw new Error('Article taxonomy and source helpers failed to load.');
+    }
+    taxonomy.PUBLIC_CATEGORIES.forEach(function (category) {
+        var option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        categoryInput.appendChild(option);
+    });
 
     function showAlert(message, options) {
         return authorDialogs.alert(message, options);
@@ -289,8 +301,9 @@
     // ── Clear ─────────────────────────────────────────────
     clearBtn.addEventListener('click', function () {
         titleInput.value = '';
-        tagInput.value = 'F1';
-        categoryInput.value = 'Racing';
+        tagInput.value = '';
+        categoryInput.value = 'News';
+        sourceMetadata = {};
         contentArea.value = '';
         heroInput.value = '';
         fileText.textContent = 'Κεντρική / thumbnail';
@@ -321,26 +334,11 @@
 
     // ── Import ZIP (reverse of Export) ────────────────────
     function normalizeZipPath(path) {
-        return String(path || '').replace(/\\/g, '/').replace(/^\.\/+/, '').replace(/^\/+/, '');
+        return articleSource.normalizeZipPath(path);
     }
 
-    function parseSourceTxtForImport(text) {
-        var lines = String(text || '').replace(/\r\n/g, '\n').split('\n');
-        var first = (lines[0] || '').trim().split(/\s+/);
-        var tag = (first[0] || 'F1').replace(/-/g, ' ');
-        var category = (first[1] || 'Racing').replace(/-/g, ' ');
-        var titleIdx = -1;
-        for (var i = 1; i < lines.length; i++) {
-            if (lines[i].trim() !== '') { titleIdx = i; break; }
-        }
-        var title = titleIdx !== -1 ? lines[titleIdx].trim() : '';
-        var body = '';
-        if (titleIdx !== -1) {
-            var rest = lines.slice(titleIdx + 1);
-            while (rest.length && rest[0].trim() === '') rest.shift();
-            body = rest.join('\n').replace(/\s+$/, '');
-        }
-        return { tag: tag, category: category, title: title, body: body };
+    function parseSourceTxtForImport(text, folderName) {
+        return articleSource.parseSourceText(text, { id: folderName });
     }
 
     function authorFromFolderName(folderName) {
@@ -406,7 +404,7 @@
                 : String(zipFile.name || '').replace(/\.zip$/i, '');
 
             var sourceText = await entries[sourcePath].async('string');
-            var meta = parseSourceTxtForImport(sourceText);
+            var meta = parseSourceTxtForImport(sourceText, folderName);
 
             // Collect image slots at the top level of the article folder
             var imageEntries = [];
@@ -425,8 +423,9 @@
 
             // Populate text fields
             titleInput.value = meta.title || '';
-            tagInput.value = meta.tag || 'F1';
-            categoryInput.value = meta.category || 'Racing';
+            tagInput.value = meta.tags.join(', ');
+            categoryInput.value = meta.category;
+            sourceMetadata = meta.metadata;
             contentArea.value = meta.body || '';
 
             var authorName = authorFromFolderName(folderName);
@@ -577,17 +576,7 @@
     }
 
     function buildSourceTxt(tag, category, title, body) {
-        // Positional format expected by blog-processor.js:
-        // Line 1: "<Tag> <Category>"  (stripped by convertToHtml, read by extractMetadata)
-        // Blank line
-        // Line 3: "<Title>"           (read by extractMetadata; stripped from body by stripLeadingArticleBoilerplate)
-        // Blank line
-        // Line 5+: body paragraphs
-        var safeTag = (tag || 'F1').replace(/\s+/g, '-');
-        var safeCategory = (category || 'Racing').replace(/\s+/g, '-');
-        var safeTitle = (title || 'Untitled').replace(/\r/g, '');
-        var safeBody = (body || '').replace(/\r/g, '');
-        return safeTag + ' ' + safeCategory + '\n\n' + safeTitle + '\n\n' + safeBody + '\n';
+        return articleSource.buildSourceText(tag, category, title, body, sourceMetadata);
     }
 
     exportBtn.addEventListener('click', async function () {
@@ -603,8 +592,8 @@
         if (!body) { await showAlert('Γράψε το κείμενο του άρθρου πριν από την εξαγωγή.'); contentArea.focus(); return; }
 
         var author = authorSelect.value;
-        var tag = tagInput.value.trim() || 'F1';
-        var category = categoryInput.value.trim() || 'Racing';
+        var tag = tagInput.value.trim();
+        var category = categoryInput.value;
         var authorCode = AUTHOR_CODES[author] || '';
         var folderName = todayYYYYMMDD() + authorCode;
 
@@ -649,7 +638,7 @@
                 'Folder:   ' + folderName + '\n' +
                 'Title:    ' + title + '\n' +
                 'Author:   ' + author + (authorCode ? ' (code: ' + authorCode + ')' : ' (no code)') + '\n' +
-                'Tag:      ' + tag + '\n' +
+                'Internal tags: ' + tag + '\n' +
                 'Category: ' + category + '\n' +
                 'Content images: ' + contentImageFiles.length + ' (markers in source.txt: ' + countMarkers() + ')\n\n' +
                 'To publish:\n' +
@@ -980,8 +969,8 @@
         }
 
         var author = authorSelect.value;
-        var tag = tagInput.value.trim() || 'F1';
-        var category = categoryInput.value.trim() || 'Racing';
+        var tag = tagInput.value.trim();
+        var category = categoryInput.value;
         var authorCode = AUTHOR_CODES[author] || '';
         var baseDate = todayYYYYMMDD();
         var folderName = baseDate + authorCode;
@@ -1072,14 +1061,12 @@
     function renderPreview() {
         var title    = titleInput.value.trim() || 'Untitled Article';
         var author   = authorSelect.value;
-        var tag      = tagInput.value.trim() || 'F1';
-        var category = categoryInput.value.trim() || 'Racing';
+        var category = categoryInput.value;
         var raw      = contentArea.value;
 
         var html = convertContent(raw);
 
         document.getElementById('pv-title').textContent = title;
-        document.getElementById('pv-tag').textContent = tag;
         document.getElementById('pv-category').textContent = category;
         document.getElementById('pv-date').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 

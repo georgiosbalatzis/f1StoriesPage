@@ -118,22 +118,22 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" decoding="async" width="48" height="48"></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="/generate.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-pen-nib"/></svg> Generate</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
-                <a href="/statistics.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Statistics</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+                <a href="/statistics.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Στατιστικά</a>
             </div>
             <div class="blog-nav-right">
                 <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="/generate.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-pen-nib"/></svg> Generate</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
-            <a href="/statistics.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Statistics</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+            <a href="/statistics.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Στατιστικά</a>
             <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
                 <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
                 <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
@@ -175,8 +175,8 @@
                 <button type="button" class="hk-icon-btn" id="hk-filter-close" aria-label="Close filters">×</button>
             </div>
             <label class="hk-filter-field">
-                <span>Tag</span>
-                <select id="hk-filter-tag"><option value="">All tags</option></select>
+                <span>Internal tag</span>
+                <select id="hk-filter-tag"><option value="">All internal tags</option></select>
             </label>
             <label class="hk-filter-field">
                 <span>Category</span>
@@ -222,12 +222,13 @@
 
         <div class="hk-field-row">
             <div class="hk-field">
-                <label>Tag</label>
-                <input type="text" id="hk-edit-tag">
+                <label for="hk-edit-tag">Internal tags (comma separated)</label>
+                <input type="text" id="hk-edit-tag" placeholder="Lewis Hamilton, Ferrari F1" aria-describedby="hk-edit-tag-hint">
+                <small id="hk-edit-tag-hint">Search terms, not public category labels.</small>
             </div>
             <div class="hk-field">
-                <label>Category</label>
-                <input type="text" id="hk-edit-category">
+                <label for="hk-edit-category">Public category</label>
+                <select id="hk-edit-category" required></select>
             </div>
         </div>
         <div class="hk-field-row">
@@ -282,6 +283,9 @@
 <button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Scroll to top"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
 
 <script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/blog-module/taxonomy.min.js?v=d5f2a3cd"></script>
+<script defer src="/scripts/author/article-source.js"></script>
+<script defer src="/scripts/author/article-index.js"></script>
 <script defer src="/scripts/author/housekeeping-page.js"></script>
 </body>
 </html>

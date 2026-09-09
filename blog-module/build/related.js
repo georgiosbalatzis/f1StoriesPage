@@ -1,17 +1,20 @@
 const { fs, path, CONFIG, escapeHtmlAttribute, getCardThumbnailPath, getImageDimensionsForPublicPath } = require('./shared');
+const { getPostTaxonomy } = require('../taxonomy');
 
 function scoreRelatedPosts(blogPosts, post, index) {
+    const taxonomy = getPostTaxonomy(post);
+    const genericTags = new Set(['f1', 'formula 1', 'racing', 'misc', 'random', 'images', 'gallery', 'gp']);
+    const tags = new Set(taxonomy.tags.map(tag => tag.toLocaleLowerCase()).filter(tag => !genericTags.has(tag)));
     const scored = blogPosts
         .filter((_, candidateIndex) => candidateIndex !== index)
         .map(candidate => {
             let score = 0;
-            if (candidate.tag && candidate.tag === post.tag) score += 3;
-            if (candidate.category && candidate.category === post.category) score += 2;
+            const candidateTaxonomy = getPostTaxonomy(candidate);
+            const sharedTags = candidateTaxonomy.tags.filter(tag => tags.has(tag.toLocaleLowerCase()));
+            score += Math.min(sharedTags.length, 3) * 3;
+            if (candidateTaxonomy.category === taxonomy.category) score += 2;
             if (candidate.author && candidate.author === post.author) score += 1;
-            if (post.categories && candidate.categories) {
-                const shared = post.categories.filter(category => candidate.categories.includes(category));
-                score += shared.length;
-            }
+            score += taxonomy.categories.filter(category => candidateTaxonomy.categories.includes(category)).length;
             const daysDiff = Math.abs(new Date(post.date) - new Date(candidate.date)) / (1000 * 60 * 60 * 24);
             if (daysDiff <= 30) score += 1;
             return { post: candidate, score };

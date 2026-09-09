@@ -36,6 +36,7 @@
         "@type": "Article",
         "headline": "Η αρχή είναι το ήμισυ του παντός;",
         "description": "Φέτος θαυμάζουμε τις καταπληκτικές εμφανίσεις του Kimi Antonelli, που του έχουν δώσει μάλιστα ένα σοβαρό προβάδισμα για τον τίτλο. Όμως υπήρξε μια στιγμή όπου θα μπορούσαν όλα να γυρίσουν τουμπα και ο...",
+        "articleSection": ["News"],
         "image": "https://f1stories.gr/blog-module/blog-entries/20260803W/2.webp",
         "datePublished": "2026-08-03",
         "dateModified": "2026-08-03",
@@ -56,7 +57,6 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
@@ -67,8 +67,6 @@
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=22d9c4c9">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=b5be626c">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" href="2.webp" fetchpriority="high">
@@ -77,6 +75,11 @@
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
 
     <!-- Prevent FOUC -->
+    <!-- f1s:article-editorial:begin -->
+    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=28f86755">
+    <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
 <!-- f1s:icon-sprite:begin -->
@@ -212,7 +215,7 @@
 
 <div class="article-mini-bar" id="article-mini-bar" aria-hidden="true">
     <div class="article-mini-bar__text">
-        <span class="article-mini-bar__category">F1</span>
+        <span class="article-mini-bar__category">News</span>
         <span class="article-mini-bar__title">Η αρχή είναι το ήμισυ του παντός;</span>
     </div>
     <button class="article-mini-bar__share" id="article-mini-share" type="button" aria-label="Κοινοποίηση άρθρου">
@@ -236,13 +239,13 @@
                     <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
-                        <span class="article-category-pill">F1</span>
+                        <span class="article-category-pill">News</span>
                     </div>
                     <h1 class="article-title">Η αρχή είναι το ήμισυ του παντός;</h1>
                     <p class="article-header-byline"><span>Γράφει</span> Themis Charvalis</p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> August 3, 2026</span>
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> Racing,-Kimi-Antonelli,-Mercedes</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
                 </div>
@@ -267,15 +270,15 @@
                         <div class="article-rail-card article-rail-meta">
                             <span class="article-rail-label">Article</span>
                             <div class="article-rail-meta-list">
-                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> F1</span>
+                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> News</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> August 3, 2026</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span data-reading-time>5 λεπτά ανάγνωσης</span></span>
                             </div>
                         </div>
 
-                        <div class="article-rail-card article-rail-tags" data-tags="Racing,-Kimi-Antonelli,-Mercedes">
-                            <span class="article-rail-label">Tags</span>
-                            <div class="article-tag-list" data-tag-list></div>
+                        <div class="article-rail-card article-rail-tags">
+                            <span class="article-rail-label">Κατηγορίες</span>
+                            <div class="article-tag-list"><a href="/blog-module/blog/index.html?category=News" class="article-tag-chip">News</a></div>
                         </div>
 
                         <div class="article-rail-card article-rail-related">
@@ -384,21 +387,21 @@
             <div class="col-12 related-section-head"><span class="related-section-eyebrow">Επόμενη ανάγνωση</span><h2 class="related-section-title">Σχετικά άρθρα</h2></div>
 
             <div class="col-md-4 mb-4">
-                <a href="/blog-module/blog-entries/20260901W/article.html" class="related-card-link" style="display:block;height:100%;">
+                <a href="/blog-module/blog-entries/20260704W/article.html" class="related-card-link" style="display:block;height:100%;">
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260901W/1.webp"
-                                 alt="Ο παθιασμένος και επιθετικός Jean Alesi"
+                            <img src="/blog-module/blog-entries/20260704W/1.webp"
+                                 alt="Antrea Kimi Antonelli: Ο νέος κυρίαρχος της F1"
                                  loading="lazy"
-                                 decoding="async" width="500" height="400"
+                                 decoding="async" width="2048" height="1152"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
-                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 6 min</span></div>
+                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 3 min</span></div>
                         </div>
                         <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 1 Sept 2026</div>
-                            <h3>Ο παθιασμένος και επιθετικός Jean Alesi</h3>
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 4 Jul 2026</div>
+                            <h3>Antrea Kimi Antonelli: Ο νέος κυρίαρχος της F1</h3>
                             <div class="related-card-footer">
                                 <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">Themis Charvalis</span>
@@ -408,48 +411,48 @@
                 </a>
             </div>
             <div class="col-md-4 mb-4">
-                <a href="/blog-module/blog-entries/20260829W/article.html" class="related-card-link" style="display:block;height:100%;">
+                <a href="/blog-module/blog-entries/20260525W/article.html" class="related-card-link" style="display:block;height:100%;">
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260829W/1.webp"
-                                 alt="RP20 εναντίον R.S.20 Η μάχη για την κορυφή του midfield το 2020"
+                            <img src="/blog-module/blog-entries/20260525W/1-card.webp"
+                                 alt="Η στιγμή που ο Αντονέλι έπαψε να είναι «το μέλλον»"
                                  loading="lazy"
-                                 decoding="async" width="678" height="452"
-                                 data-fallback-src="/blog-module/images/default-blog.jpg">
-                            <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
-                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 5 min</span></div>
-                        </div>
-                        <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 29 Aug 2026</div>
-                            <h3>RP20 εναντίον R.S.20 Η μάχη για την κορυφή του midfield το 2020</h3>
-                            <div class="related-card-footer">
-                                <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
-                                <span class="related-card-author">Themis Charvalis</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 mb-4">
-                <a href="/blog-module/blog-entries/20260828W/article.html" class="related-card-link" style="display:block;height:100%;">
-                    <div class="related-article-card">
-                        
-                        <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260828W/1.webp"
-                                 alt="Phil Hill — Ο Αμερικανός που νίκησε τους φόβους του"
-                                 loading="lazy"
-                                 decoding="async" width="3392" height="1908"
+                                 decoding="async" width="400" height="225"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 4 min</span></div>
                         </div>
                         <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 28 Aug 2026</div>
-                            <h3>Phil Hill — Ο Αμερικανός που νίκησε τους φόβους του</h3>
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 25 May 2026</div>
+                            <h3>Η στιγμή που ο Αντονέλι έπαψε να είναι «το μέλλον»</h3>
                             <div class="related-card-footer">
                                 <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">Themis Charvalis</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <a href="/blog-module/blog-entries/20250823G/article.html" class="related-card-link" style="display:block;height:100%;">
+                    <div class="related-article-card">
+                        
+                        <div class="related-card-media">
+                            <img src="/blog-module/blog-entries/20250823G/1-card.webp"
+                                 alt="Mercedes W16: Η Παράδοξη Σεζόν 2025"
+                                 loading="lazy"
+                                 decoding="async" width="400" height="267"
+                                 data-fallback-src="/blog-module/images/default-blog.jpg">
+                            <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
+                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 12 min</span></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 23 Aug 2025</div>
+                            <h3>Mercedes W16: Η Παράδοξη Σεζόν 2025</h3>
+                            <div class="related-card-footer">
+                                <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
+                                <span class="related-card-author">Georgios Balatzis</span>
                             </div>
                         </div>
                     </div>

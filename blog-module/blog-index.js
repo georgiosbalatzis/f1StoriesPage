@@ -17,21 +17,20 @@ document.addEventListener('DOMContentLoaded', function() {
     var categoryStrip = document.getElementById('category-strip');
     var strip = document.getElementById('author-strip');
     var imageObserver = null;
-    var CACHE_KEY = 'f1s-blog-index-v2-full';
+    var taxonomy = window.F1S_TAXONOMY;
+    var CACHE_KEY = 'f1s-blog-index-v3-taxonomy';
     var CACHE_TTL = 15 * 60 * 1000;
     var PAGE_ONE_PATHS = ['/blog-module/blog-index-page-1.json', '../blog-index-page-1.json', '../../blog-index-page-1.json'];
     var FULL_DATA_PATHS = ['/blog-module/blog-index-data.json', '../blog-index-data.json', '../../blog-index-data.json'];
-    var activeCategory = 'all';
+    var activeCategory = getCategoryFromUrl();
     var activeQuery = '';
     var sortDir = -1;
     var searchTimer = null;
     var pageOnePosts = [];
-    var categoryOptions = [];
     var totalPostCount = 0;
     var fullPostsLoaded = false;
     var fullPostsPromise = null;
     var staticFirstPageReady = !!(grid && grid.querySelector('.article-card') && !grid.querySelector('.skeleton-card'));
-    var MAX_VISIBLE_CATEGORIES = 10;
     var DATE_FORMATTER = typeof Intl !== 'undefined'
         ? new Intl.DateTimeFormat('el-GR', { day: 'numeric', month: 'long', year: 'numeric' })
         : null;
@@ -96,19 +95,15 @@ document.addEventListener('DOMContentLoaded', function() {
             parent.textContent = fallback;
         }, true);
     }
-    function formatCategoryToken(token) {
-        var value = String(token || '').trim();
-        var lower = value.toLowerCase();
-        var acronyms = { f1: 'F1', gp: 'GP', amg: 'AMG', rb: 'RB', drs: 'DRS', v12: 'V12' };
-        if (acronyms[lower]) return acronyms[lower];
-        if (!value || /^\d/.test(value)) return value;
-        if (value !== lower && value !== value.toUpperCase()) return value;
-        return lower.charAt(0).toUpperCase() + lower.slice(1);
+    function getCategoryFromUrl() {
+        var requested = new URL(window.location.href).searchParams.get('category');
+        return taxonomy.normalizeCategories(requested ? [requested] : [])[0] || 'all';
     }
-    function formatCategoryLabel(value) {
-        var raw = String(value || '').replace(/^[\s,-]+|[\s,-]+$/g, '').trim();
-        if (!raw) return '';
-        return raw.split(/-+/).filter(Boolean).map(formatCategoryToken).join(' ');
+    function updateCategoryUrl() {
+        var url = new URL(window.location.href);
+        if (activeCategory === 'all') url.searchParams.delete('category');
+        else url.searchParams.set('category', activeCategory);
+        if (url.href !== window.location.href) window.history.pushState(null, '', url.href);
     }
     function normalizeText(value) {
         var text = String(value || '').toLowerCase();
@@ -136,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
             post.excerpt,
             post.author,
             (post.categories || []).join(' '),
-            (post.categories || []).map(formatCategoryLabel).join(' '),
+            (post.tags || []).join(' '),
             post.displayDate,
             post.date
         ].join(' '));
@@ -148,6 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!data || data.v !== 2 || !Array.isArray(data.p)) return null;
         var authors = data.a || [];
         var categories = data.c || [];
+        var tags = data.t || [];
         return data.p.map(function(row) {
             var id = row[0] || '';
             var categoryIndexes = Array.isArray(row[8]) ? row[8] : [];
@@ -162,7 +158,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 thumbnailHeight: parseInt(row[5], 10) || 188,
                 excerpt: row[6] || '',
                 readingTime: row[7] || '',
-                categories: categoryIndexes.map(function(index) { return categories[index]; }).filter(Boolean)
+                categories: categoryIndexes.map(function(index) { return categories[index]; }).filter(Boolean),
+                tags: Array.isArray(row[9]) ? row[9].map(function(tag) {
+                    return typeof tag === 'number' ? tags[tag] : tag;
+                }).filter(Boolean) : []
             };
         });
     }
@@ -171,64 +170,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (compact) return compact;
         if (data && Array.isArray(data.posts)) return data.posts;
         return Array.isArray(data) ? data : [];
-    }
-    function splitCategoryValue(value) {
-        var parts = [];
-        String(value || '').split(',').forEach(function(part) {
-            part.split(/\s+-\s+/).forEach(function(piece) {
-                var category = piece.replace(/^[\s,-]+|[\s,-]+$/g, '').trim();
-                if (category) parts.push(category);
-            });
-        });
-        return parts;
-    }
-    function normalizePostCategories(categories) {
-        var normalized = [];
-        var seen = {};
-        (categories || []).forEach(function(category) {
-            splitCategoryValue(category).forEach(function(name) {
-                if (seen[name]) return;
-                seen[name] = true;
-                normalized.push(name);
-            });
-        });
-        return normalized;
-    }
-    function getUniqueCategories(posts) {
-        var counts = {};
-        (posts || []).forEach(function(post) {
-            normalizePostCategories(post.categories).forEach(function(category) {
-                var key = String(category || '').trim();
-                if (!key) return;
-                counts[key] = (counts[key] || 0) + 1;
-            });
-        });
-        return Object.keys(counts).sort(function(a, b) {
-            var diff = counts[b] - counts[a];
-            return diff || a.localeCompare(b, 'el');
-        });
-    }
-    function normalizeCategories(categories) {
-        var normalized = [];
-        var seen = {};
-        (categories || []).forEach(function(category) {
-            var source = typeof category === 'string' ? { name: category } : category || {};
-            splitCategoryValue(source.name).forEach(function(name) {
-                if (seen[name]) return;
-                seen[name] = true;
-                normalized.push({ name: name, count: source.count });
-            });
-        });
-        return normalized;
-    }
-    function getVisibleCategories(categories) {
-        var list = normalizeCategories(categories);
-        var visible = list.slice(0, MAX_VISIBLE_CATEGORIES);
-        if (activeCategory !== 'all' && !visible.some(function(item) { return item.name === activeCategory; })) {
-            var activeItem = list.find(function(item) { return item.name === activeCategory; });
-            if (activeItem) visible.push(activeItem);
-        }
-        return visible;
     }
     function syncChipState(container, selector, attribute, activeValue) {
         if (!container) return;
@@ -246,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!activeFilterSummary) return;
         var parts = [];
         if (activeAuthor !== 'all') parts.push('Συντάκτης: ' + activeAuthor);
-        if (activeCategory !== 'all') parts.push('Θέμα: ' + formatCategoryLabel(activeCategory));
+        if (activeCategory !== 'all') parts.push('Κατηγορία: ' + activeCategory);
         if (activeQuery) parts.push('Αναζήτηση: ' + activeQuery);
         activeFilterSummary.replaceChildren.apply(activeFilterSummary, parts.map(function(text) {
             var chip = document.createElement('span');
@@ -279,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     function renderCategoryFilters() {
         if (!categoryStrip) return;
-        var categories = getVisibleCategories(categoryOptions.length ? categoryOptions : getUniqueCategories(allPosts));
+        var categories = taxonomy.PUBLIC_CATEGORIES;
         var nodes = [];
         var allButton = document.createElement('button');
         allButton.className = 'category-chip' + (activeCategory === 'all' ? ' active' : '');
@@ -288,14 +229,13 @@ document.addEventListener('DOMContentLoaded', function() {
         allButton.setAttribute('aria-pressed', activeCategory === 'all' ? 'true' : 'false');
         allButton.textContent = 'Όλες';
         nodes.push(allButton);
-        categories.forEach(function(category) {
-            var name = typeof category === 'string' ? category : category.name;
+        categories.forEach(function(name) {
             var button = document.createElement('button');
             button.className = 'category-chip' + (name === activeCategory ? ' active' : '');
             button.type = 'button';
             button.setAttribute('data-category', name);
             button.setAttribute('aria-pressed', name === activeCategory ? 'true' : 'false');
-            button.textContent = formatCategoryLabel(name);
+            button.textContent = name;
             nodes.push(button);
         });
         categoryStrip.replaceChildren.apply(categoryStrip, nodes);
@@ -303,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function getResultsSummary(count) {
         var parts = [];
         if (activeAuthor !== 'all') parts.push('Αρθρογράφος: ' + activeAuthor);
-        if (activeCategory !== 'all') parts.push('Θέμα: ' + formatCategoryLabel(activeCategory));
+        if (activeCategory !== 'all') parts.push('Κατηγορία: ' + activeCategory);
         if (activeQuery) parts.push('Αναζήτηση: "' + activeQuery + '"');
         return count + ' ' + (count === 1 ? 'άρθρο' : 'άρθρα') + (parts.length ? ' · ' + parts.join(' · ') : '');
     }
@@ -326,7 +266,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     function preparePosts(posts) {
         return (posts || []).slice().sort(function(a, b) { return new Date(b.date) - new Date(a.date); }).map(function(post) {
-            post.categories = normalizePostCategories(post.categories);
+            var postTaxonomy = taxonomy.getPostTaxonomy(post);
+            post.category = postTaxonomy.category;
+            post.categories = postTaxonomy.categories;
+            post.tags = postTaxonomy.tags;
             post.__searchIndex = getSearchIndex(post);
             return post;
         });
@@ -335,11 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
         allPosts = preparePosts(posts);
         pageOnePosts = allPosts.slice(0, POSTS_PER_PAGE);
         totalPostCount = allPosts.length;
-        categoryOptions = normalizeCategories(getUniqueCategories(allPosts));
         fullPostsLoaded = true;
-        if (activeCategory !== 'all' && getUniqueCategories(allPosts).indexOf(activeCategory) === -1) {
-            activeCategory = 'all';
-        }
         renderCategoryFilters();
     }
     function hydratePosts(posts) {
@@ -352,7 +291,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!fullPostsLoaded) {
             allPosts = pageOnePosts.slice();
             totalPostCount = parseInt(data && data.totalCount, 10) || pageOnePosts.length;
-            categoryOptions = normalizeCategories(data && data.categories);
             renderCategoryFilters();
             renderPosts();
         }
@@ -360,11 +298,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function createCardCategories(categories) {
         var container = document.createElement('div');
         container.className = 'article-card-cats';
-        var list = categories || [];
+        var list = taxonomy.normalizeCategories(categories);
         list.slice(0, 2).forEach(function(c) {
             var span = document.createElement('span');
             span.className = 'article-card-cat';
-            span.textContent = formatCategoryLabel(c);
+            span.textContent = c;
             container.appendChild(span);
         });
         if (list.length > 2) {
@@ -667,10 +605,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function showLoadFailure() {
         var cached = readCachedPosts();
         if (cached) { hydratePosts(cached); return; }
-        if (staticFirstPageReady) {
+        if (staticFirstPageReady && isUnfiltered()) {
             lazyLoadImages();
             return;
         }
+        updateSearchControls();
+        updateActiveFilterSummary();
+        if (countEl) countEl.textContent = 'Δεν ήταν δυνατή η φόρτωση των αποτελεσμάτων.';
+        if (archiveMiniCount) archiveMiniCount.textContent = 'Η φόρτωση απέτυχε.';
+        if (paginationEl) paginationEl.replaceChildren();
+        staticFirstPageReady = false;
         if (grid) grid.replaceChildren(createEmptyState('fa-exclamation-circle', 'Δεν ήταν δυνατή η φόρτωση των άρθρων.'));
     }
 
@@ -696,6 +640,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadAndRender() { ensureFullPostsLoaded().then(renderPosts, showLoadFailure); }
 
     if (staticFirstPageReady) lazyLoadImages();
+    renderCategoryFilters();
+    updateSearchControls();
+    updateActiveFilterSummary();
 
     fetchJson(PAGE_ONE_PATHS).then(hydratePageOne).catch(function() {
         ensureFullPostsLoaded().then(function() {
@@ -720,7 +667,9 @@ document.addEventListener('DOMContentLoaded', function() {
         categoryStrip.addEventListener('click', function(e) {
             var chip = e.target.closest('.category-chip');
             if (!chip) return;
-            activeCategory = chip.getAttribute('data-category') || 'all';
+            e.preventDefault();
+            activeCategory = taxonomy.normalizeCategories([chip.getAttribute('data-category')])[0] || 'all';
+            updateCategoryUrl();
             syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
             loadAndRender();
         });
@@ -742,6 +691,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (searchClearBtn) {
         searchClearBtn.addEventListener('click', function() {
+            clearTimeout(searchTimer);
             activeQuery = '';
             if (searchInput) {
                 searchInput.value = '';
@@ -757,8 +707,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (filterResetBtn) {
         filterResetBtn.addEventListener('click', function() {
+            clearTimeout(searchTimer);
             activeAuthor = 'all';
             activeCategory = 'all';
+            updateCategoryUrl();
             activeQuery = '';
             if (searchInput) searchInput.value = '';
             syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
@@ -787,6 +739,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') setFiltersOpen(false);
+    });
+    window.addEventListener('popstate', function() {
+        activeCategory = getCategoryFromUrl();
+        syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
+        renderPosts();
     });
     window.addEventListener('resize', syncArchiveMiniBar, { passive: true });
     window.addEventListener('scroll', syncArchiveMiniBar, { passive: true });

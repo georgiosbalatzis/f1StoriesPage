@@ -36,6 +36,7 @@
         "@type": "Article",
         "headline": ARTICLE_TITLE_JSON,
         "description": ARTICLE_EXCERPT_JSON,
+        "articleSection": ARTICLE_CATEGORIES_JSON,
         "image": ARTICLE_IMAGE_URL_JSON,
         "datePublished": ARTICLE_DATE_ISO_JSON,
         "dateModified": ARTICLE_DATE_ISO_JSON,
@@ -68,7 +69,7 @@
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=22d9c4c9">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=b5be626c">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=28f86755">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" href="ARTICLE_IMAGE_ATTR" fetchpriority="high">
@@ -173,32 +174,32 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/" aria-label="Αρχική σελίδα F1 Stories"><img src="/images/logo-nav.webp" alt="Λογότυπο F1 Stories" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
                 <div class="blog-nav-countdown" id="nav-countdown">
                     <span class="countdown-flag" id="race-flag-emoji">🏁</span>
                     <div class="countdown-info">
-                        <span class="countdown-race" id="next-race-name">Φόρτωση...</span>
-                        <span class="countdown-timer" id="race-countdown">--</span>
+                        <span class="countdown-race" id="next-race-name">Επόμενο GP</span>
+                        <span class="countdown-timer" id="race-countdown">Σύντομα</span>
                     </div>
                 </div>
                 <div class="blog-nav-countdown-mobile" id="nav-countdown-mobile">
                     <span class="countdown-flag-mobile" data-race-flag-mobile aria-hidden="true">🏁</span>
-                    <span id="race-countdown-mobile">--</span>
+                    <span id="race-countdown-mobile">Σύντομα</span>
                 </div>
                 <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
                 <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
@@ -212,7 +213,7 @@
 
 <div class="article-mini-bar" id="article-mini-bar" aria-hidden="true">
     <div class="article-mini-bar__text">
-        <span class="article-mini-bar__category">ARTICLE_TAG_TEXT</span>
+        <span class="article-mini-bar__category">ARTICLE_CATEGORY_TEXT</span>
         <span class="article-mini-bar__title">ARTICLE_TITLE_TEXT</span>
     </div>
     <button class="article-mini-bar__share" id="article-mini-share" type="button" aria-label="Κοινοποίηση άρθρου">
@@ -236,13 +237,13 @@
                     <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
-                        <span class="article-category-pill">ARTICLE_TAG_TEXT</span>
+                        <span class="article-category-pill">ARTICLE_CATEGORY_TEXT</span>
                     </div>
                     <h1 class="article-title">ARTICLE_TITLE_TEXT</h1>
                     <p class="article-header-byline"><span>Γράφει</span> ARTICLE_AUTHOR_TEXT</p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ARTICLE_DATE</span>
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> ARTICLE_CATEGORY_TEXT</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> ARTICLE_CATEGORY_LINKS</span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
                 </div>
@@ -267,16 +268,13 @@
                         <div class="article-rail-card article-rail-meta">
                             <span class="article-rail-label">Article</span>
                             <div class="article-rail-meta-list">
-                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> ARTICLE_TAG_TEXT</span>
+                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> ARTICLE_CATEGORY_TEXT</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ARTICLE_DATE</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span data-reading-time>5 λεπτά ανάγνωσης</span></span>
                             </div>
                         </div>
 
-                        <div class="article-rail-card article-rail-tags" data-tags="ARTICLE_CATEGORY_TEXT">
-                            <span class="article-rail-label">Tags</span>
-                            <div class="article-tag-list" data-tag-list></div>
-                        </div>
+                        ARTICLE_CATEGORY_RAIL
 
                         <div class="article-rail-card article-rail-related">
                             <span class="article-rail-label">Related</span>
@@ -387,7 +385,7 @@
 </footer>
 <!-- @include:end partials/footer.html -->
 <script defer src="/blog-module/blog/article-script.min.js?v=c9be704c"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=9147549f"></script>
+<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
 <script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=0dd8bd8a"></script>

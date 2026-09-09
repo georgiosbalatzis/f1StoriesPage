@@ -277,6 +277,7 @@
     .archive-page :is(.filter-block-head, .category-filter-head) { min-height: 44px; }
     .archive-page .chip-scroll-frame { position: static; width: 100%; margin-top: 7px; max-height: 260px; padding: 13px; }
     .archive-page :is(.author-strip, .category-strip) { max-height: none; overflow: visible; }
+    .archive-page .category-chip { min-height: 44px; }
     .archive-page .blog-filter-toolbar .blog-sort-control { position: static; display: none; margin: 12px 0 0; padding: 0; opacity: 1; pointer-events: auto; transform: none; }
     .archive-page .blog-filter-toolbar.is-open .blog-sort-control { display: flex; justify-content: space-between; }
     .archive-page .blog-sort-control > span { display: block; }

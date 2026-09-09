@@ -71,11 +71,12 @@ function readPipeTable(lines, startIndex) {
 async function convertTxtToHtml(filePath) {
     try {
         const entryPath = path.dirname(filePath);
-        let content = fs.readFileSync(filePath, 'utf8');
-        content = content.replace(/^---\n[\s\S]*?\n---\n/, '');
-
-        if (!content.startsWith('---')) {
-            content = content.replace(/^\s*(\S+)\s+(\S+)/, '');
+        let content = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n').trimStart();
+        const frontMatter = content.match(/^---\n[\s\S]*?\n---(?:\n|$)/);
+        if (frontMatter) {
+            content = content.slice(frontMatter[0].length);
+        } else {
+            content = content.split('\n').slice(1).join('\n');
         }
 
         const { cleanedText, placeholders } = extractEmbedPlaceholders(content, entryPath, true);

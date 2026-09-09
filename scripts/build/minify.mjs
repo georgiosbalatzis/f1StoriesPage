@@ -79,6 +79,7 @@ const JS_INPUTS = [
     'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog-loader.js',
+    'blog-module/taxonomy.js',
     'blog-module/blog-index.js',
     'blog-module/blog/article-rail.js',
     'blog-module/blog/article-script.js',

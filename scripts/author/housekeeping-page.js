@@ -9,12 +9,18 @@
     var ENTRIES_PATH = 'blog-module/blog-entries';
     var authorDom = window.F1S_AUTHOR_DOM_TOOLS;
     var authorDialogs = window.F1S_AUTHOR_DIALOGS;
+    var articleSource = window.F1S_AUTHOR_ARTICLE_SOURCE;
+    var articleIndex = window.F1S_AUTHOR_ARTICLE_INDEX;
+    var taxonomy = window.F1S_TAXONOMY;
 
     if (!authorDom) {
         throw new Error('Author DOM helper failed to load.');
     }
     if (!authorDialogs) {
         throw new Error('Author dialog helper failed to load.');
+    }
+    if (!articleSource || !articleIndex || !taxonomy) {
+        throw new Error('Article taxonomy, source and index helpers failed to load.');
     }
 
     function showAlert(message, options) {
@@ -374,6 +380,12 @@
     var editSaveBtn   = document.getElementById('hk-edit-save');
     var editCancelBtn = document.getElementById('hk-edit-cancel');
     var editStatusEl  = document.getElementById('hk-edit-status');
+    taxonomy.PUBLIC_CATEGORIES.forEach(function (category) {
+        var option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        editCatEl.appendChild(option);
+    });
 
     // Mirrors blog-processor.js AUTHOR_MAP — changing author on an
     // edit rewrites the folder name so the processor picks up the
@@ -513,49 +525,6 @@
         });
     }
 
-    function defaultThumbnailForPost(id) {
-        return '/blog-module/blog-entries/' + encodeURIComponent(id || '') + '/1-card.webp';
-    }
-
-    function expandCompactPosts(data) {
-        if (!data || data.v !== 2 || !Array.isArray(data.p)) return null;
-        var authors = data.a || [];
-        var categories = data.c || [];
-        return data.p.map(function (row) {
-            var id = row[0] || '';
-            var categoryIndexes = Array.isArray(row[8]) ? row[8] : [];
-            var categoryList = categoryIndexes.map(function (index) {
-                return categories[index];
-            }).filter(Boolean);
-            var tag = categoryList[0] || '';
-            var category = categoryList.slice(1).join(', ');
-            return {
-                id: id,
-                title: row[1] || '',
-                author: authors[row[2]] || 'F1 Stories Team',
-                date: row[3] || '',
-                dateISO: row[3] || '',
-                displayDate: row[3] || '',
-                image: defaultThumbnailForPost(id),
-                imageWidth: parseInt(row[4], 10) || 400,
-                imageHeight: parseInt(row[5], 10) || 188,
-                excerpt: row[6] || '',
-                readingTime: row[7] || '',
-                url: '/blog-module/blog-entries/' + encodeURIComponent(id) + '/article.html',
-                tag: tag,
-                category: category,
-                categories: categoryList
-            };
-        });
-    }
-
-    function extractPosts(data) {
-        var compact = expandCompactPosts(data);
-        if (compact) return compact;
-        if (data && Array.isArray(data.posts)) return data.posts;
-        return Array.isArray(data) ? data : [];
-    }
-
     async function fetchPostsData() {
         var paths = [INDEX_DATA_PATH, LEGACY_DATA_PATH];
         var lastError = null;
@@ -577,10 +546,7 @@
         listFoot.hidden = true;
         try {
             var data = await fetchPostsData();
-            posts = extractPosts(data).slice();
-            posts.sort(function (a, b) {
-                return (b.dateISO || b.date || '').localeCompare(a.dateISO || a.date || '');
-            });
+            posts = articleIndex.sortNewestFirst(articleIndex.extractPosts(data));
             populateFilters();
             restoreFiltersAfterLoad();
             applyFilters(false);
@@ -592,12 +558,7 @@
     }
 
     function populateFilters() {
-        var tags = new Set(), cats = new Set(), authors = new Set();
-        posts.forEach(function (p) {
-            if (p.tag) tags.add(p.tag);
-            if (p.category) cats.add(p.category);
-            if (p.author) authors.add(p.author);
-        });
+        var options = articleIndex.collectFilterOptions(posts);
         function fill(sel, values) {
             var current = sel.value;
             sel.replaceChildren();
@@ -605,34 +566,28 @@
             all.value = '';
             all.textContent = 'All ' + sel.dataset.kind;
             sel.appendChild(all);
-            Array.from(values).sort().forEach(function (v) {
+            values.forEach(function (v) {
                 var o = document.createElement('option');
                 o.value = v; o.textContent = v;
                 if (v === current) o.selected = true;
                 sel.appendChild(o);
             });
         }
-        filterTag.dataset.kind = 'tags';
+        filterTag.dataset.kind = 'internal tags';
         filterCat.dataset.kind = 'categories';
         filterAuthor.dataset.kind = 'authors';
-        fill(filterTag, tags);
-        fill(filterCat, cats);
-        fill(filterAuthor, authors);
+        fill(filterTag, options.tags);
+        fill(filterCat, options.categories);
+        fill(filterAuthor, options.authors);
     }
 
     function applyFilters(resetPage) {
         if (resetPage !== false) visibleCount = PAGE_SIZE;
-        var q = searchEl.value.trim().toLowerCase();
-        var ft = filterTag.value, fc = filterCat.value, fa = filterAuthor.value;
-        rendered = posts.filter(function (p) {
-            if (ft && p.tag !== ft) return false;
-            if (fc && p.category !== fc) return false;
-            if (fa && p.author !== fa) return false;
-            if (q) {
-                var hay = (p.title + ' ' + p.author + ' ' + (p.tag || '') + ' ' + (p.category || '') + ' ' + (p.id || '')).toLowerCase();
-                if (hay.indexOf(q) === -1) return false;
-            }
-            return true;
+        rendered = articleIndex.filterPosts(posts, {
+            query: searchEl.value,
+            tag: filterTag.value,
+            category: filterCat.value,
+            author: filterAuthor.value
         });
         renderList();
         persistListState();
@@ -709,10 +664,10 @@
 
         var badges = document.createElement('div');
         badges.className = 'hk-card-meta';
-        if (post.tag) {
+        if (post.tags && post.tags.length) {
             var tag = document.createElement('span');
             tag.className = 'hk-badge';
-            tag.textContent = post.tag;
+            tag.textContent = 'Internal tags: ' + post.tags.join(', ');
             badges.appendChild(tag);
         }
         if (post.category) {
@@ -869,35 +824,12 @@
     }
 
     // ─── Source.txt parse / serialise ───────────────────
-    function parseSourceTxt(text) {
-        var raw = text.replace(/\r\n/g, '\n');
-        var lines = raw.split('\n');
-        var firstLine = (lines[0] || '').trim();
-        var first = firstLine.split(/\s+/);
-        var tag = first[0] || 'F1';
-        var category = first[1] || 'Racing';
-        // Find first non-blank line after index 0 as title
-        var titleIdx = -1;
-        for (var i = 1; i < lines.length; i++) {
-            if (lines[i].trim() !== '') { titleIdx = i; break; }
-        }
-        var title = titleIdx !== -1 ? lines[titleIdx].trim() : '';
-        // Body = lines after title, trimming leading blank lines
-        var body = '';
-        if (titleIdx !== -1) {
-            var rest = lines.slice(titleIdx + 1);
-            while (rest.length && rest[0].trim() === '') rest.shift();
-            body = rest.join('\n').replace(/\s+$/, '');
-        }
-        return { tag: tag, category: category, title: title, body: body };
+    function parseSourceTxt(text, folderName) {
+        return articleSource.parseSourceText(text, { id: folderName });
     }
 
-    function buildSourceTxt(tag, category, title, body) {
-        var safeTag = (tag || 'F1').replace(/\s+/g, '-');
-        var safeCategory = (category || 'Racing').replace(/\s+/g, '-');
-        var safeTitle = (title || 'Untitled').replace(/\r/g, '');
-        var safeBody = (body || '').replace(/\r/g, '');
-        return safeTag + ' ' + safeCategory + '\n\n' + safeTitle + '\n\n' + safeBody + '\n';
+    function buildSourceTxt(tag, category, title, body, metadata) {
+        return articleSource.buildSourceText(tag, category, title, body, metadata);
     }
 
     // ─── Folder listing / deletion helpers ──────────────
@@ -1173,8 +1105,8 @@
         editStatusEl.textContent = 'Loading source…';
         editStatusEl.classList.remove('err');
         editFolderEl.textContent = ENTRIES_PATH + '/' + post.id;
-        editTagEl.value = post.tag || '';
-        editCatEl.value = post.category || '';
+        editTagEl.value = (post.tags || []).join(', ');
+        editCatEl.value = post.category || 'News';
         editTitleEl.value = post.title || '';
         editBodyEl.value = '';
         var loading = authorDom.createStatusMessage('hk-empty', 'Loading...', 'fa-spinner', 'fa-spin');
@@ -1213,10 +1145,10 @@
             // 2. Load source content (GitHub returns base64 for files via /contents)
             var blob = await ghFetch('/contents/' + ENTRIES_PATH + '/' + encodeURIComponent(post.id) + '/' + encodeURIComponent(srcFile.name), token);
             var text = blob.encoding === 'base64' ? base64ToUtf8(blob.content) : (blob.content || '');
-            var parsed = parseSourceTxt(text);
+            var parsed = parseSourceTxt(text, post.id);
 
-            editTagEl.value = parsed.tag || post.tag || '';
-            editCatEl.value = parsed.category || post.category || '';
+            editTagEl.value = parsed.tags.join(', ');
+            editCatEl.value = parsed.category;
             editTitleEl.value = parsed.title || post.title || '';
             editBodyEl.value = parsed.body;
 
@@ -1231,6 +1163,7 @@
                 post: post,
                 folder: post.id,
                 srcName: srcFile.name,
+                sourceMetadata: parsed.metadata,
                 files: files,
                 slotMap: slotMap,      // slot → [{ name, sha, ... }]
                 imageOps: {},          // slot → { op, file }
@@ -1453,8 +1386,8 @@
         var token = editState.token;
         var oldFolder = editState.folder;
 
-        var tag       = editTagEl.value.trim() || 'F1';
-        var category  = editCatEl.value.trim() || 'Racing';
+        var tag       = editTagEl.value.trim();
+        var category  = editCatEl.value;
         var title     = editTitleEl.value.trim();
         var body      = editBodyEl.value.trim();
         var isoDate   = (editDateEl.value || '').trim();
@@ -1502,7 +1435,7 @@
 
         // Plan: deletes are full folder-relative paths, additions carry either
         // a File (new upload) or a reuseSha (keep existing blob at new path).
-        var newSource = buildSourceTxt(tag, category, title, body);
+        var newSource = buildSourceTxt(tag, category, title, body, editState.sourceMetadata);
         var deletes = [];
         var additions = [];
 

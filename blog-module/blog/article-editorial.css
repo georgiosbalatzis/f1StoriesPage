@@ -115,6 +115,8 @@
     font-weight: 400;
 }
 .article-page .article-meta .icon { color: #a82e1c; width: .85em; }
+.article-page .article-category-link { display: inline-flex; align-items: center; min-height: 44px; color: inherit; text-decoration: underline; text-underline-offset: 4px; }
+.article-page .article-category-link:hover { color: #a82e1c; }
 .article-page .article-header > picture {
     grid-column: 2;
     grid-row: 2;
@@ -402,7 +404,8 @@
 }
 .article-page .article-rail-meta-list { gap: 12px; }
 .article-page .article-rail-meta-list span { font-size: .78rem; line-height: 1.6; color: var(--text-secondary); }
-.article-page .article-tag-chip { padding: 6px 8px; border-radius: 2px; font-weight: 400; font-size: .72rem; }
+.article-page .article-tag-chip { display: inline-flex; align-items: center; min-height: 44px; padding: 6px 10px; border-radius: 2px; font-weight: 400; font-size: .75rem; transition: color .2s, border-color .2s; }
+.article-page .article-tag-chip:hover { color: var(--accent); border-color: var(--accent); }
 .article-page .article-rail-related-list { gap: 0; counter-reset: related-note; }
 .article-page .article-rail-related-item {
     counter-increment: related-note;

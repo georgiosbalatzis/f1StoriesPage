@@ -36,6 +36,7 @@
         "@type": "Article",
         "headline": "Μέσα από το F1λτρο μου",
         "description": "Ουγγρικό Grand Prix και η προϊστορία δείχνει ότι θα βαρεθούμε τη ζωή μας. Πίστα που δεν γίνονται πολλές προσπεράσεις, αγώνας που από άποψη θεάματος μπαίνει στην ίδια κατηγορία με αυτόν του Μονακό. Ας ...",
+        "articleSection": ["Opinion"],
         "image": "https://f1stories.gr/blog-module/blog-entries/20260726D/1.webp",
         "datePublished": "2026-07-26",
         "dateModified": "2026-07-26",
@@ -56,7 +57,6 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
@@ -67,8 +67,6 @@
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=22d9c4c9">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=b5be626c">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" href="1.webp" fetchpriority="high">
@@ -77,6 +75,11 @@
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
 
     <!-- Prevent FOUC -->
+    <!-- f1s:article-editorial:begin -->
+    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=28f86755">
+    <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
 <!-- f1s:icon-sprite:begin -->
@@ -212,7 +215,7 @@
 
 <div class="article-mini-bar" id="article-mini-bar" aria-hidden="true">
     <div class="article-mini-bar__text">
-        <span class="article-mini-bar__category">F1</span>
+        <span class="article-mini-bar__category">Opinion</span>
         <span class="article-mini-bar__title">Μέσα από το F1λτρο μου</span>
     </div>
     <button class="article-mini-bar__share" id="article-mini-share" type="button" aria-label="Κοινοποίηση άρθρου">
@@ -236,13 +239,13 @@
                     <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
-                        <span class="article-category-pill">F1</span>
+                        <span class="article-category-pill">Opinion</span>
                     </div>
                     <h1 class="article-title">Μέσα από το F1λτρο μου</h1>
                     <p class="article-header-byline"><span>Γράφει</span> Dimitris Keramidiotis</p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> July 26, 2026</span>
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> Racing</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=Opinion" class="article-category-link">Opinion</a></span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
                 </div>
@@ -267,15 +270,15 @@
                         <div class="article-rail-card article-rail-meta">
                             <span class="article-rail-label">Article</span>
                             <div class="article-rail-meta-list">
-                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> F1</span>
+                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> Opinion</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> July 26, 2026</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span data-reading-time>5 λεπτά ανάγνωσης</span></span>
                             </div>
                         </div>
 
-                        <div class="article-rail-card article-rail-tags" data-tags="Racing">
-                            <span class="article-rail-label">Tags</span>
-                            <div class="article-tag-list" data-tag-list></div>
+                        <div class="article-rail-card article-rail-tags">
+                            <span class="article-rail-label">Κατηγορίες</span>
+                            <div class="article-tag-list"><a href="/blog-module/blog/index.html?category=Opinion" class="article-tag-chip">Opinion</a></div>
                         </div>
 
                         <div class="article-rail-card article-rail-related">

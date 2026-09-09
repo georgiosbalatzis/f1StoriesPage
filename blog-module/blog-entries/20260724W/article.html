@@ -36,6 +36,7 @@
         "@type": "Article",
         "headline": "Ferrari και Mercedes δείχνουν τον δρόμο στο Hungaroring – Τα long runs της Παρασκευής αποκαλύπτουν τα φαβορί",
         "description": "Η δεύτερη περίοδος ελεύθερων δοκιμών του Grand Prix Ουγγαρίας άφησε μια ξεκάθαρη εικόνα, η Ferrari ήταν η ταχύτερη στον απόλυτο γύρο, όμως ο πραγματικός πρωταγωνιστής της Παρασκευής ήταν ο ρυθμός αγών...",
+        "articleSection": ["News"],
         "image": "https://f1stories.gr/blog-module/blog-entries/20260724W/2.webp",
         "datePublished": "2026-07-24",
         "dateModified": "2026-07-24",
@@ -56,7 +57,6 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
@@ -67,8 +67,6 @@
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=22d9c4c9">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=b5be626c">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" href="2.webp" fetchpriority="high">
@@ -77,6 +75,11 @@
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
 
     <!-- Prevent FOUC -->
+    <!-- f1s:article-editorial:begin -->
+    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=28f86755">
+    <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
 <!-- f1s:icon-sprite:begin -->
@@ -212,7 +215,7 @@
 
 <div class="article-mini-bar" id="article-mini-bar" aria-hidden="true">
     <div class="article-mini-bar__text">
-        <span class="article-mini-bar__category">F1</span>
+        <span class="article-mini-bar__category">News</span>
         <span class="article-mini-bar__title">Ferrari και Mercedes δείχνουν τον δρόμο στο Hungaroring – Τα long runs της Παρασκευής αποκαλύπτουν τα φαβορί</span>
     </div>
     <button class="article-mini-bar__share" id="article-mini-share" type="button" aria-label="Κοινοποίηση άρθρου">
@@ -236,13 +239,13 @@
                     <div class="article-edition"><span>F1 STORIES / THE JOURNAL</span><span>ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
-                        <span class="article-category-pill">F1</span>
+                        <span class="article-category-pill">News</span>
                     </div>
                     <h1 class="article-title">Ferrari και Mercedes δείχνουν τον δρόμο στο Hungaroring – Τα long runs της Παρασκευής αποκαλύπτουν τα φαβορί</h1>
                     <p class="article-header-byline"><span>Γράφει</span> Themis Charvalis</p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> July 24, 2026</span>
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> Racing,-Hungary-gp-Fp1-Fp2</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
                 </div>
@@ -267,15 +270,15 @@
                         <div class="article-rail-card article-rail-meta">
                             <span class="article-rail-label">Article</span>
                             <div class="article-rail-meta-list">
-                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> F1</span>
+                                <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> News</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> July 24, 2026</span>
                                 <span><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span data-reading-time>5 λεπτά ανάγνωσης</span></span>
                             </div>
                         </div>
 
-                        <div class="article-rail-card article-rail-tags" data-tags="Racing,-Hungary-gp-Fp1-Fp2">
-                            <span class="article-rail-label">Tags</span>
-                            <div class="article-tag-list" data-tag-list></div>
+                        <div class="article-rail-card article-rail-tags">
+                            <span class="article-rail-label">Κατηγορίες</span>
+                            <div class="article-tag-list"><a href="/blog-module/blog/index.html?category=News" class="article-tag-chip">News</a></div>
                         </div>
 
                         <div class="article-rail-card article-rail-related">
@@ -448,30 +451,6 @@
                 </a>
             </div>
             <div class="col-md-4 mb-4">
-                <a href="/blog-module/blog-entries/20260820W/article.html" class="related-card-link" style="display:block;height:100%;">
-                    <div class="related-article-card">
-                        
-                        <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260820W/1.webp"
-                                 alt="Εκεί όπου η Formula 1 συναντά τους αμμόλοφους της Βόρειας Θάλασσας"
-                                 loading="lazy"
-                                 decoding="async" width="678" height="452"
-                                 data-fallback-src="/blog-module/images/default-blog.jpg">
-                            <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
-                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 12 min</span></div>
-                        </div>
-                        <div class="card-body">
-                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 20 Aug 2026</div>
-                            <h3>Εκεί όπου η Formula 1 συναντά τους αμμόλοφους της Βόρειας Θάλασσας</h3>
-                            <div class="related-card-footer">
-                                <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
-                                <span class="related-card-author">Themis Charvalis</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 mb-4">
                 <a href="/blog-module/blog-entries/20260815W/article.html" class="related-card-link" style="display:block;height:100%;">
                     <div class="related-article-card">
                         
@@ -487,6 +466,30 @@
                         <div class="card-body">
                             <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 15 Aug 2026</div>
                             <h3>McLaren MP4/14 εναντίον Ferrari F399: Η μάχη της απόλυτης ταχύτητας απέναντι στην απόλυτη αποτελεσματικότητα</h3>
+                            <div class="related-card-footer">
+                                <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
+                                <span class="related-card-author">Themis Charvalis</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <a href="/blog-module/blog-entries/20260803W/article.html" class="related-card-link" style="display:block;height:100%;">
+                    <div class="related-article-card">
+                        
+                        <div class="related-card-media">
+                            <img src="/blog-module/blog-entries/20260803W/1.webp"
+                                 alt="Η αρχή είναι το ήμισυ του παντός;"
+                                 loading="lazy"
+                                 decoding="async" width="739" height="415"
+                                 data-fallback-src="/blog-module/images/default-blog.jpg">
+                            <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
+                                <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 3 min</span></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="related-date-badge"><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 3 Aug 2026</div>
+                            <h3>Η αρχή είναι το ήμισυ του παντός;</h3>
                             <div class="related-card-footer">
                                 <span class="related-card-read">Διαβάστε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span>
                                 <span class="related-card-author">Themis Charvalis</span>

@@ -122,24 +122,24 @@
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" decoding="async" width="48" height="48"></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+                <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
                 <a href="/housekeeping.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-broom"/></svg> Housekeeping</a>
-                <a href="/statistics.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Statistics</a>
+                <a href="/statistics.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Στατιστικά</a>
             </div>
             <div class="blog-nav-right">
                 <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Home</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Blog</a>
+            <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Standings</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
             <a href="/housekeeping.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-broom"/></svg> Housekeeping</a>
-            <a href="/statistics.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Statistics</a>
+            <a href="/statistics.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Στατιστικά</a>
             <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
                 <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
                 <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
@@ -173,13 +173,14 @@
         </div>
     </div>
     <div class="gen-row">
-        <div class="gen-field" style="max-width:180px;">
-            <label>Ετικέτα</label>
-            <input type="text" id="gen-tag" placeholder="π.χ. Historical" value="F1">
+        <div class="gen-field">
+            <label for="gen-tag">Εσωτερικές ετικέτες</label>
+            <input type="text" id="gen-tag" placeholder="Lewis Hamilton, Ferrari F1" aria-describedby="gen-tag-hint">
+            <p class="gen-hint" id="gen-tag-hint">Χώρισε τις ετικέτες με κόμμα. Χρησιμοποιούνται στην αναζήτηση, δεν εμφανίζονται ως κατηγορίες.</p>
         </div>
         <div class="gen-field" style="max-width:180px;">
-            <label>Κατηγορία</label>
-            <input type="text" id="gen-category" placeholder="π.χ. Ferrari" value="Racing">
+            <label for="gen-category">Δημόσια κατηγορία</label>
+            <select id="gen-category" required></select>
         </div>
     </div>
 
@@ -271,7 +272,6 @@
                         <h1 class="article-title" id="pv-title"></h1>
                         <div class="article-meta">
                             <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> <span id="pv-date"></span></span>
-                            <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <span id="pv-tag"></span></span>
                             <span><svg class="icon" aria-hidden="true"><use href="#fa-folder-open"/></svg> <span id="pv-category"></span></span>
                         </div>
                     </div>
@@ -317,6 +317,8 @@
 <button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Scroll to top"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
 
 <script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/blog-module/taxonomy.min.js?v=d5f2a3cd"></script>
+<script defer src="/scripts/author/article-source.js"></script>
 <script defer src="/scripts/author/generate-page.js"></script>
 </body>
 </html>

@@ -12,6 +12,7 @@ const { extractMetadata, stripLeadingArticleBoilerplate } = require('./metadata'
 const { convertDocxToHtml } = require('./parse-docx');
 const { convertTxtToHtml } = require('./parse-txt');
 const { renderArticleHtml } = require('./article-render');
+const { getPostTaxonomy } = require('../taxonomy');
 const {
     processImages,
     convertImage,
@@ -162,8 +163,7 @@ async function processBlogEntry(entryPath) {
         excerpt: metadata.excerpt || generatedExcerpt,
         comments: 0,
         url: `/blog-module/blog-entries/${folderName}/article.html`,
-        tag: metadata.tag || 'F1',
-        category: metadata.category || 'Racing',
+        ...getPostTaxonomy({ ...metadata, id: folderName }),
         wordCount,
         readingTime,
         content,

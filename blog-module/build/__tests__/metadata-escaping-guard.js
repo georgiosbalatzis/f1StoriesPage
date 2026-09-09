@@ -42,12 +42,14 @@ async function verifyArticleMetadataEscapingGuard() {
             'Body paragraph for metadata escaping regression.'
         ].join('\n'), 'utf8');
 
-        await processBlogEntry(entryDir);
+        const post = await processBlogEntry(entryDir);
         const html = fs.readFileSync(path.join(entryDir, 'article.html'), 'utf8');
         if (!html.includes(`<title>${escapeText(title)} | F1 Stories</title>`)) failures.push('title text was not escaped for a text node');
         if (!html.includes(`content="${escapeAttr(title)} | F1 Stories"`)) failures.push('title was not escaped for meta attribute context');
         if (!html.includes(`alt="${escapeAttr(title)}"`)) failures.push('title was not escaped for image alt attribute context');
-        if (!html.includes(`${escapeText(tag)}</span>`) || !html.includes(`${escapeText(category)}</span>`)) failures.push('tag/category text nodes were not escaped');
+        if (html.includes(escapeText(tag)) || html.includes(escapeText(category))) failures.push('internal metadata leaked into public article labels');
+        if (post.category !== 'News' || !post.tags.includes(tag) || !post.tags.includes(category)) failures.push('unknown metadata was not retained as internal tags');
+        if (!html.includes('Body paragraph for metadata escaping regression.')) failures.push('front matter parsing removed body words');
         if (!html.includes(`linkname=${encodedTitle}`) || !html.includes(`text=${encodedTitle}%20${encodedUrl}`)) failures.push('share URLs did not URL-encode title and page URL parameters');
         if (html.includes('<Telemetry>') || html.includes('<Team>') || html.includes('<Fast>')) failures.push('raw metadata angle-bracket content leaked into generated HTML');
 
