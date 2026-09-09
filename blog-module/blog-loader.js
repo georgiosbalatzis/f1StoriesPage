@@ -162,6 +162,31 @@ document.addEventListener('DOMContentLoaded', function () {
         return meta;
     }
 
+    function categoryLabel(post) {
+        return post.category || (post.categories && post.categories[0]) || 'News';
+    }
+
+    function renderHeroLead(post) {
+        if (!post) return;
+        const href = '/blog-module/blog-entries/' + encodeURIComponent(post.slug || post.id || '') + '/article.html';
+        const category = categoryLabel(post);
+        const categoryEl = document.getElementById('hero-category');
+        const titleEl = document.getElementById('hero-title');
+        const excerptEl = document.getElementById('hero-story-excerpt');
+        const bylineEl = document.getElementById('hero-story-byline');
+        const linkEl = document.getElementById('hero-story-link');
+        const imageEl = document.getElementById('hero-image');
+        if (categoryEl) categoryEl.textContent = category.toUpperCase();
+        if (titleEl) titleEl.textContent = post.title || '';
+        if (excerptEl) excerptEl.textContent = post.excerpt || '';
+        if (bylineEl) bylineEl.textContent = (post.author || 'F1 Stories') + ' · ' + (post.date || '');
+        if (linkEl) linkEl.href = href;
+        if (imageEl && (post.thumbnail || post.image)) {
+            imageEl.src = imgSrc(post.thumbnail || post.image);
+            imageEl.alt = post.title || 'F1 Stories';
+        }
+    }
+
     function createBlogCard(post) {
         const href = '/blog-module/blog-entries/' + encodeURIComponent(post.slug || post.id || '') + '/article.html';
         const img = imgSrc(post.thumbnail || post.image);
@@ -228,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const thumbHeight = parseInt(post.thumbnailHeight, 10) || 188;
 
         const article = document.createElement('article');
-        article.className = 'home-lead-story';
+        article.className = 'home-lead-story home-story-treatment--' + categoryLabel(post).toLowerCase();
 
         const link = document.createElement('a');
         link.href = href;
@@ -250,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
         imageOverlay.className = 'home-lead-story__overlay';
         const overlayMeta = document.createElement('span');
         overlayMeta.className = 'home-lead-story__overlay-kicker';
-        overlayMeta.textContent = 'Κύριο θέμα';
+        overlayMeta.textContent = categoryLabel(post);
         const overlayTitle = document.createElement('span');
         overlayTitle.className = 'home-lead-story__overlay-title';
         overlayTitle.textContent = post.title || '';
@@ -259,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const body = document.createElement('div');
         body.className = 'home-lead-story__body';
-        body.appendChild(createStoryMeta('Κύριο θέμα', post.date));
+        body.appendChild(createStoryMeta((post.author || 'F1 Stories') + ' · ' + categoryLabel(post), post.date));
 
         const title = document.createElement('h3');
         title.className = 'home-lead-story__title';
@@ -287,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const thumbHeight = parseInt(post.thumbnailHeight, 10) || 188;
 
         const article = document.createElement('article');
-        article.className = 'home-secondary-story';
+        article.className = 'home-secondary-story home-story-treatment--' + categoryLabel(post).toLowerCase();
 
         const link = document.createElement('a');
         link.href = href;
@@ -308,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const body = document.createElement('div');
         body.className = 'home-secondary-story__body';
-        body.appendChild(createStoryMeta('Επόμενο θέμα', post.date));
+        body.appendChild(createStoryMeta(categoryLabel(post), post.date));
 
         const title = document.createElement('h3');
         title.className = 'home-secondary-story__title';
@@ -330,6 +355,8 @@ document.addEventListener('DOMContentLoaded', function () {
             container.replaceChildren(createMessageColumn('Δεν υπάρχουν διαθέσιμα άρθρα αυτή τη στιγμή.', 'text-center'));
             return;
         }
+
+        renderHeroLead(recent[0]);
 
         const shell = document.createElement('div');
         shell.className = 'home-stories-shell';
