@@ -120,6 +120,34 @@
       "backgroundImageHeight": 835
     },
     {
+      "id": "20260910",
+      "title": "Madridring aka Jarama est. 1989",
+      "author": "F1 Stories Team",
+      "date": "2026-09-10",
+      "dateISO": "2026-09-10",
+      "displayDate": "September 10, 2026",
+      "image": "/blog-module/blog-entries/20260910/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260910/1.webp",
+      "excerpt": "Την τελευταία φορά που η Formula 1 αγωνίστηκε στη Μαδρίτη, ο Gilles Villeneuve ήταν ακόμη εδώ. Ήταν 21 Ιουνίου του 1981, στο Jarama, περίπου 30 χιλιόμετρα βόρεια της ισπανικής πρωτεύουσας. Ο Καναδός ξ...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260910/article.html",
+      "category": "2026",
+      "categories": [
+        "2026"
+      ],
+      "tags": [
+        "2026",
+        "F1"
+      ],
+      "wordCount": 349,
+      "readingTime": "2 min",
+      "imageWidth": 500,
+      "imageHeight": 400,
+      "backgroundImageWidth": 500,
+      "backgroundImageHeight": 400
+    },
+    {
       "id": "20260909W",
       "title": "Τζιανκάρλο Φισικέλα: Ο οδηγός που άγγιξε την κορυφή, χωρίς ποτέ να του ανήκει",
       "author": "Themis Charvalis",
@@ -8519,5 +8547,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-10T10:14:25.102Z"
+  "lastUpdated": "2026-09-10T13:57:12.668Z"
 }
