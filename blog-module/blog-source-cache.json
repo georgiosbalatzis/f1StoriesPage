@@ -30,6 +30,36 @@
       "backgroundImageHeight": 689
     },
     {
+      "id": "20260910-4G",
+      "title": "Ο έκπτωτος πρίγκιπας του Maranello",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-10",
+      "dateISO": "2026-09-10",
+      "displayDate": "September 10, 2026",
+      "image": "/blog-module/blog-entries/20260910-4G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260910-4G/1.webp",
+      "excerpt": "Όταν ο Charles Leclerc φόρεσε για πρώτη φορά τα κόκκινα το 2019, δεν έμοιαζε απλώς με έναν ακόμη νέο οδηγό της Ferrari. Έμοιαζε με το μέλλον της. Ήταν 21 ετών, απίστευτα γρήγορος στον γύρο, επιθετικός...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260910-4G/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "Ferrari",
+        "Charles Leclerc",
+        "2026",
+        "Monza"
+      ],
+      "wordCount": 399,
+      "readingTime": "2 min",
+      "imageWidth": 3072,
+      "imageHeight": 4096,
+      "backgroundImageWidth": 3072,
+      "backgroundImageHeight": 4096
+    },
+    {
       "id": "20260910-3G",
       "title": "Υπάρχουν οδηγοί που έχουν μία πίστα",
       "author": "Georgios Balatzis",
@@ -8489,5 +8519,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-10T09:59:38.145Z"
+  "lastUpdated": "2026-09-10T10:14:25.102Z"
 }
