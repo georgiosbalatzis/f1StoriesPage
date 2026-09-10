@@ -30,6 +30,36 @@
       "backgroundImageHeight": 689
     },
     {
+      "id": "20260910-3G",
+      "title": "Υπάρχουν οδηγοί που έχουν μία πίστα",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-10",
+      "dateISO": "2026-09-10",
+      "displayDate": "September 10, 2026",
+      "image": "/blog-module/blog-entries/20260910-3G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260910-3G/1.webp",
+      "excerpt": "Υπάρχουν πίστες που απλώς ταιριάζουν σε έναν οδηγό. Και υπάρχουν κι εκείνες που, για κάποιον ανεξήγητο λόγο, μοιάζουν να τον περιμένουν. Για τον Pierre Gasly, αυτή η πίστα είναι η Monza. View this pos...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260910-3G/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "Pierre Gasly",
+        "Alpine",
+        "Monza",
+        "2026"
+      ],
+      "wordCount": 344,
+      "readingTime": "2 min",
+      "imageWidth": 768,
+      "imageHeight": 512,
+      "backgroundImageWidth": 768,
+      "backgroundImageHeight": 512
+    },
+    {
       "id": "20260910-2G",
       "title": "More 90s nostalgia",
       "author": "Georgios Balatzis",
@@ -8459,5 +8489,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-10T09:45:37.594Z"
+  "lastUpdated": "2026-09-10T09:59:38.145Z"
 }
