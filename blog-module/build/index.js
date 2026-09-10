@@ -142,7 +142,7 @@ function formatCategoryLabel(value) {
     return raw.split(/-+/).filter(Boolean).map(formatCategoryToken).join(' ');
 }
 
-function compactExcerpt(value, maxLength = 140) {
+function compactExcerpt(value, maxLength = 120) {
     const text = String(value || '').replace(/\s+/g, ' ').trim();
     if (text.length <= maxLength) return text;
     const clipped = text.slice(0, maxLength).replace(/\s+\S*$/, '').trim();
