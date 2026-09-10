@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20260910G",
+      "title": "Missing the 90s",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-10",
+      "dateISO": "2026-09-10",
+      "displayDate": "September 10, 2026",
+      "image": "/blog-module/blog-entries/20260910G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260910G/1.webp",
+      "excerpt": "Υπάρχουν εποχές στη Formula 1 που τις θυμάσαι από τα αποτελέσματα. Και υπάρχουν κι εκείνες που τις θυμάσαι από τα χρώματα. Το πράσινο, το μπλε, το κίτρινο της Benetton. Ένα μονοθέσιο που έμοιαζε σχεδό...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260910G/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Michael Schumacher",
+        "Benetton",
+        "F1"
+      ],
+      "wordCount": 304,
+      "readingTime": "2 min",
+      "imageWidth": 1052,
+      "imageHeight": 689,
+      "backgroundImageWidth": 1052,
+      "backgroundImageHeight": 689
+    },
+    {
       "id": "20260909W",
       "title": "Τζιανκάρλο Φισικέλα: Ο οδηγός που άγγιξε την κορυφή, χωρίς ποτέ να του ανήκει",
       "author": "Themis Charvalis",
@@ -8400,5 +8429,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-09T09:57:12.381Z"
+  "lastUpdated": "2026-09-10T09:10:41.609Z"
 }
