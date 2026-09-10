@@ -44,6 +44,44 @@ body.editorial-page {
     --accent-hover: #8e281a;
     --accent-contrast: #f2eee4;
 }
+
+/* Archive and longform pages share a warmer charcoal dark theme. Keep these
+ * tokens scoped so the homepage and data views can retain their own covers. */
+body.archive-page,
+body.article-page {
+    --paper: #eee8df;
+    --ink: #1b1a19;
+    --bg-base: #1b1a19;
+    --bg-surface: #242321;
+    --bg-surface-alt: #2e2c29;
+    --text-primary: #eee8df;
+    --text-secondary: #b8b1a6;
+    --text-tertiary: #968f86;
+    --border: #6d6861;
+    --accent: #ff775f;
+    --accent-readable: #ff9a89;
+    --accent-hover: #ffad9e;
+    --accent-contrast: #1b1a19;
+    --accent-muted: #ed4c3226;
+}
+
+[data-theme="light"] body.archive-page,
+[data-theme="light"] body.article-page {
+    --paper: #e9e3d6;
+    --ink: #20251f;
+    --bg-base: #f2eee4;
+    --bg-surface: #e9e3d6;
+    --bg-surface-alt: #dfd9ca;
+    --text-primary: #20251f;
+    --text-secondary: #5b6256;
+    --text-tertiary: #5b6256;
+    --border: #c8c8b9;
+    --accent: #a82e1c;
+    --accent-readable: #a82e1c;
+    --accent-hover: #8e281a;
+    --accent-contrast: #f2eee4;
+    --accent-muted: #a82e1c14;
+}
 /* A tiny inline noise tile adds ink-and-paper texture without an image request. */
 .editorial-page::after {
     content: '';
@@ -54,6 +92,7 @@ body.editorial-page {
     opacity: .035;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.84' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23000' filter='url%28%23n%29' opacity='.65' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
 }
+:root:not([data-theme="light"]) .editorial-page::after { display: none; }
 .editorial-page .container { max-width: 1476px; width: 100%; padding-inline: 48px; }
 .editorial-page :is(button, input, textarea, .skip-link) { font-family: var(--font-body); }
 .editorial-page :is(h1, h2, h3, p) { margin-top: 0; }
@@ -65,6 +104,13 @@ body.editorial-page {
 .editorial-page section { scroll-margin-top: 100px; }
 .editorial-page .editorial-accent { color: var(--accent); }
 .editorial-page .section-kicker { display: block; color: var(--text-secondary); font-size: .68rem; font-weight: 600; letter-spacing: .13em; margin: 0 0 22px; }
+
+/* Keep text selection visible against the charcoal reading surfaces. */
+:root:not([data-theme="light"]) body.archive-page ::selection,
+:root:not([data-theme="light"]) body.article-page ::selection {
+    color: var(--accent-contrast);
+    background: var(--accent-readable);
+}
 
 /* Shared masthead — warm paper, ink and a measured racing-red rule. */
 body.editorial-page .blog-nav,
@@ -468,4 +514,75 @@ body.editorial-page .blog-nav :focus-visible { outline-color: var(--ink); }
 @media (max-width: 359px) { body.editorial-page .container { padding-inline: 17px; } }
 @media (prefers-reduced-motion: reduce) {
     body.editorial-page *, body.editorial-page *::before, body.editorial-page *::after { animation: none; transition: none; scroll-behavior: auto; }
+}
+
+/* Dark archive/article navigation uses the reading palette instead of the
+ * light paper masthead used by the other editorial routes. */
+:root:not([data-theme="light"]) body.archive-page .blog-nav,
+:root:not([data-theme="light"]) body.article-page .blog-nav {
+    --nav-bg: var(--bg-surface);
+    --nav-border: var(--border);
+    color: var(--text-primary);
+    background: var(--nav-bg);
+    background-image: linear-gradient(180deg, #ffffff08, transparent 75%);
+}
+
+:root:not([data-theme="light"]) body.archive-page .blog-nav :is(.blog-nav-brand, .blog-nav-link, .blog-nav-countdown-mobile, .countdown-timer, .theme-toggle-nav-btn),
+:root:not([data-theme="light"]) body.article-page .blog-nav :is(.blog-nav-brand, .blog-nav-link, .blog-nav-countdown-mobile, .countdown-timer, .theme-toggle-nav-btn) {
+    color: var(--text-primary);
+}
+
+:root:not([data-theme="light"]) body.archive-page .blog-nav .countdown-race,
+:root:not([data-theme="light"]) body.article-page .blog-nav .countdown-race {
+    color: var(--text-secondary);
+}
+
+:root:not([data-theme="light"]) body.archive-page .blog-nav :is(.blog-nav-link:hover, .blog-nav-link:focus-visible, .theme-toggle-nav-btn:hover, .theme-toggle-nav-btn:focus-visible),
+:root:not([data-theme="light"]) body.article-page .blog-nav :is(.blog-nav-link:hover, .blog-nav-link:focus-visible, .theme-toggle-nav-btn:hover, .theme-toggle-nav-btn:focus-visible) {
+    color: var(--text-primary);
+}
+
+:root:not([data-theme="light"]) body.archive-page .blog-nav-mobile,
+:root:not([data-theme="light"]) body.article-page .blog-nav-mobile {
+    --nav-bg: var(--bg-surface);
+    --nav-border: var(--border);
+    color: var(--text-primary);
+}
+
+:root:not([data-theme="light"]) body.archive-page .blog-nav-mobile :is(.blog-nav-mobile-link, .theme-toggle-menu-btn),
+:root:not([data-theme="light"]) body.article-page .blog-nav-mobile :is(.blog-nav-mobile-link, .theme-toggle-menu-btn) {
+    color: var(--text-primary);
+}
+
+:root:not([data-theme="light"]) body.archive-page .blog-nav-mobile :is(.blog-nav-mobile-link:hover, .blog-nav-mobile-link:focus-visible, .theme-toggle-menu-btn:hover, .theme-toggle-menu-btn:focus-visible),
+:root:not([data-theme="light"]) body.article-page .blog-nav-mobile :is(.blog-nav-mobile-link:hover, .blog-nav-mobile-link:focus-visible, .theme-toggle-menu-btn:hover, .theme-toggle-menu-btn:focus-visible) {
+    color: var(--text-primary);
+    background: #ffffff0a;
+}
+
+:root:not([data-theme="light"]) body.archive-page .blog-nav :focus-visible,
+:root:not([data-theme="light"]) body.article-page .blog-nav :focus-visible {
+    outline-color: var(--accent-readable);
+}
+
+/* Secondary article utilities sit on the same charcoal surfaces as the
+ * reading canvas. Keep the artwork that needs contrast on a small light mat. */
+body.editorial-page .scroll-to-top-btn.visible {
+    display: flex !important; /* utility-important */
+}
+
+:root:not([data-theme="light"]) body.editorial-page .scroll-to-top-btn {
+    color: var(--text-primary) !important; /* utility-important */
+    background: var(--bg-surface-alt) !important; /* utility-important */
+    border-color: var(--border) !important; /* utility-important */
+    box-shadow: 0 8px 22px #00000066 !important; /* utility-important */
+    backdrop-filter: none !important; /* utility-important */
+    -webkit-backdrop-filter: none !important; /* utility-important */
+}
+
+:root:not([data-theme="light"]) body.editorial-page .scroll-to-top-btn:hover,
+:root:not([data-theme="light"]) body.editorial-page .scroll-to-top-btn:focus-visible {
+    color: var(--accent-contrast) !important; /* utility-important */
+    background: var(--accent-readable) !important; /* utility-important */
+    border-color: var(--accent-readable) !important; /* utility-important */
 }

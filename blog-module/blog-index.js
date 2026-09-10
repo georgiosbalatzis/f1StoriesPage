@@ -250,15 +250,43 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateActiveFilterSummary() {
         if (!activeFilterSummary) return;
         var parts = [];
-        if (activeAuthor !== 'all') parts.push('Συντάκτης: ' + activeAuthor);
-        if (activeCategory !== 'all') parts.push('Κατηγορία: ' + activeCategory);
-        if (activeQuery) parts.push('Αναζήτηση: ' + activeQuery);
-        activeFilterSummary.replaceChildren.apply(activeFilterSummary, parts.map(function(text) {
-            var chip = document.createElement('span');
+        if (activeAuthor !== 'all') parts.push({ kind: 'author', label: 'Συντάκτης: ' + activeAuthor });
+        if (activeCategory !== 'all') parts.push({ kind: 'category', label: 'Κατηγορία: ' + activeCategory });
+        if (activeQuery) parts.push({ kind: 'query', label: 'Αναζήτηση: ' + activeQuery });
+        activeFilterSummary.replaceChildren.apply(activeFilterSummary, parts.map(function(filter) {
+            var chip = document.createElement('button');
+            chip.type = 'button';
             chip.className = 'active-filter-chip';
-            chip.textContent = text;
+            chip.setAttribute('data-filter-kind', filter.kind);
+            chip.setAttribute('aria-label', 'Αφαίρεση φίλτρου: ' + filter.label);
+            chip.appendChild(document.createTextNode(filter.label));
+            var remove = document.createElement('span');
+            remove.className = 'active-filter-chip__remove';
+            remove.setAttribute('aria-hidden', 'true');
+            remove.textContent = '×';
+            chip.appendChild(remove);
             return chip;
         }));
+    }
+
+    function removeActiveFilter(kind) {
+        clearTimeout(searchTimer);
+        if (kind === 'author') {
+            activeAuthor = 'all';
+            updateAuthorUrl();
+            syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
+        } else if (kind === 'category') {
+            activeCategory = 'all';
+            updateCategoryUrl();
+            syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
+        } else if (kind === 'query') {
+            activeQuery = '';
+            if (searchInput) searchInput.value = '';
+        } else {
+            return;
+        }
+        currentPage = 1;
+        renderPosts();
     }
     function setFiltersOpen(open) {
         if (!filterToolbar) return;
@@ -758,6 +786,14 @@ document.addEventListener('DOMContentLoaded', function() {
             updateCategoryUrl();
             syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
             loadAndRender();
+        });
+    }
+
+    if (activeFilterSummary) {
+        activeFilterSummary.addEventListener('click', function(e) {
+            var chip = e.target.closest('.active-filter-chip');
+            if (!chip) return;
+            removeActiveFilter(chip.getAttribute('data-filter-kind'));
         });
     }
 
