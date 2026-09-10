@@ -30,6 +30,36 @@
       "backgroundImageHeight": 689
     },
     {
+      "id": "20260910-2G",
+      "title": "More 90s nostalgia",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-10",
+      "dateISO": "2026-09-10",
+      "displayDate": "September 10, 2026",
+      "image": "/blog-module/blog-entries/20260910-2G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260910-2G/1.webp",
+      "excerpt": "Υπήρξε μια εποχή που η Formula 1 δεν προσπαθούσε να δείχνει άγρια. Ήταν. Τα μονοθέσια ήταν μικρότερα, στενότερα, πιο νευρικά. Οι οδηγοί πάλευαν περισσότερο με το τιμόνι και λιγότερο με τα settings στη...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260910-2G/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Ayrton Senna",
+        "Michael Schumacher",
+        "2000",
+        "1990"
+      ],
+      "wordCount": 281,
+      "readingTime": "2 min",
+      "imageWidth": 1359,
+      "imageHeight": 835,
+      "backgroundImageWidth": 1359,
+      "backgroundImageHeight": 835
+    },
+    {
       "id": "20260909W",
       "title": "Τζιανκάρλο Φισικέλα: Ο οδηγός που άγγιξε την κορυφή, χωρίς ποτέ να του ανήκει",
       "author": "Themis Charvalis",
@@ -8429,5 +8459,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-10T09:10:41.609Z"
+  "lastUpdated": "2026-09-10T09:45:37.594Z"
 }
