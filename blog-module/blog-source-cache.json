@@ -30,6 +30,34 @@
       "backgroundImageHeight": 689
     },
     {
+      "id": "20260910-5G",
+      "title": "Williams πάλι όπως τότε",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-10",
+      "dateISO": "2026-09-10",
+      "displayDate": "September 10, 2026",
+      "image": "/blog-module/blog-entries/20260910-5G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260910-5G/1.webp",
+      "excerpt": "Υπάρχουν ομάδες στη Formula 1 που χρειάζεται να ανοίξουν βιβλίο για να θυμηθούν την ιστορία τους. Η Williams αρκεί να κοιτάξει γύρω της στο Grove. Τα εννέα Πρωταθλήματα Κατασκευαστών, οι επτά τίτλοι ο...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260910-5G/article.html",
+      "category": "Teams",
+      "categories": [
+        "Teams"
+      ],
+      "tags": [
+        "Williams",
+        "2026"
+      ],
+      "wordCount": 594,
+      "readingTime": "3 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
+    },
+    {
       "id": "20260910-4G",
       "title": "Ο έκπτωτος πρίγκιπας του Maranello",
       "author": "Georgios Balatzis",
@@ -8547,5 +8575,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-10T13:57:12.668Z"
+  "lastUpdated": "2026-09-10T14:37:06.248Z"
 }
