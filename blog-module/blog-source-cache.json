@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20260911W",
+      "title": "🏁 ΤΟ ΜΕΓΑΛΟ ΜΗΧΑΝΟΚΙΝΗΤΟ ΑΘΛΗΤΙΚΟ ΣΑΒΒΑΤΟΚΥΡΙΑΚΟ",
+      "author": "Themis Charvalis",
+      "date": "2026-09-11",
+      "dateISO": "2026-09-11",
+      "displayDate": "September 11, 2026",
+      "image": "/blog-module/blog-entries/20260911W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260911W/2.webp",
+      "excerpt": "Αυτό το τριήμερο, 11–13 Σεπτεμβρίου, έχει σχεδόν τα πάντα, ιστορική πρεμιέρα στη Formula 1, μάχη τίτλου στα βουνά της Χιλής, MotoGP σε κατάσταση συναγερμού και DTM που μπαίνει στην τελική ευθεία. Οπότ...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260911W/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "F1",
+        "WRC",
+        "Motogp",
+        "DTM",
+        "Racing"
+      ],
+      "wordCount": 794,
+      "readingTime": "4 min",
+      "imageWidth": 678,
+      "imageHeight": 452,
+      "backgroundImageWidth": 800,
+      "backgroundImageHeight": 500
+    },
+    {
       "id": "20260910G",
       "title": "Missing the 90s",
       "author": "Georgios Balatzis",
@@ -8575,5 +8606,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-10T14:37:06.248Z"
+  "lastUpdated": "2026-09-11T13:42:50.687Z"
 }
