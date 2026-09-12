@@ -1,6 +1,39 @@
 {
   "posts": [
     {
+      "id": "20260912W",
+      "title": "Οι στόχοι του big 4 για το Madring",
+      "author": "Themis Charvalis",
+      "date": "2026-09-12",
+      "dateISO": "2026-09-12",
+      "displayDate": "September 12, 2026",
+      "image": "/blog-module/blog-entries/20260912W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260912W/2.webp",
+      "excerpt": "Οι κατατακτήριες του Grand Prix Μαδρίτης έδωσαν μια πρώτη εικόνα για τις πραγματικές ισορροπίες δυνάμεων. Η McLaren έχει την pole, η Mercedes καραδοκεί, η Ferrari ψάχνει το podium και ο Verstappen παρ...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260912W/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "F1",
+        "Racing",
+        "Madrid Grand Prix",
+        "Mercedes F1",
+        "Ferrari",
+        "McLaren",
+        "Red bull"
+      ],
+      "wordCount": 947,
+      "readingTime": "5 min",
+      "imageWidth": 1920,
+      "imageHeight": 1080,
+      "backgroundImageWidth": 739,
+      "backgroundImageHeight": 415
+    },
+    {
       "id": "20260912J",
       "title": "BetCast #273: Προσπεράσεις ή… τοίχος με τοίχο;",
       "author": "Giannis Poulikidis",
@@ -8637,5 +8670,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-12T10:02:33.445Z"
+  "lastUpdated": "2026-09-12T19:52:45.237Z"
 }
