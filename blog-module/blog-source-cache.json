@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20260912J",
+      "title": "BetCast #273: Προσπεράσεις ή… τοίχος με τοίχο;",
+      "author": "Giannis Poulikidis",
+      "date": "2026-09-12",
+      "dateISO": "2026-09-12",
+      "displayDate": "September 12, 2026",
+      "image": "/blog-module/blog-entries/20260912J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260912J/1.webp",
+      "excerpt": "Ήρθε επιτέλους και το πολυανα.... Ναι, οκ, ήρθε ένα ακόμα circuit πόλης! Με την πρώτη ματιά... ωραίο, glamour, εντυπωσιακό το Sector 2. Όμως... Όμως λέω... θα έχουμε προσπεράσεις; Θέαμα και μάχες; Είν...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260912J/article.html",
+      "category": "Betting",
+      "categories": [
+        "Betting"
+      ],
+      "tags": [
+        "BetCast",
+        "Betting",
+        "Ποντάρισμα",
+        "Στοίχημα",
+        "Σημεία"
+      ],
+      "wordCount": 239,
+      "readingTime": "2 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
+    },
+    {
       "id": "20260911W",
       "title": "🏁 ΤΟ ΜΕΓΑΛΟ ΜΗΧΑΝΟΚΙΝΗΤΟ ΑΘΛΗΤΙΚΟ ΣΑΒΒΑΤΟΚΥΡΙΑΚΟ",
       "author": "Themis Charvalis",
@@ -8606,5 +8637,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-11T13:42:50.687Z"
+  "lastUpdated": "2026-09-12T10:02:33.445Z"
 }
