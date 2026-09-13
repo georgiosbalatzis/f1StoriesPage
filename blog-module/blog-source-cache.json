@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20260913G",
+      "title": "Το Baku δεν ήταν απλώς ένα λάθος",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-13",
+      "dateISO": "2026-09-13",
+      "displayDate": "September 13, 2026",
+      "image": "/blog-module/blog-entries/20260913G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260913G/1.webp",
+      "excerpt": "Μέχρι το Baku του 2025, ένα από τα μεγαλύτερα προσόντα του Oscar Piastri ήταν ότι έμοιαζε σχεδόν απρόσβλητος από το χάος γύρω του. Δεν ήταν ο πιο εκφραστικός οδηγός του grid, ούτε εκείνος που θα έδειχ...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260913G/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "Oscar Piastri",
+        "McLaren",
+        "2025",
+        "2026"
+      ],
+      "wordCount": 670,
+      "readingTime": "4 min",
+      "imageWidth": 474,
+      "imageHeight": 316,
+      "backgroundImageWidth": 474,
+      "backgroundImageHeight": 316
+    },
+    {
       "id": "20260912W",
       "title": "Οι στόχοι του big 4 για το Madring",
       "author": "Themis Charvalis",
@@ -8670,5 +8700,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-12T19:52:45.237Z"
+  "lastUpdated": "2026-09-13T08:11:04.504Z"
 }
