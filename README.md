@@ -379,6 +379,16 @@ npm run build:assets:minify
 npm run build:assets:stamp
 ```
 
+### Τοπικό visual preview
+
+Για να ανοίξεις το site τοπικά με τα generated CSS/JS assets διαθέσιμα:
+
+```bash
+npm run preview
+```
+
+Η εντολή ανανεώνει τα browser assets, ελέγχει ότι υπάρχουν τα βασικά generated αρχεία και ξεκινά preview server στο `http://127.0.0.1:4173/`. Σταμάτησέ τον με `Ctrl+C`. Τα generated αρχεία παραμένουν local build output και δεν χρειάζεται να προστεθούν στο repository.
+
 ### Αναδημιουργία blog content
 
 ```bash

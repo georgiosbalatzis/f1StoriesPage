@@ -66,8 +66,8 @@ const LAZY_IMAGE_PLACEHOLDER = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///y
 const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief', 'destructors'];
 const LIGHTWEIGHT_TABS = ['drivers', 'constructors'];
 const REPORT_DETAILS = {
-    'drivers': { label: 'Οδηγοί', note: 'Championship table · Jolpica F1' },
-    'constructors': { label: 'Κατασκευαστές', note: 'Team standings · Jolpica F1' },
+    'drivers': { label: 'Οδηγοί', note: 'Βαθμολογία πρωταθλήματος · Jolpica F1' },
+    'constructors': { label: 'Κατασκευαστές', note: 'Βαθμολογία ομάδων · Jolpica F1' },
     'quali-gaps': { label: 'Quali Gaps', note: 'Teammate pace comparison · Jolpica F1' },
     'lap1-gains': { label: 'Lap 1 Gains', note: 'Race start movement · OpenF1' },
     'tyre-pace': { label: 'Tyre Pace', note: 'Race pace distributions · OpenF1' },
@@ -1122,7 +1122,7 @@ function renderDrivers(standings, openf1Map) {
 
     const maxPts = parseFloat(standings[0].points) || 1;
     renderDriverStandingsPolish(standings, latestStandingsMeta, document.getElementById('season-year').textContent || YEAR);
-    let html = tableHeadHTML('Driver / Team');
+    let html = tableHeadHTML('Οδηγός / Ομάδα');
 
     standings.forEach(function(s, index) {
         const driver = s.Driver;
@@ -1160,10 +1160,10 @@ function renderDrivers(standings, openf1Map) {
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
             + '</div>'
             + detailRowHTML(detailId, [
-                { label: 'Form', value: wins > 0 ? formatWinsLabel(wins) : 'No wins yet' },
-                { label: 'Team', value: teamName || 'Unknown' },
-                { label: 'Gap ahead', value: index === 0 ? 'Leader' : '+' + pointsText(gapAhead) + ' pts' },
-                { label: 'Gap behind', value: next ? pointsText(gapBehind) + ' pts' : 'Last classified' }
+                { label: 'Φόρμα', value: wins > 0 ? formatWinsLabel(wins) : 'Χωρίς νίκες ακόμη' },
+                { label: 'Ομάδα', value: teamName || 'Άγνωστη' },
+                { label: 'Διαφορά από τον προηγούμενο', value: index === 0 ? 'Πρωτοπόρος' : '+' + pointsText(gapAhead) + ' βαθ.' },
+                { label: 'Διαφορά από τον επόμενο', value: next ? pointsText(gapBehind) + ' βαθ.' : 'Τελευταία καταχώριση' }
             ]);
     });
     renderTrustedHtml(driversTable, html, 'driver standings rows from validated standings payload');
@@ -1211,7 +1211,7 @@ function renderConstructors(standings, driverStandings) {
 
     const maxPts = parseFloat(standings[0].points) || 1;
     renderConstructorStandingsPolish(standings, teamDrivers, latestStandingsMeta, document.getElementById('season-year').textContent || YEAR);
-    let html = tableHeadHTML('Constructor / Drivers');
+    let html = tableHeadHTML('Κατασκευαστής / Οδηγοί');
 
     standings.forEach(function(s, index) {
         const c = s.Constructor;
@@ -1247,10 +1247,10 @@ function renderConstructors(standings, driverStandings) {
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
             + '</div>'
             + detailRowHTML(detailId, [
-                { label: 'Form', value: wins > 0 ? formatWinsLabel(wins) : 'No wins yet' },
-                { label: 'Drivers', value: drivers.length ? drivers.join(' / ') : 'TBD' },
-                { label: 'Gap ahead', value: index === 0 ? 'Leader' : '+' + pointsText(gapAhead) + ' pts' },
-                { label: 'Gap behind', value: next ? pointsText(gapBehind) + ' pts' : 'Last classified' }
+                { label: 'Φόρμα', value: wins > 0 ? formatWinsLabel(wins) : 'Χωρίς νίκες ακόμη' },
+                { label: 'Οδηγοί', value: drivers.length ? drivers.join(' / ') : 'Δεν έχει οριστεί' },
+                { label: 'Διαφορά από τον προηγούμενο', value: index === 0 ? 'Πρωτοπόρος' : '+' + pointsText(gapAhead) + ' βαθ.' },
+                { label: 'Διαφορά από τον επόμενο', value: next ? pointsText(gapBehind) + ' βαθ.' : 'Τελευταία καταχώριση' }
             ]);
     });
     renderTrustedHtml(constructorsTable, html, 'constructor standings rows from validated standings payload');

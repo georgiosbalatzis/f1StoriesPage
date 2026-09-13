@@ -41,9 +41,9 @@ const state = {
 let DIRTY_AIR_MINISECTORS = 30;
 const DIRTY_AIR_CATEGORIES = [
     { key: 'drs', label: 'DRS', range: '<= 1.0s', color: 'ef4444' },
-    { key: 'heavy', label: 'Heavy', range: '1.0-2.0s', color: 'f97316' },
-    { key: 'low', label: 'Low', range: '2.0-4.0s', color: 'eab308' },
-    { key: 'clean', label: 'Clean Air', range: '> 4.0s', color: '22c55e' }
+    { key: 'heavy', label: 'Βαριά', range: '1.0-2.0s', color: 'f97316' },
+    { key: 'low', label: 'Ήπια', range: '2.0-4.0s', color: 'eab308' },
+    { key: 'clean', label: 'Καθαρός αέρας', range: '> 4.0s', color: '22c55e' }
 ];
 
 let onRendered = null;
@@ -1119,8 +1119,8 @@ function renderDirtyAir(sessionData, session) {
     if (!sessionData || !session) {
         setTrustedHtml(dirtyAirTable, '<div class="dirty-air-empty-card">'
             + '<svg class="icon" aria-hidden="true"><use href="#fa-wind"/></svg>'
-            + '<p>Δεν υπάρχουν ακόμη completed races για dirty air analysis.</p>'
-            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρχουν διαθέσιμα race telemetry samples.</p>'
+            + '<p>Δεν υπάρχουν ακόμη ολοκληρωμένοι αγώνες για την ανάλυση Dirty Air.</p>'
+            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Η καρτέλα ενεργοποιείται μόλις υπάρχουν διαθέσιμα δείγματα τηλεμετρίας αγώνα.</p>'
             + '</div>', 'dirty air empty state');
         fireRendered();
         return;
@@ -1128,12 +1128,12 @@ function renderDirtyAir(sessionData, session) {
 
     if (!hasRenderableDirtyAirRows(sessionData)) {
         setTrustedHtml(dirtyAirTable, '<div class="dirty-air-card">'
-            + '<div class="dirty-air-head"><div class="dirty-air-head-copy"><h3 class="dirty-air-head-title">Dirty Air Proximity Breakdown</h3><p class="dirty-air-head-note">Clean air σημαίνει ότι δεν υπάρχει κανένα μονοθέσιο μπροστά μέσα σε 4.0s στο ίδιο minisector. Τα backmarkers που ετοιμάζονται να δεχτούν γύρο μετρούν κανονικά ως traffic.</p></div><label class="dirty-air-controls"><span class="dirty-air-controls-label">Available races</span><select class="dirty-air-select" data-dirty-air-select aria-label="Επιλογή αγώνα για dirty air analysis">' + sessionOptions + '</select></label></div>'
-            + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || 'Race')) + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Drivers</span><span class="dirty-air-summary-value">0</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">MiniSectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div></div></div>'
+            + '<div class="dirty-air-head"><div class="dirty-air-head-copy"><h3 class="dirty-air-head-title">Ανάλυση εγγύτητας Dirty Air</h3><p class="dirty-air-head-note">Καθαρός αέρας σημαίνει ότι δεν υπάρχει μονοθέσιο μπροστά μέσα σε 4.0s στο ίδιο minisector. Τα backmarkers που ετοιμάζονται να δεχτούν γύρο υπολογίζονται κανονικά ως κίνηση.</p></div><label class="dirty-air-controls"><span class="dirty-air-controls-label">Διαθέσιμοι αγώνες</span><select class="dirty-air-select" data-dirty-air-select aria-label="Επιλογή αγώνα για την ανάλυση Dirty Air">' + sessionOptions + '</select></label></div>'
+            + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || 'Αγώνας')) + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Οδηγοί</span><span class="dirty-air-summary-value">0</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Minisectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div></div></div>'
             + '<div class="dirty-air-empty-card">'
             + '<svg class="icon" aria-hidden="true"><use href="#fa-wind"/></svg>'
-            + '<p>Δεν υπάρχουν ακόμη αρκετά race telemetry samples για το συγκεκριμένο race.</p>'
-            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Διάλεξε άλλο completed Grand Prix ή δοκίμασε ξανά αργότερα όταν το OpenF1 έχει περισσότερα location samples.</p>'
+            + '<p>Δεν υπάρχουν ακόμη αρκετά δείγματα τηλεμετρίας για τον συγκεκριμένο αγώνα.</p>'
+            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Διάλεξε άλλο ολοκληρωμένο Grand Prix ή δοκίμασε ξανά αργότερα, όταν το OpenF1 θα έχει περισσότερα δείγματα θέσης.</p>'
             + '</div>'
             + '</div>', 'dirty air no-data report state');
         fireRendered();
@@ -1204,19 +1204,19 @@ function renderDirtyAir(sessionData, session) {
     }
 
     const activeView = sanitizeView(state.activeView);
-    const viewSwitchHTML = '<div class="dirty-air-view-switch"><div class="dirty-air-view-tabs" role="tablist" aria-label="Dirty air views">'
-        + '<button class="dirty-air-view-tab' + (activeView === 'summary' ? ' active' : '') + '" type="button" data-dirty-air-view="summary" role="tab" aria-selected="' + (activeView === 'summary' ? 'true' : 'false') + '">% By Proximity</button>'
-        + '<button class="dirty-air-view-tab' + (activeView === 'timeline' ? ' active' : '') + '" type="button" data-dirty-air-view="timeline" role="tab" aria-selected="' + (activeView === 'timeline' ? 'true' : 'false') + '">Per Lap Timeline</button>'
+    const viewSwitchHTML = '<div class="dirty-air-view-switch"><div class="dirty-air-view-tabs" role="tablist" aria-label="Προβολές Dirty Air">'
+        + '<button class="dirty-air-view-tab' + (activeView === 'summary' ? ' active' : '') + '" type="button" data-dirty-air-view="summary" role="tab" aria-selected="' + (activeView === 'summary' ? 'true' : 'false') + '">% ανά απόσταση</button>'
+        + '<button class="dirty-air-view-tab' + (activeView === 'timeline' ? ' active' : '') + '" type="button" data-dirty-air-view="timeline" role="tab" aria-selected="' + (activeView === 'timeline' ? 'true' : 'false') + '">Χρονολόγιο ανά γύρο</button>'
         + '</div></div>';
 
     const html = '<div class="dirty-air-card">'
-        + '<div class="dirty-air-head"><div class="dirty-air-head-copy"><h3 class="dirty-air-head-title">Dirty Air Proximity Breakdown</h3><p class="dirty-air-head-note">Clean air σημαίνει ότι δεν υπάρχει κανένα μονοθέσιο μπροστά μέσα σε 4.0s στο ίδιο minisector. Τα backmarkers που ετοιμάζονται να δεχτούν γύρο μετρούν κανονικά ως traffic.</p></div><label class="dirty-air-controls"><span class="dirty-air-controls-label">Available races</span><select class="dirty-air-select" data-dirty-air-select aria-label="Επιλογή αγώνα για dirty air analysis">' + sessionOptions + '</select></label></div>'
-        + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || 'Race') + ' · ' + sessionData.maxLaps + ' laps') + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Drivers</span><span class="dirty-air-summary-value">' + esc(String(sessionData.rows.length)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">MiniSectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">SC Periods</span><span class="dirty-air-summary-value">' + esc(String((sessionData.safetyCarSpans || []).length)) + '</span></div></div></div>'
+        + '<div class="dirty-air-head"><div class="dirty-air-head-copy"><h3 class="dirty-air-head-title">Ανάλυση εγγύτητας Dirty Air</h3><p class="dirty-air-head-note">Καθαρός αέρας σημαίνει ότι δεν υπάρχει μονοθέσιο μπροστά μέσα σε 4.0s στο ίδιο minisector. Τα backmarkers που ετοιμάζονται να δεχτούν γύρο υπολογίζονται κανονικά ως κίνηση.</p></div><label class="dirty-air-controls"><span class="dirty-air-controls-label">Διαθέσιμοι αγώνες</span><select class="dirty-air-select" data-dirty-air-select aria-label="Επιλογή αγώνα για την ανάλυση Dirty Air">' + sessionOptions + '</select></label></div>'
+        + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || 'Αγώνας') + ' · ' + sessionData.maxLaps + ' γύροι') + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Οδηγοί</span><span class="dirty-air-summary-value">' + esc(String(sessionData.rows.length)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Minisectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Περίοδοι SC</span><span class="dirty-air-summary-value">' + esc(String((sessionData.safetyCarSpans || []).length)) + '</span></div></div></div>'
         + '<div class="dirty-air-legend">' + legendHTML + '</div>'
         + viewSwitchHTML
-        + '<div class="dirty-air-view-panel' + (activeView === 'summary' ? ' active' : '') + '" data-dirty-air-panel="summary"><section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">% Of Race By Proximity</h4><p class="dirty-air-section-note">Share of valid race minisectors spent in each traffic bucket.</p></div></div><div class="dirty-air-summary-list">' + summaryRowsHTML + '</div></section></div>'
-        + '<div class="dirty-air-view-panel' + (activeView === 'timeline' ? ' active' : '') + '" data-dirty-air-panel="timeline"><section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Per Lap Timeline</h4><p class="dirty-air-section-note">Every lap is split into 30 equal minisectors. Safety Car laps are highlighted across the chart.</p></div></div><div class="dirty-air-timeline-scroll"><div class="dirty-air-timeline-body" style="--dirty-air-chart-width:' + chartWidth + 'px;"><div class="dirty-air-timeline-track">' + scOverlayHTML + scMarkerRowHTML + timelineRowsHTML + '</div><div class="dirty-air-axis-row"><div class="dirty-air-axis-spacer"></div><div class="dirty-air-axis-track">' + axisLabels + '</div></div></div></div></section></div>'
-        + '<p class="dirty-air-footnote">Source: OpenF1 `location`, `laps`, `session_result` και `race_control`. Το nearest car ahead μετριέται ανά minisector χρησιμοποιώντας το πιο πρόσφατο crossing στο ίδιο κομμάτι της πίστας.</p>'
+        + '<div class="dirty-air-view-panel' + (activeView === 'summary' ? ' active' : '') + '" data-dirty-air-panel="summary"><section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Ποσοστό αγώνα ανά απόσταση</h4><p class="dirty-air-section-note">Ποσοστό των έγκυρων minisectors αγώνα που δαπανήθηκαν σε κάθε κατηγορία κίνησης.</p></div></div><div class="dirty-air-summary-list">' + summaryRowsHTML + '</div></section></div>'
+        + '<div class="dirty-air-view-panel' + (activeView === 'timeline' ? ' active' : '') + '" data-dirty-air-panel="timeline"><section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Χρονολόγιο ανά γύρο</h4><p class="dirty-air-section-note">Κάθε γύρος χωρίζεται σε 30 ίσα minisectors. Οι γύροι με Safety Car επισημαίνονται στο γράφημα.</p></div></div><div class="dirty-air-timeline-scroll"><div class="dirty-air-timeline-body" style="--dirty-air-chart-width:' + chartWidth + 'px;"><div class="dirty-air-timeline-track">' + scOverlayHTML + scMarkerRowHTML + timelineRowsHTML + '</div><div class="dirty-air-axis-row"><div class="dirty-air-axis-spacer"></div><div class="dirty-air-axis-track">' + axisLabels + '</div></div></div></div></section></div>'
+        + '<p class="dirty-air-footnote">Πηγή: OpenF1 `location`, `laps`, `session_result` και `race_control`. Η απόσταση από το πλησιέστερο μονοθέσιο μπροστά μετριέται ανά minisector, με το πιο πρόσφατο πέρασμα από το ίδιο κομμάτι της πίστας.</p>'
         + '</div>';
 
     setTrustedHtml(dirtyAirTable, html, 'dirty air report template');

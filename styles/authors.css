@@ -72,6 +72,14 @@
   .author-profile__stories { grid-area: stories; }
   .author-profile__links { grid-area: links; }
   .author-profile__number { right: -6px; bottom: -6px; width: 28px; height: 28px; font-size: .62rem; }
+  .author-profile__kicker,
+  .author-profile__column strong,
+  .author-profile__stories-head strong,
+  .author-profile__stories-head span,
+  .author-profile__archive,
+  .author-profile__social { font-size: .75rem; }
+  .author-profile__archive,
+  .author-profile__social { display: inline-flex; align-items: center; min-height: 44px; }
   .author-directory.is-focused .author-profile.is-selected { grid-template-columns: 94px minmax(0, 1fr); margin: 0; padding: 16px; }
   .author-directory.is-focused .author-profile.is-selected .author-profile__name { font-size: 1.7rem; }
 }

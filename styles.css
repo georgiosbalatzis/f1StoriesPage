@@ -258,6 +258,18 @@ footer::before { display: none; }
 .footer-link:hover::after { width: 100%; }
 .footer-separator { color: rgba(255,255,255,0.38); margin: 0 0.5rem; }
 
+@media (max-width: 767.98px) {
+    .footer-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+    }
+
+    .footer-separator {
+        align-self: center;
+    }
+}
+
 /* Footer grid (shared by home + episodes) */
 .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; padding-bottom: var(--space-lg); border-bottom: 1px solid var(--border); margin-bottom: var(--space-lg); }
 .footer-col__title { font-size: var(--text-xs); color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; font-weight: 600; }

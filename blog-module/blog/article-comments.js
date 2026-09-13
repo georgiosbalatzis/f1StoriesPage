@@ -18,6 +18,7 @@
         window.disqus_config = function () {
             this.page.url = window.location.href;
             this.page.identifier = getArticleIdentifier(disqusThread);
+            this.language = 'el';
         };
 
         script = document.createElement('script');

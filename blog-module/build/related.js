@@ -68,7 +68,7 @@ async function buildRelatedPostsHtml(relatedPosts) {
 
         return `
             <div class="col-md-4 mb-4">
-                <a href="${related.url}" class="related-card-link" style="display:block;height:100%;">
+                <a href="${related.url}" class="related-card-link">
                     <div class="related-article-card${hasImage ? '' : ' related-article-card--no-image'}">
                         ${mediaHtml}
                         <div class="card-body">

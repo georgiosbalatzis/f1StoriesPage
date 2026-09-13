@@ -515,9 +515,9 @@ function renderTyrePace(data, session) {
     }).join('');
 
     let html = '<div class="tyre-pace-card">'
-        + '<div class="tyre-pace-head"><div class="tyre-pace-head-copy"><h3 class="tyre-pace-head-title">Tyre Compound Lap Time Distributions</h3><p class="tyre-pace-head-note">Dry-compound colours: hard white, medium yellow, soft red. Out laps, in laps και πολύ αργοί outlier laps αφαιρούνται για πιο καθαρό pace picture.</p></div><label class="tyre-pace-controls"><span class="tyre-pace-controls-label">Available sessions</span><select class="tyre-pace-select" data-tyre-pace-select aria-label="Επιλογή session για tyre pace">' + selectOptions + '</select></label></div>'
-        + '<div class="tyre-pace-summary"><div><div class="tyre-pace-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="tyre-pace-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || session.session_type || 'Race')) + '</div></div><div class="tyre-pace-summary-stats"><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Drivers</span><span class="tyre-pace-summary-value">' + esc(String(data.driverCount)) + '</span></div><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Valid laps</span><span class="tyre-pace-summary-value">' + esc(String(data.validLapCount)) + '</span></div><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Best lap</span><span class="tyre-pace-summary-value">' + esc(formatLapTime(data.rows[0] && data.rows[0].bestLap, true)) + '</span></div></div></div>'
-        + '<div class="tyre-pace-legend"><span class="tyre-pace-legend-title">Tyre Compound</span>';
+        + '<div class="tyre-pace-head"><div class="tyre-pace-head-copy"><h3 class="tyre-pace-head-title">Κατανομές χρόνων γύρου ανά γόμα</h3><p class="tyre-pace-head-note">Χρώματα στεγνής γόμας: σκληρή λευκή, medium κίτρινη, soft κόκκινη. Οι γύροι εξόδου, εισόδου και οι πολύ αργοί ακραίοι γύροι αφαιρούνται για καθαρότερη εικόνα ρυθμού.</p></div><label class="tyre-pace-controls"><span class="tyre-pace-controls-label">Διαθέσιμες συνεδρίες</span><select class="tyre-pace-select" data-tyre-pace-select aria-label="Επιλογή συνεδρίας για το Tyre Pace">' + selectOptions + '</select></label></div>'
+        + '<div class="tyre-pace-summary"><div><div class="tyre-pace-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="tyre-pace-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || session.session_type || 'Αγώνας')) + '</div></div><div class="tyre-pace-summary-stats"><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Οδηγοί</span><span class="tyre-pace-summary-value">' + esc(String(data.driverCount)) + '</span></div><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Έγκυροι γύροι</span><span class="tyre-pace-summary-value">' + esc(String(data.validLapCount)) + '</span></div><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Καλύτερος γύρος</span><span class="tyre-pace-summary-value">' + esc(formatLapTime(data.rows[0] && data.rows[0].bestLap, true)) + '</span></div></div></div>'
+        + '<div class="tyre-pace-legend"><span class="tyre-pace-legend-title">Γόμα ελαστικών</span>';
 
     compounds.forEach(function(compound) {
         const meta = getCompoundMeta(compound);
@@ -526,7 +526,7 @@ function renderTyrePace(data, session) {
 
     html += '</div>'
         + '<div class="tyre-pace-chart-scroll" data-horizontal-chart-scroll><div class="tyre-pace-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
-        + '<div class="tyre-pace-axis"><span class="tyre-pace-axis-title">Lap Time (s)</span>';
+        + '<div class="tyre-pace-axis"><span class="tyre-pace-axis-title">Χρόνος γύρου (δ.)</span>';
 
     axisValues.forEach(function(value) {
         const bottom = data.maxTime > data.minTime ? ((value - data.minTime) / (data.maxTime - data.minTime)) * 100 : 0;
@@ -548,12 +548,12 @@ function renderTyrePace(data, session) {
             html += '<div class="tyre-pace-plot">' + buildTyrePaceSvg(row.laps, data.minTime, data.maxTime, row.teamColor) + '</div>'
                 + '<div class="tyre-pace-best">' + esc(formatLapTime(row.bestLap, true)) + '</div>';
         } else {
-            html += '<div class="tyre-pace-no-data">No laps</div><div class="tyre-pace-best">n/a</div>';
+            html += '<div class="tyre-pace-no-data">Χωρίς γύρους</div><div class="tyre-pace-best">—</div>';
         }
         html += '<div class="tyre-pace-code">' + esc(row.acronym) + '</div><div class="tyre-pace-name">' + esc(row.fullName) + '</div></article>';
     });
 
-    html += '</div></div></div></div><p class="tyre-pace-footnote">Source: OpenF1 `laps` + `stints`. Compounds are mapped from stint ranges to each valid race lap.</p></div>';
+    html += '</div></div></div></div><p class="tyre-pace-footnote">Πηγή: OpenF1 `laps` + `stints`. Οι γόμες αντιστοιχίζονται από τα διαστήματα των stint σε κάθε έγκυρο γύρο αγώνα.</p></div>';
 
     setTrustedHtml(tyrePaceTable, html, 'tyre pace report template');
     fireRendered();

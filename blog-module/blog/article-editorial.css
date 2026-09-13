@@ -539,7 +539,7 @@
 .article-page .related-section-title { font: 400 clamp(2.2rem, 3.3vw, 3.25rem)/1.2 var(--font-editorial); letter-spacing: -.03em; }
 .article-page .related-article-card { border-radius: 0; box-shadow: none; }
 .article-page .related-article-card:hover { transform: none; box-shadow: none; }
-.article-page .related-card-link { color: var(--text-primary); text-decoration: none; }
+.article-page .related-card-link { display: block; height: 100%; color: var(--text-primary); text-decoration: none; }
 .article-page .related-card-media { aspect-ratio: 1.5; background: var(--bg-surface); border: 0; border-radius: 0; }
 .article-page .article-related-section > div:nth-child(3) .related-card-media { border-radius: 0 0 36px 0; }
 .article-page .related-card-media::after { display: none; }
