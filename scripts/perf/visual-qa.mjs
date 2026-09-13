@@ -642,7 +642,11 @@ async function captureRoute(browser, origin, outputDir, route, viewport, theme, 
 
         pageErrors.forEach(message => issues.push({ type: 'page-error', detail: message }));
         consoleErrors
+            // The local QA origin cannot satisfy OpenF1's CORS policy. The
+            // qualifying-gaps panel is expected to render its themed error
+            // state in that situation; keep genuine page errors visible.
             .filter(message => !/favicon|Failed to load resource/i.test(message))
+            .filter(message => !(route.slug === 'standings-quali-gaps' && /api\.openf1\.org|Qualifying gaps error|Failed to fetch/i.test(message)))
             .forEach(message => issues.push({ type: 'console-error', detail: message }));
 
         return {

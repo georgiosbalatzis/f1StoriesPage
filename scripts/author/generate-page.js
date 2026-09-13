@@ -1068,7 +1068,7 @@
 
         document.getElementById('pv-title').textContent = title;
         document.getElementById('pv-category').textContent = category;
-        document.getElementById('pv-date').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('pv-date').textContent = new Date().toLocaleDateString('el-GR', { year: 'numeric', month: 'long', day: 'numeric' });
 
         // Article header prefers the banner (slot 2); falls back to thumbnail (slot 1).
         var heroImg = document.getElementById('pv-hero-img');
@@ -1082,6 +1082,7 @@
         authorDom.setTrustedHtml(contentEl, html, 'Generate article preview HTML');
 
         var authorData = AUTHORS[author];
+        document.getElementById('pv-byline').textContent = author;
         document.getElementById('pv-author-name').textContent = author;
         document.getElementById('pv-author-initial').textContent = author.charAt(0).toUpperCase();
         if (authorData) {

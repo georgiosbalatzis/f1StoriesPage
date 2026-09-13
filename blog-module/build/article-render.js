@@ -150,11 +150,11 @@ function renderArticleTrust(post, categories) {
     const author = escapeHtmlText(post.author || 'F1 Stories');
     const authorHref = escapeHtmlAttribute(authorProfileHref(post.author));
 
-    return `<section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+    return `<details class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις"><summary>Συντακτική ταυτότητα &amp; πηγές</summary><div class="article-trust-grid">
                         <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="${authorHref}">${author}</a></strong><span>Δημοσίευση: <time datetime="${escapeHtmlAttribute(post.dateISO || post.date || '')}">${escapeHtmlText(articleDate)}</time></span>${renderArticleUpdateStatus(post)}</div>
                         <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span>${renderArticleSources(post.sources, profile)}</div>
                         <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </section>`;
+                    </div></details>`;
 }
 
 function applyArticleEditorialIdentity(html, profile) {
@@ -201,7 +201,7 @@ function refreshArticleTaxonomy(html, post) {
         .replace(/(<span class="article-rail-label">)Related(<\/span>)/i, '$1ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ$2');
 
     updated = applyArticleEditorialIdentity(updated, profile);
-    const trustPattern = /<(?:div|section)\b[^>]*\bclass=(["'])[^"']*\barticle-trust\b[^"']*\1[^>]*>[\s\S]*?(?=\s*<div\b[^>]*\bclass=(["'])[^"']*\barticle-content\b[^"']*\2[^>]*>)/i;
+    const trustPattern = /<(?:div|section|details)\b[^>]*\bclass=(["'])[^"']*\barticle-trust\b[^"']*\1[^>]*>[\s\S]*?(?=\s*<div\b[^>]*\bclass=(["'])[^"']*\barticle-content\b[^"']*\2[^>]*>)/i;
     if (trustPattern.test(updated)) {
         updated = updated.replace(trustPattern, trustPanel);
     } else {

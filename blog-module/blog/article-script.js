@@ -509,11 +509,14 @@ document.addEventListener('DOMContentLoaded', function () {
         let current = 0;
         let touchStartX = 0;
         let touchStartY = 0;
+        let lastTrigger = null;
 
-        function open(index) {
+        function open(index, trigger) {
             const imgs = getImages();
             if (!imgs.length) return;
             current = index;
+            lastTrigger = trigger || null;
+            if (lastTrigger && !lastTrigger.hasAttribute('tabindex')) lastTrigger.setAttribute('tabindex', '-1');
             update();
             overlay.classList.add('open');
             document.body.style.overflow = 'hidden';
@@ -523,6 +526,8 @@ document.addEventListener('DOMContentLoaded', function () {
         function close() {
             overlay.classList.remove('open');
             document.body.style.overflow = '';
+            if (lastTrigger && lastTrigger.isConnected) lastTrigger.focus();
+            lastTrigger = null;
         }
 
         // Resolve full-res src: data-full-src is set by processor for srcset images
@@ -559,7 +564,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (index === -1) return;
 
             e.preventDefault();
-            open(index);
+            open(index, img);
         });
 
         lbClose.addEventListener('click', close);

@@ -31,6 +31,9 @@
     <script src="/scripts/author/dom-tools.js"></script>
     <script src="/scripts/author/dialogs.js"></script>
 
+    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=c0939d6f">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=3fed89a2">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=72651427">
     <link rel="stylesheet" href="/styles/author/generate.css">
 </head>
 <body>
@@ -252,7 +255,7 @@
 </div>
 
 <!-- ═══ Preview ════════════════════════════════════════════ -->
-<div id="preview-wrapper">
+<div id="preview-wrapper" class="editorial-preview editorial-page article-page">
     <div class="gen-preview-bar">
         <span><svg class="icon" aria-hidden="true"><use href="#fa-eye"/></svg> Preview Mode</span>
         <button class="gen-btn gen-btn-secondary" id="gen-back-btn" style="padding:0.35rem 0.9rem;font-size:0.78rem;">
@@ -260,7 +263,7 @@
         </button>
     </div>
 
-    <section class="article-page-wrapper py-5 mt-3">
+    <section class="article-page-wrapper">
         <div class="container">
             <article class="article-container">
                 <div class="article-header" id="pv-header">
@@ -269,7 +272,9 @@
                              loading="eager" decoding="sync" width="848" height="400">
                     </picture>
                     <div class="article-header-overlay">
+                        <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span></div>
                         <h1 class="article-title" id="pv-title"></h1>
+                        <p class="article-header-byline">Γράφει <span id="pv-byline"></span></p>
                         <div class="article-meta">
                             <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> <span id="pv-date"></span></span>
                             <span><svg class="icon" aria-hidden="true"><use href="#fa-folder-open"/></svg> <span id="pv-category"></span></span>

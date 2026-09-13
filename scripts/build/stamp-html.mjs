@@ -22,16 +22,20 @@
 //   node scripts/build/stamp-html.mjs --dry   # print planned edits only
 //   node scripts/build/stamp-html.mjs --stamp-articles
 //       Full article restamp for runtime hash migration work.
+//   node scripts/build/stamp-html.mjs --article-ids=20260913G,20260912W
+//       Refresh only these articles; every article migration pass respects the scope.
 
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { applyArticleEditorial } from './article-editorial.mjs';
+import { resolveArticleScope } from './article-scope.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const MANIFEST_PATH = path.join(REPO_ROOT, 'scripts', 'build', 'asset-manifest.json');
+let articleScope = null;
 
 // HTML files whose asset references we rewrite. Add to this list with care
 // — stamping a file with external asset references is fine; stamping a
@@ -517,6 +521,7 @@ function swapBootstrapCdn(html, bootstrapInfo) {
 }
 
 function listArticleHtml() {
+    if (articleScope !== null) return articleScope;
     const root = path.join(REPO_ROOT, ARTICLE_HTML_ROOT);
     const out = [];
     if (!fs.existsSync(root)) return out;
@@ -965,6 +970,7 @@ function asyncifyStylesheets(html, relPath) {
 }
 
 function main() {
+    articleScope = resolveArticleScope(process.argv.slice(2), REPO_ROOT);
     const manifest = loadManifest();
     const patterns = buildPatternsFromManifest(manifest);
     const critical = loadCriticalCss(manifest);
@@ -994,7 +1000,7 @@ function main() {
     }
     const sprite = loadSprite();
     const dry = process.argv.includes('--dry');
-    const stampArticles = process.argv.includes('--stamp-articles') || process.env.F1S_STAMP_ARTICLES === '1';
+    const stampArticles = articleScope !== null || process.argv.includes('--stamp-articles') || process.env.F1S_STAMP_ARTICLES === '1';
     let totalHits = 0;
     let totalCriticalOps = 0;
     let totalAsyncified = 0;

@@ -1,7 +1,7 @@
 {
   "name": "f1stories-site",
   "version": "1.0.0",
-  "description": "F1 Stories static website — build scripts for the blog publishing pipeline.",
+  "description": "F1 Stories static website \u2014 build scripts for the blog publishing pipeline.",
   "private": true,
   "scripts": {
     "build": "npm run build:html && npm run build:youtube && npm run build:blog && npm run build:assets",
@@ -19,7 +19,7 @@
     "build:fonts": "node scripts/build/download-fonts.mjs && node scripts/build/download-home-fonts.mjs",
     "build:icons": "node scripts/build/build-icon-sprite.mjs",
     "build:bootstrap": "sass styles/vendor/bootstrap.slim.scss styles/vendor/bootstrap.slim.css --style=compressed --no-source-map --quiet-deps --silence-deprecation=import,global-builtin,color-functions,if-function",
-    "build:assets": "node scripts/build/build-icon-sprite.mjs && npm run build:bootstrap && node scripts/build/minify.mjs && node scripts/build/stamp-html.mjs",
+    "build:assets": "npm run build:sponsors && node scripts/build/build-icon-sprite.mjs && npm run build:bootstrap && node scripts/build/minify.mjs && node scripts/build/stamp-html.mjs",
     "build:assets:minify": "node scripts/build/minify.mjs",
     "build:assets:stamp": "npm run build:html && node scripts/build/stamp-html.mjs",
     "build:assets:watch": "node scripts/build/minify.mjs --watch",
@@ -43,7 +43,9 @@
     "qa:visual": "node scripts/perf/visual-qa.mjs",
     "test:consent": "node scripts/perf/consent-guard.mjs",
     "perf:lighthouse": "node scripts/perf/lighthouse-guard.mjs",
-    "verify": "npm run build:public && npm run build:check && npm run quality:static && npm run audit:runtime && npm run test:blog && npm run test:author && npm run test:standings && npm run perf:budget && npm run perf:article-media && npm run perf:images && npm run test:consent && npm run qa:visual && npm run perf:lighthouse"
+    "verify": "npm run build:public && npm run build:check && npm run quality:static && npm run audit:runtime && npm run test:blog && npm run test:author && npm run test:standings && npm run perf:budget && npm run perf:article-media && npm run perf:images && npm run test:consent && npm run qa:visual && npm run perf:lighthouse",
+    "build:sponsors": "node scripts/build/normalize-sponsors.mjs",
+    "test:build": "node --test scripts/build/__tests__/*.test.mjs"
   },
   "dependencies": {
     "adm-zip": "^0.5.12",

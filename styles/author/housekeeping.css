@@ -496,7 +496,7 @@
 .hk-modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(17,17,19,0.86);
     display: none;
     align-items: flex-start;
     justify-content: center;
@@ -508,9 +508,10 @@
 .hk-modal {
     width: 100%;
     max-width: 780px;
-    background: var(--bg-surface, #1a1a2e);
+    background: var(--bg-surface, #161618);
     border: 1px solid var(--border, rgba(255,255,255,0.08));
-    border-radius: 14px;
+    border-radius: 2px;
+    opacity: 1;
     padding: 1.5rem;
     color: var(--text-primary);
 }
@@ -526,6 +527,31 @@
     font-family: ui-monospace, 'SF Mono', Menlo, monospace;
     margin-bottom: 1rem;
 }
+
+/* Keep housekeeping visually consistent with the public editorial pages. */
+body:has(.hk-wrap) {
+    background: var(--bg-base);
+    color: var(--text-primary);
+}
+.hk-wrap { max-width: 1200px; margin-top: 96px; }
+.hk-head { border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+.hk-head h1 { font-family: var(--font-body); font-size: 1.35rem; letter-spacing: -.02em; }
+.hk-card,
+.hk-density-switch,
+.hk-btn,
+.hk-search-row input,
+.hk-filter-field select,
+.hk-modal { border-radius: 0; }
+.hk-card { background: var(--bg-surface); border-color: var(--border); box-shadow: none; }
+.hk-card:hover { border-color: var(--border-accent); }
+.hk-search-row input,
+.hk-filter-field select { background: var(--bg-base); border-color: var(--border); }
+.hk-btn { background: var(--bg-surface-alt); border-color: var(--border); font-family: var(--font-body); }
+.hk-btn:hover { background: var(--bg-surface); }
+.hk-btn-primary { background: var(--accent); color: var(--accent-contrast); }
+.hk-btn-primary:hover { background: var(--accent-hover); }
+.hk-modal-backdrop { background: rgba(17,17,19,.86); }
+.hk-modal { background: var(--bg-surface); box-shadow: var(--shadow-lg); }
 .hk-field { margin-bottom: 0.75rem; }
 .hk-field label {
     display: block;

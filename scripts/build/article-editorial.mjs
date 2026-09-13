@@ -10,6 +10,13 @@ export function applyArticleEditorial(html, assets) {
         const attr = `class="${[...classes].join(' ')}"`;
         return `<body${existing ? attrs.replace(existing[0], attr) : `${attrs} ${attr}`}>`;
     });
+    // Keep sources and corrections reachable without repeating a tall identity
+    // block before every story. Native details also works without JavaScript.
+    result = result.replace(/<section\b([^>]*\bclass="article-trust"[^>]*)>([\s\S]*?)<\/section>/g,
+        (_match, attrs, content) => `<details${attrs}><summary>Συντακτική ταυτότητα &amp; πηγές</summary><div class="article-trust-grid">${content}</div></details>`);
+    result = result.replace(/<img\b[^>]*\bsrc="\/images\/sponsors\/(?:Balatzis|ps|BalatzisDomika|am|bedhome|GrandRealm)\.webp"[^>]*>/g,
+        tag => tag.replace('/images/sponsors/', '/images/sponsors/normalized/')
+            .replace(/\bwidth="\d+"/, 'width="320"').replace(/\bheight="\d+"/, 'height="160"'));
     result = result.replace(/(<main\b[^>]*\bclass=["'])([^"']*)(["'])/i, (tag, before, classes, after) => {
         if (!classes.split(/\s+/).includes('article-page-wrapper')) return tag;
         return before + classes.split(/\s+/).filter(name => !['py-5', 'mt-5'].includes(name)).join(' ') + after;

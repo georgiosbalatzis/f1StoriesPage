@@ -57,7 +57,6 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=3cebc518">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/gfs-didot-400-greek.woff2?v=e31763a7" crossorigin>
@@ -68,8 +67,6 @@
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=6a0adcb1">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=22d9c4c9">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=5d105652">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=723a091c">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" href="1.webp" fetchpriority="high">
@@ -78,6 +75,11 @@
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
 
     <!-- Prevent FOUC -->
+    <!-- f1s:article-editorial:begin -->
+    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=c0939d6f">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=3fed89a2">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=72651427">
+    <!-- f1s:article-editorial:end -->
 </head>
 <body class="editorial-page article-page">
 <!-- f1s:icon-sprite:begin -->
@@ -287,11 +289,11 @@
                 </aside>
 
                 <div class="article-main-column">
-                    <section class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις">
+                    <details class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις"><summary>Συντακτική ταυτότητα &amp; πηγές</summary><div class="article-trust-grid">
                         <div class="article-trust__authorship"><span class="article-trust__label">ΣΥΝΤΑΚΤΗΣ</span><strong><a href="/authors/?author=georgios-balatzis">Georgios Balatzis</a></strong><span>Δημοσίευση: <time datetime="2026-09-13">13 Σεπτεμβρίου 2026</time></span><span class="article-trust__update">Δεν έχει καταγραφεί νεότερη ενημέρωση.</span></div>
                         <div class="article-trust__sources"><span class="article-trust__label">ΠΗΓΕΣ &amp; ΕΛΕΓΧΟΣ</span><span class="article-trust__pending">Πρόκειται για συντακτικό σημείωμα. Όπου αναφέρονται εξωτερικά στοιχεία, οι παραπομπές προστίθενται με την επόμενη επιμέλεια.</span></div>
                         <div class="article-trust__corrections"><span class="article-trust__label">ΔΙΟΡΘΩΣΕΙΣ</span><span>Διορθώνουμε δημόσια τεκμηριωμένα factual λάθη.</span><span><a href="/privacy/terms.html#terms-corrections">Πολιτική διορθώσεων</a> · <a href="mailto:myf1stories@gmail.com?subject=Διόρθωση%20άρθρου">Στείλε διόρθωση ↗</a></span></div>
-                    </section>
+                    </div></details>
                     <div class="article-content"><p>Μέχρι το Baku του 2025, ένα από τα μεγαλύτερα προσόντα του Oscar Piastri ήταν ότι έμοιαζε σχεδόν απρόσβλητος από το χάος γύρω του. Δεν ήταν ο πιο εκφραστικός οδηγός του grid, ούτε εκείνος που θα έδειχνε εύκολα τον εκνευρισμό του.</p>
 <p>Ήταν όμως εξαιρετικά καθαρός, ακριβής και, κυρίως, προβλέψιμος. Έφτασε στο Αζερμπαϊτζάν με επτά νίκες και προβάδισμα 31 βαθμών από τον Lando Norris. Δύο ημέρες αργότερα είχε χτυπήσει στο qualifying, είχε κάνει μια λάθος εκκίνηση, είχε ενεργοποιήσει το anti-stall και είχε τελειώσει τον αγώνα του στις μπαριέρες της στροφής 5. Τρία διαφορετικά λάθη, μέσα σε λιγότερο από 24 ώρες.</p>
 <p>Ήταν εύκολο να το χαρακτηρίσουμε απλώς ένα κακό Σαββατοκύριακο. Και σε μεγάλο βαθμό ήταν. Ο ίδιος ο Piastri μίλησε για «παιδικά λάθη», επιμένοντας ότι δεν χρειαζόταν να αλλάξει τον τρόπο με τον οποίο προσέγγιζε τους αγώνες. Υπήρχε όμως μία λεπτομέρεια που σήμερα, έχοντας δει και το μισό 2026, αποκτά διαφορετικό βάρος. Μετά την κακή εκκίνηση στο Baku, ο Piastri παραδέχθηκε πως δεν πρόλαβε πραγματικά να την αφήσει πίσω του πριν φτάσει στη στροφή 5. Το πρώτο λάθος δεν προκάλεσε το δεύτερο μηχανικά. Του αφαίρεσε όμως κάτι που μέχρι τότε θεωρούσαμε σχεδόν δεδομένο: τον χρόνο να επεξεργαστεί αυτό που συνέβαινε και να επιστρέψει στη φυσική του ροή.</p>
@@ -327,22 +329,22 @@
                         <div class="sponsor-strip-label">Υποστηρίζουν το F1 Stories</div>
                         <div class="sponsor-logos">
                             <a href="https://georgiosbalatzis.github.io/excavatorsPage/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Χωματουργικά">
-                                <img src="/images/sponsors/Balatzis.webp" alt="Μπαλατζής Χωματουργικά" loading="lazy" decoding="async" width="612" height="408">
+                                <img src="/images/sponsors/normalized/Balatzis.webp" alt="Μπαλατζής Χωματουργικά" loading="lazy" decoding="async" width="320" height="160">
                             </a>
                             <a href="https://pourtsidisgenerators.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Πουρτσίδης Γεννήτριες">
-                                <img src="/images/sponsors/ps.webp" alt="Πουρτσίδης Γεννήτριες" loading="lazy" decoding="async" width="612" height="408">
+                                <img src="/images/sponsors/normalized/ps.webp" alt="Πουρτσίδης Γεννήτριες" loading="lazy" decoding="async" width="320" height="160">
                             </a>
                             <a href="https://georgiosbalatzis.github.io/excavatorsPage/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Δομικά">
-                                <img src="/images/sponsors/BalatzisDomika.webp" alt="Μπαλατζής Δομικά" loading="lazy" decoding="async" width="612" height="408">
+                                <img src="/images/sponsors/normalized/BalatzisDomika.webp" alt="Μπαλατζής Δομικά" loading="lazy" decoding="async" width="320" height="160">
                             </a>
                             <a href="https://ambrosiadis.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Αμβροσιάδης">
-                                <img src="/images/sponsors/am.webp" alt="Αμβροσιάδης" loading="lazy" decoding="async" width="612" height="408">
+                                <img src="/images/sponsors/normalized/am.webp" alt="Αμβροσιάδης" loading="lazy" decoding="async" width="320" height="160">
                             </a>
                             <a href="https://www.bedandhome.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Bed and Home">
-                                <img src="/images/sponsors/bedhome.webp" alt="Bed and Home" loading="lazy" decoding="async" width="612" height="408">
+                                <img src="/images/sponsors/normalized/bedhome.webp" alt="Bed and Home" loading="lazy" decoding="async" width="320" height="160">
                             </a>
                             <a href="https://www.grandrealm.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Grand Realm">
-                                <img src="/images/sponsors/GrandRealm.webp" alt="Grand Realm" loading="lazy" decoding="async" width="1536" height="1024">
+                                <img src="/images/sponsors/normalized/GrandRealm.webp" alt="Grand Realm" loading="lazy" decoding="async" width="320" height="160">
                             </a>
                         </div>
                     </div>
@@ -476,7 +478,7 @@
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=9ce9f245"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=76cdcaff"></script>
 <script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=d0d3b81d"></script>
 <script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
