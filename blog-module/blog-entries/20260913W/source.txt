@@ -1,6 +1,8 @@
-Motogp Racing,-Ducati,-Mark-Marquez
-
-Mark Marquez: Ένα ρομπότ που δεν γίνεται να λυγίσει.
+---
+category: Drivers
+tags: Motogp, Racing, Ducati, Mark Marquez
+title: Mark Marquez: Ένα ρομπότ που δεν γίνεται να λυγίσει.
+---
 
 Υπάρχουν νίκες που γράφονται,στη μνήμη, γράφονται στο σώμα.
 
