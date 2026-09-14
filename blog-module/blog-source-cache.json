@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20260914J",
+      "title": "FAIL MADRID: Μόνο τόσες… και θέλουν να μείνει μέχρι το 2035",
+      "author": "Giannis Poulikidis",
+      "date": "2026-09-14",
+      "dateISO": "2026-09-14",
+      "displayDate": "14 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260914J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260914J/1.webp",
+      "excerpt": "Άλλος ένας αγώνας έφτασε στο τέλος του... Με ένα καινούργιο circuit. Μία καινούργια πίστα στην Μαδρίτη και όλοι είναι ενθουσιασμένοι που θα την έχουμε μέχρι το 2035... Φοβερό.... Ναι, οκ, σταματάω...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260914J/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "Μαδρίτη",
+        "Overtake",
+        "Madrid",
+        "Χαμός"
+      ],
+      "wordCount": 525,
+      "readingTime": "3 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
+    },
+    {
       "id": "20260913W",
       "title": "Mark Marquez: Ένα ρομπότ που δεν γίνεται να λυγίσει.",
       "author": "Themis Charvalis",
@@ -8860,5 +8890,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-14T06:55:33.651Z"
+  "lastUpdated": "2026-09-14T10:35:35.065Z"
 }
