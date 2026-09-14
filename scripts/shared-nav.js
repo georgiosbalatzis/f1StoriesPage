@@ -67,11 +67,45 @@
 
     // ── Scroll to Top ────────────────────────────
     var scrollBtn = document.getElementById('scroll-to-top');
+    var footerEl = document.querySelector('footer');
+    var footerInView = false;
+
+    function isNarrowScrollTopLayout() {
+        return window.matchMedia && window.matchMedia('(max-width: 1199px)').matches;
+    }
+
+    function setScrollTopButtonSuppressed(suppressed) {
+        if (!scrollBtn) return;
+        scrollBtn.classList.toggle('is-suppressed', suppressed);
+        scrollBtn.tabIndex = suppressed ? -1 : 0;
+        scrollBtn.setAttribute('aria-hidden', String(suppressed));
+        if (suppressed && document.activeElement === scrollBtn) scrollBtn.blur();
+    }
+
+    function isFooterInView() {
+        if (!footerEl) return false;
+        var rect = footerEl.getBoundingClientRect();
+        return rect.top < window.innerHeight && rect.bottom > 0;
+    }
+
     if (scrollBtn) {
         scrollBtn.addEventListener('click', function () {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+        setScrollTopButtonSuppressed(isNarrowScrollTopLayout());
     }
+
+    if (footerEl && window.IntersectionObserver) {
+        new IntersectionObserver(function (entries) {
+            footerInView = entries[0].isIntersecting;
+            setScrollTopButtonSuppressed(isNarrowScrollTopLayout() || footerInView);
+        }).observe(footerEl);
+    }
+
+    window.addEventListener('resize', function () {
+        footerInView = isFooterInView();
+        setScrollTopButtonSuppressed(isNarrowScrollTopLayout() || footerInView);
+    }, { passive: true });
 
     // ── Theme Toggle ─────────────────────────────
     var themeButtons = Array.prototype.slice.call(document.querySelectorAll('.theme-toggle-btn'));
@@ -110,6 +144,8 @@
 
     function updateScrollTopButton(scrollY) {
         if (!scrollBtn) return;
+        if (!window.IntersectionObserver) footerInView = isFooterInView();
+        setScrollTopButtonSuppressed(isNarrowScrollTopLayout() || footerInView);
         scrollBtn.classList.toggle('visible', scrollY > getScrollTopThreshold());
     }
 

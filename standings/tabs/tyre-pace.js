@@ -20,6 +20,9 @@ import { isFiniteNumber, parseTimeSeconds } from './_shared.js';
 
 const OPENF1 = 'https://api.openf1.org/v1';
 const YEAR = new Date().getFullYear();
+const TYRE_PACE_SVG_VIEW_HEIGHT = 252;
+const TYRE_PACE_SVG_TOP_PAD = 8;
+const TYRE_PACE_SVG_PLOT_HEIGHT = 236;
 
 const tyrePaceTable = document.getElementById('tyre-pace-table');
 
@@ -319,12 +322,11 @@ function buildTyrePaceSvg(laps, minTime, maxTime, teamColor) {
     if (!laps || !laps.length) return '';
 
     const viewWidth = 84;
-    const viewHeight = 252;
+    const viewHeight = TYRE_PACE_SVG_VIEW_HEIGHT;
     const centerX = viewWidth / 2;
-    const topPad = 8;
-    const bottomPad = 8;
-    const plotHeight = viewHeight - topPad - bottomPad;
-    const range = Math.max(0.4, maxTime - minTime);
+    const topPad = TYRE_PACE_SVG_TOP_PAD;
+    const plotHeight = TYRE_PACE_SVG_PLOT_HEIGHT;
+    const range = getTyrePaceTimeRange(minTime, maxTime);
     const binSize = Math.max(0.18, range / 14);
     const binCount = Math.max(6, Math.ceil(range / binSize) + 1);
     const bins = [];
@@ -384,6 +386,15 @@ function buildTyrePaceSvg(laps, minTime, maxTime, teamColor) {
         + '<path d="' + esc(path) + '" fill="rgba(' + esc(fillChannels) + ', 0.22)" stroke="rgba(' + esc(strokeChannels) + ', 0.42)" stroke-width="1.2"></path>'
         + circles
         + '</svg>';
+}
+
+function getTyrePaceTimeRange(minTime, maxTime) {
+    return Math.max(0.4, maxTime - minTime);
+}
+
+function getTyrePaceAxisFraction(value, minTime, maxTime) {
+    const range = getTyrePaceTimeRange(minTime, maxTime);
+    return (TYRE_PACE_SVG_TOP_PAD + ((maxTime - value) / range) * TYRE_PACE_SVG_PLOT_HEIGHT) / TYRE_PACE_SVG_VIEW_HEIGHT;
 }
 
 function buildTyrePaceSessionData(session, drivers, laps, stints) {
@@ -526,21 +537,21 @@ function renderTyrePace(data, session) {
 
     html += '</div>'
         + '<div class="tyre-pace-chart-scroll" data-horizontal-chart-scroll><div class="tyre-pace-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
-        + '<div class="tyre-pace-axis"><span class="tyre-pace-axis-title">Χρόνος γύρου (δ.)</span>';
+        + '<div class="tyre-pace-axis"><span class="tyre-pace-axis-title">Χρόνος γύρου (δ.)</span><div class="tyre-pace-axis-layer">';
 
     axisValues.forEach(function(value) {
-        const bottom = data.maxTime > data.minTime ? ((value - data.minTime) / (data.maxTime - data.minTime)) * 100 : 0;
-        html += '<span class="tyre-pace-axis-label" style="bottom:' + bottom.toFixed(2) + '%;">' + esc(formatLapTime(value, true)) + '</span>';
+        const top = getTyrePaceAxisFraction(value, data.minTime, data.maxTime) * 100;
+        html += '<span class="tyre-pace-axis-label" style="top:' + top.toFixed(2) + '%;">' + esc(formatLapTime(value, true)) + '</span>';
     });
 
-    html += '</div><div class="tyre-pace-chart-body">';
+    html += '</div></div><div class="tyre-pace-chart-body"><div class="tyre-pace-grid-layer">';
 
     axisValues.forEach(function(value) {
-        const bottom = data.maxTime > data.minTime ? ((value - data.minTime) / (data.maxTime - data.minTime)) * 100 : 0;
-        html += '<div class="tyre-pace-grid-line" style="bottom:' + bottom.toFixed(2) + '%;"></div>';
+        const top = getTyrePaceAxisFraction(value, data.minTime, data.maxTime) * 100;
+        html += '<div class="tyre-pace-grid-line" style="top:' + top.toFixed(2) + '%;"></div>';
     });
 
-    html += '<div class="tyre-pace-columns" style="grid-template-columns:repeat(' + data.rows.length + ', minmax(68px, 1fr));">';
+    html += '</div><div class="tyre-pace-columns" style="grid-template-columns:repeat(' + data.rows.length + ', minmax(68px, 1fr));">';
 
     data.rows.forEach(function(row) {
         html += '<article class="tyre-pace-col">';

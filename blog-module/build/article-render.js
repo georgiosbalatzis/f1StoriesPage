@@ -188,12 +188,15 @@ function refreshArticleTaxonomy(html, post) {
     const primary = escapeHtmlText(category);
     const profile = getEditorialProfile(categories);
     const trustPanel = renderArticleTrust(post, categories);
+    const articleDate = escapeHtmlText(formatArticleDate(post));
     let updated = html
         .replace(/F1 STORIES \/ THE JOURNAL/g, 'F1 STORIES / Η ΕΚΔΟΣΗ')
         .replace(/(<span class="article-mini-bar__category">)[\s\S]*?(<\/span>)/, `$1${primary}$2`)
         .replace(/(<span class="article-category-pill">)[\s\S]*?(<\/span>)/, `$1${primary}$2`)
         .replace(/(<div class="article-meta">[\s\S]*?<span><svg class="icon" aria-hidden="true"><use href="#fa-tag"\/><\/svg> )[\s\S]*?(<\/span>)/, `$1${renderCategoryLinks(categories)}$2`)
         .replace(/(<div class="article-rail-meta-list">\s*<span><svg class="icon" aria-hidden="true"><use href="#fa-tag"\/><\/svg> )[\s\S]*?(<\/span>)/, `$1${primary}$2`)
+        .replace(/(<div class="article-meta">[\s\S]*?fa-calendar-alt[^>]*><\/svg>\s*)[^<]*(<\/span>)/, `$1${articleDate}$2`)
+        .replace(/(<div class="article-rail-meta-list">[\s\S]*?fa-calendar-alt[^>]*><\/svg>\s*)[^<]*(<\/span>)/, `$1${articleDate}$2`)
         .replace(/<div class="article-rail-card article-rail-tags"[^>]*>[\s\S]*?<div class="article-tag-list"[^>]*>[\s\S]*?<\/div>\s*<\/div>/, renderCategoryRail(categories))
         .replace(/(<span class="article-mini-bar__category">)[\s\S]*?(<\/span>)/, `$1${primary}$2`)
         .replace(/(<div class="article-edition"><span>[\s\S]*?<\/span><span>)[\s\S]*?(<\/span><\/div>)/, `$1${escapeHtmlText(profile.label)}$2`)

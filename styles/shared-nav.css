@@ -578,6 +578,15 @@ body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn):not(.
     visibility: visible !important;
     transform: translateY(0) scale(1) !important;
 }
+body.editorial-page .scroll-to-top-btn.is-suppressed,
+body.editorial-page .scroll-to-top-btn.is-suppressed.visible,
+.scroll-to-top-btn.is-suppressed,
+.scroll-to-top-btn.is-suppressed.visible {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
 .scroll-to-top-btn:hover {
     color: #41B6E6 !important;
     border-color: #41B6E6 !important;
@@ -598,6 +607,16 @@ body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn):not(.
     box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
 }
 [data-theme="light"] .scroll-to-top-btn:hover { color: #41B6E6 !important; border-color: #41B6E6 !important; }
+
+@media (max-width: 1199px) {
+    .scroll-to-top-btn,
+    .scroll-to-top-btn.visible {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+}
 
 /* ── Hide old navbar if present ───────────────── */
 .theme-toggle-container { display: none !important; }

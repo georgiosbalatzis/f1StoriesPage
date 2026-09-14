@@ -375,11 +375,11 @@ body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn):not(.
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border: 0;
   background: transparent;
-  color: var(--text-secondary);
+  color: inherit;
 }
 .cookie-intro,
 .cookie-content > p {
@@ -464,6 +464,7 @@ body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn):not(.
   .cookie-btn {
     width: 100%;
     max-width: 100%;
+    min-height: 44px;
     padding: 0.46rem 0.5rem;
     overflow: hidden;
     font-size: clamp(0.7rem, 2.45vw, 0.78rem);

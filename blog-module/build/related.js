@@ -39,7 +39,7 @@ async function buildRelatedPostsHtml(relatedPosts) {
         const relatedImage = getCardThumbnailPath(related.image);
         const relatedImagePath = relatedImage.substring(relatedImage.lastIndexOf('/') + 1);
         const relDate = new Date(related.date);
-        const relDateStr = relDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        const relDateStr = relDate.toLocaleDateString('el-GR', { day: 'numeric', month: 'short', year: 'numeric' });
         const relatedTitle = escapeHtmlAttribute(related.title);
         const relatedAuthor = escapeHtmlAttribute(related.author);
         const relatedReadTime = escapeHtmlAttribute(related.readingTime || '');

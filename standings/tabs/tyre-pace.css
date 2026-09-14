@@ -63,15 +63,19 @@
 
 .tyre-pace-chart-scroll { overflow-x: auto; overflow-y: hidden; padding-bottom: 0.3rem; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; overscroll-behavior-y: contain; }
 
-.tyre-pace-chart-shell { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 0.9rem; align-items: stretch; min-height: 348px; min-width: 1320px; }
+.tyre-pace-chart-shell { --tyre-pace-label-reserve: 62px; display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 0.9rem; align-items: stretch; min-height: 348px; min-width: 1320px; }
 
 .tyre-pace-axis { position: relative; min-height: 348px; }
 
-.tyre-pace-axis-label { position: absolute; right: 0; transform: translateY(50%); font-size: 0.76rem; font-weight: 700; color: var(--st-text-muted); }
+.tyre-pace-axis-layer { position: absolute; inset: 0 0 var(--tyre-pace-label-reserve); }
+
+.tyre-pace-axis-label { position: absolute; right: 0; transform: translateY(-50%); font-size: 0.76rem; font-weight: 700; color: var(--st-text-muted); }
 
 .tyre-pace-axis-title { position: absolute; top: 50%; left: 8px; transform: translate(-100%, -50%) rotate(-90deg); transform-origin: center; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--st-text-muted); white-space: nowrap; }
 
 .tyre-pace-chart-body { position: relative; min-height: 348px; padding: 0 0.2rem 0.45rem; }
+
+.tyre-pace-grid-layer { position: absolute; inset: 0 0.2rem var(--tyre-pace-label-reserve); overflow: hidden; }
 
 .tyre-pace-grid-line { position: absolute; left: 0; right: 0; border-top: 1px solid var(--st-border); }
 
@@ -79,7 +83,7 @@
 
 .tyre-pace-col { position: relative; min-width: 68px; }
 
-.tyre-pace-plot { position: absolute; inset: 0 0 62px; border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); }
+.tyre-pace-plot { position: absolute; inset: 0 0 var(--tyre-pace-label-reserve); border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); }
 
 [data-theme="light"] .tyre-pace-plot { background: linear-gradient(180deg, rgba(65,182,230,0.03), rgba(65,182,230,0)); }
 
@@ -95,7 +99,7 @@
 
 .tyre-pace-name { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; font-size: 0.66rem; color: var(--st-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.tyre-pace-no-data { position: absolute; inset: 0 0 62px; display: flex; align-items: center; justify-content: center; border-radius: 14px; border: 1px dashed var(--st-border); color: var(--st-text-muted); font-size: 0.7rem; font-weight: 700; }
+.tyre-pace-no-data { position: absolute; inset: 0 0 var(--tyre-pace-label-reserve); display: flex; align-items: center; justify-content: center; border-radius: 14px; border: 1px dashed var(--st-border); color: var(--st-text-muted); font-size: 0.7rem; font-weight: 700; }
 
 .tyre-pace-empty-card { padding: 2.4rem 1rem; text-align: center; color: var(--st-text-muted); }
 
@@ -117,9 +121,8 @@
     .tyre-pace-summary { flex-direction: column; align-items: flex-start; }
     .tyre-pace-summary-stats { justify-content: flex-start; }
     .tyre-pace-summary-stat { align-items: flex-start; }
-    .tyre-pace-chart-shell { min-height: 328px; min-width: 1180px; grid-template-columns: 60px minmax(0, 1fr); gap: 0.7rem; }
+    .tyre-pace-chart-shell { --tyre-pace-label-reserve: 58px; min-height: 328px; min-width: 1180px; grid-template-columns: 60px minmax(0, 1fr); gap: 0.7rem; }
     .tyre-pace-axis, .tyre-pace-chart-body { min-height: 328px; }
-    .tyre-pace-plot, .tyre-pace-no-data { inset: 0 0 58px; }
     .tyre-pace-best { bottom: 37px; }
     .tyre-pace-code { bottom: 17px; }
 }

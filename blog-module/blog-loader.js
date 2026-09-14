@@ -209,6 +209,17 @@ document.addEventListener('DOMContentLoaded', function () {
         return post.category || (post.categories && post.categories[0]) || 'News';
     }
 
+    function heroTitlePresentation(value) {
+        var title = String(value || '').trim();
+        if (title.endsWith('.') && !title.endsWith('..')) {
+            return { text: title.slice(0, -1), period: '.', showPeriod: true };
+        }
+        if (/[!?;…]$/.test(title) || title.endsWith('.')) {
+            return { text: title, period: '', showPeriod: false };
+        }
+        return { text: title, period: '.', showPeriod: true };
+    }
+
     function renderHeroLead(post) {
         if (!post) return;
         const href = '/blog-module/blog-entries/' + encodeURIComponent(post.slug || post.id || '') + '/article.html';
@@ -221,9 +232,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (categoryEl) categoryEl.textContent = category.toUpperCase();
         if (titleEl) {
             const periodEl = titleEl.querySelector('.hero-period');
-            titleEl.textContent = post.title || '';
+            const title = heroTitlePresentation(post.title);
+            titleEl.textContent = title.text;
             if (periodEl) {
-                periodEl.textContent = '.';
+                periodEl.textContent = title.period;
+                periodEl.hidden = !title.showPeriod;
+                periodEl.setAttribute('aria-hidden', 'true');
                 titleEl.appendChild(periodEl);
             }
         }

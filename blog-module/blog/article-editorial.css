@@ -301,6 +301,16 @@
     font: 500 .75rem/1.4 var(--font-body);
     letter-spacing: .08em;
 }
+@media (max-width: 1199px) {
+    .article-page .article-content h2::before,
+    .article-page .article-content > h1::before {
+        content: none;
+    }
+}
+.article-page .article-content h2.has-authored-section-number::before,
+.article-page .article-content > h1.has-authored-section-number::before {
+    content: none;
+}
 .article-page .article-content h3 {
     position: relative;
     font: 600 1.18rem/1.4 var(--font-body);

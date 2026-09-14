@@ -474,8 +474,10 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
     padding: 0.58rem 0.74rem 0.62rem;
 }
 .cookie-header {
+    display: flex;
     grid-column: 1 / -1;
     align-items: center;
+    justify-content: space-between;
     margin-bottom: 0;
     padding-bottom: 0;
     border-bottom: 0;
@@ -483,10 +485,22 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
     background: transparent;
 }
 .cookie-header h3 {
+    margin: 0;
     font-size: 0.76rem;
     line-height: 1.2;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+}
+.cookie-header .close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
 }
 .close-btn {
     border-radius: var(--button-radius);
@@ -542,6 +556,8 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
 .cookie-section h4 { font-size: 0.82rem; margin: 0 0 0.22rem; }
 .cookie-section p { margin: 0; color: var(--text-secondary); font-size: 0.76rem; line-height: 1.35; }
 .cookie-actions {
+    display: flex;
+    flex-wrap: wrap;
     align-self: end;
     justify-content: flex-end;
     gap: 0.42rem;
@@ -606,6 +622,9 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
     box-shadow: var(--shadow-md);
 }
 .cookie-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     grid-column: 1 / -1;
     justify-content: flex-start;
     gap: 0.8rem;
@@ -692,6 +711,7 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
     .cookie-btn {
         width: 100%;
         min-width: 0;
+        min-height: 44px;
         max-width: 100%;
         padding: 0.46rem 0.5rem;
         font-size: clamp(0.7rem, 2.45vw, 0.78rem);

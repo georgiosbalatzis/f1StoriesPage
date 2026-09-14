@@ -84,6 +84,21 @@ document.addEventListener('DOMContentLoaded', function () {
         if (initialEl) initialEl.textContent = name.charAt(0).toUpperCase();
     }
 
+    function markAuthoredSectionNumbers() {
+        if (!articleContent) return;
+        const numberedHeading = /^\d+[.)]\s/;
+        const headings = [
+            ...articleContent.querySelectorAll('h2'),
+            ...articleContent.querySelectorAll(':scope > h1')
+        ];
+
+        headings.forEach(heading => {
+            if (numberedHeading.test(heading.textContent.trim())) {
+                heading.classList.add('has-authored-section-number');
+            }
+        });
+    }
+
     function extractIndexPosts(data) {
         if (data && data.v === 2 && Array.isArray(data.p)) {
             return data.p.map(row => ({
@@ -386,12 +401,21 @@ document.addEventListener('DOMContentLoaded', function () {
             const indicator = scrollContainer.querySelector('.table-scroll-indicator');
             if (!table || !indicator) return;
 
-            if (table.offsetWidth > scrollContainer.offsetWidth) {
-                scrollContainer.classList.add('has-scroll');
-                indicator.style.display = '';
+            const updateIndicator = () => {
+                const hasOverflow = scrollContainer.scrollWidth > scrollContainer.clientWidth + 1;
+                scrollContainer.classList.toggle('has-scroll', hasOverflow);
+                indicator.hidden = !hasOverflow;
+                indicator.style.display = hasOverflow ? '' : 'none';
+            };
+
+            updateIndicator();
+
+            if (typeof ResizeObserver !== 'undefined') {
+                const resizeObserver = new ResizeObserver(updateIndicator);
+                resizeObserver.observe(scrollContainer);
+                resizeObserver.observe(table);
             } else {
-                scrollContainer.classList.remove('has-scroll');
-                indicator.style.display = 'none';
+                window.addEventListener('resize', updateIndicator, { passive: true });
             }
         });
     }
@@ -604,6 +628,7 @@ document.addEventListener('DOMContentLoaded', function () {
     populateAuthor();
     updateShareLinks();
     setupArticleMiniBar();
+    markAuthoredSectionNumbers();
     buildTableOfContents();
     setupResponsiveTables();
     setupNavigation();

@@ -409,6 +409,30 @@ function replaceHomepageTextSlot(html, id, begin, end, value) {
     return html.replace(elementPattern, (match, open, close) => open + value + close);
 }
 
+function heroTitlePresentation(value) {
+    const title = String(value || '').trim();
+    if (title.endsWith('.') && !title.endsWith('..')) {
+        return { text: title.slice(0, -1), period: '.', showPeriod: true };
+    }
+    if (/[!?;…]$/.test(title) || title.endsWith('.')) {
+        return { text: title, period: '', showPeriod: false };
+    }
+    return { text: title, period: '.', showPeriod: true };
+}
+
+function updateHomepageHeroPeriod(html, presentation) {
+    return html.replace(
+        /(<span\b[^>]*\bclass="[^"]*\bhero-period\b[^"]*"[^>]*)(>)[^<]*(<\/span>)/i,
+        (match, attributes, opening, closing) => {
+            let updatedAttributes = setHtmlAttribute(attributes, 'aria-hidden', 'true');
+            updatedAttributes = presentation.showPeriod
+                ? removeHtmlAttribute(updatedAttributes, 'hidden')
+                : setHtmlAttribute(updatedAttributes, 'hidden', 'hidden');
+            return updatedAttributes + opening + presentation.period + closing;
+        }
+    );
+}
+
 function injectHomepageHero(hero) {
     const indexHtmlPath = path.join(CONFIG.BLOG_DIR, '..', '..', 'index.html');
     if (!fs.existsSync(indexHtmlPath) || !hero) {
@@ -419,7 +443,8 @@ function injectHomepageHero(hero) {
     const image = hero.heroImage || hero.image || CONFIG.DEFAULT_BLOG_IMAGE;
     const avif = hero.heroAvif || '';
     const webp = /\.webp(?:\?.*)?$/i.test(image) ? image : '';
-    const title = escapeHtmlAttribute(hero.title || 'F1 Stories');
+    const titlePresentation = heroTitlePresentation(hero.title || 'F1 Stories');
+    const title = escapeHtmlAttribute(titlePresentation.text);
     const category = escapeHtmlAttribute(String(hero.category || 'News').toUpperCase());
     const excerpt = escapeHtmlAttribute(hero.excerpt || '');
     const byline = escapeHtmlAttribute(`${hero.author || 'F1 Stories'} · ${hero.date || ''}`);
@@ -446,6 +471,7 @@ function injectHomepageHero(hero) {
         '<!-- f1s:hero-title:end -->',
         title
     );
+    html = updateHomepageHeroPeriod(html, titlePresentation);
     html = replaceHomepageTextSlot(
         html,
         'hero-story-excerpt',

@@ -141,7 +141,11 @@ async function processBlogEntry(entryPath) {
     const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
     const wordCount = plainText ? plainText.split(/\s+/).length : 0;
     const readingTime = `${Math.max(1, Math.ceil(wordCount / 200))} min`;
-    const generatedExcerpt = plainText ? `${plainText.substring(0, 200)}...` : `${metadata.title} image gallery.`;
+    const generatedExcerpt = plainText
+        ? plainText.length <= 200
+            ? plainText
+            : `${plainText.slice(0, 200).replace(/\s+\S*$/, '').trim() || plainText.slice(0, 200).trim()}...`
+        : `${metadata.title} image gallery.`;
 
     const primaryImage = images.thumbnail || images.background || CONFIG.DEFAULT_BLOG_IMAGE;
     const headerImage = images.background || images.thumbnail || CONFIG.DEFAULT_BLOG_IMAGE;
@@ -153,7 +157,7 @@ async function processBlogEntry(entryPath) {
         author: metadata.author || 'F1 Stories Team',
         date: `${year}-${month}-${day}`,
         dateISO: `${year}-${month}-${day}`,
-        displayDate: fullDate.toLocaleDateString('en-US', {
+        displayDate: fullDate.toLocaleDateString('el-GR', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
