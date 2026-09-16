@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20260916W",
+      "title": "Jenson Button: Ο υπομονετικός και προσαρμοστικός πρωταθλητής",
+      "author": "Themis Charvalis",
+      "date": "2026-09-16",
+      "dateISO": "2026-09-16",
+      "displayDate": "16 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260916W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260916W/2.webp",
+      "excerpt": "Γεννήθηκε στις 19 Ιανουαρίου του 1980 στο Φρομ του Σόμερσετ, στην Αγγλία. Από μικρός βρέθηκε μέσα στους αγώνες, ξεκινώντας το karting σε ηλικία μόλις οκτώ ετών και περνώντας στη Formula Ford και στη...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260916W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "F1",
+        "Racing",
+        "Legends",
+        "Jenson Button"
+      ],
+      "wordCount": 1201,
+      "readingTime": "7 min",
+      "imageWidth": 460,
+      "imageHeight": 276,
+      "backgroundImageWidth": 3392,
+      "backgroundImageHeight": 2262
+    },
+    {
       "id": "20260916G",
       "title": "Η Μαδρίτη πλήγωσε τον Sainz",
       "author": "Georgios Balatzis",
@@ -8948,5 +8978,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-16T17:36:39.260Z"
+  "lastUpdated": "2026-09-16T17:46:10.097Z"
 }
