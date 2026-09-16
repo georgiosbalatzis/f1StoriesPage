@@ -116,7 +116,22 @@ jobs:
           fi
 
           git commit -m "chore(blog): auto-build generated artifacts [skip ci]"
-          git push
+
+          # The processor can take several minutes. Another maintenance run
+          # may publish while it is working, making the checkout stale by the
+          # time this commit is ready. Rebase and retry so a fast-forward race
+          # does not turn a successful build into a failed job.
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              break
+            fi
+            if [ "$attempt" = 3 ]; then
+              echo "Unable to publish generated artifacts after $attempt attempts." >&2
+              exit 1
+            fi
+            git fetch origin main
+            git rebase origin/main
+          done
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
   refresh_youtube:
