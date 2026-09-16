@@ -571,8 +571,27 @@
         });
     }
 
+    function initHomeVideoFacade() {
+        var facade = document.querySelector('.home-video-facade');
+        if (!facade) return;
+        facade.addEventListener('click', function () {
+            if (facade.dataset.loaded === 'true') return;
+            facade.dataset.loaded = 'true';
+            var frame = facade.parentElement;
+            var id = normalizeVideoId(facade.getAttribute('data-video-id'));
+            if (!frame || !id) return;
+            var iframe = document.createElement('iframe');
+            iframe.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) + '?autoplay=1';
+            iframe.title = 'BetCast #270 Hungaroring — F1 Stories';
+            iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+            iframe.allowFullscreen = true;
+            frame.replaceChildren(iframe);
+        });
+    }
+
     initTabs();
     initFadeIns();
     initContactForm();
+    initHomeVideoFacade();
     initVideoLoading();
 })();

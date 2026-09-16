@@ -178,7 +178,16 @@
 }
 
 @media (max-width: 767.98px) {
-    .legal-toc { top: 58px; margin-inline: -0.2rem; }
+    .legal-toc { top: 58px; margin-inline: -0.2rem; padding-right: 2rem; }
+    .legal-toc.has-overflow:not(.at-end)::after {
+        content: '';
+        position: absolute;
+        inset: 0 0 0 auto;
+        width: 2rem;
+        pointer-events: none;
+        border-radius: 0 10px 10px 0;
+        background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--bg-overlay) 96%, transparent) 72%);
+    }
     .legal-toc a { display: inline-flex; align-items: center; min-height: 44px; }
     .legal-card {
         border-radius: 0 0 24px 0;

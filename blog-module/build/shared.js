@@ -53,6 +53,10 @@ function hasInlineDataImageTag(html) {
     return /<img\b[^>]*src="data:image\/[^"]+"[^>]*>/i.test(String(html || ''));
 }
 
+function hasResponsiveHeroSrcset(html) {
+    return /<img\b(?=[^>]*\bclass=["'][^"']*\barticle-header-img\b)(?=[^>]*\bsrcset=["'])[^>]*>/i.test(String(html || ''));
+}
+
 function assertNoInlineDataImages(html, contextLabel) {
     const match = String(html || '').match(/<img\b[^>]*src="data:image\/[^"]+"[^>]*>/i);
     if (!match) return;
@@ -218,7 +222,9 @@ const utils = {
             const articlePath = path.join(entryPath, 'article.html');
             if (!fs.existsSync(articlePath)) return false;
             try {
-                if (hasInlineDataImageTag(fs.readFileSync(articlePath, 'utf8'))) return false;
+                const articleHtml = fs.readFileSync(articlePath, 'utf8');
+                if (hasInlineDataImageTag(articleHtml)) return false;
+                if (!hasResponsiveHeroSrcset(articleHtml)) return false;
             } catch (_) {
                 return false;
             }
@@ -235,6 +241,7 @@ const utils = {
         try {
             const articleHtml = fs.readFileSync(articlePath, 'utf8');
             if (hasInlineDataImageTag(articleHtml)) return false;
+            if (!hasResponsiveHeroSrcset(articleHtml)) return false;
         } catch (_) {
             return false;
         }

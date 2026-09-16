@@ -251,6 +251,12 @@
     outline-offset: 3px;
 }
 
+@media (max-width: 991.98px) {
+    .archive-page :is(.author-chip, .category-chip, .active-filter-chip, .filter-reset-btn) {
+        min-height: 44px;
+    }
+}
+
 /* Three featured stories keep their opening spread; remaining stories form equal columns. */
 .archive-page .archive-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 28px 32px; scroll-margin-top: 95px; }
 .archive-page .article-card-wrap {

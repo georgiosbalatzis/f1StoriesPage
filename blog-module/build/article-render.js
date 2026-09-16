@@ -231,9 +231,15 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ? headerImage.substring(headerImage.lastIndexOf('/') + 1)
         : headerImage;
     const heroAvifFile = `${path.parse(bgImageFilename).name}.avif`;
+    const heroBase = path.parse(bgImageFilename).name;
+    const mobileWebp = `${heroBase}-mobile.webp`;
+    const mobileAvif = `${heroBase}-mobile.avif`;
     const heroAvifSource = fs.existsSync(path.join(entryPath, heroAvifFile))
-        ? `<source type="image/avif" srcset="${escapeHtmlAttribute(encodePathSegment(heroAvifFile))}">`
+        ? `<source type="image/avif" srcset="${fs.existsSync(path.join(entryPath, mobileAvif)) ? `${encodePathSegment(mobileAvif)} 800w, ` : ''}${encodePathSegment(heroAvifFile)} 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">`
         : '';
+    const heroWebpSrcset = fs.existsSync(path.join(entryPath, mobileWebp))
+        ? `${encodePathSegment(mobileWebp)} 800w, ${encodePathSegment(bgImageFilename)} 1600w`
+        : encodePathSegment(bgImageFilename);
     const authorImagePath = CONFIG.AUTHOR_AVATARS[postData.author] || CONFIG.AUTHOR_AVATARS.default;
     const authorImageDimensions = await getImageDimensionsForPublicPath(`/images/authors/${authorImagePath}`);
     const headerImageDimensions = postData.backgroundImageWidth && postData.backgroundImageHeight
@@ -265,6 +271,7 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_IMAGE_WIDTH: String(headerImageDimensions && headerImageDimensions.width ? headerImageDimensions.width : 848),
         ARTICLE_IMAGE_HEIGHT: String(headerImageDimensions && headerImageDimensions.height ? headerImageDimensions.height : 400),
         ARTICLE_IMAGE_ATTR: escapeHtmlAttribute(imageFilePath),
+        ARTICLE_IMAGE_SRCSET: escapeHtmlAttribute(heroWebpSrcset),
         ARTICLE_IMAGE_URL_ATTR: escapeHtmlAttribute(imageUrl),
         ARTICLE_IMAGE_URL_JSON: jsonScriptLiteral(imageUrl),
         ARTICLE_HERO_AVIF_SOURCE: heroAvifSource,

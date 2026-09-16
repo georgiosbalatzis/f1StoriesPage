@@ -11,6 +11,11 @@ import { cacheGet, cacheSet } from './cache.js';
 
 const FETCH_CACHE_PREFIX = 'f1s-standings:';
 const FETCH_CACHE_TTL = 60 * 60 * 1000;
+const inFlight = new Map();
+
+function performNoCacheFetch(url, timeoutMs) {
+    return fetchJSONWithTimeout(url, timeoutMs, { cache: 'no-store' });
+}
 
 export function readCachedResponse(url) {
     return cacheGet(FETCH_CACHE_PREFIX + url, FETCH_CACHE_TTL).then(function(cached) {
@@ -42,19 +47,27 @@ export function fetchJSONWithTimeout(url, timeoutMs, fetchOptions) {
 }
 
 export function fetchJSONNoCache(url, timeoutMs) {
-    return fetchJSONWithTimeout(url, timeoutMs, { cache: 'no-store' });
+    if (inFlight.has(url)) return inFlight.get(url);
+    const request = performNoCacheFetch(url, timeoutMs).finally(function() {
+        inFlight.delete(url);
+    });
+    inFlight.set(url, request);
+    return request;
 }
 
 export function fetchJSON(url) {
-    return readCachedResponse(url).then(function(cached) {
+    if (inFlight.has(url)) return inFlight.get(url);
+    const request = readCachedResponse(url).then(function(cached) {
         if (cached != null) return cached;
 
-        return fetchJSONNoCache(url).then(function(data) {
+        return performNoCacheFetch(url).then(function(data) {
             return writeCachedResponse(url, data).then(function() {
                 return data;
             });
         });
-    });
+    }).finally(function() { inFlight.delete(url); });
+    inFlight.set(url, request);
+    return request;
 }
 
 export function delay(ms) {

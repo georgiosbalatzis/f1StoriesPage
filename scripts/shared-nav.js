@@ -151,6 +151,20 @@
 
     // ── Reading Progress Bar (article pages only) ─
     var progressBar = document.getElementById('reading-progress');
+
+    function initLegalTocCue() {
+        var toc = document.querySelector('.legal-toc');
+        if (!toc) return;
+        var update = function () {
+            var remaining = toc.scrollWidth - toc.clientWidth - toc.scrollLeft;
+            toc.classList.toggle('has-overflow', toc.scrollWidth > toc.clientWidth + 1);
+            toc.classList.toggle('at-end', remaining <= 1);
+        };
+        toc.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+        update();
+    }
+    initLegalTocCue();
     var articleEl = progressBar ? document.querySelector('.article-content') : null;
     var articleHeight = 0;
     var articleTop = 0;

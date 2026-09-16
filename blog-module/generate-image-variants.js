@@ -16,10 +16,12 @@ const sharp = require('sharp');
 
 const DRY_RUN = !process.argv.includes('--run');
 const FORCE   = process.argv.includes('--force');
+const CARDS_ONLY = process.argv.includes('--cards-only');
 const BLOG_DIR = path.join(__dirname, 'blog-entries');
 const SM_MAX_WIDTH = 800;
 const FULL_MAX_WIDTH = 1600;
 const CARD_MAX_WIDTH = 400;
+const MOBILE_HERO_MAX_WIDTH = 800;
 
 // ─── Worker thread ────────────────────────────────────────────────────────────
 if (!isMainThread) {
@@ -59,17 +61,21 @@ async function main() {
         const contentWebps = files.filter(f => /^\d+\.webp$/i.test(f) && parseInt(f) >= 3);
 
         for (const webpFile of contentWebps) {
+            if (CARDS_ONLY) continue;
             const num  = path.parse(webpFile).name;        // "3"
             const src  = path.join(entryPath, webpFile);
+            const sourceWidth = (await sharp(src).metadata()).width || 0;
 
             const variants = [
                 // Full-size AVIF
-                { dest: path.join(entryPath, `${num}.avif`),    format: 'avif', quality: 60, maxWidth: FULL_MAX_WIDTH },
-                // Small WebP
-                { dest: path.join(entryPath, `${num}-sm.webp`), format: 'webp', quality: 80, maxWidth: SM_MAX_WIDTH },
-                // Small AVIF
-                { dest: path.join(entryPath, `${num}-sm.avif`), format: 'avif', quality: 60, maxWidth: SM_MAX_WIDTH },
+                { dest: path.join(entryPath, `${num}.avif`), format: 'avif', quality: 60, maxWidth: FULL_MAX_WIDTH }
             ];
+            if (sourceWidth > SM_MAX_WIDTH) {
+                variants.push(
+                    { dest: path.join(entryPath, `${num}-sm.webp`), format: 'webp', quality: 80, maxWidth: SM_MAX_WIDTH },
+                    { dest: path.join(entryPath, `${num}-sm.avif`), format: 'avif', quality: 60, maxWidth: SM_MAX_WIDTH }
+                );
+            }
 
             for (const v of variants) {
                 if (!FORCE && fs.existsSync(v.dest)) continue;   // already done
@@ -84,6 +90,8 @@ async function main() {
             const src = path.join(entryPath, webpFile);
             const variants = [
                 { dest: path.join(entryPath, `${num}.avif`), format: 'avif', quality: 60, maxWidth: FULL_MAX_WIDTH },
+                { dest: path.join(entryPath, `${num}-mobile.webp`), format: 'webp', quality: 60, maxWidth: MOBILE_HERO_MAX_WIDTH },
+                { dest: path.join(entryPath, `${num}-mobile.avif`), format: 'avif', quality: 60, maxWidth: MOBILE_HERO_MAX_WIDTH },
                 { dest: path.join(entryPath, `${num}-card.webp`), format: 'webp', quality: 60, maxWidth: CARD_MAX_WIDTH }
             ];
             for (const v of variants) {
