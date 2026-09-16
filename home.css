@@ -163,6 +163,11 @@
 .home-page .latest-aside-card h3 { font: 400 1.6rem/1.2 var(--font-editorial); letter-spacing: -.025em; margin-bottom: 12px; }
 .home-page .home-video-frame { aspect-ratio: 16 / 9; margin: 0 0 16px; background: #151713; overflow: hidden; }
 .home-page .home-video-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+.home-page .home-video-facade { position: relative; width: 100%; height: 100%; padding: 0; border: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; background: #151713; }
+.home-page .home-video-facade img { width: 100%; height: 100%; object-fit: cover; opacity: .22; }
+.home-page .home-video-facade__play { position: absolute; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; color: #151713; background: var(--accent); }
+.home-page .home-video-facade__play .icon { width: 20px; height: 20px; }
+.home-page .home-video-facade:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .home-page .home-video-meta { color: var(--accent) !important; font-size: .75rem !important; letter-spacing: .05em; text-transform: uppercase; }
 .home-page .latest-aside-card p { color: var(--text-secondary); font-size: .75rem; line-height: 1.75; margin-bottom: 14px; }
 .home-page .latest-aside-card .cta-button { font-size: .75rem; }

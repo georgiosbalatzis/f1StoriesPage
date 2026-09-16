@@ -12,6 +12,7 @@ nextsteps.txt
 # Generated build output — images are served directly from blog-entries/
 blog-module/blog/images/
 dist/
+.build/pages/
 
 # Node
 node_modules/
@@ -19,6 +20,7 @@ npm-debug.log*
 
 # Temp extraction folder (cleaned up by processor, but just in case)
 blog-module/blog-entries/*/extracted/
+blog-module/blog-entries/**/*.bak
 
 # Local/generated authoring data
 blog-module/blog-data.json

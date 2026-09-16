@@ -603,8 +603,9 @@ function dropInlineThemeBoot(html) {
     );
 }
 
-function ensureThemeInitScript(html, themeInfo) {
+function ensureThemeInitScript(html, themeInfo, relPath = '') {
     if (!themeInfo || !themeInfo.min || !themeInfo.hash) return html;
+    if (relPath === 'ghostcar/index.html' || relPath === 'f1telemetry/index.html') return html;
     if (/\/scripts\/theme-init(?:\.min)?\.js(?:\?v=[a-f0-9]+)?/i.test(html)) return html;
 
     const themeSrc = `/${themeInfo.min}?v=${themeInfo.hash}`;
@@ -1025,7 +1026,7 @@ function main() {
 
         // 1) stamp local asset refs with content-hash query strings
         let { result, hits } = rewrite(original, patterns);
-        result = ensureThemeInitScript(dropInlineThemeBoot(result), themeInfo);
+        result = ensureThemeInitScript(dropInlineThemeBoot(result), themeInfo, rel);
         result = normalizeThemeToggleCopy(result);
 
         // 1b) swap Bootstrap CDN CSS → local slim build and drop the unused

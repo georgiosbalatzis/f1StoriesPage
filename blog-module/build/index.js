@@ -1,4 +1,5 @@
 const { Worker } = require('worker_threads');
+const { execFileSync } = require('child_process');
 const os = require('os');
 const { updateDirtyAirCache } = require('../dirty-air-cache');
 const { updateDestructorsCache } = require('../destructors-cache');
@@ -31,6 +32,12 @@ function readJsonIfExists(filePath) {
     } catch (_) {
         return null;
     }
+}
+
+function generateMissingImageVariants() {
+    const generatorPath = path.join(__dirname, '..', 'generate-image-variants.js');
+    if (!fs.existsSync(generatorPath)) return;
+    execFileSync(process.execPath, [generatorPath, '--run', '--cards-only'], { stdio: 'inherit' });
 }
 
 function sameJsonExceptKey(left, right, key) {
@@ -887,6 +894,11 @@ async function processBlogEntries(options = {}) {
     }
     fs.writeFileSync(CONFIG.SOURCE_CACHE_JSON, JSON.stringify(sourceCache, null, 2));
 
+    // Workers may have just converted newly supplied hero images to WebP.
+    // Generate missing card variants now, before archive/home payloads resolve
+    // their thumbnail paths, while the generator's existence checks keep this
+    // incremental for an unchanged archive.
+    generateMissingImageVariants();
     const indexPosts = await buildIndexPosts(blogPosts);
     const indexPath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-data.json');
     const compactIndexData = buildCompactIndexData(indexPosts);
@@ -915,7 +927,7 @@ async function processBlogEntries(options = {}) {
     injectHomepageHero(homeLatest[0]);
 
     generateSitemap(blogPosts);
-    await renderCachedArticlePages(cachedPosts);
+    await renderCachedArticlePages(freshPosts.concat(cachedPosts));
     await injectRelatedArticles(blogPosts);
     injectPrevNextLinks(blogPosts);
 
