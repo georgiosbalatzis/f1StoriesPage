@@ -72,7 +72,7 @@
     <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=72651427">
 
     <!-- Preload hero image for LCP -->
-    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="2.webp" imagesrcset="2-mobile.webp 800w, 2.webp 1600w" imagesizes="(max-width: 820px) calc(100vw - 2rem), 770px" fetchpriority="high">
 
     <script defer src="/scripts/analytics.min.js?v=98a1ee70"></script>
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
@@ -227,8 +227,8 @@
         <article class="article-container article-container--history" data-article-kind="history">
             <div class="article-header" data-article-dossier="ΑΠΟ ΤΟ ΑΡΧΕΙΟ">
                 <picture>
-
-                    <img src="2.webp" alt="Hannu Mikkola tribute." class="article-header-img"
+                    <source type="image/avif" srcset="2-mobile.avif 800w, 2.avif 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                    <img src="2.webp" srcset="2-mobile.webp 800w, 2.webp 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px" alt="Hannu Mikkola tribute." class="article-header-img"
                          loading="eager" fetchpriority="high" decoding="sync"
                          width="480" height="639"
                          data-fallback-src="/blog-module/images/default-blog.jpg">
@@ -242,7 +242,7 @@
                     <h1 class="article-title">Hannu Mikkola tribute.</h1>
                     <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=themis-charvalis" class="article-author-link">Themis Charvalis</a></p>
                     <div class="article-meta">
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 31 Αυγούστου 2026</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> Δημοσίευση: 31 Αυγούστου 2026</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=History" class="article-category-link">History</a></span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
@@ -429,10 +429,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260914W/1.webp"
+                            <img src="/blog-module/blog-entries/20260914W/1-card.webp"
                                  alt="Mika Salo: Ο οδηγός που πάντα πρόσφερε."
                                  loading="lazy"
-                                 decoding="async" width="1920" height="1080"
+                                 decoding="async" width="400" height="225"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 3 min</span></div>
@@ -453,10 +453,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260911W/1.webp"
+                            <img src="/blog-module/blog-entries/20260911W/1-card.webp"
                                  alt="🏁 ΤΟ ΜΕΓΑΛΟ ΜΗΧΑΝΟΚΙΝΗΤΟ ΑΘΛΗΤΙΚΟ ΣΑΒΒΑΤΟΚΥΡΙΑΚΟ"
                                  loading="lazy"
-                                 decoding="async" width="678" height="452"
+                                 decoding="async" width="400" height="267"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 4 min</span></div>
@@ -477,10 +477,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260909W/1.webp"
+                            <img src="/blog-module/blog-entries/20260909W/1-card.webp"
                                  alt="Τζιανκάρλο Φισικέλα: Ο οδηγός που άγγιξε την κορυφή, χωρίς ποτέ να του ανήκει"
                                  loading="lazy"
-                                 decoding="async" width="1572" height="980"
+                                 decoding="async" width="400" height="249"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 6 min</span></div>

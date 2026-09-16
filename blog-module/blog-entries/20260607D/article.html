@@ -72,7 +72,7 @@
     <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=72651427">
 
     <!-- Preload hero image for LCP -->
-    <link rel="preload" as="image" href="1.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="1.webp" imagesrcset="1-mobile.webp 800w, 1.webp 1600w" imagesizes="(max-width: 820px) calc(100vw - 2rem), 770px" fetchpriority="high">
 
     <script defer src="/scripts/analytics.min.js?v=98a1ee70"></script>
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
@@ -227,8 +227,8 @@
         <article class="article-container article-container--opinion" data-article-kind="opinion">
             <div class="article-header" data-article-dossier="ΣΗΜΕΙΩΜΑ ΓΝΩΜΗΣ">
                 <picture>
-
-                    <img src="1.webp" alt="Μέσα από το F1ltro μου" class="article-header-img"
+                    <source type="image/avif" srcset="1-mobile.avif 800w, 1.avif 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                    <img src="1.webp" srcset="1-mobile.webp 800w, 1.webp 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px" alt="Μέσα από το F1ltro μου" class="article-header-img"
                          loading="eager" fetchpriority="high" decoding="sync"
                          width="533" height="717"
                          data-fallback-src="/blog-module/images/default-blog.jpg">
@@ -242,7 +242,7 @@
                     <h1 class="article-title">Μέσα από το F1ltro μου</h1>
                     <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=dimitris-keramidiotis" class="article-author-link">Dimitris Keramidiotis</a></p>
                     <div class="article-meta">
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 7 Ιουνίου 2026</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> Δημοσίευση: 7 Ιουνίου 2026</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=Opinion" class="article-category-link">Opinion</a></span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
@@ -367,10 +367,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260706D/1.webp"
+                            <img src="/blog-module/blog-entries/20260706D/1-card.webp"
                                  alt="Μέσα από το F1λτρο μου"
                                  loading="lazy"
-                                 decoding="async" width="1536" height="1024"
+                                 decoding="async" width="400" height="267"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 5 min</span></div>
@@ -391,10 +391,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260701D/1.webp"
+                            <img src="/blog-module/blog-entries/20260701D/1-card.webp"
                                  alt="Μέσα από το F1λτρο μου"
                                  loading="lazy"
-                                 decoding="async" width="1536" height="1024"
+                                 decoding="async" width="400" height="267"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 3 min</span></div>

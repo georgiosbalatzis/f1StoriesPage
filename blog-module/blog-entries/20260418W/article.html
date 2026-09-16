@@ -72,7 +72,7 @@
     <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=72651427">
 
     <!-- Preload hero image for LCP -->
-    <link rel="preload" as="image" href="1.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="1.webp" imagesrcset="1-mobile.webp 800w, 1.webp 1600w" imagesizes="(max-width: 820px) calc(100vw - 2rem), 770px" fetchpriority="high">
 
     <script defer src="/scripts/analytics.min.js?v=98a1ee70"></script>
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
@@ -227,8 +227,8 @@
         <article class="article-container article-container--news" data-article-kind="news">
             <div class="article-header" data-article-dossier="ΡΕΠΟΡΤΑΖ">
                 <picture>
-                    <source type="image/avif" srcset="1.avif">
-                    <img src="1.webp" alt="Όταν η νίκη ξεπερνά τους αριθμούς." class="article-header-img"
+                    <source type="image/avif" srcset="1-mobile.avif 800w, 1.avif 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                    <img src="1.webp" srcset="1-mobile.webp 800w, 1.webp 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px" alt="Όταν η νίκη ξεπερνά τους αριθμούς." class="article-header-img"
                          loading="eager" fetchpriority="high" decoding="sync"
                          width="1024" height="676"
                          data-fallback-src="/blog-module/images/default-blog.jpg">
@@ -242,7 +242,7 @@
                     <h1 class="article-title">Όταν η νίκη ξεπερνά τους αριθμούς.</h1>
                     <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=themis-charvalis" class="article-author-link">Themis Charvalis</a></p>
                     <div class="article-meta">
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 18 Απριλίου 2026</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> Δημοσίευση: 18 Απριλίου 2026</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
@@ -358,7 +358,7 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260815W/1.webp"
+                            <img src="/blog-module/blog-entries/20260815W/1-card.webp"
                                  alt="McLaren MP4/14 εναντίον Ferrari F399: Η μάχη της απόλυτης ταχύτητας απέναντι στην απόλυτη αποτελεσματικότητα"
                                  loading="lazy"
                                  decoding="async" width="399" height="501"
@@ -382,10 +382,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260715W/1.webp"
+                            <img src="/blog-module/blog-entries/20260715W/1-card.webp"
                                  alt="Williams FW16 και Benetton B194: Όταν δύο ιδιοφυΐες συγκρούστηκαν"
                                  loading="lazy"
-                                 decoding="async" width="1500" height="1500"
+                                 decoding="async" width="400" height="400"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 3 min</span></div>
@@ -406,10 +406,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260910G/1.webp"
+                            <img src="/blog-module/blog-entries/20260910G/1-card.webp"
                                  alt="Missing the 90s"
                                  loading="lazy"
-                                 decoding="async" width="1052" height="689"
+                                 decoding="async" width="400" height="262"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 2 min</span></div>

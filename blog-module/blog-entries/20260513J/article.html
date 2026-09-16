@@ -72,7 +72,7 @@
     <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=72651427">
 
     <!-- Preload hero image for LCP -->
-    <link rel="preload" as="image" href="1.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="1.webp" imagesrcset="1-mobile.webp 800w, 1.webp 1600w" imagesizes="(max-width: 820px) calc(100vw - 2rem), 770px" fetchpriority="high">
 
     <script defer src="/scripts/analytics.min.js?v=98a1ee70"></script>
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
@@ -227,8 +227,8 @@
         <article class="article-container article-container--news" data-article-kind="news">
             <div class="article-header" data-article-dossier="ΡΕΠΟΡΤΑΖ">
                 <picture>
-                    <source type="image/avif" srcset="1.avif">
-                    <img src="1.webp" alt="Από τη Formula 1 στο Nürburgring: Η νέα πρόκληση του Max Verstappen" class="article-header-img"
+                    <source type="image/avif" srcset="1-mobile.avif 800w, 1.avif 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                    <img src="1.webp" srcset="1-mobile.webp 800w, 1.webp 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px" alt="Από τη Formula 1 στο Nürburgring: Η νέα πρόκληση του Max Verstappen" class="article-header-img"
                          loading="eager" fetchpriority="high" decoding="sync"
                          width="1672" height="941"
                          data-fallback-src="/blog-module/images/default-blog.jpg">
@@ -242,7 +242,7 @@
                     <h1 class="article-title">Από τη Formula 1 στο Nürburgring: Η νέα πρόκληση του Max Verstappen</h1>
                     <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=giannis-poulikidis" class="article-author-link">Giannis Poulikidis</a></p>
                     <div class="article-meta">
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 13 Μαΐου 2026</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> Δημοσίευση: 13 Μαΐου 2026</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
@@ -396,10 +396,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260909J/1.webp"
+                            <img src="/blog-module/blog-entries/20260909J/1-card.webp"
                                  alt="Τροφή για σκέψη: Russell, σημειώσατε διπλό"
                                  loading="lazy"
-                                 decoding="async" width="1672" height="940"
+                                 decoding="async" width="400" height="225"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 3 min</span></div>
@@ -420,10 +420,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260901J/1.webp"
+                            <img src="/blog-module/blog-entries/20260901J/1-card.webp"
                                  alt="ΤΙ ΚΡΥΒΕΤΑΙ ΣΤΟ ΜΥΑΛΟ ΤΟΥ MAX VERSTAPPEN"
                                  loading="lazy"
-                                 decoding="async" width="1536" height="1024"
+                                 decoding="async" width="400" height="267"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 5 min</span></div>

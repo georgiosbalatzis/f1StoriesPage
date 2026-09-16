@@ -72,7 +72,7 @@
     <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=72651427">
 
     <!-- Preload hero image for LCP -->
-    <link rel="preload" as="image" href="2.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="2.webp" imagesrcset="2-mobile.webp 800w, 2.webp 1600w" imagesizes="(max-width: 820px) calc(100vw - 2rem), 770px" fetchpriority="high">
 
     <script defer src="/scripts/analytics.min.js?v=98a1ee70"></script>
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
@@ -227,8 +227,8 @@
         <article class="article-container article-container--news" data-article-kind="news">
             <div class="article-header" data-article-dossier="ΡΕΠΟΡΤΑΖ">
                 <picture>
-
-                    <img src="2.webp" alt="Mercedes W05: Η απόλυτη κυριαρχία στην Αυστραλία του 2014" class="article-header-img"
+                    <source type="image/avif" srcset="2-mobile.avif 800w, 2.avif 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                    <img src="2.webp" srcset="2-mobile.webp 800w, 2.webp 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px" alt="Mercedes W05: Η απόλυτη κυριαρχία στην Αυστραλία του 2014" class="article-header-img"
                          loading="eager" fetchpriority="high" decoding="sync"
                          width="679" height="452"
                          data-fallback-src="/blog-module/images/default-blog.jpg">
@@ -242,7 +242,7 @@
                     <h1 class="article-title">Mercedes W05: Η απόλυτη κυριαρχία στην Αυστραλία του 2014</h1>
                     <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=themis-charvalis" class="article-author-link">Themis Charvalis</a></p>
                     <div class="article-meta">
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 13 Ιουλίου 2026</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> Δημοσίευση: 13 Ιουλίου 2026</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=News" class="article-category-link">News</a></span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
@@ -434,10 +434,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260803W/1.webp"
+                            <img src="/blog-module/blog-entries/20260803W/1-card.webp"
                                  alt="Η αρχή είναι το ήμισυ του παντός;"
                                  loading="lazy"
-                                 decoding="async" width="739" height="415"
+                                 decoding="async" width="400" height="225"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 3 min</span></div>
@@ -458,10 +458,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260802W/1.webp"
+                            <img src="/blog-module/blog-entries/20260802W/1-card.webp"
                                  alt="Toleman TG184 εναντίον Alfa Romeo 184T"
                                  loading="lazy"
-                                 decoding="async" width="1799" height="1191"
+                                 decoding="async" width="400" height="265"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 3 min</span></div>
@@ -482,10 +482,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260726W/1.webp"
+                            <img src="/blog-module/blog-entries/20260726W/1-card.webp"
                                  alt="Ουγγαρία 2026: Το 4-5 της Ferrari ίσως να ήταν η στιγμή που κρίθηκε το πρωτάθλημα"
                                  loading="lazy"
-                                 decoding="async" width="737" height="416"
+                                 decoding="async" width="400" height="226"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 4 min</span></div>

@@ -72,7 +72,7 @@
     <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=72651427">
 
     <!-- Preload hero image for LCP -->
-    <link rel="preload" as="image" href="1.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="1.webp" imagesrcset="1-mobile.webp 800w, 1.webp 1600w" imagesizes="(max-width: 820px) calc(100vw - 2rem), 770px" fetchpriority="high">
 
     <script defer src="/scripts/analytics.min.js?v=98a1ee70"></script>
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
@@ -227,8 +227,8 @@
         <article class="article-container article-container--betting" data-article-kind="betting">
             <div class="article-header" data-article-dossier="BETCAST NOTE">
                 <picture>
-
-                    <img src="1.webp" alt="Betcast: 267 Austria GP: Προβλέπουμε χαμό ; .." class="article-header-img"
+                    <source type="image/avif" srcset="1-mobile.avif 800w, 1.avif 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">
+                    <img src="1.webp" srcset="1-mobile.webp 800w, 1.webp 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px" alt="Betcast: 267 Austria GP: Προβλέπουμε χαμό ; .." class="article-header-img"
                          loading="eager" fetchpriority="high" decoding="sync"
                          width="1672" height="941"
                          data-fallback-src="/blog-module/images/default-blog.jpg">
@@ -242,7 +242,7 @@
                     <h1 class="article-title">Betcast: 267 Austria GP: Προβλέπουμε χαμό ; ..</h1>
                     <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=giannis-poulikidis" class="article-author-link">Giannis Poulikidis</a></p>
                     <div class="article-meta">
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 27 Ιουνίου 2026</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> Δημοσίευση: 27 Ιουνίου 2026</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=Betting" class="article-category-link">Betting</a></span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
@@ -369,10 +369,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260725J/1.webp"
+                            <img src="/blog-module/blog-entries/20260725J/1-card.webp"
                                  alt="BetCast #270.  Αλλαγή στο Hungaroring!"
                                  loading="lazy"
-                                 decoding="async" width="1672" height="941"
+                                 decoding="async" width="400" height="225"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 1 min</span></div>
@@ -393,10 +393,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260704J/1.webp"
+                            <img src="/blog-module/blog-entries/20260704J/1-card.webp"
                                  alt="BetCast #268: Τα στοιχηματικά σημεία που ξεχωρίσαμε για το Grand Prix"
                                  loading="lazy"
-                                 decoding="async" width="1672" height="941"
+                                 decoding="async" width="400" height="225"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 1 min</span></div>
@@ -417,10 +417,10 @@
                     <div class="related-article-card">
                         
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/20260613J/1.webp"
+                            <img src="/blog-module/blog-entries/20260613J/1-card.webp"
                                  alt="Betcast #266: Οι προβλέψεις για το GP της Catalunya"
                                  loading="lazy"
-                                 decoding="async" width="1672" height="941"
+                                 decoding="async" width="400" height="225"
                                  data-fallback-src="/blog-module/images/default-blog.jpg">
                             <div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>
                                 <span class="related-card-hover-meta"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> 1 min</span></div>
