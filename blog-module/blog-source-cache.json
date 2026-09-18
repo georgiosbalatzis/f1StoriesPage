@@ -59,6 +59,34 @@
       "backgroundImageHeight": 1080
     },
     {
+      "id": "20260918-2G",
+      "title": "Ο Colapinto δεν ζητά πλέον χρόνο",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-18",
+      "dateISO": "2026-09-18",
+      "displayDate": "18 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260918-2G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260918-2G/1.webp",
+      "excerpt": "Πριν από έναν χρόνο, η συζήτηση γύρω από τον Franco Colapinto ήταν σχεδόν πάντα η ίδια. Έχει ταχύτητα, έχει προσωπικότητα, έχει το κοινό μαζί του. Αλλά μπορεί πραγματικά να χτίσει μία καριέρα στη...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260918-2G/article.html",
+      "category": "Drivers",
+      "categories": [
+        "Drivers"
+      ],
+      "tags": [
+        "Alpine",
+        "2026"
+      ],
+      "wordCount": 599,
+      "readingTime": "3 min",
+      "imageWidth": 2000,
+      "imageHeight": 1333,
+      "backgroundImageWidth": 2000,
+      "backgroundImageHeight": 1333
+    },
+    {
       "id": "20260916W",
       "title": "Jenson Button: Ο υπομονετικός και προσαρμοστικός πρωταθλητής",
       "author": "Themis Charvalis",
@@ -9036,5 +9064,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-18T18:52:11.027Z"
+  "lastUpdated": "2026-09-18T19:22:50.442Z"
 }
