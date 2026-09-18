@@ -31,6 +31,34 @@
       "backgroundImageHeight": 1908
     },
     {
+      "id": "20260918G",
+      "title": "Οι μηδέν βαθμοί λένε τη μισή αλήθεια",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-18",
+      "dateISO": "2026-09-18",
+      "displayDate": "18 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260918G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260918G/1.webp",
+      "excerpt": "14 Grand Prix. 0 βαθμοί. Τελευταία θέση στο Πρωτάθλημα Κατασκευαστών. Αν προσέξει κάποιος μόνο αυτά τα τρία στοιχεία, η πρώτη χρονιά της Cadillac στη Formula 1 μοιάζει αρκετά απλή στην ανάλυσή της....",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260918G/article.html",
+      "category": "Teams",
+      "categories": [
+        "Teams"
+      ],
+      "tags": [
+        "Cadillac",
+        "2026"
+      ],
+      "wordCount": 617,
+      "readingTime": "4 min",
+      "imageWidth": 1920,
+      "imageHeight": 1080,
+      "backgroundImageWidth": 1920,
+      "backgroundImageHeight": 1080
+    },
+    {
       "id": "20260916W",
       "title": "Jenson Button: Ο υπομονετικός και προσαρμοστικός πρωταθλητής",
       "author": "Themis Charvalis",
@@ -9008,5 +9036,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-18T18:43:10.527Z"
+  "lastUpdated": "2026-09-18T18:52:11.027Z"
 }
