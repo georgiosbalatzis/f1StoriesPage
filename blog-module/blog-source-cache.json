@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20260918W",
+      "title": "Οι βαθμοί που δεν λένε όλη την αλήθεια",
+      "author": "Themis Charvalis",
+      "date": "2026-09-18",
+      "dateISO": "2026-09-18",
+      "displayDate": "18 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260918W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260918W/2.webp",
+      "excerpt": "Hamilton, Fangio, Clark, Prost, Schumacher, Senna, πώς μπορείς συγκρίνεις οδηγούς όταν η ίδια η Formula 1 άλλαζε συνεχώς τον τρόπο με τον οποίο μετρούσε την επιτυχία; Στη Formula 1 υπάρχει ένα...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260918W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "F1",
+        "Racing",
+        "Legends",
+        "Statistics analysis"
+      ],
+      "wordCount": 1218,
+      "readingTime": "7 min",
+      "imageWidth": 4690,
+      "imageHeight": 2639,
+      "backgroundImageWidth": 3392,
+      "backgroundImageHeight": 1908
+    },
+    {
       "id": "20260916W",
       "title": "Jenson Button: Ο υπομονετικός και προσαρμοστικός πρωταθλητής",
       "author": "Themis Charvalis",
@@ -8978,5 +9008,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-16T17:46:10.097Z"
+  "lastUpdated": "2026-09-18T18:43:10.527Z"
 }
