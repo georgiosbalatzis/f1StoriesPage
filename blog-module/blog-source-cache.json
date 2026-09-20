@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20260920W",
+      "title": "Istanbul Park 2006: Η πρώτη νίκη του Massa και ο ταχύτερος όλων Michael Schumacher Schumacher",
+      "author": "Themis Charvalis",
+      "date": "2026-09-20",
+      "dateISO": "2026-09-20",
+      "displayDate": "20 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260920W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260920W/2.webp",
+      "excerpt": "Τουρκία, 27 Αυγούστου 2006. Το Istanbul Park υποδέχεται για δεύτερη φορά το Παγκόσμιο Πρωτάθλημα της Formula 1 και προσφέρει έναν αγώνα που θα μείνει στην ιστορία όχι μόνο για την απαιτητική χάραξη...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260920W/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "F1",
+        "Racing",
+        "Turkish gp",
+        "Felipe Massa",
+        "Ferrari",
+        "Michael Schumacher"
+      ],
+      "wordCount": 652,
+      "readingTime": "4 min",
+      "imageWidth": 1600,
+      "imageHeight": 1200,
+      "backgroundImageWidth": 681,
+      "backgroundImageHeight": 450
+    },
+    {
       "id": "20260918W",
       "title": "Οι βαθμοί που δεν λένε όλη την αλήθεια",
       "author": "Themis Charvalis",
@@ -9064,5 +9096,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-18T19:22:50.442Z"
+  "lastUpdated": "2026-09-20T10:17:34.212Z"
 }
