@@ -575,6 +575,13 @@
         );
     }
 
+    // Headline hygiene is advisory: the author sees the issues and may continue.
+    async function confirmTitleHygiene(title, body) {
+        var warnings = articleSource.titleWarnings(title, body);
+        if (!warnings.length) return true;
+        return showConfirm(warnings.join('\n') + '\n\nΝα συνεχίσω παρ\' όλα αυτά;');
+    }
+
     function buildSourceTxt(tag, category, title, body) {
         return articleSource.buildSourceText(tag, category, title, body, sourceMetadata);
     }
@@ -590,6 +597,7 @@
 
         var body = contentArea.value.trim();
         if (!body) { await showAlert('Γράψε το κείμενο του άρθρου πριν από την εξαγωγή.'); contentArea.focus(); return; }
+        if (!(await confirmTitleHygiene(title, body))) { titleInput.focus(); return; }
 
         var author = authorSelect.value;
         var tag = tagInput.value.trim();
@@ -961,6 +969,7 @@
 
         var body = contentArea.value.trim();
         if (!body) { await showAlert('Γράψε το κείμενο του άρθρου πριν από τη δημοσίευση.'); contentArea.focus(); return; }
+        if (!(await confirmTitleHygiene(title, body))) { titleInput.focus(); return; }
 
         var token = getStoredToken();
         if (!token) {

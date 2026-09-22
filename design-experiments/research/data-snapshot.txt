@@ -1,0 +1,160 @@
+Emulating viewport: {"isMobile":false,"hasTouch":false,"isLandscape":false,"width":1440,"height":900}
+## Latest page snapshot
+uid=6_0 RootWebArea "F1 Stories — Βαθμολογίες Πρωταθλήματος" url="http://127.0.0.1:4185/standings/?tab=drivers"
+  uid=6_1 link "Μετάβαση στο περιεχόμενο" url="http://127.0.0.1:4185/standings/?tab=drivers#main"
+    uid=6_2 StaticText "Μετάβαση στο περιεχόμενο"
+  uid=6_3 banner
+    uid=6_4 navigation
+      uid=6_5 link "F1 Stories home" url="http://127.0.0.1:4185/"
+        uid=6_6 image "F1 Stories Logo" url="http://127.0.0.1:4185/images/logo-nav.webp"
+        uid=6_7 StaticText "F1 STORIES"
+        uid=6_8 StaticText "."
+      uid=6_9 link "Αρχική" url="http://127.0.0.1:4185/"
+        uid=6_10 StaticText "Αρχική"
+      uid=6_11 link "Άρθρα" url="http://127.0.0.1:4185/blog-module/blog/index.html"
+        uid=6_12 StaticText "Άρθρα"
+      uid=6_13 link "YouTube" url="https://www.youtube.com/@f1_stories_original"
+        uid=6_14 StaticText "YouTube"
+      uid=6_15 link "Βαθμολογία" url="http://127.0.0.1:4185/standings/"
+        uid=6_16 StaticText "Βαθμολογία"
+      uid=6_17 link "Δεδομένα" url="http://127.0.0.1:4185/standings/?tab=tyre-pace"
+        uid=6_18 StaticText "Δεδομένα"
+      uid=6_19 link "Συντάκτες" url="http://127.0.0.1:4185/authors/"
+        uid=6_20 StaticText "Συντάκτες"
+      uid=6_21 link "BetCast" url="https://georgiosbalatzis.github.io/BetCastVisualisation/"
+        uid=6_22 StaticText "BetCast"
+      uid=6_23 StaticText "🇦🇿"
+      uid=6_24 StaticText "Azerbaijan GP"
+      uid=6_25 StaticText "9d 23h 0m"
+      uid=6_26 button "Φωτεινό θέμα" pressed
+  uid=6_27 main
+    uid=6_28 StaticText "F1 STORIES / RACE DESK"
+    uid=6_29 StaticText "ΒΑΘΜΟΛΟΓΙΕΣ & ΑΝΑΛΥΣΗ"
+    uid=6_30 heading "THE GRID. Βαθμολογίες Πρωταθλήματος" level="1"
+    uid=6_31 StaticText "Κάθε βαθμός,"
+    uid=6_32 LineBreak "
+"
+    uid=6_33 StaticText "μια ιστορία."
+    uid=6_34 StaticText "Οδηγοί, ομάδες και οι λεπτομέρειες που κρίνουν τον αγώνα. Διάβασε τη σεζόν μέσα από τα δεδομένα."
+    uid=6_35 StaticText "Live δεδομένα · Σεζόν"
+    uid=6_36 StaticText "2026"
+    uid=6_37 StaticText "Μετά τον γύρο"
+    uid=6_38 StaticText "11"
+    uid=6_39 StaticText "EVERY POINT COUNTS."
+    uid=6_40 tab "Οδηγοί" selectable selected
+    uid=6_41 tab "Κατασκευαστές" selectable
+    uid=6_42 tab "Quali Gaps" selectable
+    uid=6_43 tab "Lap 1 Gains" selectable
+    uid=6_44 tab "Tyre Pace" selectable
+    uid=6_45 tab "Dirty Air" selectable
+    uid=6_46 tab "Track Dominance" selectable
+    uid=6_47 tab "Pit Stops" selectable
+    uid=6_48 tab "Debrief" selectable
+    uid=6_49 tab "Destructors" selectable
+    uid=6_50 tabpanel "Οδηγοί"
+      uid=6_51 generic live="polite" relevant="additions text"
+        uid=6_52 StaticText "ΠΡΩΤΟΠΟΡΟΣ"
+        uid=6_53 StaticText "Andrea Kimi Antonelli"
+        uid=6_54 StaticText "219 βαθ."
+        uid=6_55 StaticText "ΠΙΟ ΚΟΝΤΙΝΗ ΜΑΧΗ"
+        uid=6_56 StaticText "Bottas vs Stroll"
+        uid=6_57 StaticText "0 βαθ. διαφορά"
+        uid=6_58 StaticText "ΤΕΛΕΥΤΑΙΑ ΕΝΗΜΕΡΩΣΗ"
+        uid=6_59 StaticText "22 Αυγ 2026"
+        uid=6_60 StaticText "Σεζόν 2026"
+        uid=6_61 StaticText "ΠΗΓΗ"
+        uid=6_62 StaticText "Jolpica F1 snapshot"
+        uid=6_63 StaticText "Πρωτάθλημα οδηγών"
+      uid=6_64 generic live="polite" relevant="additions text"
+        uid=6_65 button "1 Andrea Kimi Antonelli Andrea Kimi Antonelli Mercedes 219 6 νίκες +" expandable
+        uid=6_66 button "2 Lewis Hamilton Lewis Hamilton Ferrari 169 1 νίκη +" expandable
+        uid=6_67 button "3 George Russell George Russell Mercedes 160 2 νίκες +" expandable
+        uid=6_68 button "4 Charles Leclerc Charles Leclerc Ferrari 138 1 νίκη +" expandable
+        uid=6_69 button "5 Lando Norris Lando Norris McLaren 128 1 νίκη +" expandable
+        uid=6_70 button "6 Max Verstappen Max Verstappen Red Bull 109 +" expandable
+        uid=6_71 button "7 Oscar Piastri Oscar Piastri McLaren 92 +" expandable
+        uid=6_72 button "8 Isack Hadjar Isack Hadjar Red Bull 68 +" expandable
+        uid=6_73 button "9 Liam Lawson Liam Lawson RB F1 Team 43 +" expandable
+        uid=6_74 button "10 Pierre Gasly Pierre Gasly Alpine F1 Team 42 +" expandable
+        uid=6_75 button "11 Arvid Lindblad Arvid Lindblad RB F1 Team 23 +" expandable
+        uid=6_76 button "12 Franco Colapinto Franco Colapinto Alpine F1 Team 19 +" expandable
+        uid=6_77 button "13 Oliver Bearman Oliver Bearman Haas F1 Team 18 +" expandable
+        uid=6_78 button "14 Gabriel Bortoleto Gabriel Bortoleto Audi 10 +" expandable
+        uid=6_79 button "15 Carlos Sainz Carlos Sainz Williams 6 +" expandable
+        uid=6_80 button "16 Alexander Albon Alexander Albon Williams 5 +" expandable
+        uid=6_81 button "17 Esteban Ocon Esteban Ocon Haas F1 Team 3 +" expandable
+        uid=6_82 button "18 Nico Hülkenberg Nico Hülkenberg Audi 2 +" expandable
+        uid=6_83 button "19 Fernando Alonso Fernando Alonso Aston Martin 1 +" expandable
+        uid=6_84 button "20 Lance Stroll Lance Stroll Aston Martin 0 +" expandable
+        uid=6_85 button "21 Valtteri Bottas Valtteri Bottas Cadillac F1 Team 0 +" expandable
+        uid=6_86 button "22 Sergio Pérez Sergio Pérez Cadillac F1 Team 0 +" expandable
+      uid=6_87 heading "Κατανομή βαθμών — Top 10" level="2"
+      uid=6_88 StaticText "Κοινοποίησε ή ενσωμάτωσε το τρέχον γράφημα βαθμών οδηγών."
+      uid=6_89 button "Κοινοποίηση γραφήματος"
+      uid=6_90 button "Ενσωμάτωση γραφήματος"
+      uid=6_91 StaticText "ANT"
+      uid=6_92 StaticText "219"
+      uid=6_93 StaticText "HAM"
+      uid=6_94 StaticText "169"
+      uid=6_95 StaticText "RUS"
+      uid=6_96 StaticText "160"
+      uid=6_97 StaticText "LEC"
+      uid=6_98 StaticText "138"
+      uid=6_99 StaticText "NOR"
+      uid=6_100 StaticText "128"
+      uid=6_101 StaticText "VER"
+      uid=6_102 StaticText "109"
+      uid=6_103 StaticText "PIA"
+      uid=6_104 StaticText "92"
+      uid=6_105 StaticText "HAD"
+      uid=6_106 StaticText "68"
+      uid=6_107 StaticText "LAW"
+      uid=6_108 StaticText "43"
+      uid=6_109 StaticText "GAS"
+      uid=6_110 StaticText "42"
+      uid=6_111 complementary "Driver standings context"
+        uid=6_112 StaticText "ΑΓΩΝΙΣΤΙΚΟ ΔΕΛΤΙΟ"
+        uid=6_113 StaticText "Πλαίσιο πρωταθλήματος οδηγών"
+        uid=6_114 StaticText "ΔΙΑΦΟΡΕΣ ΑΠΟ ΤΟ ΠΡΟΠΟΡΕΥΟΜΕΝΟ ΜΟΝΟΘΕΣΙΟ"
+        uid=6_115 StaticText "Lewis Hamilton"
+        uid=6_116 StaticText "+50"
+        uid=6_117 StaticText "George Russell"
+        uid=6_118 StaticText "+9"
+        uid=6_119 StaticText "Charles Leclerc"
+        uid=6_120 StaticText "+22"
+        uid=6_121 StaticText "Lando Norris"
+        uid=6_122 StaticText "+10"
+        uid=6_123 StaticText "ΠΛΑΙΣΙΟ"
+        uid=6_124 StaticText "Πρωτοπόρος ομάδα"
+        uid=6_125 StaticText "Mercedes"
+        uid=6_126 StaticText "Καταταγμένοι οδηγοί"
+        uid=6_127 StaticText "22"
+        uid=6_128 StaticText "Πηγή"
+        uid=6_129 StaticText "Jolpica F1 snapshot"
+    uid=6_130 StaticText "Δεδομένα από "
+    uid=6_131 link "Jolpica F1" url="https://github.com/jolpica/jolpica-f1"
+      uid=6_132 StaticText "Jolpica F1"
+    uid=6_133 StaticText " & "
+    uid=6_134 link "OpenF1" url="https://openf1.org/"
+      uid=6_135 StaticText "OpenF1"
+    uid=6_136 StaticText " · Ενημέρωση μετά από κάθε αγώνα"
+  uid=6_137 generic live="polite" relevant="additions text"
+  uid=6_138 contentinfo
+    uid=6_139 StaticText "© "
+    uid=6_140 StaticText "2026"
+    uid=6_141 StaticText " F1 Stories. Με επιφύλαξη παντός δικαιώματος."
+    uid=6_142 link "F1 Stories στο YouTube" url="https://www.youtube.com/@f1_stories_original"
+    uid=6_143 link "F1 Stories στο Facebook" url="https://www.facebook.com/f1storiess"
+    uid=6_144 link "F1 Stories στο Instagram" url="https://www.instagram.com/myf1stories/"
+    uid=6_145 link "F1 Stories στο TikTok" url="https://www.tiktok.com/@f1stories6"
+    uid=6_146 link "Email στο F1 Stories" url="mailto:myf1stories@gmail.com"
+    uid=6_147 link "Πολιτική Απορρήτου" url="http://127.0.0.1:4185/privacy/privacy.html"
+      uid=6_148 StaticText "Πολιτική Απορρήτου"
+    uid=6_149 StaticText "|"
+    uid=6_150 link "Όροι Χρήσης" url="http://127.0.0.1:4185/privacy/terms.html"
+      uid=6_151 StaticText "Όροι Χρήσης"
+    uid=6_152 StaticText "|"
+    uid=6_153 button "Ρυθμίσεις cookies"
+    uid=6_154 StaticText "|"
+    uid=6_155 button "Εκκαθάριση cache"
+

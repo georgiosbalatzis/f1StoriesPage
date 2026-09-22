@@ -27,26 +27,25 @@
         (document.head || document.body).appendChild(script);
     }
 
+    // Disqus is a large third-party surface: load it only when the reader asks.
     function initArticleComments() {
         var disqusThread = document.getElementById('disqus_thread');
-        var observer;
+        var button;
 
-        if (!disqusThread) return;
+        if (!disqusThread || disqusThread.dataset.disqusLoaded === '1') return;
 
-        if (!('IntersectionObserver' in window)) {
+        button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'comments-load-btn';
+        button.textContent = 'Δες τα σχόλια (Disqus)';
+        button.setAttribute('aria-controls', 'disqus_thread');
+        button.addEventListener('click', function () {
+            button.remove();
             loadDisqus(disqusThread);
-            return;
-        }
-
-        observer = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-                if (!entry.isIntersecting) return;
-                observer.disconnect();
-                loadDisqus(disqusThread);
-            });
-        }, { rootMargin: '400px 0px' });
-
-        observer.observe(disqusThread);
+            disqusThread.focus({ preventScroll: true });
+        }, { once: true });
+        disqusThread.setAttribute('tabindex', '-1');
+        disqusThread.parentNode.insertBefore(button, disqusThread);
     }
 
     if (document.readyState === 'loading') {

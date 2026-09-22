@@ -31,7 +31,7 @@
     --success: #1aa34a;
     --success-muted: rgba(26,163,74,.12);
     --border: rgba(255,255,255,.08);
-    --border-accent: rgba(65,182,230,.22);
+    --border-accent: color-mix(in srgb, var(--accent) 22%, transparent);
     --font-body: 'Roboto', system-ui, -apple-system, sans-serif;
 
     /* ── Legacy aliases (used by older selectors) ── */
@@ -143,7 +143,7 @@ body {
 .navbar-brand { transition: transform 0.3s ease; }
 .navbar-brand:hover { transform: scale(1.05); }
 .navbar-brand img { height: 50px; transition: filter 0.3s ease; }
-.navbar-brand:hover img { filter: drop-shadow(0 0 5px rgba(65,182,230,0.4)); }
+.navbar-brand:hover img { filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 40%, transparent)); }
 .navbar-dark .navbar-nav .nav-link { color: var(--text-secondary); font-weight: bold; padding: 0.5rem 1rem; transition: var(--transition-base); position: relative; }
 .navbar-dark .navbar-nav .nav-link::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 2px; background: var(--gradient-accent); transition: var(--transition-base); transform: translateX(-50%); }
 .navbar-dark .navbar-nav .nav-link:hover { color: var(--accent); }
@@ -231,7 +231,7 @@ h2::after { display: none; }
 .contact-form .form-group:focus-within label { color: var(--accent); }
 .contact-form .form-group:focus-within label::before { height: 80%; }
 .contact-form input, .contact-form textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 5px; background-color: var(--bg-surface-alt); color: var(--text-primary); transition: var(--transition-base); box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
-.contact-form input:focus, .contact-form textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(65,182,230,0.2); transform: translateY(-2px); }
+.contact-form input:focus, .contact-form textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); transform: translateY(-2px); }
 .contact-form textarea { resize: vertical; height: 150px; }
 .contact-form input::placeholder, .contact-form textarea::placeholder { color: var(--text-tertiary); }
 .form-control { background-color: var(--bg-surface-alt); color: var(--text-primary); border-color: var(--border); }
@@ -317,7 +317,7 @@ footer::before { display: none; }
 .ratio { transition: var(--transition-base); }
 .episode-card:hover .ratio { transform: scale(1.01); }
 .video-duration { font-size: 0.8rem; color: #fff; z-index: 10; background-color: rgba(17,17,19,0.85); padding: 2px 8px; border-radius: 12px; backdrop-filter: blur(4px); transition: var(--transition-base); }
-.episode-card:hover .video-duration { background-color: rgba(65,182,230,0.8); }
+.episode-card:hover .video-duration { background-color: color-mix(in srgb, var(--accent) 80%, transparent); }
 
 /* ── Scroll Animations ── */
 .fade-in { opacity: 1; transition: transform 0.8s var(--ease-bounce); transform: translateY(0); }
@@ -329,14 +329,14 @@ footer::before { display: none; }
 .modal.fade .modal-dialog { transition: transform 0.5s var(--ease-bounce), opacity 0.5s ease; transform: translateY(-50px) scale(0.95); opacity: 0; }
 .modal.show .modal-dialog { transform: translateY(0) scale(1); opacity: 1; }
 .modal-content { border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 40px rgba(0,0,0,0.6); background: var(--bg-surface); overflow: hidden; position: relative; }
-.modal-content::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at top right, rgba(65,182,230,0.08), transparent 70%); pointer-events: none; }
+.modal-content::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at top right, color-mix(in srgb, var(--accent) 8%, transparent), transparent 70%); pointer-events: none; }
 .modal-header { background: var(--bg-surface-alt); border-bottom: 1px solid rgba(255,255,255,0.08); }
 .modal-title { color: var(--accent); }
 .modal-footer { border-top: 1px solid rgba(255,255,255,0.08); background: var(--bg-surface-alt); }
 .social-link-item { transition: var(--transition-hover); }
-.social-link-item:hover { background-color: rgba(65,182,230,0.06); transform: translateX(5px); }
+.social-link-item:hover { background-color: color-mix(in srgb, var(--accent) 6%, transparent); transform: translateX(5px); }
 .social-link-item .btn { transition: var(--transition-hover); background: var(--gradient-primary); border: none; }
-.social-link-item:hover .btn { transform: scale(1.1); box-shadow: 0 4px 10px rgba(65,182,230,0.25); }
+.social-link-item:hover .btn { transform: scale(1.1); box-shadow: 0 4px 10px color-mix(in srgb, var(--accent) 25%, transparent); }
 
 
 /* ── BetCast Button ── */
@@ -371,10 +371,10 @@ input:checked + .toggle-slider:before { transform: translateX(26px); }
 .custom-dropdown-menu { background: rgba(22,22,24,0.97); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); padding: 0.5rem 0; margin-top: 0.5rem; list-style: none; position: absolute; left: 50%; transform: translateX(-50%); min-width: 200px; z-index: 1000; display: none; text-align: left; }
 .custom-dropdown.open .custom-dropdown-menu { display: block; }
 .dropdown-item { color: var(--text-secondary); padding: 0.6rem 1.5rem; font-size: 0.95rem; position: relative; transition: var(--transition-base); display: block; text-decoration: none; }
-.dropdown-item:hover { color: #ffffff; background-color: rgba(65,182,230,0.08); padding-left: 1.8rem; }
+.dropdown-item:hover { color: #ffffff; background-color: color-mix(in srgb, var(--accent) 8%, transparent); padding-left: 1.8rem; }
 .dropdown-item:hover::before { content: ''; position: absolute; top: 50%; left: 0.8rem; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; transform: translateY(-50%); }
 .dropdown-divider { height: 1px; margin: 0.5rem 0; background-color: rgba(255,255,255,0.08); }
-.betcast-item { background: linear-gradient(90deg, rgba(65,182,230,0.06), transparent); border-left: 2px solid var(--accent); }
+.betcast-item { background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 6%, transparent), transparent); border-left: 2px solid var(--accent); }
 .navbar-nav .nav-link.active, .navbar-nav .nav-item.active .nav-link, .custom-dropdown-toggle.active { color: var(--accent) !important; }
 .navbar-nav { display: flex; justify-content: center; }
 .navbar-nav .nav-item { margin: 0 10px; }
@@ -779,7 +779,7 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
 .pwa-banner-text span { font-size: .78rem; color: var(--text-secondary, #a1a1a6); line-height: 1.4; }
 .pwa-banner-btn {
     flex-shrink: 0; padding: .45rem 1rem; border: none; border-radius: 8px;
-    background: var(--accent, #41B6E6); color: var(--accent-contrast, #0B0D12);
+    background: var(--accent, var(--accent)); color: var(--accent-contrast, #0B0D12);
     font-family: 'Outfit', sans-serif; font-weight: 600; font-size: .82rem;
     cursor: pointer;
 }

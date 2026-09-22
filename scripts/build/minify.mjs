@@ -129,6 +129,9 @@ async function buildStandingsGraph() {
         platform: 'browser',
         target: ['es2019'],
         minify: true,
+        // ES modules are always decoded as UTF-8; emitting Greek as-is keeps each
+        // letter at 2 bytes instead of a 6-byte \uXXXX escape.
+        charset: 'utf8',
         legalComments: 'none',
         sourcemap: 'external',
         metafile: true,

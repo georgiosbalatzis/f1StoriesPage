@@ -144,7 +144,7 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v40';
+var SW_VERSION    = 'v41';
 var CACHE_SHELL   = 'f1s-shell-v40';
 var CACHE_PAGES   = 'f1s-pages-v40';
 var CACHE_ASSETS  = 'f1s-assets-v40';
@@ -199,7 +199,8 @@ var SHELL_ASSETS = [
   '/assets/fonts/gfs-didot-400-greek-ext.woff2',
   '/assets/fonts/ibm-plex-sans-400-600.woff2',
   '/assets/fonts/ibm-plex-sans-400-600-latin-ext.woff2',
-  '/assets/fonts/ibm-plex-sans-400-600-greek.woff2'
+  '/assets/fonts/ibm-plex-sans-400-600-greek.woff2',
+  '/assets/fonts/ibm-plex-sans-400-600-arrows.woff2'
 ];
 
 var STANDINGS_DATA_ASSETS = [

@@ -104,7 +104,7 @@ export function ensureLoaded(forceReload) {
     }
 
     state.loading = true;
-    setTrustedHtml(debriefTable, '<div class="debrief-loading"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-circle-notch"/></svg><p>Loading Friday Debrief snapshot...</p></div>', 'debrief loading state');
+    setTrustedHtml(debriefTable, '<div class="debrief-loading"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-circle-notch"/></svg><p>Φόρτωση δεδομένων Debrief Παρασκευής…</p></div>', 'debrief loading state');
 
     fetchJSONNoCache(DEBRIEF_CACHE_URL, 8000).then(function(payload) {
         state.snapshot = normalizeDebriefSnapshot(payload);
@@ -119,6 +119,8 @@ export function ensureLoaded(forceReload) {
     });
 }
 
+
+const DEBRIEF_METHOD_NOTE = 'Από τις ολοκληρωμένες συνεδρίες Παρασκευής του OpenF1. Γρήγορος γύρος και ιδανικός γύρος ομάδας από το FP2 ή τα Sprint Qualifying· ρυθμός stint, φθορά ελαστικών και ρυθμός αγώνα από το FP2, ή το FP1 σε σαββατοκύριακα sprint.';
 function fireRendered() {
     if (onRendered) onRendered('debrief');
 }
@@ -321,17 +323,17 @@ function buildDebriefRoundSelector(rounds, selectedRound) {
             + 'R' + esc(roundKey) + ' · ' + esc(round.grandPrix) + ' · ' + esc(formatRaceDate(round))
             + '</option>';
     }).join('');
-    return '<div class="debrief-round-selector"><label class="debrief-round-picker"><span class="debrief-round-label">Select Grand Prix</span><select class="debrief-round-select" data-debrief-select aria-label="Select Friday Debrief round">' + options + '</select></label></div>';
+    return '<div class="debrief-round-selector"><label class="debrief-round-picker"><span class="debrief-round-label">Επιλογή Grand Prix</span><select class="debrief-round-select" data-debrief-select aria-label="Επιλογή γύρου για το Debrief Παρασκευής">' + options + '</select></label></div>';
 }
 
 function buildDebriefViewSwitch() {
-    return '<div class="debrief-view-switch"><div class="debrief-view-tabs" role="tablist" aria-label="Friday Debrief views">'
-        + '<button class="debrief-view-tab' + (state.activeView === 'single-lap' ? ' active' : '') + '" type="button" data-debrief-view="single-lap" role="tab" aria-selected="' + (state.activeView === 'single-lap' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-stopwatch"/></svg> Single Lap</button>'
-        + '<button class="debrief-view-tab' + (state.activeView === 'long-run' ? ' active' : '') + '" type="button" data-debrief-view="long-run" role="tab" aria-selected="' + (state.activeView === 'long-run' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-wave-square"/></svg> Long Run</button>'
-        + '<button class="debrief-view-tab' + (state.activeView === 'tyre-deg' ? ' active' : '') + '" type="button" data-debrief-view="tyre-deg" role="tab" aria-selected="' + (state.activeView === 'tyre-deg' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Tyre Deg</button>'
-        + '<button class="debrief-view-tab' + (state.activeView === 'team-ideal' ? ' active' : '') + '" type="button" data-debrief-view="team-ideal" role="tab" aria-selected="' + (state.activeView === 'team-ideal' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Team Ideal</button>'
-        + '<button class="debrief-view-tab' + (state.activeView === 'corners' ? ' active' : '') + '" type="button" data-debrief-view="corners" role="tab" aria-selected="' + (state.activeView === 'corners' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-road"/></svg> Corners</button>'
-        + '<button class="debrief-view-tab' + (state.activeView === 'race-pace' ? ' active' : '') + '" type="button" data-debrief-view="race-pace" role="tab" aria-selected="' + (state.activeView === 'race-pace' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-gauge-high"/></svg> Race Pace</button>'
+    return '<div class="debrief-view-switch"><div class="debrief-view-tabs" role="tablist" aria-label="Προβολές Debrief Παρασκευής">'
+        + '<button class="debrief-view-tab' + (state.activeView === 'single-lap' ? ' active' : '') + '" type="button" data-debrief-view="single-lap" role="tab" aria-selected="' + (state.activeView === 'single-lap' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-stopwatch"/></svg> Γρήγορος γύρος</button>'
+        + '<button class="debrief-view-tab' + (state.activeView === 'long-run' ? ' active' : '') + '" type="button" data-debrief-view="long-run" role="tab" aria-selected="' + (state.activeView === 'long-run' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-wave-square"/></svg> Ρυθμός stint</button>'
+        + '<button class="debrief-view-tab' + (state.activeView === 'tyre-deg' ? ' active' : '') + '" type="button" data-debrief-view="tyre-deg" role="tab" aria-selected="' + (state.activeView === 'tyre-deg' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Φθορά ελαστικών</button>'
+        + '<button class="debrief-view-tab' + (state.activeView === 'team-ideal' ? ' active' : '') + '" type="button" data-debrief-view="team-ideal" role="tab" aria-selected="' + (state.activeView === 'team-ideal' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Ιδανικός γύρος ομάδας</button>'
+        + '<button class="debrief-view-tab' + (state.activeView === 'corners' ? ' active' : '') + '" type="button" data-debrief-view="corners" role="tab" aria-selected="' + (state.activeView === 'corners' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-road"/></svg> Στροφές</button>'
+        + '<button class="debrief-view-tab' + (state.activeView === 'race-pace' ? ' active' : '') + '" type="button" data-debrief-view="race-pace" role="tab" aria-selected="' + (state.activeView === 'race-pace' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-gauge-high"/></svg> Ρυθμός αγώνα</button>'
         + '</div></div>';
 }
 
@@ -402,7 +404,7 @@ function showDebriefTooltipFromElement(target) {
 
 function buildDebriefPaceChartHTML(title, rows) {
     if (!rows || !rows.length) {
-        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-chart-bar"/></svg><p>No chart data available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-chart-bar"/></svg><p>Δεν υπάρχουν δεδομένα γραφήματος για αυτόν τον γύρο.</p></div>';
     }
 
     const fastest = rows[0].seconds;
@@ -451,12 +453,12 @@ function buildDebriefPaceChartHTML(title, rows) {
 
 function buildDebriefSingleLapHTML(round) {
     if (!round || !round.singleLap.length) {
-        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg><p>No single-lap data available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg><p>Δεν υπάρχουν δεδομένα γρήγορου γύρου για αυτόν τον γύρο.</p></div>';
     }
 
     const rows = round.singleLap.map(function(entry, index) {
         const compoundClass = getDebriefCompoundClass(entry.compound);
-        const gapText = (entry.gap && entry.gap !== 'null') ? entry.gap : (index === 0 ? 'Leader' : '');
+        const gapText = (entry.gap && entry.gap !== 'null') ? entry.gap : (index === 0 ? 'Πρώτος' : '');
         const gapClass = index === 0 ? 'debrief-delta-leader' : 'debrief-gap';
         return '<tr>'
             + '<td>' + (index + 1) + '</td>'
@@ -468,17 +470,17 @@ function buildDebriefSingleLapHTML(round) {
             + '</tr>';
     }).join('');
 
-    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Lap Time</th><th>Gap</th><th>Tyre</th><th>Laps</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Χρόνος γύρου</th><th>Διαφορά</th><th>Ελαστικό</th><th>Γύροι</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
 function buildDebriefLongRunHTML(round) {
     if (!round || !round.longRun.length) {
-        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-wave-square"/></svg><p>No long-run data available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-wave-square"/></svg><p>Δεν υπάρχουν δεδομένα long run για αυτόν τον γύρο.</p></div>';
     }
 
     const rows = round.longRun.map(function(entry, index) {
         const compoundClass = getDebriefCompoundClass(entry.compound);
-        const deltaText = (entry.delta && entry.delta !== 'null') ? entry.delta : (index === 0 ? 'Leader' : '');
+        const deltaText = (entry.delta && entry.delta !== 'null') ? entry.delta : (index === 0 ? 'Πρώτος' : '');
         return '<tr>'
             + '<td>' + (index + 1) + '</td>'
             + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
@@ -489,12 +491,12 @@ function buildDebriefLongRunHTML(round) {
             + '</tr>';
     }).join('');
 
-    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Avg Lap</th><th>Delta</th><th>Tyre</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Μέσος γύρος</th><th>Δέλτα</th><th>Ελαστικό</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
 function buildDebriefTyreDegHTML(round) {
     if (!round || !round.tyreDeg.length) {
-        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg><p>No tyre-degradation data available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg><p>Δεν υπάρχουν δεδομένα φθοράς ελαστικών για αυτόν τον γύρο.</p></div>';
     }
 
     let leaderDeg = NaN;
@@ -529,7 +531,7 @@ function buildDebriefTyreDegHTML(round) {
             + '</tr>';
     }).join('');
 
-    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Driver</th><th>Deg Rate</th><th>Delta</th><th>Tyre</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Φθορά</th><th>Δέλτα</th><th>Ελαστικό</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
 function buildDebriefIdealScatterSVG(rows, title, xMin, xMax) {
@@ -613,7 +615,7 @@ function buildDebriefIdealGapBarsHTML(rows) {
     }).join('');
 
     return '<div class="debrief-ideal-bars-wrap">'
-        + '<div class="debrief-ideal-panel-title">Gap to Ideal Lap</div>'
+        + '<div class="debrief-ideal-panel-title">Διαφορά από τον ιδανικό γύρο</div>'
         + '<div class="debrief-ideal-bars-ytitle">Gap (s)</div>'
         + '<div class="debrief-ideal-bars-chart">'
         + '<div class="debrief-ideal-bars-axis">' + ticksHTML + '</div>'
@@ -624,7 +626,7 @@ function buildDebriefIdealGapBarsHTML(rows) {
 
 function buildDebriefTeamIdealHTML(round) {
     if (!round || !round.singleLap.length) {
-        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg><p>No ideal-lap analysis available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg><p>Δεν υπάρχει ανάλυση ιδανικού γύρου για αυτόν τον γύρο.</p></div>';
     }
 
     const rows = round.singleLap.slice().map(function(entry, index) {
@@ -641,7 +643,7 @@ function buildDebriefTeamIdealHTML(round) {
     });
 
     if (!rows.length) {
-        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg><p>No ideal-lap analysis available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg><p>Δεν υπάρχει ανάλυση ιδανικού γύρου για αυτόν τον γύρο.</p></div>';
     }
 
     const classified = rows.slice().sort(function(a, b) {
@@ -674,18 +676,18 @@ function buildDebriefTeamIdealHTML(round) {
     });
     const chartView = sanitizeDebriefIdealChartView(state.idealChartView);
     const tabsHTML = '<div class="debrief-ideal-switch"><div class="debrief-ideal-tabs" role="tablist" aria-label="Ideal lap analysis charts">'
-        + '<button class="debrief-ideal-tab' + (chartView === 'classified' ? ' active' : '') + '" type="button" data-ideal-view="classified" role="tab" aria-selected="' + (chartView === 'classified' ? 'true' : 'false') + '">Classified Order</button>'
-        + '<button class="debrief-ideal-tab' + (chartView === 'ideal' ? ' active' : '') + '" type="button" data-ideal-view="ideal" role="tab" aria-selected="' + (chartView === 'ideal' ? 'true' : 'false') + '">Ideal Order</button>'
-        + '<button class="debrief-ideal-tab' + (chartView === 'gap' ? ' active' : '') + '" type="button" data-ideal-view="gap" role="tab" aria-selected="' + (chartView === 'gap' ? 'true' : 'false') + '">Gap to Ideal Lap</button>'
+        + '<button class="debrief-ideal-tab' + (chartView === 'classified' ? ' active' : '') + '" type="button" data-ideal-view="classified" role="tab" aria-selected="' + (chartView === 'classified' ? 'true' : 'false') + '">Σειρά κατάταξης</button>'
+        + '<button class="debrief-ideal-tab' + (chartView === 'ideal' ? ' active' : '') + '" type="button" data-ideal-view="ideal" role="tab" aria-selected="' + (chartView === 'ideal' ? 'true' : 'false') + '">Ιδανική σειρά</button>'
+        + '<button class="debrief-ideal-tab' + (chartView === 'gap' ? ' active' : '') + '" type="button" data-ideal-view="gap" role="tab" aria-selected="' + (chartView === 'gap' ? 'true' : 'false') + '">Διαφορά από τον ιδανικό γύρο</button>'
         + '</div></div>';
     const panelHTML = chartView === 'ideal'
-        ? buildDebriefIdealScatterSVG(ideal, 'Ideal Order', minTime, maxTime)
+        ? buildDebriefIdealScatterSVG(ideal, 'Ιδανική σειρά', minTime, maxTime)
         : (chartView === 'gap'
             ? buildDebriefIdealGapBarsHTML(gapRows)
-            : buildDebriefIdealScatterSVG(classified, 'Classified Order', minTime, maxTime));
+            : buildDebriefIdealScatterSVG(classified, 'Σειρά κατάταξης', minTime, maxTime));
 
     return '<div class="debrief-figure">'
-        + '<div class="debrief-figure-title">Ideal Lap Analysis</div>'
+        + '<div class="debrief-figure-title">Ανάλυση ιδανικού γύρου</div>'
         + tabsHTML
         + panelHTML
         + '</div>';
@@ -749,23 +751,23 @@ function buildDebriefCornerPanelHTML(title, rows, metricKey) {
 
 function buildDebriefCornerPerfHTML(round) {
     if (!round || !round.cornerPerformance.length) {
-        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-road"/></svg><p>No corner-performance data available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-road"/></svg><p>Δεν υπάρχουν δεδομένα απόδοσης στις στροφές για αυτόν τον γύρο.</p></div>';
     }
 
     return '<div class="debrief-figure">'
-        + '<div class="debrief-figure-title">Corner Performance</div>'
+        + '<div class="debrief-figure-title">Απόδοση στις στροφές</div>'
         + '<div class="debrief-corner-grid">'
-        + buildDebriefCornerPanelHTML('Slow Corners', round.cornerPerformance, 'slowCorners')
-        + buildDebriefCornerPanelHTML('Medium Corners', round.cornerPerformance, 'mediumCorners')
-        + buildDebriefCornerPanelHTML('Fast Corners', round.cornerPerformance, 'fastCorners')
-        + buildDebriefCornerPanelHTML('Overall', round.cornerPerformance, 'overall')
+        + buildDebriefCornerPanelHTML('Αργές στροφές', round.cornerPerformance, 'slowCorners')
+        + buildDebriefCornerPanelHTML('Μεσαίες στροφές', round.cornerPerformance, 'mediumCorners')
+        + buildDebriefCornerPanelHTML('Γρήγορες στροφές', round.cornerPerformance, 'fastCorners')
+        + buildDebriefCornerPanelHTML('Συνολικά', round.cornerPerformance, 'overall')
         + '</div>'
         + '</div>';
 }
 
 function buildDebriefRacePaceHTML(round) {
     if (!round || !round.racePacePrediction.length) {
-        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-gauge-high"/></svg><p>No race-pace prediction data available for this round.</p></div>';
+        return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-gauge-high"/></svg><p>Δεν υπάρχουν δεδομένα πρόβλεψης ρυθμού αγώνα για αυτόν τον γύρο.</p></div>';
     }
 
     const rows = round.racePacePrediction.map(function(entry) {
@@ -780,7 +782,7 @@ function buildDebriefRacePaceHTML(round) {
         return a.seconds - b.seconds;
     });
 
-    return buildDebriefPaceChartHTML('Race Simulation Pace', rows);
+    return buildDebriefPaceChartHTML('Ρυθμός προσομοίωσης αγώνα', rows);
 }
 
 function renderDebrief(snapshot) {
@@ -808,17 +810,18 @@ function renderDebrief(snapshot) {
     const summaryParts = [];
 
     summaryParts.push(selectedRound.location + ' · ' + formatRaceDate(selectedRound));
-    if (singleLapLeader) summaryParts.push('Single lap: ' + singleLapLeader.code + ' ' + singleLapLeader.lapTime);
-    if (longRunLeader) summaryParts.push('Long run: ' + longRunLeader.code + ' ' + longRunLeader.avgLap);
-    if (tyreDegLeader) summaryParts.push('Tyre deg: ' + tyreDegLeader.code + ' ' + tyreDegLeader.deg + ' s/lap');
-    if (snapshot.source && snapshot.source.note) summaryParts.push(String(snapshot.source.note));
+    if (singleLapLeader) summaryParts.push('Γρήγορος γύρος: ' + singleLapLeader.code + ' ' + singleLapLeader.lapTime);
+    if (longRunLeader) summaryParts.push('Ρυθμός stint: ' + longRunLeader.code + ' ' + longRunLeader.avgLap);
+    if (tyreDegLeader) summaryParts.push('Φθορά ελαστικών: ' + tyreDegLeader.code + ' ' + tyreDegLeader.deg + ' s/lap');
+    // The cache's methodology note is written in English by the data builder; readers get it in Greek.
+    if (snapshot.source) summaryParts.push(DEBRIEF_METHOD_NOTE);
 
     const summaryHTML = '<div class="debrief-summary">'
         + '<div class="debrief-summary-main"><div class="debrief-summary-title">Round ' + esc(String(selectedRound.round)) + ' · ' + esc(selectedRound.grandPrix) + '</div><div class="debrief-summary-sub">' + esc(summaryParts.join(' · ')) + '</div></div>'
         + '<div class="debrief-summary-stats">'
-        + '<div class="debrief-summary-stat"><div class="debrief-summary-label">Single Lap</div><div class="debrief-summary-value">' + selectedRound.singleLap.length + '</div></div>'
-        + '<div class="debrief-summary-stat"><div class="debrief-summary-label">Long Run</div><div class="debrief-summary-value">' + selectedRound.longRun.length + '</div></div>'
-        + '<div class="debrief-summary-stat"><div class="debrief-summary-label">Tyre Deg</div><div class="debrief-summary-value">' + selectedRound.tyreDeg.length + '</div></div>'
+        + '<div class="debrief-summary-stat"><div class="debrief-summary-label">Γρήγορος γύρος</div><div class="debrief-summary-value">' + selectedRound.singleLap.length + '</div></div>'
+        + '<div class="debrief-summary-stat"><div class="debrief-summary-label">Ρυθμός stint</div><div class="debrief-summary-value">' + selectedRound.longRun.length + '</div></div>'
+        + '<div class="debrief-summary-stat"><div class="debrief-summary-label">Φθορά ελαστικών</div><div class="debrief-summary-value">' + selectedRound.tyreDeg.length + '</div></div>'
         + '</div></div>';
 
     setTrustedHtml(debriefTable, summaryHTML
@@ -836,7 +839,7 @@ function renderDebrief(snapshot) {
 
 function showDebriefError() {
     if (!debriefTable) return;
-    setTrustedHtml(debriefTable, '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg><p>Failed to load the Friday Debrief snapshot.</p></div>', 'debrief error state');
+    setTrustedHtml(debriefTable, '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg><p>Δεν ήταν δυνατή η φόρτωση των δεδομένων Debrief Παρασκευής.</p></div>', 'debrief error state');
     fireRendered();
 }
 

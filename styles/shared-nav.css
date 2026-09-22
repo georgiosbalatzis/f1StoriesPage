@@ -546,37 +546,35 @@ body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn):not(.
 
 /* ── Scroll-to-Top Button ─────────────────────── */
 .scroll-to-top-btn {
+    /* Sits centred in the right page gutter (48px at 1200–1475, wider above),
+     * so it never covers the 1476px content column. Colours come from the
+     * shared secondary button role in styles/editorial.css. */
     position: fixed !important;
     bottom: var(--floating-btn-bottom) !important;
-    left: var(--floating-btn-side) !important;
-    right: auto !important;
-    width: var(--floating-btn-size) !important;
-    height: var(--floating-btn-size) !important;
-    border-radius: 50% !important;
-    border: 1px solid rgba(255,255,255,0.14) !important;
-    background: rgba(255,255,255,0.06) !important;
-    background-image: none !important;
-    color: rgba(255,255,255,0.6) !important;
+    left: auto !important;
+    right: max(6px, calc((100vw - 1476px) / 4 + 6px)) !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: var(--radius-control, 2px);
+    border: 1px solid var(--border);
+    background: var(--bg-base);
+    color: var(--text-primary);
     font-size: 0.9rem !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
     cursor: pointer;
     display: none !important;
     align-items: center;
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(10px) scale(0.85);
-    transition: all 0.25s, opacity 0.4s ease, visibility 0.4s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    transition: opacity 0.3s ease, visibility 0.3s ease, color 0.25s, border-color 0.25s;
     z-index: 1050;
     margin-bottom: 0 !important;
-    will-change: transform, opacity;
 }
+/* 44px hit area around the 36px mark. */
+.scroll-to-top-btn::after { content: ''; position: absolute; inset: -4px; }
 .scroll-to-top-btn.visible {
     opacity: 1 !important;
     visibility: visible !important;
-    transform: translateY(0) scale(1) !important;
 }
 body.editorial-page .scroll-to-top-btn.is-suppressed,
 body.editorial-page .scroll-to-top-btn.is-suppressed.visible,
@@ -587,11 +585,6 @@ body.editorial-page .scroll-to-top-btn.is-suppressed.visible,
     visibility: hidden !important;
     pointer-events: none !important;
 }
-.scroll-to-top-btn:hover {
-    color: #41B6E6 !important;
-    border-color: #41B6E6 !important;
-    transform: scale(1.08) !important;
-}
 .scroll-to-top-btn::before { display: none !important; }
 .theme-toggle-btn i,
 .scroll-to-top-btn i {
@@ -599,14 +592,6 @@ body.editorial-page .scroll-to-top-btn.is-suppressed.visible,
     font-size: 0.9rem !important;
     line-height: 1;
 }
-.scroll-to-top-btn:hover i { transform: none !important; }
-[data-theme="light"] .scroll-to-top-btn {
-    background: #FFFFFF !important;
-    border-color: rgba(0,0,0,0.08) !important;
-    color: #86868b !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
-}
-[data-theme="light"] .scroll-to-top-btn:hover { color: #41B6E6 !important; border-color: #41B6E6 !important; }
 
 @media (max-width: 1199px) {
     .scroll-to-top-btn,
@@ -632,8 +617,7 @@ header > .navbar { display: none !important; }
     body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn):not(.theme-toggle-nav-btn) {
         display: none;
     }
-    .theme-toggle-menu-btn,
-    .scroll-to-top-btn {
+    .theme-toggle-menu-btn {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
     }
@@ -653,8 +637,7 @@ header > .navbar { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
     body:not(.home-page):not(.editorial-page) .blog-nav,
     [data-theme="light"] body:not(.home-page):not(.editorial-page) .blog-nav,
-    body:not(.home-page):not(.editorial-page) .theme-toggle-btn,
-    body:not(.home-page):not(.editorial-page) .scroll-to-top-btn {
+    body:not(.home-page):not(.editorial-page) .theme-toggle-btn {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
         background: rgba(17,17,19,0.97) !important;
@@ -662,8 +645,7 @@ header > .navbar { display: none !important; }
     [data-theme="light"] body:not(.home-page):not(.editorial-page) .blog-nav {
         background: rgba(255,255,255,0.98) !important;
     }
-    [data-theme="light"] body:not(.home-page):not(.editorial-page) .theme-toggle-btn,
-    [data-theme="light"] body:not(.home-page):not(.editorial-page) .scroll-to-top-btn {
+    [data-theme="light"] body:not(.home-page):not(.editorial-page) .theme-toggle-btn {
         background: #fff !important;
     }
 }

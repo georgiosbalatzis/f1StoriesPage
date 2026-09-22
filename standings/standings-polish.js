@@ -148,16 +148,21 @@ function formatStandingsDate(value) {
     });
 }
 
-function findClosestBattle(rows) {
+// The headline battle is fought at the sharp end: adjacent pairs within the
+// top 10 where both have scored. Falls back to P1–P2 when nothing qualifies.
+export function findClosestBattle(rows) {
     if (!rows || rows.length < 2) return null;
     let best = null;
-    for (let i = 1; i < rows.length; i++) {
+    for (let i = 1; i < Math.min(rows.length, 10); i++) {
+        if (normalizePoints(rows[i].points || rows[i].points_current) <= 0) continue;
         const current = normalizePoints(rows[i].points || rows[i].points_current);
         const ahead = normalizePoints(rows[i - 1].points || rows[i - 1].points_current);
         const gap = Math.max(0, ahead - current);
         if (!best || gap < best.gap) best = { gap: gap, ahead: rows[i - 1], current: rows[i] };
     }
-    return best;
+    if (best) return best;
+    const leader = normalizePoints(rows[0].points || rows[0].points_current);
+    return { gap: Math.max(0, leader - normalizePoints(rows[1].points || rows[1].points_current)), ahead: rows[0], current: rows[1] };
 }
 
 function renderSummaryCards(target, items) {

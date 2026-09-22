@@ -195,7 +195,7 @@ function formatSessionDateShort(session) {
     const value = session && (session.date_start || session.date || session.date_end);
     const date = value ? new Date(value) : null;
     if (!date || isNaN(date.getTime())) return '';
-    return date.toLocaleDateString('en-GB', {
+    return date.toLocaleDateString('el-GR', {
         day: 'numeric',
         month: 'short'
     }).replace(/\./g, '');

@@ -1,5 +1,5 @@
 const { fs, path, CONFIG, utils, escapeHtmlAttribute, getImageDimensionsForPublicPath } = require('./shared');
-const { getPostTaxonomy } = require('../taxonomy');
+const { getPostTaxonomy, categoryLabel, authorLabel } = require('../taxonomy');
 
 function escapeHtmlText(value) {
     return String(value ?? '')
@@ -116,15 +116,8 @@ function replaceTemplateTokens(templateHtml, tokens) {
 function renderCategoryLinks(categories, className = 'article-category-link') {
     return categories.map(category => {
         const href = `/blog-module/blog/index.html?category=${encodeURIComponent(category)}`;
-        return `<a href="${escapeHtmlAttribute(href)}"${className ? ` class="${className}"` : ''}>${escapeHtmlText(category)}</a>`;
+        return `<a href="${escapeHtmlAttribute(href)}"${className ? ` class="${className}"` : ''}>${escapeHtmlText(categoryLabel(category))}</a>`;
     }).join(' ');
-}
-
-function renderCategoryRail(categories) {
-    return `<div class="article-rail-card article-rail-tags">
-                            <span class="article-rail-label">Κατηγορίες</span>
-                            <div class="article-tag-list">${renderCategoryLinks(categories, 'article-tag-chip')}</div>
-                        </div>`;
 }
 
 function formatArticleDate(post) {
@@ -147,7 +140,7 @@ function renderArticleUpdateStatus(post) {
 function renderArticleTrust(post, categories) {
     const profile = getEditorialProfile(categories);
     const articleDate = formatArticleDate(post);
-    const author = escapeHtmlText(post.author || 'F1 Stories');
+    const author = escapeHtmlText(authorLabel(post.author || 'F1 Stories'));
     const authorHref = escapeHtmlAttribute(authorProfileHref(post.author));
 
     return `<details class="article-trust" aria-label="Συντακτική ταυτότητα, τεκμηρίωση και διορθώσεις"><summary>Συντακτική ταυτότητα &amp; πηγές</summary><div class="article-trust-grid">
@@ -178,6 +171,36 @@ function applyArticleEditorialIdentity(html, profile) {
     return updated;
 }
 
+// The standfirst treatment is earned, not positional: only a real opening
+// paragraph (before any heading, one or two sentences long, not a lead-in
+// ending in ":") gets .article-lead. Longer openings are ordinary body text.
+// Idempotent, so every build can re-evaluate old entries.
+const LEAD_MIN_CHARS = 140;
+const LEAD_MAX_CHARS = 240;
+function markArticleLead(html) {
+    const open = /<div\b[^>]*\bclass="[^"]*\barticle-content\b[^"]*"[^>]*>/.exec(html);
+    if (!open) return html;
+    let updated = html.replace(/(<p\b[^>]*?)\s+class="article-lead"/g, '$1');
+    let pos = open.index + open[0].length;
+    const blockRe = /<(p|h[1-6]|blockquote|figure|div|ul|ol|table)\b[^>]*>/g;
+    for (let step = 0; step < 12; step += 1) {
+        blockRe.lastIndex = pos;
+        const block = blockRe.exec(updated);
+        if (!block || /^h[1-3]$/.test(block[1])) return updated;
+        if (block[1] === 'p') {
+            const close = updated.indexOf('</p>', blockRe.lastIndex);
+            const text = updated.slice(blockRe.lastIndex, close).replace(/<[^>]+>/g, '').replace(/&nbsp;|\s+/g, ' ').trim();
+            if (close === -1 || text.length < LEAD_MIN_CHARS || text.length > LEAD_MAX_CHARS || /:$/.test(text)) return updated;
+            if (/\bclass=/.test(block[0])) return updated; // authored classes stay untouched
+            return updated.slice(0, block.index) + block[0].replace(/^<p\b/, '<p class="article-lead"') + updated.slice(block.index + block[0].length);
+        }
+        const end = updated.indexOf(`</${block[1]}>`, blockRe.lastIndex);
+        if (end === -1) return updated;
+        pos = end;
+    }
+    return updated;
+}
+
 // Older entries can lack source documents. Update only template-owned metadata
 // slots so their body, embedded media, and editorial changes remain byte intact.
 function refreshArticleTaxonomy(html, post) {
@@ -185,7 +208,8 @@ function refreshArticleTaxonomy(html, post) {
         .replace(/(<span class="countdown-timer" id="race-countdown">)--(<\/span>)/g, '$1Σύντομα$2')
         .replace(/(<span id="race-countdown-mobile">)--(<\/span>)/g, '$1Σύντομα$2');
     const { category, categories } = getPostTaxonomy(post);
-    const primary = escapeHtmlText(category);
+    const primary = escapeHtmlText(categoryLabel(category));
+    const authorText = escapeHtmlText(authorLabel(post.author || 'F1 Stories'));
     const profile = getEditorialProfile(categories);
     const trustPanel = renderArticleTrust(post, categories);
     const articleDate = escapeHtmlText(formatArticleDate(post));
@@ -194,16 +218,21 @@ function refreshArticleTaxonomy(html, post) {
         .replace(/(<span class="article-mini-bar__category">)[\s\S]*?(<\/span>)/, `$1${primary}$2`)
         .replace(/(<span class="article-category-pill">)[\s\S]*?(<\/span>)/, `$1${primary}$2`)
         .replace(/(<div class="article-meta">[\s\S]*?<span><svg class="icon" aria-hidden="true"><use href="#fa-tag"\/><\/svg> )[\s\S]*?(<\/span>)/, `$1${renderCategoryLinks(categories)}$2`)
-        .replace(/(<div class="article-rail-meta-list">\s*<span><svg class="icon" aria-hidden="true"><use href="#fa-tag"\/><\/svg> )[\s\S]*?(<\/span>)/, `$1${primary}$2`)
         .replace(/(<div class="article-meta">[\s\S]*?fa-calendar-alt[^>]*><\/svg>\s*)[^<]*(<\/span>)/, `$1${articleDate}$2`)
-        .replace(/(<div class="article-rail-meta-list">[\s\S]*?fa-calendar-alt[^>]*><\/svg>\s*)[^<]*(<\/span>)/, `$1${articleDate}$2`)
-        .replace(/<div class="article-rail-card article-rail-tags"[^>]*>[\s\S]*?<div class="article-tag-list"[^>]*>[\s\S]*?<\/div>\s*<\/div>/, renderCategoryRail(categories))
+        // The cover already carries category, date and reading time; the rail keeps
+        // related stories and a short share set only.
+        .replace(/\s*<div class="article-rail-card article-rail-tags"[^>]*>[\s\S]*?<div class="article-tag-list"[^>]*>[\s\S]*?<\/div>\s*<\/div>/, '')
+        .replace(/\s*<div class="article-rail-card article-rail-meta">\s*<span class="article-rail-label">[^<]*<\/span>\s*<div class="article-rail-meta-list">[\s\S]*?<\/div>\s*<\/div>/, '')
+        .replace(/\n[ \t]*<(?:a|button)\b[^\n]*class="share-btn (?:threads|instagram|telegram)"[^\n]*/g, '')
         .replace(/(<span class="article-mini-bar__category">)[\s\S]*?(<\/span>)/, `$1${primary}$2`)
         .replace(/(<div class="article-edition"><span>[\s\S]*?<\/span><span>)[\s\S]*?(<\/span><\/div>)/, `$1${escapeHtmlText(profile.label)}$2`)
         .replace(/(<span class="article-rail-label">)Article(<\/span>)/i, `$1${escapeHtmlText(profile.label)}$2`)
-        .replace(/(<span class="article-rail-label">)Related(<\/span>)/i, '$1ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ$2');
+        .replace(/(<span class="article-rail-label">)Related(<\/span>)/i, '$1ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ$2')
+        .replace(/(<a href="[^"]*" class="article-author-link">)[^<]*(<\/a>)/, `$1${authorText}$2`)
+        .replace(/(<p class="author-name" id="author-name"><a href="[^"]*">)[^<]*(<\/a><\/p>)/, `$1${authorText}$2`);
 
     updated = applyArticleEditorialIdentity(updated, profile);
+    updated = markArticleLead(updated);
     const trustPattern = /<(?:div|section|details)\b[^>]*\bclass=(["'])[^"']*\barticle-trust\b[^"']*\1[^>]*>[\s\S]*?(?=\s*<div\b[^>]*\bclass=(["'])[^"']*\barticle-content\b[^"']*\2[^>]*>)/i;
     if (trustPattern.test(updated)) {
         updated = updated.replace(trustPattern, trustPanel);
@@ -254,8 +283,8 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_TITLE_ATTR: escapeHtmlAttribute(postData.title),
         ARTICLE_TITLE_JSON: jsonScriptLiteral(postData.title),
         ARTICLE_TITLE_PARAM: encodeURIComponent(String(postData.title ?? '')),
-        ARTICLE_AUTHOR_TEXT: escapeHtmlText(postData.author),
-        ARTICLE_AUTHOR_ATTR: escapeHtmlAttribute(postData.author),
+        ARTICLE_AUTHOR_TEXT: escapeHtmlText(authorLabel(postData.author)),
+        ARTICLE_AUTHOR_ATTR: escapeHtmlAttribute(authorLabel(postData.author)),
         ARTICLE_AUTHOR_JSON: jsonScriptLiteral(postData.author),
         ARTICLE_AUTHOR_PROFILE_HREF: escapeHtmlAttribute(authorProfileHref(postData.author)),
         ARTICLE_DATE_ISO_JSON: jsonScriptLiteral(postData.dateISO),
@@ -277,12 +306,11 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_HERO_AVIF_SOURCE: heroAvifSource,
         ARTICLE_ID_JSON: jsonScriptLiteral(folderName),
         ARTICLE_ID: escapeHtmlAttribute(folderName),
-        ARTICLE_CATEGORY_TEXT: escapeHtmlText(taxonomy.category),
+        ARTICLE_CATEGORY_TEXT: escapeHtmlText(categoryLabel(taxonomy.category)),
         ARTICLE_CATEGORIES_JSON: JSON.stringify(taxonomy.categories),
         ARTICLE_EDITORIAL_KIND: escapeHtmlAttribute(editorialProfile.kind),
         ARTICLE_EDITORIAL_LABEL: escapeHtmlText(editorialProfile.label),
         ARTICLE_CATEGORY_LINKS: renderCategoryLinks(taxonomy.categories),
-        ARTICLE_CATEGORY_RAIL: renderCategoryRail(taxonomy.categories),
         ARTICLE_CONTENT: postData.content || '',
         ARTICLE_URL_ATTR: escapeHtmlAttribute(articleUrl),
         ARTICLE_URL_JSON: jsonScriptLiteral(articleUrl),
@@ -295,7 +323,7 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         .replace(/src="\/images\/authors\/default\.webp"/, `src="/images/authors/${escapeHtmlAttribute(authorImagePath)}"`);
 
     if (!fs.existsSync(CONFIG.OUTPUT_HTML_DIR)) utils.ensureDirectory(CONFIG.OUTPUT_HTML_DIR);
-    const output = blogHtml.replace(/[ \t]+$/gm, '');
+    const output = markArticleLead(blogHtml).replace(/[ \t]+$/gm, '');
     fs.writeFileSync(path.join(entryPath, 'article.html'), output);
     return output;
 }
@@ -305,5 +333,6 @@ module.exports = {
     refreshArticleTaxonomy,
     getEditorialProfile,
     normalizeSourceReferences,
-    renderArticleSources
+    renderArticleSources,
+    markArticleLead
 };

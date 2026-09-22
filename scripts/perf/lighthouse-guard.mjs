@@ -270,7 +270,8 @@ async function runLighthouse(route, origin, budget, outputDir, chromePort) {
         '--output=json',
         `--output-path=${outputPath}`
     ];
-    if (budget.preset) args.push(`--preset=${budget.preset}`);
+    // Lighthouse 12 emulates mobile by default and rejects --preset=mobile.
+    if (budget.preset && budget.preset !== 'mobile') args.push(`--preset=${budget.preset}`);
 
     if (chromePort) {
         args.push(`--port=${chromePort}`, '--disable-storage-reset');

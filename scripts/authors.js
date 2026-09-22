@@ -28,8 +28,8 @@
     selected.classList.add('is-selected');
     selected.setAttribute('aria-current', 'page');
 
-    var name = selected.getAttribute('data-author-name') || '';
     var heading = selected.querySelector('.author-profile__name');
+    var name = heading ? heading.textContent.trim() : '';
     if (name && heading) document.title = name + ' | F1 Stories';
 
     var back = document.querySelector('[data-author-directory-back]');

@@ -7,6 +7,8 @@ body.editorial-page,
     --paper: #e9e3d6;
     --ink: #20251f;
     --signal: #ed4c32;
+    /* Text set on --signal: the darkest brand ink, so 12px labels clear WCAG AA (4.77:1). */
+    --signal-ink: #17191b;
     --bg-base: #1b1a19;
     --bg-surface: #242321;
     --bg-surface-alt: #2e2c29;
@@ -26,6 +28,11 @@ body.editorial-page,
     --space-section: clamp(40px, 6vw, 80px);
     --radius-media: 4px;
     --button-radius: 2px;
+    --radius-control: 2px;
+    /* The one bottom-right cut corner on photographs and editorial panels. */
+    --cut-sm: 24px;
+    --cut-md: 40px;
+    --cut-lg: 64px;
     --shadow-sm: none;
     --shadow-md: none;
     --ease-editorial: cubic-bezier(.22,.68,0,1.02);
@@ -103,6 +110,8 @@ body.editorial-page::after {
 .editorial-page :is(h1, h2, h3, p) { margin-top: 0; }
 .editorial-page h2 { display: block; font: 600 clamp(1.8rem, 3vw, 3rem)/1.2 var(--font-body); padding: 0; margin-bottom: 20px; border: 0; letter-spacing: -.025em; }
 .editorial-page h3 { color: inherit; }
+/* Decks and intros avoid one-word last lines. */
+body.editorial-page :is(.section-intro__text, .hero-subtitle, .hero-description, .archive-subtitle, .archive-masthead-note > p, .contact-block__intro, .authors-intro p, .standings-masthead-description, .legal-subtitle) { text-wrap: pretty; }
 .editorial-page a { text-decoration: none; }
 .editorial-page ::selection { color: var(--paper); background: var(--ink); }
 .editorial-page :focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
@@ -312,6 +321,16 @@ body.editorial-page .blog-nav-mobile .theme-toggle-menu-btn:focus-visible {
     border-bottom-color: var(--nav-border);
 }
 
+/* Mobile menu: text rows like the desktop nav. External destinations carry
+ * the site's ↗ mark; the bar toggle is the single theme control. */
+body.editorial-page .blog-nav-mobile-link .icon { display: none; }
+body.editorial-page .blog-nav-mobile-link[target="_blank"]::after {
+    content: '↗';
+    margin-left: auto;
+    color: var(--text-secondary);
+}
+body.editorial-page .blog-nav:has(.theme-toggle-nav-btn) .blog-nav-mobile .theme-toggle-menu-btn { display: none; }
+
 @media (max-width: 1199px) and (min-width: 992px) {
     body.editorial-page .blog-nav-inner { gap: 1.25rem; }
     body.editorial-page .blog-nav-links { gap: 1rem; }
@@ -368,7 +387,7 @@ body.editorial-page footer p {
     margin: 0;
     max-width: 42ch;
     color: var(--paper, #e9e3d6);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     line-height: 1.65;
     text-align: left;
 }
@@ -508,12 +527,65 @@ body.editorial-page,
 }
 [data-theme="light"] body.editorial-page { color-scheme: light; --bg-overlay: #f2eee4f2; }
 body.editorial-page :is(button, input, textarea, select, .skip-link) { font-family: var(--font-body); }
+body.editorial-page .skip-link { border-radius: 0 0 var(--radius-control) var(--radius-control); }
 body.editorial-page :is(.background, .streak) { display: none; }
 body.editorial-page .cookie-banner { background: var(--bg-base); color: var(--text-primary); border-color: var(--border); border-radius: 0; box-shadow: 0 -3px 15px #00000012; }
-body.editorial-page .cookie-btn { border-radius: 2px; font-family: var(--font-body); }
-body.editorial-page .cookie-btn.accept-btn { color: var(--ink); background: var(--signal); }
+
+/* Buttons: three roles shared by every route. Primary is the ink block that
+ * turns signal on hover; secondary is a matte 1px-ruled control; the text
+ * role (.cta-secondary) stays an underlined link in home.css. */
+body.editorial-page {
+    --btn-primary-bg: var(--text-primary);
+    --btn-primary-fg: var(--ink);
+}
+[data-theme="light"] body.editorial-page {
+    --btn-primary-bg: var(--ink);
+    --btn-primary-fg: var(--paper);
+}
+body.editorial-page :is(.cta-primary, .contact-submit, .cookie-btn.accept-btn, .page-btn.active) {
+    color: var(--btn-primary-fg);
+    background: var(--btn-primary-bg);
+    border: 1px solid var(--btn-primary-bg);
+    border-radius: var(--radius-control);
+    font-family: var(--font-body);
+    font-weight: 600;
+    box-shadow: none;
+    transform: none;
+    transition: color .25s, background-color .25s, border-color .25s;
+}
+body.editorial-page :is(.cta-primary, .contact-submit, .cookie-btn.accept-btn, .page-btn.active):is(:hover, :focus-visible):not(:disabled) {
+    color: var(--signal-ink);
+    background: var(--signal);
+    border-color: var(--signal);
+    box-shadow: none;
+    transform: none;
+}
+body.editorial-page :is(.cookie-btn:not(.accept-btn), .page-btn:not(.active), .filter-reset-btn, .share-btn, .retry-btn, .comments-load-btn, .gallery-carousel-prev, .gallery-carousel-next, .scroll-to-top-btn) {
+    color: var(--text-primary);
+    background: var(--bg-base);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    font-family: var(--font-body);
+    font-weight: 500;
+    box-shadow: none;
+    opacity: 1;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transition: color .25s, border-color .25s;
+}
+body.editorial-page :is(.cookie-btn:not(.accept-btn), .page-btn:not(.active), .filter-reset-btn, .share-btn, .retry-btn, .comments-load-btn, .gallery-carousel-prev, .gallery-carousel-next, .scroll-to-top-btn):is(:hover, :focus-visible):not(:disabled) {
+    color: var(--accent-readable);
+    background: var(--bg-base);
+    border-color: var(--accent-readable);
+    box-shadow: none;
+}
+body.editorial-page :is(.page-btn, .share-btn, .retry-btn, .gallery-carousel-prev, .gallery-carousel-next, .cookie-btn):disabled {
+    color: var(--text-secondary);
+    border-color: var(--border);
+    opacity: .45;
+    cursor: not-allowed;
+}
 body.editorial-page .cookie-header h3, body.editorial-page .cookie-banner a { color: var(--accent); }
-body.editorial-page .scroll-to-top-btn { color: var(--ink); background: var(--paper); border: 1px solid var(--border); border-radius: 2px; box-shadow: none; }
 body.editorial-page .reading-progress-bar { background: var(--signal); }
 body.editorial-page .blog-nav :focus-visible { outline-color: var(--ink); }
 @media (max-width: 1199px) { body.editorial-page .container { padding-inline: 32px; } }
@@ -580,7 +652,7 @@ body.editorial-page :is(.blog-nav-hamburger, .theme-toggle-nav-btn) { min-width:
     color: #20251f;
     color-scheme: light;
     border: 1px solid #c8c8b9;
-    border-radius: 4px;
+    border-radius: var(--radius-media);
     overflow: hidden;
 }
 .editorial-page .sponsor-logo {
@@ -628,24 +700,20 @@ body.editorial-page :is(.blog-nav-hamburger, .theme-toggle-nav-btn) { min-width:
     .editorial-page .sponsor-logo { height: 100px; min-height: 100px; padding: 18px 14px; }
 }
 
-/* Secondary article utilities sit on the same charcoal surfaces as the
- * reading canvas. Keep the artwork that needs contrast on a small light mat. */
 body.editorial-page .scroll-to-top-btn.visible {
     display: flex !important; /* utility-important */
 }
 
-:root:not([data-theme="light"]) body.editorial-page .scroll-to-top-btn {
-    color: var(--text-primary) !important; /* utility-important */
-    background: var(--bg-surface-alt) !important; /* utility-important */
-    border-color: var(--border) !important; /* utility-important */
-    box-shadow: 0 8px 22px #00000066 !important; /* utility-important */
-    backdrop-filter: none !important; /* utility-important */
-    -webkit-backdrop-filter: none !important; /* utility-important */
-}
 
-:root:not([data-theme="light"]) body.editorial-page .scroll-to-top-btn:hover,
-:root:not([data-theme="light"]) body.editorial-page .scroll-to-top-btn:focus-visible {
-    color: var(--accent-contrast) !important; /* utility-important */
-    background: var(--accent-readable) !important; /* utility-important */
-    border-color: var(--accent-readable) !important; /* utility-important */
-}
+/* Colophon: the masthead's wordmark and a section index close every page. */
+body.editorial-page footer .footer-colophon { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 24px; padding-bottom: 18px; border-bottom: 1px solid rgba(233, 227, 214, 0.18); }
+body.editorial-page footer .footer-wordmark { color: var(--paper); font: 700 1.75rem/1 var(--font-brand); letter-spacing: -.035em; text-decoration: none; }
+body.editorial-page footer .footer-mission { max-width: none; color: #c0bfb2; font-size: .875rem; }
+body.editorial-page footer .footer-index { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 24px; }
+body.editorial-page footer .footer-index a { display: inline-flex; align-items: center; min-height: 44px; color: var(--paper); font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; background: linear-gradient(var(--signal), var(--signal)) 0 calc(100% - 10px) / 0 2px no-repeat; transition: background-size .25s; }
+body.editorial-page footer .footer-index a:is(:hover, :focus-visible) { background-size: 100% 2px; }
+@media (prefers-reduced-motion: reduce) { body.editorial-page footer .footer-index a { transition: none; } }
+body.editorial-page footer .footer-wordmark .editorial-accent { color: var(--signal); }
+
+/* Standalone text links keep a 24px minimum target (WCAG 2.2 AA 2.5.8) without changing their type. */
+body.editorial-page :is(.authors-directory-link, .team-member__name a, .footer-link, .authors-intro__data-link, .author-profile__archive, .author-profile__social, .author-profile-link, .article-author-link, .author-name a, .article-trust strong a, .article-trust__corrections a) { display: inline-flex; align-items: center; min-height: 24px; }

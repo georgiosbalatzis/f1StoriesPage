@@ -32,9 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
     var fullPostsLoaded = false;
     var fullPostsPromise = null;
     var staticFirstPageReady = !!(grid && grid.querySelector('.article-card') && !grid.querySelector('.skeleton-card'));
-    var DATE_FORMATTER = typeof Intl !== 'undefined'
-        ? new Intl.DateTimeFormat('el-GR', { day: 'numeric', month: 'long', year: 'numeric' })
-        : null;
 
     function createIcon(iconId) {
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -63,6 +60,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!img || img.tagName !== 'IMG') return;
             var currentSrc = img.getAttribute('src') || img.getAttribute('data-src') || '';
             var fallbackSrc = img.getAttribute('data-fallback-src') || '';
+            // A failed responsive candidate: drop srcset and retry the plain card once.
+            if (img.hasAttribute('srcset')) {
+                img.removeAttribute('srcset');
+                if (currentSrc) { img.src = currentSrc; return; }
+            }
             if (/-card\.webp(?:\?.*)?$/i.test(currentSrc)) {
                 img.removeAttribute('data-src');
                 img.src = currentSrc.replace(/-card\.webp(\?.*)?$/i, '.webp$1');
@@ -131,18 +133,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return text;
     }
-    function parsePostDate(value) {
-        if (!value) return null;
-        var parsed = value.length === 10 ? new Date(value + 'T12:00:00') : new Date(value);
-        return isNaN(parsed.getTime()) ? null : parsed;
-    }
     function formatPostDate(post) {
-        var parsed = parsePostDate(post.date || post.displayDate || '');
-        if (parsed && DATE_FORMATTER) return DATE_FORMATTER.format(parsed);
-        return post.displayDate || post.date || '';
-    }
-    function formatReadingTime(value) {
-        return String(value || '').replace(/\bmin\b/gi, 'λεπ');
+        return taxonomy.formatDate(post.date || '') || post.displayDate || '';
     }
 
     // Keep archive cards recognisable at a glance while the public taxonomy
@@ -171,7 +163,9 @@ document.addEventListener('DOMContentLoaded', function() {
             post.title,
             post.excerpt,
             post.author,
+            taxonomy.authorLabel(post.author),
             (post.categories || []).join(' '),
+            (post.categories || []).map(taxonomy.categoryLabel).join(' '),
             (post.tags || []).join(' '),
             post.displayDate,
             post.date
@@ -250,8 +244,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateActiveFilterSummary() {
         if (!activeFilterSummary) return;
         var parts = [];
-        if (activeAuthor !== 'all') parts.push({ kind: 'author', label: 'Συντάκτης: ' + activeAuthor });
-        if (activeCategory !== 'all') parts.push({ kind: 'category', label: 'Κατηγορία: ' + activeCategory });
+        if (activeAuthor !== 'all') parts.push({ kind: 'author', label: 'Συντάκτης: ' + taxonomy.authorLabel(activeAuthor) });
+        if (activeCategory !== 'all') parts.push({ kind: 'category', label: 'Κατηγορία: ' + taxonomy.categoryLabel(activeCategory) });
         if (activeQuery) parts.push({ kind: 'query', label: 'Αναζήτηση: ' + activeQuery });
         activeFilterSummary.replaceChildren.apply(activeFilterSummary, parts.map(function(filter) {
             var chip = document.createElement('button');
@@ -327,15 +321,15 @@ document.addEventListener('DOMContentLoaded', function() {
             button.type = 'button';
             button.setAttribute('data-category', name);
             button.setAttribute('aria-pressed', name === activeCategory ? 'true' : 'false');
-            button.textContent = name;
+            button.textContent = taxonomy.categoryLabel(name);
             nodes.push(button);
         });
         categoryStrip.replaceChildren.apply(categoryStrip, nodes);
     }
     function getResultsSummary(count) {
         var parts = [];
-        if (activeAuthor !== 'all') parts.push('Αρθρογράφος: ' + activeAuthor);
-        if (activeCategory !== 'all') parts.push('Κατηγορία: ' + activeCategory);
+        if (activeAuthor !== 'all') parts.push('Αρθρογράφος: ' + taxonomy.authorLabel(activeAuthor));
+        if (activeCategory !== 'all') parts.push('Κατηγορία: ' + taxonomy.categoryLabel(activeCategory));
         if (activeQuery) parts.push('Αναζήτηση: "' + activeQuery + '"');
         return count + ' ' + (count === 1 ? 'άρθρο' : 'άρθρα') + (parts.length ? ' · ' + parts.join(' · ') : '');
     }
@@ -402,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
         list.slice(0, 2).forEach(function(c) {
             var span = document.createElement('span');
             span.className = 'article-card-cat';
-            span.textContent = c;
+            span.textContent = taxonomy.categoryLabel(c);
             container.appendChild(span);
         });
         if (list.length > 2) {
@@ -425,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var mediaClasses = editorialCardMediaClasses(post);
         var img = post.thumbnail || post.image || '';
         var date = formatPostDate(post);
-        var author = post.author || 'F1 Stories';
+        var author = taxonomy.authorLabel(post.author || 'F1 Stories');
         var excerpt = post.excerpt || '';
         var readMins = post.readingTime || post.readTime || '';
         var imageWidth = parseInt(post.thumbnailWidth, 10) || 400;
@@ -434,7 +428,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var imageClass = 'article-card-img' + (isLcpImage ? ' loaded' : '');
         if (!readMins && post.wordCount) { readMins = Math.max(1, Math.ceil(post.wordCount / 200)) + ' min'; }
         if (!readMins && excerpt) { readMins = Math.max(2, Math.ceil(Math.round(excerpt.split(/\s+/).length * 10) / 200)) + ' min'; }
-        readMins = formatReadingTime(readMins);
+        readMins = taxonomy.formatReadingTime(readMins);
 
         var stagger = window.innerWidth < 768 ? 0.03 : 0.06;
         var animationDelay = Math.round(idx * stagger * 100) / 100;
@@ -455,11 +449,17 @@ document.addEventListener('DOMContentLoaded', function() {
         image.className = imageClass;
         image.width = imageWidth;
         image.height = imageHeight;
+        // The curated lead is drawn large, so it may use the 1600w original.
+        var isLead = idx === 0 && isDefaultCuratedState();
+        var srcset = taxonomy.cardImageSrcset(img, isLead);
+        if (srcset) image.sizes = isLead ? taxonomy.CARD_SIZES.archiveLead : taxonomy.CARD_SIZES.archiveCard;
         if (img && isLcpImage) {
+            if (srcset) image.srcset = srcset;
             image.src = img;
             image.loading = 'eager';
             image.fetchPriority = 'high';
         } else if (img) {
+            if (srcset) image.setAttribute('data-srcset', srcset);
             image.setAttribute('data-src', img);
             image.loading = 'lazy';
         } else {
@@ -506,7 +506,7 @@ document.addEventListener('DOMContentLoaded', function() {
         footer.className = 'article-card-footer';
         var readMore = document.createElement('span');
         readMore.className = 'article-card-read';
-        readMore.append(document.createTextNode('Διαβάστε περισσότερα '), createIcon('fa-arrow-right'));
+        readMore.append(document.createTextNode('Διάβασε '), createIcon('fa-arrow-right'));
         footer.append(readMore, createCardCategories(post.categories));
 
         var content = document.createElement('div');
@@ -541,6 +541,8 @@ document.addEventListener('DOMContentLoaded', function() {
             var src = img.getAttribute('data-src');
             if (!src) return;
             img.decoding = 'async';
+            var srcset = img.getAttribute('data-srcset');
+            if (srcset) { img.srcset = srcset; img.removeAttribute('data-srcset'); }
             img.src = src; img.removeAttribute('data-src');
             img.addEventListener('load', function() { img.classList.add('loaded'); }, { once: true });
             img.addEventListener('error', function() { img.classList.add('loaded'); }, { once: true });

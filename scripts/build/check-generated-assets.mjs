@@ -30,4 +30,29 @@ if (missing.length) {
     process.exit(1);
 }
 
-console.log(`Generated asset check passed (${REQUIRED_ASSETS.length} required files).`);
+// Every <use href="#fa-*"> in a shell with an inlined sprite must resolve to a
+// <symbol> in that same file; a stale sprite renders as an empty icon.
+const SHELLS = [
+    'index.html', 'offline.html', '404.html', 'authors/index.html', 'standings/index.html',
+    'blog-module/blog/index.html', 'blog-module/blog/template.html', 'privacy/privacy.html',
+    'privacy/terms.html', 'generate.html', 'housekeeping.html', 'statistics.html'
+];
+const unresolved = [];
+for (const relPath of SHELLS) {
+    const absPath = path.join(REPO_ROOT, relPath);
+    if (!fs.existsSync(absPath)) continue;
+    const html = fs.readFileSync(absPath, 'utf8');
+    if (!html.includes('f1s:icon-sprite:begin')) continue;
+    const symbols = new Set([...html.matchAll(/<symbol\s+id="(fa-[a-z0-9-]+)"/g)].map(m => m[1]));
+    const used = new Set([...html.matchAll(/<use\s+href="#(fa-[a-z0-9-]+)"/g)].map(m => m[1]));
+    for (const id of used) if (!symbols.has(id)) unresolved.push(`${relPath}: #${id}`);
+}
+
+if (unresolved.length) {
+    console.error('Icon references without an inlined <symbol>:');
+    unresolved.forEach(item => console.error(`- ${item}`));
+    console.error('Run `npm run build:assets` to rebuild and re-inline the sprite.');
+    process.exit(1);
+}
+
+console.log(`Generated asset check passed (${REQUIRED_ASSETS.length} required files, sprite references resolved).`);
