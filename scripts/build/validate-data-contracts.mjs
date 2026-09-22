@@ -347,7 +347,7 @@ function validateBlogFirstPage() {
 
 function validateHomeLatest() {
     const relPath = 'blog-module/home-latest.json';
-    const posts = requireArray(readJson(relPath), relPath, { maxLength: 3 });
+    const posts = requireArray(readJson(relPath), relPath, { maxLength: 4 });
     posts.forEach((post, index) => validateIndexPost(post, `${relPath}[${index}]`, { homeLatest: true }));
 }
 

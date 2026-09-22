@@ -80,8 +80,23 @@ async function main() {
         writeIfChanged(path.join(FONT_DIR, 'licenses', `${font.upstream}-OFL.txt`), license);
     }
 
+    // The editorial arrows (← → ↔ ↗ ↙ …) are outside Google's Plex latin subset,
+    // so they fell back to platform fonts. Fetch just the Arrows block by text.
+    const arrowText = Array.from({ length: 10 }, (_, i) => String.fromCodePoint(0x2190 + i)).join('');
+    const arrowCss = (await download(`https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400..600&text=${encodeURIComponent(arrowText)}&display=swap`)).toString('utf8');
+    const arrowBlock = arrowCss.match(/@font-face\s*\{[^}]*\}/)?.[0];
+    const arrowUrl = arrowBlock?.match(/url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)/)?.[1];
+    if (!arrowUrl) throw new Error('Missing IBM Plex Sans arrows subset');
+    const arrowData = await download(arrowUrl);
+    if (arrowData.subarray(0, 4).toString('ascii') !== 'wOF2') throw new Error(`Invalid WOFF2: ${arrowUrl}`);
+    const arrowFile = 'ibm-plex-sans-400-600-arrows.woff2';
+    const arrowHash = crypto.createHash('sha256').update(arrowData).digest('hex').slice(0, 8);
+    writeIfChanged(path.join(FONT_DIR, arrowFile), arrowData);
+    faces.push('/* IBM Plex Sans — arrows */', arrowBlock.replace(arrowUrl, `/assets/fonts/${arrowFile}?v=${arrowHash}`), '');
+    totalBytes += arrowData.length;
+
     writeIfChanged(path.join(ROOT, 'styles/home-fonts.css'), faces.join('\n'));
-    console.log(`Homepage fonts refreshed: ${(totalBytes / 1024).toFixed(1)} KB across 7 WOFF2 subsets.`);
+    console.log(`Homepage fonts refreshed: ${(totalBytes / 1024).toFixed(1)} KB across 8 WOFF2 subsets.`);
 }
 
 main().catch(error => {

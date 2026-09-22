@@ -328,7 +328,7 @@ function renderPitStopsSeasonContent(seasonCache) {
     let html = disclaimer;
 
     if (teamBest.length) {
-        html += '<p class="pit-stops-section-title"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-flag-checkered"/></svg>Team Season Best</p><div class="pit-stops-team-rows">';
+        html += '<p class="pit-stops-section-title"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-flag-checkered"/></svg>Ρεκόρ σεζόν ομάδων</p><div class="pit-stops-team-rows">';
         const teamFastest = teamBest[0].duration;
         teamBest.forEach(function(entry, idx) {
             const rgb = hexToRgbChannels(entry.teamColor);
@@ -354,7 +354,7 @@ function renderPitStopsSeasonContent(seasonCache) {
     }
 
     if (driverBest.length) {
-        html += '<p class="pit-stops-section-title" style="margin-top:1.4rem;"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-helmet-safety"/></svg>Driver Season Best</p><div class="pit-stops-rows">';
+        html += '<p class="pit-stops-section-title" style="margin-top:1.4rem;"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-helmet-safety"/></svg>Ρεκόρ σεζόν οδηγών</p><div class="pit-stops-rows">';
         const driverFastest = driverBest[0].duration;
         driverBest.forEach(function(entry, idx) {
             const modifiedEntry = Object.assign({}, entry, {
@@ -440,8 +440,8 @@ function renderPitStops(raceData, race, races) {
             + '<div class="pit-stops-summary-main"><div class="pit-stops-summary-title">Ταχύτερη διέλευση pit lane: ' + esc(p1.code) + ' — ' + p1.duration.toFixed(1) + 's</div>'
             + '<div class="pit-stops-summary-sub">' + esc(p1.fullName) + ' · ' + esc(p1.teamName) + ' · Lap ' + esc(String(p1.lap)) + '</div></div>'
             + '<div class="pit-stops-summary-stats">'
-            + '<div class="pit-stops-summary-stat"><div class="pit-stops-summary-label">Drivers</div><div class="pit-stops-summary-value">' + sorted.length + '</div></div>'
-            + '<div class="pit-stops-summary-stat"><div class="pit-stops-summary-label">Total Stops</div><div class="pit-stops-summary-value">' + totalStops + '</div></div>'
+            + '<div class="pit-stops-summary-stat"><div class="pit-stops-summary-label">Οδηγοί</div><div class="pit-stops-summary-value">' + sorted.length + '</div></div>'
+            + '<div class="pit-stops-summary-stat"><div class="pit-stops-summary-label">Συνολικές στάσεις</div><div class="pit-stops-summary-value">' + totalStops + '</div></div>'
             + '</div></div>';
 
         html += '<div class="pit-stops-rows">';

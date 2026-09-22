@@ -34,29 +34,29 @@
 
     <link rel="dns-prefetch" href="https://api.jolpi.ca">
     <link rel="dns-prefetch" href="https://api.openf1.org">
-    <link rel="modulepreload" href="/standings/standings.min.js?v=18337583">
+    <link rel="modulepreload" href="/standings/standings.min.js?v=2d05248a">
     <link rel="preload" href="/standings/standings-cache.json" as="fetch" crossorigin="anonymous">
-    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=c0939d6f">
+    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/barlow-condensed-700.woff2?v=e3e520cb" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=9c6508cb">
-    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=22d9c4c9">
+    <link rel="stylesheet" href="/styles.min.css?v=516859ca">
+    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=73b1e224">
 
     <script defer src="/scripts/analytics.min.js?v=98a1ee70"></script>
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
 
-    <link rel="stylesheet" href="standings.min.css?v=ff728c56">
+    <link rel="stylesheet" href="standings.min.css?v=6bed97be">
     <link rel="stylesheet" href="standings-polish.min.css?v=feddf245">
-    <noscript><link rel="stylesheet" href="standings.min.css?v=ff728c56"></noscript>
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=3fed89a2">
-    <link rel="stylesheet" href="/standings/standings-editorial.min.css?v=9f09e311">
+    <noscript><link rel="stylesheet" href="standings.min.css?v=6bed97be"></noscript>
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=b0ec5f10">
+    <link rel="stylesheet" href="/standings/standings-editorial.min.css?v=e0707bd6">
 </head>
 <body class="editorial-page standings-page">
 <!-- f1s:icon-sprite:begin -->
-<div hidden data-hash="94e0743f"><svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+<div hidden data-hash="470ee70e"><svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
   <symbol id="fa-arrow-left" viewBox="0 0 448 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></symbol>
   <symbol id="fa-arrow-right" viewBox="0 0 448 512"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></symbol>
   <symbol id="fa-arrow-trend-up" viewBox="0 0 576 512"><path d="M384 160c-17.7 0-32-14.3-32-32s14.3-32 32-32H544c17.7 0 32 14.3 32 32V288c0 17.7-14.3 32-32 32s-32-14.3-32-32V205.3L342.6 374.6c-12.5 12.5-32.8 12.5-45.3 0L192 269.3 54.6 406.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160c12.5-12.5 32.8-12.5 45.3 0L320 306.7 466.7 160H384z"/></symbol>
@@ -101,6 +101,7 @@
   <symbol id="fa-newspaper" viewBox="0 0 512 512"><path d="M96 96c0-35.3 28.7-64 64-64H448c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H80c-44.2 0-80-35.8-80-80V128c0-17.7 14.3-32 32-32s32 14.3 32 32V400c0 8.8 7.2 16 16 16s16-7.2 16-16V96zm64 24v80c0 13.3 10.7 24 24 24H296c13.3 0 24-10.7 24-24V120c0-13.3-10.7-24-24-24H184c-13.3 0-24 10.7-24 24zm208-8c0 8.8 7.2 16 16 16h48c8.8 0 16-7.2 16-16s-7.2-16-16-16H384c-8.8 0-16 7.2-16 16zm0 96c0 8.8 7.2 16 16 16h48c8.8 0 16-7.2 16-16s-7.2-16-16-16H384c-8.8 0-16 7.2-16 16zM160 304c0 8.8 7.2 16 16 16H432c8.8 0 16-7.2 16-16s-7.2-16-16-16H176c-8.8 0-16 7.2-16 16zm0 96c0 8.8 7.2 16 16 16H432c8.8 0 16-7.2 16-16s-7.2-16-16-16H176c-8.8 0-16 7.2-16 16z"/></symbol>
   <symbol id="fa-pen" viewBox="0 0 512 512"><path d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"/></symbol>
   <symbol id="fa-pen-nib" viewBox="0 0 512 512"><path d="M368.4 18.3L312.7 74.1 437.9 199.3l55.7-55.7c21.9-21.9 21.9-57.3 0-79.2L447.6 18.3c-21.9-21.9-57.3-21.9-79.2 0zM288 94.6l-9.2 2.8L134.7 140.6c-19.9 6-35.7 21.2-42.3 41L3.8 445.8c-3.8 11.3-1 23.9 7.3 32.4L164.7 324.7c-3-6.3-4.7-13.3-4.7-20.7c0-26.5 21.5-48 48-48s48 21.5 48 48s-21.5 48-48 48c-7.4 0-14.4-1.7-20.7-4.7L33.7 500.9c8.6 8.3 21.1 11.2 32.4 7.3l264.3-88.6c19.7-6.6 35-22.4 41-42.3l43.2-144.1 2.8-9.2L288 94.6z"/></symbol>
+  <symbol id="fa-play" viewBox="0 0 384 512"><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></symbol>
   <symbol id="fa-redo" viewBox="0 0 512 512"><path d="M386.3 160H336c-17.7 0-32 14.3-32 32s14.3 32 32 32H464c17.7 0 32-14.3 32-32V64c0-17.7-14.3-32-32-32s-32 14.3-32 32v51.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0s-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3s163.8-62.5 226.3 0L386.3 160z"/></symbol>
   <symbol id="fa-road" viewBox="0 0 576 512"><path d="M256 32H181.2c-27.1 0-51.3 17.1-60.3 42.6L3.1 407.2C1.1 413 0 419.2 0 425.4C0 455.5 24.5 480 54.6 480H256V416c0-17.7 14.3-32 32-32s32 14.3 32 32v64H521.4c30.2 0 54.6-24.5 54.6-54.6c0-6.2-1.1-12.4-3.1-18.2L455.1 74.6C446 49.1 421.9 32 394.8 32H320V96c0 17.7-14.3 32-32 32s-32-14.3-32-32V32zm64 192v64c0 17.7-14.3 32-32 32s-32-14.3-32-32V224c0-17.7 14.3-32 32-32s32 14.3 32 32z"/></symbol>
   <symbol id="fa-rocket" viewBox="0 0 512 512"><path d="M156.6 384.9L125.7 354c-8.5-8.5-11.5-20.8-7.7-32.2c3-8.9 7-20.5 11.8-33.8L24 288c-8.6 0-16.6-4.6-20.9-12.1s-4.2-16.7 .2-24.1l52.5-88.5c13-21.9 36.5-35.3 61.9-35.3l82.3 0c2.4-4 4.8-7.7 7.2-11.3C289.1-4.1 411.1-8.1 483.9 5.3c11.6 2.1 20.6 11.2 22.8 22.8c13.4 72.9 9.3 194.8-111.4 276.7c-3.5 2.4-7.3 4.8-11.3 7.2v82.3c0 25.4-13.4 49-35.3 61.9l-88.5 52.5c-7.4 4.4-16.6 4.5-24.1 .2s-12.1-12.2-12.1-20.9V380.8c-14.1 4.9-26.4 8.9-35.7 11.9c-11.2 3.6-23.4 .5-31.8-7.8zM384 168a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/></symbol>
@@ -209,11 +210,11 @@
                 <select id="standings-report-selector" class="standings-report-native">
                     <option value="drivers">Οδηγοί</option>
                     <option value="constructors">Κατασκευαστές</option>
-                    <option value="quali-gaps">Quali Gaps</option>
-                    <option value="lap1-gains">Lap 1 Gains</option>
-                    <option value="tyre-pace">Tyre Pace</option>
+                    <option value="quali-gaps">Κενά κατατακτήριων</option>
+                    <option value="lap1-gains">Κέρδη 1ου γύρου</option>
+                    <option value="tyre-pace">Ρυθμός ελαστικών</option>
                     <option value="dirty-air">Dirty Air</option>
-                    <option value="track-dominance">Track Dominance</option>
+                    <option value="track-dominance">Κυριαρχία πίστας</option>
                     <option value="pit-stops">Pit Stops</option>
                     <option value="debrief">Debrief</option>
                     <option value="destructors">Destructors</option>
@@ -227,11 +228,11 @@
         <div class="standings-tabs" role="tablist" aria-label="Ενότητες βαθμολογιών και ανάλυσης">
             <button class="standings-tab active" id="tab-drivers" data-tab="drivers" role="tab" aria-controls="panel-drivers" aria-selected="true" tabindex="0"><svg class="icon" aria-hidden="true"><use href="#fa-helmet-safety"/></svg> Οδηγοί</button>
             <button class="standings-tab" id="tab-constructors" data-tab="constructors" role="tab" aria-controls="panel-constructors" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg> Κατασκευαστές</button>
-            <button class="standings-tab" id="tab-quali-gaps" data-tab="quali-gaps" role="tab" aria-controls="panel-quali-gaps" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-stopwatch"/></svg> Quali Gaps</button>
-            <button class="standings-tab" id="tab-lap1-gains" data-tab="lap1-gains" role="tab" aria-controls="panel-lap1-gains" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-trend-up"/></svg> Lap 1 Gains</button>
-            <button class="standings-tab" id="tab-tyre-pace" data-tab="tyre-pace" role="tab" aria-controls="panel-tyre-pace" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-wave-square"/></svg> Tyre Pace</button>
+            <button class="standings-tab" id="tab-quali-gaps" data-tab="quali-gaps" role="tab" aria-controls="panel-quali-gaps" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-stopwatch"/></svg> Κενά κατατακτήριων</button>
+            <button class="standings-tab" id="tab-lap1-gains" data-tab="lap1-gains" role="tab" aria-controls="panel-lap1-gains" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-trend-up"/></svg> Κέρδη 1ου γύρου</button>
+            <button class="standings-tab" id="tab-tyre-pace" data-tab="tyre-pace" role="tab" aria-controls="panel-tyre-pace" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-wave-square"/></svg> Ρυθμός ελαστικών</button>
             <button class="standings-tab" id="tab-dirty-air" data-tab="dirty-air" role="tab" aria-controls="panel-dirty-air" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-wind"/></svg> Dirty Air</button>
-            <button class="standings-tab" id="tab-track-dominance" data-tab="track-dominance" role="tab" aria-controls="panel-track-dominance" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-route"/></svg> Track Dominance</button>
+            <button class="standings-tab" id="tab-track-dominance" data-tab="track-dominance" role="tab" aria-controls="panel-track-dominance" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-route"/></svg> Κυριαρχία πίστας</button>
             <button class="standings-tab" id="tab-pit-stops" data-tab="pit-stops" role="tab" aria-controls="panel-pit-stops" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-wrench"/></svg> Pit Stops</button>
             <button class="standings-tab" id="tab-debrief" data-tab="debrief" role="tab" aria-controls="panel-debrief" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-clipboard-list"/></svg> Debrief</button>
             <button class="standings-tab" id="tab-destructors" data-tab="destructors" role="tab" aria-controls="panel-destructors" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#fa-car-burst"/></svg> Destructors</button>
@@ -286,18 +287,18 @@
         <div class="standings-panel" id="panel-quali-gaps" role="tabpanel" aria-labelledby="tab-quali-gaps" hidden>
             <div class="quali-gaps-wrap">
                 <div class="quali-gaps-intro">
-                    <div class="quali-kicker">Teammate H2H · <span id="qualifying-gaps-year">2026</span></div>
-                    <h2 class="quali-title">Teammate Qualifying Gaps</h2>
+                    <div class="quali-kicker">Συμπαίκτες H2H · <span id="qualifying-gaps-year">2026</span></div>
+                    <h2 class="quali-title">Κενά κατατακτήριων μεταξύ συμπαικτών</h2>
                     <p class="quali-sub">Q + Sprint Shootout. Ο συνολικά ταχύτερος teammate εμφανίζεται αριστερά και τα rows ταξινομούνται από το μικρότερο στο μεγαλύτερο average gap.</p>
                 </div>
                 <div class="panel-tools">
                     <div class="panel-tools-copy">
-                        <div class="panel-tools-title">Qualifying Gaps Tab</div>
-                        <div class="panel-tools-note">The shared link keeps the active sub-view and selected qualifying session.</div>
+                        <div class="panel-tools-title">Καρτέλα Κενά κατατακτήριων</div>
+                        <div class="panel-tools-note">Ο κοινόχρηστος σύνδεσμος διατηρεί την ενεργή προβολή και την επιλεγμένη συνεδρία κατατακτήριων.</div>
                     </div>
                     <div class="share-tools">
-                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-quali-gaps"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Share tab</button>
-                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-quali-gaps"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed tab</button>
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-quali-gaps"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Κοινοποίηση καρτέλας</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-quali-gaps"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Ενσωμάτωση καρτέλας</button>
                     </div>
                 </div>
                 <div id="qualifying-gaps-table" aria-live="polite"></div>
@@ -307,18 +308,18 @@
         <div class="standings-panel" id="panel-lap1-gains" role="tabpanel" aria-labelledby="tab-lap1-gains" hidden>
             <div class="lap1-gains-wrap">
                 <div class="lap1-gains-intro">
-                    <div class="lap1-kicker">Race Starts · <span id="lap1-gains-year">2026</span></div>
-                    <h2 class="lap1-title">Who Gains Most on Lap 1?</h2>
+                    <div class="lap1-kicker">Εκκινήσεις · <span id="lap1-gains-year">2026</span></div>
+                    <h2 class="lap1-title">Ποιος κερδίζει τις περισσότερες θέσεις στον 1ο γύρο;</h2>
                     <p class="lap1-sub">Για κάθε completed Grand Prix race ή sprint, υπολογίζεται ποιος κέρδισε τις περισσότερες θέσεις μέχρι το τέλος του πρώτου γύρου.</p>
                 </div>
                 <div class="panel-tools">
                     <div class="panel-tools-copy">
-                        <div class="panel-tools-title">Lap 1 Gains Tab</div>
-                        <div class="panel-tools-note">The shared URL keeps the selected overview or session view and the active race or sprint.</div>
+                        <div class="panel-tools-title">Καρτέλα Κέρδη 1ου γύρου</div>
+                        <div class="panel-tools-note">Ο κοινόχρηστος σύνδεσμος διατηρεί την επιλεγμένη προβολή και τον ενεργό αγώνα ή sprint.</div>
                     </div>
                     <div class="share-tools">
-                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-lap1-gains"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Share tab</button>
-                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-lap1-gains"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed tab</button>
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-lap1-gains"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Κοινοποίηση καρτέλας</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-lap1-gains"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Ενσωμάτωση καρτέλας</button>
                     </div>
                 </div>
                 <div id="lap1-gains-table" aria-live="polite"></div>
@@ -334,7 +335,7 @@
                 </div>
                 <div class="panel-tools">
                     <div class="panel-tools-copy">
-                        <div class="panel-tools-title">Καρτέλα Tyre Pace</div>
+                        <div class="panel-tools-title">Καρτέλα Ρυθμός ελαστικών</div>
                         <div class="panel-tools-note">Ο κοινόχρηστος σύνδεσμος διατηρεί το γράφημα της επιλεγμένης κατανομής γύρων αγώνα ή sprint.</div>
                     </div>
                     <div class="share-tools">
@@ -370,18 +371,18 @@
         <div class="standings-panel" id="panel-track-dominance" role="tabpanel" aria-labelledby="tab-track-dominance" hidden>
             <div class="track-dom-wrap">
                 <div class="track-dom-intro">
-                    <div class="track-dom-kicker">Telemetry · <span id="track-dominance-year">2026</span></div>
-                    <h2 class="track-dom-title">Track Dominance</h2>
+                    <div class="track-dom-kicker">Τηλεμετρία · <span id="track-dominance-year">2026</span></div>
+                    <h2 class="track-dom-title">Κυριαρχία πίστας</h2>
                     <p class="track-dom-sub">Σύγκρινε το fastest lap δύο οδηγών από το ίδιο completed session και δες πού κερδίζει χρόνο ο καθένας πάνω στην πίστα.</p>
                 </div>
                 <div class="panel-tools">
                     <div class="panel-tools-copy">
-                        <div class="panel-tools-title">Track Dominance Tab</div>
-                        <div class="panel-tools-note">The shared link keeps the selected session and both drivers.</div>
+                        <div class="panel-tools-title">Καρτέλα Κυριαρχία πίστας</div>
+                        <div class="panel-tools-note">Ο κοινόχρηστος σύνδεσμος διατηρεί την επιλεγμένη συνεδρία και τους δύο οδηγούς.</div>
                     </div>
                     <div class="share-tools">
-                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-track-dominance"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Share tab</button>
-                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-track-dominance"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed tab</button>
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-track-dominance"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Κοινοποίηση καρτέλας</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-track-dominance"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Ενσωμάτωση καρτέλας</button>
                     </div>
                 </div>
                 <div id="track-dominance-table" aria-live="polite"></div>
@@ -392,17 +393,17 @@
             <div class="pit-stops-wrap">
                 <div class="pit-stops-intro">
                     <div class="pit-stops-kicker">Pit Stops · <span id="pit-stops-year">2026</span></div>
-                    <h2 class="pit-stops-title">Fastest Pit Stops</h2>
+                    <h2 class="pit-stops-title">Ταχύτερα pit stop</h2>
                     <p class="pit-stops-sub">Ταχύτερο pit stop ανά οδηγό και ομάδα — ανά αγώνα ή season-best ranking.</p>
                 </div>
                 <div class="panel-tools">
                     <div class="panel-tools-copy">
-                        <div class="panel-tools-title">Pit Stops Tab</div>
-                        <div class="panel-tools-note">Share the fastest pit stop analysis or embed it in your page.</div>
+                        <div class="panel-tools-title">Καρτέλα Pit Stops</div>
+                        <div class="panel-tools-note">Κοινοποίησε την ανάλυση των ταχύτερων pit stop ή ενσωμάτωσέ την στη σελίδα σου.</div>
                     </div>
                     <div class="share-tools">
-                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-pit-stops"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Share tab</button>
-                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-pit-stops"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed tab</button>
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-pit-stops"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Κοινοποίηση καρτέλας</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-pit-stops"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Ενσωμάτωση καρτέλας</button>
                     </div>
                 </div>
                 <div id="pit-stops-table" aria-live="polite"></div>
@@ -412,18 +413,18 @@
         <div class="standings-panel" id="panel-debrief" role="tabpanel" aria-labelledby="tab-debrief" hidden>
             <div class="debrief-wrap">
                 <div class="debrief-intro">
-                    <div class="debrief-kicker">Friday Practice · <span id="debrief-year">2026</span></div>
-                    <h2 class="debrief-title">Friday Debrief</h2>
+                    <div class="debrief-kicker">Ελεύθερες δοκιμές Παρασκευής · <span id="debrief-year">2026</span></div>
+                    <h2 class="debrief-title">Debrief Παρασκευής</h2>
                     <p class="debrief-sub">Ανάλυση δεδομένων FP1/FP2: single-lap pace, long-run pace και tyre degradation ανά Grand Prix, βασισμένα στο FIA Friday Debrief.</p>
                 </div>
                 <div class="panel-tools">
                     <div class="panel-tools-copy">
-                        <div class="panel-tools-title">Debrief Tab</div>
-                        <div class="panel-tools-note">The shared link preserves the selected GP round and sub-view.</div>
+                        <div class="panel-tools-title">Καρτέλα Debrief</div>
+                        <div class="panel-tools-note">Ο κοινόχρηστος σύνδεσμος διατηρεί τον επιλεγμένο γύρο GP και την ενεργή προβολή.</div>
                     </div>
                     <div class="share-tools">
-                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-debrief"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Share tab</button>
-                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-debrief"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed tab</button>
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-debrief"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Κοινοποίηση καρτέλας</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-debrief"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Ενσωμάτωση καρτέλας</button>
                     </div>
                 </div>
                 <div id="debrief-table" aria-live="polite"></div>
@@ -433,18 +434,18 @@
         <div class="standings-panel" id="panel-destructors" role="tabpanel" aria-labelledby="tab-destructors" hidden>
             <div class="destructors-wrap">
                 <div class="destructors-intro">
-                    <div class="destructors-kicker">Crash Costs · <span id="destructors-year">2026</span></div>
-                    <h2 class="destructors-title">Destructors Championship</h2>
+                    <div class="destructors-kicker">Κόστος ζημιών · <span id="destructors-year">2026</span></div>
+                    <h2 class="destructors-title">Πρωτάθλημα Destructors</h2>
                     <p class="destructors-sub">Team damage bars και driver-to-team flow chart σε ένα tabbed view, βασισμένα στο destructors snapshot των εικόνων.</p>
                 </div>
                 <div class="panel-tools">
                     <div class="panel-tools-copy">
-                        <div class="panel-tools-title">Destructors Tab</div>
-                        <div class="panel-tools-note">The shared link keeps the active destructors chart view.</div>
+                        <div class="panel-tools-title">Καρτέλα Destructors</div>
+                        <div class="panel-tools-note">Ο κοινόχρηστος σύνδεσμος διατηρεί την ενεργή προβολή του γραφήματος.</div>
                     </div>
                     <div class="share-tools">
-                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-destructors"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Share tab</button>
-                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-destructors"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Embed tab</button>
+                        <button class="share-btn" type="button" data-share-kind="share" data-share-target="panel-destructors"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg> Κοινοποίηση καρτέλας</button>
+                        <button class="share-btn" type="button" data-share-kind="embed" data-share-target="panel-destructors"><svg class="icon" aria-hidden="true"><use href="#fa-code"/></svg> Ενσωμάτωση καρτέλας</button>
                     </div>
                 </div>
                 <div id="destructors-table" aria-live="polite"></div>
@@ -466,6 +467,17 @@
     <div class="container">
         <div class="row">
             <div class="col-12 text-center">
+                <div class="footer-colophon">
+                    <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
+                    <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
+                </div>
+                <nav class="footer-index" aria-label="Ενότητες">
+                    <a href="/blog-module/blog/index.html">Άρθρα</a>
+                    <a href="/standings/">Βαθμολογία</a>
+                    <a href="/authors/">Συντάκτες</a>
+                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
+                    <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
+                </nav>
                 <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
                 <div class="social-media">
                     <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
@@ -488,10 +500,10 @@
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/scripts/shared-nav.min.js?v=84155728"></script>
+<script defer src="/scripts/shared-nav.min.js?v=486bf03f"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 
-<script type="module" src="standings.min.js?v=18337583"></script>
+<script type="module" src="standings.min.js?v=2d05248a"></script>
 <script nomodule src="standings-nomodule.min.js?v=c06e53db"></script>
 </body>
 </html>

@@ -323,10 +323,28 @@ function collectPublicImageRefs() {
     return refs;
 }
 
+// Posts whose card can be the archive or home lead (srcset includes 1600w).
+const LEAD_CARD_REFS = (() => {
+    try {
+        const posts = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'blog-module/home-latest.json'), 'utf8'));
+        return new Set(posts.map(post => String(post.thumbnail || '').replace(/^\//, '')).filter(ref => /-card\.webp$/.test(ref)));
+    } catch (_) {
+        return new Set();
+    }
+})();
+
 function shouldCopyBlogEntry(relPath) {
     if (!relPath.startsWith('blog-module/blog-entries/')) return false;
     const name = path.posix.basename(relPath);
     if (name === 'article.html') return true;
+    // Card srcsets advertise "<base>-mobile.webp 800w" (and "<base>.webp 1600w"
+    // for lead cards); ship those siblings whenever their card ships.
+    const sibling = /^(.+?)(-mobile)?\.webp$/.exec(name);
+    if (sibling && !/-card$/.test(sibling[1])) {
+        const cardRel = path.posix.join(path.posix.dirname(relPath), `${sibling[1]}-card.webp`);
+        const cardShips = fs.existsSync(path.join(REPO_ROOT, cardRel)) && shouldCopyBlogEntry(cardRel);
+        if (cardShips && (sibling[2] || LEAD_CARD_REFS.has(cardRel))) return true;
+    }
     // Compact archive cards advertise the smaller variant through their
     // thumbnail run map. Entries without that variant still need their first
     // source image available when the archive reconstructs the card. Article

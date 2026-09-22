@@ -211,7 +211,7 @@ function formatSessionDateShort(session) {
     const value = session && (session.date_start || session.date || session.date_end);
     const date = value ? new Date(value) : null;
     if (!date || isNaN(date.getTime())) return '';
-    return date.toLocaleDateString('en-GB', {
+    return date.toLocaleDateString('el-GR', {
         day: 'numeric',
         month: 'short'
     }).replace(/\./g, '');
@@ -536,6 +536,7 @@ function renderTyrePace(data, session) {
     });
 
     html += '</div>'
+        + '<p class="tyre-pace-scroll-hint" aria-hidden="true">Σύρε για όλους τους οδηγούς →</p>'
         + '<div class="tyre-pace-chart-scroll" data-horizontal-chart-scroll><div class="tyre-pace-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
         + '<div class="tyre-pace-axis"><span class="tyre-pace-axis-title">Χρόνος γύρου (δ.)</span><div class="tyre-pace-axis-layer">';
 
@@ -567,7 +568,21 @@ function renderTyrePace(data, session) {
     html += '</div></div></div></div><p class="tyre-pace-footnote">Πηγή: OpenF1 `laps` + `stints`. Οι γόμες αντιστοιχίζονται από τα διαστήματα των stint σε κάθε έγκυρο γύρο αγώνα.</p></div>';
 
     setTrustedHtml(tyrePaceTable, html, 'tyre pace report template');
+    watchChartOverflow(tyrePaceTable.querySelector('.tyre-pace-chart-scroll'));
     fireRendered();
+}
+
+// Presentation only: flag the scroller while columns are hidden to the right,
+// so CSS can show the edge fade and the swipe hint.
+function watchChartOverflow(scroller) {
+    if (!scroller) return;
+    const update = function () {
+        const hiddenRight = scroller.scrollWidth - scroller.clientWidth - scroller.scrollLeft > 4;
+        scroller.classList.toggle('is-overflowing', hiddenRight);
+    };
+    scroller.addEventListener('scroll', update, { passive: true });
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(update).observe(scroller);
+    update();
 }
 
 function showTyrePaceError() {

@@ -198,7 +198,7 @@ function formatSessionDateShort(session) {
     const value = session && (session.date_start || session.date || session.date_end);
     const date = value ? new Date(value) : null;
     if (!date || isNaN(date.getTime())) return '';
-    return date.toLocaleDateString('en-GB', {
+    return date.toLocaleDateString('el-GR', {
         day: 'numeric',
         month: 'short'
     }).replace(/\./g, '');
@@ -721,7 +721,7 @@ function renderQualifyingGapOverview(rows) {
             + '</div>'
             + '</div>'
             + '<div class="quali-track-wrap">'
-            + '<div class="quali-track-meta"><span class="quali-track-team">' + esc(row.teamName) + '</span><span class="quali-track-note">' + esc(formatSessionCount(row.sessionCount)) + ' · avg gap ' + esc(row.avgGap.toFixed(3)) + 's</span></div>'
+            + '<div class="quali-track-meta"><span class="quali-track-team">' + esc(row.teamName) + '</span><span class="quali-track-note">' + esc(formatSessionCount(row.sessionCount)) + ' · μέση διαφορά ' + esc(row.avgGap.toFixed(3)) + 's</span></div>'
             + '<div class="quali-track">'
             + '<div class="quali-zero-line" aria-hidden="true"></div>'
             + '<div class="quali-dots">';
@@ -781,8 +781,8 @@ function renderQualifyingGapRaceView(rows, selectedRow) {
     }, 0);
     const chartMinWidth = Math.max(980, selectedRow.pairs.length * 116);
     let html = '<div class="quali-race-card">'
-        + '<div class="quali-race-head"><div class="quali-race-head-copy"><h3 class="quali-race-head-title">Teammate Gaps By Session</h3><p class="quali-race-head-note">Ο ταχύτερος teammate είναι επάνω, ο πιο αργός κάτω, και τα teams ταξινομούνται από το μικρότερο στο μεγαλύτερο gap.</p></div><label class="quali-race-controls"><span class="quali-race-controls-label">Available sessions</span><select class="quali-race-select" data-quali-race-select aria-label="Επιλογή qualifying session για teammate gaps">' + selectorOptions + '</select></label></div>'
-        + '<div class="quali-race-summary"><div><div class="quali-race-summary-title">' + esc(selectedRow.meetingName) + '</div><div class="quali-race-summary-sub">' + esc(selectedRow.sessionName + (selectedRow.dateLabel ? ' · ' + selectedRow.dateLabel : '')) + '</div></div><div class="quali-race-summary-stats"><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Teams</span><span class="quali-race-summary-value">' + esc(String(selectedRow.pairCount)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Smallest</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.smallestGap, true)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Biggest</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.biggestGap, true)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Average</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.avgGap, true)) + '</span></div></div></div>'
+        + '<div class="quali-race-head"><div class="quali-race-head-copy"><h3 class="quali-race-head-title">Κενά συμπαικτών ανά συνεδρία</h3><p class="quali-race-head-note">Ο ταχύτερος teammate είναι επάνω, ο πιο αργός κάτω, και τα teams ταξινομούνται από το μικρότερο στο μεγαλύτερο gap.</p></div><label class="quali-race-controls"><span class="quali-race-controls-label">Διαθέσιμες συνεδρίες</span><select class="quali-race-select" data-quali-race-select aria-label="Επιλογή qualifying session για teammate gaps">' + selectorOptions + '</select></label></div>'
+        + '<div class="quali-race-summary"><div><div class="quali-race-summary-title">' + esc(selectedRow.meetingName) + '</div><div class="quali-race-summary-sub">' + esc(selectedRow.sessionName + (selectedRow.dateLabel ? ' · ' + selectedRow.dateLabel : '')) + '</div></div><div class="quali-race-summary-stats"><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Ομάδες</span><span class="quali-race-summary-value">' + esc(String(selectedRow.pairCount)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Μικρότερο</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.smallestGap, true)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Μεγαλύτερο</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.biggestGap, true)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Μέσος όρος</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.avgGap, true)) + '</span></div></div></div>'
         + '<div class="quali-race-chart-scroll"><div class="quali-race-chart" style="--pair-count:' + selectedRow.pairCount + ';min-width:' + chartMinWidth + 'px;">';
 
     selectedRow.pairs.forEach(function(pair) {
@@ -846,8 +846,8 @@ function renderQualifyingGaps(data) {
 
     if (raceRows.length) {
         html = '<div class="quali-view-switch"><div class="quali-view-tabs" role="tablist" aria-label="Qualifying gaps views">'
-            + '<button class="quali-view-tab' + (activeView === 'overview' ? ' active' : '') + '" type="button" data-quali-view="overview" role="tab" aria-selected="' + (activeView === 'overview' ? 'true' : 'false') + '">Overview</button>'
-            + '<button class="quali-view-tab' + (activeView === 'race-detail' ? ' active' : '') + '" type="button" data-quali-view="race-detail" role="tab" aria-selected="' + (activeView === 'race-detail' ? 'true' : 'false') + '">By Race</button>'
+            + '<button class="quali-view-tab' + (activeView === 'overview' ? ' active' : '') + '" type="button" data-quali-view="overview" role="tab" aria-selected="' + (activeView === 'overview' ? 'true' : 'false') + '">Επισκόπηση</button>'
+            + '<button class="quali-view-tab' + (activeView === 'race-detail' ? ' active' : '') + '" type="button" data-quali-view="race-detail" role="tab" aria-selected="' + (activeView === 'race-detail' ? 'true' : 'false') + '">Ανά αγώνα</button>'
             + '</div></div>';
     }
 

@@ -109,10 +109,24 @@ async function expandIncludes(source, currentDir, context, stack = []) {
   return output;
 }
 
+// Rendered articles carry the same @include markers (from template.html), so
+// shared partials such as the footer must reach them too.
+async function articleTargets() {
+  const dir = path.join(ROOT, 'blog-module/blog-entries');
+  const entries = await fs.readdir(dir, { withFileTypes: true }).catch(() => []);
+  const out = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const rel = `blog-module/blog-entries/${entry.name}/article.html`;
+    try { await fs.access(path.join(ROOT, rel)); out.push(rel); } catch (_) {}
+  }
+  return out;
+}
+
 async function main() {
   let changedFiles = 0;
 
-  for (const relativePath of TARGET_HTML) {
+  for (const relativePath of [...TARGET_HTML, ...await articleTargets()]) {
     const absolutePath = path.join(ROOT, relativePath);
     const original = await fs.readFile(absolutePath, 'utf8');
     const context = {

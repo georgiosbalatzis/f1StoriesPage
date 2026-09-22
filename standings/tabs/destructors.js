@@ -269,7 +269,7 @@ function buildTeamChartHTML(data) {
     }).join('');
 
     return '<div class="destructors-card">'
-        + '<div class="destructors-card-head"><div><div class="destructors-card-kicker">Stacked Team Damage</div><h4 class="destructors-card-title">F1 Destructors Championship ' + esc(String(data.season)) + '</h4></div></div>'
+        + '<div class="destructors-card-head"><div><div class="destructors-card-kicker">Ζημιές ανά ομάδα</div><h4 class="destructors-card-title">Πρωτάθλημα Destructors ' + esc(String(data.season)) + '</h4></div></div>'
         + '<div class="destructors-teams-chart">' + rowsHTML + '</div>'
         + '</div>';
 }
@@ -278,7 +278,7 @@ function buildFlowChartHTML(data) {
     const drivers = data.drivers.slice();
     const teams = data.nonZeroTeams.slice();
     if (!drivers.length || !teams.length) {
-        return '<div class="destructors-card"><div class="destructors-empty"><svg class="icon" aria-hidden="true"><use href="#fa-car-side"/></svg><p>No destructors data available for this snapshot.</p></div></div>';
+        return '<div class="destructors-card"><div class="destructors-empty"><svg class="icon" aria-hidden="true"><use href="#fa-car-side"/></svg><p>Δεν υπάρχουν δεδομένα destructors για αυτό το στιγμιότυπο.</p></div></div>';
     }
 
     const width = 920;
@@ -383,7 +383,7 @@ function buildFlowChartHTML(data) {
     }).join('');
 
     return '<div class="destructors-card">'
-        + '<div class="destructors-card-head"><div><div class="destructors-card-kicker">Driver To Constructor Flow</div><h4 class="destructors-card-title">F1 ' + esc(String(data.season)) + ' Destructors World Championship</h4></div></div>'
+        + '<div class="destructors-card-head"><div><div class="destructors-card-kicker">Ροή οδηγών προς ομάδες</div><h4 class="destructors-card-title">F1 ' + esc(String(data.season)) + ' Destructors World Championship</h4></div></div>'
         + '<div class="destructors-flow-scroll">'
         + '<svg class="destructors-flow-svg" viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="Driver to team destructors flow chart">'
         + '<rect x="0" y="0" width="' + width + '" height="' + height + '" fill="transparent"></rect>'
@@ -399,16 +399,16 @@ function renderDestructors(snapshot) {
     const leader = snapshot.teams.filter(function(team) { return team.total > 0; })[0];
     const summaryHTML = '<div class="destructors-summary">'
         + '<div class="destructors-summary-main"><div class="destructors-summary-title">' + esc(snapshot.snapshotLabel || ('Season ' + snapshot.season + ' snapshot')) + '</div>'
-        + '<div class="destructors-summary-sub">' + (leader ? esc(leader.name + ' lead the chart with ' + formatUsdAmount(leader.total) + '.') : 'No non-zero destructors entries yet.') + '</div></div>'
+        + '<div class="destructors-summary-sub">' + (leader ? esc(leader.name + ' lead the chart with ' + formatUsdAmount(leader.total) + '.') : 'Δεν υπάρχουν ακόμη καταχωρήσεις ζημιών.') + '</div></div>'
         + '<div class="destructors-summary-stats">'
-        + '<div class="destructors-summary-stat"><div class="destructors-summary-label">Total Damage</div><div class="destructors-summary-value">' + formatUsdCompact(snapshot.totalDamage) + '</div></div>'
-        + '<div class="destructors-summary-stat"><div class="destructors-summary-label">Drivers</div><div class="destructors-summary-value">' + snapshot.drivers.length + '</div></div>'
-        + '<div class="destructors-summary-stat"><div class="destructors-summary-label">Teams Hit</div><div class="destructors-summary-value">' + snapshot.nonZeroTeams.length + '</div></div>'
+        + '<div class="destructors-summary-stat"><div class="destructors-summary-label">Συνολικές ζημιές</div><div class="destructors-summary-value">' + formatUsdCompact(snapshot.totalDamage) + '</div></div>'
+        + '<div class="destructors-summary-stat"><div class="destructors-summary-label">Οδηγοί</div><div class="destructors-summary-value">' + snapshot.drivers.length + '</div></div>'
+        + '<div class="destructors-summary-stat"><div class="destructors-summary-label">Ομάδες με ζημιές</div><div class="destructors-summary-value">' + snapshot.nonZeroTeams.length + '</div></div>'
         + '</div></div>';
 
-    const switchHTML = '<div class="destructors-view-switch"><div class="destructors-view-tabs" role="tablist" aria-label="Destructors views">'
-        + '<button class="destructors-view-tab' + (state.activeView === 'teams' ? ' active' : '') + '" type="button" data-destructors-view="teams" role="tab" aria-selected="' + (state.activeView === 'teams' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-chart-bar"/></svg> Team Damage</button>'
-        + '<button class="destructors-view-tab' + (state.activeView === 'flow' ? ' active' : '') + '" type="button" data-destructors-view="flow" role="tab" aria-selected="' + (state.activeView === 'flow' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-diagram-project"/></svg> Driver Flow</button>'
+    const switchHTML = '<div class="destructors-view-switch"><div class="destructors-view-tabs" role="tablist" aria-label="Προβολές Destructors">'
+        + '<button class="destructors-view-tab' + (state.activeView === 'teams' ? ' active' : '') + '" type="button" data-destructors-view="teams" role="tab" aria-selected="' + (state.activeView === 'teams' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-chart-bar"/></svg> Ζημιές ομάδων</button>'
+        + '<button class="destructors-view-tab' + (state.activeView === 'flow' ? ' active' : '') + '" type="button" data-destructors-view="flow" role="tab" aria-selected="' + (state.activeView === 'flow' ? 'true' : 'false') + '"><svg class="icon" aria-hidden="true"><use href="#fa-diagram-project"/></svg> Ροή οδηγών</button>'
         + '</div></div>';
 
     renderTrustedHtml(destructorsTable, summaryHTML

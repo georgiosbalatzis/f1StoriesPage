@@ -1,0 +1,91 @@
+[
+  {
+    "concept": "a",
+    "menuPointerAndKeyboard": true,
+    "escapeFocusRestored": true,
+    "navInTabOrder": true,
+    "articleDisclosure": true,
+    "player": {
+      "src": "https://www.youtube-nocookie.com/embed/l0vNNK6FO3g?autoplay=0",
+      "title": "BetCast #270 Hungaroring — F1Stories",
+      "width": 350,
+      "height": 196.875
+    },
+    "constructorReport": {
+      "driversHidden": true,
+      "constructorsHidden": false,
+      "rows": 11,
+      "selected": "true",
+      "width": 390,
+      "scroll": 390
+    },
+    "returnToDrivers": true
+  },
+  {
+    "concept": "b",
+    "menuPointerAndKeyboard": true,
+    "escapeFocusRestored": true,
+    "navInTabOrder": true,
+    "articleDisclosure": true,
+    "player": {
+      "src": "https://www.youtube-nocookie.com/embed/l0vNNK6FO3g?autoplay=0",
+      "title": "BetCast #270 Hungaroring — F1Stories",
+      "width": 350,
+      "height": 196.875
+    },
+    "constructorReport": {
+      "driversHidden": true,
+      "constructorsHidden": false,
+      "rows": 11,
+      "selected": "true",
+      "width": 390,
+      "scroll": 390
+    },
+    "returnToDrivers": true,
+    "expandedMobilePlayerRetested": true
+  },
+  {
+    "concept": "c",
+    "menuPointerAndKeyboard": true,
+    "escapeFocusRestored": true,
+    "navInTabOrder": true,
+    "articleDisclosure": true,
+    "player": {
+      "src": "https://www.youtube-nocookie.com/embed/l0vNNK6FO3g?autoplay=0",
+      "title": "BetCast #270 Hungaroring — F1Stories",
+      "width": 350,
+      "height": 196.875
+    },
+    "constructorReport": {
+      "driversHidden": true,
+      "constructorsHidden": false,
+      "rows": 11,
+      "selected": "true",
+      "width": 390,
+      "scroll": 390
+    },
+    "returnToDrivers": true
+  },
+  {
+    "reviewControls": {
+      "images": [
+        "http://127.0.0.1:4186/screenshots/final/a-article-mobile-viewport.png",
+        "http://127.0.0.1:4186/screenshots/final/b-article-mobile-viewport.png",
+        "http://127.0.0.1:4186/screenshots/final/c-article-mobile-viewport.png"
+      ],
+      "openLinks": [
+        "/concept-a/article.html",
+        "/concept-b/article.html",
+        "/concept-c/article.html"
+      ],
+      "status": "Article · Mobile",
+      "width": 1440,
+      "scroll": 1440
+    },
+    "reviewAt390NoOverflow": true,
+    "workingFrame": {
+      "width": 390,
+      "pathname": "/concept-c/article.html"
+    }
+  }
+]

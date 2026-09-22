@@ -68,14 +68,14 @@ const LIGHTWEIGHT_TABS = ['drivers', 'constructors'];
 const REPORT_DETAILS = {
     'drivers': { label: 'Οδηγοί', note: 'Βαθμολογία πρωταθλήματος · Jolpica F1' },
     'constructors': { label: 'Κατασκευαστές', note: 'Βαθμολογία ομάδων · Jolpica F1' },
-    'quali-gaps': { label: 'Quali Gaps', note: 'Teammate pace comparison · Jolpica F1' },
-    'lap1-gains': { label: 'Lap 1 Gains', note: 'Race start movement · OpenF1' },
-    'tyre-pace': { label: 'Tyre Pace', note: 'Race pace distributions · OpenF1' },
-    'dirty-air': { label: 'Dirty Air', note: 'Traffic and proximity analysis · OpenF1' },
-    'track-dominance': { label: 'Track Dominance', note: 'Fastest-lap sector comparison · OpenF1' },
-    'pit-stops': { label: 'Pit Stops', note: 'Stop time rankings · OpenF1' },
-    'debrief': { label: 'Debrief', note: 'Friday practice analysis · FIA / OpenF1' },
-    'destructors': { label: 'Destructors', note: 'Damage cost snapshot · F1 Stories' }
+    'quali-gaps': { label: 'Κενά κατατακτήριων', note: 'Σύγκριση με τον συμπαίκτη · Jolpica F1' },
+    'lap1-gains': { label: 'Κέρδη 1ου γύρου', note: 'Κινήσεις στην εκκίνηση · OpenF1' },
+    'tyre-pace': { label: 'Ρυθμός ελαστικών', note: 'Κατανομές ρυθμού αγώνα · OpenF1' },
+    'dirty-air': { label: 'Dirty Air', note: 'Ανάλυση κίνησης και απόστασης · OpenF1' },
+    'track-dominance': { label: 'Κυριαρχία πίστας', note: 'Σύγκριση τομέων ταχύτερου γύρου · OpenF1' },
+    'pit-stops': { label: 'Pit Stops', note: 'Κατάταξη χρόνων στάσης · OpenF1' },
+    'debrief': { label: 'Debrief', note: 'Ανάλυση ελεύθερων δοκιμών Παρασκευής · FIA / OpenF1' },
+    'destructors': { label: 'Destructors', note: 'Κόστος ζημιών · F1 Stories' }
 };
 // Phase 6C: every heavy tab now lives in its own module while the
 // drivers/constructors tables keep rendering from this shell.
@@ -92,20 +92,20 @@ const TAB_LOADERS = {
     'debrief': function() { return import('./tabs/debrief.js'); }
 };
 const SHARE_TARGETS = {
-    'panel-drivers': { tab: 'drivers', title: 'Driver standings tab', height: 980 },
-    'drivers-table': { tab: 'drivers', title: 'Driver standings table', height: 760 },
-    'drivers-chart': { tab: 'drivers', title: 'Driver points chart', height: 520 },
-    'panel-constructors': { tab: 'constructors', title: 'Constructor standings tab', height: 940 },
-    'constructors-table': { tab: 'constructors', title: 'Constructor standings table', height: 740 },
-    'constructors-chart': { tab: 'constructors', title: 'Constructor points chart', height: 520 },
-    'panel-quali-gaps': { tab: 'quali-gaps', title: 'Teammate qualifying gaps', height: 1120 },
-    'panel-lap1-gains': { tab: 'lap1-gains', title: 'Lap 1 gains analysis', height: 1160 },
-    'panel-tyre-pace': { tab: 'tyre-pace', title: 'Tyre pace chart', height: 1080 },
-    'panel-dirty-air': { tab: 'dirty-air', title: 'Dirty air analysis', height: 1520 },
-    'panel-track-dominance': { tab: 'track-dominance', title: 'Track dominance analysis', height: 1320 },
-    'panel-pit-stops': { tab: 'pit-stops', title: 'Fastest pit stops', height: 1080 },
-    'panel-debrief': { tab: 'debrief', title: 'Friday Debrief analysis', height: 1200 },
-    'panel-destructors': { tab: 'destructors', title: 'Destructors championship', height: 1260 }
+    'panel-drivers': { tab: 'drivers', title: 'Βαθμολογία οδηγών', height: 980 },
+    'drivers-table': { tab: 'drivers', title: 'Πίνακας βαθμολογίας οδηγών', height: 760 },
+    'drivers-chart': { tab: 'drivers', title: 'Γράφημα βαθμών οδηγών', height: 520 },
+    'panel-constructors': { tab: 'constructors', title: 'Βαθμολογία κατασκευαστών', height: 940 },
+    'constructors-table': { tab: 'constructors', title: 'Πίνακας βαθμολογίας κατασκευαστών', height: 740 },
+    'constructors-chart': { tab: 'constructors', title: 'Γράφημα βαθμών κατασκευαστών', height: 520 },
+    'panel-quali-gaps': { tab: 'quali-gaps', title: 'Κενά κατατακτήριων συμπαικτών', height: 1120 },
+    'panel-lap1-gains': { tab: 'lap1-gains', title: 'Κέρδη 1ου γύρου', height: 1160 },
+    'panel-tyre-pace': { tab: 'tyre-pace', title: 'Ρυθμός ελαστικών', height: 1080 },
+    'panel-dirty-air': { tab: 'dirty-air', title: 'Ανάλυση Dirty Air', height: 1520 },
+    'panel-track-dominance': { tab: 'track-dominance', title: 'Κυριαρχία πίστας', height: 1320 },
+    'panel-pit-stops': { tab: 'pit-stops', title: 'Ταχύτερα pit stop', height: 1080 },
+    'panel-debrief': { tab: 'debrief', title: 'Debrief Παρασκευής', height: 1200 },
+    'panel-destructors': { tab: 'destructors', title: 'Πρωτάθλημα Destructors', height: 1260 }
 };
 
 let activeStandingsTab = 'drivers';
@@ -511,9 +511,9 @@ function handleShareAction(kind, target) {
 
     if (kind === 'embed') {
         return copyTextToClipboard(createEmbedCode(shareTarget)).then(function() {
-            showShareFeedback('Embed code copied.');
+            showShareFeedback('Ο κώδικας ενσωμάτωσης αντιγράφηκε.');
         }).catch(function() {
-            showShareFeedback('Could not copy embed code.');
+            showShareFeedback('Δεν ήταν δυνατή η αντιγραφή του κώδικα ενσωμάτωσης.');
         });
     }
 
@@ -524,21 +524,21 @@ function handleShareAction(kind, target) {
             text: meta.title,
             url: shareURL
         }).then(function() {
-            showShareFeedback('Share sheet opened.');
+            showShareFeedback('Άνοιξε το μενού κοινοποίησης.');
         }).catch(function(error) {
             if (error && error.name === 'AbortError') return;
             return copyTextToClipboard(shareURL).then(function() {
-                showShareFeedback('Link copied.');
+                showShareFeedback('Ο σύνδεσμος αντιγράφηκε.');
             }).catch(function() {
-                showShareFeedback('Could not copy link.');
+                showShareFeedback('Δεν ήταν δυνατή η αντιγραφή του συνδέσμου.');
             });
         });
     }
 
     return copyTextToClipboard(shareURL).then(function() {
-        showShareFeedback('Link copied.');
+        showShareFeedback('Ο σύνδεσμος αντιγράφηκε.');
     }).catch(function() {
-        showShareFeedback('Could not copy link.');
+        showShareFeedback('Δεν ήταν δυνατή η αντιγραφή του συνδέσμου.');
     });
 }
 
@@ -550,10 +550,10 @@ function handleClearCacheAction() {
 
     return cacheClear().then(function() {
         standingsPromise = null;
-        showShareFeedback('Stored standings cache cleared.');
+        showShareFeedback('Η αποθηκευμένη cache βαθμολογιών καθαρίστηκε.');
     }).catch(function(error) {
         console.error('Could not clear standings cache:', error);
-        showShareFeedback('Could not clear standings cache.');
+        showShareFeedback('Δεν ήταν δυνατή η εκκαθάριση της cache βαθμολογιών.');
     }).finally(function() {
         clearCacheButton.disabled = false;
         clearCacheButton.removeAttribute('aria-busy');

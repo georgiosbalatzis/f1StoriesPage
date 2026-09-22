@@ -162,7 +162,7 @@ function formatSessionDateShort(session) {
     const value = session && (session.date_start || session.date || session.date_end);
     const date = value ? new Date(value) : null;
     if (!date || isNaN(date.getTime())) return '';
-    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).replace(/\./g, '');
+    return date.toLocaleDateString('el-GR', { day: 'numeric', month: 'short' }).replace(/\./g, '');
 }
 
 function groupRecordsBySession(records) {
@@ -366,7 +366,7 @@ function renderLap1OverviewContent(rows) {
     const axisValues = buildLap1AxisValues(maxGain);
     const chartMinWidth = Math.max(620, 76 + rows.length * 84);
     let html = '<div class="lap1-overview-card">'
-        + '<div class="lap1-overview-head"><div><h3 class="lap1-overview-title">Lap 1 Movers Overview</h3><p class="lap1-overview-note">Completed race και sprint sessions, ταξινομημένα χρονολογικά.</p></div><div class="lap1-overview-meta">' + rows.length + ' sessions</div></div>'
+        + '<div class="lap1-overview-head"><div><h3 class="lap1-overview-title">Κινήσεις 1ου γύρου</h3><p class="lap1-overview-note">Completed race και sprint sessions, ταξινομημένα χρονολογικά.</p></div><div class="lap1-overview-meta">' + rows.length + ' sessions</div></div>'
         + '<div class="lap1-chart-scroll" data-horizontal-chart-scroll><div class="lap1-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
         + '<div class="lap1-axis"><span class="lap1-axis-title">Lap 1 Gain (Pos)</span><div class="lap1-axis-scale">';
 
@@ -446,10 +446,10 @@ function renderLap1RaceDetailContent(rows, selectedRow) {
     }).join('');
 
     return '<div class="lap1-race-card">'
-        + '<div class="lap1-race-head"><div><h3 class="lap1-overview-title">Driver Gains By Session</h3><p class="lap1-overview-note">Διάλεξε race ή sprint και δες όλο το grid ταξινομημένο από το μεγαλύτερο gain στο μεγαλύτερο loss μετά τον 1ο γύρο.</p></div><label class="lap1-race-controls"><span class="lap1-race-controls-label">Available sessions</span><select class="lap1-race-select" data-lap1-select aria-label="Επιλογή session για Lap 1 gains">' + selectorOptions + '</select></label></div>'
+        + '<div class="lap1-race-head"><div><h3 class="lap1-overview-title">Κέρδη οδηγών ανά συνεδρία</h3><p class="lap1-overview-note">Διάλεξε race ή sprint και δες όλο το grid ταξινομημένο από το μεγαλύτερο gain στο μεγαλύτερο loss μετά τον 1ο γύρο.</p></div><label class="lap1-race-controls"><span class="lap1-race-controls-label">Διαθέσιμες συνεδρίες</span><select class="lap1-race-select" data-lap1-select aria-label="Επιλογή session για Lap 1 gains">' + selectorOptions + '</select></label></div>'
         + '<div class="lap1-race-summary" style="--winner-color:' + esc(summaryColor) + ';">'
         + '<div class="lap1-race-summary-main"><span class="lap1-session-type">' + esc(selectedRow.sessionTypeShort) + '</span><div class="lap1-race-summary-copy"><div class="lap1-race-summary-title">' + esc(selectedRow.meetingName) + '</div><div class="lap1-race-summary-sub">' + esc(selectedRow.dateLabel + ' · ' + selectedRow.sessionName) + '</div></div></div>'
-        + '<div class="lap1-race-summary-stats"><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Top mover</span><span class="lap1-race-summary-value">' + esc(topMoverLabel) + '</span></div><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Best gain</span><span class="lap1-race-summary-value">' + esc(formatGainValue(selectedRow.maxGain)) + '</span></div><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Drivers</span><span class="lap1-race-summary-value">' + esc(String(selectedRow.moves.length)) + '</span></div></div>'
+        + '<div class="lap1-race-summary-stats"><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Μεγαλύτερη άνοδος</span><span class="lap1-race-summary-value">' + esc(topMoverLabel) + '</span></div><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Καλύτερο κέρδος</span><span class="lap1-race-summary-value">' + esc(formatGainValue(selectedRow.maxGain)) + '</span></div><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Οδηγοί</span><span class="lap1-race-summary-value">' + esc(String(selectedRow.moves.length)) + '</span></div></div>'
         + '</div>'
         + '<div class="lap1-race-rows">' + selectedRow.moves.map(renderLap1RaceDriverRow).join('') + '</div>'
         + '</div>';
@@ -483,8 +483,8 @@ function renderLap1Gains(rows) {
         : renderLap1OverviewContent(rows);
 
     const html = '<div class="lap1-view-switch"><div class="lap1-view-tabs" role="tablist" aria-label="Lap 1 Gains views">'
-        + '<button class="lap1-view-tab' + (activeView === 'overview' ? ' active' : '') + '" type="button" data-lap1-view="overview" role="tab" aria-selected="' + (activeView === 'overview' ? 'true' : 'false') + '">Overview</button>'
-        + '<button class="lap1-view-tab' + (activeView === 'race-detail' ? ' active' : '') + '" type="button" data-lap1-view="race-detail" role="tab" aria-selected="' + (activeView === 'race-detail' ? 'true' : 'false') + '">By Session</button>'
+        + '<button class="lap1-view-tab' + (activeView === 'overview' ? ' active' : '') + '" type="button" data-lap1-view="overview" role="tab" aria-selected="' + (activeView === 'overview' ? 'true' : 'false') + '">Επισκόπηση</button>'
+        + '<button class="lap1-view-tab' + (activeView === 'race-detail' ? ' active' : '') + '" type="button" data-lap1-view="race-detail" role="tab" aria-selected="' + (activeView === 'race-detail' ? 'true' : 'false') + '">Ανά συνεδρία</button>'
         + '</div></div>'
         + viewContent;
 

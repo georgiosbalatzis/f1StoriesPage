@@ -1,5 +1,5 @@
 const { fs, path, CONFIG, escapeHtmlAttribute, getCardThumbnailPath, getImageDimensionsForPublicPath } = require('./shared');
-const { getPostTaxonomy } = require('../taxonomy');
+const { getPostTaxonomy, authorLabel, formatDate, formatReadingTime, cardImageSrcset, CARD_SIZES } = require('../taxonomy');
 
 function scoreRelatedPosts(blogPosts, post, index) {
     const taxonomy = getPostTaxonomy(post);
@@ -38,11 +38,11 @@ async function buildRelatedPostsHtml(relatedPosts) {
     const cards = await Promise.all(relatedPosts.map(async related => {
         const relatedImage = getCardThumbnailPath(related.image);
         const relatedImagePath = relatedImage.substring(relatedImage.lastIndexOf('/') + 1);
-        const relDate = new Date(related.date);
-        const relDateStr = relDate.toLocaleDateString('el-GR', { day: 'numeric', month: 'short', year: 'numeric' });
+        const relDateStr = formatDate(related.date);
         const relatedTitle = escapeHtmlAttribute(related.title);
-        const relatedAuthor = escapeHtmlAttribute(related.author);
-        const relatedReadTime = escapeHtmlAttribute(related.readingTime || '');
+        const relatedSrcset = escapeHtmlAttribute(cardImageSrcset(`/blog-module/blog-entries/${related.id}/${relatedImagePath}`));
+        const relatedAuthor = escapeHtmlAttribute(authorLabel(related.author));
+        const relatedReadTime = escapeHtmlAttribute(formatReadingTime(related.readingTime));
         const imageDimensions = await getImageDimensionsForPublicPath(relatedImage);
         const hasImage = Boolean(relatedImage && relatedImage !== CONFIG.DEFAULT_BLOG_IMAGE && imageDimensions);
         const widthAttr = imageDimensions && imageDimensions.width ? ` width="${imageDimensions.width}"` : '';
@@ -54,7 +54,8 @@ async function buildRelatedPostsHtml(relatedPosts) {
 
         const mediaHtml = hasImage ? `
                         <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}"
+                            <img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}"${relatedSrcset ? `
+                                 srcset="${relatedSrcset}" sizes="${CARD_SIZES.related}"` : ''}
                                  alt="${relatedTitle}"
                                  loading="lazy"
                                  decoding="async"${widthAttr}${heightAttr}
@@ -75,7 +76,7 @@ async function buildRelatedPostsHtml(relatedPosts) {
                             <div class="related-date-badge">${icon('fa-calendar-alt')} ${relDateStr}</div>
                             <h3>${relatedTitle}</h3>
                             <div class="related-card-footer">
-                                <span class="related-card-read">Διαβάστε ${icon('fa-arrow-right')}</span>
+                                <span class="related-card-read">Διάβασε ${icon('fa-arrow-right')}</span>
                                 <span class="related-card-author">${relatedAuthor}</span>
                             </div>
                         </div>

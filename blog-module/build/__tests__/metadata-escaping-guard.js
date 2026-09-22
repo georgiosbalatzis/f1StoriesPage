@@ -50,7 +50,7 @@ async function verifyArticleMetadataEscapingGuard() {
         if (html.includes(escapeText(tag)) || html.includes(escapeText(category))) failures.push('internal metadata leaked into public article labels');
         if (post.category !== 'News' || !post.tags.includes(tag) || !post.tags.includes(category)) failures.push('unknown metadata was not retained as internal tags');
         if (!html.includes('Body paragraph for metadata escaping regression.')) failures.push('front matter parsing removed body words');
-        if (!html.includes(`linkname=${encodedTitle}`) || !html.includes(`text=${encodedTitle}%20${encodedUrl}`)) failures.push('share URLs did not URL-encode title and page URL parameters');
+        if (!html.includes(`sharer.php?u=${encodedUrl}`) || !html.includes(`text=${encodedTitle}%20${encodedUrl}`)) failures.push('share URLs did not URL-encode title and page URL parameters');
         if (html.includes('<Telemetry>') || html.includes('<Team>') || html.includes('<Fast>')) failures.push('raw metadata angle-bracket content leaked into generated HTML');
 
         const ldJsonScripts = [...html.matchAll(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/g)];

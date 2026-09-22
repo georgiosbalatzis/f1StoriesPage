@@ -87,7 +87,25 @@
             .concat(extraFields, ['---', '', safeBody, '']).join('\n');
     }
 
+    // Non-blocking checks for headline hygiene: a repeated adjacent word, a
+    // shouted (mostly capitals) title, or emoji in the title or heading lines.
+    var EMOJI = /\p{Extended_Pictographic}/u;
+    function titleWarnings(title, body) {
+        var text = String(title || '').trim();
+        var warnings = [];
+        var repeat = text.match(/(^|[^\p{L}\p{N}])([\p{L}\p{N}]{2,})\s+\2(?![\p{L}\p{N}])/iu);
+        if (repeat) warnings.push('Ο τίτλος επαναλαμβάνει τη λέξη «' + repeat[2] + '».');
+        var letters = text.replace(/[^\p{L}]/gu, '');
+        var upper = letters.replace(/[^\p{Lu}]/gu, '');
+        if (letters.length >= 8 && upper.length / letters.length > 0.6) warnings.push('Ο τίτλος είναι κυρίως κεφαλαία.');
+        if (EMOJI.test(text)) warnings.push('Ο τίτλος περιέχει emoji.');
+        var headings = String(body || '').split('\n').filter(function (line) { return /^#{1,6}\s/.test(line.trim()); });
+        if (headings.some(function (line) { return EMOJI.test(line); })) warnings.push('Κάποιοι υπότιτλοι περιέχουν emoji.');
+        return warnings;
+    }
+
     global.F1S_AUTHOR_ARTICLE_SOURCE = {
+        titleWarnings: titleWarnings,
         buildSourceText: buildSourceText,
         normalizeZipPath: normalizeZipPath,
         parseSourceText: parseSourceText

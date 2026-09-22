@@ -17,7 +17,7 @@ const { generateSitemap } = require('./sitemap');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
 const { renderArticleHtml, refreshArticleTaxonomy, getEditorialProfile } = require('./article-render');
-const { PUBLIC_CATEGORIES, getPostTaxonomy } = require('../taxonomy');
+const { PUBLIC_CATEGORIES, getPostTaxonomy, categoryLabel, authorLabel, formatDate, formatReadingTime, cardImageSrcset, CARD_SIZES } = require('../taxonomy');
 
 function parseBuildOptions(argv = process.argv, env = process.env) {
     const forceRebuild = argv.includes('--force') || argv.includes('-f');
@@ -157,16 +157,12 @@ function compactExcerpt(value, maxLength = 120) {
 }
 
 function formatBlogIndexDate(post) {
-    const value = post.date || post.displayDate || '';
-    const parsed = value ? new Date(value.length === 10 ? `${value}T12:00:00` : value) : null;
-    if (parsed && !Number.isNaN(parsed.getTime())) {
-        return new Intl.DateTimeFormat('el-GR', { day: 'numeric', month: 'long', year: 'numeric' }).format(parsed);
-    }
-    return post.displayDate || post.date || '';
+    return formatDate(post.date || '') || post.displayDate || '';
 }
 
-function formatReadingTime(value) {
-    return String(value || '').replace(/\bmin\b/gi, 'λεπ');
+// Greek capitals drop the tonos: "Ειδήσεις" → "ΕΙΔΗΣΕΙΣ".
+function greekUpper(value) {
+    return String(value || '').normalize('NFD').replace(/\u0301/g, '').toUpperCase().normalize('NFC');
 }
 
 function getBlogIndexSummary(count) {
@@ -247,7 +243,7 @@ function renderBlogCategoryFilters(categories) {
     categories.forEach(category => {
         const name = typeof category === 'string' ? category : category.name;
         if (!name) return;
-        const label = formatCategoryLabel(name);
+        const label = categoryLabel(name) || formatCategoryLabel(name);
         buttons.push(
             `<button class="category-chip" data-category="${escapeHtmlAttribute(name)}" aria-pressed="false">${escapeHtmlAttribute(label)}</button>`
         );
@@ -260,7 +256,7 @@ function renderBlogCardCategories(categories) {
     const list = categories || [];
     const chips = list
         .slice(0, 2)
-        .map(category => `<span class="article-card-cat">${escapeHtmlAttribute(formatCategoryLabel(category))}</span>`);
+        .map(category => `<span class="article-card-cat">${escapeHtmlAttribute(categoryLabel(category) || formatCategoryLabel(category))}</span>`);
     if (list.length > 2) {
         chips.push(`<span class="article-card-cat article-card-cat-more">+${list.length - 2}</span>`);
     }
@@ -287,7 +283,7 @@ function renderBlogIndexCard(post, idx) {
         ? path.join(CONFIG.BLOG_DIR, post.id, path.posix.basename(image))
         : null;
     const hasImage = Boolean(image && (!imagePath || fs.existsSync(imagePath)));
-    const author = post.author || 'F1 Stories';
+    const author = authorLabel(post.author || 'F1 Stories');
     const excerpt = post.excerpt || '';
     let readingTime = post.readingTime || post.readTime || '';
     if (!readingTime && post.wordCount) readingTime = `${Math.max(1, Math.ceil(post.wordCount / 200))} min`;
@@ -300,11 +296,16 @@ function renderBlogIndexCard(post, idx) {
     const imageHeight = parseInt(post.thumbnailHeight, 10) || 188;
     const isLcpImage = idx === 0 && hasImage;
     const imageClass = `article-card-img${isLcpImage ? ' loaded' : ''}`;
+    // idx 0 is the curated lead on the static first page, drawn large.
+    const srcset = hasImage ? cardImageSrcset(image, idx === 0) : '';
+    const responsiveAttrs = srcset
+        ? `${isLcpImage ? ' srcset' : ' data-srcset'}="${escapeHtmlAttribute(srcset)}" sizes="${idx === 0 ? CARD_SIZES.archiveLead : CARD_SIZES.archiveCard}"`
+        : '';
     const imageAttrs = !hasImage
         ? ' hidden'
         : isLcpImage
-        ? ` src="${escapeHtmlAttribute(image)}" loading="eager" fetchpriority="high"`
-        : ` data-src="${escapeHtmlAttribute(image)}" loading="lazy"`;
+        ? ` src="${escapeHtmlAttribute(image)}"${responsiveAttrs} loading="eager" fetchpriority="high"`
+        : ` data-src="${escapeHtmlAttribute(image)}"${responsiveAttrs} loading="lazy"`;
     const stagger = 0.06;
     const animationDelay = Math.round(idx * stagger * 100) / 100;
 
@@ -316,7 +317,7 @@ function renderBlogIndexCard(post, idx) {
         + `<h2 class="article-card-title">${escapeHtmlAttribute(post.title)}</h2>`
         + `<p class="article-card-excerpt">${escapeHtmlAttribute(excerpt)}</p>`
         + '</div>'
-        + `<div class="article-card-footer"><span class="article-card-read">Διαβάστε περισσότερα <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span><div class="article-card-cats">${categories}</div></div></div>`
+        + `<div class="article-card-footer"><span class="article-card-read">Διάβασε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span><div class="article-card-cats">${categories}</div></div></div>`
         + '</a>'
         + '</article>';
 }
@@ -452,9 +453,9 @@ function injectHomepageHero(hero) {
     const webp = /\.webp(?:\?.*)?$/i.test(image) ? image : '';
     const titlePresentation = heroTitlePresentation(hero.title || 'F1 Stories');
     const title = escapeHtmlAttribute(titlePresentation.text);
-    const category = escapeHtmlAttribute(String(hero.category || 'News').toUpperCase());
+    const category = escapeHtmlAttribute(greekUpper(categoryLabel(hero.category || 'News')));
     const excerpt = escapeHtmlAttribute(hero.excerpt || '');
-    const byline = escapeHtmlAttribute(`${hero.author || 'F1 Stories'} · ${hero.date || ''}`);
+    const byline = escapeHtmlAttribute(`${authorLabel(hero.author || 'F1 Stories')} · ${formatDate(hero.date || '', 'long')}`);
     const storyId = hero.slug || hero.id || '';
     const href = `/blog-module/blog-entries/${encodeURIComponent(storyId)}/article.html`;
     const width = parseInt(hero.heroImageWidth, 10) || 1920;
@@ -609,7 +610,8 @@ function injectBlogIndexFirstPage(indexPosts, pageOneData) {
 }
 
 async function buildHomeLatest(blogPosts) {
-    return Promise.all(blogPosts.slice(0, 3).map(async post => {
+    // [0] is the homepage cover; [1..3] fill the journal so the cover story is not repeated.
+    return Promise.all(blogPosts.slice(0, 4).map(async post => {
         const thumbnail = getCardThumbnailPath(post.image);
         const thumbnailDimensions = await getImageDimensionsForPublicPath(thumbnail);
         const hero = await buildHomepageHeroData(post);

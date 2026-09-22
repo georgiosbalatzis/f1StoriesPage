@@ -1,0 +1,164 @@
+[
+  {
+    "concept": "a",
+    "page": "homepage",
+    "viewport": "desktop",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Grand Prix Journal · F1Stories\",\"width\":1440,\"scrollWidth\":1440,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Ο οδηγός που\\nπάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "a",
+    "page": "homepage",
+    "viewport": "mobile",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Grand Prix Journal · F1Stories\",\"width\":390,\"scrollWidth\":390,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Ο οδηγός που\\nπάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "a",
+    "page": "homepage",
+    "viewport": "tablet",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Grand Prix Journal · F1Stories\",\"width\":768,\"scrollWidth\":768,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Ο οδηγός που\\nπάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "a",
+    "page": "article",
+    "viewport": "desktop",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Grand Prix Journal · Mika Salo: Ο οδηγός που πάντα πρόσφερε.\",\"width\":1440,\"scrollWidth\":1440,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Mika Salo: Ο οδηγός που πάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "a",
+    "page": "article",
+    "viewport": "mobile",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Grand Prix Journal · Mika Salo: Ο οδηγός που πάντα πρόσφερε.\",\"width\":390,\"scrollWidth\":390,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Mika Salo: Ο οδηγός που πάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "a",
+    "page": "article",
+    "viewport": "tablet",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Grand Prix Journal · Mika Salo: Ο οδηγός που πάντα πρόσφερε.\",\"width\":768,\"scrollWidth\":768,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Mika Salo: Ο οδηγός που πάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "a",
+    "page": "data-hub",
+    "viewport": "desktop",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Grand Prix Journal · F1 Data Hub\",\"width\":1440,\"scrollWidth\":1440,\"fonts\":\"loaded\",\"brokenImages\":[\"http://127.0.0.1:4186/source/images/drivers/max_verstappen.webp\",\"http://127.0.0.1:4186/source/images/drivers/arvid_lindblad.webp\"],\"overflow\":[],\"h1\":\"Κάθε βαθμός,\\nμια ιστορία.\"}\n```\n"
+  },
+  {
+    "concept": "a",
+    "page": "data-hub",
+    "viewport": "mobile",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Grand Prix Journal · F1 Data Hub\",\"width\":390,\"scrollWidth\":390,\"fonts\":\"loaded\",\"brokenImages\":[\"http://127.0.0.1:4186/source/images/drivers/max_verstappen.webp\",\"http://127.0.0.1:4186/source/images/drivers/arvid_lindblad.webp\"],\"overflow\":[],\"h1\":\"Κάθε βαθμός,\\nμια ιστορία.\"}\n```\n"
+  },
+  {
+    "concept": "a",
+    "page": "data-hub",
+    "viewport": "tablet",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Grand Prix Journal · F1 Data Hub\",\"width\":768,\"scrollWidth\":768,\"fonts\":\"loaded\",\"brokenImages\":[\"http://127.0.0.1:4186/source/images/drivers/max_verstappen.webp\",\"http://127.0.0.1:4186/source/images/drivers/arvid_lindblad.webp\"],\"overflow\":[],\"h1\":\"Κάθε βαθμός,\\nμια ιστορία.\"}\n```\n"
+  },
+  {
+    "concept": "b",
+    "page": "homepage",
+    "viewport": "desktop",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Paddock · F1Stories\",\"width\":1440,\"scrollWidth\":1440,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Mika Salo: Ο οδηγός που πάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "b",
+    "page": "homepage",
+    "viewport": "mobile",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Paddock · F1Stories\",\"width\":390,\"scrollWidth\":390,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Mika Salo: Ο οδηγός που πάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "b",
+    "page": "homepage",
+    "viewport": "tablet",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Paddock · F1Stories\",\"width\":768,\"scrollWidth\":768,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Mika Salo: Ο οδηγός που πάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "b",
+    "page": "article",
+    "viewport": "desktop",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Paddock · Mika Salo: Ο οδηγός που πάντα πρόσφερε.\",\"width\":1440,\"scrollWidth\":1440,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Mika Salo: Ο οδηγός που πάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "b",
+    "page": "article",
+    "viewport": "mobile",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Paddock · Mika Salo: Ο οδηγός που πάντα πρόσφερε.\",\"width\":390,\"scrollWidth\":390,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Mika Salo: Ο οδηγός που πάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "b",
+    "page": "article",
+    "viewport": "tablet",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Paddock · Mika Salo: Ο οδηγός που πάντα πρόσφερε.\",\"width\":768,\"scrollWidth\":768,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Mika Salo: Ο οδηγός που πάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "b",
+    "page": "data-hub",
+    "viewport": "desktop",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Paddock · F1 Data Hub\",\"width\":1440,\"scrollWidth\":1440,\"fonts\":\"loaded\",\"brokenImages\":[\"http://127.0.0.1:4186/source/images/drivers/max_verstappen.webp\",\"http://127.0.0.1:4186/source/images/drivers/arvid_lindblad.webp\"],\"overflow\":[],\"h1\":\"Κάθε βαθμός,\\nμια ιστορία.\"}\n```\n"
+  },
+  {
+    "concept": "b",
+    "page": "data-hub",
+    "viewport": "mobile",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Paddock · F1 Data Hub\",\"width\":390,\"scrollWidth\":390,\"fonts\":\"loaded\",\"brokenImages\":[\"http://127.0.0.1:4186/source/images/drivers/max_verstappen.webp\",\"http://127.0.0.1:4186/source/images/drivers/arvid_lindblad.webp\"],\"overflow\":[],\"h1\":\"Κάθε βαθμός,\\nμια ιστορία.\"}\n```\n"
+  },
+  {
+    "concept": "b",
+    "page": "data-hub",
+    "viewport": "tablet",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Paddock · F1 Data Hub\",\"width\":768,\"scrollWidth\":768,\"fonts\":\"loaded\",\"brokenImages\":[\"http://127.0.0.1:4186/source/images/drivers/max_verstappen.webp\",\"http://127.0.0.1:4186/source/images/drivers/arvid_lindblad.webp\"],\"overflow\":[],\"h1\":\"Κάθε βαθμός,\\nμια ιστορία.\"}\n```\n"
+  },
+  {
+    "concept": "c",
+    "page": "homepage",
+    "viewport": "desktop",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Race Notebook · F1Stories\",\"width\":1440,\"scrollWidth\":1440,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Πίσω από τον αγώνα,\\nυπάρχει μια ιστορία.\"}\n```\n"
+  },
+  {
+    "concept": "c",
+    "page": "homepage",
+    "viewport": "mobile",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Race Notebook · F1Stories\",\"width\":390,\"scrollWidth\":390,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Πίσω από τον αγώνα,\\nυπάρχει μια ιστορία.\"}\n```\n"
+  },
+  {
+    "concept": "c",
+    "page": "homepage",
+    "viewport": "tablet",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Race Notebook · F1Stories\",\"width\":768,\"scrollWidth\":768,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Πίσω από τον αγώνα,\\nυπάρχει μια ιστορία.\"}\n```\n"
+  },
+  {
+    "concept": "c",
+    "page": "article",
+    "viewport": "desktop",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Race Notebook · Mika Salo: Ο οδηγός που πάντα πρόσφερε.\",\"width\":1440,\"scrollWidth\":1440,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Mika Salo: Ο οδηγός που πάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "c",
+    "page": "article",
+    "viewport": "mobile",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Race Notebook · Mika Salo: Ο οδηγός που πάντα πρόσφερε.\",\"width\":390,\"scrollWidth\":390,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Mika Salo: Ο οδηγός που πάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "c",
+    "page": "article",
+    "viewport": "tablet",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Race Notebook · Mika Salo: Ο οδηγός που πάντα πρόσφερε.\",\"width\":768,\"scrollWidth\":768,\"fonts\":\"loaded\",\"brokenImages\":[],\"overflow\":[],\"h1\":\"Mika Salo: Ο οδηγός που πάντα πρόσφερε.\"}\n```\n"
+  },
+  {
+    "concept": "c",
+    "page": "data-hub",
+    "viewport": "desktop",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Race Notebook · F1 Data Hub\",\"width\":1440,\"scrollWidth\":1440,\"fonts\":\"loaded\",\"brokenImages\":[\"http://127.0.0.1:4186/source/images/drivers/max_verstappen.webp\",\"http://127.0.0.1:4186/source/images/drivers/arvid_lindblad.webp\"],\"overflow\":[],\"h1\":\"Κάθε βαθμός,\\nμια ιστορία.\"}\n```\n"
+  },
+  {
+    "concept": "c",
+    "page": "data-hub",
+    "viewport": "mobile",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Race Notebook · F1 Data Hub\",\"width\":390,\"scrollWidth\":390,\"fonts\":\"loaded\",\"brokenImages\":[\"http://127.0.0.1:4186/source/images/drivers/max_verstappen.webp\",\"http://127.0.0.1:4186/source/images/drivers/arvid_lindblad.webp\"],\"overflow\":[],\"h1\":\"Κάθε βαθμός,\\nμια ιστορία.\"}\n```\n"
+  },
+  {
+    "concept": "c",
+    "page": "data-hub",
+    "viewport": "tablet",
+    "result": "Script ran on page and returned:\n```json\n{\"title\":\"Race Notebook · F1 Data Hub\",\"width\":768,\"scrollWidth\":768,\"fonts\":\"loaded\",\"brokenImages\":[\"http://127.0.0.1:4186/source/images/drivers/max_verstappen.webp\",\"http://127.0.0.1:4186/source/images/drivers/arvid_lindblad.webp\"],\"overflow\":[],\"h1\":\"Κάθε βαθμός,\\nμια ιστορία.\"}\n```\n"
+  }
+]

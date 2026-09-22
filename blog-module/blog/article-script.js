@@ -71,7 +71,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const nameEl = $('#author-name');
         if (!nameEl) return;
         const name = nameEl.textContent.trim();
-        const data = AUTHORS[name];
+        // The byline shows the Greek display name; the profile link carries the canonical slug.
+        const link = nameEl.querySelector('a[href*="author="]');
+        const slug = link ? new URL(link.href, window.location.href).searchParams.get('author') : '';
+        const key = Object.keys(AUTHORS).find(k => k === name || k.toLowerCase().replace(/\s+/g, '-') === slug);
+        const data = key ? AUTHORS[key] : null;
         const imgEl = $('#author-image');
         const initialEl = $('#author-initial');
         const titleEl = $('#author-title');

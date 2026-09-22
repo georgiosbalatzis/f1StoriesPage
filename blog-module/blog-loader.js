@@ -201,12 +201,50 @@ document.addEventListener('DOMContentLoaded', function () {
         dateEl.className = 'home-story-meta__date';
         dateEl.textContent = date || '';
 
-        meta.append(labelEl, dateEl);
+        const sep = document.createElement('span');
+        sep.setAttribute('aria-hidden', 'true');
+        sep.textContent = '·';
+
+        meta.append(labelEl, sep, dateEl);
         return meta;
     }
 
-    function categoryLabel(post) {
+    // Canonical category drives the treatment classes; readers see the Greek
+    // label from the shared taxonomy (loaded before this script on home).
+    const TAXONOMY = window.F1S_TAXONOMY || null;
+
+    function categoryKey(post) {
         return post.category || (post.categories && post.categories[0]) || 'News';
+    }
+
+    function categoryText(post) {
+        return TAXONOMY ? TAXONOMY.categoryLabel(categoryKey(post)) : categoryKey(post);
+    }
+
+    function authorText(post) {
+        const author = post.author || 'F1 Stories';
+        return TAXONOMY ? TAXONOMY.authorLabel(author) : author;
+    }
+
+    // Offer the 800w (and for the lead, 1600w) siblings of a card image.
+    function setCardSources(image, src, includeFull, sizesKey) {
+        const srcset = TAXONOMY && TAXONOMY.cardImageSrcset ? TAXONOMY.cardImageSrcset(src, includeFull) : '';
+        if (srcset) {
+            image.sizes = TAXONOMY.CARD_SIZES[sizesKey];
+            image.srcset = srcset;
+            // A missing candidate falls back to the plain card once.
+            image.addEventListener('error', function () { if (image.hasAttribute('srcset')) { image.removeAttribute('srcset'); image.src = src; } }, { once: true });
+        }
+        image.src = src;
+    }
+
+    function dateText(post, style) {
+        return TAXONOMY ? TAXONOMY.formatDate(post.date || '', style) : (post.date || '');
+    }
+
+    // Greek capitals drop the tonos: "Ειδήσεις" → "ΕΙΔΗΣΕΙΣ".
+    function greekUpper(value) {
+        return String(value || '').normalize('NFD').replace(/\u0301/g, '').toUpperCase().normalize('NFC');
     }
 
     function heroTitlePresentation(value) {
@@ -223,13 +261,13 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderHeroLead(post) {
         if (!post) return;
         const href = '/blog-module/blog-entries/' + encodeURIComponent(post.slug || post.id || '') + '/article.html';
-        const category = categoryLabel(post);
+        const category = categoryText(post);
         const categoryEl = document.getElementById('hero-category');
         const titleEl = document.getElementById('hero-title');
         const excerptEl = document.getElementById('hero-story-excerpt');
         const bylineEl = document.getElementById('hero-story-byline');
         const linkEl = document.getElementById('hero-story-link');
-        if (categoryEl) categoryEl.textContent = category.toUpperCase();
+        if (categoryEl) categoryEl.textContent = greekUpper(category);
         if (titleEl) {
             const periodEl = titleEl.querySelector('.hero-period');
             const title = heroTitlePresentation(post.title);
@@ -242,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         if (excerptEl) excerptEl.textContent = post.excerpt || '';
-        if (bylineEl) bylineEl.textContent = (post.author || 'F1 Stories') + ' · ' + (post.date || '');
+        if (bylineEl) bylineEl.textContent = authorText(post) + ' · ' + dateText(post, 'long');
         if (linkEl) linkEl.href = href;
         syncHeroMedia(post);
     }
@@ -296,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function () {
         excerpt.textContent = post.excerpt || '';
         const readMore = document.createElement('span');
         readMore.className = 'blog-read-more';
-        readMore.append(document.createTextNode('Συνέχεια ανάγνωσης '), createIcon('fa-arrow-right'));
+        readMore.append(document.createTextNode('Διάβασε '), createIcon('fa-arrow-right'));
         body.append(title, excerpt, readMore);
 
         card.append(media, body);
@@ -313,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const thumbHeight = parseInt(post.thumbnailHeight, 10) || 188;
 
         const article = document.createElement('article');
-        article.className = 'home-lead-story home-story-treatment--' + categoryLabel(post).toLowerCase();
+        article.className = 'home-lead-story home-story-treatment--' + categoryKey(post).toLowerCase();
 
         const link = document.createElement('a');
         link.href = href;
@@ -322,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const media = document.createElement('div');
         media.className = 'home-lead-story__media';
         const image = document.createElement('img');
-        image.src = img;
+        setCardSources(image, img, true, 'homeLead');
         image.alt = post.title || '';
         image.className = 'home-lead-story__image';
         image.loading = 'lazy';
@@ -335,7 +373,7 @@ document.addEventListener('DOMContentLoaded', function () {
         imageOverlay.className = 'home-lead-story__overlay';
         const overlayMeta = document.createElement('span');
         overlayMeta.className = 'home-lead-story__overlay-kicker';
-        overlayMeta.textContent = categoryLabel(post);
+        overlayMeta.textContent = categoryText(post);
         const overlayTitle = document.createElement('span');
         overlayTitle.className = 'home-lead-story__overlay-title';
         overlayTitle.textContent = post.title || '';
@@ -344,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const body = document.createElement('div');
         body.className = 'home-lead-story__body';
-        body.appendChild(createStoryMeta((post.author || 'F1 Stories') + ' · ' + categoryLabel(post), post.date));
+        body.appendChild(createStoryMeta(authorText(post) + ' · ' + categoryText(post), dateText(post)));
 
         const title = document.createElement('h3');
         title.className = 'home-lead-story__title';
@@ -356,7 +394,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const cta = document.createElement('span');
         cta.className = 'home-lead-story__cta';
-        cta.append(document.createTextNode('Συνέχεια ανάγνωσης '), createIcon('fa-arrow-right'));
+        cta.append(document.createTextNode('Διάβασε '), createIcon('fa-arrow-right'));
 
         body.append(title, excerpt, cta);
         link.append(media, body);
@@ -372,7 +410,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const thumbHeight = parseInt(post.thumbnailHeight, 10) || 188;
 
         const article = document.createElement('article');
-        article.className = 'home-secondary-story home-story-treatment--' + categoryLabel(post).toLowerCase();
+        article.className = 'home-secondary-story home-story-treatment--' + categoryKey(post).toLowerCase();
 
         const link = document.createElement('a');
         link.href = href;
@@ -381,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const media = document.createElement('div');
         media.className = 'home-secondary-story__media';
         const image = document.createElement('img');
-        image.src = img;
+        setCardSources(image, img, false, 'homeSecondary');
         image.alt = post.title || '';
         image.className = 'home-secondary-story__image';
         image.loading = 'lazy';
@@ -393,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const body = document.createElement('div');
         body.className = 'home-secondary-story__body';
-        body.appendChild(createStoryMeta(categoryLabel(post), post.date));
+        body.appendChild(createStoryMeta(categoryText(post), dateText(post)));
 
         const title = document.createElement('h3');
         title.className = 'home-secondary-story__title';
@@ -410,13 +448,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function renderHomepageFeed(container, posts) {
-        const recent = posts.slice(0, 3);
-        if (!recent.length) {
+        if (!posts.length) {
             container.replaceChildren(createMessageColumn('Δεν υπάρχουν διαθέσιμα άρθρα αυτή τη στιγμή.', 'text-center'));
             return;
         }
 
-        renderHeroLead(recent[0]);
+        renderHeroLead(posts[0]);
+        // The cover already carries posts[0]; the journal continues from the next story.
+        const recent = posts.length >= 4 ? posts.slice(1, 4) : posts.slice(0, 3);
 
         const shell = document.createElement('div');
         shell.className = 'home-stories-shell';

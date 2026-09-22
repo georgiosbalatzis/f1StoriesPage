@@ -81,3 +81,14 @@ assert.ok(legacyFrontmatter.tags.includes('Lewis Hamilton'));
 assert.ok(legacyFrontmatter.tags.includes('Racing'));
 
 console.log('author article source tests passed.');
+
+{
+    const { titleWarnings } = loadArticleSource();
+    assert.equal(titleWarnings('Michael Schumacher Schumacher', '').length, 1, 'repeated adjacent word');
+    assert.equal(titleWarnings('Ο Massa και ο Schumacher', '').length, 0, 'clean title');
+    assert.equal(titleWarnings('CHARLES LECLERC Ο ΑΙΩΝΙΟΣ ΔΙΑΔΟΧΟΣ', '').length, 1, 'mostly capitals');
+    assert.equal(titleWarnings('GP Καναδά 2025 🏁', '').length, 1, 'emoji in title');
+    assert.equal(titleWarnings('Καθαρός τίτλος', '## Ενότητα 🔥\nκείμενο').length, 1, 'emoji in heading');
+    assert.equal(titleWarnings('F1 και F1 Academy', '').length, 0, 'non-adjacent repeat is fine');
+    console.log('titleWarnings: ok');
+}

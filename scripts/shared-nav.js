@@ -139,7 +139,7 @@
     function getScrollTopThreshold() {
         var isMobile = window.matchMedia && window.matchMedia('(max-width: 767.98px)').matches;
         if (isMobile) return Math.max(900, Math.round(window.innerHeight * 1.2));
-        return 400;
+        return window.innerHeight * 2;
     }
 
     function updateScrollTopButton(scrollY) {

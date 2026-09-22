@@ -42,6 +42,65 @@
         '20260824D': 'Opinion'
     });
 
+    // Display layer. Data, URLs and filters keep the canonical values above;
+    // only the text a reader sees is Greek.
+    const CATEGORY_LABELS = Object.freeze({
+        News: 'Ειδήσεις', Analysis: 'Ανάλυση', Technical: 'Τεχνικά', History: 'Ιστορία', Opinion: 'Άποψη',
+        Betting: 'Στοίχημα', Drivers: 'Οδηγοί', Teams: 'Ομάδες', '2026': '2026'
+    });
+    const AUTHOR_LABELS = Object.freeze({
+        'Georgios Balatzis': 'Γιώργος Μπαλατζής',
+        'Giannis Poulikidis': 'Γιάννης Πουλικίδης',
+        'Themis Charvalis': 'Θέμης Χαρβάλης',
+        'Thanasis Batalas': 'Θανάσης Μπαταλάς',
+        'Dimitris Keramidiotis': 'Δημήτρης Κεραμιδιώτης'
+    });
+    // Fixed month tables keep build (Node ICU) and browser output identical.
+    const MONTHS_SHORT = ['Ιαν', 'Φεβ', 'Μαρ', 'Απρ', 'Μαΐ', 'Ιουν', 'Ιουλ', 'Αυγ', 'Σεπ', 'Οκτ', 'Νοε', 'Δεκ'];
+    const MONTHS_LONG = ['Ιανουαρίου', 'Φεβρουαρίου', 'Μαρτίου', 'Απριλίου', 'Μαΐου', 'Ιουνίου', 'Ιουλίου',
+        'Αυγούστου', 'Σεπτεμβρίου', 'Οκτωβρίου', 'Νοεμβρίου', 'Δεκεμβρίου'];
+
+    function categoryLabel(value) {
+        return Object.prototype.hasOwnProperty.call(CATEGORY_LABELS, value) ? CATEGORY_LABELS[value] : String(value || '');
+    }
+
+    function authorLabel(name) {
+        const key = String(name || '').trim();
+        return Object.prototype.hasOwnProperty.call(AUTHOR_LABELS, key) ? AUTHOR_LABELS[key] : key;
+    }
+
+    /** "2026-09-20" → "20 Σεπ 2026" (short) or "20 Σεπτεμβρίου 2026" (long). */
+    function formatDate(value, style) {
+        const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value || ''));
+        if (!match) return String(value || '');
+        const months = style === 'long' ? MONTHS_LONG : MONTHS_SHORT;
+        return `${Number(match[3])} ${months[Number(match[2]) - 1]} ${match[1]}`;
+    }
+
+    /** Accepts 4, "4", "4 min" or "4 λεπ" and returns "4 λεπτά" (or "1 λεπτό"). */
+    function formatReadingTime(value) {
+        const minutes = parseInt(String(value || '').replace(/[^\d]/g, ''), 10);
+        if (!minutes) return '';
+        return minutes === 1 ? '1 λεπτό' : `${minutes} λεπτά`;
+    }
+
+    // Every "<name>-card.webp" (400w) ships with "<name>-mobile.webp" (800w) and
+    // "<name>.webp" (1600w); the public artifact copies them together. Leads may
+    // ask for the 1600w original; grid cards stop at 800w to keep bytes sane.
+    const CARD_SIZES = Object.freeze({
+        archiveLead: '(min-width: 1200px) 780px, (min-width: 768px) 55vw, 100vw',
+        archiveCard: '(min-width: 1200px) 430px, (min-width: 768px) 50vw, 100vw',
+        homeLead: '(min-width: 1200px) 640px, (min-width: 768px) 55vw, 100vw',
+        // 16:9 cards cropped into a 104px square on phones need ~185px of width.
+        homeSecondary: '(max-width: 767px) 185px, 400px',
+        related: '(max-width: 767px) 40vw, 390px'
+    });
+    function cardImageSrcset(url, includeFull) {
+        const match = /^(.*)-card\.webp$/.exec(String(url || ''));
+        if (!match) return '';
+        return `${match[1]}-card.webp 400w, ${match[1]}-mobile.webp 800w${includeFull ? `, ${match[1]}.webp 1600w` : ''}`;
+    }
+
     function comparisonKey(value) {
         return value.normalize('NFC').toLowerCase().replace(/ς/g, 'σ');
     }
@@ -110,5 +169,8 @@
         return { category, categories, tags };
     }
 
-    return Object.freeze({ PUBLIC_CATEGORIES, LEGACY_CATEGORY_OVERRIDES, normalizeTags, normalizeCategories, isPublicCategory, getPostTaxonomy });
+    return Object.freeze({
+        PUBLIC_CATEGORIES, LEGACY_CATEGORY_OVERRIDES, normalizeTags, normalizeCategories, isPublicCategory, getPostTaxonomy,
+        categoryLabel, authorLabel, formatDate, formatReadingTime, cardImageSrcset, CARD_SIZES
+    });
 }));
