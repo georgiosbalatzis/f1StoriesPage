@@ -13,15 +13,23 @@
         style.textContent = [
             '.f1s-author-dialog-backdrop{position:fixed;inset:0;z-index:12000;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(17,17,19,.86)}',
             '.f1s-author-dialog{width:min(520px,100%);max-height:min(86vh,720px);overflow:auto;border:1px solid var(--border,#ffffff14);border-radius:2px;background:var(--bg-surface,#161618);color:var(--text-primary,#e5e5e7);box-shadow:0 24px 70px rgba(0,0,0,.48);opacity:1}',
+            // Scoped under the backdrop so page-level section/h2 styles cannot resize the dialog.
+            '.f1s-author-dialog-backdrop .f1s-author-dialog{padding:0;margin:0}',
             '.f1s-author-dialog-head{padding:1rem 1.1rem .35rem}',
-            '.f1s-author-dialog-title{margin:0;font-size:1rem;line-height:1.25}',
+            '.f1s-author-dialog-backdrop .f1s-author-dialog-title{margin:0;font-family:inherit;font-size:1.05rem;font-weight:600;line-height:1.25;letter-spacing:0;text-transform:none}',
             '.f1s-author-dialog-body{padding:.45rem 1.1rem 1rem}',
             '.f1s-author-dialog-message{margin:0;color:var(--text-secondary,#a1a1a6);font-size:.9rem;line-height:1.5;white-space:pre-wrap}',
             '.f1s-author-dialog-input{width:100%;margin-top:.85rem;border:1px solid var(--border,#ffffff14);border-radius:2px;background:var(--bg-base,#111113);color:var(--text-primary,#e5e5e7);padding:.72rem .8rem;font:inherit;opacity:1}',
             '.f1s-author-dialog-actions{display:flex;justify-content:flex-end;gap:.55rem;padding:.85rem 1.1rem 1.05rem;border-top:1px solid var(--border,rgba(255,255,255,.1))}',
             '.f1s-author-dialog-btn{border:1px solid var(--border,#ffffff14);border-radius:2px;background:var(--bg-surface-alt,#1e1e20);color:var(--text-primary,#e5e5e7);padding:.55rem .9rem;font:inherit;font-weight:700;cursor:pointer;opacity:1}',
-            '.f1s-author-dialog-btn-primary{border-color:var(--accent,#41b6e6);background:var(--accent,#41b6e6);color:#061018}',
+            '.f1s-author-dialog-btn-primary{border-color:var(--accent,#41b6e6);background:var(--accent,#41b6e6);color:var(--accent-contrast,#061018)}',
             '.f1s-author-dialog-btn:focus-visible,.f1s-author-dialog-input:focus-visible{outline:2px solid var(--accent,#41b6e6);outline-offset:2px}',
+            '.f1s-author-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}',
+            '.f1s-author-dialog-choices{display:grid;gap:.5rem;margin:.85rem 0 0;padding:0;border:0}',
+            '.f1s-author-dialog-choice{display:grid;grid-template-columns:20px 1fr;gap:.6rem;align-items:start;padding:.7rem .75rem;border:1px solid var(--border,#ffffff14);cursor:pointer;color:var(--text-primary,#e5e5e7);font-size:.9rem}',
+            '.f1s-author-dialog-choice:has(input:checked){border-color:var(--accent,#41b6e6)}',
+            '.f1s-author-dialog-choice input{margin:.2rem 0 0;accent-color:var(--accent,#41b6e6)}',
+            '.f1s-author-dialog-choice small{display:block;margin-top:.15rem;color:var(--text-secondary,#a1a1a6);font-size:.8rem}',
             '@media (max-width:560px){.f1s-author-dialog-backdrop{align-items:flex-end;padding:.75rem}.f1s-author-dialog-actions{display:grid;grid-template-columns:1fr}.f1s-author-dialog-actions .f1s-author-dialog-btn-primary{order:-1}}'
         ].join('');
         document.head.appendChild(style);
@@ -52,7 +60,7 @@
     function openDialog(options) {
         options = options || {};
         var kind = options.kind || 'alert';
-        var title = options.title || (kind === 'alert' ? 'Notice' : kind === 'prompt' ? 'Input Required' : 'Confirm');
+        var title = options.title || (kind === 'alert' ? 'Ειδοποίηση' : kind === 'prompt' ? 'Απαιτείται στοιχείο' : 'Επιβεβαίωση');
         var previousFocus = document.activeElement;
 
         installStyle();
@@ -94,11 +102,43 @@
                 body.appendChild(input);
             }
 
+            // Choice: one radio per option; resolves with the chosen value.
+            var choiceInputs = [];
+            if (kind === 'choice') {
+                var group = document.createElement('fieldset');
+                group.className = 'f1s-author-dialog-choices';
+                var legend = document.createElement('legend');
+                legend.className = 'f1s-author-sr';
+                legend.textContent = title;
+                group.appendChild(legend);
+                (options.choices || []).forEach(function (choice, index) {
+                    var row = document.createElement('label');
+                    row.className = 'f1s-author-dialog-choice';
+                    var radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = 'f1s-author-dialog-choice';
+                    radio.value = choice.value;
+                    radio.checked = options.defaultValue ? choice.value === options.defaultValue : index === 0;
+                    var text = document.createElement('span');
+                    text.textContent = choice.label;
+                    if (choice.detail) {
+                        var detail = document.createElement('small');
+                        detail.textContent = choice.detail;
+                        text.appendChild(detail);
+                    }
+                    row.appendChild(radio);
+                    row.appendChild(text);
+                    group.appendChild(row);
+                    choiceInputs.push(radio);
+                });
+                body.appendChild(group);
+            }
+
             var actions = document.createElement('div');
             actions.className = 'f1s-author-dialog-actions';
             var cancelButton = null;
             if (kind !== 'alert') {
-                cancelButton = createButton(options.cancelLabel || 'Cancel', false);
+                cancelButton = createButton(options.cancelLabel || 'Ακύρωση', false);
                 actions.appendChild(cancelButton);
             }
             var okButton = createButton(options.okLabel || 'OK', true);
@@ -120,12 +160,17 @@
             }
 
             function cancel() {
-                finish(kind === 'prompt' ? null : false);
+                finish(kind === 'prompt' || kind === 'choice' ? null : false);
             }
 
             function accept() {
                 if (kind === 'prompt') {
                     finish(input.value);
+                    return;
+                }
+                if (kind === 'choice') {
+                    var picked = choiceInputs.filter(function (radio) { return radio.checked; })[0];
+                    finish(picked ? picked.value : null);
                     return;
                 }
                 finish(true);
@@ -146,7 +191,7 @@
             document.addEventListener('keydown', onKeydown);
 
             setTimeout(function () {
-                (input || okButton).focus();
+                (input || choiceInputs.filter(function (radio) { return radio.checked; })[0] || okButton).focus();
                 if (input) input.select();
             }, 0);
         });
@@ -171,6 +216,14 @@
             options = options || {};
             options.kind = 'confirm';
             options.message = message;
+            return enqueue(options);
+        },
+        // choices: [{ value, label, detail? }]. Resolves with a value, or null on cancel.
+        choose: function (message, choices, options) {
+            options = options || {};
+            options.kind = 'choice';
+            options.message = message;
+            options.choices = choices;
             return enqueue(options);
         },
         prompt: function (message, defaultValue, options) {

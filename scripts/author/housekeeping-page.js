@@ -4,14 +4,13 @@
     var REPO_OWNER = 'georgiosbalatzis';
     var REPO_NAME  = 'f1StoriesPage';
     var TOKEN_KEY  = 'f1stories-gh-token';
-    var TOKEN_REMEMBER_KEY = TOKEN_KEY + '-remember';
-    var tokenMemory = '';
     var ENTRIES_PATH = 'blog-module/blog-entries';
     var authorDom = window.F1S_AUTHOR_DOM_TOOLS;
     var authorDialogs = window.F1S_AUTHOR_DIALOGS;
     var articleSource = window.F1S_AUTHOR_ARTICLE_SOURCE;
     var articleIndex = window.F1S_AUTHOR_ARTICLE_INDEX;
     var taxonomy = window.F1S_TAXONOMY;
+    var sessionTokens = window.F1S_AUTHOR_SESSION_TOKEN;
 
     if (!authorDom) {
         throw new Error('Author DOM helper failed to load.');
@@ -21,6 +20,9 @@
     }
     if (!articleSource || !articleIndex || !taxonomy) {
         throw new Error('Article taxonomy, source and index helpers failed to load.');
+    }
+    if (!sessionTokens) {
+        throw new Error('Author session token helper failed to load.');
     }
 
     function showAlert(message, options) {
@@ -35,20 +37,14 @@
         return authorDialogs.prompt(message, defaultValue, options);
     }
 
-    function setImportReady() {
-        authorDom.setIconText(importBtn, 'fa-file-zipper', 'Import ZIP');
+    function el(tag, className, text) {
+        var node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text != null) node.textContent = text;
+        return node;
     }
 
-    function setEditSaveReady() {
-        authorDom.setIconText(editSaveBtn, 'fa-check', 'Save changes');
-    }
-
-    // ── Token helpers (shared with generate.html) ────────
-    // Tokens must be ASCII-only. fetch() rejects header values with any
-    // character > 255, so a smart-dash slipped into the token (e.g. from
-    // pasting the hint placeholder) would break every request with
-    // "Cannot convert value in record<ByteString, ByteString> to ByteString".
-    function isAsciiToken(t) { return /^[\x20-\x7E]+$/.test(t); }
+    function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
 
     function readStorage(storage, key) {
         try { return storage.getItem(key) || ''; } catch (e) { return ''; }
@@ -65,82 +61,24 @@
         try { storage.removeItem(key); } catch (e) {}
     }
 
-    function setSessionToken(t) {
-        tokenMemory = t || '';
-        writeStorage(sessionStorage, TOKEN_KEY, tokenMemory);
-    }
-
-    function clearStoredToken() {
-        tokenMemory = '';
-        removeStorage(sessionStorage, TOKEN_KEY);
-        removeStorage(localStorage, TOKEN_KEY);
-        removeStorage(localStorage, TOKEN_REMEMBER_KEY);
-    }
-
-    function hasPersistentToken() {
-        var t = readStorage(localStorage, TOKEN_KEY);
-        if (!t || readStorage(localStorage, TOKEN_REMEMBER_KEY) !== '1') return false;
-        if (!isAsciiToken(t)) {
-            removeStorage(localStorage, TOKEN_KEY);
-            removeStorage(localStorage, TOKEN_REMEMBER_KEY);
-            return false;
-        }
-        return true;
-    }
-
-    function getStoredToken() {
-        if (tokenMemory && isAsciiToken(tokenMemory)) return tokenMemory;
-
-        var sessionToken = readStorage(sessionStorage, TOKEN_KEY);
-        if (sessionToken) {
-            if (!isAsciiToken(sessionToken)) {
-                removeStorage(sessionStorage, TOKEN_KEY);
-                return '';
-            }
-            tokenMemory = sessionToken;
-            return sessionToken;
-        }
-
-        var localToken = readStorage(localStorage, TOKEN_KEY);
-        if (!localToken) return '';
-        if (!isAsciiToken(localToken)) {
-            removeStorage(localStorage, TOKEN_KEY);
-            removeStorage(localStorage, TOKEN_REMEMBER_KEY);
-            return '';
-        }
-
-        if (readStorage(localStorage, TOKEN_REMEMBER_KEY) !== '1') {
-            removeStorage(localStorage, TOKEN_KEY);
-            removeStorage(localStorage, TOKEN_REMEMBER_KEY);
-        }
-
-        setSessionToken(localToken);
-        return localToken;
-    }
-
-    function setStoredToken(t, remember) {
-        if (!t) {
-            clearStoredToken();
-            return;
-        }
-
-        setSessionToken(t);
-        removeStorage(localStorage, TOKEN_KEY);
-        removeStorage(localStorage, TOKEN_REMEMBER_KEY);
-    }
+    // ── GitHub token (session only) ───────────────────────
+    // Memory + sessionStorage only; legacy persistent tokens are migrated and
+    // removed from localStorage on load (session-token.js).
+    var tokenStore = sessionTokens.createSessionTokenStore(TOKEN_KEY);
+    tokenStore.migrateLegacyPersistentToken();
 
     async function promptForToken(hint) {
         var msg =
             (hint ? hint + '\n\n' : '') +
             'GitHub Personal Access Token (fine-grained):\n\n' +
-            '- Create at: github.com/settings/personal-access-tokens/new\n' +
+            '- Δημιούργησέ το στο: github.com/settings/personal-access-tokens/new\n' +
             '- Resource owner: ' + REPO_OWNER + '\n' +
             '- Only select repository: ' + REPO_NAME + '\n' +
             '- Repository permissions -> Contents: Read and write\n' +
             '- Repository permissions -> Pull requests: Read and write\n' +
-            '- Expiration: as short as you are comfortable with\n\n' +
-            'Paste the token below. Leave empty to clear.\n' +
-            'Default: keep it only for the current tab/session.';
+            '- Διάρκεια: όσο πιο σύντομη σε βολεύει\n\n' +
+            'Επικόλλησε το token παρακάτω. Άφησέ το κενό για διαγραφή.\n' +
+            'Κρατιέται μόνο για την τρέχουσα καρτέλα (sessionStorage).';
         var input = await showPrompt(msg, '', {
             title: 'GitHub Token',
             inputLabel: 'GitHub Personal Access Token',
@@ -148,27 +86,21 @@
         });
         if (input === null) return null;
         input = input.trim();
-        if (input && !isAsciiToken(input)) {
-            await showAlert('Token contains non-ASCII characters. Paste only the raw token from GitHub.');
+        if (input && !sessionTokens.isAsciiToken(input)) {
+            await showAlert('Το token περιέχει μη-ASCII χαρακτήρες. Επικόλλησε μόνο το αρχικό token από το GitHub.');
             return null;
         }
-        if (!input) {
-            setStoredToken('', false);
-            return '';
-        }
-        setStoredToken(input, false);
+        tokenStore.set(input);
+        paintTokenState();
         return input;
     }
 
-    // Migrate legacy persistent tokens into session storage as soon as this tool loads.
-    getStoredToken();
-
     async function requireToken() {
-        var t = getStoredToken();
+        var t = tokenStore.get();
         if (!t) {
             t = await promptForToken('');
             if (!t) {
-                await showAlert('Cannot continue without a token.');
+                await showAlert('Δεν γίνεται να συνεχίσεις χωρίς token.');
                 return null;
             }
         }
@@ -201,16 +133,27 @@
 
     function githubErrorHint(err) {
         if (!err || !err.status) {
-            return '\n\nCheck your connection and that the live site allows requests to api.github.com. If this only happens on the deployed site, the likely cause is Content-Security-Policy.';
+            return '\n\nΈλεγξε τη σύνδεση και ότι το site επιτρέπει requests προς api.github.com. Αν συμβαίνει μόνο στο live site, πιθανό αίτιο είναι το Content-Security-Policy.';
         }
         if (err.status === 401 || err.status === 403) {
-            return '\n\nCheck your token — repo access needs Contents: Read and write and Pull requests: Read and write.';
+            return '\n\nΈλεγξε το token — χρειάζεται Contents: Read and write και Pull requests: Read and write στο ' + REPO_OWNER + '/' + REPO_NAME + '.';
         }
         return '';
     }
 
     function createAuthorPullRequest(token, kind, identifier, tree, commitMessage, prTitle, prBody, progress) {
-        var github = window.F1S_AUTHOR_GITHUB.createClient({ owner: REPO_OWNER, repo: REPO_NAME });
+        var github = window.F1S_AUTHOR_GITHUB.createClient({
+            owner: REPO_OWNER,
+            repo: REPO_NAME,
+            messages: {
+                readBase: 'Ανάγνωση main…',
+                createBranch: 'Δημιουργία branch…',
+                readTree: 'Ανάγνωση δέντρου αρχείων…',
+                createCommit: 'Δημιουργία commit…',
+                updateBranch: 'Ενημέρωση branch…',
+                openPullRequest: 'Άνοιγμα Pull Request…'
+            }
+        });
         return github.createPullRequestFromTree(
             token,
             kind,
@@ -262,10 +205,7 @@
     }
 
     function normalizeZipPath(path) {
-        return String(path || '')
-            .replace(/\\/g, '/')
-            .replace(/^\.\/+/, '')
-            .replace(/^\/+/, '');
+        return articleSource.normalizeZipPath(path);
     }
 
     function mimeTypeForExtension(ext) {
@@ -345,47 +285,71 @@
     }
 
     // ─── DOM refs ────────────────────────────────────────
-    var listEl       = document.getElementById('hk-list');
-    var searchEl     = document.getElementById('hk-search');
-    var filterTag    = document.getElementById('hk-filter-tag');
-    var filterCat    = document.getElementById('hk-filter-cat');
-    var filterAuthor = document.getElementById('hk-filter-author');
-    var filterPanel  = document.getElementById('hk-filter-panel');
-    var filterToggle = document.getElementById('hk-filter-toggle');
-    var filterClose  = document.getElementById('hk-filter-close');
-    var filterReset  = document.getElementById('hk-filter-reset');
-    var filterDone   = document.getElementById('hk-filter-done');
-    var filterScrim  = document.getElementById('hk-filter-scrim');
-    var statsEl      = document.getElementById('hk-stats');
-    var densityGrid  = document.getElementById('hk-density-grid');
-    var densityList  = document.getElementById('hk-density-list');
-    var listFoot     = document.getElementById('hk-list-foot');
-    var loadMoreBtn  = document.getElementById('hk-load-more');
-    var importBtn    = document.getElementById('hk-import-btn');
-    var importInput  = document.getElementById('hk-import-input');
-    var refreshBtn   = document.getElementById('hk-refresh-btn');
-    var tokenBtn     = document.getElementById('hk-token-btn');
+    function byId(id) { return document.getElementById(id); }
+    var laneListEl   = byId('hk-lane-list');
+    var laneChipsEl  = byId('hk-lane-chips');
+    var lanesSubEl   = byId('hk-lanes-sub');
+    var laneHeading  = byId('hk-lane-heading');
+    var laneDescEl   = byId('hk-lane-desc');
+    var laneProgress = byId('hk-lane-progress');
+    var laneProgressText = byId('hk-lane-progress-text');
+    var laneProgressBar  = byId('hk-lane-progress-bar');
+    var browseEl     = byId('hk-browse');
+    var listEl       = byId('hk-list');
+    var searchEl     = byId('hk-search');
+    var filterTag    = byId('hk-filter-tag');
+    var filterCat    = byId('hk-filter-cat');
+    var filterAuthor = byId('hk-filter-author');
+    var filterReset  = byId('hk-filter-reset');
+    var statsEl      = byId('hk-stats');
+    var listFoot     = byId('hk-list-foot');
+    var loadMoreBtn  = byId('hk-load-more');
+    var importBtn    = byId('hk-import-btn');
+    var importInput  = byId('hk-import-input');
+    var refreshBtn   = byId('hk-refresh-btn');
+    var tokenBtn     = byId('hk-token-btn');
+    var tokenStateEl = byId('hk-token-state');
+    var logListEl    = byId('hk-log-list');
+    var logEmptyEl   = byId('hk-log-empty');
 
-    var editBackdrop  = document.getElementById('hk-edit-backdrop');
-    var editFolderEl  = document.getElementById('hk-edit-folder');
-    var editTagEl     = document.getElementById('hk-edit-tag');
-    var editCatEl     = document.getElementById('hk-edit-category');
-    var editAuthorEl  = document.getElementById('hk-edit-author');
-    var editDateEl    = document.getElementById('hk-edit-date');
-    var editTitleEl   = document.getElementById('hk-edit-title-input');
-    var editBodyEl    = document.getElementById('hk-edit-body');
-    var editImagesEl  = document.getElementById('hk-edit-images');
-    var editHeroIn    = document.getElementById('hk-edit-hero-input');
-    var editContIn    = document.getElementById('hk-edit-content-input');
-    var editSaveBtn   = document.getElementById('hk-edit-save');
-    var editCancelBtn = document.getElementById('hk-edit-cancel');
-    var editStatusEl  = document.getElementById('hk-edit-status');
+    var editBackdrop  = byId('hk-edit-backdrop');
+    var editFolderEl  = byId('hk-edit-folder');
+    var editFolderNote = byId('hk-edit-folder-note');
+    var editTagEl     = byId('hk-edit-tag');
+    var editCatEl     = byId('hk-edit-category');
+    var editAuthorEl  = byId('hk-edit-author');
+    var editDateEl    = byId('hk-edit-date');
+    var editTitleEl   = byId('hk-edit-title-input');
+    var editTitleWarn = byId('hk-edit-title-warnings');
+    var editBodyEl    = byId('hk-edit-body');
+    var editImagesEl  = byId('hk-edit-images');
+    var editHeroIn    = byId('hk-edit-hero-input');
+    var editContIn    = byId('hk-edit-content-input');
+    var editSaveBtn   = byId('hk-edit-save');
+    var editCancelBtn = byId('hk-edit-cancel');
+    var editCloseBtn  = byId('hk-edit-close');
+    var editStatusEl  = byId('hk-edit-status');
     taxonomy.PUBLIC_CATEGORIES.forEach(function (category) {
         var option = document.createElement('option');
         option.value = category;
         option.textContent = category;
         editCatEl.appendChild(option);
     });
+
+    function setImportReady() {
+        importBtn.disabled = false;
+        authorDom.setIconText(importBtn, 'fa-file-zipper', 'Εισαγωγή ZIP');
+    }
+
+    function setEditSaveReady() {
+        authorDom.setIconText(editSaveBtn, 'fa-check', 'Άνοιγμα PR');
+    }
+
+    function paintTokenState() {
+        var has = Boolean(tokenStore.get());
+        tokenStateEl.textContent = has ? 'Token: ενεργό (καρτέλα)' : 'Token GitHub';
+        tokenBtn.classList.toggle('has-token', has);
+    }
 
     // Mirrors blog-processor.js AUTHOR_MAP — changing author on an
     // edit rewrites the folder name so the processor picks up the
@@ -395,7 +359,7 @@
         'Georgios Balatzis':    'G',
         'Giannis Poulikidis':   'J',
         'Thanasis Batalas':     'T',
-        'Themis Charvalis':         'W',
+        'Themis Charvalis':     'W',
         'Dimitris Keramidiotis':'D',
         'F1 Stories Team':      ''
     };
@@ -431,7 +395,7 @@
                 throw e;
             }
         }
-        throw new Error('No free -N suffix found for ' + isoDate + authorCode + ' (tried 2-99).');
+        throw new Error('Δεν βρέθηκε ελεύθερο -N (2–99) για ' + isoDate + authorCode + '.');
     }
 
     async function folderExists(token, folder) {
@@ -444,58 +408,93 @@
         }
     }
 
+    // ─── Session log (memory only) ──────────────────────
+    var sessionLog = [];
+    function logPullRequest(kind, label, result) {
+        var pr = result && result.pullRequest || {};
+        sessionLog.unshift({ kind: kind, label: label, branch: result.branchName, number: pr.number, url: pr.html_url });
+        renderLog();
+    }
+    var KIND_LABELS = { edit: 'Επεξεργασία', 'quick-fix': 'Διόρθωση', delete: 'Διαγραφή', import: 'Εισαγωγή' };
+    function renderLog() {
+        logEmptyEl.hidden = sessionLog.length > 0;
+        logListEl.replaceChildren.apply(logListEl, sessionLog.map(function (entry) {
+            var li = el('li', 'hk-log-item');
+            li.appendChild(el('span', 'hk-log-kind', KIND_LABELS[entry.kind] + (entry.number ? ' · PR #' + entry.number : '')));
+            li.appendChild(el('span', 'hk-log-label', entry.label));
+            li.appendChild(el('code', 'hk-log-branch', entry.branch));
+            if (entry.url) {
+                var link = el('a', 'hk-log-link', 'Προβολή στο GitHub');
+                link.href = entry.url;
+                link.target = '_blank';
+                link.rel = 'noopener';
+                li.appendChild(link);
+            }
+            return li;
+        }));
+    }
+
+    async function announcePullRequest(kind, label, result) {
+        logPullRequest(kind, label, result);
+        await showAlert('Άνοιξε Pull Request' + (result.pullRequest && result.pullRequest.number ? ' #' + result.pullRequest.number : '') + '.\n\nBranch: ' + result.branchName + '\n\nΟι έλεγχοι του GitHub κάνουν merge, build και deploy αυτόματα.', { title: 'Pull Request ανοιχτό' });
+    }
+
+    // ─── Index + lanes ──────────────────────────────────
     var PAGE_SIZE = 24;
     var MAX_RESTORED_ITEMS = PAGE_SIZE * 20;
     var LIST_STATE_KEY = 'f1stories-housekeeping-list-state-v1';
-    var posts = [];
-    var rendered = [];
-    var visibleCount = PAGE_SIZE;
-    var density = 'grid';
-    var cardRenderSequence = 0;
-    var listStateToRestore = readListState();
-    var pendingScrollY = normalizeScrollY(listStateToRestore.scrollY);
     var INDEX_DATA_PATH = '/blog-module/blog-index-data.json';
     var LEGACY_DATA_PATH = '/blog-module/blog-data.json';
+    var posts = [];
+    var lanes = null;
+    var rendered = [];
+    var visibleCount = PAGE_SIZE;
+    var currentLane = 'emoji';
+    // post id → true once a PR was opened this session. Further PRs on the same
+    // source.txt would conflict at merge, so the article stays locked until reload.
+    var pending = {};
+    var skipped = {};    // post id → true when skipped this session
+    var listStateToRestore = readListState();
+
+    var LANES = [
+        { key: 'emoji', group: 'Τίτλοι', title: 'Emoji στον τίτλο', desc: 'Ίδιος έλεγχος με το Generate. Η διόρθωση αλλάζει μόνο τον τίτλο στο source.txt.', fix: 'title' },
+        { key: 'caps', group: 'Τίτλοι', title: 'Κυρίως κεφαλαία', desc: 'Πάνω από 60% κεφαλαία γράμματα. Η πρόταση είναι πεζά — πρόσθεσε τόνους και κεφαλαία στα ονόματα.', fix: 'title' },
+        { key: 'repeat', group: 'Τίτλοι', title: 'Επανάληψη λέξης', desc: 'Η ίδια λέξη δύο φορές στη σειρά στον τίτλο.', fix: 'title' },
+        { key: 'duplicate', group: 'Τίτλοι', title: 'Επαναλαμβανόμενος τίτλος', desc: 'Ίδιος τίτλος σε πάνω από ένα άρθρο. Αν είναι στήλη, δεν χρειάζεται αλλαγή.' },
+        { key: 'tags', group: 'Μεταδεδομένα', title: 'Χωρίς εσωτερικές ετικέτες', desc: 'Δεν εμφανίζονται στην αναζήτηση ετικετών.', fix: 'tags' },
+        { key: 'folder', group: 'Μεταδεδομένα', title: 'Μη τυπικό όνομα φακέλου', desc: 'Δεν ταιριάζει στο YYYYMMDD[-N][Κωδικός]. Η επεξεργασία κρατά τον φάκελο ίδιο· αλλαγή συντάκτη ή ημερομηνίας δεν επιτρέπεται εδώ.' },
+        { key: 'prs', group: 'Δημοσίευση', title: 'Ανοιχτά PR συντακτών', desc: 'Pull requests από branches author/* που περιμένουν ελέγχους ή merge. Χρειάζεται token.' },
+        { key: 'all', group: 'Αρχείο', title: 'Όλα τα άρθρα', desc: 'Αναζήτηση, επεξεργασία, προβολή και διαγραφή σε όλο το αρχείο.' }
+    ];
+    function laneDef(key) { return LANES.filter(function (lane) { return lane.key === key; })[0] || LANES[0]; }
 
     function readListState() {
         var raw = readStorage(sessionStorage, LIST_STATE_KEY);
         if (!raw) return {};
         try {
-            var state = JSON.parse(raw);
-            return state && typeof state === 'object' ? state : {};
-        } catch (e) {
+            var parsed = JSON.parse(raw);
+            return parsed && typeof parsed === 'object' ? parsed : {};
+        } catch (_) {
             removeStorage(sessionStorage, LIST_STATE_KEY);
             return {};
         }
     }
 
     function normalizeVisibleCount(value) {
-        var count = parseInt(value, 10);
+        var count = Number(value);
         if (!Number.isFinite(count) || count < PAGE_SIZE) return PAGE_SIZE;
-        return Math.min(count, MAX_RESTORED_ITEMS);
-    }
-
-    function normalizeScrollY(value) {
-        var scrollY = parseInt(value, 10);
-        return Number.isFinite(scrollY) && scrollY > 0 ? scrollY : 0;
+        return Math.min(MAX_RESTORED_ITEMS, Math.ceil(count / PAGE_SIZE) * PAGE_SIZE);
     }
 
     function persistListState() {
         writeStorage(sessionStorage, LIST_STATE_KEY, JSON.stringify({
+            lane: currentLane,
             search: searchEl.value,
             tag: filterTag.value,
             category: filterCat.value,
             author: filterAuthor.value,
-            visibleCount: visibleCount,
-            density: density,
-            scrollY: Math.max(0, Math.round(window.scrollY || 0))
+            visibleCount: visibleCount
         }));
-    }
-
-    function restoreListShell() {
-        searchEl.value = typeof listStateToRestore.search === 'string' ? listStateToRestore.search : '';
-        visibleCount = normalizeVisibleCount(listStateToRestore.visibleCount);
-        setDensity(listStateToRestore.density === 'list' ? 'list' : 'grid', false);
     }
 
     function restoreSelectValue(select, value) {
@@ -506,23 +505,6 @@
                 return;
             }
         }
-    }
-
-    function restoreFiltersAfterLoad() {
-        if (!listStateToRestore) return;
-        restoreSelectValue(filterTag, listStateToRestore.tag);
-        restoreSelectValue(filterCat, listStateToRestore.category);
-        restoreSelectValue(filterAuthor, listStateToRestore.author);
-        listStateToRestore = null;
-    }
-
-    function restoreScrollAfterRender() {
-        if (!pendingScrollY) return;
-        var scrollY = pendingScrollY;
-        pendingScrollY = 0;
-        requestAnimationFrame(function () {
-            window.scrollTo(0, scrollY);
-        });
     }
 
     async function fetchPostsData() {
@@ -540,31 +522,496 @@
         throw lastError || new Error('No article index available');
     }
 
-    // ─── Fetch + render list ─────────────────────────────
-    async function loadList() {
-        listEl.replaceChildren(authorDom.createStatusMessage('hk-empty', 'Loading articles...', 'fa-spinner', 'fa-spin'));
+    // true = editable, false = source-less legacy article, null = unknown (older index).
+    function editable(post) { return post.hasSource !== false; }
+
+    function openItems(key) {
+        if (!lanes) return [];
+        if (key === 'duplicate') return lanes.duplicate;
+        if (key === 'all' || key === 'prs') return [];
+        return (lanes[key] || []).filter(function (post) { return !skipped[post.id]; });
+    }
+
+    function laneCounts(key) {
+        if (key === 'all') return { total: posts.length };
+        if (key === 'prs') return { total: openPulls ? openPulls.length : null };
+        if (key === 'duplicate') {
+            return { total: lanes.duplicate.reduce(function (sum, group) { return sum + group.length; }, 0) };
+        }
+        var items = lanes[key] || [];
+        var fixable = items.filter(editable);
+        return {
+            total: items.length,
+            fixable: fixable.length,
+            open: fixable.filter(function (post) { return !pending[post.id] && !skipped[post.id]; }).length,
+            legacy: items.length - fixable.length
+        };
+    }
+
+    function laneBadge(lane) {
+        var counts = laneCounts(lane.key);
+        if (counts.total === null) return '—';
+        if (lane.fix) return counts.open === 0 && counts.fixable > 0 ? '✓' : String(counts.open);
+        return String(counts.total);
+    }
+
+    function laneNote(lane) {
+        var counts = laneCounts(lane.key);
+        if (!lane.fix || !counts.legacy) return '';
+        return plural(counts.fixable, 'διορθώσιμο', 'διορθώσιμα') + ' · ' + counts.legacy + ' παλιά χωρίς source.txt';
+    }
+
+    function renderLanes() {
+        var groups = [];
+        LANES.forEach(function (lane) {
+            var group = groups[groups.length - 1];
+            if (!group || group.name !== lane.group) groups.push(group = { name: lane.group, lanes: [] });
+            group.lanes.push(lane);
+        });
+        laneListEl.replaceChildren.apply(laneListEl, groups.map(function (group) {
+            var wrap = el('div', 'hk-lane-group');
+            wrap.appendChild(el('p', 'hk-lane-group-name', group.name));
+            var list = el('ul', 'hk-lane-items');
+            group.lanes.forEach(function (lane) {
+                var button = el('button', 'hk-lane');
+                button.type = 'button';
+                if (lane.key === currentLane) button.setAttribute('aria-current', 'true');
+                var badge = laneBadge(lane);
+                if (badge === '✓') button.classList.add('is-clear');
+                button.appendChild(el('span', 'hk-lane-name', lane.title));
+                button.appendChild(el('span', 'hk-lane-count', badge));
+                var note = laneNote(lane);
+                if (note) button.appendChild(el('small', 'hk-lane-note', note));
+                button.addEventListener('click', function () { selectLane(lane.key, true); });
+                var li = el('li');
+                li.appendChild(button);
+                list.appendChild(li);
+            });
+            wrap.appendChild(list);
+            return wrap;
+        }));
+        laneChipsEl.replaceChildren.apply(laneChipsEl, LANES.map(function (lane) {
+            var chip = el('button', 'hk-chip', lane.title + ' · ' + laneBadge(lane));
+            chip.type = 'button';
+            chip.setAttribute('role', 'tab');
+            chip.setAttribute('aria-selected', String(lane.key === currentLane));
+            chip.addEventListener('click', function () { selectLane(lane.key, true); });
+            return chip;
+        }));
+        var flagged = ['emoji', 'caps', 'repeat', 'tags', 'folder'].reduce(function (sum, key) { return sum + lanes[key].length; }, 0) + laneCounts('duplicate').total;
+        var sources = posts.filter(function (post) { return post.hasSource === true; }).length;
+        lanesSubEl.textContent = plural(posts.length, 'άρθρο', 'άρθρα') + ' · ' + flagged + ' σημάνσεις' + (sources ? ' · ' + sources + ' με source.txt' : '');
+    }
+
+    function selectLane(key, focusHeading) {
+        currentLane = laneDef(key).key;
+        visibleCount = PAGE_SIZE;
+        renderLanes();
+        renderLane();
+        persistListState();
+        if (focusHeading) {
+            laneHeading.focus({ preventScroll: true });
+            window.scrollTo({ top: 0, behavior: 'auto' });
+        }
+        if (currentLane === 'prs') loadOpenPulls(false);
+    }
+
+    function renderLane() {
+        var lane = laneDef(currentLane);
+        laneHeading.textContent = lane.title;
+        laneDescEl.textContent = lane.desc;
+        browseEl.hidden = lane.key !== 'all';
         listFoot.hidden = true;
+        var counts = laneCounts(lane.key);
+        laneProgress.hidden = !lane.fix || !counts.fixable;
+        if (lane.fix && counts.fixable) {
+            var done = counts.fixable - counts.open;
+            laneProgressText.textContent = done + ' από ' + counts.fixable + ' με PR αυτή τη session';
+            laneProgressBar.style.width = Math.round(done / counts.fixable * 100) + '%';
+        }
+        if (lane.key === 'all') return applyFilters(false);
+        if (lane.key === 'prs') return renderPulls();
+        if (lane.key === 'duplicate') return renderDuplicates();
+        renderTickets(lane);
+    }
+
+    // ─── Tickets (fixable lanes) ────────────────────────
+    function thumbFor(post) {
+        var img = el('img', 'hk-thumb');
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.width = parseInt(post.imageWidth, 10) || 400;
+        img.height = parseInt(post.imageHeight, 10) || 188;
+        img.src = post.image || '/blog-module/images/default-blog.jpg';
+        img.alt = '';
+        img.onerror = function () { img.onerror = null; img.src = '/blog-module/images/default-blog.jpg'; };
+        return img;
+    }
+
+    function metaLine(post) {
+        var meta = el('p', 'hk-meta');
+        meta.appendChild(el('code', 'hk-meta-id', post.id));
+        meta.appendChild(el('span', '', post.author || '—'));
+        meta.appendChild(el('span', '', post.displayDate || post.date || '—'));
+        if (post.category) meta.appendChild(el('span', '', post.category));
+        return meta;
+    }
+
+    function titleWithMarks(post, highlightEmoji) {
+        var h = el('h3', 'hk-item-title');
+        var text = post.title || '(χωρίς τίτλο)';
+        if (!highlightEmoji) {
+            h.textContent = text;
+            return h;
+        }
+        var re = /(?:\p{Extended_Pictographic}|[\u{1F1E6}-\u{1F1FF}])+/gu;
+        var last = 0;
+        var match;
+        while ((match = re.exec(text))) {
+            h.appendChild(document.createTextNode(text.slice(last, match.index)));
+            h.appendChild(el('mark', '', match[0]));
+            last = match.index + match[0].length;
+        }
+        h.appendChild(document.createTextNode(text.slice(last)));
+        return h;
+    }
+
+    function actionLink(post) {
+        var link = el('a', 'hk-btn hk-btn-sm hk-btn-ghost', 'Προβολή');
+        link.href = post.url || '/blog-module/blog-entries/' + encodeURIComponent(post.id) + '/article.html';
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.addEventListener('click', persistListState);
+        return link;
+    }
+
+    function suggestionFor(lane, post) {
+        if (lane === 'emoji') return articleSource.stripEmoji(post.title);
+        if (lane === 'caps') {
+            var clean = articleSource.stripEmoji(post.title);
+            return clean.charAt(0) + clean.slice(1).toLocaleLowerCase('el');
+        }
+        if (lane === 'repeat') {
+            return post.title.replace(/(^|[^\p{L}\p{N}])([\p{L}\p{N}]{2,})\s+\2(?![\p{L}\p{N}])/iu, '$1$2');
+        }
+        return '';
+    }
+
+    function commonTags(category) {
+        var counts = new Map();
+        posts.forEach(function (post) {
+            if (post.category !== category) return;
+            (post.tags || []).forEach(function (tag) { counts.set(tag, (counts.get(tag) || 0) + 1); });
+        });
+        return Array.from(counts.entries()).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 5).map(function (entry) { return entry[0]; });
+    }
+
+    function buildFixBox(lane, post) {
+        var box = el('div', 'hk-fix');
+        if (pending[post.id]) {
+            box.classList.add('is-done');
+            box.appendChild(el('p', 'hk-fix-done', '✓ PR σε αναμονή για αυτό το άρθρο. Νέες αλλαγές μετά το merge, ώστε να μη συγκρουστούν στο source.txt.'));
+            return box;
+        }
+        var row = el('div', 'hk-fix-row');
+        var input = el('input', 'hk-input');
+        input.type = 'text';
+        var submit = el('button', 'hk-btn hk-btn-primary');
+        submit.type = 'button';
+        if (lane.fix === 'title') {
+            box.appendChild(el('p', 'hk-fix-label', lane.key === 'caps' ? 'Πρόταση: πεζά — έλεγξε τόνους και ονόματα' : lane.key === 'repeat' ? 'Πρόταση: χωρίς την επανάληψη' : 'Πρόταση: χωρίς emoji'));
+            input.value = suggestionFor(lane.key, post);
+            input.setAttribute('aria-label', 'Νέος τίτλος για ' + post.id);
+            var check = el('p', 'hk-fix-check');
+            var paintCheck = function () {
+                var warnings = articleSource.titleWarnings(input.value, '');
+                check.textContent = warnings.length ? '! ' + warnings.join(' ') : '✓ Χωρίς προειδοποιήσεις';
+                check.classList.toggle('is-warn', warnings.length > 0);
+            };
+            input.addEventListener('input', paintCheck);
+            paintCheck();
+            submit.textContent = 'PR με αυτόν τον τίτλο';
+            submit.addEventListener('click', function () {
+                quickFix(post, { title: input.value.trim() }, submit);
+            });
+            row.append(input, submit);
+            box.appendChild(row);
+            box.appendChild(check);
+        } else {
+            box.appendChild(el('p', 'hk-fix-label', 'Συχνές στην κατηγορία ' + (post.category || '—')));
+            var chips = el('div', 'hk-fix-chips');
+            commonTags(post.category).forEach(function (tag) {
+                var chip = el('button', 'hk-chip', '+ ' + tag);
+                chip.type = 'button';
+                chip.addEventListener('click', function () {
+                    input.value = taxonomy.normalizeTags(input.value ? input.value + ', ' + tag : tag).join(', ');
+                });
+                chips.appendChild(chip);
+            });
+            box.appendChild(chips);
+            input.placeholder = 'π.χ. F1, Ferrari';
+            input.setAttribute('aria-label', 'Ετικέτες για ' + post.id);
+            submit.textContent = 'PR με ετικέτες';
+            submit.addEventListener('click', function () {
+                var tags = taxonomy.normalizeTags(input.value);
+                if (!tags.length) { showAlert('Πρόσθεσε τουλάχιστον μία ετικέτα.'); return; }
+                quickFix(post, { tags: tags.join(', ') }, submit);
+            });
+            row.append(input, submit);
+            box.appendChild(row);
+        }
+        var skip = el('button', 'hk-btn hk-btn-sm hk-btn-ghost', 'Παράλειψη');
+        skip.type = 'button';
+        skip.title = 'Μόνο για αυτή τη session';
+        skip.addEventListener('click', function () {
+            skipped[post.id] = true;
+            renderLanes();
+            renderLane();
+        });
+        var more = el('div', 'hk-fix-more');
+        more.append(skip, editButton(post), actionLink(post));
+        box.appendChild(more);
+        return box;
+    }
+
+    function editButton(post) {
+        var button = el('button', 'hk-btn hk-btn-sm', 'Πλήρης επεξεργασία');
+        button.type = 'button';
+        if (!editable(post)) {
+            button.disabled = true;
+            button.title = 'Χωρίς source.txt — δεν επεξεργάζεται από εδώ';
+        } else if (pending[post.id]) {
+            button.disabled = true;
+            button.title = 'Υπάρχει PR σε αναμονή για αυτό το άρθρο';
+        }
+        button.addEventListener('click', function () { openEdit(post); });
+        return button;
+    }
+
+    function ticket(lane, post) {
+        var item = el('article', 'hk-item' + (pending[post.id] ? ' is-pending' : ''));
+        item.appendChild(thumbFor(post));
+        var body = el('div', 'hk-item-body');
+        body.appendChild(metaLine(post));
+        body.appendChild(titleWithMarks(post, lane.key === 'emoji'));
+        item.appendChild(body);
+        if (lane.key === 'folder') {
+            item.appendChild(folderInfo(post));
+        } else {
+            item.appendChild(buildFixBox(lane, post));
+        }
+        return item;
+    }
+
+    function folderInfo(post) {
+        var box = el('div', 'hk-fix hk-fix-info');
+        var code = post.id.replace(/^[\d-]+/, '');
+        var reason = /[^\x00-\x7F]/.test(code)
+            ? 'Ο κωδικός «' + code + '» δεν είναι λατινικός χαρακτήρας (π.χ. ελληνικό «Τ» αντί για «T»). Το build το πιστώνει στο F1 Stories Team.'
+            : 'Ο κωδικός «' + code + '» δεν αναγνωρίζεται. Το build πιστώνει το άρθρο στο F1 Stories Team.';
+        box.appendChild(el('p', 'hk-fix-label', 'Μόνο ενημέρωση'));
+        box.appendChild(el('p', 'hk-fix-text', reason));
+        box.appendChild(el('p', 'hk-fix-check', 'Η επεξεργασία εδώ κρατά τον φάκελο και το URL ίδια· η μετονομασία χρειάζεται απόφαση και γίνεται χειροκίνητα.'));
+        var more = el('div', 'hk-fix-more');
+        more.append(editButton(post), actionLink(post));
+        box.appendChild(more);
+        return box;
+    }
+
+    function renderTickets(lane) {
+        var items = openItems(lane.key);
+        var fixable = items.filter(editable);
+        var legacy = items.filter(function (post) { return !editable(post); });
+        var nodes = fixable.slice(0, visibleCount).map(function (post) { return ticket(lane, post); });
+        if (!fixable.length && lane.key !== 'folder') {
+            nodes.push(authorDom.createStatusMessage('hk-empty', legacy.length ? 'Όλα τα διορθώσιμα άρθρα έχουν PR ή παραλείφθηκαν.' : 'Καθαρή ουρά — τίποτα για διόρθωση.', 'fa-check-circle'));
+        }
+        if (lane.key === 'folder') {
+            nodes = items.slice(0, visibleCount).map(function (post) { return ticket(lane, post); });
+        }
+        if (legacy.length && lane.key !== 'folder') nodes.push(legacySection(legacy));
+        listEl.replaceChildren.apply(listEl, nodes);
+        var shown = lane.key === 'folder' ? items.length : fixable.length;
+        showMoreFooter(shown);
+    }
+
+    function legacySection(items) {
+        var details = el('details', 'hk-legacy');
+        var summary = el('summary', 'hk-legacy-summary', plural(items.length, 'παλιό άρθρο', 'παλιά άρθρα') + ' χωρίς source.txt — μόνο ανάγνωση');
+        details.appendChild(summary);
+        details.appendChild(el('p', 'hk-hint', 'Τα στοιχεία τους ζουν στο cache του build, όχι σε source.txt, οπότε το εργαλείο δεν τα αλλάζει. Διόρθωση μόνο χειροκίνητα στο repo.'));
+        var list = el('ul', 'hk-legacy-list');
+        items.forEach(function (post) {
+            var li = el('li', 'hk-legacy-item');
+            li.appendChild(el('code', 'hk-meta-id', post.id));
+            li.appendChild(el('span', 'hk-legacy-title', post.title));
+            li.appendChild(actionLink(post));
+            list.appendChild(li);
+        });
+        details.appendChild(list);
+        return details;
+    }
+
+    function showMoreFooter(total) {
+        var remaining = Math.max(0, total - visibleCount);
+        listFoot.hidden = remaining === 0;
+        if (remaining) loadMoreBtn.textContent = 'Περισσότερα (' + remaining + ')';
+    }
+
+    function renderDuplicates() {
+        listEl.replaceChildren.apply(listEl, lanes.duplicate.map(function (group) {
+            var item = el('article', 'hk-item hk-item-group');
+            var body = el('div', 'hk-item-body');
+            body.appendChild(el('p', 'hk-meta', plural(group.length, 'άρθρο', 'άρθρα')));
+            body.appendChild(el('h3', 'hk-item-title', '«' + group[0].title + '»'));
+            var list = el('ul', 'hk-dup-list');
+            group.forEach(function (post) {
+                var li = el('li', 'hk-dup-item');
+                li.appendChild(el('code', 'hk-meta-id', post.id));
+                li.appendChild(el('span', '', (post.author || '—') + ' · ' + (post.displayDate || post.date || '')));
+                var actions = el('span', 'hk-dup-actions');
+                actions.append(editButton(post), actionLink(post));
+                li.appendChild(actions);
+                list.appendChild(li);
+            });
+            body.appendChild(list);
+            var authors = new Set(group.map(function (post) { return post.author; }));
+            body.appendChild(el('p', 'hk-hint', group.length > 2 && authors.size === 1 ? 'Ίδιος συντάκτης σε πολλά άρθρα — μοιάζει με στήλη.' : 'Ίδιος τίτλος σε διαφορετικά άρθρα — έλεγξε αν είναι διπλότυπο.'));
+            item.appendChild(body);
+            return item;
+        }));
+    }
+
+    // ─── Quick fix: rewrite only source.txt via PR ──────
+    async function quickFix(post, change, button) {
+        if (change.title !== undefined && !change.title) { await showAlert('Ο τίτλος δεν μπορεί να είναι κενός.'); return; }
+        var token = await requireToken();
+        if (!token) return;
+        button.disabled = true;
+        var label = button.textContent;
+        authorDom.setBusyText(button, 'Φόρτωση source.txt…');
         try {
-            var data = await fetchPostsData();
-            posts = articleIndex.sortNewestFirst(articleIndex.extractPosts(data));
-            populateFilters();
-            restoreFiltersAfterLoad();
-            applyFilters(false);
-            restoreScrollAfterRender();
+            var files = await listFolder(token, post.id);
+            var src = files.find(function (f) { return f.type === 'file' && f.name === 'source.txt'; });
+            if (!src) throw new Error('Ο φάκελος δεν έχει source.txt· το άρθρο δεν διορθώνεται από εδώ.');
+            var blob = await ghFetch('/contents/' + ENTRIES_PATH + '/' + encodeURIComponent(post.id) + '/source.txt', token);
+            var text = blob.encoding === 'base64' ? base64ToUtf8(blob.content) : (blob.content || '');
+            var parsed = parseSourceTxt(text, post.id);
+            var nextTitle = change.title !== undefined ? change.title : parsed.title;
+            var nextTags = change.tags !== undefined ? change.tags : parsed.tags.join(', ');
+            var summary = change.title !== undefined
+                ? 'Τίτλος:\n«' + parsed.title + '»\n→ «' + nextTitle + '»'
+                : 'Ετικέτες → ' + nextTags;
+            if (!(await showConfirm(summary + '\n\nΑλλάζει μόνο το source.txt του ' + post.id + '. Εικόνες και φάκελος μένουν ίδια.', { title: 'Άνοιγμα PR διόρθωσης', okLabel: 'Άνοιγμα PR' }))) return;
+            var newSource = buildSourceTxt(nextTags, parsed.category, nextTitle, parsed.body, parsed.metadata);
+            authorDom.setBusyText(button, 'Ανέβασμα…');
+            var upload = await ghFetch('/git/blobs', token, {
+                method: 'POST',
+                body: { content: utf8ToBase64(newSource), encoding: 'base64' }
+            });
+            var commitMsg = 'edit(blog): ' + (change.title !== undefined ? 'τίτλος' : 'ετικέτες') + ' — ' + nextTitle + ' (' + post.id + ')';
+            var result = await createAuthorPullRequest(
+                token,
+                'edit',
+                post.id,
+                [{ path: ENTRIES_PATH + '/' + post.id + '/source.txt', mode: '100644', type: 'blob', sha: upload.sha }],
+                commitMsg,
+                commitMsg,
+                'Author tool quick fix for `' + ENTRIES_PATH + '/' + post.id + '/source.txt`.',
+                function (msg) { authorDom.setBusyText(button, msg); }
+            );
+            pending[post.id] = true;
+            logPullRequest('quick-fix', nextTitle, result);
+            renderLanes();
+            renderLane();
         } catch (e) {
-            listEl.replaceChildren(authorDom.createStatusMessage('hk-error', 'Failed to load article index: ' + e.message));
-            listFoot.hidden = true;
+            console.error('Quick fix failed', e);
+            await showAlert('Η διόρθωση απέτυχε: ' + e.message + githubErrorHint(e));
+        } finally {
+            if (button.isConnected) {
+                button.disabled = false;
+                button.textContent = label;
+            }
         }
     }
 
+    // ─── Open author PRs (read-only) ────────────────────
+    var openPulls = null;
+    var pullsError = '';
+    async function loadOpenPulls(force) {
+        if (openPulls && !force) return;
+        var token = tokenStore.get();
+        if (!token) { openPulls = null; pullsError = ''; renderPulls(); return; }
+        listEl.replaceChildren(authorDom.createStatusMessage('hk-empty', 'Φόρτωση pull requests…'));
+        try {
+            var data = await ghFetch('/pulls?state=open&per_page=50', token);
+            openPulls = (Array.isArray(data) ? data : []).filter(function (pr) {
+                return pr && pr.head && /^author\//.test(pr.head.ref || '');
+            });
+            pullsError = '';
+        } catch (e) {
+            openPulls = [];
+            pullsError = 'Αποτυχία φόρτωσης: ' + e.message + githubErrorHint(e).replace(/\n+/g, ' ');
+        }
+        renderLanes();
+        if (currentLane === 'prs') renderPulls();
+    }
+
+    function renderPulls() {
+        if (currentLane !== 'prs') return;
+        var nodes = [];
+        if (!tokenStore.get()) {
+            var box = el('div', 'hk-fix hk-fix-info');
+            box.appendChild(el('p', 'hk-fix-text', 'Χρειάζεται token (μόνο για αυτή την καρτέλα) για να διαβαστούν τα ανοιχτά pull requests.'));
+            var set = el('button', 'hk-btn hk-btn-primary', 'Ορισμός token');
+            set.type = 'button';
+            set.addEventListener('click', async function () { if (await promptForToken('')) loadOpenPulls(true); });
+            box.appendChild(set);
+            nodes.push(box);
+        } else if (pullsError) {
+            nodes.push(authorDom.createStatusMessage('hk-error', pullsError));
+        } else if (openPulls && !openPulls.length) {
+            nodes.push(authorDom.createStatusMessage('hk-empty', 'Κανένα ανοιχτό PR συντάκτη.', 'fa-check-circle'));
+        } else if (openPulls) {
+            openPulls.forEach(function (pr) {
+                var item = el('article', 'hk-item hk-item-pr');
+                var body = el('div', 'hk-item-body');
+                var meta = el('p', 'hk-meta');
+                meta.appendChild(el('span', 'hk-pr-state', '#' + pr.number + (pr.draft ? ' · πρόχειρο' : ' · ανοιχτό')));
+                meta.appendChild(el('span', '', pr.user && pr.user.login ? pr.user.login : ''));
+                meta.appendChild(el('span', '', pr.created_at ? new Date(pr.created_at).toLocaleString('el-GR', { dateStyle: 'medium', timeStyle: 'short' }) : ''));
+                body.appendChild(meta);
+                body.appendChild(el('h3', 'hk-item-title', pr.title || ''));
+                body.appendChild(el('code', 'hk-log-branch', pr.head.ref));
+                var link = el('a', 'hk-btn hk-btn-sm', 'Άνοιγμα στο GitHub');
+                link.href = pr.html_url;
+                link.target = '_blank';
+                link.rel = 'noopener';
+                var more = el('div', 'hk-fix-more');
+                more.appendChild(link);
+                body.appendChild(more);
+                item.appendChild(body);
+                nodes.push(item);
+            });
+        }
+        if (tokenStore.get()) {
+            var refresh = el('button', 'hk-btn hk-btn-sm hk-btn-ghost', 'Ανανέωση λίστας PR');
+            refresh.type = 'button';
+            refresh.addEventListener('click', function () { loadOpenPulls(true); });
+            nodes.push(refresh);
+        }
+        listEl.replaceChildren.apply(listEl, nodes);
+    }
+
+    // ─── "Όλα τα άρθρα" browse ──────────────────────────
     function populateFilters() {
         var options = articleIndex.collectFilterOptions(posts);
-        function fill(sel, values) {
+        function fill(sel, label, values) {
             var current = sel.value;
             sel.replaceChildren();
             var all = document.createElement('option');
             all.value = '';
-            all.textContent = 'All ' + sel.dataset.kind;
+            all.textContent = label;
             sel.appendChild(all);
             values.forEach(function (v) {
                 var o = document.createElement('option');
@@ -573,12 +1020,9 @@
                 sel.appendChild(o);
             });
         }
-        filterTag.dataset.kind = 'internal tags';
-        filterCat.dataset.kind = 'categories';
-        filterAuthor.dataset.kind = 'authors';
-        fill(filterTag, options.tags);
-        fill(filterCat, options.categories);
-        fill(filterAuthor, options.authors);
+        fill(filterTag, 'Όλες οι ετικέτες', options.tags);
+        fill(filterCat, 'Όλες οι κατηγορίες', options.categories);
+        fill(filterAuthor, 'Όλοι οι συντάκτες', options.authors);
     }
 
     function applyFilters(resetPage) {
@@ -589,238 +1033,81 @@
             category: filterCat.value,
             author: filterAuthor.value
         });
-        renderList();
+        renderBrowse();
         persistListState();
     }
 
-    function renderList() {
-        if (!rendered.length) {
-            listEl.replaceChildren(authorDom.createStatusMessage('hk-empty', 'No articles match.'));
-            updateListChrome(0);
-            return;
-        }
-        var frag = document.createDocumentFragment();
-        var shown = Math.min(visibleCount, rendered.length);
-        rendered.slice(0, shown).forEach(function (p) {
-            frag.appendChild(buildCard(p));
-        });
-        listEl.replaceChildren(frag);
-        updateListChrome(shown);
+    function browseRow(post) {
+        var item = el('article', 'hk-item hk-item-row');
+        item.appendChild(thumbFor(post));
+        var body = el('div', 'hk-item-body');
+        body.appendChild(metaLine(post));
+        body.appendChild(el('h3', 'hk-item-title', post.title || '(χωρίς τίτλο)'));
+        var flags = el('p', 'hk-flags');
+        var issues = articleSource.titleIssues(post.title, '');
+        if (issues.length) flags.appendChild(el('span', 'hk-badge hk-badge-warn', articleSource.titleWarnings(post.title, '')[0]));
+        if (!(post.tags || []).length) flags.appendChild(el('span', 'hk-badge hk-badge-warn', 'Χωρίς ετικέτες'));
+        if (!editable(post)) flags.appendChild(el('span', 'hk-badge', 'Χωρίς source.txt'));
+        if (flags.childNodes.length) body.appendChild(flags);
+        item.appendChild(body);
+        var actions = el('div', 'hk-item-actions');
+        var del = el('button', 'hk-btn hk-btn-sm hk-btn-ghost hk-btn-danger', 'Διαγραφή');
+        del.type = 'button';
+        del.setAttribute('aria-label', 'Διαγραφή ' + (post.title || post.id));
+        del.addEventListener('click', function () { deleteArticle(post, del); });
+        actions.append(editButton(post), actionLink(post), del);
+        item.appendChild(actions);
+        return item;
     }
 
-    function updateListChrome(shown) {
-        var matched = rendered.length;
-        var total = posts.length;
-        if (matched === total) {
-            statsEl.textContent = 'Showing ' + shown + ' of ' + total + ' article' + (total === 1 ? '' : 's');
+    function renderBrowse() {
+        if (currentLane !== 'all') return;
+        if (!rendered.length) {
+            listEl.replaceChildren(authorDom.createStatusMessage('hk-empty', 'Κανένα άρθρο δεν ταιριάζει.'));
         } else {
-            statsEl.textContent = 'Showing ' + shown + ' of ' + matched + ' matches · ' + total + ' total';
+            var frag = document.createDocumentFragment();
+            rendered.slice(0, visibleCount).forEach(function (post) { frag.appendChild(browseRow(post)); });
+            listEl.replaceChildren(frag);
         }
-
-        var remaining = Math.max(0, matched - shown);
-        listFoot.hidden = remaining === 0;
-        if (remaining) {
-            var nextCount = Math.min(PAGE_SIZE, remaining);
-            loadMoreBtn.textContent = 'Load ' + nextCount + ' more';
-            loadMoreBtn.setAttribute('aria-label', 'Load ' + nextCount + ' more articles, ' + remaining + ' remaining');
-        }
-
-        var activeFilters = Number(!!filterTag.value) + Number(!!filterCat.value) + Number(!!filterAuthor.value);
-        filterToggle.textContent = activeFilters ? 'Filters (' + activeFilters + ')' : 'Filters';
-        filterDone.textContent = 'Show ' + matched + ' result' + (matched === 1 ? '' : 's');
+        var shown = Math.min(visibleCount, rendered.length);
+        statsEl.textContent = rendered.length === posts.length
+            ? shown + ' από ' + posts.length + ' άρθρα'
+            : shown + ' από ' + rendered.length + ' αποτελέσματα · ' + posts.length + ' συνολικά';
+        showMoreFooter(rendered.length);
     }
 
     function loadMore() {
-        var from = Math.min(visibleCount, rendered.length);
-        var to = Math.min(from + PAGE_SIZE, rendered.length);
-        if (to <= from) return;
-
-        var frag = document.createDocumentFragment();
-        rendered.slice(from, to).forEach(function (post) {
-            frag.appendChild(buildCard(post));
-        });
-        listEl.appendChild(frag);
-        visibleCount = to;
-        updateListChrome(to);
+        visibleCount += PAGE_SIZE;
+        if (currentLane === 'all') renderBrowse();
+        else renderLane();
         persistListState();
     }
 
-    function setDensity(nextDensity, shouldPersist) {
-        density = nextDensity === 'list' ? 'list' : 'grid';
-        listEl.classList.toggle('hk-density-grid', density === 'grid');
-        listEl.classList.toggle('hk-density-list', density === 'list');
-        densityGrid.setAttribute('aria-pressed', String(density === 'grid'));
-        densityList.setAttribute('aria-pressed', String(density === 'list'));
-        if (shouldPersist !== false) persistListState();
-    }
-
-    function createCardDetails(post) {
-        var details = document.createDocumentFragment();
-        var meta = document.createElement('div');
-        meta.className = 'hk-card-meta';
-        meta.appendChild(authorDom.createMetaItem('fa-user', post.author || '-'));
-        meta.appendChild(authorDom.createMetaItem('fa-calendar-alt', post.displayDate || post.date || '-'));
-        details.appendChild(meta);
-
-        var badges = document.createElement('div');
-        badges.className = 'hk-card-meta';
-        if (post.tags && post.tags.length) {
-            var tag = document.createElement('span');
-            tag.className = 'hk-badge';
-            tag.textContent = 'Internal tags: ' + post.tags.join(', ');
-            badges.appendChild(tag);
-        }
-        if (post.category) {
-            var category = document.createElement('span');
-            category.className = 'hk-badge hk-badge-cat';
-            category.textContent = post.category;
-            badges.appendChild(category);
-        }
-        if (badges.childNodes.length) details.appendChild(badges);
-
-        var id = document.createElement('div');
-        id.className = 'hk-card-id';
-        id.textContent = post.id || '';
-        id.title = post.id || '';
-        details.appendChild(id);
-        return details;
-    }
-
-    function buildCard(p) {
-        var card = document.createElement('article');
-        card.className = 'hk-card';
-
-        var main = document.createElement('div');
-        main.className = 'hk-card-main';
-
-        var imgWrap = document.createElement('div');
-        imgWrap.className = 'hk-card-img-wrap';
-
-        var img = document.createElement('img');
-        img.className = 'hk-card-img';
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        img.width = parseInt(p.imageWidth, 10) || 848;
-        img.height = parseInt(p.imageHeight, 10) || 400;
-        img.src = p.image || '/blog-module/images/default-blog.jpg';
-        img.alt = '';
-        img.onerror = function () { img.src = '/blog-module/images/default-blog.jpg'; };
-        imgWrap.appendChild(img);
-
-        var body = document.createElement('div');
-        body.className = 'hk-card-body';
-
-        var title = document.createElement('h3');
-        title.className = 'hk-card-title';
-        title.textContent = p.title || '(untitled)';
-
-        var status = document.createElement('div');
-        status.className = 'hk-card-status';
-        var statusDot = document.createElement('span');
-        statusDot.className = 'hk-status-dot';
-        statusDot.setAttribute('aria-hidden', 'true');
-        var statusText = document.createElement('span');
-        statusText.textContent = p.status || 'Published';
-        status.appendChild(statusDot);
-        status.appendChild(statusText);
-
-        var controls = document.createElement('div');
-        controls.className = 'hk-card-controls';
-
-        var secondaryId = 'hk-card-details-' + (++cardRenderSequence);
-        var secondary = document.createElement('div');
-        secondary.className = 'hk-card-secondary';
-        secondary.id = secondaryId;
-        secondary.hidden = true;
-
-        var detailsBtn = document.createElement('button');
-        detailsBtn.type = 'button';
-        detailsBtn.className = 'hk-card-details-toggle';
-        detailsBtn.textContent = 'Details';
-        detailsBtn.setAttribute('aria-expanded', 'false');
-        detailsBtn.setAttribute('aria-controls', secondaryId);
-        detailsBtn.addEventListener('click', function () {
-            var willOpen = secondary.hidden;
-            if (willOpen && !secondary.dataset.ready) {
-                secondary.appendChild(createCardDetails(p));
-                secondary.dataset.ready = 'true';
+    // ─── Fetch + render ─────────────────────────────────
+    async function loadList() {
+        listEl.replaceChildren(authorDom.createStatusMessage('hk-empty', 'Φόρτωση άρθρων…'));
+        listFoot.hidden = true;
+        try {
+            var data = await fetchPostsData();
+            posts = articleIndex.sortNewestFirst(articleIndex.extractPosts(data));
+            lanes = articleIndex.maintenanceLanes(posts, articleSource.titleIssues);
+            populateFilters();
+            if (listStateToRestore) {
+                searchEl.value = typeof listStateToRestore.search === 'string' ? listStateToRestore.search : '';
+                restoreSelectValue(filterTag, listStateToRestore.tag);
+                restoreSelectValue(filterCat, listStateToRestore.category);
+                restoreSelectValue(filterAuthor, listStateToRestore.author);
+                if (typeof listStateToRestore.lane === 'string') currentLane = laneDef(listStateToRestore.lane).key;
+                visibleCount = normalizeVisibleCount(listStateToRestore.visibleCount);
+                listStateToRestore = null;
             }
-            secondary.hidden = !willOpen;
-            detailsBtn.setAttribute('aria-expanded', String(willOpen));
-            detailsBtn.textContent = willOpen ? 'Hide details' : 'Details';
-        });
-
-        var menu = document.createElement('details');
-        menu.className = 'hk-card-menu';
-        var menuSummary = document.createElement('summary');
-        menuSummary.className = 'hk-card-menu-toggle';
-        menuSummary.setAttribute('aria-label', 'Actions for ' + (p.title || 'article'));
-        menuSummary.textContent = '⋮';
-        var menuItems = null;
-
-        function populateMenuItems() {
-            if (menuItems) return;
-            menuItems = document.createElement('div');
-            menuItems.className = 'hk-card-menu-items';
-
-            var previewBtn = document.createElement('button');
-            previewBtn.type = 'button';
-            previewBtn.className = 'hk-card-menu-action';
-            previewBtn.title = 'Preview';
-            authorDom.setIconText(previewBtn, 'fa-eye', 'Preview');
-            previewBtn.addEventListener('click', function () {
-                persistListState();
-                menu.removeAttribute('open');
-                window.open(p.url, '_blank', 'noopener');
-            });
-
-            var editBtn = document.createElement('button');
-            editBtn.type = 'button';
-            editBtn.className = 'hk-card-menu-action';
-            editBtn.title = 'Edit';
-            authorDom.setIconText(editBtn, 'fa-pen', 'Edit');
-            editBtn.addEventListener('click', function () {
-                menu.removeAttribute('open');
-                openEdit(p);
-            });
-
-            var delBtn = document.createElement('button');
-            delBtn.type = 'button';
-            delBtn.className = 'hk-card-menu-action hk-card-menu-danger';
-            delBtn.title = 'Delete';
-            authorDom.setIconText(delBtn, 'fa-trash', 'Delete');
-            delBtn.addEventListener('click', function () {
-                menu.removeAttribute('open');
-                deleteArticle(p, delBtn);
-            });
-
-            menuItems.appendChild(previewBtn);
-            menuItems.appendChild(editBtn);
-            menuItems.appendChild(delBtn);
-            menu.appendChild(menuItems);
+            renderLanes();
+            renderLane();
+            if (currentLane === 'prs') loadOpenPulls(false);
+        } catch (e) {
+            listEl.replaceChildren(authorDom.createStatusMessage('hk-error', 'Αποτυχία φόρτωσης index: ' + e.message));
+            lanesSubEl.textContent = 'Το index δεν φορτώθηκε.';
         }
-
-        menu.appendChild(menuSummary);
-        menu.addEventListener('toggle', function () {
-            card.classList.toggle('hk-menu-open', menu.open);
-            if (!menu.open) return;
-            populateMenuItems();
-            Array.prototype.forEach.call(listEl.querySelectorAll('.hk-card-menu[open]'), function (openMenu) {
-                if (openMenu !== menu) openMenu.removeAttribute('open');
-            });
-        });
-
-        body.appendChild(status);
-        body.appendChild(title);
-        body.appendChild(detailsBtn);
-        controls.appendChild(menu);
-
-        main.appendChild(imgWrap);
-        main.appendChild(body);
-        main.appendChild(controls);
-        card.appendChild(main);
-        card.appendChild(secondary);
-        return card;
     }
 
     // ─── Source.txt parse / serialise ───────────────────
@@ -860,7 +1147,7 @@
 
     async function parseGeneratedZipPackage(zipFile) {
         if (typeof JSZip === 'undefined') {
-            throw new Error('ZIP library is still loading. Try again in a moment.');
+            throw new Error('Η βιβλιοθήκη ZIP φορτώνει ακόμη. Δοκίμασε ξανά σε λίγο.');
         }
 
         var zip = await JSZip.loadAsync(zipFile);
@@ -873,7 +1160,7 @@
 
         var names = Object.keys(entryMap);
         if (!names.length) {
-            throw new Error('ZIP is empty.');
+            throw new Error('Το ZIP είναι κενό.');
         }
 
         var sourcePath = names.find(function (name) {
@@ -884,14 +1171,14 @@
         });
 
         if (!sourcePath) {
-            throw new Error('ZIP does not contain source.txt.');
+            throw new Error('Το ZIP δεν περιέχει source.txt.');
         }
 
         var folderName = sourcePath.indexOf('/') !== -1
             ? sourcePath.split('/')[0]
             : String(zipFile.name || '').replace(/\.zip$/i, '');
         if (!folderParts(folderName)) {
-            throw new Error('ZIP folder name is invalid. Export a fresh package from Generate.');
+            throw new Error('Μη έγκυρο όνομα φακέλου στο ZIP. Κάνε νέα εξαγωγή από το Generate.');
         }
 
         var sourceText = await entryMap[sourcePath].async('string');
@@ -948,26 +1235,30 @@
         var title = pkg.meta && pkg.meta.title ? pkg.meta.title : pkg.folderName;
 
         if (await folderExists(token, targetFolder)) {
-            var wantNewVersion = await showConfirm(
-                'ZIP targets an existing article:\n\n  ' + ENTRIES_PATH + '/' + targetFolder + '\n\n' +
-                '• OK: create a new article with the next free -N suffix\n' +
-                '• Cancel: replace the existing folder'
+            var choice = await authorDialogs.choose(
+                'Το ZIP στοχεύει υπάρχον άρθρο: ' + ENTRIES_PATH + '/' + targetFolder,
+                [
+                    { value: 'new', label: 'Νέο άρθρο με το επόμενο ελεύθερο -N', detail: 'Το υπάρχον μένει ανέπαφο.' },
+                    { value: 'replace', label: 'Αντικατάσταση του ' + targetFolder, detail: 'Αφαιρεί source, article.html και όλες τις εικόνες πριν το rebuild.' }
+                ],
+                { title: 'Ο φάκελος υπάρχει ήδη', okLabel: 'Συνέχεια' }
             );
-            if (wantNewVersion) {
+            if (!choice) return;
+            if (choice === 'new') {
                 targetFolder = await findNextFolderSuffix(token, parsedParts.date, parsedParts.authorCode);
             } else {
-                if (!(await showConfirm('Replace everything in ' + ENTRIES_PATH + '/' + targetFolder + '?\n\nThis removes the current source, generated article.html, and all image variants before the workflow rebuilds it.'))) {
+                if (!(await showConfirm('Σίγουρα να αντικατασταθούν όλα τα αρχεία στο ' + ENTRIES_PATH + '/' + targetFolder + ';', { title: 'Αντικατάσταση φακέλου', okLabel: 'Αντικατάσταση' }))) {
                     return;
                 }
                 replaceExisting = true;
             }
         }
 
-        var confirmMsg = 'Import "' + title + '" from ' + zipFile.name + ' to ' + ENTRIES_PATH + '/' + targetFolder + ' on main?';
+        var confirmMsg = 'Εισαγωγή του «' + title + '» από ' + zipFile.name + ' στο ' + ENTRIES_PATH + '/' + targetFolder + ' μέσω Pull Request;';
         if (pkg.images.length) {
-            confirmMsg += '\n\n' + pkg.images.length + ' image file' + (pkg.images.length === 1 ? '' : 's') + ' will be normalized to .webp.';
+            confirmMsg += '\n\n' + plural(pkg.images.length, 'εικόνα', 'εικόνες') + ' θα μετατραπούν σε .webp.';
         }
-        if (!(await showConfirm(confirmMsg))) return;
+        if (!(await showConfirm(confirmMsg, { title: 'Εισαγωγή ZIP', okLabel: 'Άνοιγμα PR' }))) return;
 
         importBtn.disabled = true;
 
@@ -978,7 +1269,7 @@
             }];
 
             for (var i = 0; i < pkg.images.length; i++) {
-                authorDom.setBusyText(importBtn, 'Converting images...');
+                authorDom.setBusyText(importBtn, 'Μετατροπή εικόνων…');
                 additions.push({
                     path: targetFolder + '/' + pkg.images[i].slot + '.webp',
                     file: await ensureWebpFile(pkg.images[i].file, 'ZIP image slot ' + pkg.images[i].slot)
@@ -1001,7 +1292,7 @@
             var pathToSha = {};
             for (var j = 0; j < additions.length; j++) {
                 var a = additions[j];
-                authorDom.setBusyText(importBtn, 'Uploading...');
+                authorDom.setBusyText(importBtn, 'Ανέβασμα…');
                 var contentB64 = (a.text != null) ? utf8ToBase64(a.text) : await blobToBase64(a.file);
                 var blob = await ghFetch('/git/blobs', token, {
                     method: 'POST',
@@ -1010,7 +1301,7 @@
                 pathToSha[a.path] = blob.sha;
             }
 
-            authorDom.setBusyText(importBtn, 'Opening PR...');
+            authorDom.setBusyText(importBtn, 'Άνοιγμα PR…');
             var tree = [];
             deletes.forEach(function (p) {
                 tree.push({ path: ENTRIES_PATH + '/' + p, mode: '100644', type: 'blob', sha: null });
@@ -1030,38 +1321,42 @@
                 'Author tool import for `' + ENTRIES_PATH + '/' + targetFolder + '`.',
                 function (msg) { authorDom.setBusyText(importBtn, msg); }
             );
-            await showAlert('Queued automatic publish for ' + ENTRIES_PATH + '/' + targetFolder + '.\n\nBranch: ' + prResult.branchName + '\n\nGitHub Actions will validate, merge, rebuild, and deploy it.');
+            await announcePullRequest('import', title, prResult);
         } finally {
-            importBtn.disabled = false;
             setImportReady();
         }
     }
 
     // ─── Delete article ─────────────────────────────────
     async function deleteArticle(post, btn) {
-        if (!(await showConfirm('Delete article "' + post.title + '"?\n\nFolder: ' + ENTRIES_PATH + '/' + post.id + '\n\nThis removes source, generated article.html, and all image variants. The workflow will rebuild blog-data.json + sitemap.'))) {
+        if (pending[post.id]) {
+            await showAlert('Υπάρχει ήδη PR σε αναμονή για το ' + post.id + '. Η διαγραφή γίνεται μετά το merge του.');
+            return;
+        }
+        if (!(await showConfirm('Διαγραφή του «' + post.title + '»;\n\nΦάκελος: ' + ENTRIES_PATH + '/' + post.id + '\n\nΑφαιρεί source, article.html και όλες τις παραλλαγές εικόνων. Το workflow ξαναχτίζει index και sitemap.', { title: 'Διαγραφή άρθρου', okLabel: 'Συνέχεια' }))) {
             return;
         }
         var confirmation = await showPrompt(
-            'Type the article folder ID to confirm deletion:\n\n' + post.id,
+            'Πληκτρολόγησε το ID του φακέλου για επιβεβαίωση:\n\n' + post.id,
             '',
             {
-                title: 'Confirm Delete',
-                inputLabel: 'Article folder ID'
+                title: 'Επιβεβαίωση διαγραφής',
+                inputLabel: 'ID φακέλου άρθρου',
+                okLabel: 'Διαγραφή'
             }
         );
         if (confirmation === null) return;
         if (confirmation.trim() !== post.id) {
-            await showAlert('Delete cancelled. Folder ID did not match.');
+            await showAlert('Η διαγραφή ακυρώθηκε — το ID δεν ταιριάζει.');
             return;
         }
         var token = await requireToken();
         if (!token) return;
         btn.disabled = true;
-        authorDom.setBusyText(btn, '');
+        authorDom.setBusyText(btn, 'Διαγραφή…');
         try {
             var files = await listFolder(token, post.id);
-            if (!files.length) throw new Error('Folder is empty or missing.');
+            if (!files.length) throw new Error('Ο φάκελος είναι κενός ή λείπει.');
 
             var tree = files.filter(function (f) { return f.type === 'file'; }).map(function (f) {
                 return {
@@ -1083,40 +1378,59 @@
             );
 
             posts = posts.filter(function (p) { return p.id !== post.id; });
-            applyFilters(false);
-            await showAlert('Queued automatic deletion for this article.\n\nBranch: ' + prResult.branchName + '\n\nGitHub Actions will validate, merge, rebuild, and deploy it.');
+            lanes = articleIndex.maintenanceLanes(posts, articleSource.titleIssues);
+            renderLanes();
+            renderLane();
+            await announcePullRequest('delete', post.title, prResult);
         } catch (e) {
             console.error('Delete failed', e);
             var hint = githubErrorHint(e);
-            await showAlert('Delete failed: ' + e.message + hint);
+            await showAlert('Η διαγραφή απέτυχε: ' + e.message + hint);
             btn.disabled = false;
-            authorDom.setIconText(btn, 'fa-trash', 'Delete');
+            btn.textContent = 'Διαγραφή';
         }
     }
 
     // ─── Edit modal ─────────────────────────────────────
-    // imageOps[slot] = { op: 'keep'|'replace'|'remove'|'add', file?: File, existing?: [filename] }
+    // imageOps[slot] = { op: 'keep'|'replace'|'remove', file?: File }
     var editState = null;
 
+    function renderEditTitleWarnings() {
+        var warnings = articleSource.titleWarnings(editTitleEl.value, '');
+        editTitleWarn.replaceChildren.apply(editTitleWarn, warnings.map(function (text) {
+            return el('span', 'hk-badge hk-badge-warn', text);
+        }));
+    }
+    editTitleEl.addEventListener('input', renderEditTitleWarnings);
+
     async function openEdit(post) {
+        if (!editable(post)) {
+            await showAlert('Το άρθρο ' + post.id + ' δεν έχει source.txt, οπότε δεν επεξεργάζεται από εδώ.');
+            return;
+        }
+        if (pending[post.id]) {
+            await showAlert('Υπάρχει ήδη PR σε αναμονή για το ' + post.id + '. Κάνε νέες αλλαγές μετά το merge.');
+            return;
+        }
         var token = await requireToken();
         if (!token) return;
 
-        editStatusEl.textContent = 'Loading source…';
+        editStatusEl.textContent = 'Φόρτωση source.txt…';
         editStatusEl.classList.remove('err');
         editFolderEl.textContent = ENTRIES_PATH + '/' + post.id;
         editTagEl.value = (post.tags || []).join(', ');
         editCatEl.value = post.category || 'News';
         editTitleEl.value = post.title || '';
         editBodyEl.value = '';
-        var loading = authorDom.createStatusMessage('hk-empty', 'Loading...', 'fa-spinner', 'fa-spin');
-        loading.style.padding = '0.8rem';
-        editImagesEl.replaceChildren(loading);
+        renderEditTitleWarnings();
+        editImagesEl.replaceChildren(authorDom.createStatusMessage('hk-empty', 'Φόρτωση…'));
 
         // Seed author + date from the folder name (single source of truth — the
-        // processor derives both from the folder prefix). If the folder isn't
-        // in the expected format, fall back to blog-data.json fields.
+        // processor derives both from the folder prefix). Non-standard folder
+        // names cannot be rebuilt from the form, so author and date are locked
+        // and the save keeps the folder (and URL) as it is.
         var parts = folderParts(post.id);
+        var locked = !parts;
         if (parts) {
             editAuthorEl.value = AUTHOR_CODE_TO_NAME[parts.authorCode] || 'F1 Stories Team';
             editDateEl.value = parts.date;
@@ -1124,22 +1438,23 @@
             editAuthorEl.value = post.author || 'F1 Stories Team';
             editDateEl.value = (post.dateISO || post.date || '').slice(0, 10);
         }
+        editAuthorEl.disabled = locked;
+        editDateEl.disabled = locked;
+        editFolderNote.hidden = !locked;
+        editFolderNote.textContent = locked
+            ? 'Το όνομα φακέλου «' + post.id + '» δεν είναι τυπικό. Συντάκτης και ημερομηνία δεν αλλάζουν εδώ, ώστε ο φάκελος και το URL να μείνουν ίδια.'
+            : '';
 
         editBackdrop.classList.add('open');
         document.body.style.overflow = 'hidden';
+        editTitleEl.focus();
 
         try {
             // 1. Load folder listing
             var files = await listFolder(token, post.id);
             var srcFile = files.find(function (f) { return f.type === 'file' && f.name === 'source.txt'; });
             if (!srcFile) {
-                // Fallback: any .txt, but not article.html
-                srcFile = files.find(function (f) {
-                    return f.type === 'file' && /\.txt$/i.test(f.name) && !/^article\./.test(f.name);
-                });
-            }
-            if (!srcFile) {
-                throw new Error('No editable .txt source in this folder. Likely a .docx-originated article — edit it via the source file on GitHub.');
+                throw new Error('Ο φάκελος δεν έχει source.txt· επεξεργασία μόνο στο GitHub.');
             }
 
             // 2. Load source content (GitHub returns base64 for files via /contents)
@@ -1151,6 +1466,7 @@
             editCatEl.value = parsed.category;
             editTitleEl.value = parsed.title || post.title || '';
             editBodyEl.value = parsed.body;
+            renderEditTitleWarnings();
 
             // 3. Compute existing slots from folder, keep full file list so we
             //    can rename the folder by reusing blob SHAs for non-slot files.
@@ -1162,6 +1478,7 @@
                 token: token,
                 post: post,
                 folder: post.id,
+                folderLocked: locked,
                 srcName: srcFile.name,
                 sourceMetadata: parsed.metadata,
                 files: files,
@@ -1185,73 +1502,63 @@
         }
     }
 
+    function slotLabel(slot) {
+        if (slot === 1) return 'Κεντρική (1)';
+        if (slot === 2) return 'Banner (2)';
+        return 'Εικόνα κειμένου (' + slot + ')';
+    }
+
+    function slotRow(imgSrc, title, detail, opText, opClass, actions) {
+        var row = el('div', 'hk-slot' + (opClass ? ' ' + opClass : ''));
+        var img = el('img', 'hk-slot-img');
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.width = 160;
+        img.height = 90;
+        img.alt = '';
+        img.onerror = function () { img.removeAttribute('src'); img.classList.add('is-missing'); };
+        if (imgSrc) img.src = imgSrc;
+        var info = el('div', 'hk-slot-info');
+        info.appendChild(el('strong', '', title));
+        info.appendChild(el('span', 'hk-slot-files', detail));
+        if (opText) info.appendChild(el('span', 'hk-slot-op', opText));
+        var actionsEl = el('div', 'hk-slot-actions');
+        actions.forEach(function (action) { actionsEl.appendChild(action); });
+        row.append(img, info, actionsEl);
+        return row;
+    }
+
+    function slotButton(text, handler, className) {
+        var button = el('button', 'hk-btn hk-btn-sm' + (className ? ' ' + className : ''), text);
+        button.type = 'button';
+        button.addEventListener('click', handler);
+        return button;
+    }
+
     function renderEditImages() {
         if (!editState) return;
-        editImagesEl.replaceChildren();
-
+        var rows = [];
         var slots = Object.keys(editState.imageOps).map(Number).sort(function (a, b) { return a - b; });
 
-        // Existing slots + any replace/remove states
         slots.forEach(function (slot) {
             var op = editState.imageOps[slot];
             var files = editState.slotMap[slot] || [];
-            var row = document.createElement('div');
-            row.className = 'hk-image-slot';
-
-            // Preview image for this slot
-            var img = document.createElement('img');
-            img.loading = 'lazy';
-            img.decoding = 'async';
-            img.width = 1600;
-            img.height = 900;
-            img.onerror = function () { img.style.background = 'rgba(255,255,255,0.05)'; img.removeAttribute('src'); };
-            img.addEventListener('load', function () {
-                if (img.naturalWidth) img.width = img.naturalWidth;
-                if (img.naturalHeight) img.height = img.naturalHeight;
-            }, { once: true });
+            var src = '';
             if (op.op === 'replace' && op.file) {
-                img.src = URL.createObjectURL(op.file);
-                img.dataset.objectUrl = '1';
+                src = URL.createObjectURL(op.file);
             } else {
                 // Prefer .webp > jpg/png; use the first existing file
                 var pref = files.find(function (f) { return /\.webp$/i.test(f.name) && !/-\d+\.webp$/i.test(f.name); })
                     || files.find(function (f) { return /\.(jpg|jpeg|png)$/i.test(f.name); })
                     || files[0];
-                if (pref) {
-                    img.src = '/' + ENTRIES_PATH + '/' + encodeURIComponent(editState.folder) + '/' + encodeURIComponent(pref.name);
-                }
+                if (pref) src = '/' + ENTRIES_PATH + '/' + encodeURIComponent(editState.folder) + '/' + encodeURIComponent(pref.name);
             }
-
-            var info = document.createElement('div');
-            info.className = 'hk-image-slot-info';
-            var isHero = (slot === 1);
-            var label = (isHero ? 'Hero (slot 1)' : 'Content image slot ' + slot);
-            var strong = document.createElement('strong');
-            strong.textContent = label;
-            var fileList = document.createElement('div');
-            fileList.className = 'hk-slot-files';
-            fileList.textContent = files.map(function (f) { return f.name; }).join(', ');
-            info.append(strong, fileList);
-            if (op.op === 'replace' || op.op === 'remove') {
-                var opLabel = document.createElement('span');
-                opLabel.className = op.op === 'replace'
-                    ? 'hk-slot-op hk-op-replace'
-                    : 'hk-slot-op hk-op-remove';
-                opLabel.textContent = op.op === 'replace' ? 'Will replace' : 'Will be removed';
-                info.appendChild(opLabel);
-            }
-
-            var actions = document.createElement('div');
-            actions.className = 'hk-image-slot-actions';
-            if (op.op === 'keep' || op.op === 'replace') {
-                var replaceLabel = document.createElement('label');
-                replaceLabel.className = 'hk-btn';
-                replaceLabel.style.cursor = 'pointer';
-                authorDom.setIconText(replaceLabel, 'fa-rotate', 'Replace');
-                var replaceInput = document.createElement('input');
+            var actions = [];
+            if (op.op === 'keep') {
+                var replaceLabel = el('label', 'hk-btn hk-btn-sm', 'Αντικατάσταση');
+                var replaceInput = el('input', 'hk-sr');
                 replaceInput.type = 'file';
                 replaceInput.accept = 'image/*';
-                replaceInput.className = 'hk-sr';
                 replaceInput.addEventListener('change', function () {
                     if (replaceInput.files && replaceInput.files[0]) {
                         editState.imageOps[slot] = { op: 'replace', file: replaceInput.files[0] };
@@ -1259,87 +1566,35 @@
                     }
                 });
                 replaceLabel.appendChild(replaceInput);
-                actions.appendChild(replaceLabel);
-            }
-            if (!isHero) {
-                var delBtn = document.createElement('button');
-                delBtn.className = 'hk-btn hk-btn-danger';
-                authorDom.setIconText(delBtn, 'fa-trash', 'Remove');
-                delBtn.addEventListener('click', function () {
-                    editState.imageOps[slot] = { op: 'remove' };
-                    renderEditImages();
-                });
-                actions.appendChild(delBtn);
-            }
-            if (op.op !== 'keep') {
-                var undoBtn = document.createElement('button');
-                undoBtn.className = 'hk-btn';
-                authorDom.setIconText(undoBtn, 'fa-undo', 'Undo');
-                undoBtn.addEventListener('click', function () {
+                actions.push(replaceLabel);
+                if (slot !== 1) {
+                    actions.push(slotButton('Αφαίρεση', function () {
+                        editState.imageOps[slot] = { op: 'remove' };
+                        renderEditImages();
+                    }, 'hk-btn-ghost hk-btn-danger'));
+                }
+            } else {
+                actions.push(slotButton('Αναίρεση', function () {
                     editState.imageOps[slot] = { op: 'keep' };
                     renderEditImages();
-                });
-                actions.appendChild(undoBtn);
+                }));
             }
-
-            row.appendChild(img);
-            row.appendChild(info);
-            row.appendChild(actions);
-            editImagesEl.appendChild(row);
+            var opText = op.op === 'replace' ? 'Θα αντικατασταθεί' : op.op === 'remove' ? 'Θα αφαιρεθεί' : '';
+            rows.push(slotRow(src, slotLabel(slot), files.map(function (f) { return f.name; }).join(', ') || (op.file ? op.file.name : ''), opText, op.op === 'keep' ? '' : 'is-' + op.op, actions));
         });
 
         // New content images queued to append
         editState.addContent.forEach(function (file, idx) {
-            var row = document.createElement('div');
-            row.className = 'hk-image-slot';
-
-            var img = document.createElement('img');
-            img.loading = 'lazy';
-            img.decoding = 'async';
-            img.width = 1600;
-            img.height = 900;
-            img.src = URL.createObjectURL(file);
-            img.addEventListener('load', function () {
-                if (img.naturalWidth) img.width = img.naturalWidth;
-                if (img.naturalHeight) img.height = img.naturalHeight;
-            }, { once: true });
-
-            var info = document.createElement('div');
-            info.className = 'hk-image-slot-info';
-            var strong = document.createElement('strong');
-            strong.textContent = 'New content image';
-            var fileList = document.createElement('div');
-            fileList.className = 'hk-slot-files';
-            fileList.textContent = file.name;
-            var opLabel = document.createElement('span');
-            opLabel.className = 'hk-slot-op hk-op-add';
-            opLabel.textContent = 'Will be added';
-            info.append(strong, fileList, opLabel);
-
-            var actions = document.createElement('div');
-            actions.className = 'hk-image-slot-actions';
-            var rmBtn = document.createElement('button');
-            rmBtn.className = 'hk-btn hk-btn-danger';
-            rmBtn.appendChild(authorDom.createSvgIcon('fa-times'));
-            rmBtn.addEventListener('click', function () {
-                editState.addContent.splice(idx, 1);
-                renderEditImages();
-            });
-            actions.appendChild(rmBtn);
-
-            row.appendChild(img);
-            row.appendChild(info);
-            row.appendChild(actions);
-            editImagesEl.appendChild(row);
+            rows.push(slotRow(URL.createObjectURL(file), 'Νέα εικόνα κειμένου', file.name, 'Θα προστεθεί', 'is-add', [
+                slotButton('Αφαίρεση', function () {
+                    editState.addContent.splice(idx, 1);
+                    renderEditImages();
+                }, 'hk-btn-ghost hk-btn-danger')
+            ]));
         });
 
-        if (!slots.length && !editState.addContent.length) {
-            var hint = document.createElement('div');
-            hint.className = 'hk-empty';
-            hint.style.padding = '0.8rem';
-            hint.textContent = 'No images yet.';
-            editImagesEl.appendChild(hint);
-        }
+        if (!rows.length) rows.push(el('p', 'hk-hint', 'Δεν υπάρχουν εικόνες ακόμη.'));
+        editImagesEl.replaceChildren.apply(editImagesEl, rows);
     }
 
     editHeroIn.addEventListener('change', function () {
@@ -1365,11 +1620,12 @@
     });
 
     editCancelBtn.addEventListener('click', closeEdit);
+    editCloseBtn.addEventListener('click', closeEdit);
     editBackdrop.addEventListener('click', function (e) {
         if (e.target === editBackdrop) closeEdit();
     });
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && editBackdrop.classList.contains('open')) closeEdit();
+        if (e.key === 'Escape' && editBackdrop.classList.contains('open') && !document.querySelector('.f1s-author-dialog-backdrop')) closeEdit();
     });
 
     function closeEdit() {
@@ -1395,10 +1651,10 @@
         var authorCode = AUTHOR_CODES[authorName];
         if (authorCode === undefined) authorCode = '';
 
-        if (!title)   { await showAlert('Title is required.'); editTitleEl.focus(); return; }
-        if (!body)    { await showAlert('Body is required.');  editBodyEl.focus();  return; }
+        if (!title)   { await showAlert('Ο τίτλος είναι υποχρεωτικός.'); editTitleEl.focus(); return; }
+        if (!body)    { await showAlert('Το κείμενο είναι υποχρεωτικό.');  editBodyEl.focus();  return; }
         if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) {
-            await showAlert('Valid date (YYYY-MM-DD) is required.');
+            await showAlert('Χρειάζεται έγκυρη ημερομηνία (YYYY-MM-DD).');
             editDateEl.focus();
             return;
         }
@@ -1406,9 +1662,13 @@
         // The folder name encodes date + author — rebuild it from the form.
         // Keep the existing -N suffix if the source folder had one so we
         // don't collide with other same-day posts by the same author.
-        var oldParts = folderParts(oldFolder) || { suffix: null, authorCode: authorCode, date: isoDate };
-        var newFolder = buildFolderName(isoDate, authorCode, oldParts.suffix);
-        if (!newFolder) { await showAlert('Could not build folder name from date/author.'); return; }
+        // Non-standard folders keep their name (author/date are locked).
+        var newFolder = oldFolder;
+        if (!editState.folderLocked) {
+            var oldParts = folderParts(oldFolder);
+            newFolder = buildFolderName(isoDate, authorCode, oldParts.suffix);
+            if (!newFolder) { await showAlert('Δεν γίνεται να σχηματιστεί όνομα φακέλου από ημερομηνία/συντάκτη.'); return; }
+        }
 
         var isRename = (newFolder !== oldFolder);
 
@@ -1424,9 +1684,8 @@
             }
             if (exists) {
                 var pickNext = await showConfirm(
-                    'Target folder already exists:\n\n  blog-entries/' + newFolder + '\n\n' +
-                    '• OK: pick the next free -N suffix\n' +
-                    '• Cancel: abort the save'
+                    'Ο φάκελος προορισμού υπάρχει ήδη:\n\n  blog-entries/' + newFolder + '\n\nΝα χρησιμοποιηθεί το επόμενο ελεύθερο -N;',
+                    { title: 'Ο φάκελος υπάρχει', okLabel: 'Επόμενο -N', cancelLabel: 'Ακύρωση αποθήκευσης' }
                 );
                 if (!pickNext) return;
                 newFolder = await findNextFolderSuffix(token, isoDate, authorCode);
@@ -1487,17 +1746,18 @@
 
         var newUploadCount = additions.filter(function (a) { return a.file || a.text != null; }).length;
         var summary = isRename
-            ? ('Rename + save:\n\n' +
+            ? ('Μετονομασία + αποθήκευση:\n\n' +
                '  ' + oldFolder + '\n    ↓\n  ' + newFolder + '\n\n' +
-               '• ' + editState.files.length + ' file(s) re-keyed\n' +
-               '• ' + newUploadCount + ' upload(s) (source + new/replaced images)\n' +
-               '• Kept variants are moved by SHA (no re-upload)')
-            : ('Save changes to ' + oldFolder + '?\n\n' +
-               '• Source will be rewritten\n' +
-               '• ' + deletes.length + ' file(s) to delete\n' +
-               '• ' + (newUploadCount - 1) + ' image upload(s)' +
-               (editState.addContent.length ? ' (' + editState.addContent.length + ' new)' : ''));
-        if (!(await showConfirm(summary))) return;
+               '• ' + plural(editState.files.length, 'αρχείο', 'αρχεία') + ' μεταφέρονται\n' +
+               '• ' + plural(newUploadCount, 'ανέβασμα', 'ανεβάσματα') + ' (source + νέες/αντικατεστημένες εικόνες)\n' +
+               '• Οι εικόνες που μένουν μεταφέρονται με SHA (χωρίς νέο ανέβασμα)\n' +
+               '• Το URL του άρθρου αλλάζει')
+            : ('Αποθήκευση στο ' + oldFolder + ';\n\n' +
+               '• Το source.txt ξαναγράφεται\n' +
+               '• ' + plural(deletes.length, 'αρχείο', 'αρχεία') + ' για διαγραφή\n' +
+               '• ' + plural(newUploadCount - 1, 'ανέβασμα εικόνας', 'ανεβάσματα εικόνων') +
+               (editState.addContent.length ? ' (' + editState.addContent.length + ' νέες)' : ''));
+        if (!(await showConfirm(summary, { title: 'Άνοιγμα PR επεξεργασίας', okLabel: 'Άνοιγμα PR' }))) return;
 
         editSaveBtn.disabled = true;
         editStatusEl.classList.remove('err');
@@ -1505,7 +1765,7 @@
         try {
             // Phase 1: upload blobs once. These are global by SHA, so we can
             // reuse them if a retry is needed below.
-            authorDom.setBusyText(editSaveBtn, 'Uploading...');
+            authorDom.setBusyText(editSaveBtn, 'Ανέβασμα…');
             var pathToSha = {};
             for (var i = 0; i < additions.length; i++) {
                 var a = additions[i];
@@ -1513,7 +1773,7 @@
                     pathToSha[a.path] = a.reuseSha;
                     continue;
                 }
-                editStatusEl.textContent = 'Uploading ' + a.path + ' (' + (i + 1) + '/' + additions.length + ')…';
+                editStatusEl.textContent = 'Ανέβασμα ' + a.path + ' (' + (i + 1) + '/' + additions.length + ')…';
                 var uploadFile = a.file;
                 if (uploadFile && a.convertToWebp) {
                     uploadFile = await ensureWebpFile(uploadFile, baseName(a.path));
@@ -1526,8 +1786,7 @@
                 pathToSha[a.path] = blob.sha;
             }
 
-            authorDom.setBusyText(editSaveBtn, 'Opening PR...');
-            editStatusEl.textContent = 'Opening Pull Request…';
+            authorDom.setBusyText(editSaveBtn, 'Άνοιγμα PR…');
             var tree = [];
             deletes.forEach(function (p) {
                 tree.push({ path: ENTRIES_PATH + '/' + p, mode: '100644', type: 'blob', sha: null });
@@ -1539,6 +1798,7 @@
             var commitMsg = isRename
                 ? ('edit(blog): rename ' + oldFolder + ' to ' + newFolder + ' (' + title + ')')
                 : ('edit(blog): ' + title + ' (' + oldFolder + ')');
+            var post = editState.post;
             var prResult = await createAuthorPullRequest(
                 token,
                 'edit',
@@ -1550,56 +1810,27 @@
                 function (msg) { editStatusEl.textContent = msg; }
             );
 
-            editStatusEl.textContent = 'Queued automatic publish.';
-            await showAlert('Queued automatic publish for this edit.\n\nBranch: ' + prResult.branchName + '\n\nGitHub Actions will validate, merge, rebuild, and deploy it.');
+            pending[post.id] = true;
             closeEdit();
+            renderLanes();
+            renderLane();
+            await announcePullRequest('edit', title, prResult);
         } catch (e) {
             console.error('Save failed', e);
             editStatusEl.classList.add('err');
             var hint = githubErrorHint(e).replace(/\n+/g, ' ');
-            editStatusEl.textContent = 'Save failed: ' + e.message + hint;
+            editStatusEl.textContent = 'Η αποθήκευση απέτυχε: ' + e.message + hint;
             editSaveBtn.disabled = false;
             setEditSaveReady();
         }
     });
 
     // ─── Events ──────────────────────────────────────────
-    var mobileFilterMedia = window.matchMedia('(max-width: 720px)');
-
-    function setFilterPanelOpen(open, returnFocus) {
-        open = Boolean(open && mobileFilterMedia.matches);
-        filterPanel.classList.toggle('open', open);
-        filterToggle.setAttribute('aria-expanded', String(open));
-        filterScrim.hidden = !open;
-        document.body.classList.toggle('hk-filters-open', open);
-
-        if (mobileFilterMedia.matches) {
-            filterPanel.setAttribute('aria-hidden', String(!open));
-            filterPanel.setAttribute('role', 'dialog');
-            filterPanel.setAttribute('aria-modal', 'true');
-            filterPanel.setAttribute('aria-labelledby', 'hk-filter-heading');
-        } else {
-            filterPanel.removeAttribute('aria-hidden');
-            filterPanel.removeAttribute('role');
-            filterPanel.removeAttribute('aria-modal');
-            filterPanel.removeAttribute('aria-labelledby');
-        }
-
-        if (open) {
-            requestAnimationFrame(function () { filterTag.focus(); });
-        } else if (returnFocus) {
-            filterToggle.focus();
-        }
-    }
-
-    function syncFilterPanelMode() {
-        setFilterPanelOpen(false, false);
-    }
-
     tokenBtn.addEventListener('click', async function () {
-        var existing = getStoredToken();
-        var storageScope = hasPersistentToken() ? 'persistently on this device' : 'for the current session';
-        await promptForToken(existing ? 'Token already available (' + storageScope + '). Paste a new one to replace, or leave empty to clear.' : '');
+        var existing = tokenStore.get();
+        await promptForToken(existing ? 'Υπάρχει ήδη token για αυτή την καρτέλα. Επικόλλησε νέο για αντικατάσταση ή άφησε κενό για διαγραφή.' : '');
+        openPulls = null;
+        if (currentLane === 'prs') loadOpenPulls(true);
     });
     importBtn.addEventListener('click', function () { importInput.click(); });
     importInput.addEventListener('change', async function () {
@@ -1611,27 +1842,20 @@
         } catch (e) {
             console.error('ZIP import failed', e);
             var hint = githubErrorHint(e);
-            await showAlert('ZIP import failed: ' + e.message + hint);
-            importBtn.disabled = false;
+            await showAlert('Η εισαγωγή ZIP απέτυχε: ' + e.message + hint);
             setImportReady();
         }
     });
-    refreshBtn.addEventListener('click', function () { loadList(); });
+    refreshBtn.addEventListener('click', function () { openPulls = null; loadList(); });
     loadMoreBtn.addEventListener('click', loadMore);
 
-    filterToggle.addEventListener('click', function () { setFilterPanelOpen(true, false); });
-    filterClose.addEventListener('click', function () { setFilterPanelOpen(false, true); });
-    filterDone.addEventListener('click', function () { setFilterPanelOpen(false, true); });
-    filterScrim.addEventListener('click', function () { setFilterPanelOpen(false, true); });
     filterReset.addEventListener('click', function () {
+        searchEl.value = '';
         filterTag.value = '';
         filterCat.value = '';
         filterAuthor.value = '';
         applyFilters(true);
     });
-
-    densityGrid.addEventListener('click', function () { setDensity('grid'); });
-    densityList.addEventListener('click', function () { setDensity('list'); });
 
     var searchTimer;
     searchEl.addEventListener('input', function () {
@@ -1641,25 +1865,10 @@
     filterTag.addEventListener('change', applyFilters);
     filterCat.addEventListener('change', applyFilters);
     filterAuthor.addEventListener('change', applyFilters);
-
-    document.addEventListener('click', function (e) {
-        Array.prototype.forEach.call(listEl.querySelectorAll('.hk-card-menu[open]'), function (menu) {
-            if (!menu.contains(e.target)) menu.removeAttribute('open');
-        });
-    });
-    document.addEventListener('keydown', function (e) {
-        if (e.key !== 'Escape') return;
-        if (filterPanel.classList.contains('open')) setFilterPanelOpen(false, true);
-        Array.prototype.forEach.call(listEl.querySelectorAll('.hk-card-menu[open]'), function (menu) {
-            menu.removeAttribute('open');
-        });
-    });
     window.addEventListener('pagehide', persistListState);
-    if (mobileFilterMedia.addEventListener) mobileFilterMedia.addEventListener('change', syncFilterPanelMode);
-    else mobileFilterMedia.addListener(syncFilterPanelMode);
 
     // Init
-    restoreListShell();
-    syncFilterPanelMode();
+    paintTokenState();
+    renderLog();
     loadList();
 })();

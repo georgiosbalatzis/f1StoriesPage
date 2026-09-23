@@ -90,5 +90,12 @@ console.log('author article source tests passed.');
     assert.equal(titleWarnings('GP Καναδά 2025 🏁', '').length, 1, 'emoji in title');
     assert.equal(titleWarnings('Καθαρός τίτλος', '## Ενότητα 🔥\nκείμενο').length, 1, 'emoji in heading');
     assert.equal(titleWarnings('F1 και F1 Academy', '').length, 0, 'non-adjacent repeat is fine');
+    const { titleIssues, stripEmoji } = loadArticleSource();
+    assert.deepEqual(Array.from(titleIssues('ΤΟ ΜΕΓΑΛΟ ΣΑΒΒΑΤΟΚΥΡΙΑΚΟ 🏁', ''), issue => issue.code), ['caps', 'emoji']);
+    assert.equal(titleIssues('Michael Schumacher Schumacher', '')[0].word, 'Schumacher');
+    assert.equal(stripEmoji('🏁 GP Μαϊάμι 2025 – Ανάλυση 🧠📊'), 'GP Μαϊάμι 2025 – Ανάλυση');
+    assert.equal(stripEmoji('Ο Piastri στο Zandvoort 🇳🇱🏆'), 'Ο Piastri στο Zandvoort');
+    assert.equal(stripEmoji('Φύγαμε 🚀!'), 'Φύγαμε!');
+    assert.equal(stripEmoji('Καθαρός τίτλος'), 'Καθαρός τίτλος');
     console.log('titleWarnings: ok');
 }

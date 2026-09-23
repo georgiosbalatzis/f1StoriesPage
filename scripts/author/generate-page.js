@@ -6,43 +6,70 @@
         'Georgios Balatzis':    { image: '/images/authors/georgios.webp',  title: 'Founder & Host',       bio: 'Ο Γιώργος είναι ο ιδρυτής του F1 Stories podcast. Μοιράζεται αναλύσεις, ιστορίες και insights από τον κόσμο της Formula 1.' },
         'Giannis Poulikidis':   { image: '/images/authors/giannis.webp',  title: 'Co-Host & Analyst',    bio: 'Ο Γιάννης φέρνει αναλυτική ματιά στα τεχνικά θέματα και τις στρατηγικές αγώνων της F1.' },
         'Thanasis Batalas':     { image: '/images/authors/thanasis.webp', title: 'Contributor',          bio: 'Ο Θανάσης συνεισφέρει με ιστορίες από τα παρασκήνια και ανασκοπήσεις αγώνων.' },
-        'Themis Charvalis':         { image: '/images/authors/2fast.webp',    title: 'Sim Racing Expert',    bio: 'Ο Themis Charvalis είναι ειδικός στο sim racing, φέρνοντας τον κόσμο του virtual motorsport στο F1 Stories.' },
-        'Dimitris Keramidiotis':{ image: '/images/authors/dimitris.webp', title: 'Contributor',          bio: 'Ο Δημήτρης μοιράζεται θεματικά άρθρα, rankings και opinion pieces.' }
+        'Themis Charvalis':     { image: '/images/authors/2fast.webp',    title: 'Sim Racing Expert',    bio: 'Ο Themis Charvalis είναι ειδικός στο sim racing, φέρνοντας τον κόσμο του virtual motorsport στο F1 Stories.' },
+        'Dimitris Keramidiotis':{ image: '/images/authors/dimitris.webp', title: 'Contributor',          bio: 'Ο Δημήτρης μοιράζεται θεματικά άρθρα, rankings και opinion pieces.' },
+        'F1 Stories Team':      { image: '/images/authors/default.webp',  title: 'Ομάδα F1 Stories',     bio: '' }
     };
 
+    // Author → folder code (mirrors blog-processor.js AUTHOR_MAP)
+    var AUTHOR_CODES = {
+        'Georgios Balatzis':    'G',
+        'Giannis Poulikidis':   'J',
+        'Thanasis Batalas':     'T',
+        'Themis Charvalis':     'W',
+        'Dimitris Keramidiotis':'D',
+        'F1 Stories Team':      ''
+    };
+    var DEFAULT_AUTHOR = 'Georgios Balatzis';
+    var DEFAULT_CATEGORY = 'News';
+
     // ── DOM refs ──────────────────────────────────────────
-    var titleInput    = document.getElementById('gen-title');
-    var authorSelect  = document.getElementById('gen-author');
-    var tagInput      = document.getElementById('gen-tag');
-    var categoryInput = document.getElementById('gen-category');
-    var contentArea   = document.getElementById('gen-content');
-    var heroInput     = document.getElementById('gen-hero-input');
-    var fileLabel     = document.getElementById('gen-file-label');
-    var fileText      = document.getElementById('gen-file-text');
-    var headerInput   = document.getElementById('gen-header-input');
-    var headerLabel   = document.getElementById('gen-header-label');
-    var headerText    = document.getElementById('gen-header-text');
-    var contentInput      = document.getElementById('gen-content-input');
-    var contentFileLabel  = document.getElementById('gen-content-file-label');
-    var contentFileText   = document.getElementById('gen-content-file-text');
-    var contentImagesList = document.getElementById('gen-content-images-list');
-    var insertMarkerBtn   = document.getElementById('gen-insert-img-marker');
-    var markerCountEl     = document.getElementById('gen-marker-count');
-    var previewBtn    = document.getElementById('gen-preview-btn');
-    var exportBtn     = document.getElementById('gen-export-btn');
-    var importInput   = document.getElementById('gen-import-input');
-    var importLabel   = document.getElementById('gen-import-label');
-    var importText    = document.getElementById('gen-import-text');
-    var publishBtn    = document.getElementById('gen-publish-btn');
-    var tokenBtn      = document.getElementById('gen-token-btn');
-    var clearBtn      = document.getElementById('gen-clear-btn');
-    var backBtn       = document.getElementById('gen-back-btn');
-    var editorPanel   = document.getElementById('editor-panel');
-    var previewWrap   = document.getElementById('preview-wrapper');
+    function byId(id) { return document.getElementById(id); }
+    var titleInput        = byId('gen-title');
+    var titleWarningsEl   = byId('gen-title-warnings');
+    var authorGroup       = byId('gen-author-group');
+    var categoryGroup     = byId('gen-category-group');
+    var tagInput          = byId('gen-tag');
+    var contentArea       = byId('gen-content');
+    var heroInput         = byId('gen-hero-input');
+    var fileLabel         = byId('gen-file-label');
+    var fileText          = byId('gen-file-text');
+    var heroThumb         = byId('gen-hero-thumb');
+    var headerInput       = byId('gen-header-input');
+    var headerLabel       = byId('gen-header-label');
+    var headerText        = byId('gen-header-text');
+    var headerThumb       = byId('gen-header-thumb');
+    var contentInput      = byId('gen-content-input');
+    var contentFileLabel  = byId('gen-content-file-label');
+    var contentFileText   = byId('gen-content-file-text');
+    var contentImagesList = byId('gen-content-images-list');
+    var insertMarkerBtn   = byId('gen-insert-img-marker');
+    var markerCountEl     = byId('gen-marker-count');
+    var exportBtn         = byId('gen-export-btn');
+    var importInput       = byId('gen-import-input');
+    var importLabel       = byId('gen-import-label');
+    var importText        = byId('gen-import-text');
+    var publishBtn        = byId('gen-publish-btn');
+    var tokenBtn          = byId('gen-token-btn');
+    var tokenStateEl      = byId('gen-token-state');
+    var clearBtn          = byId('gen-clear-btn');
+    var prevBtn           = byId('gen-prev');
+    var nextBtn           = byId('gen-next');
+    var reviewList        = byId('gen-review');
+    var reviewFolder      = byId('gen-review-folder');
+    var progressList      = byId('gen-progress');
+    var resultBox         = byId('gen-result');
+    var previewFrame      = byId('gen-preview-frame');
+    var mobileProgress    = byId('gen-mobile-progress');
+    var mobileProgressLbl = byId('gen-mobile-progress-label');
+    var stepButtons  = Array.prototype.slice.call(document.querySelectorAll('.gb-step'));
+    var panels       = Array.prototype.slice.call(document.querySelectorAll('.gb-panel'));
+    var deviceButtons = Array.prototype.slice.call(document.querySelectorAll('.gb-device-btn'));
     var authorDom = window.F1S_AUTHOR_DOM_TOOLS;
     var authorDialogs = window.F1S_AUTHOR_DIALOGS;
     var articleSource = window.F1S_AUTHOR_ARTICLE_SOURCE;
     var taxonomy = window.F1S_TAXONOMY;
+    var sessionTokens = window.F1S_AUTHOR_SESSION_TOKEN;
     var sourceMetadata = {};
 
     if (!authorDom) {
@@ -54,12 +81,9 @@
     if (!articleSource || !taxonomy) {
         throw new Error('Article taxonomy and source helpers failed to load.');
     }
-    taxonomy.PUBLIC_CATEGORIES.forEach(function (category) {
-        var option = document.createElement('option');
-        option.value = category;
-        option.textContent = category;
-        categoryInput.appendChild(option);
-    });
+    if (!sessionTokens) {
+        throw new Error('Author session token helper failed to load.');
+    }
 
     function showAlert(message, options) {
         return authorDialogs.alert(message, options);
@@ -73,23 +97,63 @@
         return authorDialogs.prompt(message, defaultValue, options);
     }
 
+    function el(tag, className, text) {
+        var node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text != null) node.textContent = text;
+        return node;
+    }
+
+    // ── Author + category pickers (radio groups) ──────────
+    Object.keys(AUTHOR_CODES).forEach(function (name) {
+        var option = el('label', 'gb-author');
+        var radio = el('input');
+        radio.type = 'radio';
+        radio.name = 'gen-author';
+        radio.value = name;
+        radio.checked = name === DEFAULT_AUTHOR;
+        var avatar = el('img');
+        avatar.src = (AUTHORS[name] || AUTHORS['F1 Stories Team']).image;
+        avatar.alt = '';
+        avatar.width = 40;
+        avatar.height = 40;
+        avatar.decoding = 'async';
+        var text = el('span', 'gb-author-text', name);
+        text.appendChild(el('small', '', (AUTHORS[name] || {}).title || ''));
+        option.append(radio, avatar, text);
+        authorGroup.appendChild(option);
+    });
+
+    taxonomy.PUBLIC_CATEGORIES.forEach(function (category) {
+        var option = el('label', 'gb-chip');
+        var radio = el('input');
+        radio.type = 'radio';
+        radio.name = 'gen-category';
+        radio.value = category;
+        radio.checked = category === DEFAULT_CATEGORY;
+        option.append(radio, el('span', '', category));
+        categoryGroup.appendChild(option);
+    });
+
+    function checkedValue(name, fallback) {
+        var checked = document.querySelector('input[name="' + name + '"]:checked');
+        return checked ? checked.value : fallback;
+    }
+    function setChecked(name, value) {
+        Array.prototype.forEach.call(document.querySelectorAll('input[name="' + name + '"]'), function (radio) {
+            radio.checked = radio.value === value;
+        });
+    }
+    function getAuthor() { return checkedValue('gen-author', DEFAULT_AUTHOR); }
+    function getCategory() { return checkedValue('gen-category', DEFAULT_CATEGORY); }
+
     function setExportReady() {
-        authorDom.setIconText(exportBtn, 'fa-file-zipper', 'Εξαγωγή ZIP');
+        authorDom.setIconText(exportBtn, 'fa-file-zipper', 'Εξαγωγή ZIP αντί για PR');
     }
 
     function setPublishReady() {
-        authorDom.setIconText(publishBtn, 'fa-rocket', 'Δημοσίευση');
+        authorDom.setIconText(publishBtn, 'fa-rocket', 'Άνοιγμα Pull Request');
     }
-
-    // Author → folder code (mirrors blog-processor.js AUTHOR_MAP)
-    var AUTHOR_CODES = {
-        'Georgios Balatzis':    'G',
-        'Giannis Poulikidis':   'J',
-        'Thanasis Batalas':     'T',
-        'Themis Charvalis':         'W',
-        'Dimitris Keramidiotis':'D',
-        'F1 Stories Team':      ''
-    };
 
     var heroObjectUrl = null;
     var heroImageMeta = { width: 848, height: 400 };
@@ -117,14 +181,40 @@
         img.height = meta && meta.height ? meta.height : fallbackHeight;
     }
 
+    // Slot 1 / slot 2 drop zones show a thumbnail once a file is chosen.
+    function paintDrop(label, thumb, textEl, url, name, emptyText, iconId) {
+        label.classList.toggle('has-file', Boolean(url));
+        thumb.replaceChildren();
+        if (url) {
+            var img = el('img');
+            img.src = url;
+            img.alt = '';
+            thumb.appendChild(img);
+            textEl.textContent = name + ' · πάτα για αλλαγή';
+        } else {
+            thumb.appendChild(authorDom.createSvgIcon(iconId));
+            textEl.textContent = emptyText;
+        }
+    }
+    var HERO_EMPTY = 'Κάρτα στο blog και header αν δεν υπάρχει banner';
+    var HEADER_EMPTY = 'Στην κορυφή του άρθρου· αλλιώς η κεντρική';
+    function paintHero() {
+        var file = heroInput.files && heroInput.files[0];
+        paintDrop(fileLabel, heroThumb, fileText, heroObjectUrl, file ? file.name : '', HERO_EMPTY, 'fa-image');
+    }
+    function paintHeader() {
+        var file = headerInput.files && headerInput.files[0];
+        paintDrop(headerLabel, headerThumb, headerText, headerObjectUrl, file ? file.name : '', HEADER_EMPTY, 'fa-layer-group');
+    }
+
     // ── Hero image handler ────────────────────────────────
     heroInput.addEventListener('change', async function () {
         if (heroInput.files && heroInput.files[0]) {
             if (heroObjectUrl) URL.revokeObjectURL(heroObjectUrl);
             heroObjectUrl = URL.createObjectURL(heroInput.files[0]);
             heroImageMeta = await readImageMeta(heroObjectUrl);
-            fileText.textContent = heroInput.files[0].name;
-            fileLabel.classList.add('has-file');
+            paintHero();
+            refresh();
         }
     });
 
@@ -134,12 +224,12 @@
             if (headerObjectUrl) URL.revokeObjectURL(headerObjectUrl);
             headerObjectUrl = URL.createObjectURL(headerInput.files[0]);
             headerImageMeta = await readImageMeta(headerObjectUrl);
-            headerText.textContent = headerInput.files[0].name;
-            headerLabel.classList.add('has-file');
+            paintHeader();
+            refresh();
         }
     });
 
-    // ── Content images handlers ───────────────────────────
+    // ── Content images: marker → file map ─────────────────
     var contentImageFiles = []; // [{ file, url, width, height }]
     var MARKER_TOKEN = '[img-instert-tag]';
 
@@ -148,117 +238,85 @@
         return matches ? matches.length : 0;
     }
 
+    function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+
     function updateMarkerCount() {
         var markers = countMarkers();
-        var imgs    = contentImageFiles.length;
-        var label =
-            markers + ' δείκτ' + (markers === 1 ? 'ης' : 'ες') + ' • ' +
-            imgs    + ' εικόν' + (imgs    === 1 ? 'α'  : 'ες');
+        var imgs = contentImageFiles.length;
+        var label = plural(markers, 'δείκτης', 'δείκτες') + ' • ' + plural(imgs, 'εικόνα', 'εικόνες');
         if (imgs > markers && markers > 0) {
             label += ' (οι επιπλέον → carousel στο τέλος)';
         } else if (imgs > 0 && markers === 0) {
             label += ' → carousel στο τέλος';
+        } else if (markers > imgs) {
+            label += ' — λείπουν εικόνες (βήμα 3)';
         }
         markerCountEl.textContent = label;
-        // Only warn when markers outnumber images — those slots will render empty.
-        markerCountEl.style.color = (markers > imgs) ? '#f59e0b' : '';
+        markerCountEl.classList.toggle('is-warn', markers > imgs);
+    }
+
+    function iconButton(iconId, label, handler, disabled) {
+        var button = el('button', 'gb-icon-btn');
+        button.type = 'button';
+        button.setAttribute('aria-label', label);
+        button.title = label;
+        button.disabled = Boolean(disabled);
+        button.appendChild(authorDom.createSvgIcon(iconId));
+        button.addEventListener('click', handler);
+        return button;
     }
 
     function renderContentImagesList() {
-        if (!contentImageFiles.length) {
-            contentImagesList.style.display = 'none';
-            contentImagesList.replaceChildren();
-            contentFileText.textContent = 'Εικόνες κειμένου';
-            contentFileLabel.classList.remove('has-file');
-            updateMarkerCount();
-            return;
+        var markers = countMarkers();
+        var rows = Math.max(markers, contentImageFiles.length);
+        var items = [];
+        for (var idx = 0; idx < rows; idx++) {
+            items.push(buildMapRow(idx, markers));
         }
-        contentImagesList.style.display = 'grid';
-        contentImagesList.style.gridTemplateColumns = 'repeat(auto-fill, minmax(140px, 1fr))';
-        contentImagesList.style.gap = '0.5rem';
-        contentImagesList.replaceChildren();
-
-        contentImageFiles.forEach(function (item, idx) {
-            var tile = document.createElement('div');
-            tile.style.cssText =
-                'position:relative;border:1px solid var(--border,rgba(255,255,255,0.1));' +
-                'border-radius:8px;overflow:hidden;background:var(--bg-base,#111113);';
-
-            var img = document.createElement('img');
-            img.src = item.url;
-            img.alt = item.file.name;
-            img.loading = 'lazy';
-            img.decoding = 'async';
-            applyImageMeta(img, item, 1600, 900);
-            img.style.cssText = 'width:100%;height:90px;object-fit:cover;display:block;';
-
-            var label = document.createElement('div');
-            label.textContent = (idx + 3) + '.webp · ' + item.file.name;
-            label.style.cssText =
-                'padding:4px 6px;font-size:0.7rem;color:var(--text-tertiary);' +
-                'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
-
-            var controls = document.createElement('div');
-            controls.style.cssText =
-                'position:absolute;top:4px;right:4px;display:flex;gap:3px;';
-
-            function mkBtn(iconId, title, handler) {
-                var b = document.createElement('button');
-                b.type = 'button';
-                b.appendChild(authorDom.createSvgIcon(iconId));
-                b.title = title;
-                b.style.cssText =
-                    'width:22px;height:22px;padding:0;border:none;border-radius:50%;' +
-                    'background:rgba(0,0,0,0.65);color:#fff;cursor:pointer;font-size:0.65rem;' +
-                    'display:flex;align-items:center;justify-content:center;';
-                b.addEventListener('click', handler);
-                return b;
-            }
-
-            if (idx > 0) {
-                controls.appendChild(mkBtn(
-                    'fa-arrow-left',
-                    'Μετακίνηση αριστερά',
-                    function () {
-                        var tmp = contentImageFiles[idx - 1];
-                        contentImageFiles[idx - 1] = contentImageFiles[idx];
-                        contentImageFiles[idx] = tmp;
-                        renderContentImagesList();
-                    }
-                ));
-            }
-            if (idx < contentImageFiles.length - 1) {
-                controls.appendChild(mkBtn(
-                    'fa-arrow-right',
-                    'Μετακίνηση δεξιά',
-                    function () {
-                        var tmp = contentImageFiles[idx + 1];
-                        contentImageFiles[idx + 1] = contentImageFiles[idx];
-                        contentImageFiles[idx] = tmp;
-                        renderContentImagesList();
-                    }
-                ));
-            }
-            controls.appendChild(mkBtn(
-                'fa-times',
-                'Αφαίρεση',
-                function () {
-                    URL.revokeObjectURL(item.url);
-                    contentImageFiles.splice(idx, 1);
-                    renderContentImagesList();
-                }
-            ));
-
-            tile.appendChild(img);
-            tile.appendChild(label);
-            tile.appendChild(controls);
-            contentImagesList.appendChild(tile);
-        });
-
-        contentFileText.textContent =
-            contentImageFiles.length + (contentImageFiles.length === 1 ? ' εικόνα επισυνάφθηκε' : ' εικόνες επισυνάφθηκαν');
-        contentFileLabel.classList.add('has-file');
+        contentImagesList.replaceChildren.apply(contentImagesList, items);
+        contentImagesList.hidden = rows === 0;
+        contentFileText.textContent = contentImageFiles.length ? 'Προσθήκη εικόνων (' + contentImageFiles.length + ')' : 'Προσθήκη εικόνων';
+        contentFileLabel.classList.toggle('has-file', contentImageFiles.length > 0);
         updateMarkerCount();
+        refresh();
+    }
+
+    function buildMapRow(idx, markers) {
+        var item = contentImageFiles[idx];
+        var row = el('li', 'gb-map-row');
+        var slotName = idx < markers ? 'Δείκτης ' + (idx + 1) : 'Χωρίς δείκτη';
+        row.appendChild(el('span', 'gb-map-slot', slotName));
+        if (!item) {
+            row.classList.add('is-missing');
+            row.appendChild(el('span', 'gb-map-thumb gb-map-thumb-empty', '—'));
+            row.appendChild(el('span', 'gb-map-file', 'Λείπει εικόνα — η θέση θα μείνει κενή'));
+            return row;
+        }
+        if (idx >= markers) row.classList.add('is-orphan');
+        var img = el('img', 'gb-map-thumb');
+        img.src = item.url;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        applyImageMeta(img, item, 1600, 900);
+        row.appendChild(img);
+        var file = el('span', 'gb-map-file', (idx + 3) + '.webp');
+        file.appendChild(el('small', '', item.file.name + (idx >= markers ? ' · carousel στο τέλος' : '')));
+        row.appendChild(file);
+        var actions = el('span', 'gb-map-actions');
+        actions.appendChild(iconButton('fa-chevron-up', 'Μετακίνηση πάνω', function () {
+            var tmp = contentImageFiles[idx - 1];
+            contentImageFiles[idx - 1] = contentImageFiles[idx];
+            contentImageFiles[idx] = tmp;
+            renderContentImagesList();
+        }, idx === 0));
+        actions.appendChild(iconButton('fa-times', 'Αφαίρεση ' + item.file.name, function () {
+            URL.revokeObjectURL(item.url);
+            contentImageFiles.splice(idx, 1);
+            renderContentImagesList();
+        }));
+        row.appendChild(actions);
+        return row;
     }
 
     contentInput.addEventListener('change', async function () {
@@ -292,44 +350,193 @@
         var caret = start + insertion.length;
         contentArea.focus();
         contentArea.setSelectionRange(caret, caret);
-        updateMarkerCount();
+        renderContentImagesList();
     });
 
-    contentArea.addEventListener('input', updateMarkerCount);
-    updateMarkerCount();
+    contentArea.addEventListener('input', renderContentImagesList);
+
+    // ── Steps ─────────────────────────────────────────────
+    var STEP_TITLES = ['Βασικά', 'Κείμενο', 'Εικόνες', 'Προεπισκόπηση', 'Έλεγχος & PR'];
+    var currentStep = 0;
+    var visited = { 0: true };
+
+    function wordCount() {
+        var text = contentArea.value.trim();
+        return text ? text.split(/\s+/).length : 0;
+    }
+
+    // Issues by step. `block` issues disable the PR; the rest are advisory.
+    function collectIssues() {
+        var issues = [];
+        var title = titleInput.value.trim();
+        var body = contentArea.value.trim();
+        var markers = countMarkers();
+        var images = contentImageFiles.length;
+        if (!title) issues.push({ step: 0, text: 'Λείπει ο τίτλος', block: true });
+        articleSource.titleWarnings(title, body).forEach(function (text) { issues.push({ step: 0, text: text }); });
+        if (!body) issues.push({ step: 1, text: 'Λείπει το κείμενο', block: true });
+        if (!(heroInput.files && heroInput.files[0])) issues.push({ step: 2, text: 'Χωρίς κεντρική εικόνα — θα μπει η προεπιλεγμένη' });
+        if (markers > images) issues.push({ step: 2, text: plural(markers - images, 'δείκτης', 'δείκτες') + ' χωρίς εικόνα — κενή θέση στο άρθρο' });
+        if (images > markers) issues.push({ step: 2, text: plural(images - markers, 'εικόνα', 'εικόνες') + ' χωρίς δείκτη → carousel στο τέλος' });
+        return issues;
+    }
+
+    function folderPreview() {
+        return todayYYYYMMDD() + (AUTHOR_CODES[getAuthor()] || '');
+    }
+
+    function goToStep(step, focusHeading) {
+        if (step < 0 || step >= panels.length) return;
+        currentStep = step;
+        visited[step] = true;
+        panels.forEach(function (panel, index) { panel.hidden = index !== step; });
+        if (step === 3) renderPreview();
+        refresh();
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        if (focusHeading !== false) {
+            var heading = panels[step].querySelector('.gb-title');
+            if (heading) heading.focus({ preventScroll: true });
+        }
+    }
+
+    stepButtons.forEach(function (button) {
+        button.addEventListener('click', function () { goToStep(Number(button.dataset.step)); });
+    });
+    prevBtn.addEventListener('click', function () { goToStep(currentStep - 1); });
+    nextBtn.addEventListener('click', function () {
+        if (currentStep === panels.length - 1) {
+            var blocking = collectIssues().filter(function (issue) { return issue.block; })[0];
+            if (blocking) goToStep(blocking.step);
+            else publishBtn.click();
+            return;
+        }
+        goToStep(currentStep + 1);
+    });
+
+    deviceButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            deviceButtons.forEach(function (other) { other.setAttribute('aria-pressed', String(other === button)); });
+            previewFrame.classList.toggle('is-phone', button.dataset.device === 'phone');
+        });
+    });
+
+    function renderSteps(issues) {
+        stepButtons.forEach(function (button, index) {
+            var hasIssue = issues.some(function (issue) { return issue.step === index; });
+            var done = visited[index] && index !== currentStep;
+            if (index === currentStep) button.setAttribute('aria-current', 'step');
+            else button.removeAttribute('aria-current');
+            button.classList.toggle('is-done', done && !hasIssue);
+            button.classList.toggle('is-warn', done && hasIssue);
+            button.querySelector('.gb-step-n').textContent = done && !hasIssue ? '✓' : String(index + 1);
+        });
+        mobileProgressLbl.textContent = 'Βήμα ' + (currentStep + 1) + ' από ' + panels.length + ' · ' + STEP_TITLES[currentStep];
+        Array.prototype.forEach.call(mobileProgress.querySelectorAll('i'), function (bar, index) {
+            bar.className = index === currentStep ? 'is-now' : index < currentStep ? 'is-done' : '';
+        });
+        prevBtn.disabled = currentStep === 0;
+        if (currentStep === panels.length - 1) {
+            authorDom.setIconText(nextBtn, 'fa-rocket', 'Άνοιγμα PR');
+            nextBtn.classList.add('gb-nav-publish');
+        } else {
+            nextBtn.replaceChildren(document.createTextNode('Επόμενο: ' + STEP_TITLES[currentStep + 1] + ' '), authorDom.createSvgIcon('fa-arrow-right'));
+            nextBtn.classList.remove('gb-nav-publish');
+        }
+    }
+
+    function renderReview(issues) {
+        var title = titleInput.value.trim();
+        var rows = [];
+        rows.push({ ok: Boolean(title), text: title ? 'Τίτλος: «' + title + '»' : 'Λείπει ο τίτλος', step: 0 });
+        rows.push({ ok: Boolean(contentArea.value.trim()), text: contentArea.value.trim() ? 'Κείμενο · ' + plural(wordCount(), 'λέξη', 'λέξεις') : 'Λείπει το κείμενο', step: 1 });
+        issues.filter(function (issue) { return !issue.block; }).forEach(function (issue) {
+            rows.push({ ok: false, text: issue.text, step: issue.step });
+        });
+        if (!issues.some(function (issue) { return issue.step === 2; })) {
+            rows.push({ ok: true, text: 'Εικόνες: 1.webp' + (headerObjectUrl ? ', 2.webp' : '') + (contentImageFiles.length ? ' + ' + plural(contentImageFiles.length, 'εικόνα', 'εικόνες') + ' κειμένου' : ''), step: 2 });
+        }
+        reviewList.replaceChildren.apply(reviewList, rows.map(function (row) {
+            var li = el('li', 'gb-review-row ' + (row.ok ? 'is-ok' : 'is-warn'));
+            li.appendChild(el('span', 'gb-review-text', row.text));
+            var jump = el('button', 'gb-btn gb-btn-sm gb-btn-ghost', 'Βήμα ' + (row.step + 1));
+            jump.type = 'button';
+            jump.addEventListener('click', function () { goToStep(row.step); });
+            li.appendChild(jump);
+            return li;
+        }));
+        reviewFolder.textContent = 'blog-entries/' + folderPreview() + '/';
+        publishBtn.disabled = publishing || issues.some(function (issue) { return issue.block; });
+    }
+
+    function renderSummary() {
+        var author = getAuthor();
+        var tags = taxonomy.normalizeTags(tagInput.value);
+        byId('gen-card-img').src = heroObjectUrl || '/blog-module/images/default-blog.jpg';
+        byId('gen-card-meta').textContent = getCategory() + ' · ' + new Date().toLocaleDateString('el-GR', { day: 'numeric', month: 'short', year: 'numeric' });
+        byId('gen-card-title').textContent = titleInput.value.trim() || 'Χωρίς τίτλο';
+        byId('gen-card-author').textContent = 'Γράφει ' + author;
+        byId('gen-fact-folder').textContent = folderPreview();
+        byId('gen-fact-words').textContent = String(wordCount());
+        byId('gen-fact-read').textContent = plural(Math.max(1, Math.ceil(wordCount() / 200)), 'λεπτό', 'λεπτά');
+        var imageCount = (heroObjectUrl ? 1 : 0) + (headerObjectUrl ? 1 : 0) + contentImageFiles.length;
+        byId('gen-fact-images').textContent = imageCount ? imageCount + ' · όλες .webp' : '0';
+        byId('gen-fact-tags').textContent = tags.length ? tags.join(', ') : '—';
+    }
+
+    function renderTitleWarnings() {
+        var warnings = articleSource.titleWarnings(titleInput.value, '');
+        titleWarningsEl.replaceChildren.apply(titleWarningsEl, warnings.map(function (text) {
+            return el('span', 'gb-badge gb-badge-warn', text + ' (δεν μπλοκάρει)');
+        }));
+    }
+
+    var publishing = false;
+    function refresh() {
+        var issues = collectIssues();
+        renderSteps(issues);
+        renderReview(issues);
+        renderSummary();
+    }
+
+    titleInput.addEventListener('input', function () { renderTitleWarnings(); refresh(); });
+    tagInput.addEventListener('input', refresh);
+    authorGroup.addEventListener('change', refresh);
+    categoryGroup.addEventListener('change', refresh);
 
     // ── Clear ─────────────────────────────────────────────
-    clearBtn.addEventListener('click', function () {
+    function resetForm() {
         titleInput.value = '';
         tagInput.value = '';
-        categoryInput.value = 'News';
+        setChecked('gen-category', DEFAULT_CATEGORY);
+        setChecked('gen-author', DEFAULT_AUTHOR);
         sourceMetadata = {};
         contentArea.value = '';
         heroInput.value = '';
-        fileText.textContent = 'Κεντρική / thumbnail';
-        fileLabel.classList.remove('has-file');
         if (heroObjectUrl) { URL.revokeObjectURL(heroObjectUrl); heroObjectUrl = null; }
+        heroImageMeta = { width: 848, height: 400 };
         headerInput.value = '';
-        headerText.textContent = 'Banner άρθρου';
-        headerLabel.classList.remove('has-file');
         if (headerObjectUrl) { URL.revokeObjectURL(headerObjectUrl); headerObjectUrl = null; }
         headerImageMeta = { width: 848, height: 400 };
         contentImageFiles.forEach(function (item) { URL.revokeObjectURL(item.url); });
         contentImageFiles = [];
         contentInput.value = '';
         if (importInput) importInput.value = '';
-        if (importLabel) importLabel.classList.remove('has-file');
-        if (importText) importText.textContent = 'Εισαγωγή ZIP';
+        importLabel.classList.remove('has-file');
+        importText.textContent = 'Συνέχεια από ZIP';
+        paintHero();
+        paintHeader();
+        renderTitleWarnings();
+        progressList.hidden = true;
+        resultBox.hidden = true;
+        visited = { 0: true };
         renderContentImagesList();
-        previewWrap.classList.remove('visible');
-        if (typeof schedulePreview === 'function') schedulePreview();
-    });
+    }
 
-    // ── Back to editor ────────────────────────────────────
-    backBtn.addEventListener('click', function () {
-        previewWrap.classList.remove('visible');
-        editorPanel.style.display = '';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    clearBtn.addEventListener('click', async function () {
+        var dirty = titleInput.value.trim() || contentArea.value.trim() || contentImageFiles.length || heroObjectUrl || headerObjectUrl;
+        if (dirty && !(await showConfirm('Θα χαθούν κείμενο και εικόνες που δεν έχουν εξαχθεί ή δημοσιευτεί. Συνέχεια;', { title: 'Καθαρισμός φόρμας', okLabel: 'Καθαρισμός' }))) return;
+        resetForm();
+        goToStep(0);
     });
 
     // ── Import ZIP (reverse of Export) ────────────────────
@@ -363,7 +570,6 @@
             return false;
         }
     }
-    function resetHeroInputFile(file) { return resetFileInputWith(heroInput, file); }
 
     importInput.addEventListener('change', async function () {
         var zipFile = importInput.files && importInput.files[0];
@@ -422,32 +628,15 @@
             imageEntries.sort(function (a, b) { return a.slot - b.slot; });
 
             // Populate text fields
+            resetForm();
             titleInput.value = meta.title || '';
             tagInput.value = meta.tags.join(', ');
-            categoryInput.value = meta.category;
+            setChecked('gen-category', meta.category);
             sourceMetadata = meta.metadata;
             contentArea.value = meta.body || '';
 
             var authorName = authorFromFolderName(folderName);
-            if (authorName) {
-                for (var oi = 0; oi < authorSelect.options.length; oi++) {
-                    if (authorSelect.options[oi].value === authorName) { authorSelect.selectedIndex = oi; break; }
-                }
-            }
-
-            // Reset current images
-            if (heroObjectUrl) { URL.revokeObjectURL(heroObjectUrl); heroObjectUrl = null; }
-            heroImageMeta = { width: 848, height: 400 };
-            heroInput.value = '';
-            fileText.textContent = 'Κεντρική / thumbnail';
-            fileLabel.classList.remove('has-file');
-            if (headerObjectUrl) { URL.revokeObjectURL(headerObjectUrl); headerObjectUrl = null; }
-            headerImageMeta = { width: 848, height: 400 };
-            headerInput.value = '';
-            headerText.textContent = 'Banner άρθρου';
-            headerLabel.classList.remove('has-file');
-            contentImageFiles.forEach(function (item) { URL.revokeObjectURL(item.url); });
-            contentImageFiles = [];
+            if (authorName) setChecked('gen-author', authorName);
 
             // Load thumbnail (slot 1), banner (slot 2), content (slot >= 3)
             for (var k = 0; k < imageEntries.length; k++) {
@@ -463,15 +652,11 @@
                 if (ent.slot === 1) {
                     heroObjectUrl = url;
                     heroImageMeta = meta2;
-                    resetHeroInputFile(file);
-                    fileText.textContent = file.name;
-                    fileLabel.classList.add('has-file');
+                    resetFileInputWith(heroInput, file);
                 } else if (ent.slot === 2) {
                     headerObjectUrl = url;
                     headerImageMeta = meta2;
                     resetFileInputWith(headerInput, file);
-                    headerText.textContent = file.name;
-                    headerLabel.classList.add('has-file');
                 } else if (ent.slot >= 3) {
                     contentImageFiles.push({ file: file, url: url, width: meta2.width, height: meta2.height });
                 } else {
@@ -479,8 +664,10 @@
                 }
             }
 
+            paintHero();
+            paintHeader();
+            renderTitleWarnings();
             renderContentImagesList();
-            updateMarkerCount();
 
             importLabel.classList.add('has-file');
             importText.textContent = folderName;
@@ -575,15 +762,26 @@
         );
     }
 
-    // Headline hygiene is advisory: the author sees the issues and may continue.
-    async function confirmTitleHygiene(title, body) {
-        var warnings = articleSource.titleWarnings(title, body);
-        if (!warnings.length) return true;
-        return showConfirm(warnings.join('\n') + '\n\nΝα συνεχίσω παρ\' όλα αυτά;');
-    }
-
     function buildSourceTxt(tag, category, title, body) {
         return articleSource.buildSourceText(tag, category, title, body, sourceMetadata);
+    }
+
+    // Title, body and hero gaps are already listed on the review step, so
+    // export and publish only stop for blocking gaps (missing title/body).
+    async function requireTitleAndBody(action) {
+        if (!titleInput.value.trim()) {
+            await showAlert('Συμπλήρωσε τίτλο πριν από ' + action + '.');
+            goToStep(0);
+            titleInput.focus();
+            return false;
+        }
+        if (!contentArea.value.trim()) {
+            await showAlert('Γράψε το κείμενο του άρθρου πριν από ' + action + '.');
+            goToStep(1);
+            contentArea.focus();
+            return false;
+        }
+        return true;
     }
 
     exportBtn.addEventListener('click', async function () {
@@ -591,26 +789,18 @@
             await showAlert('Η βιβλιοθήκη ZIP φορτώνει ακόμη - δοκίμασε ξανά σε λίγο.');
             return;
         }
+        if (!(await requireTitleAndBody('την εξαγωγή'))) return;
 
         var title = titleInput.value.trim();
-        if (!title) { await showAlert('Συμπλήρωσε τίτλο πριν από την εξαγωγή.'); titleInput.focus(); return; }
-
         var body = contentArea.value.trim();
-        if (!body) { await showAlert('Γράψε το κείμενο του άρθρου πριν από την εξαγωγή.'); contentArea.focus(); return; }
-        if (!(await confirmTitleHygiene(title, body))) { titleInput.focus(); return; }
-
-        var author = authorSelect.value;
+        var author = getAuthor();
         var tag = tagInput.value.trim();
-        var category = categoryInput.value;
+        var category = getCategory();
         var authorCode = AUTHOR_CODES[author] || '';
         var folderName = todayYYYYMMDD() + authorCode;
 
         var heroFile = heroInput.files && heroInput.files[0];
         var headerFile = headerInput.files && headerInput.files[0];
-        if (!heroFile) {
-            var proceed = await showConfirm('Δεν έχει επισυναφθεί κεντρική εικόνα. Το άρθρο θα χρησιμοποιήσει την προεπιλεγμένη. Να συνεχίσω;');
-            if (!proceed) return;
-        }
 
         exportBtn.disabled = true;
         authorDom.setBusyText(exportBtn, 'Πακετάρισμα…');
@@ -655,9 +845,8 @@
                 '     blog-module/blog-entries/' + folderName + '/1.webp   (hero image)\n' +
                 '     blog-module/blog-entries/' + folderName + '/3.webp…  (content images, in order)\n' +
                 '2. Delete this README.txt from that folder (optional, keeps it tidy).\n' +
-                '3. git add, commit, push to main.\n' +
-                '4. The "Publish Blog" GitHub Action runs blog-processor.js and commits\n' +
-                '   the generated article.html and updated JSON feeds back to main.\n';
+                '3. Commit on a branch and open a pull request (or use Housekeeping → Import ZIP).\n' +
+                '4. After merge, the publish workflow builds article.html and the JSON feeds.\n';
             folder.file('README.txt', readme);
 
             var blob = await zip.generateAsync({ type: 'blob' });
@@ -678,96 +867,19 @@
         }
     });
 
-    // ── Publish directly to GitHub ────────────────────────
+    // ── GitHub token (session only) ───────────────────────
     var REPO_OWNER = 'georgiosbalatzis';
     var REPO_NAME  = 'f1StoriesPage';
     var TOKEN_KEY  = 'f1stories-gh-token';
-    var TOKEN_REMEMBER_KEY = TOKEN_KEY + '-remember';
-    var tokenMemory = '';
+    // Memory + sessionStorage only; legacy persistent tokens are migrated and
+    // removed from localStorage on load (session-token.js).
+    var tokenStore = sessionTokens.createSessionTokenStore(TOKEN_KEY);
+    tokenStore.migrateLegacyPersistentToken();
 
-    // Tokens must be ASCII-only. fetch() rejects header values with any
-    // character > 255, so a smart-dash slipped into the token (e.g. from
-    // pasting the hint placeholder) would break every request with
-    // "Cannot convert value in record<ByteString, ByteString> to ByteString".
-    function isAsciiToken(t) { return /^[\x20-\x7E]+$/.test(t); }
-
-    function readStorage(storage, key) {
-        try { return storage.getItem(key) || ''; } catch (e) { return ''; }
-    }
-
-    function writeStorage(storage, key, value) {
-        try {
-            if (value) storage.setItem(key, value);
-            else storage.removeItem(key);
-        } catch (e) {}
-    }
-
-    function removeStorage(storage, key) {
-        try { storage.removeItem(key); } catch (e) {}
-    }
-
-    function setSessionToken(t) {
-        tokenMemory = t || '';
-        writeStorage(sessionStorage, TOKEN_KEY, tokenMemory);
-    }
-
-    function clearStoredToken() {
-        tokenMemory = '';
-        removeStorage(sessionStorage, TOKEN_KEY);
-        removeStorage(localStorage, TOKEN_KEY);
-        removeStorage(localStorage, TOKEN_REMEMBER_KEY);
-    }
-
-    function hasPersistentToken() {
-        var t = readStorage(localStorage, TOKEN_KEY);
-        if (!t || readStorage(localStorage, TOKEN_REMEMBER_KEY) !== '1') return false;
-        if (!isAsciiToken(t)) {
-            removeStorage(localStorage, TOKEN_KEY);
-            removeStorage(localStorage, TOKEN_REMEMBER_KEY);
-            return false;
-        }
-        return true;
-    }
-
-    function getStoredToken() {
-        if (tokenMemory && isAsciiToken(tokenMemory)) return tokenMemory;
-
-        var sessionToken = readStorage(sessionStorage, TOKEN_KEY);
-        if (sessionToken) {
-            if (!isAsciiToken(sessionToken)) {
-                removeStorage(sessionStorage, TOKEN_KEY);
-                return '';
-            }
-            tokenMemory = sessionToken;
-            return sessionToken;
-        }
-
-        var localToken = readStorage(localStorage, TOKEN_KEY);
-        if (!localToken) return '';
-        if (!isAsciiToken(localToken)) {
-            removeStorage(localStorage, TOKEN_KEY);
-            removeStorage(localStorage, TOKEN_REMEMBER_KEY);
-            return '';
-        }
-
-        if (readStorage(localStorage, TOKEN_REMEMBER_KEY) !== '1') {
-            removeStorage(localStorage, TOKEN_KEY);
-            removeStorage(localStorage, TOKEN_REMEMBER_KEY);
-        }
-
-        setSessionToken(localToken);
-        return localToken;
-    }
-
-    function setStoredToken(t, remember) {
-        if (!t) {
-            clearStoredToken();
-            return;
-        }
-
-        setSessionToken(t);
-        removeStorage(localStorage, TOKEN_KEY);
-        removeStorage(localStorage, TOKEN_REMEMBER_KEY);
+    function paintTokenState() {
+        var has = Boolean(tokenStore.get());
+        tokenStateEl.textContent = has ? 'Token: ενεργό (καρτέλα)' : 'Token GitHub';
+        tokenBtn.classList.toggle('has-token', has);
     }
 
     async function promptForToken(hint) {
@@ -781,7 +893,7 @@
             '- Repository permissions -> Pull requests: Read and write\n' +
             '- Διάρκεια: όσο πιο σύντομη σε βολεύει\n\n' +
             'Επικόλλησε το token παρακάτω. Άφησέ το κενό για διαγραφή.\n' +
-            'Προεπιλογή: χρήση μόνο για την τρέχουσα καρτέλα/session.';
+            'Κρατιέται μόνο για την τρέχουσα καρτέλα (sessionStorage).';
         var input = await showPrompt(msg, '', {
             title: 'GitHub Token',
             inputLabel: 'GitHub Personal Access Token',
@@ -789,27 +901,21 @@
         });
         if (input === null) return null; // cancelled
         input = input.trim();
-        if (input && !isAsciiToken(input)) {
+        if (input && !sessionTokens.isAsciiToken(input)) {
             await showAlert('Το token περιέχει μη-ASCII χαρακτήρες. Επικόλλησε μόνο το αρχικό token από το GitHub.');
             return null;
         }
-        if (!input) {
-            setStoredToken('', false);
-            return '';
-        }
-        setStoredToken(input, false);
+        tokenStore.set(input);
+        paintTokenState();
         return input;
     }
 
-    // Migrate legacy persistent tokens into session storage as soon as this tool loads.
-    getStoredToken();
-
     tokenBtn.addEventListener('click', async function () {
-        var existing = getStoredToken();
-        var storageScope = hasPersistentToken() ? 'μόνιμα σε αυτή τη συσκευή' : 'για την τρέχουσα session';
-        await promptForToken(existing ? 'Υπάρχει ήδη token (' + storageScope + '). Επικόλλησε νέο για αντικατάσταση ή άφησε κενό για διαγραφή.' : '');
+        var existing = tokenStore.get();
+        await promptForToken(existing ? 'Υπάρχει ήδη token για αυτή την καρτέλα. Επικόλλησε νέο για αντικατάσταση ή άφησε κενό για διαγραφή.' : '');
     });
 
+    // ── Publish via branch + pull request ─────────────────
     function utf8ToBase64(str) {
         var bytes = new TextEncoder().encode(str);
         var binary = '';
@@ -950,7 +1056,18 @@
             });
         }
 
-        var github = window.F1S_AUTHOR_GITHUB.createClient({ owner: REPO_OWNER, repo: REPO_NAME });
+        var github = window.F1S_AUTHOR_GITHUB.createClient({
+            owner: REPO_OWNER,
+            repo: REPO_NAME,
+            messages: {
+                readBase: 'Ανάγνωση main…',
+                createBranch: 'Δημιουργία branch…',
+                readTree: 'Ανάγνωση δέντρου αρχείων…',
+                createCommit: 'Δημιουργία commit…',
+                updateBranch: 'Ενημέρωση branch…',
+                openPullRequest: 'Άνοιγμα Pull Request…'
+            }
+        });
         return github.createPullRequestFromTree(
             token,
             'blog',
@@ -963,23 +1080,48 @@
         );
     }
 
+    function logProgress(message) {
+        var items = progressList.querySelectorAll('li');
+        if (items.length) items[items.length - 1].className = 'is-done';
+        var li = el('li', 'is-now', message);
+        progressList.appendChild(li);
+    }
+
+    function showResult(publishResult, folderName) {
+        var pr = publishResult.pullRequest || {};
+        resultBox.replaceChildren();
+        resultBox.appendChild(el('h2', 'gb-result-title', 'Το Pull Request' + (pr.number ? ' #' + pr.number : '') + ' άνοιξε'));
+        var branch = el('p', 'gb-result-branch');
+        branch.appendChild(el('code', '', publishResult.branchName));
+        resultBox.appendChild(branch);
+        resultBox.appendChild(el('p', '', 'Φάκελος blog-entries/' + folderName + '/. Οι έλεγχοι του GitHub κάνουν merge, build και deploy αυτόματα — δεν χρειάζεται άλλο βήμα.'));
+        if (pr.html_url) {
+            var link = el('a', 'gb-btn gb-btn-sm', 'Προβολή PR στο GitHub');
+            link.href = pr.html_url;
+            link.target = '_blank';
+            link.rel = 'noopener';
+            resultBox.appendChild(link);
+        }
+        resultBox.hidden = false;
+        resultBox.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+
     publishBtn.addEventListener('click', async function () {
-        var title = titleInput.value.trim();
-        if (!title) { await showAlert('Συμπλήρωσε τίτλο πριν από τη δημοσίευση.'); titleInput.focus(); return; }
+        if (publishing) return;
+        if (!(await requireTitleAndBody('τη δημοσίευση'))) return;
+        goToStep(4, false);
 
-        var body = contentArea.value.trim();
-        if (!body) { await showAlert('Γράψε το κείμενο του άρθρου πριν από τη δημοσίευση.'); contentArea.focus(); return; }
-        if (!(await confirmTitleHygiene(title, body))) { titleInput.focus(); return; }
-
-        var token = getStoredToken();
+        var token = tokenStore.get();
         if (!token) {
             token = await promptForToken('');
             if (!token) { await showAlert('Δεν είναι δυνατή η δημοσίευση χωρίς token.'); return; }
         }
 
-        var author = authorSelect.value;
+        var title = titleInput.value.trim();
+        var body = contentArea.value.trim();
+        var author = getAuthor();
         var tag = tagInput.value.trim();
-        var category = categoryInput.value;
+        var category = getCategory();
         var authorCode = AUTHOR_CODES[author] || '';
         var baseDate = todayYYYYMMDD();
         var folderName = baseDate + authorCode;
@@ -987,58 +1129,56 @@
         var headerFile = headerInput.files && headerInput.files[0];
         var replaceExisting = false;
 
-        if (!heroFile) {
-            if (!(await showConfirm('Δεν έχει επισυναφθεί κεντρική εικόνα. Να γίνει δημοσίευση με την προεπιλεγμένη;'))) return;
-        }
-
+        publishing = true;
         publishBtn.disabled = true;
-        authorDom.setBusyText(publishBtn, 'Έλεγχος…');
+        nextBtn.disabled = true;
+        resultBox.hidden = true;
+        progressList.replaceChildren();
+        progressList.hidden = false;
+        authorDom.setBusyText(publishBtn, 'Έλεγχος φακέλου…');
+        logProgress('Έλεγχος φακέλου ' + folderName + '…');
 
         try {
-            var exists = await folderExists(token, folderName);
-            if (exists) {
-                // Two-step choice: new numbered version vs overwrite in place.
-                // The first modal accepts the new-version path; cancel chooses replacement.
-                var wantNewVersion = await showConfirm(
-                    'Υπάρχει ήδη άρθρο για σήμερα:\n\n  blog-entries/' + folderName + '\n\n' +
-                    '• Πάτα OK για ΝΕΑ έκδοση (θα πάρει επόμενο -N suffix)\n' +
-                    '• Πάτα Cancel για να ΑΝΤΙΚΑΤΑΣΤΑΘΕΙ το υπάρχον'
+            if (await folderExists(token, folderName)) {
+                var choice = await authorDialogs.choose(
+                    'Υπάρχει ήδη άρθρο για σήμερα στο blog-entries/' + folderName + '.',
+                    [
+                        { value: 'new', label: 'Νέα έκδοση με επόμενο -N', detail: 'Το υπάρχον άρθρο μένει ανέπαφο.' },
+                        { value: 'replace', label: 'Αντικατάσταση του ' + folderName, detail: 'Τα αρχεία του φακέλου που δεν ξαναγράφονται θα διαγραφούν στο PR.' }
+                    ],
+                    { title: 'Ο φάκελος υπάρχει ήδη', okLabel: 'Συνέχεια' }
                 );
-                if (wantNewVersion) {
+                if (!choice) { logProgress('Ακυρώθηκε.'); return; }
+                if (choice === 'new') {
                     authorDom.setBusyText(publishBtn, 'Εύρεση suffix…');
                     folderName = await nextNumberedFolder(token, baseDate, authorCode);
                 } else {
-                    if (!(await showConfirm('Σίγουρα να αντικατασταθούν τα αρχεία στο ' + folderName + ';'))) return;
+                    if (!(await showConfirm('Σίγουρα να αντικατασταθούν τα αρχεία στο ' + folderName + ';', { title: 'Αντικατάσταση φακέλου', okLabel: 'Αντικατάσταση' }))) {
+                        logProgress('Ακυρώθηκε.');
+                        return;
+                    }
                     replaceExisting = true;
                 }
             }
 
             var markerCount = countMarkers();
-            var confirmMsg = 'Δημοσίευση του "' + title + '" στο blog-module/blog-entries/' + folderName + '/ στο main;';
+            var confirmMsg = 'Άνοιγμα Pull Request για το «' + title + '» στο blog-module/blog-entries/' + folderName + '/.';
             if (contentImageFiles.length) {
-                confirmMsg += '\n\nΠεριλαμβάνει ' + contentImageFiles.length + (contentImageFiles.length === 1 ? ' εικόνα' : ' εικόνες') +
-                    ' κειμένου + ' + markerCount + (markerCount === 1 ? ' δείκτη' : ' δείκτες') + '.';
-                if (markerCount === 0) {
-                    confirmMsg += '\n\nΧωρίς δείκτες [img-instert-tag] — οι εικόνες θα εμφανιστούν ως carousel στο τέλος.';
-                } else if (contentImageFiles.length > markerCount) {
-                    confirmMsg += '\n\n' + (contentImageFiles.length - markerCount) +
-                        (contentImageFiles.length - markerCount === 1 ? ' επιπλέον εικόνα' : ' επιπλέον εικόνες') +
-                        ' θα μπουν σε carousel στο τέλος.';
-                } else if (markerCount > contentImageFiles.length) {
-                    confirmMsg += '\n\n⚠ ' + (markerCount - contentImageFiles.length) +
-                        (markerCount - contentImageFiles.length === 1 ? ' δείκτης' : ' δείκτες') +
-                        ' χωρίς αντίστοιχη εικόνα — αυτές οι θέσεις θα μείνουν κενές.';
-                }
+                confirmMsg += '\n\nΠεριλαμβάνει ' + plural(contentImageFiles.length, 'εικόνα', 'εικόνες') +
+                    ' κειμένου + ' + plural(markerCount, 'δείκτη', 'δείκτες') + '.';
             }
-            if (!(await showConfirm(confirmMsg))) return;
+            confirmMsg += '\n\nΤο main αλλάζει μόνο μετά τους ελέγχους και το αυτόματο merge.';
+            if (!(await showConfirm(confirmMsg, { title: 'Άνοιγμα Pull Request', okLabel: 'Άνοιγμα PR' }))) {
+                logProgress('Ακυρώθηκε.');
+                return;
+            }
 
             authorDom.setBusyText(publishBtn, 'Δημοσίευση…');
-
+            logProgress('Μετατροπή εικόνων σε WebP…');
             var publishHeroFile = heroFile ? await ensureWebpFile(heroFile, 'Hero image') : null;
             var publishHeaderFile = headerFile ? await ensureWebpFile(headerFile, 'Header image') : null;
             var publishContentImages = [];
             for (var i = 0; i < contentImageFiles.length; i++) {
-                authorDom.setBusyText(publishBtn, 'Μετατροπή εικόνων…');
                 publishContentImages.push({
                     file: await ensureWebpFile(contentImageFiles[i].file, 'Content image ' + (i + 1))
                 });
@@ -1048,100 +1188,78 @@
 
             var publishResult = await publishToGitHub(
                 token, folderName, sourceTxt, publishHeroFile, publishHeaderFile, publishContentImages, commitMessage,
-                function (msg) { authorDom.setBusyText(publishBtn, msg); },
+                logProgress,
                 replaceExisting
             );
-
-            await showAlert('Το άρθρο μπήκε στην ουρά για αυτόματη δημοσίευση.\n\nBranch: ' + publishResult.branchName + '\n\nΤο GitHub Actions θα κάνει έλεγχο, merge, δημιουργία αρχείων και deploy χωρίς άλλο βήμα.');
+            logProgress('Ολοκληρώθηκε.');
+            progressList.lastChild.className = 'is-done';
+            showResult(publishResult, folderName);
         } catch (err) {
             console.error('Publish failed', err);
+            logProgress('Απέτυχε.');
+            progressList.lastChild.className = 'is-error';
             var hint = githubErrorHint(err);
             await showAlert('Η δημοσίευση απέτυχε: ' + (err && err.message ? err.message : err) + hint);
         } finally {
-            publishBtn.disabled = false;
+            publishing = false;
+            nextBtn.disabled = false;
             setPublishReady();
+            refresh();
         }
     });
 
-    // ── Preview ───────────────────────────────────────────
-    var SPLIT_QUERY = window.matchMedia('(min-width: 1200px)');
-    function isSplitView() { return SPLIT_QUERY.matches; }
-
+    // ── Preview (step 4) ──────────────────────────────────
     function renderPreview() {
-        var title    = titleInput.value.trim() || 'Untitled Article';
-        var author   = authorSelect.value;
-        var category = categoryInput.value;
+        var title    = titleInput.value.trim() || 'Χωρίς τίτλο';
+        var author   = getAuthor();
+        var category = getCategory();
         var raw      = contentArea.value;
 
         var html = convertContent(raw);
 
-        document.getElementById('pv-title').textContent = title;
-        document.getElementById('pv-category').textContent = category;
-        document.getElementById('pv-date').textContent = new Date().toLocaleDateString('el-GR', { year: 'numeric', month: 'long', day: 'numeric' });
+        byId('pv-title').textContent = title;
+        byId('pv-category').textContent = category;
+        byId('pv-date').textContent = new Date().toLocaleDateString('el-GR', { year: 'numeric', month: 'long', day: 'numeric' });
 
         // Article header prefers the banner (slot 2); falls back to thumbnail (slot 1).
-        var heroImg = document.getElementById('pv-hero-img');
+        var heroImg = byId('pv-hero-img');
         var headerUrl = headerObjectUrl || heroObjectUrl;
         var headerMeta = headerObjectUrl ? headerImageMeta : (heroObjectUrl ? heroImageMeta : null);
         heroImg.src = headerUrl || '/blog-module/images/default-blog.jpg';
         heroImg.alt = title;
         applyImageMeta(heroImg, headerMeta || { width: 848, height: 400 }, 848, 400);
 
-        var contentEl = document.getElementById('pv-content');
+        var contentEl = byId('pv-content');
         authorDom.setTrustedHtml(contentEl, html, 'Generate article preview HTML');
 
-        var authorData = AUTHORS[author];
-        document.getElementById('pv-byline').textContent = author;
-        document.getElementById('pv-author-name').textContent = author;
-        document.getElementById('pv-author-initial').textContent = author.charAt(0).toUpperCase();
-        if (authorData) {
-            document.getElementById('pv-author-img').src = authorData.image;
-            document.getElementById('pv-author-img').alt = author;
-            document.getElementById('pv-author-title').textContent = authorData.title;
-            document.getElementById('pv-author-bio').textContent = authorData.bio;
-        }
+        var authorData = AUTHORS[author] || AUTHORS['F1 Stories Team'];
+        byId('pv-byline').textContent = author;
+        byId('pv-author-name').textContent = author;
+        byId('pv-author-initial').textContent = author.charAt(0).toUpperCase();
+        byId('pv-author-img').src = authorData.image;
+        byId('pv-author-img').alt = author;
+        byId('pv-author-title').textContent = authorData.title;
+        byId('pv-author-bio').textContent = authorData.bio;
 
         var words = contentEl.textContent.trim().split(/\s+/).length;
-        document.getElementById('pv-reading-time').textContent = Math.max(1, Math.ceil(words / 200)) + ' min read';
+        byId('pv-reading-time').textContent = plural(Math.max(1, Math.ceil(words / 200)), 'λεπτό', 'λεπτά') + ' ανάγνωσης';
 
         processSocialEmbeds(contentEl);
     }
 
-    previewBtn.addEventListener('click', function () {
-        renderPreview();
-        if (!isSplitView()) {
-            editorPanel.style.display = 'none';
-            previewWrap.classList.add('visible');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Leaving with unsaved work loses it (there is no draft storage).
+    window.addEventListener('beforeunload', function (event) {
+        if (publishing || titleInput.value.trim() || contentArea.value.trim()) {
+            event.preventDefault();
+            event.returnValue = '';
         }
     });
 
-    // ── Live preview (split view only) ────────────────────
-    var previewTimer = null;
-    function schedulePreview() {
-        if (!isSplitView()) return;
-        if (previewTimer) clearTimeout(previewTimer);
-        previewTimer = setTimeout(renderPreview, 250);
-    }
-
-    [titleInput, tagInput, categoryInput, contentArea].forEach(function (el) {
-        el.addEventListener('input', schedulePreview);
-    });
-    authorSelect.addEventListener('change', schedulePreview);
-    heroInput.addEventListener('change', schedulePreview);
-    headerInput.addEventListener('change', schedulePreview);
-    contentInput.addEventListener('change', schedulePreview);
-
-    // Re-render on viewport crossings of the split-view breakpoint so the
-    // preview pane on the right is always populated when the user resizes.
-    if (typeof SPLIT_QUERY.addEventListener === 'function') {
-        SPLIT_QUERY.addEventListener('change', function (e) {
-            if (e.matches) renderPreview();
-        });
-    }
-
-    // Initial paint in split view
-    if (isSplitView()) renderPreview();
+    paintTokenState();
+    paintHero();
+    paintHeader();
+    renderContentImagesList();
+    goToStep(0, false);
 
     // ═══════════════════════════════════════════════════════
     // Content conversion (client-side .txt → HTML)

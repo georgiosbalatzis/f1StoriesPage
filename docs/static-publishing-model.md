@@ -94,6 +94,8 @@ The local author flow is:
 
 1. Open the generated local author URL.
 2. Create or edit the article.
+   - `generate.html` is a five-step flow (Βασικά → Κείμενο → Εικόνες → Προεπισκόπηση → Έλεγχος & PR). The review step lists every advisory warning before the PR; a same-day folder collision is an explicit choice between a new `-N` version and a replacement (which asks again).
+   - `housekeeping.html` groups the archive into maintenance lanes computed from `blog-index-data.json` (title hygiene, missing internal tags, repeated titles, non-standard folder names, open `author/*` PRs) plus an "all articles" lane. Only folders with `source.txt` (the index `s` flag) are editable; source-less legacy articles are listed read-only. Quick fixes rewrite only `source.txt`. Folders whose names do not match `YYYYMMDD[-N][A-Z]` keep their name on edit (author and date are locked), and an article with a PR opened in the current session stays locked until reload so two PRs never rewrite the same file.
 3. Add a fine-grained GitHub token when publishing.
 4. Publish from the tool. The tool creates an `author/...` branch and opens a pull request through the GitHub API.
 5. `Site Quality` builds and validates the pull request with read-only permissions.

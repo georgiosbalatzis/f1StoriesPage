@@ -89,4 +89,33 @@ assert.equal(enriched[0].category, expanded[0].category);
 assert.equal(enriched[0].tags.join(','), 'Racecraft');
 assert.equal(enriched[1].tags.join(','), 'Strategy');
 
+assert.equal(expanded[0].hasSource, null, 'Indexes without the s flag leave editability unknown');
+const withSource = articleIndex.expandCompactPosts(Object.assign({}, compact, { s: '01,11' }));
+assert.equal(withSource[0].hasSource, false);
+assert.equal(withSource[1].hasSource, true);
+assert.equal(articleIndex.decodeRunFlags('12,01', 3).join(','), 'true,true,false');
+assert.equal(articleIndex.decodeRunFlags('13', 2), null, 'Runs longer than the post list are rejected');
+assert.equal(articleIndex.decodeRunFlags('11', 2), null, 'Runs shorter than the post list are rejected');
+assert.equal(articleIndex.decodeRunFlags('x2', 2), null);
+
+const source = (() => {
+    const context = { console };
+    context.window = context;
+    const file = path.join(REPO_ROOT, 'scripts', 'author', 'article-source.js');
+    vm.runInNewContext(fs.readFileSync(file, 'utf8'), context, { filename: file });
+    return context.window.F1S_AUTHOR_ARTICLE_SOURCE;
+})();
+const lanes = articleIndex.maintenanceLanes([
+    { id: '20260911W', title: '🏁 ΤΟ ΜΕΓΑΛΟ ΣΑΒΒΑΤΟΚΥΡΙΑΚΟ', tags: ['F1'] },
+    { id: '20250810WF', title: 'Gioacchino Colombo', tags: ['F1'] },
+    { id: '20260227\u03a4', title: 'Παλιά κοιμόμασταν', tags: [] },
+    { id: '20260222T', title: 'παλιά κοιμόμασταν', tags: ['F1'] }
+], source.titleIssues);
+assert.deepEqual(Array.from(lanes.emoji, post => post.id), ['20260911W']);
+assert.deepEqual(Array.from(lanes.caps, post => post.id), ['20260911W']);
+assert.deepEqual(Array.from(lanes.tags, post => post.id), ['20260227\u03a4']);
+assert.deepEqual(Array.from(lanes.folder, post => post.id), ['20250810WF', '20260227\u03a4'], 'Two-letter codes and a Greek Tau are non-standard');
+assert.equal(lanes.duplicate.length, 1);
+assert.equal(lanes.duplicate[0].length, 2, 'Duplicate titles match case-insensitively');
+
 console.log('author article index tests passed.');

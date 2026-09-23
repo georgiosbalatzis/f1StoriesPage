@@ -17,7 +17,7 @@ Current checked contracts:
 
 When a versioned generated format changes, update the validator and record the migration here:
 
-- `blog-index-data` `v: 2`: compact rows are `[id, title, authorIndex, date, thumbnailWidth, thumbnailHeight, excerpt, readingTime, categoryIndexes]`.
+- `blog-index-data` `v: 2`: compact rows are `[id, title, authorIndex, date, thumbnailWidth, thumbnailHeight, excerpt, readingTime, categoryIndexes]`. Top-level `h` and `s` are run-length flag strings (comma-separated runs of a `0`/`1` marker plus a base36 length, covering every row): `h` = the `-card.webp` thumbnail exists; `s` = the folder has a `source.txt` the author tools can edit (source-less legacy articles are read-only there). `s` is optional for older payloads.
 - `dirty-air-cache` `version: 1`: sessions contain normalized rows, proximity counts, and timeline segments.
 - `destructors-cache` `version: 1`: drivers contain `acronym`, `fullName`, `teamKey`, and `damage`.
 - `debrief-cache` `version: 2`: rounds contain driver and team-level Friday debrief arrays.

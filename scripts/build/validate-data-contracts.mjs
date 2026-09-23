@@ -227,6 +227,8 @@ function validateTags(value, label) {
     assertCondition(JSON.stringify(tags) === JSON.stringify(normalizeTags(tags)), label, 'internal tags must be normalized and unique');
 }
 
+const RUN_FLAGS = /^(?:[01][0-9a-z]+)(?:,(?:[01][0-9a-z]+))*$/;
+
 function validateCompactBlogIndex() {
     const relPath = 'blog-module/blog-index-data.json';
     const data = requireObject(readJson(relPath), relPath);
@@ -246,13 +248,20 @@ function validateCompactBlogIndex() {
         assertCondition(/^(?:[01][0-9a-z]+)(?:,(?:[01][0-9a-z]+))*$/.test(thumbnailFlags), `${relPath}.h`, 'thumbnail flags must use alternating 0/1 markers and base36 run lengths');
     }
 
+    let sourceFlags = null;
+    if (data.s !== undefined) {
+        sourceFlags = requireString({ sourceFlags: data.s }, 'sourceFlags', `${relPath}.s`, { allowEmpty: true, maxLength: 4096 });
+        assertCondition(sourceFlags === '' || RUN_FLAGS.test(sourceFlags), `${relPath}.s`, 'source flags must use alternating 0/1 markers and base36 run lengths');
+    }
+
     const rows = requireArray(data.p, `${relPath}.p`, { maxLength: 1000 });
     compactBlogPostCount = rows.length;
-    if (thumbnailFlags !== null && /^(?:[01][0-9a-z]+)(?:,(?:[01][0-9a-z]+))*$/.test(thumbnailFlags)) {
+    [[thumbnailFlags, 'h', 'thumbnail'], [sourceFlags, 's', 'source']].forEach(([flags, key, name]) => {
+        if (flags === null || !RUN_FLAGS.test(flags)) return;
         let flagCount = 0;
-        thumbnailFlags.split(',').forEach(run => { flagCount += parseInt(run.slice(1), 36); });
-        assertCondition(flagCount === rows.length, `${relPath}.h`, `thumbnail flags describe ${flagCount} posts, expected ${rows.length}`);
-    }
+        flags.split(',').forEach(run => { flagCount += parseInt(run.slice(1), 36); });
+        assertCondition(flagCount === rows.length, `${relPath}.${key}`, `${name} flags describe ${flagCount} posts, expected ${rows.length}`);
+    });
     const seen = new Set();
     let previousDate = '';
 

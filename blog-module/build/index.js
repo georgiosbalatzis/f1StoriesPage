@@ -122,7 +122,8 @@ async function buildIndexPosts(blogPosts) {
             excerpt: compactExcerpt(post.excerpt),
             readingTime: post.readingTime,
             categories,
-            tags
+            tags,
+            hasSource: fs.existsSync(path.join(CONFIG.BLOG_DIR, post.id, 'source.txt'))
         };
     }));
 }
@@ -187,29 +188,32 @@ function summarizeCategories(posts) {
     return PUBLIC_CATEGORIES.map(name => ({ name, count: counts[name] || 0 }));
 }
 
+// Run-length encodes a per-post boolean: comma-separated runs of a 0/1 marker
+// followed by the run length in base36.
+function runLengthFlags(posts, predicate) {
+    const runs = [];
+    let previous = null;
+    let length = 0;
+    posts.forEach(post => {
+        const value = predicate(post);
+        if (previous !== null && value === previous) {
+            length += 1;
+            return;
+        }
+        if (previous !== null) runs.push((previous ? '1' : '0') + length.toString(36));
+        previous = value;
+        length = 1;
+    });
+    if (previous !== null) runs.push((previous ? '1' : '0') + length.toString(36));
+    return runs.join(',');
+}
+
 function buildCompactIndexData(posts) {
     const authors = Array.from(new Set(posts.map(post => post.author || 'F1 Stories')));
     const categories = PUBLIC_CATEGORIES;
     const tags = Array.from(new Set(posts.flatMap(post => post.tags || [])));
-    const thumbnailRuns = [];
-    let previousThumbnailVariant = null;
-    let thumbnailRunLength = 0;
-    posts.forEach(post => {
-        const hasCardThumbnail = !!(post.thumbnail && /-card\.webp(?:\?.*)?$/i.test(post.thumbnail));
-        if (previousThumbnailVariant !== null && hasCardThumbnail === previousThumbnailVariant) {
-            thumbnailRunLength += 1;
-            return;
-        }
-        if (previousThumbnailVariant !== null) {
-            thumbnailRuns.push((previousThumbnailVariant ? '1' : '0') + thumbnailRunLength.toString(36));
-        }
-        previousThumbnailVariant = hasCardThumbnail;
-        thumbnailRunLength = 1;
-    });
-    if (previousThumbnailVariant !== null) {
-        thumbnailRuns.push((previousThumbnailVariant ? '1' : '0') + thumbnailRunLength.toString(36));
-    }
-    const thumbnailFlags = thumbnailRuns.join(',');
+    const thumbnailFlags = runLengthFlags(posts, post => !!(post.thumbnail && /-card\.webp(?:\?.*)?$/i.test(post.thumbnail)));
+    const sourceFlags = runLengthFlags(posts, post => !!post.hasSource);
 
     return {
         v: 2,
@@ -221,6 +225,9 @@ function buildCompactIndexData(posts) {
         // -card.webp file exists. Keeping this as a top-level field preserves
         // the 10-field post row and the compact feed budget.
         h: thumbnailFlags,
+        // Same encoding; 1 means the folder has a source.txt the author tools
+        // can edit. Source-less (legacy) articles are read-only there.
+        s: sourceFlags,
         p: posts.map(post => [
             post.id,
             post.title,
@@ -948,7 +955,8 @@ async function processBlogEntries(options = {}) {
     console.log(`Blog index data saved to ${indexPath} (${jsonKb(compactIndexData)} KB)`);
 
     const pageOneData = {
-        posts: indexPosts.slice(0, 12),
+        // hasSource is author-tool metadata; the public first page does not need it.
+        posts: indexPosts.slice(0, 12).map(({ hasSource, ...post }) => post),
         categories: summarizeCategories(indexPosts),
         totalCount: indexPosts.length,
         lastUpdated

@@ -37,6 +37,12 @@ test('compact archive thumbnail variants use an unambiguous run map', () => {
     assert.equal(compact.h, '01,12,01');
 });
 
+test('compact archive marks which posts have an editable source.txt', () => {
+    const row = (id, hasSource) => ({ id, title: id, author: 'Author', date: '2026-09-01', thumbnail: '', thumbnailWidth: 400, thumbnailHeight: 225, excerpt: '', readingTime: '1 min', categories: ['News'], tags: [], hasSource });
+    assert.equal(buildCompactIndexData([row('a', true), row('b', true), row('c', false)]).s, '12,01');
+    assert.equal(buildCompactIndexData([]).s, '');
+});
+
 test('source-less article taxonomy migration leaves body bytes intact and is idempotent', () => {
     const body = '<p>Ferrari-F1, original prose &amp; markup.</p><div><video src="race.mp4"></video></div>';
     const oldLabel = 'Racing,-70ς,-History,-F1-Legends';

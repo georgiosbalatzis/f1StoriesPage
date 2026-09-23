@@ -89,22 +89,45 @@
 
     // Non-blocking checks for headline hygiene: a repeated adjacent word, a
     // shouted (mostly capitals) title, or emoji in the title or heading lines.
+    // titleIssues() returns stable codes; titleWarnings() renders them in Greek.
     var EMOJI = /\p{Extended_Pictographic}/u;
-    function titleWarnings(title, body) {
+    function titleIssues(title, body) {
         var text = String(title || '').trim();
-        var warnings = [];
+        var issues = [];
         var repeat = text.match(/(^|[^\p{L}\p{N}])([\p{L}\p{N}]{2,})\s+\2(?![\p{L}\p{N}])/iu);
-        if (repeat) warnings.push('Ο τίτλος επαναλαμβάνει τη λέξη «' + repeat[2] + '».');
+        if (repeat) issues.push({ code: 'repeat', word: repeat[2] });
         var letters = text.replace(/[^\p{L}]/gu, '');
         var upper = letters.replace(/[^\p{Lu}]/gu, '');
-        if (letters.length >= 8 && upper.length / letters.length > 0.6) warnings.push('Ο τίτλος είναι κυρίως κεφαλαία.');
-        if (EMOJI.test(text)) warnings.push('Ο τίτλος περιέχει emoji.');
+        if (letters.length >= 8 && upper.length / letters.length > 0.6) issues.push({ code: 'caps' });
+        if (EMOJI.test(text)) issues.push({ code: 'emoji' });
         var headings = String(body || '').split('\n').filter(function (line) { return /^#{1,6}\s/.test(line.trim()); });
-        if (headings.some(function (line) { return EMOJI.test(line); })) warnings.push('Κάποιοι υπότιτλοι περιέχουν emoji.');
-        return warnings;
+        if (headings.some(function (line) { return EMOJI.test(line); })) issues.push({ code: 'heading-emoji' });
+        return issues;
+    }
+
+    var TITLE_MESSAGES = {
+        repeat: function (issue) { return 'Ο τίτλος επαναλαμβάνει τη λέξη «' + issue.word + '».'; },
+        caps: function () { return 'Ο τίτλος είναι κυρίως κεφαλαία.'; },
+        emoji: function () { return 'Ο τίτλος περιέχει emoji.'; },
+        'heading-emoji': function () { return 'Κάποιοι υπότιτλοι περιέχουν emoji.'; }
+    };
+
+    function titleWarnings(title, body) {
+        return titleIssues(title, body).map(function (issue) { return TITLE_MESSAGES[issue.code](issue); });
+    }
+
+    // Removes emoji (and flag/variation-selector/ZWJ residue) from a title.
+    function stripEmoji(title) {
+        return String(title || '')
+            .replace(/[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\uFE0F\u200D]/gu, '')
+            .replace(/\s{2,}/g, ' ')
+            .replace(/\s+([!?.;:,])/g, '$1')
+            .trim();
     }
 
     global.F1S_AUTHOR_ARTICLE_SOURCE = {
+        stripEmoji: stripEmoji,
+        titleIssues: titleIssues,
         titleWarnings: titleWarnings,
         buildSourceText: buildSourceText,
         normalizeZipPath: normalizeZipPath,
