@@ -70,7 +70,9 @@
             var backdrop = document.createElement('div');
             backdrop.className = 'f1s-author-dialog-backdrop';
 
-            var dialog = document.createElement('section');
+            // A div, not a section: theme-overrides.css forces every light-theme
+            // section to a transparent background with !important.
+            var dialog = document.createElement('div');
             dialog.className = 'f1s-author-dialog';
             dialog.setAttribute('role', 'dialog');
             dialog.setAttribute('aria-modal', 'true');

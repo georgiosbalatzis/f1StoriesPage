@@ -403,7 +403,19 @@
         button.addEventListener('click', function () { goToStep(Number(button.dataset.step)); });
     });
     prevBtn.addEventListener('click', function () { goToStep(currentStep - 1); });
+    function finishAndClose() {
+        // Empty the form first so the unsaved-work guard does not ask to confirm.
+        resetForm();
+        window.close();
+        // Browsers only let a script close a tab it opened; otherwise leave the tool.
+        setTimeout(function () { location.assign('/'); }, 150);
+    }
+
     nextBtn.addEventListener('click', function () {
+        if (published) {
+            finishAndClose();
+            return;
+        }
         if (currentStep === panels.length - 1) {
             var blocking = collectIssues().filter(function (issue) { return issue.block; })[0];
             if (blocking) goToStep(blocking.step);
@@ -435,7 +447,10 @@
             bar.className = index === currentStep ? 'is-now' : index < currentStep ? 'is-done' : '';
         });
         prevBtn.disabled = currentStep === 0;
-        if (currentStep === panels.length - 1) {
+        if (currentStep === panels.length - 1 && published) {
+            authorDom.setIconText(nextBtn, 'fa-check', 'Τέλος');
+            nextBtn.classList.add('gb-nav-publish');
+        } else if (currentStep === panels.length - 1) {
             authorDom.setIconText(nextBtn, 'fa-rocket', 'Άνοιγμα PR');
             nextBtn.classList.add('gb-nav-publish');
         } else {
@@ -465,7 +480,7 @@
             return li;
         }));
         reviewFolder.textContent = 'blog-entries/' + folderPreview() + '/';
-        publishBtn.disabled = publishing || issues.some(function (issue) { return issue.block; });
+        publishBtn.disabled = publishing || published || issues.some(function (issue) { return issue.block; });
     }
 
     function renderSummary() {
@@ -491,6 +506,7 @@
     }
 
     var publishing = false;
+    var published = false;
     function refresh() {
         var issues = collectIssues();
         renderSteps(issues);
@@ -530,6 +546,7 @@
         resultBox.hidden = true;
         visited = { 0: true };
         renderContentImagesList();
+        published = false;
     }
 
     clearBtn.addEventListener('click', async function () {
@@ -1094,14 +1111,20 @@
         var branch = el('p', 'gb-result-branch');
         branch.appendChild(el('code', '', publishResult.branchName));
         resultBox.appendChild(branch);
-        resultBox.appendChild(el('p', '', 'Φάκελος blog-entries/' + folderName + '/. Οι έλεγχοι του GitHub κάνουν merge, build και deploy αυτόματα — δεν χρειάζεται άλλο βήμα.'));
+        var note = el('p', '', 'Φάκελος blog-entries/' + folderName + '/. Οι έλεγχοι του GitHub κάνουν merge, build και deploy αυτόματα — δεν χρειάζεται άλλο βήμα.');
         if (pr.html_url) {
-            var link = el('a', 'gb-btn gb-btn-sm', 'Προβολή PR στο GitHub');
+            var link = el('a', '', 'Προβολή PR στο GitHub');
             link.href = pr.html_url;
             link.target = '_blank';
             link.rel = 'noopener';
-            resultBox.appendChild(link);
+            note.append(' ', link);
         }
+        resultBox.appendChild(note);
+        var doneBtn = el('button', 'gb-btn gb-btn-sm');
+        doneBtn.type = 'button';
+        authorDom.setIconText(doneBtn, 'fa-check', 'Τέλος');
+        doneBtn.addEventListener('click', finishAndClose);
+        resultBox.appendChild(doneBtn);
         resultBox.hidden = false;
         resultBox.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
@@ -1193,6 +1216,7 @@
             );
             logProgress('Ολοκληρώθηκε.');
             progressList.lastChild.className = 'is-done';
+            published = true;
             showResult(publishResult, folderName);
         } catch (err) {
             console.error('Publish failed', err);
@@ -1349,10 +1373,10 @@
     function getYouTubeId(url) {
         try {
             var u = new URL(url);
-            var host = u.hostname.replace('www.', '');
+            var host = u.hostname.replace(/^(www|m)\./, '');
             if (host === 'youtube.com' && u.pathname === '/watch') return u.searchParams.get('v');
             if (host === 'youtu.be') return u.pathname.split('/')[1];
-            if (host === 'youtube.com' && u.pathname.startsWith('/shorts/')) return u.pathname.split('/')[2];
+            if (host === 'youtube.com' && /^\/(shorts|live|embed)\//.test(u.pathname)) return u.pathname.split('/')[2];
         } catch (e) {}
         return null;
     }
@@ -1769,12 +1793,14 @@
         }
 
         // Instagram
+        var instagramReady = Promise.resolve();
         if (container.querySelectorAll('blockquote.instagram-media').length) {
             if (window.instgrm && window.instgrm.Embeds) {
                 window.instgrm.Embeds.process();
             } else {
-                loadScript('https://www.instagram.com/embed.js')
-                    .then(function () { if (window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process(); });
+                instagramReady = loadScript('https://www.instagram.com/embed.js')
+                    .then(function () { if (window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process(); })
+                    .catch(function () {});
             }
         }
 
@@ -1798,7 +1824,10 @@
                 window.FB.XFBML.parse(container);
             } else {
                 window.fbAsyncInit = function () { window.FB.XFBML.parse(container); };
-                loadScript('https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v23.0', { crossorigin: 'anonymous' });
+                // Instagram's embed.js does nothing once the Facebook SDK is on the page.
+                instagramReady.then(function () {
+                    loadScript('https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v23.0', { crossorigin: 'anonymous' });
+                });
             }
         }
     }

@@ -273,12 +273,13 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
+        let instagramReady = Promise.resolve();
         if (instagramEmbeds.length) {
             const processInstagram = () => window.instgrm?.Embeds?.process?.();
             if (window.instgrm?.Embeds?.process) {
                 processInstagram();
             } else {
-                loadScriptOnce('https://www.instagram.com/embed.js')
+                instagramReady = loadScriptOnce('https://www.instagram.com/embed.js')
                     .then(processInstagram)
                     .catch(error => console.error('Error loading Instagram embeds:', error));
             }
@@ -290,7 +291,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (facebookEmbeds.length) {
-            loadFacebookSdk()
+            // Instagram's embed.js does nothing once the Facebook SDK is on the page.
+            instagramReady
+                .then(loadFacebookSdk)
                 .then(() => window.FB?.XFBML?.parse(articleContent))
                 .catch(error => console.error('Error loading Facebook embeds:', error));
         }

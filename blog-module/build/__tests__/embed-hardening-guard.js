@@ -2,6 +2,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { buildEmbedHtml } = require('../embed-render');
+const { getYouTubeVideoId } = require('../embeds');
 
 function verifyEmbedHardeningGuard() {
     const failures = [];
@@ -88,6 +89,17 @@ function verifyEmbedHardeningGuard() {
     } finally {
         fs.rmSync(tempDir, { recursive: true, force: true });
     }
+
+    [
+        'https://www.youtube.com/watch?v=skIoWJ0RbtU',
+        'https://m.youtube.com/watch?v=skIoWJ0RbtU&t=30s',
+        'https://youtu.be/skIoWJ0RbtU?si=abc',
+        'https://www.youtube.com/shorts/skIoWJ0RbtU',
+        'https://www.youtube.com/live/skIoWJ0RbtU?si=abc',
+        'https://www.youtube.com/embed/skIoWJ0RbtU'
+    ].forEach(url => {
+        if (getYouTubeVideoId(url) !== 'skIoWJ0RbtU') failures.push(`YouTube URL not recognised: ${url}`);
+    });
 
     return failures;
 }

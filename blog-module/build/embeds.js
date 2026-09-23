@@ -46,8 +46,9 @@ function getYouTubeVideoId(url) {
 
     const host = parsed.hostname.toLowerCase();
     const parts = parsed.pathname.split('/').filter(Boolean);
+    const isYouTubeHost = ['youtube.com', 'www.youtube.com', 'm.youtube.com'].includes(host);
 
-    if ((host === 'youtube.com' || host === 'www.youtube.com') && parsed.pathname === '/watch') {
+    if (isYouTubeHost && parsed.pathname === '/watch') {
         const videoId = parsed.searchParams.get('v') || '';
         return /^[a-zA-Z0-9_-]{11}$/.test(videoId) ? videoId : null;
     }
@@ -57,7 +58,7 @@ function getYouTubeVideoId(url) {
         return /^[a-zA-Z0-9_-]{11}$/.test(videoId) ? videoId : null;
     }
 
-    if ((host === 'youtube.com' || host === 'www.youtube.com') && parts[0] === 'shorts') {
+    if (isYouTubeHost && ['shorts', 'live', 'embed'].includes(parts[0])) {
         const videoId = parts[1] || '';
         return /^[a-zA-Z0-9_-]{11}$/.test(videoId) ? videoId : null;
     }
