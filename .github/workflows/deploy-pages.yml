@@ -4,16 +4,11 @@ on:
   workflow_call:
   push:
     branches: [main]
+    # Exactly the Site Maintenance push paths: it rebuilds the blog and deploys itself.
     paths-ignore:
       - 'blog-module/blog-entries/**'
       - 'blog-module/blog-processor.js'
       - 'blog-module/blog/template.html'
-      - 'blog-module/dirty-air-cache.js'
-      - 'blog-module/destructors-cache.js'
-      - 'standings/debrief-cache.js'
-      - 'standings/debrief-cache.json'
-      - 'package.json'
-      - 'package-lock.json'
       - '.github/workflows/publish-blog.yml'
   workflow_dispatch:
 
@@ -37,14 +32,7 @@ jobs:
         with:
           ref: main
 
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+      - uses: ./.github/actions/setup
 
       - name: Build public artifact
         run: npm run build:public

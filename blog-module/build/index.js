@@ -1,9 +1,6 @@
 const { Worker } = require('worker_threads');
 const { execFileSync } = require('child_process');
 const os = require('os');
-const { updateDirtyAirCache } = require('../dirty-air-cache');
-const { updateDestructorsCache } = require('../destructors-cache');
-const { updateDebriefCache } = require('../../standings/debrief-cache');
 const {
     fs,
     path,
@@ -981,40 +978,7 @@ async function processBlogEntries(options = {}) {
     await injectRelatedArticles(blogPosts);
     injectPrevNextLinks(blogPosts);
 
-    try {
-        const dirtyAirResult = await updateDirtyAirCache({ force: forceRebuild });
-        console.log(
-            `Dirty air cache saved to ${dirtyAirResult.outputPath} ` +
-            `(${dirtyAirResult.sessionCount} sessions, ${dirtyAirResult.rebuiltCount} rebuilt, ${dirtyAirResult.reusedCount} reused, ${dirtyAirResult.failedCount} failed)`
-        );
-    } catch (error) {
-        console.warn(`⚠️  Dirty air cache update skipped: ${error.message}`);
-    }
-
-    try {
-        const destructorsResult = await updateDestructorsCache({ force: forceRebuild });
-        console.log(
-            `Destructors cache saved to ${destructorsResult.outputPath} ` +
-            `(${destructorsResult.driverCount} drivers, ${destructorsResult.activeTeamCount} active teams${destructorsResult.unchanged ? ', unchanged' : ''})`
-        );
-    } catch (error) {
-        console.warn(`⚠️  Destructors cache update skipped: ${error.message}`);
-    }
-
-    if (process.env.BLOG_BUILD_REFRESH_DEBRIEF === '1') {
-        try {
-            const debriefResult = await updateDebriefCache({ force: forceRebuild });
-            console.log(
-                `Debrief cache saved to ${debriefResult.outputPath} ` +
-                `(${debriefResult.roundCount} rounds, season ${debriefResult.season})`
-            );
-        } catch (error) {
-            console.warn(`⚠️  Debrief cache update skipped: ${error.message}`);
-        }
-    } else {
-        console.log('Debrief cache refresh skipped during blog build; set BLOG_BUILD_REFRESH_DEBRIEF=1 to refresh it.');
-    }
-
+    // Standings caches are refreshed only by `npm run build:standings-data`.
     console.log('Blog processing complete');
 }
 

@@ -1,5 +1,8 @@
 name: Publish Article
 
+# Merges a trusted author-tool PR once Site Quality passes, then hands off to
+# Site Maintenance (task=blog), which rebuilds, commits and deploys.
+
 on:
   workflow_run:
     workflows: ['Site Quality']
@@ -12,21 +15,17 @@ on:
 
 permissions: {}
 
-concurrency:
-  group: content-publishing
-  queue: max
-
 jobs:
-  publish:
-    name: Merge author PR and publish artifacts
+  merge:
+    name: Merge trusted author PR
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 5
     permissions:
       contents: write
       pull-requests: write
     outputs:
-      published: ${{ steps.pr.outputs.publish }}
+      merged: ${{ steps.pr.outputs.publish }}
     steps:
       - name: Resolve trusted author PR
         id: pr
@@ -86,7 +85,6 @@ jobs:
           fi
 
           echo "number=$pr_number" >> "$GITHUB_OUTPUT"
-          echo "head_ref=$head_ref" >> "$GITHUB_OUTPUT"
           echo "publish=true" >> "$GITHUB_OUTPUT"
 
       - name: Merge author PR
@@ -94,83 +92,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-        run: |
-          set -eu
-          gh pr merge "${{ steps.pr.outputs.number }}" --repo "$REPO" --merge --delete-branch
+        run: gh pr merge "${{ steps.pr.outputs.number }}" --repo "$REPO" --merge --delete-branch
 
-      - name: Checkout main
-        if: ${{ steps.pr.outputs.publish == 'true' }}
-        uses: actions/checkout@v5
-        with:
-          ref: main
-          fetch-depth: 0
-          persist-credentials: true
-
-      - name: Setup Node
-        if: ${{ steps.pr.outputs.publish == 'true' }}
-        uses: actions/setup-node@v5
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        if: ${{ steps.pr.outputs.publish == 'true' }}
-        run: npm ci --no-audit --no-fund
-
-      - name: Restore git mtimes for blog entries
-        if: ${{ steps.pr.outputs.publish == 'true' }}
-        run: |
-          set -eu
-          git log --pretty=tformat:'@%at' --name-only -- 'blog-module/blog-entries/' \
-            | awk '
-                /^@[0-9]+$/ { ts = substr($0, 2); next }
-                NF == 0 { next }
-                !seen[$0]++ { printf "%s\t%s\n", ts, $0 }
-              ' \
-            | while IFS=$'\t' read -r ts file; do
-                if [ -e "$file" ]; then
-                  touch -m -d "@$ts" "$file"
-                fi
-              done
-
-      - name: Run blog processor
-        if: ${{ steps.pr.outputs.publish == 'true' }}
-        run: node blog-module/blog-processor.js
-
-      - name: Commit generated artifacts
-        if: ${{ steps.pr.outputs.publish == 'true' }}
-        run: |
-          set -eu
-          git config user.name  "Georgios Balatzis"
-          git config user.email "georgios.balatzis@gmail.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No generated artifact changes."
-            exit 0
-          fi
-
-          git commit -m "chore(blog): auto-build generated artifacts [skip ci]"
-
-          # The blog build can run long enough for another publisher to move
-          # main. Rebase and retry when the initial push loses that race.
-          for attempt in 1 2 3; do
-            if git push origin HEAD:main; then
-              break
-            fi
-            if [ "$attempt" = 3 ]; then
-              echo "Unable to publish generated artifacts after $attempt attempts." >&2
-              exit 1
-            fi
-            git fetch origin main
-            git rebase origin/main
-          done
-
-  deploy:
-    name: Deploy published article
-    needs: publish
-    if: ${{ needs.publish.outputs.published == 'true' }}
+  publish:
+    name: Build and deploy article
+    needs: merge
+    if: ${{ needs.merge.outputs.merged == 'true' }}
     permissions:
-      contents: read
+      contents: write
       pages: write
       id-token: write
-    uses: ./.github/workflows/deploy-pages.yml
+    uses: ./.github/workflows/publish-blog.yml
+    with:
+      task: blog

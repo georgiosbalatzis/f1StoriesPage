@@ -17,20 +17,11 @@ jobs:
     name: Quality gates
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    permissions:
-      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+      - uses: ./.github/actions/setup
 
       - name: Build public artifact
         run: npm run build:public

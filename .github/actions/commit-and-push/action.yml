@@ -1,0 +1,53 @@
+name: Commit and push
+description: Commit generated changes and push them to main, rebasing when another publisher moved main first.
+
+inputs:
+  message:
+    description: Commit message.
+    required: true
+  paths:
+    description: Space-separated paths to stage, or -A for everything.
+    required: false
+    default: '-A'
+
+outputs:
+  changed:
+    description: "'true' when a commit was pushed."
+    value: ${{ steps.commit.outputs.changed }}
+
+runs:
+  using: composite
+  steps:
+    - id: commit
+      shell: bash
+      env:
+        MESSAGE: ${{ inputs.message }}
+        PATHS: ${{ inputs.paths }}
+      run: |
+        set -eu
+        echo "changed=false" >> "$GITHUB_OUTPUT"
+        git config user.name  "Georgios Balatzis"
+        git config user.email "georgios.balatzis@gmail.com"
+        # PATHS is intentionally unquoted so it splits into separate arguments.
+        git add $PATHS
+        if git diff --cached --quiet; then
+          echo "Nothing to commit."
+          exit 0
+        fi
+
+        git commit -m "$MESSAGE"
+
+        # Builds can run long enough for another publisher to move main.
+        # Rebase and retry so a lost fast-forward race does not fail the job.
+        for attempt in 1 2 3; do
+          if git push origin HEAD:main; then
+            break
+          fi
+          if [ "$attempt" = 3 ]; then
+            echo "Unable to push after $attempt attempts." >&2
+            exit 1
+          fi
+          git fetch origin main
+          git rebase origin/main
+        done
+        echo "changed=true" >> "$GITHUB_OUTPUT"

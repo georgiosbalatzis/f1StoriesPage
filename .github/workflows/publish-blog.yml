@@ -2,32 +2,35 @@ name: Site Maintenance
 
 # Owns generated content maintenance: blog artifacts, standings data, and the YouTube snapshot.
 # Scheduled jobs are split by cron through job-level conditions. Push events
-# only run the blog publisher for article/build-source changes.
+# only run the blog publisher for article changes. Publish Article calls this
+# workflow with task=blog after merging an author PR.
+# The blog build is offline; the standings job is the only one that fetches F1 data.
 
 on:
   schedule:
-    - cron: '17 5,17 * * *'
     - cron: '17 0,12 * * *'
-    # Standings refresh: Friday 23:59 and Saturday 07:01 Europe/Athens.
-    # GitHub cron is UTC, so both EET and EEST offsets are scheduled and
-    # the job gates them against the local Athens time window.
+    # Standings refresh: Friday 23:59, Saturday 07:01 and Monday 07:01 Europe/Athens
+    # (after practice, after qualifying, after the race). GitHub cron is UTC, so
+    # both EET and EEST offsets are scheduled and the job keeps the matching one.
     - cron: '59 20 * * 5'
     - cron: '59 21 * * 5'
     - cron: '1 4 * * 6'
     - cron: '1 5 * * 6'
+    - cron: '1 4 * * 1'
+    - cron: '1 5 * * 1'
   push:
     branches: [main]
     paths:
       - 'blog-module/blog-entries/**'
       - 'blog-module/blog-processor.js'
       - 'blog-module/blog/template.html'
-      - 'blog-module/dirty-air-cache.js'
-      - 'blog-module/destructors-cache.js'
-      - 'standings/debrief-cache.js'
-      - 'standings/debrief-cache.json'
-      - 'package.json'
-      - 'package-lock.json'
       - '.github/workflows/publish-blog.yml'
+  workflow_call:
+    inputs:
+      task:
+        description: 'Maintenance task to run'
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
       task:
@@ -49,8 +52,7 @@ jobs:
     if: >-
       ${{
         github.event_name == 'push' ||
-        (github.event_name == 'schedule' && github.event.schedule == '17 5,17 * * *') ||
-        (github.event_name == 'workflow_dispatch' && inputs.task == 'blog')
+        inputs.task == 'blog'
       }}
     runs-on: ubuntu-latest
     concurrency:
@@ -59,20 +61,14 @@ jobs:
     outputs:
       changed: ${{ steps.commit.outputs.changed }}
     steps:
-      - name: Checkout
+      - name: Checkout main
         uses: actions/checkout@v5
         with:
+          ref: main
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+      - uses: ./.github/actions/setup
 
       - name: Restore git mtimes for blog entries
         # actions/checkout sets every file's mtime to the checkout time, so the
@@ -104,42 +100,16 @@ jobs:
 
       - name: Commit generated artifacts
         id: commit
-        run: |
-          set -eu
-          echo "changed=false" >> "$GITHUB_OUTPUT"
-          git config user.name  "Georgios Balatzis"
-          git config user.email "georgios.balatzis@gmail.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No changes produced by blog-processor — nothing to commit."
-            exit 0
-          fi
-
-          git commit -m "chore(blog): auto-build generated artifacts [skip ci]"
-
-          # The processor can take several minutes. Another maintenance run
-          # may publish while it is working, making the checkout stale by the
-          # time this commit is ready. Rebase and retry so a fast-forward race
-          # does not turn a successful build into a failed job.
-          for attempt in 1 2 3; do
-            if git push origin HEAD:main; then
-              break
-            fi
-            if [ "$attempt" = 3 ]; then
-              echo "Unable to publish generated artifacts after $attempt attempts." >&2
-              exit 1
-            fi
-            git fetch origin main
-            git rebase origin/main
-          done
-          echo "changed=true" >> "$GITHUB_OUTPUT"
+        uses: ./.github/actions/commit-and-push
+        with:
+          message: 'chore(blog): auto-build generated artifacts [skip ci]'
 
   refresh_youtube:
     name: Refresh YouTube snapshot
     if: >-
       ${{
-        (github.event_name == 'schedule' && github.event.schedule == '17 0,12 * * *') ||
-        (github.event_name == 'workflow_dispatch' && inputs.task == 'youtube')
+        github.event.schedule == '17 0,12 * * *' ||
+        inputs.task == 'youtube'
       }}
     runs-on: ubuntu-latest
     concurrency:
@@ -155,46 +125,24 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+      - uses: ./.github/actions/setup
 
       - name: Refresh YouTube snapshot
         run: node scripts/build/fetch-youtube.mjs
 
       - name: Commit updated snapshot
         id: commit
-        run: |
-          set -eu
-          echo "changed=false" >> "$GITHUB_OUTPUT"
-          git add assets/youtube-latest.json
-          if git diff --cached --quiet; then
-            echo "No YouTube snapshot changes."
-            exit 0
-          fi
-
-          git config user.name  "Georgios Balatzis"
-          git config user.email "georgios.balatzis@gmail.com"
-          git commit -m "chore(data): refresh youtube snapshot [skip ci]"
-          git push origin HEAD:main
-          echo "changed=true" >> "$GITHUB_OUTPUT"
+        uses: ./.github/actions/commit-and-push
+        with:
+          message: 'chore(data): refresh youtube snapshot [skip ci]'
+          paths: assets/youtube-latest.json
 
   refresh_standings_data:
     name: Refresh standings data
     if: >-
       ${{
-        (github.event_name == 'schedule' && (
-          github.event.schedule == '59 20 * * 5' ||
-          github.event.schedule == '59 21 * * 5' ||
-          github.event.schedule == '1 4 * * 6' ||
-          github.event.schedule == '1 5 * * 6'
-        )) ||
-        (github.event_name == 'workflow_dispatch' && inputs.task == 'standings')
+        (github.event_name == 'schedule' && github.event.schedule != '17 0,12 * * *') ||
+        inputs.task == 'standings'
       }}
     runs-on: ubuntu-latest
     concurrency:
@@ -205,15 +153,18 @@ jobs:
     steps:
       - name: Check Athens schedule window
         id: schedule_window
-        if: ${{ github.event_name == 'schedule' }}
         shell: bash
         env:
           SCHEDULE: ${{ github.event.schedule }}
         run: |
           set -eu
+          if [ -z "$SCHEDULE" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           # Decide from the cron slot that fired, not the wall clock: GitHub often
           # starts scheduled runs hours late, and a wall-clock window then skips
-          # every refresh. Each Athens slot (Fri 23:59, Sat 07:01) is scheduled for
+          # every refresh. Each Athens slot (Fri 23:59, Sat/Mon 07:01) is scheduled for
           # both UTC offsets; only the slot matching today's offset runs.
           offset_hours=$((10#$(TZ=Europe/Athens date +%z | cut -c2-3)))
           read -r _ cron_hour _ <<< "$SCHEDULE"
@@ -227,49 +178,31 @@ jobs:
           echo "run=$should_run" >> "$GITHUB_OUTPUT"
 
       - name: Checkout main
-        if: ${{ github.event_name != 'schedule' || steps.schedule_window.outputs.run == 'true' }}
+        if: ${{ steps.schedule_window.outputs.run == 'true' }}
         uses: actions/checkout@v5
         with:
           ref: main
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Setup Node
-        if: ${{ github.event_name != 'schedule' || steps.schedule_window.outputs.run == 'true' }}
-        uses: actions/setup-node@v5
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        if: ${{ github.event_name != 'schedule' || steps.schedule_window.outputs.run == 'true' }}
-        run: npm ci --no-audit --no-fund
+      - if: ${{ steps.schedule_window.outputs.run == 'true' }}
+        uses: ./.github/actions/setup
 
       - name: Refresh standings data
-        if: ${{ github.event_name != 'schedule' || steps.schedule_window.outputs.run == 'true' }}
+        if: ${{ steps.schedule_window.outputs.run == 'true' }}
         run: npm run build:standings-data
 
       - name: Commit updated standings data
         id: commit
-        if: ${{ github.event_name != 'schedule' || steps.schedule_window.outputs.run == 'true' }}
-        run: |
-          set -eu
-          echo "changed=false" >> "$GITHUB_OUTPUT"
-          git add \
-            standings/standings-cache.json \
-            standings/dirty-air-cache.json \
-            standings/destructors-cache.json \
+        if: ${{ steps.schedule_window.outputs.run == 'true' }}
+        uses: ./.github/actions/commit-and-push
+        with:
+          message: 'chore(data): refresh standings snapshots [skip ci]'
+          paths: >-
+            standings/standings-cache.json
+            standings/dirty-air-cache.json
+            standings/destructors-cache.json
             standings/debrief-cache.json
-          if git diff --cached --quiet; then
-            echo "No standings data changes."
-            exit 0
-          fi
-
-          git config user.name  "Georgios Balatzis"
-          git config user.email "georgios.balatzis@gmail.com"
-          git commit -m "chore(data): refresh standings snapshots [skip ci]"
-          git push origin HEAD:main
-          echo "changed=true" >> "$GITHUB_OUTPUT"
 
   deploy:
     name: Deploy changed maintenance content
@@ -278,9 +211,9 @@ jobs:
       ${{
         always() &&
         (
-          (needs.publish_blog.result == 'success' && needs.publish_blog.outputs.changed == 'true') ||
-          (needs.refresh_youtube.result == 'success' && needs.refresh_youtube.outputs.changed == 'true') ||
-          (needs.refresh_standings_data.result == 'success' && needs.refresh_standings_data.outputs.changed == 'true')
+          needs.publish_blog.outputs.changed == 'true' ||
+          needs.refresh_youtube.outputs.changed == 'true' ||
+          needs.refresh_standings_data.outputs.changed == 'true'
         )
       }}
     permissions:

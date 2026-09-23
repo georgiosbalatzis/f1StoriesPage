@@ -55,7 +55,9 @@ function main() {
     assertNoPattern(DEPLOY_WORKFLOW, workflow, /\bworkflow_run:\s*$/m, 'Pages deploy must not fan out from completed workflows');
 
     const articleWorkflow = readText(ARTICLE_PUBLISH_WORKFLOW);
-    assertPattern(ARTICLE_PUBLISH_WORKFLOW, articleWorkflow, /uses:\s*\.\/\.github\/workflows\/deploy-pages\.yml\b/, 'article publishing must call the reusable Pages deploy in the same run');
+    // Article publishing reaches the Pages deploy through the reusable maintenance workflow.
+    assertPattern(ARTICLE_PUBLISH_WORKFLOW, articleWorkflow, /uses:\s*\.\/\.github\/workflows\/publish-blog\.yml\b/, 'article publishing must call the reusable maintenance workflow in the same run');
+    assertPattern(MAINTENANCE_WORKFLOW, readText(MAINTENANCE_WORKFLOW), /\bworkflow_call:\s*$/m, 'maintenance must remain reusable by article publishing');
     assertNoPattern(ARTICLE_PUBLISH_WORKFLOW, articleWorkflow, /gh\s+workflow\s+run\s+["']?Deploy Pages/i, 'article publishing must not dispatch a second Pages workflow run');
 
     const maintenanceWorkflow = readText(MAINTENANCE_WORKFLOW);

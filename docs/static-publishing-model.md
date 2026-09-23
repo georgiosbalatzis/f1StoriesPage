@@ -142,7 +142,7 @@ npm run build:public
 That command runs:
 
 1. `npm run pages:guard`
-2. `npm run build`
+2. `npm run build:html`, `npm run build:blog`, `npm run build:assets` (no YouTube fetch; the blog build never fetches data, so `dist/` is built from committed state)
 3. `npm run build:data-contracts`
 4. `node scripts/build/public-artifact.mjs`
 5. `node scripts/build/validate-public-artifact.mjs`
