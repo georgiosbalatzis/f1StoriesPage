@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', function () {
         toggle.type = 'button';
         toggle.setAttribute('aria-label', 'Toggle table of contents');
         const label = document.createElement('span');
-        label.textContent = 'Περιεχόμενα / Contents';
+        label.textContent = 'Περιεχόμενα';
         toggle.append(createIcon('fa-list-ul'), label, createIcon('fa-chevron-down', 'icon toc-chevron'));
 
         const body = document.createElement('div');

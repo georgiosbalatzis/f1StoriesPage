@@ -207,23 +207,23 @@ jobs:
         id: schedule_window
         if: ${{ github.event_name == 'schedule' }}
         shell: bash
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
         run: |
           set -eu
-          read -r weekday hour minute <<< "$(TZ=Europe/Athens date +'%u %H %M')"
-          minute_num=$((10#$minute))
+          # Decide from the cron slot that fired, not the wall clock: GitHub often
+          # starts scheduled runs hours late, and a wall-clock window then skips
+          # every refresh. Each Athens slot (Fri 23:59, Sat 07:01) is scheduled for
+          # both UTC offsets; only the slot matching today's offset runs.
+          offset_hours=$((10#$(TZ=Europe/Athens date +%z | cut -c2-3)))
+          read -r _ cron_hour _ <<< "$SCHEDULE"
+          athens_hour=$(( (10#$cron_hour + offset_hours) % 24 ))
           should_run=false
-
-          if [ "$weekday" = "5" ] && [ "$hour" = "23" ] && [ "$minute_num" -ge 50 ]; then
-            should_run=true
-          fi
-          if [ "$weekday" = "6" ] && [ "$hour" = "00" ] && [ "$minute_num" -le 45 ]; then
-            should_run=true
-          fi
-          if [ "$weekday" = "6" ] && [ "$hour" = "07" ] && [ "$minute_num" -le 45 ]; then
+          if [ "$athens_hour" = "23" ] || [ "$athens_hour" = "7" ]; then
             should_run=true
           fi
 
-          echo "Athens time: weekday=$weekday hour=$hour minute=$minute"
+          echo "Schedule '$SCHEDULE' → Athens hour $athens_hour (UTC+$offset_hours), run=$should_run"
           echo "run=$should_run" >> "$GITHUB_OUTPUT"
 
       - name: Checkout main

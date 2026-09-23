@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="el">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>F1Stories Telemetry</title>
+    <title>Telemetry | F1 Stories</title>
     <meta name="robots" content="noindex, follow">
-    <meta name="description" content="Redirect to F1 Stories Telemetry Dashboard.">
+    <meta name="description" content="Μεταφορά στο Telemetry του F1 Stories: οπτικοποίηση δεδομένων αγώνα.">
 
     <!-- Open Graph Meta Tags for Social Media Preview -->
-    <meta property="og:title" content="F1Stories Telemetry">
+    <meta property="og:title" content="Telemetry | F1 Stories">
     <meta property="og:description" content="F1 Stories Telemetry Dashboard — live data visualizations.">
     <meta property="og:image" content="https://f1stories.gr/images/icons/icon-512.png">
     <meta property="og:url" content="https://f1stories.gr/f1telemetry/">
@@ -19,14 +19,22 @@
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="F1Stories Telemetry">
+    <meta name="twitter:title" content="Telemetry | F1 Stories">
     <meta name="twitter:description" content="F1 Stories Telemetry Dashboard — live data visualizations.">
     <meta name="twitter:image" content="https://f1stories.gr/images/icons/icon-512.png">
+    <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
+    <style>
+        /* Shown only for the instant before the redirect: the site's dark and paper grounds, never a white flash. */
+        :root { color-scheme: dark; --bg: #1b1a19; --text: #eee8db; --muted: #b6bbac; --accent: #ff775f; }
+        :root[data-theme="light"] { color-scheme: light; --bg: #f2eee4; --text: #20251f; --muted: #5b6256; --accent: #a82e1c; }
+        body { margin: 0; min-height: 100svh; display: grid; place-content: center; gap: 14px; padding: 24px; background: var(--bg); color: var(--text); font-family: "IBM Plex Sans", system-ui, sans-serif; }
+        p { margin: 0; color: var(--muted); font-size: .875rem; letter-spacing: .11em; }
+        a { display: inline-flex; align-items: center; min-height: 44px; color: var(--text); font-size: 1.25rem; font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--accent); }
+    </style>
     <script src="/scripts/external-redirect.min.js?v=06bf3526"></script>
 </head>
 <body>
-<!-- Optional: You can add some content here if needed -->
-<h1>Redirecting...</h1>
-<p>If you are not redirected automatically, <a href="https://georgiosbalatzis.github.io/f1-telemetry-dashboard/">click here</a>.</p>
+<p>F1 STORIES / ΜΕΤΑΦΟΡΑ</p>
+<a href="https://georgiosbalatzis.github.io/f1-telemetry-dashboard/">Άνοιξε το Telemetry ↗</a>
 </body>
 </html>

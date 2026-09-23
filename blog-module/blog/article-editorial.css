@@ -92,8 +92,12 @@
 .article-page .back-link .icon { transition: transform .3s var(--ease-editorial); }
 .article-page .back-link:hover { color: #a82e1c; background: none; }
 .article-page .back-link:hover .icon { transform: translateX(-5px); }
+/* The kicker pill is the cover's category link: same 44px row as the back link. */
 .article-page .article-category-pill {
-    min-height: 0;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: none;
     max-width: 100%;
     padding: 4px 0 4px 18px;
     border: 0;
@@ -106,6 +110,7 @@
     letter-spacing: .06em;
     overflow-wrap: anywhere;
 }
+.article-page a.article-category-pill:hover { text-decoration: underline; text-underline-offset: 3px; }
 .article-page .article-title {
     max-width: none;
     margin: 0 0 24px;
@@ -406,6 +411,8 @@
     .article-page .responsive-table { min-width: 480px; }
     /* Phones always get the card view for CSV tables, so the switch would do nothing. */
     .article-page .table-responsive-container:not(.docx-table-container) .view-toggle { display: none; }
+    /* With the switch hidden and no authored title, the controls row would be an empty band between rules. */
+    .article-page .table-responsive-container:not(.docx-table-container) .table-controls:not(:has(.table-title)) { display: none; }
 }
 
 /* Article photography uses the language of a printed contact sheet. */
@@ -429,7 +436,8 @@
 .article-page .gallery-carousel-slides { width: 100%; height: 100%; min-height: 0; }
 .article-page .gallery-slide { width: 100%; height: 100%; padding: 0; }
 .article-page .gallery-slide picture { display: block; width: 100%; height: 100%; max-height: none; }
-.article-page .gallery-slide .article-content-img { display: block; width: 100%; height: 100%; max-height: none; margin: 0; border-radius: 0; object-fit: cover; box-shadow: none; }
+/* scale-down: a photo is never enlarged past its own pixels or cropped; it sits whole on the contact-sheet ground. */
+.article-page .gallery-slide .article-content-img { display: block; width: 100%; height: 100%; max-height: none; margin: 0; border-radius: 0; object-fit: scale-down; box-shadow: none; }
 .article-page :is(.gallery-carousel-prev, .gallery-carousel-next) {
     width: 44px;
     height: 44px;
@@ -630,7 +638,10 @@
     .article-page .article-content h3 { font-size: 1.12rem; }
     .article-page .article-content blockquote:not(.twitter-tweet):not(.instagram-media):not(.text-post-media) { padding-left: 20px; font-size: 1.55rem; }
     .article-page .article-content .social-embed { overflow-x: auto; }
-    .article-page .article-mini-bar { top: 68px; }
+    /* One pinned bar while reading: the mini bar takes the masthead's place, which returns at the top of the story. */
+    .article-page .article-mini-bar { top: 0; }
+    .article-page .blog-nav { transition: transform .18s ease; }
+    .article-page:has(.article-mini-bar.is-visible) .blog-nav { transform: translateY(-100%); }
     .article-page .article-mini-bar__category { max-width: 5.5rem; font-size: .75rem; }
     .article-page .author-box { padding: 22px 20px; }
     .article-page .author-name { font-size: 1.12rem; overflow-wrap: anywhere; }
@@ -663,7 +674,7 @@
     @keyframes article-editorial-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 }
 @media (prefers-reduced-motion: reduce) {
-    .article-page :is(.article-container, .article-header-overlay, .article-header > picture, .article-header-img, .article-content-img, .share-btn, .toc-body, .toc-item, .article-mini-bar, .related-article-card img, .article-rail-related-item, .gallery-slide, .lb-overlay, .lb-img, .author-profile-link > span) { animation: none; transition: none; }
+    .article-page :is(.article-container, .article-header-overlay, .article-header > picture, .article-header-img, .article-content-img, .share-btn, .toc-body, .toc-item, .article-mini-bar, .blog-nav, .related-article-card img, .article-rail-related-item, .gallery-slide, .lb-overlay, .lb-img, .author-profile-link > span) { animation: none; transition: none; }
 }
 
 /* Dark covers keep the editorial spread readable without falling back to a

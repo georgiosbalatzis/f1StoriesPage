@@ -242,7 +242,7 @@
 @media (max-width: 480px) {
     .lap1-sub { font-size: 0.84rem; }
     .lap1-overview-meta { font-size: 0.72rem; }
-    .lap1-chart-shell { --lap1-chart-headroom: 58px; min-width: 500px; min-height: 292px; }
+    .lap1-chart-shell { --lap1-chart-headroom: 64px; min-width: 500px; min-height: 292px; }
     .lap1-axis, .lap1-chart-body { min-height: 292px; }
     .lap1-bubble { width: 46px; height: 46px; }
     .lap1-gain-pill { min-width: 38px; font-size: 0.7rem; }

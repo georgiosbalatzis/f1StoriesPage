@@ -41,7 +41,7 @@
     function appendCachedArticle(cache, list, request) {
         var url = new URL(request.url);
         var parts = url.pathname.split('/');
-        var folder = parts[parts.length - 2] || 'Article';
+        var folder = parts[parts.length - 2] || 'Άρθρο';
         var item = document.createElement('li');
         var link = document.createElement('a');
 

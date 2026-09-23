@@ -311,7 +311,7 @@ function buildPitStopsDriverRowHTML(entry, idx, fastestDuration) {
         + '<span class="pit-stops-driver-team-label">' + esc(entry.teamName) + '</span></div>'
         + '<div class="pit-stops-driver-name">' + esc(entry.fullName) + '</div></div></div>'
         + '<div class="pit-stops-time-area"><div class="pit-stops-time">' + entry.duration.toFixed(1) + 's</div>'
-        + '<div class="pit-stops-lap-info">Lap ' + esc(String(entry.lap)) + ' · Stop ' + esc(String(entry.stop)) + '</div></div>'
+        + '<div class="pit-stops-lap-info">Γύρος ' + esc(String(entry.lap)) + ' · Στάση ' + esc(String(entry.stop)) + '</div></div>'
         + '<div class="pit-stops-bar-wrap"><div class="pit-stops-bar" style="width:' + barPct + '%;background:#' + esc(entry.teamColor) + ';"></div></div>'
         + '</div>';
 }
@@ -346,7 +346,7 @@ function renderPitStopsSeasonContent(seasonCache) {
                 + '<div class="pit-stops-team-info"><div class="pit-stops-team-name-text">' + esc(entry.teamName) + '</div>'
                 + '<div class="pit-stops-team-meta-text">' + esc(entry.code) + ' · R' + esc(String(entry.round)) + ' ' + esc(entry.raceName) + '</div></div>'
                 + '<div class="pit-stops-time-area"><div class="pit-stops-time" style="color:rgb(' + rgb + ');">' + entry.duration.toFixed(1) + 's</div>'
-                + '<div class="pit-stops-lap-info">Lap ' + esc(String(entry.lap)) + '</div></div>'
+                + '<div class="pit-stops-lap-info">Γύρος ' + esc(String(entry.lap)) + '</div></div>'
                 + '<div class="pit-stops-bar-wrap"><div class="pit-stops-bar" style="width:' + barPct + '%;background:rgb(' + rgb + ');"></div></div>'
                 + '</div>';
         });
@@ -427,8 +427,8 @@ function renderPitStops(raceData, race, races) {
         + '<select class="pit-stops-select" data-pitstop-select>' + selectOptions + '</select></div></div>';
 
     html += '<div class="pit-stops-view-switch"><div class="pit-stops-view-tabs">'
-        + '<button class="pit-stops-view-tab' + (state.activeView === 'race' ? ' active' : '') + '" data-pitstop-view="race"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg> Per Race</button>'
-        + '<button class="pit-stops-view-tab' + (state.activeView === 'season' ? ' active' : '') + '" data-pitstop-view="season"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Season Best</button>'
+        + '<button class="pit-stops-view-tab' + (state.activeView === 'race' ? ' active' : '') + '" data-pitstop-view="race"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg> Ανά αγώνα</button>'
+        + '<button class="pit-stops-view-tab' + (state.activeView === 'season' ? ' active' : '') + '" data-pitstop-view="season"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Καλύτερο σεζόν</button>'
         + '</div></div>';
 
     html += '<div class="pit-stops-view-panel' + (state.activeView === 'race' ? ' active' : '') + '" data-pitstop-panel="race">';
@@ -438,7 +438,7 @@ function renderPitStops(raceData, race, races) {
         const p1 = sorted[0];
         html += '<div class="pit-stops-summary">'
             + '<div class="pit-stops-summary-main"><div class="pit-stops-summary-title">Ταχύτερη διέλευση pit lane: ' + esc(p1.code) + ' — ' + p1.duration.toFixed(1) + 's</div>'
-            + '<div class="pit-stops-summary-sub">' + esc(p1.fullName) + ' · ' + esc(p1.teamName) + ' · Lap ' + esc(String(p1.lap)) + '</div></div>'
+            + '<div class="pit-stops-summary-sub">' + esc(p1.fullName) + ' · ' + esc(p1.teamName) + ' · Γύρος ' + esc(String(p1.lap)) + '</div></div>'
             + '<div class="pit-stops-summary-stats">'
             + '<div class="pit-stops-summary-stat"><div class="pit-stops-summary-label">Οδηγοί</div><div class="pit-stops-summary-value">' + sorted.length + '</div></div>'
             + '<div class="pit-stops-summary-stat"><div class="pit-stops-summary-label">Συνολικές στάσεις</div><div class="pit-stops-summary-value">' + totalStops + '</div></div>'

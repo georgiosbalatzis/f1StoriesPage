@@ -41,12 +41,6 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
-function getTableName(csvFileName) {
-    let tableName = csvFileName.replace(/\.[^.]+$/, '');
-    tableName = tableName.replace(/([A-Z])/g, ' $1').trim();
-    return tableName.charAt(0).toUpperCase() + tableName.slice(1);
-}
-
 function stripCellParagraphs(html) {
     return String(html || '')
         .trim()
@@ -204,9 +198,10 @@ function createResponsiveTableFromCSV(csvContent, csvFileName, options = {}) {
         const headers = parseCSVRow(rows[0]);
         if (!headers.length) return '<div class="csv-error">Αδυναμία ανάλυσης επικεφαλίδων CSV</div>';
 
-        const tableName = getTableName(csvFileName);
-        const safeTableName = escapeHtml(tableName);
-        const safeCsvFileName = escapeHtml(csvFileName);
+        // Title and source are authored (CSV_TABLE:file.csv|Τίτλος|Πηγή); a filename is never page copy.
+        const caption = String(options.caption || '').trim();
+        const source = String(options.source || '').trim();
+        const dataRowCount = rows.slice(1).filter(row => parseCSVRow(row).some(cell => String(cell || '').trim())).length;
         const tableId = `csv-table-${sanitizeId(csvFileName)}`;
         const headerMeta = headers.map((header, index) => {
             const raw = String(header || '').trim() || `Column ${index + 1}`;
@@ -219,9 +214,9 @@ function createResponsiveTableFromCSV(csvContent, csvFileName, options = {}) {
         });
 
         let html = `
-        <div class="table-responsive-container">
+        <div class="table-responsive-container${dataRowCount <= 2 ? ' table-compact' : ''}">
             <div class="table-controls">
-                <h4 class="table-title">${safeTableName}</h4>
+                ${caption ? `<h4 class="table-title">${escapeHtml(caption)}</h4>` : ''}
                 <div class="view-toggle">
                     <button class="view-toggle-btn scroll-view active" data-view="scroll" data-table="${tableId}">
                         <svg class="icon" aria-hidden="true"><use href="#fa-table"/></svg> Προβολή πίνακα
@@ -289,9 +284,9 @@ function createResponsiveTableFromCSV(csvContent, csvFileName, options = {}) {
         html += `
                 </div>
             </div>
-            <div class="table-footer">
-                <div class="table-source">Πηγή: ${safeCsvFileName}</div>
-            </div>
+            ${source ? `<div class="table-footer">
+                <div class="table-source">Πηγή: ${escapeHtml(source)}</div>
+            </div>` : ''}
         </div>`;
 
         return html;
@@ -319,10 +314,13 @@ function enhancedExtractCSVTags(htmlContent) {
             const fullMatch = match[0];
             if (seen.has(fullMatch)) continue;
             seen.add(fullMatch);
+            const [fileName, caption = '', source = ''] = match[2].split('|').map(part => part.trim());
             allMatches.push({
                 fullMatch,
                 allowHtml: match[1] === '_HTML',
-                fileName: match[2].trim()
+                fileName,
+                caption,
+                source
             });
         }
     });
@@ -340,7 +338,7 @@ function processEmbeddedCSV(htmlContent, entryPath) {
         try {
             const { content } = findCSVFile(tag.fileName, resolvedEntryPath);
             const replacement = content
-                ? createResponsiveTableFromCSV(content, tag.fileName, { allowHtml: tag.allowHtml })
+                ? createResponsiveTableFromCSV(content, tag.fileName, { allowHtml: tag.allowHtml, caption: tag.caption, source: tag.source })
                 : createCSVErrorMessage(tag.fileName);
             const escapedMatch = tag.fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             processedContent = processedContent.replace(new RegExp(escapedMatch, 'g'), replacement);
@@ -361,7 +359,6 @@ module.exports = {
     parseCSVRow,
     sanitizeId,
     escapeHtml,
-    getTableName,
     stripCellParagraphs,
     extractTableRowsFromHtml,
     buildResponsiveDocTable,

@@ -122,18 +122,18 @@ async function processBlogEntry(entryPath) {
         const docPath = path.join(entryPath, docFile);
         content = await convertSourceToHtml(docPath);
         content = stripLeadingArticleBoilerplate(content, metadata);
-        content = await processContentImages(content, folderName, extractedImages);
-        content = await processImageInsertTags(content, images, folderName);
+        content = await processContentImages(content, folderName, extractedImages, metadata.title);
+        content = await processImageInsertTags(content, images, folderName, metadata.title);
     }
 
     const hasContentImages = Object.keys(images).some(key => key.startsWith('image'));
     if (hasContentImages && isImagesOnlyContent(content)) {
-        content = await createImageGallery(images, folderName);
+        content = await createImageGallery(images, folderName, metadata.title);
         metadata.tag = 'Images';
         metadata.category = 'Gallery';
     } else if (docFile) {
-        content = await mergeConsecutiveFigures(content, folderName);
-        content = await appendOrphanContentImagesGallery(content, folderName);
+        content = await mergeConsecutiveFigures(content, folderName, metadata.title);
+        content = await appendOrphanContentImagesGallery(content, folderName, metadata.title);
     }
 
     assertNoInlineDataImages(content, folderName);

@@ -32,6 +32,21 @@
     var name = heading ? heading.textContent.trim() : '';
     if (name && heading) document.title = name + ' | F1 Stories';
 
+    // The page header speaks for the selected author, not the whole directory.
+    var title = document.querySelector('.authors-intro h1');
+    if (name && title) {
+        var accent = title.querySelector('.editorial-accent');
+        title.textContent = name;
+        if (accent) title.appendChild(accent);
+    }
+    var desk = selected.querySelector('.author-profile__kicker');
+    var folioDesk = document.querySelector('.authors-edition > span:last-child');
+    if (desk && folioDesk) {
+        folioDesk.textContent = desk.textContent.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().normalize('NFC');
+    }
+    var introCopy = document.querySelector('.authors-intro__copy');
+    if (introCopy) introCopy.hidden = true;
+
     var back = document.querySelector('[data-author-directory-back]');
     if (back) back.hidden = false;
 

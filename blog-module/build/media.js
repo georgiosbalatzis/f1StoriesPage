@@ -1,4 +1,4 @@
-const { fs, path, sharp, AdmZip, CONFIG, utils, getImageDimensions } = require('./shared');
+const { fs, path, sharp, AdmZip, CONFIG, utils, getImageDimensions, escapeHtmlAttribute } = require('./shared');
 
 function processImages(entryPath, folderName) {
     const entryFiles = fs.readdirSync(entryPath);
@@ -65,7 +65,7 @@ async function buildPictureHtml(folderName, imageNumber, altText = '', options =
     const imgTag = `<img src="${webpFile}"
                  srcset="${webpSrcset}"
                  sizes="${sizes}"
-                 alt="${altText}"
+                 alt="${escapeHtmlAttribute(altText)}"
                  class="article-content-img"
                  loading="${loading}"${fetchPriority} decoding="async"${widthAttr}${heightAttr}
                  data-full-src="${webpFile}"
@@ -143,13 +143,13 @@ async function extractImagesFromDocx(docPath, entryPath) {
     }
 }
 
-async function processContentImages(content, folderName, extractedImages = []) {
+async function processContentImages(content, folderName, extractedImages = [], title = '') {
     if (!extractedImages.length) return content;
 
     const replacements = await Promise.all(extractedImages.map(async (_, index) => {
         const imageNumber = index + 3;
         return `<figure class="article-figure">
-            ${await buildPictureHtml(folderName, imageNumber, `Image ${index + 1}`)}
+            ${await buildPictureHtml(folderName, imageNumber, `${plainTitle(title) ? `${plainTitle(title)}: ` : ''}εικόνα ${index + 1}`)}
         </figure>`;
     }));
 
@@ -167,7 +167,7 @@ async function processContentImages(content, folderName, extractedImages = []) {
     return processedContent;
 }
 
-async function processImageInsertTags(content, images, folderName) {
+async function processImageInsertTags(content, images, folderName, title = '') {
     let imageCounter = 3;
 
     while (content.includes('[img-instert-tag]')) {
@@ -175,7 +175,7 @@ async function processImageInsertTags(content, images, folderName) {
         if (imageFile) {
             const imageHtml = `
             <figure class="article-figure">
-                ${await buildPictureHtml(folderName, imageCounter, `Image ${imageCounter}`)}
+                ${await buildPictureHtml(folderName, imageCounter, `${plainTitle(title) ? `${plainTitle(title)}: ` : ''}εικόνα ${imageCounter}`)}
                 <figcaption>Image ${imageCounter}</figcaption>
             </figure>`;
             content = content.replace('[img-instert-tag]', imageHtml);
@@ -189,8 +189,16 @@ async function processImageInsertTags(content, images, folderName) {
     return content;
 }
 
+// Image labels use the article title without emoji, which screen readers would announce.
+function plainTitle(title) {
+    return String(title || '').replace(/[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\u{FE0F}\u{200D}]/gu, '').replace(/\s+/g, ' ').trim();
+}
+
 async function buildImageCarousel(folderName, imageNumbers, options = {}) {
-    const { ariaLabel = 'Image Gallery', withUnwrapMarkers = false } = options;
+    const { withUnwrapMarkers = false } = options;
+    const title = plainTitle(options.title);
+    const ariaLabel = title ? `Φωτογραφικό αρχείο: ${title}` : 'Φωτογραφικό αρχείο';
+    const total = imageNumbers.length;
     const entryPath = path.join(CONFIG.BLOG_DIR, folderName);
 
     let slidesHtml = '';
@@ -202,7 +210,7 @@ async function buildImageCarousel(folderName, imageNumbers, options = {}) {
 
         slidesHtml += `
             <div class="gallery-slide${isActive}" data-index="${i}">
-                ${await buildPictureHtml(folderName, imageNumber, `Gallery image ${i + 1}`, i === 0 ? { loading: 'eager', fetchPriority: 'low' } : {})}
+                ${await buildPictureHtml(folderName, imageNumber, `${title ? `${title}: ` : ''}φωτογραφία ${i + 1} από ${total}`, i === 0 ? { loading: 'eager', fetchPriority: 'low' } : {})}
             </div>`;
 
         const smWebp = `${imageNumber}-sm.webp`;
@@ -213,13 +221,13 @@ async function buildImageCarousel(folderName, imageNumbers, options = {}) {
         const thumbHeightAttr = thumbDimensions && thumbDimensions.height ? ` height="${thumbDimensions.height}"` : '';
 
         thumbsHtml += `
-            <button class="gallery-thumb${isActive}" data-index="${i}" aria-label="Show image ${i + 1}">
+            <button class="gallery-thumb${isActive}" data-index="${i}" aria-label="Εμφάνιση φωτογραφίας ${i + 1} από ${total}">
                 <img src="${thumbSrc}" alt="" loading="lazy" decoding="async"${thumbWidthAttr}${thumbHeightAttr} draggable="false">
             </button>`;
     }
 
     const html = `
-    <div class="gallery-carousel" role="region" aria-label="${ariaLabel}" aria-roledescription="carousel">
+    <div class="gallery-carousel" role="region" aria-label="${escapeHtmlAttribute(ariaLabel)}" aria-roledescription="carousel">
         <div class="gallery-carousel-stage">
             <div class="gallery-carousel-slides">
                 ${slidesHtml}
@@ -240,7 +248,7 @@ async function buildImageCarousel(folderName, imageNumbers, options = {}) {
     return withUnwrapMarkers ? `<!--ig-carousel-->${html}<!--/ig-carousel-->` : html;
 }
 
-async function createImageGallery(images, folderName) {
+async function createImageGallery(images, folderName, title = '') {
     void images;
     const entryPath = path.join(CONFIG.BLOG_DIR, folderName);
     const allImageNumbers = [];
@@ -253,11 +261,11 @@ async function createImageGallery(images, folderName) {
         num++;
     }
 
-    if (!allImageNumbers.length) return '<p>Photo gallery</p>';
-    return buildImageCarousel(folderName, allImageNumbers);
+    if (!allImageNumbers.length) return '<p>Φωτογραφικό αρχείο</p>';
+    return buildImageCarousel(folderName, allImageNumbers, { title });
 }
 
-async function mergeConsecutiveFigures(content, folderName) {
+async function mergeConsecutiveFigures(content, folderName, title = '') {
     const figureRe = /<figure class="article-figure">([\s\S]*?)<\/figure>/g;
     const figures = [];
     let match;
@@ -290,7 +298,7 @@ async function mergeConsecutiveFigures(content, folderName) {
         replacements.push({
             start: group[0].start,
             end: group[group.length - 1].end,
-            html: await buildImageCarousel(folderName, nums, { withUnwrapMarkers: true })
+            html: await buildImageCarousel(folderName, nums, { withUnwrapMarkers: true, title })
         });
     }
     if (!replacements.length) return content;
@@ -315,7 +323,7 @@ function isImagesOnlyContent(content) {
     return textOnly.length === 0;
 }
 
-async function appendOrphanContentImagesGallery(content, folderName) {
+async function appendOrphanContentImagesGallery(content, folderName, title = '') {
     const entryPath = path.join(CONFIG.BLOG_DIR, folderName);
     const referenced = new Set();
 
@@ -336,7 +344,7 @@ async function appendOrphanContentImagesGallery(content, folderName) {
     }
     if (!orphanSlots.length) return content;
 
-    return content + '\n' + await buildImageCarousel(folderName, orphanSlots, { ariaLabel: 'Image Gallery' });
+    return content + '\n' + await buildImageCarousel(folderName, orphanSlots, { title });
 }
 
 module.exports = {

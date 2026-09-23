@@ -716,4 +716,5 @@ body.editorial-page footer .footer-index a:is(:hover, :focus-visible) { backgrou
 body.editorial-page footer .footer-wordmark .editorial-accent { color: var(--signal); }
 
 /* Standalone text links keep a 24px minimum target (WCAG 2.2 AA 2.5.8) without changing their type. */
-body.editorial-page :is(.authors-directory-link, .team-member__name a, .footer-link, .authors-intro__data-link, .author-profile__archive, .author-profile__social, .author-profile-link, .article-author-link, .author-name a, .article-trust strong a, .article-trust__corrections a) { display: inline-flex; align-items: center; min-height: 24px; }
+/* KEEP: 44px targets for every standalone link, not just WCAG's 24px floor. */
+body.editorial-page :is(.authors-directory-link, .team-member__name a, .footer-link, .footer-wordmark, .authors-directory-back, .authors-intro__data-link, .author-profile__archive, .author-profile__social, .author-profile__name a, .author-profile__stories a, .author-profile-link, .article-author-link, .author-name a, .article-trust strong a, .article-trust__corrections a) { display: inline-flex; align-items: center; min-height: 44px; }
