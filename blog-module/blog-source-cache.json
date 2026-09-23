@@ -57,6 +57,34 @@
       "backgroundImageHeight": 530
     },
     {
+      "id": "20260923",
+      "title": "Το πραγματικό πρόβλημα του Baku είναι η ενέργεια",
+      "author": "F1 Stories Team",
+      "date": "2026-09-23",
+      "dateISO": "2026-09-23",
+      "displayDate": "23 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260923/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260923/1.webp",
+      "excerpt": "Το Baku ανέκαθεν ήταν πίστα με διχασμένη προσωπικότητα. Στο δεύτερο sector, ανάμεσα στα τείχη της παλιάς πόλης, θέλεις πρόσφυση, ένα αυτοκίνητο σταθερό στο φρενάρισμα και αρκετό downforce για να μη...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260923/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "Baku",
+        "2026"
+      ],
+      "wordCount": 708,
+      "readingTime": "4 min",
+      "imageWidth": 1920,
+      "imageHeight": 1080,
+      "backgroundImageWidth": 1920,
+      "backgroundImageHeight": 1080
+    },
+    {
       "id": "20260922W",
       "title": "Pedro de la rosa: Αυτός που περίμενε την μεγάλη ευκαιρία.",
       "author": "Themis Charvalis",
@@ -9183,5 +9211,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-23T12:32:48.970Z"
+  "lastUpdated": "2026-09-23T14:48:47.997Z"
 }
