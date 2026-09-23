@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20260923W",
+      "title": "John Surtees: Ένας σπουδαίος οδηγός αγώνων",
+      "author": "Themis Charvalis",
+      "date": "2026-09-23",
+      "dateISO": "2026-09-23",
+      "displayDate": "23 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260923W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260923W/2.webp",
+      "excerpt": "Γεννήθηκε στις 11 Φεβρουαρίου του 1934 στο Tatsfield του Surrey και από πολύ μικρός βρέθηκε μέσα στους αγώνες. Ο πατέρας του, Jack Surtees, ήταν έμπορος μοτοσυκλετών και αγωνιζόμενος, οπότε για τον...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260923W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "F1",
+        "Motogp",
+        "Racing",
+        "60ς"
+      ],
+      "wordCount": 446,
+      "readingTime": "3 min",
+      "imageWidth": 588,
+      "imageHeight": 330,
+      "backgroundImageWidth": 3392,
+      "backgroundImageHeight": 1908
+    },
+    {
       "id": "20260923G",
       "title": "Το B-spec της Williams και το πραγματικό τεστ",
       "author": "Georgios Balatzis",
@@ -9211,5 +9241,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-23T14:48:47.997Z"
+  "lastUpdated": "2026-09-23T20:26:35.299Z"
 }
