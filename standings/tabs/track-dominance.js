@@ -521,15 +521,44 @@ function getTrackDominanceDriverShortLabel(driver) {
 
 function buildTrackDominanceVisualPalette(leftDriver, rightDriver) {
     const leftHex = normalizeHexColor(leftDriver && leftDriver.teamColor ? leftDriver.teamColor : '41B6E6');
-    let rightHex = normalizeHexColor(rightDriver && rightDriver.teamColor ? rightDriver.teamColor : '41B6E6');
+    const rightHex = normalizeHexColor(rightDriver && rightDriver.teamColor ? rightDriver.teamColor : '41B6E6');
     const sameTeam = !!(leftDriver && rightDriver && leftDriver.teamKey && rightDriver.teamKey && leftDriver.teamKey === rightDriver.teamKey);
-    if (sameTeam || leftHex === rightHex) rightHex = adjustHexColor(rightHex, -34);
+    // Teammates share a team colour, and a shade of it is indistinguishable on the map:
+    // the second driver gets a theme neutral on the far side of the team colour's
+    // lightness, drawn dashed (CSS .is-second, --track-dom-second-*-rgb).
+    const second = sameTeam || leftHex === rightHex;
+    const luminance = function(channels) {
+        return channels.split(', ').reduce(function(sum, channel, index) {
+            const c = Number(channel) / 255;
+            return sum + [0.2126, 0.7152, 0.0722][index] * (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+        }, 0);
+    };
+    const contrast = function(a, b) { return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05); };
+    // Mirrors --track-dom-second-{dark,light}-rgb in standings-editorial.css.
+    const candidates = document.documentElement.getAttribute('data-theme') === 'light'
+        ? { dark: '32, 37, 31', light: '184, 177, 166' }
+        : { dark: '122, 116, 108', light: '238, 232, 219' };
+    const leftLuminance = luminance(hexToRgbChannels(leftHex));
+    const leftIsLight = contrast(leftLuminance, luminance(candidates.dark)) >= contrast(leftLuminance, luminance(candidates.light));
+    // A mid-tone team colour (McLaren, Williams…) sits too close to either neutral, so
+    // the first driver steps away from its partner, lighter or darker, in the same hue,
+    // until the pair reaches 3:1. The step also keeps it clear of the map ground.
+    let leftChannels = hexToRgbChannels(leftHex);
+    if (second) {
+        const partner = luminance(leftIsLight ? candidates.dark : candidates.light);
+        const target = leftIsLight ? 255 : 0;
+        const base = leftChannels.split(', ').map(Number);
+        for (let mix = 0.1; mix < 1 && contrast(luminance(leftChannels), partner) < 3; mix += 0.1) {
+            leftChannels = base.map(function(channel) { return Math.round(channel + (target - channel) * mix); }).join(', ');
+        }
+    }
     return {
         sameTeam: sameTeam,
+        second: second,
         leftHex: leftHex,
         rightHex: rightHex,
-        leftChannels: hexToRgbChannels(leftHex),
-        rightChannels: hexToRgbChannels(rightHex)
+        leftChannels: leftChannels,
+        rightChannels: second ? (leftIsLight ? 'var(--track-dom-second-dark-rgb)' : 'var(--track-dom-second-light-rgb)') : hexToRgbChannels(rightHex)
     };
 }
 
@@ -558,11 +587,11 @@ function resolveTrackDominanceSelection(sessionData, preferredLeftKey, preferred
 }
 
 function buildTrackDominanceTooltipText(delta, leftName, rightName) {
-    if (!isFiniteNumber(delta)) return 'Telemetry delta unavailable';
-    if (Math.abs(delta) < 0.004) return 'Drivers are level at this point of the lap';
+    if (!isFiniteNumber(delta)) return 'Η διαφορά δεν είναι διαθέσιμη';
+    if (Math.abs(delta) < 0.004) return 'Ισόπαλοι σε αυτό το σημείο του γύρου';
     const leader = delta <= 0 ? leftName : rightName;
     const trailer = delta <= 0 ? rightName : leftName;
-    return leader + ' -' + Math.abs(delta).toFixed(3) + 's on ' + trailer;
+    return leader + ' -' + Math.abs(delta).toFixed(3) + 's έναντι ' + trailer;
 }
 
 function getTrackDominanceLapWindow(lapInfo, extraMs) {
@@ -821,7 +850,8 @@ function buildTrackDominanceTrackMap(leftDriver, rightDriver, leftLocations, rig
             y2: end.y,
             colorChannels: leader === 'left' ? leftChannels : rightChannels,
             tooltip: buildTrackDominanceTooltipText(deltaMid, getTrackDominanceDriverShortLabel(leftDriver), getTrackDominanceDriverShortLabel(rightDriver)),
-            leader: leader
+            leader: leader,
+            second: leader === 'right' && visualPalette.second
         });
     }
 
@@ -919,7 +949,7 @@ function renderTrackDominanceDriverCard(side, driver, colorChannels, metricCompa
         : '<div class="track-dom-team-logo-fallback">' + esc(getTrackDominanceShortName(driver.teamName)) + '</div>';
 
     return '<article class="track-dom-team-card ' + side + '" style="--team-color:' + esc(colorChannels) + ';">'
-        + '<div class="track-dom-team-top"><div class="track-dom-team-logo">' + logoMarkup + '</div><div class="track-dom-team-copy"><div class="track-dom-team-name">' + esc(driver.fullName || getTrackDominanceDriverShortLabel(driver)) + '</div><div class="track-dom-team-driver">' + esc(driver.teamName + ' · ' + getTrackDominanceDriverShortLabel(driver) + ' · Lap ' + lap.lapNumber) + '</div></div></div>'
+        + '<div class="track-dom-team-top"><div class="track-dom-team-logo">' + logoMarkup + '</div><div class="track-dom-team-copy"><div class="track-dom-team-name">' + esc(driver.fullName || getTrackDominanceDriverShortLabel(driver)) + '</div><div class="track-dom-team-driver">' + esc(driver.teamName + ' · ' + getTrackDominanceDriverShortLabel(driver) + ' · Γύρος ' + lap.lapNumber) + '</div></div></div>'
         + '<div class="track-dom-team-time">' + esc(formatLapTime(lap.duration, true)) + '</div>'
         + renderTrackDominanceMetricStrip(side, metricComparison)
         + '</article>';
@@ -973,14 +1003,14 @@ function renderTrackDominance(sessionData, pairData, session) {
     const finishTrailer = finishDelta <= 0 ? getTrackDominanceDriverShortLabel(rightDriver) : getTrackDominanceDriverShortLabel(leftDriver);
 
     let html = '<div class="track-dom-card">'
-        + '<div class="track-dom-head"><div class="track-dom-head-copy"><h3 class="track-dom-head-title">Κυριαρχία πίστας στον ταχύτερο γύρο</h3><p class="track-dom-head-note">Η γραμμή χρωματίζεται με βάση το ποιος οδηγός είναι μπροστά στο ίδιο σημείο του γύρου, χρησιμοποιώντας το fastest lap κάθε selected driver στο session.</p></div><label class="track-dom-controls"><span class="track-dom-controls-label">Διαθέσιμες συνεδρίες</span><select class="track-dom-select" data-track-dom-session aria-label="Επιλογή session για track dominance">' + sessionOptions + '</select></label></div>'
+        + '<div class="track-dom-head"><div class="track-dom-head-copy"><h3 class="track-dom-head-title">Κυριαρχία πίστας στον ταχύτερο γύρο</h3><p class="track-dom-head-note">Η γραμμή χρωματίζεται με βάση το ποιος οδηγός είναι μπροστά στο ίδιο σημείο του γύρου, χρησιμοποιώντας τον ταχύτερο γύρο κάθε επιλεγμένου οδηγού στη συνεδρία.</p></div><label class="track-dom-controls"><span class="track-dom-controls-label">Διαθέσιμες συνεδρίες</span><select class="track-dom-select" data-track-dom-session aria-label="Επιλογή συνεδρίας για την κυριαρχία πίστας">' + sessionOptions + '</select></label></div>'
         + '<div class="track-dom-team-pickers">'
         + '<label class="track-dom-controls"><span class="track-dom-controls-label">Οδηγός 1</span><select class="track-dom-select" data-track-dom-driver="left" aria-label="Επιλογή πρώτου οδηγού για track dominance">' + leftDriverOptions + '</select></label>'
         + '<label class="track-dom-controls"><span class="track-dom-controls-label">Οδηγός 2</span><select class="track-dom-select" data-track-dom-driver="right" aria-label="Επιλογή δεύτερου οδηγού για track dominance">' + rightDriverOptions + '</select></label>'
         + '</div>'
         + '<div class="track-dom-duel">'
         + renderTrackDominanceDriverCard('left', leftDriver, leftChannels, metricComparison)
-        + '<div class="track-dom-vs-card"><div class="track-dom-vs-label">Συνεδρία</div><div class="track-dom-vs-title">' + esc(session.meeting_name || session.circuit_short_name || session.location || 'Track') + '</div><div class="track-dom-vs-sub">' + esc((session.session_name || session.session_type || 'Session') + (formatSessionDateShort(session) ? ' · ' + formatSessionDateShort(session) : '')) + '</div><div class="track-dom-vs-delta">' + esc(finishLeader + ' -' + Math.abs(finishDelta).toFixed(3) + 's') + '</div><div class="track-dom-vs-note">on ' + esc(finishTrailer) + '</div></div>'
+        + '<div class="track-dom-vs-card"><div class="track-dom-vs-label">Συνεδρία</div><div class="track-dom-vs-title">' + esc(session.meeting_name || session.circuit_short_name || session.location || 'Πίστα') + '</div><div class="track-dom-vs-sub">' + esc((session.session_name || session.session_type || 'Συνεδρία') + (formatSessionDateShort(session) ? ' · ' + formatSessionDateShort(session) : '')) + '</div><div class="track-dom-vs-delta">' + esc(finishLeader + ' -' + Math.abs(finishDelta).toFixed(3) + 's') + '</div><div class="track-dom-vs-note">έναντι ' + esc(finishTrailer) + '</div></div>'
         + renderTrackDominanceDriverCard('right', rightDriver, rightChannels, metricComparison)
         + '</div>';
 
@@ -991,7 +1021,7 @@ function renderTrackDominance(sessionData, pairData, session) {
             + '<path class="track-dom-track-base" d="' + esc(pairData.pathD) + '"></path>';
 
         pairData.segments.forEach(function(segment) {
-            svg += '<line class="track-dom-segment" x1="' + segment.x1.toFixed(2) + '" y1="' + segment.y1.toFixed(2) + '" x2="' + segment.x2.toFixed(2) + '" y2="' + segment.y2.toFixed(2) + '" style="--team-color:' + esc(segment.colorChannels) + ';" data-tooltip="' + esc(segment.tooltip) + '"><title>' + esc(segment.tooltip) + '</title></line>';
+            svg += '<line class="track-dom-segment' + (segment.second ? ' is-second' : '') + '" x1="' + segment.x1.toFixed(2) + '" y1="' + segment.y1.toFixed(2) + '" x2="' + segment.x2.toFixed(2) + '" y2="' + segment.y2.toFixed(2) + '" style="--team-color:' + esc(segment.colorChannels) + ';" data-tooltip="' + esc(segment.tooltip) + '"><title>' + esc(segment.tooltip) + '</title></line>';
         });
 
         if (pairData.startLine) {
@@ -1003,17 +1033,17 @@ function renderTrackDominance(sessionData, pairData, session) {
         svg += '</svg>';
 
         html += '<div class="track-dom-map-card">'
-            + '<div class="track-dom-map-meta"><div class="track-dom-map-title">Χάρτης κυριαρχίας πίστας</div><div class="track-dom-map-note">Hover το track για live delta tooltip · η checkered γραμμή δείχνει το start/finish.</div></div>'
+            + '<div class="track-dom-map-meta"><div class="track-dom-map-title">Χάρτης κυριαρχίας πίστας</div><div class="track-dom-map-note">Πέρασε τον δείκτη πάνω από την πίστα για τη διαφορά σε κάθε σημείο · η καρό γραμμή δείχνει την εκκίνηση/τερματισμό.</div></div>'
             + '<div class="track-dom-track-shell" data-track-dom-shell>' + svg + '<div class="track-dom-tooltip" data-track-dom-tooltip></div></div>'
             + '<div class="track-dom-advantage">'
-            + '<div class="track-dom-advantage-head"><span class="track-dom-advantage-team left" style="--team-color:' + esc(leftChannels) + ';">' + esc(getTrackDominanceDriverShortLabel(leftDriver)) + ' ahead ' + esc(Math.round(pairData.leftLeadPct)) + '%</span><span class="track-dom-advantage-team right" style="--team-color:' + esc(rightChannels) + ';">' + esc(getTrackDominanceDriverShortLabel(rightDriver)) + ' ahead ' + esc(Math.round(pairData.rightLeadPct)) + '%</span></div>'
+            + '<div class="track-dom-advantage-head"><span class="track-dom-advantage-team left" style="--team-color:' + esc(leftChannels) + ';">' + esc(getTrackDominanceDriverShortLabel(leftDriver)) + ' μπροστά ' + esc(Math.round(pairData.leftLeadPct)) + '%</span><span class="track-dom-advantage-team right' + (visualPalette.second ? ' is-second' : '') + '" style="--team-color:' + esc(rightChannels) + ';">' + esc(getTrackDominanceDriverShortLabel(rightDriver)) + ' μπροστά ' + esc(Math.round(pairData.rightLeadPct)) + '%</span></div>'
             + '<div class="track-dom-advantage-bar"><span class="track-dom-advantage-fill left" style="--team-color:' + esc(leftChannels) + ';width:' + pairData.leftLeadPct.toFixed(2) + '%;"></span><span class="track-dom-advantage-fill right" style="--team-color:' + esc(rightChannels) + ';width:' + pairData.rightLeadPct.toFixed(2) + '%;"></span></div>'
-            + '<div class="track-dom-advantage-note">' + esc(finishLeader + ' -' + Math.abs(finishDelta).toFixed(3) + 's on ' + finishTrailer) + ' · peak swing ' + esc(Math.abs(pairData.peakDelta).toFixed(3)) + 's</div>'
+            + '<div class="track-dom-advantage-note">' + esc(finishLeader + ' -' + Math.abs(finishDelta).toFixed(3) + 's έναντι ' + finishTrailer) + ' · μέγιστη διαφορά ' + esc(Math.abs(pairData.peakDelta).toFixed(3)) + 's</div>'
             + '</div>'
             + '</div>';
     }
 
-    html += '<p class="track-dom-footnote">Source: OpenF1 `laps` + `location`. Κάθε selected driver εκπροσωπείται από το single fastest lap του στο session.</p></div>';
+    html += '<p class="track-dom-footnote">Πηγή: OpenF1. Κάθε οδηγός εκπροσωπείται από τον ταχύτερο γύρο του στη συνεδρία.</p></div>';
 
     setTrustedHtml(trackDominanceTable, html, 'track dominance report template');
     fireRendered();
@@ -1026,7 +1056,7 @@ function showTrackDominanceError() {
     }).join('');
 
     setTrustedHtml(trackDominanceTable, '<div class="track-dom-card">'
-        + '<div class="track-dom-head"><div class="track-dom-head-copy"><h3 class="track-dom-head-title">Κυριαρχία πίστας στον ταχύτερο γύρο</h3><p class="track-dom-head-note">Δεν υπάρχει διαθέσιμο telemetry map για το selected session αυτή τη στιγμή. Διάλεξε άλλο session ή ξαναδοκίμασε όταν το OpenF1 δώσει location samples.</p></div><label class="track-dom-controls"><span class="track-dom-controls-label">Διαθέσιμες συνεδρίες</span><select class="track-dom-select" data-track-dom-session aria-label="Επιλογή session για track dominance">' + sessionOptions + '</select></label></div>'
+        + '<div class="track-dom-head"><div class="track-dom-head-copy"><h3 class="track-dom-head-title">Κυριαρχία πίστας στον ταχύτερο γύρο</h3><p class="track-dom-head-note">Δεν υπάρχει διαθέσιμο telemetry map για το selected session αυτή τη στιγμή. Διάλεξε άλλο session ή ξαναδοκίμασε όταν το OpenF1 δώσει location samples.</p></div><label class="track-dom-controls"><span class="track-dom-controls-label">Διαθέσιμες συνεδρίες</span><select class="track-dom-select" data-track-dom-session aria-label="Επιλογή συνεδρίας για την κυριαρχία πίστας">' + sessionOptions + '</select></label></div>'
         + '<div class="track-dom-empty-card">'
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
         + '<p>Δεν ήταν δυνατή η φόρτωση του track dominance report για αυτό το session.</p>'

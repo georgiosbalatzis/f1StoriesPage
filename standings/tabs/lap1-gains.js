@@ -21,6 +21,8 @@ import { isFiniteNumber } from './_shared.js';
 
 const OPENF1 = 'https://api.openf1.org/v1';
 const YEAR = new Date().getFullYear();
+// Drivers missing from the OpenF1 lookup get a warm neutral, not the retired legacy blue.
+const UNKNOWN_DRIVER_COLOR = '968F86';
 
 const lap1GainsTable = document.getElementById('lap1-gains-table');
 
@@ -271,7 +273,7 @@ function buildLap1GainRows(sessions, drivers, positions, lapOneLaps, lapTwoLaps)
                 fullName: 'Οδηγός #' + record.driver_number,
                 headshot: '',
                 teamName: '',
-                teamColor: '41B6E6'
+                teamColor: UNKNOWN_DRIVER_COLOR
             };
             const startPosition = normalizedStartMap[record.driver_number];
             const afterPosition = moves.length + 1;
@@ -334,7 +336,7 @@ function buildLap1AxisValues(maxGain) {
 }
 
 function renderLap1Bubble(driver, extraBadge) {
-    const winnerColor = hexToRgbChannels(driver.teamColor || '41B6E6');
+    const winnerColor = hexToRgbChannels(driver.teamColor || UNKNOWN_DRIVER_COLOR);
     const headshot = getCachedHeadshotResult('', driver.fullName, driver.headshot || '');
     return '<div class="lap1-bubble" style="--winner-color:' + esc(winnerColor) + ';">'
         + (headshot.url
@@ -346,7 +348,7 @@ function renderLap1Bubble(driver, extraBadge) {
 }
 
 function renderLap1DriverChip(driver) {
-    const winnerColor = hexToRgbChannels(driver.teamColor || '41B6E6');
+    const winnerColor = hexToRgbChannels(driver.teamColor || UNKNOWN_DRIVER_COLOR);
     const headshot = getCachedHeadshotResult('', driver.fullName, driver.headshot || '');
     return '<div class="lap1-driver-chip" style="--winner-color:' + esc(winnerColor) + ';">'
         + '<div class="lap1-driver-chip-avatar">'
@@ -366,9 +368,9 @@ function renderLap1OverviewContent(rows) {
     const axisValues = buildLap1AxisValues(maxGain);
     const chartMinWidth = Math.max(620, 76 + rows.length * 84);
     let html = '<div class="lap1-overview-card">'
-        + '<div class="lap1-overview-head"><div><h3 class="lap1-overview-title">Κινήσεις 1ου γύρου</h3><p class="lap1-overview-note">Completed race και sprint sessions, ταξινομημένα χρονολογικά.</p></div><div class="lap1-overview-meta">' + rows.length + ' sessions</div></div>'
+        + '<div class="lap1-overview-head"><div><h3 class="lap1-overview-title">Κινήσεις 1ου γύρου</h3><p class="lap1-overview-note">Ολοκληρωμένοι αγώνες και sprint, με χρονολογική σειρά.</p></div><div class="lap1-overview-meta">' + rows.length + ' συνεδρίες</div></div>'
         + '<div class="lap1-chart-scroll" data-horizontal-chart-scroll><div class="lap1-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
-        + '<div class="lap1-axis"><span class="lap1-axis-title">Lap 1 Gain (Pos)</span><div class="lap1-axis-scale">';
+        + '<div class="lap1-axis"><span class="lap1-axis-title">Θέσεις στον 1ο γύρο</span><div class="lap1-axis-scale">';
 
     axisValues.forEach(function(value) {
         const bottom = maxGain > 0 ? (value / maxGain) * 100 : 0;
@@ -385,7 +387,7 @@ function renderLap1OverviewContent(rows) {
     html += '<div class="lap1-chart-columns" style="grid-template-columns:repeat(' + rows.length + ', minmax(72px, 1fr));">';
 
     rows.forEach(function(row) {
-        const primaryColor = hexToRgbChannels(row.primaryWinner.teamColor || '41B6E6');
+        const primaryColor = hexToRgbChannels(row.primaryWinner.teamColor || UNKNOWN_DRIVER_COLOR);
         const bottom = maxGain > 0 ? (row.maxGain / maxGain) * 100 : 0;
         const tieBadge = row.winnerCount > 1 ? '+' + (row.winnerCount - 1) : '';
 
@@ -393,7 +395,7 @@ function renderLap1OverviewContent(rows) {
             + '<div class="lap1-session-plot"><div class="lap1-session-point" style="bottom:' + bottom.toFixed(2) + '%;--winner-color:' + esc(primaryColor) + ';">'
             + '<span class="lap1-gain-pill">' + esc(formatGainValue(row.maxGain)) + '</span>'
             + renderLap1Bubble(row.primaryWinner, tieBadge)
-            + '<span class="lap1-primary-code">' + esc(row.primaryWinner.acronym) + (row.winnerCount > 1 ? ' tie' : '') + '</span>'
+            + '<span class="lap1-primary-code">' + esc(row.primaryWinner.acronym) + '</span>'
             + '</div></div>'
             + '<div class="lap1-session-footer"><span class="lap1-session-type">' + esc(row.sessionTypeShort) + '</span><span class="lap1-session-name">' + esc(row.meetingName) + '</span><span class="lap1-session-date">' + esc(row.dateLabel) + '</span></div>'
             + '</article>';
@@ -402,12 +404,12 @@ function renderLap1OverviewContent(rows) {
     html += '</div></div></div></div></div><div class="lap1-gains-cards">';
 
     rows.forEach(function(row) {
-        const primaryColor = hexToRgbChannels(row.primaryWinner.teamColor || '41B6E6');
+        const primaryColor = hexToRgbChannels(row.primaryWinner.teamColor || UNKNOWN_DRIVER_COLOR);
         html += '<article class="lap1-gain-card" style="--winner-color:' + esc(primaryColor) + ';">'
-            + '<div class="lap1-gain-card-head"><div class="lap1-gain-card-session"><span class="lap1-gain-card-type">' + esc(row.sessionTypeShort) + '</span><div class="lap1-gain-card-name">' + esc(row.meetingName) + '</div><div class="lap1-gain-card-date">' + esc(row.dateLabel + ' · ' + row.sessionName) + '</div></div><div><div class="lap1-gain-card-value">' + esc(formatGainValue(row.maxGain)) + '</div><div class="lap1-gain-card-sub">lap 1 gain</div></div></div>'
+            + '<div class="lap1-gain-card-head"><div class="lap1-gain-card-session"><span class="lap1-gain-card-type">' + esc(row.sessionTypeShort) + '</span><div class="lap1-gain-card-name">' + esc(row.meetingName) + '</div><div class="lap1-gain-card-date">' + esc(row.dateLabel + ' · ' + row.sessionName) + '</div></div><div><div class="lap1-gain-card-value">' + esc(formatGainValue(row.maxGain)) + '</div><div class="lap1-gain-card-sub">θέσεις στον 1ο γύρο</div></div></div>'
             + '<div class="lap1-driver-cluster">' + row.winners.map(renderLap1DriverChip).join('') + '</div>'
             + '<p class="lap1-card-meta">' + (row.winnerCount > 1
-                ? esc('Ισοπαλία ' + row.winnerCount + ' οδηγών για το καλύτερο move μετά τον 1ο γύρο.')
+                ? esc('Ισοπαλία ' + row.winnerCount + ' οδηγών για την καλύτερη άνοδο στον 1ο γύρο.')
                 : esc(formatPositionTag(row.primaryWinner.startPosition) + ' -> ' + formatPositionTag(row.primaryWinner.afterPosition) + ' μέχρι το τέλος του 1ου γύρου.'))
             + '</p>'
             + '</article>';
@@ -417,7 +419,7 @@ function renderLap1OverviewContent(rows) {
 }
 
 function renderLap1RaceDriverRow(move, index) {
-    const winnerColor = hexToRgbChannels(move.teamColor || '41B6E6');
+    const winnerColor = hexToRgbChannels(move.teamColor || UNKNOWN_DRIVER_COLOR);
     const deltaTone = move.gain > 0 ? 'positive' : move.gain < 0 ? 'negative' : 'neutral';
     const headshot = getCachedHeadshotResult('', move.fullName, move.headshot || '');
 
@@ -437,7 +439,7 @@ function renderLap1RaceDriverRow(move, index) {
 }
 
 function renderLap1RaceDetailContent(rows, selectedRow) {
-    const summaryColor = hexToRgbChannels(selectedRow.primaryWinner.teamColor || '41B6E6');
+    const summaryColor = hexToRgbChannels(selectedRow.primaryWinner.teamColor || UNKNOWN_DRIVER_COLOR);
     const topMoverLabel = selectedRow.winnerCount > 1
         ? selectedRow.winners.map(function(driver) { return driver.acronym; }).join(', ')
         : selectedRow.primaryWinner.acronym;
@@ -446,7 +448,7 @@ function renderLap1RaceDetailContent(rows, selectedRow) {
     }).join('');
 
     return '<div class="lap1-race-card">'
-        + '<div class="lap1-race-head"><div><h3 class="lap1-overview-title">Κέρδη οδηγών ανά συνεδρία</h3><p class="lap1-overview-note">Διάλεξε race ή sprint και δες όλο το grid ταξινομημένο από το μεγαλύτερο gain στο μεγαλύτερο loss μετά τον 1ο γύρο.</p></div><label class="lap1-race-controls"><span class="lap1-race-controls-label">Διαθέσιμες συνεδρίες</span><select class="lap1-race-select" data-lap1-select aria-label="Επιλογή session για Lap 1 gains">' + selectorOptions + '</select></label></div>'
+        + '<div class="lap1-race-head"><div><h3 class="lap1-overview-title">Κέρδη οδηγών ανά συνεδρία</h3><p class="lap1-overview-note">Διάλεξε αγώνα ή sprint και δες όλο το grid, από το μεγαλύτερο κέρδος θέσεων ως τη μεγαλύτερη απώλεια στον 1ο γύρο.</p></div><label class="lap1-race-controls"><span class="lap1-race-controls-label">Διαθέσιμες συνεδρίες</span><select class="lap1-race-select" data-lap1-select aria-label="Επιλογή συνεδρίας για τα κέρδη 1ου γύρου">' + selectorOptions + '</select></label></div>'
         + '<div class="lap1-race-summary" style="--winner-color:' + esc(summaryColor) + ';">'
         + '<div class="lap1-race-summary-main"><span class="lap1-session-type">' + esc(selectedRow.sessionTypeShort) + '</span><div class="lap1-race-summary-copy"><div class="lap1-race-summary-title">' + esc(selectedRow.meetingName) + '</div><div class="lap1-race-summary-sub">' + esc(selectedRow.dateLabel + ' · ' + selectedRow.sessionName) + '</div></div></div>'
         + '<div class="lap1-race-summary-stats"><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Μεγαλύτερη άνοδος</span><span class="lap1-race-summary-value">' + esc(topMoverLabel) + '</span></div><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Καλύτερο κέρδος</span><span class="lap1-race-summary-value">' + esc(formatGainValue(selectedRow.maxGain)) + '</span></div><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Οδηγοί</span><span class="lap1-race-summary-value">' + esc(String(selectedRow.moves.length)) + '</span></div></div>'
@@ -462,8 +464,8 @@ function renderLap1Gains(rows) {
     if (!rows || !rows.length) {
         setTrustedHtml(lap1GainsTable, '<div class="lap1-empty-card">'
             + '<svg class="icon" aria-hidden="true"><use href="#fa-arrow-trend-up"/></svg>'
-            + '<p>Δεν υπάρχουν ακόμη διαθέσιμα δεδομένα για τα μεγαλύτερα gains μετά τον 1ο γύρο.</p>'
-            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed race ή sprint sessions με lap timing data.</p>'
+            + '<p>Δεν υπάρχουν ακόμη διαθέσιμα δεδομένα για τα κέρδη θέσεων στον 1ο γύρο.</p>'
+            + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Η καρτέλα ενεργοποιείται μόλις υπάρξουν ολοκληρωμένοι αγώνες ή sprint με χρονομέτρηση γύρων.</p>'
             + '</div>', 'lap 1 gains empty state');
         if (onRendered) onRendered('lap1-gains');
         return;
@@ -482,7 +484,7 @@ function renderLap1Gains(rows) {
         ? renderLap1RaceDetailContent(rows, selectedRow)
         : renderLap1OverviewContent(rows);
 
-    const html = '<div class="lap1-view-switch"><div class="lap1-view-tabs" role="tablist" aria-label="Lap 1 Gains views">'
+    const html = '<div class="lap1-view-switch"><div class="lap1-view-tabs" role="tablist" aria-label="Προβολές κερδών 1ου γύρου">'
         + '<button class="lap1-view-tab' + (activeView === 'overview' ? ' active' : '') + '" type="button" data-lap1-view="overview" role="tab" aria-selected="' + (activeView === 'overview' ? 'true' : 'false') + '">Επισκόπηση</button>'
         + '<button class="lap1-view-tab' + (activeView === 'race-detail' ? ' active' : '') + '" type="button" data-lap1-view="race-detail" role="tab" aria-selected="' + (activeView === 'race-detail' ? 'true' : 'false') + '">Ανά συνεδρία</button>'
         + '</div></div>'

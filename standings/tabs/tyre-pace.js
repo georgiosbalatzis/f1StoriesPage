@@ -377,7 +377,7 @@ function buildTyrePaceSvg(laps, minTime, maxTime, teamColor) {
             if (bin.length > 1 && binMax !== binMin) y += (ratio - 0.5) * 6;
             const meta = getCompoundMeta(lap.compound);
             circles += '<circle class="tyre-pace-dot" cx="' + (centerX + offsets[lapIndex]).toFixed(2) + '" cy="' + y.toFixed(2) + '" r="4.2" fill="rgb(' + esc(hexToRgbChannels(meta.hex)) + ')">'
-                + '<title>' + esc(lap.compound + ' · Lap ' + lap.lapNumber + ' · ' + formatLapTime(lap.duration, true)) + '</title>'
+                + '<title>' + esc(lap.compound + ' · Γύρος ' + lap.lapNumber + ' · ' + formatLapTime(lap.duration, true)) + '</title>'
                 + '</circle>';
         });
     });
@@ -565,7 +565,7 @@ function renderTyrePace(data, session) {
         html += '<div class="tyre-pace-code">' + esc(row.acronym) + '</div><div class="tyre-pace-name">' + esc(row.fullName) + '</div></article>';
     });
 
-    html += '</div></div></div></div><p class="tyre-pace-footnote">Πηγή: OpenF1 `laps` + `stints`. Οι γόμες αντιστοιχίζονται από τα διαστήματα των stint σε κάθε έγκυρο γύρο αγώνα.</p></div>';
+    html += '</div></div></div></div><p class="tyre-pace-footnote">Πηγή: OpenF1. Οι γόμες αντιστοιχίζονται από τα διαστήματα των stint σε κάθε έγκυρο γύρο αγώνα.</p></div>';
 
     setTrustedHtml(tyrePaceTable, html, 'tyre pace report template');
     watchChartOverflow(tyrePaceTable.querySelector('.tyre-pace-chart-scroll'));

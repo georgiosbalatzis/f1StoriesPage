@@ -96,7 +96,7 @@ export function ensureLoaded(forceReload) {
         loadingHTML: loadingCardHTML({
             wrapperClass: 'destructors-card',
             stateClass: 'destructors-loading',
-            message: 'Loading destructors snapshot...'
+            message: 'Φόρτωση στιγμιότυπου destructors…'
         }),
         loadingReason: 'destructors snapshot loading state',
         load: function() {
@@ -214,9 +214,11 @@ function normalizeSnapshot(payload) {
         };
     });
 
+    // Rank by total so the bar order and the named leader follow the data;
+    // the stable sort keeps DESTRUCTORS_TEAM_ORDER for ties.
     const teams = DESTRUCTORS_TEAM_ORDER.map(function(teamKey) {
         return teamsByKey[teamKey] || null;
-    }).filter(Boolean);
+    }).filter(Boolean).sort(function(a, b) { return b.total - a.total; });
     const nonZeroTeams = teams.filter(function(team) { return team.total > 0; });
     const maxTeamTotal = teams.reduce(function(max, team) {
         return Math.max(max, team.total || 0);
@@ -234,18 +236,26 @@ function normalizeSnapshot(payload) {
     };
 }
 
+// The cache label is English ("Latest available on F1 Top App (May 7, 2026)");
+// only its date is reused, in a Greek title.
+function snapshotTitle(snapshot) {
+    const match = /\(([^)]+)\)/.exec(snapshot.snapshotLabel || '');
+    const date = match ? new Date(match[1]) : null;
+    return date && Number.isFinite(date.getTime())
+        ? 'Στιγμιότυπο F1 Top App · ' + date.toLocaleDateString('el-GR', { day: 'numeric', month: 'long', year: 'numeric' })
+        : 'Στιγμιότυπο σεζόν ' + snapshot.season;
+}
+
 function buildSourceHTML(source) {
     const parts = [];
     if (source && source.upstreamHtml) {
-        parts.push('Live source verified at <a href="' + esc(source.upstreamHtml) + '" target="_blank" rel="noopener">F1 Top App</a>');
+        parts.push('Πηγή: <a href="' + esc(source.upstreamHtml) + '" target="_blank" rel="noopener">F1 Top App</a>');
     }
     if (source && source.referencePost) {
-        parts.push('snapshot reference <a href="' + esc(source.referencePost) + '" target="_blank" rel="noopener">Reddit</a>');
+        parts.push('αναφορά: <a href="' + esc(source.referencePost) + '" target="_blank" rel="noopener">Reddit</a>');
     }
-    return '<div class="destructors-source">'
-        + (parts.length ? parts.join(' · ') + '. ' : '')
-        + esc(source && source.note ? source.note : 'Local snapshot used because the upstream page does not expose a stable browser-safe API.')
-        + '</div>';
+    // The cache's source.note is a maintainer note (English); it is not page copy.
+    return '<div class="destructors-source">' + (parts.length ? parts.join(' · ') + '.' : 'Πηγή: F1 Top App.') + '</div>';
 }
 
 function buildTeamChartHTML(data) {
@@ -383,9 +393,9 @@ function buildFlowChartHTML(data) {
     }).join('');
 
     return '<div class="destructors-card">'
-        + '<div class="destructors-card-head"><div><div class="destructors-card-kicker">Ροή οδηγών προς ομάδες</div><h4 class="destructors-card-title">F1 ' + esc(String(data.season)) + ' Destructors World Championship</h4></div></div>'
+        + '<div class="destructors-card-head"><div><div class="destructors-card-kicker">Ροή οδηγών προς ομάδες</div><h4 class="destructors-card-title">Πρωτάθλημα Destructors ' + esc(String(data.season)) + '</h4></div></div>'
         + '<div class="destructors-flow-scroll">'
-        + '<svg class="destructors-flow-svg" viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="Driver to team destructors flow chart">'
+        + '<svg class="destructors-flow-svg" viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="Ροή ζημιών από τους οδηγούς προς τις ομάδες">'
         + '<rect x="0" y="0" width="' + width + '" height="' + height + '" fill="transparent"></rect>'
         + linkHTML + leftNodesHTML + rightNodesHTML
         + '</svg></div>'
@@ -398,8 +408,8 @@ function renderDestructors(snapshot) {
 
     const leader = snapshot.teams.filter(function(team) { return team.total > 0; })[0];
     const summaryHTML = '<div class="destructors-summary">'
-        + '<div class="destructors-summary-main"><div class="destructors-summary-title">' + esc(snapshot.snapshotLabel || ('Season ' + snapshot.season + ' snapshot')) + '</div>'
-        + '<div class="destructors-summary-sub">' + (leader ? esc(leader.name + ' lead the chart with ' + formatUsdAmount(leader.total) + '.') : 'Δεν υπάρχουν ακόμη καταχωρήσεις ζημιών.') + '</div></div>'
+        + '<div class="destructors-summary-main"><div class="destructors-summary-title">' + esc(snapshotTitle(snapshot)) + '</div>'
+        + '<div class="destructors-summary-sub">' + (leader ? esc('Πρώτη θέση: ' + leader.name + ', ' + formatUsdAmount(leader.total) + '.') : 'Δεν υπάρχουν ακόμη καταχωρήσεις ζημιών.') + '</div></div>'
         + '<div class="destructors-summary-stats">'
         + '<div class="destructors-summary-stat"><div class="destructors-summary-label">Συνολικές ζημιές</div><div class="destructors-summary-value">' + formatUsdCompact(snapshot.totalDamage) + '</div></div>'
         + '<div class="destructors-summary-stat"><div class="destructors-summary-label">Οδηγοί</div><div class="destructors-summary-value">' + snapshot.drivers.length + '</div></div>'
@@ -426,6 +436,6 @@ function showDestructorsError() {
         wrapperClass: 'destructors-card',
         stateClass: 'destructors-empty',
         icon: 'fa-exclamation-triangle',
-        message: 'Failed to load the destructors snapshot.'
+        message: 'Δεν ήταν δυνατή η φόρτωση του στιγμιότυπου destructors.'
     }, 'destructors error state', fireRendered);
 }

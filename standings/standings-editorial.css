@@ -27,7 +27,7 @@ body.standings-page {
 
 .standings-page .standings-wrapper { padding: 76px 0 72px; background: none; }
 .standings-page .standings-wrapper > .container,
-.standings-page .standings-header .container { max-width: 1476px; width: 100%; padding-inline: 48px; }
+.standings-page .standings-header .container { max-width: 1476px; width: 100%; }
 .standings-page .standings-header { padding: 0; color: var(--text-primary); background: var(--bg-surface); }
 .standings-page .standings-masthead { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 0 7%; padding-top: 24px; padding-bottom: 32px; }
 .standings-page .standings-edition { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 20px; padding-top: 11px; margin-bottom: 24px; border-top: 1px solid var(--border); font-size: .75rem; font-weight: 500; letter-spacing: .11em; }
@@ -45,6 +45,7 @@ body.standings-page {
 .standings-page .standings-timing-band .container { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding-block: 11px; }
 .standings-page .standings-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; color: var(--signal-ink); margin: 0; font-size: .75rem; font-weight: 500; line-height: 1.45; }
 .standings-page .live-dot { background: var(--signal-ink); width: 6px; height: 6px; margin-right: 5px; animation: none; }
+.standings-page .live-dot[hidden] { display: none; }
 .standings-page .round-badge { background: transparent; color: var(--signal-ink); border-left: 1px solid color-mix(in srgb, var(--signal-ink) 40%, transparent); border-radius: 0; padding: 2px 0 2px 12px; margin-left: 10px; min-width: 0; font-size: .75rem; font-weight: 500; }
 .standings-page .standings-timing-caption { font: 700 1.2rem/1 var(--font-brand); white-space: nowrap; letter-spacing: .02em; }
 
@@ -176,6 +177,33 @@ body.standings-page {
  * under a rule instead of inside boxes, bars and badges stop being pills, and
  * faster/slower reads by weight — the colour stays with team and tyre data. */
 .standings-page .standings-panel :is(.tyre-pace-card, .dirty-air-card, .track-dom-card, .track-dom-team-card, .track-dom-vs-card, .track-dom-map-card, .destructors-card) { background: transparent; border: 0; border-top: 1px solid var(--st-border); border-radius: 0; box-shadow: none; padding-inline: 0; }
+/* destructors.css colours its text white for the dark card removed above. */
+.standings-page .standings-panel :is(.destructors-card-title, .destructors-team-label, .destructors-team-total) { color: var(--st-text); }
+.standings-page .standings-panel :is(.destructors-card-kicker, .destructors-loading, .destructors-empty) { color: var(--st-text-secondary); }
+.standings-page .standings-panel .destructors-flow-node text { fill: var(--st-text); }
+.standings-page .standings-panel .destructors-source a { color: var(--st-accent-readable); }
+/* Team colour belongs to the data mark (rule, dot, trace), not to text. The tab
+ * sheets are injected after this file, so `body.` wins the nth-child rank ties. */
+body.standings-page .standings-panel :is(.track-dom-team-time, .pit-stops-time, .pit-stops-avatar-fallback, .lap1-gain-pill, .lap1-bubble-fallback, .lap1-gain-card-value, .lap1-driver-chip-move, .lap1-driver-chip-avatar-fallback, .lap1-race-avatar-fallback, .lap1-overview-meta, .lap1-session-type, .lap1-gain-card-type) { color: var(--st-text); }
+body.standings-page .standings-panel :is(.pit-stops-row, .pit-stops-team-row) .pit-stops-rank { color: var(--st-text); }
+body.standings-page .standings-panel :is(.track-dom-team-metric-label, .lap1-driver-chip-name) { color: var(--st-text-secondary); }
+.standings-page .standings-panel .pit-stops-footnote a { color: var(--st-accent-readable); }
+/* Pit stops and lap 1 on the ledger: rows under rules, no tinted boxes or pills. */
+.standings-page .standings-panel :is(.pit-stops-row, .pit-stops-team-row) { border: 0; border-bottom: 1px solid var(--st-border); border-radius: 0; background: transparent; }
+.standings-page .standings-panel :is(.pit-stops-row, .pit-stops-team-row)::before { width: 2px; border-radius: 0; }
+.standings-page .standings-panel .pit-stops-driver-team-label { min-height: 0; padding: 0; border-radius: 0; background: none; font-weight: 500; }
+.standings-page .standings-panel .pit-stops-view-tab .icon { display: none; }
+.standings-page .standings-panel :is(.lap1-overview-card, .lap1-gain-card) { background: transparent; border: 0; border-top: 1px solid var(--st-border); border-radius: 0; box-shadow: none; padding-inline: 0; }
+.standings-page .standings-panel .lap1-overview-meta { padding: 0; background: none; font-weight: 500; }
+.standings-page .standings-panel .lap1-driver-chip { background: transparent; border: 0; border-left: 2px solid rgb(var(--winner-color)); border-radius: 0; }
+.standings-page .standings-panel .lap1-bubble { overflow: visible; background: var(--st-surface-2); box-shadow: none; }
+.standings-page .standings-panel .lap1-bubble img { border-radius: 50%; }
+/* Track dominance, teammates: the second driver takes the theme neutral with the higher contrast (picked in track-dominance.js), dashed. */
+body.standings-page { --track-dom-second-dark-rgb: 122, 116, 108; --track-dom-second-light-rgb: 238, 232, 219; }
+:root[data-theme="light"] body.standings-page { --track-dom-second-dark-rgb: 32, 37, 31; --track-dom-second-light-rgb: 184, 177, 166; }
+.standings-page .standings-panel .track-dom-segment.is-second { stroke-dasharray: 14 8; stroke-linecap: butt; }
+.standings-page .standings-panel .track-dom-advantage-team.is-second::before { background: transparent; border: 2px dashed rgb(var(--team-color)); box-shadow: none; }
+.standings-page .standings-panel .track-dom-team-time::before { content: ''; display: inline-block; width: .3em; height: .3em; margin-right: .3em; vertical-align: middle; background: rgb(var(--team-color)); }
 .standings-page .standings-panel .debrief-table { border: 0; border-top: 2px solid var(--st-text); border-radius: 0; }
 .standings-page .standings-panel :is(.tyre-pace-summary, .dirty-air-summary, .destructors-summary, .dirty-air-view-tabs, .dirty-air-view-tab, .destructors-view-tabs, .destructors-view-tab, .debrief-view-tabs, .debrief-view-tab, .debrief-ideal-tabs, .debrief-ideal-tab, .track-dom-tooltip, .debrief-chart-tooltip, .compound-pill, .strategy-pill, .track-dom-team-logo) { border-radius: var(--radius-control); }
 .standings-page .standings-panel :is(.dirty-air-summary-bar, .dirty-air-timeline-bar, .track-dom-advantage-bar, .debrief-team-bar) { border-radius: 0; }
@@ -227,10 +255,13 @@ body.standings-page {
 }
 
 @media (max-width: 1024px) {
-    .standings-page .standings-report-select { top: 76px; padding: 14px 0 12px; margin: 0 0 24px; border: 0; border-bottom: 1px solid var(--st-border); background: var(--bg-base); }
+    /* Only the select row stays pinned: the wrapper dissolves so the control can be
+     * sticky within the whole report column, and the label and source line scroll away. */
+    .standings-page .standings-report-select { display: contents; }
     .standings-page .standings-report-select::before { display: none; }
-    .standings-page .standings-report-label { display: block; color: var(--st-text-secondary); min-height: 0; padding: 0; margin-bottom: 7px; background: none; font: 500 .75rem/1.4 var(--font-body); letter-spacing: .12em; }
-    .standings-page .standings-report-control { margin-top: 0; }
+    .standings-page .standings-report-label { display: block; color: var(--st-text-secondary); min-height: 0; padding: 0; margin: 14px 0 7px; background: none; font: 500 .75rem/1.4 var(--font-body); letter-spacing: .12em; }
+    .standings-page .standings-report-control { position: sticky; top: 76px; z-index: 1040; margin-top: 0; padding-block: 8px; background: var(--bg-base); }
+    .standings-page .standings-report-meta { margin: 8px 0 24px; padding-bottom: 12px; border-bottom: 1px solid var(--st-border); }
     .standings-page .standings-report-native { min-height: 45px; padding-block: 10px; font-size: .875rem; }
     .standings-page .standings-context-row { grid-template-columns: 1.2fr 1.2fr 1fr; }
     .standings-page .standings-context-card:last-child { display: none; }
@@ -238,7 +269,7 @@ body.standings-page {
 
 @media (max-width: 991.98px) {
     .standings-page .standings-wrapper { padding-top: 68px; }
-    .standings-page .standings-report-select { top: 68px; }
+    .standings-page .standings-report-control { top: 68px; }
 }
 
 @media (max-width: 767.98px) {
@@ -246,8 +277,6 @@ body.standings-page {
     /* The Greek labels are longer than the old English ones: stack the pair full-width so neither wraps. */
     .standings-page .share-tools { display: grid; grid-template-columns: 1fr; gap: 8px; width: 100%; }
     .standings-page .share-tools .share-btn { justify-content: center; white-space: nowrap; }
-    .standings-page .standings-wrapper > .container,
-    .standings-page .standings-header .container { padding-inline: 22px; }
     .standings-page .standings-masthead { grid-template-columns: 1fr; gap: 0; padding-top: 16px; padding-bottom: 20px; }
     .standings-page .standings-edition { font-size: .75rem; letter-spacing: .07em; gap: 10px; margin-bottom: 16px; }
     .standings-page .standings-title-display { font-size: clamp(3.5rem, 16vw, 4.5rem); margin-left: -2px; }
@@ -260,8 +289,7 @@ body.standings-page {
     .standings-page .standings-timing-band .container { padding-block: 9px; }
     .standings-page .standings-sub { font-size: .75rem; }
     .standings-page .round-badge { font-size: .75rem; padding-left: 8px; margin-left: 5px; }
-    .standings-page .standings-report-select { top: 68px; margin-bottom: 22px; }
-    .standings-page .standings-report-meta { white-space: normal; font-size: .75rem; line-height: 1.5; margin-top: 8px; }
+    .standings-page .standings-report-meta { white-space: normal; font-size: .75rem; line-height: 1.5; margin-bottom: 22px; }
     .standings-page .standings-context-row { grid-template-columns: 1fr 1fr; margin-bottom: 23px; }
     .standings-page .standings-context-card { padding: 0 0 0 16px; }
     .standings-page .standings-context-card:nth-child(3) { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px 12px; padding: 14px 0 0; margin-top: 17px; border: 0; border-top: 1px solid var(--st-border); }

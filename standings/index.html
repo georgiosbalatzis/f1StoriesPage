@@ -34,7 +34,7 @@
 
     <link rel="dns-prefetch" href="https://api.jolpi.ca">
     <link rel="dns-prefetch" href="https://api.openf1.org">
-    <link rel="modulepreload" href="/standings/standings.min.js?v=2d05248a">
+    <link rel="modulepreload" href="/standings/standings.min.js?v=4aa8567e">
     <link rel="preload" href="/standings/standings-cache.json" as="fetch" crossorigin="anonymous">
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=c3f2db5f">
@@ -51,8 +51,8 @@
     <link rel="stylesheet" href="standings.min.css?v=6bed97be">
     <link rel="stylesheet" href="standings-polish.min.css?v=feddf245">
     <noscript><link rel="stylesheet" href="standings.min.css?v=6bed97be"></noscript>
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=b0ec5f10">
-    <link rel="stylesheet" href="/standings/standings-editorial.min.css?v=e0707bd6">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=60120c3f">
+    <link rel="stylesheet" href="/standings/standings-editorial.min.css?v=ae58adc4">
 </head>
 <body class="editorial-page standings-page">
 <!-- f1s:icon-sprite:begin -->
@@ -196,7 +196,7 @@
         </div>
         <div class="standings-timing-band">
             <div class="container">
-                <p class="standings-sub"><span class="live-dot" aria-hidden="true"></span>Live δεδομένα · Σεζόν <span id="season-year">2026</span> <span class="round-badge" id="round-badge">Μετά τον γύρο <span id="round-num"></span></span></p>
+                <p class="standings-sub"><span class="live-dot" aria-hidden="true" hidden></span><span id="standings-data-status">Φόρτωση δεδομένων</span> · Σεζόν <span id="season-year">2026</span> <span class="round-badge" id="round-badge">Μετά τον γύρο <span id="round-num"></span></span></p>
                 <span class="standings-timing-caption" lang="en">EVERY POINT COUNTS.</span>
             </div>
         </div>
@@ -289,7 +289,7 @@
                 <div class="quali-gaps-intro">
                     <div class="quali-kicker">Συμπαίκτες H2H · <span id="qualifying-gaps-year">2026</span></div>
                     <h2 class="quali-title">Κενά κατατακτήριων μεταξύ συμπαικτών</h2>
-                    <p class="quali-sub">Q + Sprint Shootout. Ο συνολικά ταχύτερος teammate εμφανίζεται αριστερά και τα rows ταξινομούνται από το μικρότερο στο μεγαλύτερο average gap.</p>
+                    <p class="quali-sub">Q + Sprint Shootout. Ο συνολικά ταχύτερος συμπαίκτης εμφανίζεται αριστερά και οι γραμμές ταξινομούνται από τη μικρότερη στη μεγαλύτερη μέση διαφορά.</p>
                 </div>
                 <div class="panel-tools">
                     <div class="panel-tools-copy">
@@ -310,7 +310,7 @@
                 <div class="lap1-gains-intro">
                     <div class="lap1-kicker">Εκκινήσεις · <span id="lap1-gains-year">2026</span></div>
                     <h2 class="lap1-title">Ποιος κερδίζει τις περισσότερες θέσεις στον 1ο γύρο;</h2>
-                    <p class="lap1-sub">Για κάθε completed Grand Prix race ή sprint, υπολογίζεται ποιος κέρδισε τις περισσότερες θέσεις μέχρι το τέλος του πρώτου γύρου.</p>
+                    <p class="lap1-sub">Για κάθε ολοκληρωμένο Grand Prix ή sprint, υπολογίζεται ποιος κέρδισε τις περισσότερες θέσεις μέχρι το τέλος του πρώτου γύρου.</p>
                 </div>
                 <div class="panel-tools">
                     <div class="panel-tools-copy">
@@ -373,7 +373,7 @@
                 <div class="track-dom-intro">
                     <div class="track-dom-kicker">Τηλεμετρία · <span id="track-dominance-year">2026</span></div>
                     <h2 class="track-dom-title">Κυριαρχία πίστας</h2>
-                    <p class="track-dom-sub">Σύγκρινε το fastest lap δύο οδηγών από το ίδιο completed session και δες πού κερδίζει χρόνο ο καθένας πάνω στην πίστα.</p>
+                    <p class="track-dom-sub">Σύγκρινε τον ταχύτερο γύρο δύο οδηγών στην ίδια ολοκληρωμένη συνεδρία και δες πού κερδίζει χρόνο ο καθένας πάνω στην πίστα.</p>
                 </div>
                 <div class="panel-tools">
                     <div class="panel-tools-copy">
@@ -415,7 +415,7 @@
                 <div class="debrief-intro">
                     <div class="debrief-kicker">Ελεύθερες δοκιμές Παρασκευής · <span id="debrief-year">2026</span></div>
                     <h2 class="debrief-title">Debrief Παρασκευής</h2>
-                    <p class="debrief-sub">Ανάλυση δεδομένων FP1/FP2: single-lap pace, long-run pace και tyre degradation ανά Grand Prix, βασισμένα στο FIA Friday Debrief.</p>
+                    <p class="debrief-sub">Ανάλυση δεδομένων FP1/FP2: ταχύτητα σε έναν γύρο, ρυθμός σε μεγάλα stint και φθορά ελαστικών ανά Grand Prix, με βάση το FIA Friday Debrief.</p>
                 </div>
                 <div class="panel-tools">
                     <div class="panel-tools-copy">
@@ -436,7 +436,7 @@
                 <div class="destructors-intro">
                     <div class="destructors-kicker">Κόστος ζημιών · <span id="destructors-year">2026</span></div>
                     <h2 class="destructors-title">Πρωτάθλημα Destructors</h2>
-                    <p class="destructors-sub">Team damage bars και driver-to-team flow chart σε ένα tabbed view, βασισμένα στο destructors snapshot των εικόνων.</p>
+                    <p class="destructors-sub">Ζημιές ανά ομάδα και ροή από τους οδηγούς προς τις ομάδες, με βάση το πιο πρόσφατο στιγμιότυπο του F1 Top App.</p>
                 </div>
                 <div class="panel-tools">
                     <div class="panel-tools-copy">
@@ -503,7 +503,7 @@
 <script defer src="/scripts/shared-nav.min.js?v=486bf03f"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 
-<script type="module" src="standings.min.js?v=2d05248a"></script>
+<script type="module" src="standings.min.js?v=4aa8567e"></script>
 <script nomodule src="standings-nomodule.min.js?v=c06e53db"></script>
 </body>
 </html>

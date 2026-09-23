@@ -14,6 +14,7 @@ const {
     getImageDimensionsForPublicPath
 } = require('./shared');
 const { generateSitemap } = require('./sitemap');
+const { htmlToPlainText } = require('./metadata');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
 const { renderArticleHtml, refreshArticleTaxonomy, getEditorialProfile } = require('./article-render');
@@ -454,7 +455,8 @@ function injectHomepageHero(hero) {
     const titlePresentation = heroTitlePresentation(hero.title || 'F1 Stories');
     const title = escapeHtmlAttribute(titlePresentation.text);
     const category = escapeHtmlAttribute(greekUpper(categoryLabel(hero.category || 'News')));
-    const excerpt = escapeHtmlAttribute(hero.excerpt || '');
+    const deck = escapeHtmlAttribute(hero.deck || '');
+    const lede = escapeHtmlAttribute(hero.lede || '');
     const byline = escapeHtmlAttribute(`${authorLabel(hero.author || 'F1 Stories')} · ${formatDate(hero.date || '', 'long')}`);
     const storyId = hero.slug || hero.id || '';
     const href = `/blog-module/blog-entries/${encodeURIComponent(storyId)}/article.html`;
@@ -482,10 +484,17 @@ function injectHomepageHero(hero) {
     html = updateHomepageHeroPeriod(html, titlePresentation);
     html = replaceHomepageTextSlot(
         html,
+        'hero-story-deck',
+        '<!-- f1s:hero-deck:begin -->',
+        '<!-- f1s:hero-deck:end -->',
+        deck
+    );
+    html = replaceHomepageTextSlot(
+        html,
         'hero-story-excerpt',
         '<!-- f1s:hero-excerpt:begin -->',
         '<!-- f1s:hero-excerpt:end -->',
-        excerpt
+        lede
     );
     html = replaceHomepageTextSlot(
         html,
@@ -609,12 +618,41 @@ function injectBlogIndexFirstPage(indexPosts, pageOneData) {
     return false;
 }
 
+// Cover copy comes from the article's opening paragraph and is cut only at sentence ends:
+// `deck` gathers whole sentences up to 160 characters (or one opening sentence up to 240),
+// `lede` is the next whole sentence.
+function heroCopy(post) {
+    let html = typeof post.content === 'string' ? post.content : '';
+    if (!html) {
+        try {
+            html = fs.readFileSync(path.join(CONFIG.BLOG_DIR, post.id, 'article.html'), 'utf8');
+            html = html.slice(html.indexOf('class="article-content"'));
+        } catch (_) { html = ''; }
+    }
+    const paragraph = /<p\b[^>]*>([\s\S]*?)<\/p>/i.exec(html);
+    const sentences = htmlToPlainText(paragraph ? paragraph[1] : '').match(/[^.!;;?…]+[.!;;?…]+(?=\s|$)/g) || [];
+    const clean = sentences.map(sentence => sentence.trim()).filter(sentence => sentence && !/(\.\.\.|…)$/.test(sentence));
+    let deck = '';
+    let next = 0;
+    while (next < clean.length && (deck ? deck.length + 1 : 0) + clean[next].length <= 160) {
+        deck = deck ? `${deck} ${clean[next]}` : clean[next];
+        next += 1;
+    }
+    if (!deck && clean[0] && clean[0].length <= 240) {
+        deck = clean[0];
+        next = 1;
+    }
+    const lede = clean[next] && clean[next].length <= 320 ? clean[next] : '';
+    return { deck, lede };
+}
+
 async function buildHomeLatest(blogPosts) {
     // [0] is the homepage cover; [1..3] fill the journal so the cover story is not repeated.
     return Promise.all(blogPosts.slice(0, 4).map(async post => {
         const thumbnail = getCardThumbnailPath(post.image);
         const thumbnailDimensions = await getImageDimensionsForPublicPath(thumbnail);
         const hero = await buildHomepageHeroData(post);
+        const copy = heroCopy(post);
         return {
             title: post.title,
             slug: post.id,
@@ -623,6 +661,8 @@ async function buildHomeLatest(blogPosts) {
             category: (post.categories && post.categories[0]) || 'News',
             categories: post.categories || ['News'],
             excerpt: post.excerpt,
+            ...(copy.deck ? { deck: copy.deck } : {}),
+            ...(copy.lede ? { lede: copy.lede } : {}),
             thumbnail,
             thumbnailWidth: thumbnailDimensions && thumbnailDimensions.width ? thumbnailDimensions.width : 400,
             thumbnailHeight: thumbnailDimensions && thumbnailDimensions.height ? thumbnailDimensions.height : 188,

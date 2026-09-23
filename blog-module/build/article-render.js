@@ -217,6 +217,7 @@ function refreshArticleTaxonomy(html, post) {
         .replace(/F1 STORIES \/ THE JOURNAL/g, 'F1 STORIES / Η ΕΚΔΟΣΗ')
         .replace(/(<span class="article-mini-bar__category">)[\s\S]*?(<\/span>)/, `$1${primary}$2`)
         .replace(/(<span class="article-category-pill">)[\s\S]*?(<\/span>)/, `$1${primary}$2`)
+        .replace(/<a href="[^"]*" class="article-category-pill">[\s\S]*?<\/a>/, `<a href="${escapeHtmlAttribute(`/blog-module/blog/index.html?category=${encodeURIComponent(category)}`)}" class="article-category-pill">${primary}</a>`)
         .replace(/(<div class="article-meta">[\s\S]*?<span><svg class="icon" aria-hidden="true"><use href="#fa-tag"\/><\/svg> )[\s\S]*?(<\/span>)/, `$1${renderCategoryLinks(categories)}$2`)
         .replace(/(<div class="article-meta">[\s\S]*?fa-calendar-alt[^>]*><\/svg>\s*)[^<]*(<\/span>)/, `$1${articleDate}$2`)
         // The cover already carries category, date and reading time; the rail keeps

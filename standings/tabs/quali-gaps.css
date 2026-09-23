@@ -81,13 +81,11 @@
             rgba(var(--right-color), 0.10) 100%);
 }
 
-.quali-track::before, .quali-track::after { content: ''; position: absolute; top: 10px; bottom: 10px; width: 1px; background: rgba(255,255,255,0.08); }
+/* No fixed quarter guides: each pairing's axis is asymmetric, so 25%/75% mean nothing. */
+.quali-track::before, .quali-track::after { content: none; }
 
-.quali-track::before { left: 25%; }
 
-.quali-track::after { left: 75%; }
 
-[data-theme="light"] .quali-track::before, [data-theme="light"] .quali-track::after { background: rgba(0,0,0,0.06); }
 
 .quali-zero-line { position: absolute; top: 8px; bottom: 8px; left: 50%; width: 1px; background: rgba(var(--pair-color), 0.28); transform: translateX(-0.5px); }
 
@@ -127,9 +125,9 @@
 
 .quali-dot-tooltip-session { display: block; margin-top: 0.28rem; font-size: 0.64rem; line-height: 1.3; color: rgba(255,255,255,0.72); white-space: normal; }
 
-.quali-track-scale { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; font-size: 0.7rem; font-weight: 700; color: var(--st-text-muted); }
+.quali-track-scale { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; font-size: 0.7rem; font-weight: 700; color: var(--st-text-muted); }
 
-.quali-track-scale span:nth-child(2) { color: var(--st-text-secondary); }
+.quali-track-scale .quali-track-scale-zero { position: absolute; top: 0; transform: translateX(-50%); color: var(--st-text-secondary); }
 
 .quali-empty-card { padding: 2.4rem 1rem; text-align: center; color: var(--st-text-muted); }
 

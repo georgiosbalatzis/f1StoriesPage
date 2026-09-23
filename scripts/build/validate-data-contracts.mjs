@@ -314,6 +314,8 @@ function validateIndexPost(post, label, options = {}) {
         requireInteger(post, 'heroImageWidth', label, { min: 1, max: 8000 });
         requireInteger(post, 'heroImageHeight', label, { min: 1, max: 8000 });
         if (post.heroAvif) validatePublicPath(`${label}.heroAvif`, post.heroAvif);
+        if (post.deck != null) requireString(post, 'deck', label, { maxLength: 240 });
+        if (post.lede != null) requireString(post, 'lede', label, { maxLength: 320 });
     }
     if (!options.homeLatest) {
         validateReadingTime(`${label}.readingTime`, requireString(post, 'readingTime', label, { maxLength: 20 }));

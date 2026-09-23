@@ -685,18 +685,31 @@ function createQualifyingSkeletonRows(count) {
     return html + '</div>';
 }
 
+// Each pairing gets its own axis, from its furthest gap on one side to its furthest
+// on the other (each side capped), with the zero line placed where it falls. A pair
+// whose gaps all sit on one side then uses the whole track instead of half of it.
+const QUALI_SCALE_CAP = 1;
+
+function qualiAxisSide(max) {
+    return max > 0 ? roundUp(Math.min(max, QUALI_SCALE_CAP), 0.05) : 0;
+}
+
+function qualiAxisLabel(value, max) {
+    return value ? formatScaleValue(value) + 's' + (max > value ? '+' : '') : '0';
+}
+
 function renderQualifyingGapOverview(rows) {
-    const maxSessionGap = rows.reduce(function(max, row) {
-        const rowMax = row.dots.reduce(function(acc, dot) {
-            return Math.max(acc, Math.abs(dot.signedGap));
-        }, 0);
-        return Math.max(max, rowMax);
-    }, 0);
-    const scale = Math.max(0.2, roundUp(maxSessionGap || 0.2, 0.05));
     const laneOffsets = [28, 40, 52, 64, 34, 58];
     let html = '<div class="quali-gaps-list">';
 
     rows.forEach(function(row) {
+        const leftMax = row.dots.reduce(function(acc, dot) { return Math.max(acc, -dot.signedGap); }, 0);
+        const rightMax = row.dots.reduce(function(acc, dot) { return Math.max(acc, dot.signedGap); }, 0);
+        let axisLeft = qualiAxisSide(leftMax);
+        const axisRight = qualiAxisSide(rightMax);
+        if (axisLeft + axisRight === 0) axisLeft = 0.05;
+        const axisSpan = axisLeft + axisRight;
+        const zeroPct = (axisLeft / axisSpan) * 100;
         let leftColor = getDriverAccentColor(row.left, row.teamColor, 30);
         let rightColor = getDriverAccentColor(row.right, row.teamColor, -20);
         if (leftColor === rightColor) rightColor = adjustHexColor(row.teamColor, -42);
@@ -723,11 +736,11 @@ function renderQualifyingGapOverview(rows) {
             + '<div class="quali-track-wrap">'
             + '<div class="quali-track-meta"><span class="quali-track-team">' + esc(row.teamName) + '</span><span class="quali-track-note">' + esc(formatSessionCount(row.sessionCount)) + ' · μέση διαφορά ' + esc(row.avgGap.toFixed(3)) + 's</span></div>'
             + '<div class="quali-track">'
-            + '<div class="quali-zero-line" aria-hidden="true"></div>'
+            + '<div class="quali-zero-line" aria-hidden="true" style="left:' + zeroPct.toFixed(2) + '%;"></div>'
             + '<div class="quali-dots">';
 
         row.dots.forEach(function(dot, dotIndex) {
-            const leftPct = clampNumber(50 + (dot.signedGap / scale) * 50, 2, 98);
+            const leftPct = clampNumber(((dot.signedGap + axisLeft) / axisSpan) * 100, 2, 98);
             const top = laneOffsets[dotIndex % laneOffsets.length];
             const gapLabel = formatSignedGap(dot.signedGap, true);
             const tooltipSide = top <= 34 ? ' tooltip-bottom' : '';
@@ -738,7 +751,9 @@ function renderQualifyingGapOverview(rows) {
         });
 
         html += '</div></div>'
-            + '<div class="quali-track-scale"><span>' + esc(formatScaleValue(scale)) + 's</span><span>0</span><span>' + esc(formatScaleValue(scale)) + 's</span></div>'
+            + '<div class="quali-track-scale"><span>' + esc(qualiAxisLabel(axisLeft, leftMax)) + '</span>'
+            + (zeroPct > 12 && zeroPct < 88 ? '<span class="quali-track-scale-zero" style="left:' + zeroPct.toFixed(2) + '%;">0</span>' : '')
+            + '<span>' + esc(qualiAxisLabel(axisRight, rightMax)) + '</span></div>'
             + '</div>'
             + '<div class="quali-side right">'
             + '<div class="quali-side-top"><span class="quali-h2h-count">' + row.right.wins + '</span><span class="quali-h2h-label">H2H</span></div>'
@@ -781,7 +796,7 @@ function renderQualifyingGapRaceView(rows, selectedRow) {
     }, 0);
     const chartMinWidth = Math.max(980, selectedRow.pairs.length * 116);
     let html = '<div class="quali-race-card">'
-        + '<div class="quali-race-head"><div class="quali-race-head-copy"><h3 class="quali-race-head-title">Κενά συμπαικτών ανά συνεδρία</h3><p class="quali-race-head-note">Ο ταχύτερος teammate είναι επάνω, ο πιο αργός κάτω, και τα teams ταξινομούνται από το μικρότερο στο μεγαλύτερο gap.</p></div><label class="quali-race-controls"><span class="quali-race-controls-label">Διαθέσιμες συνεδρίες</span><select class="quali-race-select" data-quali-race-select aria-label="Επιλογή qualifying session για teammate gaps">' + selectorOptions + '</select></label></div>'
+        + '<div class="quali-race-head"><div class="quali-race-head-copy"><h3 class="quali-race-head-title">Κενά συμπαικτών ανά συνεδρία</h3><p class="quali-race-head-note">Ο ταχύτερος συμπαίκτης είναι επάνω, ο πιο αργός κάτω, και οι ομάδες ταξινομούνται από τη μικρότερη στη μεγαλύτερη διαφορά.</p></div><label class="quali-race-controls"><span class="quali-race-controls-label">Διαθέσιμες συνεδρίες</span><select class="quali-race-select" data-quali-race-select aria-label="Επιλογή κατατακτήριων για τα κενά συμπαικτών">' + selectorOptions + '</select></label></div>'
         + '<div class="quali-race-summary"><div><div class="quali-race-summary-title">' + esc(selectedRow.meetingName) + '</div><div class="quali-race-summary-sub">' + esc(selectedRow.sessionName + (selectedRow.dateLabel ? ' · ' + selectedRow.dateLabel : '')) + '</div></div><div class="quali-race-summary-stats"><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Ομάδες</span><span class="quali-race-summary-value">' + esc(String(selectedRow.pairCount)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Μικρότερο</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.smallestGap, true)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Μεγαλύτερο</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.biggestGap, true)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Μέσος όρος</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.avgGap, true)) + '</span></div></div></div>'
         + '<div class="quali-race-chart-scroll"><div class="quali-race-chart" style="--pair-count:' + selectedRow.pairCount + ';min-width:' + chartMinWidth + 'px;">';
 
@@ -819,7 +834,7 @@ function renderQualifyingGaps(data) {
     if ((!overviewRows || !overviewRows.length) && (!raceRows || !raceRows.length)) {
         setTrustedHtml(qualifyingGapsTable, '<div class="quali-empty-card">'
             + '<svg class="icon" aria-hidden="true"><use href="#fa-stopwatch"/></svg>'
-            + '<p>Δεν υπάρχουν ακόμη αρκετά qualifying δεδομένα για teammate gaps.</p>'
+            + '<p>Δεν υπάρχουν ακόμη αρκετά δεδομένα κατατακτήριων για τα κενά συμπαικτών.</p>'
             + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το tab ενεργοποιείται μόλις υπάρξουν completed qualifying ή sprint shootout sessions.</p>'
             + '</div>', 'qualifying gaps empty state');
         if (onRendered) onRendered('quali-gaps');
@@ -858,7 +873,7 @@ function renderQualifyingGaps(data) {
 function showQualifyingError() {
     setTrustedHtml(qualifyingGapsTable, '<div class="quali-empty-card">'
         + '<svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>'
-        + '<p>Δεν ήταν δυνατή η φόρτωση των teammate qualifying gaps.</p>'
+        + '<p>Δεν ήταν δυνατή η φόρτωση των κενών κατατακτήριων μεταξύ συμπαικτών.</p>'
         + '<p style="font-size:0.82rem;margin:0.35rem 0 0;">Το OpenF1 endpoint ίσως να μην είναι διαθέσιμο προσωρινά.</p>'
         + '<button class="retry-btn" type="button" data-standings-retry="__retryQualifyingGaps"><svg class="icon" aria-hidden="true"><use href="#fa-redo"/></svg> Νέα προσπάθεια</button>'
         + '</div>', 'qualifying gaps error state');

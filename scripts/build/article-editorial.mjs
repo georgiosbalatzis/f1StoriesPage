@@ -53,5 +53,34 @@ export function applyArticleEditorial(html, assets) {
         const profileLink = `<a class="author-profile-link" href="${authorHref}">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>`;
         result = result.replace(/(<div\b[^>]*\bclass="author-bio"[^>]*>[\s\S]*?<\/div>)/i, `$1\n                            ${profileLink}`);
     }
+    // Greek, descriptive image labels (the source builder emits these too since media.js
+    // gained the title). Only the retired English defaults match, so reruns are no-ops.
+    if (/alt="(?:Gallery image|Image) \d+"|aria-label="(?:Image Gallery|Show image \d+)"/.test(result)) {
+        const title = (result.match(/<h1\b[^>]*\bclass="article-title"[^>]*>([\s\S]*?)<\/h1>/i)?.[1] || '')
+            .replace(/<[^>]*>/g, '').replace(/[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\u{FE0F}\u{200D}]/gu, '').replace(/\s+/g, ' ').trim();
+        const prefix = title ? `${title}: ` : '';
+        result = result.replace(/<div class="gallery-carousel"[\s\S]*?<div class="gallery-carousel-thumbs"[\s\S]*?<\/div>/g, carousel => {
+            const total = (carousel.match(/class="gallery-slide\b/g) || []).length;
+            return carousel
+                .replace('aria-label="Image Gallery"', `aria-label="${title ? `Φωτογραφικό αρχείο: ${title}` : 'Φωτογραφικό αρχείο'}"`)
+                .replace(/alt="Gallery image (\d+)"/g, (_m, n) => `alt="${prefix}φωτογραφία ${n} από ${total}"`)
+                .replace(/aria-label="Show image (\d+)"/g, (_m, n) => `aria-label="Εμφάνιση φωτογραφίας ${n} από ${total}"`);
+        });
+        result = result.replace(/alt="Image (\d+)"/g, (_m, n) => `alt="${prefix}εικόνα ${n}"`);
+    }
+    // The cover names its category once: the kicker pill becomes the category link and
+    // the duplicate in the meta line goes (article-render keeps both forms in sync).
+    const categoryLink = result.match(/<span><svg class="icon" aria-hidden="true"><use href="#fa-tag"\/><\/svg> <a href="([^"]+)" class="article-category-link">[^<]*<\/a><\/span>/);
+    if (categoryLink && /<span class="article-category-pill">/.test(result)) {
+        result = result
+            .replace(/<span class="article-category-pill">([^<]*)<\/span>/, `<a href="${categoryLink[1]}" class="article-category-pill">$1</a>`)
+            .replace(/\n[ \t]*<span><svg class="icon" aria-hidden="true"><use href="#fa-tag"\/><\/svg> <a href="[^"]+" class="article-category-link">[^<]*<\/a><\/span>/, '');
+    }
+    // CSV tables: drop the filename title and "Πηγή: file.csv" footer, and mark
+    // one- or two-row tables compact so phones keep them as tables (csv-to-table.js).
+    result = result.replace(/<div class="table-responsive-container">([\s\S]*?)\s*<div class="table-footer">\s*<div class="table-source">Πηγή: [^<]*\.csv<\/div>\s*<\/div>(\s*<\/div>)/gi, (_m, body, close) => {
+        const rows = (body.match(/<tbody>([\s\S]*?)<\/tbody>/)?.[1].match(/<tr\b/g) || []).length;
+        return `<div class="table-responsive-container${rows <= 2 ? ' table-compact' : ''}">${body.replace(/\s*<h4 class="table-title">[^<]*<\/h4>/, '')}${close}`;
+    });
     return result;
 }

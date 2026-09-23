@@ -341,6 +341,11 @@ function formatDebriefAxisTick(value) {
     return String(value.toFixed(1)).replace(/\.0$/, '');
 }
 
+function lapCountLabel(value) {
+    const laps = Number(value) || 0;
+    return laps + (laps === 1 ? ' γύρος' : ' γύροι');
+}
+
 function formatDebriefGapStat(gapSeconds, baseSeconds) {
     const pct = baseSeconds > 0 ? (gapSeconds / baseSeconds) * 100 : 0;
     return '+' + gapSeconds.toFixed(2) + ' (' + pct.toFixed(2) + '%)';
@@ -426,8 +431,8 @@ function buildDebriefPaceChartHTML(title, rows) {
             : 'left:0.5rem;';
         const tooltip = buildDebriefTooltipText([
             entry.teamName,
-            'Predicted lap ' + formatLapTime(entry.seconds, true),
-            'Gap ' + formatDebriefGapStat(gap, fastest)
+            'Προβλεπόμενος γύρος ' + formatLapTime(entry.seconds, true),
+            'Διαφορά ' + formatDebriefGapStat(gap, fastest)
         ]);
         return '<div class="debrief-hchart-row">'
             + '<div class="debrief-hchart-label">' + esc(entry.teamName) + '</div>'
@@ -447,7 +452,7 @@ function buildDebriefPaceChartHTML(title, rows) {
         + '<div class="debrief-hchart-shell">'
         + rowsHTML
         + '<div class="debrief-hchart-axis">' + axisHTML + '</div>'
-        + '<div class="debrief-hchart-xlabel">Gap to Fastest - Lap (s)</div>'
+        + '<div class="debrief-hchart-xlabel">Διαφορά από τον ταχύτερο γύρο (s)</div>'
         + '</div></div>';
 }
 
@@ -466,7 +471,7 @@ function buildDebriefSingleLapHTML(round) {
             + '<td><span class="debrief-time">' + esc(entry.lapTime) + '</span></td>'
             + '<td><span class="' + gapClass + '">' + esc(gapText) + '</span></td>'
             + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
-            + '<td>' + esc(String(entry.laps || 0)) + ' laps</td>'
+            + '<td>' + esc(lapCountLabel(entry.laps)) + '</td>'
             + '</tr>';
     }).join('');
 
@@ -487,7 +492,7 @@ function buildDebriefLongRunHTML(round) {
             + '<td><span class="debrief-time">' + esc(entry.avgLap) + '</span></td>'
             + '<td><span class="debrief-gap">' + esc(deltaText) + '</span></td>'
             + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
-            + '<td>' + esc(String(entry.stintLaps || 0)) + ' laps</td>'
+            + '<td>' + esc(lapCountLabel(entry.stintLaps)) + '</td>'
             + '</tr>';
     }).join('');
 
@@ -527,7 +532,7 @@ function buildDebriefTyreDegHTML(round) {
             + '<td><span class="debrief-time' + (degClass ? ' ' + degClass : '') + '">' + esc(degText) + '</span></td>'
             + '<td><span class="debrief-gap">' + esc(deltaText) + '</span></td>'
             + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
-            + '<td>' + esc(String(entry.stintLaps || 0)) + ' laps</td>'
+            + '<td>' + esc(lapCountLabel(entry.stintLaps)) + '</td>'
             + '</tr>';
     }).join('');
 
@@ -563,9 +568,9 @@ function buildDebriefIdealScatterSVG(rows, title, xMin, xMax) {
         const pointColor = entry.teamColor ? ('#' + entry.teamColor) : '#06b6d4';
         const tooltip = buildDebriefTooltipText([
             entry.code,
-            'Lap ' + formatLapTime(entry.lapSeconds, true),
-            'Ideal ' + formatLapTime(entry.idealSeconds, true),
-            'Gap to ideal ' + (entry.lapSeconds > entry.idealSeconds ? '+' + (entry.lapSeconds - entry.idealSeconds).toFixed(3) : '+0.000')
+            'Γύρος ' + formatLapTime(entry.lapSeconds, true),
+            'Ιδανικός ' + formatLapTime(entry.idealSeconds, true),
+            'Διαφορά από τον ιδανικό ' + (entry.lapSeconds > entry.idealSeconds ? '+' + (entry.lapSeconds - entry.idealSeconds).toFixed(3) : '+0.000')
         ]);
         return '<g class="debrief-chart-point" tabindex="0" data-debrief-tooltip="' + escAttr(tooltip) + '">'
             + '<text x="' + (left - 8) + '" y="' + (y + 4) + '" text-anchor="end" class="debrief-ideal-label">' + esc(entry.code) + '</text>'
@@ -579,7 +584,7 @@ function buildDebriefIdealScatterSVG(rows, title, xMin, xMax) {
         + '<svg class="debrief-ideal-svg" viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="' + esc(title) + '">'
         + gridHTML + pointsHTML
         + '</svg>'
-        + '<div class="debrief-ideal-axis-label">Lap Time (s)</div>'
+        + '<div class="debrief-ideal-axis-label">Χρόνος γύρου (s)</div>'
         + '</div>';
 }
 
@@ -605,7 +610,7 @@ function buildDebriefIdealGapBarsHTML(rows) {
         const barColor = entry.teamColor ? ('#' + entry.teamColor) : '#f97316';
         const tooltip = buildDebriefTooltipText([
             entry.code,
-            'Gap to ideal ' + label
+            'Διαφορά από τον ιδανικό ' + label
         ]);
         return '<div class="debrief-ideal-bar-col debrief-chart-hit" tabindex="0" data-debrief-tooltip="' + escAttr(tooltip) + '">'
             + '<div class="debrief-ideal-bar-value">' + esc(label) + '</div>'
@@ -724,7 +729,7 @@ function buildDebriefCornerPanelHTML(title, rows, metricKey) {
         const tooltip = buildDebriefTooltipText([
             title,
             entry.code,
-            entry.gap > 0 ? 'Gap ' + valueText : 'Leader'
+            entry.gap > 0 ? 'Διαφορά ' + valueText : 'Πρώτος'
         ]);
         return '<div class="debrief-corner-row">'
             + '<div class="debrief-corner-label">' + esc(entry.code) + '</div>'

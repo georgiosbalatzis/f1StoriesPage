@@ -1001,6 +1001,7 @@ DATA-04 ─> A11Y-02
   - **Check:** `RADIUS-SET`, `FOLIO-MATCH`, `NO-CENTER-BLOCKS`, `TOC-ANCHORS`
   - **Done when:** PASS on both legal pages
 - **Dependencies:** GLOBAL-01, GLOBAL-03, GLOBAL-04, GLOBAL-06
+- **Re-verified 2026-09-22 (VISUAL_AUDIT.md):** still open. At 390 the boxed TOC clips its third item ("Cooki…"), the kicker is still a pill, and "Σε αυτή τη σελίδα" renders at 11.52px on privacy and terms, at every viewport. Evidence: `audit/p1-privacy-legacy-skin-390-light.png`, `audit/sweep/metrics.json` → `privacy-*`/`terms-*`.`smallText`.
 
 ### - [x] POLISH-02 — Footer colophon: wordmark and section index `[P3-01]`
 - **Status (2026-09-22): DONE.** `partials/footer.html` gains the "F1 STORIES." wordmark (Barlow, signal full stop), a mission line and a section index (Άρθρα, Βαθμολογία, Συντάκτες, YouTube ↗, BetCast ↗) with the signal underline on hover. **Root-cause extra:** `include.mjs` only expanded the shell list, so the partial never reached the 352 articles that carry the same `@include` markers. It now expands article files too (idempotent).
@@ -1071,6 +1072,1860 @@ DATA-04 ─> A11Y-02
   - **Check:** unit tests (no Playwright); plus `TITLE-NO-DUP-WORD` on home after republish
   - **Done when:** PASS
 - **Dependencies:** none
+
+---
+
+## Phase 6: Final visual audit (`VISUAL_AUDIT.md`, 2026-09-22)
+
+These tasks come from `VISUAL_AUDIT.md`. Each ID matches a finding there, and the full evidence and measurements live in that finding.
+
+They were deduplicated against Phases 0–5:
+- The legal pages remain **POLISH-01** and are not re-filed.
+- Where a task re-opens work that an earlier task marked done, it says so under **Dependencies**.
+
+**Verification:**
+- Server: `node scripts/serve-site.mjs`.
+- Captures: Playwright at the viewports listed in each task, in **both themes** unless stated.
+- Evidence paths are under `audit/`.
+
+### [x] VIS-P0-01: Standings presents a stale snapshot as "Live δεδομένα"
+
+**Priority:** P0
+
+**Surface:** `/standings/` (all standings-backed tabs)
+
+**Viewport:** all
+
+**Problem:**
+- The band always says "Live δεδομένα" while the page first renders `standings-cache.json`, which is round 11 from 2026-08-22.
+- About 2.5–4s later it re-renders round 14 from the API, which reorders P2 and changes the points.
+- If the API is blocked or rate-limited, the stale round-11 table stays indefinitely under the "Live" label.
+
+**Evidence:**
+- `audit/p0-standings-stale-snapshot-labelled-live-390-light.png`
+- `audit/p0-standings-stale-first-paint-1440-light.png`
+- `audit/p0-standings-after-live-swap-1440-light.png`
+- 250ms timeline in VISUAL_AUDIT §VIS-P0-01
+
+**Root cause:**
+- `standings/index.html:199` hard-codes the label.
+- `standings/standings.js:1059-1063` and `:1539` render the snapshot first, then swap silently.
+- The scheduled `build:standings-data` hasn't committed since `899e39d11` (2026-08-22).
+
+**Likely files:**
+- `standings/index.html`
+- `standings/standings.js`
+- `.github/workflows/publish-blog.yml`
+- `scripts/build/refresh-standings-data.mjs`
+
+**Required change:**
+- Drive the band label from the data source:
+  - snapshot: `Στιγμιότυπο · ενημέρωση <date>`
+  - live: `Live δεδομένα`
+  - live failed: `Στιγμιότυπο <date> · τα live δεδομένα δεν είναι διαθέσιμα`
+- Show the same source word in the context row and the side panel.
+- Diagnose and restore the scheduled snapshot refresh.
+
+**Must preserve:**
+- the snapshot-first fast paint
+- the timing band
+- the ledger layout
+
+**Acceptance criteria:**
+1. With `api.jolpi.ca` blocked, `.standings-timing-band` doesn't contain "Live" and does contain the snapshot date.
+2. With the API available, the band, the context row "Πηγή" and the side panel "Πηγή" never disagree. Sample every 100ms for 6s.
+3. On `main`, `standings-cache.json` `generatedAt` is ≤7 days older than the latest completed round.
+
+**Verification:**
+- Run a Playwright route-abort test and a 100ms sampling test at 390 and 1440.
+- Check the timestamp with `git log -1 -- standings/standings-cache.json` on `main`.
+
+**Dependencies:** none (DATA-05 error state exists; reuse its copy style)
+
+**Status (2026-09-23): DONE.** Criterion 3 was completed on the owner's instruction:
+- **Workflow (`.github/workflows/publish-blog.yml`, "Check Athens schedule window"):** the wall-clock window is replaced by a cron-slot check.
+  - The step maps the triggering `github.event.schedule` UTC hour to Athens time (DST-aware, via `TZ=Europe/Athens date +%z`).
+  - It runs the slot meant for Fri 23:59 or Sat 07:01, however late GitHub starts it.
+  - The duplicate cron for the other UTC offset still skips.
+  - Tested by executing the step script against all four crons: exactly one Friday and one Saturday slot run per offset.
+- **Snapshot:** refreshed locally with `npm run build:standings-data`.
+  - `standings-cache.json` is `generatedAt 2026-09-23`, round 14, the latest completed round (Spanish GP, 2026-09-13).
+  - `debrief-cache.json` was refreshed by the same script.
+  - Contracts validate.
+  - The criterion holds on `main` once this change is merged.
+- **Re-verified with Playwright:**
+  - API blocked: never "Live", and shows the new snapshot date "23 Σεπ".
+  - Live: 0 band/context/side-panel disagreements.
+  - Everything blocked: "Χωρίς δεδομένα".
+
+**Earlier status (2026-09-22): PARTIAL, left open.** Criteria 1 and 2 pass. Criterion 3 is blocked because it needs a workflow change, which was out of scope for this batch.
+- **Done:**
+  - `standings/index.html` now has `#standings-data-status`, and the live dot starts `hidden`.
+  - In `standings/standings.js`, `setStandingsDataStatus()` sets one of four labels:
+    - `Live δεδομένα`
+    - `Στιγμιότυπο 22 Αυγ`
+    - `Στιγμιότυπο 22 Αυγ · χωρίς live`
+    - `Χωρίς δεδομένα`
+  - The live dot is shown only for live data.
+  - `renderStandingsPayload()` now re-renders when only the source changes, so the "Πηγή" cells follow the band.
+  - `standings-editorial.css` gains a `.live-dot[hidden]` rule.
+- **Copy deviation:** the labels are shorter than the wording in "Required change" above. The long wording wrapped the band at 390 and left a stray "·" and a split "Σεζόν / 2026". The date sits next to "Σεζόν 2026", so the year is implied.
+- **Verified with Playwright** at 390 and 1440, both themes:
+  - API blocked: never shows "Live", and shows "22 Αυγ".
+  - API live: 0 band/context/side-panel disagreements in 60 samples at 100ms.
+  - No snapshot: shows Live.
+  - Everything blocked: shows "Χωρίς δεδομένα".
+  - Evidence in `audit/after/p0-01-*`.
+- **Root cause of criterion 3, which corrects the audit's guess:**
+  - The refresh job isn't failing. GitHub starts the Friday/Saturday standings crons 2–4h late: 20:59→23:08, 21:59→23:39, 04:01→08:26 and 05:01→09:09 UTC on 18–19 Sep.
+  - The "Check Athens schedule window" step (`.github/workflows/publish-blog.yml:206-227`) accepts only a few minutes around each target, so every run skips the refresh. On those dates `Refresh standings data` was `skipped` in runs 35404477282, 35406571680, 35431994868 and 35433910730.
+  - The fix is to widen or drop that window gate, or to trigger the refresh some other way. That's a workflow change.
+
+### [x] VIS-P0-02: Destructors ranks teams in a fixed order and names the wrong leader
+
+**Priority:** P0
+
+**Surface:** `/standings/?tab=destructors`
+
+**Viewport:** all
+
+**Problem:**
+- The summary says "Haas lead the chart with $1,067,000".
+- The bars follow a hard-coded team order, yet Red Bull ($1,407,000) and Alpine ($1,300,000) are higher.
+
+**Evidence:** `audit/p0-destructors-wrong-leader-1440-dark.png`
+
+**Root cause:**
+- `standings/tabs/destructors.js:25` defines a fixed `DESTRUCTORS_TEAM_ORDER`.
+- `:217` maps teams in that order.
+- `:399` takes the leader as the first non-zero team in that order.
+
+**Likely files:** `standings/tabs/destructors.js`
+
+**Required change:** Sort `teams` by `total` descending (tie-break by name) before building the chart, the flow view and `leader`.
+
+**Must preserve:**
+- the driver segments and team colours
+- the flow view
+
+**Acceptance criteria:**
+1. `.destructors-team-total` values are non-increasing top to bottom.
+2. The summary names the maximum-total team (Red Bull on the current cache).
+
+**Verification:** Playwright at 1440 dark, plus a DOM check of the order. Add an assertion in `standings/core/__tests__/` if the sort is extracted to a pure helper.
+
+**Dependencies:** VIS-P1-03 (the summary string is also rewritten in Greek there)
+
+**Status (2026-09-22): DONE.**
+- In `standings/tabs/destructors.js`, `normalizeSnapshot()` sorts `teams` by `total`, descending. The sort is stable, so ties keep `DESTRUCTORS_TEAM_ORDER`.
+- The chart, the flow view and `leader` all follow the new order.
+- Verified with Playwright at 390, 768 and 1440 in both themes. Order: Red Bull 1,407,000 → Alpine → Haas → … → Aston Martin 0. The summary reads "Red Bull lead the chart with $1,407,000."
+- Evidence: `audit/after/p0-02-03-destructors-teams-*`.
+- `npm run test:standings` passes.
+
+### [x] VIS-P0-03: Destructors chart text is white on paper in light theme
+
+**Priority:** P0
+
+**Surface:** `/standings/?tab=destructors`
+
+**Viewport:** all
+
+**Problem:**
+- In light theme these render at 1.16:1 and are effectively invisible:
+  - the chart kicker
+  - the chart title
+  - all team labels
+  - the totals outside bars
+  - the flow-view node labels
+
+**Evidence:** `audit/p0-destructors-white-text-on-paper-1440-light.png`
+
+**Root cause:**
+- This is a regression from F-04.
+- `standings/standings-editorial.css:178` removed the dark card background.
+- `standings/tabs/destructors.css:75,81` (and the kicker, total and flow `text` rules) still hard-code white.
+
+**Likely files:**
+- `standings/standings-editorial.css`
+- `standings/tabs/destructors.css`
+
+**Required change:** In the editorial override, set:
+- `.destructors-card-kicker` → `--st-text-secondary`
+- `.destructors-card-title`, `.destructors-team-label`, `.destructors-team-total` and `.destructors-flow-node text { fill }` → `--st-text`
+
+**Must preserve:**
+- the unboxed treatment
+- the colours inside bar segments
+
+**Acceptance criteria:** In light theme at 390 and 1440, every text node in `.destructors-wrap`, including SVG, is ≥4.5:1 (or ≥3:1 when ≥24px) against `--bg-base`.
+
+**Verification:** Playwright contrast probe on the `destructors` tab in both themes.
+
+**Dependencies:** none
+
+**Status (2026-09-22): DONE.**
+- Next to the F-04 unboxing rule, `standings/standings-editorial.css` now maps these destructors colours to theme tokens:
+  - card title, team labels and totals → `--st-text`
+  - card kicker and the loading/empty states → `--st-text-secondary`
+  - flow `text` fill → `--st-text`
+  - the source link → `--st-accent-readable`, the same token other standings source links use. It was 3.19:1 in light.
+- Verified with Playwright at 390, 768 and 1440 in both themes. In the teams and flow views, every text node over the page is ≥4.5:1, or ≥3:1 when large.
+- Evidence: `audit/after/p0-02-03-*`, `audit/after/p0-03-destructors-flow-*`.
+- **Not covered by this task:**
+  - The driver codes drawn inside coloured bar segments (`.destructors-team-segment em`) measure 2.0–4.1:1 against their own bar colour in both themes. Nothing in this regression touched them; they are text on a team colour, so they belong to VIS-P1-01.
+  - At 92% width the Alpine total still overlaps its bar end, because of the existing `left: min(pct + 12px, 100% - 126px)` rule.
+
+### [x] VIS-P1-01: Team colours used as text fail contrast in the data reports
+
+**Priority:** P1
+
+**Surface:** standings: track dominance, pit stops, lap-1 gains
+
+**Viewport:** all
+
+**Problem:** Team-colour text fails contrast on paper (light theme):
+
+| Element | Contrast |
+|---|---|
+| Track dominance lap times | 1.21:1 and 1.67:1 |
+| Pit-stop podium ranks | 1.19–1.65:1 |
+| Pit-stop times | team colour |
+| Lap-1 "+n" pills | 1.51–2.80:1 |
+| Lap-1 fallback bubbles (legacy `#41b6e6`) | 1.81:1 |
+
+**Evidence:**
+- `audit/p1-trackdom-team-colour-lap-times-1440-light.png`
+- `audit/p1-pitstops-dashboard-rows-1440-light.png`
+- `audit/p1-lap1-bubble-chart-1440-light.png`
+
+**Root cause:**
+- `standings/tabs/track-dominance.css:62` (`color: rgb(var(--team-color))`)
+- the rank and time colours in `standings/tabs/pit-stops.css`
+- `.lap1-gain-pill` and `.lap1-bubble-fallback` in `standings/tabs/lap1-gains.css`
+- None of these are overridden by the editorial layer.
+
+**Likely files:**
+- `standings/standings-editorial.css`
+- `standings/tabs/{track-dominance,pit-stops,lap1-gains}.css`
+
+**Required change:**
+- Set text to `--st-text` or `--st-text-secondary`.
+- Show team identity with a 2–3px team-colour rule or dot beside the value.
+- Remove the gold, silver and bronze rank colours.
+
+**Must preserve:** team colour on bars, rules, traces and headshot base lines
+
+**Acceptance criteria:**
+1. On the three tabs at 390 and 1440 in both themes, every text node over an opaque surface meets 4.5:1 (or 3:1 for large text).
+2. No element's computed `color` equals `rgb(var(--team-color))`.
+
+**Verification:** Playwright contrast probe per tab. Use opaque-background nodes only.
+
+**Dependencies:** extends DATA-04 / F-05 (marked done; these elements were missed)
+
+**Status (2026-09-23): DONE.**
+- `standings/standings-editorial.css`: the text in these reports now uses `--st-text` / `--st-text-secondary`:
+  - track dominance: lap times and metric labels
+  - pit stops: times, ranks and avatar fallbacks
+  - lap 1: gain pills, bubble fallbacks, card values, chip moves and session-type chips
+- The rank override uses a `body.` prefix. Without it, the lazy-loaded tab sheet's `:nth-child` rules (0,4,0) would still win.
+- Team identity stays on the data marks: row rules, bubble rings, and a new 0.3em team-colour square before each track-dominance lap time.
+- The pit-stops footnote link uses `--st-accent-readable`. It was 3.19:1.
+- **Verified with Playwright** at 390 and 1440 in both themes, pit stops in both views:
+  - Every text node over an opaque, composited background is ≥4.5:1, or ≥3:1 for large text.
+  - 0 text elements have a computed colour equal to their `--team-color` or `--winner-color`.
+  - Evidence: `audit/after/p1-02-*`.
+
+
+### [x] VIS-P1-02: Pit stops and lap-1 gains still use dashboard components
+
+**Priority:** P1
+
+**Surface:** `/standings/?tab=pit-stops`, `?tab=lap1-gains`
+
+**Viewport:** all
+
+**Problem:**
+- **Pit stops:**
+  - rows are fully bordered, team-tinted boxes;
+  - team names are grey pills;
+  - the "🏁 Per Race / 🏆 Season Best" switch uses emoji icons.
+- **Lap-1 gains:**
+  - the chart sits in a filled bordered card;
+  - it shows an "11 sessions" pill;
+  - 9 of 11 bubbles are "#NN" fallbacks in legacy blue;
+  - the "+n" badges are clipped.
+
+**Evidence:**
+- `audit/p1-pitstops-dashboard-rows-1440-light.png`
+- `audit/p1-lap1-bubble-chart-1440-light.png`
+
+**Root cause:** The editorial override lists in `standings/standings-editorial.css:178-190` cover only the outer `*-card` classes, not the rows, pills, chart frame or bubbles.
+
+**Likely files:**
+- `standings/standings-editorial.css`
+- `standings/tabs/pit-stops.{css,js}`
+- `standings/tabs/lap1-gains.{css,js}`
+
+**Required change:**
+- **Pit-stop rows:**
+  - transparent, with a 1px `--st-border` rule between rows;
+  - a 2px team-colour left rule, matching `.st-row`.
+- **Team pills:** plain secondary text.
+- **Pit-stop switch:** the underline-tab style with Greek labels and no emoji.
+- **Lap-1 chart:**
+  - no background or border;
+  - badge as meta text;
+  - neutral fallback disc with `--st-text` initials;
+  - non-clipping gain badges.
+
+**Must preserve:**
+- the data
+- the per-race and season-best modes
+- headshots
+- team colour on rules
+
+**Acceptance criteria:**
+1. In both tabs, no element >300px wide has borders on all four sides.
+2. No `border-radius` ≥8px except `50%` avatars.
+3. Rows have transparent backgrounds.
+4. Every `.lap1-*` badge has `scrollWidth ≤ clientWidth`.
+5. No computed `rgb(65,182,230)`.
+
+**Verification:** `REPORT-LEDGER` and `RADIUS-SET` checks (extend them to these tabs), plus Playwright at 390 and 1440 in both themes.
+
+**Dependencies:** extends DATA-04 / F-04; do together with VIS-P1-01
+
+**Status (2026-09-23): DONE.**
+- **`standings/standings-editorial.css`:**
+  - Pit-stop and team rows are transparent and sit under a 1px rule, keeping a 2px team rule.
+  - Team pills are plain text.
+  - The view-tab icons are hidden. The tabs were already underline tabs.
+  - The lap-1 overview and gain cards are unboxed.
+  - `.lap1-overview-meta` is plain meta text.
+  - Driver chips are a 2px team rule with no tint.
+  - Bubbles use a neutral `--st-surface-2` ground with `overflow: visible`, so the corner badges are no longer clipped. The headshot is rounded on the `img`.
+- **Root cause, "#NN" fallbacks in legacy blue:** drivers missing from OpenF1's `drivers` response (common under 429 rate limits) got `'41B6E6'`. `standings/tabs/lap1-gains.js` now uses one `UNKNOWN_DRIVER_COLOR` (`968F86`, the documented warm tertiary neutral) in place of seven literals.
+- **Top-pill clipping:** at ≤480px the top "+10" pill was clipped by 1px. `lap1-gains.css` headroom at ≤480px goes from 58px to 64px, matching ≤767px.
+- **Verified with Playwright** at 390 and 1440 in both themes, pit stops in both views:
+  - No non-control element wider than 300px with 4-sided borders. Share buttons and selects are exempt as controls.
+  - No radius ≥8px except `50%`.
+  - Row backgrounds are transparent.
+  - No clipped badges, and no `rgb(65,182,230)`.
+  - Evidence: `audit/after/p1-02-*`.
+- **Not in scope:**
+  - The Greek tab labels belong to VIS-P1-03.
+  - On lap 1, "TIE" labels under low bubbles can touch the session chips below them. That's pre-existing chart geometry.
+
+
+### [x] VIS-P1-03: English and developer copy in the standings reports
+
+**Priority:** P1
+
+**Surface:** standings: quali, lap-1, tyre pace, dirty air, track dominance, pit stops, debrief, destructors
+
+**Viewport:** all
+
+**Problem:**
+- The reports mix English into Greek sentences, for example "teammate", "rows", "completed session", "fastest lap", "selected driver", "Hover το track…", "RUS ahead 90%", "on ANT", "Per Race / Season Best", "Lap 28 · Stop 2", "6 laps", "tabbed view", "Latest available on F1 Top App…" and "Haas lead the chart…".
+- They print raw API endpoint names in backticks.
+- They print an internal developer note ("A local snapshot is still required because the upstream page does not expose a stable browser-safe API.").
+
+**Evidence:**
+- `audit/p1-quali-mixed-language-copy-390-dark.png`
+- `audit/p1-trackdom-hover-copy-and-same-team-colours-390-light.png`
+- `audit/p0-destructors-wrong-leader-1440-dark.png`
+- the string list in VISUAL_AUDIT §VIS-P1-03
+
+**Root cause:**
+- Literal strings in the `standings/tabs/*.js` renderers.
+- Cache `source.note` and `snapshotLabel` are rendered verbatim.
+
+**Likely files:**
+- `standings/tabs/quali-gaps.js`
+- `standings/tabs/lap1-gains.js`
+- `standings/tabs/tyre-pace.js`
+- `standings/tabs/dirty-air.js`
+- `standings/tabs/track-dominance.js`
+- `standings/tabs/pit-stops.js`
+- `standings/tabs/debrief.js`
+- `standings/tabs/destructors.js`
+
+**Required change:**
+- Translate all UI copy into Greek.
+- Use "Πηγή: OpenF1" or "Πηγή: F1 Top App, <date>" instead of endpoint lists.
+- Never render cache notes verbatim.
+- Replace the "Hover" instruction with "Πέρασε ή πάτησε πάνω στην πίστα".
+
+**Must preserve:** F1 jargon used in Greek (pit stop, stint, Grand Prix, sprint), driver codes and team names
+
+**Acceptance criteria:** A text-node scan of `.standings-panel.active` on all 10 tabs for `/\b(Hover|completed|fastest|selected|rows|teammate|Source|ahead|Latest available|lead the chart|Per Race|Season Best|sessions|laps|Stop \d|tabbed|flow chart|snapshot|Auto-refreshed)\b|`/` returns 0 matches.
+
+**Verification:** Extend `GREEK-LABELS-STANDINGS` in `perf/visual-qa/redesign-audit/checks.mjs` to the panel body copy of all 10 tabs.
+
+**Dependencies:** re-opens DATA-07 / F-13 scope (tab labels were done; body copy was not)
+
+**Status (2026-09-23): DONE.**
+- **Copy translated** in:
+  - `standings/tabs/{quali-gaps,lap1-gains,tyre-pace,dirty-air,track-dominance,pit-stops,debrief,destructors}.js`
+  - the quali, lap-1, track-dominance, debrief and destructors intros in `standings/index.html`
+  - the source names in `standings/standings.js` ("Jolpica F1 · στιγμιότυπο" / "· live")
+- **What the translation covers:**
+  - UI copy, aria-labels, tooltips and axis labels
+  - "Γύρος N · Στάση N"
+  - "N γύροι", via `lapCountLabel()` for the singular and plural
+  - "Ανά αγώνα / Καλύτερο σεζόν"
+  - "μπροστά" and "έναντι"
+- **Sources:** the API endpoint lists became "Πηγή: OpenF1".
+- **Destructors:**
+  - The cache's `source.note` is no longer rendered.
+  - `snapshotTitle()` keeps only the date from the English `snapshotLabel`, e.g. "Στιγμιότυπο F1 Top App · 7 Μαΐου 2026".
+  - The leader line reads "Πρώτη θέση: Red Bull, $1,407,000."
+- **Lap 1:** the English "TIE" suffix is removed. The +N badge and the "Ισοπαλία N οδηγών" line already say it.
+- **Track dominance:** the "Hover" instruction became "Πέρασε τον δείκτη πάνω από την πίστα…". The map tooltip only listens to `pointermove`, so the copy doesn't promise touch.
+- **Verified with Playwright** at 390 and 1440 on all 10 tabs, including every view switch: the criterion regex returns **0** matches. All tabs render with no JS errors, and `test:standings` passes.
+- **Also re-checked:** the VIS-P0-01 band/source agreement after the source rename.
+- **Kept on purpose:** F1 jargon (Q, Sprint Shootout, stint, pit lane, FP1/FP2, "FIA Friday Debrief", Destructors) and "live".
+
+
+### [x] VIS-P1-04: The mobile standings report bar pins 208px of chrome
+
+**Priority:** P1
+
+**Surface:** `/standings/` (all tabs)
+
+**Viewport:** 320, 390 (≤767)
+
+**Problem:**
+- The sticky `.standings-report-select` (label, select and a 2-line source line) is 140px tall, below the 68px masthead.
+- That pins 208px of 844 (24.6%).
+- Chart and section titles scroll underneath it.
+
+**Evidence:**
+- `audit/p1-standings-sticky-report-bar-390-dark.png`
+- `audit/tour/standings-390-dark-03.png`
+
+**Root cause:** `standings/standings-editorial.css:230,241,263` make the whole select block sticky.
+
+**Likely files:**
+- `standings/standings-editorial.css`
+- `standings/index.html`
+
+**Required change:**
+- Keep only the `<select>` row sticky (≤64px including padding).
+- Move the "ΑΝΑΦΟΡΑ" label and the source/meta line out of the sticky element.
+
+**Must preserve:**
+- the select as the mobile switcher
+- the source attribution
+
+**Acceptance criteria:**
+1. At 390×844 after scrolling 1000px, the pinned elements total ≤132px.
+2. The `.chart-section` heading is fully visible when its first bar reaches the top of the unobscured area.
+
+**Verification:** Playwright scroll probe at 320 and 390.
+
+**Dependencies:** none
+
+**Status (2026-09-23): DONE.**
+- In `standings/standings-editorial.css`, at ≤1024px `.standings-report-select` becomes `display: contents`.
+- `.standings-report-control` (the select row) is the only sticky element: `top: 76px`, or 68px at ≤991px, with 8px padding.
+- The "ΑΝΑΦΟΡΑ" label and the source/meta line now scroll away. The rule that used to sit under the whole block moves to the meta line.
+- The sticky element had to be the control inside the dissolved wrapper, not the wrapper itself. A sticky child is confined to its parent, so it would have scrolled away with it.
+- Embed mode still hides the wrapper with `display: none !important`.
+- **Verified with Playwright:**
+  - After scrolling 1000px, the pinned total is 129px at 320, 390, 767 and 768, and 137px at 1024. It was 208px.
+  - The 1025 and 1440 desktop tabs are unchanged.
+  - Scrolled to the drivers chart at 320, 390 and 768: the "Κατανομή βαθμών" heading sits below the pinned bar, and the first 5 bars are in view.
+  - Switching the report with the pinned select still works (drivers → constructors, and the URL updates).
+  - Evidence: `audit/after/p1-04-*`.
+- **Criterion note:** "≤132px" is measured where the masthead is 68px (≤991px). At 992–1024px the masthead is 76px, so the same 61px select gives 137px.
+
+
+### [x] VIS-P1-05: Rebuild the offline page in the editorial system
+
+**Priority:** P1
+
+**Surface:** `/offline.html`
+
+**Viewport:** all
+
+**Problem:**
+- The copy is English ("Offline", "Retry", "CACHED ARTICLES").
+- It uses DM Sans and Outfit, which aren't loaded, so it renders in the system font.
+- The button is a legacy blue `#41b6e6` pill.
+- The card has a 20px radius.
+- The background is blue-black `#111113`.
+- `/favicon.ico` returns 404.
+
+**Evidence:** `audit/p1-offline-page-off-brand-390-dark.png`
+
+**Root cause:** The `offline.html` inline styles predate the editorial layer.
+
+**Likely files:**
+- `offline.html`
+- `scripts/offline-page.js`
+
+**Required change:**
+- Self-host Plex and Barlow `@font-face`, the same way `404.html` does.
+- Use the editorial tokens, with dark by default and honouring `theme-init`.
+- Copy and components:
+  - folio `F1 STORIES / ΕΚΤΟΣ ΣΥΝΔΕΣΗΣ`
+  - h1 `Χωρίς σύνδεση.` with a signal stop
+  - Greek body copy
+  - ink/paper primary CTA `Δοκίμασε ξανά` with 2px radius
+  - `ΑΠΟΘΗΚΕΥΜΕΝΑ ΑΡΘΡΑ`
+- Add a favicon link.
+
+**Must preserve:**
+- the retry logic
+- the cached-articles list
+
+**Acceptance criteria:**
+1. Every text node's font-family starts with `IBM Plex Sans` or `Barlow Condensed`.
+2. No `rgb(65,182,230)`.
+3. No radius >4px.
+4. No English UI words.
+5. 0 requests with status ≥400.
+
+**Verification:** Playwright at 390 and 1440 in both themes, plus a network log.
+
+**Dependencies:** GLOBAL-06 (button roles)
+
+**Status (2026-09-23): DONE.**
+- `offline.html` was rewritten in the editorial language:
+  - The fonts come from the precached `home-fonts.min.css`. The SW serves stamped `?v=` assets by pathname, so this works fully offline.
+  - The editorial tokens are inlined: dark by default, light via `data-theme`, set by the existing `theme-init`.
+  - A logo plus the "F1 STORIES." wordmark with the signal stop.
+  - The folio `F1 STORIES / ΕΚΤΟΣ ΣΥΝΔΕΣΗΣ`.
+  - h1 `Χωρίς σύνδεση.` in Plex 600, with Greek body copy.
+  - The primary CTA `Δοκίμασε ξανά`: ink/paper block, 2px radius, signal on hover.
+  - `ΑΠΟΘΗΚΕΥΜΕΝΑ ΑΡΘΡΑ` as a rule-separated list with 52px rows.
+  - A favicon link.
+- `scripts/offline-page.js` only changes its fallback link text, 'Article' → 'Άρθρο'. The retry and cached-list logic is unchanged.
+- **Verified with Playwright** at 390 and 1440 in both themes:
+  - The only font families are IBM Plex Sans and Barlow Condensed.
+  - 0 elements use `rgb(65,182,230)`, and there's no radius over 4px.
+  - No English UI words, and no text under 12px.
+  - 0 responses ≥400.
+  - The empty cached-articles state was checked too.
+  - Evidence: `audit/after/p1-05-*`.
+
+
+### [x] VIS-P1-06: Bring the 404 page onto the system
+
+**Priority:** P1
+
+**Surface:** `/404.html`
+
+**Viewport:** all
+
+**Problem:**
+- The Greek h1 is set in Barlow Condensed, which has no Greek glyphs, so it renders in the OS fallback font at 144px.
+- It uses radar-ring "RED FLAG" HUD decoration, with a circle cutting through "404".
+- It has text at 9.92–11.2px.
+- It has no masthead, and its wordmark reads "F1 Stories".
+- In dark theme the primary CTA is a coral fill.
+
+**Evidence:**
+- `audit/p1-404-greek-in-barlow-fallback-1440-light.png`
+- `audit/p1-404-radar-decoration-390-dark.png`
+
+**Root cause:** The `404.html` inline `<style>`.
+
+**Likely files:** `404.html`
+
+**Required change:**
+- h1: Plex 600, mixed case, `Λάθος στροφή` plus a signal stop, `clamp(2.5rem,6vw,4.5rem)`.
+- Delete the rings and the "RED FLAG" marker. Latin "404" may stay in Barlow.
+- All labels ≥12px.
+- Wordmark "F1 STORIES." (or the shared masthead).
+- Primary CTA ink/paper.
+- Brand link ≥44px.
+
+**Must preserve:**
+- the Greek copy and voice
+- both CTAs
+- inline self-contained CSS
+
+**Acceptance criteria:**
+1. No Greek text node's font-family starts with `Barlow`.
+2. No text under 12px.
+3. No element with `border-radius: 50%` wider than 100px.
+4. The primary CTA background equals the ink or paper token for its theme.
+5. The brand link is ≥44px tall.
+
+**Verification:** Playwright at 390, 768 and 1440 in both themes, plus `audit/sweep`-style metrics.
+
+**Dependencies:** GLOBAL-06
+
+**Status (2026-09-23): DONE.**
+- `404.html` now uses the editorial language.
+- **Type:**
+  - The h1 is Plex 600, mixed case: `Λάθος στροφή` plus a signal stop, at `clamp(2.5rem,6vw,4.5rem)`, tracking `-.025em`.
+  - Fonts come from the shared `home-fonts.min.css`, so Latin and Greek Plex both load.
+  - The kicker and issue label are typed caps at .75rem, with no `text-transform`.
+- **Decoration removed:**
+  - the radar rings and "RED FLAG"
+  - the diagonal-line background gradient, which DESIGN §6 lists as an unrelated gradient
+- **Kept:** a quiet Latin "404" numeral in Barlow, in the `--line` colour and `aria-hidden`.
+- **Brand:** the "F1 STORIES." wordmark with the signal stop, and a 44px link.
+- **CTAs:** the primary is an ink/paper block that turns signal on hover. The secondary is text with a rule.
+- **Mobile:** content starts at the top instead of being vertically centred, and the right header label is hidden at ≤680px.
+- **Verified with Playwright** at 390, 768 and 1440 in both themes:
+  - 0 Greek text nodes in Barlow, and 0 text under 12px.
+  - 0 `50%` circles wider than 100px.
+  - The primary CTA background is ink `#20251f` in light and paper `#eee8db` in dark.
+  - The brand link is 44px tall.
+  - No overflow, and no 4xx responses.
+  - Evidence: `audit/after/p1-06-*`.
+
+
+### [x] VIS-P1-07: Remove the ≥1600px hero headline jump
+
+**Priority:** P1
+
+**Surface:** home hero
+
+**Viewport:** 1600–1920+
+
+**Problem:**
+- At 1920×1080 the h1 is 88px and runs 6 lines.
+- The primary CTA sits at 1059–1106, below the fold.
+- About 400px of the right column is empty under the photo.
+- The size jumps +28% between 1599px and 1600px.
+
+**Evidence:** `audit/p1-home-hero-cta-below-fold-1920-dark.png`
+
+**Root cause:** `home.css:255-256`: a `@media (min-width:1600px)` rule sets `clamp(3rem,7vw,5.5rem)`.
+
+**Likely files:** `home.css`
+
+**Required change:** Delete the ≥1600 override (the base clamp caps at 4.5rem), or cap it at 4.75rem.
+
+**Must preserve:**
+- the 47/53 split
+- the headline style
+- the stamp
+
+**Acceptance criteria:**
+1. At 1920×1080 and 1600×900, `#hero .cta-primary` bottom ≤ viewport height and the h1 runs ≤5 lines.
+2. The h1 font-size changes by less than 4px across 1580–1620px.
+
+**Verification:** Playwright probe at 1580, 1600, 1620 and 1920.
+
+**Dependencies:** none
+
+**Status (2026-09-23): DONE.**
+- In `home.css`, the `@media (min-width:1600px)` override (`clamp(3rem,7vw,5.5rem)`) is deleted.
+- **Deviation from the task:** removing the override wasn't enough. The base clamp's 4.5rem cap still wrapped the current headline to 6 lines in the 652px column at ≥1620px. The cap is now `4.25rem`. It only binds above 1582px, so 1440 and below are unchanged.
+- **Verified with Playwright** across 1440, 1580, 1600, 1620, 1920×1080 and 2560:
+  - The h1 is 67.9–68px and runs 5 lines.
+  - The CTA bottom is 890px, inside the 900 and 1080 viewports.
+  - Across 1580–1620px the size changes by 0.06px (it used to jump by 19px).
+  - Evidence: `audit/after/p1-07-home-1920-dark.png`.
+
+
+### [x] VIS-P2-01: Give the home cover a story deck, not the site tagline
+
+**Priority:** P2
+
+**Surface:** home hero
+
+**Viewport:** all
+
+**Problem:**
+- The deck under the story headline is the site slogan ("Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.").
+- The description below it is body text cut mid-sentence with "...".
+
+**Evidence:** `audit/p2-home-hero-tagline-as-deck-1440-dark.png`
+
+**Root cause:**
+- `index.html:204` has a hard-coded `.hero-subtitle`.
+- `:205` is filled by the `f1s:hero-excerpt` build region with a character-truncated excerpt.
+
+**Likely files:**
+- `index.html` (source region)
+- the hero-injection build script
+- the blog excerpt source
+
+**Required change:**
+- Inject a sentence-complete story excerpt (≤160 characters, cut at a sentence boundary) into `.hero-subtitle`.
+- Drop `.hero-description`, or fill it with a complete sentence.
+- Leave the slogan to the edition line.
+
+**Must preserve:**
+- the cover structure
+- the build markers
+
+**Acceptance criteria:**
+1. `.hero-subtitle` ≠ the slogan.
+2. No hero text node ends with "..." or "…".
+
+**Verification:** Playwright at 390 and 1440. Rebuild through the normal hero build.
+
+**Dependencies:** HOME-01
+
+**Status (2026-09-23): DONE.**
+- **Root cause, more precise than the audit's:**
+  - `excerpt` is cut at 200 characters in `blog-module/build/worker.js`.
+  - Taking whole sentences from it would leave 114 of 352 posts with a deck under 40 characters.
+  - So the cover now reads the article's own opening paragraph.
+- **Build (`blog-module/build/index.js`):** `heroCopy()` splits that paragraph at sentence ends.
+  - `deck` is whole sentences up to 160 characters, or one opening sentence up to 240.
+  - `lede` is the next whole sentence, up to 320 characters.
+  - Both are written to `home-latest.json` (optional fields) and injected into new `f1s:hero-deck` markers on `.hero-subtitle` and into the existing `f1s:hero-excerpt` slot.
+- **Runtime (`blog-module/blog-loader.js`):** `renderHeroLead()` renders the same two fields.
+- **`home.css`:**
+  - Empty cover paragraphs are hidden.
+  - The desktop lede measure is 60ch (was 52ch). Without it, the longer, complete lede pushed the CTA below the fold at 1600×900 (914px).
+- **Data contract:** `validate-data-contracts.mjs` accepts `deck` (≤240) and `lede` (≤320). `docs/data-contracts.md` is updated.
+- The slogan now appears only in the edition line.
+- **Regenerated** with `npm run build:blog`: `index.html` hero region and `home-latest.json`. `test:blog` goldens match, and contracts validate.
+- **Verified with Playwright** at 390, 768, 1024, 1440, 1600 and 1920:
+  - The subtitle isn't the slogan.
+  - No hero text ends in "..." or "…".
+  - The CTA bottom is 890px at 1600×900 and 1920×1080. P1-07 still holds: 5 lines.
+  - Evidence: `audit/after/p2-01-*`.
+- **Limitation:** 58 of 352 posts (galleries, or openings without a sentence-ending mark) produce no deck. For them the subtitle collapses.
+
+
+### [x] VIS-P2-02: Remove the text-shadow on the hero byline
+
+**Priority:** P2
+
+**Surface:** home hero
+
+**Viewport:** all
+
+**Problem:** `#hero-story-byline` carries `text-shadow: 0 1px 8px rgba(0,0,0,.26)`, which smudges 12px caps on paper.
+
+**Evidence:** `audit/p2-home-byline-text-shadow-320-light.png`
+
+**Root cause:**
+- Legacy `styles.css:161` sets `.hero-content p` with a shadow.
+- `home.css:72` is the only hero `p` that doesn't reset it.
+
+**Likely files:** `home.css`
+
+**Required change:** Add `text-shadow: none` to `.home-page .hero-story-byline`.
+
+**Must preserve:** the byline
+
+**Acceptance criteria:** Every element under `#hero` computes `text-shadow: none`.
+
+**Verification:** DOM probe at 390 and 1440 in both themes.
+
+**Dependencies:** none
+
+**Status (2026-09-23): DONE.** `home.css`: `.hero-story-byline` gains `text-shadow: none`. That cancels the legacy `styles.css:161` `.hero-content p` shadow, as the neighbouring hero rules already do. Verified with Playwright at 390 and 1440 in both themes: 0 elements under `#hero` have a non-`none` text-shadow.
+
+
+### [x] VIS-P2-03: The contact heading must stay below the cover headline
+
+**Priority:** P2
+
+**Surface:** home #contact
+
+**Viewport:** all
+
+**Problem:** The contact h2 is larger than the cover h1: 69.1 vs 61.9px at 1440, and 40 vs 33.2px at 390.
+
+**Evidence:** `audit/p2-home-contact-h2-oversized-1440-dark.png`
+
+**Root cause:** `home.css:213` (`clamp(2.5rem,4.8vw,4.8rem)`) and `:404` (`2.5rem`).
+
+**Likely files:** `home.css`
+
+**Required change:** Use the section-h2 clamp (`clamp(1.8rem,3vw,3rem)`), or cap it at `clamp(2rem,3.4vw,3.4rem)`.
+
+**Must preserve:**
+- the informal copy
+- the signal ";"
+- the two-column contact layout
+
+**Acceptance criteria:** At all six matrix viewports, `.contact-block h2` font-size < `#hero h1` font-size.
+
+**Verification:** Playwright probe across the viewport matrix.
+
+**Dependencies:** none
+
+**Status (2026-09-23): DONE.**
+- `home.css`: `.contact-block h2` is now `clamp(2rem, 3.4vw, 3.4rem)`, and 1.9rem at ≤767px (was `clamp(2.5rem,4.8vw,4.8rem)` and 2.5rem).
+- **Verified with Playwright:** contact < cover at every viewport, and contact ≥ section h2:
+
+  | Viewport | Contact | Cover | Section h2 |
+  |---|---|---|---|
+  | 320 | 30.4 | 32 | 30.4 |
+  | 390 | 30.4 | 33.15 | 30.4 |
+  | 768 | 32 | 46.1 | — |
+  | 1024 | 34.8 | 44.0 | — |
+  | 1440 | 49.0 | 61.9 | 43.2 |
+  | 1920 | 54.4 | 68 | — |
+
+- Evidence: `audit/after/p2-03-*`.
+
+
+### [x] VIS-P2-04: Fix the archive masthead folio wrap and the orphaned stamp on phones
+
+**Priority:** P2
+
+**Surface:** blog archive masthead
+
+**Viewport:** 320, 390
+
+**Problem:**
+- The folio's right label wraps, leaving "PADDOCK" alone. At 320 the left label wraps too.
+- The stamp occupies an 82px row of its own, attached to nothing.
+
+**Evidence:** `audit/p2-archive-masthead-folio-stamp-390-dark.png`
+
+**Root cause:**
+- `blog-module/blog/archive-editorial.css:380` (`max-width: 16ch`)
+- `:387` (static stamp from F-02)
+
+**Likely files:** `blog-module/blog/archive-editorial.css`
+
+**Required change:**
+- Remove the 16ch cap and let the right label take its own full line, or hide it at ≤389.
+- Place the stamp absolutely over the top-right corner of the first card image, clear of the deck text.
+
+**Must preserve:**
+- the folio line
+- the stamp overlapping an edge
+
+**Acceptance criteria:**
+1. At 320 and 390, each `.archive-edition` span renders as 1 line.
+2. `.archive-stamp` intersects no text rects.
+3. The masthead is ≥60px shorter than it is today.
+
+**Verification:** `ARCHIVE-STAMP-CLEAR` plus a new line-count check at 320 and 390.
+
+**Dependencies:** follows F-02
+
+**Status (2026-09-23): DONE.**
+- `blog-module/blog/archive-editorial.css` (≤767px):
+  - The folio uses `flex-wrap` with `nowrap` labels. The 16ch cap is removed, so it wraps between labels, never inside one.
+  - The stamp sits absolutely on the masthead's bottom rule (`right: 6px; bottom: -12px`, smaller at .85rem), beside the "Εξερεύνησε το αρχείο" link.
+- **Deviation from the task:** the stamp stays in the masthead instead of moving onto the first card image. That's a CSS-only fix, and it keeps the "overlaps an edge" behaviour.
+- **Verified with Playwright** at 320, 360, 390, 480 and 767:
+  - Each folio label renders as 1 line.
+  - The stamp intersects 0 text rects and stays above the search toolbar: stamp bottom 519, toolbar 578.
+  - The masthead at 390 is 438px (was 517): 79px shorter.
+  - Evidence: `audit/after/p2-04-*`.
+
+
+### [x] VIS-P2-05: Archive card meta wrapping, colour and weight
+
+**Priority:** P2
+
+**Surface:** blog archive cards
+
+**Viewport:** 320, 390
+
+**Problem:**
+- A separator "·" is stranded at the end of a line in thumbnail rows.
+- The author name takes the category colour, so one person appears in four colours.
+- Reading time is weight 500 while the date is 400.
+
+**Evidence:**
+- `audit/p2-archive-thumb-meta-wrap-320-light.png`
+- `audit/tour/blog-390-dark-01.png`
+
+**Root cause:**
+- `archive-editorial.css:295` colours `.author-tag` with the category colour.
+- `:322-323` sets separate flex separators and the `.author-tag` weight.
+
+**Likely files:**
+- `blog-module/blog/archive-editorial.css`
+- the card renderer in `blog-module/`
+
+**Required change:**
+- Author name in `--text-primary`.
+- Category signal moves to the category label, the arrow and a dot.
+- Separators become `::before` on the following item.
+- All meta items at one weight.
+
+**Must preserve:**
+- the category signal colours
+- the .75rem meta size
+
+**Acceptance criteria:**
+1. No meta line box ends with "·" at 320 or 390.
+2. `.author-tag` has an identical colour across categories.
+3. There is a single font-weight across meta items.
+
+**Verification:** Playwright line-box probe at 320 and 390 in both themes.
+
+**Dependencies:** VIS-P3-06
+
+**Status (2026-09-23): DONE.** CSS only, in `blog-module/blog/archive-editorial.css`. It covers the static first page and the client renderers, which share the markup.
+- The author name is `--text-primary`, and every meta item is weight 500.
+- The literal `<span>·</span>` separators are hidden. Each following item draws `·` through `::before`, so a wrapped line can only start with a separator, never end with one.
+- The category signal moved from the author to `.article-card-cat` and the arrow.
+- **Verified with Playwright** at 320, 390 and 1440 in both themes:
+  - 0 meta lines end with "·" across 12 cards.
+  - The author colour is identical across categories: `#eee8df` in dark, `#20251f` in light.
+  - Meta has a single weight (500).
+  - The category labels carry their signal, and every text node in `#articles-grid` passes AA.
+  - Evidence: `audit/after/p2-05-*`.
+
+
+### [x] VIS-P2-06: Standings must use the shared container gutter
+
+**Priority:** P2
+
+**Surface:** `/standings/`
+
+**Viewport:** 768–1199
+
+**Problem:** Standings content starts at x=48 while every other route starts at x=32. The page edge jumps 16px between routes.
+
+**Evidence:** `audit/p2-standings-gutter-48-vs-32-1024-light.png` compared with `audit/p2-archive-gutter-32-1024-light.png`
+
+**Root cause:** `standings/standings-editorial.css:30` (`padding-inline: 48px`), overridden only at ≤767 (`:250`).
+
+**Likely files:** `standings/standings-editorial.css`
+
+**Required change:** Delete the `padding-inline` redeclarations and inherit the container padding from `styles/editorial.css`.
+
+**Must preserve:** 48px at ≥1200
+
+**Acceptance criteria:** At 390, 768, 1024 and 1440, the standings content left edge equals the home content left edge (±1px).
+
+**Verification:** Playwright edge probe on `/` and `/standings/`.
+
+**Dependencies:** none
+
+**Status (2026-09-23): DONE.**
+- `standings/standings-editorial.css` drops the route's own `padding-inline` values: 48px on the header and wrapper containers, and the ≤767 22px block.
+- Standings now inherits the shared `styles/editorial.css` container steps: 48, 32, 22 and 17px.
+- **Verified with Playwright:** the header, timing band and report containers start at the same x as home at 340, 390, 768, 1024, 1199, 1200 and 1440. The values are 17, 22, 32, 32, 32, 48 and 48px respectively.
+
+
+### [x] VIS-P2-07: Stop upscaling gallery and cover-slot photography
+
+**Priority:** P2
+
+**Surface:** article gallery, home journal lead, archive lead
+
+**Viewport:** 768–1920
+
+**Problem:**
+- Gallery photos with a 460px natural width are drawn at 678–708px (0.65–0.68 at 1×).
+- Cover-cropped slots pick under-resolved `srcset` candidates: 0.64–0.76 at 1×.
+
+**Evidence:**
+- `audit/p2-article-gallery-upscaled-1440-light.png`
+- `audit/sweep/metrics.json` (`lowres`)
+
+**Root cause:**
+- The gallery is `width: 100%` with no natural-width cap.
+- `cardImageSrcset()` `sizes` (`blog-module/taxonomy.js`) ignores the `object-fit: cover` crop when the slot is taller than 16:9.
+
+**Likely files:**
+- `blog-module/blog/article-editorial.css`
+- `blog-module/taxonomy.js`
+- `home.css`
+- `blog-module/blog/archive-editorial.css`
+
+**Required change:**
+- Cap gallery images at their natural width, centred, or generate a larger variant at publish.
+- Scale `sizes` by `slotAspect/sourceAspect`, or give the slots the source aspect ratio.
+
+**Must preserve:**
+- the RESP-02 variants
+- the cut corners
+- the desaturate-at-rest treatment
+
+**Acceptance criteria:** At 1440@1× and 768@2×, every content image >300px wide has a resolution ratio ≥0.9, or renders at ≤ its natural width when the source is smaller.
+
+**Verification:** The `lowres` probe from `audit/sweep` on home, blog and article.
+
+**Dependencies:** extends RESP-02 / F-01
+
+**Status (2026-09-23): DONE.**
+- **Measurement fix:**
+  - With `srcset` w-descriptors, Chrome reports `naturalWidth` density-corrected, so the audit's ratios for srcset images were wrong.
+  - Re-measured against the true pixel size of `currentSrc`: the home and archive cover slots already pass at 1440@1× and 768@2×.
+  - The one real enlargement was the article gallery.
+- **Change:** in `blog-module/blog/article-editorial.css`, `.gallery-slide .article-content-img` uses `object-fit: scale-down` (was `cover`).
+  - A photo smaller than the 16:10 stage renders at its own size on the surface ground.
+  - A larger photo is shown whole instead of being cropped. Portrait composites such as `20260415` were cut to a middle strip before.
+- **Regenerated:** 352 article files, each a one-line `?v=` restamp of `article-editorial.min.css` from `stamp-html.mjs`. That's expected pipeline output.
+- **Verified with Playwright** at 1440@1×, 768@2× and 1920@1× on home, the archive, `20260920W` and `20260415`: every content image >300px wide is at ≥0.9 resolution, or (where the original is smaller than the slot) is not enlarged beyond its natural width. Evidence: `audit/after/p2-07-*`.
+- **Not changed:**
+  - The 800w ceiling on archive grid cards at 3× (F-01, owner-accepted).
+  - The archive lead at 1920 (0.86). It's outside the stated criterion, and fixing it would ship the 1600w file on every large screen.
+
+
+### [x] VIS-P2-08: Require alt text for article photos
+
+**Priority:** P2
+
+**Surface:** articles
+
+**Viewport:** all
+
+**Problem:**
+- The gallery photos in `20260920W` have `alt=""`.
+- 9 of 18 images in `20260415` have `alt=""`.
+
+**Evidence:**
+- `blog-module/blog-entries/20260920W/article.html`
+- probe `imgsNoAlt: 9` on `20260415`
+
+**Root cause:** The author tool emits empty alt when no description is given, with no warning.
+
+**Likely files:**
+- `scripts/author/article-source.js`
+- `scripts/author/generate-page.js`
+- the `blog-module/build/` gallery renderer
+
+**Required change:**
+- Add a non-blocking "εικόνα χωρίς περιγραφή" warning, using the POLISH-04 pattern.
+- Fall back to a descriptive alt: title plus position.
+
+**Must preserve:**
+- the gallery UI
+- the publish flow
+
+**Acceptance criteria:**
+1. New builds contain no `alt=""` in `.article-content` or the gallery, unless an image is marked decorative.
+2. `npm run test:author` covers the warning.
+
+**Verification:** Unit test plus a grep on the golden output.
+
+**Dependencies:** POLISH-04
+
+**Status (2026-09-23): DONE.**
+- **Root cause, corrected:**
+  - The empty alts the audit counted are the gallery **thumbnails** inside buttons that carry their own `aria-label`. That's correct decorative use.
+  - The real gap was the rest of the labels, all English and generic:
+    - slide alts: "Gallery image N"
+    - body figure alts: "Image N"
+    - thumb labels: "Show image N"
+    - carousel label: "Image Gallery"
+  - Authors never supply alt text for these, so the planned author-tool warning would fire on every gallery. It was not added.
+- **Source (`blog-module/build/media.js`, `worker.js`):** the article title (emoji stripped) is threaded into the carousel and body-image builders:
+  - `alt="<τίτλος>: φωτογραφία N από M"`
+  - `alt="<τίτλος>: εικόνα N"`
+  - `aria-label="Φωτογραφικό αρχείο: <τίτλος>"`
+  - `aria-label="Εμφάνιση φωτογραφίας N από M"`
+  - Alt values are now attribute-escaped.
+- **Baked articles:** the committed articles come from the migration path, and a template rebuild of one produced unrelated drift. So the same labels are applied by an idempotent step in `scripts/build/article-editorial.mjs` (`applyArticleEditorial`, run by `stamp-html`).
+  - 100 articles are updated; a second stamp is byte-identical.
+  - 0 English image labels remain.
+- **Goldens** were updated with `run-golden.js --update` and reviewed: only these labels and the `article-editorial.min.css` `?v=` changed. `test:blog` passes.
+- **Verified with Playwright** on `20260415`, `20260920W` and `20250323G`: 0 non-decorative empty alts, 0 English labels, and Greek region and thumb names.
+
+
+### [x] VIS-P2-09: Stop titling in-article tables with CSV filenames
+
+**Priority:** P2
+
+**Surface:** 23 articles with CSV tables
+
+**Viewport:** all
+
+**Problem:** Titles read "FL", "Q", "Fp2top5", "Redbull". The footer says "Πηγή: fl.csv". A 1-row table becomes a 536px card stack on mobile.
+
+**Evidence:**
+- `audit/p2-article-table-csv-filename-title-1440-light.png`
+- `audit/p2-article-table-csv-filename-title-390-dark.png`
+
+**Root cause:** `blog-module/build/csv-to-table.js` derives the title and source from the file basename.
+
+**Likely files:** `blog-module/build/csv-to-table.js`
+
+**Required change:**
+- Support an authored caption and source.
+- When absent, omit the title and footer.
+- At ≤767, keep tables of ≤2 rows as a scrollable ledger table rather than cards.
+
+**Must preserve:**
+- the ledger table styling (ARTICLE-05)
+- the view toggle for large tables
+
+**Acceptance criteria:** No rendered text node contains `.csv`, and no `.table-title` equals a CSV basename. Goldens are updated.
+
+**Verification:** `npm run test:blog` goldens plus `grep -l '\.csv<' blog-module/blog-entries/*/article.html` returning 0.
+
+**Dependencies:** ARTICLE-05
+
+**Status (2026-09-23): DONE.**
+- **Builder (`blog-module/build/csv-to-table.js`):**
+  - The table title and source are authored: `CSV_TABLE:file.csv|Τίτλος|Πηγή`. When absent, no `.table-title` or `.table-footer` is rendered.
+  - The filename-derived `getTableName()` is removed.
+  - Tables with ≤2 data rows get `table-compact`.
+- **CSS:**
+  - `blog-module/blog-styles.css`: the existing mobile force-card `!important` rule is scoped to `:not(.table-compact)`. No new `!important` was added.
+  - `blog-module/blog/article-editorial.css`: at ≤767px it hides the controls row when it's empty.
+- **Baked articles:** an idempotent step in `scripts/build/article-editorial.mjs` removes the filename title and the "Πηγή: *.csv" footer, and marks compact tables. 23 articles changed; a second stamp is byte-identical.
+- **Goldens** were updated and reviewed: the `csv-team-sample` title and footer are removed, plus `?v=` changes. `test:blog` passes.
+- **Verified with Playwright** on `20250615G`:
+  - 0 `.csv` strings in the page text, and 0 `.table-title` elements.
+  - The 1-row table renders as a 128px ledger table at 390 (it was a 536px card stack); multi-row tables still use cards on phones.
+  - No overflow.
+  - The repo-wide grep finds 0 `.csv</div>` or filename titles.
+  - Evidence: `audit/after/p2-09-*`.
+
+
+### [x] VIS-P2-10: One sticky bar on the mobile article
+
+**Priority:** P2
+
+**Surface:** article
+
+**Viewport:** 320, 390
+
+**Problem:** The masthead (68px) and the mini bar (54px) are both pinned: 122px, or 14.5% of the viewport, during reading.
+
+**Evidence:** `audit/p2-article-sticky-chrome-390-dark.png`
+
+**Root cause:** `.article-mini-bar` is sticky under a masthead that doesn't collapse.
+
+**Likely files:**
+- `blog-module/blog/article-editorial.css`
+- the article scroll script
+
+**Required change:** At ≤767, when the mini bar activates, translate the masthead out and pin the mini bar at `top: 0`, or remove the mini bar and keep the progress bar.
+
+**Must preserve:**
+- the reading-progress bar
+- share access
+
+**Acceptance criteria:** At 390×844, scrolled 1500px into the body, pinned elements total ≤68px.
+
+**Verification:** Playwright scroll probe.
+
+**Dependencies:** none
+
+**Status (2026-09-23): DONE.**
+- CSS only, in `blog-module/blog/article-editorial.css` (≤767px). While `.article-mini-bar.is-visible`, the masthead slides up (`:has()` + `translateY(-100%)`) and the mini bar pins at `top: 0`.
+- The masthead returns when the reader scrolls back above the story header, because that's where the existing script hides the mini bar.
+- The reading-progress track stays; it's a separate fixed element.
+- The nav transition is included in the existing reduced-motion reset.
+- **Verified with Playwright** at 320, 390 and 767 in both themes, scrolled 1500px into the body:
+  - Only the mini bar is pinned, bottom 54px ≤ 68px (was 122px).
+  - At the top of the page, the masthead is back.
+  - 768 and 1440 are unchanged: masthead only.
+  - Evidence: `audit/after/p2-10-*`.
+
+
+### [x] VIS-P2-11: A real episode thumbnail for the home video facade
+
+**Priority:** P2
+
+**Surface:** home "ON AIR."
+
+**Viewport:** all
+
+**Problem:**
+- The facade shows the square site logo cropped to 16:9 at 22% opacity, upscaled (0.52 at 390@2×).
+- The meta line wraps to 3 lines, and "14:42" isn't labelled as a duration.
+
+**Evidence:** `audit/p2-home-video-logo-placeholder-390-dark.png`
+
+**Root cause:**
+- `index.html:251` uses the hard-coded logo.
+- `home.css:171` sets `opacity: .22`.
+- `scripts/build/fetch-youtube.mjs` doesn't fetch thumbnails.
+
+**Likely files:**
+- `scripts/build/fetch-youtube.mjs`
+- `index.html` (source region)
+- `home.css`
+
+**Required change:**
+- At build time, self-host the episode thumbnail as `/images/youtube/<id>.webp`.
+- Render it at opacity 1 with `saturate(.8)`.
+- Shorten the meta line to `Γ. Πουλικίδης · Γ. Μπαλατζής · 14:42 λεπτά` in `--text-secondary`.
+
+**Must preserve:**
+- the click-to-load, consent-safe facade
+- the play affordance
+
+**Acceptance criteria:**
+1. The facade `img` `currentSrc` isn't `logo-256`.
+2. Opacity is 1.
+3. The resolution ratio is ≥0.9 at 390@2×.
+4. The meta line is ≤2 lines at 390.
+
+**Verification:** Playwright at 390 and 1440. Verify with a network log that there's no third-party request before click.
+
+**Dependencies:** none
+
+**Status (2026-09-23): DONE.**
+- **`scripts/build/fetch-youtube.mjs`:** a new `ensureFacadeThumbnail()` reads the facade's `data-video-id` from `index.html`.
+  - When `/images/youtube/<id>.webp` is missing, it downloads `maxresdefault` (falling back to `hqdefault`) and writes an 800×450 webp with the existing `sharp` dependency.
+  - Failures are non-fatal.
+  - `--thumbnail-only` generated `images/youtube/l0vNNK6FO3g.webp` (52 KB) without touching the RSS snapshot.
+- **`index.html`:** the facade image points to the episode thumbnail (lazy-loaded). The meta reads `Γ. Πουλικίδης · Γ. Μπαλατζής · 14:42 λεπτά`.
+- **`home.css`:** the image is at full opacity with the site's `saturate(.8)`. The meta colour is `--text-secondary`: the existing `!important` declaration is edited, not a new one added.
+- **Verified with Playwright** at 390 and 1440 in both themes:
+  - `currentSrc` is the episode thumbnail, and opacity is 1.
+  - Resolution ratio is ≥1.16 at 390@2×.
+  - The meta line runs 2 lines.
+  - The only YouTube-related request before clicking is the local `/images/youtube/…webp`, so there are 0 third-party requests.
+  - Evidence: `audit/after/p2-11-*`.
+- **Follow-up:** the facade's video ID is still hand-authored in `index.html`. When it changes, the next `build:youtube` run creates the matching thumbnail.
+
+
+### [x] VIS-P2-12: The filtered author view should reflect the selected author
+
+**Priority:** P2
+
+**Surface:** `/authors/?author=<slug>`
+
+**Viewport:** 768, 1440
+
+**Problem:**
+- The page keeps the generic h1, the "ΠΕΝΤΕ ΦΩΝΕΣ" folio and the "Πέντε συντάκτες" intro.
+- The single profile floats in a centred block (x=240–1200) that doesn't align with the container edge (x=48).
+
+**Evidence:** `audit/p2-author-filtered-page-generic-1440-light.png`
+
+**Root cause:**
+- `scripts/authors.js` filters the cards but leaves the intro untouched.
+- The single-profile rule in `styles/authors.css` uses a max-width with auto margins.
+
+**Likely files:**
+- `scripts/authors.js`
+- `styles/authors.css`
+
+**Required change:** In the filtered state:
+- h1 = the author's name plus a signal stop;
+- folio right label = the author's desk;
+- hide the intro paragraph;
+- update `document.title`;
+- align the profile to the container edge.
+
+**Must preserve:**
+- the profile content
+- the badge
+- "← Όλοι οι συντάκτες"
+
+**Acceptance criteria:**
+1. With `?author=georgios-balatzis`, the h1 contains "Μπαλατζής".
+2. The `.author-profile` left edge equals the `.authors-intro` left edge (±1px) at 768 and 1440.
+
+**Verification:** Playwright at 390, 768 and 1440.
+
+**Dependencies:** AUTHORS-01
+
+**Status (2026-09-23): DONE.**
+- **`scripts/authors.js`,** when an author is selected:
+  - The h1 becomes the author's name, keeping the signal stop.
+  - The folio's right label becomes the author's desk in unaccented capitals ("ΤΕΧΝΙΚΑ · ΔΕΔΟΜΕΝΑ").
+  - The directory intro paragraph is hidden.
+  - `document.title` was already set.
+- **`styles/authors.css`:**
+  - The selected profile loses its `max-width: 960px; margin: 0 auto` inset, so it sits on the container edge.
+  - Its own name heading is hidden, since the h1 now carries it.
+- **Verified with Playwright** on `?author=georgios-balatzis` at 390, 768 and 1440:
+  - h1 "Γιώργος Μπαλατζής."
+  - The profile's left edge equals the intro's left edge: 22, 32 and 48px.
+  - Exactly one visible heading with the name.
+  - The unfiltered `/authors/` is unchanged.
+  - Evidence: `audit/after/p2-12-*`.
+
+
+### [x] VIS-P2-13: No duplicate titles in author featured stories
+
+**Priority:** P2
+
+**Surface:** `/authors/` (Δημήτρης Κεραμιδιώτης)
+
+**Viewport:** all
+
+**Problem:** "Επιλεγμένα άρθρα" lists "Μέσα από το F1λτρο μου" twice (`20260824D` and `20260726D`), and the entries can't be told apart.
+
+**Evidence:**
+- `audit/p2-authors-duplicate-story-titles-1440-dark.png`
+- `authors/index.html:221`
+
+**Root cause:** The featured selection takes the latest N without de-duplicating titles.
+
+**Likely files:** the builder of `authors/index.html` `.author-profile__stories`, and `scripts/authors.js`
+
+**Required change:**
+- Append the date to entries whose title repeats, or matches the column name.
+- Prefer one non-column article when available.
+
+**Must preserve:** 2 featured stories per author
+
+**Acceptance criteria:** No `.author-profile__stories` contains two links with identical text.
+
+**Verification:** DOM probe on `/authors/`.
+
+**Dependencies:** none
+
+**Status (2026-09-23): DONE.**
+- **Root cause, corrected:** there's no builder. The featured stories are hand-authored in `authors/index.html`, which is a source region.
+- Every one of Δημήτρης Κεραμιδιώτης's recent pieces is an issue of his column, so the list now pairs the latest issue, labelled with its date ("Μέσα από το F1λτρο μου · 24 Αυγ"), with his one non-column article ("Κανόνες για το Fantasy της Formula 1").
+- **Verified with Playwright:** 0 `.author-profile__stories` lists contain duplicate link texts, and both links return 200.
+
+
+### [x] VIS-P2-14: Quali-gap chart: per-pair scale and touch-safe dots
+
+**Priority:** P2
+
+**Surface:** `/standings/?tab=quali-gaps`
+
+**Viewport:** all; worst at 390
+
+**Problem:**
+- The fixed ±4.3s axis compresses ~20 dots per pair into about 40px.
+- The dots are overlapping 10×10px buttons.
+
+**Evidence:**
+- `audit/p2-quali-dots-collapsed-scale-390-dark.png`
+- `audit/sweep/metrics.json` → `st-quali-390-*`.`targets`
+
+**Root cause:**
+- `standings/tabs/quali-gaps.js` derives the axis from the global maximum.
+- The dot size is set in `quali-gaps.css`.
+
+**Likely files:**
+- `standings/tabs/quali-gaps.js`
+- `standings/tabs/quali-gaps.css`
+
+**Required change:**
+- Scale each pairing to max(|gap|), rounded up to 0.25s, with labelled ends. Alternatively, clamp at ±1.0s and show outliers as arrows.
+- Give each dot a 24×24 transparent hit area.
+- On touch, surface the values via the "Ανά αγώνα" list.
+
+**Must preserve:**
+- the dot-strip concept
+- team colour
+- the H2H counts
+
+**Acceptance criteria:**
+1. At 390, the dot spread is ≥40% of the track width for pairs with ≥2 distinct gaps.
+2. Every `.quali-dot` hit area is ≥24×24.
+
+**Verification:** Playwright probe at 390 and 1440.
+
+**Dependencies:** A11Y-02
+
+**Status (2026-09-23, final): DONE, no exceptions.**
+- **Axis:** each pairing's axis now runs from its furthest gap on one side to its furthest on the other.
+  - Each side is capped at 1.0s and rounded up to 0.05s.
+  - The zero line (and its "0" label) is placed proportionally, no longer at the fixed centre.
+- **Result:** a one-sided pairing uses the whole track, with zero at the edge, and zero still marks "equal".
+- **Guide lines:** the fixed 25% and 75% guides in `quali-gaps.css` assumed a symmetric axis, so they are removed.
+- **Verified with Playwright** at 390 and 1440:
+  - All 13 pairings spread 57–96%. The worst was 28% before, the one-sided Racing Bulls pair.
+  - Every dot's hit area is ≥24px, the tab passes AA in both themes, and `test:standings` passes.
+  - Evidence: `audit/after/p2-14-*`.
+
+**Earlier note (superseded): DONE, with one data-bound exception.**
+- **Scale (`standings/tabs/quali-gaps.js`):** the single global axis is replaced by a per-pairing axis: max |gap| rounded up to 0.05s, capped at 1.0s.
+  - Sessions beyond the cap sit at the edge, keeping their exact value in the tooltip and aria-label.
+  - The axis ends read "1s+" when anything is clamped.
+- **Hit area, already met (stale half):** `.quali-dot::after { inset: -7px }` in `standings-editorial.css` already gives every dot a 24×24 (10+14) target. The audit measured only the element box. No change made.
+- **Verified with Playwright** at 390, across 13 pairings:
+  - The spread is 42–96% for every pairing with gaps on both sides of zero. The Ferrari/Mercedes blob of about 40px (~12%) now spans 92% and 75%.
+  - Every dot hit area is 24px.
+  - Evidence: `audit/after/p2-14-*`.
+- **Exception (criterion wording):** the Racing Bulls pairing's 4 gaps all fall on one side (−0.41, −0.44, −1.04, −1.47s), and it spans 28%.
+  - On a zero-centred axis, a one-sided pairing can span at most 50% × (max−min)/max, which is 35% even unclamped.
+  - So "≥40%" can only be met by dropping the zero line that gives the chart its meaning. The criterion holds for every two-sided pairing.
+
+
+
+
+
+### [x] VIS-P2-15: Tell same-team drivers apart on track dominance
+
+**Priority:** P2
+
+**Surface:** `/standings/?tab=track-dominance`
+
+**Viewport:** all
+
+**Problem:** The default pair (RUS vs ANT) is drawn in `#27f4d2` against `#05d2b0` on the map, the bar and the legend, so the two drivers can't be told apart.
+
+**Evidence:** `audit/p1-trackdom-hover-copy-and-same-team-colours-390-light.png`
+
+**Root cause:** `standings/tabs/track-dominance.js` assigns team colour per driver with no same-team fallback.
+
+**Likely files:**
+- `standings/tabs/track-dominance.js`
+- `standings/tabs/track-dominance.css`
+
+**Required change:** For same-team pairs, render driver 2 in `--st-text` with a dashed trace and a dashed legend swatch.
+
+**Must preserve:** team colours for cross-team pairs
+
+**Acceptance criteria:** For same-team pairs, the two driver colours are ≥3:1 against each other and the legend swatches differ in pattern.
+
+**Verification:** Playwright at 390 and 1440 in both themes.
+
+**Dependencies:** VIS-P1-01
+
+**Status (2026-09-23, final): DONE, no exceptions.**
+- The "physical exception" below is resolved. When the best theme neutral still sits under 3:1 against the first driver's team colour, `buildTrackDominanceVisualPalette()` steps the first driver's colour away from its partner in the same hue: lighter against a dark partner, darker against a light one, in 10% steps, until the pair reaches 3:1.
+  - Darkening happens against the light partner, so the first line also gets further from the dark map ground.
+- **Checked for all 11 team colours in both themes:** every teammate pair is ≥3:1.
+  - Worst in dark: McLaren 3.15 (`#cc6600` vs paper, dashed), Williams 3.13, Haas 3.16.
+  - Worst in light: Red Bull 3.22.
+- **Verified with Playwright** on NOR/PIA (`?trackTeamA=1&trackTeamB=81`):
+  - Dark: `rgb(204,102,0)` against `rgb(238,232,219)` dashed, 3.15:1.
+  - Light: 6.20:1.
+  - Mercedes default: 3.29 dark, 11.11 light.
+  - Evidence: `audit/after/p2-15-*`.
+
+**Earlier note (superseded): DONE, with one physical exception.**
+- **`standings/tabs/track-dominance.js`:** for same-team (or same-colour) pairs, the second driver no longer gets a -34 shade of the team colour.
+  - Instead it gets a theme neutral: whichever of two candidates has the higher WCAG contrast against the first driver's colour.
+  - The candidates are `--track-dom-second-{dark,light}-rgb` in `standings-editorial.css`: `#7a746c` / `#eee8db` in dark, and ink / `#b8b1a6` in light.
+- The second driver's map segments are drawn dashed (`stroke-dasharray: 14 8`), and its legend swatch is a dashed ring.
+- The `const` for `rightHex` is tidied.
+- **Verified with Playwright** on the default pair RUS/ANT (Mercedes) at 1440 in both themes:
+  - The driver colours are 3.29:1 in dark and 11.11:1 in light.
+  - The swatches differ in pattern (solid vs dashed).
+  - `test:standings` passes.
+  - Evidence: `audit/after/p2-15-*`.
+- **Exception:**
+  - For mid-luminance team colours in **dark** theme (McLaren, Williams, Alpine, Aston Martin, Haas, Racing Bulls), no line colour can be ≥3:1 from the team colour and still be visible (≥3:1) on the charcoal map. The best available pick is 2.1–2.9:1.
+  - For those pairs the dashed trace and dashed legend carry the distinction without colour (WCAG 1.4.1).
+  - All team colours reach ≥3:1 in light theme and for light or dark team colours in dark theme.
+
+
+### [x] VIS-P2-16: Brand the Ghost Car and Telemetry redirect bridges
+
+**Priority:** P2
+
+**Surface:** `/ghostcar/`, `/f1telemetry/`
+
+**Viewport:** all
+
+**Problem:**
+- Both bridges are unstyled white pages with `lang="en"`, "Redirecting...", "click here" and a leftover template comment.
+- They flash between dark Greek pages.
+
+**Evidence:**
+- `audit/p2-bridge-ghostcar-unstyled-390.png`
+- `audit/p2-bridge-telemetry-unstyled-390.png`
+
+**Root cause:** Boilerplate bridge files.
+
+**Likely files:**
+- `ghostcar/index.html`
+- `f1telemetry/index.html`
+
+**Required change:**
+- `lang="el"`.
+- Inline warm-charcoal background and paper text, respecting `theme-init`.
+- Copy: "Μεταφορά στο Ghost Car…" plus a link "Άνοιξε το Ghost Car ↗".
+- Title "Ghost Car | F1 Stories".
+- Remove the template comment.
+
+**Must preserve:**
+- the instant redirect
+- canonical, OG and `noindex`
+
+**Acceptance criteria:**
+1. With the redirect suppressed: `lang="el"`, a non-white background, and no "click here" or "Redirecting".
+2. The title ends in "| F1 Stories".
+
+**Verification:** Playwright with `meta refresh` stripped via `route.fulfill`.
+
+**Dependencies:** none
+
+**Status (2026-09-23): DONE.**
+- `ghostcar/index.html` and `f1telemetry/index.html`:
+  - `lang="el"`.
+  - Titles and OG/Twitter titles are "Ghost Car | F1 Stories" and "Telemetry | F1 Stories", with a Greek meta description.
+  - They load the existing `theme-init` and an inline style that uses the dark `#1b1a19` / paper `#f2eee4` grounds.
+  - The body is a folio line plus "Άνοιξε το Ghost Car ↗" (a 44px link with an accent rule).
+  - The template comment, "Redirecting..." and "click here" are gone.
+- The canonical, `meta refresh`, `f1s-redirect-target`, `noindex` and the external-redirect script are unchanged.
+- **Verified with Playwright** at 390 in both themes, with the redirect suppressed: `lang="el"`, a non-white background, no "click here" or "Redirecting", and a title ending in "| F1 Stories".
+- With JS on, both pages still redirect to their `github.io` targets.
+- Evidence: `audit/after/p2-16-*`.
+
+
+### [x] VIS-P3-01: Align the home journal columns and remove the stacked rules
+
+**Priority:** P3
+
+**Surface:** home #latest
+
+**Viewport:** 768, 1440
+
+**Problem:**
+- The first secondary image sits 45px below the lead image top.
+- "Όλα τα άρθρα" sits between a full-width rule and its own underline, 61px apart.
+
+**Evidence:** `audit/p2-home-journal-offsets-1440-dark.png`
+
+**Root cause:**
+- the secondary-column top spacing in `home.css`
+- `.latest-footer-actions`, which is still bordered at ≥768
+
+**Likely files:** `home.css`
+
+**Required change:**
+- Offset 0 (or a deliberate ≥96px stagger).
+- At ≥768, drop the `.latest-footer-actions` top border.
+
+**Must preserve:** the 1.35fr / .85fr split
+
+**Acceptance criteria:**
+1. At 1440, |leadImg.top − firstSecImg.top| ≤1px (or ≥96px).
+2. No two rules within 64px in `#latest`.
+
+**Verification:** Playwright probe at 768 and 1440.
+
+**Dependencies:** POLISH-03
+
+**Status (2026-09-23): DONE.**
+- `home.css`:
+  - The `.home-stories-shell__rail { padding-top: 45px }` offset is removed, along with its now-redundant mobile reset.
+  - The top border of `.latest-footer-actions` is removed at all widths. The "Όλα τα άρθρα" link keeps its own underline.
+- **Verified with Playwright:**
+  - The lead and first secondary image tops are equal at 1440 (1203 = 1203) and 768 (1582 = 1582).
+  - No two horizontal rules within 64px in `#latest`.
+  - Evidence: `audit/after/p3-01-*`.
+
+
+### [x] VIS-P3-02: Paddock strip on one line per side at 320
+
+**Priority:** P3
+
+**Surface:** home paddock strip
+
+**Viewport:** 320 (≤359)
+
+**Problem:** The slogan and the link each wrap to 2 lines, and the arrow is detached.
+
+**Evidence:** `audit/p2-paddock-strip-wrap-320-light.png`
+
+**Root cause:** No ≤359 step in `home.css`.
+
+**Likely files:** `home.css`
+
+**Required change:** At ≤359, reduce the slogan to `1.05rem` and shorten the link label, or stack the link under the slogan.
+
+**Must preserve:** the band, the slogan and the link
+
+**Acceptance criteria:** At 320, the slogan is 1 line and the link text plus arrow is 1 line.
+
+**Verification:** Playwright line count at 320.
+
+**Dependencies:** HOME-02
+
+**Status (2026-09-23): DONE.**
+- `home.css`:
+  - At ≤767px the slogan and the link are `white-space: nowrap`.
+  - In the existing ≤359px block the slogan drops to 1.05rem. The link keeps its .75rem floor.
+  - At 320 the parts measure 121 + 10 + 148 = 279px of 286px available.
+- **Verified with Playwright** at 320, 359 and 360: the slogan and the link are each one line (a 17px slogan box and a 44px link box), with no overflow. Evidence: `audit/after/p3-02-*`.
+
+
+### [x] VIS-P3-03: No orphan cell in the home cast at tablet
+
+**Priority:** P3
+
+**Surface:** home #about
+
+**Viewport:** 768 (576–991)
+
+**Problem:** In the 2-column list, #05 sits alone and leaves an empty half.
+
+**Evidence:** `audit/p2-home-cast-orphan-768-light.png`
+
+**Root cause:** The `home.css` cast grid is `repeat(2,1fr)` at 576–991.
+
+**Likely files:** `home.css`
+
+**Required change:** Use a single column at 576–991, or span the last odd item across both columns.
+
+**Must preserve:** the numbered rows and portraits
+
+**Acceptance criteria:** At 768, no cast grid row has an empty cell.
+
+**Verification:** Playwright at 768.
+
+**Dependencies:** none
+
+**Status (2026-09-23): DONE.**
+- `home.css` (576–991px, 2-column cast): `.team-member:last-child:nth-child(odd) { grid-column: 1 / -1; }`. The fifth member spans the row with its rule, instead of leaving an empty half.
+- **Verified with Playwright** at 768 and 991: 3 rows, 0 empty cells.
+- The ≥992 staggered 5-up layout and the ≤767 single column are unchanged.
+- Evidence: `audit/after/p3-03-*`.
+
+
+### [x] VIS-P3-04: One photo-corner rule
+
+**Priority:** P3
+
+**Surface:** archive cards, article related cards
+
+**Viewport:** all
+
+**Problem:**
+- Archive card images have a 4px radius on all corners.
+- Related card #2 has its cut corner at bottom-left instead of bottom-right.
+
+**Evidence:**
+- `audit/tour/blog-390-dark-02.png`
+- `audit/tour/article-390-dark-08.png`
+
+**Root cause:**
+- the archive image-wrapper radius in `archive-editorial.css`
+- the related `:nth-child` cut corner in `article-editorial.css`
+
+**Likely files:**
+- `blog-module/blog/archive-editorial.css`
+- `blog-module/blog/article-editorial.css`
+
+**Required change:**
+- Radius 0 on archive image wrappers, except the cut-corner card.
+- Related cut corner at bottom-right on the card DESIGN names (#3).
+
+**Must preserve:** the single cut corner
+
+**Acceptance criteria:** Every card image wrapper computes `0px` or a bottom-right-only radius.
+
+**Verification:** `RADIUS-SET` extended to image wrappers.
+
+**Dependencies:** GLOBAL-04
+
+**Status (2026-09-23): DONE.**
+- `blog-module/blog/archive-editorial.css`:
+  - Archive card image wrappers go from `var(--radius-media)` (4px on all corners) to `0`.
+  - The curated lead goes from `1px 1px var(--cut-lg) 1px` to `0 0 var(--cut-lg) 0`.
+- **Related cards, stale:** they already compute `0 0 40px` (bottom-right only) on card #3, as DESIGN specifies. The audit misread a 3-value shorthand as bottom-left. No change made.
+- **Verified with Playwright** at 390 and 1440 on the archive (12 cards), the article's related cards and the home journal: every image wrapper computes `0px` or a bottom-right-only radius.
+
+
+### [x] VIS-P3-05: Remove English and duplicate chrome copy
+
+**Priority:** P3
+
+**Surface:** home hero, article cover and TOC
+
+**Viewport:** all
+
+**Problem:**
+- "SCROLL TO EXPLORE" appears on the home hero.
+- The TOC label reads "Περιεχόμενα / Contents".
+- The category appears twice in the article cover.
+
+**Evidence:**
+- `audit/tour/home-1440-dark-00.png`
+- `audit/tour/article-390-dark-00.png`
+- `blog-module/blog/article-script.js:324`
+
+**Root cause:**
+- the `index.html` scroll link
+- `article-script.js:324`
+- the category item in `.article-meta`
+
+**Likely files:**
+- `index.html`
+- `blog-module/blog/article-script.js`
+- `blog-module/blog/template.html`
+
+**Required change:**
+- Greek label, or remove the scroll link.
+- TOC label "Περιεχόμενα".
+- Drop the category from the meta line.
+
+**Must preserve:**
+- the folio
+- the category link
+
+**Acceptance criteria:**
+1. No "SCROLL TO EXPLORE" or "/ Contents" text.
+2. `.article-header` shows the category name once.
+
+**Verification:** Text scan on home and two articles. Run goldens if the template changes.
+
+**Dependencies:** none
+
+**Status (2026-09-23): DONE.**
+- **Copy:**
+  - `index.html`: the hero scroll label "SCROLL TO EXPLORE" becomes "ΣΥΝΕΧΙΣΕ ΠΑΡΑΚΑΤΩ".
+  - `blog-module/blog/article-script.js`: the TOC label "Περιεχόμενα / Contents" becomes "Περιεχόμενα".
+- **Category once:** an idempotent step in `scripts/build/article-editorial.mjs` turns the cover's kicker pill into the category link, using the meta line's own href, and removes the duplicate category from the meta line.
+  - `article-render.js` `refreshArticleTaxonomy` now also refreshes the `<a>` form of the pill.
+  - `article-editorial.css` gives the pill a 44px target, the same row height as the back link, and an underline on hover.
+- **Restamp:** `stamp-html --stamp-articles` was run so the 352 articles reference the new `article-script` and CSS hashes. A second run is byte-identical. Goldens are updated (hashes only) and `test:blog` passes.
+- **Verified with Playwright** on `20260920W` and `20250303G` at 390 and 1440:
+  - The category name appears once in `.article-header`, as a link.
+  - No "SCROLL TO EXPLORE" or "Contents" text, and the TOC reads "Περιεχόμενα".
+  - Evidence: `audit/after/p3-05-*`.
+
+
+### [x] VIS-P3-06: Don't underline non-link text in archive cards
+
+**Priority:** P3
+
+**Surface:** blog archive cards
+
+**Viewport:** all
+
+**Problem:** The bottom-right category label is underlined but isn't a link.
+
+**Evidence:** `audit/tour/blog-1440-dark-02.png`
+
+**Root cause:** The underline rule on the category span in `archive-editorial.css`.
+
+**Likely files:** `blog-module/blog/archive-editorial.css`
+
+**Required change:** Remove the underline and use the category signal colour (see VIS-P2-05).
+
+**Must preserve:** the label position
+
+**Acceptance criteria:** Non-link text inside `.article-card` has no bottom border or underline.
+
+**Verification:** DOM probe.
+
+**Dependencies:** VIS-P2-05
+
+**Status (2026-09-23): DONE.**
+- `blog-module/blog/archive-editorial.css`: `.article-card-cat` loses its 1px bottom border.
+- The label keeps its category signal colour (VIS-P2-05). The whole card stays the single link.
+- **Verified with Playwright** at 390 and 1440 in both themes: 0 non-link text elements inside `.article-card` have a bottom border or underline.
+
+
+### [x] VIS-P3-07: 44px targets for footer, legal and back links
+
+**Priority:** P3
+
+**Surface:** footer (all routes), authors back link, cast name links
+
+**Viewport:** 390
+
+**Problem:**
+- Legal and footer links are 24px tall.
+- The wordmark link is 28px.
+- `.authors-directory-back` is 19px.
+- KEEP requires 44px.
+
+**Evidence:** `audit/sweep/metrics.json` → `*-390-*`.`targets`
+
+**Root cause:** Inline links without padding in `styles/editorial.css`, `styles/authors.css` and `home.css`.
+
+**Likely files:**
+- `styles/editorial.css`
+- `styles/authors.css`
+- `home.css`
+
+**Required change:** `min-height: 44px; display: inline-flex; align-items: center` (or equivalent `padding-block`).
+
+**Must preserve:** the visual size and spacing of the links
+
+**Acceptance criteria:** At 390, every `a` or `button` outside running text is ≥44px tall.
+
+**Verification:** Extend the `TARGETS` check to the footer and authors.
+
+**Dependencies:** none
+
+**Status (2026-09-23): DONE.**
+- `styles/editorial.css`: the shared standalone-link rule's floor goes from `min-height: 24px` to `44px` (KEEP §Components). It now also covers:
+  - `.footer-wordmark`
+  - `.authors-directory-back` (was 19px)
+  - `.author-profile__name a`
+  - `.author-profile__stories a`
+- **Verified with Playwright** at 390 on home, an article, `/authors/` and a filtered author page: 0 `a`/`button` elements outside running text are under 44px. Before, there were 10, 8, 27 and 8.
+- Footer and author-profile rhythm checked visually. Evidence: `audit/after/p3-07-*`.
+- **Not in scope:**
+  - The standings meta line's inline "Jolpica F1 / OpenF1" source links (running text).
+  - The privacy page links, owned by POLISH-01.
+
+
+### [x] VIS-P3-08: A standard focus ring on the archive search
+
+**Priority:** P3
+
+**Surface:** blog archive toolbar
+
+**Viewport:** all
+
+**Problem:**
+- The input's outline is removed.
+- The only cue is a 1px border hue change plus a 15%-alpha glow.
+
+**Evidence:** `audit/p2-search-focus-weak-1440-dark.png` compared with `audit/states/search-unfocused-1440-dark.png`
+
+**Root cause:** `blog-module/blog/archive-editorial.css:126-127` plus the shell `:focus-within` rule.
+
+**Likely files:** `blog-module/blog/archive-editorial.css`
+
+**Required change:** `.blog-search-shell:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; box-shadow: none }`
+
+**Must preserve:** the search shell
+
+**Acceptance criteria:** When the input has keyboard focus, the shell computes `outline-width: 2px` and `box-shadow: none`.
+
+**Verification:** Playwright keyboard focus test in both themes.
+
+**Dependencies:** GLOBAL-05
+
+**Status (2026-09-23): DONE.**
+- `blog-module/blog/archive-editorial.css`: `.blog-search-shell:focus-within` now draws `outline: 2px solid var(--accent); outline-offset: 3px`, the same ring as every other control. The `box-shadow` glow is removed.
+- **Verified with Playwright** with keyboard focus (Tab) at 390 and 1440 in both themes:
+  - The shell computes `outline-width: 2px` and `box-shadow: none`.
+  - The ring is fully visible; the only clipping ancestor is the page wrapper's `overflow-x: clip`.
+  - Evidence: `audit/after/p3-08-*`.
+
+
+### [x] VIS-P3-09: Monotonic hero headline scale between tablet and desktop
+
+**Priority:** P3
+
+**Surface:** home hero
+
+**Viewport:** 768, 1024
+
+**Problem:** The h1 is 46.1px at 768 but 44.0px at 1024.
+
+**Evidence:** probe values in VISUAL_AUDIT §VIS-P3-09
+
+**Root cause:** `home.css:314` (≤991 clamp) against `home.css:67` (`4.3vw`).
+
+**Likely files:** `home.css`
+
+**Required change:** Raise the base clamp floor so 992px yields ≥46px, or lower the ≤991 maximum.
+
+**Must preserve:** the RESP-01 tablet recomposition
+
+**Acceptance criteria:** The hero h1 font-size is non-decreasing across 320, 390, 768, 1024, 1440 and 1920.
+
+**Verification:** Playwright probe across the matrix.
+
+**Dependencies:** VIS-P1-07
+
+**Status (2026-09-23): DONE.**
+- `home.css`: the three hero h1 clamps are aligned so the size never shrinks as the viewport grows:
+  - phone (≤767) cap `3rem` → `2.875rem`
+  - tablet (≤991) cap `3.4rem` → `2.9rem`
+  - desktop floor `2.5rem` → `2.9rem`
+- **Verified with Playwright** across 320, 390, 560, 767, 768, 991, 992, 1024, 1080, 1440, 1600 and 1920:
+
+  | Width | h1 size |
+  |---|---|
+  | 320 | 32 |
+  | 390 | 33.15 |
+  | 560 | 46 |
+  | 767 | 46 |
+  | 768 | 46.08 |
+  | 991–1024 | 46.4 |
+  | 1080 | 46.44 |
+  | 1440 | 61.9 |
+  | 1600–1920 | 68 |
+
+  - The size is non-decreasing across the matrix, including the 767/768 and 991/992 boundaries, which dropped by 2 and 12px before.
+  - The CTA stays above the fold at 1024×768 (726px) and 992×900 (780px).
+  - VIS-P1-07 still holds: 5 lines, CTA at 890px at 1600/1920.
+
 
 ---
 

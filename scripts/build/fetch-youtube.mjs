@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { XMLParser } from 'fast-xml-parser';
+import sharp from 'sharp';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -159,7 +160,28 @@ function snapshotKey(payload) {
     ]);
 }
 
+// The homepage "ON AIR." facade shows the episode's own frame, self-hosted so the
+// page makes no YouTube request before the reader presses play.
+async function ensureFacadeThumbnail() {
+    const html = fs.readFileSync(path.join(REPO_ROOT, 'index.html'), 'utf8');
+    const id = normalizeVideoId(html.match(/class="home-video-facade"[^>]*data-video-id="([^"]+)"/)?.[1]);
+    if (!id) return;
+    const target = path.join(REPO_ROOT, 'images', 'youtube', `${id}.webp`);
+    if (fs.existsSync(target)) return;
+    for (const size of ['maxresdefault', 'hqdefault']) {
+        const response = await fetch(`https://i.ytimg.com/vi/${id}/${size}.jpg`, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
+        if (!response.ok) continue;
+        fs.mkdirSync(path.dirname(target), { recursive: true });
+        await sharp(Buffer.from(await response.arrayBuffer())).resize({ width: 800, height: 450, fit: 'cover' }).webp({ quality: 72 }).toFile(target);
+        console.log(`Wrote ${path.relative(REPO_ROOT, target)}.`);
+        return;
+    }
+    console.warn(`No YouTube thumbnail available for ${id}.`);
+}
+
 async function main() {
+    await ensureFacadeThumbnail().catch(error => console.warn(`Facade thumbnail skipped: ${error.message || error}`));
+    if (process.argv.includes('--thumbnail-only')) return;
     const xml = await fetchFeedXml();
     const feed = parser.parse(xml)?.feed || {};
     const videos = toArray(feed.entry)

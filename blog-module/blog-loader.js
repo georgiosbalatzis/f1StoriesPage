@@ -264,6 +264,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const category = categoryText(post);
         const categoryEl = document.getElementById('hero-category');
         const titleEl = document.getElementById('hero-title');
+        const deckEl = document.getElementById('hero-story-deck');
         const excerptEl = document.getElementById('hero-story-excerpt');
         const bylineEl = document.getElementById('hero-story-byline');
         const linkEl = document.getElementById('hero-story-link');
@@ -279,7 +280,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 titleEl.appendChild(periodEl);
             }
         }
-        if (excerptEl) excerptEl.textContent = post.excerpt || '';
+        if (deckEl) deckEl.textContent = post.deck || '';
+        if (excerptEl) excerptEl.textContent = post.lede || '';
         if (bylineEl) bylineEl.textContent = authorText(post) + ' · ' + dateText(post, 'long');
         if (linkEl) linkEl.href = href;
         syncHeroMedia(post);

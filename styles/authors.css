@@ -42,8 +42,10 @@
 .author-profile__archive:hover, .author-profile__social:hover { color: var(--text-primary); }
 .author-directory.is-focused { display: block; }
 .author-directory.is-focused .author-profile:not(.is-selected) { display: none; }
-.author-directory.is-focused .author-profile.is-selected { grid-template-columns: minmax(180px, 260px) minmax(0, 1fr); max-width: 960px; margin: 0 auto; padding: clamp(24px, 4vw, 48px) 0; border-top-color: var(--accent); transform: none; }
-.author-directory.is-focused .author-profile.is-selected .author-profile__name { font-size: clamp(1.8rem, 4vw, 3rem); }
+.author-directory.is-focused .author-profile.is-selected { grid-template-columns: minmax(180px, 260px) minmax(0, 1fr); padding: clamp(24px, 4vw, 48px) 0; border-top-color: var(--accent); transform: none; }
+/* The page h1 already names the selected author. */
+.author-directory.is-focused .author-profile.is-selected .author-profile__name { display: none; }
+.authors-intro__copy[hidden] { display: none; }
 .author-directory.is-focused .author-profile.is-selected .author-profile__bio { max-width: 60ch; font-size: 1rem; }
 @media (min-width: 768px) and (max-width: 991px) {
   .author-directory { grid-template-columns: 1fr; gap: 22px; }

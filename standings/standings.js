@@ -48,6 +48,8 @@ const standingsTablist = document.querySelector('.standings-tabs');
 const standingsTabs = Array.prototype.slice.call(document.querySelectorAll('.standings-tab'));
 const standingsReportSelector = document.getElementById('standings-report-selector');
 const standingsReportMetaStatus = document.getElementById('standings-report-meta-status');
+const standingsDataStatus = document.getElementById('standings-data-status');
+const standingsLiveDot = document.querySelector('.standings-timing-band .live-dot');
 const standingsPanels = Array.prototype.slice.call(document.querySelectorAll('.standings-panel'));
 const shareFeedback = document.getElementById('share-feedback');
 const clearCacheButton = document.getElementById('standings-clear-cache');
@@ -977,6 +979,25 @@ function standingsSignature(season, round, driverStandings, constructorStandings
     return [season || '', round || '', drivers, constructors].join('::');
 }
 
+// The timing band names its data source: the tracked snapshot (with its date)
+// until the live API answers, and says so when it doesn't. Labels stay short
+// enough to share the band's single line with the season at 320px.
+function setStandingsDataStatus(state) {
+    if (!standingsDataStatus) return;
+    const updated = new Date(latestStandingsMeta.updatedAt);
+    const snapshot = 'Στιγμιότυπο' + (Number.isFinite(updated.getTime())
+        ? ' ' + updated.toLocaleDateString('el-GR', { day: 'numeric', month: 'short' })
+        : '');
+    const labels = {
+        live: 'Live δεδομένα',
+        snapshot: snapshot,
+        stale: snapshot + ' · χωρίς live',
+        error: 'Χωρίς δεδομένα'
+    };
+    standingsDataStatus.textContent = labels[state];
+    if (standingsLiveDot) standingsLiveDot.hidden = state !== 'live';
+}
+
 function renderStandingsPayload(driverData, constructorData, meta) {
     const dList = getStandingsLists(driverData);
     const cList = getStandingsLists(constructorData);
@@ -989,12 +1010,16 @@ function renderStandingsPayload(driverData, constructorData, meta) {
     const season = dList[0].season;
     const signature = standingsSignature(season, round, dStandings, cStandings);
 
-    if (signature && signature === latestStandingsSignature) return false;
+    const source = meta && meta.source ? meta.source : 'Jolpica F1';
+
+    // Same data from a different source still re-renders, so the "Πηγή" cells follow the band.
+    if (signature && signature === latestStandingsSignature && source === latestStandingsMeta.source) return false;
     latestStandingsSignature = signature;
     latestStandingsMeta = {
         updatedAt: meta && meta.updatedAt ? meta.updatedAt : latestStandingsMeta.updatedAt,
-        source: meta && meta.source ? meta.source : 'Jolpica F1'
+        source: source
     };
+    setStandingsDataStatus(meta && meta.live ? 'live' : 'snapshot');
 
     document.getElementById('season-year').textContent = season || YEAR;
     if (round) {
@@ -1035,11 +1060,13 @@ function renderPrimaryStandings(useFallback) {
     return fetchPrimaryStandings().then(function(payload) {
         renderStandingsPayload(payload.driverStandings, payload.constructorStandings, {
             updatedAt: new Date().toISOString(),
-            source: 'Jolpica F1 live'
+            source: 'Jolpica F1 · live',
+            live: true
         });
     }).catch(function(err) {
         if (!useFallback) {
             console.warn('Live standings refresh skipped:', err);
+            setStandingsDataStatus('stale');
             return;
         }
         console.error('Standings error:', err);
@@ -1060,7 +1087,7 @@ function loadStandingsSnapshot() {
         validateStandingsSnapshotPayload(snapshot);
         renderStandingsPayload(snapshot.driverStandings, snapshot.constructorStandings, {
             updatedAt: snapshot.generatedAt || '',
-            source: snapshot.source && snapshot.source.name ? snapshot.source.name : 'Jolpica F1 snapshot'
+            source: snapshot.source && snapshot.source.name ? snapshot.source.name : 'Jolpica F1 · στιγμιότυπο'
         });
         scheduleLiveStandingsRefresh();
     });
@@ -1101,11 +1128,13 @@ function loadFromOpenF1Fallback() {
             validateOpenF1ArrayPayload(r[2], 'OpenF1 drivers');
             renderDriversFromOpenF1(r[0], r[2]);
             renderConstructorsFromOpenF1(r[1], r[2]);
+            setStandingsDataStatus('live');
         })
         .catch(function(err) {
             console.error('OpenF1 fallback failed:', err);
             showError(driversTable);
             showError(constructorsTable);
+            setStandingsDataStatus('error');
         });
 }
 
