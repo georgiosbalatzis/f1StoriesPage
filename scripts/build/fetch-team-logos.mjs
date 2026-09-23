@@ -65,12 +65,13 @@ async function main() {
 
         const remoteUrl = `${baseUrl}/${team.remoteSlug}/2026${team.remoteSlug}logo.webp`;
         const buffer = await downloadBuffer(remoteUrl);
+        // Keep the logo's own bounds: padding it into a square canvas made it tiny in the badge boxes.
         await sharp(buffer)
             .rotate()
+            .trim()
             .resize(320, 320, {
-                fit: 'contain',
-                withoutEnlargement: true,
-                background: { r: 0, g: 0, b: 0, alpha: 0 }
+                fit: 'inside',
+                withoutEnlargement: true
             })
             .webp({ quality: 82, effort: 6 })
             .toFile(outputPath);
