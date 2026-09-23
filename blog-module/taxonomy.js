@@ -1,0 +1,176 @@
+(function (root, factory) {
+    'use strict';
+    const taxonomy = factory();
+    if (typeof module === 'object' && module.exports) module.exports = taxonomy;
+    else root.F1S_TAXONOMY = taxonomy;
+}(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+    'use strict';
+
+    const PUBLIC_CATEGORIES = Object.freeze([
+        'News', 'Analysis', 'Technical', 'History', 'Opinion', 'Betting', 'Drivers', 'Teams', '2026'
+    ]);
+    const aliases = Object.freeze({
+        news: 'News', 'race news': 'News', 'f1 news': 'News',
+        analysis: 'Analysis', 'race analysis': 'Analysis', 'race review': 'Analysis', head2head: 'Analysis', 'head to head': 'Analysis',
+        technical: 'Technical', tech: 'Technical', technology: 'Technical', 'technical analysis': 'Technical',
+        history: 'History', historical: 'History', 'racing history': 'History', 'f1 history': 'History',
+        legend: 'History', legends: 'History', 'f1 legend': 'History', 'f1 legends': 'History',
+        'racing legend': 'History', 'racing legends': 'History', 'le mans legends': 'History', 'wrc legend': 'History', 'mclaren history': 'History',
+        opinion: 'Opinion', opinions: 'Opinion', editorial: 'Opinion', commentary: 'Opinion',
+        betting: 'Betting', bet: 'Betting', betcast: 'Betting', 'bet cast': 'Betting',
+        drivers: 'Drivers', driver: 'Drivers', teams: 'Teams', team: 'Teams',
+        '2026': '2026', '2026 season': '2026', 'season 2026': '2026', '2026 championship': '2026', 'f1 2026': '2026'
+    });
+    const legacyTeams = new Set([
+        'ferrari', 'redbull', 'red bull', 'mclaren', 'mercedes', 'audi', 'cadillac',
+        'sauber', 'honda', 'astonmartin', 'aston martin', 'lotus', 'williams', 'alpine', 'haas', 'rb'
+    ]);
+
+    // Reviewed legacy series whose source headers contain only "F1 Racing".
+    // These migrations apply only without a specific category; modern categories always win.
+    const LEGACY_CATEGORY_OVERRIDES = Object.freeze({
+        '20260523J': 'Betting', // Betcast #264
+        '20260606J': 'Betting', // Betcast #265
+        '20260719J': 'Betting', // Betcast #269
+        '20260822J': 'Betting', // Betcast #271
+        '20260507D': 'Opinion', // Μέσα από το F1λτρο μου
+        '20260526D': 'Opinion',
+        '20260607D': 'Opinion',
+        '20260701D': 'Opinion',
+        '20260706D': 'Opinion',
+        '20260726D': 'Opinion',
+        '20260824D': 'Opinion'
+    });
+
+    // Display layer. Data, URLs and filters keep the canonical values above;
+    // only the text a reader sees is Greek.
+    const CATEGORY_LABELS = Object.freeze({
+        News: 'Ειδήσεις', Analysis: 'Ανάλυση', Technical: 'Τεχνικά', History: 'Ιστορία', Opinion: 'Άποψη',
+        Betting: 'Στοίχημα', Drivers: 'Οδηγοί', Teams: 'Ομάδες', '2026': '2026'
+    });
+    const AUTHOR_LABELS = Object.freeze({
+        'Georgios Balatzis': 'Γιώργος Μπαλατζής',
+        'Giannis Poulikidis': 'Γιάννης Πουλικίδης',
+        'Themis Charvalis': 'Θέμης Χαρβάλης',
+        'Thanasis Batalas': 'Θανάσης Μπαταλάς',
+        'Dimitris Keramidiotis': 'Δημήτρης Κεραμιδιώτης'
+    });
+    // Fixed month tables keep build (Node ICU) and browser output identical.
+    const MONTHS_SHORT = ['Ιαν', 'Φεβ', 'Μαρ', 'Απρ', 'Μαΐ', 'Ιουν', 'Ιουλ', 'Αυγ', 'Σεπ', 'Οκτ', 'Νοε', 'Δεκ'];
+    const MONTHS_LONG = ['Ιανουαρίου', 'Φεβρουαρίου', 'Μαρτίου', 'Απριλίου', 'Μαΐου', 'Ιουνίου', 'Ιουλίου',
+        'Αυγούστου', 'Σεπτεμβρίου', 'Οκτωβρίου', 'Νοεμβρίου', 'Δεκεμβρίου'];
+
+    function categoryLabel(value) {
+        return Object.prototype.hasOwnProperty.call(CATEGORY_LABELS, value) ? CATEGORY_LABELS[value] : String(value || '');
+    }
+
+    function authorLabel(name) {
+        const key = String(name || '').trim();
+        return Object.prototype.hasOwnProperty.call(AUTHOR_LABELS, key) ? AUTHOR_LABELS[key] : key;
+    }
+
+    /** "2026-09-20" → "20 Σεπ 2026" (short) or "20 Σεπτεμβρίου 2026" (long). */
+    function formatDate(value, style) {
+        const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value || ''));
+        if (!match) return String(value || '');
+        const months = style === 'long' ? MONTHS_LONG : MONTHS_SHORT;
+        return `${Number(match[3])} ${months[Number(match[2]) - 1]} ${match[1]}`;
+    }
+
+    /** Accepts 4, "4", "4 min" or "4 λεπ" and returns "4 λεπτά" (or "1 λεπτό"). */
+    function formatReadingTime(value) {
+        const minutes = parseInt(String(value || '').replace(/[^\d]/g, ''), 10);
+        if (!minutes) return '';
+        return minutes === 1 ? '1 λεπτό' : `${minutes} λεπτά`;
+    }
+
+    // Every "<name>-card.webp" (400w) ships with "<name>-mobile.webp" (800w) and
+    // "<name>.webp" (1600w); the public artifact copies them together. Leads may
+    // ask for the 1600w original; grid cards stop at 800w to keep bytes sane.
+    const CARD_SIZES = Object.freeze({
+        archiveLead: '(min-width: 1200px) 780px, (min-width: 768px) 55vw, 100vw',
+        archiveCard: '(min-width: 1200px) 430px, (min-width: 768px) 50vw, 100vw',
+        homeLead: '(min-width: 1200px) 640px, (min-width: 768px) 55vw, 100vw',
+        // 16:9 cards cropped into a 104px square on phones need ~185px of width.
+        homeSecondary: '(max-width: 767px) 185px, 400px',
+        related: '(max-width: 767px) 40vw, 390px'
+    });
+    function cardImageSrcset(url, includeFull) {
+        const match = /^(.*)-card\.webp$/.exec(String(url || ''));
+        if (!match) return '';
+        return `${match[1]}-card.webp 400w, ${match[1]}-mobile.webp 800w${includeFull ? `, ${match[1]}.webp 1600w` : ''}`;
+    }
+
+    function comparisonKey(value) {
+        return value.normalize('NFC').toLowerCase().replace(/ς/g, 'σ');
+    }
+
+    /** Split legacy delimiter artifacts without losing multiword names or Unicode text. */
+    function normalizeTags(values) {
+        const tags = [];
+        const seen = new Set();
+        function visit(value) {
+            if (Array.isArray(value)) {
+                value.forEach(visit);
+                return;
+            }
+            if (typeof value !== 'string' && typeof value !== 'number') return;
+            String(value).split(/[,;|\r\n]+/).forEach(part => {
+                const tag = part.normalize('NFC')
+                    .replace(/[-_\u2010-\u2015]+/g, ' ')
+                    .replace(/^\s*#+\s*/, '')
+                    .replace(/\s+/g, ' ').trim();
+                const key = comparisonKey(tag);
+                if (!tag || seen.has(key)) return;
+                seen.add(key);
+                tags.push(tag);
+            });
+        }
+        visit(values);
+        return tags;
+    }
+
+    /** Public labels are canonical, case-sensitive values; aliases are input-only. */
+    function isPublicCategory(value) {
+        return PUBLIC_CATEGORIES.includes(value);
+    }
+
+    function normalizeCategories(values) {
+        const selected = new Set(normalizeTags(values).map(value => aliases[comparisonKey(value)]).filter(Boolean));
+        return PUBLIC_CATEGORIES.filter(category => selected.has(category));
+    }
+
+    function getPostTaxonomy(post) {
+        const record = post && typeof post === 'object' ? post : {};
+        const suppliedCategories = normalizeTags(record.categories);
+        const modern = Array.isArray(record.categories) && suppliedCategories.length > 0 && suppliedCategories.every(isPublicCategory);
+        const sourceTags = normalizeTags([record.tags, record.tag]);
+        if (modern) {
+            const categories = normalizeCategories(suppliedCategories);
+            const category = categories.includes(record.category) ? record.category : categories[0];
+            // Explicit tags are internal metadata, even when a tag resembles a category.
+            const tags = Object.prototype.hasOwnProperty.call(record, 'tags') ? normalizeTags(record.tags) : sourceTags;
+            return { category, categories, tags };
+        }
+
+        const legacyCategoryTags = normalizeTags([record.categories, record.category]);
+        const allTags = normalizeTags([sourceTags, legacyCategoryTags]);
+        let categories = normalizeCategories(allTags);
+        if (legacyCategoryTags.length && legacyCategoryTags.every(value => legacyTeams.has(comparisonKey(value)))) {
+            categories = normalizeCategories([categories, 'Teams']);
+        }
+        if (!categories.length) {
+            categories = [Object.prototype.hasOwnProperty.call(LEGACY_CATEGORY_OVERRIDES, record.id) ? LEGACY_CATEGORY_OVERRIDES[record.id] : 'News'];
+        }
+        const explicitCategory = normalizeCategories(record.category);
+        const category = explicitCategory.length === 1 && categories.includes(explicitCategory[0]) ? explicitCategory[0] : categories[0];
+        const explicitTagKeys = new Set(normalizeTags(record.tags).map(comparisonKey));
+        const tags = allTags.filter(tag => explicitTagKeys.has(comparisonKey(tag)) || !normalizeCategories(tag).includes(tag));
+        return { category, categories, tags };
+    }
+
+    return Object.freeze({
+        PUBLIC_CATEGORIES, LEGACY_CATEGORY_OVERRIDES, normalizeTags, normalizeCategories, isPublicCategory, getPostTaxonomy,
+        categoryLabel, authorLabel, formatDate, formatReadingTime, cardImageSrcset, CARD_SIZES
+    });
+}));

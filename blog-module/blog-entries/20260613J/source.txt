@@ -1,0 +1,15 @@
+F1 Betcast
+
+Betcast #266: Οι προβλέψεις για το GP της Catalunya
+
+Οι προβλέψεις για το GP της Catalunya . 
+
+Για την Pole Position έχουμε δύο επιλογές.
+Lando Norris σε απόδοση 7,70 και George Russell σε απόδοση 2,52 όπου είναι και το φαβορί.
+Στην διαφορά του νικητή έχουμε 0,0 - 0,1 σε απόδοση 2,80.
+
+Στον αγώνα θα δώσουμε 3 επιλογές. 
+Για το Τοπ 10 θα δώσουμε μία επιλογή στον Oliver Bearman στην πολύ καλή απόδοση 7,20.
+Συνδυασμό των πρωτοπορων θα επιλέηουμε άλλον συνδυασμό από αυτούς που θα εκκινήσουν στο 1-2 σε απόδοση 2,00.  Τέλος θα κλείσουμε με την κατάταξη των μονοθεσίων να είναι 17-18.
+
+<iframe src="https://georgiosbalatzis.github.io/BetCastVisualisation/?viz=dataTable&week=7&embed=1" title="BetCast F1Stories" loading="lazy" style="width:100%;min-height:960px;border:0;"></iframe>

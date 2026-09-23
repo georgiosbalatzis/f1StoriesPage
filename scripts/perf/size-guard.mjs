@@ -1,0 +1,295 @@
+#!/usr/bin/env node
+// size-guard.mjs — compare tracked file sizes against perf/size-budget.json.
+//
+// Usage:
+//   node scripts/perf/size-guard.mjs              # check; exit 1 if any file >10% over budget
+//   node scripts/perf/size-guard.mjs --update     # rewrite the budget with current sizes
+//   node scripts/perf/size-guard.mjs --threshold 15   # custom tolerance %
+//
+// Designed for the pre-commit hook and the CI perf gate. No deps.
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
+const BUDGET_PATH = path.join(REPO_ROOT, 'perf', 'size-budget.json');
+
+const SOURCE_FILES = [
+    'styles.css',
+    'home.css',
+    'theme-overrides.css',
+    'styles/shared-nav.css',
+    'styles/critical-common.css',
+    'styles/critical-standings.css',
+    'styles/fonts.css',
+    'styles/vendor/bootstrap.slim.css',
+    'blog-module/blog-styles.css',
+    'blog-module/blog/article-styles.css',
+    'standings/standings.css',
+    // Phase 7: per-tab stylesheets lazily injected by standings.js.
+    'standings/tabs/quali-gaps.css',
+    'standings/tabs/lap1-gains.css',
+    'standings/tabs/tyre-pace.css',
+    'standings/tabs/dirty-air.css',
+    'standings/tabs/track-dominance.css',
+    'standings/tabs/pit-stops.css',
+    'standings/tabs/debrief.css',
+    'standings/tabs/destructors.css',
+    'standings/standings.js',
+    'standings/core/format.js',
+    'standings/core/teams.js',
+    'standings/core/drivers-meta.js',
+    'standings/core/cache.js',
+    'standings/core/fetchers.js',
+    'standings/core/lifecycle.js',
+    'standings/core/payloads.js',
+    'standings/core/rendering.js',
+    // Phase 6C: per-tab ES modules. _shared holds the leaf helpers the tab
+    // modules pull in; steps 1-8 extracted destructors, pit-stops,
+    // quali-gaps, lap1-gains, tyre-pace, dirty-air, track-dominance,
+    // and debrief.
+    'standings/tabs/_shared.js',
+    'standings/tabs/destructors.js',
+    'standings/tabs/pit-stops.js',
+    'standings/tabs/quali-gaps.js',
+    'standings/tabs/lap1-gains.js',
+    'standings/tabs/tyre-pace.js',
+    'standings/tabs/dirty-air.js',
+    'standings/tabs/track-dominance.js',
+    'standings/tabs/debrief.js',
+    'scripts/analytics.js',
+    'scripts/f1-optimized.js',
+    'scripts/shared-nav.js',
+    'scripts/sw-register.js',
+    'scripts/cookie-consent.js',
+    'scripts/background-randomizer.js',
+    'scripts/perf/error-beacon.js',
+    'scripts/perf/web-vitals-beacon.js',
+    'blog-module/blog-loader.js',
+    'blog-module/blog-index.js',
+    'blog-module/blog-index-page-1.json',
+    'blog-module/blog-index-data.json',
+    'blog-module/blog/article-script.js',
+    'blog-module/blog-fixes.js',
+    'blog-module/blog-processor.js',
+    'blog-module/build/shared.js',
+    'blog-module/build/metadata.js',
+    'blog-module/build/csv-to-table.js',
+    'blog-module/build/embeds.js',
+    'blog-module/build/embed-render.js',
+    'blog-module/build/media.js',
+    'blog-module/build/parse-docx.js',
+    'blog-module/build/parse-txt.js',
+    'blog-module/build/related.js',
+    'blog-module/build/nav.js',
+    'blog-module/build/sitemap.js',
+    'blog-module/build/worker.js',
+    'blog-module/build/index.js',
+    'blog-module/build/__tests__/golden.js',
+    'blog-module/build/__tests__/run-golden.js',
+    'scripts/build/fetch-youtube.mjs',
+    'sw.js',
+    'manifest.json',
+    'assets/youtube-latest.json',
+    'images/icons/sprite.svg'
+];
+
+const MINIFIED_JS_SOURCES = new Set([
+    'standings/standings.js',
+    'standings/tabs/destructors.js',
+    'standings/tabs/pit-stops.js',
+    'standings/tabs/quali-gaps.js',
+    'standings/tabs/lap1-gains.js',
+    'standings/tabs/tyre-pace.js',
+    'standings/tabs/dirty-air.js',
+    'standings/tabs/track-dominance.js',
+    'standings/tabs/debrief.js',
+    'scripts/analytics.js',
+    'scripts/f1-optimized.js',
+    'scripts/shared-nav.js',
+    'scripts/sw-register.js',
+    'scripts/cookie-consent.js',
+    'scripts/background-randomizer.js',
+    'scripts/perf/error-beacon.js',
+    'scripts/perf/web-vitals-beacon.js',
+    'blog-module/blog-loader.js',
+    'blog-module/blog-index.js',
+    'blog-module/blog/article-script.js',
+    'blog-module/blog-fixes.js'
+]);
+
+// Every browser CSS source in SOURCE_FILES is emitted by scripts/build/minify.mjs.
+// JS is explicit because SOURCE_FILES also budgets Node-only build/test scripts.
+function deriveMinSiblings(files) {
+    return files
+        .filter(f =>
+            f.endsWith('.css')
+            || MINIFIED_JS_SOURCES.has(f)
+        )
+        .map(f => f.replace(/\.(css|js)$/, '.min.$1'));
+}
+
+const TRACKED_GLOBS = [...SOURCE_FILES, ...deriveMinSiblings(SOURCE_FILES)];
+
+function parseArgs(argv) {
+    const args = { update: false, threshold: 10 };
+    for (let i = 2; i < argv.length; i++) {
+        const a = argv[i];
+        if (a === '--update') args.update = true;
+        else if (a === '--threshold') args.threshold = Number(argv[++i]) || 10;
+    }
+    return args;
+}
+
+function fileSize(relPath) {
+    const abs = path.join(REPO_ROOT, relPath);
+    try { return fs.statSync(abs).size; }
+    catch { return null; }
+}
+
+function fmtBytes(b) {
+    if (b == null) return '—';
+    if (b < 1024) return `${b} B`;
+    if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`;
+    return `${(b / 1024 / 1024).toFixed(2)} MB`;
+}
+
+function loadBudget() {
+    if (!fs.existsSync(BUDGET_PATH)) return null;
+    return JSON.parse(fs.readFileSync(BUDGET_PATH, 'utf8'));
+}
+
+// Standings is an ESM graph: the shell and every tab entry are emitted once,
+// while shared code lives in hashed chunks. Keep route budgets independent of
+// the content hash so a new chunk cannot silently regress page startup.
+const STANDINGS_BUNDLE_BUDGET = {
+    shellBytes: 45 * 1024,
+    initialGraphBytes: 68 * 1024,
+    lazyEntryBytes: 34 * 1024,
+    sharedChunkBytes: 12 * 1024,
+    lazyTotalBytes: 190 * 1024
+};
+
+function checkStandingsBundleBudgets() {
+    const standingsDir = path.join(REPO_ROOT, 'standings');
+    const shellRel = 'standings/standings.min.js';
+    const shell = fileSize(shellRel);
+    if (shell == null) return [];
+    const files = fs.readdirSync(path.join(standingsDir, 'tabs'), { withFileTypes: true })
+        .filter(entry => entry.isFile() && entry.name.endsWith('.min.js'))
+        .map(entry => `standings/tabs/${entry.name}`);
+    const chunksDir = path.join(standingsDir, 'chunks');
+    const chunks = fs.existsSync(chunksDir)
+        ? fs.readdirSync(chunksDir, { withFileTypes: true })
+            .filter(entry => entry.isFile() && entry.name.endsWith('.min.js'))
+            .map(entry => `standings/chunks/${entry.name}`)
+        : [];
+    const directImports = fs.readFileSync(path.join(REPO_ROOT, shellRel), 'utf8')
+        .match(/(?:\.\/)?chunks\/[^"']+\.min\.js/g) || [];
+    const initialGraph = shell + [...new Set(directImports)].reduce((sum, spec) => {
+        return sum + fileSize(`standings/${spec.replace(/^\.\//, '')}`);
+    }, 0);
+    const violations = [];
+    if (shell > STANDINGS_BUNDLE_BUDGET.shellBytes) violations.push(`${shellRel} ${fmtBytes(shell)} > ${fmtBytes(STANDINGS_BUNDLE_BUDGET.shellBytes)}`);
+    if (initialGraph > STANDINGS_BUNDLE_BUDGET.initialGraphBytes) violations.push(`standings initial graph ${fmtBytes(initialGraph)} > ${fmtBytes(STANDINGS_BUNDLE_BUDGET.initialGraphBytes)}`);
+    for (const rel of files) {
+        const bytes = fileSize(rel);
+        if (bytes > STANDINGS_BUNDLE_BUDGET.lazyEntryBytes) violations.push(`${rel} ${fmtBytes(bytes)} > ${fmtBytes(STANDINGS_BUNDLE_BUDGET.lazyEntryBytes)}`);
+    }
+    for (const rel of chunks) {
+        const bytes = fileSize(rel);
+        if (bytes > STANDINGS_BUNDLE_BUDGET.sharedChunkBytes) violations.push(`${rel} ${fmtBytes(bytes)} > ${fmtBytes(STANDINGS_BUNDLE_BUDGET.sharedChunkBytes)}`);
+    }
+    const lazyTotal = [...files, ...chunks].reduce((sum, rel) => sum + fileSize(rel), 0);
+    if (lazyTotal > STANDINGS_BUNDLE_BUDGET.lazyTotalBytes) violations.push(`standings lazy total ${fmtBytes(lazyTotal)} > ${fmtBytes(STANDINGS_BUNDLE_BUDGET.lazyTotalBytes)}`);
+    return violations;
+}
+
+function writeBudget(budget) {
+    fs.mkdirSync(path.dirname(BUDGET_PATH), { recursive: true });
+    fs.writeFileSync(BUDGET_PATH, JSON.stringify(budget, null, 2) + '\n', 'utf8');
+}
+
+function main() {
+    const args = parseArgs(process.argv);
+    const current = {};
+    for (const rel of TRACKED_GLOBS) {
+        const size = fileSize(rel);
+        if (size != null) current[rel] = size;
+    }
+
+    if (args.update) {
+        const budget = {
+            updatedAt: new Date().toISOString(),
+            thresholdPercent: args.threshold,
+            note: 'Byte budgets for tracked JS/CSS/HTML assets. Run `npm run perf:budget` to check, `npm run perf:budget:update` to rewrite this file with current sizes. Threshold is the max % growth allowed before the check fails.',
+            files: current
+        };
+        writeBudget(budget);
+        console.log(`✓ budget updated: ${Object.keys(current).length} files, ${BUDGET_PATH}`);
+        return;
+    }
+
+    const budget = loadBudget();
+    if (!budget) {
+        console.error(`✗ ${BUDGET_PATH} missing. Run: node scripts/perf/size-guard.mjs --update`);
+        process.exit(2);
+    }
+
+    const threshold = budget.thresholdPercent ?? args.threshold;
+    const rows = [];
+    let violations = 0;
+    let newFiles = 0;
+
+    for (const rel of TRACKED_GLOBS) {
+        const curr = current[rel];
+        const base = budget.files[rel];
+        if (curr == null) {
+            rows.push({ rel, base, curr: null, delta: null, pct: null, status: 'MISSING' });
+            continue;
+        }
+        if (base == null) {
+            rows.push({ rel, base: null, curr, delta: null, pct: null, status: 'NEW' });
+            newFiles++;
+            continue;
+        }
+        const delta = curr - base;
+        const pct = base === 0 ? 0 : (delta / base) * 100;
+        const over = pct > threshold;
+        if (over) violations++;
+        rows.push({ rel, base, curr, delta, pct, status: over ? 'OVER' : 'ok' });
+    }
+
+    const nameW = Math.max(...rows.map(r => r.rel.length), 10);
+    console.log(`\nPerformance budget (threshold +${threshold}%):\n`);
+    console.log(`${'file'.padEnd(nameW)}  ${'baseline'.padStart(10)}  ${'current'.padStart(10)}  ${'Δ'.padStart(8)}  ${'Δ%'.padStart(7)}  status`);
+    console.log('-'.repeat(nameW + 46));
+    for (const r of rows) {
+        const pctStr = r.pct == null ? '   —  ' : `${r.pct >= 0 ? '+' : ''}${r.pct.toFixed(1)}%`;
+        const deltaStr = r.delta == null ? '   —  ' : `${r.delta >= 0 ? '+' : ''}${r.delta}`;
+        console.log(
+            `${r.rel.padEnd(nameW)}  ${fmtBytes(r.base).padStart(10)}  ${fmtBytes(r.curr).padStart(10)}  ${deltaStr.padStart(8)}  ${pctStr.padStart(7)}  ${r.status}`
+        );
+    }
+    console.log('');
+
+    if (violations > 0) {
+        console.error(`✗ ${violations} file(s) exceeded the +${threshold}% budget.`);
+        console.error('  Investigate or run: npm run perf:budget:update');
+        process.exit(1);
+    }
+    if (newFiles > 0) {
+        console.log(`ℹ ${newFiles} new file(s) not in budget yet. Run: npm run perf:budget:update`);
+    }
+    const standingsViolations = checkStandingsBundleBudgets();
+    if (standingsViolations.length) {
+        console.error('✗ standings bundle budget exceeded:');
+        standingsViolations.forEach(message => console.error(`  - ${message}`));
+        process.exit(1);
+    }
+    console.log('✓ all tracked files within budget.');
+}
+
+main();

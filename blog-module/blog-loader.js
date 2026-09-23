@@ -1,0 +1,595 @@
+// blog-loader.js — Handles homepage blog section only
+// The blog index page (index.html) has its own self-contained loader.
+// This script loads the 3 most recent posts for the homepage blog preview.
+
+document.addEventListener('DOMContentLoaded', function () {
+    const CACHE_KEY = 'f1s-home-blog-v2';
+    const CACHE_TTL = 15 * 60 * 1000;
+    const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+    const $ = sel => document.querySelector(sel);
+    let started = false;
+
+    // ── Build image path ────────────────────────────
+    function imgSrc(src) {
+        if (!src) return '/blog-module/images/default-blog.jpg';
+        if (src.startsWith('http')) return src;
+        return src.startsWith('/') ? src : '/' + src;
+    }
+
+    function heroSrc(post) {
+        const candidate = post && (post.heroImage || post.image || post.thumbnail);
+        if (!candidate) return '';
+        return imgSrc(candidate).replace(/-(?:card|sm)(?=\.[^.]+$)/i, '');
+    }
+
+    function setOptionalSrcset(element, value) {
+        if (!element) return;
+        if (value) element.setAttribute('srcset', value);
+        else element.removeAttribute('srcset');
+    }
+
+    function syncHeroMedia(post) {
+        const imageEl = document.getElementById('hero-image');
+        const avifSource = document.getElementById('hero-source-avif');
+        const webpSource = document.getElementById('hero-source-webp');
+        const preload = document.getElementById('hero-image-preload');
+        const image = heroSrc(post);
+        const avif = post && post.heroAvif ? imgSrc(post.heroAvif) : '';
+        const webp = /\.webp(?:\?.*)?$/i.test(image) ? image : '';
+
+        if (!imageEl || !image) return;
+
+        // A background rotation script used to leave an AVIF/srcset behind
+        // after the story metadata changed. Clear every responsive source
+        // before assigning the lead story so all browsers render the same
+        // image as the headline and preload.
+        setOptionalSrcset(avifSource, avif);
+        setOptionalSrcset(webpSource, webp);
+        imageEl.removeAttribute('srcset');
+        imageEl.src = image;
+        imageEl.alt = post.title || 'F1 Stories';
+        imageEl.sizes = '(max-width: 767px) 100vw, 55vw';
+        if (post.heroImageWidth || post.imageWidth) imageEl.width = parseInt(post.heroImageWidth || post.imageWidth, 10) || imageEl.width;
+        if (post.heroImageHeight || post.imageHeight) imageEl.height = parseInt(post.heroImageHeight || post.imageHeight, 10) || imageEl.height;
+
+        if (preload) {
+            preload.href = avif || image;
+            preload.removeAttribute('imagesrcset');
+            preload.setAttribute('imagesizes', '(max-width: 767px) 100vw, 55vw');
+        }
+    }
+
+    function dateParts(value) {
+        const match = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!match) return { day: '', month: '' };
+        const monthIndex = parseInt(match[2], 10) - 1;
+        return {
+            day: String(parseInt(match[3], 10) || ''),
+            month: MONTHS[monthIndex] || ''
+        };
+    }
+
+    function defaultThumbnail(id) {
+        return '/blog-module/blog-entries/' + encodeURIComponent(id || '') + '/1-card.webp';
+    }
+
+    function extractPosts(data) {
+        if (data && data.v === 2 && Array.isArray(data.p)) {
+            return data.p.map(row => {
+                const id = row[0] || '';
+                return {
+                    id: id,
+                    title: row[1] || '',
+                    date: row[3] || '',
+                    thumbnail: defaultThumbnail(id),
+                    thumbnailWidth: parseInt(row[4], 10) || 400,
+                    thumbnailHeight: parseInt(row[5], 10) || 188,
+                    excerpt: row[6] || ''
+                };
+            });
+        }
+        if (data && Array.isArray(data.posts)) return data.posts;
+        return Array.isArray(data) ? data : [];
+    }
+
+    // ── Fetch home-latest.json with fallback paths ────────
+    function readCachedBlogData() {
+        try {
+            const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY));
+            if (cached && cached.ts && Date.now() - cached.ts < CACHE_TTL && cached.data) {
+                return cached.data;
+            }
+        } catch (_) {}
+        return null;
+    }
+
+    function writeCachedBlogData(data) {
+        try {
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+                ts: Date.now(),
+                data: data
+            }));
+        } catch (_) {}
+    }
+
+    async function fetchBlogData() {
+        const cached = readCachedBlogData();
+
+        const paths = [
+            '/blog-module/home-latest.json',
+            'blog-module/home-latest.json',
+            '/blog-module/blog-index-data.json'
+        ];
+        for (const p of paths) {
+            try {
+                const r = await fetch(p, {
+                    cache: 'no-store',
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (r.ok) {
+                    const data = await r.json();
+                    writeCachedBlogData(data);
+                    return data;
+                }
+            } catch (_) { /* next */ }
+        }
+        if (cached) return cached;
+        throw new Error('Failed to fetch blog data');
+    }
+
+    // ── Render a single card ────────────────────────
+    document.addEventListener('error', function(event) {
+        var img = event.target;
+        if (!img || img.tagName !== 'IMG') return;
+        var fallback = img.getAttribute('data-fallback-src');
+        if (!fallback) return;
+        img.removeAttribute('data-fallback-src');
+        img.src = fallback;
+    }, true);
+
+    function createIcon(iconId) {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'icon');
+        svg.setAttribute('aria-hidden', 'true');
+        const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+        use.setAttribute('href', '#' + iconId);
+        svg.appendChild(use);
+        return svg;
+    }
+
+    function createMessageColumn(text, className) {
+        const col = document.createElement('div');
+        col.className = className || 'col-12 text-center';
+        const p = document.createElement('p');
+        p.style.color = 'var(--bs-text-muted)';
+        p.textContent = text;
+        col.appendChild(p);
+        return col;
+    }
+
+    function createLoadingColumn() {
+        const fragment = document.createDocumentFragment();
+        for (let i = 0; i < 3; i += 1) {
+            const card = document.createElement('div');
+            card.className = 'skeleton-card';
+            card.setAttribute('aria-hidden', 'true');
+            const image = document.createElement('div');
+            image.className = 'skeleton-img';
+            const body = document.createElement('div');
+            body.className = 'skeleton-body';
+            ['w40', 'w80', 'w60'].forEach(function (width) {
+                const line = document.createElement('div');
+                line.className = 'skeleton-line ' + width;
+                body.appendChild(line);
+            });
+            card.append(image, body);
+            fragment.appendChild(card);
+        }
+        return fragment;
+    }
+
+    function createStoryMeta(label, date) {
+        const meta = document.createElement('div');
+        meta.className = 'home-story-meta';
+
+        const labelEl = document.createElement('span');
+        labelEl.className = 'home-story-meta__label';
+        labelEl.textContent = label;
+
+        const dateEl = document.createElement('span');
+        dateEl.className = 'home-story-meta__date';
+        dateEl.textContent = date || '';
+
+        const sep = document.createElement('span');
+        sep.setAttribute('aria-hidden', 'true');
+        sep.textContent = '·';
+
+        meta.append(labelEl, sep, dateEl);
+        return meta;
+    }
+
+    // Canonical category drives the treatment classes; readers see the Greek
+    // label from the shared taxonomy (loaded before this script on home).
+    const TAXONOMY = window.F1S_TAXONOMY || null;
+
+    function categoryKey(post) {
+        return post.category || (post.categories && post.categories[0]) || 'News';
+    }
+
+    function categoryText(post) {
+        return TAXONOMY ? TAXONOMY.categoryLabel(categoryKey(post)) : categoryKey(post);
+    }
+
+    function authorText(post) {
+        const author = post.author || 'F1 Stories';
+        return TAXONOMY ? TAXONOMY.authorLabel(author) : author;
+    }
+
+    // Offer the 800w (and for the lead, 1600w) siblings of a card image.
+    function setCardSources(image, src, includeFull, sizesKey) {
+        const srcset = TAXONOMY && TAXONOMY.cardImageSrcset ? TAXONOMY.cardImageSrcset(src, includeFull) : '';
+        if (srcset) {
+            image.sizes = TAXONOMY.CARD_SIZES[sizesKey];
+            image.srcset = srcset;
+            // A missing candidate falls back to the plain card once.
+            image.addEventListener('error', function () { if (image.hasAttribute('srcset')) { image.removeAttribute('srcset'); image.src = src; } }, { once: true });
+        }
+        image.src = src;
+    }
+
+    function dateText(post, style) {
+        return TAXONOMY ? TAXONOMY.formatDate(post.date || '', style) : (post.date || '');
+    }
+
+    // Greek capitals drop the tonos: "Ειδήσεις" → "ΕΙΔΗΣΕΙΣ".
+    function greekUpper(value) {
+        return String(value || '').normalize('NFD').replace(/\u0301/g, '').toUpperCase().normalize('NFC');
+    }
+
+    function heroTitlePresentation(value) {
+        var title = String(value || '').trim();
+        if (title.endsWith('.') && !title.endsWith('..')) {
+            return { text: title.slice(0, -1), period: '.', showPeriod: true };
+        }
+        if (/[!?;…]$/.test(title) || title.endsWith('.')) {
+            return { text: title, period: '', showPeriod: false };
+        }
+        return { text: title, period: '.', showPeriod: true };
+    }
+
+    function renderHeroLead(post) {
+        if (!post) return;
+        const href = '/blog-module/blog-entries/' + encodeURIComponent(post.slug || post.id || '') + '/article.html';
+        const category = categoryText(post);
+        const categoryEl = document.getElementById('hero-category');
+        const titleEl = document.getElementById('hero-title');
+        const deckEl = document.getElementById('hero-story-deck');
+        const excerptEl = document.getElementById('hero-story-excerpt');
+        const bylineEl = document.getElementById('hero-story-byline');
+        const linkEl = document.getElementById('hero-story-link');
+        if (categoryEl) categoryEl.textContent = greekUpper(category);
+        if (titleEl) {
+            const periodEl = titleEl.querySelector('.hero-period');
+            const title = heroTitlePresentation(post.title);
+            titleEl.textContent = title.text;
+            if (periodEl) {
+                periodEl.textContent = title.period;
+                periodEl.hidden = !title.showPeriod;
+                periodEl.setAttribute('aria-hidden', 'true');
+                titleEl.appendChild(periodEl);
+            }
+        }
+        if (deckEl) deckEl.textContent = post.deck || '';
+        if (excerptEl) excerptEl.textContent = post.lede || '';
+        if (bylineEl) bylineEl.textContent = authorText(post) + ' · ' + dateText(post, 'long');
+        if (linkEl) linkEl.href = href;
+        syncHeroMedia(post);
+    }
+
+    function createBlogCard(post) {
+        const href = '/blog-module/blog-entries/' + encodeURIComponent(post.slug || post.id || '') + '/article.html';
+        const img = imgSrc(post.thumbnail || post.image);
+        const fallback = '/blog-module/images/default-blog.jpg';
+        const parts = dateParts(post.date);
+        const thumbWidth = parseInt(post.thumbnailWidth, 10) || 400;
+        const thumbHeight = parseInt(post.thumbnailHeight, 10) || 188;
+
+        const col = document.createElement('div');
+        col.className = 'col-md-4';
+        const link = document.createElement('a');
+        link.href = href;
+        link.className = 'blog-card-link';
+        const card = document.createElement('div');
+        card.className = 'blog-card';
+
+        const media = document.createElement('div');
+        media.className = 'blog-img-container';
+        const image = document.createElement('img');
+        image.src = img;
+        image.alt = post.title || '';
+        image.className = 'blog-img';
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        image.width = thumbWidth;
+        image.height = thumbHeight;
+        image.setAttribute('data-fallback-src', fallback);
+
+        const date = document.createElement('div');
+        date.className = 'blog-date';
+        const day = document.createElement('span');
+        day.className = 'day';
+        day.textContent = parts.day;
+        const month = document.createElement('span');
+        month.className = 'month';
+        month.textContent = parts.month;
+        date.append(day, month);
+        media.append(image, date);
+
+        const body = document.createElement('div');
+        body.className = 'blog-content';
+        const title = document.createElement('h3');
+        title.className = 'blog-title';
+        title.textContent = post.title || '';
+        const excerpt = document.createElement('p');
+        excerpt.className = 'blog-excerpt';
+        excerpt.textContent = post.excerpt || '';
+        const readMore = document.createElement('span');
+        readMore.className = 'blog-read-more';
+        readMore.append(document.createTextNode('Διάβασε '), createIcon('fa-arrow-right'));
+        body.append(title, excerpt, readMore);
+
+        card.append(media, body);
+        link.appendChild(card);
+        col.appendChild(link);
+        return col;
+    }
+
+    function createHomeLeadStory(post) {
+        const href = '/blog-module/blog-entries/' + encodeURIComponent(post.slug || post.id || '') + '/article.html';
+        const img = imgSrc(post.thumbnail || post.image);
+        const fallback = '/blog-module/images/default-blog.jpg';
+        const thumbWidth = parseInt(post.thumbnailWidth, 10) || 400;
+        const thumbHeight = parseInt(post.thumbnailHeight, 10) || 188;
+
+        const article = document.createElement('article');
+        article.className = 'home-lead-story home-story-treatment--' + categoryKey(post).toLowerCase();
+
+        const link = document.createElement('a');
+        link.href = href;
+        link.className = 'home-lead-story__link';
+
+        const media = document.createElement('div');
+        media.className = 'home-lead-story__media';
+        const image = document.createElement('img');
+        setCardSources(image, img, true, 'homeLead');
+        image.alt = post.title || '';
+        image.className = 'home-lead-story__image';
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        image.width = thumbWidth;
+        image.height = thumbHeight;
+        image.setAttribute('data-fallback-src', fallback);
+
+        const imageOverlay = document.createElement('div');
+        imageOverlay.className = 'home-lead-story__overlay';
+        const overlayMeta = document.createElement('span');
+        overlayMeta.className = 'home-lead-story__overlay-kicker';
+        overlayMeta.textContent = categoryText(post);
+        const overlayTitle = document.createElement('span');
+        overlayTitle.className = 'home-lead-story__overlay-title';
+        overlayTitle.textContent = post.title || '';
+        imageOverlay.append(overlayMeta, overlayTitle);
+        media.append(image, imageOverlay);
+
+        const body = document.createElement('div');
+        body.className = 'home-lead-story__body';
+        body.appendChild(createStoryMeta(authorText(post) + ' · ' + categoryText(post), dateText(post)));
+
+        const title = document.createElement('h3');
+        title.className = 'home-lead-story__title';
+        title.textContent = post.title || '';
+
+        const excerpt = document.createElement('p');
+        excerpt.className = 'home-lead-story__excerpt';
+        excerpt.textContent = post.excerpt || '';
+
+        const cta = document.createElement('span');
+        cta.className = 'home-lead-story__cta';
+        cta.append(document.createTextNode('Διάβασε '), createIcon('fa-arrow-right'));
+
+        body.append(title, excerpt, cta);
+        link.append(media, body);
+        article.appendChild(link);
+        return article;
+    }
+
+    function createHomeSecondaryStory(post) {
+        const href = '/blog-module/blog-entries/' + encodeURIComponent(post.slug || post.id || '') + '/article.html';
+        const img = imgSrc(post.thumbnail || post.image);
+        const fallback = '/blog-module/images/default-blog.jpg';
+        const thumbWidth = parseInt(post.thumbnailWidth, 10) || 400;
+        const thumbHeight = parseInt(post.thumbnailHeight, 10) || 188;
+
+        const article = document.createElement('article');
+        article.className = 'home-secondary-story home-story-treatment--' + categoryKey(post).toLowerCase();
+
+        const link = document.createElement('a');
+        link.href = href;
+        link.className = 'home-secondary-story__link';
+
+        const media = document.createElement('div');
+        media.className = 'home-secondary-story__media';
+        const image = document.createElement('img');
+        setCardSources(image, img, false, 'homeSecondary');
+        image.alt = post.title || '';
+        image.className = 'home-secondary-story__image';
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        image.width = thumbWidth;
+        image.height = thumbHeight;
+        image.setAttribute('data-fallback-src', fallback);
+        media.appendChild(image);
+
+        const body = document.createElement('div');
+        body.className = 'home-secondary-story__body';
+        body.appendChild(createStoryMeta(categoryText(post), dateText(post)));
+
+        const title = document.createElement('h3');
+        title.className = 'home-secondary-story__title';
+        title.textContent = post.title || '';
+
+        const excerpt = document.createElement('p');
+        excerpt.className = 'home-secondary-story__excerpt';
+        excerpt.textContent = post.excerpt || '';
+
+        body.append(title, excerpt);
+        link.append(media, body);
+        article.appendChild(link);
+        return article;
+    }
+
+    function renderHomepageFeed(container, posts) {
+        if (!posts.length) {
+            container.replaceChildren(createMessageColumn('Δεν υπάρχουν διαθέσιμα άρθρα αυτή τη στιγμή.', 'text-center'));
+            return;
+        }
+
+        renderHeroLead(posts[0]);
+        // The cover already carries posts[0]; the journal continues from the next story.
+        const recent = posts.length >= 4 ? posts.slice(1, 4) : posts.slice(0, 3);
+
+        const shell = document.createElement('div');
+        shell.className = 'home-stories-shell';
+
+        const lead = document.createElement('div');
+        lead.className = 'home-stories-shell__lead';
+        lead.appendChild(createHomeLeadStory(recent[0]));
+
+        shell.appendChild(lead);
+
+        if (recent.length > 1) {
+            const rail = document.createElement('div');
+            rail.className = 'home-stories-shell__rail';
+            recent.slice(1).forEach(post => rail.appendChild(createHomeSecondaryStory(post)));
+            shell.appendChild(rail);
+        }
+
+        container.replaceChildren(shell);
+    }
+
+    // ── Load homepage blog posts ────────────────────
+    function loadHomepagePosts() {
+        if (started) return;
+        started = true;
+
+        // Look for blog posts container on the homepage
+        // Try multiple selectors: the old #blog section, or the new #panel-articles
+        var container = null;
+
+        // Try #blog section first (legacy layout)
+        var section = $('#blog');
+        if (section) {
+            container = section.querySelector('.blog-posts');
+        }
+
+        // Try #panel-articles (new tabbed layout in Latest section)
+        if (!container) {
+            var panel = $('#panel-articles');
+            if (panel) {
+                container = panel.querySelector('.blog-posts');
+            }
+        }
+
+        // Fallback: any .blog-posts on the page
+        if (!container) {
+            container = $('.blog-posts');
+        }
+
+        if (!container) return;
+
+        container.setAttribute('aria-busy', 'true');
+
+        // Show loading state
+        container.replaceChildren(createLoadingColumn());
+
+        fetchBlogData()
+            .then(function (data) {
+                var posts = extractPosts(data);
+                if (container.closest('#latest')) {
+                    renderHomepageFeed(container, posts);
+                    container.setAttribute('aria-busy', 'false');
+                    return;
+                }
+
+                var recent = posts.slice(0, 3);
+                if (!recent.length) {
+                    container.replaceChildren(createMessageColumn('Δεν υπάρχουν διαθέσιμα άρθρα αυτή τη στιγμή.'));
+                    container.setAttribute('aria-busy', 'false');
+                    return;
+                }
+                container.replaceChildren.apply(container, recent.map(createBlogCard));
+                container.setAttribute('aria-busy', 'false');
+            })
+            .catch(function () {
+                var col = document.createElement('div');
+                col.className = 'col-12';
+                var alert = document.createElement('div');
+                alert.className = 'alert alert-danger';
+                alert.setAttribute('role', 'alert');
+                alert.textContent = 'Δεν ήταν δυνατή η φόρτωση των άρθρων.';
+                col.appendChild(alert);
+                container.replaceChildren(col);
+                container.setAttribute('aria-busy', 'false');
+            });
+    }
+
+    function canWarmHiddenPanel() {
+        if (!navigator.connection) return true;
+        return !navigator.connection.saveData &&
+            navigator.connection.effectiveType !== 'slow-2g' &&
+            navigator.connection.effectiveType !== '2g' &&
+            navigator.connection.effectiveType !== '3g';
+    }
+
+    function scheduleLoad() {
+        if (started) return;
+        if ('requestIdleCallback' in window && canWarmHiddenPanel()) {
+            requestIdleCallback(loadHomepagePosts, { timeout: 1500 });
+            return;
+        }
+        setTimeout(loadHomepagePosts, 0);
+    }
+
+    // Only run on the homepage, not on the blog index
+    var path = window.location.pathname;
+    var isBlogIndex = path.includes('/blog/index.html') || path.includes('/blog-module/blog/') || path.endsWith('/blog/');
+    if (!isBlogIndex) {
+        var articlesPanel = $('#panel-articles');
+        var latestSection = $('#latest');
+        var articlesTab = $('.latest-tab[data-tab="articles"]');
+
+        if (!articlesPanel) {
+            loadHomepagePosts();
+            return;
+        }
+
+        document.addEventListener('homepage:articles-tab-open', loadHomepagePosts);
+        if (articlesTab) {
+            articlesTab.addEventListener('click', loadHomepagePosts, { once: true });
+        }
+
+        if (articlesPanel.classList.contains('active')) {
+            scheduleLoad();
+        } else if (latestSection && 'IntersectionObserver' in window && canWarmHiddenPanel()) {
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) return;
+                    observer.disconnect();
+                    scheduleLoad();
+                });
+            }, { rootMargin: '120px 0px' });
+            observer.observe(latestSection);
+        }
+    }
+});

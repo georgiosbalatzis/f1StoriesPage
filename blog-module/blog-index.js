@@ -1,0 +1,896 @@
+document.addEventListener('DOMContentLoaded', function() {
+
+    var allPosts = [];
+    var activeAuthor = getAuthorFromUrl();
+    var grid = document.getElementById('articles-grid');
+    var countEl = document.getElementById('post-count');
+    var searchInput = document.getElementById('blog-search');
+    var searchClearBtn = document.getElementById('blog-search-clear');
+    var sortSelect = document.getElementById('blog-sort-select');
+    var filterResetBtn = document.getElementById('blog-filter-reset');
+    var filterToolbar = document.querySelector('.blog-filter-toolbar');
+    var filterToggleBtn = document.getElementById('blog-filter-toggle');
+    var activeFilterSummary = document.getElementById('active-filter-summary');
+    var archiveMiniBar = document.getElementById('blog-archive-mini-bar');
+    var archiveMiniCount = document.getElementById('blog-archive-mini-count');
+    var archiveMiniFilter = document.getElementById('blog-archive-mini-filter');
+    var categoryStrip = document.getElementById('category-strip');
+    var strip = document.getElementById('author-strip');
+    var filterDetails = filterToolbar ? filterToolbar.querySelectorAll('details') : [];
+    var imageObserver = null;
+    var taxonomy = window.F1S_TAXONOMY;
+    var CACHE_KEY = 'f1s-blog-index-v3-taxonomy';
+    var CACHE_TTL = 15 * 60 * 1000;
+    var PAGE_ONE_PATHS = ['/blog-module/blog-index-page-1.json', '../blog-index-page-1.json', '../../blog-index-page-1.json'];
+    var FULL_DATA_PATHS = ['/blog-module/blog-index-data.json', '../blog-index-data.json', '../../blog-index-data.json'];
+    var activeCategory = getCategoryFromUrl();
+    var activeQuery = '';
+    var sortDir = -1;
+    var searchTimer = null;
+    var pageOnePosts = [];
+    var totalPostCount = 0;
+    var fullPostsLoaded = false;
+    var fullPostsPromise = null;
+    var staticFirstPageReady = !!(grid && grid.querySelector('.article-card') && !grid.querySelector('.skeleton-card'));
+
+    function createIcon(iconId) {
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'icon');
+        svg.setAttribute('aria-hidden', 'true');
+        var use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+        use.setAttribute('href', '#' + iconId);
+        svg.appendChild(use);
+        return svg;
+    }
+
+    function createEmptyState(iconId, text) {
+        var empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.appendChild(createIcon(iconId));
+        var p = document.createElement('p');
+        p.textContent = text;
+        empty.appendChild(p);
+        return empty;
+    }
+    function bindImageFallbacks() {
+        if (!grid || grid.__f1sImageFallbacksBound) return;
+        grid.__f1sImageFallbacksBound = true;
+        grid.addEventListener('error', function(event) {
+            var img = event.target;
+            if (!img || img.tagName !== 'IMG') return;
+            var currentSrc = img.getAttribute('src') || img.getAttribute('data-src') || '';
+            var fallbackSrc = img.getAttribute('data-fallback-src') || '';
+            // A failed responsive candidate: drop srcset and retry the plain card once.
+            if (img.hasAttribute('srcset')) {
+                img.removeAttribute('srcset');
+                if (currentSrc) { img.src = currentSrc; return; }
+            }
+            if (/-card\.webp(?:\?.*)?$/i.test(currentSrc)) {
+                img.removeAttribute('data-src');
+                img.src = currentSrc.replace(/-card\.webp(\?.*)?$/i, '.webp$1');
+                return;
+            }
+            if (fallbackSrc && currentSrc !== fallbackSrc) {
+                img.removeAttribute('data-src');
+                img.src = fallbackSrc;
+                return;
+            }
+            var card = img.closest('.article-card');
+            var wrap = img.closest('.article-card-img-wrap');
+            if (card) card.classList.add('article-card--no-image');
+            if (wrap) wrap.classList.add('img-ready');
+            img.removeAttribute('data-src');
+            img.removeAttribute('data-fallback-src');
+            img.removeAttribute('src');
+            img.hidden = true;
+        }, true);
+    }
+    function bindAuthorFallbacks() {
+        if (!strip || strip.__f1sAuthorFallbacksBound) return;
+        strip.__f1sAuthorFallbacksBound = true;
+        strip.addEventListener('error', function(event) {
+            var img = event.target;
+            if (!img || img.tagName !== 'IMG') return;
+            var fallback = img.getAttribute('data-fallback-label');
+            var parent = img.parentElement;
+            if (!fallback || !parent) return;
+            img.remove();
+            parent.textContent = fallback;
+        }, true);
+    }
+    function getCategoryFromUrl() {
+        var requested = new URL(window.location.href).searchParams.get('category');
+        return taxonomy.normalizeCategories(requested ? [requested] : [])[0] || 'all';
+    }
+    function slugifyAuthor(value) {
+        return String(value || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+    function getAuthorFromUrl() {
+        var requested = new URL(window.location.href).searchParams.get('author');
+        return requested ? String(requested).trim() : 'all';
+    }
+    function updateAuthorUrl() {
+        var url = new URL(window.location.href);
+        if (activeAuthor === 'all') url.searchParams.delete('author');
+        else url.searchParams.set('author', slugifyAuthor(activeAuthor));
+        if (url.href !== window.location.href) window.history.pushState(null, '', url.href);
+    }
+    function updateCategoryUrl() {
+        var url = new URL(window.location.href);
+        if (activeCategory === 'all') url.searchParams.delete('category');
+        else url.searchParams.set('category', activeCategory);
+        if (url.href !== window.location.href) window.history.pushState(null, '', url.href);
+    }
+    function normalizeText(value) {
+        var text = String(value || '').toLowerCase();
+        if (text.normalize) {
+            text = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+        return text;
+    }
+    function formatPostDate(post) {
+        return taxonomy.formatDate(post.date || '') || post.displayDate || '';
+    }
+
+    // Keep archive cards recognisable at a glance while the public taxonomy
+    // stays deliberately small. The class is visual metadata only; filtering
+    // continues to use the canonical category values above.
+    function editorialCardKind(categories) {
+        var list = Array.isArray(categories) ? categories : [];
+        var order = [
+            ['Technical', 'technical'],
+            ['Analysis', 'analysis'],
+            ['History', 'history'],
+            ['Opinion', 'opinion'],
+            ['Betting', 'betting'],
+            ['Drivers', 'drivers'],
+            ['Teams', 'teams'],
+            ['2026', 'season'],
+            ['News', 'news']
+        ];
+        for (var i = 0; i < order.length; i += 1) {
+            if (list.indexOf(order[i][0]) !== -1) return order[i][1];
+        }
+        return 'journal';
+    }
+    function getSearchIndex(post) {
+        return normalizeText([
+            post.title,
+            post.excerpt,
+            post.author,
+            taxonomy.authorLabel(post.author),
+            (post.categories || []).join(' '),
+            (post.categories || []).map(taxonomy.categoryLabel).join(' '),
+            (post.tags || []).join(' '),
+            post.displayDate,
+            post.date
+        ].join(' '));
+    }
+    function defaultThumbnailForPost(id) {
+        // Older compact payloads do not carry an explicit thumbnail. Fall
+        // back to the guaranteed first source image for those payloads.
+        return '/blog-module/blog-entries/' + encodeURIComponent(id || '') + '/1.webp';
+    }
+    function decodeThumbnailFlags(flags, maxPosts) {
+        var variants = [];
+        if (!flags) return variants;
+        var runs = flags.split(',');
+        for (var runIndex = 0; runIndex < runs.length; runIndex += 1) {
+            var run = runs[runIndex];
+            var marker = run.charAt(0);
+            if (marker !== '0' && marker !== '1') return [];
+            var runLength = parseInt(run.slice(1), 36);
+            if (!runLength) return [];
+            if (runLength > maxPosts - variants.length) return [];
+            for (var offset = 0; offset < runLength; offset += 1) {
+                variants.push(marker === '1');
+            }
+        }
+        return variants;
+    }
+    function expandCompactPosts(data) {
+        if (!data || data.v !== 2 || !Array.isArray(data.p)) return null;
+        var authors = data.a || [];
+        var categories = data.c || [];
+        var tags = data.t || [];
+        var thumbnailFlags = typeof data.h === 'string' ? decodeThumbnailFlags(data.h, data.p.length) : [];
+        return data.p.map(function(row, postIndex) {
+            var id = row[0] || '';
+            var categoryIndexes = Array.isArray(row[8]) ? row[8] : [];
+            var width = parseInt(row[4], 10) || 400;
+            return {
+                id: id,
+                title: row[1] || '',
+                author: authors[row[2]] || 'F1 Stories',
+                date: row[3] || '',
+                thumbnail: thumbnailFlags[postIndex]
+                    ? '/blog-module/blog-entries/' + encodeURIComponent(id || '') + '/1-card.webp'
+                    : defaultThumbnailForPost(id),
+                thumbnailWidth: width,
+                thumbnailHeight: parseInt(row[5], 10) || 188,
+                excerpt: row[6] || '',
+                readingTime: row[7] || '',
+                categories: categoryIndexes.map(function(index) { return categories[index]; }).filter(Boolean),
+                tags: Array.isArray(row[9]) ? row[9].map(function(tag) {
+                    return typeof tag === 'number' ? tags[tag] : tag;
+                }).filter(Boolean) : []
+            };
+        });
+    }
+    function extractPosts(data) {
+        var compact = expandCompactPosts(data);
+        if (compact) return compact;
+        if (data && Array.isArray(data.posts)) return data.posts;
+        return Array.isArray(data) ? data : [];
+    }
+    function syncChipState(container, selector, attribute, activeValue) {
+        if (!container) return;
+        Array.prototype.forEach.call(container.querySelectorAll(selector), function(chip) {
+            var isActive = chip.getAttribute(attribute) === activeValue;
+            chip.classList.toggle('active', isActive);
+            chip.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+    }
+    function updateSearchControls() {
+        var hasQuery = activeQuery || (searchInput && searchInput.value.trim());
+        if (searchClearBtn) searchClearBtn.hidden = !hasQuery;
+        if (filterResetBtn) filterResetBtn.hidden = !(activeAuthor !== 'all' || activeCategory !== 'all' || hasQuery);
+    }
+    function updateActiveFilterSummary() {
+        if (!activeFilterSummary) return;
+        var parts = [];
+        if (activeAuthor !== 'all') parts.push({ kind: 'author', label: 'Συντάκτης: ' + taxonomy.authorLabel(activeAuthor) });
+        if (activeCategory !== 'all') parts.push({ kind: 'category', label: 'Κατηγορία: ' + taxonomy.categoryLabel(activeCategory) });
+        if (activeQuery) parts.push({ kind: 'query', label: 'Αναζήτηση: ' + activeQuery });
+        activeFilterSummary.replaceChildren.apply(activeFilterSummary, parts.map(function(filter) {
+            var chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = 'active-filter-chip';
+            chip.setAttribute('data-filter-kind', filter.kind);
+            chip.setAttribute('aria-label', 'Αφαίρεση φίλτρου: ' + filter.label);
+            chip.appendChild(document.createTextNode(filter.label));
+            var remove = document.createElement('span');
+            remove.className = 'active-filter-chip__remove';
+            remove.setAttribute('aria-hidden', 'true');
+            remove.textContent = '×';
+            chip.appendChild(remove);
+            return chip;
+        }));
+    }
+
+    function removeActiveFilter(kind) {
+        clearTimeout(searchTimer);
+        if (kind === 'author') {
+            activeAuthor = 'all';
+            updateAuthorUrl();
+            syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
+        } else if (kind === 'category') {
+            activeCategory = 'all';
+            updateCategoryUrl();
+            syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
+        } else if (kind === 'query') {
+            activeQuery = '';
+            if (searchInput) searchInput.value = '';
+        } else {
+            return;
+        }
+        currentPage = 1;
+        renderPosts();
+    }
+    function setFiltersOpen(open) {
+        if (!filterToolbar) return;
+        filterToolbar.classList.toggle('is-open', open);
+        if (filterToggleBtn) filterToggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (archiveMiniFilter) archiveMiniFilter.setAttribute('aria-expanded', open ? 'true' : 'false');
+        document.documentElement.classList.toggle('blog-filters-open', open && window.innerWidth <= 767);
+    }
+    function syncArchiveMiniBar() {
+        if (!archiveMiniBar || !filterToolbar) return;
+        if (window.innerWidth <= 767) {
+            archiveMiniBar.classList.add('is-visible');
+            archiveMiniBar.setAttribute('aria-hidden', 'false');
+            return;
+        }
+        archiveMiniBar.classList.remove('is-visible');
+        archiveMiniBar.setAttribute('aria-hidden', 'true');
+        document.documentElement.classList.remove('blog-filters-open');
+        filterToolbar.classList.remove('is-open');
+        var visible = window.innerWidth <= 767 && filterToolbar.getBoundingClientRect().bottom < 64;
+        archiveMiniBar.classList.toggle('is-visible', visible);
+        archiveMiniBar.setAttribute('aria-hidden', visible ? 'false' : 'true');
+    }
+    function renderCategoryFilters() {
+        if (!categoryStrip) return;
+        var categories = taxonomy.PUBLIC_CATEGORIES;
+        var nodes = [];
+        var allButton = document.createElement('button');
+        allButton.className = 'category-chip' + (activeCategory === 'all' ? ' active' : '');
+        allButton.type = 'button';
+        allButton.setAttribute('data-category', 'all');
+        allButton.setAttribute('aria-pressed', activeCategory === 'all' ? 'true' : 'false');
+        allButton.textContent = 'Όλες';
+        nodes.push(allButton);
+        categories.forEach(function(name) {
+            var button = document.createElement('button');
+            button.className = 'category-chip' + (name === activeCategory ? ' active' : '');
+            button.type = 'button';
+            button.setAttribute('data-category', name);
+            button.setAttribute('aria-pressed', name === activeCategory ? 'true' : 'false');
+            button.textContent = taxonomy.categoryLabel(name);
+            nodes.push(button);
+        });
+        categoryStrip.replaceChildren.apply(categoryStrip, nodes);
+    }
+    function getResultsSummary(count) {
+        var parts = [];
+        if (activeAuthor !== 'all') parts.push('Αρθρογράφος: ' + taxonomy.authorLabel(activeAuthor));
+        if (activeCategory !== 'all') parts.push('Κατηγορία: ' + taxonomy.categoryLabel(activeCategory));
+        if (activeQuery) parts.push('Αναζήτηση: "' + activeQuery + '"');
+        return count + ' ' + (count === 1 ? 'άρθρο' : 'άρθρα') + (parts.length ? ' · ' + parts.join(' · ') : '');
+    }
+    function readCachedPosts() {
+        try {
+            var cached = JSON.parse(sessionStorage.getItem(CACHE_KEY));
+            if (cached && cached.ts && Date.now() - cached.ts < CACHE_TTL && Array.isArray(cached.posts)) {
+                return cached.posts;
+            }
+        } catch (_) {}
+        return null;
+    }
+    function writeCachedPosts(posts) {
+        try {
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+                ts: Date.now(),
+                posts: posts
+            }));
+        } catch (_) {}
+    }
+    function preparePosts(posts) {
+        return (posts || []).slice().sort(function(a, b) { return new Date(b.date) - new Date(a.date); }).map(function(post) {
+            var postTaxonomy = taxonomy.getPostTaxonomy(post);
+            post.category = postTaxonomy.category;
+            post.categories = postTaxonomy.categories;
+            post.tags = postTaxonomy.tags;
+            post.__searchIndex = getSearchIndex(post);
+            return post;
+        });
+    }
+    function setFullPosts(posts) {
+        allPosts = preparePosts(posts);
+        if (activeAuthor !== 'all') {
+            var requestedAuthor = activeAuthor;
+            var matchedAuthor = allPosts.find(function (post) {
+                return post.author === requestedAuthor || slugifyAuthor(post.author) === slugifyAuthor(requestedAuthor);
+            });
+            activeAuthor = matchedAuthor ? matchedAuthor.author : 'all';
+        }
+        pageOnePosts = allPosts.slice(0, POSTS_PER_PAGE);
+        totalPostCount = allPosts.length;
+        fullPostsLoaded = true;
+        renderCategoryFilters();
+        syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
+    }
+    function hydratePosts(posts) {
+        setFullPosts(posts);
+        renderPosts();
+    }
+    function hydratePageOne(data) {
+        var posts = extractPosts(data);
+        pageOnePosts = preparePosts(posts);
+        if (!fullPostsLoaded) {
+            allPosts = pageOnePosts.slice();
+            totalPostCount = parseInt(data && data.totalCount, 10) || pageOnePosts.length;
+            renderCategoryFilters();
+            renderPosts();
+        }
+    }
+    function createCardCategories(categories) {
+        var container = document.createElement('div');
+        container.className = 'article-card-cats';
+        var list = taxonomy.normalizeCategories(categories);
+        list.slice(0, 2).forEach(function(c) {
+            var span = document.createElement('span');
+            span.className = 'article-card-cat';
+            span.textContent = taxonomy.categoryLabel(c);
+            container.appendChild(span);
+        });
+        if (list.length > 2) {
+            var more = document.createElement('span');
+            more.className = 'article-card-cat article-card-cat-more';
+            more.textContent = '+' + (list.length - 2);
+            container.appendChild(more);
+        }
+        return container;
+    }
+    function editorialCardMediaClasses(post) {
+        var id = String(post && post.id || '');
+        if (id !== '20260905J' && id !== '20260909J') return '';
+        return ' article-card--preserve-composition' + (id === '20260909J' ? ' article-card--preserve-composition-banner' : '');
+    }
+
+    function createArticleCard(post, idx) {
+        var url = post.url || ('/blog-module/blog-entries/' + post.id + '/article.html');
+        var cardKind = editorialCardKind(post.categories);
+        var mediaClasses = editorialCardMediaClasses(post);
+        var img = post.thumbnail || post.image || '';
+        var date = formatPostDate(post);
+        var author = taxonomy.authorLabel(post.author || 'F1 Stories');
+        var excerpt = post.excerpt || '';
+        var readMins = post.readingTime || post.readTime || '';
+        var imageWidth = parseInt(post.thumbnailWidth, 10) || 400;
+        var imageHeight = parseInt(post.thumbnailHeight, 10) || 188;
+        var isLcpImage = idx === 0;
+        var imageClass = 'article-card-img' + (isLcpImage ? ' loaded' : '');
+        if (!readMins && post.wordCount) { readMins = Math.max(1, Math.ceil(post.wordCount / 200)) + ' min'; }
+        if (!readMins && excerpt) { readMins = Math.max(2, Math.ceil(Math.round(excerpt.split(/\s+/).length * 10) / 200)) + ' min'; }
+        readMins = taxonomy.formatReadingTime(readMins);
+
+        var stagger = window.innerWidth < 768 ? 0.03 : 0.06;
+        var animationDelay = Math.round(idx * stagger * 100) / 100;
+
+        var article = document.createElement('article');
+        article.className = 'article-card-wrap article-card-wrap--' + cardKind;
+        article.setAttribute('data-card-kind', cardKind);
+        var link = document.createElement('a');
+        link.href = url;
+        link.className = 'article-card article-card--' + cardKind + mediaClasses;
+        link.setAttribute('data-card-kind', cardKind);
+        link.style.animationDelay = animationDelay + 's';
+        if (!img) link.classList.add('article-card--no-image');
+
+        var imageWrap = document.createElement('div');
+        imageWrap.className = 'article-card-img-wrap';
+        var image = document.createElement('img');
+        image.className = imageClass;
+        image.width = imageWidth;
+        image.height = imageHeight;
+        // The curated lead is drawn large, so it may use the 1600w original.
+        var isLead = idx === 0 && isDefaultCuratedState();
+        var srcset = taxonomy.cardImageSrcset(img, isLead);
+        if (srcset) image.sizes = isLead ? taxonomy.CARD_SIZES.archiveLead : taxonomy.CARD_SIZES.archiveCard;
+        if (img && isLcpImage) {
+            if (srcset) image.srcset = srcset;
+            image.src = img;
+            image.loading = 'eager';
+            image.fetchPriority = 'high';
+        } else if (img) {
+            if (srcset) image.setAttribute('data-srcset', srcset);
+            image.setAttribute('data-src', img);
+            image.loading = 'lazy';
+        } else {
+            image.hidden = true;
+            imageWrap.classList.add('img-ready');
+        }
+        image.decoding = 'async';
+        image.alt = post.title || '';
+        image.setAttribute('data-fallback-src', '/blog-module/images/default-blog.jpg');
+        imageWrap.appendChild(image);
+
+        var body = document.createElement('div');
+        body.className = 'article-card-body';
+        var meta = document.createElement('div');
+        meta.className = 'article-card-meta';
+        var authorTag = document.createElement('span');
+        authorTag.className = 'author-tag';
+        authorTag.textContent = author;
+        var dot = document.createElement('span');
+        dot.textContent = '\u00b7';
+        var time = document.createElement('time');
+        time.className = 'article-card-date';
+        time.dateTime = post.date || '';
+        time.textContent = date;
+        meta.append(authorTag, dot, time);
+        if (readMins) {
+            var readDot = document.createElement('span');
+            readDot.textContent = '\u00b7';
+            var readTime = document.createElement('span');
+            readTime.className = 'article-card-reading-time';
+            readTime.append(createIcon('fa-clock'), document.createTextNode(' ' + readMins));
+            meta.append(readDot, readTime);
+        }
+
+        var title = document.createElement('h2');
+        title.className = 'article-card-title';
+        title.textContent = post.title || '';
+        var excerptEl = document.createElement('p');
+        excerptEl.className = 'article-card-excerpt';
+        excerptEl.textContent = excerpt;
+        body.append(meta, title, excerptEl);
+
+        var footer = document.createElement('div');
+        footer.className = 'article-card-footer';
+        var readMore = document.createElement('span');
+        readMore.className = 'article-card-read';
+        readMore.append(document.createTextNode('Διάβασε '), createIcon('fa-arrow-right'));
+        footer.append(readMore, createCardCategories(post.categories));
+
+        var content = document.createElement('div');
+        content.className = 'article-card-content';
+        content.append(body, footer);
+        link.append(imageWrap, content);
+        article.appendChild(link);
+        return article;
+    }
+    function isUnfiltered() {
+        return activeAuthor === 'all' && activeCategory === 'all' && !activeQuery;
+    }
+    function isDefaultCuratedState() {
+        return isUnfiltered() && currentPage === 1;
+    }
+
+    function lazyLoadImages() {
+        if (!grid) return;
+        bindImageFallbacks();
+        var imgs = grid.querySelectorAll('img[data-src]');
+        if (!imgs.length) return;
+        if (imageObserver) {
+            imageObserver.disconnect();
+            imageObserver = null;
+        }
+        function loadImg(img) {
+            if (img.getAttribute('src')) {
+                img.removeAttribute('data-src');
+                img.classList.add('loaded');
+                return;
+            }
+            var src = img.getAttribute('data-src');
+            if (!src) return;
+            img.decoding = 'async';
+            var srcset = img.getAttribute('data-srcset');
+            if (srcset) { img.srcset = srcset; img.removeAttribute('data-srcset'); }
+            img.src = src; img.removeAttribute('data-src');
+            img.addEventListener('load', function() { img.classList.add('loaded'); }, { once: true });
+            img.addEventListener('error', function() { img.classList.add('loaded'); }, { once: true });
+            if (img.complete && img.naturalWidth > 0) img.classList.add('loaded');
+        }
+        if ('IntersectionObserver' in window) {
+            imageObserver = new IntersectionObserver(function(entries) { entries.forEach(function(entry) { if (entry.isIntersecting) { loadImg(entry.target); imageObserver.unobserve(entry.target); } }); }, { rootMargin: '300px 0px' });
+            imgs.forEach(function(img) { imageObserver.observe(img); });
+        } else { imgs.forEach(loadImg); }
+    }
+    bindImageFallbacks();
+    bindAuthorFallbacks();
+
+    var POSTS_PER_PAGE = 12;
+    var currentPage = 1;
+    var filteredPosts = [];
+    var paginationEl = document.getElementById('blog-pagination');
+
+    function getPageRange(current, total) {
+        if (total <= 7) {
+            var r = []; for (var i = 1; i <= total; i++) r.push(i); return r;
+        }
+        var pages = [1];
+        var left = Math.max(2, current - 1);
+        var right = Math.min(total - 1, current + 1);
+        if (left > 2) pages.push('…');
+        for (var p = left; p <= right; p++) pages.push(p);
+        if (right < total - 1) pages.push('…');
+        pages.push(total);
+        return pages;
+    }
+
+    function renderPagination() {
+        if (!paginationEl) return;
+        var totalItems = (!fullPostsLoaded && isUnfiltered())
+            ? (totalPostCount || filteredPosts.length)
+            : filteredPosts.length;
+        var totalPages = Math.ceil(totalItems / POSTS_PER_PAGE);
+        if (totalPages <= 1) { paginationEl.replaceChildren(); return; }
+        var range = getPageRange(currentPage, totalPages);
+        var nodes = [];
+        var prev = document.createElement('button');
+        prev.className = 'page-btn page-prev';
+        prev.type = 'button';
+        prev.setAttribute('aria-label', 'Προηγούμενη σελίδα');
+        prev.disabled = currentPage === 1;
+        prev.appendChild(createIcon('fa-chevron-left'));
+        nodes.push(prev);
+        range.forEach(function(item) {
+            if (item === '…') {
+                var ellipsis = document.createElement('span');
+                ellipsis.className = 'page-ellipsis';
+                ellipsis.textContent = '...';
+                nodes.push(ellipsis);
+            } else {
+                var pageButton = document.createElement('button');
+                pageButton.className = 'page-btn page-num' + (item === currentPage ? ' active' : '');
+                pageButton.type = 'button';
+                pageButton.setAttribute('data-page', item);
+                pageButton.setAttribute('aria-label', 'Σελίδα ' + item);
+                if (item === currentPage) pageButton.setAttribute('aria-current', 'page');
+                pageButton.textContent = item;
+                nodes.push(pageButton);
+            }
+        });
+        var next = document.createElement('button');
+        next.className = 'page-btn page-next';
+        next.type = 'button';
+        next.setAttribute('aria-label', 'Επόμενη σελίδα');
+        next.disabled = currentPage === totalPages;
+        next.appendChild(createIcon('fa-chevron-right'));
+        nodes.push(next);
+        paginationEl.replaceChildren.apply(paginationEl, nodes);
+    }
+
+    function getFilteredPosts() {
+        return allPosts.filter(function(post) {
+            var matchesAuthor = activeAuthor === 'all' || post.author === activeAuthor;
+            var matchesCategory = activeCategory === 'all' || (post.categories || []).indexOf(activeCategory) !== -1;
+            var matchesQuery = !activeQuery || post.__searchIndex.indexOf(normalizeText(activeQuery)) !== -1;
+            return matchesAuthor && matchesCategory && matchesQuery;
+        }).sort(function(a, b) { return sortDir * (new Date(a.date) - new Date(b.date)); });
+    }
+
+    function goToPage(page, options) {
+        if (!grid) return;
+        if (!fullPostsLoaded && page > 1) {
+            ensureFullPostsLoaded().then(function() {
+                filteredPosts = getFilteredPosts();
+                goToPage(page, options);
+            }).catch(showLoadFailure);
+            return;
+        }
+        var totalItems = (!fullPostsLoaded && isUnfiltered())
+            ? (totalPostCount || filteredPosts.length)
+            : filteredPosts.length;
+        var totalPages = Math.max(1, Math.ceil(totalItems / POSTS_PER_PAGE));
+        currentPage = Math.max(1, Math.min(page, totalPages));
+        grid.classList.toggle('is-curated-default', isDefaultCuratedState());
+        var start = (currentPage - 1) * POSTS_PER_PAGE;
+        var pagePosts = filteredPosts.slice(start, start + POSTS_PER_PAGE);
+        if (options && options.preserveStatic && currentPage === 1 && staticFirstPageReady) {
+            lazyLoadImages();
+            renderPagination();
+            return;
+        }
+        grid.replaceChildren.apply(grid, pagePosts.map(function(p, i) { return createArticleCard(p, i); }));
+        lazyLoadImages();
+        renderPagination();
+        if (!options || options.scroll !== false) {
+            grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    if (paginationEl) {
+        paginationEl.addEventListener('click', function(e) {
+            var btn = e.target.closest('.page-btn');
+            if (!btn || btn.disabled) return;
+            if (btn.classList.contains('page-prev')) { goToPage(currentPage - 1); return; }
+            if (btn.classList.contains('page-next')) { goToPage(currentPage + 1); return; }
+            var page = parseInt(btn.getAttribute('data-page'), 10);
+            if (page && page !== currentPage) goToPage(page);
+        });
+    }
+
+    function renderPosts() {
+        if (!grid) return;
+        if (!fullPostsLoaded && !isUnfiltered()) {
+            loadAndRender();
+            return;
+        }
+        filteredPosts = getFilteredPosts();
+        if (!fullPostsLoaded && isUnfiltered()) {
+            filteredPosts = pageOnePosts.length ? pageOnePosts : filteredPosts;
+        }
+        if (countEl) {
+            var count = (!fullPostsLoaded && isUnfiltered())
+                ? (totalPostCount || filteredPosts.length)
+                : filteredPosts.length;
+            countEl.textContent = getResultsSummary(count);
+            if (archiveMiniCount) archiveMiniCount.textContent = getResultsSummary(count);
+        }
+        updateSearchControls();
+        updateActiveFilterSummary();
+        syncArchiveMiniBar();
+        if (!filteredPosts.length) {
+            grid.replaceChildren(createEmptyState('fa-newspaper', 'Δεν βρέθηκαν άρθρα για τα επιλεγμένα φίλτρα.'));
+            if (paginationEl) paginationEl.replaceChildren();
+            return;
+        }
+        goToPage(1, { scroll: false, preserveStatic: !fullPostsLoaded });
+    }
+
+    window.__blogFilterByAuthor = function(author) {
+        activeAuthor = author;
+        updateAuthorUrl();
+        currentPage = 1;
+        syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
+        renderPosts();
+    };
+
+    function fetchJson(paths, idx) {
+        idx = idx || 0;
+        if (idx >= paths.length) {
+            return Promise.reject(new Error('Unable to load blog data'));
+        }
+        return fetch(paths[idx], {
+            cache: 'no-store',
+            headers: { 'Accept': 'application/json' }
+        }).then(function(r) { if (!r.ok) throw new Error('not ok'); return r.json(); }).catch(function() {
+            return fetchJson(paths, idx + 1);
+        });
+    }
+
+    function showLoadFailure() {
+        var cached = readCachedPosts();
+        if (cached) { hydratePosts(cached); return; }
+        if (staticFirstPageReady && isUnfiltered()) {
+            lazyLoadImages();
+            return;
+        }
+        updateSearchControls();
+        updateActiveFilterSummary();
+        if (countEl) countEl.textContent = 'Δεν ήταν δυνατή η φόρτωση των αποτελεσμάτων.';
+        if (archiveMiniCount) archiveMiniCount.textContent = 'Η φόρτωση απέτυχε.';
+        if (paginationEl) paginationEl.replaceChildren();
+        staticFirstPageReady = false;
+        if (grid) grid.replaceChildren(createEmptyState('fa-exclamation-circle', 'Δεν ήταν δυνατή η φόρτωση των άρθρων.'));
+    }
+
+    function ensureFullPostsLoaded() {
+        if (fullPostsLoaded) return Promise.resolve(allPosts);
+        if (fullPostsPromise) return fullPostsPromise;
+        var cached = readCachedPosts();
+        if (cached) {
+            setFullPosts(cached);
+            return Promise.resolve(allPosts);
+        }
+        fullPostsPromise = fetchJson(FULL_DATA_PATHS).then(function(data) {
+            var posts = extractPosts(data);
+            writeCachedPosts(posts);
+            setFullPosts(posts);
+            return allPosts;
+        }).catch(function(error) {
+            fullPostsPromise = null;
+            throw error;
+        });
+        return fullPostsPromise;
+    }
+    function loadAndRender() { ensureFullPostsLoaded().then(renderPosts, showLoadFailure); }
+
+    if (staticFirstPageReady) lazyLoadImages();
+    renderCategoryFilters();
+    updateSearchControls();
+    updateActiveFilterSummary();
+
+    fetchJson(PAGE_ONE_PATHS).then(hydratePageOne).catch(function() {
+        ensureFullPostsLoaded().then(function() {
+            renderPosts();
+        }).catch(showLoadFailure);
+    });
+
+    if (strip) {
+        syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
+        function handleChipActivate(e) {
+            var chip = e.target.closest('.author-chip');
+            if (!chip) return;
+            e.preventDefault();
+            activeAuthor = chip.getAttribute('data-author');
+            updateAuthorUrl();
+            syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
+            loadAndRender();
+        }
+        strip.addEventListener('click', handleChipActivate);
+    }
+
+    if (categoryStrip) {
+        categoryStrip.addEventListener('click', function(e) {
+            var chip = e.target.closest('.category-chip');
+            if (!chip) return;
+            e.preventDefault();
+            activeCategory = taxonomy.normalizeCategories([chip.getAttribute('data-category')])[0] || 'all';
+            updateCategoryUrl();
+            syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
+            loadAndRender();
+        });
+    }
+
+    if (activeFilterSummary) {
+        activeFilterSummary.addEventListener('click', function(e) {
+            var chip = e.target.closest('.active-filter-chip');
+            if (!chip) return;
+            removeActiveFilter(chip.getAttribute('data-filter-kind'));
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            updateSearchControls();
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(function() {
+                activeQuery = searchInput.value.trim();
+                if (activeQuery) {
+                    loadAndRender();
+                } else {
+                    renderPosts();
+                }
+            }, 250);
+        });
+    }
+
+    if (searchClearBtn) {
+        searchClearBtn.addEventListener('click', function() {
+            clearTimeout(searchTimer);
+            activeQuery = '';
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.focus();
+            }
+            renderPosts();
+        });
+    }
+    if (sortSelect) sortSelect.addEventListener('change', function() {
+        sortDir = sortSelect.value === 'oldest' ? 1 : -1;
+        loadAndRender();
+    });
+
+    if (filterResetBtn) {
+        filterResetBtn.addEventListener('click', function() {
+            clearTimeout(searchTimer);
+            activeAuthor = 'all';
+            activeCategory = 'all';
+            updateAuthorUrl();
+            updateCategoryUrl();
+            activeQuery = '';
+            if (searchInput) searchInput.value = '';
+            syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
+            syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
+            renderPosts();
+        });
+    }
+    if (filterToggleBtn) {
+        filterToggleBtn.addEventListener('click', function() {
+            setFiltersOpen(!(filterToolbar && filterToolbar.classList.contains('is-open')));
+        });
+    }
+    if (filterToolbar) {
+        filterToolbar.addEventListener('click', function(e) {
+            if (e.target === filterToolbar && filterToolbar.classList.contains('is-open')) {
+                setFiltersOpen(false);
+            }
+        });
+    }
+    filterDetails.forEach(function(details) {
+        details.addEventListener('toggle', function() {
+            if (!details.open) return;
+            filterDetails.forEach(function(sibling) {
+                if (sibling !== details) sibling.open = false;
+            });
+        });
+    });
+    document.addEventListener('click', function(e) {
+        if (filterToolbar && !filterToolbar.contains(e.target) && (!archiveMiniBar || !archiveMiniBar.contains(e.target))) {
+            filterDetails.forEach(function(details) { details.open = false; });
+            setFiltersOpen(false);
+        }
+    });
+    if (archiveMiniFilter) {
+        archiveMiniFilter.setAttribute('aria-controls', 'blog-filter-panel');
+        archiveMiniFilter.setAttribute('aria-expanded', 'false');
+        archiveMiniFilter.addEventListener('click', function() {
+            setFiltersOpen(!(filterToolbar && filterToolbar.classList.contains('is-open')));
+        });
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            filterDetails.forEach(function(details) { details.open = false; });
+            setFiltersOpen(false);
+        }
+    });
+    window.addEventListener('popstate', function() {
+        activeAuthor = getAuthorFromUrl();
+        activeCategory = getCategoryFromUrl();
+        currentPage = 1;
+        syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
+        syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
+        loadAndRender();
+    });
+    window.addEventListener('resize', syncArchiveMiniBar, { passive: true });
+    window.addEventListener('scroll', syncArchiveMiniBar, { passive: true });
+});

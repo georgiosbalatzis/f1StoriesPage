@@ -1,0 +1,1044 @@
+const { Worker } = require('worker_threads');
+const { execFileSync } = require('child_process');
+const os = require('os');
+const { updateDirtyAirCache } = require('../dirty-air-cache');
+const { updateDestructorsCache } = require('../destructors-cache');
+const { updateDebriefCache } = require('../../standings/debrief-cache');
+const {
+    fs,
+    path,
+    CONFIG,
+    utils,
+    escapeHtmlAttribute,
+    getCardThumbnailPath,
+    getImageDimensionsForPublicPath
+} = require('./shared');
+const { generateSitemap } = require('./sitemap');
+const { htmlToPlainText } = require('./metadata');
+const { injectRelatedArticles } = require('./related');
+const { injectPrevNextLinks } = require('./nav');
+const { renderArticleHtml, refreshArticleTaxonomy, getEditorialProfile } = require('./article-render');
+const { PUBLIC_CATEGORIES, getPostTaxonomy, categoryLabel, authorLabel, formatDate, formatReadingTime, cardImageSrcset, CARD_SIZES } = require('../taxonomy');
+
+function parseBuildOptions(argv = process.argv, env = process.env) {
+    const forceRebuild = argv.includes('--force') || argv.includes('-f');
+    const maxWorkers = Math.min(parseInt(env.BLOG_WORKERS || '0', 10) || os.cpus().length, os.cpus().length);
+    return { forceRebuild, maxWorkers };
+}
+
+function readJsonIfExists(filePath) {
+    if (!fs.existsSync(filePath)) return null;
+    try {
+        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch (_) {
+        return null;
+    }
+}
+
+function generateMissingImageVariants() {
+    const generatorPath = path.join(__dirname, '..', 'generate-image-variants.js');
+    if (!fs.existsSync(generatorPath)) return;
+    execFileSync(process.execPath, [generatorPath, '--run', '--cards-only'], { stdio: 'inherit' });
+}
+
+function sameJsonExceptKey(left, right, key) {
+    if (!left || !right) return false;
+    const a = { ...left };
+    const b = { ...right };
+    delete a[key];
+    delete b[key];
+    return JSON.stringify(a) === JSON.stringify(b);
+}
+
+function runWorker(entryPath) {
+    return new Promise((resolve, reject) => {
+        const worker = new Worker(path.join(__dirname, 'worker.js'), {
+            workerData: { entryPath }
+        });
+        worker.on('message', resolve);
+        worker.on('error', reject);
+        worker.on('exit', code => {
+            if (code !== 0) reject(new Error(`Worker exited with code ${code}`));
+        });
+    });
+}
+
+async function runWorkerPool(entryPaths, concurrency) {
+    const results = [];
+    const failures = [];
+    let index = 0;
+
+    async function next() {
+        if (index >= entryPaths.length) return;
+        const currentIndex = index++;
+        const entryPath = entryPaths[currentIndex];
+        const folderName = path.basename(entryPath);
+
+        try {
+            const result = await runWorker(entryPath);
+            if (result.ok && result.postData) {
+                results.push(result.postData);
+                console.log(`✅ [worker] ${folderName}`);
+            } else {
+                failures.push({ entryPath, error: result.error || 'no data' });
+                console.warn(`❌ [worker] ${folderName}: ${result.error || 'no data'}`);
+            }
+        } catch (error) {
+            failures.push({ entryPath, error: error.message });
+            console.error(`❌ [worker] ${folderName}: ${error.message}`);
+        }
+
+        await next();
+    }
+
+    await Promise.all(Array.from({ length: concurrency }, () => next()));
+    return { results, failures };
+}
+
+function fixMissingAuthors(blogPosts) {
+    blogPosts.forEach(post => {
+        if (!post.author || post.author === 'F1 Stories Team') {
+            const lastChar = post.id.charAt(post.id.length - 1);
+            if (Object.prototype.hasOwnProperty.call(CONFIG.AUTHOR_MAP, lastChar)) {
+                post.author = CONFIG.AUTHOR_MAP[lastChar];
+            }
+        }
+    });
+}
+
+async function buildIndexPosts(blogPosts) {
+    return Promise.all(blogPosts.map(async post => {
+        const { categories, tags } = getPostTaxonomy(post);
+        const thumbnail = getCardThumbnailPath(post.image);
+        const thumbnailDimensions = await getImageDimensionsForPublicPath(thumbnail);
+        return {
+            id: post.id,
+            title: post.title,
+            author: post.author,
+            date: post.date,
+            thumbnail,
+            thumbnailWidth: thumbnailDimensions && thumbnailDimensions.width ? thumbnailDimensions.width : 400,
+            thumbnailHeight: thumbnailDimensions && thumbnailDimensions.height ? thumbnailDimensions.height : 188,
+            excerpt: compactExcerpt(post.excerpt),
+            readingTime: post.readingTime,
+            categories,
+            tags,
+            hasSource: fs.existsSync(path.join(CONFIG.BLOG_DIR, post.id, 'source.txt'))
+        };
+    }));
+}
+
+function formatCategoryToken(token) {
+    const value = String(token || '').trim();
+    const lower = value.toLowerCase();
+    const acronyms = {
+        f1: 'F1',
+        gp: 'GP',
+        amg: 'AMG',
+        rb: 'RB',
+        drs: 'DRS',
+        v12: 'V12'
+    };
+    if (acronyms[lower]) return acronyms[lower];
+    if (!value || /^\d/.test(value)) return value;
+    if (value !== lower && value !== value.toUpperCase()) return value;
+    return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+
+function formatCategoryLabel(value) {
+    const raw = String(value || '').replace(/^[\s,-]+|[\s,-]+$/g, '').trim();
+    if (!raw) return '';
+    return raw.split(/-+/).filter(Boolean).map(formatCategoryToken).join(' ');
+}
+
+function compactExcerpt(value, maxLength = 120) {
+    const text = String(value || '').replace(/\s+/g, ' ').trim();
+    if (text.length <= maxLength) return text;
+    const clipped = text.slice(0, maxLength).replace(/\s+\S*$/, '').trim();
+    return `${clipped || text.slice(0, maxLength).trim()}...`;
+}
+
+function formatBlogIndexDate(post) {
+    return formatDate(post.date || '') || post.displayDate || '';
+}
+
+// Greek capitals drop the tonos: "Ειδήσεις" → "ΕΙΔΗΣΕΙΣ".
+function greekUpper(value) {
+    return String(value || '').normalize('NFD').replace(/\u0301/g, '').toUpperCase().normalize('NFC');
+}
+
+function getBlogIndexSummary(count) {
+    return `${count} ${count === 1 ? 'άρθρο' : 'άρθρα'}`;
+}
+
+function jsonKb(value) {
+    return Math.round(Buffer.byteLength(JSON.stringify(value)) / 1024);
+}
+
+function summarizeCategories(posts) {
+    const counts = {};
+    posts.forEach(post => {
+        (post.categories || []).forEach(category => {
+            const key = String(category || '').trim();
+            if (!key) return;
+            counts[key] = (counts[key] || 0) + 1;
+        });
+    });
+
+    return PUBLIC_CATEGORIES.map(name => ({ name, count: counts[name] || 0 }));
+}
+
+// Run-length encodes a per-post boolean: comma-separated runs of a 0/1 marker
+// followed by the run length in base36.
+function runLengthFlags(posts, predicate) {
+    const runs = [];
+    let previous = null;
+    let length = 0;
+    posts.forEach(post => {
+        const value = predicate(post);
+        if (previous !== null && value === previous) {
+            length += 1;
+            return;
+        }
+        if (previous !== null) runs.push((previous ? '1' : '0') + length.toString(36));
+        previous = value;
+        length = 1;
+    });
+    if (previous !== null) runs.push((previous ? '1' : '0') + length.toString(36));
+    return runs.join(',');
+}
+
+function buildCompactIndexData(posts) {
+    const authors = Array.from(new Set(posts.map(post => post.author || 'F1 Stories')));
+    const categories = PUBLIC_CATEGORIES;
+    const tags = Array.from(new Set(posts.flatMap(post => post.tags || [])));
+    const thumbnailFlags = runLengthFlags(posts, post => !!(post.thumbnail && /-card\.webp(?:\?.*)?$/i.test(post.thumbnail)));
+    const sourceFlags = runLengthFlags(posts, post => !!post.hasSource);
+
+    return {
+        v: 2,
+        a: authors,
+        c: categories,
+        t: tags,
+        // Run-length encoded thumbnail variants. Each comma-separated run is
+        // a 0/1 marker followed by its length in base36; 1 means the smaller
+        // -card.webp file exists. Keeping this as a top-level field preserves
+        // the 10-field post row and the compact feed budget.
+        h: thumbnailFlags,
+        // Same encoding; 1 means the folder has a source.txt the author tools
+        // can edit. Source-less (legacy) articles are read-only there.
+        s: sourceFlags,
+        p: posts.map(post => [
+            post.id,
+            post.title,
+            authors.indexOf(post.author || 'F1 Stories'),
+            post.date,
+            post.thumbnailWidth === 400 ? 0 : post.thumbnailWidth,
+            post.thumbnailHeight,
+            post.excerpt,
+            post.readingTime,
+            (post.categories || []).map(category => categories.indexOf(category)),
+            (post.tags || []).map(tag => tags.indexOf(tag))
+        ])
+    };
+}
+
+function renderBlogCategoryFilters(categories) {
+    const buttons = [
+        '<button class="category-chip active" data-category="all" aria-pressed="true">Όλες</button>'
+    ];
+
+    categories.forEach(category => {
+        const name = typeof category === 'string' ? category : category.name;
+        if (!name) return;
+        const label = categoryLabel(name) || formatCategoryLabel(name);
+        buttons.push(
+            `<button class="category-chip" data-category="${escapeHtmlAttribute(name)}" aria-pressed="false">${escapeHtmlAttribute(label)}</button>`
+        );
+    });
+
+    return buttons.join('\n                    ');
+}
+
+function renderBlogCardCategories(categories) {
+    const list = categories || [];
+    const chips = list
+        .slice(0, 2)
+        .map(category => `<span class="article-card-cat">${escapeHtmlAttribute(categoryLabel(category) || formatCategoryLabel(category))}</span>`);
+    if (list.length > 2) {
+        chips.push(`<span class="article-card-cat article-card-cat-more">+${list.length - 2}</span>`);
+    }
+    return chips.join('');
+}
+
+function editorialCardKind(categories) {
+    return getEditorialProfile(Array.isArray(categories) ? categories : []).kind;
+}
+
+function editorialCardMediaClasses(post) {
+    const id = String(post && post.id || '');
+    if (id !== '20260905J' && id !== '20260909J') return '';
+    return ` article-card--preserve-composition${id === '20260909J' ? ' article-card--preserve-composition-banner' : ''}`;
+}
+
+function renderBlogIndexCard(post, idx) {
+    const categories = renderBlogCardCategories(post.categories);
+    const cardKind = editorialCardKind(post.categories);
+    const mediaClasses = editorialCardMediaClasses(post);
+    const url = post.url || `/blog-module/blog-entries/${post.id}/article.html`;
+    const image = post.thumbnail || post.image || '';
+    const imagePath = image && image.startsWith('/blog-module/blog-entries/')
+        ? path.join(CONFIG.BLOG_DIR, post.id, path.posix.basename(image))
+        : null;
+    const hasImage = Boolean(image && (!imagePath || fs.existsSync(imagePath)));
+    const author = authorLabel(post.author || 'F1 Stories');
+    const excerpt = post.excerpt || '';
+    let readingTime = post.readingTime || post.readTime || '';
+    if (!readingTime && post.wordCount) readingTime = `${Math.max(1, Math.ceil(post.wordCount / 200))} min`;
+    if (!readingTime && excerpt) readingTime = `${Math.max(2, Math.ceil(Math.round(excerpt.split(/\s+/).length * 10) / 200))} min`;
+    readingTime = formatReadingTime(readingTime);
+    const readBadge = readingTime
+        ? `<span>·</span><span class="article-card-reading-time"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> ${escapeHtmlAttribute(readingTime)}</span>`
+        : '';
+    const imageWidth = parseInt(post.thumbnailWidth, 10) || 400;
+    const imageHeight = parseInt(post.thumbnailHeight, 10) || 188;
+    const isLcpImage = idx === 0 && hasImage;
+    const imageClass = `article-card-img${isLcpImage ? ' loaded' : ''}`;
+    // idx 0 is the curated lead on the static first page, drawn large.
+    const srcset = hasImage ? cardImageSrcset(image, idx === 0) : '';
+    const responsiveAttrs = srcset
+        ? `${isLcpImage ? ' srcset' : ' data-srcset'}="${escapeHtmlAttribute(srcset)}" sizes="${idx === 0 ? CARD_SIZES.archiveLead : CARD_SIZES.archiveCard}"`
+        : '';
+    const imageAttrs = !hasImage
+        ? ' hidden'
+        : isLcpImage
+        ? ` src="${escapeHtmlAttribute(image)}"${responsiveAttrs} loading="eager" fetchpriority="high"`
+        : ` data-src="${escapeHtmlAttribute(image)}"${responsiveAttrs} loading="lazy"`;
+    const stagger = 0.06;
+    const animationDelay = Math.round(idx * stagger * 100) / 100;
+
+    return `<article class="article-card-wrap article-card-wrap--${escapeHtmlAttribute(cardKind)}" data-card-kind="${escapeHtmlAttribute(cardKind)}">`
+        + `<a href="${escapeHtmlAttribute(url)}" class="article-card article-card--${escapeHtmlAttribute(cardKind)}${mediaClasses}${hasImage ? '' : ' article-card--no-image'}" data-card-kind="${escapeHtmlAttribute(cardKind)}" style="animation-delay:${animationDelay}s">`
+        + `<div class="article-card-img-wrap${hasImage ? '' : ' img-ready'}"><img class="${imageClass}" width="${imageWidth}" height="${imageHeight}"${imageAttrs} decoding="async" alt="${escapeHtmlAttribute(post.title)}" data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}"></div>`
+        + '<div class="article-card-content"><div class="article-card-body">'
+        + `<div class="article-card-meta"><span class="author-tag">${escapeHtmlAttribute(author)}</span><span>·</span><time class="article-card-date" datetime="${escapeHtmlAttribute(post.date || '')}">${escapeHtmlAttribute(formatBlogIndexDate(post))}</time>${readBadge}</div>`
+        + `<h2 class="article-card-title">${escapeHtmlAttribute(post.title)}</h2>`
+        + `<p class="article-card-excerpt">${escapeHtmlAttribute(excerpt)}</p>`
+        + '</div>'
+        + `<div class="article-card-footer"><span class="article-card-read">Διάβασε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span><div class="article-card-cats">${categories}</div></div></div>`
+        + '</a>'
+        + '</article>';
+}
+
+function replaceMarkedBlock(html, begin, end, innerHtml) {
+    const start = html.indexOf(begin);
+    const finish = html.indexOf(end);
+    if (start === -1 || finish === -1 || finish < start) return html;
+    const lineStart = html.lastIndexOf('\n', start) + 1;
+    const indentMatch = html.slice(lineStart, start).match(/^[ \t]*/);
+    const indent = indentMatch ? indentMatch[0] : '';
+    return html.slice(0, start + begin.length)
+        + '\n'
+        + innerHtml
+        + '\n'
+        + indent
+        + html.slice(finish);
+}
+
+function replaceInlineMarkedBlock(html, begin, end, value) {
+    const start = html.indexOf(begin);
+    const finish = html.indexOf(end, start + begin.length);
+    if (start === -1 || finish === -1 || finish < start) return html;
+    return html.slice(0, start + begin.length) + value + html.slice(finish);
+}
+
+function escapeRegExp(value) {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function setHtmlAttribute(attributes, name, value) {
+    const pattern = new RegExp(`\\s${escapeRegExp(name)}\\s*=\\s*"[^"]*"`, 'i');
+    const replacement = ` ${name}="${escapeHtmlAttribute(value)}"`;
+    return pattern.test(attributes)
+        ? attributes.replace(pattern, replacement)
+        : attributes + replacement;
+}
+
+function removeHtmlAttribute(attributes, name) {
+    return attributes.replace(new RegExp(`\\s${escapeRegExp(name)}\\s*=\\s*"[^"]*"`, 'i'), '');
+}
+
+function updateElementById(html, id, update) {
+    const idPattern = escapeRegExp(id);
+    const elementPattern = new RegExp(
+        `(<(?:img|source|link)\\b(?=[^>]*\\bid="${idPattern}"[^>]*>)[^>]*)(\\/?>)`,
+        'i'
+    );
+    return html.replace(elementPattern, (match, attributes, closing) => update(attributes) + closing);
+}
+
+function updateMetaContent(html, attributeName, attributeValue, value) {
+    const attributeNamePattern = escapeRegExp(attributeName);
+    const attributeValuePattern = escapeRegExp(attributeValue);
+    const metaPattern = new RegExp(
+        `(<meta\\b[^>]*\\b${attributeNamePattern}="${attributeValuePattern}"[^>]*\\bcontent=")[^"]*(")`,
+        'i'
+    );
+    return html.replace(metaPattern, `$1${escapeHtmlAttribute(value)}$2`);
+}
+
+function getHomepageHeroVariant(image, extension) {
+    const marker = '/blog-module/blog-entries/';
+    if (!image || !image.startsWith(marker)) return '';
+    const relative = image.slice(marker.length).split('?')[0];
+    const parts = relative.split('/');
+    if (parts.length < 2) return '';
+    const entryId = parts.shift();
+    const imageName = parts.pop();
+    const variantName = `${path.parse(imageName).name}.${extension}`;
+    const entryPath = path.join(CONFIG.BLOG_DIR, entryId);
+    if (!fs.existsSync(path.join(entryPath, variantName))) return '';
+    return `${marker}${entryId}/${variantName}`;
+}
+
+async function buildHomepageHeroData(post) {
+    const image = post && (post.image || post.backgroundImage) || CONFIG.DEFAULT_BLOG_IMAGE;
+    const dimensions = await getImageDimensionsForPublicPath(image);
+    return {
+        image,
+        avif: getHomepageHeroVariant(image, 'avif'),
+        width: dimensions && dimensions.width ? dimensions.width : 1920,
+        height: dimensions && dimensions.height ? dimensions.height : 1080
+    };
+}
+
+function replaceHomepageTextSlot(html, id, begin, end, value) {
+    const hasMarkers = html.indexOf(begin) !== -1 && html.indexOf(end) !== -1;
+    const updated = replaceInlineMarkedBlock(html, begin, end, value);
+    if (hasMarkers) return updated;
+    const idPattern = escapeRegExp(id);
+    const tagName = id === 'hero-title' ? 'h1' : id === 'hero-category' ? 'span' : 'p';
+    const elementPattern = new RegExp(
+        `(<${tagName}\\b[^>]*\\bid="${idPattern}"[^>]*>)[\\s\\S]*?(</${tagName}>)`,
+        'i'
+    );
+    return html.replace(elementPattern, (match, open, close) => open + value + close);
+}
+
+function heroTitlePresentation(value) {
+    const title = String(value || '').trim();
+    if (title.endsWith('.') && !title.endsWith('..')) {
+        return { text: title.slice(0, -1), period: '.', showPeriod: true };
+    }
+    if (/[!?;…]$/.test(title) || title.endsWith('.')) {
+        return { text: title, period: '', showPeriod: false };
+    }
+    return { text: title, period: '.', showPeriod: true };
+}
+
+function updateHomepageHeroPeriod(html, presentation) {
+    return html.replace(
+        /(<span\b[^>]*\bclass="[^"]*\bhero-period\b[^"]*"[^>]*)(>)[^<]*(<\/span>)/i,
+        (match, attributes, opening, closing) => {
+            let updatedAttributes = setHtmlAttribute(attributes, 'aria-hidden', 'true');
+            updatedAttributes = presentation.showPeriod
+                ? removeHtmlAttribute(updatedAttributes, 'hidden')
+                : setHtmlAttribute(updatedAttributes, 'hidden', 'hidden');
+            return updatedAttributes + opening + presentation.period + closing;
+        }
+    );
+}
+
+function injectHomepageHero(hero) {
+    const indexHtmlPath = path.join(CONFIG.BLOG_DIR, '..', '..', 'index.html');
+    if (!fs.existsSync(indexHtmlPath) || !hero) {
+        console.warn(`⚠️  Homepage HTML not found, static lead render skipped: ${indexHtmlPath}`);
+        return false;
+    }
+
+    const image = hero.heroImage || hero.image || CONFIG.DEFAULT_BLOG_IMAGE;
+    const avif = hero.heroAvif || '';
+    const webp = /\.webp(?:\?.*)?$/i.test(image) ? image : '';
+    const titlePresentation = heroTitlePresentation(hero.title || 'F1 Stories');
+    const title = escapeHtmlAttribute(titlePresentation.text);
+    const category = escapeHtmlAttribute(greekUpper(categoryLabel(hero.category || 'News')));
+    const deck = escapeHtmlAttribute(hero.deck || '');
+    const lede = escapeHtmlAttribute(hero.lede || '');
+    const byline = escapeHtmlAttribute(`${authorLabel(hero.author || 'F1 Stories')} · ${formatDate(hero.date || '', 'long')}`);
+    const storyId = hero.slug || hero.id || '';
+    const href = `/blog-module/blog-entries/${encodeURIComponent(storyId)}/article.html`;
+    const width = parseInt(hero.heroImageWidth, 10) || 1920;
+    const height = parseInt(hero.heroImageHeight, 10) || 1080;
+    const imageSizes = '(max-width: 767px) 100vw, 55vw';
+    const imageUrl = /^https?:\/\//i.test(image) ? image : `https://f1stories.gr${image}`;
+    let html = fs.readFileSync(indexHtmlPath, 'utf8');
+    const original = html;
+
+    html = replaceHomepageTextSlot(
+        html,
+        'hero-category',
+        '<!-- f1s:hero-category:begin -->',
+        '<!-- f1s:hero-category:end -->',
+        category
+    );
+    html = replaceHomepageTextSlot(
+        html,
+        'hero-title',
+        '<!-- f1s:hero-title:begin -->',
+        '<!-- f1s:hero-title:end -->',
+        title
+    );
+    html = updateHomepageHeroPeriod(html, titlePresentation);
+    html = replaceHomepageTextSlot(
+        html,
+        'hero-story-deck',
+        '<!-- f1s:hero-deck:begin -->',
+        '<!-- f1s:hero-deck:end -->',
+        deck
+    );
+    html = replaceHomepageTextSlot(
+        html,
+        'hero-story-excerpt',
+        '<!-- f1s:hero-excerpt:begin -->',
+        '<!-- f1s:hero-excerpt:end -->',
+        lede
+    );
+    html = replaceHomepageTextSlot(
+        html,
+        'hero-story-byline',
+        '<!-- f1s:hero-byline:begin -->',
+        '<!-- f1s:hero-byline:end -->',
+        byline
+    );
+
+    html = html.replace(
+        /(<a\b[^>]*\bid="hero-story-link"[^>]*\bhref=")[^"]*(")/i,
+        `$1${escapeHtmlAttribute(href)}$2`
+    );
+    html = updateElementById(html, 'hero-source-avif', attributes => {
+        return avif ? setHtmlAttribute(attributes, 'srcset', avif) : removeHtmlAttribute(attributes, 'srcset');
+    });
+    html = updateElementById(html, 'hero-source-webp', attributes => {
+        return webp ? setHtmlAttribute(attributes, 'srcset', webp) : removeHtmlAttribute(attributes, 'srcset');
+    });
+    html = updateElementById(html, 'hero-image', attributes => {
+        let updated = setHtmlAttribute(attributes, 'src', image);
+        updated = removeHtmlAttribute(updated, 'srcset');
+        updated = setHtmlAttribute(updated, 'alt', hero.title || 'F1 Stories');
+        updated = setHtmlAttribute(updated, 'width', width);
+        updated = setHtmlAttribute(updated, 'height', height);
+        updated = setHtmlAttribute(updated, 'sizes', imageSizes);
+        return updated;
+    });
+    html = updateElementById(html, 'hero-image-preload', attributes => {
+        let updated = setHtmlAttribute(attributes, 'href', avif || image);
+        updated = removeHtmlAttribute(updated, 'imagesrcset');
+        updated = setHtmlAttribute(updated, 'imagesizes', imageSizes);
+        return updated;
+    });
+    html = updateMetaContent(html, 'property', 'og:image', imageUrl);
+    html = updateMetaContent(html, 'name', 'twitter:image', imageUrl);
+    html = updateMetaContent(html, 'property', 'og:image:width', width);
+    html = updateMetaContent(html, 'property', 'og:image:height', height);
+
+    if (html !== original) {
+        fs.writeFileSync(indexHtmlPath, html);
+        console.log(`Homepage lead story rendered into ${indexHtmlPath}`);
+        return true;
+    }
+    return false;
+}
+
+function injectBlogIndexFirstPage(indexPosts, pageOneData) {
+    const indexHtmlPath = path.join(CONFIG.OUTPUT_HTML_DIR, 'index.html');
+    if (!fs.existsSync(indexHtmlPath)) {
+        console.warn(`⚠️  Blog index HTML not found, static first-page render skipped: ${indexHtmlPath}`);
+        return false;
+    }
+
+    const firstPagePosts = pageOneData.posts || indexPosts.slice(0, 12);
+    const firstImage = firstPagePosts[0] && (firstPagePosts[0].thumbnail || firstPagePosts[0].image);
+    const preloadBlock = [
+        '<link rel="preload" href="/blog-module/blog-index-page-1.json" as="fetch" crossorigin>',
+        firstImage ? `<link rel="preload" as="image" href="${escapeHtmlAttribute(firstImage)}" fetchpriority="high">` : ''
+    ].filter(Boolean).join('\n    ');
+    const cards = firstPagePosts.map((post, idx) => renderBlogIndexCard(post, idx)).join('\n            ');
+    const categories = renderBlogCategoryFilters(pageOneData.categories || summarizeCategories(indexPosts));
+    const count = getBlogIndexSummary(pageOneData.totalCount || indexPosts.length);
+
+    let html = fs.readFileSync(indexHtmlPath, 'utf8');
+    const original = html;
+
+    html = html.replace(
+        /[ \t]*<link rel="preload" href="\/blog-module\/blog-index-data\.json" as="fetch" crossorigin>\n?/,
+        '    <!-- f1s:blog-index-preload:begin -->\n    <!-- f1s:blog-index-preload:end -->\n'
+    );
+    html = replaceMarkedBlock(
+        html,
+        '<!-- f1s:blog-index-preload:begin -->',
+        '<!-- f1s:blog-index-preload:end -->',
+        `    ${preloadBlock}`
+    );
+
+    html = html.replace(
+        /(<div class="category-strip" id="category-strip" aria-label="Φίλτρο κατηγορίας">)([\s\S]*?)(<\/div>)/,
+        `$1\n                    <!-- f1s:blog-categories:begin -->\n                    ${categories}\n                    <!-- f1s:blog-categories:end -->\n                $3`
+    );
+    html = replaceMarkedBlock(
+        html,
+        '<!-- f1s:blog-categories:begin -->',
+        '<!-- f1s:blog-categories:end -->',
+        `                    ${categories}`
+    );
+
+    html = html.replace(
+        /(<div class="post-count" id="post-count" aria-live="polite">)([\s\S]*?)(<\/div>)/,
+        `$1<!-- f1s:blog-count:begin -->${escapeHtmlAttribute(count)}<!-- f1s:blog-count:end -->$3`
+    );
+
+    // Keep the compact count in the mobile archive bar in sync with the
+    // server-rendered total. It is visible before the archive script hydrates
+    // the page, so a stale value is misleading even when the main count is
+    // correct.
+    html = html.replace(
+        /(<span id="blog-archive-mini-count">)([\s\S]*?)(<\/span>)/,
+        `$1<!-- f1s:blog-mini-count:begin -->${escapeHtmlAttribute(count)}<!-- f1s:blog-mini-count:end -->$3`
+    );
+
+    html = html.replace(
+        /(<div class="articles-grid" id="articles-grid">)([\s\S]*?)(\n\s*<\/div>\n\s*<nav class="blog-pagination" id="blog-pagination")/,
+        `$1\n            <!-- f1s:blog-first-page:begin -->\n            ${cards}\n            <!-- f1s:blog-first-page:end -->$3`
+    );
+    html = replaceMarkedBlock(
+        html,
+        '<!-- f1s:blog-first-page:begin -->',
+        '<!-- f1s:blog-first-page:end -->',
+        `            ${cards}`
+    );
+
+    if (html !== original) {
+        fs.writeFileSync(indexHtmlPath, html);
+        console.log(`Blog first page rendered into ${indexHtmlPath}`);
+        return true;
+    }
+
+    return false;
+}
+
+// Cover copy comes from the article's opening paragraph and is cut only at sentence ends:
+// `deck` gathers whole sentences up to 160 characters (or one opening sentence up to 240),
+// `lede` is the next whole sentence.
+function heroCopy(post) {
+    let html = typeof post.content === 'string' ? post.content : '';
+    if (!html) {
+        try {
+            html = fs.readFileSync(path.join(CONFIG.BLOG_DIR, post.id, 'article.html'), 'utf8');
+            html = html.slice(html.indexOf('class="article-content"'));
+        } catch (_) { html = ''; }
+    }
+    const paragraph = /<p\b[^>]*>([\s\S]*?)<\/p>/i.exec(html);
+    const sentences = htmlToPlainText(paragraph ? paragraph[1] : '').match(/[^.!;;?…]+[.!;;?…]+(?=\s|$)/g) || [];
+    const clean = sentences.map(sentence => sentence.trim()).filter(sentence => sentence && !/(\.\.\.|…)$/.test(sentence));
+    let deck = '';
+    let next = 0;
+    while (next < clean.length && (deck ? deck.length + 1 : 0) + clean[next].length <= 160) {
+        deck = deck ? `${deck} ${clean[next]}` : clean[next];
+        next += 1;
+    }
+    if (!deck && clean[0] && clean[0].length <= 240) {
+        deck = clean[0];
+        next = 1;
+    }
+    const lede = clean[next] && clean[next].length <= 320 ? clean[next] : '';
+    return { deck, lede };
+}
+
+async function buildHomeLatest(blogPosts) {
+    // [0] is the homepage cover; [1..3] fill the journal so the cover story is not repeated.
+    return Promise.all(blogPosts.slice(0, 4).map(async post => {
+        const thumbnail = getCardThumbnailPath(post.image);
+        const thumbnailDimensions = await getImageDimensionsForPublicPath(thumbnail);
+        const hero = await buildHomepageHeroData(post);
+        const copy = heroCopy(post);
+        return {
+            title: post.title,
+            slug: post.id,
+            date: post.date,
+            author: post.author || 'F1 Stories',
+            category: (post.categories && post.categories[0]) || 'News',
+            categories: post.categories || ['News'],
+            excerpt: post.excerpt,
+            ...(copy.deck ? { deck: copy.deck } : {}),
+            ...(copy.lede ? { lede: copy.lede } : {}),
+            thumbnail,
+            thumbnailWidth: thumbnailDimensions && thumbnailDimensions.width ? thumbnailDimensions.width : 400,
+            thumbnailHeight: thumbnailDimensions && thumbnailDimensions.height ? thumbnailDimensions.height : 188,
+            heroImage: hero.image,
+            ...(hero.avif ? { heroAvif: hero.avif } : {}),
+            heroImageWidth: hero.width,
+            heroImageHeight: hero.height
+        };
+    }));
+}
+
+function loadExistingPosts() {
+    loadExistingPosts.hasFullContent = false;
+    const cachePath = fs.existsSync(CONFIG.SOURCE_CACHE_JSON)
+        ? CONFIG.SOURCE_CACHE_JSON
+        : CONFIG.OUTPUT_JSON;
+
+    if (!cachePath || !fs.existsSync(cachePath)) return [];
+
+    try {
+        const existing = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+        const posts = existing.posts || [];
+        loadExistingPosts.hasFullContent =
+            cachePath === CONFIG.OUTPUT_JSON && posts.some(post => typeof post.content === 'string' && post.content.trim());
+        return posts;
+    } catch (_) {
+        console.warn(`⚠️  Could not read cached blog metadata from ${path.basename(cachePath)}, continuing without cached post metadata`);
+        return [];
+    }
+}
+
+async function renderCachedArticlePages(cachedPosts) {
+    let rendered = 0;
+    for (const post of cachedPosts) {
+        if (!post || !post.id) continue;
+        const entryPath = path.join(CONFIG.BLOG_DIR, post.id);
+        if (!fs.existsSync(entryPath)) continue;
+        if (typeof post.content === 'string' && post.content.trim()) {
+            await renderArticleHtml(post, entryPath, post.id);
+        } else {
+            // Source-less articles retain their existing body and media. Only owned
+            // taxonomy slots are migrated, including their structured metadata.
+            const articlePath = path.join(entryPath, 'article.html');
+            if (!fs.existsSync(articlePath)) continue;
+            const html = fs.readFileSync(articlePath, 'utf8');
+            const updated = refreshArticleTaxonomy(html, post);
+            if (updated === html) continue;
+            fs.writeFileSync(articlePath, updated);
+        }
+        rendered++;
+    }
+    if (rendered > 0) {
+        console.log(`♻️  Rendered ${rendered} cached article page${rendered === 1 ? '' : 's'} from cached blog metadata`);
+    }
+}
+
+function classifyEntry(entryPath, options = {}) {
+    const folderName = path.basename(entryPath);
+    const entryFiles = options.entryFiles || fs.readdirSync(entryPath);
+    const cachedPostsById = options.cachedPostsById || new Map();
+    const forceRebuild = Boolean(options.forceRebuild);
+    const docFile = utils.findSourceDocument(entryFiles);
+    const hasGalleryImages = utils.hasGalleryImages(entryPath, entryFiles);
+
+    if (docFile) {
+        return {
+            folderName,
+            kind: 'source-backed',
+            action: utils.shouldSkip(entryPath, forceRebuild) ? 'skip' : 'build',
+            hasSourceDocument: true,
+            hasGalleryImages,
+            cached: cachedPostsById.has(folderName)
+        };
+    }
+
+    if (hasGalleryImages && !cachedPostsById.has(folderName)) {
+        return {
+            folderName,
+            kind: 'image-only-gallery',
+            action: utils.shouldSkip(entryPath, forceRebuild) ? 'skip' : 'build',
+            hasSourceDocument: false,
+            hasGalleryImages: true,
+            cached: false
+        };
+    }
+
+    if (cachedPostsById.has(folderName)) {
+        return {
+            folderName,
+            kind: 'cached-only',
+            action: 'reuse-cached',
+            hasSourceDocument: false,
+            hasGalleryImages,
+            cached: true
+        };
+    }
+
+    return {
+        folderName,
+        kind: 'ignored',
+        action: 'ignore',
+        hasSourceDocument: false,
+        hasGalleryImages,
+        cached: false
+    };
+}
+
+async function processBlogEntries(options = {}) {
+    const resolvedOptions = Object.assign(parseBuildOptions(), options);
+    const { forceRebuild, maxWorkers } = resolvedOptions;
+
+    if (!fs.existsSync(CONFIG.BLOG_DIR)) {
+        console.error(`Blog entries directory not found: ${CONFIG.BLOG_DIR}`);
+        return;
+    }
+
+    let entryFolders;
+    try {
+        entryFolders = fs.readdirSync(CONFIG.BLOG_DIR)
+            .filter(folder => {
+                try {
+                    return fs.statSync(path.join(CONFIG.BLOG_DIR, folder)).isDirectory();
+                } catch (_) {
+                    return false;
+                }
+            })
+            .map(folder => path.join(CONFIG.BLOG_DIR, folder));
+    } catch (error) {
+        console.error('Error reading blog directories:', error);
+        entryFolders = [];
+    }
+
+    console.log(`Found ${entryFolders.length} potential blog entry folders`);
+
+    const existingPosts = loadExistingPosts();
+    const cachedPostsById = new Map(existingPosts.map(post => [post.id, post]));
+    const existingOrderById = new Map(existingPosts.map((post, index) => [post.id, index]));
+
+    const toBuild = [];
+    const skipped = [];
+    const reusedCached = [];
+    const ignored = [];
+    const classifications = new Map();
+    entryFolders.forEach(entryPath => {
+        const entryFiles = fs.readdirSync(entryPath);
+        const classification = classifyEntry(entryPath, {
+            entryFiles,
+            cachedPostsById,
+            forceRebuild
+        });
+        classifications.set(classification.folderName, classification);
+
+        if (classification.action === 'build') {
+            toBuild.push(entryPath);
+            return;
+        }
+
+        if (classification.action === 'skip') {
+            skipped.push(classification.folderName);
+            return;
+        }
+
+        if (classification.action === 'reuse-cached') {
+            reusedCached.push(classification.folderName);
+            return;
+        }
+
+        ignored.push(classification.folderName);
+    });
+
+    if (skipped.length > 0) {
+        console.log(`⏭️  Skipping ${skipped.length} up-to-date entries${forceRebuild ? '' : ' (use --force to rebuild all)'}:`);
+        skipped.forEach(folder => console.log(`   ⏭️  ${folder}`));
+    }
+    if (reusedCached.length > 0) {
+        console.log(
+            `ℹ️  Reusing cached metadata for ${reusedCached.length} entr${reusedCached.length === 1 ? 'y' : 'ies'} ` +
+            `without a source document in the repo.`
+        );
+    }
+    if (ignored.length > 0) {
+        console.log(`ℹ️  Ignoring ${ignored.length} non-buildable folder${ignored.length === 1 ? '' : 's'} without cached metadata.`);
+    }
+
+    if (toBuild.length === 0) console.log('Nothing to build — all entries are up to date.');
+
+    console.log(`\n🔨 Building ${toBuild.length} entries with ${Math.min(maxWorkers, toBuild.length || 1)} workers...\n`);
+
+    const concurrency = Math.min(maxWorkers, toBuild.length || 1);
+    const freshBuild = toBuild.length > 0 ? await runWorkerPool(toBuild, concurrency) : { results: [], failures: [] };
+    const freshPosts = freshBuild.results;
+    const buildFailures = freshBuild.failures.slice();
+
+    let cachedPosts = [];
+    const cachedFolderNames = new Set(skipped.concat(reusedCached));
+    if (cachedFolderNames.size > 0 && existingPosts.length > 0) {
+        cachedPosts = existingPosts.filter(post => cachedFolderNames.has(post.id));
+        console.log(`📦 Loaded ${cachedPosts.length} cached entries from blog metadata`);
+    }
+
+    let rebuiltSkippedPosts = [];
+    const cachedIds = new Set(cachedPosts.map(post => post.id));
+    const missingSkippedPaths = entryFolders.filter(entryPath => {
+        const folderName = path.basename(entryPath);
+        if (!skipped.includes(folderName) || cachedIds.has(folderName)) return false;
+        const classification = classifications.get(folderName);
+        return classification && (classification.kind === 'source-backed' || classification.kind === 'image-only-gallery');
+    });
+
+    if (missingSkippedPaths.length > 0) {
+        console.log(`♻️  Rebuilding ${missingSkippedPaths.length} skipped entries because cached metadata was missing...`);
+        const rebuiltSkippedBuild = await runWorkerPool(
+            missingSkippedPaths,
+            Math.min(maxWorkers, missingSkippedPaths.length)
+        );
+        rebuiltSkippedPosts = rebuiltSkippedBuild.results;
+        buildFailures.push(...rebuiltSkippedBuild.failures);
+    }
+
+    const freshIds = new Set(freshPosts.concat(rebuiltSkippedPosts).map(post => post.id));
+    const blogPosts = [
+        ...freshPosts,
+        ...rebuiltSkippedPosts,
+        ...cachedPosts.filter(post => !freshIds.has(post.id))
+    ];
+
+    fixMissingAuthors(blogPosts);
+    blogPosts.forEach(post => {
+        Object.assign(post, getPostTaxonomy(post));
+        delete post.tag;
+    });
+    console.log(`\n✅ Total: ${blogPosts.length} posts (${freshPosts.length} built, ${rebuiltSkippedPosts.length} rebuilt from skipped, ${cachedPosts.length} cached)`);
+
+    if (blogPosts.length === 0) {
+        console.error('No blog posts were successfully processed!');
+        return;
+    }
+
+    if (buildFailures.length > 0) {
+        const firstFailure = buildFailures[0];
+        throw new Error(
+            `Blog build failed for ${buildFailures.length} entr${buildFailures.length === 1 ? 'y' : 'ies'}. ` +
+            `First failure: ${path.basename(firstFailure.entryPath)}: ${firstFailure.error}`
+        );
+    }
+
+    blogPosts.sort((a, b) => {
+        const dateDiff = new Date(b.date) - new Date(a.date);
+        if (dateDiff !== 0) return dateDiff;
+        if (existingOrderById.has(a.id) && existingOrderById.has(b.id)) {
+            return existingOrderById.get(a.id) - existingOrderById.get(b.id);
+        }
+        return String(b.id).localeCompare(String(a.id));
+    });
+
+    const lastUpdated = new Date().toISOString();
+    const blogData = {
+        posts: blogPosts,
+        lastUpdated
+    };
+    fs.writeFileSync(CONFIG.OUTPUT_JSON, JSON.stringify(blogData, null, 2));
+    console.log(`Blog data saved to ${CONFIG.OUTPUT_JSON}`);
+
+    const sourceCache = {
+        posts: blogPosts.map(({ content, ...metadata }) => metadata),
+        lastUpdated
+    };
+    const previousCache = readJsonIfExists(CONFIG.SOURCE_CACHE_JSON);
+    if (sameJsonExceptKey(previousCache, sourceCache, 'lastUpdated') && previousCache.lastUpdated) {
+        sourceCache.lastUpdated = previousCache.lastUpdated;
+    }
+    fs.writeFileSync(CONFIG.SOURCE_CACHE_JSON, JSON.stringify(sourceCache, null, 2));
+
+    // Workers may have just converted newly supplied hero images to WebP.
+    // Generate missing card variants now, before archive/home payloads resolve
+    // their thumbnail paths, while the generator's existence checks keep this
+    // incremental for an unchanged archive.
+    generateMissingImageVariants();
+    const indexPosts = await buildIndexPosts(blogPosts);
+    const indexPath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-data.json');
+    const compactIndexData = buildCompactIndexData(indexPosts);
+    fs.writeFileSync(indexPath, JSON.stringify(compactIndexData, null, 0));
+    console.log(`Blog index data saved to ${indexPath} (${jsonKb(compactIndexData)} KB)`);
+
+    const pageOneData = {
+        // hasSource is author-tool metadata; the public first page does not need it.
+        posts: indexPosts.slice(0, 12).map(({ hasSource, ...post }) => post),
+        categories: summarizeCategories(indexPosts),
+        totalCount: indexPosts.length,
+        lastUpdated
+    };
+    const pageOnePath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-page-1.json');
+    const existingPageOneData = readJsonIfExists(pageOnePath);
+    if (sameJsonExceptKey(existingPageOneData, pageOneData, 'lastUpdated') && existingPageOneData.lastUpdated) {
+        pageOneData.lastUpdated = existingPageOneData.lastUpdated;
+    }
+    fs.writeFileSync(pageOnePath, JSON.stringify(pageOneData, null, 0));
+    console.log(`Blog first-page data saved to ${pageOnePath} (${jsonKb(pageOneData)} KB)`);
+    injectBlogIndexFirstPage(indexPosts, pageOneData);
+
+    const homeLatest = await buildHomeLatest(blogPosts);
+    const homeLatestPath = path.join(CONFIG.BLOG_DIR, '..', 'home-latest.json');
+    fs.writeFileSync(homeLatestPath, JSON.stringify(homeLatest, null, 0));
+    console.log(`Home latest data saved to ${homeLatestPath} (${jsonKb(homeLatest)} KB)`);
+    injectHomepageHero(homeLatest[0]);
+
+    generateSitemap(blogPosts);
+    await renderCachedArticlePages(freshPosts.concat(cachedPosts));
+    await injectRelatedArticles(blogPosts);
+    injectPrevNextLinks(blogPosts);
+
+    try {
+        const dirtyAirResult = await updateDirtyAirCache({ force: forceRebuild });
+        console.log(
+            `Dirty air cache saved to ${dirtyAirResult.outputPath} ` +
+            `(${dirtyAirResult.sessionCount} sessions, ${dirtyAirResult.rebuiltCount} rebuilt, ${dirtyAirResult.reusedCount} reused, ${dirtyAirResult.failedCount} failed)`
+        );
+    } catch (error) {
+        console.warn(`⚠️  Dirty air cache update skipped: ${error.message}`);
+    }
+
+    try {
+        const destructorsResult = await updateDestructorsCache({ force: forceRebuild });
+        console.log(
+            `Destructors cache saved to ${destructorsResult.outputPath} ` +
+            `(${destructorsResult.driverCount} drivers, ${destructorsResult.activeTeamCount} active teams${destructorsResult.unchanged ? ', unchanged' : ''})`
+        );
+    } catch (error) {
+        console.warn(`⚠️  Destructors cache update skipped: ${error.message}`);
+    }
+
+    if (process.env.BLOG_BUILD_REFRESH_DEBRIEF === '1') {
+        try {
+            const debriefResult = await updateDebriefCache({ force: forceRebuild });
+            console.log(
+                `Debrief cache saved to ${debriefResult.outputPath} ` +
+                `(${debriefResult.roundCount} rounds, season ${debriefResult.season})`
+            );
+        } catch (error) {
+            console.warn(`⚠️  Debrief cache update skipped: ${error.message}`);
+        }
+    } else {
+        console.log('Debrief cache refresh skipped during blog build; set BLOG_BUILD_REFRESH_DEBRIEF=1 to refresh it.');
+    }
+
+    console.log('Blog processing complete');
+}
+
+if (require.main === module) {
+    processBlogEntries().catch(error => {
+        console.error('Blog processing failed:', error);
+        process.exitCode = 1;
+    });
+}
+
+module.exports = {
+    parseBuildOptions,
+    runWorker,
+    runWorkerPool,
+    fixMissingAuthors,
+    buildIndexPosts,
+    summarizeCategories,
+    buildCompactIndexData,
+    renderBlogIndexCard,
+    editorialCardKind,
+    injectBlogIndexFirstPage,
+    buildHomeLatest,
+    loadExistingPosts,
+    renderCachedArticlePages,
+    classifyEntry,
+    processBlogEntries
+};

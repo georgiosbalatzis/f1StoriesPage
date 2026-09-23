@@ -1,0 +1,15 @@
+@layer reset, tokens, base, components, utilities, page, theme, overrides;
+
+@layer reset {
+    *, *::before, *::after { box-sizing: border-box; }
+}
+
+@layer tokens {
+    :root {
+        --color-surface: var(--bg-base, #111113);
+        --color-surface-raised: var(--bg-surface, #161618);
+        --color-text: var(--text-primary, #e5e5e7);
+        --color-muted: var(--text-secondary, #a1a1a6);
+        --color-accent: var(--accent, #8fb6cf);
+    }
+}

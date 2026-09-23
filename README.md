@@ -1,0 +1,554 @@
+# F1 Stories
+
+Το `f1stories.github.io` είναι το αποθετήριο του public website του F1 Stories: μιας στατικής, content-first πλατφόρμας για podcasting, αρθρογραφία, live Formula 1 dashboards και εξειδικευμένα microsurfaces γύρω από δεδομένα, ανάλυση και community content.
+
+Το project είναι σχεδιασμένο με λογική static publishing και όχι ως κλασικό SPA ή framework app. Η βάση του είναι HTML, CSS και vanilla JavaScript, ενώ τα δυναμικά τμήματα ενισχύονται είτε με build-time generation είτε με client-side φόρτωση δεδομένων από εξωτερικές πηγές και τοπικά cache bundles.
+
+> Το F1 Stories συνδυάζει editorial περιεχόμενο, podcast identity και data-driven Formula 1 εργαλεία σε ένα ενιαίο static-first web product. Το repository αυτό είναι ο λειτουργικός πυρήνας αυτής της εμπειρίας: από την αρχική σελίδα και το blog μέχρι τα standings dashboards, τα cache builders και τα βοηθητικά publishing scripts.
+
+## Περιεχόμενα
+
+- [Σύνοψη προϊόντος](#product-overview)
+- [Τι είναι αυτό το project](#project-purpose)
+- [Κύρια τμήματα της εφαρμογής](#application-sections)
+- [Τεχνολογική προσέγγιση](#technical-approach)
+- [Δομή αποθετηρίου](#repository-structure)
+- [Ροή περιεχομένου blog](#blog-content-pipeline)
+- [Data pipeline για standings](#standings-data-pipeline)
+- [Τοπική ανάπτυξη](#local-development)
+- [Απαιτούμενα εργαλεία για content build](#build-requirements)
+- [Βασικά commands συντήρησης](#maintenance-commands)
+- [Design και εμπειρία χρήστη](#design-and-ux)
+- [Εξωτερικές υπηρεσίες και integrations](#integrations)
+- [Deployment λογική](#deployment)
+- [Static publishing maintainer guide](#static-publishing-maintainer-guide)
+- [Πρακτικές σημειώσεις για maintainers](#maintainer-notes)
+- [Γιατί αυτό το repository έχει ενδιαφέρον](#why-this-repo-matters)
+
+<a id="product-overview"></a>
+## Σύνοψη προϊόντος
+
+Από πλευράς προϊόντος, το F1 Stories δεν είναι απλώς ένα ακόμη informational site για τη Formula 1. Είναι μια ενιαία ψηφιακή παρουσία που συνδέει:
+
+- branded homepage για το podcast και το community
+- editorial blog με long-form ανάλυση, embeds, custom media και structured article pages
+- live και near-live dashboards με βαθμολογίες και advanced race metrics
+- auxiliary routes που λειτουργούν ως είσοδος προς εξωτερικά εργαλεία του οικοσυστήματος
+
+Αυτό κάνει το repository χρήσιμο σε τρία επίπεδα:
+
+- ως website codebase
+- ως content publishing workflow
+- ως data presentation layer για motorsport analytics
+
+<a id="project-purpose"></a>
+## Τι είναι αυτό το project
+
+Ο βασικός ρόλος του repository είναι να υποστηρίζει:
+
+- την κεντρική σελίδα του brand `F1 Stories`
+- το blog και τη ροή δημοσίευσης άρθρων
+- dashboards βαθμολογιών και advanced metrics για τη Formula 1
+- βοηθητικές landing pages και redirects προς εξωτερικά εργαλεία
+- νομικές σελίδες και shared UI υποδομή για ολόκληρο το site
+
+Πρακτικά, πρόκειται για ένα hybrid publishing system:
+
+- static στο presentation layer
+- scripted στο content generation layer
+- API-assisted στο data layer
+
+Αυτή η προσέγγιση επιτρέπει γρήγορο φόρτωμα, απλή φιλοξενία σε GitHub Pages ή αντίστοιχο static host, και ταυτόχρονα αρκετά πλούσιο functionality χωρίς frontend framework.
+
+<a id="application-sections"></a>
+## Κύρια τμήματα της εφαρμογής
+
+### Αρχική σελίδα
+
+Η ρίζα του project, στο [index.html](./index.html), λειτουργεί ως το βασικό landing page του brand και περιλαμβάνει:
+
+- hero section για το podcast
+- latest content area με tabs για βίντεο και άρθρα
+- ομάδα παρουσιαστών και guests
+- sponsor strip
+- φόρμα επικοινωνίας μέσω Formspree
+- shared navigation με countdown για τον επόμενο αγώνα
+
+Η αρχική σελίδα τραβά τα πιο πρόσφατα blog posts από το παραγόμενο `blog-index-data.json` μέσω του [blog-loader.js](./blog-module/blog-loader.js).
+
+### Blog module
+
+Το blog ζει κάτω από το `blog-module/` και είναι το σημαντικότερο publishing subsystem του repo. Περιλαμβάνει:
+
+- index σελίδα blog
+- template για article pages
+- generator που μετατρέπει source content σε έτοιμο HTML
+- metadata bundles για homepage και blog listing
+- βοηθητικά εργαλεία για εικόνες, TTS και caches
+
+Η παραγωγή άρθρων εκκινεί από το [blog-processor.js](./blog-module/blog-processor.js), το οποίο πλέον είναι thin compatibility wrapper προς το `blog-module/build/`. Ο πραγματικός pipeline κώδικας είναι σπασμένος σε concern-specific modules όπως:
+
+- [build/index.js](./blog-module/build/index.js) για το orchestrator και το worker pool
+- [build/worker.js](./blog-module/build/worker.js) για το per-entry build
+- [build/embeds.js](./blog-module/build/embeds.js) για detection και placeholder extraction στα social/iframe/widget embeds
+- [build/embed-render.js](./blog-module/build/embed-render.js) για render/sanitization/resolution των embed payloads
+- [build/media.js](./blog-module/build/media.js) για εικόνες, galleries και responsive `<picture>`
+- [build/parse-docx.js](./blog-module/build/parse-docx.js) και [build/parse-txt.js](./blog-module/build/parse-txt.js) για source parsing
+- [build/csv-to-table.js](./blog-module/build/csv-to-table.js) για CSV/doc tables
+
+Το pipeline:
+
+- διαβάζει άρθρα από `blog-module/blog-entries/`
+- υποστηρίζει source αρχεία `.docx` και `.txt`
+- εντοπίζει και οργανώνει εικόνες άρθρων με συμβατικό naming
+- μετατρέπει embedded media και external links σε ασφαλές HTML
+- δημιουργεί `article.html` για κάθε post
+- παράγει τα `blog-data.json` και `blog-index-data.json`
+- συνδέει related articles, previous/next navigation και metadata
+- ανανεώνει τα cache bundles που χρησιμοποιεί το standings dashboard
+
+### Standings και data dashboards
+
+Το route `/standings/`, με entry τα [standings/index.html](./standings/index.html), αποτελεί ξεχωριστό analytics surface για τη σεζόν της Formula 1.
+
+Το subsystem αυτό δεν περιορίζεται μόνο σε κλασικές βαθμολογίες. Περιλαμβάνει πολλαπλές όψεις και custom visual analyses όπως:
+
+- βαθμολογία οδηγών
+- βαθμολογία κατασκευαστών
+- teammate qualifying gaps
+- lap 1 gains
+- tyre pace distributions
+- dirty air analysis
+- track dominance
+- pit stop comparisons
+- destructors championship
+
+Το rendering και η data orchestration γίνονται κυρίως από το [standings/standings.js](./standings/standings.js), ενώ η εμφάνιση ορίζεται στο [standings/standings.css](./standings/standings.css).
+
+### Redirect pages και auxiliary routes
+
+Το αποθετήριο περιλαμβάνει και lightweight routes που λειτουργούν ως redirect ή bridge προς ανεξάρτητα εργαλεία:
+
+- [f1telemetry/index.html](./f1telemetry/index.html)
+- [ghostcar/index.html](./ghostcar/index.html)
+
+Οι σελίδες αυτές υπάρχουν κυρίως για canonical routing, social previews και ομαλή μετάβαση σε εξωτερικά projects.
+
+### Νομικές σελίδες και shared infrastructure
+
+Το folder `privacy/` περιέχει τους βασικούς νομικούς πόρους του site, ενώ στο `scripts/` και `styles/` βρίσκονται τα κοινά components υποδομής, όπως:
+
+- analytics
+- cookie consent
+- shared navigation
+- service worker registration
+- κοινό styling για legal και global navigation
+
+<a id="technical-approach"></a>
+## Τεχνολογική προσέγγιση
+
+Το project ακολουθεί μια συνειδητά απλή αλλά αποτελεσματική στοίβα:
+
+- HTML για page structure
+- CSS για theming, layout και responsive behavior
+- vanilla JavaScript για client-side interaction και data rendering
+- Bootstrap όπου χρειάζεται για baseline layout utilities
+- Node.js scripts για content build και data preparation
+
+Δεν υπάρχει frontend bundler, framework router ή component runtime τύπου React/Vue/Next. Αυτό κρατά το deployment απλό και ταιριαστό σε static hosting, αλλά μεταφέρει μέρος της πειθαρχίας στην οργάνωση αρχείων, naming conventions και helper scripts.
+
+<a id="repository-structure"></a>
+## Δομή αποθετηρίου
+
+Η ουσιαστική δομή του project είναι η εξής:
+
+```text
+.
+├── index.html
+├── README.md
+├── package.json
+├── package-lock.json
+├── blog-module/
+│   ├── blog/
+│   ├── blog-entries/
+│   ├── build/
+│   ├── blog-data.json
+│   ├── blog-index-data.json
+│   ├── blog-loader.js
+│   ├── blog-processor.js
+│   ├── blog-processor.legacy.js
+│   ├── blog-fixes.js
+│   ├── blog-styles.css
+│   ├── dirty-air-cache.js
+│   ├── destructors-cache.js
+│   └── generate-image-variants.js
+├── standings/
+│   ├── index.html
+│   ├── standings.js
+│   ├── standings.css
+│   ├── dirty-air-cache.json
+│   ├── destructors-cache.json
+│   ├── debrief-cache.js
+│   └── debrief-cache.json
+├── scripts/
+│   ├── build/
+│   └── perf/
+├── styles/
+├── perf/
+├── images/
+├── ghostcar/
+├── f1telemetry/
+└── privacy/
+```
+
+<a id="blog-content-pipeline"></a>
+## Πώς λειτουργεί η ροή περιεχομένου του blog
+
+Η πιο σημαντική παραγωγική ροή του repo είναι η ροή δημιουργίας άρθρων.
+
+### Source of truth
+
+Κάθε άρθρο ζει σε δικό του folder μέσα στο `blog-module/blog-entries/`. Το naming convention ακολουθεί ημερομηνιακή λογική, συνήθως σε μορφές όπως:
+
+```text
+YYYYMMDDX
+YYYYMMDD-1X
+```
+
+όπου το τελικό γράμμα χρησιμοποιείται ως author code.
+
+### Public categories and internal tags
+
+The public taxonomy is defined once in [`blog-module/taxonomy.js`](./blog-module/taxonomy.js): **News / Analysis / Technical / History / Opinion / Betting / Drivers / Teams / 2026**. Archive filters, article labels and links, structured article metadata, and authoring selectors use these exact names. Category links use `/blog-module/blog/index.html?category=History` (substitute any canonical category).
+
+Public `categories` and the primary `category` are separate from `tags`. Driver names, team names, race names, series labels, other seasons, and other detailed terms remain normalized internal tags. They support keyword search and related-article scoring without becoming public category chips. Compact index rows store public category indexes at position 8 and internal search tag indexes at position 9. The `c` dictionary always contains the nine public categories in their defined order; `t` holds the internal search tag dictionary.
+
+New source files use explicit front matter, which the editor writes automatically:
+
+```text
+---
+category: Analysis
+tags: Lewis Hamilton, Ferrari F1
+title: The article title
+---
+
+The article body starts here.
+```
+
+An explicit selected category is authoritative. Legacy two-token headers remain readable; their comma-separated labels are normalized during the build, with aliases such as `Historical` mapped to `History`. The `2026` category comes from explicit metadata, never an article's publication year. Reviewed exceptions for legacy series live alongside the taxonomy rules. Unknown metadata is retained internally, with `News` as the public fallback.
+
+Each blog build refreshes `blog-source-cache.json` with normalized metadata for all articles. Entries without source documents receive taxonomy updates in their existing HTML while retaining the article body and media. `npm run test:taxonomy` checks migration, source round trips, category contracts, and related-article behavior; it also runs as part of `npm run test:blog`.
+
+### Αναμενόμενα αρχεία ανά post
+
+Ένα folder άρθρου μπορεί να περιλαμβάνει:
+
+- source κείμενο σε `.docx` ή `.txt`
+- `1.*` ως thumbnail / primary image
+- `2.*` ως background image
+- `3.*`, `4.*`, `5.*` κ.ο.κ. ως content images
+- `.csv` αρχεία για article tables
+- `.html` ή `.svg` αρχεία για embeds όπου αυτό επιτρέπεται
+
+### Τι κάνει ο blog processor
+
+Όταν εκτελείται το `npm run build:blog`:
+
+1. εντοπίζει νέα ή αλλαγμένα άρθρα
+2. μετατρέπει DOCX περιεχόμενο σε HTML
+3. εξάγει και οργανώνει media
+4. δημιουργεί responsive εικόνες μέσα στο article content
+5. συνθέτει το τελικό `article.html` με βάση το template
+6. ανανεώνει τα συνολικά JSON feeds του blog
+7. υπολογίζει related posts
+8. συμπληρώνει previous/next article navigation
+9. ανανεώνει τα cache αρχεία του standings module
+
+Το script υποστηρίζει incremental rebuilds, `--force` mode για πλήρη αναδημιουργία των source-backed entries και golden regression harness στο `blog-module/build/__tests__/`.
+
+Αν ένα παλιότερο article folder υπάρχει ακόμα στο repo αλλά δεν έχει πλέον το αρχικό `.docx` ή `.txt`, ο orchestrator δεν το ξαναχτίζει ως gallery από τα εναπομείναντα images. Αντί γι' αυτό επαναχρησιμοποιεί το committed metadata από το `blog-data.json`, ώστε τα historical cached posts να μένουν σταθερά.
+
+### Νέα διάταξη build modules
+
+- `blog-module/build/index.js`: διαβάζει τα entry folders, αποφασίζει skip/rebuild και γράφει `blog-data.json`, `blog-index-data.json`, `home-latest.json`, `sitemap.xml`
+- `blog-module/build/worker.js`: τρέχει το build ενός μόνο article folder
+- `blog-module/build/embeds.js`: αν θέλεις νέο embed type, πρόσθεσε detection + render case εδώ
+- `blog-module/build/media.js`: αν αλλάζουν targets εικόνων, ενημέρωσε εδώ τα quality / width όρια για hero και content variants
+- `blog-module/blog-processor.js`: compatibility wrapper που καλεί το νέο build module
+- `blog-module/blog-processor.legacy.js`: archived reference του παλιού monolith, όχι η κύρια διαδρομή build
+
+<a id="standings-data-pipeline"></a>
+## Data pipeline για τα standings
+
+Το standings section είναι το πιο data-heavy μέρος του site. Η λογική του είναι μικτή:
+
+- live client-side fetch από public APIs
+- local cache bundles για ακριβά ή πιο εύθραυστα datasets
+- curated mappings για λογότυπα, χρώματα ομάδων και driver headshots
+
+### Κύριες πηγές δεδομένων
+
+- `Jolpica / Ergast mirror` για championship standings
+- `OpenF1` για sessions, drivers, laps, stints και telemetry-adjacent datasets
+- `Formula1.com media CDN` για team logos και driver headshots
+- `F1 Top App` για destructors standings μέσω HTML parsing
+
+### Local cache artifacts
+
+Τα παρακάτω αρχεία αποθηκεύονται στο repo και λειτουργούν ως intermediate outputs:
+
+- [standings/dirty-air-cache.json](./standings/dirty-air-cache.json)
+- [standings/destructors-cache.json](./standings/destructors-cache.json)
+- [standings/debrief-cache.json](./standings/debrief-cache.json)
+
+Αυτά δημιουργούνται ή ανανεώνονται από:
+
+- [blog-module/dirty-air-cache.js](./blog-module/dirty-air-cache.js)
+- [blog-module/destructors-cache.js](./blog-module/destructors-cache.js)
+- [standings/debrief-cache.js](./standings/debrief-cache.js)
+
+Η κύρια αναμενόμενη ροή είναι να ενεργοποιούνται από το `npm run build:blog`, μέσω του orchestrator στο `blog-module/build/index.js`. Τα cache builders παραμένουν επίσης χρήσιμα ως direct scripts για στοχευμένο refresh όταν χρειάζεται.
+
+<a id="local-development"></a>
+## Τοπική ανάπτυξη
+
+Επειδή το site χρησιμοποιεί absolute paths όπως `/blog-module/...` και `/standings/...`, πρέπει να σερβίρεται από τη ρίζα του repository και όχι να ανοίγεται απευθείας με `file://`.
+
+### Γρήγορο local preview
+
+Από τη ρίζα του project:
+
+```bash
+python3 -m http.server 8080
+```
+
+και μετά:
+
+```text
+http://localhost:8080/
+```
+
+### Προτεινόμενες runtime προϋποθέσεις
+
+- Node.js 18 ή νεότερο
+- npm με υποστήριξη `npm ci`
+
+Το Node 18+ είναι ουσιαστικά αναγκαίο επειδή αρκετά scripts βασίζονται στο built-in `fetch`, ενώ το image pipeline χρησιμοποιεί native packages όπως `sharp`.
+
+<a id="build-requirements"></a>
+## Απαιτούμενα εργαλεία για content build
+
+Το αποθετήριο έχει πλέον πλήρες [package.json](./package.json) και lockfile. Από καθαρό checkout, η προτεινόμενη εγκατάσταση είναι:
+
+```bash
+npm ci
+```
+
+Οι βασικές runtime dependencies για το blog pipeline είναι `mammoth`, `sharp` και `adm-zip`. Τα build/dev εργαλεία όπως `sass`, `esbuild`, `lightningcss`, Bootstrap και Font Awesome εγκαθίστανται από το ίδιο lockfile.
+
+<a id="maintenance-commands"></a>
+## Βασικά commands συντήρησης
+
+### Καθαρό setup
+
+```bash
+npm ci
+```
+
+### Shell, partials και assets
+
+```bash
+npm run build
+```
+
+Το full build επεκτείνει HTML partials, ανανεώνει το YouTube snapshot και ξαναχτίζει/stamp-άρει τα browser assets. Για επιμέρους βήματα:
+
+```bash
+npm run build:html
+npm run build:youtube
+npm run build:assets
+npm run build:assets:minify
+npm run build:assets:stamp
+```
+
+### Τοπικό visual preview
+
+Για να ανοίξεις το site τοπικά με τα generated CSS/JS assets διαθέσιμα:
+
+```bash
+npm run preview
+```
+
+Η εντολή ανανεώνει τα browser assets, ελέγχει ότι υπάρχουν τα βασικά generated αρχεία και ξεκινά preview server στο `http://127.0.0.1:4173/`. Σταμάτησέ τον με `Ctrl+C`. Τα generated αρχεία παραμένουν local build output και δεν χρειάζεται να προστεθούν στο repository.
+
+### Αναδημιουργία blog content
+
+```bash
+npm run build:blog
+```
+
+Για πλήρες rebuild:
+
+```bash
+npm run build:blog:force
+```
+
+### Δημιουργία image variants
+
+Preview χωρίς write:
+
+```bash
+node blog-module/generate-image-variants.js
+```
+
+Πραγματική παραγωγή:
+
+```bash
+node blog-module/generate-image-variants.js --run
+```
+
+Force regeneration:
+
+```bash
+node blog-module/generate-image-variants.js --run --force
+```
+
+### Regression και performance checks
+
+```bash
+node blog-module/build/__tests__/run-golden.js
+npm run perf:budget
+```
+
+<a id="design-and-ux"></a>
+## Design και εμπειρία χρήστη
+
+Το project δεν είναι απλώς data container. Υπάρχει εμφανής έμφαση σε:
+
+- branded visual identity
+- mobile-friendly εμπειρία
+- shared navigation σε όλες τις σελίδες
+- dark/light theme behavior
+- social previews και metadata
+- loading states, skeletons και lazy loading
+- lightweight client-side enhancement χωρίς βαρύ runtime
+
+Ιδιαίτερα το standings module δείχνει μια πιο editorial αντιμετώπιση των δεδομένων: όχι απλή παράθεση πινάκων, αλλά παρουσίαση με tabs, cards, charts, share/embed εργαλεία και tailored visual language.
+
+<a id="integrations"></a>
+## Εξωτερικές υπηρεσίες και integrations
+
+Το site συνεργάζεται με τρίτες υπηρεσίες για συγκεκριμένες λειτουργίες:
+
+- Google Analytics 4 μέσω του [scripts/analytics.js](./scripts/analytics.js)
+- Formspree για την φόρμα επικοινωνίας
+- YouTube για videos και embeds
+- OpenF1 και Jolpica για motorsport data
+- Formula1.com media CDN για official media assets
+
+Αυτό σημαίνει ότι μέρος της συμπεριφοράς του site εξαρτάται από την υγεία και τη συμβατότητα αυτών των upstream υπηρεσιών.
+
+<a id="deployment"></a>
+## Deployment λογική
+
+Το production deploy δεν γίνεται από το repository root. Το root περιέχει source files, editorial εργαλεία, build scripts, σημειώσεις εργασίας και raw article assets. Το public boundary είναι το generated artifact:
+
+```bash
+npm run build:public
+```
+
+Το command παράγει καθαρό `dist/` και τρέχει validation πριν θεωρηθεί publishable. Το `dist/` περιέχει μόνο visitor-facing αρχεία:
+
+- public HTML pages
+- minified CSS και JavaScript
+- optimized article images
+- explicitly referenced public images
+- public JSON data, fonts, manifest, service worker, robots και sitemap
+
+Δεν πρέπει να σερβίρονται από production:
+
+- `nextsteps.txt`, `laststeps.txt`, `appdev.txt` ή άλλα task notes
+- `generate.html`, `housekeeping.html` ή admin/editorial tools χωρίς πραγματικό authentication
+- source maps
+- build scripts, tests, package files
+- raw `.docx`, draft `.txt`, `.sql`, backup files
+- original article `.png`, `.jpg`, `.jpeg` όταν υπάρχει optimized `.webp` ή `.avif`
+
+Το GitHub Pages deploy ανήκει στο `.github/workflows/deploy-pages.yml` και γίνεται αυτόματα μέσω Actions artifact deploy από το `dist/` directory. Το workflow τρέχει απευθείας σε `push` στο `main` και σε manual `workflow_dispatch`, ενώ χρησιμοποιείται ως reusable job από τα `Publish Article` και `Site Maintenance`. Το maintenance καλεί deploy μόνο όταν έχει κάνει πραγματικό commit αλλαγών.
+
+- `.github/workflows/deploy-pages.yml` κάνει `npm run build:public`
+- το ίδιο workflow τρέχει τα quality gates πριν το deploy
+- `actions/upload-pages-artifact` ανεβάζει μόνο `dist`
+- `actions/deploy-pages` δημοσιεύει το artifact
+
+Το `.github/workflows/quality.yml` παραμένει PR/manual CI gate και δεν κάνει production deploy. Το Pages setting του repository πρέπει να είναι **GitHub Actions**, όχι legacy publish από `main:/`. Άρα το repository root μπορεί να παραμείνει πλήρες για development, αλλά δεν είναι το production artifact.
+
+Publishing από το `generate.html` δημιουργεί branch και Pull Request. Το read-only `Site Quality` κάνει validation και, όταν περάσει, το `Publish Article` ελέγχει ότι πρόκειται αποκλειστικά για trusted author-tool αλλαγές, κάνει merge, τρέχει τον blog processor και δημιουργεί ξεχωριστό follow-up commit με τα generated artifacts. Στο τέλος του ίδιου workflow καλείται το reusable Pages deploy και δημοσιεύεται το rebuilt `dist/` artifact. Έτσι ένα άρθρο εμφανίζεται στο Actions ως δύο top-level runs (`Site Quality` → `Publish Article`) και μόνο ένα production deployment.
+
+Πριν από publish σε production, η ασφαλής ροή είναι:
+
+1. ενημέρωση ή προσθήκη περιεχομένου στο `blog-module/blog-entries/`
+2. εκτέλεση `npm run build:blog`
+3. εκτέλεση `npm run build` αν άλλαξαν shared partials, CSS, JS, icons ή stamped asset references
+4. έλεγχος ότι ενημερώθηκαν σωστά τα `blog-data.json`, `blog-index-data.json`, `home-latest.json`, `sitemap.xml` και τα cache bundles
+5. εκτέλεση `npm run build:public`
+6. local preview του site
+7. εκτέλεση `npm run verify` πριν από merge ή publish όταν η αλλαγή επηρεάζει UI, performance, public artifact ή analytics behavior
+8. merge ή push στο `main`, ώστε το automatic Pages workflow να κάνει deploy μόνο του `dist/` artifact
+
+<a id="static-publishing-maintainer-guide"></a>
+## Static publishing maintainer guide
+
+The operational source of truth for source ownership, generated files, author flow, deploy flow, quality gates, and static-publishing decisions is [docs/static-publishing-model.md](./docs/static-publishing-model.md).
+
+<a id="maintainer-notes"></a>
+## Πρακτικές σημειώσεις για maintainers
+
+- Το blog subsystem είναι convention-driven. Αν τα filenames των εικόνων ή των source documents παρεκκλίνουν, το build μπορεί να μην παράξει το αναμενόμενο αποτέλεσμα.
+- Το standings module συνδυάζει live fetch και local fallback data. Άρα κάποια regressions ενδέχεται να εμφανίζονται μόνο σε πραγματικό runtime και όχι σε απλή ανάγνωση κώδικα.
+- Το `package-lock.json` είναι μέρος της build reproducibility. Προτίμησε `npm ci` για καθαρό περιβάλλον αντί για ad hoc package installs.
+- Το `npm run build:blog` δεν παράγει μόνο άρθρα. Ανανεώνει και supporting datasets που επηρεάζουν το `/standings/`.
+- Τα redirect routes σε `f1telemetry/` και `ghostcar/` είναι μέρος της public εμπειρίας του domain και δεν πρέπει να αντιμετωπίζονται ως άσχετα placeholder αρχεία.
+
+<a id="why-this-repo-matters"></a>
+## Γιατί αυτό το repository έχει ενδιαφέρον
+
+Το project είναι ένα καλό παράδειγμα για το πώς μπορεί να στηθεί ένα media/product site χωρίς βαρύ framework, αλλά με αρκετά ώριμη λογική publishing:
+
+- static-first για απόδοση και απλότητα
+- scripted automation για editorial workflows
+- selective χρήση APIs για live αθλητικά δεδομένα
+- local caches όπου οι upstream πηγές είναι ασταθείς ή ακριβές
+- καθαρός διαχωρισμός ανάμεσα σε brand site, content system και analytics surfaces
+
+Με απλά λόγια, το `f1stories.github.io` δεν είναι μόνο ένα website. Είναι το λειτουργικό publishing layer του F1 Stories.
+
+<a id="build-assets"></a>
+## Build assets (minification pipeline)
+
+Κάθε browser-delivered CSS/JS έχει δίπλα του ένα `.min` sibling (π.χ. `styles.css` + `styles.min.css`). Το production HTML φορτώνει τα minified αρχεία με content-hash query string για σωστό cache-busting. Μόνο τα sources είναι commit-ed· τα `.min` siblings είναι local/CI build output (στο `.gitignore`). Node-only build/test modules μπορούν να είναι budgeted χωρίς να απαιτούν minified sibling.
+
+- `npm run build` — full shell rebuild: expanded HTML partials first, then refresh of `assets/youtube-latest.json`, then asset minify/stamp.
+- `npm run build:html` — επεκτείνει τα `<!-- @include ... -->` markers στα shared shell pages (`partials/head-meta.html`, `partials/footer.html`) με idempotent generated blocks.
+- `npm run build:youtube` — τραβά το YouTube channel RSS στο build-time και ξαναγράφει το local snapshot `assets/youtube-latest.json` που χρησιμοποιεί η homepage videos rail.
+- `npm run build:assets` — χτίζει icon sprite + slim Bootstrap CSS, τρέχει minify (`lightningcss` για CSS, `esbuild` για JS) και μετά stamp (rewrite HTML references σε `.min.<ext>?v=<hash>`).
+- `npm run build:bootstrap` — παράγει το self-hosted `styles/vendor/bootstrap.slim.css` από το scoped SCSS subset.
+- `npm run build:assets:watch` — rebuild σε κάθε αλλαγή source.
+- `npm run build:assets:minify` / `build:assets:stamp` — τα δύο βήματα ξεχωριστά. Το `build:assets:stamp` περνά πρώτα από το include expansion ώστε footer/head partial edits να γράφονται στα shell HTML πριν το stamping.
+- Χειροκίνητα source edits σε `.css` / `.js`: τρέξε `npm run build:assets` πριν το commit, ώστε να commit-αριστεί το ενημερωμένο `?v=` HTML reference.
+- Χειροκίνητα edits σε `partials/*.html`: τρέξε `npm run build` ή τουλάχιστον `npm run build:html && npm run build:assets:stamp` πριν το commit.
+
+Τα generated artifacts που commit-άρονται είναι τα rewritten HTML refs στα tracked landing pages (βλ. `TARGET_HTML` στο `stamp-html.mjs`). Τα `*.min.css` / `*.min.js`, τα sourcemaps και το `scripts/build/asset-manifest.json` (path → `{ min, hash, bytes, sourceBytes }`) είναι στο `.gitignore` και ξαναχτίζονται σε κάθε build.
+
+Το `stamp-html.mjs` stamp-άρει τα maintained shell pages και τα article runtime refs σε committed `blog-module/blog-entries/*/article.html`, ώστε τα article pages να δείχνουν στα minified `article-script` / `blog-fixes` assets χωρίς να απαιτείται full content rebuild. Για αλλαγές στο ίδιο το article template ή στο generated content, το source of truth παραμένει το `npm run build:blog` / `npm run build:blog:force`.
+
+<a id="performance-budget"></a>
+## Performance budget
+
+Ένα ελαφρύ guardrail για το βάρος των critical JS/CSS assets. Το budget ζει στο `perf/size-budget.json` και ελέγχεται με το script `scripts/perf/size-guard.mjs`.
+
+- `npm run perf:budget` — τρέχει τον έλεγχο· exit code 1 αν οποιοδήποτε tracked αρχείο έχει μεγαλώσει πάνω από `thresholdPercent` (default 10%) σε σχέση με το αποθηκευμένο baseline.
+- `npm run perf:budget:update` — ξαναγράφει το baseline με τα τρέχοντα μεγέθη. Τρέξε το μόνο μετά από συνειδητό perf review (π.χ. μετά από Phase 1 minification).
+- Ο πρώτος baseline ελήφθη στις `2026-04-20` (βλ. `perf/baseline-2026-04-20.md`) — είναι το reference point για κάθε φάση optimization που ακολουθεί στο `nextsteps.txt`. Το budget tracks τόσο τα source assets όσο και τα `.min` siblings του current shell/per-tab graph, ώστε regression του minifier να πιάνεται μαζί με source-level growth.
+
+Επίσης, κάθε σελίδα landing (home, blog index, standings, article template) φορτώνει το `scripts/perf/web-vitals-beacon.js` μέσα σε `requestIdleCallback` και στέλνει στο GA4 event `web_vital` με `metric_name`, `metric_value`, `metric_rating`, `page_path`. Οι ζωντανές τιμές δημιουργούν ένα RUM dataset για LCP/INP/CLS/FCP/TTFB ανά route — αυτό είναι το χρήσιμο signal πριν και μετά από κάθε perf phase.

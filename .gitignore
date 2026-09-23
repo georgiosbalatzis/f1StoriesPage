@@ -1,0 +1,63 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Local workspace state
+.idea/
+context.md
+appdev.txt
+laststeps.txt
+nextsteps.txt
+
+# Generated build output — images are served directly from blog-entries/
+blog-module/blog/images/
+dist/
+.build/pages/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Temp extraction folder (cleaned up by processor, but just in case)
+blog-module/blog-entries/*/extracted/
+blog-module/blog-entries/**/*.bak
+
+# Local/generated authoring data
+blog-module/blog-data.json
+
+# Legacy rollback artifacts, kept local only
+blog-module/blog-processor.legacy.js
+standings/standings.legacy.js
+
+# Source documents — not needed on the web server
+blog-module/blog-entries/**/*.docx
+
+# Note: .avif and -sm.* variants ARE tracked in git (required for deployment on GitHub Pages)
+# Regenerate missing ones with: node blog-module/generate-image-variants.js --run
+
+# Generated build assets
+# Regenerate with: npm run build:assets
+*.min.js
+*.min.css
+*.min.js.map
+*.min.css.map
+styles/vendor/bootstrap.slim.css
+images/icons/sprite.svg
+scripts/build/asset-manifest.json
+
+# Local legacy/raw image leftovers that are no longer referenced by the site
+images/logo.png
+images/bg/bg[6-9]*
+images/bg/compress_videos.sh
+images/bg/convert-to-avif.sh
+images/authors/FAAM.webp
+images/avatars/FA.webp
+images/avatars/FAAM.webp
+images/avatars/Poulikidis.webp
+
+# Local QA / audit evidence (screenshots, probes) — never source
+perf/visual-qa/
+/audit/
+
+# Local code-graph cache (graphify); regenerate with /graphify
+graphify-out/

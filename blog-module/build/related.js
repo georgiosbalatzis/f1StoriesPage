@@ -1,0 +1,123 @@
+const { fs, path, CONFIG, escapeHtmlAttribute, getCardThumbnailPath, getImageDimensionsForPublicPath } = require('./shared');
+const { getPostTaxonomy, authorLabel, formatDate, formatReadingTime, cardImageSrcset, CARD_SIZES } = require('../taxonomy');
+
+function scoreRelatedPosts(blogPosts, post, index) {
+    const taxonomy = getPostTaxonomy(post);
+    const genericTags = new Set(['f1', 'formula 1', 'racing', 'misc', 'random', 'images', 'gallery', 'gp']);
+    const tags = new Set(taxonomy.tags.map(tag => tag.toLocaleLowerCase()).filter(tag => !genericTags.has(tag)));
+    const scored = blogPosts
+        .filter((_, candidateIndex) => candidateIndex !== index)
+        .map(candidate => {
+            let score = 0;
+            const candidateTaxonomy = getPostTaxonomy(candidate);
+            const sharedTags = candidateTaxonomy.tags.filter(tag => tags.has(tag.toLocaleLowerCase()));
+            score += Math.min(sharedTags.length, 3) * 3;
+            if (candidateTaxonomy.category === taxonomy.category) score += 2;
+            if (candidate.author && candidate.author === post.author) score += 1;
+            score += taxonomy.categories.filter(category => candidateTaxonomy.categories.includes(category)).length;
+            const daysDiff = Math.abs(new Date(post.date) - new Date(candidate.date)) / (1000 * 60 * 60 * 24);
+            if (daysDiff <= 30) score += 1;
+            return { post: candidate, score };
+        })
+        .filter(item => item.score > 0)
+        .sort((a, b) => b.score - a.score || new Date(b.post.date) - new Date(a.post.date));
+
+    let relatedPosts = scored.slice(0, 3).map(item => item.post);
+    if (relatedPosts.length < 3) {
+        const ids = new Set(relatedPosts.map(candidate => candidate.id));
+        const fallbacks = blogPosts
+            .filter((candidate, candidateIndex) => candidateIndex !== index && !ids.has(candidate.id))
+            .slice(0, 3 - relatedPosts.length);
+        relatedPosts = relatedPosts.concat(fallbacks);
+    }
+    return relatedPosts;
+}
+
+async function buildRelatedPostsHtml(relatedPosts) {
+    const icon = name => `<svg class="icon" aria-hidden="true"><use href="#${name}"/></svg>`;
+    const cards = await Promise.all(relatedPosts.map(async related => {
+        const relatedImage = getCardThumbnailPath(related.image);
+        const relatedImagePath = relatedImage.substring(relatedImage.lastIndexOf('/') + 1);
+        const relDateStr = formatDate(related.date);
+        const relatedTitle = escapeHtmlAttribute(related.title);
+        const relatedSrcset = escapeHtmlAttribute(cardImageSrcset(`/blog-module/blog-entries/${related.id}/${relatedImagePath}`));
+        const relatedAuthor = escapeHtmlAttribute(authorLabel(related.author));
+        const relatedReadTime = escapeHtmlAttribute(formatReadingTime(related.readingTime));
+        const imageDimensions = await getImageDimensionsForPublicPath(relatedImage);
+        const hasImage = Boolean(relatedImage && relatedImage !== CONFIG.DEFAULT_BLOG_IMAGE && imageDimensions);
+        const widthAttr = imageDimensions && imageDimensions.width ? ` width="${imageDimensions.width}"` : '';
+        const heightAttr = imageDimensions && imageDimensions.height ? ` height="${imageDimensions.height}"` : '';
+        const hoverMeta = relatedReadTime
+            ? `<span class="related-card-hover-meta">${icon('fa-clock')} ${relatedReadTime}</span>`
+            : '';
+        const hover = `<div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>${hoverMeta ? `\n                                ${hoverMeta}` : ''}</div>`;
+
+        const mediaHtml = hasImage ? `
+                        <div class="related-card-media">
+                            <img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}"${relatedSrcset ? `
+                                 srcset="${relatedSrcset}" sizes="${CARD_SIZES.related}"` : ''}
+                                 alt="${relatedTitle}"
+                                 loading="lazy"
+                                 decoding="async"${widthAttr}${heightAttr}
+                                 data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">
+                            ${hover}
+                        </div>` : `
+                        <div class="related-card-media related-card-media--placeholder" aria-hidden="true">
+                            <span class="related-card-placeholder">F1 Stories</span>
+                            ${hover}
+                        </div>`;
+
+        return `
+            <div class="col-md-4 mb-4">
+                <a href="${related.url}" class="related-card-link">
+                    <div class="related-article-card${hasImage ? '' : ' related-article-card--no-image'}">
+                        ${mediaHtml}
+                        <div class="card-body">
+                            <div class="related-date-badge">${icon('fa-calendar-alt')} ${relDateStr}</div>
+                            <h3>${relatedTitle}</h3>
+                            <div class="related-card-footer">
+                                <span class="related-card-read">Διάβασε ${icon('fa-arrow-right')}</span>
+                                <span class="related-card-author">${relatedAuthor}</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>`;
+    }));
+    return cards.join('');
+}
+
+function renderRelatedArticlesSection(relatedPostsHtml) {
+    const cardsHtml = relatedPostsHtml ? relatedPostsHtml.replace(/^\n/, '') : '';
+    return `        <div class="row article-related-section">
+            <div class="col-12 related-section-head"><span class="related-section-eyebrow">Επόμενη ανάγνωση</span><h2 class="related-section-title">Σχετικά άρθρα</h2></div>${cardsHtml ? `\n\n${cardsHtml}` : ''}
+        </div>`;
+}
+
+async function injectRelatedArticles(blogPosts) {
+    for (const [index, post] of blogPosts.entries()) {
+        const postHtmlPath = path.join(CONFIG.BLOG_DIR, post.id, 'article.html');
+        if (!fs.existsSync(postHtmlPath)) continue;
+
+        const relatedPosts = scoreRelatedPosts(blogPosts, post, index);
+        const relatedPostsHtml = await buildRelatedPostsHtml(relatedPosts);
+        let postHtml = fs.readFileSync(postHtmlPath, 'utf8');
+        const originalHtml = postHtml;
+        if (postHtml.includes('RELATED_ARTICLES')) {
+            postHtml = postHtml.replace(/^[ \t]*RELATED_ARTICLES[ \t]*$/gm, relatedPostsHtml || '');
+        } else {
+            postHtml = postHtml.replace(
+                /        <div class="row(?: mt-5| article-related-section)">\n\s*<div class="col-12(?: related-section-head)?">[\s\S]*?related-section-title">(?:Related Articles|Σχετικά άρθρα)<\/h2><\/div>[\s\S]*?\n        <\/div>(?=\n    <\/div>\n<\/main>)/,
+                renderRelatedArticlesSection(relatedPostsHtml)
+            );
+        }
+        if (postHtml !== originalHtml) fs.writeFileSync(postHtmlPath, postHtml);
+    }
+}
+
+module.exports = {
+    scoreRelatedPosts,
+    buildRelatedPostsHtml,
+    renderRelatedArticlesSection,
+    injectRelatedArticles
+};

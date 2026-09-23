@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "updated": "2026-06-30",
+  "description": "Reviewed raw HTML rendering sink counts. Lower this baseline as sinks move to DOM construction or trusted rendering helpers.",
+  "ignoredPrefixes": [
+    "archive/",
+    "blog-module/blog-entries/",
+    "dist/",
+    "node_modules/"
+  ],
+  "ignoredFiles": [
+    "scripts/quality/rendering-sink-guard.mjs"
+  ],
+  "files": {
+    "scripts/author/dom-tools.js": {
+      "innerHTML": 1,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 1
+    },
+    "standings/core/rendering.js": {
+      "innerHTML": 1,
+      "outerHTML": 0,
+      "insertAdjacentHTML": 0,
+      "total": 1
+    }
+  }
+}

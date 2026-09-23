@@ -1,0 +1,692 @@
+/* ============================================================
+   critical-common.css — Phase 2 (Above-the-fold critical path)
+   ─────────────────────────────────────────────────────────────
+   Minified + inlined into every page <head> by stamp-html.mjs.
+   Keeps FOUC away while the rest of the stylesheets load
+   asynchronously via rel="preload"+onload="this.rel='stylesheet'".
+
+   Scope (strictly above-the-fold):
+     • Theme design tokens (both light + dark)
+     • html/body reset + typography defaults
+     • .background fixed layer (prevents flash-of-wrong-bg)
+     • .skip-link a11y affordance
+     • .blog-nav sticky navbar + inner layout
+     • #hero / .hero-content baseline layout
+     • Light-mode overrides for the same scope
+
+   Non-goals (full stylesheets still load async):
+     • Card grids, section dividers, footer, animations
+     • Legacy .navbar (only used on episodes page)
+     • Everything below the hero
+
+   Hand-crafted (not generated) so the diff stays reviewable.
+   ============================================================ */
+
+:root {
+  --bg-base: #111113;
+  --bg-surface: #161618;
+  --bg-overlay: rgba(17,17,19,.92);
+  --text-primary: #e5e5e7;
+  --text-secondary: #a1a1a6;
+  --accent: #41B6E6;
+  --accent-readable: #41B6E6;
+  --border: rgba(255,255,255,.08);
+  --font-body: 'Roboto', system-ui, -apple-system, sans-serif;
+  --f1s-hero-position: center center;
+  --f1s-hero-mobile-position: center center;
+  --radius-lg: 14px;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  margin: 0;
+  padding: 0;
+  color: var(--text-primary);
+  background-color: var(--bg-base);
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100svh;
+}
+
+/* Fixed background layer so the page never flashes white behind hero */
+.background {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: var(--bg-base);
+  z-index: -2;
+}
+
+/* Streaks hidden on mobile + reduced-motion — keep the rule in critical so
+   the animation never kicks in on slow devices before full CSS arrives. */
+.streak { position: fixed; z-index: -1; opacity: 0; }
+@media (min-width: 769px) {
+  .streak { opacity: 0.5; }
+}
+
+/* a11y — the skip link stays offscreen until focused */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: var(--bg-base);
+  padding: 0.5rem 1.5rem;
+  text-decoration: none;
+  z-index: 10000;
+  border-radius: 0 0 6px 6px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.skip-link:focus { top: 0; }
+
+/* ── Shared fixed navbar (above-the-fold on every page) ── */
+.blog-nav {
+  --nav-bg: rgba(14,14,16,0.98);
+  --nav-border: rgba(255,255,255,0.12);
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1060;
+  background: var(--nav-bg);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom: 1px solid var(--nav-border);
+  box-shadow: none;
+}
+.blog-nav.scrolled { background: var(--nav-bg); box-shadow: none; }
+.blog-nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.6rem 0;
+  min-height: 58px;
+}
+.blog-nav-brand img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  display: block;
+}
+.blog-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.35rem;
+  margin-left: 0;
+}
+.blog-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  position: relative;
+  padding: 0.1rem 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(255,255,255,0.58);
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+}
+.blog-nav-link.active {
+  color: #f0f0f2;
+  border-bottom-color: #41B6E6;
+  font-weight: 700;
+}
+.blog-nav-link.betcast-link {
+  margin-left: 0.25rem;
+  padding-left: 1.3rem;
+  border-left: 1px solid rgba(255,255,255,0.14);
+  border-bottom-color: transparent;
+  color: #e874c9;
+}
+.blog-nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.blog-nav-countdown {
+  display: flex;
+  align-items: center;
+  gap: 0.58rem;
+  padding: 0.08rem 0 0.08rem 1rem;
+  background: transparent;
+  border: 0;
+  border-left: 1px solid rgba(255,255,255,0.14);
+  border-radius: 0;
+}
+.countdown-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.countdown-race {
+  max-width: 140px;
+  overflow: hidden;
+  color: rgba(255,255,255,0.38);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: .68rem;
+  font-weight: 500;
+}
+.countdown-timer {
+  color: #41B6E6;
+  font-size: .78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .02em;
+}
+.countdown-flag {
+  line-height: 1;
+  font-size: 1.1rem;
+}
+.countdown-flag-mobile {
+  line-height: 1;
+  color: currentColor;
+  font-size: 1rem;
+}
+.blog-nav-countdown-mobile {
+  display: none;
+  align-items: center;
+  gap: 0.35rem;
+  color: #41B6E6;
+  font-size: .78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn):not(.theme-toggle-nav-btn) {
+  display: none;
+}
+.scroll-to-top-btn { display: none; }
+.blog-nav .theme-toggle-nav-btn {
+  position: static;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(255,255,255,0.72);
+  box-shadow: none;
+}
+.blog-nav-hamburger {
+  display: none;
+  width: 44px;
+  height: 44px;
+  padding: 8px;
+  border: 0;
+  background: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+}
+.blog-nav-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 2px;
+}
+[data-theme="light"] .blog-nav-hamburger span { background: #6e6e73; }
+.blog-nav-mobile {
+  display: none;
+  max-height: 0;
+  overflow: hidden;
+  padding: 0;
+  border-top: 1px solid transparent;
+  background: var(--nav-bg);
+}
+.blog-nav-mobile.open {
+  max-height: 420px;
+  border-top-color: rgba(255,255,255,0.08);
+}
+.blog-nav-mobile-link {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  min-height: 44px;
+  padding: .72rem 1rem;
+  border: 0;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-radius: 0;
+  background: transparent;
+  color: rgba(255,255,255,.6);
+  text-decoration: none;
+}
+.blog-nav-mobile-link.active {
+  color: #41B6E6;
+  border-left-color: #41B6E6;
+  font-weight: 600;
+}
+.blog-nav-mobile-link.betcast-link {
+  border-left-color: transparent;
+  color: #e874c9;
+}
+.blog-nav-mobile .theme-toggle-menu-btn {
+  position: static;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: .72rem 1rem;
+  justify-content: flex-start;
+  gap: .6rem;
+  border: 0;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-radius: 0;
+  background: transparent;
+  color: rgba(255,255,255,0.72);
+  box-shadow: none;
+}
+@media (max-width: 991px) {
+  .blog-nav-links { display: none; }
+  .blog-nav-hamburger { display: flex; }
+  .blog-nav-mobile { display: block; }
+}
+@media (max-width: 767px) {
+  .blog-nav-countdown { display: none; }
+  .blog-nav-countdown-mobile { display: flex; }
+}
+@media (max-width: 575.98px) {
+  .blog-nav-inner { gap: 0.75rem; padding-right: calc(44px + 1.5rem); }
+  .blog-nav-right { min-width: 0; gap: 0.25rem; }
+  .blog-nav-countdown-mobile { display: none; }
+  .blog-nav-hamburger {
+    display: flex !important;
+    position: fixed;
+    top: 11px;
+    right: 12px;
+    z-index: 1062;
+    border-radius: 0;
+    background: transparent;
+  }
+}
+
+/* Keep the consent banner out of document flow before async CSS loads. */
+.cookie-banner,
+.cookie-consent {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  max-height: min(28vh, 240px);
+  overflow-y: auto;
+  color: var(--text-primary);
+  background: rgba(17,17,19,0.9);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.32);
+  transform: translateY(100%);
+  opacity: 0;
+  visibility: hidden;
+  contain: layout style;
+}
+.cookie-banner.show,
+.cookie-consent.show {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+.cookie-banner.show:not(.is-ready),
+.cookie-consent.show:not(.is-ready) {
+  transform: translateY(100%);
+  opacity: 0;
+  visibility: hidden;
+}
+.cookie-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.56rem 0.74rem 0.62rem;
+  color: var(--text-primary);
+}
+.cookie-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.cookie-header h3 {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+.cookie-intro,
+.cookie-content > p {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.3;
+}
+.cookie-details {
+  margin: 0;
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.cookie-details[open] {
+  margin-top: 0.12rem;
+  padding: 0.52rem;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.cookie-settings-summary {
+  width: max-content;
+  max-width: 100%;
+  padding: 0.18rem 0;
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+.cookie-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.42rem;
+  margin: 0;
+}
+.cookie-btn {
+  min-width: 0;
+  padding: 0.46rem 0.68rem;
+  border: 0;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.decline {
+  min-height: auto;
+  padding: 0.35rem 0.2rem;
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-secondary);
+}
+.cookie-details:not([open]) ~ .cookie-actions .reject-btn,
+.cookie-details:not([open]) ~ .cookie-actions .accept-selected-btn {
+  display: none;
+}
+.cookie-footer {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 0.65rem;
+  font-size: 0.8rem;
+}
+@media (max-width: 767.98px) {
+  .cookie-banner,
+  .cookie-consent {
+    max-height: min(22vh, 156px);
+    border-radius: 12px 12px 0 0;
+  }
+  .cookie-content {
+    max-width: 100%;
+    padding: 0.48rem 0.76rem max(0.56rem, env(safe-area-inset-bottom));
+  }
+  .cookie-header { margin-bottom: 0; }
+  .cookie-intro,
+  .cookie-content > p { font-size: 0.72rem; }
+  .cookie-details { margin-top: 0; }
+  .cookie-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 0.38rem;
+    width: 100%;
+    margin: 0;
+  }
+  .cookie-btn {
+    width: 100%;
+    max-width: 100%;
+    min-height: 44px;
+    padding: 0.46rem 0.5rem;
+    overflow: hidden;
+    font-size: clamp(0.7rem, 2.45vw, 0.78rem);
+    text-overflow: ellipsis;
+  }
+  .cookie-footer { display: none; }
+}
+
+/* ── Hero baseline (homepage/standings share this shape) ── */
+#hero {
+  position: relative;
+  color: #fff;
+  padding: 4.1rem 0 3.6rem;
+  margin-top: 64px;
+  min-height: clamp(430px, 47vh, 500px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  clip-path: none;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.92;
+  overflow: hidden;
+}
+.hero-overlay picture,
+.hero-overlay img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.hero-overlay.image-bg img {
+  object-fit: cover;
+  object-position: var(--f1s-hero-position, center center);
+  transform: scale(1.015);
+}
+#hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(5,7,10,0.94) 0%, rgba(8,11,16,0.82) 34%, rgba(8,10,14,0.42) 64%, rgba(5,6,8,0.3) 100%);
+  z-index: -1;
+}
+.hero-content {
+  max-width: 760px;
+  padding: 0 var(--space-md);
+}
+.hero-content h1 {
+  font-size: clamp(3.25rem, 5vw, 5rem);
+  margin: 0 0 0.72rem;
+  line-height: 0.92;
+  max-width: 11ch;
+  text-shadow: 0 3px 24px rgba(0,0,0,0.62);
+}
+.hero-content p {
+  max-width: 580px;
+  margin-bottom: 1.45rem;
+  font-size: 1.08rem;
+  color: rgba(255,255,255,0.88);
+  text-shadow: 0 2px 18px rgba(0,0,0,0.6);
+}
+@media (max-width: 1199.98px) {
+  #hero {
+    min-height: clamp(390px, 44vh, 440px);
+    padding: 3.25rem 0 2.85rem;
+  }
+  .hero-content {
+    max-width: 680px;
+  }
+  .hero-content h1 {
+    font-size: clamp(3rem, 6vw, 4.25rem);
+  }
+}
+@media (max-width: 767.98px) {
+  #hero {
+    padding: 2.8rem 0 2.35rem;
+    min-height: clamp(340px, 49vh, 390px);
+    clip-path: none;
+  }
+  .hero-overlay.image-bg img {
+    object-position: var(--f1s-hero-mobile-position, var(--f1s-hero-position, center center));
+  }
+  .hero-content {
+    max-width: 34rem;
+    margin: 0;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    text-align: left;
+  }
+  .hero-content h1 {
+    max-width: 10ch;
+    margin-left: 0;
+    margin-right: 0;
+    font-size: clamp(2.35rem, 11vw, 3.25rem);
+    line-height: 0.94;
+  }
+  .hero-content p {
+    max-width: 25rem;
+    margin-left: 0;
+    margin-right: 0;
+    font-size: 0.96rem;
+    line-height: 1.5;
+  }
+}
+@media (max-width: 575.98px) {
+  .hero-content p {
+    max-width: 17.5rem;
+  }
+}
+@media (max-width: 479.98px) {
+  .hero-content {
+    padding-right: 0;
+    padding-left: 0;
+  }
+  .hero-content h1 {
+    font-size: clamp(2.2rem, 12vw, 2.8rem);
+  }
+}
+
+/* ── Light-mode overrides for the critical scope only ── */
+[data-theme="light"] {
+  --bg-base: #ffffff;
+  --bg-surface: #f5f5f7;
+  --bg-overlay: rgba(255,255,255,.92);
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --accent: #41B6E6;
+  --accent-readable: #0A4F66;
+  --border: rgba(0,0,0,.08);
+}
+[data-theme="light"] body { background-color: #fff; color: #1d1d1f; }
+[data-theme="light"] .background { background: #fff; }
+[data-theme="light"] .streak { display: none; }
+[data-theme="light"] .blog-nav {
+  --nav-bg: rgba(255,255,255,0.98);
+  --nav-border: rgba(29,29,31,0.12);
+  background: var(--nav-bg);
+  border-bottom-color: var(--nav-border);
+}
+[data-theme="light"] .blog-nav.scrolled { background: var(--nav-bg); box-shadow: none; }
+[data-theme="light"] .blog-nav-link { color: #6e6e73; }
+[data-theme="light"] .blog-nav-link.active {
+  color: #1d1d1f;
+  border-bottom-color: #0A7FA8;
+}
+[data-theme="light"] .blog-nav-link.betcast-link {
+  border-left-color: rgba(29,29,31,0.14);
+  color: #a72f89;
+}
+[data-theme="light"] .blog-nav-countdown {
+  border-left-color: rgba(29,29,31,0.14);
+  background: transparent;
+}
+[data-theme="light"] .blog-nav-mobile { background: var(--nav-bg); }
+[data-theme="light"] .blog-nav-mobile-link {
+  color: #6e6e73;
+  border-bottom-color: rgba(29,29,31,0.08);
+}
+[data-theme="light"] .blog-nav-mobile-link.active {
+  color: var(--accent-readable);
+  border-left-color: #0A7FA8;
+}
+[data-theme="light"] .blog-nav-mobile-link.betcast-link {
+  border-left-color: transparent;
+  color: #a72f89;
+}
+[data-theme="light"] .blog-nav .theme-toggle-nav-btn,
+[data-theme="light"] .blog-nav-mobile .theme-toggle-menu-btn {
+  border-color: transparent;
+  background: transparent;
+  color: #6e6e73;
+  box-shadow: none;
+}
+[data-theme="light"] .countdown-timer,
+[data-theme="light"] .blog-nav-countdown-mobile { color: var(--accent-readable); }
+
+/* ── Flat homepage hero and compact-desktop navigation ──────── */
+.hero-brand-lockup {
+  display: none;
+}
+@media (min-width: 992px) {
+  .blog-nav-inner {
+    min-height: 64px;
+    padding: 0;
+  }
+  .blog-nav-brand {
+    padding-right: 1.45rem;
+  }
+  .blog-nav-links {
+    align-self: stretch;
+    gap: 1.35rem;
+    margin-left: 0;
+  }
+  .blog-nav-link {
+    padding: 0.1rem 0;
+    border-radius: 0;
+  }
+  .blog-nav-link .icon {
+    display: none;
+  }
+  .blog-nav .theme-toggle-nav-btn { width: 36px; height: 36px; }
+}
+
+/* ── Icon sprite base (Phase 3b) ── */
+/* Replaces the Font Awesome <i> webfont glyphs. Sized to currentColor like
+   a character so `<svg class="icon">` drops into existing layouts with no
+   extra tweaks. The -.125em baseline nudge matches FA's own glyph metrics. */
+.icon {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  vertical-align: -0.125em;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.fa-spin {
+  animation: fa-spin 2s linear infinite;
+}
+@keyframes fa-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
