@@ -1,6 +1,34 @@
 {
   "posts": [
     {
+      "id": "20260923G",
+      "title": "Το B-spec της Williams και το πραγματικό τεστ",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-23",
+      "dateISO": "2026-09-23",
+      "displayDate": "23 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260923G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260923G/1.webp",
+      "excerpt": "Θυμάστε το Baku πέρσι; Ο Sainz στο podium και η Williams να ζει ένα από τα καλύτερα Σαββατοκύριακά της εδώ και πολλά χρόνια. Τότε έλεγα κι εγώ, όπως οι περισσότεροι, ότι το project του Vowles άρχιζε...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260923G/article.html",
+      "category": "Technical",
+      "categories": [
+        "Technical"
+      ],
+      "tags": [
+        "Williams",
+        "2026"
+      ],
+      "wordCount": 628,
+      "readingTime": "4 min",
+      "imageWidth": 474,
+      "imageHeight": 266,
+      "backgroundImageWidth": 474,
+      "backgroundImageHeight": 266
+    },
+    {
       "id": "20260922W",
       "title": "Pedro de la rosa: Αυτός που περίμενε την μεγάλη ευκαιρία.",
       "author": "Themis Charvalis",
@@ -9127,5 +9155,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-22T18:48:02.743Z"
+  "lastUpdated": "2026-09-23T11:41:28.659Z"
 }
