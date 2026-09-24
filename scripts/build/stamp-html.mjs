@@ -145,7 +145,8 @@ const ARTICLE_RUNTIME_SOURCES = new Set([
     'blog-module/blog/article-rail.js',
     'blog-module/blog/article-script.js',
     'blog-module/blog/article-comments.js',
-    'blog-module/blog-fixes.js'
+    'blog-module/blog-fixes.js',
+    'scripts/sw-register.js'
 ]);
 
 // Primary font weight to preload per page template. Picked to match the
@@ -166,7 +167,6 @@ const FONT_PRELOADS = {
         'assets/fonts/ibm-plex-sans-400-600-greek.woff2'
     ],
     'blog-module/blog/template.html': [
-        'assets/fonts/gfs-didot-400-greek.woff2',
         'assets/fonts/ibm-plex-sans-400-600-greek.woff2'
     ],
     'generate.html': [
@@ -186,6 +186,32 @@ const FONT_PRELOADS = {
 // Marker comments around the font preload block. Idempotent replacement.
 const FONTS_BEGIN = '<!-- f1s:fonts-preload:begin -->';
 const FONTS_END   = '<!-- f1s:fonts-preload:end -->';
+
+// Static chunks an entry module imports, preloaded next to the entry's own modulepreload so they
+// download in parallel instead of after it parses. minify.mjs derives the list from the esbuild
+// metafile; chunk names are content-hashed, so the hrefs carry no ?v= and match the import URLs.
+const MODULE_PRELOADS = { 'standings/index.html': 'standings/standings.js' };
+const MODULEPRELOAD_BEGIN = '<!-- f1s:modulepreload:begin -->';
+const MODULEPRELOAD_END   = '<!-- f1s:modulepreload:end -->';
+
+function stampModulePreloads(html, relPath, manifest) {
+    const source = MODULE_PRELOADS[relPath];
+    if (!source) return html;
+    const entry = manifest[source];
+    if (!entry || !Array.isArray(entry.staticImports)) {
+        throw new Error(`manifest missing staticImports for ${source} — run build:assets:minify`);
+    }
+    const block = [
+        MODULEPRELOAD_BEGIN,
+        ...entry.staticImports.map(rel => `    <link rel="modulepreload" href="/${rel}">`),
+        `    ${MODULEPRELOAD_END}`
+    ].join('\n');
+    const existing = new RegExp(escapeRegex(MODULEPRELOAD_BEGIN) + '[\\s\\S]*?' + escapeRegex(MODULEPRELOAD_END));
+    if (existing.test(html)) return html.replace(existing, () => block);
+    const anchor = new RegExp(`^([ \\t]*)<link rel="modulepreload" href="/${escapeRegex(entry.min)}[^"]*">\\n`, 'm');
+    if (!anchor.test(html)) throw new Error(`${relPath}: no modulepreload for /${entry.min} to anchor chunk preloads`);
+    return html.replace(anchor, (line, indent) => `${line}${indent}${block}\n`);
+}
 
 function loadManifest() {
     if (!fs.existsSync(MANIFEST_PATH)) {
@@ -696,6 +722,17 @@ function ensureArticleRailAssets(html, railCssInfo, railJsInfo) {
     return result;
 }
 
+// Every public route registers the service worker (PERF-P2-10). It goes last so it never
+// delays the article's own deferred scripts.
+function ensureSwRegisterScript(html, swInfo) {
+    if (!swInfo || !swInfo.min || !swInfo.hash) return html;
+    if (/\/scripts\/sw-register(?:\.min)?\.js(?:\?v=[a-f0-9]+)?/i.test(html)) return html;
+    return String(html || '').replace(
+        /(<script\s+defer\s+src=["']\/blog-module\/blog-fixes(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["']><\/script>)/i,
+        `$1\n<script defer src="/${swInfo.min}?v=${swInfo.hash}"></script>`
+    );
+}
+
 // Keep the consent summary in committed article pages in sync with the
 // shared banner. Source-less articles are not rendered from the template on
 // every build, so their static copy needs the same small migration as their
@@ -782,7 +819,71 @@ function dropLegacyCsvTableScripts(html) {
     );
 }
 
-function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo, railJsInfo) {
+// The hero preload must request the file the hero <picture> renders: its AVIF
+// source when it has one (matches article-render.js). Idempotent: an aligned
+// preload carries type="image/avif" and no longer matches.
+function alignArticleHeroPreload(html) {
+    const avif = html.match(/<picture>\s*<source type="image\/avif" srcset="([^"]+)"(?: sizes="([^"]+)")?>(?=\s*<img\b[^>]*\bclass="article-header-img")/);
+    if (!avif) return html;
+    const candidates = avif[1].split(',').map(candidate => candidate.trim().split(/\s+/));
+    const href = (candidates.find(([, width]) => width === '1600w') || candidates[candidates.length - 1])[0];
+    const responsive = avif[2] ? ` imagesrcset="${avif[1]}" imagesizes="${avif[2]}"` : '';
+    return html.replace(
+        /<link rel="preload" as="image" href="[^"]*"(?: imagesrcset="[^"]*" imagesizes="[^"]*")? fetchpriority="high">/,
+        `<link rel="preload" as="image" type="image/avif" href="${href}"${responsive} fetchpriority="high">`
+    );
+}
+
+// Width/height from a WebP header (lossy VP8, lossless VP8L, extended VP8X).
+function webpSize(file) {
+    const b = fs.readFileSync(file);
+    const chunk = b.toString('ascii', 12, 16);
+    if (chunk === 'VP8X') return { width: 1 + b.readUIntLE(24, 3), height: 1 + b.readUIntLE(27, 3) };
+    if (chunk === 'VP8 ') return { width: b.readUInt16LE(26) & 0x3fff, height: b.readUInt16LE(28) & 0x3fff };
+    if (chunk === 'VP8L') {
+        const bits = b.readUInt32LE(21);
+        return { width: (bits & 0x3fff) + 1, height: ((bits >>> 14) & 0x3fff) + 1 };
+    }
+    return null;
+}
+
+// Gallery thumbnails use the dedicated N-thumb.webp once generate-image-variants made it
+// (matches media.js buildImageCarousel). Re-derived every run, so regenerated thumbs keep
+// correct width/height.
+function useGalleryThumbs(html, relPath) {
+    const dir = path.dirname(path.join(REPO_ROOT, relPath));
+    return html.replace(/(class="gallery-thumb[^"]*"[^>]*>\s*<img src=")(\d+)(?:-sm|-thumb)?\.webp"([^>]*>)/g, (match, head, num, tail) => {
+        const thumb = path.join(dir, `${num}-thumb.webp`);
+        const size = fs.existsSync(thumb) && webpSize(thumb);
+        if (!size) return match;
+        const attrs = tail.replace(/\swidth="\d+"/, ` width="${size.width}"`).replace(/\sheight="\d+"/, ` height="${size.height}"`);
+        return `${head}${num}-thumb.webp"${attrs}`;
+    });
+}
+
+// Sponsor logos and the home video facade ship a -1x sibling for 1x screens; the existing
+// file stays the 2x (and default) candidate. The srcset is derived from src on every run,
+// so a hand-edited src (a new episode, a renamed sponsor) never keeps a stale srcset.
+function addDensitySrcset(html) {
+    return html.replace(/<img src="(\/images\/(?:sponsors\/normalized|youtube)\/[^"/]+)\.webp"(?: srcset="[^"]*")?/g, (match, base) => {
+        const tag = `<img src="${base}.webp"`;
+        return fs.existsSync(path.join(REPO_ROOT, `${base.slice(1)}-1x.webp`)) ? `${tag} srcset="${base}-1x.webp 1x, ${base}.webp 2x"` : tag;
+    });
+}
+
+// Articles take the archive rules they use from article-styles.css (§ 0), not blog-styles.
+function dropArticleBlogStyles(html) {
+    return html.replace(/^[ \t]*<link rel="stylesheet" href="\/blog-module\/blog-styles\.min\.css\?v=[a-f0-9]+">\n/m, '');
+}
+
+// Embedded iframes load natively lazily (matches embed-render.js).
+function ensureLazyIframes(html) {
+    return html.replace(/<iframe\b[^>]*>/g, tag => (
+        /\sloading=/.test(tag) ? tag : tag.replace(/(\s+)([^\s>]+)>$/, '$1$2$1loading="lazy">')
+    ));
+}
+
+function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo, railJsInfo, swInfo) {
     const articleId = articleIdFromRel(relPath);
     let result = String(html || '');
     result = asyncifyStylesheets(result, relPath).result;
@@ -807,9 +908,16 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo,
     result = ensureArticleMiniBar(result);
     result = ensureArticleRailAssets(result, railCssInfo, railJsInfo);
     result = ensureArticleCommentsScript(result, commentsInfo);
+    result = ensureSwRegisterScript(result, swInfo);
     result = normalizeArticleConsentCopy(result);
     result = ensureArticleCookieSettings(result);
     result = normalizeThemeToggleCopy(result);
+    result = alignArticleHeroPreload(result);
+    result = dropArticleBlogStyles(result);
+    result = ensureLazyIframes(result);
+    result = useGalleryThumbs(result, relPath);
+    result = addDensitySrcset(result);
+    result = subsetSprite(result, relPath);
     return result;
 }
 
@@ -828,7 +936,7 @@ function stampArticleRuntimeMarkup(commentsInfo, railCssInfo, railJsInfo, dry, m
     for (const rel of listArticleHtml()) {
         const abs = path.join(REPO_ROOT, rel);
         const original = fs.readFileSync(abs, 'utf8');
-        let result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, railCssInfo, railJsInfo);
+        let result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, railCssInfo, railJsInfo, manifest['scripts/sw-register.js']);
         // Refresh the marker block on every stamp. applyArticleEditorial is
         // byte-stable when hashes are current and updates archived pages when
         // any shared editorial stylesheet changes.
@@ -916,6 +1024,50 @@ function injectSprite(html, spriteInfo) {
     const insertAt = m.index + m[0].length;
     const result = html.slice(0, insertAt) + block + '\n' + html.slice(insertAt);
     return { result, injected: true, replaced: false };
+}
+
+// Keep only the symbols a page can use: ids its markup references plus every fa-* literal
+// in the scripts it loads (ES imports followed, including lazy tab modules), since runtime
+// code builds `<use href="#fa-…">` from literals. validate-public-artifact checks the markup.
+const SPRITE_BLOCK_RE = /(<div hidden data-hash="[a-f0-9]+"><svg[^>]*>)([\s\S]*?)(<\/svg><\/div>)/;
+const scriptIconCache = new Map();
+
+function scriptIconIds(absPath, seen = new Set()) {
+    if (seen.has(absPath) || !fs.existsSync(absPath)) return new Set();
+    seen.add(absPath);
+    if (!scriptIconCache.has(absPath)) {
+        const source = fs.readFileSync(absPath, 'utf8');
+        const imports = [...source.matchAll(/(?:\bfrom\s*|\bimport\s*\(?\s*)["'](\.{1,2}\/[^"']+\.js)["']/g)]
+            .map(m => path.resolve(path.dirname(absPath), m[1]));
+        scriptIconCache.set(absPath, { ids: new Set(source.match(/fa-[a-z0-9-]+/g) || []), imports });
+    }
+    const { ids, imports } = scriptIconCache.get(absPath);
+    const all = new Set(ids);
+    imports.forEach(dep => scriptIconIds(dep, seen).forEach(id => all.add(id)));
+    return all;
+}
+
+// Symbols come from the page's own block first (kept byte-for-byte), then from the current
+// sprite, so an icon added to shared JS later still reaches previously subset pages.
+let currentSpriteSymbols = null;
+function spriteSymbols(svg) {
+    return new Map([...svg.matchAll(/<symbol id="([^"]+)"[\s\S]*?<\/symbol>/g)].map(m => [m[1], m[0]]));
+}
+
+function subsetSprite(html, relPath) {
+    const block = html.match(SPRITE_BLOCK_RE);
+    if (!block) return html;
+    if (!currentSpriteSymbols) currentSpriteSymbols = spriteSymbols(loadSprite().svg);
+    const markup = html.replace(block[0], '');
+    const needed = new Set([...markup.matchAll(/href="#([^"]+)"/g)].map(m => m[1]));
+    for (const m of markup.matchAll(/<script\b[^>]*\bsrc="([^"?#]+)/g)) {
+        if (/^(?:https?:)?\/\//.test(m[1])) continue;
+        const abs = m[1].startsWith('/') ? path.join(REPO_ROOT, m[1]) : path.resolve(path.dirname(path.join(REPO_ROOT, relPath)), m[1]);
+        scriptIconIds(abs).forEach(id => needed.add(id));
+    }
+    const pool = new Map([...currentSpriteSymbols, ...spriteSymbols(block[2])]);
+    const kept = [...pool].filter(([id]) => needed.has(id)).map(([, symbol]) => symbol).join('');
+    return html.replace(block[0], () => block[1] + kept + block[3]);
 }
 
 // Load the sprite once per stamp run. Stripped of the leading <?xml?> + the
@@ -1026,8 +1178,10 @@ function main() {
 
         // 1) stamp local asset refs with content-hash query strings
         let { result, hits } = rewrite(original, patterns);
+        result = addDensitySrcset(result);
         result = ensureThemeInitScript(dropInlineThemeBoot(result), themeInfo, rel);
         result = normalizeThemeToggleCopy(result);
+        result = stampModulePreloads(result, rel, manifest);
 
         // 1b) swap Bootstrap CDN CSS → local slim build and drop the unused
         //     Bootstrap JS bundle.
@@ -1060,7 +1214,9 @@ function main() {
             if (cdnDrop.dropped) faDropNote = `${cdnDrop.dropped} FA CDN drop`;
 
             const inj = injectSprite(result, sprite);
-            result = inj.result;
+            // The article template keeps every symbol; each rendered article is subset
+            // from its final markup in normalizeArticleRuntimeMarkup.
+            result = rel === 'blog-module/blog/template.html' ? inj.result : subsetSprite(inj.result, rel);
             if (inj.injected) { spriteNote = 'sprite injected'; totalSpriteOps++; }
             else if (inj.replaced) { spriteNote = 'sprite refreshed'; totalSpriteOps++; }
         }

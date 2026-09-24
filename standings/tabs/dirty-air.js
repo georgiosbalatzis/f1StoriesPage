@@ -20,7 +20,8 @@ import { setTrustedHtml } from '../core/rendering.js';
 import { parseNumberValue, isFiniteNumber, parseTimeSeconds } from './_shared.js';
 
 const OPENF1 = 'https://api.openf1.org/v1';
-const DIRTY_AIR_CACHE_URL = 'dirty-air-cache.json';
+// A small session index, then one cached file per session, fetched when it is shown.
+const DIRTY_AIR_CACHE_URL = 'dirty-air/index.json';
 const YEAR = new Date().getFullYear();
 
 const dirtyAirTable = document.getElementById('dirty-air-table');
@@ -493,7 +494,9 @@ function loadDirtyAirCacheBundle() {
         if (parseDirtyAirInteger(bundle && bundle.minisectors) > 0) {
             DIRTY_AIR_MINISECTORS = parseDirtyAirInteger(bundle.minisectors);
         }
-        const sessions = (bundle && bundle.sessions || []).map(normalizeDirtyAirCacheSession).filter(Boolean);
+        const sessions = (bundle && bundle.sessions || []).filter(function(session) {
+            return session && session.session_key != null;
+        });
         state.cacheBundle = {
             version: bundle && bundle.version,
             year: bundle && bundle.year,
@@ -502,12 +505,7 @@ function loadDirtyAirCacheBundle() {
             sessions: sessions
         };
 
-        if (sessions.length) {
-            state.sessions = sessions;
-            sessions.forEach(function(session) {
-                state.sessionCache[String(session.session_key)] = session;
-            });
-        }
+        if (sessions.length) state.sessions = sessions;
 
         return state.cacheBundle;
     }).catch(function(error) {
@@ -1244,6 +1242,17 @@ function loadDirtyAirSessionData(sessionKey) {
         return Promise.resolve(state.sessionCache[cacheKey]);
     }
 
+    return fetchJSONWithTimeout('dirty-air/' + encodeURIComponent(cacheKey) + '.json', 12000).then(function(cached) {
+        const normalized = normalizeDirtyAirCacheSession(cached);
+        if (!shouldReuseDirtyAirSessionCache(normalized)) throw new Error('Dirty air session cache not renderable');
+        state.sessionCache[cacheKey] = normalized;
+        return normalized;
+    }).catch(function() {
+        return loadDirtyAirSessionFromOpenF1(session, cacheKey);
+    });
+}
+
+function loadDirtyAirSessionFromOpenF1(session, cacheKey) {
     return fetchOpenF1BySessionKeys(OPENF1, 'drivers', [session.session_key]).then(function(driversPayload) {
         return fetchOpenF1BySessionKeys(OPENF1, 'laps', [session.session_key]).then(function(lapsPayload) {
             return fetchOpenF1BySessionKeys(OPENF1, 'session_result', [session.session_key]).then(function(resultsPayload) {

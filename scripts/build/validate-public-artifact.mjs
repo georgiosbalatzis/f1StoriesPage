@@ -53,31 +53,11 @@ const REQUIRED_EXACT = [
     'images/icons/favicon-32.png',
     'images/icons/icon-192.png',
     'images/icons/icon-512.png',
-    'images/bg/bg1.avif',
-    'images/bg/bg1.webp',
-    'images/bg/bg1-mobile.avif',
-    'images/bg/bg1-mobile.webp',
-    'images/bg/bg2.avif',
-    'images/bg/bg2.webp',
-    'images/bg/bg2-mobile.avif',
-    'images/bg/bg2-mobile.webp',
-    'images/bg/bg3.avif',
-    'images/bg/bg3.webp',
-    'images/bg/bg3-mobile.avif',
-    'images/bg/bg3-mobile.webp',
-    'images/bg/bg4.avif',
-    'images/bg/bg4.webp',
-    'images/bg/bg4-mobile.avif',
-    'images/bg/bg4-mobile.webp',
-    'images/bg/bg5.avif',
-    'images/bg/bg5.webp',
-    'images/bg/bg5-mobile.avif',
-    'images/bg/bg5-mobile.webp',
     'standings/index.html',
     'authors/index.html',
     'standings/debrief-cache.json',
     'standings/destructors-cache.json',
-    'standings/dirty-air-cache.json',
+    'standings/dirty-air/index.json',
     'standings/standings-cache.json',
     'styles.min.css',
     'styles/editorial.min.css',
@@ -765,6 +745,13 @@ function validateRouteMarkers(errors, editorialRefs) {
     });
 }
 
+// Pages inline only the sprite symbols they use, so every icon reference must resolve in-page.
+function validateSpriteRefs(errors, html, relPath) {
+    const symbols = new Set([...html.matchAll(/<symbol id="([^"]+)"/g)].map(m => m[1]));
+    const missing = [...new Set([...html.matchAll(/<use href="#([^"]+)"/g)].map(m => m[1]))].filter(id => !symbols.has(id));
+    if (missing.length) errors.push(`${relPath}: icon symbols missing from the inlined sprite: ${missing.join(', ')}`);
+}
+
 function validateEditorialArticle(errors, html, relPath, editorialRefs) {
     if (!/^blog-module\/blog-entries\/[^/]+\/article\.html$/i.test(relPath)) return;
     if (!/<body\b[^>]*class=["'][^"']*\beditorial-page\b/i.test(html)
@@ -830,6 +817,7 @@ function main() {
             validateHtmlSecurityMeta(errors, html, relPath);
             validateHtmlMetadata(errors, html, relPath, sitemapUrls, indexedArticleUrls);
             validateHtmlRefs(errors, abs, relPath);
+            validateSpriteRefs(errors, html, relPath);
         }
         if (/\.css$/i.test(relPath)) validateCssRefs(errors, abs, relPath);
     });

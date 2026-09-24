@@ -1,5 +1,5 @@
 /* ============================================================
-   F1 Stories — Service Worker v40
+   F1 Stories — Service Worker v42
    ─────────────────────────────────────────────────────────────
    Shell assets          → pre-cached on install (minified variants)
    Static assets         → cache-first, background revalidate
@@ -8,6 +8,11 @@
    Blog article pages    → network-first, recent/previsited cache fallback
    External APIs         → network-only (OpenF1, Jolpica, etc.)
 
+   v42 bump: Stamped assets — look up the exact `?v=` URL first so a deploy's
+   new CSS/JS is fetched instead of the unversioned shell copy; the pathname
+   match is now only the offline fallback. Cache names realigned with v42.
+   The unused GFS Didot files and layers.css are no longer precached; cache names
+   derive from SW_VERSION and the asset cache keeps its newest 150 entries.
    v40 bump: Data navigation — keep the active standings/data section in sync
    as readers move between championship tables and analysis tabs.
    v39 bump: Author profiles/data navigation — precache the contributor
@@ -144,11 +149,13 @@
    are removed; legacy cache names (v6) are cleaned up on activate.
    ============================================================ */
 
-var SW_VERSION    = 'v41';
-var CACHE_SHELL   = 'f1s-shell-v40';
-var CACHE_PAGES   = 'f1s-pages-v40';
-var CACHE_ASSETS  = 'f1s-assets-v40';
-var CACHE_DATA    = 'f1s-data-v40';
+// Cache names follow SW_VERSION, so every bump also purges the previous caches.
+var SW_VERSION    = 'v42';
+var CACHE_SHELL   = 'f1s-shell-' + SW_VERSION;
+var CACHE_PAGES   = 'f1s-pages-' + SW_VERSION;
+var CACHE_ASSETS  = 'f1s-assets-' + SW_VERSION;
+var CACHE_DATA    = 'f1s-data-' + SW_VERSION;
+var ASSET_CACHE_LIMIT = 150;
 var ALL_CACHES    = [CACHE_SHELL, CACHE_PAGES, CACHE_ASSETS, CACHE_DATA];
 var OFFLINE_URL   = '/offline.html';
 var BROADCAST_CHANNEL = 'f1s-sw';
@@ -158,7 +165,6 @@ var SHELL_ASSETS = [
   OFFLINE_URL,
   '/',
   '/styles.min.css',
-  '/styles/layers.css',
   '/styles/shared-nav.min.css',
   '/styles/editorial.min.css',
   '/styles/home-fonts.min.css',
@@ -194,9 +200,6 @@ var SHELL_ASSETS = [
   '/scripts/authors.min.js',
   // Complete editorial subsets, matched to styles/home-fonts.css.
   '/assets/fonts/barlow-condensed-700.woff2',
-  '/assets/fonts/gfs-didot-400.woff2',
-  '/assets/fonts/gfs-didot-400-greek.woff2',
-  '/assets/fonts/gfs-didot-400-greek-ext.woff2',
   '/assets/fonts/ibm-plex-sans-400-600.woff2',
   '/assets/fonts/ibm-plex-sans-400-600-latin-ext.woff2',
   '/assets/fonts/ibm-plex-sans-400-600-greek.woff2',
@@ -353,20 +356,39 @@ function precacheStandingsData() {
   });
 }
 
-// Cache-first with background revalidation
+// Cache-first with background revalidation. The cache lookup is exact (the
+// stamped `?v=` is part of the key), so a deploy's new hash goes to the network.
+// matchShellAsset: only when the network also fails, fall back to any cached
+// variant by pathname (e.g. the unversioned precached shell file) for offline.
 function staleWhileRevalidate(request, cacheName, matchShellAsset) {
   return caches.open(cacheName).then(function (cache) {
-    var cachedResponse = matchShellAsset
-      ? caches.match(request, { ignoreSearch: true })
-      : cache.match(request);
+    var cachedResponse = matchShellAsset ? caches.match(request) : cache.match(request);
     return cachedResponse.then(function (cached) {
       var fetched = fetch(request).then(function (response) {
-        if (response.ok) cache.put(request, response.clone());
+        if (response.ok) {
+          var stored = cache.put(request, response.clone());
+          if (cacheName === CACHE_ASSETS) stored.then(function () { return trimCache(cache, ASSET_CACHE_LIMIT); }).catch(function () {});
+        }
         return response;
       }).catch(function () { return null; });
 
-      return cached || fetched.then(function (r) { return r || Response.error(); });
+      return cached || fetched.then(function (r) {
+        if (r || !matchShellAsset) return r || Response.error();
+        return caches.match(request, { ignoreSearch: true }).then(function (fallback) {
+          return fallback || Response.error();
+        });
+      });
     });
+  });
+}
+
+// Keep the newest `limit` entries. put() re-appends a key, so keys() runs oldest-write first
+// and revalidated (recently used) assets survive.
+function trimCache(cache, limit) {
+  return cache.keys().then(function (keys) {
+    return Promise.all(keys.slice(0, Math.max(0, keys.length - limit)).map(function (key) {
+      return cache.delete(key);
+    }));
   });
 }
 
@@ -475,9 +497,9 @@ self.addEventListener('fetch', function (e) {
 
   // Static assets (CSS, JS, images, fonts) → cache-first, background update
   if (isStaticAsset(pathname)) {
-    // Shell files are precached without their build hash query. Search all
-    // current caches by pathname so a cold offline load can satisfy the
-    // stamped `?v=` request from CACHE_SHELL.
+    // Shell files are precached without their build hash query. When both the
+    // exact lookup and the network miss, search all current caches by pathname
+    // so a cold offline load can satisfy the stamped `?v=` request from CACHE_SHELL.
     e.respondWith(staleWhileRevalidate(e.request, CACHE_ASSETS, true));
     return;
   }

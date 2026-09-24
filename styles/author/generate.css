@@ -186,6 +186,10 @@ body.author-page .background { display: none; }
     color: var(--text-secondary);
 }
 .gb-chip:has(input:checked) { background: var(--text-primary); border-color: var(--text-primary); color: var(--bg-base); }
+/* generate-page.js (deferred) fills both groups after first paint: reserve their settled
+   height meanwhile, 6 authors × 63.45px cards per column count, chips in 2 rows. */
+.gb-authors:empty { min-height: 135px; }
+.gb-chips:empty { min-height: 88px; }
 
 /* ── Buttons ────────────────────────────────────────── */
 .gb-btn {
@@ -393,6 +397,7 @@ body.author-page .background { display: none; }
     /* The sticky bar carries the PR action on small screens. */
     #gen-publish-btn { display: none; }
     .gb-authors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .gb-authors:empty { min-height: 206px; }
     .gb-drop { grid-template-columns: 96px minmax(0, 1fr); }
     .gb-map-row { grid-template-columns: 64px minmax(0, 1fr) auto; }
     .gb-map-slot { grid-column: 1 / -1; }
@@ -403,4 +408,6 @@ body.author-page .background { display: none; }
 }
 @media (max-width: 420px) {
     .gb-authors { grid-template-columns: minmax(0, 1fr); }
+    .gb-authors:empty { min-height: 421px; }
+    .gb-chips:empty { min-height: 136px; }
 }

@@ -9,25 +9,48 @@
 @import "../../node_modules/bootstrap/scss/mixins";
 @import "../../node_modules/bootstrap/scss/utilities";
 
-$utilities: map-get-multiple(
-  $utilities,
-  (
-    "display",
-    "justify-content",
-    "align-items",
-    "margin-top",
-    "margin-bottom",
-    "padding-y",
-    "text-align",
-    "color"
-  )
+// Only the grid, utility and alert classes the published pages (including author tools and
+// JS-built markup) reference; audited against every token in dist HTML/JS. Add a class here
+// before using it in markup.
+$utilities: (
+  "margin-top": map-merge(map-get($utilities, "margin-top"), (responsive: false, values: map-get-multiple($spacers, (3, 5)))),
+  "margin-bottom": map-merge(map-get($utilities, "margin-bottom"), (responsive: false, values: map-get-multiple($spacers, (4,)))),
+  "padding-y": map-merge(map-get($utilities, "padding-y"), (responsive: false, values: map-get-multiple($spacers, (4, 5)))),
+  "text-align": map-merge(map-get($utilities, "text-align"), (responsive: false, values: (center: center)))
 );
 
 @import "../../node_modules/bootstrap/scss/root";
 @import "../../node_modules/bootstrap/scss/reboot";
 @import "../../node_modules/bootstrap/scss/containers";
-@import "../../node_modules/bootstrap/scss/grid";
+
+// Grid: what bootstrap/scss/grid emits, minus make-grid-columns() (every col/offset/gutter/
+// row-cols class at every breakpoint); only the columns in use are generated.
+:root {
+  @each $name, $value in $grid-breakpoints {
+    --#{$prefix}breakpoint-#{$name}: #{$value};
+  }
+}
+.row {
+  @include make-row();
+  > * {
+    @include make-col-ready();
+  }
+}
+.col-12 { @include make-col(12); }
+@include media-breakpoint-up(md) {
+  .col-md-4 { @include make-col(4); }
+  .col-md-6 { @include make-col(6); }
+}
+@include media-breakpoint-up(lg) {
+  .col-lg-4 { @include make-col(4); }
+}
+
 @import "../../node_modules/bootstrap/scss/helpers/visually-hidden";
-@import "../../node_modules/bootstrap/scss/spinners";
+
+// Alerts: only .alert-danger is used, so generate the colour modifiers for danger alone.
+$_all-theme-colors: $theme-colors;
+$theme-colors: (danger: $danger);
 @import "../../node_modules/bootstrap/scss/alert";
+$theme-colors: $_all-theme-colors;
+
 @import "../../node_modules/bootstrap/scss/utilities/api";

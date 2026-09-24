@@ -264,12 +264,21 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
     const heroBase = path.parse(bgImageFilename).name;
     const mobileWebp = `${heroBase}-mobile.webp`;
     const mobileAvif = `${heroBase}-mobile.avif`;
-    const heroAvifSource = fs.existsSync(path.join(entryPath, heroAvifFile))
-        ? `<source type="image/avif" srcset="${fs.existsSync(path.join(entryPath, mobileAvif)) ? `${encodePathSegment(mobileAvif)} 800w, ` : ''}${encodePathSegment(heroAvifFile)} 1600w" sizes="(max-width: 820px) calc(100vw - 2rem), 770px">`
+    const heroSizes = '(max-width: 820px) calc(100vw - 2rem), 770px';
+    const heroAvifSrcset = fs.existsSync(path.join(entryPath, heroAvifFile))
+        ? `${fs.existsSync(path.join(entryPath, mobileAvif)) ? `${encodePathSegment(mobileAvif)} 800w, ` : ''}${encodePathSegment(heroAvifFile)} 1600w`
+        : '';
+    const heroAvifSource = heroAvifSrcset
+        ? `<source type="image/avif" srcset="${heroAvifSrcset}" sizes="${heroSizes}">`
         : '';
     const heroWebpSrcset = fs.existsSync(path.join(entryPath, mobileWebp))
         ? `${encodePathSegment(mobileWebp)} 800w, ${encodePathSegment(bgImageFilename)} 1600w`
         : encodePathSegment(bgImageFilename);
+    // Preload the candidate the <picture> will actually pick: AVIF when it has an
+    // AVIF source (browsers without AVIF skip the typed preload), otherwise WebP.
+    const heroPreload = heroAvifSrcset
+        ? `<link rel="preload" as="image" type="image/avif" href="${escapeHtmlAttribute(encodePathSegment(heroAvifFile))}" imagesrcset="${escapeHtmlAttribute(heroAvifSrcset)}" imagesizes="${heroSizes}" fetchpriority="high">`
+        : `<link rel="preload" as="image" href="${escapeHtmlAttribute(encodePathSegment(bgImageFilename))}" imagesrcset="${escapeHtmlAttribute(heroWebpSrcset)}" imagesizes="${heroSizes}" fetchpriority="high">`;
     const authorImagePath = CONFIG.AUTHOR_AVATARS[postData.author] || CONFIG.AUTHOR_AVATARS.default;
     const authorImageDimensions = await getImageDimensionsForPublicPath(`/images/authors/${authorImagePath}`);
     const headerImageDimensions = postData.backgroundImageWidth && postData.backgroundImageHeight
@@ -305,6 +314,7 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_IMAGE_URL_ATTR: escapeHtmlAttribute(imageUrl),
         ARTICLE_IMAGE_URL_JSON: jsonScriptLiteral(imageUrl),
         ARTICLE_HERO_AVIF_SOURCE: heroAvifSource,
+        ARTICLE_HERO_PRELOAD: heroPreload,
         ARTICLE_ID_JSON: jsonScriptLiteral(folderName),
         ARTICLE_ID: escapeHtmlAttribute(folderName),
         ARTICLE_CATEGORY_TEXT: escapeHtmlText(categoryLabel(taxonomy.category)),

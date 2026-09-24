@@ -22,16 +22,19 @@ const SM_MAX_WIDTH = 800;
 const FULL_MAX_WIDTH = 1600;
 const CARD_MAX_WIDTH = 400;
 const MOBILE_HERO_MAX_WIDTH = 800;
+// Gallery thumbnails are a 76×52 CSS box with object-fit: cover, so cover 3× of it.
+const THUMB_BOX = { width: 228, height: 156 };
 
 // ─── Worker thread ────────────────────────────────────────────────────────────
 if (!isMainThread) {
     (async () => {
         const { tasks } = workerData;
         const results = [];
-        for (const { src, dest, format, maxWidth, quality } of tasks) {
+        for (const { src, dest, format, maxWidth, box, quality } of tasks) {
             try {
                 let p = sharp(src);
                 if (maxWidth) p = p.resize(maxWidth, null, { withoutEnlargement: true });
+                if (box) p = p.resize(box.width, box.height, { fit: 'outside', withoutEnlargement: true });
                 await p[format]({ quality }).toFile(dest);
                 results.push({ dest, ok: true });
             } catch (e) {
@@ -80,6 +83,21 @@ async function main() {
             for (const v of variants) {
                 if (!FORCE && fs.existsSync(v.dest)) continue;   // already done
                 allTasks.push({ src, ...v });
+            }
+        }
+
+        // Gallery thumbnails, for every image a built gallery shows (also with --cards-only,
+        // which the blog build uses).
+        const articlePath = path.join(entryPath, 'article.html');
+        if (fs.existsSync(articlePath)) {
+            const html = fs.readFileSync(articlePath, 'utf8');
+            const nums = new Set([...html.matchAll(/class="gallery-thumb[^"]*"[^>]*>\s*<img src="(\d+)(?:-sm|-thumb)?\.webp"/g)].map(m => m[1]));
+            for (const num of nums) {
+                const src = path.join(entryPath, `${num}.webp`);
+                const dest = path.join(entryPath, `${num}-thumb.webp`);
+                if (fs.existsSync(src) && (FORCE || !fs.existsSync(dest))) {
+                    allTasks.push({ src, dest, format: 'webp', quality: 80, box: THUMB_BOX });
+                }
             }
         }
 

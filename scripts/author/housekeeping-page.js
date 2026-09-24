@@ -1146,11 +1146,7 @@
     }
 
     async function parseGeneratedZipPackage(zipFile) {
-        if (typeof JSZip === 'undefined') {
-            throw new Error('Η βιβλιοθήκη ZIP φορτώνει ακόμη. Δοκίμασε ξανά σε λίγο.');
-        }
-
-        var zip = await JSZip.loadAsync(zipFile);
+        var zip = await (await authorDom.loadJSZip()).loadAsync(zipFile);
         var entryMap = {};
         Object.keys(zip.files).forEach(function (rawName) {
             var entry = zip.files[rawName];

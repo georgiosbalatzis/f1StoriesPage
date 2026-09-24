@@ -213,9 +213,10 @@ async function buildImageCarousel(folderName, imageNumbers, options = {}) {
                 ${await buildPictureHtml(folderName, imageNumber, `${title ? `${title}: ` : ''}φωτογραφία ${i + 1} από ${total}`, i === 0 ? { loading: 'eager', fetchPriority: 'low' } : {})}
             </div>`;
 
-        const smWebp = `${imageNumber}-sm.webp`;
-        const fullWebp = `${imageNumber}.webp`;
-        const thumbSrc = fs.existsSync(path.join(entryPath, smWebp)) ? smWebp : fullWebp;
+        // Dedicated thumbnail (generate-image-variants), else the 800px variant; the full file
+        // is used only when no smaller variant exists because the source is already small.
+        const thumbSrc = [`${imageNumber}-thumb.webp`, `${imageNumber}-sm.webp`, `${imageNumber}.webp`]
+            .find(name => fs.existsSync(path.join(entryPath, name))) || `${imageNumber}.webp`;
         const thumbDimensions = await getImageDimensions(path.join(entryPath, thumbSrc));
         const thumbWidthAttr = thumbDimensions && thumbDimensions.width ? ` width="${thumbDimensions.width}"` : '';
         const thumbHeightAttr = thumbDimensions && thumbDimensions.height ? ` height="${thumbDimensions.height}"` : '';

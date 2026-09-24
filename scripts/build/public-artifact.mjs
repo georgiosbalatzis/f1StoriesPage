@@ -86,7 +86,6 @@ const AUTHORS_PUBLIC_FILES = new Set([
 const STANDINGS_ROOT_FILES = new Set([
     'standings/debrief-cache.json',
     'standings/destructors-cache.json',
-    'standings/dirty-air-cache.json',
     'standings/index.html',
     'standings/standings-cache.json',
     'standings/standings.min.css',
@@ -94,29 +93,6 @@ const STANDINGS_ROOT_FILES = new Set([
     'standings/standings-polish.min.css',
     'standings/standings-polish.min.js',
     'standings/standings.min.js'
-]);
-
-const HERO_BACKGROUND_FILES = new Set([
-    'images/bg/bg1.avif',
-    'images/bg/bg1.webp',
-    'images/bg/bg1-mobile.avif',
-    'images/bg/bg1-mobile.webp',
-    'images/bg/bg2.avif',
-    'images/bg/bg2.webp',
-    'images/bg/bg2-mobile.avif',
-    'images/bg/bg2-mobile.webp',
-    'images/bg/bg3.avif',
-    'images/bg/bg3.webp',
-    'images/bg/bg3-mobile.avif',
-    'images/bg/bg3-mobile.webp',
-    'images/bg/bg4.avif',
-    'images/bg/bg4.webp',
-    'images/bg/bg4-mobile.avif',
-    'images/bg/bg4-mobile.webp',
-    'images/bg/bg5.avif',
-    'images/bg/bg5.webp',
-    'images/bg/bg5-mobile.avif',
-    'images/bg/bg5-mobile.webp'
 ]);
 
 const BLOG_ENTRY_PUBLIC_REFS = collectBlogEntryPublicRefs();
@@ -362,6 +338,8 @@ function shouldCopyStandings(relPath) {
     if (STANDINGS_ROOT_FILES.has(relPath)) return true;
     if (/^standings\/tabs\/[^/]+\.min\.(?:css|js)$/i.test(relPath)) return true;
     if (/^standings\/chunks\/[^/]+\.min\.js$/i.test(relPath)) return true;
+    // Dirty air ships as an index plus per-session files; the whole bundle stays source-only.
+    if (/^standings\/dirty-air\/[^/]+\.json$/i.test(relPath)) return true;
     return false;
 }
 
@@ -390,10 +368,6 @@ function shouldCopy(relPath) {
     if (relPath.startsWith('assets/')) {
         if (/^assets\/fonts\/licenses\/(?:barlowcondensed|gfsdidot|ibmplexsans)-OFL\.txt$/.test(relPath)) return true;
         return /\.(?:json|woff2)$/i.test(relPath);
-    }
-
-    if (relPath.startsWith('images/bg/')) {
-        return HERO_BACKGROUND_FILES.has(relPath);
     }
 
     if (relPath.startsWith('images/')) {

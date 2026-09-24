@@ -197,7 +197,7 @@
                 if (progressBar && articleEl) {
                     var scrolled = scrollY - articleTop + window.innerHeight * 0.3;
                     var pct = Math.max(0, Math.min(100, (scrolled / articleHeight) * 100));
-                    progressBar.style.width = pct + '%';
+                    progressBar.style.transform = 'scaleX(' + pct / 100 + ')';
                 }
                 scrollTicking = false;
             });
@@ -207,7 +207,7 @@
             // Initialise progress on load
             var initScrollY = window.pageYOffset || document.documentElement.scrollTop;
             var initScrolled = initScrollY - articleTop + window.innerHeight * 0.3;
-            progressBar.style.width = Math.max(0, Math.min(100, (initScrolled / articleHeight) * 100)) + '%';
+            progressBar.style.transform = 'scaleX(' + Math.max(0, Math.min(1, initScrolled / articleHeight)) + ')';
         }
     }
 

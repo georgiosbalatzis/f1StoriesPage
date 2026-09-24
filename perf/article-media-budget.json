@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-13T15:23:12.444Z",
+  "updatedAt": "2026-09-24T11:47:33.602Z",
   "thresholdPercent": 5,
   "note": "Repository-side article media budget. Public delivery size is checked separately by scripts/perf/public-image-guard.mjs. New raw article images should not appear unless this baseline is intentionally updated in review.",
   "limits": {
@@ -7,55 +7,28 @@
     "singleOptimizedImageBytes": 1048576
   },
   "metrics": {
-    "totalFiles": 2062,
-    "totalBytes": 201765157,
-    "rawFiles": 14,
-    "rawBytes": 6720074,
-    "optimizedFiles": 2048,
-    "optimizedBytes": 195045083,
-    "cardFiles": 436,
-    "cardBytes": 5384678,
-    "smallFiles": 216,
-    "smallBytes": 8121950,
-    "largestRawBytes": 3158868,
-    "largestOptimizedBytes": 1036852,
+    "totalFiles": 3717,
+    "totalBytes": 271567175,
+    "rawFiles": 0,
+    "rawBytes": 0,
+    "optimizedFiles": 3717,
+    "optimizedBytes": 271567175,
+    "cardFiles": 636,
+    "cardBytes": 8143672,
+    "smallFiles": 196,
+    "smallBytes": 7492643,
+    "largestRawBytes": 0,
+    "largestOptimizedBytes": 1328836,
     "byExtension": {
       ".webp": {
-        "count": 1396,
-        "bytes": 144678046
+        "count": 2249,
+        "bytes": 178265383
       },
       ".avif": {
-        "count": 652,
-        "bytes": 50367037
-      },
-      ".png": {
-        "count": 3,
-        "bytes": 4542844
-      },
-      ".jpg": {
-        "count": 10,
-        "bytes": 2159117
-      },
-      ".jpeg": {
-        "count": 1,
-        "bytes": 18113
+        "count": 1468,
+        "bytes": 93301792
       }
     }
   },
-  "rawPaths": [
-    "blog-module/blog-entries/20250403G/2.png",
-    "blog-module/blog-entries/20260403W/1.jpg",
-    "blog-module/blog-entries/20260405G/1.png",
-    "blog-module/blog-entries/20260407W/1.jpeg",
-    "blog-module/blog-entries/20260408J/1.jpg",
-    "blog-module/blog-entries/20260409W/1.jpg",
-    "blog-module/blog-entries/20260414W/1.jpg",
-    "blog-module/blog-entries/20260416G/1.jpg",
-    "blog-module/blog-entries/20260416W/1.jpg",
-    "blog-module/blog-entries/20260417W/1.jpg",
-    "blog-module/blog-entries/20260418W/1.jpg",
-    "blog-module/blog-entries/20260420W/1.jpg",
-    "blog-module/blog-entries/20260421-2J/1.jpg",
-    "blog-module/blog-entries/20260423G/1.png"
-  ]
+  "rawPaths": []
 }

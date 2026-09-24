@@ -754,15 +754,13 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
     .hero-content p, .hero-subtitle { font-size: 0.95rem; margin-bottom: 1rem; }
 }
 
-/* ── PWA install banner ────────────────────────── */
-#pwa-install-banner,
+/* ── Service-worker update banner ──────────────── */
 #sw-update-banner {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 10000;
     transform: translateY(100%); transition: transform .35s cubic-bezier(.4,0,.2,1);
     padding: 0 env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
     pointer-events: none;
 }
-#pwa-install-banner.pwa-banner-visible,
 #sw-update-banner.pwa-banner-visible { transform: translateY(0); pointer-events: auto; }
 .pwa-banner-inner {
     display: flex; align-items: center; gap: .75rem;

@@ -201,6 +201,7 @@ jobs:
           paths: >-
             standings/standings-cache.json
             standings/dirty-air-cache.json
+            standings/dirty-air
             standings/destructors-cache.json
             standings/debrief-cache.json
 

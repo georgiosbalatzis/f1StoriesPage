@@ -26,6 +26,7 @@ const FILE_LIMITS = {
     'standings/debrief-cache.json': 1024 * 1024,
     'standings/destructors-cache.json': 64 * 1024,
     'standings/dirty-air-cache.json': 2 * 1024 * 1024,
+    'standings/dirty-air/index.json': 32 * 1024,
     'standings/standings-cache.json': 256 * 1024
 };
 
@@ -501,6 +502,29 @@ function validateDirtyAirCache() {
     });
 }
 
+// The published split (index + one file per session) must mirror the validated bundle exactly.
+function validateDirtyAirSplit() {
+    const bundle = readJson('standings/dirty-air-cache.json');
+    const index = requireObject(readJson('standings/dirty-air/index.json'), 'standings/dirty-air/index.json');
+    if (!bundle || !index) return;
+    const label = 'standings/dirty-air';
+    ['version', 'year', 'generatedAt', 'minisectors'].forEach(key => {
+        assertCondition(index[key] === bundle[key], `${label}/index.json.${key}`, 'must match dirty-air-cache.json');
+    });
+    const expected = (bundle.sessions || []).filter(session => session && session.rows && session.rows.length);
+    const listed = Array.isArray(index.sessions) ? index.sessions : [];
+    assertCondition(JSON.stringify(listed.map(s => s.session_key)) === JSON.stringify(expected.map(s => s.session_key)), `${label}/index.json.sessions`, 'must list the bundle sessions that have rows, in order');
+    const files = new Set(fs.readdirSync(relAbs(label)).filter(name => name !== 'index.json'));
+    expected.forEach(session => {
+        const name = `${session.session_key}.json`;
+        files.delete(name);
+        const relPath = `${label}/${name}`;
+        if (!fs.existsSync(relAbs(relPath))) { addError(relPath, 'missing session file'); return; }
+        assertCondition(fs.readFileSync(relAbs(relPath), 'utf8') === JSON.stringify(session), relPath, 'must equal the bundle session');
+    });
+    files.forEach(name => addError(`${label}/${name}`, 'stale session file not in dirty-air-cache.json'));
+}
+
 function validateDestructorsCache() {
     const relPath = 'standings/destructors-cache.json';
     const data = requireObject(readJson(relPath), relPath);
@@ -655,6 +679,7 @@ function main() {
     validateYoutubeSnapshot();
     validateStandingsCache();
     validateDirtyAirCache();
+    validateDirtyAirSplit();
     validateDestructorsCache();
     validateDebriefCache();
     validateManifest();

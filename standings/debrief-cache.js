@@ -1217,7 +1217,7 @@ async function updateDebriefCache(options) {
     }
 
     fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
-    fs.writeFileSync(OUTPUT_PATH, JSON.stringify(payload, null, 2) + '\n', 'utf8');
+    fs.writeFileSync(OUTPUT_PATH, JSON.stringify(payload) + '\n', 'utf8');
 
     return {
         outputPath: OUTPUT_PATH,

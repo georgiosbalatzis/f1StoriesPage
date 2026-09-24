@@ -54,6 +54,9 @@ body.author-page .background { display: none; }
 /* ── Lanes ──────────────────────────────────────────── */
 .hk-lanes-title { margin: 0 8px 4px; font: 600 1.7rem/1.1 var(--font-body); letter-spacing: -.02em; color: var(--text-primary); }
 .hk-lanes-sub { margin: 0 8px 18px; font-size: .84rem; color: var(--text-secondary); }
+/* housekeeping-page.js (deferred) renders the fixed LANES set after first paint: 4 groups,
+   8 lanes, reserved at their settled height. */
+.hk-lane-groups:empty { min-height: 565px; }
 .hk-lane-group { margin-top: 14px; }
 .hk-lane-group-name { margin: 0 8px 6px; font-size: .68rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--text-secondary); }
 .hk-lane-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
@@ -103,6 +106,7 @@ body.author-page .background { display: none; }
 .hk .hk-work-title { margin: 0; font: 600 1.5rem/1.2 var(--font-body); letter-spacing: -.01em; color: var(--text-primary); }
 .hk-work-title:focus { outline: none; }
 .hk-work-desc { margin: 4px 0 0; max-width: 64ch; font-size: .88rem; color: var(--text-secondary); }
+.hk-work-desc:empty { min-height: 2lh; } /* lane description, set by JS: 2 lines on phones, 1 on wider screens */
 .hk-progress { display: grid; gap: 6px; min-width: 200px; font-size: .78rem; color: var(--text-secondary); }
 .hk-progress-bar { display: block; height: 4px; background: var(--border); }
 .hk-progress-bar i { display: block; height: 100%; width: 0; background: var(--hk-ok); transition: width .3s ease; }
@@ -328,6 +332,7 @@ body.author-page .background { display: none; }
         align-items: center;
         min-height: 0;
     }
+    .hk-lane-chips:empty { min-height: 59px; } /* 38px chips + padding + border, filled by JS */
     .hk-lane-chips .hk-chip { flex: none; height: 38px; min-height: 38px; }
     .hk-work { padding: 18px 16px 60px; }
     .hk-item { grid-template-columns: 72px minmax(0, 1fr); gap: 10px 12px; }

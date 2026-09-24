@@ -167,12 +167,19 @@ async function ensureFacadeThumbnail() {
     const id = normalizeVideoId(html.match(/class="home-video-facade"[^>]*data-video-id="([^"]+)"/)?.[1]);
     if (!id) return;
     const target = path.join(REPO_ROOT, 'images', 'youtube', `${id}.webp`);
-    if (fs.existsSync(target)) return;
+    // 800×450 serves 2x screens; the -1x file serves 1x screens (stamp-html addDensitySrcset).
+    const target1x = path.join(REPO_ROOT, 'images', 'youtube', `${id}-1x.webp`);
+    if (fs.existsSync(target)) {
+        if (!fs.existsSync(target1x)) await sharp(target).resize({ width: 400, height: 225, fit: 'cover' }).webp({ quality: 72 }).toFile(target1x);
+        return;
+    }
     for (const size of ['maxresdefault', 'hqdefault']) {
         const response = await fetch(`https://i.ytimg.com/vi/${id}/${size}.jpg`, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
         if (!response.ok) continue;
         fs.mkdirSync(path.dirname(target), { recursive: true });
-        await sharp(Buffer.from(await response.arrayBuffer())).resize({ width: 800, height: 450, fit: 'cover' }).webp({ quality: 72 }).toFile(target);
+        const source = Buffer.from(await response.arrayBuffer());
+        await sharp(source).resize({ width: 800, height: 450, fit: 'cover' }).webp({ quality: 72 }).toFile(target);
+        await sharp(source).resize({ width: 400, height: 225, fit: 'cover' }).webp({ quality: 72 }).toFile(target1x);
         console.log(`Wrote ${path.relative(REPO_ROOT, target)}.`);
         return;
     }

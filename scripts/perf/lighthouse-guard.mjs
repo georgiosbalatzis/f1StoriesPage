@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 
@@ -93,13 +94,21 @@ function resolveRequest(root, requestUrl) {
     return null;
 }
 
-function sendFile(res, filePath) {
+// Text is gzipped as GitHub Pages serves it, so timings and byte budgets match production.
+const GZIP_TYPES = new Set(['.css', '.html', '.js', '.json', '.map', '.svg', '.txt', '.webmanifest', '.xml']);
+
+function sendFile(req, res, filePath) {
     const ext = path.extname(filePath).toLowerCase();
     const type = MIME_TYPES.get(ext) || 'application/octet-stream';
-    res.writeHead(200, {
-        'cache-control': 'no-store',
-        'content-type': type
-    });
+    const headers = { 'cache-control': 'no-store', 'content-type': type };
+    if (GZIP_TYPES.has(ext) && /\bgzip\b/.test(req.headers['accept-encoding'] || '')) {
+        headers['content-encoding'] = 'gzip';
+        headers.vary = 'Accept-Encoding';
+        res.writeHead(200, headers);
+        fs.createReadStream(filePath).pipe(zlib.createGzip()).pipe(res);
+        return;
+    }
+    res.writeHead(200, headers);
     fs.createReadStream(filePath).pipe(res);
 }
 
@@ -141,7 +150,7 @@ function startServer(root) {
             res.end();
             return;
         }
-        sendFile(res, filePath);
+        sendFile(req, res, filePath);
     });
 
     return new Promise((resolve, reject) => {
@@ -225,6 +234,16 @@ async function seedAuditConsent(chrome, origin) {
     }
 }
 
+// A route path of "latest-article" resolves to the newest published article, as qa:visual does.
+const LATEST_ARTICLE = 'latest-article';
+
+function latestArticlePath(root) {
+    const pageOne = JSON.parse(fs.readFileSync(path.join(root, 'blog-module', 'blog-index-page-1.json'), 'utf8'));
+    const id = pageOne.posts && pageOne.posts[0] && pageOne.posts[0].id;
+    if (!id) throw new Error('latest-article route: blog-index-page-1.json has no posts');
+    return `/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`;
+}
+
 function slug(value) {
     return String(value || 'route')
         .toLowerCase()
@@ -256,8 +275,8 @@ function runCommand(command, args) {
     });
 }
 
-async function runLighthouse(route, origin, budget, outputDir, chromePort) {
-    const outputPath = path.join(outputDir, `${slug(route.name)}.json`);
+async function runLighthouse(route, origin, budget, outputDir, chromePort, run) {
+    const outputPath = path.join(outputDir, `${slug(route.name)}-${run}.json`);
     const routePath = String(route.path || '/').startsWith('/') ? route.path : `/${route.path}`;
     const url = new URL(routePath, origin).toString();
     const categories = (budget.onlyCategories || ['performance', 'accessibility', 'best-practices', 'seo']).join(',');
@@ -311,8 +330,7 @@ function fmtCls(value) {
     return value == null ? '-' : value.toFixed(3);
 }
 
-function evaluateRoute(route, lhr) {
-    const thresholds = route.thresholds || {};
+function routeMetrics(lhr) {
     const metrics = {
         performance: score(lhr, 'performance'),
         accessibility: score(lhr, 'accessibility'),
@@ -324,11 +342,27 @@ function evaluateRoute(route, lhr) {
         'dom-size': auditValue(lhr, 'dom-size'),
         'lcp-image-bytes': auditValue(lhr, 'largest-contentful-paint-element')
     };
+    // Lighthouse 12 reports lowercase resource types and plain-string request entities.
     const resources = lhr.audits?.['resource-summary']?.details?.items || [];
-    metrics['initial-js-bytes'] = resources.filter(item => item.resourceType === 'Script').reduce((sum, item) => sum + (item.transferSize || 0), 0);
-    metrics['route-css-bytes'] = resources.filter(item => item.resourceType === 'Stylesheet').reduce((sum, item) => sum + (item.transferSize || 0), 0);
-    metrics['third-party-requests'] = (lhr.audits?.['network-requests']?.details?.items || []).filter(item => item.entity?.isUnrecognized).length;
+    const bytesOf = type => resources.find(item => item.resourceType === type)?.transferSize ?? null;
+    metrics['initial-js-bytes'] = bytesOf('script');
+    metrics['route-css-bytes'] = bytesOf('stylesheet');
+    const firstParty = (lhr.entities || []).find(entity => entity.isFirstParty)?.name;
+    metrics['third-party-requests'] = (lhr.audits?.['network-requests']?.details?.items || []).filter(item => firstParty && item.entity && item.entity !== firstParty).length;
+    return metrics;
+}
 
+// Median per metric across runs; Lighthouse varies run to run.
+function medianMetrics(runs) {
+    const median = values => {
+        const sorted = values.filter(value => value != null).sort((a, b) => a - b);
+        return sorted.length ? sorted[Math.floor((sorted.length - 1) / 2)] : null;
+    };
+    return Object.fromEntries(Object.keys(runs[0]).map(id => [id, median(runs.map(run => run[id]))]));
+}
+
+function evaluateRoute(route, metrics) {
+    const thresholds = route.thresholds || {};
     const failures = [];
     for (const [id, threshold] of Object.entries(thresholds)) {
         const actual = metrics[id];
@@ -383,9 +417,15 @@ async function main() {
         await seedAuditConsent(chrome, started.origin);
 
         const rows = [];
-        for (const route of budget.routes) {
-            const lhr = await runLighthouse(route, started.origin, budget, tempDir, chrome.port);
-            rows.push({ route, ...evaluateRoute(route, lhr) });
+        const runs = budget.runs || 3;
+        for (const configured of budget.routes) {
+            const route = configured.path === LATEST_ARTICLE ? { ...configured, path: latestArticlePath(args.root) } : configured;
+            const perRun = [];
+            for (let run = 1; run <= runs; run++) {
+                perRun.push(routeMetrics(await runLighthouse(route, started.origin, budget, tempDir, chrome.port, run)));
+            }
+            const metrics = medianMetrics(perRun);
+            rows.push({ route, metrics, ...evaluateRoute(route, metrics) });
         }
 
         printTable(rows);
