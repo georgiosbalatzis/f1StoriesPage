@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20260924W",
+      "title": "Μπακού: Η πόλη όπου η Formula 1 δεν ξέρει ποτέ τι θα συμβεί",
+      "author": "Themis Charvalis",
+      "date": "2026-09-24",
+      "dateISO": "2026-09-24",
+      "displayDate": "24 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260924W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260924W/2.webp",
+      "excerpt": "Υπάρχει μια πόλη όπου ένα μονοθέσιο μπορεί να περνά ξυστά από τα μεσαιωνικά τείχη της Παλιάς Πόλης, να βγαίνει από μια στενή λωρίδα ασφάλτου και λίγα δευτερόλεπτα αργότερα να βρίσκεται σε έναν από...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260924W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "F1",
+        "Racing",
+        "Grand Prix Azerbaijan"
+      ],
+      "wordCount": 2068,
+      "readingTime": "11 min",
+      "imageWidth": 1920,
+      "imageHeight": 916,
+      "backgroundImageWidth": 750,
+      "backgroundImageHeight": 460
+    },
+    {
       "id": "20260924J",
       "title": "Betcast #274 Baku",
       "author": "Giannis Poulikidis",
@@ -9268,5 +9297,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-24T19:16:15.540Z"
+  "lastUpdated": "2026-09-24T20:56:43.472Z"
 }
