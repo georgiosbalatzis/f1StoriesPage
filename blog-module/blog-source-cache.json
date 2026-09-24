@@ -1,6 +1,33 @@
 {
   "posts": [
     {
+      "id": "20260924J",
+      "title": "Betcast #274 Baku",
+      "author": "Giannis Poulikidis",
+      "date": "2026-09-24",
+      "dateISO": "2026-09-24",
+      "displayDate": "24 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260924J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260924J/1.webp",
+      "excerpt": "Betcast 274 και πάμε με τέρμα γκάζι στο Baku, στο Azerbaijan, όπου η κόκκινη σημαία είναι ο πρωταγωνιστής τα τελευταία χρόνια. Αλλαγή για φέτος, ότι το τριήμερο θα γίνει μια μέρα νωρίτερα, δηλαδή...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260924J/article.html",
+      "category": "Betting",
+      "categories": [
+        "Betting"
+      ],
+      "tags": [
+        "F1"
+      ],
+      "wordCount": 115,
+      "readingTime": "1 min",
+      "imageWidth": 300,
+      "imageHeight": 300,
+      "backgroundImageWidth": 300,
+      "backgroundImageHeight": 300
+    },
+    {
       "id": "20260923W",
       "title": "John Surtees: Ένας σπουδαίος οδηγός αγώνων",
       "author": "Themis Charvalis",
@@ -9241,5 +9268,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-23T20:26:35.299Z"
+  "lastUpdated": "2026-09-24T19:16:15.540Z"
 }
