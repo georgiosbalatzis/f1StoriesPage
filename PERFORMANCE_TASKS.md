@@ -806,6 +806,8 @@ Budget overages need an explicit human decision. This task must **not** run `per
 > - Load: 1,139–1,481 ms → 256–313 ms.
 >
 > Revalidation continues in the background without blocking paint.
+>
+> **Guard fix:** `perf:lighthouse` shares one Chrome with `--disable-storage-reset` so the consent seed persists. Once the SW registered, it served every later audit from Cache Storage (JS/CSS 0 B, LCP about 0.7 s), silently making the gate measure warm loads. The guard now clears the origin's service workers and Cache Storage before each run over CDP (`Storage.clearDataForOrigin`; localStorage is kept). Cold-visit numbers are back: LCP 2.25–2.41 s, and against the pre-change run CSS is −3.3 KB and JS +1.4 KB per route.
 
 **Surface:** repeat visits to home, archive, articles and standings.
 

@@ -234,6 +234,27 @@ async function seedAuditConsent(chrome, origin) {
     }
 }
 
+// Every public route registers the service worker. With --disable-storage-reset (kept so the
+// consent seed survives), it would serve each later audit from Cache Storage and zero out the
+// byte budgets, so every run starts without SW state; localStorage (consent) is left alone.
+async function clearServiceWorkers(chrome, origin) {
+    let browser;
+    let page;
+    try {
+        browser = await puppeteer.connect({ browserURL: `http://127.0.0.1:${chrome.port}` });
+        page = await browser.newPage();
+        const session = await page.createCDPSession();
+        await session.send('Storage.clearDataForOrigin', { origin, storageTypes: 'service_workers,cache_storage' });
+    } finally {
+        if (page) {
+            try {
+                await page.close();
+            } catch (_) {}
+        }
+        await closeBrowser(browser);
+    }
+}
+
 // A route path of "latest-article" resolves to the newest published article, as qa:visual does.
 const LATEST_ARTICLE = 'latest-article';
 
@@ -422,6 +443,7 @@ async function main() {
             const route = configured.path === LATEST_ARTICLE ? { ...configured, path: latestArticlePath(args.root) } : configured;
             const perRun = [];
             for (let run = 1; run <= runs; run++) {
+                await clearServiceWorkers(chrome, started.origin);
                 perRun.push(routeMetrics(await runLighthouse(route, started.origin, budget, tempDir, chrome.port, run)));
             }
             const metrics = medianMetrics(perRun);
