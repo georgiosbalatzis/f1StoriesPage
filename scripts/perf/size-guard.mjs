@@ -62,7 +62,7 @@ const SOURCE_FILES = [
     'scripts/analytics.js',
     'scripts/f1-optimized.js',
     'scripts/shared-nav.js',
-    'scripts/sw-register.js',
+    'scripts/sw-cleanup.js',
     'scripts/cookie-consent.js',
     'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',
@@ -90,7 +90,6 @@ const SOURCE_FILES = [
     'blog-module/build/__tests__/run-golden.js',
     'scripts/build/fetch-youtube.mjs',
     'sw.js',
-    'manifest.json',
     'assets/youtube-latest.json',
     'images/icons/sprite.svg'
 ];
@@ -108,7 +107,7 @@ const MINIFIED_JS_SOURCES = new Set([
     'scripts/analytics.js',
     'scripts/f1-optimized.js',
     'scripts/shared-nav.js',
-    'scripts/sw-register.js',
+    'scripts/sw-cleanup.js',
     'scripts/cookie-consent.js',
     'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',

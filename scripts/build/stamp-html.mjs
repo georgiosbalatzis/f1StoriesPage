@@ -43,7 +43,6 @@ let articleScope = null;
 // content-committed article is NOT (see module header).
 const TARGET_HTML = [
     'index.html',
-    'offline.html',
     'ghostcar/index.html',
     'f1telemetry/index.html',
     'authors/index.html',
@@ -59,8 +58,8 @@ const TARGET_HTML = [
 ];
 
 // Pages that get the inlined SVG sprite + FA CDN removal (Phase 3b). Only
-// pages that actually use fa-* icons need this; offline.html + 404.html have
-// none, so they're excluded.
+// pages that actually use fa-* icons need this; 404.html has
+// none, so it is excluded.
 const SPRITE_TARGETS = new Set([
     'index.html',
     'standings/index.html',
@@ -79,8 +78,8 @@ const SPRITE_BEGIN = '<!-- f1s:icon-sprite:begin -->';
 const SPRITE_END   = '<!-- f1s:icon-sprite:end -->';
 
 // HTML files that get the critical-CSS treatment (inlined critical block +
-// async-preload for local stylesheets). Excluded: offline.html and 404.html
-// which already inline all their CSS and have no external refs.
+// async-preload for local stylesheets). Excluded: 404.html,
+// which already inlines all its CSS and has no external refs.
 const CRITICAL_TARGETS = new Set([
     'generate.html',
     'housekeeping.html',
@@ -148,7 +147,7 @@ const ARTICLE_RUNTIME_SOURCES = new Set([
     'blog-module/blog/article-script.js',
     'blog-module/blog/article-comments.js',
     'blog-module/blog-fixes.js',
-    'scripts/sw-register.js'
+    'scripts/sw-cleanup.js'
 ]);
 
 // Primary font weight to preload per page template. Picked to match the
@@ -748,12 +747,14 @@ function ensureArticleRailAssets(html, railCssInfo, railJsInfo) {
     return result;
 }
 
-// Every public route registers the service worker (PERF-P2-10). It goes last so it never
+// The site no longer has a service worker. Articles swap the old registration script
+// for the one that removes returning visitors' workers; it goes last so it never
 // delays the article's own deferred scripts.
-function ensureSwRegisterScript(html, swInfo) {
+function ensureSwCleanupScript(html, swInfo) {
     if (!swInfo || !swInfo.min || !swInfo.hash) return html;
-    if (/\/scripts\/sw-register(?:\.min)?\.js(?:\?v=[a-f0-9]+)?/i.test(html)) return html;
-    return String(html || '').replace(
+    const source = String(html || '').replace(/\n<script\s+defer\s+src=["']\/scripts\/sw-register(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["']><\/script>/gi, '');
+    if (/\/scripts\/sw-cleanup(?:\.min)?\.js(?:\?v=[a-f0-9]+)?/i.test(source)) return source;
+    return source.replace(
         /(<script\s+defer\s+src=["']\/blog-module\/blog-fixes(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["']><\/script>)/i,
         `$1\n<script defer src="/${swInfo.min}?v=${swInfo.hash}"></script>`
     );
@@ -935,7 +936,7 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo,
     result = ensureArticleMiniBar(result);
     result = ensureArticleRailAssets(result, railCssInfo, railJsInfo);
     result = ensureArticleCommentsScript(result, commentsInfo);
-    result = ensureSwRegisterScript(result, swInfo);
+    result = ensureSwCleanupScript(result, swInfo);
     result = normalizeArticleConsentCopy(result);
     result = ensureArticleCookieSettings(result);
     result = normalizeThemeToggleCopy(result);
@@ -963,7 +964,7 @@ function stampArticleRuntimeMarkup(commentsInfo, railCssInfo, railJsInfo, dry, m
     for (const rel of listArticleHtml()) {
         const abs = path.join(REPO_ROOT, rel);
         const original = fs.readFileSync(abs, 'utf8');
-        let result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, railCssInfo, railJsInfo, manifest['scripts/sw-register.js']);
+        let result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, railCssInfo, railJsInfo, manifest['scripts/sw-cleanup.js']);
         // Refresh the marker block on every stamp. applyArticleEditorial is
         // byte-stable when hashes are current and updates archived pages when
         // any shared editorial stylesheet changes.
@@ -1236,7 +1237,7 @@ function main() {
         totalPreconnectDrops += fontSwap.swaps.preconnectDropped;
 
         // 2b) Phase 3b: drop FA CDN <link>s + inline sprite (only on pages
-        //     that use icons; offline/404 have none).
+        //     that use icons; 404 has none).
         let faDropNote = '';
         let spriteNote = '';
         if (SPRITE_TARGETS.has(rel)) {

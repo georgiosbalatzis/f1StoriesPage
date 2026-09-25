@@ -14,7 +14,7 @@ Current checked contracts:
 - `standings/dirty-air/index.json` + `standings/dirty-air/<session_key>.json`: the published split of the dirty-air cache: session metadata, then one file per session loaded on selection.
 - `standings/destructors-cache.json`: destructors cache `version: 1`.
 - `standings/debrief-cache.json`: Friday debrief cache `version: 2`.
-- `manifest.json`, `scripts/build/asset-manifest.json`, and `sitemap.xml`.
+- `scripts/build/asset-manifest.json` and `sitemap.xml`.
 
 When a versioned generated format changes, update the validator and record the migration here:
 

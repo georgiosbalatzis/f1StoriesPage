@@ -32,7 +32,7 @@ export const CONTENT_SECURITY_POLICY = [
     "connect-src 'self' https://api.github.com https://api.jolpi.ca https://api.openf1.org https://analyticsdata.googleapis.com https://oauth2.googleapis.com https://formspree.io https://www.googletagmanager.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://stats.g.doubleclick.net https://f1stories-gr.disqus.com https://*.disqus.com https://*.disquscdn.com https://connect.facebook.net https://www.facebook.com https://platform.twitter.com https://syndication.twitter.com https://twitter.com https://*.twitter.com https://x.com https://*.x.com https://www.instagram.com https://www.threads.net",
     "frame-src 'self' https://accounts.google.com https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://open.spotify.com https://player.vimeo.com https://codepen.io https://datawrapper.dwcdn.net https://sketchfab.com https://www.sketchfab.com https://facebook.com https://www.facebook.com https://platform.twitter.com https://syndication.twitter.com https://www.instagram.com https://instagram.com https://threads.net https://www.threads.net https://f1stories.gr https://www.f1stories.gr https://georgiosbalatzis.github.io https://f1stories-gr.disqus.com https://disqus.com",
     "worker-src 'self' blob:",
-    "manifest-src 'self'",
+    "manifest-src 'none'", // browser-only site: no installable app manifest
     "media-src 'self' https:",
     'upgrade-insecure-requests'
 ].join('; ');

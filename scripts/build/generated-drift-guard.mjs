@@ -22,7 +22,6 @@ const GENERATED_EXACT = new Set([
     'housekeeping.html',
     'images/icons/sprite.svg',
     'index.html',
-    'offline.html',
     'privacy/privacy.html',
     'privacy/terms.html',
     'statistics.html',

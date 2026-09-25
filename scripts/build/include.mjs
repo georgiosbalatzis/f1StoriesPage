@@ -8,7 +8,6 @@ const ROOT = process.cwd();
 
 const TARGET_HTML = [
   'index.html',
-  'offline.html',
   'standings/index.html',
   'blog-module/blog/index.html',
   'blog-module/blog/template.html',

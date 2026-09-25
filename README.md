@@ -117,13 +117,13 @@ npm run verify
 ```text
 .
 ├── index.html                  Αρχική σελίδα
-├── 404.html, offline.html      Σελίδα 404 και offline σελίδα του service worker
+├── 404.html                    Σελίδα 404
 ├── generate.html               Εργαλείο δημιουργίας άρθρου (συντάκτες)
 ├── housekeeping.html           Εργαλείο επεξεργασίας, διαγραφής και εισαγωγής ZIP (συντάκτες)
 ├── statistics.html             Dashboard Google Analytics 4 (συντάκτες)
 ├── home.css, styles.css, theme-overrides.css
-├── sw.js                       Service worker
-├── manifest.json, robots.txt, sitemap.xml, CNAME, .nojekyll
+├── sw.js                       Stub που αφαιρεί τον παλιό service worker (βλ. ενότητα «Χωρίς εφαρμογή»)
+├── robots.txt, sitemap.xml, CNAME, .nojekyll
 ├── partials/                   head-meta.html, footer.html (γίνονται include με build:html)
 ├── assets/                     youtube-latest.json, fonts/
 ├── images/                     Λογότυπα, backgrounds, οδηγοί, ομάδες, sponsors, avatars, icons
@@ -176,7 +176,7 @@ npm run verify
 | `/privacy/privacy.html`, `/privacy/terms.html` | `privacy/` | Νομικές σελίδες. |
 | `/f1telemetry/` | `f1telemetry/index.html` | Redirect στο `georgiosbalatzis.github.io/f1-telemetry-dashboard/`. |
 | `/ghostcar/` | `ghostcar/index.html` | Redirect στο `georgiosbalatzis.github.io/ghostcar/`. |
-| `/404.html`, `/offline.html` | | Σελίδα σφάλματος και offline fallback του service worker. |
+| `/404.html` | | Σελίδα σφάλματος. |
 | `/generate.html`, `/housekeeping.html`, `/statistics.html` | | Εργαλεία συντακτών. Ανεβαίνουν στο `dist/` με `noindex, nofollow` και λειτουργούν μόνο με GitHub token ή Google login (ενότητα 12). |
 
 Όλες οι σελίδες είναι `lang="el"`. Το σκούρο θέμα είναι το προεπιλεγμένο. Το ανοιχτό ενεργοποιείται με `html[data-theme="light"]` μέσω του `scripts/theme-init.js`. Τα analytics (GA4) φορτώνουν μόνο αφού ο επισκέπτης δώσει ρητή συγκατάθεση στο cookie banner (`scripts/cookie-consent.js`, `scripts/analytics.js`).
@@ -457,7 +457,7 @@ npm run build
 
 ### 10.1 `build:html`: partials
 
-Το `scripts/build/include.mjs` αντικαθιστά τους δείκτες `<!-- @include partials/... -->` με το περιεχόμενο του partial, μέσα σε μπλοκ `@include:begin` / `@include:end`. Η λειτουργία είναι idempotent. Εφαρμόζεται σε αυτά τα shells: `index.html`, `offline.html`, `404.html`, `standings/index.html`, `blog-module/blog/index.html`, `blog-module/blog/template.html`, `authors/index.html`, `privacy/*.html`, `generate.html`, `housekeeping.html`, `statistics.html`.
+Το `scripts/build/include.mjs` αντικαθιστά τους δείκτες `<!-- @include partials/... -->` με το περιεχόμενο του partial, μέσα σε μπλοκ `@include:begin` / `@include:end`. Η λειτουργία είναι idempotent. Εφαρμόζεται σε αυτά τα shells: `index.html`, `404.html`, `standings/index.html`, `blog-module/blog/index.html`, `blog-module/blog/template.html`, `authors/index.html`, `privacy/*.html`, `generate.html`, `housekeeping.html`, `statistics.html`.
 
 Το `.blog-nav` **δεν** είναι partial. Υπάρχει αντίγραφό του σε κάθε shell και σε κάθε `article.html`. Αν αλλάξει το markup του, πρέπει να ενημερωθούν τα shells και το `template.html`, και τα άρθρα να περάσουν migration με το `scripts/build/article-editorial.mjs`.
 
@@ -511,7 +511,6 @@ npm run build:public
    - λείπουν απαιτούμενα αρχεία,
    - υπάρχουν σπασμένα references ή λάθος URLs στα metadata,
    - το sitemap έχει κακούς συνδέσμους,
-   - ο service worker αναφέρεται σε αρχεία που δεν υπάρχουν,
    - η πολιτική ασφαλείας δεν ταιριάζει.
 
 Στο `dist/` **δεν** μπαίνουν: scripts του build, tests, `package*.json`, σημειώσεις, source maps, `.docx`, `source.txt`, raw εικόνες, `blog-data.json`, `template.html` και `asset-manifest.json`.
@@ -525,9 +524,9 @@ npm run build:public
 
 Το CSP δεν επιτρέπει inline scripts ούτε `on*` attributes. Όλη η JavaScript βρίσκεται σε αρχεία. Αν προσθέσετε νέα εξωτερική πηγή (script, iframe, API), πρέπει να ενημερώσετε το `security-policy.mjs`. Λεπτομέρειες στο `docs/security-headers.md`.
 
-### Service worker
+### Χωρίς εφαρμογή (μόνο browser)
 
-Το `sw.js` κρατά σε cache το shell του site και σερβίρει το `offline.html` όταν δεν υπάρχει σύνδεση. Το `scripts/sw-register.js` τον καταχωρεί. Ο validator ελέγχει ότι κάθε αρχείο που κάνει cache ο service worker υπάρχει στο `dist/`.
+Το site λειτουργεί μόνο online, μέσα από browser. Δεν έχει web app manifest, offline λειτουργία ή εγκατάσταση ως εφαρμογή, και το CSP ορίζει `manifest-src 'none'`. Παλαιότερες εκδόσεις είχαν service worker. Για τους επισκέπτες που τον έχουν ακόμη, το `scripts/sw-cleanup.js` (σε κάθε δημόσια σελίδα) τον καταργεί και σβήνει τις caches `f1s-*`. Το `sw.js` είναι stub που κάνει το ίδιο αν ο browser ελέγξει για ενημέρωση. Και τα δύο αρχεία μπορούν να διαγραφούν μερικούς μήνες μετά τον Σεπτέμβριο 2026.
 
 ---
 
@@ -932,7 +931,7 @@ Actions > Site Maintenance > Run workflow > `standings`. Τοπικά: `npm run 
 | Το `perf:article-media` αποτυγχάνει | Προστέθηκε raw JPG/PNG/GIF. Μετατρέψτε το σε WebP/AVIF ή ενημερώστε το baseline με αιτιολόγηση. |
 | Το `qa:visual` / `perf:lighthouse` δεν βρίσκει Chrome | Ορίστε `CHROME_PATH`. |
 | Κενό icon σε κάποια σελίδα | Το sprite δεν είναι ενημερωμένο. Τρέξτε `npm run build:assets` και `npm run check:assets`. |
-| Ο browser δείχνει παλιά έκδοση | Ο service worker κρατά το παλιό shell. Κάντε hard reload ή Unregister στο DevTools > Application. |
+| Ο browser δείχνει παλιά έκδοση | Κάντε hard reload. Αν επιμένει, ελέγξτε στο DevTools > Application ότι δεν υπάρχει service worker (το `sw-cleanup.js` τον αφαιρεί στην πρώτη επίσκεψη). |
 
 ---
 
