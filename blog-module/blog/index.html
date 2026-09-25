@@ -5,8 +5,7 @@
     <!-- @include:begin partials/head-meta.html -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <script src="/scripts/perf/error-beacon.min.js?v=59367e85"></script>
-    <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
+    <script defer src="/scripts/perf/error-beacon.min.js?v=59367e85"></script>
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
     <link rel="manifest" href="/manifest.json">
@@ -32,7 +31,7 @@
 
     <!-- f1s:blog-index-preload:begin -->
     <link rel="preload" href="/blog-module/blog-index-page-1.json" as="fetch" crossorigin>
-    <link rel="preload" as="image" href="/blog-module/blog-entries/20260923G/1-card.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="/blog-module/blog-entries/20260923G/1-card.webp" imagesrcset="/blog-module/blog-entries/20260923G/1-card.webp 400w, /blog-module/blog-entries/20260923G/1-mobile.webp 800w, /blog-module/blog-entries/20260923G/1.webp 1600w" imagesizes="(min-width: 1200px) 780px, (min-width: 768px) 55vw, 100vw" fetchpriority="high">
     <!-- f1s:blog-index-preload:end -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=946979ee">
@@ -41,14 +40,15 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
     <link rel="stylesheet" href="/styles.min.css?v=1b54c917">
-    <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=afadef10">
+    <link rel="stylesheet" href="/blog-module/blog-styles.min.css?v=bd55a696">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=73b1e224">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=e64ce27c">
-    <link rel="stylesheet" href="/blog-module/blog/archive-editorial.min.css?v=5a52a3ab">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
+    <link rel="stylesheet" href="/blog-module/blog/archive-editorial.min.css?v=8cf25760">
 
     <script defer src="/scripts/analytics.min.js?v=5a47903d"></script>
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
 
+    <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
 </head>
 <body class="editorial-page archive-page">
 <!-- f1s:icon-sprite:begin -->
