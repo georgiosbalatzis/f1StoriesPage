@@ -924,7 +924,6 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo,
     result = ensureLazyIframes(result);
     result = useGalleryThumbs(result, relPath);
     result = addDensitySrcset(result);
-    result = subsetSprite(result, relPath);
     return result;
 }
 
@@ -951,6 +950,9 @@ function stampArticleRuntimeMarkup(commentsInfo, railCssInfo, railJsInfo, dry, m
         result = swapFonts(result, 'blog-module/blog/template.html', manifest['styles/home-fonts.css'], manifest).result;
         // The editorial block lands before </head>; theme-init must stay after it.
         result = placeHeadScripts(result);
+        // Subset last: the editorial migration removes icon uses (the fa-tag category span),
+        // and an earlier subset kept their symbols until a second build.
+        result = subsetSprite(result, rel);
         if (result === original) continue;
 
         totals.files++;
@@ -1223,7 +1225,7 @@ function main() {
 
             const inj = injectSprite(result, sprite);
             // The article template keeps every symbol; each rendered article is subset
-            // from its final markup in normalizeArticleRuntimeMarkup.
+            // from its final markup in stampArticleRuntimeMarkup.
             result = rel === 'blog-module/blog/template.html' ? inj.result : subsetSprite(inj.result, rel);
             if (inj.injected) { spriteNote = 'sprite injected'; totalSpriteOps++; }
             else if (inj.replaced) { spriteNote = 'sprite refreshed'; totalSpriteOps++; }
