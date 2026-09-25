@@ -98,6 +98,17 @@ jobs:
       - name: Run blog processor
         run: node blog-module/blog-processor.js
 
+      - name: Stamp article runtime markup
+        # The processor renders from the template; stamp-html applies the article
+        # migrations and asset hashes, as build:public does locally. The sprite,
+        # Bootstrap subset and minified hash manifest it reads are gitignored.
+        # Sponsor normalization is skipped: its outputs are tracked images.
+        run: |
+          node scripts/build/build-icon-sprite.mjs
+          npm run build:bootstrap
+          node scripts/build/minify.mjs
+          node scripts/build/stamp-html.mjs
+
       - name: Commit generated artifacts
         id: commit
         uses: ./.github/actions/commit-and-push
