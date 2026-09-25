@@ -517,6 +517,12 @@ body { overflow-x: clip; overflow-y: auto !important; position: relative; }
     background: transparent;
 }
 
+/* A collapsed TOC is clipped to zero height; animating its links' active state as the reader
+   scrolls only repainted the page (about half of all scroll paint on long articles). */
+.toc-body:not(.open) .toc-item {
+    transition: none;
+}
+
 .toc-item.toc-sub {
     padding-left: 1.4rem;
     font-size: 0.78rem;

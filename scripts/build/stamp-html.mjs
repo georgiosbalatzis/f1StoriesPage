@@ -12,16 +12,14 @@
 // exceptions are:
 //   - An idempotent editorial shell migration for archived articles without source documents.
 //   - Bootstrap CDN swap, so no live HTML keeps loading Bootstrap from jsDelivr.
-//   - Article runtime script refs, so committed articles can move to minified
-//     stamped JS without a full content rebuild.
+//   - Article runtime asset refs (ARTICLE_RUNTIME_SOURCES), restamped on every run so
+//     committed articles always carry the current ?v= hashes.
 //   - The shared consent summary/settings control, so archived article pages
 //     keep privacy copy and the cookie-settings entry point current.
 //
 // Usage:
 //   node scripts/build/stamp-html.mjs
 //   node scripts/build/stamp-html.mjs --dry   # print planned edits only
-//   node scripts/build/stamp-html.mjs --stamp-articles
-//       Full article restamp for runtime hash migration work.
 //   node scripts/build/stamp-html.mjs --article-ids=20260913G,20260912W
 //       Refresh only these articles; every article migration pass respects the scope.
 
@@ -132,6 +130,7 @@ const ARTICLE_RUNTIME_SOURCES = new Set([
     'styles/editorial.css',
     'blog-module/blog/article-editorial.css',
     'styles/shared-nav.css',
+    'styles/vendor/bootstrap.slim.css',
     'theme-overrides.css',
     'blog-module/blog-styles.css',
     'blog-module/blog/article-rail.css',
@@ -588,18 +587,9 @@ function stampArticleBootstrap(bootstrapInfo, dry) {
     return totals;
 }
 
-function needsArticleRuntimeMigration(html) {
-    const source = String(html || '');
-    for (const rel of ARTICLE_RUNTIME_SOURCES) {
-        const ref = escapeRegex(rel);
-        if (new RegExp(`(?:href|src)=["']/?${ref}(?:[?#"'])`).test(source)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function stampArticleRuntimeScripts(patterns, dry, options = {}) {
+// Every build restamps article runtime refs to the current hashes; only files whose hashes
+// changed are rewritten. Skipping this left articles on stale ?v= after a shared asset changed.
+function stampArticleRuntimeScripts(patterns, dry) {
     const articlePatterns = patterns.filter(pattern => ARTICLE_RUNTIME_SOURCES.has(pattern.source));
     const totals = { files: 0, hits: 0 };
     if (!articlePatterns.length) return totals;
@@ -607,8 +597,6 @@ function stampArticleRuntimeScripts(patterns, dry, options = {}) {
     for (const rel of listArticleHtml()) {
         const abs = path.join(REPO_ROOT, rel);
         const original = fs.readFileSync(abs, 'utf8');
-        if (options.migrationOnly && !needsArticleRuntimeMigration(original)) continue;
-
         const { result, hits } = rewrite(original, articlePatterns);
         if (result === original) continue;
 
@@ -636,9 +624,28 @@ function ensureThemeInitScript(html, themeInfo, relPath = '') {
 
     const themeSrc = `/${themeInfo.min}?v=${themeInfo.hash}`;
     return String(html || '').replace(
-        /(<script\s+src=["']\/scripts\/perf\/error-beacon(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["']><\/script>)/i,
+        /(<script\s+(?:defer\s+)?src=["']\/scripts\/perf\/error-beacon(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["']><\/script>)/i,
         `$1\n    <script src="${themeSrc}"></script>`
     );
+}
+
+// The CSP <meta> makes Chromium hold preload-scanner fetches until the parser passes it, so a
+// parser-blocking script at the top of <head> delayed every stylesheet, font and preload by its own
+// round trip. error-beacon only reports through gtag (deferred) and ignores resource errors, so it
+// runs first in the defer queue; theme-init stays blocking but moves to the end of <head>, still
+// before <body> exists, so the theme is set before first paint.
+const THEME_INIT_TAG = /\n?[ \t]*<script src="\/scripts\/theme-init(?:\.min)?\.js(?:\?v=[a-f0-9]+)?"><\/script>/;
+
+function placeHeadScripts(html, relPath = '') {
+    if (relPath === 'ghostcar/index.html' || relPath === 'f1telemetry/index.html') return html;
+    let result = String(html || '').replace(
+        /<script src=(["']\/scripts\/perf\/error-beacon(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["'])><\/script>/i,
+        '<script defer src=$1></script>'
+    );
+    const theme = result.match(THEME_INIT_TAG);
+    if (!theme || !/<\/head>/i.test(result)) return result;
+    result = result.replace(theme[0], '');
+    return result.replace(/\n?[ \t]*<\/head>/i, `\n    ${theme[0].trim()}\n</head>`);
 }
 
 function stampArticleThemeInit(themeInfo, dry) {
@@ -647,7 +654,7 @@ function stampArticleThemeInit(themeInfo, dry) {
         const abs = path.join(REPO_ROOT, rel);
         const original = fs.readFileSync(abs, 'utf8');
         let result = dropInlineThemeBoot(original);
-        result = ensureThemeInitScript(result, themeInfo);
+        result = placeHeadScripts(ensureThemeInitScript(result, themeInfo));
         if (result === original) continue;
 
         totals.files++;
@@ -942,6 +949,8 @@ function stampArticleRuntimeMarkup(commentsInfo, railCssInfo, railJsInfo, dry, m
         // any shared editorial stylesheet changes.
         result = applyArticleEditorial(result, editorialAssets);
         result = swapFonts(result, 'blog-module/blog/template.html', manifest['styles/home-fonts.css'], manifest).result;
+        // The editorial block lands before </head>; theme-init must stay after it.
+        result = placeHeadScripts(result);
         if (result === original) continue;
 
         totals.files++;
@@ -1153,7 +1162,6 @@ function main() {
     }
     const sprite = loadSprite();
     const dry = process.argv.includes('--dry');
-    const stampArticles = articleScope !== null || process.argv.includes('--stamp-articles') || process.env.F1S_STAMP_ARTICLES === '1';
     let totalHits = 0;
     let totalCriticalOps = 0;
     let totalAsyncified = 0;
@@ -1179,7 +1187,7 @@ function main() {
         // 1) stamp local asset refs with content-hash query strings
         let { result, hits } = rewrite(original, patterns);
         result = addDensitySrcset(result);
-        result = ensureThemeInitScript(dropInlineThemeBoot(result), themeInfo, rel);
+        result = placeHeadScripts(ensureThemeInitScript(dropInlineThemeBoot(result), themeInfo, rel), rel);
         result = normalizeThemeToggleCopy(result);
         result = stampModulePreloads(result, rel, manifest);
 
@@ -1292,16 +1300,13 @@ function main() {
         );
     }
 
-    const articleRuntime = stampArticleRuntimeScripts(patterns, dry, { migrationOnly: !stampArticles });
+    const articleRuntime = stampArticleRuntimeScripts(patterns, dry);
     totalArticleRuntimeHits += articleRuntime.hits;
     if (articleRuntime.files) {
-        const mode = stampArticles ? 'article runtime script stamp(s)' : 'article runtime migration stamp(s)';
         console.log(
             `\n${ARTICLE_HTML_ROOT}/**/article.html  →  ${articleRuntime.files} file(s), ` +
-            `${articleRuntime.hits} ${mode}`
+            `${articleRuntime.hits} article runtime script stamp(s)`
         );
-    } else if (dry && !stampArticles) {
-        console.log(`\n${ARTICLE_HTML_ROOT}/**/article.html  →  no obsolete article runtime refs found (use --stamp-articles for full migration work)`);
     }
 
     const articleThemeInit = stampArticleThemeInit(themeInfo, dry);

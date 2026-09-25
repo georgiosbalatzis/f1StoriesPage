@@ -44,4 +44,4 @@ The `.blog-nav` markup is not a partial: it is copied into every shell page and 
 - Do not put cross-site components in `home.css`, blog CSS, or standings CSS.
 - Light-mode fixes belong in `theme-overrides.css`; default theme styles belong in the owning page/component CSS. Editorial routes own both theme palettes in `styles/editorial.css`.
 - If a selector is needed by generated article HTML, update the template/build path first and let `npm run build:public` regenerate artifacts.
-- Routine builds should not restamp every article runtime hash. Use `node scripts/build/stamp-html.mjs --stamp-articles` only for intentional article runtime migrations.
+- Every build restamps article runtime hashes (`scripts/build/stamp-html.mjs`), so a change to a shared stylesheet or script rewrites the `?v=` in every article that references it. Expect those article diffs in the same commit.

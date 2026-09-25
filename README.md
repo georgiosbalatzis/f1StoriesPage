@@ -476,7 +476,6 @@ npm run build
 ```bash
 npm run build:assets:watch                           # minify σε κάθε αλλαγή
 node scripts/build/stamp-html.mjs --dry              # δείχνει μόνο τι θα αλλάξει
-node scripts/build/stamp-html.mjs --stamp-articles   # πλήρες restamp όλων των άρθρων
 node scripts/build/stamp-html.mjs --article-ids=20260913G,20260912W
 ```
 

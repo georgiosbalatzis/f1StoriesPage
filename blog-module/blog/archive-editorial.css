@@ -61,7 +61,7 @@
     margin: 0 0 16px;
 }
 .archive-page .archive-masthead-note > p + p {
-    max-width: 35ch;
+    max-width: 21em;
     font-size: .875rem;
     line-height: 1.7;
     color: var(--text-secondary);
@@ -390,7 +390,7 @@
     .archive-page .archive-masthead h1 { font-size: clamp(5.25rem, 21vw, 9.6rem); margin-left: -2px; }
     .archive-page .archive-masthead-note { padding-top: 20px; padding-right: 0; }
     .archive-page .archive-subtitle { font-size: 1.7rem; }
-    .archive-page .archive-masthead-note > p + p { font-size: .875rem; max-width: 34ch; }
+    .archive-page .archive-masthead-note > p + p { font-size: .875rem; max-width: 20.4em; }
     /* On phones the stamp sits on the masthead's bottom rule, beside the archive link and clear of the deck. */
     .archive-page .archive-stamp { right: 6px; bottom: -12px; font-size: .85rem; padding: 9px 8px; }
     .archive-page .blog-filter-toolbar { grid-template-columns: 1fr; grid-template-areas: "search" "summary" "panel" "sort" "topline"; gap: 0; margin-bottom: 0; }

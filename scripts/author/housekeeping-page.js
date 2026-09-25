@@ -1069,6 +1069,21 @@
             rendered.slice(0, visibleCount).forEach(function (post) { frag.appendChild(browseRow(post)); });
             listEl.replaceChildren(frag);
         }
+        updateBrowseStats();
+    }
+
+    // "Load more" appends the next page; rebuilding every row already on screen made each
+    // page slower than the last. Falls back to a full render if the list is not that page.
+    function appendBrowse(from) {
+        if (currentLane !== 'all') return;
+        if (!rendered.length || listEl.children.length !== Math.min(from, rendered.length)) return renderBrowse();
+        var frag = document.createDocumentFragment();
+        rendered.slice(from, visibleCount).forEach(function (post) { frag.appendChild(browseRow(post)); });
+        listEl.appendChild(frag);
+        updateBrowseStats();
+    }
+
+    function updateBrowseStats() {
         var shown = Math.min(visibleCount, rendered.length);
         statsEl.textContent = rendered.length === posts.length
             ? shown + ' από ' + posts.length + ' άρθρα'
@@ -1077,8 +1092,9 @@
     }
 
     function loadMore() {
+        var previous = visibleCount;
         visibleCount += PAGE_SIZE;
-        if (currentLane === 'all') renderBrowse();
+        if (currentLane === 'all') appendBrowse(previous);
         else renderLane();
         persistListState();
     }

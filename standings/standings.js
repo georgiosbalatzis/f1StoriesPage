@@ -980,18 +980,18 @@ function standingsSignature(season, round, driverStandings, constructorStandings
 }
 
 // The timing band names its data source: the tracked snapshot (with its date)
-// until the live API answers, and says so when it doesn't. Labels stay short
-// enough to share the band's single line with the season at 320px.
+// until the live API answers, and says so when it doesn't. The stale label must
+// be no wider than the snapshot label it replaces, or the band re-wraps (CLS).
 function setStandingsDataStatus(state) {
     if (!standingsDataStatus) return;
     const updated = new Date(latestStandingsMeta.updatedAt);
-    const snapshot = 'Στιγμιότυπο' + (Number.isFinite(updated.getTime())
-        ? ' ' + updated.toLocaleDateString('el-GR', { day: 'numeric', month: 'short' })
-        : '');
+    const date = Number.isFinite(updated.getTime())
+        ? updated.toLocaleDateString('el-GR', { day: 'numeric', month: 'short' })
+        : '';
     const labels = {
         live: 'Live δεδομένα',
-        snapshot: snapshot,
-        stale: snapshot + ' · χωρίς live',
+        snapshot: date ? 'Στιγμιότυπο ' + date : 'Στιγμιότυπο',
+        stale: date ? 'Χωρίς live · ' + date : 'Χωρίς live',
         error: 'Χωρίς δεδομένα'
     };
     standingsDataStatus.textContent = labels[state];

@@ -1489,6 +1489,13 @@ body {
     content-visibility: auto;
 }
 
+/* On the one-column phone archive, content-visibility on card images only made each image
+   re-enter layout and repaint as it crossed the viewport (~3× the scroll layouts and paints).
+   Wider layouts keep it: there the paint containment changes how downscaled cards rasterize. */
+@media (max-width: 767px) {
+    .article-card-img { content-visibility: visible; }
+}
+
 
 /* Loading placeholder */
 .loading-placeholder {
