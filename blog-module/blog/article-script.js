@@ -177,17 +177,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (shareButton) shareButton.addEventListener('click', triggerShare);
 
+        let shown = null;
+        let frame = 0;
         const update = () => {
+            frame = 0;
             if (!header) return;
-            const headerBottom = header.getBoundingClientRect().bottom;
-            const shouldShow = window.innerWidth <= 767 && headerBottom < 82;
-            miniBar.classList.toggle('is-visible', shouldShow);
-            miniBar.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+            const show = window.innerWidth <= 767 && header.getBoundingClientRect().bottom < 82;
+            if (show === shown) return;
+            shown = show;
+            miniBar.classList.toggle('is-visible', show);
+            miniBar.setAttribute('aria-hidden', String(!show));
         };
+        const schedule = () => { frame = frame || requestAnimationFrame(update); };
 
         update();
-        window.addEventListener('scroll', update, { passive: true });
-        window.addEventListener('resize', update);
+        window.addEventListener('scroll', schedule, { passive: true });
+        window.addEventListener('resize', schedule);
 
         if (titleEl && miniTitle) {
             miniTitle.textContent = getShortTitle(titleEl.textContent);
@@ -247,6 +252,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Run `load` once, when any of `embeds` comes within 600px of the viewport.
+    // ponytail: unscrolled embeds print as their link fallback (accepted trade-off, PERF-P0-03).
+    function loadWhenNear(embeds, load) {
+        if (!embeds.length) return;
+        const observer = new IntersectionObserver(entries => {
+            if (!entries.some(entry => entry.isIntersecting)) return;
+            observer.disconnect();
+            load();
+        }, { rootMargin: '600px 0px' });
+        embeds.forEach(embed => observer.observe(embed));
+    }
+
     function setupSocialEmbeds() {
         if (!articleContent) return;
 
@@ -263,18 +280,24 @@ document.addEventListener('DOMContentLoaded', function () {
             const theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
             twitterEmbeds.forEach(embed => embed.setAttribute('data-theme', theme));
 
-            const renderTweets = () => window.twttr?.widgets?.load(articleContent);
-            if (window.twttr?.widgets?.load) {
-                renderTweets();
-            } else {
-                loadScriptOnce('https://platform.twitter.com/widgets.js', { charset: 'utf-8' })
-                    .then(renderTweets)
-                    .catch(error => console.error('Error loading X widgets:', error));
-            }
+            loadWhenNear(twitterEmbeds, () => {
+                const renderTweets = () => window.twttr?.widgets?.load(articleContent);
+                if (window.twttr?.widgets?.load) {
+                    renderTweets();
+                } else {
+                    loadScriptOnce('https://platform.twitter.com/widgets.js', { charset: 'utf-8' })
+                        .then(renderTweets)
+                        .catch(error => console.error('Error loading X widgets:', error));
+                }
+            });
         }
 
-        let instagramReady = Promise.resolve();
-        if (instagramEmbeds.length) {
+        // Shared by the Instagram and Facebook loaders, whichever is reached first.
+        let instagramReady = null;
+        const loadInstagram = () => {
+            if (instagramReady) return instagramReady;
+            instagramReady = Promise.resolve();
+            if (!instagramEmbeds.length) return instagramReady;
             const processInstagram = () => window.instgrm?.Embeds?.process?.();
             if (window.instgrm?.Embeds?.process) {
                 processInstagram();
@@ -283,20 +306,23 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then(processInstagram)
                     .catch(error => console.error('Error loading Instagram embeds:', error));
             }
-        }
+            return instagramReady;
+        };
+        loadWhenNear(instagramEmbeds, loadInstagram);
 
-        if (threadsEmbeds.length && !document.querySelector('script[data-embed-src="https://www.threads.net/embed.js"], script[src="https://www.threads.net/embed.js"]')) {
+        loadWhenNear(threadsEmbeds, () => {
+            if (document.querySelector('script[data-embed-src="https://www.threads.net/embed.js"], script[src="https://www.threads.net/embed.js"]')) return;
             loadScriptOnce('https://www.threads.net/embed.js', { charset: 'utf-8' })
                 .catch(error => console.error('Error loading Threads embeds:', error));
-        }
+        });
 
-        if (facebookEmbeds.length) {
-            // Instagram's embed.js does nothing once the Facebook SDK is on the page.
-            instagramReady
+        // Instagram's embed.js does nothing once the Facebook SDK is on the page.
+        loadWhenNear(facebookEmbeds, () => {
+            loadInstagram()
                 .then(loadFacebookSdk)
                 .then(() => window.FB?.XFBML?.parse(articleContent))
                 .catch(error => console.error('Error loading Facebook embeds:', error));
-        }
+        });
     }
 
     function buildTableOfContents() {

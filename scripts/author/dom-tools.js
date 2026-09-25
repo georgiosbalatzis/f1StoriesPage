@@ -56,8 +56,28 @@
         return el;
     }
 
+    // JSZip (~100 KB) is only needed for ZIP import/export, so it loads on the first ZIP action.
+    var jszipPromise = null;
+    function loadJSZip() {
+        if (global.JSZip) return Promise.resolve(global.JSZip);
+        if (!jszipPromise) {
+            jszipPromise = new Promise(function (resolve, reject) {
+                var script = document.createElement('script');
+                script.src = '/node_modules/jszip/dist/jszip.min.js';
+                script.onload = function () { resolve(global.JSZip); };
+                script.onerror = function () {
+                    jszipPromise = null;
+                    reject(new Error('Η βιβλιοθήκη ZIP δεν φορτώθηκε. Δοκίμασε ξανά.'));
+                };
+                document.head.appendChild(script);
+            });
+        }
+        return jszipPromise;
+    }
+
     global.F1S_AUTHOR_DOM_TOOLS = {
         createIconTextButton: createIconTextButton,
+        loadJSZip: loadJSZip,
         createMetaItem: createMetaItem,
         createStatusMessage: createStatusMessage,
         createSvgIcon: createSvgIcon,

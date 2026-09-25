@@ -593,8 +593,10 @@
         importInput.value = '';
         if (!zipFile) return;
 
-        if (typeof JSZip === 'undefined') {
-            await showAlert('Η βιβλιοθήκη ZIP φορτώνει ακόμη - δοκίμασε ξανά σε λίγο.');
+        try {
+            await authorDom.loadJSZip();
+        } catch (error) {
+            await showAlert(error.message);
             return;
         }
 
@@ -802,8 +804,10 @@
     }
 
     exportBtn.addEventListener('click', async function () {
-        if (typeof JSZip === 'undefined') {
-            await showAlert('Η βιβλιοθήκη ZIP φορτώνει ακόμη - δοκίμασε ξανά σε λίγο.');
+        try {
+            await authorDom.loadJSZip();
+        } catch (error) {
+            await showAlert(error.message);
             return;
         }
         if (!(await requireTitleAndBody('την εξαγωγή'))) return;

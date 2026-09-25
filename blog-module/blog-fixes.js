@@ -169,16 +169,6 @@
         }, { capture: true, passive: false });
     }
 
-    // ── 7. VIEWPORT HEIGHT FIX (100vh on mobile) ─
-    function fixViewportHeight() {
-        function setVH() {
-            document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
-        }
-        setVH();
-        window.addEventListener('resize', setVH, { passive: true });
-    }
-
-
     // ═════════════════════════════════════════════
     // PERFORMANCE FIXES
     // ═════════════════════════════════════════════
@@ -307,7 +297,6 @@
 
     function init() {
         // Mobile fixes
-        fixViewportHeight();
         enhanceShareButtons();
         fixLazyImages();
         fixCardTaps();

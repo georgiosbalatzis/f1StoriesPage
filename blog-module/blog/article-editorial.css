@@ -178,7 +178,6 @@
     display: block;
     width: 100%;
     height: auto;
-    aspect-ratio: auto;
     object-fit: contain;
     filter: none;
     transform: none;
@@ -227,8 +226,10 @@
 }
 .article-page .article-main-column { min-width: 0; }
 .article-page .article-side-rail { align-self: stretch; }
+/* Measures in em, not ch: Plex's "0" is .6em, but while its Latin subset loads `ch` falls
+ * back to .5em (the Greek subset has no "0"), so ch-sized text re-wraps on arrival. */
 .article-page .article-content {
-    max-width: 68ch;
+    max-width: 40.8em;
     padding: 24px 0 32px;
     font: 400 1.125rem/1.75 var(--font-body);
     color: var(--text-primary);
@@ -615,7 +616,7 @@
     .article-page .article-header { padding: 22px 22px 28px; width: calc(100% + 44px); margin-inline: -22px; grid-template-columns: minmax(0, 1fr); }
     .article-page .article-header-overlay { padding: 0; }
     .article-page .article-edition { margin-bottom: 20px; font-size: .75rem; gap: 12px; }
-    .article-page .article-edition > span:last-child { max-width: 18ch; text-align: right; }
+    .article-page .article-edition > span:last-child { max-width: 10.8em; text-align: right; }
     .article-page .article-header-kicker-row { gap: 14px; margin-bottom: 17px; }
     .article-page .back-link { font-size: .75rem; }
     .article-page .article-category-pill { padding-left: 12px; font-size: .75rem; }
@@ -623,7 +624,7 @@
     .article-page .article-header-byline { font-size: .75rem; }
     .article-page .article-header-overlay .article-meta { gap: 8px 15px; font-size: .75rem; }
     .article-page .article-header > picture { border-radius: 0 0 var(--cut-md) 0; }
-    .article-page .article-header-img { height: auto; aspect-ratio: auto; }
+    .article-page .article-header-img { height: auto; }
     .article-page .article-header::after { font-size: .75rem; letter-spacing: .08em; }
     .article-page .article-header::before { right: 12px; top: 19px; font-size: .75rem; }
     .article-page .article-body-grid { margin-top: 24px; }
@@ -767,7 +768,7 @@
 .article-page .article-header-overlay .article-meta > span + span::before { content: '·'; margin-right: 10px; }
 /* Previous / next: a small direction label over the story title, one per half. */
 .article-page .article-navigation { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
-.article-page .article-nav-link { display: grid; gap: 6px; max-width: 40ch; padding: 6px 0; }
+.article-page .article-nav-link { display: grid; gap: 6px; max-width: 24em; padding: 6px 0; }
 .article-page .article-nav-link.next { grid-column: 2; justify-self: end; text-align: right; }
 .article-page .article-nav-label { display: inline-flex; align-items: center; gap: 8px; color: var(--text-secondary); font: 500 .75rem/1.4 var(--font-body); letter-spacing: .08em; }
 .article-page .article-nav-link.next .article-nav-label { justify-content: flex-end; }

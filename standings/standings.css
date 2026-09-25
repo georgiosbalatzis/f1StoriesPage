@@ -533,7 +533,8 @@ body.standings-embed [data-embed-hidden="true"] { display: none !important; }
     }
     .standings-title {
         font-size: 1.46rem;
-        max-width: 18ch;
+        /* 18ch in em: `ch` reads .5em (not Plex's .6em) while the Latin subset loads. */
+        max-width: 10.8em;
     }
     .standings-sub {
         font-size: 0.76rem;

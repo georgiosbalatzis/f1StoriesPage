@@ -10,7 +10,6 @@
     var analyticsConfigured = false;
     var clickTrackingBound = false;
     var CLICK_EVENT_NAME = 'internal_page_click';
-    var CLICK_EVENT_TIMEOUT = 250;
 
     function readConsent() {
         try {
@@ -125,11 +124,9 @@
         return 'page';
     }
 
-    function trackInternalPageClick(anchor, destination, callback) {
-        if (!hasAnalyticsConsent(readConsent()) || typeof window.gtag !== 'function') {
-            if (typeof callback === 'function') callback();
-            return;
-        }
+    // Beacon transport survives the unload, so the browser navigates natively.
+    function trackInternalPageClick(anchor, destination) {
+        if (!hasAnalyticsConsent(readConsent()) || typeof window.gtag !== 'function') return;
 
         var articleId = getArticleIdFromUrl(destination.href);
         var params = {
@@ -144,10 +141,6 @@
         };
 
         if (articleId) params.article_id = articleId;
-        if (typeof callback === 'function') {
-            params.event_callback = callback;
-            params.event_timeout = CLICK_EVENT_TIMEOUT;
-        }
 
         window.gtag('event', CLICK_EVENT_NAME, params);
     }
@@ -169,23 +162,7 @@
                 return;
             }
 
-            var target = (anchor.getAttribute('target') || '').toLowerCase();
-            if (target && target !== '_self') {
-                trackInternalPageClick(anchor, destination);
-                return;
-            }
-
-            event.preventDefault();
-
-            var navigated = false;
-            function navigate() {
-                if (navigated) return;
-                navigated = true;
-                window.location.assign(destination.href);
-            }
-
-            trackInternalPageClick(anchor, destination, navigate);
-            window.setTimeout(navigate, CLICK_EVENT_TIMEOUT);
+            trackInternalPageClick(anchor, destination);
         });
     }
 

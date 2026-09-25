@@ -41,6 +41,13 @@ const state = {
 let debriefTooltip = null;
 let debriefTooltipTarget = null;
 let onRendered = null;
+// The last full report render: revisiting the tab with the same snapshot, round and view keeps
+// this DOM instead of rebuilding it (the rebuild cost several dropped frames on mobile).
+let lastRender = null;
+
+function renderKey() {
+    return String(state.selectedRound) + '|' + sanitizeDebriefView(state.activeView);
+}
 let onRoundChange = null;
 let onViewChange = null;
 let listenersBound = false;
@@ -99,6 +106,10 @@ export function ensureLoaded(forceReload) {
     if (!debriefTable) return;
     if (state.loading) return;
     if (state.loaded && state.snapshot && !forceReload) {
+        if (lastRender && lastRender.snapshot === state.snapshot && lastRender.key === renderKey() && debriefTable.firstElementChild === lastRender.node) {
+            fireRendered();
+            return;
+        }
         renderDebrief(state.snapshot);
         return;
     }
@@ -839,6 +850,7 @@ function renderDebrief(snapshot) {
         + '<div class="debrief-view-panel' + (state.activeView === 'corners' ? ' active' : '') + '" data-debrief-panel="corners">' + buildDebriefCornerPerfHTML(selectedRound) + '</div>'
         + '<div class="debrief-view-panel' + (state.activeView === 'race-pace' ? ' active' : '') + '" data-debrief-panel="race-pace">' + buildDebriefRacePaceHTML(selectedRound) + '</div>', 'debrief report template');
 
+    lastRender = { snapshot: snapshot, key: renderKey(), node: debriefTable.firstElementChild };
     fireRendered();
 }
 

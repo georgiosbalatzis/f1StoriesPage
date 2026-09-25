@@ -760,6 +760,34 @@ function buildDirtyAirSessionPayload(session, drivers, laps, results, raceContro
     };
 }
 
+// The page fetches a small index plus the one session it shows, not the whole bundle
+// (which stays the builder's own state in OUTPUT_PATH and is not published).
+// Sessions without rows are left out of the index, as the tab never lists them.
+const SPLIT_DIR = path.join(__dirname, '..', 'standings', 'dirty-air');
+const INDEX_SESSION_FIELDS = ['session_key', 'meeting_name', 'circuit_short_name', 'location', 'country_name', 'session_name', 'session_type', 'date_start', 'date_end', 'maxLaps'];
+
+function writeDirtyAirSplit(bundle) {
+    const sessions = (bundle.sessions || []).filter(session => session && session.rows && session.rows.length);
+    fs.mkdirSync(SPLIT_DIR, { recursive: true });
+    const keep = new Set(['index.json']);
+    sessions.forEach(session => {
+        // session_key comes from OpenF1 and becomes a file name: numeric only.
+        if (!/^\d+$/.test(String(session.session_key))) throw new Error(`dirty-air: unexpected session_key ${JSON.stringify(session.session_key)}`);
+        const name = `${session.session_key}.json`;
+        keep.add(name);
+        fs.writeFileSync(path.join(SPLIT_DIR, name), JSON.stringify(session));
+    });
+    const index = {
+        version: bundle.version,
+        year: bundle.year,
+        generatedAt: bundle.generatedAt,
+        minisectors: bundle.minisectors,
+        sessions: sessions.map(session => Object.fromEntries(INDEX_SESSION_FIELDS.filter(key => key in session).map(key => [key, session[key]])))
+    };
+    fs.writeFileSync(path.join(SPLIT_DIR, 'index.json'), JSON.stringify(index));
+    fs.readdirSync(SPLIT_DIR).filter(name => !keep.has(name)).forEach(name => fs.unlinkSync(path.join(SPLIT_DIR, name)));
+}
+
 function readExistingCache(expectedYear) {
     if (!fs.existsSync(OUTPUT_PATH)) return null;
 
@@ -862,6 +890,7 @@ async function updateDirtyAirCache(options) {
 
     fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
     fs.writeFileSync(OUTPUT_PATH, JSON.stringify(bundle));
+    writeDirtyAirSplit(bundle);
 
     return {
         outputPath: OUTPUT_PATH,
@@ -875,5 +904,6 @@ async function updateDirtyAirCache(options) {
 module.exports = {
     DIRTY_AIR_CACHE_OUTPUT_PATH: OUTPUT_PATH,
     DIRTY_AIR_CACHE_VERSION: CACHE_VERSION,
-    updateDirtyAirCache
+    updateDirtyAirCache,
+    writeDirtyAirSplit
 };

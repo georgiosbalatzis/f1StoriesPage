@@ -289,20 +289,26 @@ document.addEventListener('DOMContentLoaded', function() {
         if (archiveMiniFilter) archiveMiniFilter.setAttribute('aria-expanded', open ? 'true' : 'false');
         document.documentElement.classList.toggle('blog-filters-open', open && window.innerWidth <= 767);
     }
+    var archiveMiniShown = null;
+    var archiveMiniTicking = false;
+    // The mini-bar is shown on phones and hidden on desktop; only the breakpoint matters.
     function syncArchiveMiniBar() {
+        archiveMiniTicking = false;
         if (!archiveMiniBar || !filterToolbar) return;
-        if (window.innerWidth <= 767) {
-            archiveMiniBar.classList.add('is-visible');
-            archiveMiniBar.setAttribute('aria-hidden', 'false');
-            return;
+        var mobile = window.innerWidth <= 767;
+        if (!mobile) {
+            document.documentElement.classList.remove('blog-filters-open');
+            filterToolbar.classList.remove('is-open');
         }
-        archiveMiniBar.classList.remove('is-visible');
-        archiveMiniBar.setAttribute('aria-hidden', 'true');
-        document.documentElement.classList.remove('blog-filters-open');
-        filterToolbar.classList.remove('is-open');
-        var visible = window.innerWidth <= 767 && filterToolbar.getBoundingClientRect().bottom < 64;
-        archiveMiniBar.classList.toggle('is-visible', visible);
-        archiveMiniBar.setAttribute('aria-hidden', visible ? 'false' : 'true');
+        if (mobile === archiveMiniShown) return;
+        archiveMiniShown = mobile;
+        archiveMiniBar.classList.toggle('is-visible', mobile);
+        archiveMiniBar.setAttribute('aria-hidden', mobile ? 'false' : 'true');
+    }
+    function scheduleArchiveMiniBar() {
+        if (archiveMiniTicking) return;
+        archiveMiniTicking = true;
+        requestAnimationFrame(syncArchiveMiniBar);
     }
     function renderCategoryFilters() {
         if (!categoryStrip) return;
@@ -891,6 +897,6 @@ document.addEventListener('DOMContentLoaded', function() {
         syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
         loadAndRender();
     });
-    window.addEventListener('resize', syncArchiveMiniBar, { passive: true });
-    window.addEventListener('scroll', syncArchiveMiniBar, { passive: true });
+    window.addEventListener('resize', scheduleArchiveMiniBar, { passive: true });
+    window.addEventListener('scroll', scheduleArchiveMiniBar, { passive: true });
 });

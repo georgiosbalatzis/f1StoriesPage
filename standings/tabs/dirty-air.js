@@ -20,7 +20,8 @@ import { setTrustedHtml } from '../core/rendering.js';
 import { parseNumberValue, isFiniteNumber, parseTimeSeconds } from './_shared.js';
 
 const OPENF1 = 'https://api.openf1.org/v1';
-const DIRTY_AIR_CACHE_URL = 'dirty-air-cache.json';
+// A small session index, then one cached file per session, fetched when it is shown.
+const DIRTY_AIR_CACHE_URL = 'dirty-air/index.json';
 const YEAR = new Date().getFullYear();
 
 const dirtyAirTable = document.getElementById('dirty-air-table');
@@ -48,6 +49,15 @@ const DIRTY_AIR_CATEGORIES = [
 
 let onRendered = null;
 let onSessionChange = null;
+// The last full report render: revisiting the tab with the same data, session and view keeps
+// this DOM instead of rebuilding it (the rebuild cost several dropped frames on mobile).
+let lastRender = null;
+// Builder for a timeline view that has not been shown yet (see renderDirtyAir).
+let pendingTimeline = null;
+
+function renderKey() {
+    return String(state.selectedSessionKey) + '|' + sanitizeView(state.activeView) + '|' + state.sessions.length;
+}
 let listenersBound = false;
 
 export function initDirtyAir(options) {
@@ -86,6 +96,10 @@ export function ensureLoaded(forceReload) {
         const cached = state.sessionCache[String(state.selectedSessionKey)];
         const selectedSession = getSelectedSessionRecord();
         if (cached && selectedSession) {
+            if (lastRender && lastRender.data === cached && lastRender.key === renderKey() && dirtyAirTable.firstElementChild === lastRender.node) {
+                fireRendered();
+                return;
+            }
             renderDirtyAir(cached, selectedSession);
             return;
         }
@@ -110,7 +124,12 @@ function applyViewState() {
         btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
     });
     dirtyAirTable.querySelectorAll('[data-dirty-air-panel]').forEach(function(panel) {
-        panel.classList.toggle('active', panel.getAttribute('data-dirty-air-panel') === activeView);
+        const isActive = panel.getAttribute('data-dirty-air-panel') === activeView;
+        if (isActive && pendingTimeline && activeView === 'timeline') {
+            setTrustedHtml(panel, pendingTimeline(), 'dirty air timeline template');
+            pendingTimeline = null;
+        }
+        panel.classList.toggle('active', isActive);
     });
 }
 
@@ -493,7 +512,9 @@ function loadDirtyAirCacheBundle() {
         if (parseDirtyAirInteger(bundle && bundle.minisectors) > 0) {
             DIRTY_AIR_MINISECTORS = parseDirtyAirInteger(bundle.minisectors);
         }
-        const sessions = (bundle && bundle.sessions || []).map(normalizeDirtyAirCacheSession).filter(Boolean);
+        const sessions = (bundle && bundle.sessions || []).filter(function(session) {
+            return session && session.session_key != null;
+        });
         state.cacheBundle = {
             version: bundle && bundle.version,
             year: bundle && bundle.year,
@@ -502,12 +523,7 @@ function loadDirtyAirCacheBundle() {
             sessions: sessions
         };
 
-        if (sessions.length) {
-            state.sessions = sessions;
-            sessions.forEach(function(session) {
-                state.sessionCache[String(session.session_key)] = session;
-            });
-        }
+        if (sessions.length) state.sessions = sessions;
 
         return state.cacheBundle;
     }).catch(function(error) {
@@ -1109,6 +1125,7 @@ function buildDirtyAirSessionData(session, drivers, laps, results, raceControl, 
 
 function renderDirtyAir(sessionData, session) {
     if (!dirtyAirTable) return;
+    pendingTimeline = null;
 
     const sessionOptions = state.sessions.slice().reverse().map(function(item) {
         return '<option value="' + esc(item.session_key) + '"' + (String(item.session_key) === String(state.selectedSessionKey) ? ' selected' : '') + '>'
@@ -1155,53 +1172,57 @@ function renderDirtyAir(sessionData, session) {
             + '</div>';
     }).join('');
 
-    const maxLaps = Math.max(sessionData.maxLaps, 1);
-    const chartWidth = Math.max(780, maxLaps * (maxLaps > 60 ? 24 : 28));
-    const chartUnits = maxLaps * DIRTY_AIR_MINISECTORS;
-    let lapGridHTML = '';
-    for (let lapGrid = 1; lapGrid < maxLaps; lapGrid++) {
-        lapGridHTML += '<span class="dirty-air-lap-line" style="left:' + ((lapGrid / maxLaps) * 100).toFixed(4) + '%;"></span>';
-    }
+    // The timeline view holds ~90% of the report's nodes; build it only when it is first shown.
+    const buildTimeline = function() {
+        const maxLaps = Math.max(sessionData.maxLaps, 1);
+        const chartWidth = Math.max(780, maxLaps * (maxLaps > 60 ? 24 : 28));
+        const chartUnits = maxLaps * DIRTY_AIR_MINISECTORS;
+        let lapGridHTML = '';
+        for (let lapGrid = 1; lapGrid < maxLaps; lapGrid++) {
+            lapGridHTML += '<span class="dirty-air-lap-line" style="left:' + ((lapGrid / maxLaps) * 100).toFixed(4) + '%;"></span>';
+        }
 
-    const scBandsHTML = (sessionData.safetyCarSpans || []).map(function(span) {
-        const startPct = (((span.startLap - 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
-        const widthPct = (((span.endLap - span.startLap + 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
-        return '<span class="dirty-air-sc-band" style="left:' + startPct.toFixed(4) + '%;width:' + widthPct.toFixed(4) + '%;"></span>';
-    }).join('');
-    const scOverlayHTML = scBandsHTML ? '<div class="dirty-air-timeline-overlays">' + scBandsHTML + '</div>' : '';
-    const scMarkerBandsHTML = (sessionData.safetyCarSpans || []).map(function(span) {
-        const startPct = (((span.startLap - 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
-        const widthPct = (((span.endLap - span.startLap + 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
-        return '<span class="dirty-air-sc-band" style="left:' + startPct.toFixed(4) + '%;width:' + widthPct.toFixed(4) + '%;"><em>SC</em></span>';
-    }).join('');
-    const scMarkerRowHTML = scMarkerBandsHTML
-        ? '<div class="dirty-air-timeline-row dirty-air-sc-row">'
-            + '<div class="dirty-air-driver-tag sticky dirty-air-sc-marker"><span class="dirty-air-driver-code">SC</span></div>'
-            + '<div class="dirty-air-timeline-bar dirty-air-sc-marker-bar">' + scMarkerBandsHTML + '</div>'
-            + '</div>'
-        : '';
+        const scBandsHTML = (sessionData.safetyCarSpans || []).map(function(span) {
+            const startPct = (((span.startLap - 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
+            const widthPct = (((span.endLap - span.startLap + 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
+            return '<span class="dirty-air-sc-band" style="left:' + startPct.toFixed(4) + '%;width:' + widthPct.toFixed(4) + '%;"></span>';
+        }).join('');
+        const scOverlayHTML = scBandsHTML ? '<div class="dirty-air-timeline-overlays">' + scBandsHTML + '</div>' : '';
+        const scMarkerBandsHTML = (sessionData.safetyCarSpans || []).map(function(span) {
+            const startPct = (((span.startLap - 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
+            const widthPct = (((span.endLap - span.startLap + 1) * DIRTY_AIR_MINISECTORS) / chartUnits) * 100;
+            return '<span class="dirty-air-sc-band" style="left:' + startPct.toFixed(4) + '%;width:' + widthPct.toFixed(4) + '%;"><em>SC</em></span>';
+        }).join('');
+        const scMarkerRowHTML = scMarkerBandsHTML
+            ? '<div class="dirty-air-timeline-row dirty-air-sc-row">'
+                + '<div class="dirty-air-driver-tag sticky dirty-air-sc-marker"><span class="dirty-air-driver-code">SC</span></div>'
+                + '<div class="dirty-air-timeline-bar dirty-air-sc-marker-bar">' + scMarkerBandsHTML + '</div>'
+                + '</div>'
+            : '';
 
-    const timelineRowsHTML = sessionData.rows.map(function(row) {
-        const segmentsHTML = row.timelineSegments.map(function(segment) {
-            const startPct = (segment.startIndex / chartUnits) * 100;
-            const widthPct = ((segment.endIndex - segment.startIndex) / chartUnits) * 100;
-            return '<span class="dirty-air-timeline-segment" style="left:' + startPct.toFixed(4) + '%;width:' + widthPct.toFixed(4) + '%;background:#' + esc(segment.color) + ';"></span>';
+        const timelineRowsHTML = sessionData.rows.map(function(row) {
+            const segmentsHTML = row.timelineSegments.map(function(segment) {
+                const startPct = (segment.startIndex / chartUnits) * 100;
+                const widthPct = ((segment.endIndex - segment.startIndex) / chartUnits) * 100;
+                return '<span class="dirty-air-timeline-segment" style="left:' + startPct.toFixed(4) + '%;width:' + widthPct.toFixed(4) + '%;background:#' + esc(segment.color) + ';"></span>';
+            }).join('');
+
+            return '<div class="dirty-air-timeline-row">'
+                + '<div class="dirty-air-driver-tag sticky"><span class="dirty-air-driver-dot" style="background:#' + esc(row.teamColor) + ';"></span><span class="dirty-air-driver-code">' + esc(row.acronym) + '</span></div>'
+                + '<div class="dirty-air-timeline-bar">' + lapGridHTML + segmentsHTML + '</div>'
+                + '</div>';
         }).join('');
 
-        return '<div class="dirty-air-timeline-row">'
-            + '<div class="dirty-air-driver-tag sticky"><span class="dirty-air-driver-dot" style="background:#' + esc(row.teamColor) + ';"></span><span class="dirty-air-driver-code">' + esc(row.acronym) + '</span></div>'
-            + '<div class="dirty-air-timeline-bar">' + lapGridHTML + segmentsHTML + '</div>'
-            + '</div>';
-    }).join('');
-
-    const axisStep = getDirtyAirAxisStep(maxLaps);
-    let axisLabels = '<span class="dirty-air-axis-label start" style="left:0%;">0</span>';
-    for (let lap = axisStep; lap <= maxLaps; lap += axisStep) {
-        axisLabels += '<span class="dirty-air-axis-label" style="left:' + ((lap / maxLaps) * 100).toFixed(4) + '%;">' + esc(String(lap)) + '</span>';
-    }
-    if (maxLaps % axisStep !== 0) {
-        axisLabels += '<span class="dirty-air-axis-label end" style="left:100%;">' + esc(String(maxLaps)) + '</span>';
-    }
+        const axisStep = getDirtyAirAxisStep(maxLaps);
+        let axisLabels = '<span class="dirty-air-axis-label start" style="left:0%;">0</span>';
+        for (let lap = axisStep; lap <= maxLaps; lap += axisStep) {
+            axisLabels += '<span class="dirty-air-axis-label" style="left:' + ((lap / maxLaps) * 100).toFixed(4) + '%;">' + esc(String(lap)) + '</span>';
+        }
+        if (maxLaps % axisStep !== 0) {
+            axisLabels += '<span class="dirty-air-axis-label end" style="left:100%;">' + esc(String(maxLaps)) + '</span>';
+        }
+        return '<section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Χρονολόγιο ανά γύρο</h4><p class="dirty-air-section-note">Κάθε γύρος χωρίζεται σε 30 ίσα minisectors. Οι γύροι με Safety Car επισημαίνονται στο γράφημα.</p></div></div><div class="dirty-air-timeline-scroll"><div class="dirty-air-timeline-body" style="--dirty-air-chart-width:' + chartWidth + 'px;"><div class="dirty-air-timeline-track">' + scOverlayHTML + scMarkerRowHTML + timelineRowsHTML + '</div><div class="dirty-air-axis-row"><div class="dirty-air-axis-spacer"></div><div class="dirty-air-axis-track">' + axisLabels + '</div></div></div></div></section>';
+    };
 
     const activeView = sanitizeView(state.activeView);
     const viewSwitchHTML = '<div class="dirty-air-view-switch"><div class="dirty-air-view-tabs" role="tablist" aria-label="Προβολές Dirty Air">'
@@ -1215,11 +1236,13 @@ function renderDirtyAir(sessionData, session) {
         + '<div class="dirty-air-legend">' + legendHTML + '</div>'
         + viewSwitchHTML
         + '<div class="dirty-air-view-panel' + (activeView === 'summary' ? ' active' : '') + '" data-dirty-air-panel="summary"><section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Ποσοστό αγώνα ανά απόσταση</h4><p class="dirty-air-section-note">Ποσοστό των έγκυρων minisectors αγώνα που δαπανήθηκαν σε κάθε κατηγορία κίνησης.</p></div></div><div class="dirty-air-summary-list">' + summaryRowsHTML + '</div></section></div>'
-        + '<div class="dirty-air-view-panel' + (activeView === 'timeline' ? ' active' : '') + '" data-dirty-air-panel="timeline"><section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Χρονολόγιο ανά γύρο</h4><p class="dirty-air-section-note">Κάθε γύρος χωρίζεται σε 30 ίσα minisectors. Οι γύροι με Safety Car επισημαίνονται στο γράφημα.</p></div></div><div class="dirty-air-timeline-scroll"><div class="dirty-air-timeline-body" style="--dirty-air-chart-width:' + chartWidth + 'px;"><div class="dirty-air-timeline-track">' + scOverlayHTML + scMarkerRowHTML + timelineRowsHTML + '</div><div class="dirty-air-axis-row"><div class="dirty-air-axis-spacer"></div><div class="dirty-air-axis-track">' + axisLabels + '</div></div></div></div></section></div>'
+        + '<div class="dirty-air-view-panel' + (activeView === 'timeline' ? ' active' : '') + '" data-dirty-air-panel="timeline">' + (activeView === 'timeline' ? buildTimeline() : '') + '</div>'
         + '<p class="dirty-air-footnote">Πηγή: OpenF1. Η απόσταση από το πλησιέστερο μονοθέσιο μπροστά μετριέται ανά minisector, με το πιο πρόσφατο πέρασμα από το ίδιο κομμάτι της πίστας.</p>'
         + '</div>';
 
     setTrustedHtml(dirtyAirTable, html, 'dirty air report template');
+    pendingTimeline = activeView === 'timeline' ? null : buildTimeline;
+    lastRender = { data: sessionData, key: renderKey(), node: dirtyAirTable.firstElementChild };
     fireRendered();
 }
 
@@ -1244,6 +1267,17 @@ function loadDirtyAirSessionData(sessionKey) {
         return Promise.resolve(state.sessionCache[cacheKey]);
     }
 
+    return fetchJSONWithTimeout('dirty-air/' + encodeURIComponent(cacheKey) + '.json', 12000).then(function(cached) {
+        const normalized = normalizeDirtyAirCacheSession(cached);
+        if (!shouldReuseDirtyAirSessionCache(normalized)) throw new Error('Dirty air session cache not renderable');
+        state.sessionCache[cacheKey] = normalized;
+        return normalized;
+    }).catch(function() {
+        return loadDirtyAirSessionFromOpenF1(session, cacheKey);
+    });
+}
+
+function loadDirtyAirSessionFromOpenF1(session, cacheKey) {
     return fetchOpenF1BySessionKeys(OPENF1, 'drivers', [session.session_key]).then(function(driversPayload) {
         return fetchOpenF1BySessionKeys(OPENF1, 'laps', [session.session_key]).then(function(lapsPayload) {
             return fetchOpenF1BySessionKeys(OPENF1, 'session_result', [session.session_key]).then(function(resultsPayload) {

@@ -68,7 +68,6 @@ const CSS_DEPENDENCIES = [
 
 const JS_INPUTS = [
     'scripts/theme-init.js',
-    'scripts/hero-background-init.js',
     'scripts/external-redirect.js',
     'scripts/analytics.js',
     'scripts/cookie-consent.js',
@@ -77,7 +76,6 @@ const JS_INPUTS = [
     'scripts/sw-register.js',
     'scripts/offline-page.js',
     'scripts/f1-optimized.js',
-    'scripts/background-randomizer.js',
     'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog-loader.js',
@@ -86,7 +84,16 @@ const JS_INPUTS = [
     'blog-module/blog/article-rail.js',
     'blog-module/blog/article-script.js',
     'blog-module/blog/article-comments.js',
-    'blog-module/blog-fixes.js'
+    'blog-module/blog-fixes.js',
+    // Author tools (generate.html, housekeeping.html).
+    'scripts/author/session-token.js',
+    'scripts/author/github-client.js',
+    'scripts/author/dom-tools.js',
+    'scripts/author/dialogs.js',
+    'scripts/author/article-source.js',
+    'scripts/author/article-index.js',
+    'scripts/author/generate-page.js',
+    'scripts/author/housekeeping-page.js'
 ];
 
 const STANDINGS_TAB_ENTRIES = [
@@ -140,13 +147,24 @@ async function buildStandingsGraph() {
 
     const rows = [];
     const outputs = result.metafile?.outputs || {};
+    // Chunks an entry needs before it can run (static imports, transitively); lazy tabs are dynamic imports.
+    const staticChunks = (key, seen = new Set()) => {
+        for (const dep of outputs[key]?.imports || []) {
+            if (dep.kind !== 'import-statement' || seen.has(dep.path)) continue;
+            seen.add(dep.path);
+            staticChunks(dep.path, seen);
+        }
+        return [...seen].map(p => path.relative(REPO_ROOT, path.resolve(REPO_ROOT, p)).replace(/\\/g, '/')).sort();
+    };
     for (const [outputPath, meta] of Object.entries(outputs)) {
         const relOut = path.relative(REPO_ROOT, outputPath).replace(/\\/g, '/');
         if (!relOut.endsWith('.min.js')) continue;
         const bytes = fs.statSync(outputPath).size;
         if (meta.entryPoint) {
             const relSource = path.relative(REPO_ROOT, meta.entryPoint).replace(/\\/g, '/');
-            rows.push({ rel: relSource, outRel: relOut, sourceBytes: fs.statSync(meta.entryPoint).size, bytes });
+            const row = { rel: relSource, outRel: relOut, sourceBytes: fs.statSync(meta.entryPoint).size, bytes };
+            if (relSource === 'standings/standings.js') row.staticImports = staticChunks(outputPath);
+            rows.push(row);
         }
     }
     return rows;
@@ -254,6 +272,7 @@ async function buildOnce() {
     for (const row of await buildStandingsGraph()) {
         const hash = sha256Short(fs.readFileSync(path.join(REPO_ROOT, row.outRel)));
         manifest[row.rel] = { min: row.outRel, hash, bytes: row.bytes, sourceBytes: row.sourceBytes };
+        if (row.staticImports) manifest[row.rel].staticImports = row.staticImports;
         rows.push(row);
     }
 

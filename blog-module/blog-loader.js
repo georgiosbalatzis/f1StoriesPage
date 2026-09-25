@@ -23,10 +23,15 @@ document.addEventListener('DOMContentLoaded', function () {
         return imgSrc(candidate).replace(/-(?:card|sm)(?=\.[^.]+$)/i, '');
     }
 
-    function setOptionalSrcset(element, value) {
+    // Write only real changes: re-setting an identical src/srcset/imagesizes still mutates the
+    // element, and the hero preload <link> re-fetches its image when its attributes change.
+    function setAttr(element, name, value) {
         if (!element) return;
-        if (value) element.setAttribute('srcset', value);
-        else element.removeAttribute('srcset');
+        if (value === '' || value == null) {
+            if (element.hasAttribute(name)) element.removeAttribute(name);
+        } else if (element.getAttribute(name) !== String(value)) {
+            element.setAttribute(name, value);
+        }
     }
 
     function syncHeroMedia(post) {
@@ -44,20 +49,18 @@ document.addEventListener('DOMContentLoaded', function () {
         // after the story metadata changed. Clear every responsive source
         // before assigning the lead story so all browsers render the same
         // image as the headline and preload.
-        setOptionalSrcset(avifSource, avif);
-        setOptionalSrcset(webpSource, webp);
-        imageEl.removeAttribute('srcset');
-        imageEl.src = image;
-        imageEl.alt = post.title || 'F1 Stories';
-        imageEl.sizes = '(max-width: 767px) 100vw, 55vw';
-        if (post.heroImageWidth || post.imageWidth) imageEl.width = parseInt(post.heroImageWidth || post.imageWidth, 10) || imageEl.width;
-        if (post.heroImageHeight || post.imageHeight) imageEl.height = parseInt(post.heroImageHeight || post.imageHeight, 10) || imageEl.height;
+        setAttr(avifSource, 'srcset', avif);
+        setAttr(webpSource, 'srcset', webp);
+        setAttr(imageEl, 'srcset', '');
+        setAttr(imageEl, 'src', image);
+        setAttr(imageEl, 'alt', post.title || 'F1 Stories');
+        setAttr(imageEl, 'sizes', '(max-width: 767px) 100vw, 55vw');
+        if (post.heroImageWidth || post.imageWidth) setAttr(imageEl, 'width', parseInt(post.heroImageWidth || post.imageWidth, 10) || imageEl.width);
+        if (post.heroImageHeight || post.imageHeight) setAttr(imageEl, 'height', parseInt(post.heroImageHeight || post.imageHeight, 10) || imageEl.height);
 
-        if (preload) {
-            preload.href = avif || image;
-            preload.removeAttribute('imagesrcset');
-            preload.setAttribute('imagesizes', '(max-width: 767px) 100vw, 55vw');
-        }
+        setAttr(preload, 'href', avif || image);
+        setAttr(preload, 'imagesrcset', '');
+        setAttr(preload, 'imagesizes', '(max-width: 767px) 100vw, 55vw');
     }
 
     function dateParts(value) {

@@ -555,9 +555,14 @@ function injectBlogIndexFirstPage(indexPosts, pageOneData) {
 
     const firstPagePosts = pageOneData.posts || indexPosts.slice(0, 12);
     const firstImage = firstPagePosts[0] && (firstPagePosts[0].thumbnail || firstPagePosts[0].image);
+    // Mirror the lead card's srcset/sizes, or the preload fetches a candidate the <img> never uses.
+    const firstSrcset = firstImage ? cardImageSrcset(firstImage, true) : '';
+    const firstResponsive = firstSrcset
+        ? ` imagesrcset="${escapeHtmlAttribute(firstSrcset)}" imagesizes="${CARD_SIZES.archiveLead}"`
+        : '';
     const preloadBlock = [
         '<link rel="preload" href="/blog-module/blog-index-page-1.json" as="fetch" crossorigin>',
-        firstImage ? `<link rel="preload" as="image" href="${escapeHtmlAttribute(firstImage)}" fetchpriority="high">` : ''
+        firstImage ? `<link rel="preload" as="image" href="${escapeHtmlAttribute(firstImage)}"${firstResponsive} fetchpriority="high">` : ''
     ].filter(Boolean).join('\n    ');
     const cards = firstPagePosts.map((post, idx) => renderBlogIndexCard(post, idx)).join('\n            ');
     const categories = renderBlogCategoryFilters(pageOneData.categories || summarizeCategories(indexPosts));

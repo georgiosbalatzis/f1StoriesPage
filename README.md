@@ -386,7 +386,7 @@ npm run test:blog
 | Quali gaps | `tabs/quali-gaps.js` | OpenF1 (live) |
 | Lap 1 gains | `tabs/lap1-gains.js` | OpenF1 (live) |
 | Tyre pace | `tabs/tyre-pace.js` | OpenF1 (live) |
-| Dirty air | `tabs/dirty-air.js` | `dirty-air-cache.json` |
+| Dirty air | `tabs/dirty-air.js` | `dirty-air/index.json` + `dirty-air/<session_key>.json` |
 | Track dominance | `tabs/track-dominance.js` | OpenF1 (live) |
 | Debrief | `tabs/debrief.js` | `debrief-cache.json` |
 
@@ -403,7 +403,7 @@ npm run test:blog
 | Αρχείο | Builder | Πηγή |
 |---|---|---|
 | `standings/standings-cache.json` | `scripts/build/refresh-standings-data.mjs` | Jolpica (Ergast mirror) |
-| `standings/dirty-air-cache.json` | `blog-module/dirty-air-cache.js` | OpenF1 |
+| `standings/dirty-air-cache.json` (+ split `standings/dirty-air/`) | `blog-module/dirty-air-cache.js` | OpenF1 |
 | `standings/destructors-cache.json` | `blog-module/destructors-cache.js` | F1 Top App (parse του HTML) |
 | `standings/debrief-cache.json` | `standings/debrief-cache.js` | OpenF1 |
 
@@ -476,7 +476,6 @@ npm run build
 ```bash
 npm run build:assets:watch                           # minify σε κάθε αλλαγή
 node scripts/build/stamp-html.mjs --dry              # δείχνει μόνο τι θα αλλάξει
-node scripts/build/stamp-html.mjs --stamp-articles   # πλήρες restamp όλων των άρθρων
 node scripts/build/stamp-html.mjs --article-ids=20260913G,20260912W
 ```
 

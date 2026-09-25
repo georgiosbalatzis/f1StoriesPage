@@ -9,7 +9,8 @@ function buildYouTubeEmbed(videoId) {
           title="YouTube video player" 
           frameborder="0" 
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-          allowfullscreen>
+          allowfullscreen
+          loading="lazy">
         </iframe>
         <div class="video-caption">Video: YouTube</div>
       </div>`;
@@ -181,7 +182,7 @@ function sanitizeIframeAttributes(rawAttrs = {}) {
 
 function renderIframe(src, attrs = {}) {
     const orderedAttrs = [];
-    const remainingAttrs = { ...attrs };
+    const remainingAttrs = { loading: 'lazy', ...attrs };
     const safeSrc = normalizeEmbedUrl(src);
 
     orderedAttrs.push(`src="${escapeHtmlAttribute(safeSrc)}"`);
