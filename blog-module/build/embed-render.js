@@ -1,19 +1,9 @@
 const { fs, path, CONFIG, escapeHtmlAttribute } = require('./shared');
 const { decodeHtmlEntities } = require('./metadata');
+const { buildYouTubeFacade } = require('./youtube-facade');
 
 function buildYouTubeEmbed(videoId) {
-    return `
-      <div class="youtube-embed-container">
-        <iframe 
-          src="https://www.youtube.com/embed/${videoId}" 
-          title="YouTube video player" 
-          frameborder="0" 
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-          allowfullscreen
-          loading="lazy">
-        </iframe>
-        <div class="video-caption">Video: YouTube</div>
-      </div>`;
+    return `\n${buildYouTubeFacade(videoId)}`;
 }
 
 function buildSocialEmbed(info) {

@@ -20,7 +20,6 @@ const FILE_LIMITS = {
     'blog-module/blog-index-page-1.json': 64 * 1024,
     'blog-module/blog-source-cache.json': 1024 * 1024,
     'blog-module/home-latest.json': 16 * 1024,
-    'manifest.json': 16 * 1024,
     'scripts/build/asset-manifest.json': 256 * 1024,
     'sitemap.xml': 256 * 1024,
     'standings/debrief-cache.json': 1024 * 1024,
@@ -590,40 +589,6 @@ function validateDebriefCache() {
     });
 }
 
-function validateManifest() {
-    const relPath = 'manifest.json';
-    const data = requireObject(readJson(relPath), relPath);
-    requireString(data, 'name', relPath, { maxLength: 120 });
-    requireString(data, 'short_name', relPath, { maxLength: 40 });
-    requireString(data, 'start_url', relPath, { maxLength: 120 });
-    requireString(data, 'scope', relPath, { maxLength: 40 });
-    requireString(data, 'id', relPath, { maxLength: 40 });
-    requireString(data, 'display', relPath, { maxLength: 40 });
-    requireString(data, 'background_color', relPath, { maxLength: 40 });
-    requireString(data, 'theme_color', relPath, { maxLength: 40 });
-
-    const icons = requireArray(data.icons, `${relPath}.icons`, { maxLength: 20 });
-    icons.forEach((icon, index) => {
-        const label = `${relPath}.icons[${index}]`;
-        requireObject(icon, label);
-        validatePublicPath(`${label}.src`, requireString(icon, 'src', label, { maxLength: 160 }));
-        assertCondition(/^\d+x\d+$/.test(String(icon.sizes || '')), label, 'sizes must be WIDTHxHEIGHT');
-        requireString(icon, 'type', label, { maxLength: 80 });
-    });
-
-    requireArray(data.shortcuts, `${relPath}.shortcuts`, { allowEmpty: true, maxLength: 10 }).forEach((shortcut, index) => {
-        const label = `${relPath}.shortcuts[${index}]`;
-        requireObject(shortcut, label);
-        requireString(shortcut, 'name', label, { maxLength: 80 });
-        validatePublicPath(`${label}.url`, requireString(shortcut, 'url', label, { maxLength: 160 }));
-        requireArray(shortcut.icons, `${label}.icons`, { allowEmpty: true, maxLength: 5 }).forEach((icon, iconIndex) => {
-            const iconLabel = `${label}.icons[${iconIndex}]`;
-            requireObject(icon, iconLabel);
-            validatePublicPath(`${iconLabel}.src`, requireString(icon, 'src', iconLabel, { maxLength: 160 }));
-        });
-    });
-}
-
 function validateAssetManifest() {
     const relPath = 'scripts/build/asset-manifest.json';
     const data = requireObject(readJson(relPath), relPath);
@@ -682,7 +647,6 @@ function main() {
     validateDirtyAirSplit();
     validateDestructorsCache();
     validateDebriefCache();
-    validateManifest();
     validateAssetManifest();
     validateSitemap();
 
@@ -693,7 +657,7 @@ function main() {
         process.exit(1);
     }
 
-    console.log('Data contracts validated: blog data, standings caches, YouTube snapshot, manifests, and sitemap.');
+    console.log('Data contracts validated: blog data, standings caches, YouTube snapshot, asset manifest, and sitemap.');
 }
 
 main();

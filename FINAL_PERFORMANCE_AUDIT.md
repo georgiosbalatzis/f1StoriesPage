@@ -4,6 +4,7 @@
 - **Branch:** `perf/perf-boost`: HEAD `9fe2f65` plus the uncommitted step 3 and step 4 changes and the step 4 follow-ups.
 - **Baseline:** `PERFORMANCE_AUDIT.md` (2026-09-23, `31da787`).
 - **Scope:** read-only. No code was changed for this review. The only file written is this one.
+- **Follow-up:** the findings were then fixed in a separate pass. See [Fixes applied](#fixes-applied-2026-09-25) at the end.
 
 ## Verdict
 
@@ -233,3 +234,24 @@ Each is under 10 KB, so the cost is a later start, not bytes.
 - Production Lighthouse (not deployed).
 - A two-version SW upgrade test (P2-3 is inferred from the proven v41 behaviour plus the activation logic).
 - Standings data tabs (dirty-air, debrief), which step 3 covered.
+
+## Fixes applied (2026-09-25)
+
+The measurements compare two builds: the committed PR state (`1c6abe8`, "before") and the fixed build ("after"). Both were run with the same `probe.mjs`, interleaved, 5 reps each, on m390 cold, with third parties live. All figures are medians.
+
+| Finding | Fix | Before → after |
+|---|---|---|
+| **P1-1** YouTube eager, ad origins before consent | Click-to-load facade (`blog-module/build/youtube-facade.js`). The poster is `i.ytimg.com/vi/<id>/hqdefault.jpg`, and there's a play button. On click, `article-script.js` swaps in a `youtube-nocookie.com/embed/<id>?autoplay=1` iframe and focuses it. New builds emit the facade. `stamp-html` migrates the 9 existing videos across 8 articles (idempotent). | `20260422G`: requests 47 → 30; LCP 2,152 → 2,080 ms. Third-party origins at load went from youtube, doubleclick ×2, googleads, google, jnn-pa, fonts.gstatic and ytimg to **i.ytimg.com only** (plus the Jolpica API). All 8 video articles pass these checks: no player or ad request before click, poster loads, click plays, no page errors. |
+| **P2-1** Standings CLS | (1) Masthead kicker: `white-space: nowrap` from 390 px up; it fits in Plex (338 of 346 px). (2) The build stamps the report-meta status line, season and round from `standings-cache.json`, so the first paint already has the final text. (3) `.skip-link` is hidden at `top: -100vh` instead of `-100%`. On a warm reload it briefly took a 61 px line box, which accounted for the remaining warm shift on standings **and** articles. | Standings cold 0.043 → **0.002**. Warm 0.036 → **0.001**. Article warm 0.040 → **0.001** (5/5 reps). |
+| **P2-2** Fades pace LCP | `article-editorial-enter` and `archive-enter` start at `opacity: .01` instead of 0. Visually identical. Chrome now reports LCP at first paint. | Article `20260924W` 1,224 → **956 ms**; `20260923G` 1,176 → **872 ms**. The archive barely moved (1,524 → 1,512 ms) because the lead image's download sets its LCP, not the fade. |
+| **P2-4** Article a11y | The mini-bar gets `inert` whenever it is `aria-hidden`. Set in the template and by the migration, and toggled together with `aria-hidden` in `article-script.js`. Light-theme technical signal colour changed `#16736c` → `#15706a` (4.43:1 → ≈4.6:1 on paper). | Lighthouse a11y: `20260924W` 96 → **100**, `20260923G` 95 → **100**. |
+| **P3-2** Standings re-render on same data | If the live data equals the snapshot and only the source changed, just the two polish tables re-render. Nothing happens if the source is unchanged too. The full-table rebuild and the headshot re-requests are gone. | Standings requests 50 → 40. |
+
+**Not changed, and why:**
+- **P2-3 (v41 service-worker clients).** I tried `self.skipWaiting()` in three places: at the end of `install`, before the precache, and from the worker's `statechange`. With a v41 → current upgrade test (`swupgrade.mjs`), all three left the new worker stuck in `installed`, with navigations hanging. The existing message path (the update banner's "Reload") activates cleanly, purges the `-v40` caches and serves fresh CSS. A skipWaiting that deadlocks is worse than a one-time banner, so `sw.js` is unchanged. The risk is transitional and limited to returning visitors of `/authors/` and `/privacy/`.
+- **P3-1:** re-checked on phones, and those images are below the fold there. On tablet and desktop they are under 10 KB each. Not worth a per-breakpoint `loading` switch.
+- **P3-3:** the audit already rated it not worth doing.
+- **P3-4:** the Lighthouse gate passes today: Article LCP 2,404 ms. The Lantern estimate is made up entirely of render delay from the 9 render-blocking requests; real throttled LCP is about 0.9 s. I didn't loosen the budget. Bundling the CSS would remove the flake, and whether to do that is an owner decision.
+- **P3-5 / `perf:article-media`:** still red. There are three WebP originals over 1 MB (`20260918W/1`, `20260918W/9`, and the new `20260923W/2`), and the file count is 3,922, above the budget of 3,903. That growth is content, not code. The size fix belongs in the author upload tool, and the count needs an owner re-baseline (`npm run perf:article-media:update`).
+
+**Verification (after):** `quality:static`, `audit:runtime`, `test:blog` (goldens regenerated and reviewed), `test:author`, `test:standings`, `test:build`, `perf:budget` (article-script.min.js +518 B, +3.1%), `perf:images`, `test:consent`, `qa:visual` (80/80) and `perf:lighthouse` (all four routes; a11y 100) pass. Only `perf:article-media` fails, as above. All 359 articles pass the invariants check: head script order, hero preload, every iframe lazy, no YouTube iframe, facade icon present, mini-bar inert, and 0 stale `?v=` among 7,180 refs.

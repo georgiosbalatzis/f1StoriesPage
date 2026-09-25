@@ -26,9 +26,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { applyArticleEditorial } from './article-editorial.mjs';
 import { resolveArticleScope } from './article-scope.mjs';
+
+const { replaceYouTubeIframes } = createRequire(import.meta.url)('../../blog-module/build/youtube-facade.js');
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -40,7 +43,6 @@ let articleScope = null;
 // content-committed article is NOT (see module header).
 const TARGET_HTML = [
     'index.html',
-    'offline.html',
     'ghostcar/index.html',
     'f1telemetry/index.html',
     'authors/index.html',
@@ -56,8 +58,8 @@ const TARGET_HTML = [
 ];
 
 // Pages that get the inlined SVG sprite + FA CDN removal (Phase 3b). Only
-// pages that actually use fa-* icons need this; offline.html + 404.html have
-// none, so they're excluded.
+// pages that actually use fa-* icons need this; 404.html has
+// none, so it is excluded.
 const SPRITE_TARGETS = new Set([
     'index.html',
     'standings/index.html',
@@ -76,8 +78,8 @@ const SPRITE_BEGIN = '<!-- f1s:icon-sprite:begin -->';
 const SPRITE_END   = '<!-- f1s:icon-sprite:end -->';
 
 // HTML files that get the critical-CSS treatment (inlined critical block +
-// async-preload for local stylesheets). Excluded: offline.html and 404.html
-// which already inline all their CSS and have no external refs.
+// async-preload for local stylesheets). Excluded: 404.html,
+// which already inlines all its CSS and has no external refs.
 const CRITICAL_TARGETS = new Set([
     'generate.html',
     'housekeeping.html',
@@ -145,7 +147,7 @@ const ARTICLE_RUNTIME_SOURCES = new Set([
     'blog-module/blog/article-script.js',
     'blog-module/blog/article-comments.js',
     'blog-module/blog-fixes.js',
-    'scripts/sw-register.js'
+    'scripts/sw-cleanup.js'
 ]);
 
 // Primary font weight to preload per page template. Picked to match the
@@ -192,6 +194,22 @@ const FONTS_END   = '<!-- f1s:fonts-preload:end -->';
 const MODULE_PRELOADS = { 'standings/index.html': 'standings/standings.js' };
 const MODULEPRELOAD_BEGIN = '<!-- f1s:modulepreload:begin -->';
 const MODULEPRELOAD_END   = '<!-- f1s:modulepreload:end -->';
+
+// Pre-render the drivers report line and round from the committed snapshot, exactly as
+// standings.js writes them (REPORT_DETAILS.drivers.note), so the first render already has the
+// final text: the report line re-wrapped when the data arrived and moved its source links.
+function stampStandingsSnapshotText(html, relPath) {
+    if (relPath !== 'standings/index.html') return html;
+    const snapshot = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'standings', 'standings-cache.json'), 'utf8'));
+    const list = snapshot.driverStandings?.MRData?.StandingsTable?.StandingsLists?.[0];
+    if (!list || !list.season) return html;
+    const round = list.round ? String(list.round) : '';
+    const status = `Βαθμολογία πρωταθλήματος · Jolpica F1 · Σεζόν ${list.season}${round ? ` · Γύρος ${round}` : ''}`;
+    return html
+        .replace(/(<span id="season-year">)[^<]*(<\/span>)/, `$1${list.season}$2`)
+        .replace(/(<span id="round-num">)[^<]*(<\/span>)/, `$1${round}$2`)
+        .replace(/(<span id="standings-report-meta-status">)[^<]*(<\/span>)/, `$1${status}$2`);
+}
 
 function stampModulePreloads(html, relPath, manifest) {
     const source = MODULE_PRELOADS[relPath];
@@ -729,12 +747,14 @@ function ensureArticleRailAssets(html, railCssInfo, railJsInfo) {
     return result;
 }
 
-// Every public route registers the service worker (PERF-P2-10). It goes last so it never
+// The site no longer has a service worker. Articles swap the old registration script
+// for the one that removes returning visitors' workers; it goes last so it never
 // delays the article's own deferred scripts.
-function ensureSwRegisterScript(html, swInfo) {
+function ensureSwCleanupScript(html, swInfo) {
     if (!swInfo || !swInfo.min || !swInfo.hash) return html;
-    if (/\/scripts\/sw-register(?:\.min)?\.js(?:\?v=[a-f0-9]+)?/i.test(html)) return html;
-    return String(html || '').replace(
+    const source = String(html || '').replace(/\n<script\s+defer\s+src=["']\/scripts\/sw-register(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["']><\/script>/gi, '');
+    if (/\/scripts\/sw-cleanup(?:\.min)?\.js(?:\?v=[a-f0-9]+)?/i.test(source)) return source;
+    return source.replace(
         /(<script\s+defer\s+src=["']\/blog-module\/blog-fixes(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["']><\/script>)/i,
         `$1\n<script defer src="/${swInfo.min}?v=${swInfo.hash}"></script>`
     );
@@ -783,7 +803,8 @@ function extractArticleMiniBarText(html, pattern, fallback = '') {
 }
 
 function ensureArticleMiniBar(html) {
-    const source = String(html || '');
+    // The hidden bar is inert so its share button can't take focus (aria-hidden-focus).
+    const source = String(html || '').replace('id="article-mini-bar" aria-hidden="true">', 'id="article-mini-bar" aria-hidden="true" inert>');
     if (/class=["']article-mini-bar["']/.test(source)) return source;
 
     const title = extractArticleMiniBarText(source, /<h1\s+class=["']article-title["'][^>]*>([\s\S]*?)<\/h1>/i);
@@ -796,7 +817,7 @@ function ensureArticleMiniBar(html) {
     ) || 'Blog';
 
     const miniBar =
-        '<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true">\n' +
+        '<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert>\n' +
         '    <div class="article-mini-bar__text">\n' +
         `        <span class="article-mini-bar__category">${category}</span>\n` +
         `        <span class="article-mini-bar__title">${title}</span>\n` +
@@ -915,12 +936,13 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo,
     result = ensureArticleMiniBar(result);
     result = ensureArticleRailAssets(result, railCssInfo, railJsInfo);
     result = ensureArticleCommentsScript(result, commentsInfo);
-    result = ensureSwRegisterScript(result, swInfo);
+    result = ensureSwCleanupScript(result, swInfo);
     result = normalizeArticleConsentCopy(result);
     result = ensureArticleCookieSettings(result);
     result = normalizeThemeToggleCopy(result);
     result = alignArticleHeroPreload(result);
     result = dropArticleBlogStyles(result);
+    result = replaceYouTubeIframes(result);
     result = ensureLazyIframes(result);
     result = useGalleryThumbs(result, relPath);
     result = addDensitySrcset(result);
@@ -942,7 +964,7 @@ function stampArticleRuntimeMarkup(commentsInfo, railCssInfo, railJsInfo, dry, m
     for (const rel of listArticleHtml()) {
         const abs = path.join(REPO_ROOT, rel);
         const original = fs.readFileSync(abs, 'utf8');
-        let result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, railCssInfo, railJsInfo, manifest['scripts/sw-register.js']);
+        let result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, railCssInfo, railJsInfo, manifest['scripts/sw-cleanup.js']);
         // Refresh the marker block on every stamp. applyArticleEditorial is
         // byte-stable when hashes are current and updates archived pages when
         // any shared editorial stylesheet changes.
@@ -1192,6 +1214,7 @@ function main() {
         result = placeHeadScripts(ensureThemeInitScript(dropInlineThemeBoot(result), themeInfo, rel), rel);
         result = normalizeThemeToggleCopy(result);
         result = stampModulePreloads(result, rel, manifest);
+        result = stampStandingsSnapshotText(result, rel);
 
         // 1b) swap Bootstrap CDN CSS → local slim build and drop the unused
         //     Bootstrap JS bundle.
@@ -1214,7 +1237,7 @@ function main() {
         totalPreconnectDrops += fontSwap.swaps.preconnectDropped;
 
         // 2b) Phase 3b: drop FA CDN <link>s + inline sprite (only on pages
-        //     that use icons; offline/404 have none).
+        //     that use icons; 404 has none).
         let faDropNote = '';
         let spriteNote = '';
         if (SPRITE_TARGETS.has(rel)) {

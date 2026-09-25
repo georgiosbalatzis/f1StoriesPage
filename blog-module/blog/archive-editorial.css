@@ -366,7 +366,9 @@
 .archive-page .empty-state { grid-column: 1 / -1; padding: 60px 20px; color: var(--text-secondary); background: var(--bg-surface); border-radius: 1px 1px var(--cut-sm) 1px; }
 .archive-page .blog-pagination { justify-content: flex-end; gap: 8px; margin: 45px 0 0; padding: 24px 0 0; border-top: 1px solid var(--border); }
 .archive-page .page-btn { min-width: 44px; min-height: 44px; font: 500 .875rem/1 var(--font-body); }
-@keyframes archive-enter { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+/* Starts at .01, not 0: identical to the eye, but Chrome skips opacity-0 paints for LCP and
+ * would report the lead card only once the fade was well under way. */
+@keyframes archive-enter { from { opacity: .01; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (min-width: 768px) and (max-width: 1199px) {
     .archive-page .archive-grid > .article-card-wrap { grid-column: span 6; }

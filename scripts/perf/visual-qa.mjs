@@ -156,7 +156,6 @@ function buildRoutes() {
         { name: 'Standings quali gaps', slug: 'standings-quali-gaps', path: '/standings/?tab=quali-gaps' },
         { name: 'Standings dirty air', slug: 'standings-dirty-air', path: '/standings/?tab=dirty-air' },
         { name: 'Privacy', slug: 'privacy', path: '/privacy/privacy.html' },
-        { name: 'Offline', slug: 'offline', path: '/offline.html' },
         {
             name: '404 missing route',
             slug: 'not-found-route',
@@ -247,7 +246,7 @@ async function scanPage(page, routeSlug) {
         const issues = [];
         const visibleImages = [];
         const brokenImages = [];
-        const utilityRoutes = new Set(['offline', 'not-found-route']);
+        const utilityRoutes = new Set(['not-found-route']);
 
         function isVisible(el) {
             const style = window.getComputedStyle(el);

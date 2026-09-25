@@ -29,8 +29,6 @@ const ROOT_FILES = new Set([
     'housekeeping.html',
     'statistics.html',
     'index.html',
-    'manifest.json',
-    'offline.html',
     'robots.txt',
     'sitemap.xml',
     'sw.js',

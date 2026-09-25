@@ -8,12 +8,7 @@
     <script defer src="/scripts/perf/error-beacon.min.js?v=59367e85"></script>
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/images/icons/favicon-32.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="F1 Stories">
     <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
     <!-- @include:end partials/head-meta.html -->
     <title>F1 Stories — Βαθμολογίες Πρωταθλήματος</title>
@@ -33,7 +28,7 @@
 
     <link rel="dns-prefetch" href="https://api.jolpi.ca">
     <link rel="dns-prefetch" href="https://api.openf1.org">
-    <link rel="modulepreload" href="/standings/standings.min.js?v=5d6d544b">
+    <link rel="modulepreload" href="/standings/standings.min.js?v=89a61bbf">
     <!-- f1s:modulepreload:begin -->
     <link rel="modulepreload" href="/standings/chunks/chunk-DM5WAIMR.min.js">
     <link rel="modulepreload" href="/standings/chunks/chunk-IU4OTSHW.min.js">
@@ -46,7 +41,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/barlow-condensed-700.woff2?v=e3e520cb" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=1b54c917">
+    <link rel="stylesheet" href="/styles.min.css?v=ca8e0cc6">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=73b1e224">
 
     <script defer src="/scripts/analytics.min.js?v=5a47903d"></script>
@@ -56,7 +51,7 @@
     <link rel="stylesheet" href="standings-polish.min.css?v=feddf245">
     <noscript><link rel="stylesheet" href="standings.min.css?v=b9942337"></noscript>
     <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
-    <link rel="stylesheet" href="/standings/standings-editorial.min.css?v=66f07154">
+    <link rel="stylesheet" href="/standings/standings-editorial.min.css?v=47f2416e">
     <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
 </head>
 <body class="editorial-page standings-page">
@@ -130,7 +125,7 @@
         </div>
         <div class="standings-timing-band">
             <div class="container">
-                <p class="standings-sub"><span class="live-dot" aria-hidden="true" hidden></span><span id="standings-data-status">Φόρτωση δεδομένων</span> · Σεζόν <span id="season-year">2026</span> <span class="round-badge" id="round-badge">Μετά τον γύρο <span id="round-num"></span></span></p>
+                <p class="standings-sub"><span class="live-dot" aria-hidden="true" hidden></span><span id="standings-data-status">Φόρτωση δεδομένων</span> · Σεζόν <span id="season-year">2026</span> <span class="round-badge" id="round-badge">Μετά τον γύρο <span id="round-num">14</span></span></p>
                 <span class="standings-timing-caption" lang="en">EVERY POINT COUNTS.</span>
             </div>
         </div>
@@ -155,7 +150,7 @@
                 </select>
             </div>
             <div class="standings-report-meta" id="standings-report-meta">
-                <span id="standings-report-meta-status">Ενημέρωση μετά από κάθε αγώνα</span> · Πηγές: <a href="https://github.com/jolpica/jolpica-f1" target="_blank" rel="noopener">Jolpica F1</a> / <a href="https://openf1.org" target="_blank" rel="noopener">OpenF1</a>
+                <span id="standings-report-meta-status">Βαθμολογία πρωταθλήματος · Jolpica F1 · Σεζόν 2026 · Γύρος 14</span> · Πηγές: <a href="https://github.com/jolpica/jolpica-f1" target="_blank" rel="noopener">Jolpica F1</a> / <a href="https://openf1.org" target="_blank" rel="noopener">OpenF1</a>
             </div>
         </div>
 
@@ -437,7 +432,7 @@
 <script defer src="/scripts/shared-nav.min.js?v=1835b71e"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 
-<script type="module" src="standings.min.js?v=5d6d544b"></script>
-<script defer src="/scripts/sw-register.min.js?v=6d545d41"></script>
+<script type="module" src="standings.min.js?v=89a61bbf"></script>
+<script defer src="/scripts/sw-cleanup.min.js?v=d76b3ca4"></script>
 </body>
 </html>

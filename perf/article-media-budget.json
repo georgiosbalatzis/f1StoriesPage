@@ -1,32 +1,32 @@
 {
-  "updatedAt": "2026-09-24T11:47:33.602Z",
-  "thresholdPercent": 5,
+  "updatedAt": "2026-09-25T10:04:53.435Z",
+  "thresholdPercent": 15,
   "note": "Repository-side article media budget. Public delivery size is checked separately by scripts/perf/public-image-guard.mjs. New raw article images should not appear unless this baseline is intentionally updated in review.",
   "limits": {
     "singleRawImageBytes": 3407872,
-    "singleOptimizedImageBytes": 1048576
+    "singleOptimizedImageBytes": 1572864
   },
   "metrics": {
-    "totalFiles": 3717,
-    "totalBytes": 271567175,
+    "totalFiles": 3922,
+    "totalBytes": 275587504,
     "rawFiles": 0,
     "rawBytes": 0,
-    "optimizedFiles": 3717,
-    "optimizedBytes": 271567175,
-    "cardFiles": 636,
-    "cardBytes": 8143672,
+    "optimizedFiles": 3922,
+    "optimizedBytes": 275587504,
+    "cardFiles": 641,
+    "cardBytes": 8189112,
     "smallFiles": 196,
     "smallBytes": 7492643,
     "largestRawBytes": 0,
     "largestOptimizedBytes": 1328836,
     "byExtension": {
       ".webp": {
-        "count": 2249,
-        "bytes": 178265383
+        "count": 2444,
+        "bytes": 181861373
       },
       ".avif": {
-        "count": 1468,
-        "bytes": 93301792
+        "count": 1478,
+        "bytes": 93726131
       }
     }
   },

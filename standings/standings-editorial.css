@@ -341,6 +341,12 @@ body.standings-page { --track-dom-second-dark-rgb: 122, 116, 108; --track-dom-se
     .standings-page .standings-context-row:empty { min-height: 150px; }
     .standings-page .standings-report-meta { min-height: 49px; }
 }
+/* From 390px the kicker settles on one line in Plex (338px of 346px at 390). Wider fallback
+ * uppercase wrapped it to two lines until the Latin subset arrived, moving the page 19px. */
+@media (min-width: 390px) {
+    .standings-page .standings-edition { overflow: hidden; }
+    .standings-page .standings-edition > span { white-space: nowrap; }
+}
 @media (max-width: 374.98px) { .standings-page .standings-context-row:empty { min-height: 172px; } }
 
 /* Embeds keep their existing compact shell and selected chart visibility. */

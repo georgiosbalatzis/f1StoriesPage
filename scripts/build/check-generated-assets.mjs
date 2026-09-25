@@ -33,7 +33,7 @@ if (missing.length) {
 // Every <use href="#fa-*"> in a shell with an inlined sprite must resolve to a
 // <symbol> in that same file; a stale sprite renders as an empty icon.
 const SHELLS = [
-    'index.html', 'offline.html', '404.html', 'authors/index.html', 'standings/index.html',
+    'index.html', '404.html', 'authors/index.html', 'standings/index.html',
     'blog-module/blog/index.html', 'blog-module/blog/template.html', 'privacy/privacy.html',
     'privacy/terms.html', 'generate.html', 'housekeeping.html', 'statistics.html'
 ];

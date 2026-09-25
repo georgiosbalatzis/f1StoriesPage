@@ -23,7 +23,7 @@ These files are edited by maintainers or author tooling and should be reviewed a
 - `package.json` and `package-lock.json`
 - `.github/workflows/*.yml`
 - `partials/*.html`
-- root page shells such as `index.html`, `404.html`, and `offline.html`
+- root page shells such as `index.html` and `404.html`
 - source CSS and JavaScript such as `home.css`, `theme-overrides.css`, `scripts/*.js`, `styles/*.css`, and `standings/**/*.js`
 - blog build modules in `blog-module/build/`
 - article template and runtime files in `blog-module/blog/`
@@ -63,7 +63,7 @@ These files are generated but intentionally committed:
 
 Generated data contracts are documented in `docs/data-contracts.md` and checked by `npm run build:data-contracts`.
 
-The editorial shell is shared by the home, blog archive, standings, and article routes through `styles/editorial.css`, the self-hosted `styles/home-fonts.css`, and route stylesheets. `scripts/build/article-editorial.mjs` migrates archived article shells through the normal asset stamping step without reparsing or replacing article bodies. New posts inherit the same shell from `blog-module/blog/template.html`. Every normal asset stamp refreshes the marker-wrapped article stylesheet URLs from the current manifest, so shared style changes propagate without a content rebuild. The public artifact and service-worker shell explicitly include the archive, article and standings editorial stylesheets and font subsets.
+The editorial shell is shared by the home, blog archive, standings, and article routes through `styles/editorial.css`, the self-hosted `styles/home-fonts.css`, and route stylesheets. `scripts/build/article-editorial.mjs` migrates archived article shells through the normal asset stamping step without reparsing or replacing article bodies. New posts inherit the same shell from `blog-module/blog/template.html`. Every normal asset stamp refreshes the marker-wrapped article stylesheet URLs from the current manifest, so shared style changes propagate without a content rebuild. The public artifact explicitly includes the archive, article and standings editorial stylesheets and font subsets.
 
 ### Local Or Ignored Files
 
@@ -147,7 +147,7 @@ That command runs:
 4. `node scripts/build/public-artifact.mjs`
 5. `node scripts/build/validate-public-artifact.mjs`
 
-`public-artifact.mjs` assembles `dist/` from allowlisted public files and referenced article/media assets. `validate-public-artifact.mjs` rejects private files, source files, stale references, missing required files, broken metadata URLs, bad sitemap links, stale service worker references, missing security policy output, and representative route failures.
+`public-artifact.mjs` assembles `dist/` from allowlisted public files and referenced article/media assets. `validate-public-artifact.mjs` rejects private files, source files, stale references, missing required files, broken metadata URLs, bad sitemap links, missing security policy output, and representative route failures.
 
 ## Deploy Flow
 

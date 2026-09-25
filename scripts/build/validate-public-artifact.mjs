@@ -36,8 +36,6 @@ const REQUIRED_EXACT = [
     'housekeeping.html',
     'statistics.html',
     'index.html',
-    'manifest.json',
-    'offline.html',
     'robots.txt',
     'sitemap.xml',
     'sw.js',
@@ -48,10 +46,8 @@ const REQUIRED_EXACT = [
     'blog-module/taxonomy.min.js',
     'blog-module/blog/index.html',
     'images/favicon.png',
-    'images/icons/apple-touch-icon.png',
     'images/icons/favicon-16.png',
     'images/icons/favicon-32.png',
-    'images/icons/icon-192.png',
     'images/icons/icon-512.png',
     'standings/index.html',
     'authors/index.html',
@@ -68,7 +64,7 @@ const REQUIRED_EXACT = [
     'standings/standings-editorial.min.css',
     'styles/layers.css',
     'scripts/perf/error-beacon.min.js',
-    'scripts/sw-register.min.js',
+    'scripts/sw-cleanup.min.js',
     'node_modules/jszip/dist/jszip.min.js',
     'scripts/author/article-folder.js',
     'scripts/author/article-index.js',
@@ -485,52 +481,6 @@ function validateCname(errors) {
     if (value !== 'f1stories.gr') errors.push(`${relPath}: expected f1stories.gr`);
 }
 
-function validateManifestRefs(errors) {
-    const relPath = 'manifest.json';
-    const abs = path.join(DIST_ROOT, relPath);
-    if (!fs.existsSync(abs)) return;
-    let manifest;
-    try {
-        manifest = JSON.parse(fs.readFileSync(abs, 'utf8'));
-    } catch (error) {
-        errors.push(`${relPath}: invalid JSON (${error.message})`);
-        return;
-    }
-
-    if (!manifest.name || !manifest.short_name || !manifest.start_url || !manifest.scope) {
-        errors.push(`${relPath}: missing required app manifest fields`);
-    }
-
-    (Array.isArray(manifest.icons) ? manifest.icons : []).forEach((icon, index) => {
-        if (!icon || !icon.src) {
-            errors.push(`${relPath}: icons[${index}] missing src`);
-            return;
-        }
-        assertLocalRefExists(errors, relPath, icon.src);
-    });
-
-    (Array.isArray(manifest.shortcuts) ? manifest.shortcuts : []).forEach((shortcut, index) => {
-        if (!shortcut || !shortcut.url) {
-            errors.push(`${relPath}: shortcuts[${index}] missing url`);
-        } else {
-            assertLocalRefExists(errors, relPath, shortcut.url);
-        }
-        (Array.isArray(shortcut?.icons) ? shortcut.icons : []).forEach((icon, iconIndex) => {
-            if (!icon || !icon.src) {
-                errors.push(`${relPath}: shortcuts[${index}].icons[${iconIndex}] missing src`);
-                return;
-            }
-            assertLocalRefExists(errors, relPath, icon.src);
-        });
-    });
-}
-
-function collectStringArrayValues(js, name) {
-    const match = js.match(new RegExp(`var\\s+${name}\\s*=\\s*\\[([\\s\\S]*?)\\];`));
-    if (!match) return [];
-    return Array.from(match[1].matchAll(/'([^']+)'/g)).map(item => item[1]);
-}
-
 function loadEditorialAssetRefs(errors) {
     let files;
     try {
@@ -575,22 +525,6 @@ function validateEditorialRefs(errors, html, relPath, sources, editorialRefs) {
             errors.push(`${relPath}: expected one current ${source} reference, found ${count}`);
         }
     });
-}
-
-function validateServiceWorkerRefs(errors) {
-    const relPath = 'sw.js';
-    const abs = path.join(DIST_ROOT, relPath);
-    if (!fs.existsSync(abs)) return;
-    const js = fs.readFileSync(abs, 'utf8');
-    const refs = new Set();
-
-    const offlineMatch = js.match(/var\s+OFFLINE_URL\s*=\s*'([^']+)'/);
-    if (offlineMatch) refs.add(offlineMatch[1]);
-    collectStringArrayValues(js, 'SHELL_ASSETS').forEach(ref => refs.add(ref));
-    collectStringArrayValues(js, 'STANDINGS_DATA_ASSETS').forEach(ref => refs.add(ref));
-    Array.from(js.matchAll(/jsonFrom\('([^']+)'\)/g)).forEach(match => refs.add(match[1]));
-
-    refs.forEach(ref => assertLocalRefExists(errors, relPath, ref));
 }
 
 function validateArchiveRuntime(errors) {
@@ -793,8 +727,6 @@ function main() {
     validateSecurityHeadersFile(errors);
     validateRobots(errors);
     validateCname(errors);
-    validateManifestRefs(errors);
-    validateServiceWorkerRefs(errors);
     validateArchiveRuntime(errors);
     validateHomepageHero(errors);
     validateRouteMarkers(errors, editorialRefs);

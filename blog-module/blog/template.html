@@ -8,12 +8,7 @@
     <script defer src="/scripts/perf/error-beacon.min.js?v=59367e85"></script>
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/images/icons/favicon-32.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="F1 Stories">
     <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
     <!-- @include:end partials/head-meta.html -->
     <title>ARTICLE_TITLE_TEXT | F1 Stories</title>
@@ -61,12 +56,12 @@
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=1b54c917">
+    <link rel="stylesheet" href="/styles.min.css?v=ca8e0cc6">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=94ac6e07">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=73b1e224">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=b389f9db">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ef4df24c">
 
     <!-- Preload hero image for LCP -->
     ARTICLE_HERO_PRELOAD
@@ -206,7 +201,7 @@
     </nav>
 </header>
 
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true">
+<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert>
     <div class="article-mini-bar__text">
         <span class="article-mini-bar__category">ARTICLE_CATEGORY_TEXT</span>
         <span class="article-mini-bar__title">ARTICLE_TITLE_TEXT</span>
@@ -237,7 +232,7 @@
                     <h1 class="article-title">ARTICLE_TITLE_TEXT</h1>
                     <p class="article-header-byline"><span>Γράφει</span> <a href="ARTICLE_AUTHOR_PROFILE_HREF" class="article-author-link">ARTICLE_AUTHOR_TEXT</a></p>
                     <div class="article-meta">
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> Δημοσίευση: ARTICLE_DATE</span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ARTICLE_DATE</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> ARTICLE_CATEGORY_LINKS</span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
                     </div>
@@ -380,12 +375,12 @@
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=38702ee8"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=ba445b6d"></script>
 <script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=1835b71e"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
 <script defer src="/blog-module/blog-fixes.min.js?v=4685a10e"></script>
-<script defer src="/scripts/sw-register.min.js?v=6d545d41"></script>
+<script defer src="/scripts/sw-cleanup.min.js?v=d76b3ca4"></script>
 </body>
 </html>
