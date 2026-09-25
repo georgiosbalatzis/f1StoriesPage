@@ -624,7 +624,7 @@ function validateRouteMarkers(errors, editorialRefs) {
         {
             relPath: 'blog-module/blog/index.html',
             label: 'blog index',
-            patterns: [/<main\b/i, /<body\b[^>]*class=["'][^"']*\beditorial-page\b/i, /<body\b[^>]*class=["'][^"']*\barchive-page\b/i, /id=["']articles-grid["']/i, /article-card/i],
+            patterns: [/<main\b/i, /<body\b[^>]*class=["'][^"']*\beditorial-page\b/i, /<body\b[^>]*class=["'][^"']*\barchive-page\b/i, /id=["']articles-grid["']/i, /class=["']journal-lead\b/i, /class=["']ledger-row\b/i],
             editorialSources: ['styles/home-fonts.css', 'styles/editorial.css', 'blog-module/blog/archive-editorial.css']
         },
         {

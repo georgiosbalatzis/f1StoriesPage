@@ -104,6 +104,23 @@ The local author flow is:
 
 The expected Actions history for one author-tool publish is therefore two top-level runs: `Site Quality` and `Publish Article`. The Pages build and deployment are jobs inside `Publish Article`, not a second downstream workflow run. Non-author pull requests keep the normal manual review and merge flow.
 
+### Editing the Journal front
+
+The top of `/blog-module/blog/` is chosen in `blog-module/editorial-selection.json`:
+
+```json
+{
+  "lead": "20260924W",
+  "secondary": ["20260923G", "20260920W"],
+  "deepReads": ["20260605G", "20260604T"]
+}
+```
+
+- Values are article folder ids. `lead` is one story, `secondary` up to two, `deepReads` up to two older stories shown under "ΓΙΑ ΑΡΓΗ ΑΝΑΓΝΩΣΗ".
+- Every field is optional. An empty or missing `lead`/`secondary` slot takes the newest story not already shown; empty `deepReads` omits that column. The "ΠΡΟΣΦΑΤΑ" list is always the next four newest stories.
+- An unknown or deleted id prints a build warning and its slot falls back, so a stale file never breaks the page. A curated lead stays until someone changes it: clear `lead` to return to newest-first.
+- Run `npm run build:blog` (or any full build) to re-render the static archive page.
+
 For manual local article work:
 
 ```bash

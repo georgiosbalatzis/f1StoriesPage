@@ -14,8 +14,13 @@ const { generateSitemap } = require('./sitemap');
 const { htmlToPlainText } = require('./metadata');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
-const { renderArticleHtml, refreshArticleTaxonomy, getEditorialProfile } = require('./article-render');
-const { PUBLIC_CATEGORIES, getPostTaxonomy, categoryLabel, authorLabel, formatDate, formatReadingTime, cardImageSrcset, CARD_SIZES } = require('../taxonomy');
+const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
+const {
+    PUBLIC_CATEGORIES, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
+    formatReadingTime, cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture
+} = require('../taxonomy');
+
+const EDITORIAL_SELECTION_PATH = path.join(__dirname, '..', 'editorial-selection.json');
 
 function parseBuildOptions(argv = process.argv, env = process.env) {
     const forceRebuild = argv.includes('--force') || argv.includes('-f');
@@ -105,7 +110,9 @@ function fixMissingAuthors(blogPosts) {
 
 async function buildIndexPosts(blogPosts) {
     return Promise.all(blogPosts.map(async post => {
-        const { categories, tags } = getPostTaxonomy(post);
+        const { category, categories: ordered, tags } = getPostTaxonomy(post);
+        // The primary category leads the list; it is the one that carries the colour signal.
+        const categories = [category, ...ordered.filter(value => value !== category)];
         const thumbnail = getCardThumbnailPath(post.image);
         const thumbnailDimensions = await getImageDimensionsForPublicPath(thumbnail);
         return {
@@ -125,29 +132,6 @@ async function buildIndexPosts(blogPosts) {
     }));
 }
 
-function formatCategoryToken(token) {
-    const value = String(token || '').trim();
-    const lower = value.toLowerCase();
-    const acronyms = {
-        f1: 'F1',
-        gp: 'GP',
-        amg: 'AMG',
-        rb: 'RB',
-        drs: 'DRS',
-        v12: 'V12'
-    };
-    if (acronyms[lower]) return acronyms[lower];
-    if (!value || /^\d/.test(value)) return value;
-    if (value !== lower && value !== value.toUpperCase()) return value;
-    return lower.charAt(0).toUpperCase() + lower.slice(1);
-}
-
-function formatCategoryLabel(value) {
-    const raw = String(value || '').replace(/^[\s,-]+|[\s,-]+$/g, '').trim();
-    if (!raw) return '';
-    return raw.split(/-+/).filter(Boolean).map(formatCategoryToken).join(' ');
-}
-
 function compactExcerpt(value, maxLength = 120) {
     const text = String(value || '').replace(/\s+/g, ' ').trim();
     if (text.length <= maxLength) return text;
@@ -157,15 +141,6 @@ function compactExcerpt(value, maxLength = 120) {
 
 function formatBlogIndexDate(post) {
     return formatDate(post.date || '') || post.displayDate || '';
-}
-
-// Greek capitals drop the tonos: "Ειδήσεις" → "ΕΙΔΗΣΕΙΣ".
-function greekUpper(value) {
-    return String(value || '').normalize('NFD').replace(/\u0301/g, '').toUpperCase().normalize('NFC');
-}
-
-function getBlogIndexSummary(count) {
-    return `${count} ${count === 1 ? 'άρθρο' : 'άρθρα'}`;
 }
 
 function jsonKb(value) {
@@ -240,91 +215,196 @@ function buildCompactIndexData(posts) {
     };
 }
 
-function renderBlogCategoryFilters(categories) {
-    const buttons = [
-        '<button class="category-chip active" data-category="all" aria-pressed="true">Όλες</button>'
-    ];
-
-    categories.forEach(category => {
-        const name = typeof category === 'string' ? category : category.name;
-        if (!name) return;
-        const label = categoryLabel(name) || formatCategoryLabel(name);
-        buttons.push(
-            `<button class="category-chip" data-category="${escapeHtmlAttribute(name)}" aria-pressed="false">${escapeHtmlAttribute(label)}</button>`
-        );
-    });
-
-    return buttons.join('\n                    ');
-}
-
-function renderBlogCardCategories(categories) {
-    const list = categories || [];
-    const chips = list
-        .slice(0, 2)
-        .map(category => `<span class="article-card-cat">${escapeHtmlAttribute(categoryLabel(category) || formatCategoryLabel(category))}</span>`);
-    if (list.length > 2) {
-        chips.push(`<span class="article-card-cat article-card-cat-more">+${list.length - 2}</span>`);
+function loadEditorialSelection(filePath = EDITORIAL_SELECTION_PATH) {
+    if (!fs.existsSync(filePath)) return {};
+    try {
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        return data && typeof data === 'object' && !Array.isArray(data) ? data : {};
+    } catch (error) {
+        console.warn(`⚠️  ${path.basename(filePath)} is not valid JSON; the Journal front falls back to the newest stories (${error.message})`);
+        return {};
     }
-    return chips.join('');
 }
 
-function editorialCardKind(categories) {
-    return getEditorialProfile(Array.isArray(categories) ? categories : []).kind;
+// The Journal front: one lead, two secondary stories, a short recent list and
+// optional deep reads. Explicit picks come from editorial-selection.json; every
+// empty or invalid slot falls back to the newest story not already shown, so the
+// front is valid with no selection file at all. `posts` must be newest first.
+function resolveJournalFront(posts, selection = {}) {
+    const byId = new Map(posts.map(post => [post.id, post]));
+    const used = new Set();
+    const warnings = [];
+    function pick(value, limit) {
+        const picked = [];
+        (Array.isArray(value) ? value : [value]).forEach(id => {
+            if (typeof id !== 'string' || !id.trim()) return;
+            const post = byId.get(id.trim());
+            if (!post) warnings.push(`unknown article id "${id}"`);
+            else if (!used.has(post.id) && picked.length < limit) {
+                used.add(post.id);
+                picked.push(post);
+            }
+        });
+        return picked;
+    }
+    function fill(picked, limit) {
+        for (const post of posts) {
+            if (picked.length >= limit) break;
+            if (used.has(post.id)) continue;
+            used.add(post.id);
+            picked.push(post);
+        }
+        return picked;
+    }
+    const lead = pick(selection.lead, 1);
+    const secondary = pick(selection.secondary, JOURNAL_LAYOUT.secondary);
+    const deepReads = pick(selection.deepReads, JOURNAL_LAYOUT.deepReads);
+    fill(lead, 1);
+    fill(secondary, JOURNAL_LAYOUT.secondary);
+    const recent = fill([], JOURNAL_LAYOUT.recent);
+    return { lead: lead[0] || null, secondary, recent, deepReads, ids: [...used], warnings };
 }
 
-function editorialCardMediaClasses(post) {
-    const id = String(post && post.id || '');
-    if (id !== '20260905J' && id !== '20260909J') return '';
-    return ` article-card--preserve-composition${id === '20260909J' ? ' article-card--preserve-composition-banner' : ''}`;
+function storyUrl(post) {
+    return post.url || `/blog-module/blog-entries/${post.id}/article.html`;
 }
 
-function renderBlogIndexCard(post, idx) {
-    const categories = renderBlogCardCategories(post.categories);
-    const cardKind = editorialCardKind(post.categories);
-    const mediaClasses = editorialCardMediaClasses(post);
-    const url = post.url || `/blog-module/blog-entries/${post.id}/article.html`;
+function primaryCategory(post) {
+    return (post.categories && post.categories[0]) || 'News';
+}
+
+// The card-sized image, or '' when the article folder does not ship it.
+function storyImage(post) {
     const image = post.thumbnail || post.image || '';
-    const imagePath = image && image.startsWith('/blog-module/blog-entries/')
-        ? path.join(CONFIG.BLOG_DIR, post.id, path.posix.basename(image))
-        : null;
-    const hasImage = Boolean(image && (!imagePath || fs.existsSync(imagePath)));
-    const author = authorLabel(post.author || 'F1 Stories');
-    const excerpt = post.excerpt || '';
+    if (!image || !image.startsWith('/blog-module/blog-entries/')) return image;
+    return fs.existsSync(path.join(CONFIG.BLOG_DIR, post.id, path.posix.basename(image))) ? image : '';
+}
+
+function storyReadingTime(post) {
     let readingTime = post.readingTime || post.readTime || '';
     if (!readingTime && post.wordCount) readingTime = `${Math.max(1, Math.ceil(post.wordCount / 200))} min`;
-    if (!readingTime && excerpt) readingTime = `${Math.max(2, Math.ceil(Math.round(excerpt.split(/\s+/).length * 10) / 200))} min`;
-    readingTime = formatReadingTime(readingTime);
-    const readBadge = readingTime
-        ? `<span>·</span><span class="article-card-reading-time"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> ${escapeHtmlAttribute(readingTime)}</span>`
-        : '';
-    const imageWidth = parseInt(post.thumbnailWidth, 10) || 400;
-    const imageHeight = parseInt(post.thumbnailHeight, 10) || 188;
-    const isLcpImage = idx === 0 && hasImage;
-    const imageClass = `article-card-img${isLcpImage ? ' loaded' : ''}`;
-    // idx 0 is the curated lead on the static first page, drawn large.
-    const srcset = hasImage ? cardImageSrcset(image, idx === 0) : '';
-    const responsiveAttrs = srcset
-        ? `${isLcpImage ? ' srcset' : ' data-srcset'}="${escapeHtmlAttribute(srcset)}" sizes="${idx === 0 ? CARD_SIZES.archiveLead : CARD_SIZES.archiveCard}"`
-        : '';
-    const imageAttrs = !hasImage
-        ? ' hidden'
-        : isLcpImage
-        ? ` src="${escapeHtmlAttribute(image)}"${responsiveAttrs} loading="eager" fetchpriority="high"`
-        : ` data-src="${escapeHtmlAttribute(image)}"${responsiveAttrs} loading="lazy"`;
-    const stagger = 0.06;
-    const animationDelay = Math.round(idx * stagger * 100) / 100;
+    return formatReadingTime(readingTime);
+}
 
-    return `<article class="article-card-wrap article-card-wrap--${escapeHtmlAttribute(cardKind)}" data-card-kind="${escapeHtmlAttribute(cardKind)}">`
-        + `<a href="${escapeHtmlAttribute(url)}" class="article-card article-card--${escapeHtmlAttribute(cardKind)}${mediaClasses}${hasImage ? '' : ' article-card--no-image'}" data-card-kind="${escapeHtmlAttribute(cardKind)}" style="animation-delay:${animationDelay}s">`
-        + `<div class="article-card-img-wrap${hasImage ? '' : ' img-ready'}"><img class="${imageClass}" width="${imageWidth}" height="${imageHeight}"${imageAttrs} decoding="async" alt="${escapeHtmlAttribute(post.title)}" data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}"></div>`
-        + '<div class="article-card-content"><div class="article-card-body">'
-        + `<div class="article-card-meta"><span class="author-tag">${escapeHtmlAttribute(author)}</span><span>·</span><time class="article-card-date" datetime="${escapeHtmlAttribute(post.date || '')}">${escapeHtmlAttribute(formatBlogIndexDate(post))}</time>${readBadge}</div>`
-        + `<h2 class="article-card-title">${escapeHtmlAttribute(post.title)}</h2>`
-        + `<p class="article-card-excerpt">${escapeHtmlAttribute(excerpt)}</p>`
-        + '</div>'
-        + `<div class="article-card-footer"><span class="article-card-read">Διάβασε <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></span><div class="article-card-cats">${categories}</div></div></div>`
-        + '</a>'
-        + '</article>';
+// Story images sit inside a link that already carries the headline, so alt stays empty.
+function renderStoryImage(post, image, { sizes, full = false, eager = false }) {
+    const srcset = cardImageSrcset(image, full);
+    const width = parseInt(post.thumbnailWidth, 10) || 400;
+    const height = parseInt(post.thumbnailHeight, 10) || 188;
+    return `<img src="${escapeHtmlAttribute(image)}"`
+        + (srcset ? ` srcset="${escapeHtmlAttribute(srcset)}" sizes="${sizes}"` : '')
+        + ` width="${width}" height="${height}"`
+        + (eager ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"')
+        + ` decoding="async" alt="" data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`;
+}
+
+function renderStoryCategory(post, withSecondary = false) {
+    const [primary, ...rest] = post.categories && post.categories.length ? post.categories : ['News'];
+    const more = withSecondary && rest.length
+        ? `<span class="story-cats">${escapeHtmlAttribute(rest.map(categoryLabel).join(' · '))}</span>`
+        : '';
+    return `<p class="story-kicker"><span class="story-cat">${escapeHtmlAttribute(greekUpper(categoryLabel(primary)))}</span>${more}</p>`;
+}
+
+function renderStoryMeta(post, withDate) {
+    const items = [`<span>${escapeHtmlAttribute(authorLabel(post.author || 'F1 Stories'))}</span>`];
+    if (withDate) items.push(`<time datetime="${escapeHtmlAttribute(post.date || '')}">${escapeHtmlAttribute(formatBlogIndexDate(post))}</time>`);
+    const readingTime = storyReadingTime(post);
+    if (readingTime) items.push(`<span>${escapeHtmlAttribute(readingTime)}</span>`);
+    return `<p class="story-meta">${items.join('')}</p>`;
+}
+
+function renderJournalLead(post, deck) {
+    const image = storyImage(post);
+    return `<article class="journal-lead${image ? '' : ' journal-lead--text'}" data-kind="${categoryKind(primaryCategory(post))}">`
+        + `<a class="journal-lead__link" href="${escapeHtmlAttribute(storyUrl(post))}">`
+        + (image ? `<div class="journal-lead__media">${renderStoryImage(post, image, { sizes: CARD_SIZES.archiveLead, full: true, eager: true })}</div>` : '')
+        + `<div class="journal-lead__text">${renderStoryCategory(post, true)}`
+        + `<h2 class="journal-lead__title">${escapeHtmlAttribute(post.title)}</h2>`
+        + (deck ? `<p class="journal-lead__deck">${escapeHtmlAttribute(deck)}</p>` : '')
+        + `${renderStoryMeta(post, true)}</div></a></article>`;
+}
+
+function renderJournalSecondary(post) {
+    const image = storyImage(post);
+    return `<article class="journal-second${image ? '' : ' journal-second--text'}" data-kind="${categoryKind(primaryCategory(post))}">`
+        + `<a class="journal-second__link" href="${escapeHtmlAttribute(storyUrl(post))}">`
+        + (image ? `<div class="journal-second__media">${renderStoryImage(post, image, { sizes: CARD_SIZES.archiveSecond })}</div>` : '')
+        + `<div class="journal-second__text">${renderStoryCategory(post)}`
+        + `<h2 class="journal-second__title">${escapeHtmlAttribute(post.title)}</h2>`
+        + `${renderStoryMeta(post, false)}</div></a></article>`;
+}
+
+function renderJournalRecent(posts) {
+    if (!posts.length) return '';
+    const items = posts.map((post, index) => `<li class="journal-recent__item" data-kind="${categoryKind(primaryCategory(post))}">`
+        + `<a class="journal-recent__link" href="${escapeHtmlAttribute(storyUrl(post))}">`
+        + `<span class="journal-recent__num" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>`
+        + `${renderStoryCategory(post)}<h3 class="journal-recent__title">${escapeHtmlAttribute(post.title)}</h3>`
+        + `${renderStoryMeta(post, true)}</a></li>`);
+    return '<section class="journal-recent" aria-labelledby="journal-recent-title">'
+        + '<h2 class="journal-label" id="journal-recent-title">ΠΡΟΣΦΑΤΑ</h2>'
+        + `<ol class="journal-recent__list">${items.join('')}</ol></section>`;
+}
+
+function renderJournalDeepReads(items) {
+    if (!items.length) return '';
+    const stories = items.map(({ post, deck }) => `<article class="journal-deep__item" data-kind="${categoryKind(primaryCategory(post))}">`
+        + `<a class="journal-deep__link" href="${escapeHtmlAttribute(storyUrl(post))}">${renderStoryCategory(post, true)}`
+        + `<h3 class="journal-deep__title">${escapeHtmlAttribute(post.title)}</h3>`
+        + (deck ? `<p class="journal-deep__deck">${escapeHtmlAttribute(deck)}</p>` : '')
+        + `${renderStoryMeta(post, true)}</a></article>`);
+    return '<section class="journal-deep" aria-labelledby="journal-deep-title">'
+        + `<h2 class="journal-label" id="journal-deep-title">ΓΙΑ ΑΡΓΗ ΑΝΑΓΝΩΣΗ</h2>${stories.join('')}</section>`;
+}
+
+function renderJournalFront(front, decks = {}) {
+    const lead = front.lead ? renderJournalLead(front.lead, decks[front.lead.id] || front.lead.excerpt || '') : '';
+    const secondary = front.secondary.map(renderJournalSecondary).join('');
+    return `<section class="journal-front" aria-label="Πρωτοσέλιδο">`
+        + `${lead}<div class="journal-front__side">${secondary}</div></section>`
+        + '<div class="journal-shelf">'
+        + renderJournalRecent(front.recent)
+        + renderJournalDeepReads(front.deepReads.map(post => ({ post, deck: decks[post.id] || post.excerpt || '' })))
+        + '</div>';
+}
+
+function renderLedgerRow(post, index) {
+    const date = ledgerDate(post.date);
+    const image = isLedgerPicture(index) ? storyImage(post) : '';
+    const day = date
+        ? `${date.day} ${date.month}<span class="visually-hidden"> ${date.year}</span>`
+        : escapeHtmlAttribute(formatBlogIndexDate(post));
+    return `<li class="ledger-row${image ? ' ledger-row--picture' : ''}" data-kind="${categoryKind(primaryCategory(post))}">`
+        + `<a class="ledger-row__link" href="${escapeHtmlAttribute(storyUrl(post))}">`
+        + `<time class="ledger-row__date" datetime="${escapeHtmlAttribute(post.date || '')}">${day}</time>`
+        + renderStoryCategory(post)
+        + (image ? `<span class="ledger-row__media">${renderStoryImage(post, image, { sizes: CARD_SIZES.archiveLedger })}</span>` : '')
+        + `<h3 class="ledger-row__title">${escapeHtmlAttribute(post.title)}</h3>`
+        + (image && post.excerpt ? `<p class="ledger-row__excerpt">${escapeHtmlAttribute(post.excerpt)}</p>` : '')
+        + `${renderStoryMeta(post, false)}</a></li>`;
+}
+
+// Rows are grouped under month rules; each page opens with its month.
+function renderLedgerRows(posts, startIndex = 0) {
+    let month = '';
+    const rows = [];
+    posts.forEach((post, offset) => {
+        const date = ledgerDate(post.date);
+        if (date && date.key !== month) {
+            month = date.key;
+            rows.push(`<li class="ledger-month" aria-hidden="true">${date.monthTitle}</li>`);
+        }
+        rows.push(renderLedgerRow(post, startIndex + offset));
+    });
+    return rows.join('\n            ');
+}
+
+function renderCategoryFilterOptions() {
+    const base = '/blog-module/blog/index.html';
+    return [`<a class="filter-option" href="${base}" data-category="all" aria-current="true">Όλα</a>`]
+        .concat(PUBLIC_CATEGORIES.map(name => `<a class="filter-option" href="${base}?category=${encodeURIComponent(name)}" data-category="${escapeHtmlAttribute(name)}" data-kind="${categoryKind(name)}">${escapeHtmlAttribute(categoryLabel(name))}</a>`))
+        .join('\n                        ');
 }
 
 function replaceMarkedBlock(html, begin, end, innerHtml) {
@@ -546,84 +626,46 @@ function injectHomepageHero(hero) {
     return false;
 }
 
-function injectBlogIndexFirstPage(indexPosts, pageOneData) {
+function replaceInlineMarkers(html, name, value) {
+    const pattern = new RegExp(`(<!-- f1s:${name}:begin -->)[\\s\\S]*?(<!-- f1s:${name}:end -->)`, 'g');
+    return html.replace(pattern, (match, begin, end) => begin + value + end);
+}
+
+// The archive ships as static HTML: the front, the category filters and the first
+// ledger page, so the first screen needs no data request. The browser loads the
+// compact index only for filters, search, sorting and later pages.
+function injectBlogIndexFirstPage(indexPosts, front, decks = {}) {
     const indexHtmlPath = path.join(CONFIG.OUTPUT_HTML_DIR, 'index.html');
     if (!fs.existsSync(indexHtmlPath)) {
         console.warn(`⚠️  Blog index HTML not found, static first-page render skipped: ${indexHtmlPath}`);
         return false;
     }
 
-    const firstPagePosts = pageOneData.posts || indexPosts.slice(0, 12);
-    const firstImage = firstPagePosts[0] && (firstPagePosts[0].thumbnail || firstPagePosts[0].image);
-    // Mirror the lead card's srcset/sizes, or the preload fetches a candidate the <img> never uses.
-    const firstSrcset = firstImage ? cardImageSrcset(firstImage, true) : '';
-    const firstResponsive = firstSrcset
-        ? ` imagesrcset="${escapeHtmlAttribute(firstSrcset)}" imagesizes="${CARD_SIZES.archiveLead}"`
+    const shown = new Set(front.ids);
+    const ledger = indexPosts.filter(post => !shown.has(post.id)).slice(0, JOURNAL_LAYOUT.page);
+    const leadImage = front.lead ? storyImage(front.lead) : '';
+    const leadSrcset = leadImage ? cardImageSrcset(leadImage, true) : '';
+    // Mirror the lead image's srcset/sizes, or the preload fetches a candidate the <img> never uses.
+    const preload = leadImage
+        ? `<link rel="preload" as="image" href="${escapeHtmlAttribute(leadImage)}"${leadSrcset ? ` imagesrcset="${escapeHtmlAttribute(leadSrcset)}" imagesizes="${CARD_SIZES.archiveLead}"` : ''} fetchpriority="high">`
         : '';
-    const preloadBlock = [
-        '<link rel="preload" href="/blog-module/blog-index-page-1.json" as="fetch" crossorigin>',
-        firstImage ? `<link rel="preload" as="image" href="${escapeHtmlAttribute(firstImage)}"${firstResponsive} fetchpriority="high">` : ''
-    ].filter(Boolean).join('\n    ');
-    const cards = firstPagePosts.map((post, idx) => renderBlogIndexCard(post, idx)).join('\n            ');
-    const categories = renderBlogCategoryFilters(pageOneData.categories || summarizeCategories(indexPosts));
-    const count = getBlogIndexSummary(pageOneData.totalCount || indexPosts.length);
+    const edition = `<div class="journal-edition" id="journal-edition" data-story-ids="${escapeHtmlAttribute(front.ids.join(' '))}" data-total="${indexPosts.length}">`
+        + renderJournalFront(front, decks)
+        + '</div>';
 
     let html = fs.readFileSync(indexHtmlPath, 'utf8');
     const original = html;
-
-    html = html.replace(
-        /[ \t]*<link rel="preload" href="\/blog-module\/blog-index-data\.json" as="fetch" crossorigin>\n?/,
-        '    <!-- f1s:blog-index-preload:begin -->\n    <!-- f1s:blog-index-preload:end -->\n'
-    );
-    html = replaceMarkedBlock(
-        html,
-        '<!-- f1s:blog-index-preload:begin -->',
-        '<!-- f1s:blog-index-preload:end -->',
-        `    ${preloadBlock}`
-    );
-
-    html = html.replace(
-        /(<div class="category-strip" id="category-strip" aria-label="Φίλτρο κατηγορίας">)([\s\S]*?)(<\/div>)/,
-        `$1\n                    <!-- f1s:blog-categories:begin -->\n                    ${categories}\n                    <!-- f1s:blog-categories:end -->\n                $3`
-    );
-    html = replaceMarkedBlock(
-        html,
-        '<!-- f1s:blog-categories:begin -->',
-        '<!-- f1s:blog-categories:end -->',
-        `                    ${categories}`
-    );
-
-    html = html.replace(
-        /(<div class="post-count" id="post-count" aria-live="polite">)([\s\S]*?)(<\/div>)/,
-        `$1<!-- f1s:blog-count:begin -->${escapeHtmlAttribute(count)}<!-- f1s:blog-count:end -->$3`
-    );
-
-    // Keep the compact count in the mobile archive bar in sync with the
-    // server-rendered total. It is visible before the archive script hydrates
-    // the page, so a stale value is misleading even when the main count is
-    // correct.
-    html = html.replace(
-        /(<span id="blog-archive-mini-count">)([\s\S]*?)(<\/span>)/,
-        `$1<!-- f1s:blog-mini-count:begin -->${escapeHtmlAttribute(count)}<!-- f1s:blog-mini-count:end -->$3`
-    );
-
-    html = html.replace(
-        /(<div class="articles-grid" id="articles-grid">)([\s\S]*?)(\n\s*<\/div>\n\s*<nav class="blog-pagination" id="blog-pagination")/,
-        `$1\n            <!-- f1s:blog-first-page:begin -->\n            ${cards}\n            <!-- f1s:blog-first-page:end -->$3`
-    );
-    html = replaceMarkedBlock(
-        html,
-        '<!-- f1s:blog-first-page:begin -->',
-        '<!-- f1s:blog-first-page:end -->',
-        `            ${cards}`
-    );
+    html = replaceMarkedBlock(html, '<!-- f1s:blog-index-preload:begin -->', '<!-- f1s:blog-index-preload:end -->', preload ? `    ${preload}` : '');
+    html = replaceMarkedBlock(html, '<!-- f1s:journal-front:begin -->', '<!-- f1s:journal-front:end -->', `        ${edition}`);
+    html = replaceMarkedBlock(html, '<!-- f1s:blog-categories:begin -->', '<!-- f1s:blog-categories:end -->', `                        ${renderCategoryFilterOptions()}`);
+    html = replaceMarkedBlock(html, '<!-- f1s:blog-first-page:begin -->', '<!-- f1s:blog-first-page:end -->', `            ${renderLedgerRows(ledger)}`);
+    html = replaceInlineMarkers(html, 'journal-total', String(indexPosts.length));
 
     if (html !== original) {
         fs.writeFileSync(indexHtmlPath, html);
         console.log(`Blog first page rendered into ${indexHtmlPath}`);
         return true;
     }
-
     return false;
 }
 
@@ -970,7 +1012,14 @@ async function processBlogEntries(options = {}) {
     }
     fs.writeFileSync(pageOnePath, JSON.stringify(pageOneData, null, 0));
     console.log(`Blog first-page data saved to ${pageOnePath} (${jsonKb(pageOneData)} KB)`);
-    injectBlogIndexFirstPage(indexPosts, pageOneData);
+    const front = resolveJournalFront(indexPosts, loadEditorialSelection());
+    front.warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the slot falls back to the newest story`));
+    const postsById = new Map(blogPosts.map(post => [post.id, post]));
+    const decks = {};
+    [front.lead, ...front.deepReads].filter(Boolean).forEach(post => {
+        decks[post.id] = heroCopy(postsById.get(post.id) || post).deck;
+    });
+    injectBlogIndexFirstPage(indexPosts, front, decks);
 
     const homeLatest = await buildHomeLatest(blogPosts);
     const homeLatestPath = path.join(CONFIG.BLOG_DIR, '..', 'home-latest.json');
@@ -1002,8 +1051,10 @@ module.exports = {
     buildIndexPosts,
     summarizeCategories,
     buildCompactIndexData,
-    renderBlogIndexCard,
-    editorialCardKind,
+    loadEditorialSelection,
+    resolveJournalFront,
+    renderJournalFront,
+    renderLedgerRows,
     injectBlogIndexFirstPage,
     buildHomeLatest,
     loadExistingPosts,

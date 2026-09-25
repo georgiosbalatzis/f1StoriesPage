@@ -4,7 +4,10 @@ const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 const { PUBLIC_CATEGORIES, getPostTaxonomy } = require('../../taxonomy');
-const { buildIndexPosts, buildCompactIndexData, summarizeCategories, editorialCardKind, renderBlogIndexCard } = require('../index');
+const {
+    buildIndexPosts, buildCompactIndexData, summarizeCategories,
+    loadEditorialSelection, resolveJournalFront, renderJournalFront, renderLedgerRows
+} = require('../index');
 const { refreshArticleTaxonomy, getEditorialProfile, renderArticleSources } = require('../article-render');
 const { extractMetadata } = require('../metadata');
 const { convertTxtToHtml } = require('../parse-txt');
@@ -96,16 +99,78 @@ test('editorial dossiers use a readable section label and only render safe expli
     assert.doesNotMatch(sources, /javascript:/i);
 });
 
-test('archive cards expose a visual treatment for their public section', () => {
-    assert.equal(editorialCardKind(['Technical', '2026']), 'technical');
-    assert.equal(editorialCardKind(['History']), 'history');
-    const html = renderBlogIndexCard({
-        id: '20260901W', title: 'A technical story', author: 'Author', date: '2026-09-01',
-        categories: ['Technical'], tags: [], excerpt: 'A story.', thumbnail: ''
-    }, 0);
-    assert.match(html, /article-card-wrap--technical/);
-    assert.match(html, /article-card--technical/);
-    assert.match(html, /data-card-kind="technical"/);
+test('archive index lists the primary category first', async () => {
+    const [post] = await buildIndexPosts([{
+        id: '20260901W', title: 'A driver analysis', author: 'Author', date: '2026-09-01',
+        categories: ['Analysis', 'Drivers'], category: 'Drivers', readingTime: '3 min', excerpt: ''
+    }]);
+    assert.deepEqual(post.categories, ['Drivers', 'Analysis']);
+});
+
+const frontPosts = Array.from({ length: 12 }, (_, index) => ({
+    id: `p${index}`, title: `Story ${index}`, author: 'Georgios Balatzis',
+    date: `2026-09-${String(20 - index).padStart(2, '0')}`, categories: ['Technical'], excerpt: 'Excerpt.', thumbnail: ''
+}));
+
+test('journal front falls back to the newest stories without a selection', () => {
+    const front = resolveJournalFront(frontPosts, {});
+    assert.equal(front.lead.id, 'p0');
+    assert.deepEqual(front.secondary.map(post => post.id), ['p1', 'p2']);
+    assert.deepEqual(front.recent.map(post => post.id), ['p3', 'p4', 'p5', 'p6']);
+    assert.deepEqual(front.deepReads, []);
+    assert.deepEqual(front.warnings, []);
+    assert.deepEqual(front.ids, ['p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6']);
+});
+
+test('journal front honours a valid selection and never repeats a story', () => {
+    const front = resolveJournalFront(frontPosts, { lead: 'p5', secondary: ['p0', 'p5'], deepReads: ['p11', 'p10', 'p9'] });
+    assert.equal(front.lead.id, 'p5');
+    assert.deepEqual(front.secondary.map(post => post.id), ['p0', 'p1']);
+    assert.deepEqual(front.deepReads.map(post => post.id), ['p11', 'p10']);
+    assert.deepEqual(front.recent.map(post => post.id), ['p2', 'p3', 'p4', 'p6']);
+    assert.equal(new Set(front.ids).size, front.ids.length);
+});
+
+test('journal front drops unknown or deleted ids with a warning', () => {
+    const front = resolveJournalFront(frontPosts, { lead: 'deleted-story', secondary: ['p3'], deepReads: ['gone'] });
+    assert.equal(front.lead.id, 'p0');
+    assert.deepEqual(front.secondary.map(post => post.id), ['p3', 'p1']);
+    assert.deepEqual(front.deepReads, []);
+    assert.equal(front.warnings.length, 2);
+});
+
+test('journal selection file is optional and tolerates invalid JSON', () => {
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-selection-'));
+    try {
+        assert.deepEqual(loadEditorialSelection(path.join(directory, 'missing.json')), {});
+        const broken = path.join(directory, 'broken.json');
+        fs.writeFileSync(broken, '{ "lead": ');
+        const warn = console.warn;
+        console.warn = () => {};
+        try { assert.deepEqual(loadEditorialSelection(broken), {}); } finally { console.warn = warn; }
+    } finally {
+        fs.rmSync(directory, { recursive: true, force: true });
+    }
+});
+
+test('journal front renders a text lead when the story has no image', () => {
+    const html = renderJournalFront(resolveJournalFront(frontPosts, {}), { p0: 'A whole-sentence deck.' });
+    assert.match(html, /class="journal-lead journal-lead--text" data-kind="technical"/);
+    assert.match(html, /A whole-sentence deck\./);
+    assert.doesNotMatch(html, /<img/);
+    assert.match(html, /<span class="story-cat">ΤΕΧΝΙΚΑ<\/span>/);
+});
+
+test('archive ledger groups rows by month and marks the category signal', () => {
+    const html = renderLedgerRows([
+        { id: 'a', title: 'A', author: 'Themis Charvalis', date: '2026-09-02', categories: ['History'], readingTime: '4 min' },
+        { id: 'b', title: 'B', author: 'Themis Charvalis', date: '2026-08-31', categories: ['Analysis', 'Drivers'], readingTime: '1 min' }
+    ]);
+    assert.equal((html.match(/class="ledger-month"/g) || []).length, 2);
+    assert.match(html, /ΣΕΠΤΕΜΒΡΙΟΣ 2026[\s\S]*ΑΥΓΟΥΣΤΟΣ 2026/);
+    assert.match(html, /data-kind="analysis"[\s\S]*ΑΝΑΛΥΣΗ/);
+    assert.match(html, /2 ΣΕΠ<span class="visually-hidden"> 2026<\/span>/);
+    assert.match(html, /Θέμης Χαρβάλης<\/span><span>1 λεπτό/);
 });
 
 test('related articles use specific internal tags without rewarding generic F1 labels', () => {

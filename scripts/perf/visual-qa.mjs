@@ -211,7 +211,7 @@ async function waitForPageReady(page, routeSlug) {
     await page.evaluate(() => document.fonts && document.fonts.ready ? document.fonts.ready : null).catch(() => {});
 
     if (routeSlug === 'blog') {
-        await page.waitForSelector('#articles-grid .article-card', { timeout: 6000 }).catch(() => {});
+        await page.waitForSelector('#articles-grid .ledger-row', { timeout: 6000 }).catch(() => {});
     } else if (routeSlug.startsWith('standings')) {
         await page.waitForSelector('.standings-tab.active', { timeout: 6000 }).catch(() => {});
         await page.waitForSelector('.standings-panel.active, .standings-panel:not([hidden])', { timeout: 6000 }).catch(() => {});
@@ -470,8 +470,8 @@ async function scanPage(page, routeSlug) {
         });
 
         if (currentRouteSlug === 'blog') {
-            const cardCount = Array.from(document.querySelectorAll('#articles-grid .article-card')).filter(isVisible).length;
-            if (cardCount < 1) issues.push({ type: 'blog-cards', detail: 'no visible blog cards rendered' });
+            const cardCount = Array.from(document.querySelectorAll('#articles-grid .ledger-row')).filter(isVisible).length;
+            if (cardCount < 1) issues.push({ type: 'blog-cards', detail: 'no visible archive rows rendered' });
         }
 
         if (currentRouteSlug === 'latest-article') {

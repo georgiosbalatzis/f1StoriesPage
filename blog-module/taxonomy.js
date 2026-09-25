@@ -55,13 +55,44 @@
         'Thanasis Batalas': 'Θανάσης Μπαταλάς',
         'Dimitris Keramidiotis': 'Δημήτρης Κεραμιδιώτης'
     });
+    // One kind per public category: the class/data value that carries its signal colour.
+    const CATEGORY_KINDS = Object.freeze({
+        News: 'news', Analysis: 'analysis', Technical: 'technical', History: 'history', Opinion: 'opinion',
+        Betting: 'betting', Drivers: 'drivers', Teams: 'teams', '2026': 'season'
+    });
     // Fixed month tables keep build (Node ICU) and browser output identical.
     const MONTHS_SHORT = ['Ιαν', 'Φεβ', 'Μαρ', 'Απρ', 'Μαΐ', 'Ιουν', 'Ιουλ', 'Αυγ', 'Σεπ', 'Οκτ', 'Νοε', 'Δεκ'];
     const MONTHS_LONG = ['Ιανουαρίου', 'Φεβρουαρίου', 'Μαρτίου', 'Απριλίου', 'Μαΐου', 'Ιουνίου', 'Ιουλίου',
         'Αυγούστου', 'Σεπτεμβρίου', 'Οκτωβρίου', 'Νοεμβρίου', 'Δεκεμβρίου'];
+    // Nominative capitals for the archive's month rules ("ΣΕΠΤΕΜΒΡΙΟΣ 2026").
+    const MONTHS_TITLE = ['ΙΑΝΟΥΑΡΙΟΣ', 'ΦΕΒΡΟΥΑΡΙΟΣ', 'ΜΑΡΤΙΟΣ', 'ΑΠΡΙΛΙΟΣ', 'ΜΑΪΟΣ', 'ΙΟΥΝΙΟΣ', 'ΙΟΥΛΙΟΣ',
+        'ΑΥΓΟΥΣΤΟΣ', 'ΣΕΠΤΕΜΒΡΙΟΣ', 'ΟΚΤΩΒΡΙΟΣ', 'ΝΟΕΜΒΡΙΟΣ', 'ΔΕΚΕΜΒΡΙΟΣ'];
 
     function categoryLabel(value) {
         return Object.prototype.hasOwnProperty.call(CATEGORY_LABELS, value) ? CATEGORY_LABELS[value] : String(value || '');
+    }
+
+    function categoryKind(value) {
+        return Object.prototype.hasOwnProperty.call(CATEGORY_KINDS, value) ? CATEGORY_KINDS[value] : 'journal';
+    }
+
+    // Greek capitals drop the tonos but keep the dialytika: "Ειδήσεις" → "ΕΙΔΗΣΕΙΣ", "Μαΐ" → "ΜΑΪ".
+    function greekUpper(value) {
+        return String(value || '').normalize('NFD').replace(/́/g, '').toUpperCase().normalize('NFC');
+    }
+
+    /** "2026-09-20" → { day: "20", month: "ΣΕΠ", monthTitle: "ΣΕΠΤΕΜΒΡΙΟΣ 2026", key: "2026-09" }. */
+    function ledgerDate(value) {
+        const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value || ''));
+        if (!match) return null;
+        const month = Number(match[2]) - 1;
+        return {
+            day: String(Number(match[3])),
+            month: greekUpper(MONTHS_SHORT[month]),
+            year: match[1],
+            monthTitle: `${MONTHS_TITLE[month]} ${match[1]}`,
+            key: `${match[1]}-${match[2]}`
+        };
     }
 
     function authorLabel(name) {
@@ -89,12 +120,22 @@
     // ask for the 1600w original; grid cards stop at 800w to keep bytes sane.
     const CARD_SIZES = Object.freeze({
         archiveLead: '(min-width: 1200px) 780px, (min-width: 768px) 55vw, 100vw',
-        archiveCard: '(min-width: 1200px) 430px, (min-width: 768px) 50vw, 100vw',
+        // Secondary front stories: a 96px square on phones, the margin column above.
+        archiveSecond: '(max-width: 767px) 96px, (min-width: 1200px) 480px, 38vw',
+        // Occasional pictures inside the archive ledger.
+        archiveLedger: '(max-width: 767px) 100vw, 320px',
         homeLead: '(min-width: 1200px) 640px, (min-width: 768px) 55vw, 100vw',
         // 16:9 cards cropped into a 104px square on phones need ~185px of width.
         homeSecondary: '(max-width: 767px) 185px, 400px',
         related: '(max-width: 767px) 40vw, 390px'
     });
+    // The Journal front and archive ledger, shared by the build and the browser.
+    // A ledger page shows `page` rows; every `pictureEvery` rows, starting at
+    // `pictureAt`, one row carries a photograph so the long list keeps a rhythm.
+    const JOURNAL_LAYOUT = Object.freeze({ secondary: 2, recent: 4, deepReads: 2, page: 24, pictureAt: 5, pictureEvery: 8 });
+    function isLedgerPicture(index) {
+        return index >= JOURNAL_LAYOUT.pictureAt && (index - JOURNAL_LAYOUT.pictureAt) % JOURNAL_LAYOUT.pictureEvery === 0;
+    }
     function cardImageSrcset(url, includeFull) {
         const match = /^(.*)-card\.webp$/.exec(String(url || ''));
         if (!match) return '';
@@ -171,6 +212,7 @@
 
     return Object.freeze({
         PUBLIC_CATEGORIES, LEGACY_CATEGORY_OVERRIDES, normalizeTags, normalizeCategories, isPublicCategory, getPostTaxonomy,
-        categoryLabel, authorLabel, formatDate, formatReadingTime, cardImageSrcset, CARD_SIZES
+        categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate, formatReadingTime,
+        cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture
     });
 }));
