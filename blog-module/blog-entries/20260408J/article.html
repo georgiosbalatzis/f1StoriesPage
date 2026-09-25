@@ -85,8 +85,8 @@
     <!-- Prevent FOUC -->
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ef4df24c">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=f20beceb">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=c2c8f79e">
     <!-- f1s:article-editorial:end -->
     <script src="/scripts/theme-init.min.js?v=327f75c6"></script>
 </head>
@@ -152,7 +152,7 @@
     </nav>
 </header>
 
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert>
+<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert data-article-kind="season">
     <div class="article-mini-bar__text">
         <span class="article-mini-bar__category">2026</span>
         <span class="article-mini-bar__title">Έρχονται μάχες ή μεγάλες αλλαγές…</span>
@@ -165,8 +165,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container article-container--technical" data-article-kind="technical">
-            <div class="article-header" data-article-dossier="ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ">
+        <article class="article-container article-container--season" data-article-kind="season">
+            <div class="article-header" data-article-dossier="ΣΕΖΟΝ 2026">
                 <picture>
                     <source type="image/avif" srcset="1.avif">
                     <img src="1.webp" alt="Έρχονται μάχες ή μεγάλες αλλαγές…" class="article-header-img"
@@ -175,7 +175,7 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΣΕΖΟΝ 2026</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">2026</span>
@@ -225,24 +225,7 @@
             </iframe>
 </div><p>Σίγουρα παίζει και μεγάλο ρόλο το circuit, όμως, όπως προαναφέρθηκε και προηγουμένως, τα δεδομένα είναι ενθαρρυντικά.</p><p>Το καλύτερο που έχουμε να προτείνουμε εμείς από το F1 Stories είναι να πατήσουμε λίγο φρένο στις σκέψεις μας και να προσπαθήσουμε να δούμε πού θα μας βγάλει αυτό το καινούργιο μονοπάτι του 2026, με οδηγούς και ομάδες να δείχνουν σαφώς απροσανατολισμένοι. Όμως ο ενθουσιασμός για την καινούργια εποχή είναι εμφανής. Τουλάχιστον από τους περισσότερους.</p></div>
 
-                    <div class="article-author-footer">
-                        <div class="author-box">
-                            <div class="author-header">
-                                <div class="author-avatar">
-                                    <img id="author-image" src="/images/authors/giannis.webp" alt="Giannis Poulikidis"
-                                         loading="lazy" decoding="async" width="1024" height="1024"
-                                         data-show-on-error="author-initial">
-                                    <span class="avatar-text" id="author-initial">A</span>
-                                </div>
-                                <div class="author-info">
-                                    <p class="author-name" id="author-name"><a href="/authors/?author=giannis-poulikidis">Γιάννης Πουλικίδης</a></p>
-                                    <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
-                                </div>
-                            </div>
-                            <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
-                            <a class="author-profile-link" href="/authors/?author=giannis-poulikidis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
-                        </div>
-                    </div>
+                    <section class="author-card" data-author-slug="giannis-poulikidis" aria-labelledby="author-card-name"><p class="author-card__label">ΓΡΑΦΕΙ</p><div class="author-card__head"><img class="author-card__portrait" src="/images/avatars/SV.webp" alt="" width="80" height="80" loading="lazy" decoding="async"><div><p class="author-card__name" id="author-card-name"><a href="/authors/?author=giannis-poulikidis">Γιάννης Πουλικίδης</a></p><p class="author-card__specialty">Αγωνιστική άποψη και BetCast</p></div></div><p class="author-card__bio">Γράφει όπως μιλάει: άμεσα, με χιούμορ και θέση. Μετατρέπει το αγωνιστικό τριήμερο σε κουβέντα που συνεχίζεται.</p><p class="author-card__links"><a href="/blog-module/blog/index.html?author=giannis-poulikidis">Όλα τα άρθρα του Γιάννη <span aria-hidden="true">→</span></a><a class="author-card__social" href="https://www.instagram.com/john_pouliks/" target="_blank" rel="noopener">Instagram <span aria-hidden="true">↗</span></a></p></section>
 
                     <div class="sponsor-strip">
                         <div class="sponsor-strip-label">Συνεργάτες</div>
@@ -412,7 +395,7 @@
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=ba445b6d"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=548e1e5a"></script>
 <script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=1835b71e"></script>

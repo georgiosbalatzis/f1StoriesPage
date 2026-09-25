@@ -321,6 +321,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (option) title = option.textContent.trim();
         else if (activeCategory !== 'all') title = taxonomy.greekUpper(taxonomy.categoryLabel(activeCategory));
         else if (activeQuery) title = 'ΑΝΑΖΗΤΗΣΗ';
+        if (option && option.getAttribute('data-specialty')) notes.push(option.getAttribute('data-specialty'));
         if (option && activeCategory !== 'all') notes.push(taxonomy.categoryLabel(activeCategory));
         if (activeQuery) notes.push('«' + activeQuery + '»');
         if (archiveTitle) {
@@ -341,10 +342,13 @@ document.addEventListener('DOMContentLoaded', function() {
             archive.setAttribute('data-view', option ? 'author' : activeCategory !== 'all' ? 'category' : activeQuery ? 'search' : 'all');
             if (activeCategory !== 'all' && !option) archive.setAttribute('data-kind', taxonomy.categoryKind(activeCategory));
             else archive.removeAttribute('data-kind');
+            // A writer's view is ruled in that writer's accent ink (CSS, keyed by slug).
+            if (option) archive.setAttribute('data-author-slug', option.getAttribute('data-author-slug'));
+            else archive.removeAttribute('data-author-slug');
         }
         if (countEl) {
             var count = resultCount() + (isFiltered() ? 0 : frontIds.length);
-            countEl.textContent = count + ' ' + (count === 1 ? 'άρθρο' : 'άρθρα') + (notes.length ? ' · ' + notes.join(' · ') : '');
+            countEl.textContent = notes.concat(count + ' ' + (count === 1 ? 'άρθρο' : 'άρθρα')).join(' · ');
         }
     }
     function syncControls() {

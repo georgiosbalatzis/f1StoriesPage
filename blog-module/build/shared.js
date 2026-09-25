@@ -3,6 +3,7 @@ const path = require('path');
 const mammoth = require('mammoth');
 const sharp = require('sharp');
 const AdmZip = require('adm-zip');
+const { AUTHORS } = require('../taxonomy');
 
 const BLOG_MODULE_DIR = path.join(__dirname, '..');
 
@@ -16,21 +17,8 @@ const CONFIG = {
     DEFAULT_BLOG_IMAGE: '/blog-module/images/default-blog.jpg',
     IMAGE_FORMATS: ['webp', 'jpg', 'jpeg', 'png', 'gif'],
     IMAGE_EXTENSIONS: ['.jpg', '.jpeg', '.png', '.webp', '.gif'],
-    AUTHOR_MAP: {
-        'G': 'Georgios Balatzis',
-        'J': 'Giannis Poulikidis',
-        'T': 'Thanasis Batalas',
-        'W': 'Themis Charvalis',
-        'D': 'Dimitris Keramidiotis'
-    },
-    AUTHOR_AVATARS: {
-        'Georgios Balatzis': 'georgios.webp',
-        'Giannis Poulikidis': 'giannis.webp',
-        'Thanasis Batalas': 'thanasis.webp',
-        'Themis Charvalis': '2fast.webp',
-        'Dimitris Keramidiotis': 'dimitris.webp',
-        'default': 'default.webp'
-    },
+    // Folder-name letter → author (e.g. 20260923G). Derived from the one author list.
+    AUTHOR_MAP: Object.fromEntries(AUTHORS.map(author => [author.code, author.name])),
     IFRAME_WHITELIST: [
         'georgiosbalatzis.github.io',
         'f1stories.gr',

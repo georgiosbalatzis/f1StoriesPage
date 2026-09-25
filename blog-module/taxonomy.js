@@ -48,13 +48,54 @@
         News: 'Ειδήσεις', Analysis: 'Ανάλυση', Technical: 'Τεχνικά', History: 'Ιστορία', Opinion: 'Άποψη',
         Betting: 'Στοίχημα', Drivers: 'Οδηγοί', Teams: 'Ομάδες', '2026': '2026'
     });
-    const AUTHOR_LABELS = Object.freeze({
-        'Georgios Balatzis': 'Γιώργος Μπαλατζής',
-        'Giannis Poulikidis': 'Γιάννης Πουλικίδης',
-        'Themis Charvalis': 'Θέμης Χαρβάλης',
-        'Thanasis Batalas': 'Θανάσης Μπαταλάς',
-        'Dimitris Keramidiotis': 'Δημήτρης Κεραμιδιώτης'
-    });
+    // The writers, in directory order: the one source for names, folder codes,
+    // portraits and the short editorial profile (build, archive, articles and the
+    // author tools all read it). Each writer's accent ink lives in CSS, keyed by slug.
+    const AUTHORS = Object.freeze([
+        {
+            name: 'Themis Charvalis', label: 'Θέμης Χαρβάλης', genitive: 'Θέμη', slug: 'themis-charvalis', code: 'W',
+            portrait: '/images/avatars/AS.webp', desk: 'Ιστορία · Οδηγοί',
+            specialty: 'Ιστορικές αναδρομές και πορτρέτα οδηγών',
+            bio: 'Αναζητά το ανθρώπινο κομμάτι πίσω από τα αποτελέσματα και γράφει ιστορίες που συνδέουν το τότε με το σημερινό grid.',
+            column: 'Ιστορίες οδηγών και θρύλων', instagram: 'https://www.instagram.com/myf1stories/'
+        },
+        {
+            name: 'Giannis Poulikidis', label: 'Γιάννης Πουλικίδης', genitive: 'Γιάννη', slug: 'giannis-poulikidis', code: 'J',
+            portrait: '/images/avatars/SV.webp', desk: 'Άποψη · Στοίχημα',
+            specialty: 'Αγωνιστική άποψη και BetCast',
+            bio: 'Γράφει όπως μιλάει: άμεσα, με χιούμορ και θέση. Μετατρέπει το αγωνιστικό τριήμερο σε κουβέντα που συνεχίζεται.',
+            column: 'Τροφή για σκέψη', instagram: 'https://www.instagram.com/john_pouliks/'
+        },
+        {
+            name: 'Georgios Balatzis', label: 'Γιώργος Μπαλατζής', genitive: 'Γιώργου', slug: 'georgios-balatzis', code: 'G',
+            portrait: '/images/avatars/CSW.webp', desk: 'Τεχνικά · Δεδομένα',
+            specialty: 'Τεχνική ανάλυση και αγωνιστικός ρυθμός',
+            bio: 'Μετράει όσα δεν φαίνονται στον πίνακα αποτελεσμάτων: upgrades, ελαστικά, ρυθμό και τις αποφάσεις που κρίνουν έναν αγώνα.',
+            column: 'Τεχνικό δελτίο', instagram: 'https://www.instagram.com/borgos_gialatzis/'
+        },
+        {
+            name: 'Dimitris Keramidiotis', label: 'Δημήτρης Κεραμιδιώτης', genitive: 'Δημήτρη', slug: 'dimitris-keramidiotis', code: 'D',
+            portrait: '/images/avatars/dr3R.webp', desk: 'Άποψη',
+            specialty: 'Προσωπική ματιά στο αγωνιστικό τριήμερο',
+            bio: 'Το ημερολόγιο ενός θεατή που κοιτάζει την F1 από την κερκίδα, το paddock και όλα όσα συμβαίνουν ανάμεσα στις γραμμές.',
+            column: 'Μέσα από το F1λτρο μου', instagram: 'https://www.instagram.com/dimkeram/'
+        },
+        {
+            name: 'Thanasis Batalas', label: 'Θανάσης Μπαταλάς', genitive: 'Θανάση', slug: 'thanasis-batalas', code: 'T',
+            portrait: '/images/avatars/LN.webp', desk: 'Ιστορία · Ανάλυση',
+            specialty: 'Ιστορία, πρόσωπα και ψυχολογία',
+            bio: 'Συνδέει τις εποχές της Formula 1 με τις σημερινές μάχες και θυμίζει γιατί οι λεπτομέρειες μένουν περισσότερο από τα νούμερα.',
+            column: 'Από το αρχείο του grid', instagram: 'https://www.instagram.com/thanasismpatalas/'
+        }
+    ].map(Object.freeze));
+    function findAuthor(value) {
+        const key = String(value || '').trim();
+        return AUTHORS.find(author => author.name === key || author.slug === key) || null;
+    }
+    // Every portrait ships with a 96px square for small marks (filters, the archive's author view).
+    function authorThumb(author) {
+        return author ? author.portrait.replace(/\.webp$/, '-96.webp') : '';
+    }
     // One kind per public category: the class/data value that carries its signal colour.
     const CATEGORY_KINDS = Object.freeze({
         News: 'news', Analysis: 'analysis', Technical: 'technical', History: 'history', Opinion: 'opinion',
@@ -96,8 +137,8 @@
     }
 
     function authorLabel(name) {
-        const key = String(name || '').trim();
-        return Object.prototype.hasOwnProperty.call(AUTHOR_LABELS, key) ? AUTHOR_LABELS[key] : key;
+        const author = findAuthor(name);
+        return author ? author.label : String(name || '').trim();
     }
 
     /** "2026-09-20" → "20 Σεπ 2026" (short) or "20 Σεπτεμβρίου 2026" (long). */
@@ -212,7 +253,7 @@
 
     return Object.freeze({
         PUBLIC_CATEGORIES, LEGACY_CATEGORY_OVERRIDES, normalizeTags, normalizeCategories, isPublicCategory, getPostTaxonomy,
-        categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate, formatReadingTime,
+        AUTHORS, findAuthor, authorThumb, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate, formatReadingTime,
         cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture
     });
 }));

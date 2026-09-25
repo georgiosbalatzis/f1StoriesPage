@@ -114,6 +114,60 @@ body.article-page {
     --accent-contrast: #f2eee4;
     --accent-muted: #a82e1c14;
 }
+
+/* Category inks: the one token map for every route (archive, articles, filters).
+ * taxonomy.js names each public category's kind; markup carries it as data-kind
+ * (archive) or data-article-kind (article). --category-* marks rules and dots,
+ * --category-*-text is readable at label size (all ≥4.5:1 on paper and charcoal).
+ * Light mode prints both in the same ink. */
+body.editorial-page {
+    --category-news: #e2604a;       --category-news-text: #ff9a89;
+    --category-analysis: #cf6a45;   --category-analysis-text: #f39370;
+    --category-technical: #3c9990;  --category-technical-text: #6ec6bb;
+    --category-history: #b08a36;    --category-history-text: #dcb468;
+    --category-opinion: #b27a62;    --category-opinion-text: #d9a28d;
+    --category-betting: #4c9a68;    --category-betting-text: #7ec99a;
+    --category-drivers: #6e93bb;    --category-drivers-text: #a0c0e3;
+    --category-teams: #9580b0;      --category-teams-text: #c2afdc;
+    --category-season: #a09c3e;     --category-season-text: #d4d06f;
+}
+[data-theme="light"] body.editorial-page {
+    --category-news: #a82e1c;       --category-news-text: #a82e1c;
+    --category-analysis: #9a3d1c;   --category-analysis-text: #9a3d1c;
+    --category-technical: #12655f;  --category-technical-text: #12655f;
+    --category-history: #7a5a14;    --category-history-text: #7a5a14;
+    --category-opinion: #81452f;    --category-opinion-text: #81452f;
+    --category-betting: #2c6a43;    --category-betting-text: #2c6a43;
+    --category-drivers: #3a5f86;    --category-drivers-text: #3a5f86;
+    --category-teams: #654a7d;      --category-teams-text: #654a7d;
+    --category-season: #5f5d17;     --category-season-text: #5f5d17;
+}
+.editorial-page :is([data-kind], [data-article-kind]) { --kind: var(--signal); --kind-text: var(--accent-readable); }
+.editorial-page :is([data-kind="news"], [data-article-kind="news"]) { --kind: var(--category-news); --kind-text: var(--category-news-text); }
+.editorial-page :is([data-kind="analysis"], [data-article-kind="analysis"]) { --kind: var(--category-analysis); --kind-text: var(--category-analysis-text); }
+.editorial-page :is([data-kind="technical"], [data-article-kind="technical"]) { --kind: var(--category-technical); --kind-text: var(--category-technical-text); }
+.editorial-page :is([data-kind="history"], [data-article-kind="history"]) { --kind: var(--category-history); --kind-text: var(--category-history-text); }
+.editorial-page :is([data-kind="opinion"], [data-article-kind="opinion"]) { --kind: var(--category-opinion); --kind-text: var(--category-opinion-text); }
+.editorial-page :is([data-kind="betting"], [data-article-kind="betting"]) { --kind: var(--category-betting); --kind-text: var(--category-betting-text); }
+.editorial-page :is([data-kind="drivers"], [data-article-kind="drivers"]) { --kind: var(--category-drivers); --kind-text: var(--category-drivers-text); }
+.editorial-page :is([data-kind="teams"], [data-article-kind="teams"]) { --kind: var(--category-teams); --kind-text: var(--category-teams-text); }
+.editorial-page :is([data-kind="season"], [data-article-kind="season"]) { --kind: var(--category-season); --kind-text: var(--category-season-text); }
+
+/* Author inks: a writer's quiet signature, used only in author blocks (the article's
+ * closing card, the authors page, the archive's writer view). Never on category labels.
+ * Keyed by the slug from taxonomy.js AUTHORS; readable as text in both themes. */
+.editorial-page [data-author-slug] { --author-accent: var(--text-secondary); }
+.editorial-page [data-author-slug="georgios-balatzis"] { --author-accent: #6fa9b9; }
+.editorial-page [data-author-slug="giannis-poulikidis"] { --author-accent: #d09a64; }
+.editorial-page [data-author-slug="themis-charvalis"] { --author-accent: #dc8f79; }
+.editorial-page [data-author-slug="thanasis-batalas"] { --author-accent: #9eadd2; }
+.editorial-page [data-author-slug="dimitris-keramidiotis"] { --author-accent: #c39bb5; }
+[data-theme="light"] .editorial-page [data-author-slug="georgios-balatzis"] { --author-accent: #285f6f; }
+[data-theme="light"] .editorial-page [data-author-slug="giannis-poulikidis"] { --author-accent: #80501f; }
+[data-theme="light"] .editorial-page [data-author-slug="themis-charvalis"] { --author-accent: #9b4331; }
+[data-theme="light"] .editorial-page [data-author-slug="thanasis-batalas"] { --author-accent: #4b5a80; }
+[data-theme="light"] .editorial-page [data-author-slug="dimitris-keramidiotis"] { --author-accent: #6d4660; }
+
 /* A tiny inline noise tile adds ink-and-paper texture without an image request. */
 body.editorial-page::after {
     content: '';

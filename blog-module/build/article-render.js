@@ -1,5 +1,5 @@
 const { fs, path, CONFIG, utils, escapeHtmlAttribute, getImageDimensionsForPublicPath } = require('./shared');
-const { getPostTaxonomy, categoryLabel, authorLabel } = require('../taxonomy');
+const { getPostTaxonomy, categoryLabel, categoryKind, authorLabel, findAuthor } = require('../taxonomy');
 
 function escapeHtmlText(value) {
     return String(value ?? '')
@@ -21,39 +21,49 @@ function encodePathSegment(value) {
     return encodeURIComponent(String(value ?? ''));
 }
 
-const AUTHOR_PROFILE_SLUGS = Object.freeze({
-    'Georgios Balatzis': 'georgios-balatzis',
-    'Giannis Poulikidis': 'giannis-poulikidis',
-    'Thanasis Batalas': 'thanasis-batalas',
-    'Themis Charvalis': 'themis-charvalis',
-    'Dimitris Keramidiotis': 'dimitris-keramidiotis'
+// A story's visual treatment follows its primary public section (the author's
+// chosen category, as everywhere else). These are deliberately editorial labels
+// rather than more raw metadata: they appear in the masthead, rail and source
+// block, so readers can tell what kind of piece they are in.
+const EDITORIAL_LABELS = Object.freeze({
+    Technical: 'ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ', Analysis: 'ΑΝΑΛΥΣΗ ΑΓΩΝΑ', History: 'ΑΠΟ ΤΟ ΑΡΧΕΙΟ', Opinion: 'ΣΗΜΕΙΩΜΑ ΓΝΩΜΗΣ',
+    Betting: 'BETCAST NOTE', Drivers: 'ΠΡΟΣΩΠΟ ΤΟΥ GRID', Teams: 'ΟΜΑΔΑ ΣΤΟ GRID', News: 'ΡΕΠΟΡΤΑΖ', '2026': 'ΣΕΖΟΝ 2026'
 });
 
-// A story's visual treatment follows its public section. These are deliberately
-// editorial labels rather than more raw metadata: they appear in the masthead,
-// rail and source block, so readers can tell what kind of piece they are in.
-const EDITORIAL_PROFILES = Object.freeze([
-    { category: 'Technical', kind: 'technical', label: 'ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ' },
-    { category: 'Analysis', kind: 'analysis', label: 'ΑΝΑΛΥΣΗ ΑΓΩΝΑ' },
-    { category: 'History', kind: 'history', label: 'ΑΠΟ ΤΟ ΑΡΧΕΙΟ' },
-    { category: 'Opinion', kind: 'opinion', label: 'ΣΗΜΕΙΩΜΑ ΓΝΩΜΗΣ' },
-    { category: 'Betting', kind: 'betting', label: 'BETCAST NOTE' },
-    { category: 'Drivers', kind: 'drivers', label: 'ΠΡΟΣΩΠΟ ΤΟΥ GRID' },
-    { category: 'Teams', kind: 'teams', label: 'ΟΜΑΔΑ ΣΤΟ GRID' },
-    { category: 'News', kind: 'news', label: 'ΡΕΠΟΡΤΑΖ' },
-    { category: '2026', kind: 'season', label: 'ΣΕΖΟΝ 2026' }
-]);
-
-const DEFAULT_EDITORIAL_PROFILE = Object.freeze({ kind: 'journal', label: 'F1 STORIES JOURNAL' });
-
-function authorProfileHref(author) {
-    const slug = AUTHOR_PROFILE_SLUGS[String(author || '')];
-    return slug ? `/authors/?author=${slug}` : '/authors/';
+function authorProfileHref(name) {
+    const author = findAuthor(name);
+    return author ? `/authors/?author=${author.slug}` : '/authors/';
 }
 
-function getEditorialProfile(categories) {
-    const selected = new Set(Array.isArray(categories) ? categories : []);
-    return EDITORIAL_PROFILES.find(profile => selected.has(profile.category)) || DEFAULT_EDITORIAL_PROFILE;
+function getEditorialProfile(category) {
+    return Object.prototype.hasOwnProperty.call(EDITORIAL_LABELS, category)
+        ? { category, kind: categoryKind(category), label: EDITORIAL_LABELS[category] }
+        : { kind: 'journal', label: 'F1 STORIES JOURNAL' };
+}
+
+// The signed ending of every story: portrait, specialty, one line of biography and
+// the way into the writer's archive. The writer's accent ink comes from CSS via
+// data-author-slug; unknown writers (the team) get a plain card with no accent.
+function renderAuthorCard(post) {
+    const author = findAuthor(post.author);
+    if (!author) {
+        return '<section class="author-card" aria-label="Συντάκτης">'
+            + '<p class="author-card__label">ΓΡΑΦΕΙ</p>'
+            + '<p class="author-card__name">Η ομάδα του F1 Stories</p>'
+            + '<p class="author-card__links"><a href="/authors/">Οι συντάκτες μας <span aria-hidden="true">→</span></a></p>'
+            + '</section>';
+    }
+    const social = author.instagram
+        ? `<a class="author-card__social" href="${escapeHtmlAttribute(author.instagram)}" target="_blank" rel="noopener">Instagram <span aria-hidden="true">↗</span></a>`
+        : '';
+    return `<section class="author-card" data-author-slug="${author.slug}" aria-labelledby="author-card-name">`
+        + '<p class="author-card__label">ΓΡΑΦΕΙ</p>'
+        + `<div class="author-card__head"><img class="author-card__portrait" src="${author.portrait}" alt="" width="80" height="80" loading="lazy" decoding="async">`
+        + `<div><p class="author-card__name" id="author-card-name"><a href="/authors/?author=${author.slug}">${escapeHtmlText(author.label)}</a></p>`
+        + `<p class="author-card__specialty">${escapeHtmlText(author.specialty)}</p></div></div>`
+        + `<p class="author-card__bio">${escapeHtmlText(author.bio)}</p>`
+        + `<p class="author-card__links"><a href="/blog-module/blog/index.html?author=${author.slug}">Όλα τα άρθρα του ${escapeHtmlText(author.genitive)} <span aria-hidden="true">→</span></a>${social}</p>`
+        + '</section>';
 }
 
 function normalizeSourceReferences(value) {
@@ -137,8 +147,8 @@ function renderArticleUpdateStatus(post) {
     return `<span class="article-trust__update">Ενημέρωση: <time datetime="${escapeHtmlAttribute(post.updatedDateISO)}">${escapeHtmlText(date)}</time></span>`;
 }
 
-function renderArticleTrust(post, categories) {
-    const profile = getEditorialProfile(categories);
+function renderArticleTrust(post, category) {
+    const profile = getEditorialProfile(category);
     const articleDate = formatArticleDate(post);
     const author = escapeHtmlText(authorLabel(post.author || 'F1 Stories'));
     const authorHref = escapeHtmlAttribute(authorProfileHref(post.author));
@@ -164,6 +174,10 @@ function applyArticleEditorialIdentity(html, profile) {
             });
         return next.replace(/>$/, ` data-article-kind="${escapeHtmlAttribute(profile.kind)}">`);
     });
+    // The sticky mini-bar sits outside the article container; it carries the kind itself.
+    updated = updated.replace(/<div class="article-mini-bar"[^>]*>/, tag => tag
+        .replace(/\sdata-article-kind="[^"]*"/, '')
+        .replace(/>$/, ` data-article-kind="${escapeHtmlAttribute(profile.kind)}">`));
     updated = updated.replace(/<div\b[^>]*\bclass=(["'])[^"']*\barticle-header\b[^"']*\1[^>]*>/i, tag => {
         const next = tag.replace(/\sdata-article-dossier=(["'])[^"']*\1/gi, '');
         return next.replace(/>$/, ` data-article-dossier="${escapeHtmlAttribute(profile.label)}">`);
@@ -210,8 +224,8 @@ function refreshArticleTaxonomy(html, post) {
     const { category, categories } = getPostTaxonomy(post);
     const primary = escapeHtmlText(categoryLabel(category));
     const authorText = escapeHtmlText(authorLabel(post.author || 'F1 Stories'));
-    const profile = getEditorialProfile(categories);
-    const trustPanel = renderArticleTrust(post, categories);
+    const profile = getEditorialProfile(category);
+    const trustPanel = renderArticleTrust(post, category);
     const articleDate = escapeHtmlText(formatArticleDate(post));
     let updated = html
         .replace(/F1 STORIES \/ THE JOURNAL/g, 'F1 STORIES / Η ΕΚΔΟΣΗ')
@@ -230,7 +244,8 @@ function refreshArticleTaxonomy(html, post) {
         .replace(/(<span class="article-rail-label">)Article(<\/span>)/i, `$1${escapeHtmlText(profile.label)}$2`)
         .replace(/(<span class="article-rail-label">)Related(<\/span>)/i, '$1ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ$2')
         .replace(/(<a href="[^"]*" class="article-author-link">)[^<]*(<\/a>)/, `$1${authorText}$2`)
-        .replace(/(<p class="author-name" id="author-name"><a href="[^"]*">)[^<]*(<\/a><\/p>)/, `$1${authorText}$2`);
+        // Every story ends on the current author card (all shapes of the old box included).
+        .replace(/<(?:div class="article-author-footer"|section class="author-card")[\s\S]*?(?=\s*<div class="sponsor-strip">)/, () => renderAuthorCard(post));
 
     updated = applyArticleEditorialIdentity(updated, profile);
     updated = markArticleLead(updated);
@@ -255,7 +270,7 @@ function refreshArticleTaxonomy(html, post) {
 
 async function renderArticleHtml(postData, entryPath, folderName = postData.id || path.basename(entryPath)) {
     const taxonomy = getPostTaxonomy(postData);
-    const editorialProfile = getEditorialProfile(taxonomy.categories);
+    const editorialProfile = getEditorialProfile(taxonomy.category);
     const headerImage = postData.backgroundImage || postData.image || CONFIG.DEFAULT_BLOG_IMAGE;
     const bgImageFilename = headerImage.includes('/')
         ? headerImage.substring(headerImage.lastIndexOf('/') + 1)
@@ -279,8 +294,6 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
     const heroPreload = heroAvifSrcset
         ? `<link rel="preload" as="image" type="image/avif" href="${escapeHtmlAttribute(encodePathSegment(heroAvifFile))}" imagesrcset="${escapeHtmlAttribute(heroAvifSrcset)}" imagesizes="${heroSizes}" fetchpriority="high">`
         : `<link rel="preload" as="image" href="${escapeHtmlAttribute(encodePathSegment(bgImageFilename))}" imagesrcset="${escapeHtmlAttribute(heroWebpSrcset)}" imagesizes="${heroSizes}" fetchpriority="high">`;
-    const authorImagePath = CONFIG.AUTHOR_AVATARS[postData.author] || CONFIG.AUTHOR_AVATARS.default;
-    const authorImageDimensions = await getImageDimensionsForPublicPath(`/images/authors/${authorImagePath}`);
     const headerImageDimensions = postData.backgroundImageWidth && postData.backgroundImageHeight
         ? { width: postData.backgroundImageWidth, height: postData.backgroundImageHeight }
         : await getImageDimensionsForPublicPath(headerImage);
@@ -303,7 +316,8 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_UPDATED_DATE_ISO_JSON: jsonScriptLiteral(postData.updatedDateISO || postData.dateISO),
         ARTICLE_UPDATED_DATE: escapeHtmlText(formatArticleDate({ dateISO: postData.updatedDateISO || postData.dateISO, date: postData.date, displayDate: postData.displayDate })),
         ARTICLE_SOURCES_HTML: renderArticleSources(postData.sources, editorialProfile),
-        ARTICLE_TRUST_HTML: renderArticleTrust(postData, taxonomy.categories),
+        ARTICLE_TRUST_HTML: renderArticleTrust(postData, taxonomy.category),
+        ARTICLE_AUTHOR_CARD: renderAuthorCard(postData),
         ARTICLE_EXCERPT_ATTR: escapeHtmlAttribute(postData.excerpt),
         ARTICLE_EXCERPT_JSON: jsonScriptLiteral(postData.excerpt),
         ARTICLE_COMMENTS: String(postData.comments || 0),
@@ -325,13 +339,10 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_CONTENT: postData.content || '',
         ARTICLE_URL_ATTR: escapeHtmlAttribute(articleUrl),
         ARTICLE_URL_JSON: jsonScriptLiteral(articleUrl),
-        ARTICLE_URL_PARAM: encodeURIComponent(articleUrl),
-        ARTICLE_AUTHOR_IMAGE_WIDTH: String(authorImageDimensions && authorImageDimensions.width ? authorImageDimensions.width : 474),
-        ARTICLE_AUTHOR_IMAGE_HEIGHT: String(authorImageDimensions && authorImageDimensions.height ? authorImageDimensions.height : 474)
+        ARTICLE_URL_PARAM: encodeURIComponent(articleUrl)
     };
 
-    const blogHtml = replaceTemplateTokens(templateHtml, renderTokens)
-        .replace(/src="\/images\/authors\/default\.webp"/, `src="/images/authors/${escapeHtmlAttribute(authorImagePath)}"`);
+    const blogHtml = replaceTemplateTokens(templateHtml, renderTokens);
 
     if (!fs.existsSync(CONFIG.OUTPUT_HTML_DIR)) utils.ensureDirectory(CONFIG.OUTPUT_HTML_DIR);
     const output = markArticleLead(blogHtml).replace(/[ \t]+$/gm, '');
@@ -343,6 +354,7 @@ module.exports = {
     renderArticleHtml,
     refreshArticleTaxonomy,
     getEditorialProfile,
+    renderAuthorCard,
     normalizeSourceReferences,
     renderArticleSources,
     markArticleLead

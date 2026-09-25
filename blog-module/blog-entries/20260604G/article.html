@@ -69,8 +69,8 @@
     <!-- Prevent FOUC -->
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ef4df24c">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=f20beceb">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=c2c8f79e">
     <!-- f1s:article-editorial:end -->
     <script src="/scripts/theme-init.min.js?v=327f75c6"></script>
 </head>
@@ -136,7 +136,7 @@
     </nav>
 </header>
 
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert>
+<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert data-article-kind="season">
     <div class="article-mini-bar__text">
         <span class="article-mini-bar__category">2026</span>
         <span class="article-mini-bar__title">Η μάχη της διαχείρισης ενέργειας 2026 – πώς οι ομάδες επιβιώνουν στην εποχή των βιοκαυσίμων</span>
@@ -248,24 +248,7 @@
 <p>Και όπως πάντα σε αυτό το άθλημα, η απάντηση δεν θα δοθεί στα δελτία τύπου. Θα δοθεί στην έξοδο της τελευταίας στροφής, όταν ο οδηγός θα πατήσει το γκάζι, η μπαταρία θα αποφασίσει πόση δύναμη έχει να του δώσει, και το μονοθέσιο θα δείξει αν είναι πραγματικά έτοιμο για τη νέα εποχή.</p>
 <p>Το 2026 δεν θα επιβιώσουν οι ομάδες με τη μεγαλύτερη ισχύ. Θα επιβιώσουν οι ομάδες που καταλαβαίνουν καλύτερα πότε να τη χρησιμοποιήσουν.</p></div>
 
-                    <div class="article-author-footer">
-                        <div class="author-box">
-                            <div class="author-header">
-                                <div class="author-avatar">
-                                    <img id="author-image" src="/images/authors/georgios.webp" alt="Georgios Balatzis"
-                                         loading="lazy" decoding="async" width="474" height="474"
-                                         data-show-on-error="author-initial">
-                                    <span class="avatar-text" id="author-initial">A</span>
-                                </div>
-                                <div class="author-info">
-                                    <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Γιώργος Μπαλατζής</a></p>
-                                    <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
-                                </div>
-                            </div>
-                            <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
-                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
-                        </div>
-                    </div>
+                    <section class="author-card" data-author-slug="georgios-balatzis" aria-labelledby="author-card-name"><p class="author-card__label">ΓΡΑΦΕΙ</p><div class="author-card__head"><img class="author-card__portrait" src="/images/avatars/CSW.webp" alt="" width="80" height="80" loading="lazy" decoding="async"><div><p class="author-card__name" id="author-card-name"><a href="/authors/?author=georgios-balatzis">Γιώργος Μπαλατζής</a></p><p class="author-card__specialty">Τεχνική ανάλυση και αγωνιστικός ρυθμός</p></div></div><p class="author-card__bio">Μετράει όσα δεν φαίνονται στον πίνακα αποτελεσμάτων: upgrades, ελαστικά, ρυθμό και τις αποφάσεις που κρίνουν έναν αγώνα.</p><p class="author-card__links"><a href="/blog-module/blog/index.html?author=georgios-balatzis">Όλα τα άρθρα του Γιώργου <span aria-hidden="true">→</span></a><a class="author-card__social" href="https://www.instagram.com/borgos_gialatzis/" target="_blank" rel="noopener">Instagram <span aria-hidden="true">↗</span></a></p></section>
 
                     <div class="sponsor-strip">
                         <div class="sponsor-strip-label">Υποστηρίζουν το F1 Stories</div>
@@ -435,7 +418,7 @@
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=ba445b6d"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=548e1e5a"></script>
 <script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=1835b71e"></script>

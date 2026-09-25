@@ -60,8 +60,8 @@
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=94ac6e07">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=73b1e224">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ef4df24c">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=f20beceb">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=c2c8f79e">
 
     <!-- Preload hero image for LCP -->
     ARTICLE_HERO_PRELOAD
@@ -201,7 +201,7 @@
     </nav>
 </header>
 
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert>
+<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert data-article-kind="ARTICLE_EDITORIAL_KIND">
     <div class="article-mini-bar__text">
         <span class="article-mini-bar__category">ARTICLE_CATEGORY_TEXT</span>
         <span class="article-mini-bar__title">ARTICLE_TITLE_TEXT</span>
@@ -263,24 +263,7 @@
                     ARTICLE_TRUST_HTML
                     <div class="article-content">ARTICLE_CONTENT</div>
 
-                    <div class="article-author-footer">
-                        <div class="author-box">
-                            <div class="author-header">
-                                <div class="author-avatar">
-                                    <img id="author-image" src="/images/authors/default.webp" alt="ARTICLE_AUTHOR_ATTR"
-                                         loading="lazy" decoding="async" width="ARTICLE_AUTHOR_IMAGE_WIDTH" height="ARTICLE_AUTHOR_IMAGE_HEIGHT"
-                                         data-show-on-error="author-initial">
-                                    <span class="avatar-text" id="author-initial">A</span>
-                                </div>
-                                <div class="author-info">
-                                    <p class="author-name" id="author-name"><a href="ARTICLE_AUTHOR_PROFILE_HREF">ARTICLE_AUTHOR_TEXT</a></p>
-                                    <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
-                                </div>
-                            </div>
-                            <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
-                            <a class="author-profile-link" href="ARTICLE_AUTHOR_PROFILE_HREF">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
-                        </div>
-                    </div>
+                    ARTICLE_AUTHOR_CARD
 
                     <div class="sponsor-strip">
                         <div class="sponsor-strip-label">Υποστηρίζουν το F1 Stories</div>
@@ -375,7 +358,7 @@
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=ba445b6d"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=548e1e5a"></script>
 <script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=1835b71e"></script>

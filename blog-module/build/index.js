@@ -16,7 +16,7 @@ const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
 const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
 const {
-    PUBLIC_CATEGORIES, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
+    PUBLIC_CATEGORIES, AUTHORS, authorThumb, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
     formatReadingTime, cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture
 } = require('../taxonomy');
 
@@ -400,6 +400,16 @@ function renderLedgerRows(posts, startIndex = 0) {
     return rows.join('\n            ');
 }
 
+// Writers from the one author list; the slug carries each writer's accent (CSS) and
+// the specialty feeds the archive's author view.
+function renderAuthorFilterOptions() {
+    const base = '/blog-module/blog/index.html';
+    return [`<a class="filter-option" href="${base}" data-author="all" aria-current="true">Όλοι</a>`]
+        .concat(AUTHORS.map(author => `<a class="filter-option filter-option--author" href="${base}?author=${author.slug}" data-author="${escapeHtmlAttribute(author.name)}" data-author-slug="${author.slug}" data-specialty="${escapeHtmlAttribute(author.specialty)}">`
+            + `<img src="${authorThumb(author)}" alt="" width="48" height="48" loading="lazy" decoding="async">${escapeHtmlAttribute(author.label)}</a>`))
+        .join('\n                            ');
+}
+
 function renderCategoryFilterOptions() {
     const base = '/blog-module/blog/index.html';
     return [`<a class="filter-option" href="${base}" data-category="all" aria-current="true">Όλα</a>`]
@@ -658,6 +668,7 @@ function injectBlogIndexFirstPage(indexPosts, front, decks = {}) {
     html = replaceMarkedBlock(html, '<!-- f1s:blog-index-preload:begin -->', '<!-- f1s:blog-index-preload:end -->', preload ? `    ${preload}` : '');
     html = replaceMarkedBlock(html, '<!-- f1s:journal-front:begin -->', '<!-- f1s:journal-front:end -->', `        ${edition}`);
     html = replaceMarkedBlock(html, '<!-- f1s:blog-categories:begin -->', '<!-- f1s:blog-categories:end -->', `                        ${renderCategoryFilterOptions()}`);
+    html = replaceMarkedBlock(html, '<!-- f1s:blog-authors:begin -->', '<!-- f1s:blog-authors:end -->', `                            ${renderAuthorFilterOptions()}`);
     html = replaceMarkedBlock(html, '<!-- f1s:blog-first-page:begin -->', '<!-- f1s:blog-first-page:end -->', `            ${renderLedgerRows(ledger)}`);
     html = replaceInlineMarkers(html, 'journal-total', String(indexPosts.length));
 

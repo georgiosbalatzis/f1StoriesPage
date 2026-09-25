@@ -48,11 +48,6 @@ export function applyArticleEditorial(html, assets) {
         if (author) result = result.replace(/(<h1\b[^>]*\bclass="article-title"[^>]*>[\s\S]*?<\/h1>)/i,
             (_match, title) => `${title}\n                    <p class="article-header-byline"><span>Γράφει</span> ${author}</p>`);
     }
-    if (!/class="author-profile-link"/.test(result)) {
-        const authorHref = result.match(/<[^>]+\bclass="author-name"[^>]*>[\s\S]*?<a\s+href="([^"]+)"/i)?.[1] || '/authors/';
-        const profileLink = `<a class="author-profile-link" href="${authorHref}">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>`;
-        result = result.replace(/(<div\b[^>]*\bclass="author-bio"[^>]*>[\s\S]*?<\/div>)/i, `$1\n                            ${profileLink}`);
-    }
     // Greek, descriptive image labels (the source builder emits these too since media.js
     // gained the title). Only the retired English defaults match, so reruns are no-ops.
     if (/alt="(?:Gallery image|Image) \d+"|aria-label="(?:Image Gallery|Show image \d+)"/.test(result)) {

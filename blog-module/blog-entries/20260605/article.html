@@ -69,8 +69,8 @@
     <!-- Prevent FOUC -->
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ef4df24c">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=f20beceb">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=c2c8f79e">
     <!-- f1s:article-editorial:end -->
     <script src="/scripts/theme-init.min.js?v=327f75c6"></script>
 </head>
@@ -136,7 +136,7 @@
     </nav>
 </header>
 
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert>
+<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert data-article-kind="season">
     <div class="article-mini-bar__text">
         <span class="article-mini-bar__category">2026</span>
         <span class="article-mini-bar__title">Recharge, Boost και Lift-off: Η νέα γλώσσα της Formula 1</span>
@@ -313,24 +313,7 @@
 <p>Είναι αποτέλεσμα γλώσσας.</p>
 <p>Και όσοι μάθουν να τη μιλούν καλύτερα, θα έχουν το πραγματικό πλεονέκτημα.</p></div>
 
-                    <div class="article-author-footer">
-                        <div class="author-box">
-                            <div class="author-header">
-                                <div class="author-avatar">
-                                    <img id="author-image" src="/images/authors/default.webp" alt="F1 Stories Team"
-                                         loading="lazy" decoding="async" width="474" height="474"
-                                         data-show-on-error="author-initial">
-                                    <span class="avatar-text" id="author-initial">A</span>
-                                </div>
-                                <div class="author-info">
-                                    <p class="author-name" id="author-name"><a href="/authors/">F1 Stories Team</a></p>
-                                    <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
-                                </div>
-                            </div>
-                            <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
-                            <a class="author-profile-link" href="/authors/">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
-                        </div>
-                    </div>
+                    <section class="author-card" aria-label="Συντάκτης"><p class="author-card__label">ΓΡΑΦΕΙ</p><p class="author-card__name">Η ομάδα του F1 Stories</p><p class="author-card__links"><a href="/authors/">Οι συντάκτες μας <span aria-hidden="true">→</span></a></p></section>
 
                     <div class="sponsor-strip">
                         <div class="sponsor-strip-label">Υποστηρίζουν το F1 Stories</div>
@@ -500,7 +483,7 @@
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=ba445b6d"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=548e1e5a"></script>
 <script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=1835b71e"></script>

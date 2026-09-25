@@ -3,12 +3,12 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
-const { PUBLIC_CATEGORIES, getPostTaxonomy } = require('../../taxonomy');
+const { PUBLIC_CATEGORIES, AUTHORS, findAuthor, authorLabel, authorThumb, getPostTaxonomy } = require('../../taxonomy');
 const {
     buildIndexPosts, buildCompactIndexData, summarizeCategories,
     loadEditorialSelection, resolveJournalFront, renderJournalFront, renderLedgerRows
 } = require('../index');
-const { refreshArticleTaxonomy, getEditorialProfile, renderArticleSources } = require('../article-render');
+const { refreshArticleTaxonomy, getEditorialProfile, renderArticleSources, renderAuthorCard } = require('../article-render');
 const { extractMetadata } = require('../metadata');
 const { convertTxtToHtml } = require('../parse-txt');
 const { scoreRelatedPosts } = require('../related');
@@ -86,12 +86,12 @@ test('explicit source category survives detailed tags and front matter preserves
 });
 
 test('editorial dossiers use a readable section label and only render safe explicit sources', () => {
-    assert.deepEqual(getEditorialProfile(['Technical']), { category: 'Technical', kind: 'technical', label: 'ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ' });
-    assert.equal(getEditorialProfile(['Unknown']).kind, 'journal');
+    assert.deepEqual(getEditorialProfile('Technical'), { category: 'Technical', kind: 'technical', label: 'ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ' });
+    assert.equal(getEditorialProfile('Unknown').kind, 'journal');
 
     const sources = renderArticleSources(
         'FIA Technical Regulations | https://www.fia.com/regulation/category/110; Unsafe | javascript:alert(1); Formula 1 timing | https://www.formula1.com/en/results.html',
-        getEditorialProfile(['Technical'])
+        getEditorialProfile('Technical')
     );
     assert.match(sources, /FIA Technical Regulations/);
     assert.match(sources, /Formula 1 timing/);
@@ -171,6 +171,49 @@ test('archive ledger groups rows by month and marks the category signal', () => 
     assert.match(html, /data-kind="analysis"[\s\S]*ΑΝΑΛΥΣΗ/);
     assert.match(html, /2 ΣΕΠ<span class="visually-hidden"> 2026<\/span>/);
     assert.match(html, /Θέμης Χαρβάλης<\/span><span>1 λεπτό/);
+});
+
+test('an article takes its colour from the author-chosen primary category', () => {
+    const html = '<article class="article-container" data-article-kind="analysis"><div class="article-header">x</div></article>'
+        + '<div class="article-content"><p>Body.</p></div>';
+    const updated = refreshArticleTaxonomy(html, { categories: ['Analysis', 'Drivers'], category: 'Drivers', author: 'Themis Charvalis' });
+    assert.match(updated, /data-article-kind="drivers"/);
+    assert.match(updated, /data-article-dossier="ΠΡΟΣΩΠΟ ΤΟΥ GRID"/);
+});
+
+test('every author resolves from the one list, by canonical name or slug', () => {
+    assert.equal(AUTHORS.length, 5);
+    for (const author of AUTHORS) {
+        assert.equal(findAuthor(author.name), author);
+        assert.equal(findAuthor(author.slug), author);
+        assert.equal(authorLabel(author.name), author.label);
+        assert.ok(author.portrait && author.specialty && author.bio && author.genitive && /^[A-Z]$/.test(author.code));
+        assert.ok(fs.existsSync(path.join(__dirname, '..', '..', '..', authorThumb(author))), `${author.slug} thumbnail`);
+    }
+    assert.equal(findAuthor('F1 Stories Team'), null);
+    assert.equal(authorLabel('F1 Stories Team'), 'F1 Stories Team');
+});
+
+test('the article author card signs with the writer and degrades for the team', () => {
+    const card = renderAuthorCard({ author: 'Georgios Balatzis' });
+    assert.match(card, /class="author-card" data-author-slug="georgios-balatzis"/);
+    assert.match(card, /Γιώργος Μπαλατζής/);
+    assert.match(card, /Τεχνική ανάλυση και αγωνιστικός ρυθμός/);
+    assert.match(card, /index\.html\?author=georgios-balatzis">Όλα τα άρθρα του Γιώργου/);
+    assert.match(card, /Instagram/);
+    const team = renderAuthorCard({ author: 'F1 Stories Team' });
+    assert.doesNotMatch(team, /data-author-slug|<img|Instagram/);
+});
+
+test('the author card migration replaces the old box once and stays idempotent', () => {
+    const html = '<article class="article-container"><div class="article-header">x</div></article><div class="article-content"><p>Body.</p></div>\n'
+        + '                    <div class="article-author-footer">\n                        <div class="author-box"><p class="author-name" id="author-name"><a href="/authors/">Old</a></p></div>\n                    </div>\n\n'
+        + '                    <div class="sponsor-strip">S</div>';
+    const post = { categories: ['Technical'], author: 'Thanasis Batalas' };
+    const once = refreshArticleTaxonomy(html, post);
+    assert.doesNotMatch(once, /author-box|article-author-footer/);
+    assert.match(once, /data-author-slug="thanasis-batalas"[\s\S]*<div class="sponsor-strip">/);
+    assert.equal(refreshArticleTaxonomy(once, post), once);
 });
 
 test('related articles use specific internal tags without rewarding generic F1 labels', () => {

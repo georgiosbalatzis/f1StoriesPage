@@ -69,8 +69,8 @@
     <!-- Prevent FOUC -->
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ef4df24c">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=f20beceb">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=c2c8f79e">
     <!-- f1s:article-editorial:end -->
     <script src="/scripts/theme-init.min.js?v=327f75c6"></script>
 </head>
@@ -136,7 +136,7 @@
     </nav>
 </header>
 
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert>
+<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert data-article-kind="technical">
     <div class="article-mini-bar__text">
         <span class="article-mini-bar__category">Τεχνικά</span>
         <span class="article-mini-bar__title">Το B-spec της Williams και το πραγματικό τεστ</span>
@@ -209,24 +209,7 @@
 <p>Γι' αυτό λέω να μην κρίνουμε το Σαββατοκύριακο μόνο από το χρονόμετρο. Αν η FW48 βρει τρία δέκατα, μια χαρά. Αν φλερτάρει με το Q3 ή μπει ξανά σταθερά στη μάχη των βαθμών, ακόμα καλύτερα. Ο Vowles όμως θα κοιτάει και πράγματα που εμείς από τον καναπέ δεν βλέπουμε: αν τα νέα κομμάτια ταιριάζουν όπως σχεδιάστηκαν, αν στην πίστα συμπεριφέρονται όπως έδειχναν τα δεδομένα του εργοστασίου, και γενικά αν κατάφεραν να βγάλουν ένα τόσο μεγάλο project στην ώρα του και με την ποιότητα που ήθελαν.</p>
 <p>Ας μην κοροϊδευόμαστε όμως, το 2026 δεν πρόκειται να γίνει ξαφνικά η χρονιά που περίμενε η Williams. Ο ίδιος ο Vowles έχει παραδεχτεί ότι κάποια πράγματα στην FW48 μάλλον δεν διορθώνονται πλήρως φέτος, και το μυαλό τους έχει ήδη αρχίσει να πηγαίνει στο 2027. Οπότε δεν περιμένω από το Baku να σώσει τη σεζόν. Αυτό που θα ψάχνω, πολύ περισσότερο από τη θέση που θα τερματίσουν, είναι σημάδια ότι η Williams που θα φτιάξει το επόμενο αυτοκίνητο είναι καλύτερη ομάδα από αυτή που έφτιαξε την FW48. Αν τα δούμε, κάτι μου λέει ότι του χρόνου τέτοια εποχή θα γράφουμε πολύ διαφορετικά κείμενα για τη Williams.</p></div>
 
-                    <div class="article-author-footer">
-                        <div class="author-box">
-                            <div class="author-header">
-                                <div class="author-avatar">
-                                    <img id="author-image" src="/images/authors/georgios.webp" alt="Γιώργος Μπαλατζής"
-                                         loading="lazy" decoding="async" width="474" height="474"
-                                         data-show-on-error="author-initial">
-                                    <span class="avatar-text" id="author-initial">A</span>
-                                </div>
-                                <div class="author-info">
-                                    <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Γιώργος Μπαλατζής</a></p>
-                                    <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
-                                </div>
-                            </div>
-                            <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
-                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
-                        </div>
-                    </div>
+                    <section class="author-card" data-author-slug="georgios-balatzis" aria-labelledby="author-card-name"><p class="author-card__label">ΓΡΑΦΕΙ</p><div class="author-card__head"><img class="author-card__portrait" src="/images/avatars/CSW.webp" alt="" width="80" height="80" loading="lazy" decoding="async"><div><p class="author-card__name" id="author-card-name"><a href="/authors/?author=georgios-balatzis">Γιώργος Μπαλατζής</a></p><p class="author-card__specialty">Τεχνική ανάλυση και αγωνιστικός ρυθμός</p></div></div><p class="author-card__bio">Μετράει όσα δεν φαίνονται στον πίνακα αποτελεσμάτων: upgrades, ελαστικά, ρυθμό και τις αποφάσεις που κρίνουν έναν αγώνα.</p><p class="author-card__links"><a href="/blog-module/blog/index.html?author=georgios-balatzis">Όλα τα άρθρα του Γιώργου <span aria-hidden="true">→</span></a><a class="author-card__social" href="https://www.instagram.com/borgos_gialatzis/" target="_blank" rel="noopener">Instagram <span aria-hidden="true">↗</span></a></p></section>
 
                     <div class="sponsor-strip">
                         <div class="sponsor-strip-label">Υποστηρίζουν το F1 Stories</div>
@@ -396,7 +379,7 @@
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=ba445b6d"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=548e1e5a"></script>
 <script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=1835b71e"></script>

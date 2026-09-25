@@ -66,7 +66,7 @@
     "blog-module/build/nav.js": 2956,
     "blog-module/build/sitemap.js": 1910,
     "blog-module/build/worker.js": 8162,
-    "blog-module/build/index.js": 41912,
+    "blog-module/build/index.js": 47010,
     "blog-module/build/__tests__/golden.js": 12076,
     "blog-module/build/__tests__/run-golden.js": 778,
     "scripts/build/fetch-youtube.mjs": 9066,

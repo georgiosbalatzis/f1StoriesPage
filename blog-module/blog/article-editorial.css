@@ -10,29 +10,11 @@
     max-width: none;
     margin: 0;
     animation: none;
-    --article-signal: var(--accent);
-    --article-signal-readable: var(--article-signal);
-    --article-signal-wash: #a82e1c10;
+    /* Category inks come from styles/editorial.css, keyed by data-article-kind. */
+    --article-signal: var(--kind);
+    --article-signal-readable: var(--kind-text);
+    --article-signal-wash: color-mix(in srgb, var(--kind) 8%, transparent);
 }
-.article-page .article-container--technical { --article-signal: #16736c; --article-signal-wash: #16736c14; }
-.article-page .article-container--analysis { --article-signal: #a82e1c; --article-signal-wash: #a82e1c12; }
-.article-page .article-container--history { --article-signal: #9a5b1d; --article-signal-readable: #d4a55e; --article-signal-wash: #9a5b1d14; }
-.article-page .article-container--opinion { --article-signal: #80522c; --article-signal-wash: #80522c14; }
-.article-page .article-container--betting { --article-signal: #4f713a; --article-signal-readable: #88c979; --article-signal-wash: #4f713a14; }
-.article-page .article-container--drivers,
-.article-page .article-container--teams,
-.article-page .article-container--season { --article-signal: #6f5d39; --article-signal-wash: #6f5d3914; }
-[data-theme="light"] .article-page .article-container--technical { --article-signal-readable: #15706a; } /* #16736c was 4.43:1 on paper */
-[data-theme="light"] .article-page .article-container--history { --article-signal-readable: #805a20; }
-[data-theme="light"] .article-page .article-container--betting { --article-signal-readable: #236a4a; }
-:root:not([data-theme="light"]) .article-page .article-container--technical { --article-signal-readable: #69c5ba; }
-:root:not([data-theme="light"]) .article-page .article-container--analysis { --article-signal-readable: #ff9a89; }
-:root:not([data-theme="light"]) .article-page .article-container--history { --article-signal-readable: #d5ae70; }
-:root:not([data-theme="light"]) .article-page .article-container--opinion { --article-signal-readable: #d29a79; }
-:root:not([data-theme="light"]) .article-page .article-container--betting { --article-signal-readable: #76d5a1; }
-:root:not([data-theme="light"]) .article-page .article-container--drivers,
-:root:not([data-theme="light"]) .article-page .article-container--teams { --article-signal-readable: #baabdf; }
-:root:not([data-theme="light"]) .article-page .article-container--season { --article-signal-readable: #dfbd69; }
 
 /* The cover reads like the opening spread of a journal. */
 .article-page .article-header {
@@ -526,34 +508,43 @@
 .article-page .reading-progress-fill { background: var(--signal); box-shadow: none; }
 .article-page .article-mini-bar { top: 76px; padding-inline: 22px; background: var(--bg-base); }
 .article-page .article-mini-bar__title { font: 400 .875rem/1.4 var(--font-editorial); }
-.article-page .article-mini-bar__category { font-weight: 500; }
+.article-page .article-mini-bar__category { color: var(--kind-text); font-weight: 500; }
 .article-page .article-mini-bar__share { border-radius: 2px; }
 
 /* Closing notes, a signature, then the next story. */
-.article-page .article-author-footer { max-width: none; padding-top: 28px; border-color: var(--border); }
-.article-page .author-box { padding: 24px 28px; border: 0; border-left: 3px solid var(--article-signal); border-radius: 0 0 var(--cut-sm) 0; background: var(--bg-surface); }
-.article-page .author-header { flex-direction: row; text-align: left; gap: 16px; }
-.article-page .author-avatar { width: 56px; height: 56px; border: 0; }
-.article-page .author-name { font: 400 1.25rem/1.35 var(--font-editorial); color: var(--text-primary); }
-.article-page .author-name a {
-    color: inherit;
+/* The signed ending: paper or charcoal, bounded by rules and signed in the writer's
+ * accent ink (styles/editorial.css, keyed by data-author-slug). The category ink stays
+ * above; nothing here uses it. */
+.article-page .author-card {
+    margin-top: 48px;
+    padding: 16px 0 22px;
+    border-top: 1px solid var(--border);
+    border-bottom: 3px solid var(--author-accent, var(--border));
+}
+.article-page .author-card__label { margin: 0 0 16px; color: var(--text-secondary); font-size: .75rem; font-weight: 600; letter-spacing: .14em; }
+.article-page .author-card__head { display: grid; grid-template-columns: 80px minmax(0, 1fr); align-items: center; column-gap: 18px; }
+.article-page .author-card__portrait { width: 80px; height: 80px; object-fit: cover; background: var(--bg-surface); border-radius: 2px; }
+.article-page .author-card__name { margin: 0; font: 600 1.375rem/1.25 var(--font-body); letter-spacing: -.015em; }
+.article-page .author-card__name a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--text-primary);
     text-decoration: underline;
-    text-decoration-color: color-mix(in srgb, var(--article-signal-readable) 48%, transparent);
-    text-underline-offset: 4px;
-    transition: color .25s var(--ease-editorial), text-decoration-color .25s var(--ease-editorial);
+    text-decoration-color: transparent;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+    transition: text-decoration-color .2s;
 }
-.article-page .author-name a:hover,
-.article-page .author-name a:focus-visible {
-    color: var(--article-signal-readable);
-    text-decoration-color: currentColor;
-}
-.article-page .author-title { font: 400 .75rem/1.5 var(--font-body); color: var(--article-signal-readable); }
-.article-page .author-bio { font-size: .875rem; line-height: 1.75; }
-.article-page .author-profile-link { display: inline-flex; align-items: center; gap: 10px; margin-top: 15px; color: var(--text-primary); font: 500 .75rem/1.4 var(--font-body); letter-spacing: .07em; text-transform: uppercase; }
-.article-page .author-profile-link > span { color: var(--article-signal-readable); font-size: 1rem; transition: transform .25s var(--ease-editorial); }
-.article-page .author-profile-link:hover,
-.article-page .author-profile-link:focus-visible { color: var(--article-signal-readable); }
-.article-page .author-profile-link:hover > span { transform: translate(3px, -2px); }
+.article-page .author-card__name a:is(:hover, :focus-visible) { text-decoration-color: var(--author-accent, var(--border)); }
+.article-page .author-card__specialty { margin: 0; color: var(--text-secondary); font-size: .875rem; line-height: 1.5; }
+.article-page .author-card__bio { max-width: 36em; margin: 16px 0 0; color: var(--text-primary); font-size: 1rem; line-height: 1.65; }
+.article-page .author-card__links { display: flex; flex-wrap: wrap; gap: 0 28px; margin: 8px 0 0; }
+.article-page .author-card__links a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--text-primary); font-size: .875rem; font-weight: 500; }
+.article-page .author-card__links a.author-card__social { color: var(--text-secondary); font-weight: 400; }
+.article-page .author-card__links a > span { transition: transform .25s var(--ease-editorial); }
+.article-page .author-card__links a:hover > span { transform: translateX(4px); }
+.article-page .author-card a:focus-visible { outline: 2px solid var(--accent-readable); outline-offset: 3px; }
 .article-page .sponsor-strip { margin-top: 36px; padding-top: 22px; border-color: var(--border); }
 
 .article-page .article-comments { max-width: 968px; margin: 64px auto 0; padding-top: 28px; border-color: var(--border); }
@@ -651,8 +642,9 @@
     .article-page .blog-nav { transition: transform .18s ease; }
     .article-page:has(.article-mini-bar.is-visible) .blog-nav { transform: translateY(-100%); }
     .article-page .article-mini-bar__category { max-width: 5.5rem; font-size: .75rem; }
-    .article-page .author-box { padding: 22px 20px; }
-    .article-page .author-name { font-size: 1.12rem; overflow-wrap: anywhere; }
+    .article-page .author-card__head { grid-template-columns: 64px minmax(0, 1fr); column-gap: 14px; }
+    .article-page .author-card__portrait { width: 64px; height: 64px; }
+    .article-page .author-card__name { font-size: 1.2rem; overflow-wrap: anywhere; }
 
     .article-page .article-comments { margin-top: 44px; }
     .article-page .article-navigation { margin-top: 30px; gap: 16px; }
@@ -683,7 +675,7 @@
     @keyframes article-editorial-enter { from { opacity: .01; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 }
 @media (prefers-reduced-motion: reduce) {
-    .article-page :is(.article-container, .article-header-overlay, .article-header > picture, .article-header-img, .article-content-img, .share-btn, .toc-body, .toc-item, .article-mini-bar, .blog-nav, .related-article-card img, .article-rail-related-item, .gallery-slide, .lb-overlay, .lb-img, .author-profile-link > span) { animation: none; transition: none; }
+    .article-page :is(.article-container, .article-header-overlay, .article-header > picture, .article-header-img, .article-content-img, .share-btn, .toc-body, .toc-item, .article-mini-bar, .blog-nav, .related-article-card img, .article-rail-related-item, .gallery-slide, .lb-overlay, .lb-img, .author-card__links a > span) { animation: none; transition: none; }
 }
 
 /* Dark covers keep the editorial spread readable without falling back to a

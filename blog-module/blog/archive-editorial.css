@@ -1,6 +1,7 @@
 /* The Journal: a compact masthead, an edited front page, then the archive as a ledger.
  * Markup comes from blog-module/build/index.js (static) and blog-index.js (filtered views).
- * Category colour is punctuation: the category word and small marks only. */
+ * Category colour is punctuation: the category word and small marks only. Category and
+ * author inks (--kind, --kind-text, --author-accent) come from styles/editorial.css. */
 
 .archive-page .journal {
     padding: 76px 0 82px;
@@ -10,25 +11,6 @@
 }
 /* styles.css still pads and rules every <section>; the Journal spaces its own. */
 .journal :where(section) { padding: 0; border: 0; }
-
-/* Category signals, keyed by data-kind. --kind marks rules and dots; --kind-text is readable text. */
-.journal [data-kind] { --kind: var(--signal); --kind-text: var(--accent-readable); }
-.journal [data-kind="technical"] { --kind: #16736c; --kind-text: #69c5ba; }
-.journal [data-kind="analysis"] { --kind: #a82e1c; --kind-text: #ff9a89; }
-.journal [data-kind="history"] { --kind: #8e6b2f; --kind-text: #d5ae70; }
-.journal [data-kind="opinion"] { --kind: #694634; --kind-text: #d29a79; }
-.journal [data-kind="betting"] { --kind: #287a55; --kind-text: #76d5a1; }
-.journal [data-kind="drivers"] { --kind: #486a8f; --kind-text: #9dbde2; }
-.journal [data-kind="teams"] { --kind: #5e4c86; --kind-text: #baabdf; }
-.journal [data-kind="season"] { --kind: #a07e1e; --kind-text: #dfbd69; }
-[data-theme="light"] .journal [data-kind="technical"] { --kind-text: #15706a; }
-[data-theme="light"] .journal [data-kind="analysis"] { --kind-text: #a82e1c; }
-[data-theme="light"] .journal [data-kind="history"] { --kind-text: #805a20; }
-[data-theme="light"] .journal [data-kind="opinion"] { --kind-text: #694634; }
-[data-theme="light"] .journal [data-kind="betting"] { --kind-text: #236a4a; }
-[data-theme="light"] .journal [data-kind="drivers"] { --kind-text: #486a8f; }
-[data-theme="light"] .journal [data-kind="teams"] { --kind-text: #5e4c86; }
-[data-theme="light"] .journal [data-kind="season"] { --kind-text: #7b5f12; }
 
 /* ── Masthead ─────────────────────────────────────────── */
 .journal-masthead {
@@ -189,6 +171,7 @@
     border-top: 2px solid var(--text-primary);
 }
 .journal-archive[data-kind] .journal-archive__head { border-top-color: var(--kind); }
+.journal-archive[data-author-slug] .journal-archive__head { border-top-color: var(--author-accent); }
 .journal .journal-archive__title {
     display: flex;
     align-items: center;
@@ -277,8 +260,11 @@
     right: 0;
     bottom: 8px;
     height: 2px;
-    background: var(--kind, var(--text-primary));
+    background: var(--text-primary);
 }
+/* The chosen topic underlines in its category ink, the chosen writer in theirs. */
+.filter-option[data-kind][aria-current="true"]::after { background: var(--kind); }
+.filter-option[data-author-slug][aria-current="true"]::after { background: var(--author-accent); }
 .filter-option[data-kind][aria-current="true"]::before {
     content: '';
     width: 7px;
