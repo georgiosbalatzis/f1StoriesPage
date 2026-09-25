@@ -14,10 +14,10 @@ const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const BUDGET_PATH = path.join(REPO_ROOT, 'perf', 'article-media-budget.json');
 const ARTICLE_ROOT = 'blog-module/blog-entries';
-const DEFAULT_THRESHOLD_PERCENT = 5;
+const DEFAULT_THRESHOLD_PERCENT = 15; // ≈1.5–2 months of publishing (200–450 files, 20–30 MB a month in 2026)
 const DEFAULT_LIMITS = {
     singleRawImageBytes: 3.25 * 1024 * 1024,
-    singleOptimizedImageBytes: 1 * 1024 * 1024
+    singleOptimizedImageBytes: 1.5 * 1024 * 1024 // repo originals only; dist is capped at 300 KB by public-image-guard
 };
 
 const MEDIA_RE = /\.(?:avif|webp|png|jpe?g|gif)$/i;
