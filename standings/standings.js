@@ -1012,14 +1012,23 @@ function renderStandingsPayload(driverData, constructorData, meta) {
 
     const source = meta && meta.source ? meta.source : 'Jolpica F1';
 
-    // Same data from a different source still re-renders, so the "Πηγή" cells follow the band.
-    if (signature && signature === latestStandingsSignature && source === latestStandingsMeta.source) return false;
+    const sameStandings = signature && signature === latestStandingsSignature;
+    if (sameStandings && source === latestStandingsMeta.source) return false;
     latestStandingsSignature = signature;
     latestStandingsMeta = {
         updatedAt: meta && meta.updatedAt ? meta.updatedAt : latestStandingsMeta.updatedAt,
         source: source
     };
     setStandingsDataStatus(meta && meta.live ? 'live' : 'snapshot');
+
+    // Same standings from a new source (the snapshot confirmed live): only the "Πηγή" summary
+    // cards change, so the tables and their headshots are left in place.
+    if (sameStandings) {
+        const seasonText = document.getElementById('season-year').textContent || YEAR;
+        renderDriverStandingsPolish(dStandings, latestStandingsMeta, seasonText);
+        if (cStandings.length) renderConstructorStandingsPolish(cStandings, teamDriverCodes(dStandings), latestStandingsMeta, seasonText);
+        return true;
+    }
 
     document.getElementById('season-year').textContent = season || YEAR;
     if (round) {
@@ -1217,6 +1226,19 @@ function renderDrivers(standings, openf1Map) {
     finalizeRenderedPanel('drivers');
 }
 
+function teamDriverCodes(driverStandings) {
+    const teamDrivers = {};
+    (driverStandings || []).forEach(function(ds) {
+        const c = ds.Constructors && ds.Constructors[0];
+        if (!c) return;
+        const cId = c.constructorId;
+        if (!teamDrivers[cId]) teamDrivers[cId] = [];
+        const code = (ds.Driver.code || ds.Driver.driverId.substring(0, 3)).toUpperCase();
+        teamDrivers[cId].push(code);
+    });
+    return teamDrivers;
+}
+
 function renderConstructors(standings, driverStandings) {
     if (!standings || !standings.length) {
         renderMessage(constructorsTable, {
@@ -1228,15 +1250,7 @@ function renderConstructors(standings, driverStandings) {
         return;
     }
 
-    const teamDrivers = {};
-    (driverStandings || []).forEach(function(ds) {
-        const c = ds.Constructors && ds.Constructors[0];
-        if (!c) return;
-        const cId = c.constructorId;
-        if (!teamDrivers[cId]) teamDrivers[cId] = [];
-        const code = (ds.Driver.code || ds.Driver.driverId.substring(0, 3)).toUpperCase();
-        teamDrivers[cId].push(code);
-    });
+    const teamDrivers = teamDriverCodes(driverStandings);
 
     const maxPts = parseFloat(standings[0].points) || 1;
     renderConstructorStandingsPolish(standings, teamDrivers, latestStandingsMeta, document.getElementById('season-year').textContent || YEAR);

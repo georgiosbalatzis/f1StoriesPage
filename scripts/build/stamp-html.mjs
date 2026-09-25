@@ -26,9 +26,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { applyArticleEditorial } from './article-editorial.mjs';
 import { resolveArticleScope } from './article-scope.mjs';
+
+const { replaceYouTubeIframes } = createRequire(import.meta.url)('../../blog-module/build/youtube-facade.js');
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -192,6 +195,22 @@ const FONTS_END   = '<!-- f1s:fonts-preload:end -->';
 const MODULE_PRELOADS = { 'standings/index.html': 'standings/standings.js' };
 const MODULEPRELOAD_BEGIN = '<!-- f1s:modulepreload:begin -->';
 const MODULEPRELOAD_END   = '<!-- f1s:modulepreload:end -->';
+
+// Pre-render the drivers report line and round from the committed snapshot, exactly as
+// standings.js writes them (REPORT_DETAILS.drivers.note), so the first render already has the
+// final text: the report line re-wrapped when the data arrived and moved its source links.
+function stampStandingsSnapshotText(html, relPath) {
+    if (relPath !== 'standings/index.html') return html;
+    const snapshot = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'standings', 'standings-cache.json'), 'utf8'));
+    const list = snapshot.driverStandings?.MRData?.StandingsTable?.StandingsLists?.[0];
+    if (!list || !list.season) return html;
+    const round = list.round ? String(list.round) : '';
+    const status = `Βαθμολογία πρωταθλήματος · Jolpica F1 · Σεζόν ${list.season}${round ? ` · Γύρος ${round}` : ''}`;
+    return html
+        .replace(/(<span id="season-year">)[^<]*(<\/span>)/, `$1${list.season}$2`)
+        .replace(/(<span id="round-num">)[^<]*(<\/span>)/, `$1${round}$2`)
+        .replace(/(<span id="standings-report-meta-status">)[^<]*(<\/span>)/, `$1${status}$2`);
+}
 
 function stampModulePreloads(html, relPath, manifest) {
     const source = MODULE_PRELOADS[relPath];
@@ -783,7 +802,8 @@ function extractArticleMiniBarText(html, pattern, fallback = '') {
 }
 
 function ensureArticleMiniBar(html) {
-    const source = String(html || '');
+    // The hidden bar is inert so its share button can't take focus (aria-hidden-focus).
+    const source = String(html || '').replace('id="article-mini-bar" aria-hidden="true">', 'id="article-mini-bar" aria-hidden="true" inert>');
     if (/class=["']article-mini-bar["']/.test(source)) return source;
 
     const title = extractArticleMiniBarText(source, /<h1\s+class=["']article-title["'][^>]*>([\s\S]*?)<\/h1>/i);
@@ -796,7 +816,7 @@ function ensureArticleMiniBar(html) {
     ) || 'Blog';
 
     const miniBar =
-        '<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true">\n' +
+        '<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert>\n' +
         '    <div class="article-mini-bar__text">\n' +
         `        <span class="article-mini-bar__category">${category}</span>\n` +
         `        <span class="article-mini-bar__title">${title}</span>\n` +
@@ -921,6 +941,7 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo,
     result = normalizeThemeToggleCopy(result);
     result = alignArticleHeroPreload(result);
     result = dropArticleBlogStyles(result);
+    result = replaceYouTubeIframes(result);
     result = ensureLazyIframes(result);
     result = useGalleryThumbs(result, relPath);
     result = addDensitySrcset(result);
@@ -1192,6 +1213,7 @@ function main() {
         result = placeHeadScripts(ensureThemeInitScript(dropInlineThemeBoot(result), themeInfo, rel), rel);
         result = normalizeThemeToggleCopy(result);
         result = stampModulePreloads(result, rel, manifest);
+        result = stampStandingsSnapshotText(result, rel);
 
         // 1b) swap Bootstrap CDN CSS → local slim build and drop the unused
         //     Bootstrap JS bundle.

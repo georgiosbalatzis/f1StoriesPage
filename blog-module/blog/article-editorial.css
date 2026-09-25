@@ -22,6 +22,7 @@
 .article-page .article-container--drivers,
 .article-page .article-container--teams,
 .article-page .article-container--season { --article-signal: #6f5d39; --article-signal-wash: #6f5d3914; }
+[data-theme="light"] .article-page .article-container--technical { --article-signal-readable: #15706a; } /* #16736c was 4.43:1 on paper */
 [data-theme="light"] .article-page .article-container--history { --article-signal-readable: #805a20; }
 [data-theme="light"] .article-page .article-container--betting { --article-signal-readable: #236a4a; }
 :root:not([data-theme="light"]) .article-page .article-container--technical { --article-signal-readable: #69c5ba; }
@@ -360,6 +361,12 @@
 .article-page .article-content-img:hover { transform: none; }
 .article-page .article-content :is(.social-embed, .embed-container, .gallery-carousel) { max-width: 100%; }
 .article-page .article-content :is(iframe, video) { max-width: 100%; }
+/* YouTube click-to-load facade (build/youtube-facade.js), styled like the home video facade. */
+.article-page .youtube-embed-container .youtube-facade { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; border: 0; background: #151713; cursor: pointer; }
+.article-page .youtube-embed-container .youtube-facade img { width: 100%; height: 100%; margin: 0; object-fit: cover; border-radius: 0; box-shadow: none; }
+.article-page .youtube-facade__play { position: absolute; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; color: #151713; background: var(--accent); }
+.article-page .youtube-facade__play .icon { width: 20px; height: 20px; }
+.article-page .youtube-facade:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .article-page .article-content figure { margin: 2.8em 0; }
 .article-page .article-content figure :is(img, picture) { display: block; max-width: 100%; }
 .article-page .article-content figure .article-content-img { width: 100%; margin: 0; border-radius: 0 0 var(--cut-sm) 0; }
@@ -672,7 +679,8 @@
 @media (prefers-reduced-motion: no-preference) {
     .article-page .article-header-overlay { animation: article-editorial-enter .65s both; }
     .article-page .article-header > picture { animation: article-editorial-enter .8s .12s both; }
-    @keyframes article-editorial-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    /* From .01, not 0: identical to the eye, but Chrome skips opacity-0 paints for LCP. */
+    @keyframes article-editorial-enter { from { opacity: .01; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 }
 @media (prefers-reduced-motion: reduce) {
     .article-page :is(.article-container, .article-header-overlay, .article-header > picture, .article-header-img, .article-content-img, .share-btn, .toc-body, .toc-item, .article-mini-bar, .blog-nav, .related-article-card img, .article-rail-related-item, .gallery-slide, .lb-overlay, .lb-img, .author-profile-link > span) { animation: none; transition: none; }

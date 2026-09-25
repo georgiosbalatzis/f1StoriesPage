@@ -187,6 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
             shown = show;
             miniBar.classList.toggle('is-visible', show);
             miniBar.setAttribute('aria-hidden', String(!show));
+            miniBar.inert = !show; // a hidden bar's share button must not take focus
         };
         const schedule = () => { frame = frame || requestAnimationFrame(update); };
 
@@ -262,6 +263,24 @@ document.addEventListener('DOMContentLoaded', function () {
             load();
         }, { rootMargin: '600px 0px' });
         embeds.forEach(embed => observer.observe(embed));
+    }
+
+    // YouTube facades (build/youtube-facade.js): the player loads only on click.
+    function setupYouTubeFacades() {
+        if (!articleContent) return;
+        articleContent.addEventListener('click', event => {
+            const facade = event.target.closest('.youtube-facade');
+            const id = facade?.getAttribute('data-youtube-id') || '';
+            if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return;
+            event.preventDefault();
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1`;
+            iframe.title = 'YouTube video player';
+            iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+            iframe.allowFullscreen = true;
+            facade.replaceWith(iframe);
+            iframe.focus();
+        });
     }
 
     function setupSocialEmbeds() {
@@ -665,6 +684,7 @@ document.addEventListener('DOMContentLoaded', function () {
     buildTableOfContents();
     setupResponsiveTables();
     setupNavigation();
+    setupYouTubeFacades();
     setupSocialEmbeds();
     setupGalleryCarousel();
     setupLightbox();
