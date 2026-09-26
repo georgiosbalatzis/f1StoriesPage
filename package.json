@@ -4,7 +4,7 @@
   "description": "F1 Stories static website \u2014 build scripts for the blog publishing pipeline.",
   "private": true,
   "scripts": {
-    "build": "npm run build:html && npm run build:youtube && npm run build:blog && npm run build:assets",
+    "build": "npm run build:html && npm run build:youtube && npm run build:blog && npm run build:home-v2 && npm run build:assets",
     "build:blog": "node blog-module/build/index.js",
     "build:blog:force": "node blog-module/build/index.js --force",
     "build:html": "node scripts/build/include.mjs",
@@ -26,7 +26,7 @@
     "build:assets:watch": "node scripts/build/minify.mjs --watch",
     "check:assets": "node scripts/build/check-generated-assets.mjs",
     "preview": "npm run build:assets && npm run check:assets && node scripts/serve-site.mjs",
-    "build:public": "npm run pages:guard && npm run build:html && npm run build:blog && npm run build:assets && npm run build:data-contracts && node scripts/build/public-artifact.mjs && node scripts/build/validate-public-artifact.mjs",
+    "build:public": "npm run pages:guard && npm run build:html && npm run build:blog && npm run build:home-v2 && npm run build:assets && npm run build:data-contracts && node scripts/build/public-artifact.mjs && node scripts/build/validate-public-artifact.mjs",
     "build:data-contracts": "node scripts/build/validate-data-contracts.mjs",
     "build:check": "node scripts/build/generated-drift-guard.mjs",
     "test:blog": "npm run test:taxonomy && node blog-module/build/__tests__/run-golden.js",

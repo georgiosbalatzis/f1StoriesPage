@@ -109,6 +109,10 @@ jobs:
           node scripts/build/minify.mjs
           node scripts/build/stamp-html.mjs
 
+      - name: Render the home-v2 prototype
+        # Reads the blog index just rebuilt above; offline, deterministic.
+        run: npm run build:home-v2
+
       - name: Commit generated artifacts
         id: commit
         uses: ./.github/actions/commit-and-push
@@ -141,12 +145,15 @@ jobs:
       - name: Refresh YouTube snapshot
         run: node scripts/build/fetch-youtube.mjs
 
+      - name: Render the home-v2 prototype
+        run: npm run build:home-v2
+
       - name: Commit updated snapshot
         id: commit
         uses: ./.github/actions/commit-and-push
         with:
           message: 'chore(data): refresh youtube snapshot [skip ci]'
-          paths: assets/youtube-latest.json
+          paths: assets/youtube-latest.json home-v2/index.html
 
   refresh_standings_data:
     name: Refresh standings data
@@ -203,6 +210,10 @@ jobs:
         if: ${{ steps.schedule_window.outputs.run == 'true' }}
         run: npm run build:standings-data
 
+      - name: Render the home-v2 prototype
+        if: ${{ steps.schedule_window.outputs.run == 'true' }}
+        run: npm run build:home-v2
+
       - name: Commit updated standings data
         id: commit
         if: ${{ steps.schedule_window.outputs.run == 'true' }}
@@ -215,6 +226,7 @@ jobs:
             standings/dirty-air
             standings/destructors-cache.json
             standings/debrief-cache.json
+            home-v2/index.html
 
   deploy:
     name: Deploy changed maintenance content

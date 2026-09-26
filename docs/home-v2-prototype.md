@@ -9,6 +9,16 @@ npm run build:home-v2   # re-render home-v2/index.html from the committed data
 npm run preview         # then open http://127.0.0.1:4173/home-v2/
 ```
 
+## Keeping it current
+
+`home-v2/index.html` is a generated artifact, like `index.html`:
+
+- `npm run build` and `npm run build:public` render it after the blog build.
+- The Site Maintenance workflow (`publish-blog.yml`) re-renders and commits it whenever it publishes articles, refreshes the YouTube snapshot or refreshes the standings and Friday debrief caches.
+- `scripts/build/generated-drift-guard.mjs` lists it, so `npm run build:check` fails if the committed copy no longer matches the data.
+
+Its output depends only on committed data files and the current year, so the same inputs always render the same file.
+
 `npm run preview` builds the minified assets the rest of the site needs; the prototype itself loads unminified source files (`/styles/home-fonts.css`, `/scripts/shared-nav.js`, `/scripts/f1-optimized.js`), so a plain `node scripts/serve-site.mjs` also works.
 
 ## Files
@@ -39,4 +49,5 @@ Reused, unchanged: `scripts/shared-nav.js` (menu toggle, race countdown: same el
 - **Rhythm:** ivory cover → dark strip → ivory journal → dark technical spread → ivory On Air → paper data desk → ivory team → quiet contact and partners → dark colophon.
 - **Colour:** paper/ink neutrals from `styles/editorial.css`; the technical teal (`#12655f`, `#6ec6bb` on dark) as the brand accent; signal red only for race status (countdown dot, new episode).
 - **Type:** IBM Plex Sans for everything, Barlow Condensed only for Latin display words (ON AIR., THE NUMBERS., TECHNICAL DEEP DIVE., the wordmark). No monospace: numbers use tabular figures.
-- **Paper theme only.** The prototype is the light edition; a dark-theme pass comes after the direction is approved.
+- **Both themes**, resolved exactly like the rest of the site: `scripts/theme-init.js` runs in `<head>` (dark unless the visitor chose light or the system prefers it), and the header's `.theme-toggle-btn` is wired by `shared-nav.js` to the same `f1stories-theme` preference.
+- **Dark edition:** the page is the site's warm charcoal (`#1b1a19`); paper sections become a raised surface (`#242321`); the dark spreads drop to a deeper warm black (`#100f0e`) with a hairline edge; the race strip inverts to a paper band, so the page keeps one bright interruption; partner logos sit on a light mat; category and author inks switch to their dark variants from `styles/editorial.css`.

@@ -19,6 +19,7 @@ const GENERATED_EXACT = new Set([
     'generate.html',
     'ghostcar/index.html',
     'home.min.css',
+    'home-v2/index.html',
     'housekeeping.html',
     'images/icons/sprite.svg',
     'index.html',
