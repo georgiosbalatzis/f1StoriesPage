@@ -36,7 +36,8 @@ Each section below is split in two:
 |---|---|---|
 | `--paper` | `#e9e3d6` | Warm newsprint. Used for the light-mode masthead, light article cover, sponsor mat, and label tabs laid over photos |
 | `--ink` | `#20251f` | Green-black ink. Used for light-mode text, the footer colophon background, and text on the signal color |
-| `--signal` | `#ed4c32` | Racing red. Used for rules, underlines, dots, stamps, the reading-progress bar, the timing band, and the full stop that ends headlines |
+| `--signal` | `#12655f` light / `#6ec6bb` dark | F1 Stories teal (was racing red until 2026-09-26). Used for rules, underlines, dots, stamps, the reading-progress bar, the timing band, and the full stop that ends headlines. Text on it is `--signal-ink` (paper in light mode, ink in dark) |
+| `--race` | `#ed4c32` | Racing red, kept for race status only: the next-race dot in the masthead |
 
 **Themed surface tokens.** Dark is the default: `html` carries no `data-theme` attribute. Light is `html[data-theme="light"]`.
 
@@ -48,13 +49,13 @@ Each section below is split in two:
 | `--text-primary` | `#eee8db` | `#20251f` (= ink) |
 | `--text-secondary` (muted) | `#b6bbac` | `#5b6256` |
 | `--border` | `#4b5146` | `#c8c8b9` |
-| `--accent` | `#ff775f` | `#a82e1c` |
-| `--accent-hover` | `#ff947f` | `#8e281a` |
+| `--accent` | `#6ec6bb` | `#12655f` |
+| `--accent-hover` | `#8fd6cc` | `#0d4f4a` |
 | `--accent-contrast` (text on accent) | `#20251f` | `#f2eee4` |
 
 The neutrals are **warm and slightly green-leaning**, never cool grey. Light mode is paper, not white. Dark mode is warm charcoal, not blue-black.
 
-The accent splits by theme. Dark mode uses a light coral (`#ff775f`) because it has to be readable on charcoal. Light mode uses deep oxide red (`#a82e1c`) because it has to be readable on paper. `--signal` itself never changes. It is used for decorative marks and blocks, and whenever it carries text, that text is `--ink`.
+The accent splits by theme. Dark mode uses a light teal (`#6ec6bb`, 8.6:1 on charcoal); light mode uses deep teal (`#12655f`, 5.9:1 on paper). `--signal` follows the same split. It is used for decorative marks and blocks, and whenever it carries text, that text is `--signal-ink` (ink on the light teal, paper on the deep teal). Racing red survives as `--race`, for race status only.
 
 **Route variants** (deliberate "editions"):
 - **Archive and article** (`editorial.css:57-89`) use a warmer charcoal set: `--text-secondary #b8b1a6`, `--text-tertiary #968f86`, `--border #6d6861`, `--accent-readable #ff9a89`. The comment in the file states the intent: "warmer charcoal dark theme".
@@ -203,11 +204,11 @@ Barlow is never used for Greek running text.
 
 ### Navigation (masthead) — A
 
-- A flat bar with no blur and no shadow, and a 1px bottom rule. In light mode it's paper; in dark mode it's `--bg-surface` (the home page uses its own cover color).
-- **Brand:** 38px logo mark + "F1 STORIES." in Barlow 700 at 1.75rem, `-.035em`. The logo rotates `-8deg` on hover.
-- **Links:** Plex 500 at .875rem, with no pill and no background. The active link is weight 600 with a **2px signal underline covering 40% of its width**. On hover the underline grows from the right to full width.
-- **Right cluster:** race countdown (flag, race name, tabular timer) after a 1px left rule; a 44px round theme toggle that rotates 16° on hover; a square 1px-bordered hamburger with square strokes.
-- **Mobile menu:** full-width rows 52px tall with a signal left border on the active item. On hover the row indents from 1.5rem to 1.9rem.
+- A flat bar on the page's own ground (`--bg-base`) with no blur and no shadow, and a 1px `--border` bottom rule. One rule set serves both themes. It stays fixed at 75px (67px ≤991px); route offsets depend on that height.
+- **Brand:** 36px logo mark + "F1 STORIES." in Barlow 700 at 1.75rem, the full stop in `--signal`. The logo rotates `-8deg` on hover.
+- **Links:** five typed-caps labels (ΑΡΘΡΑ, ΒΑΘΜΟΛΟΓΙΑ, DATA, YOUTUBE ↗, ΣΥΝΤΑΚΤΕΣ), Plex 600 at .75rem with `.13em` tracking, pushed right, with no pill and no background. The active link has a **2px signal underline covering 40% of its width**. On hover the underline grows from the right to full width. The brand is the home link; BetCast lives in the colophon.
+- **Right cluster:** race countdown after a 1px left rule: a 7px `--race` dot, flag, race name (hidden ≤1199px) and tabular timer on one line; a 44px theme toggle that rotates 16° on hover; a borderless hamburger with square strokes.
+- **Mobile menu:** full-width rows 60px tall, set at 1.375rem Plex 600 and numbered `01`–`05` in the accent, like a contents page. The active row takes the accent colour.
 - **Every route uses the same masthead,** from one partial (`partials/nav.html`, expanded at build time into every shell and article; the active section comes from the page context in `scripts/build/include.mjs`).
 
 ### Edition line — A (a signature element)
@@ -314,9 +315,10 @@ The home contact form uses underline-only fields (1px bottom border, transparent
 
 ### Footer (colophon) — A
 
-- An ink block (`--ink`) with paper text in both themes, plus a faint radial wash.
-- A two-column grid: copyright on the left (max 42ch), square social icons on the right. The icons are 44px, borderless, and get a 1px border on hover while the icon tilts.
-- A rule-separated link row at .75rem. Link underlines are signal and grow on hover.
+- The last page of the magazine: a dark spread in both themes (`#1b1a19`; in dark mode a deeper `#100f0e` with a hairline top rule), with paper text.
+- The wordmark "F1 STORIES." set across the width in Barlow at up to 15.5rem, its full stop in teal.
+- Below a rule, a 12-column row: the mission ("Τεχνική ανάλυση, άποψη και ιστορίες από το grid.") in 5 columns, then **ΠΛΟΗΓΗΣΗ** and **SOCIAL** as text-link columns (external links carry ↗).
+- A rule-separated base row at .75rem: copyright, then privacy, terms, cookie settings and any route extras (standings' cache reset). Link underlines are teal and grow on hover.
 
 ### Motion — A
 

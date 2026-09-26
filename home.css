@@ -9,7 +9,7 @@
     --home-cover-button-text: var(--paper);
 }
 
-/* Night edition: warm type on charcoal, with red reserved for racing details. */
+/* Night edition: warm type on charcoal; the teal brand accent, red only for race status. */
 :root:not([data-theme="light"]) body.home-page {
     --ink: #17191b;
     --bg-base: #181a1c;
@@ -20,11 +20,11 @@
     --text-secondary: #bcb8b0;
     --text-tertiary: #bcb8b0;
     --border: #47494a;
-    --accent: #ff826b;
-    --accent-readable: #ff826b;
-    --accent-hover: #ffa28f;
+    --accent: #6ec6bb;
+    --accent-readable: #6ec6bb;
+    --accent-hover: #8fd6cc;
     --accent-contrast: #17191b;
-    --accent-muted: #ff826b12;
+    --accent-muted: #6ec6bb12;
     --home-cover: #1b1d1f;
     --home-cover-text: var(--text-primary);
     --home-cover-muted: var(--text-secondary);

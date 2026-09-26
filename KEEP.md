@@ -8,15 +8,16 @@ Fixing the **debt** listed in `DESIGN.md` is allowed only when the trait below s
 
 ## Palette
 
-- [ ] **Paper / ink / signal**:
+- [ ] **Paper / ink / signal / race**:
   - `--paper #e9e3d6`
   - `--ink #20251f`
-  - `--signal #ed4c32`
+  - `--signal`: F1 Stories teal, `#12655f` on paper and `#6ec6bb` on charcoal (the brand mark since 2026-09-26)
+  - `--race #ed4c32`: racing red, for race status only (the next-race dot)
 - [ ] **Warm neutrals only.**
   - Light mode is paper (`#f2eee4` base, `#e9e3d6` surface), never white.
   - Dark mode is warm charcoal (`#1b1a19` family), never blue-black or cool grey.
-- [ ] **The accent splits by theme:** coral `#ff775f` in dark mode, oxide `#a82e1c` in light mode. `--signal` stays constant, and any text on it is ink.
-- [ ] **Dark is the default theme.** Light is `html[data-theme="light"]`, and both themes are first-class.
+- [ ] **The accent splits by theme:** teal `#6ec6bb` in dark mode, deep teal `#12655f` in light mode. Text laid on `--signal` is `--signal-ink`: ink in dark mode, paper in light mode.
+- [ ] **Dark is the default theme.** Light is `html[data-theme="light"]`, and both themes are first-class. Exception: the redesigned homepage (`/home-v2/`) is the paper edition, light only.
 - [ ] **Per-category signal colors:** technical teal, analysis oxide, history ochre, betting green, and the others, from one token map (`--category-*`) with a dark-readable variant. Used as punctuation only: the category word and small marks, never fills, pills or colored headlines.
 - [ ] **Author accents are separate from category color:** a muted ink per writer, only in author blocks (the article's closing card, the Journal's writer view, `/authors/` badges).
 - [ ] **Team and tyre colors stay attached to data only.** They are never used as UI chrome.

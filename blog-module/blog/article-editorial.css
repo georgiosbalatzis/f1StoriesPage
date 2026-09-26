@@ -73,7 +73,7 @@
     letter-spacing: .04em;
 }
 .article-page .back-link .icon { transition: transform .3s var(--ease-editorial); }
-.article-page .back-link:hover { color: #a82e1c; background: none; }
+.article-page .back-link:hover { color: var(--accent-readable); background: none; }
 .article-page .back-link:hover .icon { transform: translateX(-5px); }
 /* The kicker pill is the cover's category link: same 44px row as the back link. */
 .article-page .article-category-pill {

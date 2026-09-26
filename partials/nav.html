@@ -1,18 +1,17 @@
 <header>
-    <nav class="blog-nav" id="blog-nav">
+    <nav class="blog-nav" id="blog-nav" aria-label="Κύριο μενού">
         <div class="container blog-nav-inner">
             <a class="blog-nav-brand" href="/" aria-label="Αρχική σελίδα F1 Stories"><img src="/images/logo-nav.webp" alt="Λογότυπο F1 Stories" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
-                <a href="/" class="blog-nav-link{{navHome}}"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
-                <a href="/blog-module/blog/index.html" class="blog-nav-link{{navJournal}}"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
-                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link{{navStandings}}"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
-                <a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
-                <a href="/authors/" class="blog-nav-link{{navAuthors}}"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
-                <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
+                <a href="/blog-module/blog/index.html" class="blog-nav-link{{navJournal}}">ΑΡΘΡΑ</a>
+                <a href="/standings/" class="blog-nav-link{{navStandings}}">ΒΑΘΜΟΛΟΓΙΑ</a>
+                <a href="/standings/?tab=tyre-pace" class="blog-nav-link">DATA</a>
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link">YOUTUBE <span class="blog-nav-out" aria-hidden="true">↗</span></a>
+                <a href="/authors/" class="blog-nav-link{{navAuthors}}">ΣΥΝΤΑΚΤΕΣ</a>
             </div>
             <div class="blog-nav-right">
                 <div class="blog-nav-countdown" id="nav-countdown">
+                    <span class="countdown-live" aria-hidden="true"></span>
                     <span class="countdown-flag" id="race-flag-emoji">🏁</span>
                     <div class="countdown-info">
                         <span class="countdown-race" id="next-race-name">Επόμενο GP</span>
@@ -20,6 +19,7 @@
                     </div>
                 </div>
                 <div class="blog-nav-countdown-mobile" id="nav-countdown-mobile">
+                    <span class="countdown-live" aria-hidden="true"></span>
                     <span class="countdown-flag-mobile" data-race-flag-mobile aria-hidden="true">🏁</span>
                     <span id="race-countdown-mobile">Σύντομα</span>
                 </div>
@@ -27,13 +27,11 @@
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
-            <a href="/" class="blog-nav-mobile-link{{navHome}}"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
-            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link{{navJournal}}"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
-            <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link{{navStandings}}"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
-            <a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
-            <a href="/authors/" class="blog-nav-mobile-link{{navAuthors}}"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
-            <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
+            <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link{{navJournal}}">ΑΡΘΡΑ</a>
+            <a href="/standings/" class="blog-nav-mobile-link{{navStandings}}">ΒΑΘΜΟΛΟΓΙΑ</a>
+            <a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link">DATA</a>
+            <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link">YOUTUBE</a>
+            <a href="/authors/" class="blog-nav-mobile-link{{navAuthors}}">ΣΥΝΤΑΚΤΕΣ</a>
             <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
                 <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
                 <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
