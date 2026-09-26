@@ -114,6 +114,60 @@ body.article-page {
     --accent-contrast: #f2eee4;
     --accent-muted: #a82e1c14;
 }
+
+/* Category inks: the one token map for every route (archive, articles, filters).
+ * taxonomy.js names each public category's kind; markup carries it as data-kind
+ * (archive) or data-article-kind (article). --category-* marks rules and dots,
+ * --category-*-text is readable at label size (all ≥4.5:1 on paper and charcoal).
+ * Light mode prints both in the same ink. */
+body.editorial-page {
+    --category-news: #e2604a;       --category-news-text: #ff9a89;
+    --category-analysis: #cf6a45;   --category-analysis-text: #f39370;
+    --category-technical: #3c9990;  --category-technical-text: #6ec6bb;
+    --category-history: #b08a36;    --category-history-text: #dcb468;
+    --category-opinion: #b27a62;    --category-opinion-text: #d9a28d;
+    --category-betting: #4c9a68;    --category-betting-text: #7ec99a;
+    --category-drivers: #6e93bb;    --category-drivers-text: #a0c0e3;
+    --category-teams: #9580b0;      --category-teams-text: #c2afdc;
+    --category-season: #a09c3e;     --category-season-text: #d4d06f;
+}
+[data-theme="light"] body.editorial-page {
+    --category-news: #a82e1c;       --category-news-text: #a82e1c;
+    --category-analysis: #9a3d1c;   --category-analysis-text: #9a3d1c;
+    --category-technical: #12655f;  --category-technical-text: #12655f;
+    --category-history: #7a5a14;    --category-history-text: #7a5a14;
+    --category-opinion: #81452f;    --category-opinion-text: #81452f;
+    --category-betting: #2c6a43;    --category-betting-text: #2c6a43;
+    --category-drivers: #3a5f86;    --category-drivers-text: #3a5f86;
+    --category-teams: #654a7d;      --category-teams-text: #654a7d;
+    --category-season: #5f5d17;     --category-season-text: #5f5d17;
+}
+.editorial-page :is([data-kind], [data-article-kind]) { --kind: var(--signal); --kind-text: var(--accent-readable); }
+.editorial-page :is([data-kind="news"], [data-article-kind="news"]) { --kind: var(--category-news); --kind-text: var(--category-news-text); }
+.editorial-page :is([data-kind="analysis"], [data-article-kind="analysis"]) { --kind: var(--category-analysis); --kind-text: var(--category-analysis-text); }
+.editorial-page :is([data-kind="technical"], [data-article-kind="technical"]) { --kind: var(--category-technical); --kind-text: var(--category-technical-text); }
+.editorial-page :is([data-kind="history"], [data-article-kind="history"]) { --kind: var(--category-history); --kind-text: var(--category-history-text); }
+.editorial-page :is([data-kind="opinion"], [data-article-kind="opinion"]) { --kind: var(--category-opinion); --kind-text: var(--category-opinion-text); }
+.editorial-page :is([data-kind="betting"], [data-article-kind="betting"]) { --kind: var(--category-betting); --kind-text: var(--category-betting-text); }
+.editorial-page :is([data-kind="drivers"], [data-article-kind="drivers"]) { --kind: var(--category-drivers); --kind-text: var(--category-drivers-text); }
+.editorial-page :is([data-kind="teams"], [data-article-kind="teams"]) { --kind: var(--category-teams); --kind-text: var(--category-teams-text); }
+.editorial-page :is([data-kind="season"], [data-article-kind="season"]) { --kind: var(--category-season); --kind-text: var(--category-season-text); }
+
+/* Author inks: a writer's quiet signature, used only in author blocks (the article's
+ * closing card, the authors page, the archive's writer view). Never on category labels.
+ * Keyed by the slug from taxonomy.js AUTHORS; readable as text in both themes. */
+.editorial-page [data-author-slug] { --author-accent: var(--text-secondary); }
+.editorial-page [data-author-slug="georgios-balatzis"] { --author-accent: #6fa9b9; }
+.editorial-page [data-author-slug="giannis-poulikidis"] { --author-accent: #d09a64; }
+.editorial-page [data-author-slug="themis-charvalis"] { --author-accent: #dc8f79; }
+.editorial-page [data-author-slug="thanasis-batalas"] { --author-accent: #9eadd2; }
+.editorial-page [data-author-slug="dimitris-keramidiotis"] { --author-accent: #c39bb5; }
+[data-theme="light"] .editorial-page [data-author-slug="georgios-balatzis"] { --author-accent: #285f6f; }
+[data-theme="light"] .editorial-page [data-author-slug="giannis-poulikidis"] { --author-accent: #80501f; }
+[data-theme="light"] .editorial-page [data-author-slug="themis-charvalis"] { --author-accent: #9b4331; }
+[data-theme="light"] .editorial-page [data-author-slug="thanasis-batalas"] { --author-accent: #4b5a80; }
+[data-theme="light"] .editorial-page [data-author-slug="dimitris-keramidiotis"] { --author-accent: #6d4660; }
+
 /* A tiny inline noise tile adds ink-and-paper texture without an image request. */
 body.editorial-page::after {
     content: '';
@@ -125,7 +179,7 @@ body.editorial-page::after {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.84' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23000' filter='url%28%23n%29' opacity='.65' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
 }
 :root:not([data-theme="light"]) .editorial-page::after { display: none; }
-.editorial-page .container { max-width: 1476px; width: 100%; padding-inline: 48px; }
+.editorial-page .container { max-width: 1476px; width: 100%; margin-inline: auto; padding-inline: 48px; }
 .editorial-page :is(button, input, textarea, .skip-link) { font-family: var(--font-body); }
 .editorial-page :is(h1, h2, h3, p) { margin-top: 0; }
 .editorial-page h2 { display: block; font: 600 clamp(1.8rem, 3vw, 3rem)/1.2 var(--font-body); padding: 0; margin-bottom: 20px; border: 0; letter-spacing: -.025em; }
@@ -390,13 +444,19 @@ body.editorial-page footer {
     color: var(--paper, #e9e3d6);
     border-top: 1px solid rgba(233, 227, 214, 0.18);
     font-family: var(--font-body);
+    padding: 1.5rem 0;
+}
+/* Notched phones keep the colophon and the consent bar clear of the home indicator. */
+@supports (padding: env(safe-area-inset-bottom)) {
+    body.editorial-page footer { padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); }
+    body.editorial-page .cookie-consent { padding-bottom: env(safe-area-inset-bottom); }
 }
 
 body.editorial-page footer > .container {
     padding-block: 1.75rem;
 }
 
-body.editorial-page footer .col-12 {
+body.editorial-page footer .footer-body {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
@@ -484,7 +544,7 @@ body.editorial-page footer .footer-separator {
 }
 
 @media (max-width: 767.98px) {
-    body.editorial-page footer .col-12 { grid-template-columns: 1fr; gap: 1.2rem; }
+    body.editorial-page footer .footer-body { grid-template-columns: 1fr; gap: 1.2rem; }
     body.editorial-page footer .social-media { justify-content: flex-start; gap: 0.5rem; }
     body.editorial-page footer .footer-links { flex-direction: row; align-items: flex-start; gap: 0.75rem 1.5rem; }
 }
@@ -496,37 +556,26 @@ body.editorial-page footer .footer-separator {
     body.editorial-page footer .social-media a:hover .icon { transform: none; }
 }
 
-/* Legacy components consume aliases defined here so both themes resolve locally. */
+/* Legacy article and standings CSS still read these aliases; unread ones have been removed.
+ * Delete each alias when the last legacy rule reading it is rewritten. */
 body.editorial-page,
 .editorial-preview {
     color-scheme: dark;
     --bg-overlay: #1b1a19f2;
     --border-accent: var(--accent);
     --accent-glow: #ed4c3222;
-    --primary-blue: var(--accent);
-    --secondary-blue: var(--accent-hover);
-    --accent-cyan: var(--accent);
-    --light-text: var(--text-primary);
-    --dark-bg: var(--bg-base);
-    --darker-bg: var(--bg-base);
     --gradient-primary: linear-gradient(var(--bg-surface), var(--bg-surface));
     --gradient-accent: linear-gradient(var(--accent), var(--accent));
     --shadow-lg: 0 8px 24px #00000012;
-    --blog-bg: var(--bg-base);
     --blog-surface: var(--bg-surface);
-    --blog-surface-hover: var(--bg-surface-alt);
     --blog-surface-raised: var(--bg-surface-alt);
     --blog-border: var(--border);
-    --blog-border-strong: var(--border);
     --blog-text-primary: var(--text-primary);
     --blog-text-secondary: var(--text-secondary);
     --blog-text-tertiary: var(--text-secondary);
     --blog-accent: var(--accent);
     --blog-accent-soft: var(--accent-muted);
-    --blog-accent-hover: var(--accent-hover);
-    --blog-shadow-sm: none;
     --blog-shadow-md: none;
-    --blog-radius: 2px;
     --blog-radius-sm: 2px;
     --st-bg: var(--bg-base);
     --st-surface: var(--bg-surface);
@@ -737,4 +786,4 @@ body.editorial-page footer .footer-wordmark .editorial-accent { color: var(--sig
 
 /* Standalone text links keep a 24px minimum target (WCAG 2.2 AA 2.5.8) without changing their type. */
 /* KEEP: 44px targets for every standalone link, not just WCAG's 24px floor. */
-body.editorial-page :is(.authors-directory-link, .team-member__name a, .footer-link, .footer-wordmark, .authors-directory-back, .authors-intro__data-link, .author-profile__archive, .author-profile__social, .author-profile__name a, .author-profile__stories a, .author-profile-link, .article-author-link, .author-name a, .article-trust strong a, .article-trust__corrections a) { display: inline-flex; align-items: center; min-height: 44px; }
+body.editorial-page :is(.authors-directory-link, .team-member__name a, .footer-link, .footer-wordmark, .authors-directory-back, .authors-intro__data-link, .author-profile__archive, .author-profile__social, .author-profile__name a, .author-profile__stories a, .article-author-link, .article-trust strong a, .article-trust__corrections a) { display: inline-flex; align-items: center; min-height: 44px; }

@@ -66,14 +66,14 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=946979ee">
+    <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=673c392e">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=ca8e0cc6">
-    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=94ac6e07">
+    <link rel="stylesheet" href="/styles.min.css?v=32423041">
+    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=7d8d58a2">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
-    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=73b1e224">
+    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=dc0b41f8">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" type="image/avif" href="2.avif" fetchpriority="high">
@@ -84,10 +84,10 @@
     <!-- Prevent FOUC -->
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ef4df24c">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=8a09ac22">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=e2e135cd">
     <!-- f1s:article-editorial:end -->
-    <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
+    <script src="/scripts/theme-init.min.js?v=327f75c6"></script>
 </head>
 <body class="editorial-page article-page">
 <!-- f1s:icon-sprite:begin -->
@@ -109,15 +109,19 @@
 </button>
 
 <!-- Navbar -->
+<!-- @include partials/nav.html -->
+<!-- @include:begin partials/nav.html -->
 <header>
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
-            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
+            <a class="blog-nav-brand" href="/" aria-label="Αρχική σελίδα F1 Stories"><img src="/images/logo-nav.webp" alt="Λογότυπο F1 Stories" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+                <a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
+                <a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -132,20 +136,29 @@
                     <span class="countdown-flag-mobile" data-race-flag-mobile aria-hidden="true">🏁</span>
                     <span id="race-countdown-mobile">Σύντομα</span>
                 </div>
-                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
+                <button class="blog-nav-hamburger" id="nav-hamburger" type="button" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
             <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
             <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+            <a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
+            <a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
+            <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
+                <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
+                <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
+                <span class="theme-toggle-label-dark">Φωτεινό θέμα</span>
+                <span class="theme-toggle-label-light">Σκούρο θέμα</span>
+            </button>
         </div>
     </nav>
 </header>
+<!-- @include:end partials/nav.html -->
 
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert>
+<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert data-article-kind="news">
     <div class="article-mini-bar__text">
         <span class="article-mini-bar__category">Ειδήσεις</span>
         <span class="article-mini-bar__title">Μονακό 2025: Η Ονειρεμένη Νίκη του Νόρις Εν μέσω Στρατηγικού Χάους και Ένος Κανονιστικού Πυρός</span>
@@ -174,7 +187,7 @@
                         <a href="/blog-module/blog/index.html?category=News" class="article-category-pill">Ειδήσεις</a>
                     </div>
                     <h1 class="article-title">Μονακό 2025: Η Ονειρεμένη Νίκη του Νόρις Εν μέσω Στρατηγικού Χάους και Ένος Κανονιστικού Πυρός</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Γιώργος Μπαλατζής</a></p>
+                    <p class="article-header-byline" data-author-slug="georgios-balatzis"><img class="article-header-byline__avatar" src="/images/avatars/CSW-96.webp" alt="" width="32" height="32" decoding="async"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Γιώργος Μπαλατζής</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 30 Μαΐου 2025</span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
@@ -252,24 +265,7 @@
                                 </div>
                             </div><p><em>Πηγή: <sup>19</sup></em></p><h3>Πρωτάθλημα Κατασκευαστών: Το Επιβλητικό Προβάδισμα της McLaren</h3><p>Η McLaren Mercedes διατηρεί ένα επιβλητικό προβάδισμα 👑 στο Πρωτάθλημα Κατασκευαστών με 319 βαθμούς.<sup>9</sup> Οι πλησιέστεροι αντίπαλοί της είναι η Mercedes (147 βαθμοί), η Red Bull Racing Honda RBPT (143 βαθμοί) και η Ferrari (142 βαθμοί).<sup>4</sup> Το σύνολο των βαθμών της McLaren είναι περισσότερο από το διπλάσιο από οποιαδήποτε άλλη ομάδα.<sup>9</sup></p><h3>Κοιτάζοντας Μπροστά: Οι Επόμενοι Γύροι του Ημερολογίου του 2025</h3><p>Το ημερολόγιο της F1 βρίσκεται σε πλήρη εξέλιξη, με τον επόμενο αγώνα να είναι το Grand Prix της Ισπανίας (Γύρος 9) από τις 30 Μαΐου έως την 1η Ιουνίου 2025, στην πίστα Circuit de Barcelona-Catalunya.<sup>11</sup> Αυτός θα είναι ο τελευταίος αγώνας στη Βαρκελώνη, καθώς από το 2026 θα μεταφερθεί στη Μαδρίτη.<sup>11</sup> Το Grand Prix της Ισπανίας θεωρείται «βαρόμετρο της F1» – αν ένα μονοθέσιο πάει καλά εκεί, είναι πιθανό να πάει καλά στις περισσότερες πίστες.<sup>10</sup> Αυτό το καθιστά ένα κρίσιμο τεστ 🧪 για τον Νόρις να επιβεβαιώσει τη δυναμική του από το Μονακό.<sup>10</sup> Η σεζόν συνεχίζεται με γύρους στον Καναδά, την Αυστρία, τη Μεγάλη Βρετανία, το Βέλγιο, την Ουγγαρία, την Ολλανδία, την Ιταλία, το Αζερμπαϊτζάν, τη Σιγκαπούρη, τις Ηνωμένες Πολιτείες, το Μεξικό, τη Βραζιλία, το Λας Βέγκας, το Κατάρ και το Άμπου Ντάμπι.<sup>21</sup></p><p>Η μάχη για το πρωτάθλημα δεν είναι πλέον πρωτίστως ένας αγώνας Red Bull εναντίον McLaren, αλλά μάλλον μια έντονη, γνήσια ενδοομαδική αντιπαλότητα μεταξύ Νόρις και Πιάστρι. Η συνολική απόδοση του μονοθεσίου της McLaren είναι σαφώς ανώτερη, υποδηλώνοντας ότι το Πρωτάθλημα Οδηγών πιθανότατα θα κριθεί μεταξύ των δύο οδηγών της. Αυτή η δυναμική μετατοπίζει την αφηγηματική εστίαση από τον δια-ομαδικό ανταγωνισμό στην ψυχολογική και στρατηγική μάχη εντός της McLaren. Υποδηλώνει επίσης ότι η Red Bull, παρά την προηγούμενη κυριαρχία του Φερστάπεν, αντιμετωπίζει μια σημαντική πρόκληση για να καλύψει τη διαφορά, ειδικά εάν το μονοθέσιό της συνεχίσει να δυσκολεύεται σε ορισμένους τύπους πίστας. Το επερχόμενο Grand Prix της Ισπανίας, μια πίστα «βαρόμετρο» <sup>10</sup>, θα είναι κρίσιμο για την επιβεβαίωση του συνολικού πλεονεκτήματος της McLaren και την πορεία αυτής της εσωτερικής μάχης για τον τίτλο.</p><h2>VI. Το Μέλλον του Μονακό: Παράδοση έναντι Αγωνιστικού Θεάματος</h2><h3>Αντιδράσεις Σχολιαστών και Οδηγών στο Μορφότυπο και τις Τακτικές του Αγώνα του 2025</h3><p>Ο υποχρεωτικός κανόνας των δύο pit stop επικρίθηκε ευρέως από οδηγούς και σχολιαστές. </p><p>Ο Λάντο Νόρις «το μίσησε» 😡, ο Τζένσον Μπάτον το χαρακτήρισε «ανόητο» 🤪, και ο Μαξ Φερστάπεν το συνέκρινε με «Mario Kart» 🍄🏎️.<sup>13</sup> Οδηγοί όπως ο Άλεξ Άλμπον και ο Κάρλος Σάινθ, παρόλο που επωφελήθηκαν από τις τακτικές «αργής οδήγησης», εξέφρασαν δυσφορία, χαρακτηρίζοντάς το «άσχημο» 🤢 και «όχι έτσι που θέλουμε να αγωνιζόμαστε».<sup>14</sup> Η γενική αίσθηση ήταν ότι ο κανόνας «δεν λειτούργησε» ❌ και οδήγησε σε «χειραγωγημένους» 😈 αγώνες αντί για γνήσιο ενθουσιασμό.<sup>13</sup> Ο Μάρτιν Μπράντλ σημείωσε συνοπτικά: «Η εστίαση ήταν στα pit stop, όχι στον αγώνα».<sup>14</sup></p><h3>Συζήτηση για Πιθανές Τροποποιήσεις Πίστας ή Αλλαγές Κανονισμών</h3><p>Το βασικό πρόβλημα που εντοπίστηκε είναι ότι τα σύγχρονα μονοθέσια της F1 είναι «πολύ μεγάλα» 📏 για την πίστα του Μονακό, καθιστώντας τις προσπεράσεις «σχεδόν αδύνατες» 🚫.<sup>1</sup> Το DRS είναι αναποτελεσματικό, και η επαφή είναι αναπόφευκτη όταν επιχειρούνται προσπεράσεις.<sup>14</sup> Προτάσεις για βελτίωση περιλαμβάνουν:</p><ul><li><strong>Αλλαγή της διάταξης της πίστας:</strong> Τροποποίηση στροφών όπως το Portier, διεύρυνση της εξόδου της σήραγγας, ή μετακίνηση του σικέιν Nouvelle για τη δημιουργία γνήσιων ευκαιριών προσπέρασης.<sup>1</sup> Ωστόσο, αυτό θεωρείται «δύσκολο να περάσει» 🚧 λόγω της παράδοσης.<sup>2</sup></li><li><strong>Πείραμα με τους κανονισμούς του 2025:</strong> Περιορισμός του πόσο αργά μπορούν να οδηγούν τα μονοθέσια για την αποτροπή χειραγώγησης του ρυθμού.<sup>1</sup></li><li><strong>Νέοι κανονισμοί μονοθεσίων του 2026:</strong> Ελπίδες ότι μικρότερα μονοθέσια 🤏 με καλύτερα υβριδικά συστήματα για προσπεράσεις θα βελτιώσουν τους αγώνες.<sup>1</sup></li><li><strong>Περισσότερη έμφαση στις κατατακτήριες:</strong> Ο Φερστάπεν πρότεινε το Μονακό να είναι ένας «αγώνας κατατακτήριων» 🏁 με βαθμούς που θα απονέμονται για το Σάββατο και την Κυριακή, καθώς αυτό είναι που αρέσει περισσότερο στον κόσμο.<sup>1</sup></li><li><strong>Εναλλακτικά μορφότυπα αγώνων:</strong> Ιδέες όπως αγώνες με αντίστροφη εκκίνηση ⏪ ή δοκιμασίες χρόνου αναφέρθηκαν από τους οπαδούς.<sup>2</sup></li></ul><h3>Η Διαρκής Κληρονομιά του Μονακό και η Θέση του στη Σύγχρονη F1</h3><p>Παρά την κριτική για το αγωνιστικό θέαμα, η εμβληματική θέση και η ιστορική σημασία του Μονακό είναι αδιαμφισβήτητες 💎.<sup>6</sup> Η συζήτηση αναδεικνύει μια ένταση μεταξύ της διατήρησης της παράδοσης και της διασφάλισης ανταγωνιστικών αγώνων στη σύγχρονη Formula 1.<sup>1</sup> Ενώ το πείραμα των δύο pit stop απέτυχε, έδωσε «τροφή για σκέψη» 🤔 στα αφεντικά της F1.<sup>5</sup></p><p>Το πρόβλημα δεν αφορά μόνο έναν μεμονωμένο κανόνα. Είναι μια θεμελιώδης ασυμβατότητα μεταξύ του σχεδιασμού της πίστας και της τρέχουσας γενιάς μονοθεσίων της F1. Το άθλημα βρίσκεται σε ένα σταυροδρόμι, χρειάζεται να αποφασίσει αν θα δώσει προτεραιότητα στην ιστορική ιερότητα του Μονακό ή αν θα το προσαρμόσει (ή τα μονοθέσια) για να εξασφαλίσει ένα πιο συναρπαστικό προϊόν στην πίστα. Αυτό παραπέμπει σε μια ευρύτερη φιλοσοφική συζήτηση εντός της F1: πόσο πρέπει η παράδοση να υπαγορεύει το μέλλον του αθλήματος; Η συζήτηση γύρω από τις τροποποιήσεις της πίστας έναντι των αλλαγών στους κανονισμούς των μονοθεσίων <sup>1</sup> αντανακλά αυτό. Το Grand Prix του Μονακό του 2025 χρησιμεύει ως μια χαρακτηριστική περίπτωση μελέτης, αποδεικνύοντας ότι οι επιφανειακές αλλαγές κανόνων δεν μπορούν να διορθώσουν βαθιά ριζωμένα δομικά ζητήματα όταν τα βασικά στοιχεία (πίστα και μονοθέσια) δεν ταιριάζουν. Αναγκάζει τη Formula 1 να αντιμετωπίσει το ερώτημα αν «το κόσμημα του στέμματος» μπορεί να παραμείνει σχετικό ως <em>αγωνιστικό</em> θέαμα χωρίς σημαντική εξέλιξη.</p><h2>VII. Συμπέρασμα: Ένα Αξιομνημόνευτο, αλλά Διχαστικό, Κεφάλαιο</h2><p>Το Grand Prix του Μονακό του 2025 θα μείνει στην ιστορία για τη συγκινητική και στρατηγική νίκη 🤩 του Λάντο Νόρις από την pole position, ένα σημαντικό ορόσημο 🎯 στην καριέρα του και στη μάχη του πρωταθλήματος.<sup>9</sup> Θα μείνει επίσης στη μνήμη για τον αμφιλεγόμενο 🤨 υποχρεωτικό κανόνα των δύο pit stop, ο οποίος, παρά τις προθέσεις του, οδήγησε σε ευρεία απογοήτευση 😞 και αμφισβητούμενες τακτικές 🧐 «αργής οδήγησης» που επισκίασαν τον ίδιο τον αγώνα.<sup>13</sup></p><p>Η νίκη του Νόρις εδραίωσε τη θέση του ως σοβαρού διεκδικητή του τίτλου, σφίγγοντας τη μάχη του πρωταθλήματος με τον teammate του Όσκαρ Πιάστρι και αναδεικνύοντας το ισχυρό συνολικό πακέτο 💪 της McLaren.<sup>9</sup> Ο αγώνας λειτούργησε ως μικρόκοσμος της συνεχιζόμενης πρόκλησης της F1: πώς να ισορροπήσει την πλούσια ιστορία και τους εμβληματικούς της χώρους με τις απαιτήσεις για συναρπαστικούς, ανταγωνιστικούς αγώνες 🏎️💨 στη σύγχρονη εποχή. Η ευρεία συζήτηση μετά τον αγώνα υποδηλώνει ότι το άθλημα πρέπει να συνεχίσει να εξελίσσει τους κανονισμούς του και ενδεχομένως τους χώρους διεξαγωγής, για να διασφαλίσει τη μακροπρόθεσμη ελκυστικότητά του 🌟 ως ένα αληθινό αγωνιστικό θέαμα.<sup>1</sup></p><h4>References</h4><ol><li>Monaco Grand Prix: What next for F1's iconic event as new 2025 rules fail to spark better racing at street circuit | F1 News | Sky Sports, Zugriff am Mai 27, 2025, <a href="https://www.skysports.com/f1/news/12433/13375018/monaco-grand-prix-what-next-for-f1s-iconic-event-as-new-2025-rules-fail-to-spark-better-racing-at-street-circuit">https://www.skysports.com/f1/news/12433/13375018/monaco-grand-prix-what-next-for-f1s-iconic-event-as-new-2025-rules-fail-to-spark-better-racing-at-street-circuit</a></li><li>POLL: Was Monaco GP race manipulation a bad look for F1? - Speedcafe.com, Zugriff am Mai 27, 2025, <a href="https://speedcafe.com/f1-news-monaco-gp-race-manipulation-two-stops-poll-sainz-albon/">https://speedcafe.com/f1-news-monaco-gp-race-manipulation-two-stops-poll-sainz-albon/</a></li><li>FORMULA 1 TAG HEUER GRAND PRIX DE MONACO 2025 ... - F1, Zugriff am Mai 27, 2025, <a href="https://www.formula1.com/en/results/2025/races/1261/monaco/race-result">https://www.formula1.com/en/results/2025/races/1261/monaco/race-result</a></li><li>2025 TEAM STANDINGS - F1, Zugriff am Mai 27, 2025, <a href="https://www.formula1.com/en/results/2025/team">https://www.formula1.com/en/results/2025/team</a></li><li>Everything we learned from F1's 2025 Monaco GP weekend - The Race, Zugriff am Mai 27, 2025, <a href="https://www.the-race.com/formula-1/everything-we-learned-from-f1-2025-monaco-grand-prix/">https://www.the-race.com/formula-1/everything-we-learned-from-f1-2025-monaco-grand-prix/</a></li><li>Monaco Grand Prix - Wikipedia, Zugriff am Mai 27, 2025, <a href="https://en.wikipedia.org/wiki/Monaco_Grand_Prix">https://en.wikipedia.org/wiki/Monaco_Grand_Prix</a></li><li>Formula 1: How to watch the Monaco Grand Prix on TV and what to know - AP News, Zugriff am Mai 27, 2025, <a href="https://apnews.com/article/monaco-f1-guide-336c00c3fe43dde5a0b4af1c89703224">https://apnews.com/article/monaco-f1-guide-336c00c3fe43dde5a0b4af1c89703224</a></li><li>F1 hopes extra pit stops bring more excitement in the glamorous but dull Monaco Grand Prix - AP News, Zugriff am Mai 27, 2025, <a href="https://apnews.com/article/f1-preview-monaco-pit-stops-verstappen-d37ec602eb8ff6e1bb71f856dc0f2acf">https://apnews.com/article/f1-preview-monaco-pit-stops-verstappen-d37ec602eb8ff6e1bb71f856dc0f2acf</a></li><li>Lando Norris takes a 'dream' Monaco win to reduce Oscar Piastri's F1 standings lead - AP News, Zugriff am Mai 27, 2025, <a href="https://apnews.com/article/monaco-f1-norris-piastri-leclerc-verstappen-2fbf2b76b452b67f61537deb68e820a3">https://apnews.com/article/monaco-f1-norris-piastri-leclerc-verstappen-2fbf2b76b452b67f61537deb68e820a3</a></li><li>F1 2025 Monaco Grand Prix, Spain: Lando Norris turning point vs Oscar Piastri after win, analysis, reaction - Fox Sports, Zugriff am Mai 27, 2025, <a href="https://www.foxsports.com.au/motorsport/formula-one/f1-2025-monaco-grand-prix-spain-lando-norris-turning-point-vs-oscar-piastri-after-win-analysis-reaction/news-story/efe8564db03c4c19188c112cdf37770f">https://www.foxsports.com.au/motorsport/formula-one/f1-2025-monaco-grand-prix-spain-lando-norris-turning-point-vs-oscar-piastri-after-win-analysis-reaction/news-story/efe8564db03c4c19188c112cdf37770f</a></li><li>Monaco Grand Prix 2025 reaction &amp; result as Lando Norris wins for McLaren - BBC Sport, Zugriff am Mai 27, 2025, <a href="https://www.bbc.co.uk/sport/live/ckgn2w4d147t">https://www.bbc.co.uk/sport/live/ckgn2w4d147t</a></li><li>What the teams said – Race day at the 2025 Monaco Grand Prix | Formula 1®, Zugriff am Mai 27, 2025, <a href="https://www.formula1.com/en/latest/article/what-the-teams-said-race-day-in-monaco-2025.Sk4momyxhafESoNnY8JnO">https://www.formula1.com/en/latest/article/what-the-teams-said-race-day-in-monaco-2025.Sk4momyxhafESoNnY8JnO</a></li><li>F1's two-stop experiment flops - 2025 Monaco GP takeaways - Motor Sport Magazine, Zugriff am Mai 27, 2025, <a href="https://www.motorsportmagazine.com/articles/single-seaters/f1/f1s-two-stop-experiment-flops-2025-monaco-gp-takeaways/">https://www.motorsportmagazine.com/articles/single-seaters/f1/f1s-two-stop-experiment-flops-2025-monaco-gp-takeaways/</a></li><li>F1's Monaco Grand Prix experiment flopped – but two changes can save prestigious race, Zugriff am Mai 27, 2025, <a href="https://www.independent.co.uk/f1/f1-2025-monaco-gp-rule-pit-stop-b2757641.html">https://www.independent.co.uk/f1/f1-2025-monaco-gp-rule-pit-stop-b2757641.html</a></li><li>www.beinsports.com, Zugriff am Mai 27, 2025, <a href="https://www.beinsports.com/en-us/motorsports/motorsports-formula-1/articles-video/drivers-criticize-monaco-gp-s-new-two-stop-rule-after-ugly-race-2025-05-26#:~:text=Williams'%20Alex%20Albon%20called%20the,the%20race%20dull%20and%20frustrating.">https://www.beinsports.com/en-us/motorsports/motorsports-formula-1/articles-video/drivers-criticize-monaco-gp-s-new-two-stop-rule-after-ugly-race-2025-05-26#:~:text=Williams'%20Alex%20Albon%20called%20the,the%20race%20dull%20and%20frustrating.</a></li><li>Frustration and slow driving at Monaco GP as F1 rule change backfires - AP News, Zugriff am Mai 27, 2025, <a href="https://apnews.com/article/f1-monaco-pit-stops-slow-racing-1e66f8fec028b5a871e24c383c55637b">https://apnews.com/article/f1-monaco-pit-stops-slow-racing-1e66f8fec028b5a871e24c383c55637b</a></li><li>What the teams said – Qualifying at the 2025 Monaco Grand Prix | Formula 1®, Zugriff am Mai 27, 2025, <a href="https://www.formula1.com/en/latest/article/what-the-teams-said-qualifying-in-monaco2025.7xMjgE0scECklfbIxCD1B1">https://www.formula1.com/en/latest/article/what-the-teams-said-qualifying-in-monaco2025.7xMjgE0scECklfbIxCD1B1</a></li><li>Oscar Piastri's F1 2025 Results - TikTok, Zugriff am Mai 27, 2025, <a href="https://www.tiktok.com/en/trending/detail/oscar-piastris-f1-2025-results">https://www.tiktok.com/en/trending/detail/oscar-piastris-f1-2025-results</a></li><li>F1 - The Official Home of Formula 1® Racing, Zugriff am Mai 27, 2025, <a href="https://www.formula1.com/">https://www.formula1.com/</a></li><li>Every 2025 F1 car's key strength and weakness right now - The Race, Zugriff am Mai 27, 2025, <a href="https://www.the-race.com/formula-1/strengths-and-weaknesses-of-every-2025-f1-car/">https://www.the-race.com/formula-1/strengths-and-weaknesses-of-every-2025-f1-car/</a></li><li>F1 Schedule 2025 - Official Calendar of Grand Prix Races, Zugriff am Mai 27, 2025, <a href="https://www.formula1.com/en/racing/2025">https://www.formula1.com/en/racing/2025</a></li></ol></div>
 
-                                <div class="article-author-footer">
-                                    <div class="author-box">
-                                        <div class="author-header">
-                                            <div class="author-avatar">
-                                                <img id="author-image" src="/images/authors/georgios.webp" alt="Georgios Balatzis"
-                                                     loading="lazy" decoding="async" width="474" height="474"
-                                                     data-show-on-error="author-initial">
-                                                <span class="avatar-text" id="author-initial">A</span>
-                                            </div>
-                                            <div class="author-info">
-                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Γιώργος Μπαλατζής</a></p>
-                                                <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
-                                            </div>
-                                        </div>
-                                        <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
-                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
-                                    </div>
-                                </div>
+                                <section class="author-card" data-author-slug="georgios-balatzis" aria-labelledby="author-card-name"><p class="author-card__label">ΓΡΑΦΕΙ</p><div class="author-card__head"><img class="author-card__portrait" src="/images/avatars/CSW.webp" alt="" width="80" height="80" loading="lazy" decoding="async"><div><p class="author-card__name" id="author-card-name"><a href="/authors/?author=georgios-balatzis">Γιώργος Μπαλατζής</a></p><p class="author-card__specialty">Τεχνική ανάλυση και αγωνιστικός ρυθμός</p></div></div><p class="author-card__bio">Μετράει όσα δεν φαίνονται στον πίνακα αποτελεσμάτων: upgrades, ελαστικά, ρυθμό και τις αποφάσεις που κρίνουν έναν αγώνα.</p><p class="author-card__links"><a href="/blog-module/blog/index.html?author=georgios-balatzis">Όλα τα άρθρα του Γιώργου <span aria-hidden="true">→</span></a><a class="author-card__social" href="https://www.instagram.com/borgos_gialatzis/" target="_blank" rel="noopener">Instagram <span aria-hidden="true">↗</span></a></p></section>
 
                                 <div class="sponsor-strip">
                                     <div class="sponsor-strip-label">Συνεργάτες</div>
@@ -404,47 +400,45 @@
 
 <!-- @include partials/footer.html -->
 <!-- @include:begin partials/footer.html -->
-<footer class="py-4">
+<footer>
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="footer-colophon">
-                    <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
-                    <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
-                </div>
-                <nav class="footer-index" aria-label="Ενότητες">
-                    <a href="/blog-module/blog/index.html">Άρθρα</a>
-                    <a href="/standings/">Βαθμολογία</a>
-                    <a href="/authors/">Συντάκτες</a>
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
-                    <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
-                </nav>
-                <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
-                <div class="social-media">
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
-                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
-                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
-                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
-                    <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
-                </div>
-                <div class="footer-links mt-3">
-                    <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
-                    <span class="footer-separator">|</span>
-                    <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
-                    <span class="footer-separator">|</span>
-                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
-                </div>
+        <div class="footer-body">
+            <div class="footer-colophon">
+                <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
+                <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
+            </div>
+            <nav class="footer-index" aria-label="Ενότητες">
+                <a href="/blog-module/blog/index.html">Άρθρα</a>
+                <a href="/standings/">Βαθμολογία</a>
+                <a href="/authors/">Συντάκτες</a>
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
+                <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
+            </nav>
+            <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
+            <div class="social-media">
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
+                <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
+                <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
+                <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
+                <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
+            </div>
+            <div class="footer-links">
+                <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
+                <span class="footer-separator">|</span>
+                <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                <span class="footer-separator">|</span>
+                <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
             </div>
         </div>
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=ba445b6d"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=548e1e5a"></script>
 <script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=1835b71e"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
-<script defer src="/blog-module/blog-fixes.min.js?v=4685a10e"></script>
+<script defer src="/blog-module/blog-fixes.min.js?v=937be1b8"></script>
 <script defer src="/scripts/sw-cleanup.min.js?v=d76b3ca4"></script>
 </body>
 </html>

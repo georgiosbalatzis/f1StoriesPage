@@ -41,7 +41,6 @@ const REQUIRED_EXACT = [
     'sw.js',
     'assets/youtube-latest.json',
     'blog-module/blog-index-data.json',
-    'blog-module/blog-index-page-1.json',
     'blog-module/home-latest.json',
     'blog-module/taxonomy.min.js',
     'blog-module/blog/index.html',
@@ -66,7 +65,6 @@ const REQUIRED_EXACT = [
     'scripts/perf/error-beacon.min.js',
     'scripts/sw-cleanup.min.js',
     'node_modules/jszip/dist/jszip.min.js',
-    'scripts/author/article-folder.js',
     'scripts/author/article-index.js',
     'scripts/author/article-source.js',
     'scripts/author/dialogs.js',
@@ -624,7 +622,7 @@ function validateRouteMarkers(errors, editorialRefs) {
         {
             relPath: 'blog-module/blog/index.html',
             label: 'blog index',
-            patterns: [/<main\b/i, /<body\b[^>]*class=["'][^"']*\beditorial-page\b/i, /<body\b[^>]*class=["'][^"']*\barchive-page\b/i, /id=["']articles-grid["']/i, /article-card/i],
+            patterns: [/<main\b/i, /<body\b[^>]*class=["'][^"']*\beditorial-page\b/i, /<body\b[^>]*class=["'][^"']*\barchive-page\b/i, /id=["']articles-grid["']/i, /class=["']journal-lead\b/i, /class=["']ledger-row\b/i],
             editorialSources: ['styles/home-fonts.css', 'styles/editorial.css', 'blog-module/blog/archive-editorial.css']
         },
         {
@@ -646,12 +644,11 @@ function validateRouteMarkers(errors, editorialRefs) {
         }
     ];
 
-    const pageOnePath = path.join(DIST_ROOT, 'blog-module/blog-index-page-1.json');
-    if (fs.existsSync(pageOnePath)) {
+    const indexPath = path.join(DIST_ROOT, 'blog-module/blog-index-data.json');
+    if (fs.existsSync(indexPath)) {
         try {
-            const pageOne = JSON.parse(fs.readFileSync(pageOnePath, 'utf8'));
-            const first = Array.isArray(pageOne.posts) ? pageOne.posts[0] : null;
-            const id = first && (first.id || first.slug);
+            const index = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+            const id = Array.isArray(index.p) && index.p[0] ? index.p[0][0] : null;
             if (id) {
                 checks.push({
                     relPath: `blog-module/blog-entries/${encodeURIComponent(id)}/article.html`,
@@ -661,7 +658,7 @@ function validateRouteMarkers(errors, editorialRefs) {
                 });
             }
         } catch (error) {
-            errors.push(`blog-module/blog-index-page-1.json: invalid JSON for route crawl (${error.message})`);
+            errors.push(`blog-module/blog-index-data.json: invalid JSON for route crawl (${error.message})`);
         }
     }
 

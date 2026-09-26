@@ -38,8 +38,9 @@ const ROOT_FILES = new Set([
 ]);
 
 const AUTHOR_TOOL_FILES = new Set([
+    // The article preview stylesheet of generate.html / housekeeping.html (no public page loads it).
+    'blog-module/blog-styles.min.css',
     'node_modules/jszip/dist/jszip.min.js',
-    'scripts/author/article-folder.js',
     'scripts/author/article-index.js',
     'scripts/author/article-source.js',
     'scripts/author/dialogs.js',
@@ -68,11 +69,9 @@ const BLOG_PUBLIC_FILES = new Set([
     'blog-module/blog/article-styles.min.css',
     'blog-module/blog-fixes.min.js',
     'blog-module/blog-index-data.json',
-    'blog-module/blog-index-page-1.json',
     'blog-module/blog-index.min.js',
     'blog-module/blog-loader.min.js',
     'blog-module/taxonomy.min.js',
-    'blog-module/blog-styles.min.css',
     'blog-module/home-latest.json',
     'blog-module/images/default-blog.jpg'
 ]);
@@ -234,7 +233,6 @@ function collectBlogEntryPublicRefs() {
     const dataSources = [
         'blog-module/blog/index.html',
         'blog-module/blog-index-data.json',
-        'blog-module/blog-index-page-1.json',
         'blog-module/home-latest.json'
     ];
 

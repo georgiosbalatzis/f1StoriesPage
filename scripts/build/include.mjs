@@ -23,16 +23,36 @@ const TARGET_HTML = [
 const DEFAULT_CONTEXT = {
   footerEmailHref: 'mailto:myf1stories@gmail.com',
   footerExtraLinks: '',
+  // partials/nav.html: the section a page belongs to gets the active underline.
+  navHome: '',
+  navJournal: '',
+  navStandings: '',
+  navAuthors: '',
 };
 
+const ACTIVE = ' active';
 const PAGE_CONTEXT = {
+  'index.html': { navHome: ACTIVE },
+  'blog-module/blog/index.html': { navJournal: ACTIVE },
+  'blog-module/blog/template.html': { navJournal: ACTIVE },
+  'authors/index.html': { navAuthors: ACTIVE },
   'standings/index.html': {
+    navStandings: ACTIVE,
     footerExtraLinks:
       '\n' +
       '                    <span class="footer-separator">|</span>\n' +
       '                    <button type="button" class="footer-link footer-link-button" id="standings-clear-cache">Εκκαθάριση cache</button>',
   },
 };
+const ARTICLE_CONTEXT = { navJournal: ACTIVE };
+
+// Archived articles were rendered with the nav baked in; the first build swaps
+// that block for the partial's marker so later nav changes reach them too.
+const BAKED_NAV_RE = /^([ \t]*)(?:<header>\s*)?<nav class="blog-nav"[\s\S]*?<\/nav>(?:\s*<\/header>)?/m;
+function adoptNavPartial(html) {
+  if (html.includes('<!-- @include partials/nav.html -->')) return html;
+  return html.replace(BAKED_NAV_RE, (match, indent) => `${indent}<!-- @include partials/nav.html -->`);
+}
 
 const INCLUDE_RE =
   /^([ \t]*)<!--\s*@include\s+([^\s]+)\s*-->[ \t]*\n?(?:\1<!--\s*@include:begin\s+\2\s*-->[\s\S]*?\1<!--\s*@include:end\s+\2\s*-->[ \t]*\n?)?/gm;
@@ -125,15 +145,17 @@ async function articleTargets() {
 async function main() {
   let changedFiles = 0;
 
-  for (const relativePath of [...TARGET_HTML, ...await articleTargets()]) {
+  const articles = await articleTargets();
+  for (const relativePath of [...TARGET_HTML, ...articles]) {
     const absolutePath = path.join(ROOT, relativePath);
     const original = await fs.readFile(absolutePath, 'utf8');
+    const isArticle = articles.includes(relativePath);
     const context = {
       ...DEFAULT_CONTEXT,
-      ...(PAGE_CONTEXT[relativePath] || {}),
+      ...(isArticle ? ARTICLE_CONTEXT : PAGE_CONTEXT[relativePath] || {}),
     };
     const expanded = await expandIncludes(
-      original,
+      isArticle ? adoptNavPartial(original) : original,
       path.dirname(absolutePath),
       context,
       [absolutePath]

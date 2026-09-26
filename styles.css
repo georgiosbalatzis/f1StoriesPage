@@ -429,7 +429,7 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
 @media (prefers-reduced-motion: no-preference) { .streak { contain: strict; } }
 /* Skip off-screen section rendering on mobile — speeds up initial paint */
 #about { content-visibility: auto; contain-intrinsic-size: 0 320px; }
-#contact { content-visibility: auto; contain-intrinsic-size: 0 420px; }
+/* #contact is not skipped: while skipped, Lighthouse's axe reads its text against the sponsor mat above it (dark theme a11y 96). */
 
 
 /* ============================================================
@@ -754,4 +754,16 @@ a, button, .cta-button, .nav-link, .filter-chip, .latest-tab, .dropdown-item, .t
     #hero { min-height: auto; padding: 2rem 0 1.5rem; clip-path: none; }
     .hero-content h1 { font-size: 1.6rem; margin-bottom: 0.5rem; }
     .hero-content p, .hero-subtitle { font-size: 0.95rem; margin-bottom: 1rem; }
+}
+
+/* Form controls take the page's type, on every route (pages without the Bootstrap subset included). */
+button, input, select, optgroup, textarea { margin: 0; font-family: inherit; font-size: inherit; line-height: inherit; }
+
+/* Screen-reader-only text (formerly from the Bootstrap subset). */
+/* position is forced because component rules (e.g. .contact-form label) set their own; clip-path hides it whatever its box. */
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Touch screens: 16px form text keeps iOS from zooming into a focused field. */
+@media (pointer: coarse) {
+    input[type="text"], input[type="email"], input[type="search"], textarea, select { font-size: max(1rem, 16px); }
 }

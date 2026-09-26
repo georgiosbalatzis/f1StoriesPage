@@ -66,14 +66,14 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=946979ee">
+    <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=673c392e">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=ca8e0cc6">
-    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=94ac6e07">
+    <link rel="stylesheet" href="/styles.min.css?v=32423041">
+    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=7d8d58a2">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
-    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=73b1e224">
+    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=dc0b41f8">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" type="image/avif" href="2.avif" fetchpriority="high">
@@ -84,10 +84,10 @@
     <!-- Prevent FOUC -->
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ef4df24c">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=8a09ac22">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=e2e135cd">
     <!-- f1s:article-editorial:end -->
-    <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
+    <script src="/scripts/theme-init.min.js?v=327f75c6"></script>
 </head>
 <body class="editorial-page article-page">
 <!-- f1s:icon-sprite:begin -->
@@ -109,15 +109,19 @@
 </button>
 
 <!-- Navbar -->
+<!-- @include partials/nav.html -->
+<!-- @include:begin partials/nav.html -->
 <header>
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
-            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
+            <a class="blog-nav-brand" href="/" aria-label="Αρχική σελίδα F1 Stories"><img src="/images/logo-nav.webp" alt="Λογότυπο F1 Stories" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+                <a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
+                <a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -132,20 +136,29 @@
                     <span class="countdown-flag-mobile" data-race-flag-mobile aria-hidden="true">🏁</span>
                     <span id="race-countdown-mobile">Σύντομα</span>
                 </div>
-                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
+                <button class="blog-nav-hamburger" id="nav-hamburger" type="button" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
             <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
             <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+            <a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
+            <a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
+            <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
+                <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
+                <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
+                <span class="theme-toggle-label-dark">Φωτεινό θέμα</span>
+                <span class="theme-toggle-label-light">Σκούρο θέμα</span>
+            </button>
         </div>
     </nav>
 </header>
+<!-- @include:end partials/nav.html -->
 
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert>
+<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert data-article-kind="history">
     <div class="article-mini-bar__text">
         <span class="article-mini-bar__category">Ιστορία</span>
         <span class="article-mini-bar__title">Ο Θρίαμβος της Μηχανολογίας</span>
@@ -174,7 +187,7 @@
                         <a href="/blog-module/blog/index.html?category=History" class="article-category-pill">Ιστορία</a>
                     </div>
                     <h1 class="article-title">Ο Θρίαμβος της Μηχανολογίας</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> F1 Stories Team</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/" class="article-author-link">F1 Stories Team</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 16 Ιουλίου 2025</span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
@@ -210,24 +223,7 @@
                     </div></details>
                     <div class="article-content"><p>Το 2006 αποτέλεσε μια κομβική χρονιά για τη Formula 1. Η FIA εισήγαγε σημαντικές αλλαγές στους τεχνικούς κανονισμούς, αντικαθιστώντας τους ισχυρούς V10 κινητήρες με νέους V8 κινητήρες 2.4 λίτρων. Μέσα σε αυτή την τεχνική αναταραχή, η Renault παρουσίασε ένα μηχανολογικό αριστούργημα: τον <strong>RS26</strong>, τον V8 κινητήρα που έδωσε πνοή στη θρυλική <strong>Renault R26</strong>.</p><h2>Η Μετάβαση στους V8: Μια Πρόκληση</h2><p>Η αλλαγή από V10 σε V8 κινητήρες δεν ήταν απλή υπόθεση. Οι ομάδες έπρεπε να ανασχεδιάσουν σχεδόν ολόκληρα τα μονοθέσια και να προσαρμοστούν σε νέες απαιτήσεις ιπποδύναμης, αξιοπιστίας και κατανάλωσης. Η Renault, με ηγέτη τον τεχνικό διευθυντή <strong>Bob Bell</strong> και την εμπειρία της <strong>Renault Sport F1</strong>, ανταποκρίθηκε στην πρόκληση με εξαιρετικό τρόπο.</p><h2>RS26: Τεχνολογία &amp; Απόδοση</h2><p>Ο <strong>Renault RS26</strong> ήταν ένας ατμοσφαιρικός V8 κινητήρας με κυβισμό 2.4 λίτρων και διάταξη 90 μοιρών. Έφτανε σε ταχύτητες περιστροφής άνω των 20.000 στροφών ανά λεπτό στις δοκιμές, αν και αργότερα περιορίστηκε στους 19.000 rpm με οδηγία της FIA. Η μέγιστη ισχύς του κυμαινόταν στους <strong>740–760 ίππους</strong>, μια εντυπωσιακή επίδοση για έναν κινητήρα μικρότερου κυβισμού από τον προκάτοχό του.</p><h3>Τεχνικά Χαρακτηριστικά:</h3><ul><li><strong>Κυβισμός:</strong> 2.4 λίτρα</li><li><strong>Διάταξη:</strong> V8, 90°</li><li><strong>Στροφές:</strong> έως 20.000 rpm</li><li><strong>Ισχύς:</strong> ~750 hp</li><li><strong>Καύσιμο:</strong> Elf Racing Fuel</li><li><strong>Υλικά:</strong> Ελαφρά κράματα αλουμινίου και τιτανίου</li><li><strong>Βάρος:</strong> ~95 kg</li></ul><p>Η κατανομή ροπής, η αποδοτικότητα στην κατανάλωση και η εξαιρετική αντοχή του RS26 τον έκαναν έναν από τους πιο αξιόπιστους κινητήρες της εποχής του.</p><h2>Το Μονοθέσιο R26: Ολοκληρωμένο Πακέτο</h2><p>Ο RS26 ήταν ταν η καρδιά ενός πλήρως εναρμονισμένου μονοθεσίου. Η <strong>Renault R26</strong>, με οδηγό τον <strong>Fernando Alonso</strong> και teammate τον <strong>Giancarlo Fisichella</strong>, συνδύαζε δυναμική αεροδυναμική, καινοτόμο σύστημα ανάρτησης και φυσικά… την ώθηση του RS26.</p><p>Η R26 κατέκτησε:</p><ul><li><strong>8 νίκες σε 18 αγώνες</strong></li><li><strong>7 pole positions</strong></li><li><strong>Δύο παγκόσμια πρωταθλήματα</strong> (Οδηγών &amp; Κατασκευαστών)</li></ul><h2>Ο Ήχος του RS26: Μουσική της Πίστας</h2><p>Ο ήχος του RS26 ήταν χαρακτηριστικός, ψιλός, μεταλλικός και καθαρός, γεμάτος ένταση στις υψηλές στροφές. Ήταν ο ήχος μιας εποχής που ακόμα προκαλεί ρίγη στους φίλους της Formula 1. Οι V8 κινητήρες είχαν μικρότερη ένταση από τους V10, αλλά μεγαλύτερη σταθερότητα στον ήχο και θεαματική απόκριση.</p><h2>Η Κληρονομιά του RS26</h2><p>Ο κινητήρας RS26 παραμένει σημείο αναφοράς στην ιστορία της Formula 1. Δεν ήταν μόνο γρήγορος, ήταν <strong>αξιόπιστος, αποδοτικός και καλοσχεδιασμένος</strong>. Σε μια εποχή που η FIA επεδίωκε μείωση της ισχύος και αύξηση της ασφάλειας, η Renault κατάφερε κερδίσει με ένα πλήρως ισορροπημένο πακέτο.</p><p>Από τότε, κανένα άλλο μονοθέσιο της Renault δεν κατάφερε να κατακτήσει τίτλο ως εργοστασιακή ομάδα. Το 2006 παραμένει η χρυσή χρονιά της γαλλικής ομάδας, και ο RS26 είναι το «μηχανολογικό της διαμάντι».</p><p>📌 <strong>Συμπέρασμα:</strong><br />Ο Renault RS26 ήταν πολλά περισσότερα από ένας κινητήρας. Ήταν η ψυχή ενός πρωταθληματικού μονοθεσίου, το αποκορύφωμα της γαλλικής μηχανολογικής φιλοσοφίας στην εποχή των V8. Η επιτυχία του αποτελεί απόδειξη της δύναμης της τεχνογνωσίας, της προσαρμοστικότητας και του αγωνιστικού πάθους.</p></div>
 
-                                <div class="article-author-footer">
-                                    <div class="author-box">
-                                        <div class="author-header">
-                                            <div class="author-avatar">
-                                                <img id="author-image" src="/images/authors/default.webp" alt="F1 Stories Team"
-                                                     loading="lazy" decoding="async" width="474" height="474"
-                                                     data-show-on-error="author-initial">
-                                                <span class="avatar-text" id="author-initial">A</span>
-                                            </div>
-                                            <div class="author-info">
-                                                <p class="author-name" id="author-name">F1 Stories Team</p>
-                                                <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
-                                            </div>
-                                        </div>
-                                        <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
-                            <a class="author-profile-link" href="https://georgiosbalatzis.github.io/excavatorsPage/">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
-                                    </div>
-                                </div>
+                                <section class="author-card" aria-label="Συντάκτης"><p class="author-card__label">ΓΡΑΦΕΙ</p><p class="author-card__name">Η ομάδα του F1 Stories</p><p class="author-card__links"><a href="/authors/">Οι συντάκτες μας <span aria-hidden="true">→</span></a></p></section>
 
                                 <div class="sponsor-strip">
                                     <div class="sponsor-strip-label">Συνεργάτες</div>
@@ -362,47 +358,45 @@
 
 <!-- @include partials/footer.html -->
 <!-- @include:begin partials/footer.html -->
-<footer class="py-4">
+<footer>
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="footer-colophon">
-                    <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
-                    <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
-                </div>
-                <nav class="footer-index" aria-label="Ενότητες">
-                    <a href="/blog-module/blog/index.html">Άρθρα</a>
-                    <a href="/standings/">Βαθμολογία</a>
-                    <a href="/authors/">Συντάκτες</a>
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
-                    <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
-                </nav>
-                <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
-                <div class="social-media">
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
-                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
-                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
-                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
-                    <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
-                </div>
-                <div class="footer-links mt-3">
-                    <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
-                    <span class="footer-separator">|</span>
-                    <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
-                    <span class="footer-separator">|</span>
-                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
-                </div>
+        <div class="footer-body">
+            <div class="footer-colophon">
+                <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
+                <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
+            </div>
+            <nav class="footer-index" aria-label="Ενότητες">
+                <a href="/blog-module/blog/index.html">Άρθρα</a>
+                <a href="/standings/">Βαθμολογία</a>
+                <a href="/authors/">Συντάκτες</a>
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
+                <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
+            </nav>
+            <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
+            <div class="social-media">
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
+                <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
+                <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
+                <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
+                <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
+            </div>
+            <div class="footer-links">
+                <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
+                <span class="footer-separator">|</span>
+                <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                <span class="footer-separator">|</span>
+                <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
             </div>
         </div>
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=ba445b6d"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=548e1e5a"></script>
 <script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=1835b71e"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
-<script defer src="/blog-module/blog-fixes.min.js?v=4685a10e"></script>
+<script defer src="/blog-module/blog-fixes.min.js?v=937be1b8"></script>
 <script defer src="/scripts/sw-cleanup.min.js?v=d76b3ca4"></script>
 </body>
 </html>

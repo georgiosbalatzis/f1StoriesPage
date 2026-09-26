@@ -7,35 +7,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Cache article content element — queried by multiple functions
     const articleContent = $('.article-content');
 
-    // ── Author data ─────────────────────────────────────────
-    const AUTHORS = {
-        'Georgios Balatzis': {
-            image: '/images/authors/georgios.webp',
-            title: 'Τεχνική ανάλυση & F1 Data',
-            bio: 'Μετράει upgrades, ελαστικά, ρυθμό και τις αποφάσεις που κρίνουν έναν αγώνα.'
-        },
-        'Giannis Poulikidis': {
-            image: '/images/authors/giannis.webp',
-            title: 'Αγωνιστική άποψη & BetCast',
-            bio: 'Γράφει άμεσα, με χιούμορ και θέση, μετατρέποντας το αγωνιστικό τριήμερο σε κουβέντα.'
-        },
-        'Thanasis Batalas': {
-            image: '/images/authors/thanasis.webp',
-            title: 'Ιστορία, πρόσωπα & ψυχολογία',
-            bio: 'Συνδέει τις εποχές της Formula 1 με τις σημερινές μάχες και όσα μένουν πίσω από τα νούμερα.'
-        },
-        'Themis Charvalis': {
-            image: '/images/authors/2fast.webp',
-            title: 'Ιστορίες οδηγών & θρύλων',
-            bio: 'Αναζητά το ανθρώπινο κομμάτι πίσω από τα αποτελέσματα, από τα πρώτα kart μέχρι το σημερινό grid.'
-        },
-        'Dimitris Keramidiotis': {
-            image: '/images/authors/dimitris.webp',
-            title: 'Στήλη γνώμης',
-            bio: 'Κοιτάζει το αγωνιστικό τριήμερο από την κερκίδα, το paddock και όλα όσα συμβαίνουν ανάμεσα στις γραμμές.'
-        }
-    };
-
     function calcReadingTime() {
         const el = $('#reading-time-value');
         if (!articleContent || !el) return;
@@ -55,37 +26,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (fallbackSrc) {
                 img.removeAttribute('data-fallback-src');
                 img.src = fallbackSrc;
-                return;
-            }
-
-            const showId = img.getAttribute('data-show-on-error');
-            if (showId) {
-                const fallbackEl = document.getElementById(showId);
-                img.style.display = 'none';
-                if (fallbackEl) fallbackEl.style.display = 'flex';
             }
         }, true);
-    }
-
-    function populateAuthor() {
-        const nameEl = $('#author-name');
-        if (!nameEl) return;
-        const name = nameEl.textContent.trim();
-        // The byline shows the Greek display name; the profile link carries the canonical slug.
-        const link = nameEl.querySelector('a[href*="author="]');
-        const slug = link ? new URL(link.href, window.location.href).searchParams.get('author') : '';
-        const key = Object.keys(AUTHORS).find(k => k === name || k.toLowerCase().replace(/\s+/g, '-') === slug);
-        const data = key ? AUTHORS[key] : null;
-        const imgEl = $('#author-image');
-        const initialEl = $('#author-initial');
-        const titleEl = $('#author-title');
-        const bioEl = $('#author-bio');
-        if (data) {
-            if (imgEl) imgEl.src = data.image;
-            if (titleEl) titleEl.textContent = data.title;
-            if (bioEl) bioEl.textContent = data.bio;
-        }
-        if (initialEl) initialEl.textContent = name.charAt(0).toUpperCase();
     }
 
     function markAuthoredSectionNumbers() {
@@ -677,7 +619,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     setupImageFallbacks();
     calcReadingTime();
-    populateAuthor();
     updateShareLinks();
     setupArticleMiniBar();
     markAuthoredSectionNumbers();

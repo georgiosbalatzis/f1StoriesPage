@@ -17,7 +17,6 @@ const CURRENT_YEAR = new Date().getFullYear();
 const FILE_LIMITS = {
     'assets/youtube-latest.json': 40 * 1024,
     'blog-module/blog-index-data.json': 128 * 1024,
-    'blog-module/blog-index-page-1.json': 64 * 1024,
     'blog-module/blog-source-cache.json': 1024 * 1024,
     'blog-module/home-latest.json': 16 * 1024,
     'scripts/build/asset-manifest.json': 256 * 1024,
@@ -30,8 +29,6 @@ const FILE_LIMITS = {
 };
 
 const errors = [];
-let compactBlogPostCount = 0;
-let compactBlogFirstPostId = '';
 
 function relAbs(relPath) {
     return path.join(REPO_ROOT, relPath);
@@ -255,7 +252,6 @@ function validateCompactBlogIndex() {
     }
 
     const rows = requireArray(data.p, `${relPath}.p`, { maxLength: 1000 });
-    compactBlogPostCount = rows.length;
     [[thumbnailFlags, 'h', 'thumbnail'], [sourceFlags, 's', 'source']].forEach(([flags, key, name]) => {
         if (flags === null || !RUN_FLAGS.test(flags)) return;
         let flagCount = 0;
@@ -272,7 +268,6 @@ function validateCompactBlogIndex() {
         assertCondition(row.length === 10, label, 'row must contain 10 fields (public categories and separate internal search tags)');
 
         const id = row[0];
-        if (index === 0) compactBlogFirstPostId = String(id || '');
         validatePostId(`${label}[0]`, id);
         assertCondition(!seen.has(id), label, `duplicate id ${id}`);
         seen.add(id);
@@ -331,29 +326,6 @@ function validateIndexPost(post, label, options = {}) {
         validateCategories(post.categories, `${label}.categories`);
         validateTags(post.tags, `${label}.tags`);
     }
-}
-
-function validateBlogFirstPage() {
-    const relPath = 'blog-module/blog-index-page-1.json';
-    const data = requireObject(readJson(relPath), relPath);
-    const posts = requireArray(data.posts, `${relPath}.posts`, { maxLength: 12 });
-    posts.forEach((post, index) => validateIndexPost(post, `${relPath}.posts[${index}]`));
-    if (compactBlogFirstPostId && posts[0]) {
-        assertCondition(posts[0].id === compactBlogFirstPostId, relPath, 'first page first post must match compact index first post');
-    }
-    const totalCount = requireInteger(data, 'totalCount', relPath, { min: posts.length, max: 1000 });
-    if (compactBlogPostCount) {
-        assertCondition(totalCount === compactBlogPostCount, relPath, 'totalCount must match compact index post count');
-    }
-    validateDateTimeString(`${relPath}.lastUpdated`, requireString(data, 'lastUpdated', relPath, { maxLength: 40 }));
-    const categories = requireArray(data.categories, `${relPath}.categories`, { maxLength: PUBLIC_CATEGORIES.length });
-    assertCondition(JSON.stringify(categories.map(category => category.name)) === JSON.stringify(PUBLIC_CATEGORIES), relPath, 'filter order must match the public taxonomy');
-    categories.forEach((category, index) => {
-        const label = `${relPath}.categories[${index}]`;
-        requireObject(category, label);
-        requireString(category, 'name', label, { maxLength: 120 });
-        requireInteger(category, 'count', label, { min: 0, max: 1000 });
-    });
 }
 
 function validateHomeLatest() {
@@ -638,7 +610,6 @@ function validateSitemap() {
 
 function main() {
     validateCompactBlogIndex();
-    validateBlogFirstPage();
     validateHomeLatest();
     validateBlogSourceCache();
     validateYoutubeSnapshot();

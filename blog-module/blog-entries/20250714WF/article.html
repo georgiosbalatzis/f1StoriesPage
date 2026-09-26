@@ -67,14 +67,14 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=946979ee">
+    <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=673c392e">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=ca8e0cc6">
-    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=94ac6e07">
+    <link rel="stylesheet" href="/styles.min.css?v=32423041">
+    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=7d8d58a2">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
-    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=73b1e224">
+    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=dc0b41f8">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" type="image/avif" href="2.avif" fetchpriority="high">
@@ -85,10 +85,10 @@
     <!-- Prevent FOUC -->
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ef4df24c">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=8a09ac22">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=e2e135cd">
     <!-- f1s:article-editorial:end -->
-    <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
+    <script src="/scripts/theme-init.min.js?v=327f75c6"></script>
 </head>
 <body class="editorial-page article-page">
 <!-- f1s:icon-sprite:begin -->
@@ -110,15 +110,19 @@
 </button>
 
 <!-- Navbar -->
+<!-- @include partials/nav.html -->
+<!-- @include:begin partials/nav.html -->
 <header>
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
-            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
+            <a class="blog-nav-brand" href="/" aria-label="Αρχική σελίδα F1 Stories"><img src="/images/logo-nav.webp" alt="Λογότυπο F1 Stories" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+                <a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
+                <a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -133,20 +137,29 @@
                     <span class="countdown-flag-mobile" data-race-flag-mobile aria-hidden="true">🏁</span>
                     <span id="race-countdown-mobile">Σύντομα</span>
                 </div>
-                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
+                <button class="blog-nav-hamburger" id="nav-hamburger" type="button" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
             <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
             <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+            <a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
+            <a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
+            <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
+                <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
+                <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
+                <span class="theme-toggle-label-dark">Φωτεινό θέμα</span>
+                <span class="theme-toggle-label-light">Σκούρο θέμα</span>
+            </button>
         </div>
     </nav>
 </header>
+<!-- @include:end partials/nav.html -->
 
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert>
+<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert data-article-kind="drivers">
     <div class="article-mini-bar__text">
         <span class="article-mini-bar__category">Οδηγοί</span>
         <span class="article-mini-bar__title">Ο Πρίγκιπας των Τροχών</span>
@@ -159,8 +172,8 @@
 <!-- Article -->
 <main id="main" class="article-page-wrapper">
     <div class="container article-page-shell">
-        <article class="article-container article-container--history" data-article-kind="history">
-            <div class="article-header" data-article-dossier="ΑΠΟ ΤΟ ΑΡΧΕΙΟ">
+        <article class="article-container article-container--drivers" data-article-kind="drivers">
+            <div class="article-header" data-article-dossier="ΠΡΟΣΩΠΟ ΤΟΥ GRID">
                 <picture>
                     <source type="image/avif" srcset="2.avif">
                     <img src="2.webp" alt="Ο Πρίγκιπας των Τροχών" class="article-header-img"
@@ -169,13 +182,13 @@
                          data-fallback-src="/blog-module/images/default-blog.jpg">
                 </picture>
                 <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΑΠΟ ΤΟ ΑΡΧΕΙΟ</span></div>
+                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ΠΡΟΣΩΠΟ ΤΟΥ GRID</span></div>
                     <div class="article-header-kicker-row">
                         <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
                         <span class="article-category-pill">Οδηγοί</span>
                     </div>
                     <h1 class="article-title">Ο Πρίγκιπας των Τροχών</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> F1 Stories Team</p>
+                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/" class="article-author-link">F1 Stories Team</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 14 Ιουλίου 2025</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=History" class="article-category-link">Ιστορία</a> <a href="/blog-module/blog/index.html?category=Drivers" class="article-category-link">Οδηγοί</a></span>
@@ -212,24 +225,7 @@
                     </div></details>
                     <div class="article-content"><p><strong>Κάποτε, στην καρδιά της Ευρώπης, σ’ ένα ήσυχο χωριουδάκι της Γερμανίας, γεννήθηκε ένα παιδί με ασυνήθιστα γρήγορα όνειρα. Ενώ τα άλλα παιδιά έπαιζαν με ξύλινα σπαθιά, εκείνος έπαιζε με τιμόνια από φαντασία και ρόδες από προορισμό. Ο Σεμπάστιαν, όπως τον ονόμασαν, δεν ήταν σαν τους αλλά παιδιά.</strong></p><p><strong>Το Βάπτισμα στον Θρύλο</strong></p><p><strong>Ο νεαρός αυτός ήρωας μπήκε στον σκληρό κόσμο των μονοθεσίων, όχι με τη βοήθεια μαγικών φίλτρων, αλλά με ιδρώτα και πείσμα. Πέρασε από το βασίλειο της Toro Rosso, κι εκεί, μια βροχερή μέρα στη Μόντσα, ύψωσε για πρώτη φορά το σπαθί του απέναντι στους γίγαντες. Και τους νίκησε. Στα 21 του χρόνια, έγινε ο νεότερος βασιλιάς ενός Grand Prix.</strong></p><p><strong>Αυτό δεν ήταν παρά μόνο η αρχή.</strong></p><p><strong>Η Χρυσή Τετραετία</strong></p><p><strong>Το βασίλειο της Red Bull Racing τον δέχτηκε με τιμές, και ο Σεμπάστιαν αντάμειψε την εμπιστοσύνη με μια δυναστεία. Τέσσερα διαδοχικά στέμματα 2010, 2011, 2012, 2013,  χρόνια όπου η ταχύτητα και η στρατηγική έγιναν ένας ενιαίος παλμός κάτω από την κόκκινη σημαία του ταύρου.</strong></p><p><strong>Κανείς δεν τον σταματούσε. Κανείς δεν τον αμφισβητούσε. Μα όπως κάθε ήρωας που κοιτά ψηλά, ένιωσε την ανάγκη για κάτι περισσότερο από νίκες. Έψαξε το νόημα, όχι μόνο το πώς κερδίζει, αλλά και το γιατί.</strong></p><p><strong>Ο Πόλεμος με τους Δαίμονες</strong></p><p><strong>Η Ferrari τον κάλεσε. Ο θρύλος του Σουμάχερ τον στοίχειωνε, και ο Φέτελ είδε στο κάλεσμα αυτό όχι απλώς μια μετάβαση, αλλά ένα κάλεσμα μοίρας. Πέντε χρόνια πολέμησε με το άλογο της Maranello ενάντια σε νεότερους αντιπάλους και αδυσώπητες μηχανές. Δεν φόρεσε τον κόκκινο θρόνο. Μα δεν γονάτισε.</strong></p><p><strong>Η ήττα δεν τον λύγισε τον έκανε σοφότερο. Εκείνος, που κάποτε έβγαζε κραυγές θριάμβου στον ασύρματο, τώρα μιλούσε με λόγια σοφίας, για δικαιοσύνη, για τη γη, για τη ζωή έξω από τα paddock.</strong></p><p><strong>Ο Αντάρτης της Συνείδησης</strong></p><p><strong>Ο Σεμπάστιαν σταμάτησε να είναι απλώς οδηγός. Έγινε φωνή. Έβαλε λουλούδια στο κράνος του και σήκωσε πανό για την ελπίδα. Δεν τον ένοιαζε πλέον το βάθρο,  τον ένοιαζε να είναι σωστός και ανθρώπινος.</strong></p><p><strong>Στα τελευταία του χρόνια στους αγώνες, έμοιαζε με ήρωα που είχε ολοκληρώσει την αποστολή του και δίδασκε. Κάποιοι έλεγαν ότι ο παλιός του εαυτός χάθηκε. Οι πιο ψαγμενοι, όμως, ήξεραν ο Σεμπάστιαν δεν έχασε τίποτα,  βρήκε τον αληθινό του προορισμό.</strong></p><p><strong> Η Σιγή του Θρύλου</strong></p><p><strong>Όταν έκλεισε το κράνος του για τελευταία φορά, δεν ακούστηκε πανηγυρισμός. Ακούστηκε μια σιγή.</strong></p><p><strong>Σαν όταν φεύγει ένας μεγάλος βασιλιάς από την αίθουσα και όλοι σκύβουν το κεφάλι, όχι γιατί πρέπει, αλλά γιατί το νιώθουν.</strong></p><p><strong>Ο Φέτελ δεν είναι πια στις πίστες, μα ζει στα βλέμματα κάθε νεαρού οδηγού που ονειρεύεται καθαρότητα, σε κάθε φιλάθλο που νοσταλγεί πάθος με αρχές.</strong></p><p><strong>Και όταν ρωτήθηκαν: “Ποιος ήταν ο Σεμπάστιαν Φέτελ;”</strong></p><p><strong>Η απάντηση δεν ήταν "ο τέσσερις φορές παγκόσμιος πρωταθλητής".</strong></p><p><strong>«Ήταν ο ιππότης των τροχών. Ο ήσυχος επαναστάτης. Ο άνθρωπος που μας δίδαξε ότι μπορείς να τρέχεις με 300 χλμ/ώρα και να έχεις ακόμα καρδιά.»</strong></p></div>
 
-                                <div class="article-author-footer">
-                                    <div class="author-box">
-                                        <div class="author-header">
-                                            <div class="author-avatar">
-                                                <img id="author-image" src="/images/authors/default.webp" alt="F1 Stories Team"
-                                                     loading="lazy" decoding="async" width="474" height="474"
-                                                     data-show-on-error="author-initial">
-                                                <span class="avatar-text" id="author-initial">A</span>
-                                            </div>
-                                            <div class="author-info">
-                                                <p class="author-name" id="author-name">F1 Stories Team</p>
-                                                <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
-                                            </div>
-                                        </div>
-                                        <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
-                            <a class="author-profile-link" href="https://georgiosbalatzis.github.io/excavatorsPage/">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
-                                    </div>
-                                </div>
+                                <section class="author-card" aria-label="Συντάκτης"><p class="author-card__label">ΓΡΑΦΕΙ</p><p class="author-card__name">Η ομάδα του F1 Stories</p><p class="author-card__links"><a href="/authors/">Οι συντάκτες μας <span aria-hidden="true">→</span></a></p></section>
 
                                 <div class="sponsor-strip">
                                     <div class="sponsor-strip-label">Συνεργάτες</div>
@@ -364,47 +360,45 @@
 
 <!-- @include partials/footer.html -->
 <!-- @include:begin partials/footer.html -->
-<footer class="py-4">
+<footer>
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="footer-colophon">
-                    <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
-                    <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
-                </div>
-                <nav class="footer-index" aria-label="Ενότητες">
-                    <a href="/blog-module/blog/index.html">Άρθρα</a>
-                    <a href="/standings/">Βαθμολογία</a>
-                    <a href="/authors/">Συντάκτες</a>
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
-                    <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
-                </nav>
-                <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
-                <div class="social-media">
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
-                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
-                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
-                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
-                    <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
-                </div>
-                <div class="footer-links mt-3">
-                    <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
-                    <span class="footer-separator">|</span>
-                    <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
-                    <span class="footer-separator">|</span>
-                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
-                </div>
+        <div class="footer-body">
+            <div class="footer-colophon">
+                <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
+                <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
+            </div>
+            <nav class="footer-index" aria-label="Ενότητες">
+                <a href="/blog-module/blog/index.html">Άρθρα</a>
+                <a href="/standings/">Βαθμολογία</a>
+                <a href="/authors/">Συντάκτες</a>
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
+                <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
+            </nav>
+            <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
+            <div class="social-media">
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
+                <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
+                <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
+                <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
+                <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
+            </div>
+            <div class="footer-links">
+                <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
+                <span class="footer-separator">|</span>
+                <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                <span class="footer-separator">|</span>
+                <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
             </div>
         </div>
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=ba445b6d"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=548e1e5a"></script>
 <script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=1835b71e"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
-<script defer src="/blog-module/blog-fixes.min.js?v=4685a10e"></script>
+<script defer src="/blog-module/blog-fixes.min.js?v=937be1b8"></script>
 <script defer src="/scripts/sw-cleanup.min.js?v=d76b3ca4"></script>
 </body>
 </html>

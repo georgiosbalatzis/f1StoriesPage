@@ -36,13 +36,13 @@
     <!-- f1s:modulepreload:end -->
     <link rel="preload" href="/standings/standings-cache.json" as="fetch" crossorigin="anonymous">
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
-    <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=946979ee">
+    <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=673c392e">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/barlow-condensed-700.woff2?v=e3e520cb" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=ca8e0cc6">
-    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=73b1e224">
+    <link rel="stylesheet" href="/styles.min.css?v=32423041">
+    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=dc0b41f8">
 
     <script defer src="/scripts/analytics.min.js?v=5a47903d"></script>
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
@@ -50,9 +50,9 @@
     <link rel="stylesheet" href="standings.min.css?v=b9942337">
     <link rel="stylesheet" href="standings-polish.min.css?v=feddf245">
     <noscript><link rel="stylesheet" href="standings.min.css?v=b9942337"></noscript>
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=8a09ac22">
     <link rel="stylesheet" href="/standings/standings-editorial.min.css?v=47f2416e">
-    <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
+    <script src="/scripts/theme-init.min.js?v=327f75c6"></script>
 </head>
 <body class="editorial-page standings-page">
 <!-- f1s:icon-sprite:begin -->
@@ -67,15 +67,19 @@
     <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
 </button>
 
+<!-- @include partials/nav.html -->
+<!-- @include:begin partials/nav.html -->
 <header>
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
-            <a class="blog-nav-brand" href="/" aria-label="F1 Stories home"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
+            <a class="blog-nav-brand" href="/" aria-label="Αρχική σελίδα F1 Stories"><img src="/images/logo-nav.webp" alt="Λογότυπο F1 Stories" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
+                <a href="/standings/" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+                <a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
+                <a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -87,17 +91,19 @@
                     </div>
                 </div>
                 <div class="blog-nav-countdown-mobile" id="nav-countdown-mobile">
-                    <svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg>
+                    <span class="countdown-flag-mobile" data-race-flag-mobile aria-hidden="true">🏁</span>
                     <span id="race-countdown-mobile">Σύντομα</span>
                 </div>
-                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
+                <button class="blog-nav-hamburger" id="nav-hamburger" type="button" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
             <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
             <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
+            <a href="/standings/" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+            <a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
+            <a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
                 <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
@@ -108,6 +114,7 @@
         </div>
     </nav>
 </header>
+<!-- @include:end partials/nav.html -->
 
 <main id="main" class="standings-wrapper">
     <header class="standings-header">
@@ -392,38 +399,36 @@
 
 <!-- @include partials/footer.html -->
 <!-- @include:begin partials/footer.html -->
-<footer class="py-4">
+<footer>
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="footer-colophon">
-                    <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
-                    <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
-                </div>
-                <nav class="footer-index" aria-label="Ενότητες">
-                    <a href="/blog-module/blog/index.html">Άρθρα</a>
-                    <a href="/standings/">Βαθμολογία</a>
-                    <a href="/authors/">Συντάκτες</a>
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
-                    <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
-                </nav>
-                <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
-                <div class="social-media">
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
-                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
-                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
-                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
-                    <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
-                </div>
-                <div class="footer-links mt-3">
-                    <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
-                    <span class="footer-separator">|</span>
-                    <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
-                    <span class="footer-separator">|</span>
-                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
+        <div class="footer-body">
+            <div class="footer-colophon">
+                <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
+                <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
+            </div>
+            <nav class="footer-index" aria-label="Ενότητες">
+                <a href="/blog-module/blog/index.html">Άρθρα</a>
+                <a href="/standings/">Βαθμολογία</a>
+                <a href="/authors/">Συντάκτες</a>
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
+                <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
+            </nav>
+            <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
+            <div class="social-media">
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
+                <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
+                <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
+                <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
+                <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
+            </div>
+            <div class="footer-links">
+                <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
+                <span class="footer-separator">|</span>
+                <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                <span class="footer-separator">|</span>
+                <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
                     <span class="footer-separator">|</span>
                     <button type="button" class="footer-link footer-link-button" id="standings-clear-cache">Εκκαθάριση cache</button>
-                </div>
             </div>
         </div>
     </div>

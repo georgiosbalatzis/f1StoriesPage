@@ -649,3 +649,13 @@ header > .navbar { display: none !important; }
         background: #fff !important;
     }
 }
+
+/* Touch screens get a larger menu button; notched phones keep the mobile menu and the
+ * scroll-to-top button clear of the home indicator. */
+@media (pointer: coarse) {
+    .blog-nav-hamburger { width: 48px; height: 48px; }
+}
+@supports (padding: env(safe-area-inset-bottom)) {
+    .scroll-to-top-btn { bottom: calc(1.5rem + env(safe-area-inset-bottom)); }
+    .blog-nav-mobile { padding-bottom: env(safe-area-inset-bottom); }
+}

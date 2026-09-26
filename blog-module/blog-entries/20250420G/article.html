@@ -66,14 +66,14 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=946979ee">
+    <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=673c392e">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=ca8e0cc6">
-    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=94ac6e07">
+    <link rel="stylesheet" href="/styles.min.css?v=32423041">
+    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=7d8d58a2">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
-    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=73b1e224">
+    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=dc0b41f8">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" type="image/avif" href="2.avif" fetchpriority="high">
@@ -84,10 +84,10 @@
     <!-- Prevent FOUC -->
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ef4df24c">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=8a09ac22">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=e2e135cd">
     <!-- f1s:article-editorial:end -->
-    <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
+    <script src="/scripts/theme-init.min.js?v=327f75c6"></script>
 </head>
 <body class="editorial-page article-page">
 <!-- f1s:icon-sprite:begin -->
@@ -109,15 +109,19 @@
 </button>
 
 <!-- Navbar -->
+<!-- @include partials/nav.html -->
+<!-- @include:begin partials/nav.html -->
 <header>
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
-            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
+            <a class="blog-nav-brand" href="/" aria-label="Αρχική σελίδα F1 Stories"><img src="/images/logo-nav.webp" alt="Λογότυπο F1 Stories" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+                <a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
+                <a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -132,20 +136,29 @@
                     <span class="countdown-flag-mobile" data-race-flag-mobile aria-hidden="true">🏁</span>
                     <span id="race-countdown-mobile">Σύντομα</span>
                 </div>
-                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
+                <button class="blog-nav-hamburger" id="nav-hamburger" type="button" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
             <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
             <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+            <a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
+            <a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
+            <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
+                <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
+                <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
+                <span class="theme-toggle-label-dark">Φωτεινό θέμα</span>
+                <span class="theme-toggle-label-light">Σκούρο θέμα</span>
+            </button>
         </div>
     </nav>
 </header>
+<!-- @include:end partials/nav.html -->
 
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert>
+<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert data-article-kind="news">
     <div class="article-mini-bar__text">
         <span class="article-mini-bar__category">Ειδήσεις</span>
         <span class="article-mini-bar__title">🏁 GP Σαουδικής Αραβίας 2025 – Τεχνική Ανασκόπηση &amp; Αγωνιστική Ανάλυση</span>
@@ -174,7 +187,7 @@
                         <a href="/blog-module/blog/index.html?category=News" class="article-category-pill">Ειδήσεις</a>
                     </div>
                     <h1 class="article-title">🏁 GP Σαουδικής Αραβίας 2025 – Τεχνική Ανασκόπηση &amp; Αγωνιστική Ανάλυση</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Γιώργος Μπαλατζής</a></p>
+                    <p class="article-header-byline" data-author-slug="georgios-balatzis"><img class="article-header-byline__avatar" src="/images/avatars/CSW-96.webp" alt="" width="32" height="32" decoding="async"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Γιώργος Μπαλατζής</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 20 Απριλίου 2025</span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
@@ -210,24 +223,7 @@
                     </div></details>
                     <div class="article-content"><p><strong>📍 **Τζέντα, Σαουδική Αραβία – 20 Απριλίου 2025 </strong>Πίστα:** Jeddah Corniche Circuit | <strong>Μήκος:</strong> 6,174 km | <strong>Γύροι:</strong> 50 | **Ζώνες DRS:**3</p><h3><a id="_rya42d8fokeh"></a><strong>🏎️ Αγωνιστική Επιστροφή &amp; Σημασία Αγώνα</strong></h3><p>Ο πέμπτος γύρος του Παγκοσμίου Πρωταθλήματος της Formula 1 για το 2025 διεξήχθη στην Τζέντα, μια από τις ταχύτερες και πιο τεχνικές πίστες του καλενταριου. Η νίκη του Όσκαρ Πιάστρι τον ανέδειξε ως τον πρώτο Αυστραλό που ηγείται του πρωταθλήματος από την εποχή του Μαρκ Γουέμπερ το 2010, ενώ η McLaren εδραιώθηκε στην κορυφή των κατασκευαστών. </p><h3><a id="_rw23zk7rcytc"></a><strong>🔧 Παρασκευή – Δοκιμές &amp; Τεχνική Ενσωμάτωση</strong></h3><p>*<em>FP1 &amp; FP2:</em></p><ul><li>Ο Πιέρ Γκασλί σημείωσε τον ταχύτερο χρόνο στο P1.<br /></li><li>Ο Λάντο Νόρις κυριάρχησε στο FP2 με χρόνο 1:28.267, ενώ ο Όσκαρ Πιάστρι και ο Μαξ Φερστάπεν ακολούθησαν.<br /></li></ul><p>*<em>Προσαρμογή των ομάδων στις συνθήκες:</em></p><ul><li>Η McLaren παρουσίασε αεροδυναμικές αναβαθμίσεις, όπως ανασχεδιασμένο διαχύτη και νέες πτέρυγες φρένων, για βελτιωμένη ροή αέρα.<br /></li><li>Η Ferrari εισήγαγε νέα πίσω πτέρυγα μειωμένου φορτίου, ενώ η Red Bull τροποποίησε το κάλυμμα του κινητήρα για καλύτερη ψύξη.<br /></li></ul><p>*<em>Ζητήματα πρόσφυσης, αεροδυναμικής, θερμικής διαχείρισης:</em></p><ul><li>Οι υψηλές θερμοκρασίες ασφάλτου (~40°C) επηρέασαν τη διαχείριση των ελαστικών και την απόδοση των μονοθεσιων.<br /></li><li>Η θερμική διαχείριση ήταν κρίσιμη, με τις ομάδες να προσαρμόζουν τις ρυθμίσεις για βέλτιστη απόδοση.<br /></li></ul><p>*<em>Πρώτες εκτιμήσεις στρατηγικής και επιλογών ελαστικών:</em></p><ul><li>Οι ομάδες δοκίμασαν διάφορες γόμες, με έμφαση στη μέση και σκληρή, για να αξιολογήσουν τη φθορά και την απόδοση.<br /></li></ul><p>📌 *<em>Τεχνικά Highlights:</em></p><ul><li>Θερμοκρασία ασφάλτου: 40°<br /></li><li>Συμπεριφορά μονοθεσίων: Υψηλές ταχύτητες με έμφαση στη σταθερότητα στις στροφες<br /></li><li>Ενεργοποίηση ERS/DRS: Κρίσιμη για προσπεράσεις στις ευθείες<br /></li></ul><h3><a id="_r0ugb8w3t19q"></a><strong>🏁 Σάββατο – Προκριματικά</strong></h3><p><strong>Κατατακτήριες (Q3)</strong></p><ul><li>Ο Μαξ Φερστάπεν κατέκτησε την pole position με χρόνο 1:27.294, μόλις 0.01 δευτερόλεπτα ταχύτερος από τον Όσκαρ Πιστρ.<br /></li><li>Ο Λάντο Νόρις υπέστη ατύχημα στο Q3, με αποτέλεσμα να ξεκινήσει από τη 10η θέση.<br /></li></ul><p>*<em>Κατάταξη πρώτης 10άδας:</em></p><ol><li>Μαξ Φερστάπεν (RedBull<br /></li><li>Όσκαρ Πιάστρι (Mcaren<br /></li><li>Τζορτζ Ράσελ (Meredes<br /></li><li>Σαρλ Λεκλέρ (Ferari<br /></li><li>Κίμι Αντονέλι (Meredes<br /></li><li>Κάρλος Σάινθ (Wiliams<br /></li><li>Λιούις Χάμιλτον (Ferari<br /></li><li>Γιούκι Τσουνόντα (RedBull<br /></li><li>Πιέρ Γκασλί (Apine)<br /></li><li>Λάντο Νόρις (Mcaren)<br /></li></ol><p><strong>Sprint Race</strong></p><ul><li>Δεν διεξήχθη Sprint Race στο GP Σαουδικής Αραβίας 2025.<br /></li></ul><h3><a id="_knsi7p20wt1g"></a><strong>🏆 Κυριακή – Ο Κύριος Αγώνας</strong></h3><p><strong>Εκκίνησ:</strong></p><ul><li>Ο Φερστάπεν διατήρησε την πρωτοπορία, αλλά μια επαφή με τον Πιάστρι στην πρώτη στροφή του κόστισε ποινή 5 δευτερολέπτων.<br /></li><li>Σύγκρουση μεταξύ Τσουνόντα και Γκασλί προκάλεσε την είσοδο του αυτοκινήτου ασφαλείας.<br /></li></ul><p><strong>Απόδοση κορυφαίων οδηγώ:</strong></p><ul><li>Ο Πιάστρι εκμεταλλεύτηκε τη στρατηγική του undercut και την ποινή του Φερστάπεν για να πάρει το προβάδισμα.<br /></li></ul><h3><a id="_xj401j44i2"></a><strong>📊 Τεχνική Ανάλυση Επιδόσεων</strong></h3><p>| Ομάδα | Μέση Ταχύτητα | Ζώνες ERS | Χρόνος Pit Stop | Φθορά Ελαστικών | |-----------|---------------|-----------|-----------------|-----------------| </p><p>| McLaren | ~242 km/h | 3 | ~22.5 s | Μέτρια | </p><p>| Red Bull | ~241 km/h | 3 | ~22.8 s | Μέτρια-Υψηλή | </p><p>| Ferrari | ~240 km/h | 3 | ~23.0 s | Μέτρια</p><p>📌 <strong>Τεχνικά Highlights</strong>:</p><p>Ο Λάντο Νόρις σημείωσε τον ταχύτερο γύρο του αγώνα με χρόνο 1:31.778 στον 41ο γύρο, επιδεικνύοντας την ταχυτητα της McLaren. Η Red Bull αντιμετωπίζει προκλήσεις με την ισορροπία του μονοθεσίου, επηρεάζοντας την απόδοσή της. Η Ferrari παρουσίασε βελτιωμένη απόδοση, με τον Σαρλ Λεκλέρ να εξασφαλίζει το πρώτο της βάθρο για το 2025. </p><h3><a id="_8zuz2oils56m"></a><strong>🏆 Επιπτώσεις στη Βαθμολογία &amp; Στρατηγική Εικόνα</strong></h3><p><strong>Βαθμολογία Οδηγών (Top 5):</strong></p><ol><li>Όσκαρ Πιάστρι – 99 βαθμοί </li><li>2. Λάντο Νόρις 89</li><li>3. Μαξ Φερστάπεν 87</li><li>4. Τζορτζ Ράσελ 73</li><li>5. Σαρλ Λεκλέρ 47<br /></li></ol><p><strong>Βαθμολογία Κατασκευαστών:</strong></p><ol><li>McLaren – 188 </li><li>Mercedes –111</li><li>Red Bull 89</li><li>Ferrari 78</li><li>Williams 25<br /></li></ol><p>Η McLaren εδραιώνει την κυριαρχία της, με τον Πιάστρι να οδηγεί τη βαθμολογία των οδηγών και την ομάδα να προηγείται στους κατασκευαστές. Η Red Bull αντιμετωπίζει προκλήσεις, ενώ η Ferrari δείχνει σημάδια ανάκαμψης. </p><h3><a id="_gcd9skyk1nu4"></a><strong>🧠 Συμπεράσματα</strong></h3><ul><li>Η McLaren επιβεβαιώνει την τεχνική της υπεροχή, με τον Πιάστρι να αποδεικνύεται σταθερός και αποτελεσματικός<br /></li><li>Ο Φερστάπεν παραμένει ανταγωνιστικός, αλλά οι ποινές και οι στρατηγικές επιλογές επηρεάζουν τα αποτελέσματά του<br /></li><li>Η Ferrari δείχνει βελτίωση, με τον Λεκλέρ να εξασφαλίζει το πρώτο της βάθρο για τη σεζόν<br /></li><li>Η Mercedes διατηρεί σταθερή απόδοση, με τους Ράσελ και Αντονέλι να συγκεντρώνουν πολύτιμους βαθμούς.<br /></li></ul><p>📌 Το GP Σαουδικής Αραβίας 2025 επιβεβαιώνει την ανοδική πορεία της McLaren και την ικανότητα του Πιάστρι να ηγείται της βαθμολογίας, ενισχύοντας τον ανταγωνισμό στο πρωτάθλημα.</p></div>
 
-                                <div class="article-author-footer">
-                                    <div class="author-box">
-                                        <div class="author-header">
-                                            <div class="author-avatar">
-                                                <img id="author-image" src="/images/authors/georgios.webp" alt="Georgios Balatzis"
-                                                     loading="lazy" decoding="async" width="474" height="474"
-                                                     data-show-on-error="author-initial">
-                                                <span class="avatar-text" id="author-initial">A</span>
-                                            </div>
-                                            <div class="author-info">
-                                                <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Γιώργος Μπαλατζής</a></p>
-                                                <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
-                                            </div>
-                                        </div>
-                                        <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
-                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
-                                    </div>
-                                </div>
+                                <section class="author-card" data-author-slug="georgios-balatzis" aria-labelledby="author-card-name"><p class="author-card__label">ΓΡΑΦΕΙ</p><div class="author-card__head"><img class="author-card__portrait" src="/images/avatars/CSW.webp" alt="" width="80" height="80" loading="lazy" decoding="async"><div><p class="author-card__name" id="author-card-name"><a href="/authors/?author=georgios-balatzis">Γιώργος Μπαλατζής</a></p><p class="author-card__specialty">Τεχνική ανάλυση και αγωνιστικός ρυθμός</p></div></div><p class="author-card__bio">Μετράει όσα δεν φαίνονται στον πίνακα αποτελεσμάτων: upgrades, ελαστικά, ρυθμό και τις αποφάσεις που κρίνουν έναν αγώνα.</p><p class="author-card__links"><a href="/blog-module/blog/index.html?author=georgios-balatzis">Όλα τα άρθρα του Γιώργου <span aria-hidden="true">→</span></a><a class="author-card__social" href="https://www.instagram.com/borgos_gialatzis/" target="_blank" rel="noopener">Instagram <span aria-hidden="true">↗</span></a></p></section>
 
                                 <div class="sponsor-strip">
                                     <div class="sponsor-strip-label">Συνεργάτες</div>
@@ -362,47 +358,45 @@
 
 <!-- @include partials/footer.html -->
 <!-- @include:begin partials/footer.html -->
-<footer class="py-4">
+<footer>
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="footer-colophon">
-                    <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
-                    <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
-                </div>
-                <nav class="footer-index" aria-label="Ενότητες">
-                    <a href="/blog-module/blog/index.html">Άρθρα</a>
-                    <a href="/standings/">Βαθμολογία</a>
-                    <a href="/authors/">Συντάκτες</a>
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
-                    <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
-                </nav>
-                <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
-                <div class="social-media">
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
-                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
-                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
-                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
-                    <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
-                </div>
-                <div class="footer-links mt-3">
-                    <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
-                    <span class="footer-separator">|</span>
-                    <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
-                    <span class="footer-separator">|</span>
-                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
-                </div>
+        <div class="footer-body">
+            <div class="footer-colophon">
+                <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
+                <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
+            </div>
+            <nav class="footer-index" aria-label="Ενότητες">
+                <a href="/blog-module/blog/index.html">Άρθρα</a>
+                <a href="/standings/">Βαθμολογία</a>
+                <a href="/authors/">Συντάκτες</a>
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
+                <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
+            </nav>
+            <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
+            <div class="social-media">
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
+                <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
+                <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
+                <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
+                <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
+            </div>
+            <div class="footer-links">
+                <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
+                <span class="footer-separator">|</span>
+                <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                <span class="footer-separator">|</span>
+                <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
             </div>
         </div>
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=ba445b6d"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=548e1e5a"></script>
 <script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=1835b71e"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
-<script defer src="/blog-module/blog-fixes.min.js?v=4685a10e"></script>
+<script defer src="/blog-module/blog-fixes.min.js?v=937be1b8"></script>
 <script defer src="/scripts/sw-cleanup.min.js?v=d76b3ca4"></script>
 </body>
 </html>

@@ -17,7 +17,8 @@ Fixing the **debt** listed in `DESIGN.md` is allowed only when the trait below s
   - Dark mode is warm charcoal (`#1b1a19` family), never blue-black or cool grey.
 - [ ] **The accent splits by theme:** coral `#ff775f` in dark mode, oxide `#a82e1c` in light mode. `--signal` stays constant, and any text on it is ink.
 - [ ] **Dark is the default theme.** Light is `html[data-theme="light"]`, and both themes are first-class.
-- [ ] **Per-category signal colors:** technical teal, analysis oxide, history ochre, betting green, and the others. Each has a separate dark-readable variant.
+- [ ] **Per-category signal colors:** technical teal, analysis oxide, history ochre, betting green, and the others, from one token map (`--category-*`) with a dark-readable variant. Used as punctuation only: the category word and small marks, never fills, pills or colored headlines.
+- [ ] **Author accents are separate from category color:** a muted ink per writer, only in author blocks (the article's closing card, the Journal's writer view, `/authors/` badges).
 - [ ] **Team and tyre colors stay attached to data only.** They are never used as UI chrome.
 - [ ] **Sponsor logos keep their original colors** on one light mat, in both themes.
 - [ ] **Paper grain** in light mode (noise at `.035`) and the faint warm radial washes.
@@ -64,15 +65,15 @@ Fixing the **debt** listed in `DESIGN.md` is allowed only when the trait below s
 
 ## Layout and asymmetry
 
-- [ ] **Asymmetric grids:** home hero 47/53 with the headline crossing the photo edge; journal main plus a 240px margin column; archive 12-column curated spread (7 + stacked 2).
+- [ ] **Asymmetric grids:** home hero 47/53 with the headline crossing the photo edge; journal main plus a 240px margin column; the Journal's 12-column front page (lead in 7, two stacked secondary stories) and the recent list beside the long reads.
 - [ ] The **standings masthead** is 1fr + 270px, and the **article body** is 680px + a 190–240px margin rail.
 - [ ] **Staggered portraits:** home cast (even items drop 54px) and author cards (even items drop 24px).
 - [ ] **Container 1476px**, with padding of 48, 32, 22 and 17px at the four breakpoints.
-- [ ] **Mobile re-composes rather than just stacking:** the home hero reorders its parts, and lead stories become thumbnail + text rows.
+- [ ] **Mobile re-composes rather than just stacking:** the home hero reorders its parts; the Journal goes lead story → 96px-thumbnail rows → numbered text rows → text-led long reads → text ledger with an occasional photo.
 
 ## Photography
 
-- [ ] **Photography stays large and leads the page:** hero image about 53%, archive lead story 7 of 12 columns.
+- [ ] **Photography stays large and leads the page:** hero image about 53%, the Journal lead story 7 of 12 columns. Deeper in the archive, photographs are the exception (one row in eight), which keeps them special.
 - [ ] **Desaturated at rest, full color on hover**, together with a slow scale of 1.045.
 - [ ] **Square corners except one large bottom-right cut corner.**
 - [ ] **Paper label tabs** laid over the top-left of photos.
@@ -81,7 +82,7 @@ Fixing the **debt** listed in `DESIGN.md` is allowed only when the trait below s
 
 ## Components
 
-- [ ] **Unboxed cards:** photo → meta → title → excerpt → arrow CTA, separated by 1px rules. No shadow, border or radius.
+- [ ] **Unboxed cards:** photo → category/meta → title → excerpt, separated by 1px rules. No shadow, border or radius. The Journal's archive is a text ledger (date · category · headline · byline) under month rules.
 - [ ] **Primary CTA:** a solid ink block (reversed in dark mode), 2px radius. On hover it turns **signal with ink text**. No lift, no shadow.
 - [ ] **Secondary CTA:** text with a bottom rule.
 - [ ] **Links in article text** use a 1px bottom border that takes the category signal on hover.

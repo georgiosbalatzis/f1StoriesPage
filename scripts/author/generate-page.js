@@ -1,25 +1,15 @@
 (function () {
     'use strict';
 
-    // ── Author data (mirrors article-script.js) ──────────
-    var AUTHORS = {
-        'Georgios Balatzis':    { image: '/images/authors/georgios.webp',  title: 'Founder & Host',       bio: 'Ο Γιώργος είναι ο ιδρυτής του F1 Stories podcast. Μοιράζεται αναλύσεις, ιστορίες και insights από τον κόσμο της Formula 1.' },
-        'Giannis Poulikidis':   { image: '/images/authors/giannis.webp',  title: 'Co-Host & Analyst',    bio: 'Ο Γιάννης φέρνει αναλυτική ματιά στα τεχνικά θέματα και τις στρατηγικές αγώνων της F1.' },
-        'Thanasis Batalas':     { image: '/images/authors/thanasis.webp', title: 'Contributor',          bio: 'Ο Θανάσης συνεισφέρει με ιστορίες από τα παρασκήνια και ανασκοπήσεις αγώνων.' },
-        'Themis Charvalis':     { image: '/images/authors/2fast.webp',    title: 'Sim Racing Expert',    bio: 'Ο Themis Charvalis είναι ειδικός στο sim racing, φέρνοντας τον κόσμο του virtual motorsport στο F1 Stories.' },
-        'Dimitris Keramidiotis':{ image: '/images/authors/dimitris.webp', title: 'Contributor',          bio: 'Ο Δημήτρης μοιράζεται θεματικά άρθρα, rankings και opinion pieces.' },
-        'F1 Stories Team':      { image: '/images/authors/default.webp',  title: 'Ομάδα F1 Stories',     bio: '' }
-    };
-
-    // Author → folder code (mirrors blog-processor.js AUTHOR_MAP)
-    var AUTHOR_CODES = {
-        'Georgios Balatzis':    'G',
-        'Giannis Poulikidis':   'J',
-        'Thanasis Batalas':     'T',
-        'Themis Charvalis':     'W',
-        'Dimitris Keramidiotis':'D',
-        'F1 Stories Team':      ''
-    };
+    // ── Authors: the one list in blog-module/taxonomy.js (loaded before this script) ──
+    var TEAM = { name: 'F1 Stories Team', label: 'F1 Stories Team', code: '', portrait: '/images/authors/default.webp', specialty: 'Ομάδα F1 Stories', bio: '' };
+    var AUTHOR_LIST = window.F1S_TAXONOMY.AUTHORS.concat([TEAM]);
+    var AUTHORS = {};
+    var AUTHOR_CODES = {};
+    AUTHOR_LIST.forEach(function (author) {
+        AUTHORS[author.name] = author;
+        AUTHOR_CODES[author.name] = author.code;
+    });
     var DEFAULT_AUTHOR = 'Georgios Balatzis';
     var DEFAULT_CATEGORY = 'News';
 
@@ -113,13 +103,13 @@
         radio.value = name;
         radio.checked = name === DEFAULT_AUTHOR;
         var avatar = el('img');
-        avatar.src = (AUTHORS[name] || AUTHORS['F1 Stories Team']).image;
+        avatar.src = AUTHORS[name].portrait;
         avatar.alt = '';
         avatar.width = 40;
         avatar.height = 40;
         avatar.decoding = 'async';
-        var text = el('span', 'gb-author-text', name);
-        text.appendChild(el('small', '', (AUTHORS[name] || {}).title || ''));
+        var text = el('span', 'gb-author-text', AUTHORS[name].label);
+        text.appendChild(el('small', '', AUTHORS[name].specialty));
         option.append(radio, avatar, text);
         authorGroup.appendChild(option);
     });
@@ -1261,12 +1251,21 @@
         authorDom.setTrustedHtml(contentEl, html, 'Generate article preview HTML');
 
         var authorData = AUTHORS[author] || AUTHORS['F1 Stories Team'];
-        byId('pv-byline').textContent = author;
-        byId('pv-author-name').textContent = author;
-        byId('pv-author-initial').textContent = author.charAt(0).toUpperCase();
-        byId('pv-author-img').src = authorData.image;
-        byId('pv-author-img').alt = author;
-        byId('pv-author-title').textContent = authorData.title;
+        byId('pv-byline').textContent = authorData.label;
+        // Mirrors renderHeaderByline(): the team signs without a portrait.
+        var bylineImg = byId('pv-byline-img');
+        bylineImg.hidden = !authorData.slug;
+        if (authorData.slug) {
+            bylineImg.src = window.F1S_TAXONOMY.authorThumb(authorData);
+            byId('pv-byline-row').setAttribute('data-author-slug', authorData.slug);
+        } else {
+            byId('pv-byline-row').removeAttribute('data-author-slug');
+        }
+        byId('pv-author-name').textContent = authorData.label;
+        byId('pv-author-img').src = authorData.portrait;
+        if (authorData.slug) byId('pv-author-card').setAttribute('data-author-slug', authorData.slug);
+        else byId('pv-author-card').removeAttribute('data-author-slug');
+        byId('pv-author-title').textContent = authorData.specialty;
         byId('pv-author-bio').textContent = authorData.bio;
 
         var words = contentEl.textContent.trim().split(/\s+/).length;

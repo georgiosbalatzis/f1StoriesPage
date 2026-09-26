@@ -1,6 +1,6 @@
 # F1 Stories — Design System (as implemented)
 
-This file documents the **existing** design language. It was pulled from source on 2026-09-22 and describes what the code does today. It is not a proposal.
+This file documents the **existing** design language. It was pulled from source on 2026-09-22 and updated on 2026-09-26 after the Journal rebuild (edited front page, archive ledger, one category ink map, author accents). It describes what the code does today. It is not a proposal.
 
 Read `docs/static-publishing-model.md` and `docs/css-architecture.md` for architecture and build ownership, and `KEEP.md` for the traits that must survive any change.
 
@@ -16,7 +16,7 @@ Wherever this document and the CSS disagree, **the CSS wins**. Every value below
 - `styles/authors.css`
 - `styles/legal.css`
 
-It sits on top of a **legacy structural layer**: `styles.css`, `styles/shared-nav.css`, `blog-module/blog-styles.css`, `blog-module/blog/article-styles.css`, `article-rail.css`, `standings/standings.css`, `standings-polish.css` and bootstrap.slim. The legacy layer supplies layout mechanics. The editorial layer re-skins it.
+It sits on top of a **legacy structural layer**: `styles.css`, `styles/shared-nav.css`, `blog-module/blog/article-styles.css`, `article-rail.css`, `standings/standings.css`, `standings-polish.css` and bootstrap.slim. The legacy layer supplies layout mechanics. The editorial layer re-skins it. The Journal (`archive-editorial.css`) no longer sits on the legacy layer: it loads only `styles.css`, shared-nav, editorial and its own stylesheet.
 
 `theme-overrides.css`, `styles/fonts.css` (Roboto) and `critical-common.css` are loaded only by author tools. They are not part of the public identity.
 
@@ -60,19 +60,23 @@ The accent splits by theme. Dark mode uses a light coral (`#ff775f`) because it 
 - **Archive and article** (`editorial.css:57-89`) use a warmer charcoal set: `--text-secondary #b8b1a6`, `--text-tertiary #968f86`, `--border #6d6861`, `--accent-readable #ff9a89`. The comment in the file states the intent: "warmer charcoal dark theme".
 - **Home, "Night edition"** (`home.css:12-36`): `--bg-base #181a1c`, `--accent #ff826b`, plus the `--home-cover-*` family for the cover band. In light mode the home cover is paper with ink text.
 
-**Semantic, category color.** Every story category has its own signal. On the archive it colors the card meta and arrow (`archive-editorial.css:241-259`). On an article it colors the cover wash, the lead-paragraph rule, section numbers, list markers and figure labels (`article-editorial.css:17-33`).
+**Semantic, category color.** Every story category has its own ink, defined once in `styles/editorial.css` (`--category-*` and `--category-*-text`, per theme) and read through `--kind` / `--kind-text` on any element carrying `data-kind` (Journal) or `data-article-kind` (article, sticky mini-bar). In the Journal it colors only the category word and small marks (the active filter dot and underline, the archive head rule of a topic view, the headline underline on hover). On an article it colors the cover wash, the lead-paragraph rule, section numbers, list markers and figure labels. A story takes the ink of its primary category (the author's chosen one); secondary categories stay neutral text.
 
-| Category | Signal (base) | Dark-readable |
-|---|---|---|
-| technical | `#16736c` teal | `#69c5ba` |
-| analysis | `#a82e1c` oxide | `#ff9a89` |
-| history | ochre/brown | `#d5ae70` |
-| opinion | brown | `#d29a79` |
-| betting | green | `#76d5a1` |
-| drivers | blue (archive) | `#9dbde2` |
-| teams | violet (archive) | `#baabdf` |
-| season | gold | `#dfbd69` |
-| news / journal | `--accent` | `--accent-readable` |
+| Category | Light ink | Dark mark | Dark text |
+|---|---|---|---|
+| news (signal red) | `#a82e1c` | `#e2604a` | `#ff9a89` |
+| analysis (oxide vermilion) | `#9a3d1c` | `#cf6a45` | `#f39370` |
+| technical (muted teal) | `#12655f` | `#3c9990` | `#6ec6bb` |
+| history (ochre) | `#7a5a14` | `#b08a36` | `#dcb468` |
+| opinion (clay) | `#81452f` | `#b27a62` | `#d9a28d` |
+| betting (racing green) | `#2c6a43` | `#4c9a68` | `#7ec99a` |
+| drivers (steel blue) | `#3a5f86` | `#6e93bb` | `#a0c0e3` |
+| teams (aubergine) | `#654a7d` | `#9580b0` | `#c2afdc` |
+| season / 2026 (brass) | `#5f5d17` | `#a09c3e` | `#d4d06f` |
+
+Text contrast is ≥4.5:1 on paper (`#f2eee4`, `#e9e3d6`) and charcoal (`#1b1a19`, `#242321`); dark marks are ≥4.3:1.
+
+**Author accents.** Each writer has a muted signature ink (`[data-author-slug]` → `--author-accent`, `styles/editorial.css`): Georgios petrol, Giannis tobacco, Themis brick, Thanasis slate, Dimitris plum. It appears only in author blocks: the article's closing author card (3px rule), the Journal's writer view and the `/authors/` badges. It never colors a category label, and category ink never enters an author block.
 
 **Data color.** Team and tyre colors belong to the data they represent (`standings-editorial.css:4`, "Team and tyre colors remain attached to the data they represent"). A team color appears on the row rule (`--team-color`), the headshot base line, a 7% row tint on hover, and the qualifying "instrument ring". Team color never becomes UI chrome.
 
@@ -87,13 +91,7 @@ These are the **only** gradients in the system. They are atmospheric tints that 
 ### B. Debt
 
 1. **Three dark charcoals** for the same role. Editorial default is `#1b1a19`. Home is `#181a1c`, with surface `#222426` (cooler and greyer). The legacy `styles.css :root` is `#111113`, and it applies outside `.editorial-page` (404, offline).
-2. **The category palettes diverge between archive and article.** For example:
-   - history: `#8e6b2f` on the archive vs `#9a5b1d` on the article
-   - opinion: `#694634` vs `#80522c`
-   - betting: `#287a55` vs `#4f713a`
-   - drivers, teams and season each have their own color on the archive, but on the article all three collapse to `#6f5d39`.
-
-   Same category, different color, depending on the page.
+2. ~~The category palettes diverge between archive and article.~~ Fixed 2026-09-26: one token map in `styles/editorial.css`.
 3. **Hard-coded values bypass the tokens:**
    - `#565b50` countdown race name (`editorial.css:223`)
    - `#51584c` article cover meta (×4)
@@ -103,7 +101,7 @@ These are the **only** gradients in the system. They are atmospheric tints that 
    - `#151713` video facade
    - `#e3ddce` sponsor hover
 4. **Stale legacy aliases.** `editorial.css:519-567` redefines about 40 aliases (`--primary-blue`, `--accent-cyan`, `--blog-*`, `--st-*`) so that legacy components pick up the editorial palette. Some are redefined again in `standings-editorial.css:6-26`, with different mappings (`--st-accent` is `--accent` in one file and `--signal` in the other).
-5. **An undefined token.** `styles/authors.css` uses `var(--bg-page)` for the page background and for the number-badge text, but `--bg-page` is not defined anywhere in public CSS.
+5. ~~An undefined token in `styles/authors.css`.~~ Fixed: the badge uses `--bg-base` on the author accent, and portraits sit on `--bg-surface`.
 6. **The legacy `styles.css` root is still a blue/Roboto palette** (`--accent #8fb6cf`, `--font-body 'Roboto'`). It is invisible on editorial pages, but it is still the fallback everywhere else.
 
 ---
@@ -140,7 +138,7 @@ Barlow is never used for Greek running text.
 
 | Role | Spec | Where |
 |---|---|---|
-| Brand masthead | `700 clamp(6rem,13vw,12rem)/.79` Barlow, `-.035em` | Archive "JOURNAL." |
+| Brand masthead | `700 clamp(4.5rem,7.4vw,6.5rem)/.8` Barlow, `-.035em` (4rem on phones) | Journal "JOURNAL." (compact: the first story leads the first screen) |
 | | `700 clamp(5.5rem,10vw,9rem)/.9` Barlow | Standings "THE GRID." |
 | Cover headline | `600 clamp(2.5rem,4.3vw,4.5rem)/1.15`, `-.025em` | Home hero h1 |
 | | `600 clamp(2rem,3.8vw,4rem)/1.15`, `-.025em`, `text-wrap: balance` | Article title |
@@ -180,7 +178,7 @@ Barlow is never used for Greek running text.
 - **Asymmetric editorial grids:**
   - Home hero: `47% / 53%`. The headline crosses the photograph's left edge.
   - Home journal: `1fr 240px` (main plus margin column), with stories set `1.35fr / .85fr`.
-  - Archive masthead: `1.6fr / 1fr`. The archive grid is 12 columns; the curated opening spread is `1/8` for the lead, and `9/-1` stacked two high for the next two.
+  - Journal: a compact masthead (`1fr` + 27rem note), then a 12-column front page: the lead story in `1/8` (5:2 photo, 4:3 on phones; headline, deck and byline fit the first screen), two stacked secondary stories in `9/-1`; below it the same split for «ΠΡΟΣΦΑΤΑ» (numbered text rows) and «ΓΙΑ ΑΡΓΗ ΑΝΑΓΝΩΣΗ» (text-led long reads); then the archive: tools and a ledger (date · category · headline · byline) under month rules, with a photograph every eighth row.
   - Standings masthead: `1fr 270px`. Standings layout: `1fr 255px` side panel.
   - Article: `minmax(0,680px) minmax(190px,240px)` body plus margin rail, max 968px wide. The cover is `1fr / 1.1fr` once its container is ≥1100px.
   - Authors: `.8fr / 1.2fr` intro, and a 2-column directory where every second card drops 24px.
@@ -189,7 +187,7 @@ Barlow is never used for Greek running text.
 - **Section rhythm:** `--space-section: clamp(40px, 6vw, 80px)`. In practice sections use 72–95px top and bottom on desktop and 34–54px on mobile.
 - **Mobile layouts re-compose rather than just stack.**
   - The home hero reorders through `grid-template-areas` to: edition → title → subtitle → photo → description → byline → actions.
-  - Archive lead stories become thumbnail + text rows.
+  - The Journal re-composes on phones: compact masthead (JOURNAL. at 4rem), lead story with a 4:3 photo, secondary stories as 96px-thumbnail rows, numbered recent rows, text-led long reads, then a text ledger (category + date, headline, byline) with an occasional full-width photo. Filters sit behind a «Φίλτρα» disclosure.
   - Cast members become `88–104px` portrait + text rows.
 
 ### B. Debt
@@ -210,7 +208,7 @@ Barlow is never used for Greek running text.
 - **Links:** Plex 500 at .875rem, with no pill and no background. The active link is weight 600 with a **2px signal underline covering 40% of its width**. On hover the underline grows from the right to full width.
 - **Right cluster:** race countdown (flag, race name, tabular timer) after a 1px left rule; a 44px round theme toggle that rotates 16° on hover; a square 1px-bordered hamburger with square strokes.
 - **Mobile menu:** full-width rows 52px tall with a signal left border on the active item. On hover the row indents from 1.5rem to 1.9rem.
-- **Every route uses the same masthead,** and the markup is duplicated in each shell (see the baseline).
+- **Every route uses the same masthead,** from one partial (`partials/nav.html`, expanded at build time into every shell and article; the active section comes from the page context in `scripts/build/include.mjs`).
 
 ### Edition line — A (a signature element)
 
@@ -270,10 +268,12 @@ A card is **usually not a box**. Archive cards, home stories, related stories an
 - an arrow CTA
 - separated by 1px rules
 
+The Journal's story blocks follow the same grammar without a per-story arrow CTA: photo (lead and secondary only) → category word → headline → deck (lead, long reads) → byline. The archive ledger is text-first rows divided by 1px rules under month rules.
+
+The article ends on an **author card** (not a box): «ΓΡΑΦΕΙ», portrait, name, specialty, one line of biography, «Όλα τα άρθρα του …», a quiet Instagram link, bounded by a 1px top rule and a 3px rule in the writer's accent.
+
 Boxed surfaces are the exception:
-- the no-image card (surface plus a 3px category left rule)
 - the opinion treatment
-- the author box
 - author profiles
 
 ### Figures and photography — A
@@ -396,9 +396,12 @@ These go against the implemented language. Most of them are already cancelled ou
 | Palette, both themes, container, masthead, footer, sponsor mat | `styles/editorial.css` |
 | Fonts | `styles/home-fonts.css` (+ `assets/fonts/`) |
 | Home cover, journal, cast, contact, primary/secondary CTA | `home.css` |
-| Archive masthead, filters, card grid, category signals, pagination | `blog-module/blog/archive-editorial.css` |
-| Article cover, reading type, numbering, figures, gallery, rail, author box, related | `blog-module/blog/article-editorial.css` |
+| Category ink map, author accent map | `styles/editorial.css` |
+| Journal masthead, front page, recent list, long reads, archive tools, ledger, pagination | `blog-module/blog/archive-editorial.css` |
+| Journal front selection | `blog-module/editorial-selection.json` (see `docs/static-publishing-model.md`) |
+| Writers (names, slugs, portraits, specialty, bio, featured stories) | `blog-module/taxonomy.js` `AUTHORS` |
+| Article cover, reading type, numbering, figures, gallery, rail, author card, related | `blog-module/blog/article-editorial.css` |
 | Standings masthead, timing band, tabs, ledger, report skins | `standings/standings-editorial.css` |
 | Authors directory | `styles/authors.css` |
 | Legal pages (off-system) | `styles/legal.css` |
-| Structural and legacy mechanics underneath | `styles.css`, `styles/shared-nav.css`, `blog-module/blog-styles.css`, `blog-module/blog/article-styles.css`, `standings/standings.css` |
+| Structural and legacy mechanics underneath | `styles.css`, `styles/shared-nav.css`, `blog-module/blog/article-styles.css`, `standings/standings.css` (the Journal uses none but `styles.css` and shared-nav) |

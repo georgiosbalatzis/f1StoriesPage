@@ -5,6 +5,10 @@
     var root = document.documentElement;
     var THEME_KEY = 'f1stories-theme';
 
+    // A filtered Journal link opens on its results: the archive hides its front page
+    // before first paint (blog-index.js keeps this attribute in sync afterwards).
+    if (/[?&](?:category|author)=/.test(window.location.search)) root.setAttribute('data-journal-filtered', '');
+
     function readStoredTheme() {
         var storedTheme = '';
 

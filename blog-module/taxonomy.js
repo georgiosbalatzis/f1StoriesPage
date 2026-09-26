@@ -48,25 +48,103 @@
         News: 'Ειδήσεις', Analysis: 'Ανάλυση', Technical: 'Τεχνικά', History: 'Ιστορία', Opinion: 'Άποψη',
         Betting: 'Στοίχημα', Drivers: 'Οδηγοί', Teams: 'Ομάδες', '2026': '2026'
     });
-    const AUTHOR_LABELS = Object.freeze({
-        'Georgios Balatzis': 'Γιώργος Μπαλατζής',
-        'Giannis Poulikidis': 'Γιάννης Πουλικίδης',
-        'Themis Charvalis': 'Θέμης Χαρβάλης',
-        'Thanasis Batalas': 'Θανάσης Μπαταλάς',
-        'Dimitris Keramidiotis': 'Δημήτρης Κεραμιδιώτης'
+    // The writers, in directory order: the one source for names, folder codes,
+    // portraits, the short editorial profile and the stories /authors/ features (build,
+    // archive, articles, /authors/ and the author tools all read it). Each writer's
+    // accent ink lives in CSS, keyed by slug.
+    const AUTHORS = Object.freeze([
+        {
+            name: 'Themis Charvalis', label: 'Θέμης Χαρβάλης', genitive: 'Θέμη', slug: 'themis-charvalis', code: 'W',
+            portrait: '/images/avatars/AS.webp', desk: 'Ιστορία · Οδηγοί',
+            specialty: 'Ιστορικές αναδρομές και πορτρέτα οδηγών',
+            bio: 'Αναζητά το ανθρώπινο κομμάτι πίσω από τα αποτελέσματα και γράφει ιστορίες που συνδέουν το τότε με το σημερινό grid.',
+            column: 'Ιστορίες οδηγών και θρύλων', instagram: 'https://www.instagram.com/myf1stories/',
+            stories: [{ id: '20260909W', title: 'Τζιανκάρλο Φισικέλα: ο οδηγός που άγγιξε την κορυφή' }, { id: '20260906W', title: 'Charles Leclerc: ο αιώνιος διάδοχος' }]
+        },
+        {
+            name: 'Giannis Poulikidis', label: 'Γιάννης Πουλικίδης', genitive: 'Γιάννη', slug: 'giannis-poulikidis', code: 'J',
+            portrait: '/images/avatars/SV.webp', desk: 'Άποψη · Στοίχημα',
+            specialty: 'Αγωνιστική άποψη και BetCast',
+            bio: 'Γράφει όπως μιλάει: άμεσα, με χιούμορ και θέση. Μετατρέπει το αγωνιστικό τριήμερο σε κουβέντα που συνεχίζεται.',
+            column: 'Τροφή για σκέψη', instagram: 'https://www.instagram.com/john_pouliks/',
+            stories: [{ id: '20260909J' }, { id: '20260905J', title: 'BetCast #272: Τέρμα γκάζι ή τέρμα clipping' }]
+        },
+        {
+            name: 'Georgios Balatzis', label: 'Γιώργος Μπαλατζής', genitive: 'Γιώργου', slug: 'georgios-balatzis', code: 'G',
+            portrait: '/images/avatars/CSW.webp', desk: 'Τεχνικά · Δεδομένα',
+            specialty: 'Τεχνική ανάλυση και αγωνιστικός ρυθμός',
+            bio: 'Μετράει όσα δεν φαίνονται στον πίνακα αποτελεσμάτων: upgrades, ελαστικά, ρυθμό και τις αποφάσεις που κρίνουν έναν αγώνα.',
+            column: 'Τεχνικό δελτίο', instagram: 'https://www.instagram.com/borgos_gialatzis/',
+            stories: [{ id: '20260727G' }, { id: '20260724G', title: 'Aston Martin AMR26 B-Spec' }]
+        },
+        {
+            name: 'Dimitris Keramidiotis', label: 'Δημήτρης Κεραμιδιώτης', genitive: 'Δημήτρη', slug: 'dimitris-keramidiotis', code: 'D',
+            portrait: '/images/avatars/dr3R.webp', desk: 'Άποψη',
+            specialty: 'Προσωπική ματιά στο αγωνιστικό τριήμερο',
+            bio: 'Το ημερολόγιο ενός θεατή που κοιτάζει την F1 από την κερκίδα, το paddock και όλα όσα συμβαίνουν ανάμεσα στις γραμμές.',
+            column: 'Μέσα από το F1λτρο μου', instagram: 'https://www.instagram.com/dimkeram/',
+            stories: [{ id: '20260824D', title: 'Μέσα από το F1λτρο μου · 24 Αυγ' }, { id: '20260304D' }]
+        },
+        {
+            name: 'Thanasis Batalas', label: 'Θανάσης Μπαταλάς', genitive: 'Θανάση', slug: 'thanasis-batalas', code: 'T',
+            portrait: '/images/avatars/LN.webp', desk: 'Ιστορία · Ανάλυση',
+            specialty: 'Ιστορία, πρόσωπα και ψυχολογία',
+            bio: 'Συνδέει τις εποχές της Formula 1 με τις σημερινές μάχες και θυμίζει γιατί οι λεπτομέρειες μένουν περισσότερο από τα νούμερα.',
+            column: 'Από το αρχείο του grid', instagram: 'https://www.instagram.com/thanasismpatalas/',
+            stories: [{ id: '20260722T', title: 'Mercedes εναντίον Ferrari' }, { id: '20260604T', title: 'Η ψυχολογία του οδηγού' }]
+        }
+    ].map(Object.freeze));
+    function findAuthor(value) {
+        const key = String(value || '').trim();
+        return AUTHORS.find(author => author.name === key || author.slug === key) || null;
+    }
+    // Every portrait ships with a 96px square for small marks (filters, the archive's author view).
+    function authorThumb(author) {
+        return author ? author.portrait.replace(/\.webp$/, '-96.webp') : '';
+    }
+    // One kind per public category: the class/data value that carries its signal colour.
+    const CATEGORY_KINDS = Object.freeze({
+        News: 'news', Analysis: 'analysis', Technical: 'technical', History: 'history', Opinion: 'opinion',
+        Betting: 'betting', Drivers: 'drivers', Teams: 'teams', '2026': 'season'
     });
     // Fixed month tables keep build (Node ICU) and browser output identical.
     const MONTHS_SHORT = ['Ιαν', 'Φεβ', 'Μαρ', 'Απρ', 'Μαΐ', 'Ιουν', 'Ιουλ', 'Αυγ', 'Σεπ', 'Οκτ', 'Νοε', 'Δεκ'];
     const MONTHS_LONG = ['Ιανουαρίου', 'Φεβρουαρίου', 'Μαρτίου', 'Απριλίου', 'Μαΐου', 'Ιουνίου', 'Ιουλίου',
         'Αυγούστου', 'Σεπτεμβρίου', 'Οκτωβρίου', 'Νοεμβρίου', 'Δεκεμβρίου'];
+    // Nominative capitals for the archive's month rules ("ΣΕΠΤΕΜΒΡΙΟΣ 2026").
+    const MONTHS_TITLE = ['ΙΑΝΟΥΑΡΙΟΣ', 'ΦΕΒΡΟΥΑΡΙΟΣ', 'ΜΑΡΤΙΟΣ', 'ΑΠΡΙΛΙΟΣ', 'ΜΑΪΟΣ', 'ΙΟΥΝΙΟΣ', 'ΙΟΥΛΙΟΣ',
+        'ΑΥΓΟΥΣΤΟΣ', 'ΣΕΠΤΕΜΒΡΙΟΣ', 'ΟΚΤΩΒΡΙΟΣ', 'ΝΟΕΜΒΡΙΟΣ', 'ΔΕΚΕΜΒΡΙΟΣ'];
 
     function categoryLabel(value) {
         return Object.prototype.hasOwnProperty.call(CATEGORY_LABELS, value) ? CATEGORY_LABELS[value] : String(value || '');
     }
 
+    function categoryKind(value) {
+        return Object.prototype.hasOwnProperty.call(CATEGORY_KINDS, value) ? CATEGORY_KINDS[value] : 'journal';
+    }
+
+    // Greek capitals drop the tonos but keep the dialytika: "Ειδήσεις" → "ΕΙΔΗΣΕΙΣ", "Μαΐ" → "ΜΑΪ".
+    function greekUpper(value) {
+        return String(value || '').normalize('NFD').replace(/́/g, '').toUpperCase().normalize('NFC');
+    }
+
+    /** "2026-09-20" → { day: "20", month: "ΣΕΠ", monthTitle: "ΣΕΠΤΕΜΒΡΙΟΣ 2026", key: "2026-09" }. */
+    function ledgerDate(value) {
+        const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value || ''));
+        if (!match) return null;
+        const month = Number(match[2]) - 1;
+        return {
+            day: String(Number(match[3])),
+            month: greekUpper(MONTHS_SHORT[month]),
+            year: match[1],
+            monthTitle: `${MONTHS_TITLE[month]} ${match[1]}`,
+            key: `${match[1]}-${match[2]}`
+        };
+    }
+
     function authorLabel(name) {
-        const key = String(name || '').trim();
-        return Object.prototype.hasOwnProperty.call(AUTHOR_LABELS, key) ? AUTHOR_LABELS[key] : key;
+        const author = findAuthor(name);
+        return author ? author.label : String(name || '').trim();
     }
 
     /** "2026-09-20" → "20 Σεπ 2026" (short) or "20 Σεπτεμβρίου 2026" (long). */
@@ -89,12 +167,22 @@
     // ask for the 1600w original; grid cards stop at 800w to keep bytes sane.
     const CARD_SIZES = Object.freeze({
         archiveLead: '(min-width: 1200px) 780px, (min-width: 768px) 55vw, 100vw',
-        archiveCard: '(min-width: 1200px) 430px, (min-width: 768px) 50vw, 100vw',
+        // Secondary front stories: a 96px square on phones, the margin column above.
+        archiveSecond: '(max-width: 767px) 96px, (min-width: 1200px) 480px, 38vw',
+        // Occasional pictures inside the archive ledger.
+        archiveLedger: '(max-width: 767px) 100vw, 320px',
         homeLead: '(min-width: 1200px) 640px, (min-width: 768px) 55vw, 100vw',
         // 16:9 cards cropped into a 104px square on phones need ~185px of width.
         homeSecondary: '(max-width: 767px) 185px, 400px',
         related: '(max-width: 767px) 40vw, 390px'
     });
+    // The Journal front and archive ledger, shared by the build and the browser.
+    // A ledger page shows `page` rows; every `pictureEvery` rows, starting at
+    // `pictureAt`, one row carries a photograph so the long list keeps a rhythm.
+    const JOURNAL_LAYOUT = Object.freeze({ secondary: 2, recent: 4, deepReads: 2, page: 24, pictureAt: 5, pictureEvery: 8 });
+    function isLedgerPicture(index) {
+        return index >= JOURNAL_LAYOUT.pictureAt && (index - JOURNAL_LAYOUT.pictureAt) % JOURNAL_LAYOUT.pictureEvery === 0;
+    }
     function cardImageSrcset(url, includeFull) {
         const match = /^(.*)-card\.webp$/.exec(String(url || ''));
         if (!match) return '';
@@ -171,6 +259,7 @@
 
     return Object.freeze({
         PUBLIC_CATEGORIES, LEGACY_CATEGORY_OVERRIDES, normalizeTags, normalizeCategories, isPublicCategory, getPostTaxonomy,
-        categoryLabel, authorLabel, formatDate, formatReadingTime, cardImageSrcset, CARD_SIZES
+        AUTHORS, findAuthor, authorThumb, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate, formatReadingTime,
+        cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture
     });
 }));

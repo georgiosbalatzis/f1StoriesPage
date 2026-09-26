@@ -67,14 +67,14 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=946979ee">
+    <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=673c392e">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=ca8e0cc6">
-    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=94ac6e07">
+    <link rel="stylesheet" href="/styles.min.css?v=32423041">
+    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=7d8d58a2">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
-    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=73b1e224">
+    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=dc0b41f8">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" type="image/avif" href="1.avif" fetchpriority="high">
@@ -85,10 +85,10 @@
     <!-- Prevent FOUC -->
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ef4df24c">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=8a09ac22">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=e2e135cd">
     <!-- f1s:article-editorial:end -->
-    <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
+    <script src="/scripts/theme-init.min.js?v=327f75c6"></script>
 </head>
 <body class="editorial-page article-page">
 <!-- f1s:icon-sprite:begin -->
@@ -110,15 +110,19 @@
 </button>
 
 <!-- Navbar -->
+<!-- @include partials/nav.html -->
+<!-- @include:begin partials/nav.html -->
 <header>
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
-            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
+            <a class="blog-nav-brand" href="/" aria-label="Αρχική σελίδα F1 Stories"><img src="/images/logo-nav.webp" alt="Λογότυπο F1 Stories" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+                <a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
+                <a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -133,14 +137,16 @@
                     <span class="countdown-flag-mobile" data-race-flag-mobile aria-hidden="true">🏁</span>
                     <span id="race-countdown-mobile">Σύντομα</span>
                 </div>
-                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
+                <button class="blog-nav-hamburger" id="nav-hamburger" type="button" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
             <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
             <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+            <a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
+            <a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
                 <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
@@ -151,8 +157,9 @@
         </div>
     </nav>
 </header>
+<!-- @include:end partials/nav.html -->
 
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert>
+<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert data-article-kind="technical">
     <div class="article-mini-bar__text">
         <span class="article-mini-bar__category">Τεχνικά</span>
         <span class="article-mini-bar__title">Audi R26  – Η αρχή μιας νέας εποχής στη Formula 1</span>
@@ -181,7 +188,7 @@
                         <span class="article-category-pill">Τεχνικά</span>
                     </div>
                     <h1 class="article-title">Audi R26  – Η αρχή μιας νέας εποχής στη Formula 1</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Γιώργος Μπαλατζής</a></p>
+                    <p class="article-header-byline" data-author-slug="georgios-balatzis"><img class="article-header-byline__avatar" src="/images/avatars/CSW-96.webp" alt="" width="32" height="32" decoding="async"><span>Γράφει</span> <a href="/authors/?author=georgios-balatzis" class="article-author-link">Γιώργος Μπαλατζής</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 5 Απριλίου 2026</span>
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> <a href="/blog-module/blog/index.html?category=Technical" class="article-category-link">Τεχνικά</a> <a href="/blog-module/blog/index.html?category=Teams" class="article-category-link">Ομάδες</a></span>
@@ -233,24 +240,7 @@
             </iframe>
 </div><h2>Power Unit – Η καρδιά του project</h2><p>Η μεγαλύτερη τομή των κανονισμών του 2026 εντοπίζεται στη μονάδα ισχύος. Η κατάργηση του MGU-H και η σημαντική ενίσχυση του ρόλου του MGU-K μεταβάλλουν πλήρως τη δυναμική του υβριδικού συστήματος, μεταφέροντας το βάρος από τη συνεχή ανάκτηση ενέργειας μέσω των καυσαερίων σε ένα πιο απαιτητικό και διακοπτόμενο μοντέλο διαχείρισης.</p><p>Στο Audi R26, η ισορροπία μεταξύ θερμικού κινητήρα και ηλεκτρικής ενέργειας πλησιάζει επίπεδα που δεν έχουν προηγούμενο στην Formula 1. Η αυξημένη εξάρτηση από το ηλεκτρικό σύστημα δημιουργεί νέες απαιτήσεις σε επίπεδο ενεργειακής στρατηγικής, καθώς η διαχείριση της ενέργειας δεν αποτελεί πλέον απλώς υποστηρικτικό στοιχείο, αλλά βασικό παράγοντα απόδοσης.</p><p>Η συμπεριφορά του μονοθεσίου αναμένεται να διαφοροποιείται αισθητά, ιδιαίτερα στην απόκριση του throttle και στην επιτάχυνση εκτός στροφών, όπου η κατανομή της διαθέσιμης ηλεκτρικής ισχύος θα καθορίζει την αποτελεσματικότητα. Παράλληλα, η ανάγκη ελέγχου θερμοκρασιών και φθοράς της μπαταρίας εισάγει έναν επιπλέον περιορισμό, που θα επηρεάζει τόσο τη στρατηγική όσο και τη συνολική απόδοση σε διάρκεια αγώνα.</p><h2>Αεροδυναμική – Μετάβαση σε ενεργά συστήματα</h2><p>Οι αεροδυναμικοί κανονισμοί του 2026 εισάγουν ενεργά στοιχεία που επιτρέπουν τη μεταβολή της αεροδυναμικής συμπεριφοράς του μονοθεσίου σε πραγματικό χρόνο. Η φιλοσοφία μετατοπίζεται από τη μεγιστοποίηση της κάθετης δύναμης προς την επίτευξη μιας πιο αποδοτικής ισορροπίας μεταξύ drag και downforce, με στόχο τη βελτίωση της συνολικής ενεργειακής αποδοτικότητας.</p><p>Το Audi R26 φαίνεται να σχεδιάζεται γύρω από αυτή τη λογική, με ιδιαίτερη έμφαση στη μείωση της αντίστασης στις ευθείες και στην ικανότητα προσαρμογής στις διαφορετικές φάσεις του γύρου. Η μετάβαση μεταξύ low drag και high downforce καταστάσεων αντικαθιστά σε μεγάλο βαθμό τον παραδοσιακό ρόλο του DRS, δημιουργώντας ένα πιο σύνθετο και δυναμικό αεροδυναμικό περιβάλλον.</p><p>Η επιλογή μιας τέτοιας προσέγγισης συνεπάγεται αυξημένη ευαισθησία σε μεταβολές της ροής, ιδιαίτερα σε συνθήκες πλευρικού ανέμου ή έντονων αλλαγών κατεύθυνσης. Η σταθερότητα του μονοθεσίου εξαρτάται πλέον σε μεγαλύτερο βαθμό από τη συνολική αεροδυναμική συνοχή και λιγότερο από την καθαρή παραγωγή κάθετης δύναμης.</p><h2>Chassis και Packaging – Σχεδίαση στα όρια</h2><p>Η αρχιτεκτονική του Audi R26 ακολουθεί μια ιδιαίτερα επιθετική προσέγγιση στο packaging, με στόχο τη μείωση του όγκου και τη βελτίωση της ροής αέρα προς τα κρίσιμα αεροδυναμικά στοιχεία. Η συμπίεση των εσωτερικών εξαρτημάτων επιτρέπει πιο καθαρές γραμμές στο αμάξωμα, αλλά περιορίζει τα περιθώρια διαχείρισης θερμότητας.</p><p>Η επιλογή αυτή δημιουργεί ένα λεπτό ισοζύγιο μεταξύ απόδοσης και αξιοπιστίας. Σε συνθήκες υψηλής θερμοκρασίας ή σε απαιτητικές πίστες, το σύστημα ψύξης καλείται να λειτουργήσει σε οριακά επίπεδα, κάτι που μπορεί να επηρεάσει τη συνολική απόδοση. Παράλληλα, το περιορισμένο setup window καθιστά το μονοθέσιο πιο απαιτητικό στην προσαρμογή του σε διαφορετικές συνθήκες.</p><p>Η ανάρτηση και η γεωμετρία του chassis σχεδιάζονται με στόχο τη διατήρηση ενός σταθερού αεροδυναμικού platform, ώστε να εξασφαλίζεται προβλέψιμη συμπεριφορά ακόμη και σε μεταβαλλόμενες συνθήκες φορτίου.</p><h2>Διαχείριση ενέργειας – Ο καθοριστικός παράγοντας</h2><p>Το 2026 εισάγει μια νέα πραγματικότητα, όπου η απόδοση δεν καθορίζεται αποκλειστικά από την ισχύ ή την αεροδυναμική, αλλά από την ικανότητα διαχείρισης της διαθέσιμης ενέργειας σε κάθε σημείο του γύρου. Στην περίπτωση της Audi, η ενεργειακή στρατηγική αποτελεί κεντρικό στοιχείο της συνολικής φιλοσοφίας.</p><p>Η κατανομή της ηλεκτρικής ισχύος, ο χρόνος και η ένταση του deployment, καθώς και η αποτελεσματικότητα της ανάκτησης ενέργειας επηρεάζουν άμεσα την ανταγωνιστικότητα. Σε πίστες με μεγάλες ευθείες, η αποδοτική χρήση της ενέργειας μπορεί να δημιουργήσει σημαντικό πλεονέκτημα, ενώ σε πιο τεχνικά layouts, η σωστή διαχείριση ανά sector γίνεται καθοριστική.</p><h2>Ανταγωνισμός και προοπτική</h2><p>Η Audi εισέρχεται σε ένα ιδιαίτερα απαιτητικό περιβάλλον, όπου οι βασικοί ανταγωνιστές διαθέτουν ήδη εδραιωμένη τεχνογνωσία. Η Mercedes συνεχίζει να αποτελεί σημείο αναφοράς στα υβριδικά συστήματα, η Ferrari διατηρεί ισχυρή παρουσία στον τομέα της θερμικής απόδοσης, ενώ η Red Bull έχει εδραιώσει την κυριαρχία της στην αεροδυναμική.</p><p>Για την Audi, το βασικό ζητούμενο δεν είναι μόνο η επίτευξη υψηλής απόδοσης σε επιμέρους τομείς, αλλά η ολοκληρωμένη ενσωμάτωση όλων των συστημάτων. Η επιτυχία του R26 θα εξαρτηθεί από το κατά πόσο το power unit και το chassis θα λειτουργούν ως ένα ενιαίο, αποδοτικό σύνολο.</p><p>Το Audi R26 αποτελεί μια καθαρή έκφραση της νέας τεχνολογικής κατεύθυνσης της Formula 1. Η επιτυχία του δεν θα κριθεί μόνο από την απόλυτη απόδοση, αλλά από την ικανότητα της ομάδας να προσαρμοστεί σε ένα περιβάλλον όπου η ενέργεια, η αποδοτικότητα και η ολοκληρωμένη σχεδίαση παίζουν πρωταγωνιστικό ρόλο.</p><p>Αν η Audi καταφέρει να διαχειριστεί αποτελεσματικά τις νέες απαιτήσεις και να επιτύχει ισορροπία μεταξύ των επιμέρους συστημάτων, το R26 μπορεί να αποτελέσει τη βάση για μια σταδιακή αλλά ουσιαστική άνοδο τα επόμενα χρόνια.</p></div>
 
-                    <div class="article-author-footer">
-                        <div class="author-box">
-                            <div class="author-header">
-                                <div class="author-avatar">
-                                    <img id="author-image" src="/images/authors/georgios.webp" alt="Georgios Balatzis"
-                                         loading="lazy" decoding="async" width="474" height="474"
-                                         data-show-on-error="author-initial">
-                                    <span class="avatar-text" id="author-initial">A</span>
-                                </div>
-                                <div class="author-info">
-                                    <p class="author-name" id="author-name"><a href="/authors/?author=georgios-balatzis">Γιώργος Μπαλατζής</a></p>
-                                    <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
-                                </div>
-                            </div>
-                            <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
-                            <a class="author-profile-link" href="/authors/?author=georgios-balatzis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
-                        </div>
-                    </div>
+                    <section class="author-card" data-author-slug="georgios-balatzis" aria-labelledby="author-card-name"><p class="author-card__label">ΓΡΑΦΕΙ</p><div class="author-card__head"><img class="author-card__portrait" src="/images/avatars/CSW.webp" alt="" width="80" height="80" loading="lazy" decoding="async"><div><p class="author-card__name" id="author-card-name"><a href="/authors/?author=georgios-balatzis">Γιώργος Μπαλατζής</a></p><p class="author-card__specialty">Τεχνική ανάλυση και αγωνιστικός ρυθμός</p></div></div><p class="author-card__bio">Μετράει όσα δεν φαίνονται στον πίνακα αποτελεσμάτων: upgrades, ελαστικά, ρυθμό και τις αποφάσεις που κρίνουν έναν αγώνα.</p><p class="author-card__links"><a href="/blog-module/blog/index.html?author=georgios-balatzis">Όλα τα άρθρα του Γιώργου <span aria-hidden="true">→</span></a><a class="author-card__social" href="https://www.instagram.com/borgos_gialatzis/" target="_blank" rel="noopener">Instagram <span aria-hidden="true">↗</span></a></p></section>
 
                     <div class="sponsor-strip">
                         <div class="sponsor-strip-label">Συνεργάτες</div>
@@ -385,47 +375,45 @@
 
 <!-- @include partials/footer.html -->
 <!-- @include:begin partials/footer.html -->
-<footer class="py-4">
+<footer>
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="footer-colophon">
-                    <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
-                    <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
-                </div>
-                <nav class="footer-index" aria-label="Ενότητες">
-                    <a href="/blog-module/blog/index.html">Άρθρα</a>
-                    <a href="/standings/">Βαθμολογία</a>
-                    <a href="/authors/">Συντάκτες</a>
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
-                    <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
-                </nav>
-                <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
-                <div class="social-media">
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
-                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
-                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
-                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
-                    <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
-                </div>
-                <div class="footer-links mt-3">
-                    <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
-                    <span class="footer-separator">|</span>
-                    <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
-                    <span class="footer-separator">|</span>
-                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
-                </div>
+        <div class="footer-body">
+            <div class="footer-colophon">
+                <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
+                <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
+            </div>
+            <nav class="footer-index" aria-label="Ενότητες">
+                <a href="/blog-module/blog/index.html">Άρθρα</a>
+                <a href="/standings/">Βαθμολογία</a>
+                <a href="/authors/">Συντάκτες</a>
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
+                <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
+            </nav>
+            <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
+            <div class="social-media">
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
+                <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
+                <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
+                <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
+                <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
+            </div>
+            <div class="footer-links">
+                <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
+                <span class="footer-separator">|</span>
+                <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                <span class="footer-separator">|</span>
+                <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
             </div>
         </div>
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=ba445b6d"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=548e1e5a"></script>
 <script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=1835b71e"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
-<script defer src="/blog-module/blog-fixes.min.js?v=4685a10e"></script>
+<script defer src="/blog-module/blog-fixes.min.js?v=937be1b8"></script>
 <script defer src="/scripts/sw-cleanup.min.js?v=d76b3ca4"></script>
 </body>
 </html>

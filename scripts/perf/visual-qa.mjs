@@ -131,15 +131,15 @@ function closeServer(server) {
 
 function readLatestArticleRoute() {
     const candidates = [
-        path.join(DIST_ROOT, 'blog-module', 'blog-index-page-1.json'),
-        path.join(REPO_ROOT, 'blog-module', 'blog-index-page-1.json')
+        path.join(DIST_ROOT, 'blog-module', 'blog-index-data.json'),
+        path.join(REPO_ROOT, 'blog-module', 'blog-index-data.json')
     ];
 
     for (const candidate of candidates) {
         if (!fs.existsSync(candidate)) continue;
         const data = JSON.parse(fs.readFileSync(candidate, 'utf8'));
-        const first = data && Array.isArray(data.posts) ? data.posts[0] : null;
-        if (first && first.id) return `/blog-module/blog-entries/${encodeURIComponent(first.id)}/article.html`;
+        const id = data && Array.isArray(data.p) && data.p[0] ? data.p[0][0] : null;
+        if (id) return `/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`;
     }
 
     return '/blog-module/blog-entries/20260526D/article.html';
@@ -211,7 +211,7 @@ async function waitForPageReady(page, routeSlug) {
     await page.evaluate(() => document.fonts && document.fonts.ready ? document.fonts.ready : null).catch(() => {});
 
     if (routeSlug === 'blog') {
-        await page.waitForSelector('#articles-grid .article-card', { timeout: 6000 }).catch(() => {});
+        await page.waitForSelector('#articles-grid .ledger-row', { timeout: 6000 }).catch(() => {});
     } else if (routeSlug.startsWith('standings')) {
         await page.waitForSelector('.standings-tab.active', { timeout: 6000 }).catch(() => {});
         await page.waitForSelector('.standings-panel.active, .standings-panel:not([hidden])', { timeout: 6000 }).catch(() => {});
@@ -470,8 +470,8 @@ async function scanPage(page, routeSlug) {
         });
 
         if (currentRouteSlug === 'blog') {
-            const cardCount = Array.from(document.querySelectorAll('#articles-grid .article-card')).filter(isVisible).length;
-            if (cardCount < 1) issues.push({ type: 'blog-cards', detail: 'no visible blog cards rendered' });
+            const cardCount = Array.from(document.querySelectorAll('#articles-grid .ledger-row')).filter(isVisible).length;
+            if (cardCount < 1) issues.push({ type: 'blog-cards', detail: 'no visible archive rows rendered' });
         }
 
         if (currentRouteSlug === 'latest-article') {
@@ -521,6 +521,16 @@ async function scanPage(page, routeSlug) {
                 if (!panel || panel.hidden || !isVisible(panel)) {
                     issues.push({ type: 'standings-tabs', selector: selectorFor(selectedTabs[0]), detail: 'selected tab panel is not visible' });
                 }
+            }
+        }
+
+        // The Journal's lead must show headline, deck and byline on the first screen;
+        // long headlines are sized down for this (journal-lead--long in blog-module/build/index.js).
+        if (currentRouteSlug === 'blog') {
+            const byline = document.querySelector('.journal-lead .story-meta');
+            const bottom = byline ? Math.round(byline.getBoundingClientRect().bottom + window.scrollY) : Infinity;
+            if (bottom > window.innerHeight) {
+                issues.push({ type: 'journal-lead-fold', selector: '.journal-lead .story-meta', detail: `lead byline ends at ${bottom}px on a ${window.innerHeight}px screen` });
             }
         }
 

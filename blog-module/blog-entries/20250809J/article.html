@@ -66,14 +66,14 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=946979ee">
+    <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=673c392e">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
-    <link rel="stylesheet" href="/styles.min.css?v=ca8e0cc6">
-    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=94ac6e07">
+    <link rel="stylesheet" href="/styles.min.css?v=32423041">
+    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=7d8d58a2">
     <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
-    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=73b1e224">
+    <link rel="stylesheet" href="/styles/shared-nav.min.css?v=dc0b41f8">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" type="image/avif" href="2.avif" fetchpriority="high">
@@ -84,10 +84,10 @@
     <!-- Prevent FOUC -->
     <!-- f1s:article-editorial:begin -->
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=ff244a9e">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=ef4df24c">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=8a09ac22">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=e2e135cd">
     <!-- f1s:article-editorial:end -->
-    <script src="/scripts/theme-init.min.js?v=a55f63a7"></script>
+    <script src="/scripts/theme-init.min.js?v=327f75c6"></script>
 </head>
 <body class="editorial-page article-page">
 <!-- f1s:icon-sprite:begin -->
@@ -109,15 +109,19 @@
 </button>
 
 <!-- Navbar -->
+<!-- @include partials/nav.html -->
+<!-- @include:begin partials/nav.html -->
 <header>
     <nav class="blog-nav" id="blog-nav">
         <div class="container blog-nav-inner">
-            <a class="blog-nav-brand" href="/"><img src="/images/logo-nav.webp" alt="F1 Stories Logo" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
+            <a class="blog-nav-brand" href="/" aria-label="Αρχική σελίδα F1 Stories"><img src="/images/logo-nav.webp" alt="Λογότυπο F1 Stories" loading="eager" fetchpriority="high" decoding="async" width="48" height="48"><span class="home-nav-wordmark">F1 STORIES<span class="home-nav-dot">.</span></span></a>
             <div class="blog-nav-links" id="nav-links">
                 <a href="/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
                 <a href="/blog-module/blog/index.html" class="blog-nav-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
                 <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
+                <a href="/standings/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+                <a href="/standings/?tab=tyre-pace" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
+                <a href="/authors/" class="blog-nav-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
                 <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
             </div>
             <div class="blog-nav-right">
@@ -132,20 +136,29 @@
                     <span class="countdown-flag-mobile" data-race-flag-mobile aria-hidden="true">🏁</span>
                     <span id="race-countdown-mobile">Σύντομα</span>
                 </div>
-                <button class="blog-nav-hamburger" id="nav-hamburger" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
+                <button class="blog-nav-hamburger" id="nav-hamburger" type="button" aria-label="Εναλλαγή μενού" aria-expanded="false" aria-controls="nav-mobile"><span></span><span></span><span></span></button>
             </div>
         </div>
         <div class="blog-nav-mobile" id="nav-mobile">
             <a href="/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-home"/></svg> Αρχική</a>
             <a href="/blog-module/blog/index.html" class="blog-nav-mobile-link active"><svg class="icon" aria-hidden="true"><use href="#fa-newspaper"/></svg> Άρθρα</a>
             <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> YouTube</a>
-            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a><a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a><a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
+            <a href="/standings/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-trophy"/></svg> Βαθμολογία</a>
+            <a href="/standings/?tab=tyre-pace" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> Δεδομένα</a>
+            <a href="/authors/" class="blog-nav-mobile-link"><svg class="icon" aria-hidden="true"><use href="#fa-users"/></svg> Συντάκτες</a>
             <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener" class="blog-nav-mobile-link betcast-link"><svg class="icon" aria-hidden="true"><use href="#fa-chart-line"/></svg> BetCast</a>
+            <button type="button" class="theme-toggle-btn theme-toggle-menu-btn" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
+                <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
+                <svg class="icon icon-moon" aria-hidden="true"><use href="#fa-moon"/></svg>
+                <span class="theme-toggle-label-dark">Φωτεινό θέμα</span>
+                <span class="theme-toggle-label-light">Σκούρο θέμα</span>
+            </button>
         </div>
     </nav>
 </header>
+<!-- @include:end partials/nav.html -->
 
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert>
+<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert data-article-kind="news">
     <div class="article-mini-bar__text">
         <span class="article-mini-bar__category">Ειδήσεις</span>
         <span class="article-mini-bar__title">Το μεγάλο Debate... McLaren, Hamilton, FIA</span>
@@ -174,7 +187,7 @@
                         <a href="/blog-module/blog/index.html?category=News" class="article-category-pill">Ειδήσεις</a>
                     </div>
                     <h1 class="article-title">Το μεγάλο Debate... McLaren, Hamilton, FIA</h1>
-                    <p class="article-header-byline"><span>Γράφει</span> <a href="/authors/?author=giannis-poulikidis" class="article-author-link">Γιάννης Πουλικίδης</a></p>
+                    <p class="article-header-byline" data-author-slug="giannis-poulikidis"><img class="article-header-byline__avatar" src="/images/avatars/SV-96.webp" alt="" width="32" height="32" decoding="async"><span>Γράφει</span> <a href="/authors/?author=giannis-poulikidis" class="article-author-link">Γιάννης Πουλικίδης</a></p>
                     <div class="article-meta">
                         <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> 9 Αυγούστου 2025</span>
                         <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">5 λεπτά ανάγνωσης</span></span>
@@ -210,24 +223,7 @@
                     </div></details>
                     <div class="article-content"><p>Το πρωτάθλημα του 2025 για την κορωνίδα του μηχανοκίνητου αθλητισμού φτάνει σιγά σιγά στο πέσιμο της καρό σημαίας. Μαζί με τη σημαία έρχεται και το τέλος μίας εποχής για τα φετινά μονοθέσια, τα οποία σηματοδοτούν την εποχή 2022–2025 για τη Formula 1.</p><p>Τα συγκεκριμένα δυσκόλεψαν αρκετά τις ομάδες και τους οδηγούς. Άμα σκεφτείτε, κλείνουμε τον κύκλο τους αυτά τα τέσσερα χρόνια και οι ομάδες ακόμα δεν έχουν λύσει κάποιες βασικές παθογένειες των μονοθεσίων. Τα φώτα όμως της δημοσιότητας σε αυτήν την εποχή στράφηκαν σε διαφορετικές κατευθύνσεις και άφησαν πίσω τους τα μονοθέσια. Με τρία βασικά σημεία τα οποία η ομάδα του F1 Stories έρχεται να απαντήσει, το κάθε ένα μέλος της ομάδας διαφορετικά.</p><p>Ας δούμε τα 3 ερωτήματα τα οποία δόθηκαν στην ομάδα.</p><p>1) Με τη McLaren να έρχεται στο παρασκήνιο και να επιστρέφει στον πρωταθλητισμό, τα βλέμματα έχουν στραφεί στους δύο οδηγούς της. Oscar Piastri vs Lando Norris. Ποιος και γιατί είναι το μέλλον της ομάδας.</p><p>Εδώ είναι ένα σκληρό ερώτημα, το οποίο οι επικεφαλής της ομάδας θα πρέπει να απαντήσουν. Δεν θα είναι εύκολη απόφαση, όπως και η διαχείρισή τους στο φετινό πρωτάθλημα.</p><p>2) Τώρα το ζήτημα που κάνει αρκετούς οπαδούς–haters να ξεκινήσουν έναν μικρό παγκόσμιο πόλεμο. Ήταν σωστή η απόφαση του Lewis Hamilton να πάει στη Ferrari; Θα μπορέσει…;</p><p>Εδώ είναι η ερώτηση των εκατομμυρίων. Μετά από τόσα χρόνια σε έναν οργανισμό, ο εφτά φορές παγκόσμιος πρωταθλητής καλείται να αλλάξει όλη του τη νοοτροπία και τα θέλω του, ώστε να μπορέσει να ανταπεξέλθει σε έναν οργανισμό ο οποίος προσαρμόζεται.</p><p>3) Ποιο, κατά τη γνώμη σας, ήταν το μεγαλύτερο λάθος της FIA τα τελευταία χρόνια και γιατί;</p><p>Η FIA, όπως και ο πρόεδρός της Mohammed Ben Sulayem, έχει δεχτεί μεγάλη κριτική και τεράστια αντιπάθεια από οδηγούς και φιλάθλους της F1. (Μπορείτε να δείτε αναλυτικά την ιστορία του σε προηγούμενο άρθρο.)</p><p>Εδώ καλούμαστε σαν F1 Stories να απαντήσουμε σε αυτά τα καυτά ερωτήματα. Ξεκινάμε λοιπόν.</p><p>Θέμης (2 Fast)</p><p>Πολύ δυνατές ερωτήσεις! Πάμε να τις δούμε μία-μία, με ειλικρίνεια και racing οπτική:</p><p>1) Lando vs Oscar – Ποιος και γιατί είναι το μέλλον της McLaren<br />Ο Oscar Piastri, ξεκάθαρα, είναι πολύ ταλαντούχος, ωμός, γρήγορος και ήδη πολύ ώριμος για την ηλικία και εμπειρία του. Δεν φοβάται να παλέψει με Lando, Max, Leclerc και έχει δείξει τεράστια ικανότητα, ειδικά με τη διαχείριση ελαστικών και καθαρές μάχες.</p><p>2) Ήταν σωστή η επιλογή του Lewis να πάει στη Ferrari;<br />Ναι, γιατί:<br />• Η Ferrari είναι το μόνο μεγάλο brand που δεν είχε οδηγήσει.<br />• Η Ferrari το 2026 (με νέους κινητήρες &amp; κανονισμούς) θα μπορούσε να κάνει reset και να ξαναγίνει πρωταθλήτρια και ο Hamilton να παλέψει για το 8ο.<br />• Θα έχει νέο μονοθέσιο, νέο σχεδιασμό, και τον Vasseur που γνωρίζονται καλά.<br />• Αν πάρει 8ο τίτλο με Ferrari, μπαίνει στο πάνθεον ξεχωριστά από όλους, δίχως συζήτηση.</p><p>3) Το μεγαλύτερο λάθος της FIA την περίοδο 2022–2025<br />Η μη επέμβαση στη μονοκρατορία της Red Bull και η καθυστέρηση στους κανονισμούς, ενώ το grid είχε ξεφύγει τελείως σε ανταγωνιστικότητα.<br />Η RB πήρε σχεδόν όλα τα GP το 2023, και η FIA δεν έκανε καμία ενδιάμεση τεχνική διόρθωση (όπως το 2021 με το πάτωμα της Mercedes ή η αλλαγή πατώματος το ‘22 που άφησε πίσω τη Ferrari).<br />Επίσης, το φιάσκο με το budget cap και γενικά μια πιο ευνοϊκή στάση στις ποινές ως προς τη Red Bull.</p><p>Δημήτρης Κεραμιδιώτης</p><p>1) Το μέλλον της McLaren πιστεύω θα είναι όποιος οδηγός πάρει το πρωτάθλημα φέτος. Πιστεύω θα το πάρει ο Lando με τον έναν ή τον άλλον τρόπο, άρα Lando δαγκωτό! Επίσης, θεωρώ ότι στην καλή του μέρα είναι καλύτερος του Piastri.</p><p>2) Η επιλογή του 44 να πάει στη Ferrari θα κριθεί απ’ την επόμενη χρονιά (2026). Δεν φαντάζομαι να πήγε εκεί για κάτι που είδε στη Ferrari όσο ήταν στη Mercedes. Πολύ νωρίς για να βγάλουμε συμπεράσματα. Αν όμως προσπαθήσουμε να δούμε το μέλλον, δεν πιστεύω ότι θα μπορέσει να περάσει τον 16, άρα δε θα μπορέσει να πάρει το 8ο.</p><p>3) Μεγαλύτερο λάθος, η απομάκρυνση Μάσι.<br />Η ασάφεια των κανονισμών έφερε το συγκεκριμένο αποτέλεσμα το ‘21. Τον έδιωξαν επειδή αυτοί δεν είχαν κάνει σωστά τη δουλειά τους.</p><p>Θανάσης Μπατάλας</p><p>1) Στο ερώτημα Oscar ή Lando, πάω με Oscar.<br />Ο Norris στη μέρα του είναι απίστευτος, πιο γρήγορος και μπορεί να βρει χρόνο στην πίστα και να κάνει σερί γρήγορους γύρους. Δε θεωρώ όμως ότι είναι θωρακισμένος.<br />Ο Piastri έχει πιο έντονα το κομμάτι της επιβολής του σε έναν αγώνα… Δηλαδή, θα επιτεθεί, θα ψάξει και θα αμφισβητήσει ακόμα και τον Max. Θα είναι σταθερός, γρήγορος και έχει κερδίσει έδαφος στο ψυχολογικό κομμάτι. Δεν είναι εύθραυστος… Αν μου έλεγες Norris για πρωτάθλημα, ναι, οκ. Αλλά να σπάσει αναρτήσεις και αεροτομές με τον Max… Δύσκολο. Piastri; θα το κάνει άνετα. Είναι πιο έτοιμος για κορυφή, ειδικά αν σκεφτείς ότι είναι και πιο νέος στο χώρο…</p><p>2) Στο δεύτερο… Lewis… Δύσκολη η κατάσταση. Αν πόνταρες να πάει στην Aston, είχε περισσότερες πιθανότητες για το 8ο… Η Ferrari δεν του ταιριάζει, ούτε σαν οδηγικό στυλ, ούτε καν σαν ιδιοσυγκρασία… Και είναι ροκ σταρ… Αν η ομάδα είναι καλή, θα την πάει καλύτερα… Να την στήσει και να ανέβει; είναι πιο δύσκολο… Το ‘26 όλα μπορούν να γίνουν, αλλά είναι δύσκολο. Θα τον πίστευα περισσότερο σε McLaren ή Aston. Το χάλι της Ferrari μπορεί να το στρώσει μόνο ο Verstappen αυτή τη στιγμή.</p><p>3) Στο τρίτο ερώτημα… Porpoising, απλά… Πολύ λάθος στα τεχνικά και ουσιαστικά ταλαιπώρησε ομάδες και οδηγούς, μέχρι να μαζέψει τα ασυμμάζευτα… Ψάχνονταν και αυτοί, θα μου πεις… Αλλά έγιναν πειράματα σε μια εποχή που ήταν σίγουροι για αυτά που αλλάζουν… Εγώ θα βάλω και λίγο την υπερβολή στα sprint. Θεωρώ ότι χάνεις στο τριήμερο έχοντας και άλλα format. Χάνει λίγο από την ουσία του ο αγώνας…</p><p>Γεώργιος Μπαλάτζης</p><p>1) Όπως έχω πει πολλές φορές σε προσωπικές συζητήσεις αλλά και στα live μας, πιστεύω ότι σε ωμή ταχύτητα ο Lando είναι πολύ καλύτερος αλλά επιρρεπής στο λάθος. Ταιριάζει όμως γάντι στην ιδιοσυγκρασία και στο brand που έχει δημιουργήσει η McLaren, οπότε πιστεύω πως μόνο εκεί θα τον δούμε σαν οδηγό για τα επόμενα χρόνια.<br />Ο Oscar, για εμένα, όμως, είναι ξεκάθαρα ο καλύτερος και πιο ισορροπημένος οδηγός. Πιστεύω ότι φέτος θα γίνει πρωταθλητής και αν δεν γίνει στη McLaren θα γίνει αλλού. Δεν είναι θέμα οργανισμού ή αυτοκινήτου, ο άνθρωπος απλά το έχει και έχει όλο το πακέτο.</p><p>2) Λάθος πέρα για πέρα. Η Ferrari είναι και γνωστή ως «νεκροταφείο πρωταθλητών» και βλέπουμε τον Lewis να κάνει speedrun την καριέρα του Seb στη Ferrari, επειδή πίστεψε ότι αυτήν τη φορά θα ήταν διαφορετικά. Όχι, δεν θα είναι, μιας και ακόμη κι ένα καλό αμάξι να φτιάξουν για το 2026 με τη συμβολή του, θα του σπάσουν την ψυχολογία. Το πρόβλημα δεν έγκειται στους μηχανικούς αλλά είναι πολύ πιο βαθύ και εντός οργανισμού.</p><p>3) Το έχω αναφέρει πολλάκις: ο κανονισμός που απαγόρευσε το αμάξι να βρίσκεται τόσο χαμηλά ώστε να δημιουργεί το strobe effect. Μέχρι εκείνη τη στιγμή είδαμε αγώνες απίστευτους, προσπεράσματα, υπερπροσπάθεια οδηγών και το ground effect να δουλεύει στο τέρμα με τον βρώμικο αέρα. Ένα ανταγωνιστικότατο πρωτάθλημα, αν η FIA δεν έκανε τη χάρη στον Toto που γκρίνιαζε περί ύψους. Πιστεύω πως η Mercedes θα έβρισκε το θέμα που είχε το 0 pods concept και θα έφερνε την ομάδα ξανά στο προσκήνιο, από το να είναι κομπάρσοι στο μεγαλύτερο κομμάτι της ground effect era. Όπως και πιστεύω ότι η Red Bull δεν θα ήταν τόσο dominant, μιας και έλυσαν καλύτερα από όλους το θέμα του αυτοκινήτου.</p><p>Γιάννης Πουλικίδης</p><p>1) Η McLaren είναι ένας οργανισμός ο οποίος εδώ και χρόνια δεν ψάχνει τον έναν και μοναδικό οδηγό ο οποίος θα κουβαλήσει την ομάδα. Προσπαθεί να γίνει ένα με τον οδηγό και να υπάρχει το team spirit που λέμε. Δεν υπάρχει το number 1. Ο καλύτερος θα νικήσει. Παρά τα λεγόμενα, όμως, ο Lando Norris είναι παιδί της McLaren και ταιριάζει αρκετά στην ιδιοσυγκρασία της ομάδας. Η ταχύτητα είναι εκεί και το ταλέντο άφθονο για τον Βρετανό. Από την απέναντι όχθη έχουμε τον Oscar, ο οποίος έρχεται ως διεκδικητής και δεν θα χαριστεί σε κανέναν και σε τίποτα. Η στόφα φαίνεται από μακριά και η εξέλιξη είναι τεράστια. Μπορεί όμως να ταιριάζει στον οργανισμό που λέγεται McLaren; Εδώ είναι η μεταβλητή που με κρατάει λίγο μαγκωμένο. Ο Lando προς το παρόν είναι πιο λίγο πιο γρήγορος, όμως και πιο επιρρεπής σε λάθος, ενώ είναι ο πιο έμπειρος οδηγός. Θεωρώ ότι το μέλλον της ομάδας είναι ο Oscar. Είναι πιο σίγουρος για τον εαυτό του και τώρα μόλις ξεκίνησε τα βήματά του στην F1. Το ταλέντο είναι εκεί και ο τσαμπουκάς παρών.</p><p>2) Lewis Hamilton και Ferrari. Δύσκολο το έργο και των δύο. Δύο ηγέτες που θα πρέπει να συνυπάρχουν. Το timing για τη μεταγραφή δεν ήταν καλό. Όμως, θα χτίσει θεμέλια για το 2026. Αυτός είναι και ο σκοπός των δύο. Το 2025 ήταν χαμένη υπόθεση από την αρχή. Σε μία εποχή όπου τα καινούργια μονοθέσια δεν βόλεψαν καθόλου τον Lewis, καλείται να προσαρμοστεί σε μία πειραματική Ferrari. Αρκετά δύσκολο. Όχι, όμως, τόσο τραγικό όπως το παρουσιάζουν. Θεωρώ ότι όποιος περίμενε να δούμε θαύματα… δεν γνωρίζει τίποτα από την F1. Στις αρχές τα πράγματα ήταν πιο θετικά, διότι υπήρχε μία πιο ήπια κατεύθυνση και από τις δύο πλευρές. Τώρα, όπου και οι δύο πλευρές πιέζουν (overdriving), τα ελαττώματα είναι πιο έντονα. Άποψή μου είναι ότι ήταν καλή επιλογή. Από μεριά του οδηγού δεν χρειάζεται να αποδείξει κάτι, μόνο να γεμίσει το εγώ του, και αυτό είναι το πιο δύσκολο κομμάτι. Από μεριάς ομάδας… με την πρώτη φωτογραφία τα λεφτά βγήκαν, η τεχνογνωσία που κερδίζει είναι τεράστια… οπότε win–win.</p><p>3) Ένα από τα μεγαλύτερα λάθη της FIA θεωρώ ότι είναι η έλλειψη σταθερότητας στους κανονισμούς. Σε άλλα συμβάντα υπάρχει ποινή, σε άλλα όχι. Αλλού έτσι – αλλού γιουβέτσι. Σαν οργανισμός πρέπει να εκπέμπεις σεβασμό και έμπνευση. Αντιθέτως, γίνεται το ανάποδο. Ειδικά μετά το 2021, όπου θα ήθελες να είσαι… με απλά λόγια, ντόμπρος. Θεωρώ ότι κάποιες ριζικές αλλαγές στον οργανισμό θα πρέπει να γίνουν άμεσα. Κυρίως θα πρέπει να αποκτηθεί ο σεβασμός από τους οδηγούς.</p></div>
 
-                                <div class="article-author-footer">
-                                    <div class="author-box">
-                                        <div class="author-header">
-                                            <div class="author-avatar">
-                                                <img id="author-image" src="/images/authors/giannis.webp" alt="Giannis Poulikidis"
-                                                     loading="lazy" decoding="async" width="1024" height="1024"
-                                                     data-show-on-error="author-initial">
-                                                <span class="avatar-text" id="author-initial">A</span>
-                                            </div>
-                                            <div class="author-info">
-                                                <p class="author-name" id="author-name"><a href="/authors/?author=giannis-poulikidis">Γιάννης Πουλικίδης</a></p>
-                                                <div class="author-title" id="author-title">Συντάκτης του F1 Stories</div>
-                                            </div>
-                                        </div>
-                                        <div class="author-bio" id="author-bio">Γράφει στο F1 Stories για αγώνες, πρόσωπα και ιστορίες από τη Formula 1.</div>
-                            <a class="author-profile-link" href="/authors/?author=giannis-poulikidis">Προφίλ συντάκτη και όλες οι ιστορίες <span aria-hidden="true">↗</span></a>
-                                    </div>
-                                </div>
+                                <section class="author-card" data-author-slug="giannis-poulikidis" aria-labelledby="author-card-name"><p class="author-card__label">ΓΡΑΦΕΙ</p><div class="author-card__head"><img class="author-card__portrait" src="/images/avatars/SV.webp" alt="" width="80" height="80" loading="lazy" decoding="async"><div><p class="author-card__name" id="author-card-name"><a href="/authors/?author=giannis-poulikidis">Γιάννης Πουλικίδης</a></p><p class="author-card__specialty">Αγωνιστική άποψη και BetCast</p></div></div><p class="author-card__bio">Γράφει όπως μιλάει: άμεσα, με χιούμορ και θέση. Μετατρέπει το αγωνιστικό τριήμερο σε κουβέντα που συνεχίζεται.</p><p class="author-card__links"><a href="/blog-module/blog/index.html?author=giannis-poulikidis">Όλα τα άρθρα του Γιάννη <span aria-hidden="true">→</span></a><a class="author-card__social" href="https://www.instagram.com/john_pouliks/" target="_blank" rel="noopener">Instagram <span aria-hidden="true">↗</span></a></p></section>
 
                                 <div class="sponsor-strip">
                                     <div class="sponsor-strip-label">Συνεργάτες</div>
@@ -362,47 +358,45 @@
 
 <!-- @include partials/footer.html -->
 <!-- @include:begin partials/footer.html -->
-<footer class="py-4">
+<footer>
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="footer-colophon">
-                    <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
-                    <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
-                </div>
-                <nav class="footer-index" aria-label="Ενότητες">
-                    <a href="/blog-module/blog/index.html">Άρθρα</a>
-                    <a href="/standings/">Βαθμολογία</a>
-                    <a href="/authors/">Συντάκτες</a>
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
-                    <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
-                </nav>
-                <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
-                <div class="social-media">
-                    <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
-                    <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
-                    <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
-                    <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
-                    <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
-                </div>
-                <div class="footer-links mt-3">
-                    <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
-                    <span class="footer-separator">|</span>
-                    <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
-                    <span class="footer-separator">|</span>
-                    <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
-                </div>
+        <div class="footer-body">
+            <div class="footer-colophon">
+                <a class="footer-wordmark" href="/" aria-label="F1 Stories, αρχική σελίδα">F1 STORIES<span class="editorial-accent">.</span></a>
+                <p class="footer-mission">Τεχνική ανάλυση, άποψη και ελληνική F1 κοινότητα.</p>
+            </div>
+            <nav class="footer-index" aria-label="Ενότητες">
+                <a href="/blog-module/blog/index.html">Άρθρα</a>
+                <a href="/standings/">Βαθμολογία</a>
+                <a href="/authors/">Συντάκτες</a>
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">YouTube ↗</a>
+                <a href="https://georgiosbalatzis.github.io/BetCastVisualisation/" target="_blank" rel="noopener">BetCast ↗</a>
+            </nav>
+            <p>&copy; <span data-current-year>2026</span> F1 Stories. Με επιφύλαξη παντός δικαιώματος.</p>
+            <div class="social-media">
+                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" aria-label="F1 Stories στο YouTube"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg></a>
+                <a href="https://www.facebook.com/f1storiess" target="_blank" rel="noopener" aria-label="F1 Stories στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
+                <a href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener" aria-label="F1 Stories στο Instagram"><svg class="icon" aria-hidden="true"><use href="#fa-instagram"/></svg></a>
+                <a href="https://www.tiktok.com/@f1stories6" target="_blank" rel="noopener" aria-label="F1 Stories στο TikTok"><svg class="icon" aria-hidden="true"><use href="#fa-tiktok"/></svg></a>
+                <a href="mailto:myf1stories@gmail.com" aria-label="Email στο F1 Stories"><svg class="icon" aria-hidden="true"><use href="#fa-envelope"/></svg></a>
+            </div>
+            <div class="footer-links">
+                <a href="/privacy/privacy.html" class="footer-link">Πολιτική Απορρήτου</a>
+                <span class="footer-separator">|</span>
+                <a href="/privacy/terms.html" class="footer-link">Όροι Χρήσης</a>
+                <span class="footer-separator">|</span>
+                <button type="button" class="footer-link footer-link-button" data-cookie-settings>Ρυθμίσεις cookies</button>
             </div>
         </div>
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=ba445b6d"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=548e1e5a"></script>
 <script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=1835b71e"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>
-<script defer src="/blog-module/blog-fixes.min.js?v=4685a10e"></script>
+<script defer src="/blog-module/blog-fixes.min.js?v=937be1b8"></script>
 <script defer src="/scripts/sw-cleanup.min.js?v=d76b3ca4"></script>
 </body>
 </html>

@@ -1,360 +1,133 @@
+// The Journal archive. The build ships the front page and the first ledger page as
+// static HTML (blog-module/build/index.js); this script loads the compact index only
+// when a reader filters, searches, re-sorts or pages, and renders ledger rows from it.
 document.addEventListener('DOMContentLoaded', function() {
+    var taxonomy = window.F1S_TAXONOMY;
+    var ledger = document.getElementById('articles-grid');
+    if (!taxonomy || !ledger) return;
 
-    var allPosts = [];
-    var activeAuthor = getAuthorFromUrl();
-    var grid = document.getElementById('articles-grid');
+    var LAYOUT = taxonomy.JOURNAL_LAYOUT;
+    var root = document.documentElement;
+    var edition = document.getElementById('journal-edition');
+    var archive = document.getElementById('journal-archive');
+    var archiveTitle = document.getElementById('journal-archive-title');
     var countEl = document.getElementById('post-count');
     var searchInput = document.getElementById('blog-search');
     var searchClearBtn = document.getElementById('blog-search-clear');
     var sortSelect = document.getElementById('blog-sort-select');
-    var filterResetBtn = document.getElementById('blog-filter-reset');
-    var filterToolbar = document.querySelector('.blog-filter-toolbar');
-    var filterToggleBtn = document.getElementById('blog-filter-toggle');
-    var activeFilterSummary = document.getElementById('active-filter-summary');
-    var archiveMiniBar = document.getElementById('blog-archive-mini-bar');
-    var archiveMiniCount = document.getElementById('blog-archive-mini-count');
-    var archiveMiniFilter = document.getElementById('blog-archive-mini-filter');
-    var categoryStrip = document.getElementById('category-strip');
-    var strip = document.getElementById('author-strip');
-    var filterDetails = filterToolbar ? filterToolbar.querySelectorAll('details') : [];
-    var imageObserver = null;
-    var taxonomy = window.F1S_TAXONOMY;
-    var CACHE_KEY = 'f1s-blog-index-v3-taxonomy';
+    var resetBtn = document.getElementById('blog-filter-reset');
+    var filterToggle = document.getElementById('journal-filter-toggle');
+    var filterPanel = document.getElementById('journal-filter-panel');
+    var categoryOptions = document.getElementById('category-strip');
+    var authorOptions = document.getElementById('author-strip');
+    var paginationEl = document.getElementById('blog-pagination');
+    var CACHE_KEY = 'f1s-blog-index-v4-primary';
     var CACHE_TTL = 15 * 60 * 1000;
-    var PAGE_ONE_PATHS = ['/blog-module/blog-index-page-1.json', '../blog-index-page-1.json', '../../blog-index-page-1.json'];
     var FULL_DATA_PATHS = ['/blog-module/blog-index-data.json', '../blog-index-data.json', '../../blog-index-data.json'];
-    var activeCategory = getCategoryFromUrl();
-    var activeQuery = '';
-    var sortDir = -1;
-    var searchTimer = null;
-    var pageOnePosts = [];
-    var totalPostCount = 0;
+    var ARCHIVE_TITLE = archiveTitle ? archiveTitle.textContent : 'ΤΟ ΑΡΧΕΙΟ';
+
+    // Stories already on the front page are left out of the unfiltered ledger.
+    var frontIds = edition ? (edition.getAttribute('data-story-ids') || '').split(/\s+/).filter(Boolean) : [];
+    var totalPosts = edition ? parseInt(edition.getAttribute('data-total'), 10) || 0 : 0;
+    var staticLedger = !!ledger.querySelector('.ledger-row');
+    var allPosts = [];
     var fullPostsLoaded = false;
     var fullPostsPromise = null;
-    var staticFirstPageReady = !!(grid && grid.querySelector('.article-card') && !grid.querySelector('.skeleton-card'));
+    var activeAuthor = authorFromUrl();
+    var activeCategory = categoryFromUrl();
+    var activeQuery = '';
+    var sortDir = -1;
+    var currentPage = 1;
+    var filteredPosts = [];
+    var searchTimer = null;
 
-    function createIcon(iconId) {
-        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('class', 'icon');
-        svg.setAttribute('aria-hidden', 'true');
-        var use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-        use.setAttribute('href', '#' + iconId);
-        svg.appendChild(use);
-        return svg;
+    function el(tag, className, text) {
+        var node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text != null) node.textContent = text;
+        return node;
     }
-
-    function createEmptyState(iconId, text) {
-        var empty = document.createElement('div');
-        empty.className = 'empty-state';
-        empty.appendChild(createIcon(iconId));
-        var p = document.createElement('p');
-        p.textContent = text;
-        empty.appendChild(p);
-        return empty;
+    function slugify(value) {
+        return String(value || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
+            .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     }
-    function bindImageFallbacks() {
-        if (!grid || grid.__f1sImageFallbacksBound) return;
-        grid.__f1sImageFallbacksBound = true;
-        grid.addEventListener('error', function(event) {
-            var img = event.target;
-            if (!img || img.tagName !== 'IMG') return;
-            var currentSrc = img.getAttribute('src') || img.getAttribute('data-src') || '';
-            var fallbackSrc = img.getAttribute('data-fallback-src') || '';
-            // A failed responsive candidate: drop srcset and retry the plain card once.
-            if (img.hasAttribute('srcset')) {
-                img.removeAttribute('srcset');
-                if (currentSrc) { img.src = currentSrc; return; }
-            }
-            if (/-card\.webp(?:\?.*)?$/i.test(currentSrc)) {
-                img.removeAttribute('data-src');
-                img.src = currentSrc.replace(/-card\.webp(\?.*)?$/i, '.webp$1');
-                return;
-            }
-            if (fallbackSrc && currentSrc !== fallbackSrc) {
-                img.removeAttribute('data-src');
-                img.src = fallbackSrc;
-                return;
-            }
-            var card = img.closest('.article-card');
-            var wrap = img.closest('.article-card-img-wrap');
-            if (card) card.classList.add('article-card--no-image');
-            if (wrap) wrap.classList.add('img-ready');
-            img.removeAttribute('data-src');
-            img.removeAttribute('data-fallback-src');
-            img.removeAttribute('src');
-            img.hidden = true;
-        }, true);
+    function normalizeText(value) {
+        return String(value || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
     }
-    function bindAuthorFallbacks() {
-        if (!strip || strip.__f1sAuthorFallbacksBound) return;
-        strip.__f1sAuthorFallbacksBound = true;
-        strip.addEventListener('error', function(event) {
-            var img = event.target;
-            if (!img || img.tagName !== 'IMG') return;
-            var fallback = img.getAttribute('data-fallback-label');
-            var parent = img.parentElement;
-            if (!fallback || !parent) return;
-            img.remove();
-            parent.textContent = fallback;
-        }, true);
-    }
-    function getCategoryFromUrl() {
+    function categoryFromUrl() {
         var requested = new URL(window.location.href).searchParams.get('category');
         return taxonomy.normalizeCategories(requested ? [requested] : [])[0] || 'all';
     }
-    function slugifyAuthor(value) {
-        return String(value || '')
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
-    }
-    function getAuthorFromUrl() {
+    // The URL carries a slug; filtering compares canonical names from the author options.
+    function authorFromUrl() {
         var requested = new URL(window.location.href).searchParams.get('author');
-        return requested ? String(requested).trim() : 'all';
+        if (!requested) return 'all';
+        var option = authorOption(requested);
+        return option ? option.getAttribute('data-author') : String(requested).trim();
     }
-    function updateAuthorUrl() {
-        var url = new URL(window.location.href);
-        if (activeAuthor === 'all') url.searchParams.delete('author');
-        else url.searchParams.set('author', slugifyAuthor(activeAuthor));
-        if (url.href !== window.location.href) window.history.pushState(null, '', url.href);
+    function authorOption(value) {
+        if (!authorOptions) return null;
+        var wanted = slugify(value);
+        return Array.prototype.find.call(authorOptions.querySelectorAll('[data-author]'), function(option) {
+            return option.getAttribute('data-author') !== 'all' && slugify(option.getAttribute('data-author')) === wanted;
+        }) || null;
     }
-    function updateCategoryUrl() {
+    function syncUrl() {
         var url = new URL(window.location.href);
         if (activeCategory === 'all') url.searchParams.delete('category');
         else url.searchParams.set('category', activeCategory);
+        if (activeAuthor === 'all') url.searchParams.delete('author');
+        else url.searchParams.set('author', slugify(activeAuthor));
         if (url.href !== window.location.href) window.history.pushState(null, '', url.href);
     }
-    function normalizeText(value) {
-        var text = String(value || '').toLowerCase();
-        if (text.normalize) {
-            text = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        }
-        return text;
+
+    function isFiltered() {
+        return activeAuthor !== 'all' || activeCategory !== 'all' || !!activeQuery;
     }
-    function formatPostDate(post) {
-        return taxonomy.formatDate(post.date || '') || post.displayDate || '';
+    // The static first page is exactly the unfiltered, newest-first ledger page 1.
+    function isStaticView() {
+        return !isFiltered() && sortDir === -1 && currentPage === 1;
     }
 
-    // Keep archive cards recognisable at a glance while the public taxonomy
-    // stays deliberately small. The class is visual metadata only; filtering
-    // continues to use the canonical category values above.
-    function editorialCardKind(categories) {
-        var list = Array.isArray(categories) ? categories : [];
-        var order = [
-            ['Technical', 'technical'],
-            ['Analysis', 'analysis'],
-            ['History', 'history'],
-            ['Opinion', 'opinion'],
-            ['Betting', 'betting'],
-            ['Drivers', 'drivers'],
-            ['Teams', 'teams'],
-            ['2026', 'season'],
-            ['News', 'news']
-        ];
-        for (var i = 0; i < order.length; i += 1) {
-            if (list.indexOf(order[i][0]) !== -1) return order[i][1];
-        }
-        return 'journal';
-    }
-    function getSearchIndex(post) {
-        return normalizeText([
-            post.title,
-            post.excerpt,
-            post.author,
-            taxonomy.authorLabel(post.author),
-            (post.categories || []).join(' '),
-            (post.categories || []).map(taxonomy.categoryLabel).join(' '),
-            (post.tags || []).join(' '),
-            post.displayDate,
-            post.date
-        ].join(' '));
-    }
-    function defaultThumbnailForPost(id) {
-        // Older compact payloads do not carry an explicit thumbnail. Fall
-        // back to the guaranteed first source image for those payloads.
-        return '/blog-module/blog-entries/' + encodeURIComponent(id || '') + '/1.webp';
-    }
-    function decodeThumbnailFlags(flags, maxPosts) {
-        var variants = [];
-        if (!flags) return variants;
+    // ── Data ─────────────────────────────────────────────
+    function decodeFlags(flags, maxPosts) {
+        var values = [];
+        if (!flags) return values;
         var runs = flags.split(',');
-        for (var runIndex = 0; runIndex < runs.length; runIndex += 1) {
-            var run = runs[runIndex];
-            var marker = run.charAt(0);
-            if (marker !== '0' && marker !== '1') return [];
-            var runLength = parseInt(run.slice(1), 36);
-            if (!runLength) return [];
-            if (runLength > maxPosts - variants.length) return [];
-            for (var offset = 0; offset < runLength; offset += 1) {
-                variants.push(marker === '1');
-            }
+        for (var i = 0; i < runs.length; i += 1) {
+            var marker = runs[i].charAt(0);
+            var length = parseInt(runs[i].slice(1), 36);
+            if ((marker !== '0' && marker !== '1') || !length || length > maxPosts - values.length) return [];
+            for (var n = 0; n < length; n += 1) values.push(marker === '1');
         }
-        return variants;
+        return values;
     }
     function expandCompactPosts(data) {
         if (!data || data.v !== 2 || !Array.isArray(data.p)) return null;
         var authors = data.a || [];
         var categories = data.c || [];
         var tags = data.t || [];
-        var thumbnailFlags = typeof data.h === 'string' ? decodeThumbnailFlags(data.h, data.p.length) : [];
-        return data.p.map(function(row, postIndex) {
+        var cardFlags = typeof data.h === 'string' ? decodeFlags(data.h, data.p.length) : [];
+        return data.p.map(function(row, index) {
             var id = row[0] || '';
-            var categoryIndexes = Array.isArray(row[8]) ? row[8] : [];
-            var width = parseInt(row[4], 10) || 400;
+            var folder = '/blog-module/blog-entries/' + encodeURIComponent(id) + '/';
+            var postCategories = (Array.isArray(row[8]) ? row[8] : []).map(function(i) { return categories[i]; }).filter(Boolean);
             return {
                 id: id,
                 title: row[1] || '',
                 author: authors[row[2]] || 'F1 Stories',
                 date: row[3] || '',
-                thumbnail: thumbnailFlags[postIndex]
-                    ? '/blog-module/blog-entries/' + encodeURIComponent(id || '') + '/1-card.webp'
-                    : defaultThumbnailForPost(id),
-                thumbnailWidth: width,
+                thumbnail: folder + (cardFlags[index] ? '1-card.webp' : '1.webp'),
+                thumbnailWidth: parseInt(row[4], 10) || 400,
                 thumbnailHeight: parseInt(row[5], 10) || 188,
                 excerpt: row[6] || '',
                 readingTime: row[7] || '',
-                categories: categoryIndexes.map(function(index) { return categories[index]; }).filter(Boolean),
-                tags: Array.isArray(row[9]) ? row[9].map(function(tag) {
-                    return typeof tag === 'number' ? tags[tag] : tag;
-                }).filter(Boolean) : []
+                // The build lists the primary category first.
+                category: postCategories[0],
+                categories: postCategories,
+                tags: Array.isArray(row[9]) ? row[9].map(function(tag) { return typeof tag === 'number' ? tags[tag] : tag; }).filter(Boolean) : []
             };
         });
-    }
-    function extractPosts(data) {
-        var compact = expandCompactPosts(data);
-        if (compact) return compact;
-        if (data && Array.isArray(data.posts)) return data.posts;
-        return Array.isArray(data) ? data : [];
-    }
-    function syncChipState(container, selector, attribute, activeValue) {
-        if (!container) return;
-        Array.prototype.forEach.call(container.querySelectorAll(selector), function(chip) {
-            var isActive = chip.getAttribute(attribute) === activeValue;
-            chip.classList.toggle('active', isActive);
-            chip.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-        });
-    }
-    function updateSearchControls() {
-        var hasQuery = activeQuery || (searchInput && searchInput.value.trim());
-        if (searchClearBtn) searchClearBtn.hidden = !hasQuery;
-        if (filterResetBtn) filterResetBtn.hidden = !(activeAuthor !== 'all' || activeCategory !== 'all' || hasQuery);
-    }
-    function updateActiveFilterSummary() {
-        if (!activeFilterSummary) return;
-        var parts = [];
-        if (activeAuthor !== 'all') parts.push({ kind: 'author', label: 'Συντάκτης: ' + taxonomy.authorLabel(activeAuthor) });
-        if (activeCategory !== 'all') parts.push({ kind: 'category', label: 'Κατηγορία: ' + taxonomy.categoryLabel(activeCategory) });
-        if (activeQuery) parts.push({ kind: 'query', label: 'Αναζήτηση: ' + activeQuery });
-        activeFilterSummary.replaceChildren.apply(activeFilterSummary, parts.map(function(filter) {
-            var chip = document.createElement('button');
-            chip.type = 'button';
-            chip.className = 'active-filter-chip';
-            chip.setAttribute('data-filter-kind', filter.kind);
-            chip.setAttribute('aria-label', 'Αφαίρεση φίλτρου: ' + filter.label);
-            chip.appendChild(document.createTextNode(filter.label));
-            var remove = document.createElement('span');
-            remove.className = 'active-filter-chip__remove';
-            remove.setAttribute('aria-hidden', 'true');
-            remove.textContent = '×';
-            chip.appendChild(remove);
-            return chip;
-        }));
-    }
-
-    function removeActiveFilter(kind) {
-        clearTimeout(searchTimer);
-        if (kind === 'author') {
-            activeAuthor = 'all';
-            updateAuthorUrl();
-            syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
-        } else if (kind === 'category') {
-            activeCategory = 'all';
-            updateCategoryUrl();
-            syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
-        } else if (kind === 'query') {
-            activeQuery = '';
-            if (searchInput) searchInput.value = '';
-        } else {
-            return;
-        }
-        currentPage = 1;
-        renderPosts();
-    }
-    function setFiltersOpen(open) {
-        if (!filterToolbar) return;
-        filterToolbar.classList.toggle('is-open', open);
-        if (filterToggleBtn) filterToggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-        if (archiveMiniFilter) archiveMiniFilter.setAttribute('aria-expanded', open ? 'true' : 'false');
-        document.documentElement.classList.toggle('blog-filters-open', open && window.innerWidth <= 767);
-    }
-    var archiveMiniShown = null;
-    var archiveMiniTicking = false;
-    // The mini-bar is shown on phones and hidden on desktop; only the breakpoint matters.
-    function syncArchiveMiniBar() {
-        archiveMiniTicking = false;
-        if (!archiveMiniBar || !filterToolbar) return;
-        var mobile = window.innerWidth <= 767;
-        if (!mobile) {
-            document.documentElement.classList.remove('blog-filters-open');
-            filterToolbar.classList.remove('is-open');
-        }
-        if (mobile === archiveMiniShown) return;
-        archiveMiniShown = mobile;
-        archiveMiniBar.classList.toggle('is-visible', mobile);
-        archiveMiniBar.setAttribute('aria-hidden', mobile ? 'false' : 'true');
-    }
-    function scheduleArchiveMiniBar() {
-        if (archiveMiniTicking) return;
-        archiveMiniTicking = true;
-        requestAnimationFrame(syncArchiveMiniBar);
-    }
-    function renderCategoryFilters() {
-        if (!categoryStrip) return;
-        var categories = taxonomy.PUBLIC_CATEGORIES;
-        var nodes = [];
-        var allButton = document.createElement('button');
-        allButton.className = 'category-chip' + (activeCategory === 'all' ? ' active' : '');
-        allButton.type = 'button';
-        allButton.setAttribute('data-category', 'all');
-        allButton.setAttribute('aria-pressed', activeCategory === 'all' ? 'true' : 'false');
-        allButton.textContent = 'Όλες';
-        nodes.push(allButton);
-        categories.forEach(function(name) {
-            var button = document.createElement('button');
-            button.className = 'category-chip' + (name === activeCategory ? ' active' : '');
-            button.type = 'button';
-            button.setAttribute('data-category', name);
-            button.setAttribute('aria-pressed', name === activeCategory ? 'true' : 'false');
-            button.textContent = taxonomy.categoryLabel(name);
-            nodes.push(button);
-        });
-        categoryStrip.replaceChildren.apply(categoryStrip, nodes);
-    }
-    function getResultsSummary(count) {
-        var parts = [];
-        if (activeAuthor !== 'all') parts.push('Αρθρογράφος: ' + taxonomy.authorLabel(activeAuthor));
-        if (activeCategory !== 'all') parts.push('Κατηγορία: ' + taxonomy.categoryLabel(activeCategory));
-        if (activeQuery) parts.push('Αναζήτηση: "' + activeQuery + '"');
-        return count + ' ' + (count === 1 ? 'άρθρο' : 'άρθρα') + (parts.length ? ' · ' + parts.join(' · ') : '');
-    }
-    function readCachedPosts() {
-        try {
-            var cached = JSON.parse(sessionStorage.getItem(CACHE_KEY));
-            if (cached && cached.ts && Date.now() - cached.ts < CACHE_TTL && Array.isArray(cached.posts)) {
-                return cached.posts;
-            }
-        } catch (_) {}
-        return null;
-    }
-    function writeCachedPosts(posts) {
-        try {
-            sessionStorage.setItem(CACHE_KEY, JSON.stringify({
-                ts: Date.now(),
-                posts: posts
-            }));
-        } catch (_) {}
     }
     function preparePosts(posts) {
         return (posts || []).slice().sort(function(a, b) { return new Date(b.date) - new Date(a.date); }).map(function(post) {
@@ -362,395 +135,52 @@ document.addEventListener('DOMContentLoaded', function() {
             post.category = postTaxonomy.category;
             post.categories = postTaxonomy.categories;
             post.tags = postTaxonomy.tags;
-            post.__searchIndex = getSearchIndex(post);
+            post.__search = normalizeText([
+                post.title, post.excerpt, post.author, taxonomy.authorLabel(post.author),
+                post.categories.join(' '), post.categories.map(taxonomy.categoryLabel).join(' '),
+                post.tags.join(' '), post.date
+            ].join(' '));
             return post;
         });
     }
-    function setFullPosts(posts) {
+    function readCache() {
+        try {
+            var cached = JSON.parse(sessionStorage.getItem(CACHE_KEY));
+            if (cached && Date.now() - cached.ts < CACHE_TTL && Array.isArray(cached.posts)) return cached.posts;
+        } catch (_) {}
+        return null;
+    }
+    function writeCache(posts) {
+        try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), posts: posts })); } catch (_) {}
+    }
+    function fetchJson(paths, index) {
+        index = index || 0;
+        if (index >= paths.length) return Promise.reject(new Error('Unable to load blog data'));
+        return fetch(paths[index], { cache: 'no-store', headers: { Accept: 'application/json' } })
+            .then(function(response) { if (!response.ok) throw new Error('not ok'); return response.json(); })
+            .catch(function() { return fetchJson(paths, index + 1); });
+    }
+    function setPosts(posts) {
         allPosts = preparePosts(posts);
-        if (activeAuthor !== 'all') {
-            var requestedAuthor = activeAuthor;
-            var matchedAuthor = allPosts.find(function (post) {
-                return post.author === requestedAuthor || slugifyAuthor(post.author) === slugifyAuthor(requestedAuthor);
-            });
-            activeAuthor = matchedAuthor ? matchedAuthor.author : 'all';
-        }
-        pageOnePosts = allPosts.slice(0, POSTS_PER_PAGE);
-        totalPostCount = allPosts.length;
         fullPostsLoaded = true;
-        renderCategoryFilters();
-        syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
-    }
-    function hydratePosts(posts) {
-        setFullPosts(posts);
-        renderPosts();
-    }
-    function hydratePageOne(data) {
-        var posts = extractPosts(data);
-        pageOnePosts = preparePosts(posts);
-        if (!fullPostsLoaded) {
-            allPosts = pageOnePosts.slice();
-            totalPostCount = parseInt(data && data.totalCount, 10) || pageOnePosts.length;
-            renderCategoryFilters();
-            renderPosts();
+        if (activeAuthor !== 'all') {
+            var wanted = slugify(activeAuthor);
+            var match = allPosts.find(function(post) { return post.author === activeAuthor || slugify(post.author) === wanted; });
+            activeAuthor = match ? match.author : 'all';
         }
     }
-    function createCardCategories(categories) {
-        var container = document.createElement('div');
-        container.className = 'article-card-cats';
-        var list = taxonomy.normalizeCategories(categories);
-        list.slice(0, 2).forEach(function(c) {
-            var span = document.createElement('span');
-            span.className = 'article-card-cat';
-            span.textContent = taxonomy.categoryLabel(c);
-            container.appendChild(span);
-        });
-        if (list.length > 2) {
-            var more = document.createElement('span');
-            more.className = 'article-card-cat article-card-cat-more';
-            more.textContent = '+' + (list.length - 2);
-            container.appendChild(more);
-        }
-        return container;
-    }
-    function editorialCardMediaClasses(post) {
-        var id = String(post && post.id || '');
-        if (id !== '20260905J' && id !== '20260909J') return '';
-        return ' article-card--preserve-composition' + (id === '20260909J' ? ' article-card--preserve-composition-banner' : '');
-    }
-
-    function createArticleCard(post, idx) {
-        var url = post.url || ('/blog-module/blog-entries/' + post.id + '/article.html');
-        var cardKind = editorialCardKind(post.categories);
-        var mediaClasses = editorialCardMediaClasses(post);
-        var img = post.thumbnail || post.image || '';
-        var date = formatPostDate(post);
-        var author = taxonomy.authorLabel(post.author || 'F1 Stories');
-        var excerpt = post.excerpt || '';
-        var readMins = post.readingTime || post.readTime || '';
-        var imageWidth = parseInt(post.thumbnailWidth, 10) || 400;
-        var imageHeight = parseInt(post.thumbnailHeight, 10) || 188;
-        var isLcpImage = idx === 0;
-        var imageClass = 'article-card-img' + (isLcpImage ? ' loaded' : '');
-        if (!readMins && post.wordCount) { readMins = Math.max(1, Math.ceil(post.wordCount / 200)) + ' min'; }
-        if (!readMins && excerpt) { readMins = Math.max(2, Math.ceil(Math.round(excerpt.split(/\s+/).length * 10) / 200)) + ' min'; }
-        readMins = taxonomy.formatReadingTime(readMins);
-
-        var stagger = window.innerWidth < 768 ? 0.03 : 0.06;
-        var animationDelay = Math.round(idx * stagger * 100) / 100;
-
-        var article = document.createElement('article');
-        article.className = 'article-card-wrap article-card-wrap--' + cardKind;
-        article.setAttribute('data-card-kind', cardKind);
-        var link = document.createElement('a');
-        link.href = url;
-        link.className = 'article-card article-card--' + cardKind + mediaClasses;
-        link.setAttribute('data-card-kind', cardKind);
-        link.style.animationDelay = animationDelay + 's';
-        if (!img) link.classList.add('article-card--no-image');
-
-        var imageWrap = document.createElement('div');
-        imageWrap.className = 'article-card-img-wrap';
-        var image = document.createElement('img');
-        image.className = imageClass;
-        image.width = imageWidth;
-        image.height = imageHeight;
-        // The curated lead is drawn large, so it may use the 1600w original.
-        var isLead = idx === 0 && isDefaultCuratedState();
-        var srcset = taxonomy.cardImageSrcset(img, isLead);
-        if (srcset) image.sizes = isLead ? taxonomy.CARD_SIZES.archiveLead : taxonomy.CARD_SIZES.archiveCard;
-        if (img && isLcpImage) {
-            if (srcset) image.srcset = srcset;
-            image.src = img;
-            image.loading = 'eager';
-            image.fetchPriority = 'high';
-        } else if (img) {
-            if (srcset) image.setAttribute('data-srcset', srcset);
-            image.setAttribute('data-src', img);
-            image.loading = 'lazy';
-        } else {
-            image.hidden = true;
-            imageWrap.classList.add('img-ready');
-        }
-        image.decoding = 'async';
-        image.alt = post.title || '';
-        image.setAttribute('data-fallback-src', '/blog-module/images/default-blog.jpg');
-        imageWrap.appendChild(image);
-
-        var body = document.createElement('div');
-        body.className = 'article-card-body';
-        var meta = document.createElement('div');
-        meta.className = 'article-card-meta';
-        var authorTag = document.createElement('span');
-        authorTag.className = 'author-tag';
-        authorTag.textContent = author;
-        var dot = document.createElement('span');
-        dot.textContent = '\u00b7';
-        var time = document.createElement('time');
-        time.className = 'article-card-date';
-        time.dateTime = post.date || '';
-        time.textContent = date;
-        meta.append(authorTag, dot, time);
-        if (readMins) {
-            var readDot = document.createElement('span');
-            readDot.textContent = '\u00b7';
-            var readTime = document.createElement('span');
-            readTime.className = 'article-card-reading-time';
-            readTime.append(createIcon('fa-clock'), document.createTextNode(' ' + readMins));
-            meta.append(readDot, readTime);
-        }
-
-        var title = document.createElement('h2');
-        title.className = 'article-card-title';
-        title.textContent = post.title || '';
-        var excerptEl = document.createElement('p');
-        excerptEl.className = 'article-card-excerpt';
-        excerptEl.textContent = excerpt;
-        body.append(meta, title, excerptEl);
-
-        var footer = document.createElement('div');
-        footer.className = 'article-card-footer';
-        var readMore = document.createElement('span');
-        readMore.className = 'article-card-read';
-        readMore.append(document.createTextNode('Διάβασε '), createIcon('fa-arrow-right'));
-        footer.append(readMore, createCardCategories(post.categories));
-
-        var content = document.createElement('div');
-        content.className = 'article-card-content';
-        content.append(body, footer);
-        link.append(imageWrap, content);
-        article.appendChild(link);
-        return article;
-    }
-    function isUnfiltered() {
-        return activeAuthor === 'all' && activeCategory === 'all' && !activeQuery;
-    }
-    function isDefaultCuratedState() {
-        return isUnfiltered() && currentPage === 1;
-    }
-
-    function lazyLoadImages() {
-        if (!grid) return;
-        bindImageFallbacks();
-        var imgs = grid.querySelectorAll('img[data-src]');
-        if (!imgs.length) return;
-        if (imageObserver) {
-            imageObserver.disconnect();
-            imageObserver = null;
-        }
-        function loadImg(img) {
-            if (img.getAttribute('src')) {
-                img.removeAttribute('data-src');
-                img.classList.add('loaded');
-                return;
-            }
-            var src = img.getAttribute('data-src');
-            if (!src) return;
-            img.decoding = 'async';
-            var srcset = img.getAttribute('data-srcset');
-            if (srcset) { img.srcset = srcset; img.removeAttribute('data-srcset'); }
-            img.src = src; img.removeAttribute('data-src');
-            img.addEventListener('load', function() { img.classList.add('loaded'); }, { once: true });
-            img.addEventListener('error', function() { img.classList.add('loaded'); }, { once: true });
-            if (img.complete && img.naturalWidth > 0) img.classList.add('loaded');
-        }
-        if ('IntersectionObserver' in window) {
-            imageObserver = new IntersectionObserver(function(entries) { entries.forEach(function(entry) { if (entry.isIntersecting) { loadImg(entry.target); imageObserver.unobserve(entry.target); } }); }, { rootMargin: '300px 0px' });
-            imgs.forEach(function(img) { imageObserver.observe(img); });
-        } else { imgs.forEach(loadImg); }
-    }
-    bindImageFallbacks();
-    bindAuthorFallbacks();
-
-    var POSTS_PER_PAGE = 12;
-    var currentPage = 1;
-    var filteredPosts = [];
-    var paginationEl = document.getElementById('blog-pagination');
-
-    function getPageRange(current, total) {
-        if (total <= 7) {
-            var r = []; for (var i = 1; i <= total; i++) r.push(i); return r;
-        }
-        var pages = [1];
-        var left = Math.max(2, current - 1);
-        var right = Math.min(total - 1, current + 1);
-        if (left > 2) pages.push('…');
-        for (var p = left; p <= right; p++) pages.push(p);
-        if (right < total - 1) pages.push('…');
-        pages.push(total);
-        return pages;
-    }
-
-    function renderPagination() {
-        if (!paginationEl) return;
-        var totalItems = (!fullPostsLoaded && isUnfiltered())
-            ? (totalPostCount || filteredPosts.length)
-            : filteredPosts.length;
-        var totalPages = Math.ceil(totalItems / POSTS_PER_PAGE);
-        if (totalPages <= 1) { paginationEl.replaceChildren(); return; }
-        var range = getPageRange(currentPage, totalPages);
-        var nodes = [];
-        var prev = document.createElement('button');
-        prev.className = 'page-btn page-prev';
-        prev.type = 'button';
-        prev.setAttribute('aria-label', 'Προηγούμενη σελίδα');
-        prev.disabled = currentPage === 1;
-        prev.appendChild(createIcon('fa-chevron-left'));
-        nodes.push(prev);
-        range.forEach(function(item) {
-            if (item === '…') {
-                var ellipsis = document.createElement('span');
-                ellipsis.className = 'page-ellipsis';
-                ellipsis.textContent = '...';
-                nodes.push(ellipsis);
-            } else {
-                var pageButton = document.createElement('button');
-                pageButton.className = 'page-btn page-num' + (item === currentPage ? ' active' : '');
-                pageButton.type = 'button';
-                pageButton.setAttribute('data-page', item);
-                pageButton.setAttribute('aria-label', 'Σελίδα ' + item);
-                if (item === currentPage) pageButton.setAttribute('aria-current', 'page');
-                pageButton.textContent = item;
-                nodes.push(pageButton);
-            }
-        });
-        var next = document.createElement('button');
-        next.className = 'page-btn page-next';
-        next.type = 'button';
-        next.setAttribute('aria-label', 'Επόμενη σελίδα');
-        next.disabled = currentPage === totalPages;
-        next.appendChild(createIcon('fa-chevron-right'));
-        nodes.push(next);
-        paginationEl.replaceChildren.apply(paginationEl, nodes);
-    }
-
-    function getFilteredPosts() {
-        return allPosts.filter(function(post) {
-            var matchesAuthor = activeAuthor === 'all' || post.author === activeAuthor;
-            var matchesCategory = activeCategory === 'all' || (post.categories || []).indexOf(activeCategory) !== -1;
-            var matchesQuery = !activeQuery || post.__searchIndex.indexOf(normalizeText(activeQuery)) !== -1;
-            return matchesAuthor && matchesCategory && matchesQuery;
-        }).sort(function(a, b) { return sortDir * (new Date(a.date) - new Date(b.date)); });
-    }
-
-    function goToPage(page, options) {
-        if (!grid) return;
-        if (!fullPostsLoaded && page > 1) {
-            ensureFullPostsLoaded().then(function() {
-                filteredPosts = getFilteredPosts();
-                goToPage(page, options);
-            }).catch(showLoadFailure);
-            return;
-        }
-        var totalItems = (!fullPostsLoaded && isUnfiltered())
-            ? (totalPostCount || filteredPosts.length)
-            : filteredPosts.length;
-        var totalPages = Math.max(1, Math.ceil(totalItems / POSTS_PER_PAGE));
-        currentPage = Math.max(1, Math.min(page, totalPages));
-        grid.classList.toggle('is-curated-default', isDefaultCuratedState());
-        var start = (currentPage - 1) * POSTS_PER_PAGE;
-        var pagePosts = filteredPosts.slice(start, start + POSTS_PER_PAGE);
-        if (options && options.preserveStatic && currentPage === 1 && staticFirstPageReady) {
-            lazyLoadImages();
-            renderPagination();
-            return;
-        }
-        grid.replaceChildren.apply(grid, pagePosts.map(function(p, i) { return createArticleCard(p, i); }));
-        lazyLoadImages();
-        renderPagination();
-        if (!options || options.scroll !== false) {
-            grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    }
-
-    if (paginationEl) {
-        paginationEl.addEventListener('click', function(e) {
-            var btn = e.target.closest('.page-btn');
-            if (!btn || btn.disabled) return;
-            if (btn.classList.contains('page-prev')) { goToPage(currentPage - 1); return; }
-            if (btn.classList.contains('page-next')) { goToPage(currentPage + 1); return; }
-            var page = parseInt(btn.getAttribute('data-page'), 10);
-            if (page && page !== currentPage) goToPage(page);
-        });
-    }
-
-    function renderPosts() {
-        if (!grid) return;
-        if (!fullPostsLoaded && !isUnfiltered()) {
-            loadAndRender();
-            return;
-        }
-        filteredPosts = getFilteredPosts();
-        if (!fullPostsLoaded && isUnfiltered()) {
-            filteredPosts = pageOnePosts.length ? pageOnePosts : filteredPosts;
-        }
-        if (countEl) {
-            var count = (!fullPostsLoaded && isUnfiltered())
-                ? (totalPostCount || filteredPosts.length)
-                : filteredPosts.length;
-            countEl.textContent = getResultsSummary(count);
-            if (archiveMiniCount) archiveMiniCount.textContent = getResultsSummary(count);
-        }
-        updateSearchControls();
-        updateActiveFilterSummary();
-        syncArchiveMiniBar();
-        if (!filteredPosts.length) {
-            grid.replaceChildren(createEmptyState('fa-newspaper', 'Δεν βρέθηκαν άρθρα για τα επιλεγμένα φίλτρα.'));
-            if (paginationEl) paginationEl.replaceChildren();
-            return;
-        }
-        goToPage(1, { scroll: false, preserveStatic: !fullPostsLoaded });
-    }
-
-    window.__blogFilterByAuthor = function(author) {
-        activeAuthor = author;
-        updateAuthorUrl();
-        currentPage = 1;
-        syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
-        renderPosts();
-    };
-
-    function fetchJson(paths, idx) {
-        idx = idx || 0;
-        if (idx >= paths.length) {
-            return Promise.reject(new Error('Unable to load blog data'));
-        }
-        return fetch(paths[idx], {
-            cache: 'no-store',
-            headers: { 'Accept': 'application/json' }
-        }).then(function(r) { if (!r.ok) throw new Error('not ok'); return r.json(); }).catch(function() {
-            return fetchJson(paths, idx + 1);
-        });
-    }
-
-    function showLoadFailure() {
-        var cached = readCachedPosts();
-        if (cached) { hydratePosts(cached); return; }
-        if (staticFirstPageReady && isUnfiltered()) {
-            lazyLoadImages();
-            return;
-        }
-        updateSearchControls();
-        updateActiveFilterSummary();
-        if (countEl) countEl.textContent = 'Δεν ήταν δυνατή η φόρτωση των αποτελεσμάτων.';
-        if (archiveMiniCount) archiveMiniCount.textContent = 'Η φόρτωση απέτυχε.';
-        if (paginationEl) paginationEl.replaceChildren();
-        staticFirstPageReady = false;
-        if (grid) grid.replaceChildren(createEmptyState('fa-exclamation-circle', 'Δεν ήταν δυνατή η φόρτωση των άρθρων.'));
-    }
-
-    function ensureFullPostsLoaded() {
+    function ensurePosts() {
         if (fullPostsLoaded) return Promise.resolve(allPosts);
         if (fullPostsPromise) return fullPostsPromise;
-        var cached = readCachedPosts();
+        var cached = readCache();
         if (cached) {
-            setFullPosts(cached);
+            setPosts(cached);
             return Promise.resolve(allPosts);
         }
         fullPostsPromise = fetchJson(FULL_DATA_PATHS).then(function(data) {
-            var posts = extractPosts(data);
-            writeCachedPosts(posts);
-            setFullPosts(posts);
+            var posts = expandCompactPosts(data) || (data && data.posts) || [];
+            writeCache(posts);
+            setPosts(posts);
             return allPosts;
         }).catch(function(error) {
             fullPostsPromise = null;
@@ -758,145 +188,360 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         return fullPostsPromise;
     }
-    function loadAndRender() { ensureFullPostsLoaded().then(renderPosts, showLoadFailure); }
 
-    if (staticFirstPageReady) lazyLoadImages();
-    renderCategoryFilters();
-    updateSearchControls();
-    updateActiveFilterSummary();
-
-    fetchJson(PAGE_ONE_PATHS).then(hydratePageOne).catch(function() {
-        ensureFullPostsLoaded().then(function() {
-            renderPosts();
-        }).catch(showLoadFailure);
-    });
-
-    if (strip) {
-        syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
-        function handleChipActivate(e) {
-            var chip = e.target.closest('.author-chip');
-            if (!chip) return;
-            e.preventDefault();
-            activeAuthor = chip.getAttribute('data-author');
-            updateAuthorUrl();
-            syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
-            loadAndRender();
+    // ── Rendering ────────────────────────────────────────
+    function storyKicker(post) {
+        var kicker = el('p', 'story-kicker');
+        kicker.appendChild(el('span', 'story-cat', taxonomy.greekUpper(taxonomy.categoryLabel(post.category || 'News'))));
+        return kicker;
+    }
+    function storyMeta(post) {
+        var meta = el('p', 'story-meta');
+        meta.appendChild(el('span', null, taxonomy.authorLabel(post.author || 'F1 Stories')));
+        var minutes = taxonomy.formatReadingTime(post.readingTime || post.readTime || '');
+        if (minutes) meta.appendChild(el('span', null, minutes));
+        return meta;
+    }
+    function storyImage(post) {
+        var image = el('img');
+        var srcset = taxonomy.cardImageSrcset(post.thumbnail, false);
+        if (srcset) {
+            image.srcset = srcset;
+            image.sizes = taxonomy.CARD_SIZES.archiveLedger;
         }
-        strip.addEventListener('click', handleChipActivate);
+        image.src = post.thumbnail;
+        image.width = post.thumbnailWidth;
+        image.height = post.thumbnailHeight;
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        image.alt = '';
+        image.setAttribute('data-fallback-src', '/blog-module/images/default-blog.jpg');
+        return image;
+    }
+    function ledgerRow(post, index) {
+        var date = taxonomy.ledgerDate(post.date);
+        var picture = taxonomy.isLedgerPicture(index) && !!post.thumbnail;
+        var row = el('li', 'ledger-row' + (picture ? ' ledger-row--picture' : ''));
+        row.setAttribute('data-kind', taxonomy.categoryKind(post.category));
+        var link = el('a', 'ledger-row__link');
+        link.href = post.url || ('/blog-module/blog-entries/' + post.id + '/article.html');
+        var time = el('time', 'ledger-row__date');
+        time.dateTime = post.date || '';
+        if (date) {
+            time.textContent = date.day + ' ' + date.month;
+            time.appendChild(el('span', 'visually-hidden', ' ' + date.year));
+        } else {
+            time.textContent = taxonomy.formatDate(post.date);
+        }
+        link.append(time, storyKicker(post));
+        if (picture) {
+            var media = el('span', 'ledger-row__media');
+            media.appendChild(storyImage(post));
+            link.appendChild(media);
+        }
+        link.appendChild(el('h3', 'ledger-row__title', post.title || ''));
+        if (picture && post.excerpt) link.appendChild(el('p', 'ledger-row__excerpt', post.excerpt));
+        link.appendChild(storyMeta(post));
+        row.appendChild(link);
+        return row;
+    }
+    // Month rules group the rows; every page opens with its month.
+    function ledgerRows(posts, start) {
+        var month = '';
+        var rows = [];
+        posts.forEach(function(post, offset) {
+            var date = taxonomy.ledgerDate(post.date);
+            if (date && date.key !== month) {
+                month = date.key;
+                var rule = el('li', 'ledger-month', date.monthTitle);
+                rule.setAttribute('aria-hidden', 'true');
+                rows.push(rule);
+            }
+            rows.push(ledgerRow(post, start + offset));
+        });
+        return rows;
+    }
+    function emptyState(text) {
+        return el('li', 'ledger-empty', text);
     }
 
-    if (categoryStrip) {
-        categoryStrip.addEventListener('click', function(e) {
-            var chip = e.target.closest('.category-chip');
-            if (!chip) return;
-            e.preventDefault();
-            activeCategory = taxonomy.normalizeCategories([chip.getAttribute('data-category')])[0] || 'all';
-            updateCategoryUrl();
-            syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
-            loadAndRender();
-        });
+    function getFilteredPosts() {
+        var query = normalizeText(activeQuery);
+        var skip = isFiltered() ? [] : frontIds;
+        return allPosts.filter(function(post) {
+            return (activeAuthor === 'all' || post.author === activeAuthor)
+                && (activeCategory === 'all' || post.categories.indexOf(activeCategory) !== -1)
+                && (!query || post.__search.indexOf(query) !== -1)
+                && skip.indexOf(post.id) === -1;
+        }).sort(function(a, b) { return sortDir * (new Date(a.date) - new Date(b.date)); });
+    }
+    function resultCount() {
+        return isFiltered() || fullPostsLoaded ? filteredPosts.length : Math.max(0, totalPosts - frontIds.length);
     }
 
-    if (activeFilterSummary) {
-        activeFilterSummary.addEventListener('click', function(e) {
-            var chip = e.target.closest('.active-filter-chip');
-            if (!chip) return;
-            removeActiveFilter(chip.getAttribute('data-filter-kind'));
+    function pageRange(current, total) {
+        if (total <= 7) return Array.from({ length: total }, function(_, i) { return i + 1; });
+        var pages = [1];
+        var left = Math.max(2, current - 1);
+        var right = Math.min(total - 1, current + 1);
+        if (left > 2) pages.push('…');
+        for (var page = left; page <= right; page += 1) pages.push(page);
+        if (right < total - 1) pages.push('…');
+        pages.push(total);
+        return pages;
+    }
+    function pageButton(label, page, ariaLabel, disabled) {
+        var button = el('button', 'ledger-page', label);
+        button.type = 'button';
+        button.setAttribute('data-page', page);
+        button.setAttribute('aria-label', ariaLabel);
+        button.disabled = !!disabled;
+        return button;
+    }
+    function renderPagination() {
+        if (!paginationEl) return;
+        var totalPages = Math.ceil(resultCount() / LAYOUT.page);
+        if (totalPages <= 1) { paginationEl.replaceChildren(); return; }
+        var nodes = [pageButton('←', currentPage - 1, 'Προηγούμενη σελίδα', currentPage === 1)];
+        pageRange(currentPage, totalPages).forEach(function(item) {
+            if (item === '…') { nodes.push(el('span', 'ledger-page-gap', '…')); return; }
+            var button = pageButton(String(item), item, 'Σελίδα ' + item);
+            if (item === currentPage) button.setAttribute('aria-current', 'page');
+            nodes.push(button);
+        });
+        nodes.push(pageButton('→', currentPage + 1, 'Επόμενη σελίδα', currentPage === totalPages));
+        paginationEl.replaceChildren.apply(paginationEl, nodes);
+    }
+
+    // The archive head names the current view: the archive, a topic, a writer or a search.
+    function renderArchiveHead() {
+        var option = activeAuthor !== 'all' ? authorOption(activeAuthor) : null;
+        var title = ARCHIVE_TITLE;
+        var notes = [];
+        if (option) title = option.textContent.trim();
+        else if (activeCategory !== 'all') title = taxonomy.greekUpper(taxonomy.categoryLabel(activeCategory));
+        else if (activeQuery) title = 'ΑΝΑΖΗΤΗΣΗ';
+        if (option && option.getAttribute('data-specialty')) notes.push(option.getAttribute('data-specialty'));
+        if (option && activeCategory !== 'all') notes.push(taxonomy.categoryLabel(activeCategory));
+        if (activeQuery) notes.push('«' + activeQuery + '»');
+        if (archiveTitle) {
+            var nodes = [];
+            var portrait = option && option.querySelector('img');
+            if (portrait) {
+                var image = el('img', 'journal-archive__portrait');
+                image.src = portrait.getAttribute('src');
+                image.alt = '';
+                image.width = 48;
+                image.height = 48;
+                nodes.push(image);
+            }
+            nodes.push(document.createTextNode(title));
+            archiveTitle.replaceChildren.apply(archiveTitle, nodes);
+        }
+        if (archive) {
+            archive.setAttribute('data-view', option ? 'author' : activeCategory !== 'all' ? 'category' : activeQuery ? 'search' : 'all');
+            if (activeCategory !== 'all' && !option) archive.setAttribute('data-kind', taxonomy.categoryKind(activeCategory));
+            else archive.removeAttribute('data-kind');
+            // A writer's view is ruled in that writer's accent ink (CSS, keyed by slug).
+            if (option) archive.setAttribute('data-author-slug', option.getAttribute('data-author-slug'));
+            else archive.removeAttribute('data-author-slug');
+        }
+        if (countEl) {
+            var count = resultCount() + (isFiltered() ? 0 : frontIds.length);
+            countEl.textContent = notes.concat(count + ' ' + (count === 1 ? 'άρθρο' : 'άρθρα')).join(' · ');
+        }
+    }
+    function syncControls() {
+        if (resetBtn) resetBtn.hidden = !isFiltered();
+        if (searchClearBtn) searchClearBtn.hidden = !(searchInput && searchInput.value);
+        [[categoryOptions, 'data-category', activeCategory], [authorOptions, 'data-author', activeAuthor]].forEach(function(group) {
+            if (!group[0]) return;
+            Array.prototype.forEach.call(group[0].querySelectorAll('[' + group[1] + ']'), function(option) {
+                if (option.getAttribute(group[1]) === group[2]) option.setAttribute('aria-current', 'true');
+                else option.removeAttribute('aria-current');
+            });
         });
     }
+    // Hiding or showing the front page must not move the archive under the reader.
+    function syncEdition() {
+        var filtered = isFiltered();
+        if (root.hasAttribute('data-journal-filtered') === filtered) return;
+        var before = archive ? archive.getBoundingClientRect().top : 0;
+        root.toggleAttribute('data-journal-filtered', filtered);
+        if (!archive || before > window.innerHeight) return;
+        var shift = archive.getBoundingClientRect().top - before;
+        // Instant: the site's smooth scrolling would visibly slide the page back.
+        if (shift) window.scrollBy({ top: shift, behavior: 'instant' });
+    }
+
+    function render(options) {
+        options = options || {};
+        syncEdition();
+        syncControls();
+        if (!fullPostsLoaded && !isStaticView()) {
+            ledger.setAttribute('aria-busy', 'true');
+            ensurePosts().then(function() { render(options); }, showLoadFailure);
+            return;
+        }
+        ledger.removeAttribute('aria-busy');
+        if (!fullPostsLoaded) {
+            // Unfiltered page 1: the static HTML is already the right ledger.
+            renderArchiveHead();
+            renderPagination();
+            return;
+        }
+        filteredPosts = getFilteredPosts();
+        var totalPages = Math.max(1, Math.ceil(filteredPosts.length / LAYOUT.page));
+        currentPage = Math.max(1, Math.min(currentPage, totalPages));
+        renderArchiveHead();
+        if (isStaticView() && staticLedger) {
+            renderPagination();
+            return;
+        }
+        staticLedger = false;
+        var start = (currentPage - 1) * LAYOUT.page;
+        var rows = ledgerRows(filteredPosts.slice(start, start + LAYOUT.page), start);
+        if (!rows.length) rows = [emptyState('Δεν βρέθηκαν άρθρα.')];
+        ledger.replaceChildren.apply(ledger, rows);
+        renderPagination();
+        if (options.scroll && archive) archive.scrollIntoView({ block: 'start' });
+    }
+    function showLoadFailure() {
+        ledger.removeAttribute('aria-busy');
+        if (countEl) countEl.textContent = 'Δεν ήταν δυνατή η φόρτωση του αρχείου.';
+        if (!isStaticView()) ledger.replaceChildren(emptyState('Δεν ήταν δυνατή η φόρτωση των άρθρων. Δοκίμασε ξανά σε λίγο.'));
+    }
+
+    function update(change, options) {
+        clearTimeout(searchTimer);
+        change();
+        currentPage = 1;
+        render(options);
+    }
+
+    // ── Events ───────────────────────────────────────────
+    ledger.addEventListener('error', function(event) {
+        var image = event.target;
+        if (!image || image.tagName !== 'IMG') return;
+        var fallback = image.getAttribute('data-fallback-src');
+        if (image.hasAttribute('srcset')) { image.removeAttribute('srcset'); return; }
+        if (fallback && image.getAttribute('src') !== fallback) { image.src = fallback; return; }
+        var media = image.closest('.ledger-row__media');
+        if (media) media.remove();
+    }, true);
+
+    // Filter options are real links (they work without script); here they update in place.
+    function bindOptions(container, attribute, apply) {
+        if (!container) return;
+        container.addEventListener('click', function(event) {
+            var option = event.target.closest('[' + attribute + ']');
+            if (!option || event.metaKey || event.ctrlKey || event.shiftKey || event.button) return;
+            event.preventDefault();
+            update(function() { apply(option.getAttribute(attribute)); syncUrl(); });
+            // On phones the panel sits above the results: close it so they are in view.
+            if (filterToggle && getComputedStyle(filterToggle).display !== 'none') setFiltersOpen(false);
+        });
+    }
+    bindOptions(categoryOptions, 'data-category', function(value) {
+        activeCategory = taxonomy.normalizeCategories([value])[0] || 'all';
+    });
+    bindOptions(authorOptions, 'data-author', function(value) { activeAuthor = value || 'all'; });
 
     if (searchInput) {
         searchInput.addEventListener('input', function() {
-            updateSearchControls();
+            if (searchClearBtn) searchClearBtn.hidden = !searchInput.value;
             clearTimeout(searchTimer);
             searchTimer = setTimeout(function() {
-                activeQuery = searchInput.value.trim();
-                if (activeQuery) {
-                    loadAndRender();
-                } else {
-                    renderPosts();
-                }
+                update(function() { activeQuery = searchInput.value.trim(); });
             }, 250);
         });
     }
-
     if (searchClearBtn) {
         searchClearBtn.addEventListener('click', function() {
-            clearTimeout(searchTimer);
-            activeQuery = '';
-            if (searchInput) {
-                searchInput.value = '';
-                searchInput.focus();
-            }
-            renderPosts();
+            update(function() { activeQuery = ''; searchInput.value = ''; });
+            searchInput.focus();
         });
     }
-    if (sortSelect) sortSelect.addEventListener('change', function() {
-        sortDir = sortSelect.value === 'oldest' ? 1 : -1;
-        loadAndRender();
-    });
-
-    if (filterResetBtn) {
-        filterResetBtn.addEventListener('click', function() {
-            clearTimeout(searchTimer);
-            activeAuthor = 'all';
-            activeCategory = 'all';
-            updateAuthorUrl();
-            updateCategoryUrl();
-            activeQuery = '';
-            if (searchInput) searchInput.value = '';
-            syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
-            syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
-            renderPosts();
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            update(function() { sortDir = sortSelect.value === 'oldest' ? 1 : -1; });
         });
     }
-    if (filterToggleBtn) {
-        filterToggleBtn.addEventListener('click', function() {
-            setFiltersOpen(!(filterToolbar && filterToolbar.classList.contains('is-open')));
-        });
-    }
-    if (filterToolbar) {
-        filterToolbar.addEventListener('click', function(e) {
-            if (e.target === filterToolbar && filterToolbar.classList.contains('is-open')) {
-                setFiltersOpen(false);
-            }
-        });
-    }
-    filterDetails.forEach(function(details) {
-        details.addEventListener('toggle', function() {
-            if (!details.open) return;
-            filterDetails.forEach(function(sibling) {
-                if (sibling !== details) sibling.open = false;
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            update(function() {
+                activeAuthor = 'all';
+                activeCategory = 'all';
+                activeQuery = '';
+                if (searchInput) searchInput.value = '';
+                syncUrl();
             });
         });
-    });
-    document.addEventListener('click', function(e) {
-        if (filterToolbar && !filterToolbar.contains(e.target) && (!archiveMiniBar || !archiveMiniBar.contains(e.target))) {
-            filterDetails.forEach(function(details) { details.open = false; });
-            setFiltersOpen(false);
-        }
-    });
-    if (archiveMiniFilter) {
-        archiveMiniFilter.setAttribute('aria-controls', 'blog-filter-panel');
-        archiveMiniFilter.setAttribute('aria-expanded', 'false');
-        archiveMiniFilter.addEventListener('click', function() {
-            setFiltersOpen(!(filterToolbar && filterToolbar.classList.contains('is-open')));
+    }
+    if (paginationEl) {
+        paginationEl.addEventListener('click', function(event) {
+            var button = event.target.closest('.ledger-page');
+            if (!button || button.disabled) return;
+            currentPage = parseInt(button.getAttribute('data-page'), 10) || 1;
+            render({ scroll: true });
         });
     }
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            filterDetails.forEach(function(details) { details.open = false; });
-            setFiltersOpen(false);
-        }
+
+    function setFiltersOpen(open) {
+        if (!filterPanel || !filterToggle) return;
+        filterPanel.classList.toggle('is-open', open);
+        filterToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    if (filterToggle) {
+        filterToggle.addEventListener('click', function() {
+            setFiltersOpen(filterToggle.getAttribute('aria-expanded') !== 'true');
+        });
+    }
+    document.addEventListener('keydown', function(event) {
+        if (event.key !== 'Escape' || !filterPanel || !filterPanel.classList.contains('is-open')) return;
+        setFiltersOpen(false);
+        filterToggle.focus();
     });
+
+    // Masthead shortcuts: jump to the archive, then focus search or open the filters.
+    Array.prototype.forEach.call(document.querySelectorAll('[data-journal-open]'), function(link) {
+        link.addEventListener('click', function(event) {
+            if (!archive) return;
+            event.preventDefault();
+            archive.scrollIntoView({ block: 'start' });
+            if (link.getAttribute('data-journal-open') === 'search' && searchInput) searchInput.focus({ preventScroll: true });
+            else if (filterToggle && getComputedStyle(filterToggle).display !== 'none') {
+                setFiltersOpen(true);
+                filterToggle.focus({ preventScroll: true });
+            }
+        });
+    });
+
+    // Fetch a story only once the reader shows intent (keyboard focus, or hover with
+    // a fine pointer), and never on data-saving or slow connections.
+    var prefetched = {};
+    function prefetchStory(event) {
+        var link = event.target.closest && event.target.closest('.journal a[href*="/blog-entries/"]');
+        var connection = navigator.connection;
+        if (!link || prefetched[link.href]) return;
+        if (connection && (connection.saveData || /2g|3g/.test(connection.effectiveType || ''))) return;
+        prefetched[link.href] = true;
+        var hint = document.createElement('link');
+        hint.rel = 'prefetch';
+        hint.href = link.href;
+        document.head.appendChild(hint);
+    }
+    document.addEventListener('focusin', prefetchStory);
+    if (window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        document.addEventListener('pointerover', prefetchStory);
+    }
+
     window.addEventListener('popstate', function() {
-        activeAuthor = getAuthorFromUrl();
-        activeCategory = getCategoryFromUrl();
-        currentPage = 1;
-        syncChipState(strip, '.author-chip', 'data-author', activeAuthor);
-        syncChipState(categoryStrip, '.category-chip', 'data-category', activeCategory);
-        loadAndRender();
+        update(function() {
+            activeAuthor = authorFromUrl();
+            activeCategory = categoryFromUrl();
+        });
     });
-    window.addEventListener('resize', scheduleArchiveMiniBar, { passive: true });
-    window.addEventListener('scroll', scheduleArchiveMiniBar, { passive: true });
+
+    render();
 });
