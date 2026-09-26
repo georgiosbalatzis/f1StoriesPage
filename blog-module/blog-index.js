@@ -517,6 +517,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Fetch a story only once the reader shows intent (keyboard focus, or hover with
+    // a fine pointer), and never on data-saving or slow connections.
+    var prefetched = {};
+    function prefetchStory(event) {
+        var link = event.target.closest && event.target.closest('.journal a[href*="/blog-entries/"]');
+        var connection = navigator.connection;
+        if (!link || prefetched[link.href]) return;
+        if (connection && (connection.saveData || /2g|3g/.test(connection.effectiveType || ''))) return;
+        prefetched[link.href] = true;
+        var hint = document.createElement('link');
+        hint.rel = 'prefetch';
+        hint.href = link.href;
+        document.head.appendChild(hint);
+    }
+    document.addEventListener('focusin', prefetchStory);
+    if (window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        document.addEventListener('pointerover', prefetchStory);
+    }
+
     window.addEventListener('popstate', function() {
         update(function() {
             activeAuthor = authorFromUrl();

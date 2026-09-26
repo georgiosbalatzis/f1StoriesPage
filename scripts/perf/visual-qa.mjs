@@ -131,15 +131,15 @@ function closeServer(server) {
 
 function readLatestArticleRoute() {
     const candidates = [
-        path.join(DIST_ROOT, 'blog-module', 'blog-index-page-1.json'),
-        path.join(REPO_ROOT, 'blog-module', 'blog-index-page-1.json')
+        path.join(DIST_ROOT, 'blog-module', 'blog-index-data.json'),
+        path.join(REPO_ROOT, 'blog-module', 'blog-index-data.json')
     ];
 
     for (const candidate of candidates) {
         if (!fs.existsSync(candidate)) continue;
         const data = JSON.parse(fs.readFileSync(candidate, 'utf8'));
-        const first = data && Array.isArray(data.posts) ? data.posts[0] : null;
-        if (first && first.id) return `/blog-module/blog-entries/${encodeURIComponent(first.id)}/article.html`;
+        const id = data && Array.isArray(data.p) && data.p[0] ? data.p[0][0] : null;
+        if (id) return `/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`;
     }
 
     return '/blog-module/blog-entries/20260526D/article.html';

@@ -179,7 +179,7 @@ body.editorial-page::after {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.84' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23000' filter='url%28%23n%29' opacity='.65' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
 }
 :root:not([data-theme="light"]) .editorial-page::after { display: none; }
-.editorial-page .container { max-width: 1476px; width: 100%; padding-inline: 48px; }
+.editorial-page .container { max-width: 1476px; width: 100%; margin-inline: auto; padding-inline: 48px; }
 .editorial-page :is(button, input, textarea, .skip-link) { font-family: var(--font-body); }
 .editorial-page :is(h1, h2, h3, p) { margin-top: 0; }
 .editorial-page h2 { display: block; font: 600 clamp(1.8rem, 3vw, 3rem)/1.2 var(--font-body); padding: 0; margin-bottom: 20px; border: 0; letter-spacing: -.025em; }
@@ -444,13 +444,19 @@ body.editorial-page footer {
     color: var(--paper, #e9e3d6);
     border-top: 1px solid rgba(233, 227, 214, 0.18);
     font-family: var(--font-body);
+    padding: 1.5rem 0;
+}
+/* Notched phones keep the colophon and the consent bar clear of the home indicator. */
+@supports (padding: env(safe-area-inset-bottom)) {
+    body.editorial-page footer { padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); }
+    body.editorial-page .cookie-consent { padding-bottom: env(safe-area-inset-bottom); }
 }
 
 body.editorial-page footer > .container {
     padding-block: 1.75rem;
 }
 
-body.editorial-page footer .col-12 {
+body.editorial-page footer .footer-body {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
@@ -538,7 +544,7 @@ body.editorial-page footer .footer-separator {
 }
 
 @media (max-width: 767.98px) {
-    body.editorial-page footer .col-12 { grid-template-columns: 1fr; gap: 1.2rem; }
+    body.editorial-page footer .footer-body { grid-template-columns: 1fr; gap: 1.2rem; }
     body.editorial-page footer .social-media { justify-content: flex-start; gap: 0.5rem; }
     body.editorial-page footer .footer-links { flex-direction: row; align-items: flex-start; gap: 0.75rem 1.5rem; }
 }
@@ -550,37 +556,26 @@ body.editorial-page footer .footer-separator {
     body.editorial-page footer .social-media a:hover .icon { transform: none; }
 }
 
-/* Legacy components consume aliases defined here so both themes resolve locally. */
+/* Legacy article and standings CSS still read these aliases; unread ones have been removed.
+ * Delete each alias when the last legacy rule reading it is rewritten. */
 body.editorial-page,
 .editorial-preview {
     color-scheme: dark;
     --bg-overlay: #1b1a19f2;
     --border-accent: var(--accent);
     --accent-glow: #ed4c3222;
-    --primary-blue: var(--accent);
-    --secondary-blue: var(--accent-hover);
-    --accent-cyan: var(--accent);
-    --light-text: var(--text-primary);
-    --dark-bg: var(--bg-base);
-    --darker-bg: var(--bg-base);
     --gradient-primary: linear-gradient(var(--bg-surface), var(--bg-surface));
     --gradient-accent: linear-gradient(var(--accent), var(--accent));
     --shadow-lg: 0 8px 24px #00000012;
-    --blog-bg: var(--bg-base);
     --blog-surface: var(--bg-surface);
-    --blog-surface-hover: var(--bg-surface-alt);
     --blog-surface-raised: var(--bg-surface-alt);
     --blog-border: var(--border);
-    --blog-border-strong: var(--border);
     --blog-text-primary: var(--text-primary);
     --blog-text-secondary: var(--text-secondary);
     --blog-text-tertiary: var(--text-secondary);
     --blog-accent: var(--accent);
     --blog-accent-soft: var(--accent-muted);
-    --blog-accent-hover: var(--accent-hover);
-    --blog-shadow-sm: none;
     --blog-shadow-md: none;
-    --blog-radius: 2px;
     --blog-radius-sm: 2px;
     --st-bg: var(--bg-base);
     --st-surface: var(--bg-surface);
@@ -791,4 +786,4 @@ body.editorial-page footer .footer-wordmark .editorial-accent { color: var(--sig
 
 /* Standalone text links keep a 24px minimum target (WCAG 2.2 AA 2.5.8) without changing their type. */
 /* KEEP: 44px targets for every standalone link, not just WCAG's 24px floor. */
-body.editorial-page :is(.authors-directory-link, .team-member__name a, .footer-link, .footer-wordmark, .authors-directory-back, .authors-intro__data-link, .author-profile__archive, .author-profile__social, .author-profile__name a, .author-profile__stories a, .author-profile-link, .article-author-link, .author-name a, .article-trust strong a, .article-trust__corrections a) { display: inline-flex; align-items: center; min-height: 44px; }
+body.editorial-page :is(.authors-directory-link, .team-member__name a, .footer-link, .footer-wordmark, .authors-directory-back, .authors-intro__data-link, .author-profile__archive, .author-profile__social, .author-profile__name a, .author-profile__stories a, .article-author-link, .article-trust strong a, .article-trust__corrections a) { display: inline-flex; align-items: center; min-height: 44px; }

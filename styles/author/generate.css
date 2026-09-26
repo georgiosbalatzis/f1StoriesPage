@@ -317,7 +317,7 @@ body.author-page .background { display: none; }
 #preview-wrapper .article-container { max-width: none; }
 #preview-wrapper .article-content { margin-inline: auto; padding-inline: 22px; }
 #preview-wrapper .article-title { font-size: clamp(1.8rem, 6cqi, 3rem); }
-#preview-wrapper .article-author-footer { padding: 0 22px; }
+#preview-wrapper :is(.reading-time-badge, .author-card) { margin-inline: 22px; }
 
 /* ── Step 5: review + PR ────────────────────────────── */
 .gb-review { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 8px; }

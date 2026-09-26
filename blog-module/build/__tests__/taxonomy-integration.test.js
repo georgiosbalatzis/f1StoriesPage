@@ -5,7 +5,7 @@ const path = require('node:path');
 const test = require('node:test');
 const { PUBLIC_CATEGORIES, AUTHORS, findAuthor, authorLabel, authorThumb, getPostTaxonomy } = require('../../taxonomy');
 const {
-    buildIndexPosts, buildCompactIndexData, summarizeCategories,
+    buildIndexPosts, buildCompactIndexData,
     loadEditorialSelection, resolveJournalFront, renderJournalFront, renderLedgerRows
 } = require('../index');
 const { refreshArticleTaxonomy, getEditorialProfile, renderArticleSources, renderAuthorCard } = require('../article-render');
@@ -26,8 +26,6 @@ test('archive data separates public categories from searchable detail tags', asy
     assert.deepEqual(compact.c, PUBLIC_CATEGORIES);
     assert.deepEqual(compact.p[0][8].map(index => compact.c[index]), posts[0].categories);
     assert.deepEqual(compact.p[0][9].map(index => compact.t[index]), posts[0].tags);
-    assert.deepEqual(summarizeCategories(posts).map(category => category.name), PUBLIC_CATEGORIES);
-    assert.equal(summarizeCategories(posts).find(category => category.name === '2026').count, 1);
 });
 
 test('compact archive thumbnail variants use an unambiguous run map', () => {

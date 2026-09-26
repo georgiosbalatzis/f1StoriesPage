@@ -94,7 +94,7 @@
     filter: saturate(.8);
     transition: transform .7s var(--ease-editorial), filter .7s var(--ease-editorial);
 }
-:where(.journal) :where(h2, h3) { margin: 0; color: var(--text-primary); font-family: var(--font-body); overflow-wrap: break-word; }
+.journal :where(h2, h3) { margin: 0; color: var(--text-primary); font-family: var(--font-body); overflow-wrap: break-word; }
 .journal :is(.journal-lead__link, .journal-second__link, .journal-recent__link, .journal-deep__link, .ledger-row__link):focus-visible {
     outline: 2px solid var(--accent-readable);
     outline-offset: 4px;
@@ -157,7 +157,7 @@
 .journal-deep { grid-column: 9 / -1; }
 .journal-deep__item + .journal-deep__item { border-top: 1px solid var(--border); }
 .journal-deep__link { display: block; padding: 18px 0 20px; }
-.journal-deep__title { font-size: clamp(1.35rem, 1.9vw, 1.75rem); font-weight: 400; line-height: 1.25; letter-spacing: -.022em; }
+.journal-deep__title { margin-bottom: 8px; font-size: clamp(1.35rem, 1.9vw, 1.75rem); font-weight: 400; line-height: 1.25; letter-spacing: -.022em; }
 .journal-deep__deck { margin: 10px 0 12px; color: var(--text-secondary); font-size: .9375rem; line-height: 1.6; }
 
 /* ── The archive ──────────────────────────────────────── */
@@ -310,7 +310,7 @@
 }
 .ledger-row__date { grid-area: date; color: var(--text-secondary); font-size: .8125rem; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
 .ledger-row .story-kicker { grid-area: kicker; margin: 0; }
-.ledger-row__title { grid-area: title; font-size: 1.1875rem; font-weight: 600; line-height: 1.35; letter-spacing: -.012em; }
+.ledger-row__title { grid-area: title; margin-bottom: 8px; font-size: 1.1875rem; font-weight: 600; line-height: 1.35; letter-spacing: -.012em; }
 .ledger-row .story-meta { grid-area: meta; justify-content: flex-end; text-align: right; }
 .ledger-row--picture .ledger-row__link {
     grid-template-columns: 5rem 7.5rem 15rem minmax(0, 1fr) 15rem;

@@ -11,11 +11,13 @@
 
 // Only the grid, utility and alert classes the published pages (including author tools and
 // JS-built markup) reference; audited against every token in dist HTML/JS. Add a class here
-// before using it in markup.
+// before using it in markup. The Journal archive and /authors/ no longer load this file; article
+// pages still use the grid (.row/.col-*/.mb-4), home's scripts .col-md-6/.col-lg-4/.text-center/
+// .alert-danger, and the legal pages .mt-5/.py-5. .visually-hidden lives in styles.css.
 $utilities: (
-  "margin-top": map-merge(map-get($utilities, "margin-top"), (responsive: false, values: map-get-multiple($spacers, (3, 5)))),
+  "margin-top": map-merge(map-get($utilities, "margin-top"), (responsive: false, values: map-get-multiple($spacers, (5,)))),
   "margin-bottom": map-merge(map-get($utilities, "margin-bottom"), (responsive: false, values: map-get-multiple($spacers, (4,)))),
-  "padding-y": map-merge(map-get($utilities, "padding-y"), (responsive: false, values: map-get-multiple($spacers, (4, 5)))),
+  "padding-y": map-merge(map-get($utilities, "padding-y"), (responsive: false, values: map-get-multiple($spacers, (5,)))),
   "text-align": map-merge(map-get($utilities, "text-align"), (responsive: false, values: (center: center)))
 );
 
@@ -44,8 +46,6 @@ $utilities: (
 @include media-breakpoint-up(lg) {
   .col-lg-4 { @include make-col(4); }
 }
-
-@import "../../node_modules/bootstrap/scss/helpers/visually-hidden";
 
 // Alerts: only .alert-danger is used, so generate the colour modifiers for danger alone.
 $_all-theme-colors: $theme-colors;

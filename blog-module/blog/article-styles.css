@@ -135,7 +135,7 @@ body { overflow-x: clip; overflow-y: auto !important; position: relative; }
     --blog-border-strong: rgba(0,0,0,0.1);
 }
 
-.article-container, .article-content, .article-comments, .author-box,
+.article-container, .article-content, .article-comments,
 .article-nav-link, .article-toolbar, .related-article-card {
     transition: background var(--blog-transition), color var(--blog-transition),
                 border-color var(--blog-transition), box-shadow var(--blog-transition);
@@ -699,76 +699,6 @@ body { overflow-x: clip; overflow-y: auto !important; position: relative; }
 }
 
 /* ── Author / Partners ───────────────────────── */
-.article-author-footer {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 1.75rem 0 0;
-    border-top: 1px solid var(--blog-border);
-}
-
-.author-box {
-    background: var(--blog-surface);
-    border-radius: 8px;
-    padding: 1.3rem 1.5rem;
-    border: 1px solid var(--blog-border);
-}
-
-.author-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
-}
-
-.author-avatar {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
-    border: 2px solid var(--blog-accent);
-    background: var(--blog-accent-soft);
-}
-
-.author-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.author-avatar .avatar-text {
-    display: none;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #fff;
-    background: var(--blog-accent);
-}
-
-.author-name {
-    color: var(--blog-text-primary);
-    font-size: 1rem;
-    margin: 0;
-    font-weight: 600;
-    font-family: 'Outfit','DM Sans',sans-serif;
-}
-
-.author-title {
-    color: var(--blog-accent);
-    font-size: 0.78rem;
-    margin-top: 0.15rem;
-    font-weight: 500;
-}
-
-.author-bio {
-    color: var(--blog-text-secondary);
-    font-size: 0.88rem;
-    line-height: 1.55;
-}
-
 .sponsor-strip {
     max-width: 760px;
     margin: 1.9rem auto 0;
@@ -1541,9 +1471,6 @@ body { overflow-x: clip; overflow-y: auto !important; position: relative; }
         margin: 1.25rem 0;
     }
 
-    .article-author-footer {
-        padding: 1.2rem 0 0;
-    }
 
     .article-toolbar,
     .social-share-bar {
@@ -1616,16 +1543,6 @@ body { overflow-x: clip; overflow-y: auto !important; position: relative; }
 
     .article-content p {
         margin-bottom: 0.92rem;
-    }
-
-    .author-header {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .author-avatar {
-        width: 46px;
-        height: 46px;
     }
 
     .sponsor-logos {

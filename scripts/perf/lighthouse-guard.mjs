@@ -259,9 +259,10 @@ async function clearServiceWorkers(chrome, origin) {
 const LATEST_ARTICLE = 'latest-article';
 
 function latestArticlePath(root) {
-    const pageOne = JSON.parse(fs.readFileSync(path.join(root, 'blog-module', 'blog-index-page-1.json'), 'utf8'));
-    const id = pageOne.posts && pageOne.posts[0] && pageOne.posts[0].id;
-    if (!id) throw new Error('latest-article route: blog-index-page-1.json has no posts');
+    // The compact index is newest first; row[0] is the article id.
+    const index = JSON.parse(fs.readFileSync(path.join(root, 'blog-module', 'blog-index-data.json'), 'utf8'));
+    const id = index.p && index.p[0] && index.p[0][0];
+    if (!id) throw new Error('latest-article route: blog-index-data.json has no posts');
     return `/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`;
 }
 

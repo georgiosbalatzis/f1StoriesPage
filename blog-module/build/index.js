@@ -15,6 +15,7 @@ const { htmlToPlainText } = require('./metadata');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
 const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
+const { injectAuthorsDirectory } = require('./authors-page');
 const {
     PUBLIC_CATEGORIES, AUTHORS, authorThumb, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
     formatReadingTime, cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture
@@ -145,19 +146,6 @@ function formatBlogIndexDate(post) {
 
 function jsonKb(value) {
     return Math.round(Buffer.byteLength(JSON.stringify(value)) / 1024);
-}
-
-function summarizeCategories(posts) {
-    const counts = {};
-    posts.forEach(post => {
-        (post.categories || []).forEach(category => {
-            const key = String(category || '').trim();
-            if (!key) return;
-            counts[key] = (counts[key] || 0) + 1;
-        });
-    });
-
-    return PUBLIC_CATEGORIES.map(name => ({ name, count: counts[name] || 0 }));
 }
 
 // Run-length encodes a per-post boolean: comma-separated runs of a 0/1 marker
@@ -1009,20 +997,6 @@ async function processBlogEntries(options = {}) {
     fs.writeFileSync(indexPath, JSON.stringify(compactIndexData, null, 0));
     console.log(`Blog index data saved to ${indexPath} (${jsonKb(compactIndexData)} KB)`);
 
-    const pageOneData = {
-        // hasSource is author-tool metadata; the public first page does not need it.
-        posts: indexPosts.slice(0, 12).map(({ hasSource, ...post }) => post),
-        categories: summarizeCategories(indexPosts),
-        totalCount: indexPosts.length,
-        lastUpdated
-    };
-    const pageOnePath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-page-1.json');
-    const existingPageOneData = readJsonIfExists(pageOnePath);
-    if (sameJsonExceptKey(existingPageOneData, pageOneData, 'lastUpdated') && existingPageOneData.lastUpdated) {
-        pageOneData.lastUpdated = existingPageOneData.lastUpdated;
-    }
-    fs.writeFileSync(pageOnePath, JSON.stringify(pageOneData, null, 0));
-    console.log(`Blog first-page data saved to ${pageOnePath} (${jsonKb(pageOneData)} KB)`);
     const front = resolveJournalFront(indexPosts, loadEditorialSelection());
     front.warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the slot falls back to the newest story`));
     const postsById = new Map(blogPosts.map(post => [post.id, post]));
@@ -1031,6 +1005,7 @@ async function processBlogEntries(options = {}) {
         decks[post.id] = heroCopy(postsById.get(post.id) || post).deck;
     });
     injectBlogIndexFirstPage(indexPosts, front, decks);
+    injectAuthorsDirectory(indexPosts);
 
     const homeLatest = await buildHomeLatest(blogPosts);
     const homeLatestPath = path.join(CONFIG.BLOG_DIR, '..', 'home-latest.json');
@@ -1060,7 +1035,6 @@ module.exports = {
     runWorkerPool,
     fixMissingAuthors,
     buildIndexPosts,
-    summarizeCategories,
     buildCompactIndexData,
     loadEditorialSelection,
     resolveJournalFront,

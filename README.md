@@ -90,7 +90,7 @@ npm run verify
          v                v                         v                     v
                  GENERATED ΚΑΙ COMMITTED ΣΤΟ GIT
   HTML shells με include/stamp/sprite blocks, blog-entries/*/article.html,
-  blog-index-data.json, blog-index-page-1.json, home-latest.json, blog-source-cache.json,
+  blog-index-data.json, home-latest.json, blog-source-cache.json, authors/index.html (κατάλογος),
   sitemap.xml, assets/youtube-latest.json, standings/*-cache.json
                                          |
                           build:public (public-artifact.mjs + validators)
@@ -209,7 +209,7 @@ YYYYMMDD[-N][X]
 | `D` | Dimitris Keramidiotis (Δημήτρης Κεραμιδιώτης) |
 | κανένας | F1 Stories Team |
 
-Οι συντάκτες ορίζονται στο `CONFIG.AUTHOR_MAP` και `AUTHOR_AVATARS` (`blog-module/build/shared.js`), στο `AUTHOR_CODES` (`scripts/author/article-folder.js`) και στο `AUTHOR_LABELS` (`blog-module/taxonomy.js`). Για νέο συντάκτη πρέπει να ενημερωθούν και τα τρία αρχεία, και να προστεθεί avatar στο `images/avatars/`.
+Οι συντάκτες ορίζονται σε ένα σημείο: τη λίστα `AUTHORS` στο `blog-module/taxonomy.js` (όνομα, ελληνικό όνομα, slug, γράμμα φακέλου, πορτρέτο, ειδικότητα, σύντομο βιογραφικό, Instagram, επιλεγμένα άρθρα). Από εκεί διαβάζουν το build, τα άρθρα, το αρχείο, η σελίδα `/authors/` και τα author tools. Για νέο συντάκτη: μια νέα εγγραφή στη λίστα, το πορτρέτο στο `images/avatars/` μαζί με ένα `-96.webp` τετράγωνο 96px, και το χρώμα υπογραφής του στο `styles/editorial.css` (`[data-author-slug="…"]`).
 
 ### 5.2 Αρχεία μέσα στον φάκελο
 
@@ -307,10 +307,9 @@ npm run build:blog:force    # ξαναχτίζει όλα τα άρθρα που
    - `blog-module/blog-data.json`: πλήρη metadata. Είναι τοπικό αρχείο και δεν γίνεται commit.
    - `blog-module/blog-source-cache.json`: κανονικοποιημένα metadata όλων των άρθρων.
    - `blog-module/blog-index-data.json`: compact index `v: 2` για το αρχείο και την αναζήτηση.
-   - `blog-module/blog-index-page-1.json`: η πρώτη σελίδα του αρχείου.
    - `blog-module/home-latest.json`: έως 4 άρθρα για την αρχική σελίδα.
 7. **Εικόνες καρτών.** Τρέχει το `generate-image-variants.js --run --cards-only` και φτιάχνει όσα `-card`/`-mobile` λείπουν.
-8. **Static render.** Γράφει την πρώτη σελίδα του αρχείου στο `blog/index.html` και το κύριο άρθρο στο `index.html`.
+8. **Static render.** Γράφει στο `blog/index.html` το πρωτοσέλιδο του Journal (κύριο θέμα, δύο δευτερεύοντα, «Πρόσφατα», «Για αργή ανάγνωση»· επιλογή στο `blog-module/editorial-selection.json`) και την πρώτη σελίδα του αρχείου ως λίστα, το κύριο άρθρο στο `index.html` και τον κατάλογο συντακτών στο `authors/index.html` (από τη λίστα `AUTHORS` του `taxonomy.js`).
 9. **Sitemap.** Ξαναγράφει το `sitemap.xml`.
 10. **Διασύνδεση.** Βάζει σχετικά άρθρα (`related.js`) και συνδέσμους προηγούμενο/επόμενο (`nav.js`) σε κάθε `article.html`.
 
@@ -809,8 +808,8 @@ npm run quality:rendering:update
 | Μπλοκ `@include` στα shells | `build:html` |
 | `?v=` references, inline sprite, editorial shell στα άρθρα | `build:assets` |
 | `blog-module/blog-entries/*/article.html` και παραλλαγές εικόνων | `build:blog` |
-| `blog-index-data.json`, `blog-index-page-1.json`, `blog-source-cache.json`, `home-latest.json` | `build:blog` |
-| Static first page στο `blog/index.html`, κύριο άρθρο στο `index.html` | `build:blog` |
+| `blog-index-data.json`, `blog-source-cache.json`, `home-latest.json` | `build:blog` |
+| Πρωτοσέλιδο και πρώτη σελίδα αρχείου στο `blog/index.html`, κύριο άρθρο στο `index.html`, κατάλογος στο `authors/index.html` | `build:blog` |
 | `sitemap.xml` | `build:blog` |
 | `assets/youtube-latest.json` | `build:youtube` |
 | `standings/*-cache.json` | `build:standings-data` |

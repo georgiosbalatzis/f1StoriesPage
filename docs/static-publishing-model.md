@@ -51,7 +51,6 @@ These files are generated but intentionally committed:
 - stamped HTML references in maintained shell pages
 - `blog-module/blog-entries/*/article.html`
 - `blog-module/blog-index-data.json`
-- `blog-module/blog-index-page-1.json`
 - `blog-module/blog-source-cache.json`
 - `blog-module/home-latest.json`
 - `assets/youtube-latest.json`

@@ -1253,9 +1253,9 @@
         var authorData = AUTHORS[author] || AUTHORS['F1 Stories Team'];
         byId('pv-byline').textContent = authorData.label;
         byId('pv-author-name').textContent = authorData.label;
-        byId('pv-author-initial').textContent = author.charAt(0).toUpperCase();
         byId('pv-author-img').src = authorData.portrait;
-        byId('pv-author-img').alt = author;
+        if (authorData.slug) byId('pv-author-card').setAttribute('data-author-slug', authorData.slug);
+        else byId('pv-author-card').removeAttribute('data-author-slug');
         byId('pv-author-title').textContent = authorData.specialty;
         byId('pv-author-bio').textContent = authorData.bio;
 

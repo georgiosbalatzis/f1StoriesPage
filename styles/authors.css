@@ -21,7 +21,8 @@
   .author-profile:nth-child(2n) { transform: translateY(24px); }
 }
 .author-profile__portrait-wrap { position: relative; min-width: 0; align-self: start; }
-.author-profile__portrait { display: block; aspect-ratio: 1; overflow: hidden; background: var(--bg-overlay); }
+/* A visible plate: the portraits are cut-out figures, and the number badge marks its corner. */
+.author-profile__portrait { display: block; aspect-ratio: 1; overflow: hidden; background: var(--bg-surface); }
 .author-profile__portrait img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.7); transition: transform .5s, filter .5s; }
 .author-profile:hover img { transform: scale(1.05); filter: saturate(1); }
 .author-profile__number { position: absolute; right: -8px; bottom: -8px; display: grid; place-items: center; width: 34px; height: 34px; color: var(--bg-base); background: var(--author-accent); font: 600 .75rem/1 var(--font-display); }
