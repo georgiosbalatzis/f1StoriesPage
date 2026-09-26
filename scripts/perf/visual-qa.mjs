@@ -524,6 +524,16 @@ async function scanPage(page, routeSlug) {
             }
         }
 
+        // The Journal's lead must show headline, deck and byline on a phone/tablet first screen;
+        // long headlines are sized down for this (journal-lead--long in blog-module/build/index.js).
+        if (currentRouteSlug === 'blog' && window.innerWidth < 1024) {
+            const byline = document.querySelector('.journal-lead .story-meta');
+            const bottom = byline ? Math.round(byline.getBoundingClientRect().bottom + window.scrollY) : Infinity;
+            if (bottom > window.innerHeight) {
+                issues.push({ type: 'journal-lead-fold', selector: '.journal-lead .story-meta', detail: `lead byline ends at ${bottom}px on a ${window.innerHeight}px screen` });
+            }
+        }
+
         if (currentRouteSlug === 'not-found-route') {
             const pageText = `${document.title} ${document.querySelector('h1')?.textContent || ''} ${document.body?.textContent || ''}`;
             if (!/(404|not found|δεν βρέθηκε|δεν βρεθηκε)/i.test(pageText)) {
