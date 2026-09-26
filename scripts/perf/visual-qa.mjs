@@ -524,9 +524,9 @@ async function scanPage(page, routeSlug) {
             }
         }
 
-        // The Journal's lead must show headline, deck and byline on a phone/tablet first screen;
+        // The Journal's lead must show headline, deck and byline on the first screen;
         // long headlines are sized down for this (journal-lead--long in blog-module/build/index.js).
-        if (currentRouteSlug === 'blog' && window.innerWidth < 1024) {
+        if (currentRouteSlug === 'blog') {
             const byline = document.querySelector('.journal-lead .story-meta');
             const bottom = byline ? Math.round(byline.getBoundingClientRect().bottom + window.scrollY) : Infinity;
             if (bottom > window.innerHeight) {

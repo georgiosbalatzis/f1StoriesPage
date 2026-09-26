@@ -178,7 +178,7 @@ Barlow is never used for Greek running text.
 - **Asymmetric editorial grids:**
   - Home hero: `47% / 53%`. The headline crosses the photograph's left edge.
   - Home journal: `1fr 240px` (main plus margin column), with stories set `1.35fr / .85fr`.
-  - Journal: a compact masthead (`1fr` + 27rem note), then a 12-column front page: the lead story in `1/8` (2:1 photo), two stacked secondary stories in `9/-1`; below it the same split for «ΠΡΟΣΦΑΤΑ» (numbered text rows) and «ΓΙΑ ΑΡΓΗ ΑΝΑΓΝΩΣΗ» (text-led long reads); then the archive: tools and a ledger (date · category · headline · byline) under month rules, with a photograph every eighth row.
+  - Journal: a compact masthead (`1fr` + 27rem note), then a 12-column front page: the lead story in `1/8` (5:2 photo, 4:3 on phones; headline, deck and byline fit the first screen), two stacked secondary stories in `9/-1`; below it the same split for «ΠΡΟΣΦΑΤΑ» (numbered text rows) and «ΓΙΑ ΑΡΓΗ ΑΝΑΓΝΩΣΗ» (text-led long reads); then the archive: tools and a ledger (date · category · headline · byline) under month rules, with a photograph every eighth row.
   - Standings masthead: `1fr 270px`. Standings layout: `1fr 255px` side panel.
   - Article: `minmax(0,680px) minmax(190px,240px)` body plus margin rail, max 968px wide. The cover is `1fr / 1.1fr` once its container is ≥1100px.
   - Authors: `.8fr / 1.2fr` intro, and a 2-column directory where every second card drops 24px.

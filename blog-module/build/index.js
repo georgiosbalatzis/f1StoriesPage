@@ -304,8 +304,8 @@ function renderStoryMeta(post, withDate) {
 
 function renderJournalLead(post, deck) {
     const image = storyImage(post);
-    // Long headlines step down a size (and take a wider crop on desktop) so the deck and byline
-    // stay on the first screen; qa:visual checks the live lead. ponytail: character count stands
+    // Long headlines step down a size so the deck and byline stay on the first screen;
+    // qa:visual checks the live lead. ponytail: character count stands
     // in for rendered width (62 fits every current title at 360px); if qa:visual flags the lead, lower it.
     const long = post.title.length > 62 ? ' journal-lead--long' : '';
     return `<article class="journal-lead${image ? '' : ' journal-lead--text'}${long}" data-kind="${categoryKind(primaryCategory(post))}">`
