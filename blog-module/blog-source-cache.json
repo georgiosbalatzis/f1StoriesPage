@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20260926D",
+      "title": "Μέσα από το F1λτρο μου",
+      "author": "Dimitris Keramidiotis",
+      "date": "2026-09-26",
+      "dateISO": "2026-09-26",
+      "displayDate": "26 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260926D/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260926D/1.webp",
+      "excerpt": "Φεύγει ο Σεπτέμβρης με τον αγώνα στο Μπακού του Αζερμπαϊτζάν. 30 μέρες έχει τούτος ο μήνας. Για κάθε μία μέρα, ένας γύρος που πάλευα να κρατήσω τα μάτια μου ανοιχτά. Σαν να κόλλησε ιό μη θεάματος από...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260926D/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "Formula 1",
+        "Azerbaijan GP",
+        "VSC"
+      ],
+      "wordCount": 608,
+      "readingTime": "4 min",
+      "imageWidth": 1536,
+      "imageHeight": 1024,
+      "backgroundImageWidth": 1536,
+      "backgroundImageHeight": 1024
+    },
+    {
       "id": "20260925W",
       "title": "McLaren εναντίον Racing Point (Force India) 2018: Η μάχη που αποκάλυψε δύο εντελώς διαφορετικούς κόσμους",
       "author": "Themis Charvalis",
@@ -9325,5 +9354,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-25T19:33:19.748Z"
+  "lastUpdated": "2026-09-26T14:57:06.841Z"
 }
