@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { XMLParser } from 'fast-xml-parser';
-import { CONTENT_SECURITY_POLICY, REFERRER_POLICY, securityHeadersText } from './security-policy.mjs';
+import { REFERRER_POLICY, contentSecurityPolicyFor, cspProfileForPath, securityHeadersText } from './security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -364,8 +364,8 @@ function validateHtmlSecurityMeta(errors, html, relPath) {
     const cspTags = findMetaTags(html, 'http-equiv', 'Content-Security-Policy');
     if (cspTags.length !== 1) {
         errors.push(`${relPath}: expected exactly one Content-Security-Policy meta tag`);
-    } else if (attrValue(cspTags[0], 'content') !== CONTENT_SECURITY_POLICY) {
-        errors.push(`${relPath}: Content-Security-Policy meta does not match scripts/build/security-policy.mjs`);
+    } else if (attrValue(cspTags[0], 'content') !== contentSecurityPolicyFor(relPath)) {
+        errors.push(`${relPath}: Content-Security-Policy meta does not match the ${cspProfileForPath(relPath)} policy in scripts/build/security-policy.mjs`);
     }
 
     const referrerTags = findMetaTags(html, 'name', 'referrer');

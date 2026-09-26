@@ -63,6 +63,7 @@
     var articleSource = window.F1S_AUTHOR_ARTICLE_SOURCE;
     var taxonomy = window.F1S_TAXONOMY;
     var sessionTokens = window.F1S_AUTHOR_SESSION_TOKEN;
+    var imageTools = window.F1S_AUTHOR_IMAGE_TOOLS;
     var sourceMetadata = {};
 
     if (!authorDom) {
@@ -76,6 +77,9 @@
     }
     if (!sessionTokens) {
         throw new Error('Author session token helper failed to load.');
+    }
+    if (!imageTools) {
+        throw new Error('Author image helper failed to load.');
     }
 
     function showAlert(message, options) {
@@ -794,71 +798,10 @@
         return ext;
     }
 
-    function replaceFileExtension(name, nextExt) {
-        var base = String(name || 'image').replace(/\.[^.]*$/, '') || 'image';
-        return base + '.' + nextExt;
-    }
-
-    function isWebpFile(file) {
-        return !!file && (
-            sanitizeImageExtension(file.name) === 'webp' ||
-            String(file.type || '').toLowerCase() === 'image/webp'
-        );
-    }
-
-    function loadImageFromFile(file, label) {
-        return new Promise(function (resolve, reject) {
-            var url = URL.createObjectURL(file);
-            var img = new Image();
-            img.onload = function () {
-                URL.revokeObjectURL(url);
-                resolve(img);
-            };
-            img.onerror = function () {
-                URL.revokeObjectURL(url);
-                reject(new Error((label || 'Image') + ' could not be decoded for WebP conversion.'));
-            };
-            img.src = url;
-        });
-    }
-
-    function canvasToWebpBlob(canvas, quality, label) {
-        return new Promise(function (resolve, reject) {
-            canvas.toBlob(function (blob) {
-                if (!blob) {
-                    reject(new Error((label || 'Image') + ' could not be converted to WebP.'));
-                    return;
-                }
-                resolve(blob);
-            }, 'image/webp', quality == null ? 0.9 : quality);
-        });
-    }
-
-    async function ensureWebpFile(file, label) {
-        if (!file || isWebpFile(file)) return file;
-
-        var img = await loadImageFromFile(file, label);
-        var width = img.naturalWidth || img.width || 0;
-        var height = img.naturalHeight || img.height || 0;
-        if (!width || !height) {
-            throw new Error((label || 'Image') + ' has invalid dimensions for WebP conversion.');
-        }
-
-        var canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        var ctx = canvas.getContext('2d');
-        if (!ctx) {
-            throw new Error('Canvas is not available for WebP conversion.');
-        }
-        ctx.drawImage(img, 0, 0, width, height);
-
-        var webpBlob = await canvasToWebpBlob(canvas, 0.9, label);
-        return new File(
-            [webpBlob],
-            replaceFileExtension(file.name, 'webp'),
-            { type: 'image/webp', lastModified: file.lastModified || Date.now() }
-        );
+    // Converts to WebP and applies the article image size policy (at most
+    // 3200 px wide and 1 MB) before the ZIP export or PR upload (image-tools.js).
+    function ensureWebpFile(file, label) {
+        return imageTools.prepareArticleImage(file, label);
     }
 
     function buildSourceTxt(tag, category, title, body) {
@@ -968,18 +911,18 @@
         }
     });
 
-    // ── GitHub token (session only) ───────────────────────
+    // ── GitHub token (memory only) ────────────────────────
     var REPO_OWNER = 'georgiosbalatzis';
     var REPO_NAME  = 'f1StoriesPage';
     var TOKEN_KEY  = 'f1stories-gh-token';
-    // Memory + sessionStorage only; legacy persistent tokens are migrated and
-    // removed from localStorage on load (session-token.js).
+    // Never written to Web Storage; a copy left by an older version is moved
+    // into memory once and deleted (session-token.js).
     var tokenStore = sessionTokens.createSessionTokenStore(TOKEN_KEY);
-    tokenStore.migrateLegacyPersistentToken();
+    tokenStore.adoptStoredToken();
 
     function paintTokenState() {
         var has = Boolean(tokenStore.get());
-        tokenStateEl.textContent = has ? 'Token: ενεργό (καρτέλα)' : 'Token GitHub';
+        tokenStateEl.textContent = has ? 'Token: ενεργό (σελίδα)' : 'Token GitHub';
         tokenBtn.classList.toggle('has-token', has);
     }
 
@@ -994,7 +937,7 @@
             '- Repository permissions -> Pull requests: Read and write\n' +
             '- Διάρκεια: όσο πιο σύντομη σε βολεύει\n\n' +
             'Επικόλλησε το token παρακάτω. Άφησέ το κενό για διαγραφή.\n' +
-            'Κρατιέται μόνο για την τρέχουσα καρτέλα (sessionStorage).';
+            'Κρατιέται μόνο στη μνήμη αυτής της σελίδας· χάνεται με ανανέωση ή κλείσιμο.';
         var input = await showPrompt(msg, '', {
             title: 'GitHub Token',
             inputLabel: 'GitHub Personal Access Token',
@@ -1008,12 +951,12 @@
         }
         tokenStore.set(input);
         paintTokenState();
-        return input;
+        return tokenStore.get() || null;
     }
 
     tokenBtn.addEventListener('click', async function () {
         var existing = tokenStore.get();
-        await promptForToken(existing ? 'Υπάρχει ήδη token για αυτή την καρτέλα. Επικόλλησε νέο για αντικατάσταση ή άφησε κενό για διαγραφή.' : '');
+        await promptForToken(existing ? 'Υπάρχει ήδη token σε αυτή τη σελίδα. Επικόλλησε νέο για αντικατάσταση ή άφησε κενό για διαγραφή.' : '');
     });
 
     // ── Publish via branch + pull request ─────────────────

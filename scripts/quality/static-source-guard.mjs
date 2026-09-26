@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { transform as lightningTransform } from 'lightningcss';
-import { CONTENT_SECURITY_POLICY } from '../build/security-policy.mjs';
+import { CSP_PROFILES } from '../build/security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -162,24 +162,32 @@ const DUPLICATE_ASSET_EXTENSIONS = new Set([
     '.woff2'
 ]);
 
+// Pages and scripts that handle the author GitHub token.
+const AUTHOR_TOOL_SOURCES = /^(?:generate|housekeeping)\.html$|^scripts\/author\/[^/]+\.js$/;
+
 const BANNED_TEXT_PATTERNS = [
     {
-        files: /^generate\.html$|^housekeeping\.html$/,
-        pattern: /writeStorage\(\s*localStorage\s*,\s*TOKEN_KEY/i,
-        reason: 'author tools must not persist GitHub tokens to localStorage'
+        files: AUTHOR_TOOL_SOURCES,
+        pattern: /writeStorage\(\s*(?:local|session)Storage\s*,\s*(?:TOKEN_KEY|tokenKey)\b/i,
+        reason: 'author tools keep GitHub tokens in memory only; never write them to Web Storage'
     },
     {
-        files: /^generate\.html$|^housekeeping\.html$/,
-        pattern: /localStorage\.setItem\(\s*TOKEN_KEY/i,
-        reason: 'author tools must not persist GitHub tokens to localStorage'
+        files: AUTHOR_TOOL_SOURCES,
+        pattern: /(?:local|session)Storage\.setItem\(\s*(?:TOKEN_KEY|tokenKey)\b/i,
+        reason: 'author tools keep GitHub tokens in memory only; never write them to Web Storage'
     },
     {
-        files: /^generate\.html$|^housekeeping\.html$/,
+        files: /^scripts\/author\/session-token\.js$/,
+        pattern: /\.setItem\s*\(|document\.cookie/,
+        reason: 'the author token store must stay memory-only (no Web Storage or cookie writes)'
+    },
+    {
+        files: AUTHOR_TOOL_SOURCES,
         pattern: /\/git\/refs\/heads\/main/i,
         reason: 'author tools must use branch + PR publishing instead of patching main'
     },
     {
-        files: /^generate\.html$|^housekeeping\.html$/,
+        files: AUTHOR_TOOL_SOURCES,
         pattern: /cdn\.jsdelivr\.net\/npm\/jszip/i,
         reason: 'author tools must use local JSZip while handling GitHub tokens'
     },
@@ -439,7 +447,14 @@ function parseCspDirectives(policy) {
 }
 
 function checkContentSecurityPolicy() {
-    const directives = parseCspDirectives(CONTENT_SECURITY_POLICY);
+    for (const [profile, policy] of Object.entries(CSP_PROFILES)) {
+        checkCspProfile(profile, policy);
+    }
+}
+
+function checkCspProfile(profile, policy) {
+    const where = `scripts/build/security-policy.mjs (${profile})`;
+    const directives = parseCspDirectives(policy);
     const sourceTokens = new Set();
 
     for (const tokens of directives.values()) {
@@ -450,29 +465,29 @@ function checkContentSecurityPolicy() {
 
     for (const source of sourceTokens) {
         if (!APPROVED_CSP_EXTERNAL_SOURCES.has(source)) {
-            errors.push(`scripts/build/security-policy.mjs: unreviewed CSP external source "${source}"`);
+            errors.push(`${where}: unreviewed CSP external source "${source}"`);
         }
     }
 
     for (const banned of BANNED_CSP_SOURCES) {
         if (sourceTokens.has(banned)) {
-            errors.push(`scripts/build/security-policy.mjs: banned/stale CSP source "${banned}" is still allowed`);
+            errors.push(`${where}: banned/stale CSP source "${banned}" is still allowed`);
         }
     }
 
     const scriptAttr = directives.get('script-src-attr') || [];
     if (scriptAttr.join(' ') !== "'none'") {
-        errors.push('scripts/build/security-policy.mjs: script-src-attr must stay set to none');
+        errors.push(`${where}: script-src-attr must stay set to none`);
     }
 
     const scriptSrc = directives.get('script-src') || [];
     if (scriptSrc.includes('https://www.google-analytics.com')) {
-        errors.push('scripts/build/security-policy.mjs: google-analytics.com should remain connect-only, not script-src');
+        errors.push(`${where}: google-analytics.com should remain connect-only, not script-src`);
     }
 
     const fontSrc = directives.get('font-src') || [];
     if (fontSrc.some(token => /^https?:/i.test(token))) {
-        errors.push('scripts/build/security-policy.mjs: font-src should remain local/self-hosted only');
+        errors.push(`${where}: font-src should remain local/self-hosted only`);
     }
 }
 

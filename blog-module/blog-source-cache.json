@@ -168,8 +168,8 @@
       "readingTime": "3 min",
       "imageWidth": 588,
       "imageHeight": 330,
-      "backgroundImageWidth": 3392,
-      "backgroundImageHeight": 1908
+      "backgroundImageWidth": 3200,
+      "backgroundImageHeight": 1800
     },
     {
       "id": "20260923G",
@@ -343,8 +343,8 @@
       ],
       "wordCount": 1218,
       "readingTime": "7 min",
-      "imageWidth": 4690,
-      "imageHeight": 2639,
+      "imageWidth": 3200,
+      "imageHeight": 1801,
       "backgroundImageWidth": 3392,
       "backgroundImageHeight": 1908
     },
@@ -9382,5 +9382,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-26T16:08:30.311Z"
+  "lastUpdated": "2026-09-26T20:39:40.962Z"
 }
