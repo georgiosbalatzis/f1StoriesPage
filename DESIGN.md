@@ -299,7 +299,7 @@ A rotated (`7deg`) signal block with a 1px ink border, set in Barlow 700 caps wi
 ### Bands — A
 
 - **Paddock strip** (home): full-bleed signal band, "RACE. TALK. REPEAT." in Barlow, a `✳` topic list, and an arrow link.
-- **Timing band** (standings): full-bleed signal band with a live dot, season and round, and "Μετά τον γύρο N".
+- **Timing band** (standings): full-bleed teal signal band under the dark «THE GRID.» nameplate, with a racing-red live dot (race status), season and round, and "Μετά τον γύρο N".
 
 ### Tables and data surfaces — A
 
@@ -308,8 +308,10 @@ The code describes these as "a broad ledger with margin notes, not a dashboard g
 - Rows have no background. Positions and points are Plex 600 at 1.75rem with tabular numerals. P1's position is accent-colored.
 - A 2px team-color rule sits on each row and grows to 4px on hover or expand.
 - Headshots sit on a portrait-shaped plate (`22px 22px 1px 1px`) with a 2px team-color base line.
-- Sub-report tabs are text with a 2px signal underline.
-- Charts: flat bars with `0 2px 2px 0` ends. Report titles and section titles alternate between Plex 600 and editorial 400.
+- Sub-report tabs are text with a 2px signal underline. The report index above them is set in typed capitals (.75rem/600), like the masthead nav, with a 3px teal underline on the active report.
+- Charts: flat bars with `0 2px 2px 0` ends. Report titles are Plex 600 display (up to 4rem) ending in the teal full stop, under a kicker led by a 48px teal rule; chart and section titles are Plex 600.
+- The Data Hub opens on a dark plate («THE GRID.» nameplate), and the race bulletin beside the drivers/constructors ledger («ΑΓΩΝΙΣΤΙΚΟ ΔΕΛΤΙΟ») is a dark plate panel; it recolours by redefining the `--st-*` tokens inside it.
+- Empty and failed report states are margin notes (a 2px teal rule, a plain first line, the reason, one action), the same as `.standings-error`; no centred icon blocks.
 
 ### Forms — A
 

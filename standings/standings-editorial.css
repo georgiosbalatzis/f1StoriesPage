@@ -28,38 +28,43 @@ body.standings-page {
 .standings-page .standings-wrapper { padding: 76px 0 72px; background: none; }
 .standings-page .standings-wrapper > .container,
 .standings-page .standings-header .container { max-width: 1476px; width: 100%; }
-.standings-page .standings-header { padding: 0; color: var(--text-primary); background: var(--bg-surface); }
+/* The masthead is the Data Hub's nameplate: the shared dark plate (--plate-*), as the
+ * Journal, the authors intro and the article cover open. */
+.standings-page .standings-header { padding: 0; color: var(--plate-text); background: var(--plate-bg); border-bottom: 1px solid var(--plate-edge); }
 .standings-page .standings-masthead { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 0 7%; padding-top: 24px; padding-bottom: 32px; }
-.standings-page .standings-edition { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 20px; padding-top: 11px; margin-bottom: 24px; border-top: 1px solid var(--border); font-size: .75rem; font-weight: 500; letter-spacing: .11em; }
-.standings-page .standings-title { margin: 0; color: var(--text-primary); font-weight: 400; letter-spacing: -.025em; min-width: 0; }
+.standings-page .standings-edition { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 20px; padding-bottom: 11px; margin-bottom: 28px; border-bottom: 1px solid var(--plate-rule); color: var(--plate-muted); font-size: .75rem; font-weight: 500; letter-spacing: .12em; }
+.standings-page .standings-title { margin: 0; color: var(--plate-text); font-weight: 400; letter-spacing: -.025em; min-width: 0; }
 .standings-page .standings-title-display { display: block; margin-left: -4px; font: 700 clamp(5.5rem, 10vw, 9rem)/.9 var(--font-brand); white-space: nowrap; letter-spacing: -.025em; }
-.standings-page .standings-title-display > span { color: var(--signal); }
+.standings-page .standings-title-display > span { color: var(--plate-mark); }
 .standings-page .standings-title-greek { display: block; margin-top: 16px; font: 500 clamp(1.25rem, 2vw, 1.8rem)/1.3 var(--font-editorial); }
 /* The arrow sits in its own column beside the note, so it can never cross the text. */
-.standings-page .standings-masthead-aside { align-self: end; position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; padding: 42px 0 0 24px; border-left: 1px solid var(--border); }
+.standings-page .standings-masthead-aside { align-self: end; position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; padding: 42px 0 0 24px; border-left: 1px solid var(--plate-rule); }
 .standings-page .standings-masthead-aside > :not(.standings-masthead-mark) { grid-column: 1; }
-.standings-page .standings-masthead-mark { position: static; grid-column: 2; grid-row: 1; align-self: start; font: 400 4.5rem/.8 var(--font-body); color: var(--accent-readable); transform: rotate(-8deg); }
-.standings-page .standings-masthead-note { margin: 0 0 12px; font: 500 1.4rem/1.4 var(--font-body); color: var(--text-primary); }
+.standings-page .standings-masthead-mark { position: static; grid-column: 2; grid-row: 1; align-self: start; font: 400 4.5rem/.8 var(--font-body); color: var(--plate-mark); transform: rotate(-8deg); }
+.standings-page .standings-masthead-note { margin: 0 0 12px; font: 500 1.4rem/1.4 var(--font-body); color: var(--plate-text); }
 /* Measures below are in em (Plex "0" = .6em): `ch` reads .5em while the Latin subset loads. */
-.standings-page .standings-masthead-description { max-width: 19.2em; margin: 0; font-size: .75rem; line-height: 1.75; color: var(--text-secondary); }
+.standings-page .standings-masthead-description { max-width: 19.2em; margin: 0; font-size: .75rem; line-height: 1.75; color: var(--plate-muted); }
+.standings-page .standings-header :focus-visible { outline: 2px solid var(--plate-mark); outline-offset: 3px; }
 .standings-page .standings-timing-band { background: var(--signal); color: var(--signal-ink); }
 .standings-page .standings-timing-band .container { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding-block: 11px; }
 .standings-page .standings-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; color: var(--signal-ink); margin: 0; font-size: .75rem; font-weight: 500; line-height: 1.45; }
-.standings-page .live-dot { background: var(--signal-ink); width: 6px; height: 6px; margin-right: 5px; animation: none; }
+/* Live data is race status: the one racing-red mark, as in the masthead countdown. */
+.standings-page .live-dot { background: var(--race); width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; animation: none; box-shadow: 0 0 0 2px var(--signal-ink); }
 .standings-page .live-dot[hidden] { display: none; }
 .standings-page .round-badge { background: transparent; color: var(--signal-ink); border-left: 1px solid color-mix(in srgb, var(--signal-ink) 40%, transparent); border-radius: 0; padding: 2px 0 2px 12px; margin-left: 10px; min-width: 0; font-size: .75rem; font-weight: 500; }
 .standings-page .standings-timing-caption { font: 700 1.2rem/1 var(--font-brand); white-space: nowrap; letter-spacing: .02em; }
 
 /* A compact index above the timing sheet, with a sliding underline. */
 .standings-page .standings-tabs { top: 76px; z-index: 1020; margin: 0 0 29px; gap: 0; padding: 10px 0 0; min-height: 68px; background: var(--bg-base); border: 0; border-bottom: 1px solid var(--st-border); border-radius: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
-.standings-page .standings-tab { flex: 1 0 auto; min-width: 0; min-height: 57px; padding: 14px 11px; font-family: var(--font-body); font-size: .875rem; font-weight: 500; border: 0; border-radius: 0; color: var(--text-secondary); background: transparent; box-shadow: none; transform: none; }
+/* Typed capitals like the masthead nav (lang="el" drops the accents in uppercase). */
+.standings-page .standings-tab { flex: 1 0 auto; min-width: 0; min-height: 57px; padding: 14px 10px; font-family: var(--font-body); font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; border: 0; border-radius: 0; color: var(--text-secondary); background: transparent; box-shadow: none; transform: none; }
 .standings-page .standings-tab .icon { display: none; }
 .standings-page .standings-tab::after { content: ''; position: absolute; inset: auto 10px -1px; height: 3px; border: 0; border-radius: 0; background: var(--signal); transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease-editorial); }
 .standings-page .standings-tab:hover,
 .standings-page .standings-tab.active { color: var(--text-primary); background: transparent; box-shadow: none; transform: none; }
 .standings-page .standings-tab:hover::after,
 .standings-page .standings-tab.active::after { transform: scaleX(1); }
-.standings-page .standings-tab.active { font-weight: 600; }
+.standings-page .standings-tab.active { font-weight: 600; color: var(--text-primary); }
 .standings-page .standings-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; box-shadow: none; }
 .standings-page .standings-report-select { border-radius: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .standings-page .standings-report-native { border-radius: 2px; font-family: var(--font-body); font-weight: 500; }
@@ -83,13 +88,32 @@ body.standings-page {
 .standings-page .standings-context-row { grid-template-columns: 1.3fr 1.1fr 1fr .8fr; gap: 0; margin-bottom: 34px; }
 .standings-page .standings-context-card { padding: 3px 22px 4px; border: 0; border-left: 1px solid var(--st-border); border-radius: 0; background: transparent; }
 .standings-page .standings-context-card:first-child { padding-left: 0; border-left: 0; }
-.standings-page .standings-context-label { font-size: .75rem; letter-spacing: .12em; font-weight: 500; }
-.standings-page .standings-context-value { font: 500 1.07rem/1.25 var(--font-body); margin-top: 11px; }
-.standings-page .standings-context-card:first-child .standings-context-value { font: 600 1.25rem/1.3 var(--font-editorial); }
+.standings-page .standings-context-label { font-size: .75rem; letter-spacing: .12em; font-weight: 600; }
+.standings-page .standings-context-value { font: 600 1.25rem/1.2 var(--font-body); letter-spacing: -.015em; margin-top: 11px; }
+.standings-page .standings-context-card:first-child .standings-context-value { font: 600 clamp(1.5rem, 1.2rem + .8vw, 1.875rem)/1.1 var(--font-body); letter-spacing: -.025em; }
 .standings-page .standings-context-note { font-size: .75rem; margin-top: 6px; }
 .standings-page .standings-layout { grid-template-columns: minmax(0, 1fr) 255px; gap: 45px; }
-.standings-page .standings-side-panel { top: 170px; margin-top: 46px; padding: 0 0 0 24px; gap: 23px; }
-.standings-page .standings-side-kicker { font: 600 1.45rem/1.2 var(--font-body); color: var(--st-text); letter-spacing: -.02em; }
+/* The race bulletin beside the ledger sits on a dark plate: the page's counterpoint.
+ * Its rules read the --st-* tokens, so redefining them recolours it for the dark ground. */
+.standings-page .standings-side-panel {
+    --st-text: var(--plate-text);
+    --st-text-secondary: var(--plate-muted);
+    --st-text-muted: var(--plate-muted);
+    --st-border: var(--plate-rule);
+    --st-accent-readable: var(--plate-mark);
+    --text-primary: var(--plate-text);
+    --text-secondary: var(--plate-muted);
+    --border: var(--plate-rule);
+    top: 170px;
+    margin-top: 46px;
+    padding: 26px 24px 8px;
+    gap: 23px;
+    color: var(--plate-text);
+    background: var(--plate-bg);
+    border: 1px solid var(--plate-edge);
+    border-radius: 0 0 var(--cut-md) 0;
+}
+.standings-page .standings-side-kicker { padding-top: 12px; border-top: 2px solid var(--plate-mark); font: 600 1.45rem/1.2 var(--font-body); color: var(--st-text); letter-spacing: -.02em; }
 .standings-page .standings-side-title { font: 400 .875rem/1.5 var(--font-editorial); color: var(--st-text-muted); margin-top: 9px; }
 .standings-page .standings-side-card { padding-bottom: 23px; }
 .standings-page .standings-side-label { font-size: .75rem; font-weight: 500; }
@@ -124,7 +148,7 @@ body.standings-page {
 .standings-page .st-detail-label { font-weight: 500; font-size: .75rem; }
 .standings-page .st-detail-value { margin-top: 7px; font-weight: 500; }
 .standings-page .chart-section { margin-top: 46px; padding: 26px 0 0; border: 0; border-top: 1px solid var(--st-border); border-radius: 0; background: none; box-shadow: none; }
-.standings-page .chart-title { font: 400 1.45rem/1.25 var(--font-editorial); letter-spacing: -.02em; }
+.standings-page .chart-title { font: 600 clamp(1.5rem, 1.2rem + .8vw, 2rem)/1.15 var(--font-body); letter-spacing: -.028em; }
 .standings-page .chart-title .icon { display: none; }
 .standings-page .chart-head { margin-bottom: 25px; }
 .standings-page .chart-note { font-size: .75rem; margin-top: 8px; max-width: 28.8em; line-height: 1.6; }
@@ -142,14 +166,16 @@ body.standings-page {
 /* All ten reports share the same typography and controls. Specificity is higher
  * than each report's lazy CSS, including its separate light-theme selectors. */
 .standings-page .standings-panel :is(.quali-gaps-intro, .lap1-gains-intro, .tyre-pace-intro, .dirty-air-intro, .track-dom-intro, .pit-stops-intro, .debrief-intro, .destructors-intro) { padding: 8px 0 24px; border: 0; border-radius: 0; background: none; box-shadow: none; }
-.standings-page .standings-panel :is(.quali-title, .lap1-title, .tyre-pace-title, .dirty-air-title, .track-dom-title, .pit-stops-title, .debrief-title, .destructors-title) { max-width: 19.2em; margin: 15px 0 17px; font: 600 clamp(1.75rem, 3.5vw, 3rem)/1.15 var(--font-display); letter-spacing: -.02em; color: var(--st-text); }
+.standings-page .standings-panel :is(.quali-title, .lap1-title, .tyre-pace-title, .dirty-air-title, .track-dom-title, .pit-stops-title, .debrief-title, .destructors-title) { max-width: 16em; margin: 18px 0 18px; font: 600 clamp(2.25rem, 1.2rem + 3vw, 4rem)/1.02 var(--font-display); letter-spacing: -.038em; color: var(--st-text); text-wrap: balance; }
+.standings-page .standings-panel :is(.quali-title, .lap1-title, .tyre-pace-title, .dirty-air-title, .track-dom-title, .pit-stops-title, .debrief-title, .destructors-title)::after { content: '.'; display: inline; color: var(--signal); }
 .standings-page .standings-panel :is(.quali-sub, .lap1-sub, .tyre-pace-sub, .dirty-air-sub, .track-dom-sub, .pit-stops-sub, .debrief-sub, .destructors-sub) { max-width: 45em; font-size: .875rem; line-height: 1.8; color: var(--st-text-secondary); }
-.standings-page .standings-panel :is(.quali-kicker, .lap1-kicker, .tyre-pace-kicker, .dirty-air-kicker, .track-dom-kicker, .pit-stops-kicker, .debrief-kicker, .destructors-kicker) { color: var(--st-text-secondary); font-size: .75rem; font-weight: 500; letter-spacing: .12em; }
-.standings-page .standings-panel :is(.quali-kicker, .lap1-kicker, .tyre-pace-kicker, .dirty-air-kicker, .track-dom-kicker, .pit-stops-kicker, .debrief-kicker, .destructors-kicker)::before { width: 6px; height: 6px; border-radius: 0; background: var(--signal); box-shadow: none; }
+.standings-page .standings-panel :is(.quali-kicker, .lap1-kicker, .tyre-pace-kicker, .dirty-air-kicker, .track-dom-kicker, .pit-stops-kicker, .debrief-kicker, .destructors-kicker) { gap: 14px; color: var(--st-text-secondary); font-size: .75rem; font-weight: 600; letter-spacing: .13em; }
+/* The kicker leads with a short teal rule, as on the legal pages and the 404. */
+.standings-page .standings-panel :is(.quali-kicker, .lap1-kicker, .tyre-pace-kicker, .dirty-air-kicker, .track-dom-kicker, .pit-stops-kicker, .debrief-kicker, .destructors-kicker)::before { width: 48px; height: 2px; border-radius: 0; background: var(--signal); box-shadow: none; }
 .standings-page .standings-panel :is(.panel-tools, .section-tools) { padding: 15px 0; margin-bottom: 18px; border: 0; border-top: 1px solid var(--st-border); border-bottom: 1px solid var(--st-border); border-radius: 0; background: transparent; }
 .standings-page .standings-panel :is(.panel-tools-title, .section-tools-title) { font-size: .875rem; font-weight: 500; }
 .standings-page .standings-panel :is(.panel-tools-note, .section-tools-note) { font-size: .75rem; line-height: 1.6; }
-.standings-page .standings-panel :is(.quali-race-summary, .lap1-race-summary, .tyre-pace-summary, .dirty-air-summary, .pit-stops-summary, .debrief-summary, .destructors-summary) { background: var(--st-surface); border: 0; border-left: 2px solid var(--signal); border-radius: 0; box-shadow: none; }
+.standings-page .standings-panel :is(.quali-race-summary, .lap1-race-summary, .tyre-pace-summary, .dirty-air-summary, .pit-stops-summary, .debrief-summary, .destructors-summary) { background: var(--st-surface); border: 0; border-left: 3px solid var(--signal); border-radius: 0 0 var(--cut-sm) 0; box-shadow: none; }
 .standings-page .standings-panel :is(.quali-view-tabs, .lap1-view-tabs, .dirty-air-view-tabs, .pit-stops-view-tabs, .debrief-view-tabs, .debrief-ideal-tabs, .destructors-view-tabs) { background: transparent; border: 0; border-bottom: 1px solid var(--st-border); border-radius: 0; padding: 0; gap: 0; }
 .standings-page .standings-panel :is(.quali-view-tab, .lap1-view-tab, .dirty-air-view-tab, .pit-stops-view-tab, .debrief-view-tab, .debrief-ideal-tab, .destructors-view-tab) { border-radius: 0; background: none; color: var(--st-text-secondary); box-shadow: none; font-size: .75rem; font-weight: 500; min-height: 44px; border-bottom: 2px solid transparent; }
 .standings-page .standings-panel :is(.quali-view-tab, .lap1-view-tab, .dirty-air-view-tab, .pit-stops-view-tab, .debrief-view-tab, .debrief-ideal-tab, .destructors-view-tab):hover { background: var(--st-surface); color: var(--st-text); }
@@ -158,7 +184,7 @@ body.standings-page {
 .standings-page .standings-panel :is(.track-dom-team-card, .track-dom-map-card, .track-dom-track-shell, .destructors-card, .debrief-figure) { background: var(--st-surface); border-color: var(--st-border); border-radius: 0; box-shadow: none; }
 .standings-page .standings-panel .track-dom-track-shell { border-radius: 0 0 var(--cut-md) 0; }
 .standings-page .standings-panel .tyre-pace-plot { background: color-mix(in srgb, var(--st-text) 3%, transparent); border-radius: 0; }
-.standings-page .standings-panel :is(.debrief-figure-title, .destructors-card-title, .track-dom-map-title, .pit-stops-section-title, .dirty-air-section-title) { font: 400 1.45rem/1.2 var(--font-editorial); letter-spacing: -.02em; }
+.standings-page .standings-panel :is(.debrief-figure-title, .destructors-card-title, .track-dom-map-title, .pit-stops-section-title, .dirty-air-section-title) { font: 600 clamp(1.4rem, 1.15rem + .7vw, 1.875rem)/1.15 var(--font-body); letter-spacing: -.025em; }
 .standings-page .standings-panel :is(.quali-race-gap-badge, .lap1-gain-pill) { background: var(--st-surface); border: 1px solid var(--st-border); border-radius: 2px; box-shadow: none; }
 .standings-page .standings-panel :is(.lap1-gain-card, .quali-race-driver-card, .pit-stops-card, .tyre-pace-card, .dirty-air-card) { border-radius: 0; box-shadow: none; }
 .standings-page .standings-panel :is(.lap1-race-row, .quali-gaps-row, .pit-stops-row) { transition: background .25s; }
@@ -205,7 +231,31 @@ body.standings-page { --track-dom-second-dark-rgb: 122, 116, 108; --track-dom-se
 .standings-page .standings-panel .track-dom-segment.is-second { stroke-dasharray: 14 8; stroke-linecap: butt; }
 .standings-page .standings-panel .track-dom-advantage-team.is-second::before { background: transparent; border: 2px dashed rgb(var(--team-color)); box-shadow: none; }
 .standings-page .standings-panel .track-dom-team-time::before { content: ''; display: inline-block; width: .3em; height: .3em; margin-right: .3em; vertical-align: middle; background: rgb(var(--team-color)); }
-.standings-page .standings-panel .debrief-table { border: 0; border-top: 2px solid var(--st-text); border-radius: 0; }
+.standings-page .standings-panel .debrief-table { border: 0; border-top: 2px solid var(--st-text); border-radius: 0; background: transparent; }
+/* The debrief sheet is a ledger on the page, not a tinted box; hover is a neutral wash. */
+.standings-page .standings-panel .debrief-table tbody tr:hover { background: color-mix(in srgb, var(--st-text) 4%, transparent); }
+.standings-page .standings-panel .debrief-table th { font-weight: 600; letter-spacing: .1em; }
+.standings-page .standings-panel .debrief-table :is(th, td):first-child { font-weight: 600; font-variant-numeric: tabular-nums; }
+/* Every report's empty or failed state reads as the page's margin note (as .standings-error):
+ * a teal rule, a plain first line, the reason, one action. No centred icon block. */
+.standings-page .standings-panel :is(.quali-empty-card, .lap1-empty-card, .tyre-pace-empty-card, .dirty-air-empty-card, .track-dom-empty-card, .pit-stops-empty-card, .debrief-empty, .destructors-empty) {
+    margin-block: 24px;
+    padding: 4px 0 4px 20px;
+    border: 0;
+    border-left: 2px solid var(--signal);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--st-text-secondary);
+    font-size: .875rem;
+    line-height: 1.6;
+    text-align: left;
+}
+.standings-page .standings-panel :is(.quali-empty-card, .lap1-empty-card, .tyre-pace-empty-card, .dirty-air-empty-card, .track-dom-empty-card, .pit-stops-empty-card, .debrief-empty, .destructors-empty) :is(.icon, i) { display: none; }
+.standings-page .standings-panel :is(.quali-empty-card, .lap1-empty-card, .tyre-pace-empty-card, .dirty-air-empty-card, .track-dom-empty-card, .pit-stops-empty-card, .debrief-empty, .destructors-empty) > p:first-of-type { margin: 0 0 6px; color: var(--st-text); font-size: 1.125rem; font-weight: 600; letter-spacing: -.01em; }
+.standings-page .standings-panel :is(.quali-empty-card, .lap1-empty-card, .tyre-pace-empty-card, .dirty-air-empty-card, .track-dom-empty-card, .pit-stops-empty-card, .debrief-empty, .destructors-empty) button { margin-top: 12px; min-height: 44px; }
+/* Report headings sit on the left edge like every other heading on the site. */
+.standings-page .standings-panel .destructors-card-head { justify-content: flex-start; text-align: left; }
 .standings-page .standings-panel :is(.tyre-pace-summary, .dirty-air-summary, .destructors-summary, .dirty-air-view-tabs, .dirty-air-view-tab, .destructors-view-tabs, .destructors-view-tab, .debrief-view-tabs, .debrief-view-tab, .debrief-ideal-tabs, .debrief-ideal-tab, .track-dom-tooltip, .debrief-chart-tooltip, .compound-pill, .strategy-pill, .track-dom-team-logo) { border-radius: var(--radius-control); }
 .standings-page .standings-panel :is(.dirty-air-summary-bar, .dirty-air-timeline-bar, .track-dom-advantage-bar, .debrief-team-bar) { border-radius: 0; }
 .standings-page .standings-panel :is(.debrief-delta-leader, .debrief-delta-fast, .debrief-deg-good, .track-dom-team-metric-value.is-better) { color: var(--st-text); font-weight: 600; text-shadow: none; }
@@ -278,7 +328,7 @@ body.standings-page { --track-dom-second-dark-rgb: 122, 116, 108; --track-dom-se
     /* The Greek labels are longer than the old English ones: stack the pair full-width so neither wraps. */
     .standings-page .share-tools { display: grid; grid-template-columns: 1fr; gap: 8px; width: 100%; }
     .standings-page .share-tools .share-btn { justify-content: center; white-space: nowrap; }
-    .standings-page .standings-masthead { grid-template-columns: 1fr; gap: 0; padding-top: 16px; padding-bottom: 20px; }
+    .standings-page .standings-masthead { grid-template-columns: 1fr; gap: 0; padding-top: 18px; padding-bottom: 26px; }
     .standings-page .standings-edition { font-size: .75rem; letter-spacing: .07em; gap: 10px; margin-bottom: 16px; }
     .standings-page .standings-title-display { font-size: clamp(3.5rem, 16vw, 4.5rem); margin-left: -2px; }
     .standings-page .standings-title-greek { margin-top: 10px; max-width: none; font-size: 1.125rem; }
