@@ -1,6 +1,34 @@
 {
   "posts": [
     {
+      "id": "20260926G",
+      "title": "Η Haas ήταν εκεί όταν άνοιξε ο δρόμος",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-26",
+      "dateISO": "2026-09-26",
+      "displayDate": "26 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260926G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260926G/1.webp",
+      "excerpt": "Σε έναν αγώνα όπου τόσοι άλλοι έμειναν στη διαδρομή, η Haas ήταν εκεί όταν άνοιξε ο δρόμος. Πριν από το Baku, η εικόνα της Haas δεν άφηνε πολλά περιθώρια αισιοδοξίας. Η σεζόν είχε ξεκινήσει καλά, με...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260926G/article.html",
+      "category": "Teams",
+      "categories": [
+        "Teams"
+      ],
+      "tags": [
+        "Haas",
+        "2026"
+      ],
+      "wordCount": 507,
+      "readingTime": "3 min",
+      "imageWidth": 1300,
+      "imageHeight": 867,
+      "backgroundImageWidth": 1300,
+      "backgroundImageHeight": 867
+    },
+    {
       "id": "20260926D",
       "title": "Μέσα από το F1λτρο μου",
       "author": "Dimitris Keramidiotis",
@@ -9354,5 +9382,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-26T14:57:06.841Z"
+  "lastUpdated": "2026-09-26T16:08:30.311Z"
 }
