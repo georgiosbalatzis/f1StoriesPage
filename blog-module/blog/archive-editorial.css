@@ -4,17 +4,7 @@
  * author inks (--kind, --kind-text, --author-accent) come from styles/editorial.css. */
 
 /* Two dark grounds give the long page its rhythm: the masthead nameplate and the
- * slow-reading panel. Light mode sets them in warm black on paper; dark mode drops
- * them below the charcoal page, edged with a hairline (as the colophon does). */
-.archive-page {
-    --plate-bg: #1b1a19;
-    --plate-text: #eee8db;
-    --plate-muted: #b6bbac;
-    --plate-rule: #3a3935;
-    --plate-mark: #6ec6bb;
-    --plate-edge: transparent;
-}
-:root:not([data-theme="light"]) .archive-page { --plate-bg: #100f0e; --plate-rule: #34322e; --plate-edge: #34322e; }
+ * slow-reading panel (the shared --plate-* tokens in styles/editorial.css). */
 
 .archive-page .journal {
     padding: 76px 0 82px;
@@ -225,7 +215,7 @@
     border-radius: 0 0 var(--cut-md) 0;
 }
 .journal .journal-deep .journal-label { border-top-color: var(--plate-mark); color: var(--plate-text); }
-.journal-deep .story-cat { color: var(--plate-mark); }
+.journal-deep .story-cat { color: var(--kind-on-dark); }
 .journal-deep :is(.story-cats, .story-meta) { color: var(--plate-muted); }
 .journal-deep__item + .journal-deep__item { border-top: 1px solid var(--plate-rule); }
 .journal-deep__link { display: block; padding: 18px 0 20px; }

@@ -126,8 +126,19 @@ body.article-page {
  * taxonomy.js names each public category's kind; markup carries it as data-kind
  * (archive) or data-article-kind (article). --category-* marks rules and dots,
  * --category-*-text is readable at label size (all ≥4.5:1 on paper and charcoal).
- * Light mode prints both in the same ink. */
+ * Light mode prints both in the same ink. --kind-on-dark is the label ink for a
+ * dark ground in either theme (the article cover, the Journal's dark panels). */
 body.editorial-page {
+    --category-news-dark: #ff9a89;
+    --category-analysis-dark: #f39370;
+    --category-technical-dark: #6ec6bb;
+    --category-history-dark: #dcb468;
+    --category-opinion-dark: #d9a28d;
+    --category-betting-dark: #7ec99a;
+    --category-drivers-dark: #a0c0e3;
+    --category-teams-dark: #c2afdc;
+    --category-season-dark: #d4d06f;
+
     --category-news: #e2604a;       --category-news-text: #ff9a89;
     --category-analysis: #cf6a45;   --category-analysis-text: #f39370;
     --category-technical: #3c9990;  --category-technical-text: #6ec6bb;
@@ -149,16 +160,16 @@ body.editorial-page {
     --category-teams: #654a7d;      --category-teams-text: #654a7d;
     --category-season: #5f5d17;     --category-season-text: #5f5d17;
 }
-.editorial-page :is([data-kind], [data-article-kind]) { --kind: var(--signal); --kind-text: var(--accent-readable); }
-.editorial-page :is([data-kind="news"], [data-article-kind="news"]) { --kind: var(--category-news); --kind-text: var(--category-news-text); }
-.editorial-page :is([data-kind="analysis"], [data-article-kind="analysis"]) { --kind: var(--category-analysis); --kind-text: var(--category-analysis-text); }
-.editorial-page :is([data-kind="technical"], [data-article-kind="technical"]) { --kind: var(--category-technical); --kind-text: var(--category-technical-text); }
-.editorial-page :is([data-kind="history"], [data-article-kind="history"]) { --kind: var(--category-history); --kind-text: var(--category-history-text); }
-.editorial-page :is([data-kind="opinion"], [data-article-kind="opinion"]) { --kind: var(--category-opinion); --kind-text: var(--category-opinion-text); }
-.editorial-page :is([data-kind="betting"], [data-article-kind="betting"]) { --kind: var(--category-betting); --kind-text: var(--category-betting-text); }
-.editorial-page :is([data-kind="drivers"], [data-article-kind="drivers"]) { --kind: var(--category-drivers); --kind-text: var(--category-drivers-text); }
-.editorial-page :is([data-kind="teams"], [data-article-kind="teams"]) { --kind: var(--category-teams); --kind-text: var(--category-teams-text); }
-.editorial-page :is([data-kind="season"], [data-article-kind="season"]) { --kind: var(--category-season); --kind-text: var(--category-season-text); }
+.editorial-page :is([data-kind], [data-article-kind]) { --kind: var(--signal); --kind-text: var(--accent-readable); --kind-on-dark: #6ec6bb; }
+.editorial-page :is([data-kind="news"], [data-article-kind="news"]) { --kind: var(--category-news); --kind-text: var(--category-news-text); --kind-on-dark: var(--category-news-dark); }
+.editorial-page :is([data-kind="analysis"], [data-article-kind="analysis"]) { --kind: var(--category-analysis); --kind-text: var(--category-analysis-text); --kind-on-dark: var(--category-analysis-dark); }
+.editorial-page :is([data-kind="technical"], [data-article-kind="technical"]) { --kind: var(--category-technical); --kind-text: var(--category-technical-text); --kind-on-dark: var(--category-technical-dark); }
+.editorial-page :is([data-kind="history"], [data-article-kind="history"]) { --kind: var(--category-history); --kind-text: var(--category-history-text); --kind-on-dark: var(--category-history-dark); }
+.editorial-page :is([data-kind="opinion"], [data-article-kind="opinion"]) { --kind: var(--category-opinion); --kind-text: var(--category-opinion-text); --kind-on-dark: var(--category-opinion-dark); }
+.editorial-page :is([data-kind="betting"], [data-article-kind="betting"]) { --kind: var(--category-betting); --kind-text: var(--category-betting-text); --kind-on-dark: var(--category-betting-dark); }
+.editorial-page :is([data-kind="drivers"], [data-article-kind="drivers"]) { --kind: var(--category-drivers); --kind-text: var(--category-drivers-text); --kind-on-dark: var(--category-drivers-dark); }
+.editorial-page :is([data-kind="teams"], [data-article-kind="teams"]) { --kind: var(--category-teams); --kind-text: var(--category-teams-text); --kind-on-dark: var(--category-teams-dark); }
+.editorial-page :is([data-kind="season"], [data-article-kind="season"]) { --kind: var(--category-season); --kind-text: var(--category-season-text); --kind-on-dark: var(--category-season-dark); }
 
 /* Author inks: a writer's quiet signature, used only in author blocks (the article's
  * closing card, the authors page, the archive's writer view). Never on category labels.
@@ -493,15 +504,25 @@ body.editorial-page .blog-nav :focus-visible { outline: 2px solid var(--accent-r
 /* Shared colophon — the last page of the magazine: a dark spread in both themes,
  * the wordmark set across the width, then contents, follow links and the small print.
  * In dark mode it drops below the charcoal page to a deeper warm black. */
+/* Dark grounds ("plates"): the colophon, the Journal nameplate and slow-reading panel,
+ * and the article cover. Warm black on paper; in dark mode they drop below the
+ * charcoal page and take a hairline edge. */
 body.editorial-page {
-    --colophon-bg: #1b1a19;
-    --colophon-text: #eee8db;
-    --colophon-muted: #b6bbac;
-    --colophon-faint: #8a8f80;
-    --colophon-rule: #3a3935;
-    --colophon-mark: #6ec6bb;
+    --plate-bg: #1b1a19;
+    --plate-text: #eee8db;
+    --plate-muted: #b6bbac;
+    --plate-faint: #8a8f80;
+    --plate-rule: #3a3935;
+    --plate-mark: #6ec6bb;
+    --plate-edge: transparent;
+    --colophon-bg: var(--plate-bg);
+    --colophon-text: var(--plate-text);
+    --colophon-muted: var(--plate-muted);
+    --colophon-faint: var(--plate-faint);
+    --colophon-rule: var(--plate-rule);
+    --colophon-mark: var(--plate-mark);
 }
-:root:not([data-theme="light"]) body.editorial-page { --colophon-bg: #100f0e; --colophon-rule: #34322e; }
+:root:not([data-theme="light"]) body.editorial-page { --plate-bg: #100f0e; --plate-rule: #34322e; --plate-edge: #34322e; --colophon-rule: #34322e; }
 
 body.editorial-page footer {
     padding: clamp(56px, 7vw, 104px) 0 28px;
