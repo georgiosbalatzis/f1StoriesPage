@@ -1,5 +1,5 @@
 const { fs, path, CONFIG, utils, escapeHtmlAttribute, getImageDimensionsForPublicPath } = require('./shared');
-const { getPostTaxonomy, categoryLabel, categoryKind, authorLabel, findAuthor } = require('../taxonomy');
+const { getPostTaxonomy, categoryLabel, categoryKind, authorLabel, findAuthor, authorThumb } = require('../taxonomy');
 
 function escapeHtmlText(value) {
     return String(value ?? '')
@@ -39,6 +39,18 @@ function getEditorialProfile(category) {
     return Object.prototype.hasOwnProperty.call(EDITORIAL_LABELS, category)
         ? { category, kind: categoryKind(category), label: EDITORIAL_LABELS[category] }
         : { kind: 'journal', label: 'F1 STORIES JOURNAL' };
+}
+
+// The cover byline: the writer's small portrait, then "Γράφει" and the name. The
+// team (no author record) signs with the name alone.
+function renderHeaderByline(post) {
+    const author = findAuthor(post.author);
+    const name = escapeHtmlText(authorLabel(post.author || 'F1 Stories'));
+    const href = escapeHtmlAttribute(authorProfileHref(post.author));
+    const avatar = author
+        ? `<img class="article-header-byline__avatar" src="${authorThumb(author)}" alt="" width="32" height="32" decoding="async">`
+        : '';
+    return `<p class="article-header-byline"${author ? ` data-author-slug="${author.slug}"` : ''}>${avatar}<span>Γράφει</span> <a href="${href}" class="article-author-link">${name}</a></p>`;
 }
 
 // The signed ending of every story: portrait, specialty, one line of biography and
@@ -223,7 +235,6 @@ function refreshArticleTaxonomy(html, post) {
         .replace(/(<span id="race-countdown-mobile">)--(<\/span>)/g, '$1Σύντομα$2');
     const { category, categories } = getPostTaxonomy(post);
     const primary = escapeHtmlText(categoryLabel(category));
-    const authorText = escapeHtmlText(authorLabel(post.author || 'F1 Stories'));
     const profile = getEditorialProfile(category);
     const trustPanel = renderArticleTrust(post, category);
     const articleDate = escapeHtmlText(formatArticleDate(post));
@@ -243,7 +254,7 @@ function refreshArticleTaxonomy(html, post) {
         .replace(/(<div class="article-edition"><span>[\s\S]*?<\/span><span>)[\s\S]*?(<\/span><\/div>)/, `$1${escapeHtmlText(profile.label)}$2`)
         .replace(/(<span class="article-rail-label">)Article(<\/span>)/i, `$1${escapeHtmlText(profile.label)}$2`)
         .replace(/(<span class="article-rail-label">)Related(<\/span>)/i, '$1ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ$2')
-        .replace(/(<a href="[^"]*" class="article-author-link">)[^<]*(<\/a>)/, `$1${authorText}$2`)
+        .replace(/<p class="article-header-byline"[^>]*>[\s\S]*?<\/p>/, () => renderHeaderByline(post))
         // Every story ends on the current author card (all shapes of the old box included).
         .replace(/<(?:div class="article-author-footer"|section class="author-card")[\s\S]*?(?=\s*<div class="sponsor-strip">)/, () => renderAuthorCard(post));
 
@@ -309,7 +320,7 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_AUTHOR_TEXT: escapeHtmlText(authorLabel(postData.author)),
         ARTICLE_AUTHOR_ATTR: escapeHtmlAttribute(authorLabel(postData.author)),
         ARTICLE_AUTHOR_JSON: jsonScriptLiteral(postData.author),
-        ARTICLE_AUTHOR_PROFILE_HREF: escapeHtmlAttribute(authorProfileHref(postData.author)),
+        ARTICLE_HEADER_BYLINE: renderHeaderByline(postData),
         ARTICLE_DATE_ISO_JSON: jsonScriptLiteral(postData.dateISO),
         ARTICLE_DATE_ISO: escapeHtmlAttribute(postData.dateISO),
         ARTICLE_DATE: escapeHtmlText(formatArticleDate(postData)),

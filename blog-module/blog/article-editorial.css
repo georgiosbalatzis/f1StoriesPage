@@ -114,6 +114,19 @@
 }
 .article-page .article-header::before { content: none; }
 .article-page .article-header-byline > span { margin-right: 5px; font-weight: 400; color: #51584c; }
+/* The writer's small portrait leads the byline, ringed in their accent ink. */
+.article-page .article-header-byline:has(.article-header-byline__avatar) { display: flex; flex-wrap: wrap; align-items: center; }
+.article-page .article-header-byline__avatar {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+    object-fit: cover;
+    border-radius: 50%;
+    background: var(--bg-surface);
+    vertical-align: middle;
+    box-shadow: 0 0 0 1.5px var(--author-accent, var(--border));
+}
 .article-page .article-author-link {
     color: var(--text-primary);
     text-decoration: underline;
@@ -512,18 +525,19 @@
 .article-page .article-mini-bar__share { border-radius: 2px; }
 
 /* Closing notes, a signature, then the next story. */
-/* The signed ending: paper or charcoal, bounded by rules and signed in the writer's
+/* The signed ending: a surface card with the site's cut corner, edged in the writer's
  * accent ink (styles/editorial.css, keyed by data-author-slug). The category ink stays
  * above; nothing here uses it. */
 .article-page .author-card {
     margin-top: 48px;
-    padding: 16px 0 22px;
-    border-top: 1px solid var(--border);
-    border-bottom: 3px solid var(--author-accent, var(--border));
+    padding: 28px clamp(20px, 4vw, 40px) 22px;
+    background: var(--bg-surface);
+    border-left: 4px solid var(--author-accent, var(--border));
+    border-radius: 0 0 var(--cut-md) 0;
 }
 .article-page .author-card__label { margin: 0 0 16px; color: var(--text-secondary); font-size: .75rem; font-weight: 600; letter-spacing: .14em; }
 .article-page .author-card__head { display: grid; grid-template-columns: 80px minmax(0, 1fr); align-items: center; column-gap: 18px; }
-.article-page .author-card__portrait { width: 80px; height: 80px; object-fit: cover; background: var(--bg-surface); border-radius: 2px; }
+.article-page .author-card__portrait { width: 80px; height: 80px; object-fit: cover; background: var(--bg-base); border-radius: 2px; }
 .article-page .author-card__name { margin: 0; font: 600 1.375rem/1.25 var(--font-body); letter-spacing: -.015em; }
 .article-page .author-card__name a {
     display: inline-flex;
@@ -642,6 +656,7 @@
     .article-page .blog-nav { transition: transform .18s ease; }
     .article-page:has(.article-mini-bar.is-visible) .blog-nav { transform: translateY(-100%); }
     .article-page .article-mini-bar__category { max-width: 5.5rem; font-size: .75rem; }
+    .article-page .author-card { padding: 22px 18px 16px; border-radius: 0 0 24px 0; }
     .article-page .author-card__head { grid-template-columns: 64px minmax(0, 1fr); column-gap: 14px; }
     .article-page .author-card__portrait { width: 64px; height: 64px; }
     .article-page .author-card__name { font-size: 1.2rem; overflow-wrap: anywhere; }

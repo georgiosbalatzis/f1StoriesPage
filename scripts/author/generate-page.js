@@ -1252,6 +1252,15 @@
 
         var authorData = AUTHORS[author] || AUTHORS['F1 Stories Team'];
         byId('pv-byline').textContent = authorData.label;
+        // Mirrors renderHeaderByline(): the team signs without a portrait.
+        var bylineImg = byId('pv-byline-img');
+        bylineImg.hidden = !authorData.slug;
+        if (authorData.slug) {
+            bylineImg.src = window.F1S_TAXONOMY.authorThumb(authorData);
+            byId('pv-byline-row').setAttribute('data-author-slug', authorData.slug);
+        } else {
+            byId('pv-byline-row').removeAttribute('data-author-slug');
+        }
         byId('pv-author-name').textContent = authorData.label;
         byId('pv-author-img').src = authorData.portrait;
         if (authorData.slug) byId('pv-author-card').setAttribute('data-author-slug', authorData.slug);
