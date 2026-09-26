@@ -46,12 +46,16 @@ on:
           - standings
           - youtube
 
-permissions:
-  contents: write
+# Granted per job. The three content jobs push generated commits to main; the
+# write token is handed to the push step only (persist-credentials: false), so
+# npm ci and the build never see it in .git/config.
+permissions: {}
 
 jobs:
   publish_blog:
     name: Publish blog artifacts
+    permissions:
+      contents: write
     if: >-
       ${{
         github.event_name == 'push' ||
@@ -65,11 +69,11 @@ jobs:
       changed: ${{ steps.commit.outputs.changed }}
     steps:
       - name: Checkout main
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           ref: main
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
       - uses: ./.github/actions/setup
 
@@ -117,9 +121,12 @@ jobs:
         uses: ./.github/actions/commit-and-push
         with:
           message: 'chore(blog): auto-build generated artifacts [skip ci]'
+          token: ${{ github.token }}
 
   refresh_youtube:
     name: Refresh YouTube snapshot
+    permissions:
+      contents: write
     if: >-
       ${{
         contains(fromJSON('["59 20 * * 6", "59 21 * * 6"]'), github.event.schedule) ||
@@ -158,11 +165,11 @@ jobs:
 
       - name: Checkout main
         if: ${{ steps.schedule_window.outputs.run == 'true' }}
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           ref: main
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
       - if: ${{ steps.schedule_window.outputs.run == 'true' }}
         uses: ./.github/actions/setup
@@ -178,9 +185,12 @@ jobs:
         with:
           message: 'chore(data): refresh youtube snapshot [skip ci]'
           paths: assets/youtube-latest.json
+          token: ${{ github.token }}
 
   refresh_standings_data:
     name: Refresh standings data
+    permissions:
+      contents: write
     if: >-
       ${{
         (github.event_name == 'schedule' && !contains(fromJSON('["59 20 * * 6", "59 21 * * 6"]'), github.event.schedule)) ||
@@ -221,11 +231,11 @@ jobs:
 
       - name: Checkout main
         if: ${{ steps.schedule_window.outputs.run == 'true' }}
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           ref: main
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
       - if: ${{ steps.schedule_window.outputs.run == 'true' }}
         uses: ./.github/actions/setup
@@ -246,6 +256,7 @@ jobs:
             standings/dirty-air
             standings/destructors-cache.json
             standings/debrief-cache.json
+          token: ${{ github.token }}
 
   deploy:
     name: Deploy changed maintenance content

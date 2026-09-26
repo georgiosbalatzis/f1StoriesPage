@@ -32,6 +32,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
+          TESTED_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           set -eu
 
@@ -48,6 +49,13 @@ jobs:
           base_ref="$(printf '%s' "$pr_json" | jq -r '.base.ref')"
           head_ref="$(printf '%s' "$pr_json" | jq -r '.head.ref')"
           head_repo="$(printf '%s' "$pr_json" | jq -r '.head.repo.full_name')"
+
+          head_sha="$(printf '%s' "$pr_json" | jq -r '.head.sha')"
+          if [ "$head_sha" != "$TESTED_SHA" ]; then
+            echo "PR #$pr_number moved to $head_sha after Site Quality ran on $TESTED_SHA; its own run will decide."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
           if [ "$state" != "open" ] || [ "$draft" != "false" ] || [ "$base_ref" != "main" ]; then
             echo "PR #$pr_number is not an open, ready PR to main."
@@ -92,7 +100,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-        run: gh pr merge "${{ steps.pr.outputs.number }}" --repo "$REPO" --merge --delete-branch
+          NUMBER: ${{ steps.pr.outputs.number }}
+          # The commit Site Quality passed on. If the branch moved since, the
+          # merge is refused and the new commit's own quality run decides.
+          TESTED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: gh pr merge "$NUMBER" --repo "$REPO" --merge --delete-branch --match-head-commit "$TESTED_SHA"
 
   publish:
     name: Build and deploy article

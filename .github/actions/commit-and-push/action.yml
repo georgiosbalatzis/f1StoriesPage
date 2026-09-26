@@ -9,6 +9,11 @@ inputs:
     description: Space-separated paths to stage, or -A for everything.
     required: false
     default: '-A'
+  token:
+    description: >-
+      Token for the fetch/push. Jobs check out with persist-credentials: false,
+      so the write token is not in .git/config while npm ci and the build run.
+    required: true
 
 outputs:
   changed:
@@ -23,6 +28,7 @@ runs:
       env:
         MESSAGE: ${{ inputs.message }}
         PATHS: ${{ inputs.paths }}
+        TOKEN: ${{ inputs.token }}
       run: |
         set -eu
         echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -37,17 +43,22 @@ runs:
 
         git commit -m "$MESSAGE"
 
+        # Same header actions/checkout would persist, but only for these git calls.
+        basic="$(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)"
+        echo "::add-mask::$basic"
+        auth=(-c "http.https://github.com/.extraheader=AUTHORIZATION: basic $basic")
+
         # Builds can run long enough for another publisher to move main.
         # Rebase and retry so a lost fast-forward race does not fail the job.
         for attempt in 1 2 3; do
-          if git push origin HEAD:main; then
+          if git "${auth[@]}" push origin HEAD:main; then
             break
           fi
           if [ "$attempt" = 3 ]; then
             echo "Unable to push after $attempt attempts." >&2
             exit 1
           fi
-          git fetch origin main
+          git "${auth[@]}" fetch origin main
           git rebase origin/main
         done
         echo "changed=true" >> "$GITHUB_OUTPUT"
