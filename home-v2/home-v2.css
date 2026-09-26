@@ -4,8 +4,8 @@
  * other site stylesheet except the self-hosted fonts (styles/home-fonts.css).
  * Palette values are the brand's own (styles/editorial.css): paper and ink
  * neutrals, the technical teal as the brand accent, and the signal red kept
- * for race status only. Both themes follow the site switch (theme-init.js):
- * dark unless html[data-theme="light"].
+ * for race status only. The homepage is the paper edition: it has no dark
+ * theme and ignores the site's theme switch.
  *
  * Sections, in page order: header · hero · race strip · journal · technical
  * (dark) · on air · the numbers · the team · team radio · partners · footer (dark).
@@ -84,37 +84,6 @@
     --settle: 650ms;               /* photographs ease in slower than UI */
 }
 
-/* Dark edition. The rhythm survives by depth, not by inversion: the page is the
- * site's warm charcoal, the paper sections become a raised surface, and the dark
- * spreads (strip, technical, colophon) drop to a deeper warm black. */
-html:not([data-theme="light"]) .v2 {
-    --bg-primary: #1b1a19;
-    --bg-secondary: #242321;
-    --bg-tertiary: #2e2c29;
-    --surface-dark: #100f0e;
-    --surface-dark-2: #1e1d1b;
-    --text-primary: #eee8db;
-    --text-secondary: #b6bbac;
-    --text-faint: #72776b;
-    --accent: #6ec6bb;
-    --accent-strong: #8fd6cc;
-    --border-subtle: #4b5146;
-    --border-strong: #eee8db;
-    --border-dark: #34322e;
-    --partner-mat: #e9e3d6;
-    --partner-label: #5b6256;
-    --status-error: #ff9a89;
-}
-/* On a charcoal page a black band is invisible: the strip becomes the one paper
- * interruption, and the deep spreads take a hairline edge. */
-html:not([data-theme="light"]) .v2-strip { background: #e9e3d6; color: #20251f; }
-html:not([data-theme="light"]) .v2-strip__item--brand { color: #20251f; }
-html:not([data-theme="light"]) .v2-strip__item:not(.v2-strip__item--brand) { color: #5b6256; }
-html:not([data-theme="light"]) .v2-strip i { color: #12655f; }
-html:not([data-theme="light"]) .v2-strip__pause { background: #e9e3d6; border-left-color: #c8c8b9; color: #5b6256; }
-html:not([data-theme="light"]) .v2-strip__pause:hover { color: #12655f; }
-html:not([data-theme="light"]) .v2 :is(.v2-tech, .v2-footer) { border-block: 1px solid #34322e; }
-
 /* Category inks (styles/editorial.css): the category word only. */
 .v2 [data-kind] { --kind-text: var(--text-secondary); }
 .v2 [data-kind="news"] { --kind-text: #a82e1c; }
@@ -127,15 +96,6 @@ html:not([data-theme="light"]) .v2 :is(.v2-tech, .v2-footer) { border-block: 1px
 .v2 [data-kind="teams"] { --kind-text: #654a7d; }
 .v2 [data-kind="season"] { --kind-text: #5f5d17; }
 .v2 .v2-dark[data-kind], .v2 .v2-dark [data-kind] { --kind-text: var(--accent-on-dark); }
-html:not([data-theme="light"]) .v2 [data-kind="news"] { --kind-text: #ff9a89; }
-html:not([data-theme="light"]) .v2 [data-kind="analysis"] { --kind-text: #f39370; }
-html:not([data-theme="light"]) .v2 [data-kind="technical"] { --kind-text: #6ec6bb; }
-html:not([data-theme="light"]) .v2 [data-kind="history"] { --kind-text: #dcb468; }
-html:not([data-theme="light"]) .v2 [data-kind="opinion"] { --kind-text: #d9a28d; }
-html:not([data-theme="light"]) .v2 [data-kind="betting"] { --kind-text: #7ec99a; }
-html:not([data-theme="light"]) .v2 [data-kind="drivers"] { --kind-text: #a0c0e3; }
-html:not([data-theme="light"]) .v2 [data-kind="teams"] { --kind-text: #c2afdc; }
-html:not([data-theme="light"]) .v2 [data-kind="season"] { --kind-text: #d4d06f; }
 
 /* Author accents (styles/editorial.css, light theme): author blocks only. */
 .v2 [data-author-slug] { --author-accent: var(--text-secondary); }
@@ -145,12 +105,6 @@ html:not([data-theme="light"]) .v2 [data-kind="season"] { --kind-text: #d4d06f; 
 .v2 [data-author-slug="thanasis-batalas"] { --author-accent: #4b5a80; }
 .v2 [data-author-slug="dimitris-keramidiotis"] { --author-accent: #6d4660; }
 .v2 [data-author-slug="f1-stories"] { --author-accent: #74651c; }
-html:not([data-theme="light"]) .v2 [data-author-slug="georgios-balatzis"] { --author-accent: #6fa9b9; }
-html:not([data-theme="light"]) .v2 [data-author-slug="giannis-poulikidis"] { --author-accent: #d09a64; }
-html:not([data-theme="light"]) .v2 [data-author-slug="themis-charvalis"] { --author-accent: #dc8f79; }
-html:not([data-theme="light"]) .v2 [data-author-slug="thanasis-batalas"] { --author-accent: #9eadd2; }
-html:not([data-theme="light"]) .v2 [data-author-slug="dimitris-keramidiotis"] { --author-accent: #c39bb5; }
-html:not([data-theme="light"]) .v2 [data-author-slug="f1-stories"] { --author-accent: #d4b84a; }
 
 @media (max-width: 1199.98px) { .v2 { --wrap-pad: 32px; } }
 @media (max-width: 767.98px) { .v2 { --wrap-pad: 22px; --header-h: 60px; } }
@@ -443,25 +397,6 @@ a:is(:hover, :focus-visible) .v2-arrow--out { transform: translate(3px, -3px); }
     background: var(--signal);
     flex: none;
 }
-.v2-theme {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    margin-left: 12px;
-    padding: 0;
-    border: 0;
-    border-radius: 2px;
-    background: none;
-    color: var(--text-primary);
-    font-size: 1rem;
-    cursor: pointer;
-    transition: color var(--fast) var(--ease), transform var(--slow) var(--ease);
-}
-.v2-theme:hover { color: var(--accent); transform: rotate(16deg); }
-.v2-theme .icon-moon { display: none; }
-html[data-theme="light"] .v2-theme .icon-sun { display: none; }
-html[data-theme="light"] .v2-theme .icon-moon { display: block; }
 .v2-menu-toggle {
     display: none;
     align-items: center;
