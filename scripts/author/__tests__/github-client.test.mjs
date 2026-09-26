@@ -119,6 +119,19 @@ function testPureHelpers() {
     assert.equal(api.slugForBranch(''), 'blog-entry');
     assert.equal(api.utf8ToBase64('F1'), 'RjE=');
     assert.equal(api.base64ToUtf8(api.utf8ToBase64('F1 Stories')), 'F1 Stories');
+
+    const marker = api.publishAtMarker(new Date('2026-10-01T09:05:00.000Z'));
+    assert.equal(marker, '<!-- f1s-publish-at: 2026-10-01T09:05:00Z -->');
+    assert.equal(api.parsePublishAt('Body\n\n' + marker).toISOString(), '2026-10-01T09:05:00.000Z');
+    assert.equal(api.parsePublishAt('<!--f1s-publish-at:2026-10-01T09:05Z-->').toISOString(), '2026-10-01T09:05:00.000Z');
+    assert.equal(api.parsePublishAt('no marker'), null);
+    assert.equal(api.parsePublishAt('<!-- f1s-publish-at: 2026-13-45T09:05:00Z -->'), null);
+
+    const branch = api.authorBranchName('scheduled', '20261001-2G');
+    assert.match(branch, /^author\/scheduled\/20261001-2g-\d{14}-[a-z0-9]+$/);
+    assert.equal(api.folderFromAuthorBranch(branch), '20261001-2g');
+    assert.equal(api.folderFromAuthorBranch('author/blog/20260926g-20260926160348-ozhh'), '20260926g');
+    assert.equal(api.folderFromAuthorBranch('feature/whatever'), '');
 }
 
 await testCreatePullRequestFromTree();

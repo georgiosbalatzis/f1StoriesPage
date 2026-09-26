@@ -49,6 +49,9 @@
     var reviewFolder      = byId('gen-review-folder');
     var progressList      = byId('gen-progress');
     var resultBox         = byId('gen-result');
+    var whenGroup         = byId('gen-when-group');
+    var scheduleBox       = byId('gen-schedule-box');
+    var scheduleInput     = byId('gen-schedule-at');
     var previewFrame      = byId('gen-preview-frame');
     var mobileProgress    = byId('gen-mobile-progress');
     var mobileProgressLbl = byId('gen-mobile-progress-label');
@@ -137,12 +140,57 @@
     function getAuthor() { return checkedValue('gen-author', DEFAULT_AUTHOR); }
     function getCategory() { return checkedValue('gen-category', DEFAULT_CATEGORY); }
 
+    // ── Scheduled publishing ──────────────────────────────
+    // The PR opens now under author/scheduled/…, which Publish Article ignores;
+    // Scheduled Publish merges it once the time in the PR body has passed.
+    var SCHEDULE_MIN_LEAD_MS = 10 * 60 * 1000;
+    var SCHEDULE_LABEL = 'scheduled';
+
+    function isScheduled() { return checkedValue('gen-when', 'now') === 'schedule'; }
+
+    // datetime-local values carry no offset, so Date parses them as the author's local time.
+    function scheduledDate() {
+        if (!isScheduled() || !scheduleInput.value) return null;
+        var date = new Date(scheduleInput.value);
+        return isNaN(date.getTime()) ? null : date;
+    }
+
+    function scheduleIssue() {
+        if (!isScheduled()) return null;
+        var date = scheduledDate();
+        if (!date) return 'Λείπει η ημερομηνία και ώρα δημοσίευσης';
+        if (date.getTime() < Date.now() + SCHEDULE_MIN_LEAD_MS) return 'Η ώρα δημοσίευσης πρέπει να είναι τουλάχιστον 10 λεπτά από τώρα';
+        return null;
+    }
+
+    function formatAthens(date) {
+        return date.toLocaleString('el-GR', { timeZone: 'Europe/Athens', dateStyle: 'medium', timeStyle: 'short' }) + ' (ώρα Ελλάδας)';
+    }
+
+    function toLocalInputValue(date) {
+        return date.getFullYear() + '-' + pad2(date.getMonth() + 1) + '-' + pad2(date.getDate()) +
+            'T' + pad2(date.getHours()) + ':' + pad2(date.getMinutes());
+    }
+
+    function syncScheduleUi() {
+        var scheduled = isScheduled();
+        scheduleBox.hidden = !scheduled;
+        scheduleInput.min = toLocalInputValue(new Date());
+        if (scheduled && !scheduleInput.value) {
+            var tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(10, 0, 0, 0);
+            scheduleInput.value = toLocalInputValue(tomorrow);
+        }
+        setPublishReady();
+    }
+
     function setExportReady() {
         authorDom.setIconText(exportBtn, 'fa-file-zipper', 'Εξαγωγή ZIP αντί για PR');
     }
 
     function setPublishReady() {
-        authorDom.setIconText(publishBtn, 'fa-rocket', 'Άνοιγμα Pull Request');
+        authorDom.setIconText(publishBtn, 'fa-rocket', isScheduled() ? 'Προγραμματισμός δημοσίευσης' : 'Άνοιγμα Pull Request');
     }
 
     var heroObjectUrl = null;
@@ -368,11 +416,18 @@
         if (!(heroInput.files && heroInput.files[0])) issues.push({ step: 2, text: 'Χωρίς κεντρική εικόνα — θα μπει η προεπιλεγμένη' });
         if (markers > images) issues.push({ step: 2, text: plural(markers - images, 'δείκτης', 'δείκτες') + ' χωρίς εικόνα — κενή θέση στο άρθρο' });
         if (images > markers) issues.push({ step: 2, text: plural(images - markers, 'εικόνα', 'εικόνες') + ' χωρίς δείκτη → carousel στο τέλος' });
+        var scheduleProblem = scheduleIssue();
+        if (scheduleProblem) issues.push({ step: 4, text: scheduleProblem, block: true });
         return issues;
     }
 
+    // The folder name carries the article date: the publish date when scheduled.
+    function articleDateYYYYMMDD() {
+        return dateYYYYMMDD(scheduledDate() || new Date());
+    }
+
     function folderPreview() {
-        return todayYYYYMMDD() + (AUTHOR_CODES[getAuthor()] || '');
+        return articleDateYYYYMMDD() + (AUTHOR_CODES[getAuthor()] || '');
     }
 
     function goToStep(step, focusHeading) {
@@ -441,7 +496,7 @@
             authorDom.setIconText(nextBtn, 'fa-check', 'Τέλος');
             nextBtn.classList.add('gb-nav-publish');
         } else if (currentStep === panels.length - 1) {
-            authorDom.setIconText(nextBtn, 'fa-rocket', 'Άνοιγμα PR');
+            authorDom.setIconText(nextBtn, 'fa-rocket', isScheduled() ? 'Προγραμματισμός' : 'Άνοιγμα PR');
             nextBtn.classList.add('gb-nav-publish');
         } else {
             nextBtn.replaceChildren(document.createTextNode('Επόμενο: ' + STEP_TITLES[currentStep + 1] + ' '), authorDom.createSvgIcon('fa-arrow-right'));
@@ -460,6 +515,10 @@
         if (!issues.some(function (issue) { return issue.step === 2; })) {
             rows.push({ ok: true, text: 'Εικόνες: 1.webp' + (headerObjectUrl ? ', 2.webp' : '') + (contentImageFiles.length ? ' + ' + plural(contentImageFiles.length, 'εικόνα', 'εικόνες') + ' κειμένου' : ''), step: 2 });
         }
+        if (isScheduled()) {
+            var scheduleProblem = scheduleIssue();
+            rows.push({ ok: !scheduleProblem, text: scheduleProblem || 'Προγραμματισμένη δημοσίευση: ' + formatAthens(scheduledDate()), step: 4 });
+        }
         reviewList.replaceChildren.apply(reviewList, rows.map(function (row) {
             var li = el('li', 'gb-review-row ' + (row.ok ? 'is-ok' : 'is-warn'));
             li.appendChild(el('span', 'gb-review-text', row.text));
@@ -477,7 +536,7 @@
         var author = getAuthor();
         var tags = taxonomy.normalizeTags(tagInput.value);
         byId('gen-card-img').src = heroObjectUrl || '/blog-module/images/default-blog.jpg';
-        byId('gen-card-meta').textContent = getCategory() + ' · ' + new Date().toLocaleDateString('el-GR', { day: 'numeric', month: 'short', year: 'numeric' });
+        byId('gen-card-meta').textContent = getCategory() + ' · ' + (scheduledDate() || new Date()).toLocaleDateString('el-GR', { day: 'numeric', month: 'short', year: 'numeric' });
         byId('gen-card-title').textContent = titleInput.value.trim() || 'Χωρίς τίτλο';
         byId('gen-card-author').textContent = 'Γράφει ' + author;
         byId('gen-fact-folder').textContent = folderPreview();
@@ -508,6 +567,8 @@
     tagInput.addEventListener('input', refresh);
     authorGroup.addEventListener('change', refresh);
     categoryGroup.addEventListener('change', refresh);
+    whenGroup.addEventListener('change', function () { syncScheduleUi(); refresh(); });
+    scheduleInput.addEventListener('input', refresh);
 
     // ── Clear ─────────────────────────────────────────────
     function resetForm() {
@@ -515,6 +576,9 @@
         tagInput.value = '';
         setChecked('gen-category', DEFAULT_CATEGORY);
         setChecked('gen-author', DEFAULT_AUTHOR);
+        setChecked('gen-when', 'now');
+        scheduleInput.value = '';
+        syncScheduleUi();
         sourceMetadata = {};
         contentArea.value = '';
         heroInput.value = '';
@@ -692,9 +756,12 @@
     // ── Export ZIP ────────────────────────────────────────
     function pad2(n) { return String(n).padStart(2, '0'); }
 
-    function todayYYYYMMDD() {
-        var d = new Date();
+    function dateYYYYMMDD(d) {
         return d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate());
+    }
+
+    function todayYYYYMMDD() {
+        return dateYYYYMMDD(new Date());
     }
 
     function sanitizeImageExtension(name) {
@@ -998,17 +1065,34 @@
         }
     }
 
-    // Finds the next unused "-N<Author>" suffix for a same-day article
-    // (matches blog-processor.js parseDate's ^\d{8}-\d+[A-Z]?$ pattern).
-    async function nextNumberedFolder(token, baseDate, authorCode) {
-        for (var n = 2; n < 100; n++) {
-            var candidate = baseDate + '-' + n + authorCode;
-            if (!(await folderExists(token, candidate))) return candidate;
+    // Folders that open author/* PRs (scheduled ones included) are about to add,
+    // keyed lowercase like the branch slug. Best effort: main is still checked.
+    async function pendingPullFolders(token) {
+        var folders = {};
+        try {
+            var data = await ghFetch('/pulls?state=open&per_page=100', token);
+            (Array.isArray(data) ? data : []).forEach(function (pr) {
+                var folder = window.F1S_AUTHOR_GITHUB.folderFromAuthorBranch(pr && pr.head && pr.head.ref);
+                if (folder) folders[folder] = true;
+            });
+        } catch (e) {
+            console.warn('Could not list open pull requests', e);
         }
-        throw new Error('Δεν βρέθηκε ελεύθερο suffix (-2 έως -99) για σημερινό άρθρο.');
+        return folders;
     }
 
-    async function publishToGitHub(token, folderName, sourceTxt, heroFile, headerFile, contentImages, commitMessage, progress, replaceExisting) {
+    // Finds the next unused "-N<Author>" suffix for a same-day article
+    // (matches blog-processor.js parseDate's ^\d{8}-\d+[A-Z]?$ pattern).
+    async function nextNumberedFolder(token, baseDate, authorCode, pendingFolders) {
+        for (var n = 2; n < 100; n++) {
+            var candidate = baseDate + '-' + n + authorCode;
+            if (pendingFolders[candidate.toLowerCase()]) continue;
+            if (!(await folderExists(token, candidate))) return candidate;
+        }
+        throw new Error('Δεν βρέθηκε ελεύθερο suffix (-2 έως -99) για άρθρο της ' + baseDate + '.');
+    }
+
+    async function publishToGitHub(token, folderName, sourceTxt, heroFile, headerFile, contentImages, commitMessage, progress, replaceExisting, publishAt) {
         function tick(msg) { if (progress) progress(msg); }
 
         // Phase 1: upload blobs (content-addressed, safe to do once)
@@ -1081,16 +1165,38 @@
                 openPullRequest: 'Άνοιγμα Pull Request…'
             }
         });
-        return github.createPullRequestFromTree(
+        var prTitle = commitMessage;
+        var prBody = 'Author tool publish for `blog-module/blog-entries/' + folderName + '`.';
+        if (publishAt) {
+            prTitle += ' · προγραμματισμένο ' + formatAthens(publishAt);
+            prBody += '\n\n**Προγραμματισμένη δημοσίευση:** ' + formatAthens(publishAt) +
+                '\n\nΤο workflow **Scheduled Publish** κάνει merge μετά από αυτή την ώρα, αν οι έλεγχοι είναι πράσινοι. ' +
+                'Για αλλαγή ώρας, άλλαξε την κρυφή γραμμή `f1s-publish-at` στο κείμενο του PR (ώρα UTC). Για ακύρωση, κλείσε το PR ή κάν\' το draft.' +
+                '\n\n' + window.F1S_AUTHOR_GITHUB.publishAtMarker(publishAt);
+        }
+        var result = await github.createPullRequestFromTree(
             token,
-            'blog',
+            publishAt ? 'scheduled' : 'blog',
             folderName,
             treeEntries,
             commitMessage,
-            commitMessage,
-            'Author tool publish for `blog-module/blog-entries/' + folderName + '`.',
+            prTitle,
+            prBody,
             tick
         );
+        // The label is for people browsing PRs; the workflow keys off the branch and marker.
+        if (publishAt && result.pullRequest && result.pullRequest.number) {
+            tick('Ετικέτα ' + SCHEDULE_LABEL + '…');
+            try {
+                await ghFetch('/issues/' + result.pullRequest.number + '/labels', token, {
+                    method: 'POST',
+                    body: { labels: [SCHEDULE_LABEL] }
+                });
+            } catch (e) {
+                console.warn('Could not label scheduled PR', e);
+            }
+        }
+        return result;
     }
 
     function logProgress(message) {
@@ -1100,14 +1206,16 @@
         progressList.appendChild(li);
     }
 
-    function showResult(publishResult, folderName) {
+    function showResult(publishResult, folderName, publishAt) {
         var pr = publishResult.pullRequest || {};
         resultBox.replaceChildren();
-        resultBox.appendChild(el('h2', 'gb-result-title', 'Το Pull Request' + (pr.number ? ' #' + pr.number : '') + ' άνοιξε'));
+        resultBox.appendChild(el('h2', 'gb-result-title', 'Το Pull Request' + (pr.number ? ' #' + pr.number : '') + (publishAt ? ' προγραμματίστηκε' : ' άνοιξε')));
         var branch = el('p', 'gb-result-branch');
         branch.appendChild(el('code', '', publishResult.branchName));
         resultBox.appendChild(branch);
-        var note = el('p', '', 'Φάκελος blog-entries/' + folderName + '/. Οι έλεγχοι του GitHub κάνουν merge, build και deploy αυτόματα — δεν χρειάζεται άλλο βήμα.');
+        var note = el('p', '', publishAt
+            ? 'Φάκελος blog-entries/' + folderName + '/. Δημοσίευση: ' + formatAthens(publishAt) + '. Οι έλεγχοι τρέχουν τώρα· merge, build και deploy γίνονται αυτόματα μετά την ώρα αυτή. Για ακύρωση, κλείσε το PR.'
+            : 'Φάκελος blog-entries/' + folderName + '/. Οι έλεγχοι του GitHub κάνουν merge, build και deploy αυτόματα — δεν χρειάζεται άλλο βήμα.');
         if (pr.html_url) {
             var link = el('a', '', 'Προβολή PR στο GitHub');
             link.href = pr.html_url;
@@ -1142,7 +1250,10 @@
         var tag = tagInput.value.trim();
         var category = getCategory();
         var authorCode = AUTHOR_CODES[author] || '';
-        var baseDate = todayYYYYMMDD();
+        var publishAt = scheduledDate();
+        var scheduleProblem = scheduleIssue();
+        if (scheduleProblem) { await showAlert(scheduleProblem + '.'); refresh(); return; }
+        var baseDate = articleDateYYYYMMDD();
         var folderName = baseDate + authorCode;
         var heroFile = heroInput.files && heroInput.files[0];
         var headerFile = headerInput.files && headerInput.files[0];
@@ -1158,9 +1269,10 @@
         logProgress('Έλεγχος φακέλου ' + folderName + '…');
 
         try {
+            var pendingFolders = await pendingPullFolders(token);
             if (await folderExists(token, folderName)) {
                 var choice = await authorDialogs.choose(
-                    'Υπάρχει ήδη άρθρο για σήμερα στο blog-entries/' + folderName + '.',
+                    'Υπάρχει ήδη άρθρο για ' + (publishAt ? 'αυτή την ημερομηνία' : 'σήμερα') + ' στο blog-entries/' + folderName + '.',
                     [
                         { value: 'new', label: 'Νέα έκδοση με επόμενο -N', detail: 'Το υπάρχον άρθρο μένει ανέπαφο.' },
                         { value: 'replace', label: 'Αντικατάσταση του ' + folderName, detail: 'Τα αρχεία του φακέλου που δεν ξαναγράφονται θα διαγραφούν στο PR.' }
@@ -1170,7 +1282,7 @@
                 if (!choice) { logProgress('Ακυρώθηκε.'); return; }
                 if (choice === 'new') {
                     authorDom.setBusyText(publishBtn, 'Εύρεση suffix…');
-                    folderName = await nextNumberedFolder(token, baseDate, authorCode);
+                    folderName = await nextNumberedFolder(token, baseDate, authorCode, pendingFolders);
                 } else {
                     if (!(await showConfirm('Σίγουρα να αντικατασταθούν τα αρχεία στο ' + folderName + ';', { title: 'Αντικατάσταση φακέλου', okLabel: 'Αντικατάσταση' }))) {
                         logProgress('Ακυρώθηκε.');
@@ -1178,15 +1290,22 @@
                     }
                     replaceExisting = true;
                 }
+            } else if (pendingFolders[folderName.toLowerCase()]) {
+                var reserved = folderName;
+                folderName = await nextNumberedFolder(token, baseDate, authorCode, pendingFolders);
+                logProgress('Το ' + reserved + ' περιμένει ήδη σε ανοιχτό PR → ' + folderName);
             }
 
             var markerCount = countMarkers();
             var confirmMsg = 'Άνοιγμα Pull Request για το «' + title + '» στο blog-module/blog-entries/' + folderName + '/.';
+            if (publishAt) confirmMsg += '\n\nΠρογραμματισμένη δημοσίευση: ' + formatAthens(publishAt) + '.';
             if (contentImageFiles.length) {
                 confirmMsg += '\n\nΠεριλαμβάνει ' + plural(contentImageFiles.length, 'εικόνα', 'εικόνες') +
                     ' κειμένου + ' + plural(markerCount, 'δείκτη', 'δείκτες') + '.';
             }
-            confirmMsg += '\n\nΤο main αλλάζει μόνο μετά τους ελέγχους και το αυτόματο merge.';
+            confirmMsg += publishAt
+                ? '\n\nΤο main αλλάζει μόνο μετά την ώρα αυτή, τους ελέγχους και το αυτόματο merge.'
+                : '\n\nΤο main αλλάζει μόνο μετά τους ελέγχους και το αυτόματο merge.';
             if (!(await showConfirm(confirmMsg, { title: 'Άνοιγμα Pull Request', okLabel: 'Άνοιγμα PR' }))) {
                 logProgress('Ακυρώθηκε.');
                 return;
@@ -1208,12 +1327,13 @@
             var publishResult = await publishToGitHub(
                 token, folderName, sourceTxt, publishHeroFile, publishHeaderFile, publishContentImages, commitMessage,
                 logProgress,
-                replaceExisting
+                replaceExisting,
+                publishAt
             );
             logProgress('Ολοκληρώθηκε.');
             progressList.lastChild.className = 'is-done';
             published = true;
-            showResult(publishResult, folderName);
+            showResult(publishResult, folderName, publishAt);
         } catch (err) {
             console.error('Publish failed', err);
             logProgress('Απέτυχε.');
@@ -1288,6 +1408,7 @@
     paintHero();
     paintHeader();
     renderContentImagesList();
+    syncScheduleUi();
     goToStep(0, false);
 
     // ═══════════════════════════════════════════════════════
