@@ -9,12 +9,17 @@ name: Scheduled Publish
 # scripts/author/github-client.js):  <!-- f1s-publish-at: 2026-10-01T09:00:00Z -->
 # Edit the marker to reschedule; close the PR or mark it draft to cancel.
 # A PR goes out on the first run at or after its time, so the effective publish
-# slots are 00:17 and 12:17 UTC (generate.html shows the author which slot).
+# slots are 09:00 and 18:00 Europe/Athens (generate.html shows the author which slot).
 
 on:
   schedule:
-    # Keep in sync with PUBLISH_SLOTS_UTC in scripts/author/generate-page.js.
-    - cron: '17 0,12 * * *'
+    # 09:00 and 18:00 Europe/Athens. GitHub cron is UTC, so both EET and EEST
+    # offsets are scheduled and the job keeps the matching one.
+    # Keep in sync with PUBLISH_HOURS_ATHENS in scripts/author/generate-page.js.
+    - cron: '0 6 * * *'
+    - cron: '0 7 * * *'
+    - cron: '0 15 * * *'
+    - cron: '0 16 * * *'
   workflow_dispatch:
 
 permissions: {}
@@ -35,8 +40,33 @@ jobs:
     outputs:
       merged: ${{ steps.due.outputs.merged }}
     steps:
+      - name: Check Athens schedule window
+        id: schedule_window
+        shell: bash
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          set -eu
+          if [ -z "$SCHEDULE" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Same cron-slot rule as Site Maintenance: decide from the slot that fired,
+          # not the wall clock, and keep only the one matching today's UTC offset.
+          offset_hours=$((10#$(TZ=Europe/Athens date +%z | cut -c2-3)))
+          read -r _ cron_hour _ <<< "$SCHEDULE"
+          athens_hour=$(( (10#$cron_hour + offset_hours) % 24 ))
+          should_run=false
+          if [ "$athens_hour" = "9" ] || [ "$athens_hour" = "18" ]; then
+            should_run=true
+          fi
+
+          echo "Schedule '$SCHEDULE' → Athens hour $athens_hour (UTC+$offset_hours), run=$should_run"
+          echo "run=$should_run" >> "$GITHUB_OUTPUT"
+
       - name: Find and merge due PRs
         id: due
+        if: ${{ steps.schedule_window.outputs.run == 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}

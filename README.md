@@ -580,7 +580,7 @@ Dashboard με δεδομένα GA4 από το Google Analytics Data API, με 
 |---|---|---|---|
 | `quality.yml` | **Site Quality** | PR προς `main`, χειροκίνητα | Build και έλεγχοι, μόνο με ανάγνωση. Δεν κάνει deploy. |
 | `auto-publish-author-pr.yml` | **Publish Article** | Όταν ολοκληρωθεί το Site Quality σε branch `author/**` | Έλεγχος και merge του PR του συντάκτη, μετά κλήση του Site Maintenance (`task: blog`). |
-| `scheduled-publish.yml` | **Scheduled Publish** | Κάθε μέρα 00:17 και 12:17 UTC, χειροκίνητα | Merge των PR `author/scheduled/**` των οποίων η ώρα πέρασε, μετά κλήση του Site Maintenance (`task: blog`). |
+| `scheduled-publish.yml` | **Scheduled Publish** | Κάθε μέρα 09:00 και 18:00 ώρα Αθήνας, χειροκίνητα | Merge των PR `author/scheduled/**` των οποίων η ώρα πέρασε, μετά κλήση του Site Maintenance (`task: blog`). |
 | `publish-blog.yml` | **Site Maintenance** | Schedule, push σε άρθρα, χειροκίνητα, κλήση από το Publish Article | Build του blog, ανανέωση YouTube, ανανέωση standings, deploy αν άλλαξε κάτι. |
 | `deploy-pages.yml` | **Deploy Pages** | Push στο `main`, χειροκίνητα, κλήση από άλλο workflow | `build:public`, έλεγχοι, upload και deploy στο GitHub Pages. |
 
@@ -696,7 +696,7 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 
 Δημοσιεύει τα προγραμματισμένα άρθρα του `generate.html`. Το Publish Article δεν αγγίζει τα branches `author/scheduled/**`, οπότε τίποτα δεν γίνεται merge πριν την ώρα του.
 
-- **Trigger:** schedule δύο φορές τη μέρα (`17 0,12 * * *`: 03:17 και 15:17 ώρα Ελλάδας το καλοκαίρι, 02:17 και 14:17 τον χειμώνα) και `workflow_dispatch`. Ένα άρθρο βγαίνει στο πρώτο run μετά την ώρα του, οπότε αυτές είναι στην πράξη οι ώρες δημοσίευσης· το `generate.html` δείχνει στον συντάκτη ποιο run θα το πάρει. Το GitHub μπορεί να καθυστερήσει τα scheduled runs κατά μερικά λεπτά. Για δημοσίευση νωρίτερα: Actions > Scheduled Publish > Run workflow (κάνει merge ό,τι έχει ήδη περάσει η ώρα του).
+- **Trigger:** schedule δύο φορές τη μέρα, 09:00 και 18:00 ώρα Αθήνας, και `workflow_dispatch`. Όπως στα standings, προγραμματίζονται και οι δύο εκδοχές UTC (`0 6`, `0 7`, `0 15`, `0 16`) και το πρώτο βήμα κρατά μόνο αυτή που βγαίνει 9 ή 18 ώρα Αθήνας. Ένα άρθρο βγαίνει στο πρώτο run μετά την ώρα του, οπότε αυτές είναι στην πράξη οι ώρες δημοσίευσης· το `generate.html` δείχνει στον συντάκτη ποιο run θα το πάρει. Το GitHub μπορεί να καθυστερήσει τα scheduled runs κατά μερικά λεπτά. Για δημοσίευση νωρίτερα: Actions > Scheduled Publish > Run workflow (κάνει merge ό,τι έχει ήδη περάσει η ώρα του).
 - **Ώρα δημοσίευσης:** κρυφή γραμμή στο κείμενο του PR, `<!-- f1s-publish-at: 2026-10-01T09:00:00Z -->` (UTC). Για αλλαγή ώρας, Edit στην περιγραφή του PR και αλλαγή της γραμμής.
 - **Ακύρωση:** κλείσιμο του PR ή μετατροπή σε draft.
 - **Job `merge`** (`contents: write`, `pull-requests: write`, `checks: read`): για κάθε ανοιχτό, μη draft PR `author/scheduled/**` από το ίδιο repo προς `main`, με ώρα που πέρασε:

@@ -145,8 +145,9 @@
     // Scheduled Publish merges it once the time in the PR body has passed.
     var SCHEDULE_MIN_LEAD_MS = 10 * 60 * 1000;
     var SCHEDULE_LABEL = 'scheduled';
-    // [hour, minute] UTC of the Scheduled Publish cron ('17 0,12 * * *'); keep in sync.
-    var PUBLISH_SLOTS_UTC = [[0, 17], [12, 17]];
+    // Scheduled Publish runs on the hour at these Europe/Athens hours (see the
+    // cron slots in .github/workflows/scheduled-publish.yml); keep in sync.
+    var PUBLISH_HOURS_ATHENS = [9, 18];
 
     function isScheduled() { return checkedValue('gen-when', 'now') === 'schedule'; }
 
@@ -165,14 +166,19 @@
         return null;
     }
 
+    function athensHour(date) {
+        return Number(date.toLocaleString('en-GB', { timeZone: 'Europe/Athens', hour: '2-digit', hourCycle: 'h23' }));
+    }
+
     // The first Scheduled Publish run at or after the requested time actually merges it.
+    // Athens is a whole-hour offset from UTC, so stepping UTC hours finds its hours.
     function nextPublishSlot(date) {
-        for (var day = 0; day < 2; day++) {
-            for (var i = 0; i < PUBLISH_SLOTS_UTC.length; i++) {
-                var slot = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + day,
-                    PUBLISH_SLOTS_UTC[i][0], PUBLISH_SLOTS_UTC[i][1]));
-                if (slot >= date) return slot;
-            }
+        var slot = new Date(date.getTime());
+        slot.setUTCMinutes(0, 0, 0);
+        if (slot < date) slot.setUTCHours(slot.getUTCHours() + 1);
+        for (var i = 0; i < 48; i++) {
+            if (PUBLISH_HOURS_ATHENS.indexOf(athensHour(slot)) !== -1) return slot;
+            slot.setUTCHours(slot.getUTCHours() + 1);
         }
         return date;
     }
@@ -1185,7 +1191,7 @@
         if (publishAt) {
             prTitle += ' · προγραμματισμένο ' + formatAthens(publishAt);
             prBody += '\n\n**Προγραμματισμένη δημοσίευση:** ' + formatAthens(publishAt) +
-                '\n\nΤο workflow **Scheduled Publish** (00:17 και 12:17 UTC) κάνει merge στο πρώτο του run μετά από αυτή την ώρα, αν οι έλεγχοι είναι πράσινοι — εδώ ~' + formatAthens(nextPublishSlot(publishAt)) + '. ' +
+                '\n\nΤο workflow **Scheduled Publish** (09:00 και 18:00 ώρα Ελλάδας) κάνει merge στο πρώτο του run μετά από αυτή την ώρα, αν οι έλεγχοι είναι πράσινοι — εδώ ~' + formatAthens(nextPublishSlot(publishAt)) + '. ' +
                 'Για αλλαγή ώρας, άλλαξε την κρυφή γραμμή `f1s-publish-at` στο κείμενο του PR (ώρα UTC). Για ακύρωση, κλείσε το PR ή κάν\' το draft.' +
                 '\n\n' + window.F1S_AUTHOR_GITHUB.publishAtMarker(publishAt);
         }
