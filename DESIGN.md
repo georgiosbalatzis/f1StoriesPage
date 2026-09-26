@@ -166,7 +166,7 @@ Barlow is never used for Greek running text.
 3. **GFS Didot is preloaded and never used.** `blog-module/blog/template.html` preloads `gfs-didot-400-greek.woff2` on every article, but no public CSS declares or uses GFS Didot.
 4. **Unused font files ship in `assets/fonts/`:** DM Sans, Outfit, and Roboto. Roboto is used only by the author tools.
 5. **The authors h1 breaks the masthead system.** It uses Plex `700 … -.045em` (`authors.css:273`) where every other route uses Barlow for its masthead.
-6. **The legal pages have their own type rules:** h1 at weight 800 and tracking `-.03em`, and pill kickers at `.78rem`/700 (`styles/legal.css:14-37`).
+6. ~~The legal pages have their own type rules.~~ Fixed 2026-09-26: `styles/legal.css` uses the shared type (Plex 600 display title with the teal full stop, typed-caps kicker behind a 2px signal rule).
 
 ---
 
@@ -271,11 +271,13 @@ A card is **usually not a box**. Archive cards, home stories, related stories an
 
 The Journal's story blocks follow the same grammar without a per-story arrow CTA: photo (lead and secondary only) → category word → headline → deck (lead, long reads) → byline. The archive ledger is text-first rows divided by 1px rules under month rules.
 
-The article ends on an **author card** (not a box): «ΓΡΑΦΕΙ», portrait, name, specialty, one line of biography, «Όλα τα άρθρα του …», a quiet Instagram link, bounded by a 1px top rule and a 3px rule in the writer's accent.
+The article opens on a **dark plate** in both themes (`--plate-*`): folio, back link, the category in its dark-ground ink (`--kind-on-dark`), the headline in Plex 600 at up to 4.25rem, byline and timing-rule meta; the photograph sits whole beside it (capped in height, never cropped) with the cut corner, and bleeds edge to edge on phones. It ends on an **author card**: «ΓΡΑΦΕΙ» in the writer's accent, their illustrated sticker whole at 112px on a small plate, name, specialty, one line of biography, «Όλα τα άρθρα του …», a quiet Instagram link, on a surface with a left rule in the writer's accent. Related stories below are numbered 01–03.
 
 Boxed surfaces are the exception:
 - the opinion treatment
-- author profiles
+- the article's closing author card and the focused writer view on `/authors/`
+
+Dark plates (`--plate-*` in `styles/editorial.css`) are the page-level counterpoint: the colophon on every page, the Journal nameplate and slow-reading panel, the article cover, the authors intro and the 404. Warm black on the light theme; a deeper black with a hairline edge on the dark one.
 
 ### Figures and photography — A
 
@@ -341,9 +343,9 @@ The home contact form uses underline-only fields (1px bottom border, transparent
    - pagination `0 5px 14px`
    - dark-mode scroll-top `0 8px 22px #00000066`
    - gallery arrows `0 8px 18px`
-4. **The legal pages don't use the editorial language.** They have centered heroes, a **999px pill kicker**, 16px-radius cards, a pill TOC, and a horizontal fade gradient (`styles/legal.css`).
-5. **Authors cards are boxed.** Profiles are full bordered, filled boxes (`authors.css:283`), while every other card on the site is unboxed. Their links and kickers use `text-transform: uppercase` with 700 weight, unlike the typed-caps 500–600 labels used elsewhere.
-6. **The authors page has no edition line.** It uses a plain `section-kicker` ("F1 STORIES / ΟΙ ΑΝΘΡΩΠΟΙ") instead.
+4. ~~The legal pages don't use the editorial language.~~ Fixed 2026-09-26: a left-aligned hero, a flat rule-bounded contents bar pinned under the masthead, unboxed sections under 2px rules, ledger tables and accent-ruled callouts. No pills, no radii, no blur, no gradient. They stay deliberately quiet: no dark plate.
+5. ~~Authors cards are boxed.~~ Fixed 2026-09-26: profiles are unboxed under a 3px rule in the writer's accent; the stickers show whole and in full colour. The focused writer view (`?author=`) is the one boxed surface: a warm card edged in the writer's accent.
+6. ~~The authors page has no edition line.~~ Fixed: the intro opens with the folio line on a dark plate, like the Journal nameplate and the article cover.
 7. **The cookie banner is styled twice,** identically, in `editorial.css:476-479` and `home.css:229-232`.
 8. **`!important`:**
    - `editorial.css` 10: dark scroll-top
