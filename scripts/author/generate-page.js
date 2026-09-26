@@ -2,8 +2,8 @@
     'use strict';
 
     // ── Authors: the one list in blog-module/taxonomy.js (loaded before this script) ──
-    var TEAM = { name: 'F1 Stories Team', label: 'F1 Stories Team', code: '', portrait: '/images/authors/default.webp', specialty: 'Ομάδα F1 Stories', bio: '' };
-    var AUTHOR_LIST = window.F1S_TAXONOMY.AUTHORS.concat([TEAM]);
+    var TEAM_NAME = 'F1 Stories Team';
+    var AUTHOR_LIST = window.F1S_TAXONOMY.AUTHORS;
     var AUTHORS = {};
     var AUTHOR_CODES = {};
     AUTHOR_LIST.forEach(function (author) {
@@ -558,7 +558,9 @@
     function authorFromFolderName(folderName) {
         var m = String(folderName || '').match(/^\d{8}(?:-\d+)?([A-Z])?$/);
         if (!m) return null;
-        var code = m[1] || '';
+        // A folder without a writer's code is credited to the house byline.
+        if (!m[1]) return TEAM_NAME;
+        var code = m[1];
         for (var name in AUTHOR_CODES) {
             if (Object.prototype.hasOwnProperty.call(AUTHOR_CODES, name) && AUTHOR_CODES[name] === code) return name;
         }
@@ -1250,7 +1252,7 @@
         var contentEl = byId('pv-content');
         authorDom.setTrustedHtml(contentEl, html, 'Generate article preview HTML');
 
-        var authorData = AUTHORS[author] || AUTHORS['F1 Stories Team'];
+        var authorData = AUTHORS[author] || AUTHORS[TEAM_NAME];
         byId('pv-byline').textContent = authorData.label;
         // Mirrors renderHeaderByline(): the team signs without a portrait.
         var bylineImg = byId('pv-byline-img');

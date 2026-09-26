@@ -355,7 +355,7 @@
     // edit rewrites the folder name so the processor picks up the
     // right code (author from source is hard-overridden by the code
     // in the folder name).
-    var AUTHOR_CODES = { 'F1 Stories Team': '' };
+    var AUTHOR_CODES = {};
     window.F1S_TAXONOMY.AUTHORS.forEach(function (author) { AUTHOR_CODES[author.name] = author.code; });
     var AUTHOR_CODE_TO_NAME = {};
     Object.keys(AUTHOR_CODES).forEach(function (name) {

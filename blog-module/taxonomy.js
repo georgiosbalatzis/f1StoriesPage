@@ -92,6 +92,16 @@
             bio: 'Συνδέει τις εποχές της Formula 1 με τις σημερινές μάχες και θυμίζει γιατί οι λεπτομέρειες μένουν περισσότερο από τα νούμερα.',
             column: 'Από το αρχείο του grid', instagram: 'https://www.instagram.com/thanasismpatalas/',
             stories: [{ id: '20260722T', title: 'Mercedes εναντίον Ferrari' }, { id: '20260604T', title: 'Η ψυχολογία του οδηγού' }]
+        },
+        {
+            // The house byline: every story filed without a writer's code (or with F) is
+            // credited here. The data name stays 'F1 Stories Team'; readers see 'F1 Stories'.
+            name: 'F1 Stories Team', label: 'F1 Stories', genitive: 'F1 Stories', slug: 'f1-stories', code: 'F',
+            portrait: '/images/avatars/F1S.webp', desk: 'Χωρίς πρόσωπο',
+            specialty: 'Από το αρχείο ως τις Power Units του 2026',
+            bio: 'Κανείς δεν έχει δει το πρόσωπο κάτω από το κράνος. Ξεθάβει V12 και turbo από το αρχείο, εξηγεί την ενέργεια των νέων Power Units και εμφανίζεται μόνο όταν μια ιστορία δεν χωράει σε μία υπογραφή.',
+            column: 'El Plan',
+            stories: [{ id: '20260923', title: 'Το πραγματικό πρόβλημα του Baku είναι η ενέργεια' }, { id: '20260910', title: 'Madridring aka Jarama est. 1989' }]
         }
     ].map(Object.freeze));
     function findAuthor(value) {

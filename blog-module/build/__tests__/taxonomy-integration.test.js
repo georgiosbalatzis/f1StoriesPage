@@ -180,7 +180,7 @@ test('an article takes its colour from the author-chosen primary category', () =
 });
 
 test('every author resolves from the one list, by canonical name or slug', () => {
-    assert.equal(AUTHORS.length, 5);
+    assert.equal(AUTHORS.length, 6);
     for (const author of AUTHORS) {
         assert.equal(findAuthor(author.name), author);
         assert.equal(findAuthor(author.slug), author);
@@ -188,11 +188,14 @@ test('every author resolves from the one list, by canonical name or slug', () =>
         assert.ok(author.portrait && author.specialty && author.bio && author.genitive && /^[A-Z]$/.test(author.code));
         assert.ok(fs.existsSync(path.join(__dirname, '..', '..', '..', authorThumb(author))), `${author.slug} thumbnail`);
     }
-    assert.equal(findAuthor('F1 Stories Team'), null);
-    assert.equal(authorLabel('F1 Stories Team'), 'F1 Stories Team');
+    // The house byline is a writer like the others; unknown names still pass through.
+    assert.equal(findAuthor('F1 Stories Team').slug, 'f1-stories');
+    assert.equal(authorLabel('F1 Stories Team'), 'F1 Stories');
+    assert.equal(findAuthor('Guest Writer'), null);
+    assert.equal(authorLabel('Guest Writer'), 'Guest Writer');
 });
 
-test('the article author card signs with the writer and degrades for the team', () => {
+test('the article author card signs with the writer and degrades for an unknown name', () => {
     const card = renderAuthorCard({ author: 'Georgios Balatzis' });
     assert.match(card, /class="author-card" data-author-slug="georgios-balatzis"/);
     assert.match(card, /Γιώργος Μπαλατζής/);
@@ -200,7 +203,10 @@ test('the article author card signs with the writer and degrades for the team', 
     assert.match(card, /index\.html\?author=georgios-balatzis">Όλα τα άρθρα του Γιώργου/);
     assert.match(card, /Instagram/);
     const team = renderAuthorCard({ author: 'F1 Stories Team' });
-    assert.doesNotMatch(team, /data-author-slug|<img|Instagram/);
+    assert.match(team, /data-author-slug="f1-stories"[\s\S]*F1S\.webp[\s\S]*Όλα τα άρθρα του F1 Stories/);
+    assert.doesNotMatch(team, /Instagram/);
+    const guest = renderAuthorCard({ author: 'Guest Writer' });
+    assert.doesNotMatch(guest, /data-author-slug|<img|Instagram/);
 });
 
 test('the author card migration replaces the old box once and stays idempotent', () => {
