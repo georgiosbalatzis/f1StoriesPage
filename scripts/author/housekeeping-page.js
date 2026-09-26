@@ -974,6 +974,8 @@
                 meta.appendChild(el('span', 'hk-pr-state', '#' + pr.number + (pr.draft ? ' · πρόχειρο' : ' · ανοιχτό')));
                 meta.appendChild(el('span', '', pr.user && pr.user.login ? pr.user.login : ''));
                 meta.appendChild(el('span', '', pr.created_at ? new Date(pr.created_at).toLocaleString('el-GR', { dateStyle: 'medium', timeStyle: 'short' }) : ''));
+                var publishAt = window.F1S_AUTHOR_GITHUB.parsePublishAt(pr.body);
+                if (publishAt) meta.appendChild(el('span', 'hk-pr-state', 'προγραμματισμένο ' + publishAt.toLocaleString('el-GR', { timeZone: 'Europe/Athens', dateStyle: 'medium', timeStyle: 'short' })));
                 body.appendChild(meta);
                 body.appendChild(el('h3', 'hk-item-title', pr.title || ''));
                 body.appendChild(el('code', 'hk-log-branch', pr.head.ref));

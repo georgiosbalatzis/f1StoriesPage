@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="/theme-overrides.min.css?v=e7ab56d1">
 
     <script defer src="/scripts/author/session-token.min.js?v=0f9d8352"></script>
-    <script defer src="/scripts/author/github-client.min.js?v=a44c6a74"></script>
+    <script defer src="/scripts/author/github-client.min.js?v=5bf44f10"></script>
     <script defer src="/scripts/author/dom-tools.min.js?v=4e2a9147"></script>
     <script defer src="/scripts/author/dialogs.min.js?v=d3714dc1"></script>
 
@@ -233,9 +233,21 @@
         <section class="gb-panel" data-panel="4" aria-labelledby="gb-h-4" hidden>
             <p class="gb-eyebrow">Βήμα 5 / 5</p>
             <h1 class="gb-title" id="gb-h-4" tabindex="-1">Έλεγχος &amp; PR</h1>
-            <p class="gb-lede">Ανοίγει branch και Pull Request. Το main δεν αλλάζει απευθείας· οι έλεγχοι του GitHub κάνουν merge και build αυτόματα.</p>
+            <p class="gb-lede">Ανοίγει branch και Pull Request. Το main δεν αλλάζει απευθείας· οι έλεγχοι του GitHub κάνουν merge και build αυτόματα, τώρα ή στην ώρα που θα προγραμματίσεις.</p>
             <ul class="gb-review" id="gen-review"></ul>
             <p class="gb-folder">Φάκελος: <code id="gen-review-folder">—</code> <span class="gb-hint">Αν υπάρχει ήδη, θα ερωτηθείς για νέα έκδοση ή αντικατάσταση.</span></p>
+            <fieldset class="gb-field gb-when">
+                <legend class="gb-label">Πότε δημοσιεύεται</legend>
+                <div class="gb-chips" id="gen-when-group">
+                    <label class="gb-chip"><input type="radio" name="gen-when" value="now" checked><span>Τώρα</span></label>
+                    <label class="gb-chip"><input type="radio" name="gen-when" value="schedule"><span>Προγραμματισμένα</span></label>
+                </div>
+                <div class="gb-when-at" id="gen-schedule-box" hidden>
+                    <label class="gb-label" for="gen-schedule-at">Ημερομηνία και ώρα δημοσίευσης</label>
+                    <input type="datetime-local" class="gb-input" id="gen-schedule-at" step="300" aria-describedby="gen-schedule-hint">
+                    <p class="gb-hint" id="gen-schedule-hint">Το PR ανοίγει τώρα με ετικέτα <code>scheduled</code> και οι έλεγχοι τρέχουν αμέσως· το merge και το deploy γίνονται στον πρώτο αυτόματο έλεγχο μετά την ώρα αυτή (κάθε μέρα 09:00 και 18:00 ώρα Ελλάδας). Η ημερομηνία ορίζει και τον φάκελο. Για ακύρωση, κλείσε το PR.</p>
+                </div>
+            </fieldset>
             <div class="gb-publish-row">
                 <button class="gb-btn gb-btn-signal" id="gen-publish-btn" type="button">
                     <svg class="icon" aria-hidden="true"><use href="#fa-rocket"/></svg> Άνοιγμα Pull Request
@@ -279,6 +291,6 @@
 <script defer src="/scripts/shared-nav.min.js?v=1835b71e"></script>
 <script defer src="/blog-module/taxonomy.min.js?v=3521111e"></script>
 <script defer src="/scripts/author/article-source.min.js?v=0ccda93e"></script>
-<script defer src="/scripts/author/generate-page.min.js?v=bb85abf3"></script>
+<script defer src="/scripts/author/generate-page.min.js?v=64c65838"></script>
 </body>
 </html>

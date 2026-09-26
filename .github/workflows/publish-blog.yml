@@ -8,7 +8,10 @@ name: Site Maintenance
 
 on:
   schedule:
-    - cron: '17 0,12 * * *'
+    # YouTube snapshot: Saturday 23:59 Europe/Athens. GitHub cron is UTC, so both
+    # EET and EEST offsets are scheduled and the job keeps the matching one.
+    - cron: '59 20 * * 6'
+    - cron: '59 21 * * 6'
     # Standings refresh: Friday 23:59, Saturday 07:01 and Monday 07:01 Europe/Athens
     # (after practice, after qualifying, after the race). GitHub cron is UTC, so
     # both EET and EEST offsets are scheduled and the job keeps the matching one.
@@ -119,7 +122,7 @@ jobs:
     name: Refresh YouTube snapshot
     if: >-
       ${{
-        github.event.schedule == '17 0,12 * * *' ||
+        contains(fromJSON('["59 20 * * 6", "59 21 * * 6"]'), github.event.schedule) ||
         inputs.task == 'youtube'
       }}
     runs-on: ubuntu-latest
@@ -129,20 +132,48 @@ jobs:
     outputs:
       changed: ${{ steps.commit.outputs.changed }}
     steps:
+      - name: Check Athens schedule window
+        id: schedule_window
+        shell: bash
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          set -eu
+          if [ -z "$SCHEDULE" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Same cron-slot rule as the standings job: keep only the Saturday 23:59
+          # Athens slot that matches today's UTC offset.
+          offset_hours=$((10#$(TZ=Europe/Athens date +%z | cut -c2-3)))
+          read -r _ cron_hour _ <<< "$SCHEDULE"
+          athens_hour=$(( (10#$cron_hour + offset_hours) % 24 ))
+          should_run=false
+          if [ "$athens_hour" = "23" ]; then
+            should_run=true
+          fi
+
+          echo "Schedule '$SCHEDULE' → Athens hour $athens_hour (UTC+$offset_hours), run=$should_run"
+          echo "run=$should_run" >> "$GITHUB_OUTPUT"
+
       - name: Checkout main
+        if: ${{ steps.schedule_window.outputs.run == 'true' }}
         uses: actions/checkout@v5
         with:
           ref: main
           fetch-depth: 0
           persist-credentials: true
 
-      - uses: ./.github/actions/setup
+      - if: ${{ steps.schedule_window.outputs.run == 'true' }}
+        uses: ./.github/actions/setup
 
       - name: Refresh YouTube snapshot
+        if: ${{ steps.schedule_window.outputs.run == 'true' }}
         run: node scripts/build/fetch-youtube.mjs
 
       - name: Commit updated snapshot
         id: commit
+        if: ${{ steps.schedule_window.outputs.run == 'true' }}
         uses: ./.github/actions/commit-and-push
         with:
           message: 'chore(data): refresh youtube snapshot [skip ci]'
@@ -152,7 +183,7 @@ jobs:
     name: Refresh standings data
     if: >-
       ${{
-        (github.event_name == 'schedule' && github.event.schedule != '17 0,12 * * *') ||
+        (github.event_name == 'schedule' && !contains(fromJSON('["59 20 * * 6", "59 21 * * 6"]'), github.event.schedule)) ||
         inputs.task == 'standings'
       }}
     runs-on: ubuntu-latest

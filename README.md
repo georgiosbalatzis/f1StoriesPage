@@ -442,7 +442,7 @@ npm run build:youtube
 - Το `lastUpdated` αλλάζει μόνο όταν αλλάξουν τα videos. Έτσι δεν γίνονται άσκοπα commits.
 - Αν το YouTube δεν απαντά και υπάρχει ήδη snapshot, το script κρατά το παλιό και τερματίζει με exit code 0. Αποτυγχάνει μόνο όταν δεν υπάρχει καθόλου snapshot.
 
-Στην παραγωγή τρέχει αυτόματα δύο φορές τη μέρα (ενότητα 13.3).
+Στην παραγωγή τρέχει αυτόματα μία φορά την εβδομάδα, Σάββατο 23:59 ώρα Αθήνας (ενότητα 13.3).
 
 ---
 
@@ -551,6 +551,8 @@ npm run build:public
 - Το βήμα ελέγχου δείχνει όλα τα warnings: τίτλο με κεφαλαία ή emoji, επαναλαμβανόμενες λέξεις, εικόνες που δεν αντιστοιχούν σε δείκτες.
 - Αν υπάρχει ήδη φάκελος με την ίδια ημερομηνία, διαλέγετε ανάμεσα σε νέα έκδοση `-N` και αντικατάσταση. Η αντικατάσταση ζητά δεύτερη επιβεβαίωση.
 - **Δημοσίευση:** δημιουργεί branch `author/blog/<slug>-<timestamp>`, κάνει ένα commit μόνο μέσα στο `blog-module/blog-entries/` και ανοίγει PR προς το `main`.
+- **Προγραμματισμένη δημοσίευση:** στο βήμα 5, «Πότε δημοσιεύεται» → «Προγραμματισμένα» με ημερομηνία και ώρα (τουλάχιστον 10 λεπτά μπροστά). Το PR ανοίγει αμέσως σε branch `author/scheduled/<slug>-<timestamp>` με ετικέτα `scheduled`, και ο φάκελος παίρνει την ημερομηνία δημοσίευσης. Η δημοσίευση γίνεται από το Scheduled Publish (ενότητα 13.5).
+- Φάκελοι που περιμένουν ήδη σε ανοιχτό PR `author/*` θεωρούνται πιασμένοι: η δημοσίευση πηγαίνει αυτόματα στο επόμενο `-N`.
 - **Εξαγωγή ZIP:** κατεβάζει τον φάκελο του άρθρου (`source.txt`, εικόνες, `README.txt`) για χειροκίνητη δημοσίευση ή για εισαγωγή από το housekeeping.
 
 ### 12.3 `housekeeping.html`: συντήρηση
@@ -566,18 +568,19 @@ Dashboard με δεδομένα GA4 από το Google Analytics Data API, με 
 
 ### 12.5 Τι γίνεται μετά το PR
 
-Το PR περνά αυτόματα από έλεγχο, γίνεται merge, χτίζεται και δημοσιεύεται (ενότητα 13.2). Ο συντάκτης δεν χρειάζεται να κάνει τίποτα άλλο.
+Το PR περνά αυτόματα από έλεγχο, γίνεται merge, χτίζεται και δημοσιεύεται (ενότητα 13.2). Ο συντάκτης δεν χρειάζεται να κάνει τίποτα άλλο. Ένα προγραμματισμένο PR ελέγχεται αμέσως αλλά γίνεται merge μόνο όταν περάσει η ώρα του (ενότητα 13.5). Το housekeeping δείχνει την ώρα αυτή στη λίστα ανοιχτών PR.
 
 ---
 
 ## 13. GitHub Actions
 
-Υπάρχουν τέσσερα workflows στο `.github/workflows/`:
+Υπάρχουν πέντε workflows στο `.github/workflows/`:
 
 | Αρχείο | Όνομα | Πότε τρέχει | Τι κάνει |
 |---|---|---|---|
 | `quality.yml` | **Site Quality** | PR προς `main`, χειροκίνητα | Build και έλεγχοι, μόνο με ανάγνωση. Δεν κάνει deploy. |
 | `auto-publish-author-pr.yml` | **Publish Article** | Όταν ολοκληρωθεί το Site Quality σε branch `author/**` | Έλεγχος και merge του PR του συντάκτη, μετά κλήση του Site Maintenance (`task: blog`). |
+| `scheduled-publish.yml` | **Scheduled Publish** | Κάθε μέρα 09:00 και 18:00 ώρα Αθήνας, χειροκίνητα | Merge των PR `author/scheduled/**` των οποίων η ώρα πέρασε, μετά κλήση του Site Maintenance (`task: blog`). |
 | `publish-blog.yml` | **Site Maintenance** | Schedule, push σε άρθρα, χειροκίνητα, κλήση από το Publish Article | Build του blog, ανανέωση YouTube, ανανέωση standings, deploy αν άλλαξε κάτι. |
 | `deploy-pages.yml` | **Deploy Pages** | Push στο `main`, χειροκίνητα, κλήση από άλλο workflow | `build:public`, έλεγχοι, upload και deploy στο GitHub Pages. |
 
@@ -649,7 +652,7 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 
 | Cron | Job | Ώρα |
 |---|---|---|
-| `17 0,12 * * *` | `refresh_youtube` | κάθε μέρα 00:17 και 12:17 UTC |
+| `59 20 * * 6`, `59 21 * * 6` | `refresh_youtube` | Σάββατο 23:59 ώρα Αθήνας |
 | `59 20 * * 5`, `59 21 * * 5` | `refresh_standings_data` | Παρασκευή 23:59 ώρα Αθήνας |
 | `1 4 * * 6`, `1 5 * * 6` | `refresh_standings_data` | Σάββατο 07:01 ώρα Αθήνας |
 | `1 4 * * 1`, `1 5 * * 1` | `refresh_standings_data` | Δευτέρα 07:01 ώρα Αθήνας |
@@ -666,7 +669,7 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 - **`workflow_dispatch`** με επιλογή `task`: `blog`, `standings` ή `youtube`.
 - **`workflow_call`** με input `task`. Το χρησιμοποιεί το Publish Article με `task: blog`.
 
-**Γιατί υπάρχουν δύο cron για κάθε ώρα των standings.** Το cron του GitHub είναι πάντα σε UTC, ενώ η Αθήνα αλλάζει μεταξύ UTC+2 (χειμώνας) και UTC+3 (θερινή ώρα). Γι' αυτό προγραμματίζονται και οι δύο εκδοχές. Το πρώτο βήμα του job υπολογίζει την ώρα Αθήνας από το cron που ενεργοποιήθηκε, όχι από το ρολόι, και συνεχίζει μόνο αν βγαίνει 23 ή 7. Το GitHub συχνά ξεκινά τα scheduled runs με καθυστέρηση, οπότε ένας έλεγχος με βάση το ρολόι θα παρέλειπε τα runs.
+**Γιατί υπάρχουν δύο cron για κάθε ώρα των standings και του YouTube.** Το cron του GitHub είναι πάντα σε UTC, ενώ η Αθήνα αλλάζει μεταξύ UTC+2 (χειμώνας) και UTC+3 (θερινή ώρα). Γι' αυτό προγραμματίζονται και οι δύο εκδοχές. Το πρώτο βήμα του job υπολογίζει την ώρα Αθήνας από το cron που ενεργοποιήθηκε, όχι από το ρολόι, και συνεχίζει μόνο αν βγαίνει 23 ή 7 (για το YouTube μόνο 23). Το GitHub συχνά ξεκινά τα scheduled runs με καθυστέρηση, οπότε ένας έλεγχος με βάση το ρολόι θα παρέλειπε τα runs.
 
 **Jobs:**
 
@@ -689,7 +692,20 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 - **Job `build`** (timeout 25 λεπτά): checkout του `main`, `setup`, `npm run build:public`, `npm run quality:static`, `npm run audit:runtime`, `actions/configure-pages@v6` και `actions/upload-pages-artifact@v5` με `path: dist`.
 - **Job `deploy`:** `actions/deploy-pages@v5` στο environment `github-pages`.
 
-### 13.5 Σημαντικές λεπτομέρειες
+### 13.5 Scheduled Publish (`scheduled-publish.yml`)
+
+Δημοσιεύει τα προγραμματισμένα άρθρα του `generate.html`. Το Publish Article δεν αγγίζει τα branches `author/scheduled/**`, οπότε τίποτα δεν γίνεται merge πριν την ώρα του.
+
+- **Trigger:** schedule δύο φορές τη μέρα, 09:00 και 18:00 ώρα Αθήνας, και `workflow_dispatch`. Όπως στα standings, προγραμματίζονται και οι δύο εκδοχές UTC (`0 6`, `0 7`, `0 15`, `0 16`) και το πρώτο βήμα κρατά μόνο αυτή που βγαίνει 9 ή 18 ώρα Αθήνας. Ένα άρθρο βγαίνει στο πρώτο run μετά την ώρα του, οπότε αυτές είναι στην πράξη οι ώρες δημοσίευσης· το `generate.html` δείχνει στον συντάκτη ποιο run θα το πάρει. Το GitHub μπορεί να καθυστερήσει τα scheduled runs κατά μερικά λεπτά. Για δημοσίευση νωρίτερα: Actions > Scheduled Publish > Run workflow (κάνει merge ό,τι έχει ήδη περάσει η ώρα του).
+- **Ώρα δημοσίευσης:** κρυφή γραμμή στο κείμενο του PR, `<!-- f1s-publish-at: 2026-10-01T09:00:00Z -->` (UTC). Για αλλαγή ώρας, Edit στην περιγραφή του PR και αλλαγή της γραμμής.
+- **Ακύρωση:** κλείσιμο του PR ή μετατροπή σε draft.
+- **Job `merge`** (`contents: write`, `pull-requests: write`, `checks: read`): για κάθε ανοιχτό, μη draft PR `author/scheduled/**` από το ίδιο repo προς `main`, με ώρα που πέρασε:
+  1. περιμένει πράσινο **Quality gates** στο head commit (αλλιώς warning και ξαναδοκιμάζει στο επόμενο run),
+  2. αποτυγχάνει αν το PR αλλάζει αρχεία έξω από το `blog-module/blog-entries/`,
+  3. `gh pr merge --merge --delete-branch --match-head-commit <sha>`.
+- **Job `publish`:** αν έγινε έστω ένα merge, καλεί το `publish-blog.yml` με `task: blog`, όπως το Publish Article.
+
+### 13.6 Σημαντικές λεπτομέρειες
 
 - **`[skip ci]` και reusable deploy.** Τα commits των workflows γίνονται με το `GITHUB_TOKEN`. Το GitHub δεν ξεκινά νέα workflows από τέτοια pushes, και επιπλέον έχουν `[skip ci]`. Γι' αυτό το deploy δεν περιμένει κάποιο push. Το workflow που έκανε το commit καλεί το ίδιο το `deploy-pages.yml`.
 - **Ταυτότητα των commits.** Τα αυτόματα commits γίνονται με `user.name "Georgios Balatzis"` και `user.email "georgios.balatzis@gmail.com"`. Το `.mailmap` ενώνει τις παλιές ταυτότητες (bot, noreply) σε μία.
@@ -703,6 +719,7 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
   - push κώδικα στο `main`: Deploy Pages.
   - αλλαγή άρθρου με push ή schedule: Site Maintenance, και μετά Deploy Pages.
   - PR συντάκτη: Site Quality, Publish Article, Site Maintenance (`task: blog`), και μετά Deploy Pages.
+  - προγραμματισμένο PR συντάκτη: Site Quality, Scheduled Publish (μετά την ώρα), Site Maintenance (`task: blog`), και μετά Deploy Pages.
 
 ---
 

@@ -327,6 +327,9 @@ body.author-page .background { display: none; }
 .gb-review-row.is-warn::before { content: '!'; color: var(--gb-warn); }
 .gb-review-text { min-width: 0; overflow-wrap: anywhere; }
 .gb-folder { margin: 0 0 18px; }
+.gb-when-at { display: grid; gap: 8px; margin-top: 8px; }
+.gb-when-at .gb-input { max-width: 320px; }
+.gb-when-at[hidden] { display: none; }
 .gb-publish-row { display: flex; flex-wrap: wrap; gap: 10px; }
 .gb-pr-steps { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 2px; font-size: .88rem; }
 .gb-pr-steps li { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: center; padding: 5px 0; color: var(--text-secondary); }

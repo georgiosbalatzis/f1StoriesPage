@@ -53,6 +53,27 @@
         return 'author/' + kind + '/' + slugForBranch(identifier) + '-' + timestampForBranch();
     }
 
+    // Scheduled publishing: the PR body carries the UTC publish time in a hidden
+    // marker that .github/workflows/scheduled-publish.yml reads (keep both in sync).
+    var PUBLISH_AT_RE = /<!--\s*f1s-publish-at:\s*(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?Z)\s*-->/;
+
+    function publishAtMarker(date) {
+        return '<!-- f1s-publish-at: ' + date.toISOString().replace(/\.\d{3}Z$/, 'Z') + ' -->';
+    }
+
+    function parsePublishAt(body) {
+        var match = String(body || '').match(PUBLISH_AT_RE);
+        if (!match) return null;
+        var date = new Date(match[1]);
+        return isNaN(date.getTime()) ? null : date;
+    }
+
+    // Inverse of authorBranchName: the (lowercased) folder an author/* branch writes to.
+    function folderFromAuthorBranch(ref) {
+        var match = String(ref || '').match(/^author\/[^/]+\/(.+)-\d{14}-[a-z0-9]+$/);
+        return match ? match[1] : '';
+    }
+
     function createClient(options) {
         options = options || {};
         var owner = options.owner || DEFAULT_OWNER;
@@ -151,6 +172,9 @@
         base64ToUtf8: base64ToUtf8,
         blobToBase64: blobToBase64,
         createClient: createClient,
+        folderFromAuthorBranch: folderFromAuthorBranch,
+        parsePublishAt: parsePublishAt,
+        publishAtMarker: publishAtMarker,
         slugForBranch: slugForBranch,
         timestampForBranch: timestampForBranch,
         utf8ToBase64: utf8ToBase64
