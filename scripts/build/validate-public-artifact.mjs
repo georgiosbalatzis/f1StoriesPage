@@ -121,7 +121,7 @@ function forbiddenReason(relPath) {
     if (/\.min\.(?:css|js)\.map$/i.test(relPath)) return 'source map';
     if (/^images\/bg\/bg(?:6|7|8|9)(?:-|\.|$)/i.test(relPath)) return 'unapproved hero background';
     if (/^images\/bg\/.*\.sh$/i.test(relPath)) return 'image build helper';
-    if (/^images\/avatars\/(?:FA|FAAM|Poulikidis)\.webp$/i.test(relPath)) return 'unused home avatar';
+    if (/^images\/avatars\/(?:FAAM|Poulikidis)\.webp$/i.test(relPath)) return 'unused home avatar';
     if (/^images\/authors\/(?:CSW|FAAM)\.webp$/i.test(relPath)) return 'unused author image';
     if (/^images\/icons\/.*\.webp$/i.test(relPath)) return 'unused icon variant';
     if (relPath === 'images/icons/sprite.svg') return 'build-only icon sprite';

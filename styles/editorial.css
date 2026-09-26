@@ -162,11 +162,13 @@ body.editorial-page {
 .editorial-page [data-author-slug="themis-charvalis"] { --author-accent: #dc8f79; }
 .editorial-page [data-author-slug="thanasis-batalas"] { --author-accent: #9eadd2; }
 .editorial-page [data-author-slug="dimitris-keramidiotis"] { --author-accent: #c39bb5; }
+.editorial-page [data-author-slug="f1-stories"] { --author-accent: #d4b84a; }
 [data-theme="light"] .editorial-page [data-author-slug="georgios-balatzis"] { --author-accent: #285f6f; }
 [data-theme="light"] .editorial-page [data-author-slug="giannis-poulikidis"] { --author-accent: #80501f; }
 [data-theme="light"] .editorial-page [data-author-slug="themis-charvalis"] { --author-accent: #9b4331; }
 [data-theme="light"] .editorial-page [data-author-slug="thanasis-batalas"] { --author-accent: #4b5a80; }
 [data-theme="light"] .editorial-page [data-author-slug="dimitris-keramidiotis"] { --author-accent: #6d4660; }
+[data-theme="light"] .editorial-page [data-author-slug="f1-stories"] { --author-accent: #74651c; }
 
 /* A tiny inline noise tile adds ink-and-paper texture without an image request. */
 body.editorial-page::after {

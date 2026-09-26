@@ -76,7 +76,7 @@ const BANNED_TRACKED_PATHS = [
         reason: 'image build helpers must stay out of public-facing image paths'
     },
     {
-        pattern: /^images\/avatars\/(?:FA|FAAM|Poulikidis)\.webp$/,
+        pattern: /^images\/avatars\/(?:FAAM|Poulikidis)\.webp$/,
         reason: 'duplicate avatar aliases must stay in archive/source-assets, not active image paths'
     },
     {
