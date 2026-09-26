@@ -8,11 +8,13 @@ name: Scheduled Publish
 # The PR body carries the UTC time as a hidden marker (see publishAtMarker in
 # scripts/author/github-client.js):  <!-- f1s-publish-at: 2026-10-01T09:00:00Z -->
 # Edit the marker to reschedule; close the PR or mark it draft to cancel.
+# A PR goes out on the first run at or after its time, so the effective publish
+# slots are 00:17 and 12:17 UTC (generate.html shows the author which slot).
 
 on:
   schedule:
-    # Every 15 minutes, off the :00 mark where GitHub drops the most runs.
-    - cron: '7,22,37,52 * * * *'
+    # Keep in sync with PUBLISH_SLOTS_UTC in scripts/author/generate-page.js.
+    - cron: '17 0,12 * * *'
   workflow_dispatch:
 
 permissions: {}

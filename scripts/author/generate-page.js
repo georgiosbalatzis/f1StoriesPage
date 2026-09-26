@@ -145,6 +145,8 @@
     // Scheduled Publish merges it once the time in the PR body has passed.
     var SCHEDULE_MIN_LEAD_MS = 10 * 60 * 1000;
     var SCHEDULE_LABEL = 'scheduled';
+    // [hour, minute] UTC of the Scheduled Publish cron ('17 0,12 * * *'); keep in sync.
+    var PUBLISH_SLOTS_UTC = [[0, 17], [12, 17]];
 
     function isScheduled() { return checkedValue('gen-when', 'now') === 'schedule'; }
 
@@ -161,6 +163,18 @@
         if (!date) return 'Λείπει η ημερομηνία και ώρα δημοσίευσης';
         if (date.getTime() < Date.now() + SCHEDULE_MIN_LEAD_MS) return 'Η ώρα δημοσίευσης πρέπει να είναι τουλάχιστον 10 λεπτά από τώρα';
         return null;
+    }
+
+    // The first Scheduled Publish run at or after the requested time actually merges it.
+    function nextPublishSlot(date) {
+        for (var day = 0; day < 2; day++) {
+            for (var i = 0; i < PUBLISH_SLOTS_UTC.length; i++) {
+                var slot = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + day,
+                    PUBLISH_SLOTS_UTC[i][0], PUBLISH_SLOTS_UTC[i][1]));
+                if (slot >= date) return slot;
+            }
+        }
+        return date;
     }
 
     function formatAthens(date) {
@@ -517,7 +531,8 @@
         }
         if (isScheduled()) {
             var scheduleProblem = scheduleIssue();
-            rows.push({ ok: !scheduleProblem, text: scheduleProblem || 'Προγραμματισμένη δημοσίευση: ' + formatAthens(scheduledDate()), step: 4 });
+            rows.push({ ok: !scheduleProblem, text: scheduleProblem || 'Προγραμματισμένη δημοσίευση: ' + formatAthens(scheduledDate()) +
+                ' · βγαίνει στον επόμενο έλεγχο, ~' + formatAthens(nextPublishSlot(scheduledDate())), step: 4 });
         }
         reviewList.replaceChildren.apply(reviewList, rows.map(function (row) {
             var li = el('li', 'gb-review-row ' + (row.ok ? 'is-ok' : 'is-warn'));
@@ -1170,7 +1185,7 @@
         if (publishAt) {
             prTitle += ' · προγραμματισμένο ' + formatAthens(publishAt);
             prBody += '\n\n**Προγραμματισμένη δημοσίευση:** ' + formatAthens(publishAt) +
-                '\n\nΤο workflow **Scheduled Publish** κάνει merge μετά από αυτή την ώρα, αν οι έλεγχοι είναι πράσινοι. ' +
+                '\n\nΤο workflow **Scheduled Publish** (00:17 και 12:17 UTC) κάνει merge στο πρώτο του run μετά από αυτή την ώρα, αν οι έλεγχοι είναι πράσινοι — εδώ ~' + formatAthens(nextPublishSlot(publishAt)) + '. ' +
                 'Για αλλαγή ώρας, άλλαξε την κρυφή γραμμή `f1s-publish-at` στο κείμενο του PR (ώρα UTC). Για ακύρωση, κλείσε το PR ή κάν\' το draft.' +
                 '\n\n' + window.F1S_AUTHOR_GITHUB.publishAtMarker(publishAt);
         }
@@ -1214,7 +1229,7 @@
         branch.appendChild(el('code', '', publishResult.branchName));
         resultBox.appendChild(branch);
         var note = el('p', '', publishAt
-            ? 'Φάκελος blog-entries/' + folderName + '/. Δημοσίευση: ' + formatAthens(publishAt) + '. Οι έλεγχοι τρέχουν τώρα· merge, build και deploy γίνονται αυτόματα μετά την ώρα αυτή. Για ακύρωση, κλείσε το PR.'
+            ? 'Φάκελος blog-entries/' + folderName + '/. Δημοσίευση: ' + formatAthens(publishAt) + ', στον επόμενο έλεγχο ~' + formatAthens(nextPublishSlot(publishAt)) + '. Οι έλεγχοι τρέχουν τώρα· merge, build και deploy γίνονται αυτόματα τότε. Για ακύρωση, κλείσε το PR.'
             : 'Φάκελος blog-entries/' + folderName + '/. Οι έλεγχοι του GitHub κάνουν merge, build και deploy αυτόματα — δεν χρειάζεται άλλο βήμα.');
         if (pr.html_url) {
             var link = el('a', '', 'Προβολή PR στο GitHub');
@@ -1298,7 +1313,7 @@
 
             var markerCount = countMarkers();
             var confirmMsg = 'Άνοιγμα Pull Request για το «' + title + '» στο blog-module/blog-entries/' + folderName + '/.';
-            if (publishAt) confirmMsg += '\n\nΠρογραμματισμένη δημοσίευση: ' + formatAthens(publishAt) + '.';
+            if (publishAt) confirmMsg += '\n\nΠρογραμματισμένη δημοσίευση: ' + formatAthens(publishAt) + '. Βγαίνει στον επόμενο έλεγχο, ~' + formatAthens(nextPublishSlot(publishAt)) + '.';
             if (contentImageFiles.length) {
                 confirmMsg += '\n\nΠεριλαμβάνει ' + plural(contentImageFiles.length, 'εικόνα', 'εικόνες') +
                     ' κειμένου + ' + plural(markerCount, 'δείκτη', 'δείκτες') + '.';
