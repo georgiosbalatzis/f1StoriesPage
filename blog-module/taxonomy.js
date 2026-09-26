@@ -71,7 +71,7 @@
         },
         {
             name: 'Georgios Balatzis', label: 'Γιώργος Μπαλατζής', genitive: 'Γιώργου', slug: 'georgios-balatzis', code: 'G',
-            portrait: '/images/avatars/CSW.webp', desk: 'Τεχνικά · Δεδομένα',
+            portrait: '/images/avatars/FA.webp', desk: 'Τεχνικά · Δεδομένα',
             specialty: 'Τεχνική ανάλυση και αγωνιστικός ρυθμός',
             bio: 'Μετράει όσα δεν φαίνονται στον πίνακα αποτελεσμάτων: upgrades, ελαστικά, ρυθμό και τις αποφάσεις που κρίνουν έναν αγώνα.',
             column: 'Τεχνικό δελτίο', instagram: 'https://www.instagram.com/borgos_gialatzis/',
@@ -87,7 +87,7 @@
         },
         {
             name: 'Thanasis Batalas', label: 'Θανάσης Μπαταλάς', genitive: 'Θανάση', slug: 'thanasis-batalas', code: 'T',
-            portrait: '/images/avatars/LN.webp', desk: 'Ιστορία · Ανάλυση',
+            portrait: '/images/avatars/MV.webp', desk: 'Ιστορία · Ανάλυση',
             specialty: 'Ιστορία, πρόσωπα και ψυχολογία',
             bio: 'Συνδέει τις εποχές της Formula 1 με τις σημερινές μάχες και θυμίζει γιατί οι λεπτομέρειες μένουν περισσότερο από τα νούμερα.',
             column: 'Από το αρχείο του grid', instagram: 'https://www.instagram.com/thanasismpatalas/',
