@@ -1,6 +1,33 @@
 {
   "posts": [
     {
+      "id": "20260927W",
+      "title": "Μια νίκη που ξαναβάζει τον Russell στη μάχη.",
+      "author": "Themis Charvalis",
+      "date": "2026-09-27",
+      "dateISO": "2026-09-27",
+      "displayDate": "27 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260927W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260927W/2.webp",
+      "excerpt": "Αρκεί η σημερινή νίκη για να αυξήσει το πάθος του για το φετινό πρωτάθλημα; Ο Βρετανός πήρε την pole position με διαφορά μεγαλύτερη των οκτώ δεκάτων και στη συνέχεια μετέτρεψε την ταχύτητα ενός γύρου...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260927W/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "George Russell"
+      ],
+      "wordCount": 444,
+      "readingTime": "3 min",
+      "imageWidth": 768,
+      "imageHeight": 432,
+      "backgroundImageWidth": 678,
+      "backgroundImageHeight": 452
+    },
+    {
       "id": "20260926G",
       "title": "Η Haas ήταν εκεί όταν άνοιξε ο δρόμος",
       "author": "Georgios Balatzis",
@@ -9382,5 +9409,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-26T16:08:30.311Z"
+  "lastUpdated": "2026-09-26T21:18:02.181Z"
 }
