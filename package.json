@@ -8,6 +8,7 @@
     "build:blog": "node blog-module/build/index.js",
     "build:blog:force": "node blog-module/build/index.js --force",
     "build:html": "node scripts/build/include.mjs",
+    "build:home-v2": "node scripts/build/home-v2.mjs",
     "build:logo": "node scripts/build/optimize-logo.mjs",
     "build:driver-headshots": "node scripts/build/fetch-driver-headshots.mjs",
     "build:team-logos": "node scripts/build/fetch-team-logos.mjs",
