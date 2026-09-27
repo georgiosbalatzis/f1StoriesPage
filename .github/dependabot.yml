@@ -1,8 +1,8 @@
 version: 2
 
 # Weekly update PRs for the two dependency surfaces of this repo.
-# Dependabot PRs run Site Quality like any other PR. They never auto-merge:
-# Publish Article only merges author/* branches.
+# Dependabot PRs automatically merge after Site Quality passes on their current
+# commit, then deploy Pages. See auto-merge-dependencies.yml.
 updates:
   - package-ecosystem: npm
     directory: /
