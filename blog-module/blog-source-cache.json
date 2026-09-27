@@ -28,6 +28,37 @@
       "backgroundImageHeight": 452
     },
     {
+      "id": "20260927G",
+      "title": "Tο Σαββατοκύριακο που η McLaren τα έχασε όλα",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-27",
+      "dateISO": "2026-09-27",
+      "displayDate": "27 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260927G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260927G/1.webp",
+      "excerpt": "Μηδέν βαθμοί. Ο Norris εκτός αγώνα, ο Piastri 14ος, και μάλιστα αφού είχε περάσει μεγάλο κομμάτι του Grand Prix μέσα στην τριάδα. Αν κοιτάξεις μόνο το αποτέλεσμα, θα πεις ότι η McLaren είχε απλώς μια...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260927G/article.html",
+      "category": "Teams",
+      "categories": [
+        "Teams"
+      ],
+      "tags": [
+        "McLaren",
+        "Baku",
+        "2026",
+        "Norris",
+        "Piastri"
+      ],
+      "wordCount": 682,
+      "readingTime": "4 min",
+      "imageWidth": 768,
+      "imageHeight": 432,
+      "backgroundImageWidth": 768,
+      "backgroundImageHeight": 432
+    },
+    {
       "id": "20260926G",
       "title": "Η Haas ήταν εκεί όταν άνοιξε ο δρόμος",
       "author": "Georgios Balatzis",
@@ -9409,5 +9440,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-26T21:18:02.181Z"
+  "lastUpdated": "2026-09-27T08:15:28.435Z"
 }
