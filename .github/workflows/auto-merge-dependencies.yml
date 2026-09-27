@@ -8,6 +8,11 @@ on:
 
 permissions: {}
 
+# Do not race two successful dependency PRs against the same main commit.
+concurrency:
+  group: dependabot-merge-${{ github.repository }}
+  queue: max
+
 jobs:
   merge:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request' }}
@@ -45,7 +50,18 @@ jobs:
             exit 0
           fi
 
-          gh pr merge "$number" --repo "$REPO" --merge --delete-branch --match-head-commit "$TESTED_SHA"
+          if ! merge_output="$(gh pr merge "$number" --repo "$REPO" --merge --delete-branch --match-head-commit "$TESTED_SHA" 2>&1)"; then
+            case "$merge_output" in
+              *"is not mergeable: the merge commit cannot be cleanly created"*)
+                echo "PR #$number conflicts with the current base; leaving it open for Dependabot to rebase."
+                exit 0
+                ;;
+              *)
+                printf '%s\n' "$merge_output" >&2
+                exit 1
+                ;;
+            esac
+          fi
           echo "merged=true" >> "$GITHUB_OUTPUT"
 
   # GITHUB_TOKEN merges do not trigger the normal push deployment.

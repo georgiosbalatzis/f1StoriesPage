@@ -11,9 +11,11 @@ updates:
       day: monday
       time: '06:00'
       timezone: Europe/Athens
-    open-pull-requests-limit: 5
+    # Keep npm updates serial: each PR rewrites the shared package lock.
+    open-pull-requests-limit: 1
+    rebase-strategy: auto
     groups:
-      # One PR for the build/test toolchain, one for the runtime build deps.
+      # Batch development and runtime changes into separate, sequential PRs.
       dev-tooling:
         dependency-type: development
         update-types: [minor, patch]
