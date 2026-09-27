@@ -59,6 +59,33 @@
       "backgroundImageHeight": 432
     },
     {
+      "id": "20260927-2W",
+      "title": "Kimi Raikkonen: Ο άνθρωπος που ήταν πάντα ο ίδιος από την αρχή ως το τέλος.",
+      "author": "Themis Charvalis",
+      "date": "2026-09-27",
+      "dateISO": "2026-09-27",
+      "displayDate": "27 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260927-2W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260927-2W/2.webp",
+      "excerpt": "Το μονοθέσιο έμοιαζε να χωράει μέσα στα χέρια του. Δεν το οδηγούσε απλώς αλλά το άφηνε να κινηθεί όπως ήθελε, σαν να υπήρχε ανάμεσα στους δύο μια συμφωνία που κανείς άλλος δεν μπορούσε να καταλάβει....",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260927-2W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Kimi Raikkonen"
+      ],
+      "wordCount": 615,
+      "readingTime": "4 min",
+      "imageWidth": 724,
+      "imageHeight": 483,
+      "backgroundImageWidth": 739,
+      "backgroundImageHeight": 415
+    },
+    {
       "id": "20260926G",
       "title": "Η Haas ήταν εκεί όταν άνοιξε ο δρόμος",
       "author": "Georgios Balatzis",
@@ -9440,5 +9467,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-27T08:15:28.435Z"
+  "lastUpdated": "2026-09-27T14:40:53.105Z"
 }
