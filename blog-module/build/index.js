@@ -214,7 +214,7 @@ function loadEditorialSelection(filePath = EDITORIAL_SELECTION_PATH) {
     }
 }
 
-// The Journal front: one lead, two secondary stories, a short recent list and
+// The Journal front: one lead, three secondary stories, a short recent list and
 // optional deep reads. Explicit picks come from editorial-selection.json; every
 // empty or invalid slot falls back to the newest story not already shown, so the
 // front is valid with no selection file at all. `posts` must be newest first.

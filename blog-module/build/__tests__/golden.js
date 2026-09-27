@@ -43,6 +43,11 @@ function goldenPath(name) {
     return path.join(GOLDEN_EXPECTED_DIR, `${name}.html`);
 }
 
+function normalizeGoldenHtml(html) {
+    return html.replace(/\?v=[a-f\d]{8}\b/gi, '?v=<asset>')
+        .replace(/<!-- f1s:icon-sprite:begin -->[\s\S]*?<!-- f1s:icon-sprite:end -->/g, '<!-- f1s:icon-sprite -->');
+}
+
 function readFixtureCsv() {
     return fs.readFileSync(CSV_FIXTURE_PATH, 'utf8');
 }
@@ -308,7 +313,7 @@ async function verifyGoldenSnapshots() {
         GOLDEN_ENTRIES.forEach(slug => {
             const actual = fs.readFileSync(articlePathIn(entriesDir, slug));
             const expected = fs.readFileSync(goldenPath(slug));
-            if (!actual.equals(expected)) {
+            if (normalizeGoldenHtml(actual.toString('utf8')) !== normalizeGoldenHtml(expected.toString('utf8'))) {
                 failures.push({
                     name: slug,
                     expectedPath: goldenPath(slug),

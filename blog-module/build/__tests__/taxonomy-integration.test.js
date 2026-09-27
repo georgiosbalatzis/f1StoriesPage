@@ -113,26 +113,26 @@ const frontPosts = Array.from({ length: 12 }, (_, index) => ({
 test('journal front falls back to the newest stories without a selection', () => {
     const front = resolveJournalFront(frontPosts, {});
     assert.equal(front.lead.id, 'p0');
-    assert.deepEqual(front.secondary.map(post => post.id), ['p1', 'p2']);
-    assert.deepEqual(front.recent.map(post => post.id), ['p3', 'p4', 'p5', 'p6']);
+    assert.deepEqual(front.secondary.map(post => post.id), ['p1', 'p2', 'p3']);
+    assert.deepEqual(front.recent.map(post => post.id), ['p4', 'p5', 'p6', 'p7']);
     assert.deepEqual(front.deepReads, []);
     assert.deepEqual(front.warnings, []);
-    assert.deepEqual(front.ids, ['p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6']);
+    assert.deepEqual(front.ids, ['p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7']);
 });
 
 test('journal front honours a valid selection and never repeats a story', () => {
     const front = resolveJournalFront(frontPosts, { lead: 'p5', secondary: ['p0', 'p5'], deepReads: ['p11', 'p10', 'p9'] });
     assert.equal(front.lead.id, 'p5');
-    assert.deepEqual(front.secondary.map(post => post.id), ['p0', 'p1']);
+    assert.deepEqual(front.secondary.map(post => post.id), ['p0', 'p1', 'p2']);
     assert.deepEqual(front.deepReads.map(post => post.id), ['p11', 'p10']);
-    assert.deepEqual(front.recent.map(post => post.id), ['p2', 'p3', 'p4', 'p6']);
+    assert.deepEqual(front.recent.map(post => post.id), ['p3', 'p4', 'p6', 'p7']);
     assert.equal(new Set(front.ids).size, front.ids.length);
 });
 
 test('journal front drops unknown or deleted ids with a warning', () => {
     const front = resolveJournalFront(frontPosts, { lead: 'deleted-story', secondary: ['p3'], deepReads: ['gone'] });
     assert.equal(front.lead.id, 'p0');
-    assert.deepEqual(front.secondary.map(post => post.id), ['p3', 'p1']);
+    assert.deepEqual(front.secondary.map(post => post.id), ['p3', 'p1', 'p2']);
     assert.deepEqual(front.deepReads, []);
     assert.equal(front.warnings.length, 2);
 });

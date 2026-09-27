@@ -189,7 +189,7 @@
     // The Journal front and archive ledger, shared by the build and the browser.
     // A ledger page shows `page` rows; every `pictureEvery` rows, starting at
     // `pictureAt`, one row carries a photograph so the long list keeps a rhythm.
-    const JOURNAL_LAYOUT = Object.freeze({ secondary: 2, recent: 4, deepReads: 2, page: 24, pictureAt: 5, pictureEvery: 8 });
+    const JOURNAL_LAYOUT = Object.freeze({ secondary: 3, recent: 4, deepReads: 2, page: 24, pictureAt: 5, pictureEvery: 8 });
     function isLedgerPicture(index) {
         return index >= JOURNAL_LAYOUT.pictureAt && (index - JOURNAL_LAYOUT.pictureAt) % JOURNAL_LAYOUT.pictureEvery === 0;
     }

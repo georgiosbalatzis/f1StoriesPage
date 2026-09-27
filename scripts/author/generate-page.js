@@ -1331,6 +1331,16 @@
         var headerMeta = headerObjectUrl ? headerImageMeta : (heroObjectUrl ? heroImageMeta : null);
         heroImg.src = headerUrl || '/blog-module/images/default-blog.jpg';
         heroImg.alt = title;
+        var heroPicture = heroImg.closest('picture');
+        heroPicture.tabIndex = 0;
+        heroPicture.setAttribute('role', 'button');
+        heroPicture.setAttribute('aria-label', 'Open article image');
+        heroPicture.onkeydown = function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                heroImg.click();
+            }
+        };
         applyImageMeta(heroImg, headerMeta || { width: 848, height: 400 }, 848, 400);
 
         var contentEl = byId('pv-content');
@@ -1650,14 +1660,16 @@
         var lines = raw.split('\n');
         var html = '';
         var currentParagraph = '';
+        var leadNextParagraph = false;
         var inList = false;
         var imageIdx = 0; // sequential marker counter, mirrors processor
         var tableIdx = 0;
 
         function flushParagraph() {
             if (currentParagraph) {
-                html += '<p>' + inlineFormat(currentParagraph) + '</p>\n';
+                html += '<p' + (leadNextParagraph ? ' class="article-lead"' : '') + '>' + inlineFormat(currentParagraph) + '</p>\n';
                 currentParagraph = '';
+                leadNextParagraph = false;
             }
         }
 
@@ -1668,6 +1680,12 @@
             if (trimmed === '') {
                 flushParagraph();
                 if (inList) { html += '</ul>\n'; inList = false; }
+                continue;
+            }
+
+            if (trimmed === '[lead]') {
+                flushParagraph();
+                leadNextParagraph = true;
                 continue;
             }
 
@@ -1926,6 +1944,12 @@
     // (Reuses the same lightbox pattern from article-script.js)
     document.addEventListener('click', function (e) {
         var img = e.target.closest && e.target.closest('.article-content-img');
+        if (!img) {
+            var header = e.target.closest && e.target.closest('.article-header');
+            if (header && !e.target.closest('a, button, .article-title, .article-edition, .article-header-byline, .article-meta')) {
+                img = header.querySelector('.article-header-img');
+            }
+        }
         if (!img) return;
         // Simple fullscreen view
         var overlay = document.createElement('div');
