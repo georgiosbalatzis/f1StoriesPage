@@ -206,7 +206,21 @@ const LEAD_MAX_CHARS = 240;
 function markArticleLead(html) {
     const open = /<div\b[^>]*\bclass="[^"]*\barticle-content\b[^"]*"[^>]*>/.exec(html);
     if (!open) return html;
-    let updated = html.replace(/(<p\b[^>]*?)\s+class="article-lead"/g, '$1');
+    let updated = html.replace(/<p\b[^>]*>/gi, tag => tag.replace(/\s+class=(["'])(.*?)\1/i, (_match, quote, classes) => {
+        const cleaned = classes.split(/\s+/).filter(className => className && className !== 'article-lead');
+        return cleaned.length ? ` class=${quote}${cleaned.join(' ')}${quote}` : '';
+    }));
+    const updatedOpen = /<div\b[^>]*\bclass="[^"]*\barticle-content\b[^"]*"[^>]*>/.exec(updated);
+    const bodyStart = updatedOpen.index + updatedOpen[0].length;
+    const authoredLead = /<p\b[^>]*\bdata-article-lead="true"[^>]*>/i.exec(updated.slice(bodyStart));
+    if (authoredLead) {
+        const tag = authoredLead[0].replace(/\s+class=(["'])(.*?)\1/i, (_match, quote, classes) => {
+            const names = classes.split(/\s+/).filter(Boolean);
+            if (!names.includes('article-lead')) names.push('article-lead');
+            return ` class=${quote}${names.join(' ')}${quote}`;
+        }).replace(/^<p\b(?![^>]*\bclass=)/i, '<p class="article-lead"');
+        return updated.slice(0, bodyStart + authoredLead.index) + tag + updated.slice(bodyStart + authoredLead.index + authoredLead[0].length);
+    }
     let pos = open.index + open[0].length;
     const blockRe = /<(p|h[1-6]|blockquote|figure|div|ul|ol|table)\b[^>]*>/g;
     for (let step = 0; step < 12; step += 1) {

@@ -576,6 +576,7 @@ body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn):not(.
     opacity: 1 !important;
     visibility: visible !important;
 }
+.article-page .scroll-to-top-btn.visible:not(.is-suppressed) { display: flex !important; }
 body.editorial-page .scroll-to-top-btn.is-suppressed,
 body.editorial-page .scroll-to-top-btn.is-suppressed.visible,
 .scroll-to-top-btn.is-suppressed,
@@ -601,6 +602,7 @@ body.editorial-page .scroll-to-top-btn.is-suppressed.visible,
         visibility: hidden !important;
         pointer-events: none !important;
     }
+    .article-page .scroll-to-top-btn.visible:not(.is-suppressed) { display: flex !important; }
 }
 
 /* ── Hide old navbar if present ───────────────── */

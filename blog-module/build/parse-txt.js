@@ -85,13 +85,15 @@ async function convertTxtToHtml(filePath) {
         const lines = content.split('\n');
         let htmlContent = '';
         let currentParagraph = '';
+        let leadNextParagraph = false;
         let inList = false;
         let tableIndex = 0;
 
         function flushParagraph() {
             if (currentParagraph === '') return;
-            htmlContent += `<p>${inlineFormat(currentParagraph)}</p>\n`;
+            htmlContent += `<p${leadNextParagraph ? ' data-article-lead="true"' : ''}>${inlineFormat(currentParagraph)}</p>\n`;
             currentParagraph = '';
+            leadNextParagraph = false;
         }
 
         for (let i = 0; i < lines.length; i++) {
@@ -99,6 +101,12 @@ async function convertTxtToHtml(filePath) {
 
             if (line === '') {
                 flushParagraph();
+                continue;
+            }
+
+            if (line === '[lead]') {
+                flushParagraph();
+                leadNextParagraph = true;
                 continue;
             }
 

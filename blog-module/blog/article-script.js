@@ -473,7 +473,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ── Image Lightbox ───────────────────────────────────────
     function setupLightbox() {
         function getImages() {
-            return Array.from(document.querySelectorAll('.article-content-img'));
+            return Array.from(document.querySelectorAll('.article-header-img, .article-content-img'));
         }
 
         if (!getImages().length) return;
@@ -568,6 +568,14 @@ document.addEventListener('DOMContentLoaded', function () {
             if (current < imgs.length - 1) { current++; update(); }
         }
 
+        function openImage(img, e) {
+            const imgs = getImages();
+            const index = imgs.indexOf(img);
+            if (index === -1) return;
+            e.preventDefault();
+            open(index, img);
+        }
+
         articleContent.addEventListener('click', (e) => {
             const trigger = e.target.closest('.article-content-img, .article-figure picture, .article-figure');
             if (!trigger) return;
@@ -577,13 +585,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 : trigger.querySelector('.article-content-img');
             if (!img) return;
 
-            const imgs = getImages();
-            const index = imgs.indexOf(img);
-            if (index === -1) return;
-
-            e.preventDefault();
-            open(index, img);
+            openImage(img, e);
         });
+
+        const headerImage = $('.article-header-img');
+        if (headerImage) {
+            const header = headerImage.closest('.article-header');
+            const picture = headerImage.closest('picture');
+            picture.tabIndex = 0;
+            picture.setAttribute('role', 'button');
+            picture.setAttribute('aria-label', 'Open article image');
+            header.addEventListener('click', e => {
+                if (e.target.closest('a, button, .article-title, .article-edition, .article-header-byline, .article-meta')) return;
+                openImage(headerImage, e);
+            });
+            picture.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') openImage(headerImage, e);
+            });
+        }
 
         lbClose.addEventListener('click', close);
 

@@ -71,7 +71,7 @@
     var footerInView = false;
 
     function isNarrowScrollTopLayout() {
-        return window.matchMedia && window.matchMedia('(max-width: 1199px)').matches;
+        return !document.body.classList.contains('article-page') && window.matchMedia && window.matchMedia('(max-width: 1199px)').matches;
     }
 
     function setScrollTopButtonSuppressed(suppressed) {
