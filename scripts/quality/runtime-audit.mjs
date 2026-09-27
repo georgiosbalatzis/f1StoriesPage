@@ -4,7 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CONTENT_SECURITY_POLICY } from '../build/security-policy.mjs';
+import { CSP_PROFILES, parseCsp } from '../build/security-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
@@ -82,21 +82,19 @@ function attrValue(tag, name) {
 }
 
 function checkCsp() {
-    const directives = new Map();
-    CONTENT_SECURITY_POLICY.split(';').forEach(part => {
-        const tokens = part.trim().split(/\s+/).filter(Boolean);
-        if (tokens.length) directives.set(tokens[0], tokens.slice(1));
-    });
-
-    const scriptSrc = directives.get('script-src') || [];
-    if (scriptSrc.includes("'unsafe-inline'")) {
-        errors.push('scripts/build/security-policy.mjs: script-src must not allow unsafe-inline');
-    }
-    if (scriptSrc.includes('https://www.google-analytics.com')) {
-        errors.push('scripts/build/security-policy.mjs: google-analytics.com must stay connect-only');
-    }
-    if ((directives.get('script-src-attr') || []).join(' ') !== "'none'") {
-        errors.push('scripts/build/security-policy.mjs: script-src-attr must stay none');
+    for (const [profile, policy] of Object.entries(CSP_PROFILES)) {
+        const directives = parseCsp(policy);
+        const where = `scripts/build/security-policy.mjs (${profile})`;
+        const scriptSrc = directives.get('script-src') || [];
+        if (scriptSrc.includes("'unsafe-inline'")) {
+            errors.push(`${where}: script-src must not allow unsafe-inline`);
+        }
+        if (scriptSrc.includes('https://www.google-analytics.com')) {
+            errors.push(`${where}: google-analytics.com must stay connect-only`);
+        }
+        if ((directives.get('script-src-attr') || []).join(' ') !== "'none'") {
+            errors.push(`${where}: script-src-attr must stay none`);
+        }
     }
 }
 

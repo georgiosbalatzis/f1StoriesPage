@@ -1,0 +1,41 @@
+version: 2
+
+# Weekly update PRs for the two dependency surfaces of this repo.
+# Dependabot PRs run Site Quality like any other PR. They never auto-merge:
+# Publish Article only merges author/* branches.
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Europe/Athens
+    open-pull-requests-limit: 5
+    groups:
+      # One PR for the build/test toolchain, one for the runtime build deps.
+      dev-tooling:
+        dependency-type: development
+        update-types: [minor, patch]
+      build-runtime:
+        dependency-type: production
+        update-types: [minor, patch]
+    commit-message:
+      prefix: chore(deps)
+
+  - package-ecosystem: github-actions
+    # "/" covers .github/workflows; the local composite actions pin actions too.
+    directories:
+      - /
+      - /.github/actions/*
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Europe/Athens
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns: ['*']
+    commit-message:
+      prefix: chore(actions)

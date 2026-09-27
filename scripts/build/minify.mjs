@@ -89,6 +89,7 @@ const JS_INPUTS = [
     'scripts/author/github-client.js',
     'scripts/author/dom-tools.js',
     'scripts/author/dialogs.js',
+    'scripts/author/image-tools.js',
     'scripts/author/article-source.js',
     'scripts/author/article-index.js',
     'scripts/author/generate-page.js',

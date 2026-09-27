@@ -12,10 +12,8 @@ on:
       - '.github/workflows/publish-blog.yml'
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+# Granted per job: only the deploy job can publish Pages or mint an OIDC token.
+permissions: {}
 
 concurrency:
   group: pages
@@ -26,11 +24,15 @@ jobs:
     name: Build Pages artifact
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    permissions:
+      contents: read
+      pages: read # configure-pages reads the Pages site (GET /repos/{repo}/pages)
     steps:
       - name: Checkout main
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           ref: main
+          persist-credentials: false
 
       - uses: ./.github/actions/setup
 
@@ -44,10 +46,10 @@ jobs:
         run: npm run audit:runtime
 
       - name: Configure Pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: dist
 
@@ -55,10 +57,13 @@ jobs:
     name: Deploy Pages artifact
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

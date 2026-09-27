@@ -1,54 +1,95 @@
 # Security Headers Strategy
 
 Production deploys are built from `dist/` with `npm run build:public`.
-The public artifact centralizes security policy in
-`scripts/build/security-policy.mjs` and writes it in two forms:
+`scripts/build/security-policy.mjs` is the single source of the policy, and
+the build writes it in two forms:
 
-- a generated `_headers` file for hosts that honor static header rules
-- browser-supported `Content-Security-Policy` and `Referrer-Policy` meta tags
-  in every HTML file as a GitHub Pages fallback
+- `<meta http-equiv="Content-Security-Policy">` and `<meta name="referrer">`
+  in every HTML file. This is what actually applies on GitHub Pages;
+- a generated `dist/_headers` for hosts that honor static header rules
+  (Cloudflare Pages, Netlify). **GitHub Pages ignores `_headers`.**
 
-GitHub Pages ignores `_headers`, so serving directly from GitHub Pages still
-relies on the HTML meta fallback unless Cloudflare or another edge layer adds
-real response headers. The artifact validator fails if public HTML security
-meta tags or `dist/_headers` drift from `scripts/build/security-policy.mjs`.
+The artifact validator fails if any page's meta tags or `dist/_headers` drift
+from `security-policy.mjs`.
 
-## Generated Headers
+## Per-page Content-Security-Policy
 
-`npm run build:public` generates `dist/_headers` with this rule for hosts such
-as Cloudflare Pages or Netlify:
+| Profile | Pages | Why it differs |
+|---|---|---|
+| `public` | every public page (home, archive, articles, standings, authors, legal, 404) | analytics after consent, Disqus, social embeds, F1 data APIs, Formspree |
+| `author-tools` | `housekeeping.html` | holds the GitHub token; talks only to `api.github.com`; runs no third-party code |
+| `author-generate` | `generate.html` | as `author-tools`, plus the live preview: YouTube and whitelisted iframes, and the X, Instagram, Threads and Facebook embed SDKs |
+| `statistics` | `statistics.html` | Google Identity Services and the GA4 Data API; no GitHub access |
 
-```http
-/*
-  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self' https://formspree.io; script-src 'self' https://www.googletagmanager.com https://f1stories-gr.disqus.com https://*.disqus.com https://*.disquscdn.com https://connect.facebook.net https://platform.twitter.com https://www.instagram.com https://www.threads.net; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; style-src-attr 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; connect-src 'self' https://api.jolpi.ca https://api.openf1.org https://formspree.io https://www.googletagmanager.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://stats.g.doubleclick.net https://f1stories-gr.disqus.com https://*.disqus.com https://*.disquscdn.com https://connect.facebook.net https://www.facebook.com https://platform.twitter.com https://syndication.twitter.com https://twitter.com https://*.twitter.com https://x.com https://*.x.com https://www.instagram.com https://www.threads.net; frame-src 'self' https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://open.spotify.com https://player.vimeo.com https://codepen.io https://datawrapper.dwcdn.net https://sketchfab.com https://www.sketchfab.com https://facebook.com https://www.facebook.com https://platform.twitter.com https://syndication.twitter.com https://www.instagram.com https://instagram.com https://threads.net https://www.threads.net https://f1stories.gr https://www.f1stories.gr https://georgiosbalatzis.github.io https://f1stories-gr.disqus.com https://disqus.com; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' https:; upgrade-insecure-requests
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: accelerometer=(), ambient-light-sensor=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=()
-  X-Content-Type-Options: nosniff
-  Strict-Transport-Security: max-age=31536000; includeSubDomains
+`PAGE_CSP_PROFILES` maps pages to profiles; everything else is `public`.
+`injectSecurityMeta(html, relPath)` replaces whatever policy a page carries
+with the one for its path. So `public-artifact.mjs` can no longer overwrite a
+tool page's policy with the broader public one, which it did before
+2026-09-26. The tool pages' sources carry the same meta block, so
+`serve-tools.mjs` (local dev) enforces the production policy.
+
+The tool profiles share a strict base: `base-uri 'none'`, `form-action 'none'`,
+`object-src 'none'`, `worker-src 'none'`, `media-src 'none'`,
+`manifest-src 'none'`, `font-src 'self'`, `script-src-attr 'none'`, no inline
+script, and no scheme-wide (`https:`) source in `script-src`, `connect-src`,
+`frame-src` or `img-src`.
+
+### Changing a tool policy
+
+`scripts/build/__tests__/security-policy.test.mjs` (`npm run test:security`,
+run by Site Quality) pins every tool profile source by source, and checks that:
+
+- no tool profile allows anything the public profile does not;
+- every directive that would otherwise be open (`base-uri`, `form-action`) or
+  silently fall back is set explicitly;
+- no inline/eval/wildcard script is allowed, and no analytics, ads, comments,
+  CDN or F1-data origin appears on a tool page;
+- only the two GitHub tools can reach `api.github.com`.
+
+A new origin needs the policy change **and** the matching `REVIEWED` entry in
+that test, with the reason, in the same review.
+
+## Headers GitHub Pages cannot serve
+
+GitHub Pages sends its own fixed response headers. The site cannot add:
+
+| Header | Covered today? |
+|---|---|
+| `Content-Security-Policy` | yes, via `<meta>` (a meta policy cannot carry `frame-ancestors`, `sandbox` or reporting) |
+| `Referrer-Policy` | yes, via `<meta name="referrer">` |
+| `Strict-Transport-Security` | no |
+| `X-Content-Type-Options` | no |
+| `Permissions-Policy` | no |
+| `frame-ancestors` / `X-Frame-Options` | no; author tools refuse to hold a token when framed (`session-token.js`) |
+
+To serve them, proxy `f1stories.gr` through Cloudflare and add the `dist/_headers`
+values as a Response Header Transform Rule, or deploy `dist/` to a host that
+applies `_headers`. Do not add `preload` to HSTS until every current and future
+subdomain is known to be HTTPS-only.
+
+## Verifying production
+
+```bash
+npm run security:headers                # https://f1stories.gr, human-readable
+node scripts/quality/security-headers-verify.mjs --json
+node scripts/quality/security-headers-verify.mjs --strict   # also fail on host limits
 ```
 
-For an A+ production posture on `https://f1stories.gr/*`, put Cloudflare in
-front of the GitHub Pages origin or deploy the generated artifact to a host
-that applies `_headers`. Real response headers cannot be fully replaced by
-HTML meta tags.
+For every checked page it reports each header as `pass`, `meta-fallback`,
+`host-limit` (the detected host, e.g. GitHub Pages, cannot serve it),
+`missing` (the host could serve it), `weak` or `mismatch`, plus the HTTP→HTTPS
+redirect. Exit code 1 means drift, or a header the host could serve but does
+not; 2 means the site could not be fetched. The **Security Headers** workflow
+runs it weekly and on demand.
 
-Do not add `preload` to HSTS until every current and future subdomain is known
-to be HTTPS-only.
+## Policy notes
 
-## Policy Notes
-
-- `script-src` no longer allows `unsafe-inline`, and `script-src-attr 'none'`
-  blocks inline event attributes. Runtime behavior that previously used inline
-  boot scripts or `on*` attributes now lives in versioned local JavaScript.
-- `style-src 'unsafe-inline'` remains for generated critical CSS, generated
-  article styles, and existing style attributes. This is limited to CSS; script
-  execution remains externalized.
-- Google Tag Manager is allowed because `scripts/analytics.js` only injects GA4
-  after explicit analytics consent.
-- `img-src https:` is intentionally broad because article and social embeds can
-  load images from changing CDN hostnames. Script, frame, style, and connect
-  sources remain explicit.
-- Fonts are self-hosted. Google Fonts and CDNJS are not allowed by `style-src`,
-  `font-src`, or `connect-src`.
-- Real response headers should replace the meta fallback when Cloudflare is
-  active. Keep this document aligned with `scripts/build/security-policy.mjs`.
+- `script-src` never allows `unsafe-inline`; `script-src-attr 'none'` blocks
+  inline event attributes.
+- `style-src 'unsafe-inline'` remains for generated critical CSS, article
+  styles and style attributes. This is CSS only.
+- Google Tag Manager is allowed on public pages only, because
+  `scripts/analytics.js` injects GA4 only after analytics consent.
+- Public `img-src https:` is intentionally broad for article and social
+  embeds. Tool pages allow only `'self'`, `data:` and `blob:` images.
+- Fonts are self-hosted everywhere.

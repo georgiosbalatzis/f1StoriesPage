@@ -4,7 +4,7 @@
   "note": "Repository-side article media budget. Public delivery size is checked separately by scripts/perf/public-image-guard.mjs. New raw article images should not appear unless this baseline is intentionally updated in review.",
   "limits": {
     "singleRawImageBytes": 3407872,
-    "singleOptimizedImageBytes": 1572864
+    "singleOptimizedImageBytes": 1048576
   },
   "metrics": {
     "totalFiles": 3922,

@@ -17,6 +17,30 @@ This repository publishes a static site through GitHub Pages. Article media can 
 - If a raw original must stay, update `perf/article-media-budget.json` in the same review and explain why.
 - If the total article media budget grows, check whether the growth came from a real article need or an avoidable raw asset.
 
+## Ingestion (author tools)
+
+`generate.html` and `housekeeping.html` size every article image in the browser
+before a ZIP export or an author PR is created (`ARTICLE_IMAGE_POLICY` in
+`scripts/author/image-tools.js`):
+
+- at most **3200 px wide**, aspect ratio kept. That is twice the widest public
+  variant (1600 px). Lossy WebP stores colour at half resolution, so a 2x master
+  still gives the build's Lanczos downscale full-resolution colour for every
+  1600 px AVIF/WebP variant. A 1600 px master measurably softens them;
+- at most **1 MB**, the per-original cap of `perf:article-media`. WebP quality
+  starts at the 0.9 the tools always used and steps down only when needed;
+- a WebP that already fits is uploaded byte for byte.
+
+`npm run qa:author-images` runs that code in Chromium on generated fixtures and
+real article photos. It checks the size, the format and the aspect ratio, and
+that the reader-facing AVIF stays within 1 dB PSNR of what the previous tool
+produced.
+
+Originals already in the repository can be brought under the same policy with
+`npm run build:article-originals` (dry run; `--write` to apply, `--all` to also
+resize every original wider than 3200 px). Existing AVIF and small variants are
+left untouched; rebuild the affected articles afterwards.
+
 ## Commands
 
 Check the current repository-side article media budget:
