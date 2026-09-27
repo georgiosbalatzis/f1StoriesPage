@@ -31,6 +31,7 @@ export const DEFAULT_PATHS = [
     '/standings/',
     '/generate.html',
     '/housekeeping.html',
+    '/analytics/',
     '/statistics.html'
 ];
 export const MIN_HSTS_MAX_AGE = 31536000;

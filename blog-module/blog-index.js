@@ -40,6 +40,28 @@ document.addEventListener('DOMContentLoaded', function() {
     var currentPage = 1;
     var filteredPosts = [];
     var searchTimer = null;
+    var searchAnalyticsTimer = null;
+    var pendingAnalyticsEvents = [];
+
+    function queueAnalyticsEvent(name, params) {
+        var analytics = window.f1storiesAnalytics;
+        if (!analytics || !analytics.getConsentState().analytics) return;
+        pendingAnalyticsEvents.push({ name: name, params: params || {} });
+    }
+
+    function flushAnalyticsEvents() {
+        var analytics = window.f1storiesAnalytics;
+        if (!analytics || !analytics.getConsentState().analytics || !pendingAnalyticsEvents.length) {
+            pendingAnalyticsEvents = [];
+            return;
+        }
+        pendingAnalyticsEvents.splice(0).forEach(function(event) {
+            analytics.trackEvent(event.name, Object.assign({}, event.params, {
+                result_count: filteredPosts.length,
+                page_number: currentPage
+            }));
+        });
+    }
 
     function el(tag, className, text) {
         var node = document.createElement(tag);
@@ -393,6 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
         filteredPosts = getFilteredPosts();
         var totalPages = Math.max(1, Math.ceil(filteredPosts.length / LAYOUT.page));
         currentPage = Math.max(1, Math.min(currentPage, totalPages));
+        flushAnalyticsEvents();
         renderArchiveHead();
         if (isStaticView() && staticLedger) {
             renderPagination();
@@ -437,15 +460,25 @@ document.addEventListener('DOMContentLoaded', function() {
             var option = event.target.closest('[' + attribute + ']');
             if (!option || event.metaKey || event.ctrlKey || event.shiftKey || event.button) return;
             event.preventDefault();
-            update(function() { apply(option.getAttribute(attribute)); syncUrl(); });
+            update(function() { apply(option.getAttribute(attribute), option); syncUrl(); });
             // On phones the panel sits above the results: close it so they are in view.
             if (filterToggle && getComputedStyle(filterToggle).display !== 'none') setFiltersOpen(false);
         });
     }
-    bindOptions(categoryOptions, 'data-category', function(value) {
+    bindOptions(categoryOptions, 'data-category', function(value, option) {
         activeCategory = taxonomy.normalizeCategories([value])[0] || 'all';
+        queueAnalyticsEvent('journal_filter', {
+            filter_type: 'category',
+            filter_value: option && option.getAttribute('data-kind') || 'all'
+        });
     });
-    bindOptions(authorOptions, 'data-author', function(value) { activeAuthor = value || 'all'; });
+    bindOptions(authorOptions, 'data-author', function(value, option) {
+        activeAuthor = value || 'all';
+        queueAnalyticsEvent('journal_filter', {
+            filter_type: 'author',
+            filter_value: option && option.getAttribute('data-author-slug') || 'all'
+        });
+    });
 
     if (searchInput) {
         searchInput.addEventListener('input', function() {
@@ -454,17 +487,28 @@ document.addEventListener('DOMContentLoaded', function() {
             searchTimer = setTimeout(function() {
                 update(function() { activeQuery = searchInput.value.trim(); });
             }, 250);
+            clearTimeout(searchAnalyticsTimer);
+            searchAnalyticsTimer = setTimeout(function() {
+                var query = searchInput.value.trim();
+                if (!query) return;
+                queueAnalyticsEvent('journal_search', { query_length: query.length });
+                render();
+            }, 900);
         });
     }
     if (searchClearBtn) {
         searchClearBtn.addEventListener('click', function() {
+            clearTimeout(searchAnalyticsTimer);
             update(function() { activeQuery = ''; searchInput.value = ''; });
             searchInput.focus();
         });
     }
     if (sortSelect) {
         sortSelect.addEventListener('change', function() {
-            update(function() { sortDir = sortSelect.value === 'oldest' ? 1 : -1; });
+            update(function() {
+                sortDir = sortSelect.value === 'oldest' ? 1 : -1;
+                queueAnalyticsEvent('journal_sort', { sort_order: sortDir === 1 ? 'oldest' : 'newest' });
+            });
         });
     }
     if (resetBtn) {
@@ -483,6 +527,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var button = event.target.closest('.ledger-page');
             if (!button || button.disabled) return;
             currentPage = parseInt(button.getAttribute('data-page'), 10) || 1;
+            queueAnalyticsEvent('journal_page', { requested_page: currentPage });
             render({ scroll: true });
         });
     }

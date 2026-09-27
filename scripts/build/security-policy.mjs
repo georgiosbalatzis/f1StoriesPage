@@ -81,13 +81,13 @@ export const AUTHOR_GENERATE_CSP = [
     "frame-src https://www.youtube.com https://youtube.com https://open.spotify.com https://player.vimeo.com https://codepen.io https://datawrapper.dwcdn.net https://sketchfab.com https://www.sketchfab.com https://facebook.com https://www.facebook.com https://platform.twitter.com https://syndication.twitter.com https://www.instagram.com https://instagram.com https://threads.net https://www.threads.net https://f1stories.gr https://www.f1stories.gr https://georgiosbalatzis.github.io"
 ].join('; ');
 
-// statistics.html: Google Identity Services (token client popup) and the GA4
-// Data API. No GitHub token lives here, so api.github.com is not allowed.
+// Analytics is GitHub-token gated and reads GA4 through the Google Identity
+// token client. GitHub tokens stay in memory and are checked against the repo.
 export const STATISTICS_CSP = [
     ...TOOL_BASE_DIRECTIVES,
     "script-src 'self' https://accounts.google.com",
     "img-src 'self' data:",
-    "connect-src 'self' https://analyticsdata.googleapis.com https://oauth2.googleapis.com",
+    "connect-src 'self' https://api.github.com https://analyticsdata.googleapis.com https://oauth2.googleapis.com",
     "frame-src https://accounts.google.com"
 ].join('; ');
 
@@ -102,7 +102,8 @@ export const CSP_PROFILES = Object.freeze({
 export const PAGE_CSP_PROFILES = Object.freeze({
     'generate.html': 'author-generate',
     'housekeeping.html': 'author-tools',
-    'statistics.html': 'statistics'
+    'statistics.html': 'statistics',
+    'analytics/index.html': 'statistics'
 });
 
 export function cspProfileForPath(relPath) {

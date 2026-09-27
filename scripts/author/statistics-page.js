@@ -1,546 +1,438 @@
 (function () {
     'use strict';
 
-    var CONFIG = window.F1S_GA_CONFIG || {};
-    var PROPERTY_ID = CONFIG.propertyId || '485678890';
+    var OWNER = 'georgiosbalatzis';
+    var REPO = 'f1StoriesPage';
+    var PROPERTY_ID = (window.F1S_GA_CONFIG || {}).propertyId || '485678890';
+    var TOKEN_KEY = 'f1stories-gh-token';
     var CLIENT_ID_KEY = 'f1stories-ga-oauth-client-id';
-    var SCOPE = 'https://www.googleapis.com/auth/analytics.readonly';
+    var GA_SCOPE = 'https://www.googleapis.com/auth/analytics.readonly';
     var GA_ENDPOINT = 'https://analyticsdata.googleapis.com/v1beta/properties/' + PROPERTY_ID + ':runReport';
-    var tokenClient = null;
+    var ACTIONS = ['internal_page_click', 'outbound_click', 'article_share', 'article_engaged', 'journal_search', 'journal_filter', 'journal_sort', 'journal_page'];
+    var tokenStore = window.F1S_AUTHOR_SESSION_TOKEN.createSessionTokenStore(TOKEN_KEY);
+    tokenStore.adoptStoredToken();
     var accessToken = '';
-    var loading = false;
-
+    var tokenClient = null;
+    var articles = [];
+    var current = null;
+    var authorSelect = document.getElementById('stats-author');
     var els = {
-        range: document.getElementById('stats-range'),
+        status: document.getElementById('stats-status'),
+        gate: document.getElementById('stats-gate'),
+        gateHelp: document.getElementById('stats-gate-help'),
+        gateError: document.getElementById('stats-gate-error'),
+        tokenForm: document.getElementById('stats-token-form'),
+        tokenInput: document.getElementById('stats-token'),
+        tokenButton: document.getElementById('stats-token-btn'),
+        gaConnect: document.getElementById('stats-ga-connect'),
+        clientIdWrap: document.getElementById('stats-client-id-wrap'),
+        clientId: document.getElementById('stats-client-id'),
         connect: document.getElementById('stats-connect-btn'),
         refresh: document.getElementById('stats-refresh-btn'),
-        status: document.getElementById('stats-status'),
+        range: document.getElementById('stats-range'),
+        private: document.getElementById('stats-private'),
         kpis: document.getElementById('stats-kpis'),
-        line: document.getElementById('stats-line-chart'),
+        trend: document.getElementById('stats-line-chart'),
         channels: document.getElementById('stats-channel-chart'),
-        devices: document.getElementById('stats-device-chart'),
+        actions: document.getElementById('stats-action-list'),
         pages: document.getElementById('stats-pages-table'),
-        clicks: document.getElementById('stats-click-list'),
-        reading: document.getElementById('stats-reading-list'),
-        trendNote: document.getElementById('stats-trend-note')
+        note: document.getElementById('stats-trend-note')
     };
 
-    var demoData = {
-        source: 'Demo data',
-        kpis: {
-            users: 12840,
-            newUsers: 9021,
-            views: 42180,
-            sessions: 18760,
-            avgEngagement: 146,
-            engagementRate: 0.64,
-            clicks: 5140,
-            eventCount: 78220
-        },
-        timeline: [
-            ['Jun 18', 980], ['Jun 19', 1180], ['Jun 20', 1320], ['Jun 21', 1040], ['Jun 22', 1680], ['Jun 23', 1580], ['Jun 24', 1920],
-            ['Jun 25', 1760], ['Jun 26', 2140], ['Jun 27', 2280], ['Jun 28', 2040], ['Jun 29', 2480], ['Jun 30', 2360], ['Jul 1', 2660],
-            ['Jul 2', 2840], ['Jul 3', 2520], ['Jul 4', 3180], ['Jul 5', 2960], ['Jul 6', 3360], ['Jul 7', 3540], ['Jul 8', 3280],
-            ['Jul 9', 3860], ['Jul 10', 3680], ['Jul 11', 4100], ['Jul 12', 3940], ['Jul 13', 4360], ['Jul 14', 4180], ['Jul 15', 4520]
-        ],
-        channels: [
-            ['Organic Search', 17420], ['Direct', 9820], ['Social', 7540], ['Referral', 3180], ['Unassigned', 1420]
-        ],
-        devices: [
-            ['Mobile', 25210], ['Desktop', 13960], ['Tablet', 3010]
-        ],
-        pages: [
-            ['/blog-module/blog-entries/20260715W/article.html', 'Williams FW16 και Benetton B194: Όταν δύο ιδιοφυΐες συγκρούστηκαν', 6840, 4920, 192, 0.71],
-            ['/blog-module/blog/index.html', 'Blog archive', 5120, 3820, 98, 0.58],
-            ['/', 'Homepage', 4880, 3610, 82, 0.54],
-            ['/standings/', 'Standings', 4620, 3010, 214, 0.76],
-            ['/blog-module/blog-entries/20260713W/article.html', 'Mercedes W05: Η απόλυτη κυριαρχία στην Αυστραλία του 2014', 3180, 2280, 174, 0.67],
-            ['/blog-module/blog-entries/20260713J/article.html', 'Η FIA παραδέχεται το πρόβλημα;', 2760, 1980, 158, 0.63]
-        ],
-        clicks: [
-            ['Homepage → latest article', '/ → 20260715W', 1240],
-            ['Blog archive → article', '/blog → article', 1080],
-            ['Article → related article', 'related link', 780],
-            ['Navigation → standings', 'nav', 560],
-            ['Article → YouTube', 'external media', 430]
-        ],
-        reading: [
-            ['Best engaged article', '20260715W', '3m 12s'],
-            ['Average article engagement', 'All articles', '2m 18s'],
-            ['Strongest section', 'Standings', '3m 34s'],
-            ['Returning-reader sessions', 'Returning users', '41%'],
-            ['Internal click rate', 'Tracked page clicks / sessions', '27%']
-        ]
-    };
-
-    var emptyData = {
-        source: 'Waiting for GA connection',
-        kpis: { empty: true },
-        timeline: [],
-        channels: [],
-        devices: [],
-        pages: [],
-        clicks: [],
-        reading: [
-            ['GA connection', 'Configure the public OAuth client ID once, then sign in with Google.', 'Required'],
-            ['Property', 'GA4 property ' + PROPERTY_ID, 'Ready'],
-            ['Source', 'Google Analytics Data API', 'Live data']
-        ]
-    };
-
-    function setStatus(message) {
-        if (els.status) els.status.textContent = message;
+    function setStatus(value) { els.status.textContent = value; }
+    function setError(value) {
+        els.gateError.textContent = value || '';
+        els.gateError.hidden = !value;
     }
-
-    function clear(node) {
-        if (!node) return;
-        while (node.firstChild) node.removeChild(node.firstChild);
+    function setUnlocked(value) {
+        document.body.classList.toggle('stats-unlocked', value);
+        els.private.inert = !value;
+        els.private.setAttribute('aria-hidden', value ? 'false' : 'true');
     }
-
-    function text(value) {
-        return document.createTextNode(String(value == null ? '' : value));
+    function clientId() {
+        var configured = String((window.F1S_GA_CONFIG || {}).clientId || '').trim();
+        if (configured) return configured;
+        try { return localStorage.getItem(CLIENT_ID_KEY) || ''; } catch (_) { return ''; }
     }
-
-    function el(tag, className, content) {
-        var node = document.createElement(tag);
-        if (className) node.className = className;
-        if (content != null) node.appendChild(text(content));
-        return node;
-    }
-
-    function svg(tag) {
-        return document.createElementNS('http://www.w3.org/2000/svg', tag);
-    }
-
-    function formatNumber(value) {
-        return Math.round(Number(value || 0)).toLocaleString('el-GR');
-    }
-
-    function formatPercent(value) {
-        var number = Number(value || 0);
-        if (number > 1) number = number / 100;
-        return Math.round(number * 100) + '%';
-    }
-
-    function formatDuration(seconds) {
-        var total = Math.max(0, Math.round(Number(seconds || 0)));
-        var min = Math.floor(total / 60);
-        var sec = total % 60;
-        if (min >= 60) {
-            var hours = Math.floor(min / 60);
-            return hours + 'h ' + (min % 60) + 'm';
-        }
-        return min + 'm ' + String(sec).padStart(2, '0') + 's';
-    }
-
-    function compactDate(value) {
-        var raw = String(value || '');
-        if (/^\d{8}$/.test(raw)) return raw.slice(6, 8) + '/' + raw.slice(4, 6);
-        return raw;
-    }
-
-    function metric(row, index) {
-        return Number(row && row.metricValues && row.metricValues[index] && row.metricValues[index].value || 0);
-    }
-
-    function dimension(row, index) {
-        return String(row && row.dimensionValues && row.dimensionValues[index] && row.dimensionValues[index].value || '');
-    }
-
-    function runReport(body) {
-        return fetch(GA_ENDPOINT, {
-            method: 'POST',
-            headers: {
-                Authorization: 'Bearer ' + accessToken,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        }).then(function (response) {
-            if (!response.ok) {
-                return response.text().then(function (message) {
-                    throw new Error(message || 'GA request failed: ' + response.status);
-                });
-            }
-            return response.json();
-        });
-    }
-
-    function dateRange() {
+    function apiHeaders(token) {
         return {
-            startDate: els.range ? els.range.value : '28daysAgo',
-            endDate: 'today'
+            Authorization: 'Bearer ' + token,
+            Accept: 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28'
         };
     }
 
-    function requestPayload(dimensions, metrics, options) {
+    async function verifyGithubToken(token) {
+        var response;
+        try {
+            response = await fetch('https://api.github.com/repos/' + OWNER + '/' + REPO, { headers: apiHeaders(token) });
+        } catch (_) {
+            throw new Error('Δεν ήταν δυνατή η σύνδεση με το GitHub. Έλεγξε τη σύνδεσή σου και ξαναδοκίμασε.');
+        }
+        if (response.status === 401) throw new Error('Το GitHub token δεν είναι έγκυρο.');
+        if (!response.ok) throw new Error('Το token δεν μπορεί να διαβάσει το repository. Έλεγξε τα δικαιώματά του.');
+        var repo = await response.json();
+        if (!repo.permissions || !(repo.permissions.push || repo.permissions.admin)) {
+            throw new Error('Χρειάζεται token με πρόσβαση εγγραφής στο georgiosbalatzis/f1StoriesPage, όπως στα εργαλεία συντακτών.');
+        }
+    }
+
+    function showGoogleStep() {
+        els.tokenForm.hidden = true;
+        els.gaConnect.hidden = false;
+        els.clientIdWrap.hidden = !!clientId();
+        els.range.disabled = false;
+        authorSelect.disabled = false;
+        els.refresh.disabled = false;
+        setStatus('GitHub token OK · αναμονή Google Analytics');
+        els.gateHelp.textContent = 'Το GitHub token επιβεβαιώθηκε. Η Google σύνδεση επιτρέπει μόνο ανάγνωση των αναφορών GA4.';
+    }
+
+    els.tokenForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        var token = els.tokenInput.value.trim();
+        setError('');
+        if (window.F1S_AUTHOR_SESSION_TOKEN.isFramed()) {
+            els.tokenInput.value = '';
+            setError('Άνοιξε το dashboard απευθείας σε νέα καρτέλα πριν βάλεις token.');
+            return;
+        }
+        if (!token || !window.F1S_AUTHOR_SESSION_TOKEN.isAsciiToken(token)) {
+            setError('Επικόλλησε ένα έγκυρο GitHub token. Το token δεν αποθηκεύεται.');
+            return;
+        }
+        els.tokenButton.disabled = true;
+        els.tokenButton.textContent = 'Έλεγχος…';
+        try {
+            await verifyGithubToken(token);
+            tokenStore.set(token);
+            els.tokenInput.value = '';
+            showGoogleStep();
+        } catch (error) {
+            tokenStore.clear();
+            els.tokenInput.value = '';
+            setError(error.message);
+        } finally {
+            els.tokenButton.disabled = false;
+            els.tokenButton.textContent = 'Έλεγχος token';
+        }
+    });
+
+    function dateRange(previous) {
+        var days = Number((els.range.value.match(/^([0-9]+)daysAgo$/) || [0, 28])[1]);
+        return previous
+            ? { startDate: (days * 2) + 'daysAgo', endDate: (days + 1) + 'daysAgo' }
+            : { startDate: days + 'daysAgo', endDate: 'yesterday' };
+    }
+    function payload(dimensions, metrics, options) {
         options = options || {};
         return {
-            dateRanges: [dateRange()],
-            dimensions: dimensions.map(function (name) { return { name: name }; }),
+            dateRanges: [dateRange(options.previous)],
+            dimensions: (dimensions || []).map(function (name) { return { name: name }; }),
             metrics: metrics.map(function (name) { return { name: name }; }),
+            limit: options.limit || 100,
             orderBys: options.orderBys || [],
-            limit: options.limit || 50,
+            dimensionFilter: options.dimensionFilter,
             keepEmptyRows: false
         };
     }
-
-    function fetchAnalytics() {
-        setLoading(true);
-        setStatus('Loading Google Analytics...');
-
-        return Promise.all([
-            runReport(requestPayload([], ['activeUsers', 'newUsers', 'screenPageViews', 'sessions', 'userEngagementDuration', 'engagementRate', 'eventCount'], { limit: 1 })),
-            runReport(requestPayload(['date'], ['screenPageViews'], { orderBys: [{ dimension: { dimensionName: 'date' } }], limit: 400 })),
-            runReport(requestPayload(['sessionDefaultChannelGroup'], ['sessions'], { orderBys: [{ metric: { metricName: 'sessions' }, desc: true }], limit: 8 })),
-            runReport(requestPayload(['deviceCategory'], ['screenPageViews'], { orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], limit: 6 })),
-            runReport(requestPayload(['pagePath', 'pageTitle'], ['screenPageViews', 'activeUsers', 'userEngagementDuration', 'engagementRate'], { orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], limit: 14 })),
-            fetchClickReport()
-        ]).then(function (reports) {
-            var data = normalizeReports(reports);
-            render(data);
-            setStatus('Connected to GA4 property ' + PROPERTY_ID);
-        }).catch(function (error) {
-            console.error(error);
-            setStatus('GA request failed. Showing demo data.');
-            render(demoData);
-        }).finally(function () {
-            setLoading(false);
+    async function runReport(body) {
+        var response = await fetch(GA_ENDPOINT, {
+            method: 'POST',
+            headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
         });
+        if (!response.ok) throw new Error('GA4 report request failed (' + response.status + ').');
+        return response.json();
     }
-
-    function fetchClickReport() {
-        var base = {
-            dateRanges: [dateRange()],
-            metrics: [{ name: 'eventCount' }],
-            dimensionFilter: { filter: { fieldName: 'eventName', stringFilter: { matchType: 'EXACT', value: 'internal_page_click' } } },
-            orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }],
-            limit: 12
-        };
-
-        return runReport(Object.assign({}, base, {
-            dimensions: [
-                { name: 'eventName' },
-                { name: 'customEvent:link_text' },
-                { name: 'customEvent:link_url' }
-            ]
-        })).catch(function () {
-            return runReport(Object.assign({}, base, {
-                dimensions: [{ name: 'eventName' }]
-            })).then(function (report) {
-                report.fallbackClickDimensions = true;
-                return report;
+    function number(row, index) {
+        return Number(row && row.metricValues && row.metricValues[index] && row.metricValues[index].value || 0);
+    }
+    function dim(row, index) {
+        return String(row && row.dimensionValues && row.dimensionValues[index] && row.dimensionValues[index].value || '');
+    }
+    function articleFilter() {
+        return { filter: { fieldName: 'pagePath', stringFilter: { matchType: 'BEGINS_WITH', value: '/blog-module/blog-entries/' } } };
+    }
+    function loadArticleNames() {
+        return fetch('/blog-module/blog-index-data.json').then(function (response) {
+            if (!response.ok) throw new Error('Article index unavailable.');
+            return response.json();
+        }).then(function (data) {
+            var authors = data.a || [];
+            var taxonomy = window.F1S_TAXONOMY;
+            return (data.p || []).map(function (row) {
+                var author = String(authors[row[2]] || 'F1 Stories');
+                return { id: String(row[0] || ''), title: String(row[1] || ''), author: taxonomy ? taxonomy.authorLabel(author) : author };
             });
-        });
+        }).catch(function () { return []; });
     }
-
-    function normalizeReports(reports) {
-        var overview = reports[0].rows && reports[0].rows[0];
-        var views = metric(overview, 2);
-        var engagementSeconds = metric(overview, 4);
-        var sessions = metric(overview, 3);
-        var timeline = (reports[1].rows || []).map(function (row) {
-            return [compactDate(dimension(row, 0)), metric(row, 0)];
+    function rangesForRows(report) {
+        return report.rows || [];
+    }
+    async function fetchAnalytics() {
+        setStatus('Φόρτωση GA4…');
+        els.refresh.disabled = true;
+        setUnlocked(false);
+        try {
+            var eventFilter = { fieldName: 'eventName', inListFilter: { values: ACTIONS } };
+            var results = await Promise.all([
+                runReport(payload([], ['activeUsers', 'sessions', 'screenPageViews', 'engagementRate'])),
+                runReport(payload([], ['activeUsers', 'sessions', 'screenPageViews', 'engagementRate'], { previous: true })),
+                runReport(payload(['date'], ['screenPageViews'], { limit: 400, orderBys: [{ dimension: { dimensionName: 'date' } }], dimensionFilter: articleFilter() })),
+                runReport(payload(['sessionDefaultChannelGroup'], ['sessions'], { limit: 8, orderBys: [{ metric: { metricName: 'sessions' }, desc: true }] })),
+                runReport(payload(['pagePath', 'pageTitle'], ['screenPageViews', 'activeUsers', 'userEngagementDuration', 'engagementRate', 'eventCount'], { limit: 500, orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], dimensionFilter: articleFilter() })),
+                runReport(payload(['pagePath'], ['screenPageViews', 'userEngagementDuration'], { previous: true, limit: 500, dimensionFilter: articleFilter() })),
+                runReport(payload(['eventName', 'pagePath'], ['eventCount'], { limit: 1000, orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], dimensionFilter: { filter: eventFilter } })),
+                loadArticleNames()
+            ]);
+            current = normalize(results);
+            render(current);
+            setUnlocked(true);
+            setStatus('GA4 property ' + PROPERTY_ID + ' · ' + current.rangeLabel);
+            els.gate.hidden = true;
+        } catch (error) {
+            setUnlocked(false);
+            els.gate.hidden = false;
+            els.tokenForm.hidden = true;
+            els.gaConnect.hidden = false;
+            els.clientIdWrap.hidden = !!clientId();
+            setStatus('Δεν φορτώθηκαν τα GA4 δεδομένα');
+            setError(error.message + ' Έλεγξε το Google account και το property 485678890.');
+        } finally {
+            els.refresh.disabled = false;
+        }
+    }
+    function normalize(results) {
+        var overview = results[0].rows && results[0].rows[0];
+        var articleNames = new Map((results[7] || []).map(function (item) { return [item.id, item]; }));
+        var eventTotals = Object.create(null);
+        var eventByPath = Object.create(null);
+        rangesForRows(results[6]).forEach(function (row) {
+            var name = dim(row, 0);
+            var path = dim(row, 1);
+            eventTotals[name] = (eventTotals[name] || 0) + number(row, 0);
+            eventByPath[path] = eventByPath[path] || Object.create(null);
+            eventByPath[path][name] = (eventByPath[path][name] || 0) + number(row, 0);
         });
-        var channels = (reports[2].rows || []).map(function (row) {
-            return [dimension(row, 0) || 'Unassigned', metric(row, 0)];
+        var previousPages = Object.create(null);
+        rangesForRows(results[5]).forEach(function (row) { previousPages[dim(row, 0)] = row; });
+        var pageRows = rangesForRows(results[4]).map(function (row) {
+            var path = dim(row, 0);
+            var idMatch = path.match(/\/blog-entries\/([^/]+)\/article\.html/);
+            var meta = idMatch && articleNames.get(idMatch[1]);
+            var byPath = eventByPath[path] || {};
+            var previous = previousPages[path];
+            return {
+                path: path,
+                title: (meta && meta.title) || dim(row, 1) || path,
+                author: (meta && meta.author) || 'F1 Stories',
+                views: number(row, 0),
+                prevViews: number(previous, 0),
+                readers: number(row, 1),
+                engagedSeconds: number(row, 2),
+                prevEngagedSeconds: number(previous, 1),
+                engagement: number(row, 3),
+                engagedReads: byPath.article_engaged || 0,
+                shares: byPath.article_share || 0
+            };
         });
-        var devices = (reports[3].rows || []).map(function (row) {
-            return [dimension(row, 0) || 'Unknown', metric(row, 0)];
+        var timeline = rangesForRows(results[2]).map(function (row) {
+            var date = dim(row, 0);
+            return [date.slice(4, 6) + '/' + date.slice(6, 8), number(row, 0)];
         });
-        var pages = (reports[4].rows || []).map(function (row) {
-            var pageViews = metric(row, 0);
-            var users = metric(row, 1);
-            var pageEngagement = metric(row, 2);
-            return [
-                dimension(row, 0),
-                dimension(row, 1) || dimension(row, 0),
-                pageViews,
-                users,
-                pageViews ? pageEngagement / pageViews : 0,
-                metric(row, 3)
-            ];
-        });
-        var clickReport = reports[5] || {};
-        var clicks = (clickReport.rows || []).map(function (row) {
-            if (clickReport.fallbackClickDimensions) {
-                return [
-                    'Internal page clicks',
-                    'Register link_text and link_url as GA4 custom dimensions for path detail',
-                    metric(row, 0)
-                ];
-            }
-            return [
-                dimension(row, 1) || 'Internal click',
-                dimension(row, 2) || dimension(row, 0),
-                metric(row, 0)
-            ];
-        });
-        var clicksTotal = clicks.reduce(function (sum, item) { return sum + Number(item[2] || 0); }, 0);
-
+        var channels = rangesForRows(results[3]).map(function (row) { return [dim(row, 0) || 'Unassigned', number(row, 0)]; });
+        var previousOverview = results[1].rows && results[1].rows[0];
+        var activeUsers = number(overview, 0);
+        var sessions = number(overview, 1);
+        var siteEngagement = number(overview, 3);
+        var articleViews = pageRows.reduce(function (sum, row) { return sum + row.views; }, 0);
+        var previousArticleViews = pageRows.reduce(function (sum, row) { return sum + row.prevViews; }, 0);
+        var engagedSeconds = pageRows.reduce(function (sum, row) { return sum + row.engagedSeconds; }, 0);
+        var previousEngagedSeconds = pageRows.reduce(function (sum, row) { return sum + row.prevEngagedSeconds; }, 0);
         return {
-            source: 'GA4 property ' + PROPERTY_ID,
-            kpis: {
-                users: metric(overview, 0),
-                newUsers: metric(overview, 1),
-                views: views,
-                sessions: sessions,
-                avgEngagement: views ? engagementSeconds / views : 0,
-                engagementRate: metric(overview, 5),
-                clicks: clicksTotal,
-                eventCount: metric(overview, 6)
-            },
+            rangeLabel: els.range.options[els.range.selectedIndex].textContent,
+            activeUsers: activeUsers,
+            previousUsers: number(previousOverview, 0),
+            sessions: sessions,
+            previousSessions: number(previousOverview, 1),
+            siteEngagement: siteEngagement,
+            articleViews: articleViews,
+            previousArticleViews: previousArticleViews,
+            avgEngaged: articleViews ? engagedSeconds / articleViews : 0,
+            previousAvgEngaged: previousArticleViews ? previousEngagedSeconds / previousArticleViews : 0,
+            engagedReads: eventTotals.article_engaged || 0,
+            shares: eventTotals.article_share || 0,
             timeline: timeline,
             channels: channels,
-            devices: devices,
-            pages: pages,
-            clicks: clicks,
-            reading: buildReadingSignals(pages, sessions, clicksTotal)
+            pages: pageRows.sort(function (a, b) { return b.views - a.views; }),
+            events: eventTotals
         };
     }
-
-    function buildReadingSignals(pages, sessions, clicks) {
-        var sorted = pages.slice().sort(function (a, b) { return Number(b[4] || 0) - Number(a[4] || 0); });
-        var articleRows = pages.filter(function (row) { return row[0].indexOf('/blog-module/blog-entries/') !== -1; });
-        var avgArticle = articleRows.reduce(function (sum, row) { return sum + Number(row[4] || 0); }, 0) / Math.max(1, articleRows.length);
-        return [
-            ['Best engaged page', sorted[0] ? sorted[0][1] : '-', sorted[0] ? formatDuration(sorted[0][4]) : '-'],
-            ['Average article engagement', articleRows.length + ' tracked article rows', formatDuration(avgArticle)],
-            ['Internal click rate', 'Tracked clicks / sessions', sessions ? formatPercent(clicks / sessions) : '0%'],
-            ['Top article rows', 'Rows under /blog-entries/', formatNumber(articleRows.length)],
-            ['Reading proxy', 'userEngagementDuration / views', 'GA engagement time']
+    function fmt(value) { return Math.round(Number(value || 0)).toLocaleString('el-GR'); }
+    function percent(value) { return Math.round(Number(value || 0) * 100) + '%'; }
+    function duration(value) {
+        var seconds = Math.round(Number(value || 0));
+        return Math.floor(seconds / 60) + '′ ' + String(seconds % 60).padStart(2, '0') + '″';
+    }
+    function node(tag, className, text) {
+        var element = document.createElement(tag);
+        if (className) element.className = className;
+        if (text != null) element.textContent = text;
+        return element;
+    }
+    function delta(now, before) {
+        if (!before) return 'Νέα περίοδος';
+        var change = Math.round((now - before) / before * 100);
+        return (change > 0 ? '+' : '') + change + '% από πριν';
+    }
+    function renderKpis(data) {
+        var metrics = [
+            ['Ενεργοί αναγνώστες', data.activeUsers, delta(data.activeUsers, data.previousUsers)],
+            ['Προβολές άρθρων', data.articleViews, delta(data.articleViews, data.previousArticleViews)],
+            ['Engaged reads', data.engagedReads, '30″ ορατά + 50% κύλιση'],
+            ['Κοινοποιήσεις', data.shares, 'Άρθρα που κοινοποιήθηκαν'],
+            ['Μέσος engaged χρόνος', duration(data.avgEngaged), delta(data.avgEngaged, data.previousAvgEngaged) + ' / προβολή'],
+            ['Engaged sessions', percent(data.siteEngagement), fmt(data.sessions) + ' sessions']
         ];
-    }
-
-    function setLoading(next) {
-        loading = next;
-        [els.connect, els.refresh].forEach(function (button) {
-            if (button) button.disabled = loading;
-        });
-    }
-
-    function render(data) {
-        if (!data) data = emptyData;
-        renderKpis(data.kpis || {});
-        renderLineChart(data.timeline || []);
-        renderBars(els.channels, data.channels || [], 'sessions');
-        renderBars(els.devices, data.devices || [], 'views');
-        renderPages(data.pages || []);
-        renderList(els.clicks, data.clicks || [], function (item) {
-            return { title: item[0], sub: item[1], value: formatNumber(item[2]) };
-        });
-        renderList(els.reading, data.reading || [], function (item) {
-            return { title: item[0], sub: item[1], value: item[2] };
-        });
-        if (els.trendNote) els.trendNote.textContent = data.source || '';
-    }
-
-    function renderKpis(kpis) {
-        clear(els.kpis);
-        var items = kpis.empty ? [
-            ['Users', '—', 'GA not connected'],
-            ['Page views', '—', 'Waiting for Analytics'],
-            ['Sessions', '—', 'Waiting for Analytics'],
-            ['Avg reading', '—', 'Engagement / view'],
-            ['Engagement', '—', 'Engaged sessions'],
-            ['Clicks', '—', 'internal_page_click']
-        ] : [
-            ['Users', formatNumber(kpis.users), 'Active users'],
-            ['Page views', formatNumber(kpis.views), 'screenPageViews'],
-            ['Sessions', formatNumber(kpis.sessions), 'GA sessions'],
-            ['Avg reading', formatDuration(kpis.avgEngagement), 'Engagement / view'],
-            ['Engagement', formatPercent(kpis.engagementRate), 'Engaged sessions'],
-            ['Clicks', formatNumber(kpis.clicks), 'internal_page_click']
-        ];
-        items.forEach(function (item) {
-            var card = el('article', 'stats-kpi');
-            card.appendChild(el('p', 'stats-kpi-label', item[0]));
-            card.appendChild(el('p', 'stats-kpi-value', item[1]));
-            card.appendChild(el('div', 'stats-kpi-delta', item[2]));
+        els.kpis.replaceChildren();
+        metrics.forEach(function (item) {
+            var card = node('article', 'stats-kpi');
+            card.appendChild(node('p', 'stats-kpi-label', item[0]));
+            card.appendChild(node('p', 'stats-kpi-value', typeof item[1] === 'number' ? fmt(item[1]) : item[1]));
+            card.appendChild(node('div', 'stats-kpi-delta', item[2]));
             els.kpis.appendChild(card);
         });
     }
-
-    function renderLineChart(points) {
-        clear(els.line);
-        if (!points.length) {
-            els.line.appendChild(empty('No timeline data'));
-            return;
-        }
-        var width = 900;
-        var height = 260;
-        var pad = 28;
-        var max = Math.max.apply(null, points.map(function (point) { return Number(point[1] || 0); })) || 1;
-        var step = points.length > 1 ? (width - pad * 2) / (points.length - 1) : 0;
-        var coords = points.map(function (point, index) {
-            return [
-                pad + step * index,
-                height - pad - (Number(point[1] || 0) / max) * (height - pad * 2)
-            ];
+    function renderTrend(points) {
+        els.trend.replaceChildren();
+        if (!points.length) { els.trend.appendChild(node('p', 'stats-empty', 'Δεν υπάρχουν ημερήσια δεδομένα σε αυτή την περίοδο.')); return; }
+        var width = 900, height = 260, pad = 28;
+        var max = Math.max.apply(null, points.map(function (point) { return point[1]; })) || 1;
+        var step = points.length > 1 ? (width - 2 * pad) / (points.length - 1) : 0;
+        var coords = points.map(function (point, i) { return [pad + step * i, height - pad - point[1] / max * (height - 2 * pad)]; });
+        var path = coords.map(function (point, i) { return (i ? 'L' : 'M') + point[0].toFixed(1) + ' ' + point[1].toFixed(1); }).join(' ');
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'stats-line-svg');
+        svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+        var line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        line.setAttribute('d', path);
+        line.setAttribute('class', 'stats-line-path');
+        svg.appendChild(line);
+        coords.forEach(function (point, i) {
+            if (i % Math.ceil(points.length / 10) && i !== points.length - 1) return;
+            var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            dot.setAttribute('cx', point[0]); dot.setAttribute('cy', point[1]); dot.setAttribute('r', 4); dot.setAttribute('class', 'stats-point');
+            svg.appendChild(dot);
         });
-        var path = coords.map(function (point, index) {
-            return (index ? 'L' : 'M') + point[0].toFixed(1) + ' ' + point[1].toFixed(1);
-        }).join(' ');
-        var area = path + ' L ' + (width - pad) + ' ' + (height - pad) + ' L ' + pad + ' ' + (height - pad) + ' Z';
-        var root = svg('svg');
-        root.setAttribute('class', 'stats-line-svg');
-        root.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
-        [0.25, 0.5, 0.75, 1].forEach(function (mark) {
-            var line = svg('line');
-            var y = height - pad - mark * (height - pad * 2);
-            line.setAttribute('x1', pad);
-            line.setAttribute('x2', width - pad);
-            line.setAttribute('y1', y);
-            line.setAttribute('y2', y);
-            line.setAttribute('class', 'stats-grid-line');
-            root.appendChild(line);
-        });
-        var areaPath = svg('path');
-        areaPath.setAttribute('d', area);
-        areaPath.setAttribute('class', 'stats-line-area');
-        root.appendChild(areaPath);
-        var linePath = svg('path');
-        linePath.setAttribute('d', path);
-        linePath.setAttribute('class', 'stats-line-path');
-        root.appendChild(linePath);
-        coords.forEach(function (point, index) {
-            if (index % Math.ceil(points.length / 10) !== 0 && index !== points.length - 1) return;
-            var dot = svg('circle');
-            dot.setAttribute('cx', point[0]);
-            dot.setAttribute('cy', point[1]);
-            dot.setAttribute('r', 4);
-            dot.setAttribute('class', 'stats-point');
-            root.appendChild(dot);
-        });
-        els.line.appendChild(root);
+        els.trend.appendChild(svg);
     }
-
-    function renderBars(container, rows, suffix) {
-        clear(container);
-        if (!rows.length) {
-            container.appendChild(empty('No data'));
-            return;
-        }
-        var wrap = el('div', 'stats-bars');
-        var max = Math.max.apply(null, rows.map(function (row) { return Number(row[1] || 0); })) || 1;
+    function renderBars(container, rows) {
+        container.replaceChildren();
+        if (!rows.length) { container.appendChild(node('p', 'stats-empty', 'Δεν υπάρχουν δεδομένα.')); return; }
+        var wrap = node('div', 'stats-bars');
+        var max = Math.max.apply(null, rows.map(function (row) { return row[1]; })) || 1;
         rows.forEach(function (row) {
-            var line = el('div', 'stats-bar-row');
-            line.appendChild(el('div', 'stats-bar-label', row[0]));
-            var track = el('div', 'stats-bar-track');
-            var fill = el('div', 'stats-bar-fill');
-            fill.style.width = Math.max(2, Number(row[1] || 0) / max * 100).toFixed(1) + '%';
-            track.appendChild(fill);
-            line.appendChild(track);
-            line.appendChild(el('div', 'stats-list-value', formatNumber(row[1]) + (suffix ? '' : '')));
-            wrap.appendChild(line);
+            var item = node('div', 'stats-bar-row');
+            item.appendChild(node('div', 'stats-bar-label', row[0]));
+            var track = node('div', 'stats-bar-track');
+            var fill = node('div', 'stats-bar-fill');
+            fill.style.width = Math.max(2, row[1] / max * 100) + '%';
+            track.appendChild(fill); item.appendChild(track); item.appendChild(node('div', 'stats-list-value', fmt(row[1]))); wrap.appendChild(item);
         });
         container.appendChild(wrap);
     }
-
+    function renderActions(data) {
+        var labels = [
+            ['internal_page_click', 'Εσωτερικά clicks'],
+            ['outbound_click', 'Outbound clicks'],
+            ['article_share', 'Κοινοποιήσεις άρθρων'],
+            ['article_engaged', 'Engaged reads'],
+            ['journal_search', 'Αναζητήσεις περιοδικού'],
+            ['journal_filter', 'Φίλτρα περιοδικού'],
+            ['journal_sort', 'Αλλαγές ταξινόμησης'],
+            ['journal_page', 'Σελίδες αποτελεσμάτων']
+        ];
+        els.actions.replaceChildren();
+        labels.forEach(function (item) {
+            var row = node('div', 'stats-list-row');
+            row.appendChild(node('div', 'stats-list-title', item[1]));
+            row.appendChild(node('div', 'stats-list-value', fmt(data.events[item[0]] || 0)));
+            els.actions.appendChild(row);
+        });
+    }
     function renderPages(rows) {
-        clear(els.pages);
-        var tableWrap = els.pages && els.pages.closest ? els.pages.closest('.stats-table-wrap') : null;
-        if (tableWrap) tableWrap.classList.toggle('is-empty', !rows.length);
-        rows.forEach(function (row) {
+        var selected = authorSelect.value;
+        var shown = rows.filter(function (row) { return selected === 'all' || row.author === selected; }).slice(0, 100);
+        els.pages.replaceChildren();
+        shown.forEach(function (row) {
             var tr = document.createElement('tr');
-            var title = el('div', 'stats-page-title', row[1] || row[0]);
-            title.appendChild(el('span', 'stats-page-path', row[0]));
-            var first = document.createElement('td');
-            first.appendChild(title);
-            tr.appendChild(first);
-            tr.appendChild(el('td', '', formatNumber(row[2])));
-            tr.appendChild(el('td', '', formatNumber(row[3])));
-            tr.appendChild(el('td', '', formatDuration(row[4])));
-            tr.appendChild(el('td', '', formatPercent(row[5])));
+            var titleCell = document.createElement('td');
+            var link = node('a', 'stats-page-title', row.title);
+            link.href = row.path;
+            titleCell.appendChild(link);
+            titleCell.appendChild(node('span', 'stats-page-path', row.author));
+            tr.appendChild(titleCell);
+            tr.appendChild(node('td', '', fmt(row.views)));
+            tr.appendChild(node('td', '', fmt(row.readers)));
+            tr.appendChild(node('td', '', fmt(row.engagedReads)));
+            tr.appendChild(node('td', '', fmt(row.shares)));
+            tr.appendChild(node('td', '', percent(row.engagement)));
             els.pages.appendChild(tr);
         });
-        if (!rows.length) {
-            var trEmpty = document.createElement('tr');
-            var td = document.createElement('td');
-            td.colSpan = 5;
-            td.appendChild(empty('No page data'));
-            trEmpty.appendChild(td);
-            els.pages.appendChild(trEmpty);
+        if (!shown.length) {
+            var emptyRow = document.createElement('tr');
+            var cell = node('td', 'stats-empty', 'Δεν βρέθηκαν άρθρα για αυτή την περίοδο.');
+            cell.colSpan = 6; emptyRow.appendChild(cell); els.pages.appendChild(emptyRow);
         }
     }
-
-    function renderList(container, rows, mapRow) {
-        clear(container);
-        if (!rows.length) {
-            container.appendChild(empty('No data'));
+    function render(data) {
+        renderKpis(data);
+        renderTrend(data.timeline);
+        renderBars(els.channels, data.channels);
+        renderActions(data);
+        renderPages(data.pages);
+        els.note.textContent = 'GA4 · ' + data.rangeLabel + ' · engagement time ανά προβολή άρθρου';
+    }
+    function populateAuthors(rows) {
+        var names = Array.from(new Set(rows.map(function (row) { return row.author; }))).sort();
+        authorSelect.replaceChildren(new Option('Όλοι οι συντάκτες', 'all'));
+        names.forEach(function (name) { authorSelect.add(new Option(name, name)); });
+    }
+    function connectGoogle() {
+        var id = clientId();
+        if (!id) id = els.clientId.value.trim();
+        if (!id) {
+            setError('Χρειάζεται Google OAuth client ID για να ζητηθεί η read-only πρόσβαση στο GA4.');
+            els.clientIdWrap.hidden = false;
+            els.clientId.focus();
             return;
         }
-        rows.slice(0, 8).forEach(function (row) {
-            var mapped = mapRow(row);
-            var item = el('div', 'stats-list-row');
-            var copy = el('div');
-            copy.appendChild(el('div', 'stats-list-title', mapped.title));
-            copy.appendChild(el('div', 'stats-list-sub', mapped.sub));
-            item.appendChild(copy);
-            item.appendChild(el('div', 'stats-list-value', mapped.value));
-            container.appendChild(item);
-        });
-    }
-
-    function empty(message) {
-        return el('div', 'stats-empty', message);
-    }
-
-    function connect() {
-        var clientId = resolveClientId();
-        if (!clientId) {
-            setStatus('GA OAuth client is not configured.');
-            return;
-        }
-        try {
-            localStorage.setItem(CLIENT_ID_KEY, clientId);
-        } catch (_) {}
+        try { localStorage.setItem(CLIENT_ID_KEY, id); } catch (_) {}
         if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
-            setStatus('Google Identity script is still loading. Try again.');
+            setError('Η υπηρεσία σύνδεσης Google δεν φορτώθηκε. Ανανέωσε τη σελίδα και ξαναδοκίμασε.');
             return;
         }
+        setError('');
         tokenClient = window.google.accounts.oauth2.initTokenClient({
-            client_id: clientId,
-            scope: SCOPE,
+            client_id: id,
+            scope: GA_SCOPE,
             callback: function (response) {
-                if (response && response.access_token) {
-                    accessToken = response.access_token;
-                    fetchAnalytics();
-                } else {
-                    setStatus('Google authorization was cancelled.');
+                if (!response || !response.access_token) {
+                    setError('Δεν εγκρίθηκε η σύνδεση Google Analytics.');
+                    return;
                 }
+                accessToken = response.access_token;
+                fetchAnalytics();
             }
         });
-        tokenClient.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
+        tokenClient.requestAccessToken({ prompt: 'consent' });
     }
-
-    function resolveClientId() {
-        var configured = String(CONFIG.clientId || '').trim();
-        if (configured) return configured;
-        try {
-            return (localStorage.getItem(CLIENT_ID_KEY) || '').trim();
-        } catch (_) {
-            return '';
-        }
-    }
-
-    function init() {
-        if (els.connect) els.connect.addEventListener('click', connect);
-        if (els.refresh) els.refresh.addEventListener('click', function () {
-            if (accessToken) fetchAnalytics();
-            else setStatus(resolveClientId() ? 'Connect Google Analytics first.' : 'GA OAuth client is not configured.');
-        });
-        if (els.range) els.range.addEventListener('change', function () {
-            if (accessToken) fetchAnalytics();
-        });
-        if (!resolveClientId()) {
-            document.body.classList.add('stats-ga-missing');
-            if (els.connect) els.connect.disabled = true;
-            setStatus('GA OAuth client is not configured.');
-        } else {
-            document.body.classList.add('stats-ga-configured');
-        }
-        render(emptyData);
-    }
-
-    init();
+    els.connect.addEventListener('click', connectGoogle);
+    els.refresh.addEventListener('click', function () { if (accessToken) fetchAnalytics(); });
+    els.range.addEventListener('change', function () { if (accessToken) fetchAnalytics(); });
+    authorSelect.addEventListener('change', function () { if (current) renderPages(current.pages); });
+    els.clientId.addEventListener('input', function () { setError(''); });
+    els.clientIdWrap.hidden = !!clientId();
+    setUnlocked(false);
 })();

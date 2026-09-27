@@ -35,6 +35,7 @@ const REQUIRED_EXACT = [
     'generate.html',
     'housekeeping.html',
     'statistics.html',
+    'analytics/index.html',
     'index.html',
     'robots.txt',
     'sitemap.xml',

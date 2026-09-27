@@ -35,7 +35,7 @@ if (missing.length) {
 const SHELLS = [
     'index.html', '404.html', 'authors/index.html', 'standings/index.html',
     'blog-module/blog/index.html', 'blog-module/blog/template.html', 'privacy/privacy.html',
-    'privacy/terms.html', 'generate.html', 'housekeeping.html', 'statistics.html'
+    'privacy/terms.html', 'generate.html', 'housekeeping.html', 'analytics/index.html'
 ];
 const unresolved = [];
 for (const relPath of SHELLS) {
