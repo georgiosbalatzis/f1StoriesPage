@@ -54,9 +54,9 @@
     "test:build": "node --test scripts/build/__tests__/*.test.mjs"
   },
   "dependencies": {
-    "adm-zip": "^0.5.12",
-    "mammoth": "^1.8.0",
-    "sharp": "^0.33.5"
+    "adm-zip": "^0.6.1",
+    "mammoth": "^1.12.3",
+    "sharp": "^0.35.4"
   },
   "engines": {
     "node": ">=22"
