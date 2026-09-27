@@ -10,6 +10,8 @@
     var analyticsConfigured = false;
     var clickTrackingBound = false;
     var CLICK_EVENT_NAME = 'internal_page_click';
+    var ARTICLE_ENGAGEMENT_SECONDS = 30;
+    var ARTICLE_ENGAGEMENT_SCROLL_DEPTH = 50;
 
     function readConsent() {
         try {
@@ -78,6 +80,17 @@
         return 'page';
     }
 
+    function analyticsPageLocation() {
+        var url = new URL(window.location.href);
+        var allowedParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'gbraid', 'wbraid'];
+        var campaign = new URLSearchParams();
+        allowedParams.forEach(function (name) {
+            var value = url.searchParams.get(name);
+            if (value) campaign.set(name, value);
+        });
+        return url.origin + url.pathname + (campaign.toString() ? '?' + campaign.toString() : '');
+    }
+
     function getArticleIdFromUrl(url) {
         var match = String(url || '').match(/\/blog-entries\/([^/]+)\/article\.html(?:$|[?#])/);
         return match ? match[1] : '';
@@ -117,6 +130,11 @@
 
     function classifyLink(anchor) {
         if (!anchor) return 'page';
+        if (anchor.closest('.share-buttons')) return 'article_share';
+        if (anchor.relList && anchor.relList.contains('sponsored')) return 'sponsor';
+        if (anchor.closest('.sponsor-logos, .sponsor-strip')) return 'sponsor';
+        if (anchor.closest('.social-links, .social-links-row')) return 'social';
+        if (anchor.matches('.cta-button, .hero-listen')) return 'cta';
         if (anchor.matches('.article-card, .blog-card-link, .article-nav-link, #prev-article-link, #next-article-link')) return 'article_link';
         if (anchor.closest('.blog-posts, #articles-grid, .article-navigation')) return 'article_link';
         if (anchor.closest('.blog-nav, #nav-mobile')) return 'navigation';
@@ -130,7 +148,7 @@
 
         var articleId = getArticleIdFromUrl(destination.href);
         var params = {
-            link_url: destination.href,
+            link_url: destination.origin + destination.pathname,
             link_path: destination.pathname,
             link_text: getLinkText(anchor),
             link_section: classifyLink(anchor),
@@ -145,6 +163,50 @@
         window.gtag('event', CLICK_EVENT_NAME, params);
     }
 
+    function shareMethodForHost(hostname) {
+        hostname = String(hostname || '').toLowerCase();
+        if (hostname.indexOf('whatsapp.') !== -1 || hostname === 'wa.me') return 'whatsapp';
+        if (hostname === 'x.com' || hostname === 'twitter.com') return 'x';
+        if (hostname === 'facebook.com' || hostname === 'm.facebook.com') return 'facebook';
+        if (hostname === 't.me' || hostname === 'telegram.me') return 'telegram';
+        return 'social_link';
+    }
+
+    function trackOutboundClick(anchor) {
+        if (!hasAnalyticsConsent(readConsent()) || typeof window.gtag !== 'function' || anchor.hasAttribute('download')) return;
+        var rawHref = anchor.getAttribute('href') || '';
+        if (!rawHref || /^(mailto:|tel:|javascript:)/i.test(rawHref)) return;
+
+        var destination;
+        try {
+            destination = new URL(anchor.href, window.location.href);
+        } catch (_) {
+            return;
+        }
+        if (!/^https?:$/.test(destination.protocol) || destination.origin === window.location.origin) return;
+
+        var isShare = !!anchor.closest('.share-buttons');
+        var params = {
+            destination_domain: destination.hostname,
+            link_section: classifyLink(anchor),
+            link_text: getLinkText(anchor),
+            source_path: window.location.pathname,
+            source_type: detectPageType(window.location.pathname),
+            transport_type: 'beacon'
+        };
+        if (anchor.relList && anchor.relList.contains('sponsored')) params.sponsored = true;
+
+        var articleId = getArticleIdFromUrl(window.location.pathname);
+        if (articleId) params.article_id = articleId;
+
+        if (isShare) {
+            params.method = shareMethodForHost(destination.hostname);
+            window.gtag('event', 'article_share', params);
+        } else {
+            window.gtag('event', 'outbound_click', params);
+        }
+    }
+
     function bindInternalClickTracking() {
         if (clickTrackingBound) return;
         clickTrackingBound = true;
@@ -153,7 +215,11 @@
             if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 
             var anchor = event.target && event.target.closest ? event.target.closest('a[href]') : null;
-            if (!isInternalPageLink(anchor)) return;
+            if (!anchor) return;
+            if (!isInternalPageLink(anchor)) {
+                trackOutboundClick(anchor);
+                return;
+            }
 
             var destination;
             try {
@@ -164,6 +230,44 @@
 
             trackInternalPageClick(anchor, destination);
         });
+    }
+
+    function bindArticleEngagementTracking() {
+        var articleId = getArticleIdFromUrl(window.location.pathname);
+        if (!articleId) return;
+
+        var activeSeconds = 0;
+        var maxScrollDepth = 0;
+        var sent = false;
+
+        function updateScrollDepth() {
+            var pageHeight = document.documentElement.scrollHeight;
+            var scrollable = Math.max(1, pageHeight - window.innerHeight);
+            var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+            var depth = pageHeight <= window.innerHeight ? 100 : Math.min(100, Math.round(scrollY / scrollable * 100));
+            maxScrollDepth = Math.max(maxScrollDepth, depth);
+        }
+
+        function maybeSend() {
+            if (sent || activeSeconds < ARTICLE_ENGAGEMENT_SECONDS || maxScrollDepth < ARTICLE_ENGAGEMENT_SCROLL_DEPTH) return;
+            sent = true;
+            window.f1storiesAnalytics.trackEvent('article_engaged', {
+                article_id: articleId,
+                engaged_seconds: ARTICLE_ENGAGEMENT_SECONDS,
+                scroll_depth: ARTICLE_ENGAGEMENT_SCROLL_DEPTH
+            });
+            window.clearInterval(timer);
+        }
+
+        var timer = window.setInterval(function () {
+            if (document.visibilityState === 'visible' && hasAnalyticsConsent(readConsent())) activeSeconds++;
+            maybeSend();
+        }, 1000);
+        window.addEventListener('scroll', function () {
+            updateScrollDepth();
+            maybeSend();
+        }, { passive: true });
+        updateScrollDepth();
     }
 
     function configureAnalytics(consent) {
@@ -186,7 +290,8 @@
         if (!analyticsConfigured) {
             window.gtag('js', new Date());
             window.gtag('config', TRACKING_ID, {
-                transport_type: 'beacon'
+                transport_type: 'beacon',
+                page_location: analyticsPageLocation()
             });
             analyticsConfigured = true;
         }
@@ -196,7 +301,8 @@
         trackEvent: function (name, params) {
             if (!name || !hasAnalyticsConsent(readConsent())) return;
             ensureGtag();
-            window.gtag('event', name, params || {});
+            params = Object.assign({ transport_type: 'beacon' }, params || {});
+            window.gtag('event', name, params);
         },
         getConsentState: function () {
             return buildConsentState(readConsent());
@@ -205,6 +311,7 @@
 
     configureAnalytics(readConsent());
     bindInternalClickTracking();
+    bindArticleEngagementTracking();
 
     window.addEventListener('f1stories:cookie-consent-changed', function (event) {
         configureAnalytics(event.detail || readConsent());

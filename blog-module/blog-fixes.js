@@ -36,6 +36,16 @@
         } catch (e) { return false; }
     }
 
+    function trackArticleShare(method) {
+        var analytics = window.f1storiesAnalytics;
+        if (!analytics) return;
+        var match = window.location.pathname.match(/\/blog-entries\/([^/]+)\/article\.html/);
+        analytics.trackEvent('article_share', {
+            method: method,
+            article_id: match ? match[1] : ''
+        });
+    }
+
     // ── 2. SHARE BUTTON ENHANCEMENTS ────────────
     function enhanceShareButtons() {
         var copyBtn = document.getElementById('copy-link-btn');
@@ -45,6 +55,7 @@
                 e.stopPropagation();
                 copyToClipboard(window.location.href).then(function (success) {
                     if (success || success === undefined) {
+                        trackArticleShare('copy_link');
                         copyBtn.classList.add('copied');
                         var icon = copyBtn.querySelector('i');
                         if (icon) icon.className = 'fas fa-check';
@@ -67,6 +78,8 @@
                         title: document.title,
                         text: document.querySelector('meta[property="og:description"]')?.content || '',
                         url: window.location.href
+                    }).then(function () {
+                        trackArticleShare('native_share');
                     }).catch(function () {});
                 });
             } else {

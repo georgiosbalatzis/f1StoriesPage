@@ -28,6 +28,7 @@ const ROOT_FILES = new Set([
     'generate.html',
     'housekeeping.html',
     'statistics.html',
+    'analytics/index.html',
     'index.html',
     'robots.txt',
     'sitemap.xml',
@@ -38,6 +39,7 @@ const ROOT_FILES = new Set([
 ]);
 
 const AUTHOR_TOOL_FILES = new Set([
+    'analytics/index.html',
     // The article preview stylesheet of generate.html / housekeeping.html (no public page loads it).
     'blog-module/blog-styles.min.css',
     'node_modules/jszip/dist/jszip.min.js',

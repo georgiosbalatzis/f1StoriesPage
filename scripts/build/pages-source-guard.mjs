@@ -14,7 +14,7 @@ const MAINTENANCE_WORKFLOW = '.github/workflows/publish-blog.yml';
 const PUBLIC_ARTIFACT_SCRIPT = 'scripts/build/public-artifact.mjs';
 const PUBLIC_VALIDATOR_SCRIPT = 'scripts/build/validate-public-artifact.mjs';
 const PACKAGE_JSON = 'package.json';
-const AUTHOR_TOOL_FILES = ['generate.html', 'housekeeping.html', 'statistics.html'];
+const AUTHOR_TOOL_FILES = ['generate.html', 'housekeeping.html', 'statistics.html', 'analytics/index.html'];
 
 const errors = [];
 

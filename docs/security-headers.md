@@ -19,7 +19,7 @@ from `security-policy.mjs`.
 | `public` | every public page (home, archive, articles, standings, authors, legal, 404) | analytics after consent, Disqus, social embeds, F1 data APIs, Formspree |
 | `author-tools` | `housekeeping.html` | holds the GitHub token; talks only to `api.github.com`; runs no third-party code |
 | `author-generate` | `generate.html` | as `author-tools`, plus the live preview: YouTube and whitelisted iframes, and the X, Instagram, Threads and Facebook embed SDKs |
-| `statistics` | `statistics.html` | Google Identity Services and the GA4 Data API; no GitHub access |
+| `statistics` | `analytics/index.html`, legacy redirect `statistics.html` | GitHub token validation plus Google Identity Services and the GA4 Data API |
 
 `PAGE_CSP_PROFILES` maps pages to profiles; everything else is `public`.
 `injectSecurityMeta(html, relPath)` replaces whatever policy a page carries
@@ -42,9 +42,10 @@ run by Site Quality) pins every tool profile source by source, and checks that:
 - no tool profile allows anything the public profile does not;
 - every directive that would otherwise be open (`base-uri`, `form-action`) or
   silently fall back is set explicitly;
-- no inline/eval/wildcard script is allowed, and no analytics, ads, comments,
-  CDN or F1-data origin appears on a tool page;
-- only the two GitHub tools can reach `api.github.com`.
+- no inline/eval/wildcard script is allowed; public tracking, ads, comments,
+  CDNs and F1-data origins stay off tool pages, with Google Identity/GA4 APIs
+  limited to the statistics profile;
+- only author tools and the analytics token gate can reach `api.github.com`.
 
 A new origin needs the policy change **and** the matching `REVIEWED` entry in
 that test, with the reason, in the same review.

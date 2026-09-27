@@ -10,3 +10,4 @@ Disallow: /standings/dirty-air/
 Disallow: /blog-module/blog-data.json
 Disallow: /blog-module/blog-index-data.json
 Disallow: /blog-module/home-latest.json
+Disallow: /analytics/

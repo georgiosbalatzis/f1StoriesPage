@@ -87,7 +87,7 @@ function sendAuthorIndex(res) {
     <p>
       <a href="/generate.html">Generate Article</a>
       <a href="/housekeeping.html">Housekeeping</a>
-      <a href="/statistics.html">Statistics</a>
+      <a href="/analytics/">Analytics</a>
     </p>
   </main>
 </body>
@@ -141,6 +141,6 @@ server.listen(PORT, HOST, () => {
     console.log(`Author tools running at ${baseUrl}/`);
     console.log(`Generate:      ${baseUrl}/generate.html`);
     console.log(`Housekeeping:  ${baseUrl}/housekeeping.html`);
-    console.log(`Statistics:    ${baseUrl}/statistics.html`);
+    console.log(`Analytics:     ${baseUrl}/analytics/`);
     console.log('Press Ctrl+C to stop.');
 });

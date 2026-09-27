@@ -98,7 +98,7 @@ const REVIEWED = {
         ...TOOL_BASE,
         'script-src': ["'self'", 'https://accounts.google.com'],
         'img-src': ["'self'", 'data:'],
-        'connect-src': ["'self'", 'https://analyticsdata.googleapis.com', 'https://oauth2.googleapis.com'],
+        'connect-src': ["'self'", 'https://analyticsdata.googleapis.com', 'https://api.github.com', 'https://oauth2.googleapis.com'],
         'frame-src': ['https://accounts.google.com']
     }
 };
@@ -150,7 +150,8 @@ test('tool pages map to their own profiles; everything else is public', () => {
     assert.deepEqual({ ...PAGE_CSP_PROFILES }, {
         'generate.html': 'author-generate',
         'housekeeping.html': 'author-tools',
-        'statistics.html': 'statistics'
+        'statistics.html': 'statistics',
+        'analytics/index.html': 'statistics'
     });
     assert.equal(contentSecurityPolicyFor('generate.html'), AUTHOR_GENERATE_CSP);
     assert.equal(contentSecurityPolicyFor('/housekeeping.html'), AUTHOR_TOOLS_CSP);
@@ -198,11 +199,11 @@ for (const profile of TOOL_PROFILES) {
     });
 }
 
-test('only the GitHub tools may reach the GitHub API', () => {
-    for (const profile of ['author-tools', 'author-generate']) {
+test('only author tools and the analytics token gate may reach the GitHub API', () => {
+    for (const profile of ['author-tools', 'author-generate', 'statistics']) {
         assert.ok(parseCsp(CSP_PROFILES[profile]).get('connect-src').includes('https://api.github.com'), profile);
     }
-    assert.doesNotMatch(STATISTICS_CSP, /api\.github\.com/);
+    assert.match(STATISTICS_CSP, /api\.github\.com/);
     assert.deepEqual(parseCsp(AUTHOR_TOOLS_CSP).get('connect-src'), ["'self'", 'https://api.github.com']);
 });
 

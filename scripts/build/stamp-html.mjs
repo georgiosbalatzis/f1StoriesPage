@@ -53,7 +53,7 @@ const TARGET_HTML = [
     'privacy/privacy.html',
     'privacy/terms.html',
     'generate.html',
-    'statistics.html',
+    'analytics/index.html',
     '404.html'
 ];
 
@@ -69,8 +69,7 @@ const SPRITE_TARGETS = new Set([
     'housekeeping.html',
     'privacy/privacy.html',
     'privacy/terms.html',
-    'generate.html',
-    'statistics.html'
+    'generate.html'
 ]);
 
 const SPRITE_SOURCE = 'images/icons/sprite.svg';
@@ -83,7 +82,7 @@ const SPRITE_END   = '<!-- f1s:icon-sprite:end -->';
 const CRITICAL_TARGETS = new Set([
     'generate.html',
     'housekeeping.html',
-    'statistics.html'
+    'analytics/index.html'
 ]);
 
 // Editorial routes load their complete stylesheets synchronously. Their old
@@ -178,7 +177,7 @@ const FONT_PRELOADS = {
         'assets/fonts/dm-sans-400.woff2',
         'assets/fonts/outfit-700.woff2'
     ],
-    'statistics.html': [
+    'analytics/index.html': [
         'assets/fonts/dm-sans-400.woff2',
         'assets/fonts/outfit-700.woff2'
     ]
