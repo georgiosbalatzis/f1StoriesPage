@@ -77,7 +77,6 @@ const JS_INPUTS = [
     'scripts/f1-optimized.js',
     'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',
-    'blog-module/blog-loader.js',
     'blog-module/taxonomy.js',
     'blog-module/blog-index.js',
     'blog-module/blog/article-rail.js',

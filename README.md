@@ -143,7 +143,7 @@ npm run verify
 │   ├── blog/                   index.html (αρχείο άρθρων), template.html, CSS/JS άρθρου
 │   ├── blog-processor.js       Wrapper που καλεί το build/
 │   ├── taxonomy.js             Δημόσιες κατηγορίες, aliases, labels (Node και browser)
-│   ├── blog-loader.js, blog-index.js, blog-fixes.js
+│   ├── blog-index.js, blog-fixes.js
 │   ├── dirty-air-cache.js, destructors-cache.js   Builders για τα cache των standings
 │   ├── generate-image-variants.js
 │   └── *.json                  Generated feeds (index, page-1, home-latest, source-cache)
