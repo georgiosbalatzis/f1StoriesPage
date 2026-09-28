@@ -1,6 +1,6 @@
 # F1 Stories
 
-Αυτό είναι το αποθετήριο του δημόσιου site [f1stories.gr](https://f1stories.gr). Το F1 Stories είναι ελληνικό podcast και editorial project για τη Formula 1. Το site περιλαμβάνει αρχική σελίδα, blog με άρθρα, dashboards βαθμολογιών και στατιστικών, σελίδα συντακτών και τοπικά εργαλεία συγγραφής άρθρων.
+Αυτό είναι το αποθετήριο του δημόσιου site [f1stories.gr](https://f1stories.gr). Το F1 Stories είναι ελληνικό podcast και editorial project για τη Formula 1. Το site περιλαμβάνει αρχική σελίδα, blog με άρθρα, βαθμολογίες, σελίδα συντακτών και τοπικά εργαλεία συγγραφής άρθρων.
 
 Είναι ένα static site. Δεν έχει backend, βάση δεδομένων ή frontend framework. Είναι γραμμένο σε HTML, CSS και vanilla JavaScript. Τα Node.js scripts παράγουν ό,τι χρειάζεται στο build time, όπως τα άρθρα, τα JSON feeds, τα cache δεδομένων, τα minified assets και το τελικό artifact. Το GitHub Actions κάνει τα builds, τα merges των άρθρων, την ανανέωση δεδομένων και το deploy στο GitHub Pages.
 
@@ -65,7 +65,7 @@ npm run preview
 node scripts/author/serve-tools.mjs
 ```
 
-Ανοίγει server στο `http://127.0.0.1:4179/` με συνδέσμους για τα `generate.html`, `housekeeping.html` και `/analytics/`. Περισσότερα στην [ενότητα 12](#12-εργαλεία-συντακτών).
+Ανοίγει server στο `http://127.0.0.1:4179/` με συνδέσμους για τα `generate.html` και `housekeeping.html`. Περισσότερα στην [ενότητα 12](#12-εργαλεία-συντακτών).
 
 ### Πλήρης έλεγχος πριν από release
 
@@ -120,8 +120,6 @@ npm run verify
 ├── 404.html                    Σελίδα 404
 ├── generate.html               Εργαλείο δημιουργίας άρθρου (συντάκτες)
 ├── housekeeping.html           Εργαλείο επεξεργασίας, διαγραφής και εισαγωγής ZIP (συντάκτες)
-├── analytics/index.html        Dashboard GA4 με άρθρα και μετρήσεις ανά συντάκτη
-├── statistics.html             Redirect στο dashboard analytics
 ├── home.css, styles.css, theme-overrides.css
 ├── sw.js                       Stub που αφαιρεί τον παλιό service worker (βλ. ενότητα «Χωρίς εφαρμογή»)
 ├── robots.txt, sitemap.xml, CNAME, .nojekyll
@@ -178,7 +176,7 @@ npm run verify
 | `/f1telemetry/` | `f1telemetry/index.html` | Redirect στο `georgiosbalatzis.github.io/f1-telemetry-dashboard/`. |
 | `/ghostcar/` | `ghostcar/index.html` | Redirect στο `georgiosbalatzis.github.io/ghostcar/`. |
 | `/404.html` | | Σελίδα σφάλματος. |
-| `/generate.html`, `/housekeeping.html`, `/analytics/` | | Εργαλεία συντακτών. Ανεβαίνουν στο `dist/` με `noindex, nofollow`; το dashboard ζητά GitHub token και Google read-only login (ενότητα 12). |
+| `/generate.html`, `/housekeeping.html` | | Εργαλεία συντακτών. Ανεβαίνουν στο `dist/` με `noindex, nofollow` (ενότητα 12). |
 
 Όλες οι σελίδες είναι `lang="el"`. Το σκούρο θέμα είναι το προεπιλεγμένο. Το ανοιχτό ενεργοποιείται με `html[data-theme="light"]` μέσω του `scripts/theme-init.js`. Τα analytics (GA4) φορτώνουν μόνο αφού ο επισκέπτης δώσει ρητή συγκατάθεση στο cookie banner (`scripts/cookie-consent.js`, `scripts/analytics.js`).
 
@@ -457,7 +455,7 @@ npm run build
 
 ### 10.1 `build:html`: partials
 
-Το `scripts/build/include.mjs` αντικαθιστά τους δείκτες `<!-- @include partials/... -->` με το περιεχόμενο του partial, μέσα σε μπλοκ `@include:begin` / `@include:end`. Η λειτουργία είναι idempotent. Εφαρμόζεται σε αυτά τα shells: `index.html`, `404.html`, `standings/index.html`, `blog-module/blog/index.html`, `blog-module/blog/template.html`, `authors/index.html`, `privacy/*.html`, `generate.html`, `housekeeping.html`, `analytics/index.html`.
+Το `scripts/build/include.mjs` αντικαθιστά τους δείκτες `<!-- @include partials/... -->` με το περιεχόμενο του partial, μέσα σε μπλοκ `@include:begin` / `@include:end`. Η λειτουργία είναι idempotent. Εφαρμόζεται σε αυτά τα shells: `index.html`, `404.html`, `standings/index.html`, `blog-module/blog/index.html`, `blog-module/blog/template.html`, `authors/index.html`, `privacy/*.html`, `generate.html`, `housekeeping.html`.
 
 Το `.blog-nav` **δεν** είναι partial. Υπάρχει αντίγραφό του σε κάθε shell και σε κάθε `article.html`. Αν αλλάξει το markup του, πρέπει να ενημερωθούν τα shells και το `template.html`, και τα άρθρα να περάσουν migration με το `scripts/build/article-editorial.mjs`.
 
@@ -563,11 +561,7 @@ npm run build:public
 - **Διαγραφή** (`author/delete/...`): αφαιρεί τον φάκελο μέσω PR.
 - **Εισαγωγή ZIP** (`author/import/...`): δέχεται ZIP από το `generate.html` και το ανεβάζει μέσω PR.
 
-### 12.4 `/analytics/`: GA4 dashboard συντακτών
-
-Το dashboard ζητά το GitHub token των author tools και ελέγχει ότι έχει πρόσβαση εγγραφής στο repository. Το token μένει μόνο στη μνήμη της καρτέλας. Μετά απαιτεί Google Identity σύνδεση με read-only scope `analytics.readonly` για property `485678890`. Η αναφορά συνδέει άρθρα με συντάκτες από το `blog-index-data.json` και εμφανίζει προβολές, engaged reads, κοινοποιήσεις και ενέργειες περιοδικού. Αν το δημόσιο OAuth Client ID δεν έχει ρυθμιστεί στο `scripts/author/statistics-config.js`, η σελίδα το ζητά και το κρατά τοπικά.
-
-### 12.5 Τι γίνεται μετά το PR
+### 12.4 Τι γίνεται μετά το PR
 
 Το PR περνά αυτόματα από έλεγχο, γίνεται merge, χτίζεται και δημοσιεύεται (ενότητα 13.2). Ο συντάκτης δεν χρειάζεται να κάνει τίποτα άλλο. Ένα προγραμματισμένο PR ελέγχεται αμέσως αλλά γίνεται merge μόνο όταν περάσει η ώρα του (ενότητα 13.5). Το housekeeping δείχνει την ώρα αυτή στη λίστα ανοιχτών PR.
 
@@ -853,7 +847,6 @@ npm run quality:rendering:update
 | Formula1.com media CDN | Φωτογραφίες οδηγών και λογότυπα ομάδων | χειροκίνητο build |
 | YouTube RSS | Snapshot των πρόσφατων videos | build |
 | Google Analytics 4 | Analytics και Web Vitals (`web_vital` event), μόνο μετά από συγκατάθεση | browser |
-| GA4 Data API και Google Identity | Dashboard στο `/analytics/` | εργαλείο συντακτών |
 | Formspree | Φόρμα επικοινωνίας της αρχικής | browser |
 | Disqus (`f1stories-gr`) | Σχόλια άρθρων | browser |
 | YouTube, Spotify, X, Instagram, Threads, Facebook κ.λπ. | Embeds μέσα στα άρθρα | browser |

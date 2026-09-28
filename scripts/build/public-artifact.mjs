@@ -27,8 +27,6 @@ const ROOT_FILES = new Set([
     'CNAME',
     'generate.html',
     'housekeeping.html',
-    'statistics.html',
-    'analytics/index.html',
     'index.html',
     'robots.txt',
     'sitemap.xml',
@@ -39,7 +37,6 @@ const ROOT_FILES = new Set([
 ]);
 
 const AUTHOR_TOOL_FILES = new Set([
-    'analytics/index.html',
     // The article preview stylesheet of generate.html / housekeeping.html (no public page loads it).
     'blog-module/blog-styles.min.css',
     'node_modules/jszip/dist/jszip.min.js',
@@ -53,11 +50,8 @@ const AUTHOR_TOOL_FILES = new Set([
     'scripts/author/image-tools.js',
     'scripts/author/media-policy.js',
     'scripts/author/session-token.js',
-    'scripts/author/statistics-config.js',
-    'scripts/author/statistics-page.js',
     'styles/author/generate.css',
-    'styles/author/housekeeping.css',
-    'styles/author/statistics.css'
+    'styles/author/housekeeping.css'
 ]);
 
 const BLOG_PUBLIC_FILES = new Set([
@@ -448,7 +442,7 @@ async function copyFile(relPath) {
     const dest = path.join(DIST_ROOT, relPath);
     ensureDir(path.dirname(dest));
     if (/\.html$/i.test(relPath)) {
-        // Each page gets the CSP of its profile (public, author tools, statistics).
+        // Each page gets the CSP of its profile (public or an author tool).
         fs.writeFileSync(dest, injectSecurityMeta(rewritePublicLogoRefs(fs.readFileSync(src, 'utf8')), relPath), 'utf8');
         return null;
     }

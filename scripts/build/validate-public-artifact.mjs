@@ -34,8 +34,6 @@ const REQUIRED_EXACT = [
     'CNAME',
     'generate.html',
     'housekeeping.html',
-    'statistics.html',
-    'analytics/index.html',
     'index.html',
     'robots.txt',
     'sitemap.xml',
@@ -76,11 +74,8 @@ const REQUIRED_EXACT = [
     'scripts/author/image-tools.js',
     'scripts/author/media-policy.js',
     'scripts/author/session-token.js',
-    'scripts/author/statistics-config.js',
-    'scripts/author/statistics-page.js',
     'styles/author/generate.css',
-    'styles/author/housekeeping.css',
-    'styles/author/statistics.css'
+    'styles/author/housekeeping.css'
 ];
 
 const SIZE_ALLOWLIST = new Set([

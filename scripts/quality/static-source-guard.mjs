@@ -492,7 +492,7 @@ function checkCspProfile(profile, policy) {
 }
 
 function main() {
-    const files = gitLsFiles();
+    const files = gitLsFiles().filter(relPath => fs.existsSync(path.join(REPO_ROOT, relPath)));
     checkTrackedPaths(files);
     checkDuplicateAssets(files);
     checkTextPatterns(files);

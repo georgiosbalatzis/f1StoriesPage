@@ -62,6 +62,7 @@ function scanFile(relPath) {
 function scanFiles() {
     const files = sourceFiles().filter(relPath => {
         if (shouldSkip(relPath)) return false;
+        if (!fs.existsSync(path.join(REPO_ROOT, relPath))) return false;
         return SCANNED_EXTENSIONS.has(path.extname(relPath).toLowerCase());
     });
     const results = {};

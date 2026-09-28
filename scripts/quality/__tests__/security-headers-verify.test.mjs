@@ -55,7 +55,7 @@ test('detects the hosting layer', () => {
 });
 
 test('GitHub Pages: meta fallback passes, unsupplied headers are reported as host limits', () => {
-    for (const urlPath of ['/', '/generate.html', '/housekeeping.html', '/statistics.html']) {
+    for (const urlPath of ['/', '/generate.html', '/housekeeping.html']) {
         const relPath = relPathForUrlPath(urlPath);
         const result = evaluatePage({ urlPath, headers: GITHUB_PAGES, body: page(relPath), host: 'github-pages' });
         const rows = byHeader(result);
@@ -125,9 +125,9 @@ test('verifySite fetches every page from a live server', async () => {
     });
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
     try {
-        const report = await verifySite({ baseUrl: `http://127.0.0.1:${server.address().port}`, paths: ['/', '/generate.html', '/statistics.html'] });
+        const report = await verifySite({ baseUrl: `http://127.0.0.1:${server.address().port}`, paths: ['/', '/generate.html'] });
         assert.equal(report.host, 'github-pages');
-        assert.equal(report.pages.length, 3);
+        assert.equal(report.pages.length, 2);
         assert.equal(report.redirect, null, 'no HTTP→HTTPS probe for an http base URL');
         assert.equal(summarize(report).exitCode, 0);
         assert.equal(report.pages[1].profile, 'author-generate');
