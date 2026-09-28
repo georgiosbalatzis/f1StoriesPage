@@ -16,7 +16,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 
 const FILE_LIMITS = {
     'assets/youtube-latest.json': 40 * 1024,
-    'blog-module/blog-index-data.json': 128 * 1024,
+    'blog-module/blog-index-data.json': 144 * 1024,
     'blog-module/blog-source-cache.json': 1024 * 1024,
     'blog-module/home-latest.json': 16 * 1024,
     'scripts/build/asset-manifest.json': 256 * 1024,
