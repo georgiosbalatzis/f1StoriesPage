@@ -160,14 +160,15 @@ function snapshotKey(payload) {
     ]);
 }
 
-// The homepage "ON AIR." facade shows the episode's own frame, self-hosted so the
-// page makes no YouTube request before the reader presses play.
-async function ensureFacadeThumbnail() {
-    const html = fs.readFileSync(path.join(REPO_ROOT, 'index.html'), 'utf8');
-    const id = normalizeVideoId(html.match(/class="home-video-facade"[^>]*data-video-id="([^"]+)"/)?.[1]);
-    if (!id) return;
+// The homepage "ON AIR." panel (blog-module/build/home-panels.js) shows the newest
+// episodes' own frames, self-hosted so the page makes no YouTube request before
+// the reader presses play. The panel falls back to YouTube's thumbnail for a frame
+// that is not here yet.
+const HOMEPAGE_EPISODES = 3;
+
+async function ensureThumbnail(id) {
     const target = path.join(REPO_ROOT, 'images', 'youtube', `${id}.webp`);
-    // 800×450 serves 2x screens; the -1x file serves 1x screens (stamp-html addDensitySrcset).
+    // 800×450 serves the lead and 2x screens; the 400×225 -1x file serves 1x screens.
     const target1x = path.join(REPO_ROOT, 'images', 'youtube', `${id}-1x.webp`);
     if (fs.existsSync(target)) {
         if (!fs.existsSync(target1x)) await sharp(target).resize({ width: 400, height: 225, fit: 'cover' }).webp({ quality: 72 }).toFile(target1x);
@@ -186,9 +187,17 @@ async function ensureFacadeThumbnail() {
     console.warn(`No YouTube thumbnail available for ${id}.`);
 }
 
+async function ensureHomepageThumbnails() {
+    let snapshot = {};
+    try { snapshot = JSON.parse(fs.readFileSync(OUTPUT_PATH, 'utf8')); } catch (_) { return; }
+    const ids = toArray(snapshot.videos).map(video => normalizeVideoId(video && video.id)).filter(Boolean).slice(0, HOMEPAGE_EPISODES);
+    for (const id of ids) {
+        await ensureThumbnail(id).catch(error => console.warn(`Thumbnail for ${id} skipped: ${error.message || error}`));
+    }
+}
+
 async function main() {
-    await ensureFacadeThumbnail().catch(error => console.warn(`Facade thumbnail skipped: ${error.message || error}`));
-    if (process.argv.includes('--thumbnail-only')) return;
+    if (process.argv.includes('--thumbnail-only')) return ensureHomepageThumbnails();
     const xml = await fetchFeedXml();
     const feed = parser.parse(xml)?.feed || {};
     const videos = toArray(feed.entry)
@@ -226,15 +235,17 @@ async function main() {
     fs.writeFileSync(OUTPUT_PATH, JSON.stringify(payload, null, 2) + '\n', 'utf8');
 
     console.log(`Wrote ${path.relative(REPO_ROOT, OUTPUT_PATH)} with ${videos.length} video(s)${unchanged ? ' (unchanged)' : ''}.`);
+    await ensureHomepageThumbnails();
 }
 
-main().catch(error => {
+main().catch(async error => {
     // If a prior snapshot exists, don't fail the workflow on transient
     // YouTube outages — the existing JSON keeps serving until the next
     // scheduled run. Hard-fail only when there's nothing on disk yet.
     if (fs.existsSync(OUTPUT_PATH)) {
         console.warn(`YouTube refresh skipped: ${error.message || error}`);
         console.warn(`Keeping existing snapshot at ${path.relative(REPO_ROOT, OUTPUT_PATH)}.`);
+        await ensureHomepageThumbnails();
         process.exit(0);
     }
     console.error(error.message || error);

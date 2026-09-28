@@ -181,9 +181,10 @@
         archiveSecond: '(max-width: 767px) 96px, (min-width: 1200px) 480px, 38vw',
         // Occasional pictures inside the archive ledger.
         archiveLedger: '(max-width: 767px) 100vw, 320px',
-        homeLead: '(min-width: 1200px) 640px, (min-width: 768px) 55vw, 100vw',
-        // 16:9 cards cropped into a 104px square on phones need ~185px of width.
-        homeSecondary: '(max-width: 767px) 185px, 400px',
+        // Homepage journal: the lead spans two thirds of the page, side stories a third
+        // (a 112px square beside the text on phones, two across on tablets).
+        homeLead: '(min-width: 1200px) 900px, (min-width: 992px) 62vw, 100vw',
+        homeSecondary: '(max-width: 767px) 240px, (max-width: 991px) 50vw, 440px',
         related: '(max-width: 767px) 40vw, 390px'
     });
     // The Journal front and archive ledger, shared by the build and the browser.

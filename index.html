@@ -27,7 +27,6 @@
     <link rel="canonical" href="https://f1stories.gr/">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/icons/favicon-16.png">
     <link id="hero-image-preload" rel="preload" as="image" fetchpriority="high" imagesizes="(max-width: 767px) 100vw, 55vw" href="/blog-module/blog-entries/20260927W/1.avif">
-    <link rel="preload" href="/blog-module/home-latest.json" as="fetch" crossorigin>
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=673c392e">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/barlow-condensed-700.woff2?v=e3e520cb" crossorigin>
@@ -35,7 +34,7 @@
     <!-- f1s:fonts-preload:end -->
     <link rel="stylesheet" href="styles.min.css?v=32423041">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=1791cd09">
-    <link rel="stylesheet" href="home.min.css?v=bc727149">
+    <link rel="stylesheet" href="home.min.css?v=6776f89a">
     <link rel="stylesheet" href="styles/shared-nav.min.css?v=6ad6c635">
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
     <script defer src="/scripts/analytics.min.js?v=bdd2c3f4"></script>
@@ -130,29 +129,33 @@
 <section id="hero" aria-labelledby="hero-title">
     <div class="container hero-shell">
         <div class="hero-edition"><span>F1 STORIES / ΕΛΛΗΝΙΚΗ F1 ΚΟΙΝΟΤΗΤΑ</span><span>ΤΕΧΝΙΚΗ ΜΑΤΙΑ · ΚΑΘΑΡΗ ΑΠΟΨΗ</span></div>
-        <div class="hero-content">
-            <p class="hero-eyebrow"><span class="editorial-dot" aria-hidden="true"></span> <span id="hero-category"><!-- f1s:hero-category:begin -->ΑΝΑΛΥΣΗ<!-- f1s:hero-category:end --></span></p>
-            <h1 id="hero-title"><!-- f1s:hero-title:begin -->Μια νίκη που ξαναβάζει τον Russell στη μάχη<!-- f1s:hero-title:end --><span class="hero-period" aria-hidden="true">.</span></h1>
-            <p class="hero-subtitle" id="hero-story-deck"><!-- f1s:hero-deck:begin -->Αρκεί η σημερινή νίκη για να αυξήσει το πάθος του για το φετινό πρωτάθλημα;<!-- f1s:hero-deck:end --></p>
-            <p class="hero-description" id="hero-story-excerpt"><!-- f1s:hero-excerpt:begin --><!-- f1s:hero-excerpt:end --></p>
-            <p class="hero-story-byline" id="hero-story-byline"><!-- f1s:hero-byline:begin -->Θέμης Χαρβάλης · 27 Σεπτεμβρίου 2026<!-- f1s:hero-byline:end --></p>
-            <div class="hero-ctas" aria-label="Κύριες ενέργειες">
-                <a id="hero-story-link" href="/blog-module/blog-entries/20260927W/article.html" class="cta-button cta-primary">Διάβασε την ιστορία <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></a>
-                <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="hero-listen"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> Άκου την παρέα</a>
+        <!-- The story link stretches over the stage, so the text and the photograph both open the article. -->
+        <div class="hero-stage">
+            <div class="hero-content">
+                <p class="hero-eyebrow"><span>01</span><span class="hero-eyebrow__rule" aria-hidden="true"></span><span id="hero-category"><!-- f1s:hero-category:begin -->ΑΝΑΛΥΣΗ<!-- f1s:hero-category:end --></span></p>
+                <h1 id="hero-title" class="is-medium"><!-- f1s:hero-title:begin -->Μια νίκη που ξαναβάζει τον Russell στη μάχη<!-- f1s:hero-title:end --><span class="hero-period" aria-hidden="true">.</span></h1>
+                <div class="hero-body">
+                    <p class="hero-subtitle" id="hero-story-deck"><!-- f1s:hero-deck:begin -->Αρκεί η σημερινή νίκη για να αυξήσει το πάθος του για το φετινό πρωτάθλημα;<!-- f1s:hero-deck:end --></p>
+                    <p class="hero-description" id="hero-story-excerpt"><!-- f1s:hero-excerpt:begin --><!-- f1s:hero-excerpt:end --></p>
+                    <p class="hero-story-byline" id="hero-story-byline"><!-- f1s:hero-byline:begin -->Θέμης Χαρβάλης · 27 Σεπτεμβρίου 2026<!-- f1s:hero-byline:end --></p>
+                    <div class="hero-ctas" aria-label="Κύριες ενέργειες">
+                        <a id="hero-story-link" href="/blog-module/blog-entries/20260927W/article.html" class="cta-button cta-primary">Διάβασε την ιστορία <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></a>
+                        <a href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener" class="hero-listen"><svg class="icon" aria-hidden="true"><use href="#fa-youtube"/></svg> Άκου την παρέα</a>
+                    </div>
+                </div>
             </div>
+            <figure class="hero-photograph">
+                <div class="hero-overlay image-bg">
+                    <picture id="hero-picture">
+                        <source id="hero-source-avif" type="image/avif" srcset="/blog-module/blog-entries/20260927W/1.avif">
+                        <source id="hero-source-webp" type="image/webp" srcset="/blog-module/blog-entries/20260927W/1.webp">
+                        <img id="hero-image" src="/blog-module/blog-entries/20260927W/1.webp" alt="Μια νίκη που ξαναβάζει τον Russell στη μάχη." loading="eager" fetchpriority="high" decoding="async" width="768" height="432" sizes="(max-width: 767px) 100vw, 55vw">
+                    </picture>
+                </div>
+                <figcaption><span>01 / ΜΕΣΑ ΣΤΗ ΔΡΑΣΗ</span><span>F1 STORIES — ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></figcaption>
+                <span class="hero-stamp" aria-hidden="true">PURE RACING.<br>REAL STORIES.</span>
+            </figure>
         </div>
-        <figure class="hero-photograph">
-            <div class="hero-overlay image-bg">
-                <picture id="hero-picture">
-                    <source id="hero-source-avif" type="image/avif" srcset="/blog-module/blog-entries/20260927W/1.avif">
-                    <source id="hero-source-webp" type="image/webp" srcset="/blog-module/blog-entries/20260927W/1.webp">
-                    <img id="hero-image" src="/blog-module/blog-entries/20260927W/1.webp" alt="Μια νίκη που ξαναβάζει τον Russell στη μάχη." loading="eager" fetchpriority="high" decoding="async" width="768" height="432" sizes="(max-width: 767px) 100vw, 55vw">
-                </picture>
-            </div>
-            <figcaption><span>01 / ΜΕΣΑ ΣΤΗ ΔΡΑΣΗ</span><span>F1 STORIES — ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ</span></figcaption>
-            <span class="hero-stamp" aria-hidden="true">PURE RACING.<br>REAL STORIES.</span>
-        </figure>
-        <a href="#latest" class="hero-scroll"><span>ΣΥΝΕΧΙΣΕ ΠΑΡΑΚΑΤΩ</span><span aria-hidden="true">↙</span></a>
     </div>
 </section>
 <div class="paddock-strip" aria-label="Στο F1 Stories">
@@ -162,170 +165,491 @@
 <!-- ═══ LATEST SECTION — Greek ═══ -->
 <section id="latest" class="fade-in" aria-labelledby="latest-heading">
     <div class="container">
-        <div class="latest-layout">
-            <div class="latest-main">
-                <div class="section-intro">
-                    <span class="section-kicker">01 / ΤΟ JOURNAL</span>
-                    <h2 id="latest-heading">Η εβδομάδα στο grid<span class="editorial-accent">.</span></h2>
-                    <p class="section-intro__text">Αναλύσεις αγώνων, τεχνικά θέματα και ιστορίες από την ομάδα του F1 Stories.</p>
+        <header class="journal-head">
+            <div class="journal-head__main">
+                <span class="section-kicker">02 / ΤΟ JOURNAL</span>
+                <h2 id="latest-heading">Η εβδομάδα<br>στο grid<span class="editorial-accent">.</span></h2>
+            </div>
+            <div class="journal-head__aside">
+                <p>Αναλύσεις αγώνων, τεχνικά θέματα και ιστορίες από την ομάδα του F1 Stories. Γραμμένα με την ησυχία που δεν έχει ένα live feed.</p>
+                <a class="journal-all" href="/blog-module/blog/index.html">ΟΛΑ ΤΑ ΑΡΘΡΑ <span aria-hidden="true">→</span></a>
+            </div>
+        </header>
+        <!-- The stories after the cover are rendered by blog-module/build (injectHomeJournal). -->
+        <!-- f1s:home-journal:begin -->
+        <div class="home-front">
+            <article class="home-story home-story--lead" data-kind="teams"><div class="home-story__media"><img src="/blog-module/blog-entries/20260927G/1-card.webp" srcset="/blog-module/blog-entries/20260927G/1-card.webp 400w, /blog-module/blog-entries/20260927G/1-mobile.webp 800w, /blog-module/blog-entries/20260927G/1.webp 1600w" sizes="(min-width: 1200px) 900px, (min-width: 992px) 62vw, 100vw" width="400" height="225" loading="lazy" decoding="async" alt="" data-fallback-src="/blog-module/images/default-blog.jpg"><span class="home-story__tab">ΤΩΡΑ ΣΤΟ JOURNAL</span></div><div class="home-story__text"><p class="home-story__meta"><span class="home-story__idx" aria-hidden="true">02</span><span class="home-story__kind">ΟΜΑΔΕΣ</span><time datetime="2026-09-27">27.09.2026</time><span>4 ΛΕΠΤΑ</span></p><h3 class="home-story__title"><a href="/blog-module/blog-entries/20260927G/article.html">Tο Σαββατοκύριακο που η McLaren τα έχασε όλα</a></h3><p class="home-story__dek">Μηδέν βαθμοί. Ο Norris εκτός αγώνα, ο Piastri 14ος, και μάλιστα αφού είχε περάσει μεγάλο κομμάτι του Grand Prix μέσα στην τριάδα. Αν κοιτάξεις μόνο το αποτέλεσμα, θα πεις ότι η McLaren είχε απλώς μια...</p><p class="home-story__byline">Γ. ΜΠΑΛΑΤΖΗΣ</p></div></article>
+            <div class="home-front__side">
+                <article class="home-story home-story--side" data-kind="history"><div class="home-story__media"><img src="/blog-module/blog-entries/20260927-2W/1-card.webp" srcset="/blog-module/blog-entries/20260927-2W/1-card.webp 400w, /blog-module/blog-entries/20260927-2W/1-mobile.webp 800w" sizes="(max-width: 767px) 240px, (max-width: 991px) 50vw, 440px" width="400" height="267" loading="lazy" decoding="async" alt="" data-fallback-src="/blog-module/images/default-blog.jpg"></div><div class="home-story__text"><p class="home-story__meta"><span class="home-story__idx" aria-hidden="true">03</span><span class="home-story__kind">ΙΣΤΟΡΙΑ</span><time datetime="2026-09-27">27.09.2026</time></p><h3 class="home-story__title"><a href="/blog-module/blog-entries/20260927-2W/article.html">Kimi Raikkonen: Ο άνθρωπος που ήταν πάντα ο ίδιος από την αρχή ως το τέλος.</a></h3><p class="home-story__byline">Θ. ΧΑΡΒΑΛΗΣ · 4 ΛΕΠΤΑ</p></div></article>
+                <article class="home-story home-story--side" data-kind="drivers"><div class="home-story__media"><img src="/blog-module/blog-entries/20260927-2G/1-card.webp" srcset="/blog-module/blog-entries/20260927-2G/1-card.webp 400w, /blog-module/blog-entries/20260927-2G/1-mobile.webp 800w" sizes="(max-width: 767px) 240px, (max-width: 991px) 50vw, 440px" width="400" height="250" loading="lazy" decoding="async" alt="" data-fallback-src="/blog-module/images/default-blog.jpg"></div><div class="home-story__text"><p class="home-story__meta"><span class="home-story__idx" aria-hidden="true">04</span><span class="home-story__kind">ΟΔΗΓΟΙ</span><time datetime="2026-09-27">27.09.2026</time></p><h3 class="home-story__title"><a href="/blog-module/blog-entries/20260927-2G/article.html">6 εβδομάδες απών, 51 γύροι για να θυμίσει ποιος είναι</a></h3><p class="home-story__byline">Γ. ΜΠΑΛΑΤΖΗΣ · 4 ΛΕΠΤΑ</p></div></article>
+            </div>
+        </div>
+        <div class="home-latest">
+            <p class="home-latest__label">ΠΡΟΣΦΑΤΑ</p>
+            <ol class="home-ledger" start="5">
+                <li class="home-ledger__item" data-kind="teams"><span class="home-ledger__num" aria-hidden="true">05</span><p class="home-story__meta"><span class="home-story__kind">ΟΜΑΔΕΣ</span><time datetime="2026-09-26">26.09.2026</time></p><h3 class="home-ledger__title"><a href="/blog-module/blog-entries/20260926G/article.html">Η Haas ήταν εκεί όταν άνοιξε ο δρόμος</a></h3><p class="home-story__byline">Γ. ΜΠΑΛΑΤΖΗΣ · 3 ΛΕΠΤΑ</p></li>
+                <li class="home-ledger__item" data-kind="opinion"><span class="home-ledger__num" aria-hidden="true">06</span><p class="home-story__meta"><span class="home-story__kind">ΑΠΟΨΗ</span><time datetime="2026-09-26">26.09.2026</time></p><h3 class="home-ledger__title"><a href="/blog-module/blog-entries/20260926D/article.html">Μέσα από το F1λτρο μου</a></h3><p class="home-story__byline">Δ. ΚΕΡΑΜΙΔΙΩΤΗΣ · 4 ΛΕΠΤΑ</p></li>
+                <li class="home-ledger__item" data-kind="history"><span class="home-ledger__num" aria-hidden="true">07</span><p class="home-story__meta"><span class="home-story__kind">ΙΣΤΟΡΙΑ</span><time datetime="2026-09-25">25.09.2026</time></p><h3 class="home-ledger__title"><a href="/blog-module/blog-entries/20260925W/article.html">McLaren εναντίον Racing Point (Force India) 2018: Η μάχη που αποκάλυψε δύο εντελώς διαφορετικούς κόσμους</a></h3><p class="home-story__byline">Θ. ΧΑΡΒΑΛΗΣ · 3 ΛΕΠΤΑ</p></li>
+                <li class="home-ledger__item" data-kind="history"><span class="home-ledger__num" aria-hidden="true">08</span><p class="home-story__meta"><span class="home-story__kind">ΙΣΤΟΡΙΑ</span><time datetime="2026-09-24">24.09.2026</time></p><h3 class="home-ledger__title"><a href="/blog-module/blog-entries/20260924W/article.html">Μπακού: Η πόλη όπου η Formula 1 δεν ξέρει ποτέ τι θα συμβεί</a></h3><p class="home-story__byline">Θ. ΧΑΡΒΑΛΗΣ · 11 ΛΕΠΤΑ</p></li>
+            </ol>
+        </div>
+        <!-- f1s:home-journal:end -->
+    </div>
+</section>
+
+<!-- ═══ TECHNICAL — the dark spread, rendered by blog-module/build (renderHomeTech + home-panels.js) ═══ -->
+<section id="tech" class="home-tech fade-in" aria-labelledby="tech-heading">
+    <div class="home-tech__grid" aria-hidden="true"></div>
+    <!-- f1s:home-tech:begin -->
+        <div class="container tech-folio">
+            <span class="section-kicker">03 / ΤΕΧΝΙΚΗ ΑΝΑΛΥΣΗ</span>
+            <span class="section-kicker tech-folio__desk" aria-hidden="true">TECH DESK · 23.09.2026</span>
+        </div>
+        <div class="container">
+            <div class="tech-stage" data-kind="technical">
+                <p class="home-mast tech-mast" aria-hidden="true">TECHNICAL<br>DEEP DIVE<span class="editorial-accent">.</span></p>
+                <div class="tech-copy">
+                    <p class="home-story__meta"><span class="home-story__kind">ΤΕΧΝΙΚΑ</span><span>4 ΛΕΠΤΑ</span></p>
+                    <h2 class="tech-copy__title" id="tech-heading"><a href="/blog-module/blog-entries/20260923G/article.html">Το B-spec της Williams και το πραγματικό τεστ</a></h2>
+                    <p class="tech-copy__dek">Θυμάστε το Baku πέρσι; Ο Sainz στο podium και η Williams να ζει ένα από τα καλύτερα Σαββατοκύριακά της εδώ και πολλά χρόνια. Τότε έλεγα κι εγώ, όπως οι περισσότεροι, ότι το project του Vowles άρχιζε...</p>
+                    <p class="home-story__byline">Γ. ΜΠΑΛΑΤΖΗΣ · 23.09.2026</p>
+                    <a class="tech-copy__button" href="/blog-module/blog-entries/20260923G/article.html">ΔΙΑΒΑΣΕ ΤΗΝ ΑΝΑΛΥΣΗ <span aria-hidden="true">→</span></a>
                 </div>
-                <div class="latest-panel active" id="panel-articles" role="region" aria-label="Τελευταία άρθρα">
-                    <div class="blog-posts latest-stories-feed home-loading-skeleton" aria-live="polite" aria-atomic="true" aria-busy="true"><div class="skeleton-card" aria-hidden="true"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w40"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div></div><div class="skeleton-card" aria-hidden="true"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w40"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div></div><div class="skeleton-card" aria-hidden="true"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w40"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div></div></div>
-                    <div class="latest-footer-actions"><a href="/blog-module/blog/index.html" class="cta-button cta-secondary cta-sm">Όλα τα άρθρα <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></a></div>
+                <figure class="tech-photo">
+                    <a class="tech-photo__media" href="/blog-module/blog-entries/20260923G/article.html" tabindex="-1" aria-hidden="true"><img src="/blog-module/blog-entries/20260923G/1-card.webp" srcset="/blog-module/blog-entries/20260923G/1-card.webp 400w, /blog-module/blog-entries/20260923G/1-mobile.webp 800w, /blog-module/blog-entries/20260923G/1.webp 1600w" sizes="(max-width: 991px) 100vw, 64vw" width="400" height="224" loading="lazy" decoding="async" alt="" data-fallback-src="/blog-module/images/default-blog.jpg"></a>
+                    <figcaption>ΕΙΚΟΝΑ / WILLIAMS</figcaption>
+                </figure>
+                <aside class="telemetry" aria-label="Δεδομένα Παρασκευής: Williams, Madrid GP">
+                    <p class="telemetry__head"><span>R14 / MADRID GP</span><span>PRACTICE 2</span></p>
+                    <p class="telemetry__label">WILLIAMS · ΙΔΑΝΙΚΟΣ ΓΥΡΟΣ ΟΜΑΔΑΣ</p>
+                    <p class="telemetry__value"><span class="telemetry__sign">+</span>2.848<span class="telemetry__unit">s</span></p>
+                    <p class="telemetry__note">από την ταχύτερη (Ferrari) · 1:36.291 · 9η από 11 ομάδες</p>
+                    <dl class="sectors">
+                        <div><dt>S1</dt><dd>29.617</dd></div>
+                        <div><dt>S2</dt><dd>34.435</dd></div>
+                        <div><dt>S3</dt><dd>32.239</dd></div>
+                    </dl>
+                    <ul class="bars" aria-label="Απώλεια ανά τύπο στροφής">
+                        <li><span class="bars__label">ΑΡΓΕΣ ΣΤΡΟΦΕΣ</span><span class="bars__track" aria-hidden="true"><span style="width:71%"></span></span><span class="bars__value">+0.795</span></li>
+                        <li><span class="bars__label">ΜΕΣΑΙΕΣ ΣΤΡΟΦΕΣ</span><span class="bars__track" aria-hidden="true"><span style="width:99%"></span></span><span class="bars__value">+1.111</span></li>
+                        <li><span class="bars__label">ΓΡΗΓΟΡΕΣ ΣΤΡΟΦΕΣ</span><span class="bars__track" aria-hidden="true"><span style="width:100%"></span></span><span class="bars__value">+1.125</span></li>
+                    </ul>
+                    <p class="telemetry__source">ΠΗΓΗ / OPENF1 · FRIDAY DEBRIEF</p>
+                </aside>
+            </div>
+        </div>
+        <!-- f1s:home-tech:end -->
+</section>
+
+<!-- ═══ ON AIR — the latest episodes, rendered by blog-module/build (home-panels.js) ═══ -->
+<section id="onair" class="fade-in" aria-labelledby="onair-heading">
+    <div class="container onair-layout">
+        <div class="onair-intro">
+            <span class="section-kicker">04 / ΤΟ F1 STORIES ΣΤΟ YOUTUBE</span>
+            <h2 class="home-mast" id="onair-heading">ON<br>AIR<span class="editorial-accent">.</span></h2>
+            <p class="onair-intro__lede">Η παρέα πριν και μετά από κάθε Grand Prix: προβλέψεις, ρυθμός, διαφωνίες.</p>
+            <a class="journal-all" href="https://www.youtube.com/@f1_stories_original" target="_blank" rel="noopener">ΤΟ ΚΑΝΑΛΙ <span aria-hidden="true">↗</span></a>
+        </div>
+        <!-- f1s:home-onair:begin -->
+            <article class="episode episode--lead">
+                <div class="episode__frame">
+                    <button type="button" class="home-video-facade" data-video-id="l0vNNK6FO3g" data-video-title="BetCast #270: Hungaroring" aria-label="Αναπαραγωγή: BetCast #270: Hungaroring">
+                        <img alt="" src="/images/youtube/l0vNNK6FO3g.webp" srcset="/images/youtube/l0vNNK6FO3g-1x.webp 400w, /images/youtube/l0vNNK6FO3g.webp 800w" sizes="(max-width: 767px) 100vw, (max-width: 1199px) 62vw, 780px" width="800" height="450" loading="lazy" decoding="async">
+                        <span class="episode__play" aria-hidden="true"><svg class="icon"><use href="#fa-play"/></svg></span>
+                        <span class="episode__tab">BETCAST / #270</span>
+                    </button>
+                </div>
+                <div class="episode__text">
+                    <p class="home-story__meta"><span class="episode__latest"><span class="episode__dot" aria-hidden="true"></span>ΤΕΛΕΥΤΑΙΟ ΕΠΕΙΣΟΔΙΟ</span><time datetime="2026-07-25">25.07.2026</time></p>
+                    <h3 class="episode__title"><a href="https://www.youtube.com/watch?v=l0vNNK6FO3g" target="_blank" rel="noopener">BetCast #270: Hungaroring</a></h3>
+                    <p class="episode__dek">Αγωνιστική πρόβλεψη, ρυθμός και επιλογές πριν από το Grand Prix.</p>
+                    <p class="home-story__byline">Γ. ΠΟΥΛΙΚΙΔΗΣ · Γ. ΜΠΑΛΑΤΖΗΣ</p>
+                </div>
+            </article>
+            <ol class="episodes" aria-label="Προηγούμενα επεισόδια">
+                <li class="episode episode--small">
+                    <a class="episode__thumb" href="https://www.youtube.com/watch?v=Q_SQJqa6CMU" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/youtube/Q_SQJqa6CMU.webp" srcset="/images/youtube/Q_SQJqa6CMU-1x.webp 1x, /images/youtube/Q_SQJqa6CMU.webp 2x" alt="" width="800" height="450" loading="lazy" decoding="async"></a>
+                    <div>
+                        <p class="home-story__meta"><span>BETCAST #268</span><time datetime="2026-07-04">04.07.2026</time></p>
+                        <h3 class="episode__small-title"><a href="https://www.youtube.com/watch?v=Q_SQJqa6CMU" target="_blank" rel="noopener">British <span class="episode__out" aria-hidden="true">↗</span></a></h3>
+                    </div>
+                </li>
+                <li class="episode episode--small">
+                    <a class="episode__thumb" href="https://www.youtube.com/watch?v=iXCGUUeM-ag" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/youtube/iXCGUUeM-ag.webp" srcset="/images/youtube/iXCGUUeM-ag-1x.webp 1x, /images/youtube/iXCGUUeM-ag.webp 2x" alt="" width="800" height="450" loading="lazy" decoding="async"></a>
+                    <div>
+                        <p class="home-story__meta"><span>BETCAST #266</span><time datetime="2026-06-14">14.06.2026</time></p>
+                        <h3 class="episode__small-title"><a href="https://www.youtube.com/watch?v=iXCGUUeM-ag" target="_blank" rel="noopener">Barcelona <span class="episode__out" aria-hidden="true">↗</span></a></h3>
+                    </div>
+                </li>
+            </ol>
+            <!-- f1s:home-onair:end -->
+    </div>
+</section>
+
+<!-- ═══ THE NUMBERS — standings and Friday pace, rendered by blog-module/build (home-panels.js) ═══ -->
+<section id="numbers" class="fade-in" aria-labelledby="numbers-heading">
+    <div class="container">
+        <header class="numbers-head">
+            <div class="numbers-head__main">
+                <span class="section-kicker">05 / F1 DATA HUB</span>
+                <h2 class="home-mast" id="numbers-heading">THE<br>NUMBERS<span class="editorial-accent">.</span></h2>
+            </div>
+            <div class="numbers-head__aside">
+                <p>Βαθμολογία, ρυθμός, qualifying gaps και pit stops σε ένα σημείο. Τα νούμερα πίσω από κάθε κείμενο.</p>
+                <p class="home-story__meta numbers-stamp"><!-- f1s:home-numbers-stamp:begin --><span>ΣΕΖΟΝ 2026</span><span>ΜΕΤΑ ΤΟΝ ΓΥΡΟ 15</span><!-- f1s:home-numbers-stamp:end --></p>
+                <a class="journal-all" href="/standings/">ΑΝΟΙΞΕ ΤΟ DATA HUB <span aria-hidden="true">→</span></a>
+            </div>
+        </header>
+        <!-- f1s:home-numbers:begin -->
+            <div class="data-modules">
+                <div class="board board--drivers">
+                    <h3 class="board__title"><span>ΟΔΗΓΟΙ</span><span>ΒΑΘΜΟΙ</span></h3>
+                    <ol class="board__rows">
+                    <li class="board-row" style="--team:#27F4D2">
+                        <span class="board-row__pos">01</span>
+                        <span class="board-row__code">ANT</span>
+                        <span class="board-row__name">Antonelli<small>Mercedes</small></span>
+                        <span class="board-row__bar" aria-hidden="true"><span style="width:100%"></span></span>
+                        <span class="board-row__pts">292</span>
+                    </li>
+                    <li class="board-row" style="--team:#27F4D2">
+                        <span class="board-row__pos">02</span>
+                        <span class="board-row__code">RUS</span>
+                        <span class="board-row__name">Russell<small>Mercedes</small></span>
+                        <span class="board-row__bar" aria-hidden="true"><span style="width:72%"></span></span>
+                        <span class="board-row__pts">211</span>
+                    </li>
+                    <li class="board-row" style="--team:#E8002D">
+                        <span class="board-row__pos">03</span>
+                        <span class="board-row__code">HAM</span>
+                        <span class="board-row__name">Hamilton<small>Ferrari</small></span>
+                        <span class="board-row__bar" aria-hidden="true"><span style="width:65%"></span></span>
+                        <span class="board-row__pts">191</span>
+                    </li>
+                    <li class="board-row" style="--team:#FF8000">
+                        <span class="board-row__pos">04</span>
+                        <span class="board-row__code">NOR</span>
+                        <span class="board-row__name">Norris<small>McLaren</small></span>
+                        <span class="board-row__bar" aria-hidden="true"><span style="width:64%"></span></span>
+                        <span class="board-row__pts">186</span>
+                    </li>
+                    <li class="board-row" style="--team:#E8002D">
+                        <span class="board-row__pos">05</span>
+                        <span class="board-row__code">LEC</span>
+                        <span class="board-row__name">Leclerc<small>Ferrari</small></span>
+                        <span class="board-row__bar" aria-hidden="true"><span style="width:57%"></span></span>
+                        <span class="board-row__pts">167</span>
+                    </li>
+                    </ol>
+                    <a class="board__more" href="/standings/?tab=drivers">ΟΛΗ Η ΚΑΤΑΤΑΞΗ <span aria-hidden="true">→</span></a>
+                </div>
+                <div class="board board--teams">
+                    <h3 class="board__title"><span>ΚΑΤΑΣΚΕΥΑΣΤΕΣ</span><span>ΒΑΘΜΟΙ</span></h3>
+                    <ol class="board__rows">
+                    <li class="board-row board-row--team" style="--team:#27F4D2">
+                        <span class="board-row__pos">01</span>
+                        <span class="board-row__name">Mercedes<small>10 ΝΙΚΕΣ</small></span>
+                        <span class="board-row__bar" aria-hidden="true"><span style="width:100%"></span></span>
+                        <span class="board-row__pts">503</span>
+                    </li>
+                    <li class="board-row board-row--team" style="--team:#E8002D">
+                        <span class="board-row__pos">02</span>
+                        <span class="board-row__name">Ferrari<small>2 ΝΙΚΕΣ</small></span>
+                        <span class="board-row__bar" aria-hidden="true"><span style="width:71%"></span></span>
+                        <span class="board-row__pts">358</span>
+                    </li>
+                    <li class="board-row board-row--team" style="--team:#FF8000">
+                        <span class="board-row__pos">03</span>
+                        <span class="board-row__name">McLaren<small>2 ΝΙΚΕΣ</small></span>
+                        <span class="board-row__bar" aria-hidden="true"><span style="width:61%"></span></span>
+                        <span class="board-row__pts">306</span>
+                    </li>
+                    <li class="board-row board-row--team" style="--team:#3671C6">
+                        <span class="board-row__pos">04</span>
+                        <span class="board-row__name">Red Bull<small>0 ΝΙΚΕΣ</small></span>
+                        <span class="board-row__bar" aria-hidden="true"><span style="width:46%"></span></span>
+                        <span class="board-row__pts">230</span>
+                    </li>
+                    <li class="board-row board-row--team" style="--team:#6692FF">
+                        <span class="board-row__pos">05</span>
+                        <span class="board-row__name">RB F1 Team<small>0 ΝΙΚΕΣ</small></span>
+                        <span class="board-row__bar" aria-hidden="true"><span style="width:15%"></span></span>
+                        <span class="board-row__pts">77</span>
+                    </li>
+                    </ol>
+                    <a class="board__more" href="/standings/?tab=constructors">ΟΛΕΣ ΟΙ ΟΜΑΔΕΣ <span aria-hidden="true">→</span></a>
+                </div>
+                <div class="board board--pace">
+                    <h3 class="board__title"><span>ΡΥΘΜΟΣ ΑΓΩΝΑ</span><span>R14 · MADRID</span></h3>
+                    <p class="board__note">Πρόβλεψη από τα long runs της Παρασκευής. Απόσταση από την ταχύτερη ομάδα, ανά γύρο.</p>
+                    <ol class="pace">
+                    <li style="--team:#00D7B6;--x:0%">
+                        <span class="pace__code">MER</span>
+                        <span class="pace__track" aria-hidden="true"><span class="pace__dot"></span></span>
+                        <span class="pace__gap">1:39.611</span>
+                    </li>
+                    <li style="--team:#229971;--x:32%">
+                        <span class="pace__code">AMR</span>
+                        <span class="pace__track" aria-hidden="true"><span class="pace__dot"></span></span>
+                        <span class="pace__gap">+0.400</span>
+                    </li>
+                    <li style="--team:#ED1131;--x:75%">
+                        <span class="pace__code">FER</span>
+                        <span class="pace__track" aria-hidden="true"><span class="pace__dot"></span></span>
+                        <span class="pace__gap">+0.957</span>
+                    </li>
+                    <li style="--team:#9C9FA2;--x:99%">
+                        <span class="pace__code">HAA</span>
+                        <span class="pace__track" aria-hidden="true"><span class="pace__dot"></span></span>
+                        <span class="pace__gap">+1.253</span>
+                    </li>
+                    <li style="--team:#4781D7;--x:100%">
+                        <span class="pace__code">RBR</span>
+                        <span class="pace__track" aria-hidden="true"><span class="pace__dot"></span></span>
+                        <span class="pace__gap">+1.268</span>
+                    </li>
+                    </ol>
+                    <a class="board__more" href="/standings/?tab=debrief">FRIDAY DEBRIEF <span aria-hidden="true">→</span></a>
                 </div>
             </div>
-            <aside class="latest-aside" aria-label="Δευτερεύουσες διαδρομές">
-                <div class="latest-aside-card">
-                    <div class="podcast-masthead" aria-hidden="true"><span>ON<br>AIR<span class="editorial-accent">.</span></span><svg class="podcast-wave" viewBox="0 0 100 60" fill="none"><path d="M4 25v10m10-20v30m10-35v40m10-48v56m10-42v28m10-38v48m10-54v60m10-45v30m10-36v42m10-27v12" stroke="currentColor" stroke-width="3"/></svg></div>
-                    <span class="section-kicker">02 / ΤΟ F1 STORIES ΣΤΟ YOUTUBE</span>
-                    <div class="home-video-frame">
-                        <button type="button" class="home-video-facade" data-video-id="l0vNNK6FO3g" aria-label="Αναπαραγωγή BetCast #270: Hungaroring">
-                            <img src="/images/youtube/l0vNNK6FO3g.webp" srcset="/images/youtube/l0vNNK6FO3g-1x.webp 1x, /images/youtube/l0vNNK6FO3g.webp 2x" alt="" aria-hidden="true" width="800" height="450" loading="lazy" decoding="async">
-                            <span class="home-video-facade__play" aria-hidden="true"><svg class="icon"><use href="#fa-play"></use></svg></span>
-                        </button>
-                    </div>
-                    <h3>BetCast #270: Hungaroring</h3>
-                    <p class="home-video-meta">Γ. Πουλικίδης · Γ. Μπαλατζής · 14:42 λεπτά</p>
-                    <p>Αγωνιστική πρόβλεψη, ρυθμός και επιλογές πριν από το Grand Prix.</p>
-                    <a href="https://www.youtube.com/watch?v=l0vNNK6FO3g" target="_blank" rel="noopener" class="cta-button cta-secondary cta-sm latest-aside-button">Άνοιξε το επεισόδιο ↗</a>
-                </div>
-                <div class="latest-aside-card latest-aside-card--muted">
-                    <div class="data-masthead" aria-hidden="true"><span>THE<br>NUMBERS</span><span>↗</span></div>
-                    <span class="section-kicker">03 / F1 DATA HUB</span>
-                    <h3>Βαθμολογία &amp; ρυθμός.</h3>
-                    <p>Οδηγοί, ομάδες, qualifying gaps, tyre pace και pit stops σε ένα σημείο.</p>
-                    <a href="/standings/" class="cta-button cta-secondary cta-sm latest-aside-button">Άνοιξε το F1 Data Hub <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></a>
-                </div>
-            </aside>
-        </div>
+            <!-- f1s:home-numbers:end -->
+        <nav class="data-tools" aria-label="Εργαλεία δεδομένων">
+            <a href="/standings/?tab=quali-gaps"><span class="data-tools__num">01</span><span class="data-tools__label">QUALIFYING</span><span class="data-tools__note">Κενά συμπαικτών</span><span class="data-tools__arrow" aria-hidden="true">→</span></a>
+            <a href="/standings/?tab=tyre-pace"><span class="data-tools__num">02</span><span class="data-tools__label">TYRE PACE</span><span class="data-tools__note">Ρυθμός ανά γόμα</span><span class="data-tools__arrow" aria-hidden="true">→</span></a>
+            <a href="/standings/?tab=pit-stops"><span class="data-tools__num">03</span><span class="data-tools__label">PIT STOPS</span><span class="data-tools__note">Χρόνοι στα pits</span><span class="data-tools__arrow" aria-hidden="true">→</span></a>
+            <a href="/standings/?tab=dirty-air"><span class="data-tools__num">04</span><span class="data-tools__label">DIRTY AIR</span><span class="data-tools__note">Ζωή πίσω από άλλον</span><span class="data-tools__arrow" aria-hidden="true">→</span></a>
+            <a href="/standings/?tab=lap1-gains"><span class="data-tools__num">05</span><span class="data-tools__label">LAP 1</span><span class="data-tools__note">Κέρδη στην εκκίνηση</span><span class="data-tools__arrow" aria-hidden="true">→</span></a>
+        </nav>
     </div>
 </section>
 
 <!-- ═══ TEAM SECTION — Greek ═══ -->
-<section id="about" class="fade-in">
+<section id="about" class="fade-in" aria-labelledby="team-heading">
     <div class="container">
-        <div class="section-intro team-intro">
-            <span class="section-kicker">04 / Η ΠΑΡΕΑ</span>
-            <h2>Εκτός πίστας.<br>Εντός θέματος<span class="editorial-accent">.</span></h2>
-            <p class="section-intro__text">Πέντε συντάκτες, πέντε συγκεκριμένες ματιές: τεχνική ανάλυση, άποψη και ιστορία για την ελληνική F1 κοινότητα.</p>
-            <a class="authors-directory-link" href="/authors/">Γνώρισε την ομάδα ↗</a>
-        </div>
-        <div class="team-row">
-            <div class="team-member">
-                <a href="/authors/?author=dimitris-keramidiotis" tabindex="-1" aria-hidden="true">
-                    <img src="images/avatars/dr3R.webp" alt="Δημήτρης Κεραμιδιώτης" class="team-member__avatar" loading="lazy" decoding="async" width="240" height="240">
-                </a>
-                <h3 class="team-member__name"><a href="/authors/?author=dimitris-keramidiotis">Δημήτρης Κεραμιδιώτης</a></h3>
-                <span class="team-member__role">Παρουσιαστής</span>
+        <header class="team-head">
+            <div class="team-head__main">
+                <span class="section-kicker">06 / Η ΠΑΡΕΑ</span>
+                <h2 id="team-heading">Οι φωνές πίσω<br>από το grid<span class="editorial-accent">.</span></h2>
             </div>
-            <div class="team-member">
-                <a href="/authors/?author=giannis-poulikidis" tabindex="-1" aria-hidden="true">
-                    <img src="images/avatars/SV.webp" alt="Γιάννης Πουλικίδης" class="team-member__avatar" loading="lazy" decoding="async" width="240" height="240">
-                </a>
-                <h3 class="team-member__name"><a href="/authors/?author=giannis-poulikidis">Γιάννης Πουλικίδης</a></h3>
-                <span class="team-member__role">Παρουσιαστής · Στοιχηματική Ανάλυση</span>
+            <p class="team-head__aside">Πέντε συντάκτες, πέντε συγκεκριμένες ματιές: τεχνική ανάλυση, άποψη και ιστορία για την ελληνική F1 κοινότητα. Και μία υπογραφή που δεν έχει βγάλει ποτέ το κράνος.</p>
+        </header>
+        <!-- The spotlight and roster are rendered by blog-module/build from taxonomy.js AUTHORS. -->
+        <div class="team-layout">
+            <!-- f1s:home-team:begin -->
+            <div class="team-spotlight" data-team-spotlight role="region" aria-roledescription="carousel" aria-label="Συντάκτης στο προσκήνιο">
+                <button class="team-spotlight__pause" type="button" aria-pressed="false" data-team-pause hidden><span class="visually-hidden">Παύση εναλλαγής</span><span aria-hidden="true">❚❚</span></button>
+                <div class="team-spotlight__cards">
+                <article class="team-card is-active" data-author-slug="themis-charvalis" role="group" aria-roledescription="slide" aria-label="1 από 6: Θέμης Χαρβάλης">
+                    <span class="team-card__timer" aria-hidden="true"></span>
+                    <p class="team-card__label">ΣΤΗΝ ΠΡΩΤΗ ΣΕΛΙΔΑ / ΙΣΤΟΡΙΕΣ ΟΔΗΓΩΝ ΚΑΙ ΘΡΥΛΩΝ</p>
+                    <div class="team-card__head">
+                        <img class="team-card__avatar" src="/images/avatars/AS.webp" alt="" width="240" height="240" loading="lazy" decoding="async">
+                        <div>
+                            <p class="team-card__desk">ΙΣΤΟΡΙΑ · ΟΔΗΓΟΙ</p>
+                            <h3 class="team-card__name"><a href="/authors/?author=themis-charvalis">Θέμης Χαρβάλης</a></h3>
+                            <p class="team-card__specialty">Ιστορικές αναδρομές και πορτρέτα οδηγών</p>
+                        </div>
+                    </div>
+                    <p class="team-card__bio">Αναζητά το ανθρώπινο κομμάτι πίσω από τα αποτελέσματα και γράφει ιστορίες που συνδέουν το τότε με το σημερινό grid.</p>
+                    <ul class="team-card__stories"><li><span>27.09.2026</span><a href="/blog-module/blog-entries/20260927W/article.html">Μια νίκη που ξαναβάζει τον Russell στη μάχη.</a></li><li><span>27.09.2026</span><a href="/blog-module/blog-entries/20260927-2W/article.html">Kimi Raikkonen: Ο άνθρωπος που ήταν πάντα ο ίδιος από την αρχή ως το τέλος.</a></li><li><span>25.09.2026</span><a href="/blog-module/blog-entries/20260925W/article.html">McLaren εναντίον Racing Point (Force India) 2018: Η μάχη που αποκάλυψε δύο εντελώς διαφορετικούς κόσμους</a></li></ul>
+                    <div class="team-card__actions"><a class="team-card__all" href="/blog-module/blog/index.html?author=themis-charvalis">ΟΛΑ ΤΑ ΑΡΘΡΑ ΤΟΥ ΘΕΜΗ <span aria-hidden="true">→</span></a><a class="team-card__social" href="https://www.instagram.com/myf1stories/" target="_blank" rel="noopener">INSTAGRAM <span aria-hidden="true">↗</span></a></div>
+                </article>
+                <article class="team-card" data-author-slug="giannis-poulikidis" role="group" aria-roledescription="slide" aria-label="2 από 6: Γιάννης Πουλικίδης">
+                    <span class="team-card__timer" aria-hidden="true"></span>
+                    <p class="team-card__label">ΣΤΗΝ ΠΡΩΤΗ ΣΕΛΙΔΑ / ΤΡΟΦΗ ΓΙΑ ΣΚΕΨΗ</p>
+                    <div class="team-card__head">
+                        <img class="team-card__avatar" src="/images/avatars/SV.webp" alt="" width="240" height="240" loading="lazy" decoding="async">
+                        <div>
+                            <p class="team-card__desk">ΑΠΟΨΗ · ΣΤΟΙΧΗΜΑ</p>
+                            <h3 class="team-card__name"><a href="/authors/?author=giannis-poulikidis">Γιάννης Πουλικίδης</a></h3>
+                            <p class="team-card__specialty">Αγωνιστική άποψη και BetCast</p>
+                        </div>
+                    </div>
+                    <p class="team-card__bio">Γράφει όπως μιλάει: άμεσα, με χιούμορ και θέση. Μετατρέπει το αγωνιστικό τριήμερο σε κουβέντα που συνεχίζεται.</p>
+                    <ul class="team-card__stories"><li><span>24.09.2026</span><a href="/blog-module/blog-entries/20260924J/article.html">Betcast #274 Baku</a></li><li><span>14.09.2026</span><a href="/blog-module/blog-entries/20260914J/article.html">FAIL MADRID: Μόνο τόσες… και θέλουν να μείνει μέχρι το 2035</a></li><li><span>12.09.2026</span><a href="/blog-module/blog-entries/20260912J/article.html">BetCast #273: Προσπεράσεις ή… τοίχος με τοίχο;</a></li></ul>
+                    <div class="team-card__actions"><a class="team-card__all" href="/blog-module/blog/index.html?author=giannis-poulikidis">ΟΛΑ ΤΑ ΑΡΘΡΑ ΤΟΥ ΓΙΑΝΝΗ <span aria-hidden="true">→</span></a><a class="team-card__social" href="https://www.instagram.com/john_pouliks/" target="_blank" rel="noopener">INSTAGRAM <span aria-hidden="true">↗</span></a></div>
+                </article>
+                <article class="team-card" data-author-slug="georgios-balatzis" role="group" aria-roledescription="slide" aria-label="3 από 6: Γιώργος Μπαλατζής">
+                    <span class="team-card__timer" aria-hidden="true"></span>
+                    <p class="team-card__label">ΣΤΗΝ ΠΡΩΤΗ ΣΕΛΙΔΑ / ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ</p>
+                    <div class="team-card__head">
+                        <img class="team-card__avatar" src="/images/avatars/FA.webp" alt="" width="240" height="240" loading="lazy" decoding="async">
+                        <div>
+                            <p class="team-card__desk">ΤΕΧΝΙΚΑ · ΔΕΔΟΜΕΝΑ</p>
+                            <h3 class="team-card__name"><a href="/authors/?author=georgios-balatzis">Γιώργος Μπαλατζής</a></h3>
+                            <p class="team-card__specialty">Τεχνική ανάλυση και αγωνιστικός ρυθμός</p>
+                        </div>
+                    </div>
+                    <p class="team-card__bio">Μετράει όσα δεν φαίνονται στον πίνακα αποτελεσμάτων: upgrades, ελαστικά, ρυθμό και τις αποφάσεις που κρίνουν έναν αγώνα.</p>
+                    <ul class="team-card__stories"><li><span>27.09.2026</span><a href="/blog-module/blog-entries/20260927G/article.html">Tο Σαββατοκύριακο που η McLaren τα έχασε όλα</a></li><li><span>27.09.2026</span><a href="/blog-module/blog-entries/20260927-2G/article.html">6 εβδομάδες απών, 51 γύροι για να θυμίσει ποιος είναι</a></li><li><span>26.09.2026</span><a href="/blog-module/blog-entries/20260926G/article.html">Η Haas ήταν εκεί όταν άνοιξε ο δρόμος</a></li></ul>
+                    <div class="team-card__actions"><a class="team-card__all" href="/blog-module/blog/index.html?author=georgios-balatzis">ΟΛΑ ΤΑ ΑΡΘΡΑ ΤΟΥ ΓΙΩΡΓΟΥ <span aria-hidden="true">→</span></a><a class="team-card__social" href="https://www.instagram.com/borgos_gialatzis/" target="_blank" rel="noopener">INSTAGRAM <span aria-hidden="true">↗</span></a></div>
+                </article>
+                <article class="team-card" data-author-slug="dimitris-keramidiotis" role="group" aria-roledescription="slide" aria-label="4 από 6: Δημήτρης Κεραμιδιώτης">
+                    <span class="team-card__timer" aria-hidden="true"></span>
+                    <p class="team-card__label">ΣΤΗΝ ΠΡΩΤΗ ΣΕΛΙΔΑ / ΜΕΣΑ ΑΠΟ ΤΟ F1ΛΤΡΟ ΜΟΥ</p>
+                    <div class="team-card__head">
+                        <img class="team-card__avatar" src="/images/avatars/dr3R.webp" alt="" width="240" height="240" loading="lazy" decoding="async">
+                        <div>
+                            <p class="team-card__desk">ΑΠΟΨΗ</p>
+                            <h3 class="team-card__name"><a href="/authors/?author=dimitris-keramidiotis">Δημήτρης Κεραμιδιώτης</a></h3>
+                            <p class="team-card__specialty">Προσωπική ματιά στο αγωνιστικό τριήμερο</p>
+                        </div>
+                    </div>
+                    <p class="team-card__bio">Το ημερολόγιο ενός θεατή που κοιτάζει την F1 από την κερκίδα, το paddock και όλα όσα συμβαίνουν ανάμεσα στις γραμμές.</p>
+                    <ul class="team-card__stories"><li><span>26.09.2026</span><a href="/blog-module/blog-entries/20260926D/article.html">Μέσα από το F1λτρο μου</a></li><li><span>24.08.2026</span><a href="/blog-module/blog-entries/20260824D/article.html">Μέσα από το F1λτρο μου</a></li><li><span>26.07.2026</span><a href="/blog-module/blog-entries/20260726D/article.html">Μέσα από το F1λτρο μου</a></li></ul>
+                    <div class="team-card__actions"><a class="team-card__all" href="/blog-module/blog/index.html?author=dimitris-keramidiotis">ΟΛΑ ΤΑ ΑΡΘΡΑ ΤΟΥ ΔΗΜΗΤΡΗ <span aria-hidden="true">→</span></a><a class="team-card__social" href="https://www.instagram.com/dimkeram/" target="_blank" rel="noopener">INSTAGRAM <span aria-hidden="true">↗</span></a></div>
+                </article>
+                <article class="team-card" data-author-slug="thanasis-batalas" role="group" aria-roledescription="slide" aria-label="5 από 6: Θανάσης Μπαταλάς">
+                    <span class="team-card__timer" aria-hidden="true"></span>
+                    <p class="team-card__label">ΣΤΗΝ ΠΡΩΤΗ ΣΕΛΙΔΑ / ΑΠΟ ΤΟ ΑΡΧΕΙΟ ΤΟΥ GRID</p>
+                    <div class="team-card__head">
+                        <img class="team-card__avatar" src="/images/avatars/MV.webp" alt="" width="240" height="240" loading="lazy" decoding="async">
+                        <div>
+                            <p class="team-card__desk">ΙΣΤΟΡΙΑ · ΑΝΑΛΥΣΗ</p>
+                            <h3 class="team-card__name"><a href="/authors/?author=thanasis-batalas">Θανάσης Μπαταλάς</a></h3>
+                            <p class="team-card__specialty">Ιστορία, πρόσωπα και ψυχολογία</p>
+                        </div>
+                    </div>
+                    <p class="team-card__bio">Συνδέει τις εποχές της Formula 1 με τις σημερινές μάχες και θυμίζει γιατί οι λεπτομέρειες μένουν περισσότερο από τα νούμερα.</p>
+                    <ul class="team-card__stories"><li><span>22.07.2026</span><a href="/blog-module/blog-entries/20260722T/article.html">Mercedes εναντίον Ferrari: Γιατί ο αγωνιστικός ρυθμός λέει περισσότερα από τις κατατακτήριες</a></li><li><span>04.06.2026</span><a href="/blog-module/blog-entries/20260604T/article.html">Η ψυχολογία του οδηγού στην εποχή της διαχείρισης</a></li><li><span>22.02.2026</span><a href="/blog-module/blog-entries/20260222T/article.html">Παλιά κοιμόμασταν με ανοιχτά παράθυρα</a></li></ul>
+                    <div class="team-card__actions"><a class="team-card__all" href="/blog-module/blog/index.html?author=thanasis-batalas">ΟΛΑ ΤΑ ΑΡΘΡΑ ΤΟΥ ΘΑΝΑΣΗ <span aria-hidden="true">→</span></a><a class="team-card__social" href="https://www.instagram.com/thanasismpatalas/" target="_blank" rel="noopener">INSTAGRAM <span aria-hidden="true">↗</span></a></div>
+                </article>
+                <article class="team-card" data-author-slug="f1-stories" role="group" aria-roledescription="slide" aria-label="6 από 6: F1 Stories">
+                    <span class="team-card__timer" aria-hidden="true"></span>
+                    <p class="team-card__label">ΣΤΗΝ ΠΡΩΤΗ ΣΕΛΙΔΑ / EL PLAN</p>
+                    <div class="team-card__head">
+                        <img class="team-card__avatar" src="/images/avatars/F1S.webp" alt="" width="240" height="240" loading="lazy" decoding="async">
+                        <div>
+                            <p class="team-card__desk">ΧΩΡΙΣ ΠΡΟΣΩΠΟ</p>
+                            <h3 class="team-card__name"><a href="/authors/?author=f1-stories">F1 Stories</a></h3>
+                            <p class="team-card__specialty">Από το αρχείο ως τις Power Units του 2026</p>
+                        </div>
+                    </div>
+                    <p class="team-card__bio">Κανείς δεν έχει δει το πρόσωπο κάτω από το κράνος. Ξεθάβει V12 και turbo από το αρχείο, εξηγεί την ενέργεια των νέων Power Units και εμφανίζεται μόνο όταν μια ιστορία δεν χωράει σε μία υπογραφή.</p>
+                    <ul class="team-card__stories"><li><span>23.09.2026</span><a href="/blog-module/blog-entries/20260923/article.html">Το πραγματικό πρόβλημα του Baku είναι η ενέργεια</a></li><li><span>10.09.2026</span><a href="/blog-module/blog-entries/20260910/article.html">Madridring aka Jarama est. 1989</a></li><li><span>22.07.2026</span><a href="/blog-module/blog-entries/20260722/article.html">Η Ferrari SF-26 δεν είναι πλέον γρήγορη μόνο στις αργές στροφές</a></li></ul>
+                    <div class="team-card__actions"><a class="team-card__all" href="/blog-module/blog/index.html?author=f1-stories">ΟΛΑ ΤΑ ΑΡΘΡΑ ΤΟΥ F1 STORIES <span aria-hidden="true">→</span></a></div>
+                </article>
+                </div>
             </div>
-            <div class="team-member">
-                <a href="/authors/?author=georgios-balatzis" tabindex="-1" aria-hidden="true">
-                    <img src="images/avatars/FA.webp" alt="Γιώργος Μπαλατζής" class="team-member__avatar" loading="lazy" decoding="async" width="240" height="240">
-                </a>
-                <h3 class="team-member__name"><a href="/authors/?author=georgios-balatzis">Γιώργος Μπαλατζής</a></h3>
-                <span class="team-member__role">Παρουσιαστής · Τεχνικός Αναλυτής</span>
+            <div class="team-side">
+                <ol class="team-roster" aria-label="Η ομάδα">
+                <li class="team-roster__item is-current" data-author-slug="themis-charvalis" aria-current="true">
+                    <span class="team-roster__num" aria-hidden="true">01</span>
+                    <img src="/images/avatars/AS.webp" alt="" width="240" height="240" loading="lazy" decoding="async">
+                    <div class="team-roster__text">
+                        <p class="team-roster__desk">ΙΣΤΟΡΙΑ · ΟΔΗΓΟΙ</p>
+                        <h3 class="team-roster__name"><a href="/authors/?author=themis-charvalis">Θέμης Χαρβάλης</a></h3>
+                        <p>Ιστορικές αναδρομές και πορτρέτα οδηγών</p>
+                    </div>
+                    <span class="team-roster__arrow" aria-hidden="true">→</span>
+                </li>
+                <li class="team-roster__item" data-author-slug="giannis-poulikidis">
+                    <span class="team-roster__num" aria-hidden="true">02</span>
+                    <img src="/images/avatars/SV.webp" alt="" width="240" height="240" loading="lazy" decoding="async">
+                    <div class="team-roster__text">
+                        <p class="team-roster__desk">ΑΠΟΨΗ · ΣΤΟΙΧΗΜΑ</p>
+                        <h3 class="team-roster__name"><a href="/authors/?author=giannis-poulikidis">Γιάννης Πουλικίδης</a></h3>
+                        <p>Αγωνιστική άποψη και BetCast</p>
+                    </div>
+                    <span class="team-roster__arrow" aria-hidden="true">→</span>
+                </li>
+                <li class="team-roster__item" data-author-slug="georgios-balatzis">
+                    <span class="team-roster__num" aria-hidden="true">03</span>
+                    <img src="/images/avatars/FA.webp" alt="" width="240" height="240" loading="lazy" decoding="async">
+                    <div class="team-roster__text">
+                        <p class="team-roster__desk">ΤΕΧΝΙΚΑ · ΔΕΔΟΜΕΝΑ</p>
+                        <h3 class="team-roster__name"><a href="/authors/?author=georgios-balatzis">Γιώργος Μπαλατζής</a></h3>
+                        <p>Τεχνική ανάλυση και αγωνιστικός ρυθμός</p>
+                    </div>
+                    <span class="team-roster__arrow" aria-hidden="true">→</span>
+                </li>
+                <li class="team-roster__item" data-author-slug="dimitris-keramidiotis">
+                    <span class="team-roster__num" aria-hidden="true">04</span>
+                    <img src="/images/avatars/dr3R.webp" alt="" width="240" height="240" loading="lazy" decoding="async">
+                    <div class="team-roster__text">
+                        <p class="team-roster__desk">ΑΠΟΨΗ</p>
+                        <h3 class="team-roster__name"><a href="/authors/?author=dimitris-keramidiotis">Δημήτρης Κεραμιδιώτης</a></h3>
+                        <p>Προσωπική ματιά στο αγωνιστικό τριήμερο</p>
+                    </div>
+                    <span class="team-roster__arrow" aria-hidden="true">→</span>
+                </li>
+                <li class="team-roster__item" data-author-slug="thanasis-batalas">
+                    <span class="team-roster__num" aria-hidden="true">05</span>
+                    <img src="/images/avatars/MV.webp" alt="" width="240" height="240" loading="lazy" decoding="async">
+                    <div class="team-roster__text">
+                        <p class="team-roster__desk">ΙΣΤΟΡΙΑ · ΑΝΑΛΥΣΗ</p>
+                        <h3 class="team-roster__name"><a href="/authors/?author=thanasis-batalas">Θανάσης Μπαταλάς</a></h3>
+                        <p>Ιστορία, πρόσωπα και ψυχολογία</p>
+                    </div>
+                    <span class="team-roster__arrow" aria-hidden="true">→</span>
+                </li>
+                <li class="team-roster__item" data-author-slug="f1-stories">
+                    <span class="team-roster__num" aria-hidden="true">06</span>
+                    <img src="/images/avatars/F1S.webp" alt="" width="240" height="240" loading="lazy" decoding="async">
+                    <div class="team-roster__text">
+                        <p class="team-roster__desk">ΧΩΡΙΣ ΠΡΟΣΩΠΟ</p>
+                        <h3 class="team-roster__name"><a href="/authors/?author=f1-stories">F1 Stories</a></h3>
+                        <p>Από το αρχείο ως τις Power Units του 2026</p>
+                    </div>
+                    <span class="team-roster__arrow" aria-hidden="true">→</span>
+                </li>
+                </ol>
+                <a class="team-directory-link" href="/authors/">ΓΝΩΡΙΣΕ ΟΛΗ ΤΗΝ ΟΜΑΔΑ <span aria-hidden="true">→</span></a>
             </div>
-            <div class="team-member">
-                <a href="/authors/?author=themis-charvalis" tabindex="-1" aria-hidden="true">
-                    <img src="images/avatars/AS.webp" alt="Θέμης Χαρβάλης" class="team-member__avatar" loading="lazy" decoding="async" width="240" height="240">
-                </a>
-                <h3 class="team-member__name"><a href="/authors/?author=themis-charvalis">Θέμης Χαρβάλης</a></h3>
-                <span class="team-member__role">Παρουσιαστής</span>
-            </div>
-            <div class="team-member">
-                <a href="/authors/?author=thanasis-batalas" tabindex="-1" aria-hidden="true">
-                    <img src="images/avatars/MV.webp" alt="Θανάσης Μπαταλάς" class="team-member__avatar" loading="lazy" decoding="async" width="240" height="240">
-                </a>
-                <h3 class="team-member__name"><a href="/authors/?author=thanasis-batalas">Θανάσης Μπαταλάς</a></h3>
-                <span class="team-member__role">Παρουσιαστής · Ιστορική Αναδρομή</span>
-            </div>
+            
+<!-- f1s:home-team:end -->
         </div>
     </div>
 </section>
 
 <!-- ═══ CONTACT SECTION — Greek ═══ -->
-<section id="contact" class="fade-in">
-    <div class="container"><div class="contact-block">
-        <div class="contact-heading"><span class="section-kicker">05 / ΤΟ ΔΙΚΟ ΣΟΥ TEAM RADIO</span>
-        <h2>Έχεις κάτι<br>να πεις<span class="editorial-accent">;</span></h2>
-        <p class="contact-block__intro">Μια ιδέα, μια διαφωνία, μια συνεργασία. Η κουβέντα ξεκινάει από εδώ.</p>
-        <a class="contact-email" href="mailto:myf1stories@gmail.com">myf1stories@gmail.com <span aria-hidden="true">↗</span></a></div>
+<section id="contact" class="fade-in" aria-labelledby="contact-heading">
+    <div class="container contact-layout">
+        <div class="contact-head">
+            <span class="section-kicker">07 / TEAM RADIO</span>
+            <h2 class="contact-title" id="contact-heading">Έχεις κάτι<br>να πεις<span class="editorial-accent">;</span></h2>
+            <p>Μια ιδέα, μια διαφωνία, μια συνεργασία. Η κουβέντα ξεκινάει από εδώ.</p>
+            <a class="contact-email" href="mailto:myf1stories@gmail.com">myf1stories@gmail.com <span aria-hidden="true">↗</span></a>
+        </div>
         <form id="contact-form" action="https://formspree.io/f/xjkyeazq" method="POST" class="contact-form">
-            <div class="form-group">
-                <label for="name">Όνομα</label>
-                <input type="text" id="name" name="name" autocomplete="name" class="form-control" placeholder="Το ονοματεπώνυμό σου" required>
+            <div class="contact-field">
+                <label for="name">ΟΝΟΜΑ</label>
+                <input type="text" id="name" name="name" autocomplete="name" placeholder="Το ονοματεπώνυμό σου" required>
             </div>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" autocomplete="email" class="form-control" placeholder="onoma@paradeigma.gr" inputmode="email" required>
+            <div class="contact-field">
+                <label for="email">EMAIL</label>
+                <input type="email" id="email" name="email" autocomplete="email" placeholder="onoma@paradeigma.gr" inputmode="email" required>
             </div>
-            <div class="form-group">
-                <label for="message">Μήνυμα</label>
-                <textarea id="message" name="message" class="form-control" placeholder="Γράψε το μήνυμά σου" rows="4" required></textarea>
+            <div class="contact-field contact-field--wide">
+                <label for="message">ΜΗΝΥΜΑ</label>
+                <textarea id="message" name="message" placeholder="Γράψε το μήνυμά σου" rows="3" required></textarea>
             </div>
-            <div id="form-status" role="status" aria-live="polite" style="display:none">
-                <div id="form-success" class="form-alert form-alert--success" style="display:none">
-                    <svg class="icon" aria-hidden="true"><use href="#fa-check-circle"/></svg>
-                    <span>Το μήνυμα στάλθηκε. Θα επικοινωνήσουμε σύντομα.</span>
-                </div>
-                <div id="form-info" class="form-alert form-alert--info" style="display:none">
-                    <svg class="icon" aria-hidden="true"><use href="#fa-circle-info"/></svg>
-                    <span>Απαιτείται σύντομη επαλήθευση anti-spam. Μεταφέρεσαι σε ασφαλή σελίδα επιβεβαίωσης για να ολοκληρωθεί η αποστολή.</span>
-                </div>
-                <div id="form-error" class="form-alert form-alert--error" style="display:none">
-                    <svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg>
-                    <span>Κάτι πήγε στραβά. Δοκίμασε ξανά ή στείλε email στο <a href="mailto:myf1stories@gmail.com">myf1stories@gmail.com</a></span>
-                </div>
+            <div id="form-status" class="contact-form__status" role="status" aria-live="polite" style="display:none">
+                <div id="form-success" class="form-alert" style="display:none"><svg class="icon" aria-hidden="true"><use href="#fa-check-circle"/></svg><span>Το μήνυμα στάλθηκε. Θα επικοινωνήσουμε σύντομα.</span></div>
+                <div id="form-info" class="form-alert" style="display:none"><svg class="icon" aria-hidden="true"><use href="#fa-circle-info"/></svg><span>Απαιτείται σύντομη επαλήθευση anti-spam. Μεταφέρεσαι σε ασφαλή σελίδα επιβεβαίωσης για να ολοκληρωθεί η αποστολή.</span></div>
+                <div id="form-error" class="form-alert form-alert--error" style="display:none"><svg class="icon" aria-hidden="true"><use href="#fa-exclamation-triangle"/></svg><span>Κάτι πήγε στραβά. Δοκίμασε ξανά ή στείλε email στο <a href="mailto:myf1stories@gmail.com">myf1stories@gmail.com</a></span></div>
             </div>
             <label for="contact-gotcha" class="visually-hidden">Μην συμπληρώσετε αυτό το πεδίο</label>
             <input type="text" id="contact-gotcha" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
-            <button type="submit" class="cta-button cta-primary contact-submit">
-                <span class="submit-text">Αποστολή μηνύματος</span>
-                <span class="submit-spinner" style="display:none"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-circle-notch"/></svg></span>
-            </button>
-            <p class="contact-block__micro">Απαντάμε συνήθως εντός 48 ωρών.</p>
+            <div class="contact-form__foot">
+                <button type="submit" class="contact-submit"><span class="submit-text">Αποστολή μηνύματος</span><span class="submit-spinner" style="display:none"><svg class="icon fa-spin" aria-hidden="true"><use href="#fa-circle-notch"/></svg></span></button>
+                <p class="contact-form__note">ΑΠΑΝΤΑΜΕ ΣΥΝΗΘΩΣ ΕΝΤΟΣ 48 ΩΡΩΝ</p>
+            </div>
         </form>
-    </div></div>
+    </div>
 </section>
 <!-- ═══ PARTNERS ═══ -->
-<section id="home-sponsors" class="sponsor-strip-home">
-    <div class="container">
-        <div class="sponsor-strip-heading">
-            <div class="sponsor-strip-label">ΜΑΖΙ ΣΤΗΝ ΕΚΚΙΝΗΣΗ</div><p>Οι συνεργάτες μας.</p>
-        </div>
-        <div class="sponsor-logos">
-            <a href="https://balatzis.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Χωματουργικά">
-                <span class="sponsor-logo__relation">Χορηγός</span>
-                <img src="/images/sponsors/normalized/Balatzis.webp" srcset="/images/sponsors/normalized/Balatzis-1x.webp 1x, /images/sponsors/normalized/Balatzis.webp 2x" alt="Μπαλατζής Χωματουργικά" loading="lazy" decoding="async" width="320" height="160">
-            </a>
-            <a href="https://pourtsidisgenerators.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Πουρτσίδης Γεννήτριες">
-                <span class="sponsor-logo__relation">Συνεργάτης</span>
-                <img src="/images/sponsors/normalized/ps.webp" srcset="/images/sponsors/normalized/ps-1x.webp 1x, /images/sponsors/normalized/ps.webp 2x" alt="Πουρτσίδης Γεννήτριες" loading="lazy" decoding="async" width="320" height="160">
-            </a>
-            <a href="https://balatzis.gr/#domika" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Δομικά">
-                <span class="sponsor-logo__relation">Powered by</span>
-                <img src="/images/sponsors/normalized/BalatzisDomika.webp" srcset="/images/sponsors/normalized/BalatzisDomika-1x.webp 1x, /images/sponsors/normalized/BalatzisDomika.webp 2x" alt="Μπαλατζής Δομικά" loading="lazy" decoding="async" width="320" height="160">
-            </a>
-            <a href="https://ambrosiadis.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Αμβροσιάδης">
-                <span class="sponsor-logo__relation">Συνεργάτης</span>
-                <img src="/images/sponsors/normalized/am.webp" srcset="/images/sponsors/normalized/am-1x.webp 1x, /images/sponsors/normalized/am.webp 2x" alt="Αμβροσιάδης" loading="lazy" decoding="async" width="320" height="160">
-            </a>
-            <a href="https://www.bedandhome.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Bed and Home">
-                <span class="sponsor-logo__relation">Advertising partner</span>
-                <img src="/images/sponsors/normalized/bedhome.webp" srcset="/images/sponsors/normalized/bedhome-1x.webp 1x, /images/sponsors/normalized/bedhome.webp 2x" alt="Bed and Home" loading="lazy" decoding="async" width="320" height="160">
-            </a>
-            <a href="https://www.grandrealm.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Grand Realm">
-                <span class="sponsor-logo__relation">Συνεργάτης</span>
-                <img src="/images/sponsors/normalized/GrandRealm.webp" srcset="/images/sponsors/normalized/GrandRealm-1x.webp 1x, /images/sponsors/normalized/GrandRealm.webp 2x" alt="Grand Realm" loading="lazy" decoding="async" width="320" height="160">
-            </a>
-        </div>
+<section id="home-sponsors" class="sponsor-strip-home" aria-labelledby="sponsors-heading">
+    <div class="container sponsor-strip-layout">
+        <h2 class="sponsor-strip-label" id="sponsors-heading">ΜΑΖΙ ΣΤΗΝ ΕΚΚΙΝΗΣΗ</h2>
+        <ul class="sponsor-logos">
+            <li><a href="https://balatzis.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo"><img src="/images/sponsors/normalized/Balatzis.webp" srcset="/images/sponsors/normalized/Balatzis-1x.webp 1x, /images/sponsors/normalized/Balatzis.webp 2x" alt="Μπαλατζής Χωματουργικά" loading="lazy" decoding="async" width="320" height="160"><span>ΧΟΡΗΓΟΣ</span></a></li>
+            <li><a href="https://pourtsidisgenerators.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo"><img src="/images/sponsors/normalized/ps.webp" srcset="/images/sponsors/normalized/ps-1x.webp 1x, /images/sponsors/normalized/ps.webp 2x" alt="Πουρτσίδης Γεννήτριες" loading="lazy" decoding="async" width="320" height="160"><span>ΣΥΝΕΡΓΑΤΗΣ</span></a></li>
+            <li><a href="https://balatzis.gr/#domika" target="_blank" rel="noopener sponsored" class="sponsor-logo"><img src="/images/sponsors/normalized/BalatzisDomika.webp" srcset="/images/sponsors/normalized/BalatzisDomika-1x.webp 1x, /images/sponsors/normalized/BalatzisDomika.webp 2x" alt="Μπαλατζής Δομικά" loading="lazy" decoding="async" width="320" height="160"><span>POWERED BY</span></a></li>
+            <li><a href="https://ambrosiadis.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo"><img src="/images/sponsors/normalized/am.webp" srcset="/images/sponsors/normalized/am-1x.webp 1x, /images/sponsors/normalized/am.webp 2x" alt="Αμβροσιάδης" loading="lazy" decoding="async" width="320" height="160"><span>ΣΥΝΕΡΓΑΤΗΣ</span></a></li>
+            <li><a href="https://www.bedandhome.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo"><img src="/images/sponsors/normalized/bedhome.webp" srcset="/images/sponsors/normalized/bedhome-1x.webp 1x, /images/sponsors/normalized/bedhome.webp 2x" alt="Bed and Home" loading="lazy" decoding="async" width="320" height="160"><span>ADVERTISING PARTNER</span></a></li>
+            <li><a href="https://www.grandrealm.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo"><img src="/images/sponsors/normalized/GrandRealm.webp" srcset="/images/sponsors/normalized/GrandRealm-1x.webp 1x, /images/sponsors/normalized/GrandRealm.webp 2x" alt="Grand Realm" loading="lazy" decoding="async" width="320" height="160"><span>ΣΥΝΕΡΓΑΤΗΣ</span></a></li>
+        </ul>
     </div>
 </section>
 
@@ -405,9 +729,7 @@
 <button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Επιστροφή στην κορυφή"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
 
 <script src="/scripts/cookie-consent.min.js?v=217b6a3e" defer></script>
-<script src="/blog-module/taxonomy.min.js?v=311f1c54" defer></script>
-<script src="/blog-module/blog-loader.min.js?v=387aa7d5" defer></script>
-<script src="scripts/f1-optimized.min.js?v=c31216d9" defer></script>
+<script src="scripts/f1-optimized.min.js?v=c2f0dc96" defer></script>
 <script src="scripts/shared-nav.min.js?v=a0883dc2" defer></script>
 <script src="/scripts/sw-cleanup.min.js?v=d76b3ca4" defer></script>
 </body>

@@ -53,7 +53,6 @@ const TARGET_HTML = [
     'privacy/privacy.html',
     'privacy/terms.html',
     'generate.html',
-    'analytics/index.html',
     '404.html'
 ];
 
@@ -81,8 +80,7 @@ const SPRITE_END   = '<!-- f1s:icon-sprite:end -->';
 // which already inlines all its CSS and has no external refs.
 const CRITICAL_TARGETS = new Set([
     'generate.html',
-    'housekeeping.html',
-    'analytics/index.html'
+    'housekeeping.html'
 ]);
 
 // Editorial routes load their complete stylesheets synchronously. Their old
@@ -174,10 +172,6 @@ const FONT_PRELOADS = {
         'assets/fonts/outfit-700.woff2'
     ],
     'housekeeping.html': [
-        'assets/fonts/dm-sans-400.woff2',
-        'assets/fonts/outfit-700.woff2'
-    ],
-    'analytics/index.html': [
         'assets/fonts/dm-sans-400.woff2',
         'assets/fonts/outfit-700.woff2'
     ]

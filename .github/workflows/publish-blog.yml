@@ -184,7 +184,10 @@ jobs:
         uses: ./.github/actions/commit-and-push
         with:
           message: 'chore(data): refresh youtube snapshot [skip ci]'
-          paths: assets/youtube-latest.json
+          # The homepage ON AIR panel self-hosts the newest episodes' frames.
+          paths: >-
+            assets/youtube-latest.json
+            images/youtube
           token: ${{ github.token }}
 
   refresh_standings_data:

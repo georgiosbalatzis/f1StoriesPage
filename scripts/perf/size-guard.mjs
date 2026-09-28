@@ -66,7 +66,6 @@ const SOURCE_FILES = [
     'scripts/cookie-consent.js',
     'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',
-    'blog-module/blog-loader.js',
     'blog-module/blog-index.js',
     'blog-module/blog-index-data.json',
     'blog-module/blog/article-script.js',
@@ -86,6 +85,7 @@ const SOURCE_FILES = [
     'blog-module/build/worker.js',
     'blog-module/build/index.js',
     'blog-module/build/authors-page.js',
+    'blog-module/build/home-panels.js',
     'blog-module/build/__tests__/golden.js',
     'blog-module/build/__tests__/run-golden.js',
     'scripts/build/fetch-youtube.mjs',
@@ -111,7 +111,6 @@ const MINIFIED_JS_SOURCES = new Set([
     'scripts/cookie-consent.js',
     'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',
-    'blog-module/blog-loader.js',
     'blog-module/blog-index.js',
     'blog-module/blog/article-script.js',
     'blog-module/blog-fixes.js'

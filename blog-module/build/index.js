@@ -15,9 +15,10 @@ const { htmlToPlainText } = require('./metadata');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
 const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
-const { injectAuthorsDirectory } = require('./authors-page');
+const { injectAuthorsDirectory, injectHomeTeam } = require('./authors-page');
+const { injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry } = require('./home-panels');
 const {
-    PUBLIC_CATEGORIES, AUTHORS, authorThumb, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
+    PUBLIC_CATEGORIES, AUTHORS, findAuthor, authorThumb, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
     formatReadingTime, cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture
 } = require('../taxonomy');
 
@@ -392,6 +393,144 @@ function renderLedgerRows(posts, startIndex = 0) {
     return rows.join('\n            ');
 }
 
+// Homepage journal: the stories after the cover. Numbering continues from the
+// cover (01): a lead (02), two side stories (03–04) and the recent list (05–08).
+const HOME_JOURNAL = Object.freeze({ side: 2, recent: 4 });
+
+// "Themis Charvalis" → "Θ. ΧΑΡΒΑΛΗΣ"; the house byline stays whole.
+function homeByline(name) {
+    const author = findAuthor(name);
+    const label = authorLabel(name || 'F1 Stories');
+    if (!author || author.slug === 'f1-stories') return greekUpper(label);
+    const [first, ...rest] = label.split(' ');
+    return greekUpper(rest.length ? `${first[0]}. ${rest.join(' ')}` : label);
+}
+
+function homeDate(value) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value || ''));
+    return match ? `${match[3]}.${match[2]}.${match[1]}` : '';
+}
+
+function homeStoryMeta(post, index, { withIndex = true, withTime = false } = {}) {
+    const items = [];
+    if (withIndex) items.push(`<span class="home-story__idx" aria-hidden="true">${String(index).padStart(2, '0')}</span>`);
+    items.push(`<span class="home-story__kind">${escapeHtmlAttribute(greekUpper(categoryLabel(primaryCategory(post))))}</span>`);
+    items.push(`<time datetime="${escapeHtmlAttribute(post.date || '')}">${homeDate(post.date)}</time>`);
+    const readingTime = storyReadingTime(post);
+    if (withTime && readingTime) items.push(`<span>${escapeHtmlAttribute(greekUpper(readingTime))}</span>`);
+    return `<p class="home-story__meta">${items.join('')}</p>`;
+}
+
+// The title link stretches over the whole story, so picture and text both open it.
+function renderHomeStory(post, index, variant, dek) {
+    const image = storyImage(post);
+    const lead = variant === 'lead';
+    const readingTime = storyReadingTime(post);
+    const byline = homeByline(post.author) + (!lead && readingTime ? ` · ${greekUpper(readingTime)}` : '');
+    return `<article class="home-story home-story--${variant}${image ? '' : ' home-story--text'}" data-kind="${categoryKind(primaryCategory(post))}">`
+        + (image ? `<div class="home-story__media">${renderStoryImage(post, image, { sizes: lead ? CARD_SIZES.homeLead : CARD_SIZES.homeSecondary, full: lead })}`
+            + (lead ? '<span class="home-story__tab">ΤΩΡΑ ΣΤΟ JOURNAL</span>' : '') + '</div>' : '')
+        + `<div class="home-story__text">${homeStoryMeta(post, index, { withTime: lead })}`
+        + `<h3 class="home-story__title"><a href="${escapeHtmlAttribute(storyUrl(post))}">${escapeHtmlAttribute(post.title)}</a></h3>`
+        + (lead && dek ? `<p class="home-story__dek">${escapeHtmlAttribute(dek)}</p>` : '')
+        + `<p class="home-story__byline">${escapeHtmlAttribute(byline)}</p></div></article>`;
+}
+
+function renderHomeJournal(posts, leadDek = '') {
+    const [lead, ...rest] = posts;
+    if (!lead) return '';
+    const side = rest.slice(0, HOME_JOURNAL.side);
+    const recent = rest.slice(HOME_JOURNAL.side, HOME_JOURNAL.side + HOME_JOURNAL.recent);
+    const firstRecent = 3 + side.length;
+    const ledger = recent.map((post, offset) => {
+        const readingTime = storyReadingTime(post);
+        return `<li class="home-ledger__item" data-kind="${categoryKind(primaryCategory(post))}">`
+            + `<span class="home-ledger__num" aria-hidden="true">${String(firstRecent + offset).padStart(2, '0')}</span>`
+            + homeStoryMeta(post, 0, { withIndex: false })
+            + `<h3 class="home-ledger__title"><a href="${escapeHtmlAttribute(storyUrl(post))}">${escapeHtmlAttribute(post.title)}</a></h3>`
+            + `<p class="home-story__byline">${escapeHtmlAttribute(homeByline(post.author) + (readingTime ? ` · ${greekUpper(readingTime)}` : ''))}</p></li>`;
+    }).join('\n                ');
+    return `        <div class="home-front">
+            ${renderHomeStory(lead, 2, 'lead', leadDek)}
+            <div class="home-front__side">
+                ${side.map((post, offset) => renderHomeStory(post, 3 + offset, 'side')).join('\n                ')}
+            </div>
+        </div>`
+        + (ledger ? `
+        <div class="home-latest">
+            <p class="home-latest__label">ΠΡΟΣΦΑΤΑ</p>
+            <ol class="home-ledger" start="${firstRecent}">
+                ${ledger}
+            </ol>
+        </div>` : '')
+        + '\n        ';
+}
+
+// The dark technical spread: one technical story under the "TECHNICAL DEEP DIVE."
+// mast, with Friday's numbers for the team it names (home-panels.js).
+function renderHomeTech(post, dek, telemetry, teamName) {
+    const image = storyImage(post);
+    const url = escapeHtmlAttribute(storyUrl(post));
+    const readingTime = storyReadingTime(post);
+    const meta = [`<span class="home-story__kind">${escapeHtmlAttribute(greekUpper(categoryLabel(primaryCategory(post))))}</span>`]
+        .concat(readingTime ? [`<span>${escapeHtmlAttribute(greekUpper(readingTime))}</span>`] : []).join('');
+    return `
+        <div class="container tech-folio">
+            <span class="section-kicker">03 / ΤΕΧΝΙΚΗ ΑΝΑΛΥΣΗ</span>
+            <span class="section-kicker tech-folio__desk" aria-hidden="true">TECH DESK · ${homeDate(post.date)}</span>
+        </div>
+        <div class="container">
+            <div class="tech-stage" data-kind="${categoryKind(primaryCategory(post))}">
+                <p class="home-mast tech-mast" aria-hidden="true">TECHNICAL<br>DEEP DIVE<span class="editorial-accent">.</span></p>
+                <div class="tech-copy">
+                    <p class="home-story__meta">${meta}</p>
+                    <h2 class="tech-copy__title" id="tech-heading"><a href="${url}">${escapeHtmlAttribute(post.title)}</a></h2>`
+        + (dek ? `\n                    <p class="tech-copy__dek">${escapeHtmlAttribute(dek)}</p>` : '')
+        + `
+                    <p class="home-story__byline">${escapeHtmlAttribute(homeByline(post.author))} · ${homeDate(post.date)}</p>
+                    <a class="tech-copy__button" href="${url}">ΔΙΑΒΑΣΕ ΤΗΝ ΑΝΑΛΥΣΗ <span aria-hidden="true">→</span></a>
+                </div>`
+        + (image ? `
+                <figure class="tech-photo">
+                    <a class="tech-photo__media" href="${url}" tabindex="-1" aria-hidden="true">${renderStoryImage(post, image, { sizes: '(max-width: 991px) 100vw, 64vw', full: true })}</a>
+                    <figcaption>ΕΙΚΟΝΑ / ${escapeHtmlAttribute(greekUpper(teamName || 'F1 Stories'))}</figcaption>
+                </figure>` : '')
+        + (telemetry ? `\n${telemetry}` : '')
+        + `
+            </div>
+        </div>
+        `;
+}
+
+function injectHomeJournal(indexPosts, blogPosts) {
+    const indexHtmlPath = path.join(CONFIG.BLOG_DIR, '..', '..', 'index.html');
+    if (!fs.existsSync(indexHtmlPath)) return false;
+    const html = fs.readFileSync(indexHtmlPath, 'utf8');
+    if (!html.includes('<!-- f1s:home-journal:begin -->')) {
+        console.warn('⚠️  index.html has no home-journal markers; the homepage journal was not rendered');
+        return false;
+    }
+    // [0] is the cover story, rendered by injectHomepageHero.
+    const posts = indexPosts.slice(1, 2 + HOME_JOURNAL.side + HOME_JOURNAL.recent);
+    const leadSource = posts[0] && blogPosts.find(post => post.id === posts[0].id);
+    let updated = replaceInlineMarkers(html, 'home-journal', `\n${renderHomeJournal(posts, leadSource ? leadSource.excerpt || '' : '')}`);
+    // The technical spread takes the newest technical story not already on the page.
+    const shown = new Set([indexPosts[0], ...posts].filter(Boolean).map(post => post.id));
+    const tech = indexPosts.find(post => primaryCategory(post) === 'Technical' && !shown.has(post.id));
+    if (tech && updated.includes('<!-- f1s:home-tech:begin -->')) {
+        const source = blogPosts.find(post => post.id === tech.id) || tech;
+        const teamKey = findTeamKey(tech.title, (tech.tags || []).join(' '));
+        const round = latestDebriefRound();
+        const team = round && round.teamIdealLap.find(item => item.teamKey === teamKey);
+        const telemetry = renderTelemetry(round, teamKey);
+        updated = replaceInlineMarkers(updated, 'home-tech', renderHomeTech(tech, source.excerpt || '', telemetry, team ? team.teamName : ''));
+    }
+    if (updated === html) return false;
+    fs.writeFileSync(indexHtmlPath, updated);
+    console.log(`Homepage journal rendered into ${indexHtmlPath}`);
+    return true;
+}
+
 // Writers from the one author list; the slug carries each writer's accent (CSS) and
 // the specialty feeds the archive's author view.
 function renderAuthorFilterOptions() {
@@ -515,6 +654,12 @@ function heroTitlePresentation(value) {
     return { text: title, period: '.', showPeriod: true };
 }
 
+// The cover headline steps down in size as it grows, so long titles keep to about four lines.
+function heroTitleSizeClass(text) {
+    const length = String(text || '').length;
+    return length <= 30 ? 'is-short' : length <= 60 ? 'is-medium' : 'is-long';
+}
+
 function updateHomepageHeroPeriod(html, presentation) {
     return html.replace(
         /(<span\b[^>]*\bclass="[^"]*\bhero-period\b[^"]*"[^>]*)(>)[^<]*(<\/span>)/i,
@@ -568,6 +713,10 @@ function injectHomepageHero(hero) {
         title
     );
     html = updateHomepageHeroPeriod(html, titlePresentation);
+    html = html.replace(
+        /(<h1\b[^>]*\bid="hero-title"[^>]*)(>)/i,
+        (match, attributes, closing) => setHtmlAttribute(attributes, 'class', heroTitleSizeClass(titlePresentation.text)) + closing
+    );
     html = replaceHomepageTextSlot(
         html,
         'hero-story-deck',
@@ -1010,12 +1159,15 @@ async function processBlogEntries(options = {}) {
     });
     injectBlogIndexFirstPage(indexPosts, front, decks);
     injectAuthorsDirectory(indexPosts);
+    injectHomeTeam(indexPosts);
 
     const homeLatest = await buildHomeLatest(blogPosts);
     const homeLatestPath = path.join(CONFIG.BLOG_DIR, '..', 'home-latest.json');
     fs.writeFileSync(homeLatestPath, JSON.stringify(homeLatest, null, 0));
     console.log(`Home latest data saved to ${homeLatestPath} (${jsonKb(homeLatest)} KB)`);
     injectHomepageHero(homeLatest[0]);
+    injectHomeJournal(indexPosts, blogPosts);
+    await injectHomePanels();
 
     generateSitemap(blogPosts);
     await renderCachedArticlePages(freshPosts.concat(cachedPosts));
@@ -1044,6 +1196,8 @@ module.exports = {
     resolveJournalFront,
     renderJournalFront,
     renderLedgerRows,
+    renderHomeJournal,
+    renderHomeTech,
     injectBlogIndexFirstPage,
     buildHomeLatest,
     loadExistingPosts,

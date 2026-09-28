@@ -195,6 +195,129 @@ test('every author resolves from the one list, by canonical name or slug', () =>
     assert.equal(authorLabel('Guest Writer'), 'Guest Writer');
 });
 
+test('the homepage journal numbers on from the cover and signs with short bylines', () => {
+    const { renderHomeJournal } = require('../index');
+    const post = (id, author, extra = {}) => ({ id, title: `Story ${id}`, author, date: '2026-09-27', readingTime: '4 min', categories: ['History'], ...extra });
+    const html = renderHomeJournal([
+        post('L', 'Themis Charvalis'),
+        post('S1', 'F1 Stories Team'),
+        post('S2', 'Guest Writer'),
+        post('R1', 'Georgios Balatzis'), post('R2', 'Georgios Balatzis'), post('R3', 'Georgios Balatzis'), post('R4', 'Georgios Balatzis')
+    ], 'The lead dek.');
+    // Stories without a card image in the repo render as text-only.
+    assert.equal((html.match(/home-story--text/g) || []).length, 3);
+    assert.deepEqual([...html.matchAll(/home-story__idx" aria-hidden="true">(\d+)/g)].map(m => m[1]), ['02', '03', '04']);
+    assert.deepEqual([...html.matchAll(/home-ledger__num" aria-hidden="true">(\d+)/g)].map(m => m[1]), ['05', '06', '07', '08']);
+    assert.match(html, /<ol class="home-ledger" start="5">/);
+    assert.match(html, /home-story__dek">The lead dek\./);
+    assert.match(html, /Θ\. ΧΑΡΒΑΛΗΣ<\/p>/);
+    assert.match(html, /F1 STORIES · 4 ΛΕΠΤΑ/);
+    assert.match(html, /GUEST WRITER · 4 ΛΕΠΤΑ/);
+    assert.match(html, /home-story__kind">ΙΣΤΟΡΙΑ/);
+});
+
+test('ON AIR shows the newest episode behind a facade and falls back to YouTube frames', () => {
+    const { renderOnAir, splitEpisodeTitle } = require('../home-panels');
+    assert.deepEqual(splitEpisodeTitle('BetCast #270  Hungaroring'), { series: 'BetCast #270', name: 'Hungaroring' });
+    assert.deepEqual(splitEpisodeTitle('Charity Kart!'), { series: '', name: 'Charity Kart!' });
+    const video = (id, title) => ({ id, title, publishedAt: '2026-07-25T12:00:00+00:00' });
+    const html = renderOnAir({ videos: [video('l0vNNK6FO3g', 'BetCast #270  Hungaroring'), video('Q_SQJqa6CMU', 'Charity Kart!'), video('bad id', 'x'), video('iXCGUUeM-ag', 'CoolDownRoom #263')] },
+        file => file.endsWith('l0vNNK6FO3g.webp'));
+    assert.match(html, /data-video-id="l0vNNK6FO3g" data-video-title="BetCast #270: Hungaroring"/);
+    assert.match(html, /episode__tab">BETCAST \/ #270</);
+    // BetCast brings its own dek and hosts; a self-hosted lead keeps a width-based srcset.
+    assert.match(html, /episode__dek/);
+    assert.match(html, /<img alt="" src="\/images\/youtube\/l0vNNK6FO3g\.webp" srcset="[^"]+400w, [^"]+800w"/);
+    // Invalid ids are skipped; a frame not fetched yet comes from YouTube.
+    assert.equal((html.match(/episode--small/g) || []).length, 2);
+    assert.match(html, /https:\/\/i\.ytimg\.com\/vi\/Q_SQJqa6CMU\/hqdefault\.jpg/);
+    assert.match(html, /<span>F1 STORIES<\/span>/);
+    assert.equal(renderOnAir({ videos: [] }), '');
+});
+
+test('THE NUMBERS renders the top five, scales bars to the leader and pace to the fifth team', () => {
+    const { renderNumbers } = require('../home-panels');
+    const driver = (position, code, points) => ({ position: String(position), points: String(points), Driver: { code, familyName: code }, Constructors: [{ constructorId: 'mercedes', name: 'Mercedes' }] });
+    const team = (position, name, points, wins) => ({ position: String(position), points: String(points), wins: String(wins), Constructor: { constructorId: name.toLowerCase(), name } });
+    const table = (key, rows) => ({ MRData: { StandingsTable: { StandingsLists: [{ season: '2026', round: '15', [key]: rows }] } } });
+    const standings = {
+        driverStandings: table('DriverStandings', [driver(1, 'ANT', 200), driver(2, 'RUS', 100), driver(3, 'A', 50), driver(4, 'B', 40), driver(5, 'C', 30), driver(6, 'D', 20)]),
+        constructorStandings: table('ConstructorStandings', [team(1, 'Mercedes', 300, 1), team(2, 'Ferrari', 150, 0)])
+    };
+    const debrief = { rounds: [
+        { round: 14, location: 'Madrid', racePacePrediction: [
+            { code: 'MER', teamColor: '00D7B6', predictedLap: '1:39.611', gapToFirst: null },
+            { code: 'AMR', teamColor: '229971', gapToFirst: '+0.500' },
+            { code: 'FER', teamColor: 'ED1131', gapToFirst: '+1.000' }
+        ] },
+        { round: 15, location: 'Baku', racePacePrediction: [] }
+    ] };
+    const { boards, stamp } = renderNumbers(standings, debrief, () => '#123456');
+    assert.equal(stamp, '<span>ΣΕΖΟΝ 2026</span><span>ΜΕΤΑ ΤΟΝ ΓΥΡΟ 15</span>');
+    assert.equal((boards.match(/board-row__code/g) || []).length, 5);
+    assert.match(boards, /RUS[\s\S]*?width:50%/);
+    assert.match(boards, /1 ΝΙΚΗ/);
+    assert.match(boards, /0 ΝΙΚΕΣ/);
+    // The newest round with a prediction; the slowest shown team sits at the end of the track.
+    assert.match(boards, /R14 · MADRID/);
+    assert.match(boards, /--x:0%[\s\S]*--x:50%[\s\S]*--x:100%/);
+    assert.match(boards, /1:39\.611/);
+});
+
+test('the technical spread finds the article\'s team and shows its Friday numbers', () => {
+    const { findTeamKey, renderTelemetry } = require('../home-panels');
+    assert.equal(findTeamKey('Το B-spec της Williams και το πραγματικό τεστ'), 'williams');
+    assert.equal(findTeamKey('Mercedes εναντίον Ferrari'), 'mercedes');
+    assert.equal(findTeamKey('Η νέα εποχή των κανονισμών', 'Racing Bulls, 2026'), 'rb');
+    assert.equal(findTeamKey('Red Bull RB22'), 'red_bull');
+    assert.equal(findTeamKey('FIA 2026: κανονισμοί', ''), '');
+    const round = {
+        round: 14, grandPrix: 'Madrid GP', singleLapSession: 'Practice 2',
+        teamIdealLap: [
+            { pos: 1, teamKey: 'mercedes', teamName: 'Mercedes', idealLap: '1:33.524', gapToFirst: '+0.081', s1: '28.9', s2: '33.4', s3: '31.1' },
+            { pos: 2, teamKey: 'ferrari', teamName: 'Ferrari', idealLap: '1:33.443', gapToFirst: null, s1: '28.8', s2: '33.4', s3: '31.1' },
+            { pos: 3, teamKey: 'audi', teamName: 'Audi', idealLap: '1:34.701', gapToFirst: '+1.258', s1: '29.091', s2: '33.892', s3: '31.718' }
+        ],
+        cornerPerformance: [{ teamKey: 'audi', slowCorners: '+0.269', mediumCorners: '+0.568', fastCorners: '+0.604' }]
+    };
+    const audi = renderTelemetry(round, 'audi');
+    assert.match(audi, /AUDI · ΙΔΑΝΙΚΟΣ ΓΥΡΟΣ ΟΜΑΔΑΣ/);
+    assert.match(audi, /<span class="telemetry__sign">\+<\/span>1\.258/);
+    assert.match(audi, /από την ταχύτερη \(Ferrari\) · 1:34\.701 · 3η από 3 ομάδες/);
+    assert.match(audi, /R14 \/ MADRID GP/);
+    assert.match(audi, /width:45%[\s\S]*width:94%[\s\S]*width:100%/);
+    // No team named, or a team without data: the fastest team, and no corner bars without data.
+    const fastest = renderTelemetry(round, '');
+    assert.match(fastest, /FERRARI · ΙΔΑΝΙΚΟΣ ΓΥΡΟΣ ΟΜΑΔΑΣ/);
+    assert.match(fastest, /telemetry__value">1:33\.443</);
+    assert.match(fastest, /Η ταχύτερη ομάδα · 2η από 3 ομάδες/);
+    assert.doesNotMatch(fastest, /class="bars"/);
+    assert.equal(renderTelemetry(null, 'audi'), '');
+});
+
+test('the homepage team gives every writer a spotlight card with their three newest stories', () => {
+    const { renderHomeTeam } = require('../authors-page');
+    const george = AUTHORS.find(author => author.slug === 'georgios-balatzis');
+    const posts = [
+        { id: 'A', title: 'Oldest', author: george.name, date: '2026-09-01' },
+        { id: 'B', title: 'Newest', author: george.name, date: '2026-09-20' },
+        { id: 'C', title: 'Other writer', author: 'Themis Charvalis', date: '2026-09-25' },
+        { id: 'D', title: 'Second', author: george.name, date: '2026-09-15' },
+        { id: 'E', title: 'Third', author: george.name, date: '2026-09-10' }
+    ];
+    const html = renderHomeTeam(posts);
+    assert.equal((html.match(/class="team-card[ "]/g) || []).length, AUTHORS.length);
+    assert.equal((html.match(/class="team-roster__item[ "]/g) || []).length, AUTHORS.length);
+    // Only the first card and roster row start active; the page script takes over from there.
+    assert.equal((html.match(/is-active/g) || []).length, 1);
+    assert.equal((html.match(/is-current/g) || []).length, 1);
+    const card = html.slice(html.indexOf('data-author-slug="georgios-balatzis"'));
+    const stories = card.slice(card.indexOf('team-card__stories'), card.indexOf('</ul>'));
+    assert.deepEqual([...stories.matchAll(/<span>([^<]+)<\/span><a[^>]*>([^<]+)</g)].map(m => [m[1], m[2]]),
+        [['20.09.2026', 'Newest'], ['15.09.2026', 'Second'], ['10.09.2026', 'Third']]);
+    assert.match(card, /ΟΛΑ ΤΑ ΑΡΘΡΑ ΤΟΥ ΓΙΩΡΓΟΥ/);
+});
+
 test('the article author card signs with the writer and degrades for an unknown name', () => {
     const card = renderAuthorCard({ author: 'Georgios Balatzis' });
     assert.match(card, /class="author-card" data-author-slug="georgios-balatzis"/);

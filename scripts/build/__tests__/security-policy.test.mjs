@@ -1,7 +1,7 @@
 // Guards the per-page Content-Security-Policy profiles.
 //
-// The tool pages (generate, housekeeping, statistics) handle credentials: the
-// GitHub token or a Google OAuth access token. Their policies are pinned here
+// The tool pages (generate, housekeeping) handle credentials: the GitHub
+// token. Their policies are pinned here
 // source by source. Widening one fails this test until the pinned list below
 // is changed in the same review, with the reason next to the new origin.
 
@@ -17,7 +17,6 @@ import {
     CSP_PROFILES,
     PAGE_CSP_PROFILES,
     REFERRER_POLICY,
-    STATISTICS_CSP,
     contentSecurityPolicyFor,
     cspProfileForPath,
     injectSecurityMeta,
@@ -93,13 +92,6 @@ const REVIEWED = {
             'https://www.youtube.com',
             'https://youtube.com'
         ]
-    },
-    statistics: {
-        ...TOOL_BASE,
-        'script-src': ["'self'", 'https://accounts.google.com'],
-        'img-src': ["'self'", 'data:'],
-        'connect-src': ["'self'", 'https://analyticsdata.googleapis.com', 'https://api.github.com', 'https://oauth2.googleapis.com'],
-        'frame-src': ['https://accounts.google.com']
     }
 };
 
@@ -149,13 +141,10 @@ test('the public policy is unchanged by the profile split', () => {
 test('tool pages map to their own profiles; everything else is public', () => {
     assert.deepEqual({ ...PAGE_CSP_PROFILES }, {
         'generate.html': 'author-generate',
-        'housekeeping.html': 'author-tools',
-        'statistics.html': 'statistics',
-        'analytics/index.html': 'statistics'
+        'housekeeping.html': 'author-tools'
     });
     assert.equal(contentSecurityPolicyFor('generate.html'), AUTHOR_GENERATE_CSP);
     assert.equal(contentSecurityPolicyFor('/housekeeping.html'), AUTHOR_TOOLS_CSP);
-    assert.equal(contentSecurityPolicyFor('statistics.html'), STATISTICS_CSP);
     for (const relPath of ['index.html', '404.html', 'standings/index.html', 'blog-module/blog-entries/20260926G/article.html', 'privacy/generate.html', '']) {
         assert.equal(cspProfileForPath(relPath), 'public', relPath);
     }
@@ -199,11 +188,10 @@ for (const profile of TOOL_PROFILES) {
     });
 }
 
-test('only author tools and the analytics token gate may reach the GitHub API', () => {
-    for (const profile of ['author-tools', 'author-generate', 'statistics']) {
+test('only the author tools may reach the GitHub API', () => {
+    for (const profile of ['author-tools', 'author-generate']) {
         assert.ok(parseCsp(CSP_PROFILES[profile]).get('connect-src').includes('https://api.github.com'), profile);
     }
-    assert.match(STATISTICS_CSP, /api\.github\.com/);
     assert.deepEqual(parseCsp(AUTHOR_TOOLS_CSP).get('connect-src'), ["'self'", 'https://api.github.com']);
 });
 
@@ -215,7 +203,7 @@ test('injectSecurityMeta gives each page its own policy and drops any other', ()
         'without meta': '<!DOCTYPE html>\n<html>\n<head>\n    <title>x</title>\n</head>\n</html>\n'
     };
     for (const [label, html] of Object.entries(pages)) {
-        for (const relPath of ['generate.html', 'housekeeping.html', 'statistics.html', 'index.html']) {
+        for (const relPath of ['generate.html', 'housekeeping.html', 'index.html']) {
             const out = injectSecurityMeta(html, relPath);
             const csps = [...out.matchAll(/http-equiv="Content-Security-Policy" content="([^"]*)"/g)].map(m => m[1]);
             assert.deepEqual(csps, [contentSecurityPolicyFor(relPath)], `${label} / ${relPath}`);
