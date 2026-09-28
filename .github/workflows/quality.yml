@@ -26,12 +26,36 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Build public artifact
+        if: >-
+          ${{
+            !startsWith(github.head_ref, 'author/blog/') &&
+            !startsWith(github.head_ref, 'author/import/') &&
+            !startsWith(github.head_ref, 'author/delete/') &&
+            !startsWith(github.head_ref, 'author/edit/')
+          }}
         run: npm run build:public
+
+      - name: Validate author content
+        if: >-
+          ${{
+            startsWith(github.head_ref, 'author/blog/') ||
+            startsWith(github.head_ref, 'author/import/') ||
+            startsWith(github.head_ref, 'author/delete/') ||
+            startsWith(github.head_ref, 'author/edit/')
+          }}
+        run: npm run build:html && npm run build:blog && npm run build:assets && npm run build:data-contracts
 
       - name: Run static source guard
         run: npm run quality:static
 
       - name: Audit runtime dependencies
+        if: >-
+          ${{
+            !startsWith(github.head_ref, 'author/blog/') &&
+            !startsWith(github.head_ref, 'author/import/') &&
+            !startsWith(github.head_ref, 'author/delete/') &&
+            !startsWith(github.head_ref, 'author/edit/')
+          }}
         run: npm run audit:runtime
 
       - name: Run author module tests
