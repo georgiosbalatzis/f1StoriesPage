@@ -46,11 +46,26 @@
 :root:not([data-theme="light"]) body.home-page .countdown-race { color: var(--text-secondary); }
 :root:not([data-theme="light"]) body.home-page .blog-nav-hamburger span { background: var(--text-primary); }
 :root:not([data-theme="light"]) body.home-page .blog-nav :is(.blog-nav-mobile-link, .theme-toggle-menu-btn):is(:hover, :focus-visible) { background: var(--bg-surface); }
-:root:not([data-theme="light"]) .home-page #home-sponsors { --partner-mat: #f2eee4; }
+/* On the night page the cover sits on the same raised grey as the technical spread and the numbers. */
+:root:not([data-theme="light"]) .home-page #hero { background: var(--bg-surface); }
 /* On the night page the dark spread lifts one step and takes rules, so it still reads as its own spread. */
 :root:not([data-theme="light"]) .home-page .home-tech { --tech-bg: #222426; --tech-panel: #2c2e30; --tech-rule: #47494a; border-block: 1px solid var(--border); }
-:root:not([data-theme="light"]) .home-page .contact-field :is(input, textarea) { border-bottom-color: #797b79; }
-:root:not([data-theme="light"]) .home-page .contact-field :is(input, textarea):focus { border-bottom-color: var(--accent); }
+
+/* Team radio and the partners are printed on cream paper in both editions: they carry
+ * the paper edition's inks, so the night page needs no overrides for them. */
+.home-page :is(#contact, #home-sponsors) {
+    --text-primary: #20251f;
+    --text-secondary: #5b6256;
+    --border: #c8c8b9;
+    --bg-base: #f2eee4;
+    --accent: #a82e1c;
+    --accent-readable: #a82e1c;
+    --btn-primary-bg: #20251f;
+    --btn-primary-fg: #e9e3d6;
+    color-scheme: light;
+    background: #e9e3d6;
+    color: var(--text-primary);
+}
 
 /* Cover: the headline runs from the paper into the photograph and changes ink at
  * the photograph's edge, the way a printed title crosses a picture on a cover. */
@@ -436,7 +451,7 @@
 
 /* Partners: grey logos on the page itself that take their colour on hover. In the
  * night edition they keep one light mat, since the marks are drawn for paper. */
-.home-page #home-sponsors { --partner-mat: transparent; padding: 36px 0 56px; color: var(--text-primary); background: none; border: 0; }
+.home-page #home-sponsors { --partner-mat: transparent; padding: 36px 0 56px; border: 0; }
 .home-page .sponsor-strip-layout { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter-home); align-items: center; }
 /* The rule belongs to the content column, so it lines up with the rules above. */
 .home-page .sponsor-strip-layout::before { content: ''; grid-column: 1 / -1; height: 1px; margin-bottom: 28px; background: var(--border); }
