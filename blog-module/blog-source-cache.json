@@ -63,6 +63,38 @@
       "backgroundImageHeight": 1080
     },
     {
+      "id": "20260928-2G",
+      "title": "Cadillac: η αθόρυβη δουλειά στα brake ducts",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-28",
+      "dateISO": "2026-09-28",
+      "displayDate": "28 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260928-2G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260928-2G/1.webp",
+      "excerpt": "Όταν μιλάμε για αναβαθμίσεις, το μυαλό πάει συνήθως στην εμπρός πτέρυγα, στο πάτωμα ή στον diffuser. Στην περίπτωση της Cadillac όμως, το κομμάτι που έχει απασχολήσει την ομάδα περισσότερο από...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260928-2G/article.html",
+      "category": "Technical",
+      "categories": [
+        "Technical"
+      ],
+      "tags": [
+        "Cadillac",
+        "Bottas",
+        "2026",
+        "Baku",
+        "Perez",
+        "SC"
+      ],
+      "wordCount": 933,
+      "readingTime": "5 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
+    },
+    {
       "id": "20260927W",
       "title": "Μια νίκη που ξαναβάζει τον Russell στη μάχη.",
       "author": "Themis Charvalis",
@@ -9558,5 +9590,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-28T12:46:39.470Z"
+  "lastUpdated": "2026-09-28T13:37:01.179Z"
 }
