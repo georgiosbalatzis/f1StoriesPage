@@ -582,10 +582,62 @@
             if (!frame || !id) return;
             var iframe = document.createElement('iframe');
             iframe.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) + '?autoplay=1';
-            iframe.title = 'BetCast #270 Hungaroring — F1 Stories';
+            iframe.title = (facade.getAttribute('data-video-title') || 'Επεισόδιο') + ' — F1 Stories';
             iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
             iframe.allowFullscreen = true;
             frame.replaceChildren(iframe);
+        });
+    }
+
+    // Team spotlight: a random writer every five seconds. The active card's fuse (a
+    // 5s CSS animation) drives the rotation, so hover, focus and the pause button only
+    // pause that animation and the timing always matches what the reader sees.
+    function initTeamSpotlight() {
+        var spotlight = document.querySelector('[data-team-spotlight]');
+        if (!spotlight) return;
+        var cards = Array.prototype.slice.call(spotlight.querySelectorAll('.team-card'));
+        var rosterItems = Array.prototype.slice.call(document.querySelectorAll('.team-roster__item'));
+        var pause = spotlight.querySelector('[data-team-pause]');
+        var current = -1;
+        if (cards.length < 2) return;
+
+        function show(index) {
+            current = index;
+            var slug = cards[index].getAttribute('data-author-slug');
+            cards.forEach(function (card, i) {
+                card.classList.toggle('is-active', i === index);
+            });
+            rosterItems.forEach(function (item) {
+                var isCurrent = item.getAttribute('data-author-slug') === slug;
+                item.classList.toggle('is-current', isCurrent);
+                if (isCurrent) item.setAttribute('aria-current', 'true');
+                else item.removeAttribute('aria-current');
+            });
+        }
+
+        // Random, but never the same writer twice in a row.
+        function showNext() {
+            var index = Math.floor(Math.random() * (cards.length - 1));
+            show(index >= current ? index + 1 : index);
+        }
+
+        show(Math.floor(Math.random() * cards.length));
+        // Reduced motion: one random writer, no rotation.
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        spotlight.addEventListener('animationend', function (event) {
+            if (event.animationName === 'team-fuse') showNext();
+        });
+        spotlight.classList.add('is-rotating');
+
+        if (!pause) return;
+        var label = pause.querySelector('.visually-hidden');
+        pause.hidden = false;
+        pause.addEventListener('click', function () {
+            var paused = spotlight.classList.toggle('is-paused');
+            pause.setAttribute('aria-pressed', paused ? 'true' : 'false');
+            if (label) label.textContent = paused ? 'Συνέχιση εναλλαγής' : 'Παύση εναλλαγής';
+            pause.lastElementChild.textContent = paused ? '▶' : '❚❚';
         });
     }
 
@@ -594,4 +646,5 @@
     initContactForm();
     initHomeVideoFacade();
     initVideoLoading();
+    initTeamSpotlight();
 })();
