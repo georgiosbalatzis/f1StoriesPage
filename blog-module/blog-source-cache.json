@@ -1,6 +1,39 @@
 {
   "posts": [
     {
+      "id": "20260928G",
+      "title": "Το Baku ήταν το τελευταίο upgrade test της McLaren",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-28",
+      "dateISO": "2026-09-28",
+      "displayDate": "28 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260928G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260928G/1.webp",
+      "excerpt": "Η McLaren έφτασε στο Baku με κάτι πολύ περισσότερο από ένα ακόμη πακέτο αναβαθμίσεων. Νέα sidepods, αλλαγές στα radiator inlets και στο engine cover, νέο πάτωμα, διαφορετικά fairings στην πίσω...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260928G/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "McLaren",
+        "2026",
+        "News",
+        "Baku",
+        "Norris",
+        "Stella",
+        "Piastri"
+      ],
+      "wordCount": 711,
+      "readingTime": "4 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
+    },
+    {
       "id": "20260927W",
       "title": "Μια νίκη που ξαναβάζει τον Russell στη μάχη.",
       "author": "Themis Charvalis",
@@ -9496,5 +9529,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-27T18:55:34.608Z"
+  "lastUpdated": "2026-09-28T12:30:25.710Z"
 }
