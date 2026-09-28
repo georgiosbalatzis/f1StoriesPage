@@ -383,6 +383,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 else option.removeAttribute('aria-current');
             });
         });
+        revealCurrentOptions();
+    }
+    // Strips that scroll sideways (the tabs on tablets and phones, the phone's portraits)
+    // keep the chosen option in view. Only the strip moves, never the page.
+    function revealCurrentOptions() {
+        [categoryOptions, authorOptions].forEach(function(strip) {
+            var current = strip && strip.querySelector('[aria-current="true"]');
+            if (!current || strip.scrollWidth <= strip.clientWidth) return;
+            var stripBox = strip.getBoundingClientRect();
+            var box = current.getBoundingClientRect();
+            strip.scrollLeft += box.left - stripBox.left - (stripBox.width - box.width) / 2;
+        });
     }
     // Hiding or showing the front page must not move the archive under the reader.
     function syncEdition() {
@@ -536,6 +548,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!filterPanel || !filterToggle) return;
         filterPanel.classList.toggle('is-open', open);
         filterToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        // The panel was display:none, so its strips could not scroll until now.
+        if (open) revealCurrentOptions();
     }
     if (filterToggle) {
         filterToggle.addEventListener('click', function() {
