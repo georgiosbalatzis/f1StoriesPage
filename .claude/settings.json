@@ -1,0 +1,15 @@
+{
+    "defaultMode": "dontAsk",
+    "permissions": {
+      "allow": [
+        "Bash(npm:*)",
+        "Bash(git:*)",
+        "Bash(sed:*)",
+        "Bash(grep:*)",
+        "Bash(node:*)",
+        "Read",
+        "Write",
+        "Edit"
+      ]
+    }
+  }

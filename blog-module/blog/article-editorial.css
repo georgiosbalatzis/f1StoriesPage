@@ -123,7 +123,6 @@
     margin-right: 10px;
     object-fit: cover;
     border-radius: 50%;
-    background: var(--bg-surface);
     vertical-align: middle;
     box-shadow: 0 0 0 1.5px var(--author-accent, var(--border));
 }
@@ -537,7 +536,7 @@
 }
 .article-page .author-card__label { margin: 0 0 16px; color: var(--text-secondary); font-size: .75rem; font-weight: 600; letter-spacing: .14em; }
 .article-page .author-card__head { display: grid; grid-template-columns: 80px minmax(0, 1fr); align-items: center; column-gap: 18px; }
-.article-page .author-card__portrait { width: 80px; height: 80px; object-fit: cover; background: var(--bg-base); border-radius: 2px; }
+.article-page .author-card__portrait { width: 80px; height: 80px; object-fit: cover; border-radius: 2px; }
 .article-page .author-card__name { margin: 0; font: 600 1.375rem/1.25 var(--font-body); letter-spacing: -.015em; }
 .article-page .author-card__name a {
     display: inline-flex;
