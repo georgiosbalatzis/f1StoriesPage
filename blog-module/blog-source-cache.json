@@ -34,6 +34,35 @@
       "backgroundImageHeight": 941
     },
     {
+      "id": "20260928F",
+      "title": "Kρύα ελαστικά και η παγίδα της Turn 1",
+      "author": "F1 Stories Team",
+      "date": "2026-09-28",
+      "dateISO": "2026-09-28",
+      "displayDate": "28 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260928F/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260928F/1.webp",
+      "excerpt": "Στο Baku φέτος οι οδηγοί είχαν να αντιμετωπίσουν ένα πρόβλημα με τα ελαστικά που δεν είχε να κάνει με τη φθορά: να φτάσουν στην Turn 1 με αρκετή θερμοκρασία στον εμπρός άξονα. Η Pirelli το είχε...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260928F/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "Baku",
+        "2026",
+        "Analysis"
+      ],
+      "wordCount": 835,
+      "readingTime": "5 min",
+      "imageWidth": 1620,
+      "imageHeight": 1080,
+      "backgroundImageWidth": 1620,
+      "backgroundImageHeight": 1080
+    },
+    {
       "id": "20260927W",
       "title": "Μια νίκη που ξαναβάζει τον Russell στη μάχη.",
       "author": "Themis Charvalis",
@@ -9529,5 +9558,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-28T12:30:25.710Z"
+  "lastUpdated": "2026-09-28T12:46:39.470Z"
 }
