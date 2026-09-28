@@ -91,7 +91,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!authorOptions) return null;
         var wanted = slugify(value);
         return Array.prototype.find.call(authorOptions.querySelectorAll('[data-author]'), function(option) {
-            return option.getAttribute('data-author') !== 'all' && slugify(option.getAttribute('data-author')) === wanted;
+            // Links carry the writer's slug, which is not always the slugified name
+            // ("F1 Stories Team" → f1-stories), so accept either.
+            return option.getAttribute('data-author') !== 'all'
+                && (option.getAttribute('data-author-slug') === wanted || slugify(option.getAttribute('data-author')) === wanted);
         }) || null;
     }
     function syncUrl() {
