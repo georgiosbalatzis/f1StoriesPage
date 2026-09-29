@@ -61,6 +61,37 @@
       "backgroundImageHeight": 1800
     },
     {
+      "id": "20260929-2G",
+      "title": "Ferrari + Leclerc + P2 = ???",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-29",
+      "dateISO": "2026-09-29",
+      "displayDate": "29 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260929-2G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260929-2G/1.webp",
+      "excerpt": "Θα το πω από την αρχή: η δεύτερη θέση του Leclerc στις κατατακτήριες του Baku δεν με έπεισε ούτε για μια στιγμή. Όχι επειδή ο γύρος ήταν κακός. Το 1:43.363 ήταν ό,τι καλύτερο μπορούσε να βγάλει η...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260929-2G/article.html",
+      "category": "Teams",
+      "categories": [
+        "Teams"
+      ],
+      "tags": [
+        "Ferrari",
+        "Leclerc",
+        "Hamilton",
+        "2026",
+        "Baku"
+      ],
+      "wordCount": 673,
+      "readingTime": "4 min",
+      "imageWidth": 800,
+      "imageHeight": 449,
+      "backgroundImageWidth": 800,
+      "backgroundImageHeight": 449
+    },
+    {
       "id": "20260928W",
       "title": "Fernando Alonso — Ο άνθρωπος που δεν ήθελε να τελειώσει η ιστορία.",
       "author": "Themis Charvalis",
@@ -9684,5 +9715,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-29T06:20:40.832Z"
+  "lastUpdated": "2026-09-29T06:46:59.660Z"
 }
