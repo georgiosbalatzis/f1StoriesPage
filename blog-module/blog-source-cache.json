@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20260929G",
+      "title": "Lindblad: λάθη, μια συγγνώμη και ένα P7 για 0,030",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-29",
+      "dateISO": "2026-09-29",
+      "displayDate": "29 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260929G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260929G/1.webp",
+      "excerpt": "Επανεκκίνηση, Turn 1. Ο Arvid Lindblad βουτάει από μέσα, ακουμπάει το πίσω μέρος του Liam Lawson και ο ομόσταβλός του κάνει τετ-α-κέ, με ζημιά στο πάτωμα. Αν ο αγώνας της Racing Bulls τελείωνε εκεί,...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260929G/article.html",
+      "category": "Drivers",
+      "categories": [
+        "Drivers"
+      ],
+      "tags": [
+        "Lindblad",
+        "2026",
+        "Baku"
+      ],
+      "wordCount": 564,
+      "readingTime": "3 min",
+      "imageWidth": 3200,
+      "imageHeight": 1800,
+      "backgroundImageWidth": 3200,
+      "backgroundImageHeight": 1800
+    },
+    {
       "id": "20260928W",
       "title": "Fernando Alonso — Ο άνθρωπος που δεν ήθελε να τελειώσει η ιστορία.",
       "author": "Themis Charvalis",
@@ -9624,5 +9653,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-28T20:36:21.676Z"
+  "lastUpdated": "2026-09-29T06:10:01.108Z"
 }
