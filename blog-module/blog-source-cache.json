@@ -1,6 +1,33 @@
 {
   "posts": [
     {
+      "id": "20260929W",
+      "title": "Nick Heidfeld: Ίσως παραπάνω ορθολογιστής από όσο χρειαζόταν.",
+      "author": "Themis Charvalis",
+      "date": "2026-09-29",
+      "dateISO": "2026-09-29",
+      "displayDate": "29 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260929W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260929W/2.webp",
+      "excerpt": "Οι αποφάσεις που πήρε στην καριέρα του έμοιαζαν σωστές εκείνη τη στιγμή. Κάθε επιλογή είχε τη λογική της, κάθε μετακίνηση φαινόταν σαν ένα ακόμη βήμα προς τα εμπρός. Όμως, κοιτάζοντας σήμερα πίσω,...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260929W/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "F1"
+      ],
+      "wordCount": 440,
+      "readingTime": "3 min",
+      "imageWidth": 547,
+      "imageHeight": 365,
+      "backgroundImageWidth": 701,
+      "backgroundImageHeight": 438
+    },
+    {
       "id": "20260929G",
       "title": "Lindblad: λάθη, μια συγγνώμη και ένα P7 για 0,030",
       "author": "Georgios Balatzis",
@@ -9715,5 +9742,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-29T06:46:59.660Z"
+  "lastUpdated": "2026-09-29T20:50:59.789Z"
 }
