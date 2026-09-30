@@ -1,6 +1,39 @@
 {
   "posts": [
     {
+      "id": "20260930G",
+      "title": "Το τίμημα του downforce",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-30",
+      "dateISO": "2026-09-30",
+      "displayDate": "30 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260930G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260930G/1.webp",
+      "excerpt": "Λίγους γύρους πριν από το τέλος στο Baku, ο Carlos Sainz κυνηγούσε τον Nico Hülkenberg για τον τελευταίο βαθμό. Η Audi είχε δείξει καλό ρυθμό στο μεσαίο sector και ο Hülkenberg κρατούσε τη δέκατη...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260930G/article.html",
+      "category": "2026",
+      "categories": [
+        "2026"
+      ],
+      "tags": [
+        "Baku",
+        "2026",
+        "Downforce",
+        "Audi",
+        "Ferrari",
+        "McLaren",
+        "Williams"
+      ],
+      "wordCount": 1186,
+      "readingTime": "6 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
+    },
+    {
       "id": "20260929W",
       "title": "Nick Heidfeld: Ίσως παραπάνω ορθολογιστής από όσο χρειαζόταν.",
       "author": "Themis Charvalis",
@@ -9742,5 +9775,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-29T20:50:59.789Z"
+  "lastUpdated": "2026-09-30T06:16:55.839Z"
 }
