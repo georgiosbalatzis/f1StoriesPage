@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20260930J",
+      "title": "AnalystCast #01 : GP Bahrain... τελική ευθεία",
+      "author": "Giannis Poulikidis",
+      "date": "2026-09-30",
+      "dateISO": "2026-09-30",
+      "displayDate": "30 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260930J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260930J/1.webp",
+      "excerpt": "Φτάνουμε στην τελική ευθεία για το περίεργο... πρωτάθλημα του 2026. Κυρίαρχη, ξεκάθαρα, η Mercedes. Η έκπληξη, ο μικρός Ιταλός από την Μπολόνια, όπου έδειξε από νωρίς για ποιον λόγο είναι εδώ. Τι μας...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260930J/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "Bahrain",
+        "Malaysia",
+        "2026"
+      ],
+      "wordCount": 442,
+      "readingTime": "3 min",
+      "imageWidth": 1536,
+      "imageHeight": 1024,
+      "backgroundImageWidth": 1536,
+      "backgroundImageHeight": 1024
+    },
+    {
       "id": "20260930G",
       "title": "Το τίμημα του downforce",
       "author": "Georgios Balatzis",
@@ -9775,5 +9804,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-30T06:16:55.839Z"
+  "lastUpdated": "2026-09-30T11:27:39.445Z"
 }
