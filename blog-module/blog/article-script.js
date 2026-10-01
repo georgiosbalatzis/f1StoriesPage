@@ -225,6 +225,24 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Tyre Intelligence embeds (georgiosbalatzis.github.io/Tyres/embed/…) carry no script of their own:
+    // a "#dark" fragment switches them to the charcoal theme through CSS :target. Fragment changes never
+    // reload the iframe, so a 3D view the reader opened survives a theme toggle.
+    function setupTyreEmbeds() {
+        if (!articleContent) return;
+        const frames = articleContent.querySelectorAll('iframe[src^="https://georgiosbalatzis.github.io/Tyres/embed/"]');
+        if (!frames.length) return;
+        const sync = () => {
+            const fragment = document.documentElement.getAttribute('data-theme') === 'light' ? '#light' : '#dark';
+            frames.forEach(frame => {
+                const next = frame.src.split('#')[0] + fragment;
+                if (frame.src !== next) frame.src = next;
+            });
+        };
+        sync();
+        new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    }
+
     function setupSocialEmbeds() {
         if (!articleContent) return;
 
@@ -646,6 +664,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setupNavigation();
     setupYouTubeFacades();
     setupSocialEmbeds();
+    setupTyreEmbeds();
     setupGalleryCarousel();
     setupLightbox();
 });
