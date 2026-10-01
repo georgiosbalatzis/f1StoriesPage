@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261001W",
+      "title": "Sepang: Η επιστροφή της Μαλαισίας στη Formula 1",
+      "author": "Themis Charvalis",
+      "date": "2026-10-01",
+      "dateISO": "2026-10-01",
+      "displayDate": "1 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261001W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261001W/2.webp",
+      "excerpt": "Από τον Schumacher και τον Häkkinen στον Alonso, τον Vettel και τον Verstappen, η πίστα της Sepang ανοίγει ξανά τις πύλες της, σε μια Formula 1 που έχει αλλάξει όμως ολοκληρωτικά. Εννέα χρόνια μετά...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261001W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Historical",
+        "F1 legends",
+        "Malaysian Grand Prix"
+      ],
+      "wordCount": 1116,
+      "readingTime": "6 min",
+      "imageWidth": 1200,
+      "imageHeight": 720,
+      "backgroundImageWidth": 682,
+      "backgroundImageHeight": 450
+    },
+    {
       "id": "20260930J",
       "title": "AnalystCast #01 : GP Bahrain... τελική ευθεία",
       "author": "Giannis Poulikidis",
@@ -9804,5 +9833,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-09-30T11:27:39.445Z"
+  "lastUpdated": "2026-10-01T10:59:05.379Z"
 }
