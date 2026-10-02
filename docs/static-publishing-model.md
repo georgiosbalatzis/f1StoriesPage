@@ -115,7 +115,7 @@ The top of `/blog-module/blog/` is chosen in `blog-module/editorial-selection.js
 }
 ```
 
-- Values are article folder ids. `lead` is one story, `secondary` up to two, `deepReads` up to two older stories shown under "ΓΙΑ ΑΡΓΗ ΑΝΑΓΝΩΣΗ".
+- Values are article folder ids. `lead` is one story, `secondary` up to two, `deepReads` up to two older stories shown under "ΑΝΑΛΥΤΙΚΕΣ ΑΠΟΨΕΙΣ".
 - Every field is optional. An empty or missing `lead`/`secondary` slot takes the newest story not already shown; empty `deepReads` omits that column. The "ΠΡΟΣΦΑΤΑ" list is always the next four newest stories.
 - An unknown or deleted id prints a build warning and its slot falls back, so a stale file never breaks the page. A curated lead stays until someone changes it: clear `lead` to return to newest-first.
 - Run `npm run build:blog` (or any full build) to re-render the static archive page.

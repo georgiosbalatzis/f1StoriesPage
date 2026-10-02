@@ -348,7 +348,7 @@ function renderJournalDeepReads(items) {
         + (deck ? `<p class="journal-deep__deck">${escapeHtmlAttribute(deck)}</p>` : '')
         + `${renderStoryMeta(post, true)}</a></article>`);
     return '<section class="journal-deep" aria-labelledby="journal-deep-title">'
-        + `<h2 class="journal-label" id="journal-deep-title">ΓΙΑ ΑΡΓΗ ΑΝΑΓΝΩΣΗ</h2>${stories.join('')}</section>`;
+        + `<h2 class="journal-label" id="journal-deep-title">ΑΝΑΛΥΤΙΚΕΣ ΑΠΟΨΕΙΣ</h2>${stories.join('')}</section>`;
 }
 
 function renderJournalFront(front, decks = {}) {

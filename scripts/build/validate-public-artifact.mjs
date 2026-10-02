@@ -560,10 +560,10 @@ function extractElementAttribute(html, tagName, id, attribute) {
     return match ? match[1] : '';
 }
 
-function validateHomepageHero(errors) {
+export function validateHomepageHero(errors, distRoot = DIST_ROOT) {
     const relPath = 'index.html';
-    const htmlPath = path.join(DIST_ROOT, relPath);
-    const dataPath = path.join(DIST_ROOT, 'blog-module/home-latest.json');
+    const htmlPath = path.join(distRoot, relPath);
+    const dataPath = path.join(distRoot, 'blog-module/home-latest.json');
     if (!fs.existsSync(htmlPath) || !fs.existsSync(dataPath)) return;
     const html = fs.readFileSync(htmlPath, 'utf8');
 
@@ -599,7 +599,7 @@ function validateHomepageHero(errors) {
     if (avif && !allowedImages.has(avif)) errors.push(`${relPath}: hero AVIF source does not match the latest story image`);
     if (preload && !allowedImages.has(preload)) errors.push(`${relPath}: hero preload does not match the latest story image`);
     if (!link || link !== expectedLink) errors.push(`${relPath}: hero story link does not match the latest story`);
-    if (!title || !title.startsWith(String(latest.title || '').trim())) errors.push(`${relPath}: hero headline does not match the latest story`);
+    if (!title || !title.startsWith(String(latest.title || '').replace(/\s+/g, ' ').trim())) errors.push(`${relPath}: hero headline does not match the latest story`);
 
     const pictureMatch = html.match(/<picture\b[^>]*\bid=["']hero-picture["'][^>]*>([\s\S]*?)<\/picture>/i);
     if (pictureMatch && /\/images\/bg\//i.test(pictureMatch[1])) {
@@ -758,4 +758,4 @@ function main() {
     console.log(`✓ public artifact validated: ${files.length} files, ${fmtBytes(bytes)}`);
 }
 
-main();
+if (process.argv[1] && path.resolve(process.argv[1]) === __filename) main();
