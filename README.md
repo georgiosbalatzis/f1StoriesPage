@@ -953,6 +953,7 @@ Actions > Site Maintenance > Run workflow > `standings`. Τοπικά: `npm run 
 | `docs/data-contracts.md` | Μορφή και εκδόσεις των generated JSON. |
 | `docs/article-media-policy.md` | Πολιτική εικόνων άρθρων και baseline. |
 | `docs/css-architecture.md` | Ποιο CSS ανήκει σε ποια σελίδα και σειρά φόρτωσης. |
+| `docs/race-desk-architecture.md` | Ονόματα και πλοήγηση των data products: Race Desk, THE GRID, Telemetry, Ghost Car. |
 | `docs/security-headers.md` | CSP, headers, Cloudflare. |
 | `docs/release-checklist.md` | Checklist πριν από release. |
 | `DESIGN.md` | Design system όπως είναι υλοποιημένο. |
