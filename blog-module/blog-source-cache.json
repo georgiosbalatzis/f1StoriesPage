@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261002W",
+      "title": "Kimi Raikkonen και  Antonio Giovinazzi: Η απρόσμενη φιλία του Iceman",
+      "author": "Themis Charvalis",
+      "date": "2026-10-02",
+      "dateISO": "2026-10-02",
+      "displayDate": "2 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261002W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261002W/2.webp",
+      "excerpt": "Στη Formula 1, η σχέση των δύο teammates συνήθως χαρακτηρίζεται μεγάλο από ανταγωνισμό. Δύο οδηγοί μοιράζονται το ίδιο μονοθέσιο, συγκρίνονται στον ίδιο γύρο, διεκδικούν τα ίδια αποτελέσματα και,...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261002W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Raikkonen",
+        "Giovinazzi",
+        "Alfa Romeo"
+      ],
+      "wordCount": 819,
+      "readingTime": "5 min",
+      "imageWidth": 800,
+      "imageHeight": 533,
+      "backgroundImageWidth": 1170,
+      "backgroundImageHeight": 740
+    },
+    {
       "id": "20261001W",
       "title": "Sepang: Η επιστροφή της Μαλαισίας στη Formula 1",
       "author": "Themis Charvalis",
@@ -9833,5 +9862,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-01T10:59:05.379Z"
+  "lastUpdated": "2026-10-02T06:36:15.464Z"
 }
