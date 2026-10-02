@@ -30,6 +30,36 @@
       "backgroundImageHeight": 740
     },
     {
+      "id": "20261002J",
+      "title": "BetCast #275: Το Grid είναι πιο ΑΜΦΙΡΡΟΠΟ απ' όσο περιμέναμε! | F1",
+      "author": "Giannis Poulikidis",
+      "date": "2026-10-02",
+      "dateISO": "2026-10-02",
+      "displayDate": "2 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261002J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261002J/1.webp",
+      "excerpt": "Σε αχαρτογράφητα νερά, με παλιά δεδομένα και το μισό grid να μην έχει τρέξει ποτέ σε αυτήν την πίστα... Λοιπόν, καλώς ήρθατε στο Sepang International Circuit. Τα πρώτα FP έδειξαν ότι υπάρχει μεγάλος...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261002J/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "BetCast",
+        "Bahrain",
+        "Ποντάρισμα",
+        "Bet"
+      ],
+      "wordCount": 209,
+      "readingTime": "2 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
+    },
+    {
       "id": "20261001W",
       "title": "Sepang: Η επιστροφή της Μαλαισίας στη Formula 1",
       "author": "Themis Charvalis",
@@ -9862,5 +9892,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-02T06:36:15.464Z"
+  "lastUpdated": "2026-10-02T19:19:15.546Z"
 }
