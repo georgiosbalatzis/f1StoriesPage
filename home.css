@@ -19,10 +19,10 @@
     --bg-overlay: #181a1cf5;
     --text-primary: #eee7dc;
     --text-secondary: #bcb8b0;
-    --text-tertiary: #bcb8b0;
+    --text-tertiary: var(--text-secondary);
     --border: #47494a;
     --accent: #ff826b;
-    --accent-readable: #ff826b;
+    --accent-readable: var(--accent);
     --accent-hover: #ffa28f;
     --accent-contrast: #17191b;
     --accent-muted: #ff826b12;
@@ -49,7 +49,7 @@
 /* On the night page the cover sits on the same raised grey as the technical spread and the numbers. */
 :root:not([data-theme="light"]) .home-page #hero { background: var(--bg-surface); }
 /* On the night page the dark spread lifts one step and takes rules, so it still reads as its own spread. */
-:root:not([data-theme="light"]) .home-page .home-tech { --tech-bg: #222426; --tech-panel: #2c2e30; --tech-rule: #47494a; border-block: 1px solid var(--border); }
+:root:not([data-theme="light"]) .home-page .home-tech { --tech-bg: var(--bg-surface); --tech-panel: var(--bg-surface-alt); --tech-rule: var(--border); border-block: 1px solid var(--border); }
 
 /* Team radio and the partners are printed on cream paper in both editions: they carry
  * the paper edition's inks, so the night page needs no overrides for them. */
@@ -60,7 +60,7 @@
     --bg-base: #f2eee4;
     --accent: #a82e1c;
     --accent-readable: #a82e1c;
-    --btn-primary-bg: #20251f;
+    --btn-primary-bg: var(--text-primary);
     --btn-primary-fg: #e9e3d6;
     color-scheme: light;
     background: #e9e3d6;
@@ -113,7 +113,7 @@
 @media (forced-colors: active) {
     .home-page .hero-content h1 { color: CanvasText; background: none; }
 }
-.home-page .cta-button { min-height: 47px; padding: 12px 18px; border-radius: 2px; box-shadow: none; font-weight: 600; font-size: .75rem; line-height: 1.4; transition: background-color .25s, color .25s, border-color .25s; }
+.home-page .cta-button { min-height: 47px; padding: 12px 18px; border-radius: var(--radius-control); box-shadow: none; font-weight: 600; font-size: .75rem; line-height: 1.4; transition: background-color .25s, color .25s, border-color .25s; }
 .home-page .cta-button .icon { transition: transform .3s var(--ease-editorial); }
 .home-page .cta-button:hover .icon { transform: translateX(5px); }
 .home-page .hero-listen { display: inline-flex; align-items: center; gap: 9px; color: var(--home-cover-text); min-height: 44px; font-size: .75rem; border-bottom: 1px solid var(--home-cover-rule); transition: border-color .25s; }
@@ -231,7 +231,7 @@
 .home-page .tech-copy__title a:is(:hover, :focus-visible) { text-decoration-color: var(--tech-accent); }
 .home-page .tech-copy__dek { max-width: 34em; margin: 18px 0 0; color: var(--tech-muted); line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .home-page .home-tech .home-story__byline { margin-top: 18px; color: var(--tech-muted); }
-.home-page .tech-copy__button { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; margin-top: 28px; padding: 0 22px; border: 1px solid var(--tech-faint); border-radius: 2px; color: var(--tech-ink); font-size: .75rem; font-weight: 600; letter-spacing: .12em; transition: background-color .18s, border-color .18s, color .18s; }
+.home-page .tech-copy__button { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; margin-top: 28px; padding: 0 22px; border: 1px solid var(--tech-faint); border-radius: var(--radius-control); color: var(--tech-ink); font-size: .75rem; font-weight: 600; letter-spacing: .12em; transition: background-color .18s, border-color .18s, color .18s; }
 .home-page .tech-copy__button:is(:hover, :focus-visible) { background: var(--tech-accent); border-color: var(--tech-accent); color: var(--tech-bg); }
 /* The photograph starts at the split and bleeds to the viewport's right edge. */
 .home-page .tech-photo { position: relative; grid-column: 1 / -1; grid-row: 1 / 3; align-self: start; margin: 0 calc((100cqw - 100vw) / 2) 0 36cqw; }
@@ -374,7 +374,7 @@
 .home-page .team-spotlight.is-rotating .team-card.is-active .team-card__timer::after { animation: team-fuse 5s linear forwards; }
 .home-page .team-spotlight.is-rotating:is(:hover, :focus-within, .is-paused) .team-card.is-active .team-card__timer::after { animation-play-state: paused; }
 @keyframes team-fuse { to { transform: scaleX(1); } }
-.home-page .team-spotlight__pause { position: absolute; z-index: 2; top: 14px; right: 14px; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--border); border-radius: 2px; background: transparent; color: var(--text-secondary); font-size: .75rem; letter-spacing: .08em; cursor: pointer; }
+.home-page .team-spotlight__pause { position: absolute; z-index: 2; top: 14px; right: 14px; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--border); border-radius: var(--radius-control); background: transparent; color: var(--text-secondary); font-size: .75rem; letter-spacing: .08em; cursor: pointer; }
 .home-page .team-spotlight__pause:hover { color: var(--text-primary); border-color: var(--text-secondary); }
 .home-page .team-card__label { margin: 0; padding-right: 52px; color: var(--author-accent); font-size: .75rem; font-weight: 600; letter-spacing: .13em; }
 .home-page .team-card__head { display: grid; grid-template-columns: clamp(132px, 12vw, 164px) minmax(0, 1fr); column-gap: clamp(20px, 2.6vw, 36px); align-items: end; margin-top: 26px; }
@@ -392,7 +392,7 @@
 .home-page .team-card__stories a { color: var(--text-primary); font-weight: 500; }
 .home-page .team-card__stories a:hover { color: var(--author-accent); }
 .home-page .team-card__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; margin-top: 30px; }
-.home-page .team-card__all { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 22px; border: 1px solid var(--text-primary); border-radius: 2px; background: var(--text-primary); color: var(--bg-base); font-size: .75rem; font-weight: 600; letter-spacing: .12em; transition: background-color .18s, border-color .18s, color .18s; }
+.home-page .team-card__all { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 22px; border: 1px solid var(--text-primary); border-radius: var(--radius-control); background: var(--text-primary); color: var(--bg-base); font-size: .75rem; font-weight: 600; letter-spacing: .12em; transition: background-color .18s, border-color .18s, color .18s; }
 .home-page .team-card__all:is(:hover, :focus-visible) { background: var(--author-accent); border-color: var(--author-accent); color: var(--bg-base); }
 .home-page :is(.team-card__social, .team-directory-link) { position: relative; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: var(--text-secondary); font-size: .75rem; font-weight: 500; letter-spacing: .12em; }
 .home-page :is(.team-card__social, .team-directory-link)::after { content: ''; position: absolute; left: 0; right: 0; bottom: 8px; height: 1px; background: currentColor; }
@@ -440,7 +440,7 @@
 .home-page .contact-field :is(input, textarea):focus { outline: none; border-bottom: 1px solid var(--accent); box-shadow: 0 1px 0 var(--accent); }
 .home-page .contact-field :is(input, textarea):focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .home-page .contact-form__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
-.home-page .contact-submit { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 48px; padding: 0 22px; border: 1px solid var(--text-primary); border-radius: 2px; background: var(--text-primary); color: var(--bg-base); font: 600 .75rem/1.2 var(--font-body); letter-spacing: .12em; cursor: pointer; transition: background-color .18s, border-color .18s; }
+.home-page .contact-submit { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 48px; padding: 0 22px; border: 1px solid var(--text-primary); border-radius: var(--radius-control); background: var(--text-primary); color: var(--bg-base); font: 600 .75rem/1.2 var(--font-body); letter-spacing: .12em; cursor: pointer; transition: background-color .18s, border-color .18s; }
 .home-page .contact-submit:is(:hover, :focus-visible) { background: var(--accent); border-color: var(--accent); }
 .home-page .contact-submit:disabled { opacity: .6; cursor: progress; }
 .home-page .contact-form__note { margin: 0; color: var(--text-secondary); font-size: .75rem; font-weight: 500; letter-spacing: .1em; }
@@ -456,13 +456,13 @@
 /* The rule belongs to the content column, so it lines up with the rules above. */
 .home-page .sponsor-strip-layout::before { content: ''; grid-column: 1 / -1; height: 1px; margin-bottom: 28px; background: var(--border); }
 .home-page .sponsor-strip-label { grid-column: 1 / 3; margin: 0; color: var(--text-secondary); font-size: .75rem; font-weight: 600; letter-spacing: .13em; line-height: 1.4; }
-.home-page #home-sponsors .sponsor-logos { grid-column: 3 / 13; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: var(--gutter-home); margin: 0; padding: 10px 16px; list-style: none; border: 0; border-radius: 2px; background: var(--partner-mat); color: inherit; }
+.home-page #home-sponsors .sponsor-logos { grid-column: 3 / 13; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: var(--gutter-home); margin: 0; padding: 10px 16px; list-style: none; border: 0; border-radius: var(--radius-control); background: var(--partner-mat); color: inherit; }
 .home-page #home-sponsors .sponsor-logo { display: flex; flex-direction: column; align-items: center; gap: 6px; height: auto; min-height: 0; padding: 6px 0; background: none; }
 .home-page #home-sponsors .sponsor-logo img { width: 100%; max-width: 150px; height: auto; max-height: none; mix-blend-mode: multiply; filter: grayscale(1) contrast(1.05); opacity: .68; transition: filter .35s var(--ease-editorial), opacity .35s var(--ease-editorial); }
 .home-page #home-sponsors .sponsor-logo:is(:hover, :focus-visible) { background: none; }
 .home-page #home-sponsors .sponsor-logo:is(:hover, :focus-visible) img { filter: none; opacity: 1; }
 .home-page #home-sponsors .sponsor-logo:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.home-page #home-sponsors .sponsor-logo span { color: #5b6256; font-size: .6875rem; font-weight: 500; letter-spacing: .12em; text-align: center; }
+.home-page #home-sponsors .sponsor-logo span { color: var(--text-secondary); font-size: .6875rem; font-weight: 500; letter-spacing: .12em; text-align: center; }
 
 /* Motion remains optional. Text is visible even when scripts cannot run. */
 @keyframes cover-arrive { from { transform: translateY(22px); } to { transform: translateY(0); } }

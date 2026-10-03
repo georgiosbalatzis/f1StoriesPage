@@ -1,4 +1,5 @@
 /* F1 Stories / shared editorial identity.
+ * Canonical visual-token source: docs/design-tokens.md (Priority 4A).
  * Typography, paper and ink, navigation, footer, and both color themes.
  * Load after legacy structural styles and before the route editorial stylesheet.
  */
@@ -29,15 +30,18 @@ body.editorial-page,
     --signal: #ed4c32;
     /* Text set on --signal: the darkest brand ink, so 12px labels clear WCAG AA (4.77:1). */
     --signal-ink: #17191b;
+    /* Inverted editorial surfaces (colophon): fixed quiet ink on --ink. */
+    --text-inverse-secondary: #c0bfb2;
+    --border-inverse: rgba(233, 227, 214, 0.18);
     --bg-base: #1b1a19;
     --bg-surface: #242321;
     --bg-surface-alt: #2e2c29;
     --text-primary: #eee8db;
     --text-secondary: #b6bbac;
-    --text-tertiary: #b6bbac;
+    --text-tertiary: var(--text-secondary);
     --border: #4b5146;
     --accent: #ff775f;
-    --accent-readable: #ff775f;
+    --accent-readable: var(--accent);
     --accent-hover: #ff947f;
     --accent-contrast: #20251f;
     --accent-muted: #ed4c3214;
@@ -47,8 +51,9 @@ body.editorial-page,
     --font-brand: 'Barlow Condensed', sans-serif;
     --space-section: clamp(40px, 6vw, 80px);
     --radius-media: 4px;
-    --button-radius: 2px;
+    --button-radius: var(--radius-control);
     --radius-control: 2px;
+    --control-height-md: 44px;
     /* The one bottom-right cut corner on photographs and editorial panels. */
     --cut-sm: 24px;
     --cut-md: 40px;
@@ -69,10 +74,10 @@ body.editorial-page,
     --bg-surface-alt: #dfd9ca;
     --text-primary: #20251f;
     --text-secondary: #5b6256;
-    --text-tertiary: #5b6256;
+    --text-tertiary: var(--text-secondary);
     --border: #c8c8b9;
     --accent: #a82e1c;
-    --accent-readable: #a82e1c;
+    --accent-readable: var(--accent);
     --accent-hover: #8e281a;
     --accent-contrast: #f2eee4;
 }
@@ -106,10 +111,10 @@ body.article-page {
     --bg-surface-alt: #dfd9ca;
     --text-primary: #20251f;
     --text-secondary: #5b6256;
-    --text-tertiary: #5b6256;
+    --text-tertiary: var(--text-secondary);
     --border: #c8c8b9;
     --accent: #a82e1c;
-    --accent-readable: #a82e1c;
+    --accent-readable: var(--accent);
     --accent-hover: #8e281a;
     --accent-contrast: #f2eee4;
     --accent-muted: #a82e1c14;
@@ -259,7 +264,7 @@ body.editorial-page .blog-nav-links {
 body.editorial-page .blog-nav-link,
 body.editorial-page .blog-nav-link.betcast-link {
     align-self: stretch;
-    min-height: 44px;
+    min-height: var(--control-height-md);
     margin: 0;
     padding: 0;
     border: 0;
@@ -323,8 +328,8 @@ body.editorial-page .blog-nav-countdown-mobile {
 }
 
 body.editorial-page .blog-nav .theme-toggle-nav-btn {
-    width: 44px;
-    height: 44px;
+    width: var(--control-height-md);
+    height: var(--control-height-md);
     border: 1px solid transparent;
     border-radius: 50%;
     color: var(--ink, #20251f);
@@ -444,7 +449,7 @@ body.editorial-page footer {
     background: var(--ink, #20251f);
     background-image: radial-gradient(ellipse at 100% 0%, rgba(233, 227, 214, 0.055), transparent 65%);
     color: var(--paper, #e9e3d6);
-    border-top: 1px solid rgba(233, 227, 214, 0.18);
+    border-top: 1px solid var(--border-inverse);
     font-family: var(--font-body);
     padding: 1.5rem 0;
 }
@@ -481,8 +486,8 @@ body.editorial-page footer .social-media {
 }
 
 body.editorial-page footer .social-media a {
-    width: 44px;
-    height: 44px;
+    width: var(--control-height-md);
+    height: var(--control-height-md);
     padding: 0;
     color: var(--paper, #e9e3d6);
     font-size: 1.2rem;
@@ -514,11 +519,11 @@ body.editorial-page footer .footer-links {
     justify-content: flex-start;
     gap: 0.75rem;
     padding-top: 1.4rem;
-    border-top: 1px solid rgba(233, 227, 214, 0.18);
+    border-top: 1px solid var(--border-inverse);
 }
 
 body.editorial-page footer .footer-link {
-    color: #c0bfb2;
+    color: var(--text-inverse-secondary);
     font-size: .75rem;
 }
 
@@ -544,6 +549,9 @@ body.editorial-page footer .footer-link:focus-visible::after {
 body.editorial-page footer .footer-separator {
     color: #787e6e;
 }
+
+/* The light-page accent is too dim on the inverted colophon; use paper ink. */
+[data-theme="light"] body.editorial-page footer :focus-visible { outline-color: var(--paper); }
 
 @media (max-width: 767.98px) {
     body.editorial-page footer .footer-body { grid-template-columns: 1fr; gap: 1.2rem; }
@@ -578,7 +586,7 @@ body.editorial-page,
     --blog-accent: var(--accent);
     --blog-accent-soft: var(--accent-muted);
     --blog-shadow-md: none;
-    --blog-radius-sm: 2px;
+    --blog-radius-sm: var(--radius-control);
     --st-bg: var(--bg-base);
     --st-surface: var(--bg-surface);
     --st-surface-raised: var(--bg-surface-alt);
@@ -593,8 +601,8 @@ body.editorial-page,
     --st-shell-font: var(--font-body);
     --st-display-font: var(--font-display);
     --st-shadow-sm: none;
-    --st-radius: 2px;
-    --st-radius-sm: 2px;
+    --st-radius: var(--radius-control);
+    --st-radius-sm: var(--radius-control);
 }
 [data-theme="light"] body.editorial-page { color-scheme: light; --bg-overlay: #f2eee4f2; }
 body.editorial-page :is(button, input, textarea, select, .skip-link) { font-family: var(--font-body); }
@@ -708,7 +716,7 @@ body.editorial-page .blog-nav :focus-visible { outline-color: var(--ink); }
 
 /* The hamburger strokes need their own surface-aware color. */
 :root:not([data-theme="light"]) body.editorial-page .blog-nav-hamburger span { background: var(--text-primary); }
-body.editorial-page :is(.blog-nav-hamburger, .theme-toggle-nav-btn) { min-width: 44px; min-height: 44px; }
+body.editorial-page :is(.blog-nav-hamburger, .theme-toggle-nav-btn) { min-width: var(--control-height-md); min-height: var(--control-height-md); }
 @media (min-width: 992px) and (max-width: 1199px) {
     body.editorial-page .blog-nav-countdown { display: none; }
 }
@@ -736,7 +744,7 @@ body.editorial-page :is(.blog-nav-hamburger, .theme-toggle-nav-btn) { min-width:
     min-height: 112px;
     padding: 22px 18px;
     border: 0;
-    border-radius: 4px;
+    border-radius: var(--radius-media);
     background: transparent;
     box-shadow: none;
     transform: none;
@@ -777,15 +785,15 @@ body.editorial-page .scroll-to-top-btn.visible {
 
 
 /* Colophon: the masthead's wordmark and a section index close every page. */
-body.editorial-page footer .footer-colophon { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 24px; padding-bottom: 18px; border-bottom: 1px solid rgba(233, 227, 214, 0.18); }
+body.editorial-page footer .footer-colophon { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 24px; padding-bottom: 18px; border-bottom: 1px solid var(--border-inverse); }
 body.editorial-page footer .footer-wordmark { color: var(--paper); font: 700 1.75rem/1 var(--font-brand); letter-spacing: -.035em; text-decoration: none; }
-body.editorial-page footer .footer-mission { max-width: none; color: #c0bfb2; font-size: .875rem; }
+body.editorial-page footer .footer-mission { max-width: none; color: var(--text-inverse-secondary); font-size: .875rem; }
 body.editorial-page footer .footer-index { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 24px; }
-body.editorial-page footer .footer-index a { display: inline-flex; align-items: center; min-height: 44px; color: var(--paper); font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; background: linear-gradient(var(--signal), var(--signal)) 0 calc(100% - 10px) / 0 2px no-repeat; transition: background-size .25s; }
+body.editorial-page footer .footer-index a { display: inline-flex; align-items: center; min-height: var(--control-height-md); color: var(--paper); font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; background: linear-gradient(var(--signal), var(--signal)) 0 calc(100% - 10px) / 0 2px no-repeat; transition: background-size .25s; }
 body.editorial-page footer .footer-index a:is(:hover, :focus-visible) { background-size: 100% 2px; }
 @media (prefers-reduced-motion: reduce) { body.editorial-page footer .footer-index a { transition: none; } }
 body.editorial-page footer .footer-wordmark .editorial-accent { color: var(--signal); }
 
 /* Standalone text links keep a 24px minimum target (WCAG 2.2 AA 2.5.8) without changing their type. */
 /* KEEP: 44px targets for every standalone link, not just WCAG's 24px floor. */
-body.editorial-page :is(.authors-directory-link, .team-member__name a, .footer-link, .footer-wordmark, .authors-directory-back, .authors-intro__data-link, .author-profile__archive, .author-profile__social, .author-profile__name a, .author-profile__stories a, .article-author-link, .article-trust strong a, .article-trust__corrections a) { display: inline-flex; align-items: center; min-height: 44px; }
+body.editorial-page :is(.authors-directory-link, .team-member__name a, .footer-link, .footer-wordmark, .authors-directory-back, .authors-intro__data-link, .author-profile__archive, .author-profile__social, .author-profile__name a, .author-profile__stories a, .article-author-link, .article-trust strong a, .article-trust__corrections a) { display: inline-flex; align-items: center; min-height: var(--control-height-md); }

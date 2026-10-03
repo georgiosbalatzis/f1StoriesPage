@@ -245,8 +245,8 @@
 .journal-search__input::-webkit-search-cancel-button,
 .journal-search__input::-webkit-search-decoration { display: none; appearance: none; }
 .journal-search__input:focus { outline: none; }
-/* An underline field shows focus on its underline: thicker and in the accent. */
-.journal-search__input:focus-visible { border-bottom-color: var(--accent-readable); }
+/* Keyboard focus needs a ring as well as the field's accent underline. */
+.journal-search__input:focus-visible { border-bottom-color: var(--accent-readable); outline: 2px solid var(--accent-readable); outline-offset: 3px; }
 .journal-search__clear { position: absolute; right: 0; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; color: var(--text-secondary); background: none; border: 0; }
 .journal-search__clear[hidden] { display: none; }
 

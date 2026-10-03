@@ -12,7 +12,7 @@
    ============================================================ */
 
 :root {
-    /* ── Design tokens — Neutral Charcoal (single source of truth) ── */
+    /* Legacy/tooling defaults. Public visual contract: styles/editorial.css. */
     --bg-base: #111113;
     --bg-surface: #161618;
     --bg-surface-alt: #1e1e20;
