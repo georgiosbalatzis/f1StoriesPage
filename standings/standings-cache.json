@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-03T00:03:28.778Z",
+  "generatedAt": "2026-10-03T09:42:34.053Z",
   "source": {
     "driverStandingsUrl": "https://api.jolpi.ca/ergast/f1/2026/driverstandings.json?limit=30",
     "constructorStandingsUrl": "https://api.jolpi.ca/ergast/f1/2026/constructorstandings.json?limit=30"
