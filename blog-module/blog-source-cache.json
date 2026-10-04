@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20261004W",
+      "title": "Elfyn Evans: Όταν τελικά κάθε προσπάθεια αξίζει",
+      "author": "Themis Charvalis",
+      "date": "2026-10-04",
+      "dateISO": "2026-10-04",
+      "displayDate": "4 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261004W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261004W/2.webp",
+      "excerpt": "Για χρόνια βρισκόταν τόσο κοντά όσο λίγοι. Πέντε φορές είχε τερματίσει δεύτερος στο Παγκόσμιο Πρωτάθλημα Ράλι, μεταξύ αυτών και το 2025, όταν έχασε τον τίτλο από τον Sébastien Ogier για μόλις...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261004W/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "WRC",
+        "Elfyn Evans",
+        "Champion",
+        "Toyota WRC"
+      ],
+      "wordCount": 575,
+      "readingTime": "3 min",
+      "imageWidth": 547,
+      "imageHeight": 365,
+      "backgroundImageWidth": 554,
+      "backgroundImageHeight": 554
+    },
+    {
       "id": "20261002W",
       "title": "Kimi Raikkonen και  Antonio Giovinazzi: Η απρόσμενη φιλία του Iceman",
       "author": "Themis Charvalis",
@@ -9892,5 +9922,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-02T20:29:08.495Z"
+  "lastUpdated": "2026-10-04T18:03:56.568Z"
 }
