@@ -315,7 +315,7 @@ body.editorial-page .blog-nav-countdown {
 }
 
 body.editorial-page .countdown-race {
-    color: #565b50;
+    color: var(--text-secondary);
     font-size: .75rem;
     max-width: 125px;
 }
@@ -384,6 +384,11 @@ body.editorial-page .blog-nav-mobile .theme-toggle-menu-btn {
     border-bottom-color: var(--nav-border);
     background: transparent;
     transition: padding-left 220ms ease, background-color 220ms ease;
+}
+
+/* Full-width rows live in a scrollport: keep the complete keyboard ring inside it. */
+body.editorial-page .blog-nav-mobile :is(.blog-nav-mobile-link, .theme-toggle-menu-btn):focus-visible {
+    outline-offset: -5px;
 }
 
 body.editorial-page .blog-nav-mobile-link.active {

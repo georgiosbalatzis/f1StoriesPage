@@ -107,6 +107,8 @@ body.standings-page {
 .standings-page .standings-table-wrap { border: 0; border-top: 2px solid var(--st-text); border-bottom: 1px solid var(--st-border); border-radius: 0; background: transparent; box-shadow: none; }
 .standings-page .st-table-head { min-height: 43px; background: transparent; font-weight: 500; font-size: .75rem; letter-spacing: .1em; grid-template-columns: 48px minmax(0, 1fr) minmax(3.5rem, auto); padding-inline: 12px 32px; }
 .standings-page .st-row { grid-template-columns: 48px minmax(0, 1fr) minmax(3.5rem, auto); gap: 16px; padding: 11px 12px; background: transparent; transition: background .3s var(--ease-editorial); }
+/* Rows sit in the clipped table wrap: keep the polish layer's inset ring over the generic 5px offset. */
+.standings-page .st-row:focus-visible { outline-offset: -2px; }
 .standings-page .st-row::before { width: 2px; top: 14px; bottom: 14px; transition: top .3s, bottom .3s, width .3s; }
 .standings-page .st-row:hover::before,
 .standings-page .st-row.is-expanded::before { width: 4px; top: 0; bottom: 0; }

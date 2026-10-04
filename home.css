@@ -136,6 +136,8 @@
 .home-page .paddock-strip a { display: inline-flex; align-items: center; min-height: 44px; color: var(--signal-ink); font-size: .75rem; font-weight: 600; letter-spacing: .06em; padding-block: 5px; }
 .home-page .paddock-strip a span { display: inline-block; font-size: 1.1rem; margin-left: 8px; transition: transform .3s; }
 .home-page .paddock-strip a:hover span { transform: translate(3px, -3px); }
+/* On signal, focus uses signal ink (as in Telemetry/Ghost Car); 2px keeps the ring inside the mobile container clip. */
+.home-page .paddock-strip a:focus-visible { outline-color: var(--signal-ink); outline-offset: 2px; }
 
 /* Journal: the stories after the cover. A lead with its dek, two side stories and
  * the recent list, numbered on from the cover (01). Built into the page by

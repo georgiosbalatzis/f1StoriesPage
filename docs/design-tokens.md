@@ -141,7 +141,8 @@ The default is `:focus-visible { outline: 2px solid var(--accent);
 outline-offset: 5px; }`. A visible outline is required in addition to a border
 change. Keep native focus when no custom replacement exists. Surface-aware
 exceptions: light masthead uses ink, dark masthead uses accent-readable, and
-light inverted footer uses paper (12.20:1 against core ink). Reading labels may
+light inverted footer uses paper (12.20:1 against core ink). Controls on signal bands use
+signal-ink (4.77:1), as accent on signal is below 3:1. Reading labels may
 use accent-readable; the fixed dark technical spread uses its local readable
 accent. Never apply the dark-page accent blindly to a fixed paper panel.
 
@@ -150,6 +151,7 @@ Inside scroll/overflow/clip containers use a visible inset outline or provide
 real clearance; existing report tabs use -4px and video/partner controls use
 inset rings. Race Desk links retain their 2px outward offset and existing
 clearance. Test keyboard tab order and the entire ring, not just computed CSS.
+Full-width mobile menu rows use a -5px inset to keep the complete 2px ring inside their scrollport.
 Do not suppress focus on a button, input or link without a visible replacement.
 
 Use approximately 44px minimum target height/width for standalone important
