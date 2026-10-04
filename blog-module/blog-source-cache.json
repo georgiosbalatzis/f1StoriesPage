@@ -31,6 +31,35 @@
       "backgroundImageHeight": 554
     },
     {
+      "id": "20261004J",
+      "title": "Ίσως κάτι αλλάζει στη Ferrari!",
+      "author": "Giannis Poulikidis",
+      "date": "2026-10-04",
+      "dateISO": "2026-10-04",
+      "displayDate": "4 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261004J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261004J/1.webp",
+      "excerpt": "Σε έναν αγώνα όπου η βροχή ήταν ο πρωταγωνιστής, το χάος ξεκίνησε από νωρίς και η κόκκινη σημαία βγήκε στον γύρο σχηματισμού. Τρομερό; Και όμως, πραγματικά τρομερό, αφού ένα ένα τα μονοθέσια...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261004J/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "Ferrari",
+        "Bahrain",
+        "2026"
+      ],
+      "wordCount": 525,
+      "readingTime": "3 min",
+      "imageWidth": 1672,
+      "imageHeight": 941,
+      "backgroundImageWidth": 1672,
+      "backgroundImageHeight": 941
+    },
+    {
       "id": "20261002W",
       "title": "Kimi Raikkonen και  Antonio Giovinazzi: Η απρόσμενη φιλία του Iceman",
       "author": "Themis Charvalis",
@@ -9922,5 +9951,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-04T18:03:56.568Z"
+  "lastUpdated": "2026-10-04T18:46:22.603Z"
 }
