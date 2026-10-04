@@ -109,7 +109,10 @@ body.standings-page {
 .standings-page .st-row { grid-template-columns: 48px minmax(0, 1fr) minmax(3.5rem, auto); gap: 16px; padding: 11px 12px; background: transparent; transition: background .3s var(--ease-editorial); }
 /* Rows sit in the clipped table wrap: keep the polish layer's inset ring over the generic 5px offset. */
 .standings-page .st-row:focus-visible { outline-offset: -2px; }
-.standings-page .st-row::before { width: 2px; top: 14px; bottom: 14px; transition: top .3s, bottom .3s, width .3s; }
+/* The team stripe shares the ring's left 2-4px; Chrome paints positioned children over an element's own
+   outline, so keep the stripe in the row's negative layer (above its background, below the ring). */
+.standings-page .st-row { isolation: isolate; }
+.standings-page .st-row::before { z-index: -1; width: 2px; top: 14px; bottom: 14px; transition: top .3s, bottom .3s, width .3s; }
 .standings-page .st-row:hover::before,
 .standings-page .st-row.is-expanded::before { width: 4px; top: 0; bottom: 0; }
 .standings-page .st-row[data-detail-target]:hover,

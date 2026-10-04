@@ -152,6 +152,10 @@ real clearance; existing report tabs use -4px and video/partner controls use
 inset rings. Race Desk links retain their 2px outward offset and existing
 clearance. Test keyboard tab order and the entire ring, not just computed CSS.
 Full-width mobile menu rows use a -5px inset to keep the complete 2px ring inside their scrollport.
+THE GRID standings rows and the article gallery controls (stage arrows, thumb strip) sit flush with
+their clip edge and use -2px; the row's team stripe paints below the ring (`z-index: -1` in the
+isolated row), or it hides the ring's left edge. A container that only needs an x-overflow guard uses
+`overflow-x: clip`: `hidden` computes `overflow-y` to `auto` and cuts the bottom of section-ending rings.
 Do not suppress focus on a button, input or link without a visible replacement.
 
 Use approximately 44px minimum target height/width for standalone important

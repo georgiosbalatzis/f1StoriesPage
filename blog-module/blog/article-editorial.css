@@ -474,6 +474,9 @@
 .article-page .gallery-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; margin: 0; border-radius: 0; }
 .article-page .gallery-thumb.active { border-color: var(--accent); background: transparent; opacity: 1; }
 .article-page .gallery-thumb:hover:not(.active) { opacity: 1; transform: translateY(-3px) rotate(-1deg); }
+/* The stage (overflow: hidden) and the thumb strip (scroller, no side/bottom room) clip the generic 5px ring;
+   their controls sit flush with those edges, so the ring goes inset. */
+.article-page :is(.gallery-carousel-prev, .gallery-carousel-next, .gallery-thumb):focus-visible { outline-offset: -2px; }
 
 .article-page .article-rail-sticky { top: 110px; gap: 25px; padding-top: 0; }
 .article-page .article-rail-card { padding-bottom: 25px; border-color: var(--border); }

@@ -674,6 +674,10 @@ body.editorial-page .reading-progress-bar { background: var(--signal); }
 body.editorial-page .blog-nav :focus-visible { outline-color: var(--ink); }
 @media (max-width: 1199px) { body.editorial-page .container { padding-inline: 32px; } }
 @media (max-width: 767px) { body.editorial-page .container { padding-inline: 22px; } }
+/* styles.css hides .container's x-overflow on mobile, which computes overflow-y to auto and cuts the bottom of
+   the focus ring on links that end a section. clip keeps the x guard only. Scoped to pages without sticky
+   children in .container (on legal pages it would newly un-trap the sticky TOC). */
+@media (max-width: 767.98px) { body.editorial-page:is(.home-page, .archive-page) main .container { overflow-x: clip; } }
 @media (max-width: 359px) { body.editorial-page .container { padding-inline: 17px; } }
 @media (prefers-reduced-motion: reduce) {
     body.editorial-page *, body.editorial-page *::before, body.editorial-page *::after { animation: none; transition: none; scroll-behavior: auto; }

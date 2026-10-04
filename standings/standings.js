@@ -451,10 +451,11 @@ function scrollStandingsTabIntoView(tabName, smooth) {
         const listRect = standingsTablist.getBoundingClientRect();
         const isOutside = tabRect.left < listRect.left + 4 || tabRect.right > listRect.right - 4;
         if (!isOutside) return;
-        tab.scrollIntoView({
-            behavior: smooth && !prefersReducedMotion() ? 'smooth' : 'auto',
-            block: 'nearest',
-            inline: 'center'
+        // Scroll only the strip: tab.scrollIntoView() also nudged the page and moved Chrome's
+        // sequential-focus starting point, so the first Tab on load skipped the masthead and Race Desk.
+        standingsTablist.scrollTo({
+            left: standingsTablist.scrollLeft + tabRect.left - listRect.left - (listRect.width - tabRect.width) / 2,
+            behavior: smooth && !prefersReducedMotion() ? 'smooth' : 'auto'
         });
     });
 }

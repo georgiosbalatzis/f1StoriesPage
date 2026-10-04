@@ -205,7 +205,7 @@
     --tech-bg: #1b1a19;
     --tech-ink: #eee8db;
     --tech-muted: #b6bbac;
-    --tech-faint: #6f7468;
+    --tech-faint: #6f7468; /* rules/borders only: 3.27:1 on the panel (2.84:1 at night) is too dim for text */
     --tech-rule: #3d3c38;
     --tech-panel: #242321;
     --tech-accent: #6ec6bb;
@@ -244,17 +244,16 @@
 .home-page .tech-photo figcaption { position: absolute; right: calc((100vw - 100cqw) / 2); bottom: 0; padding: 10px 0 10px 14px; background: var(--tech-bg); color: var(--tech-muted); font-size: .75rem; font-weight: 500; letter-spacing: .12em; }
 .home-page .telemetry { position: relative; z-index: 3; grid-column: 6 / 11; grid-row: 3; margin-top: calc(-1 * clamp(80px, 9vw, 150px)); padding: clamp(24px, 2.6vw, 40px); border: 1px solid var(--tech-rule); border-top: 2px solid var(--tech-accent); background: var(--tech-panel); }
 .home-page .telemetry p { margin: 0; }
-.home-page .telemetry__head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 22px; padding-bottom: 12px; border-bottom: 1px solid var(--tech-rule); color: var(--tech-faint); font-size: .75rem; font-weight: 600; letter-spacing: .14em; }
-.home-page .telemetry__head span:first-child { color: var(--tech-muted); }
+.home-page .telemetry__head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 22px; padding-bottom: 12px; border-bottom: 1px solid var(--tech-rule); color: var(--tech-muted); font-size: .75rem; font-weight: 600; letter-spacing: .14em; }
 .home-page .telemetry__label { color: var(--tech-muted); font-size: .75rem; font-weight: 600; letter-spacing: .13em; }
 .home-page .telemetry p.telemetry__value { margin-top: 8px; font-size: clamp(3.75rem, 2rem + 4.6vw, 7rem); font-weight: 400; line-height: .92; letter-spacing: -.05em; }
 .home-page .telemetry__sign { color: var(--tech-accent); }
-.home-page .telemetry__unit { margin-left: .08em; color: var(--tech-faint); font-size: .36em; letter-spacing: 0; }
+.home-page .telemetry__unit { margin-left: .08em; color: var(--tech-muted); font-size: .36em; letter-spacing: 0; }
 .home-page .telemetry p.telemetry__note { margin-top: 10px; color: var(--tech-muted); font-size: .875rem; }
 .home-page .sectors { display: grid; grid-template-columns: repeat(3, 1fr); margin: 24px 0 0; border-top: 1px solid var(--tech-rule); }
 .home-page .sectors div { padding: 12px 0 0; }
 .home-page .sectors div + div { padding-left: 16px; border-left: 1px solid var(--tech-rule); }
-.home-page .sectors dt { color: var(--tech-faint); font-size: .75rem; font-weight: 600; letter-spacing: .14em; }
+.home-page .sectors dt { color: var(--tech-muted); font-size: .75rem; font-weight: 600; letter-spacing: .14em; }
 .home-page .sectors dd { margin: 4px 0 0; font-size: 1.125rem; font-weight: 600; letter-spacing: .01em; }
 .home-page .bars { display: grid; gap: 10px; margin: 24px 0 0; padding: 0; list-style: none; }
 .home-page .bars li { display: grid; grid-template-columns: 11.5em minmax(0, 1fr) 4.5em; align-items: center; gap: 14px; font-size: .75rem; letter-spacing: .1em; }
@@ -262,7 +261,7 @@
 .home-page .bars__track { position: relative; height: 1px; background: var(--tech-rule); }
 .home-page .bars__track span { position: absolute; left: 0; top: -2px; height: 5px; background: var(--tech-accent); }
 .home-page .bars__value { text-align: right; font-weight: 600; letter-spacing: .02em; }
-.home-page .telemetry p.telemetry__source { margin-top: 22px; color: var(--tech-faint); font-size: .75rem; font-weight: 500; letter-spacing: .14em; }
+.home-page .telemetry p.telemetry__source { margin-top: 22px; color: var(--tech-muted); font-size: .75rem; font-weight: 500; letter-spacing: .14em; }
 
 /* ON AIR: intro, the latest episode behind a click-to-play facade, two before it. */
 .home-page #onair { padding: clamp(80px, 9vw, 152px) 0; }

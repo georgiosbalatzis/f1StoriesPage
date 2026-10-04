@@ -11,6 +11,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright-core');
 const { Launcher } = require('chrome-launcher');
+const sharp = require('sharp');
 
 const REPO_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..');
 const DIST_ROOT = path.join(REPO_ROOT, 'dist');
@@ -587,7 +588,8 @@ async function checkFocusSequence(page) {
                 selector: selectorFor(el),
                 visible: isVisible(el),
                 tagName: el && el.tagName ? el.tagName.toLowerCase() : '',
-                bodyFocused: el === document.body || el === document.documentElement
+                bodyFocused: el === document.body || el === document.documentElement,
+                missedSkipLink: !!document.querySelector('.skip-link') && !(el && el.classList.contains('skip-link'))
             };
         });
 
@@ -596,12 +598,93 @@ async function checkFocusSequence(page) {
             break;
         }
 
+        if (step === 1 && state.missedSkipLink) {
+            issues.push({ type: 'focus-order', detail: `first Tab skipped the skip link and focused ${state.selector}` });
+        }
+
         if (!state.visible) {
             issues.push({
                 type: 'focus-order',
                 detail: `Tab step ${step} focused hidden/offscreen element ${state.selector || state.tagName || 'unknown'}`
             });
             break;
+        }
+    }
+
+    return issues;
+}
+
+// THE GRID rows sit flush inside an overflow:hidden wrap and carry a team stripe on their left edge.
+// Render the keyboard focus ring, diff it against the same frame with outline:none, and require ring
+// pixels along all four edges, collapsed and expanded. Fails if the ring is clipped or painted over.
+async function checkGridRowFocus(page) {
+    const issues = [];
+    const selector = '.standings-panel.active .st-row[tabindex="0"]';
+    const row = page.locator(selector).first();
+    if (!(await row.count())) return [{ type: 'grid-focus', detail: 'no focusable standings row rendered' }];
+
+    for (const expanded of [false, true]) {
+        await page.mouse.move(0, 0);
+        await row.evaluate(el => {
+            document.documentElement.style.scrollBehavior = 'auto';
+            el.focus();
+        });
+        await page.keyboard.press('Shift+Tab');
+        await page.keyboard.press('Tab');
+        if (expanded) await page.keyboard.press('Enter');
+        const rect = await row.evaluate(el => {
+            el.scrollIntoView({ block: 'center' });
+            const r = el.getBoundingClientRect();
+            return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, focusVisible: el.matches(':focus-visible') };
+        });
+        await page.waitForTimeout(400);
+        if (!rect.focusVisible) {
+            issues.push({ type: 'grid-focus', selector, detail: 'row is not :focus-visible after Tab' });
+            continue;
+        }
+
+        const view = page.viewportSize();
+        const x = Math.max(0, Math.floor(rect.left - 8));
+        const y = Math.max(0, Math.floor(rect.top - 8));
+        const clip = { x, y, width: Math.min(view.width, Math.ceil(rect.right + 8)) - x, height: Math.min(view.height, Math.ceil(rect.bottom + 8)) - y };
+        const decode = async () => sharp(await page.screenshot({ clip, type: 'png' })).raw().toBuffer({ resolveWithObject: true });
+        const focused = await decode();
+        const hide = await page.addStyleTag({ content: `${selector}:focus-visible { outline: none !important; }` });
+        const plain = await decode();
+        await hide.evaluate(node => node.remove());
+
+        const { width, channels } = focused.info;
+        const changed = (px, py) => {
+            const i = (Math.round(py - y) * width + Math.round(px - x)) * channels;
+            let delta = 0;
+            for (let c = 0; c < 3; c += 1) delta += Math.abs(focused.data[i + c] - plain.data[i + c]);
+            return delta > 60;
+        };
+        // Share of positions along an edge where the ring shows in the band [near - 8, near + 3].
+        const coverage = (from, to, near, vertical) => {
+            let hits = 0;
+            let total = 0;
+            for (let t = Math.ceil(from); t <= Math.floor(to); t += 1) {
+                total += 1;
+                for (let n = Math.max(vertical ? x : y, Math.floor(near - 8)); n <= Math.ceil(near + 3) && n < (vertical ? x + clip.width : y + clip.height); n += 1) {
+                    if (vertical ? changed(n, t) : changed(t, n)) { hits += 1; break; }
+                }
+            }
+            return total ? hits / total : 0;
+        };
+        const edges = {
+            left: coverage(rect.top + 4, rect.bottom - 4, rect.left, true),
+            right: coverage(rect.top + 4, rect.bottom - 4, rect.right + 5, true),
+            top: coverage(rect.left + 4, rect.right - 4, rect.top, false),
+            bottom: coverage(rect.left + 4, rect.right - 4, rect.bottom + 5, false)
+        };
+        const weak = Object.entries(edges).filter(([, value]) => value < 0.9);
+        if (weak.length) {
+            issues.push({
+                type: 'grid-focus',
+                selector,
+                detail: `${expanded ? 'expanded' : 'collapsed'} row focus ring hidden on ${weak.map(([edge, value]) => `${edge} (${Math.round(value * 100)}% visible)`).join(', ')}`
+            });
         }
     }
 
@@ -639,6 +722,9 @@ async function captureRoute(browser, origin, outputDir, route, viewport, theme, 
         const issues = scan.issues.slice();
         const focusIssues = await checkFocusSequence(page);
         issues.push(...focusIssues);
+        if (route.slug === 'standings-drivers' || route.slug === 'standings-constructors') {
+            issues.push(...await checkGridRowFocus(page));
+        }
 
         if (route.expectedStatus && status !== route.expectedStatus) {
             issues.push({
