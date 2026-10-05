@@ -153,7 +153,7 @@ npm run verify
 │   └── *-cache.json            Committed snapshots δεδομένων
 ├── authors/index.html          Σελίδα συντακτών
 ├── privacy/                    privacy.html, terms.html
-├── f1telemetry/, ghostcar/     Redirect σελίδες προς εξωτερικά εργαλεία
+├── f1telemetry/, ghostcar/, tyres/     Redirect σελίδες προς εξωτερικά εργαλεία
 ├── perf/                       Budgets (size, article media, lighthouse, !important)
 ├── quality/                    Baseline για τα rendering sinks
 ├── docs/                       Τεχνική τεκμηρίωση (βλ. ενότητα 21)
@@ -175,6 +175,7 @@ npm run verify
 | `/privacy/privacy.html`, `/privacy/terms.html` | `privacy/` | Νομικές σελίδες. |
 | `/f1telemetry/` | `f1telemetry/index.html` | Redirect στο `georgiosbalatzis.github.io/f1-telemetry-dashboard/`. |
 | `/ghostcar/` | `ghostcar/index.html` | Redirect στο `georgiosbalatzis.github.io/ghostcar/`. |
+| `/tyres/` | `tyres/index.html` | Redirect στο `georgiosbalatzis.github.io/Tyres/`. |
 | `/404.html` | | Σελίδα σφάλματος. |
 | `/generate.html`, `/housekeeping.html` | | Εργαλεία συντακτών. Ανεβαίνουν στο `dist/` με `noindex, nofollow` (ενότητα 12). |
 
