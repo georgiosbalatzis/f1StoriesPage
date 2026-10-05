@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261005G",
+      "title": "Tο bug που πάγωσε τη Formula 1 στο Sepang",
+      "author": "Georgios Balatzis",
+      "date": "2026-10-05",
+      "dateISO": "2026-10-05",
+      "displayDate": "5 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261005G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261005G/1.webp",
+      "excerpt": "Η εικόνα είχε κάτι σουρεαλιστικό. Ο Max Verstappen σερνόταν πίσω από το Safety Car, λίγο αργότερα ο Lewis Hamilton σταμάτησε στην ευθεία, και πίσω τους άρχισαν να εμφανίζονται κι άλλα αυτοκίνητα που...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261005G/article.html",
+      "category": "News",
+      "categories": [
+        "News"
+      ],
+      "tags": [
+        "Bahrain",
+        "2026",
+        "Technical"
+      ],
+      "wordCount": 1026,
+      "readingTime": "6 min",
+      "imageWidth": 1024,
+      "imageHeight": 576,
+      "backgroundImageWidth": 1024,
+      "backgroundImageHeight": 576
+    },
+    {
       "id": "20261004W",
       "title": "Elfyn Evans: Όταν τελικά κάθε προσπάθεια αξίζει",
       "author": "Themis Charvalis",
@@ -9951,5 +9980,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-05T12:53:03.358Z"
+  "lastUpdated": "2026-10-05T14:45:23.338Z"
 }
