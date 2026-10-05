@@ -23,7 +23,7 @@ const FILE_LIMITS = {
     'sitemap.xml': 256 * 1024,
     'standings/debrief-cache.json': 1024 * 1024,
     'standings/destructors-cache.json': 64 * 1024,
-    'standings/dirty-air-cache.json': 2 * 1024 * 1024,
+    'standings/dirty-air-cache.json': 4 * 1024 * 1024,
     'standings/dirty-air/index.json': 32 * 1024,
     'standings/standings-cache.json': 256 * 1024
 };
