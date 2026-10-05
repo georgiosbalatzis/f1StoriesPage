@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261005W",
+      "title": "Δεν είναι δική μας δουλειά να αποφασίσουμε πώς θα τελειώσει η ιστορία του Marc Márquez",
+      "author": "Themis Charvalis",
+      "date": "2026-10-05",
+      "dateISO": "2026-10-05",
+      "displayDate": "5 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261005W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261005W/2.webp",
+      "excerpt": "Όταν μιλάμε για τον Marquez, μιλάμε για τον αναβάτη, για όσα έχει ήδη κάνει και για αυτό που αντιπροσωπεύει. Για έναν άνθρωπο που εδώ και χρόνια έχει κάνει την εμμονή του με τη νίκη τρόπο ζωής. Που...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261005W/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "Motogp",
+        "Marc Marquez",
+        "2026 season",
+        "Champion",
+        "Racing legend"
+      ],
+      "wordCount": 307,
+      "readingTime": "2 min",
+      "imageWidth": 678,
+      "imageHeight": 452,
+      "backgroundImageWidth": 980,
+      "backgroundImageHeight": 735
+    },
+    {
       "id": "20261005G",
       "title": "Tο bug που πάγωσε τη Formula 1 στο Sepang",
       "author": "Georgios Balatzis",
@@ -9980,5 +10011,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-05T14:45:23.338Z"
+  "lastUpdated": "2026-10-05T16:13:44.919Z"
 }
