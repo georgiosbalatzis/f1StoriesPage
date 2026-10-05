@@ -38,6 +38,9 @@ const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const MANIFEST_PATH = path.join(REPO_ROOT, 'scripts', 'build', 'asset-manifest.json');
 let articleScope = null;
 
+// Redirect stubs to external tools: no theme-init, no deferred head scripts (they redirect before paint).
+const REDIRECT_STUBS = new Set(['ghostcar/index.html', 'f1telemetry/index.html', 'tyres/index.html']);
+
 // HTML files whose asset references we rewrite. Add to this list with care
 // — stamping a file with external asset references is fine; stamping a
 // content-committed article is NOT (see module header).
@@ -45,6 +48,7 @@ const TARGET_HTML = [
     'index.html',
     'ghostcar/index.html',
     'f1telemetry/index.html',
+    'tyres/index.html',
     'authors/index.html',
     'standings/index.html',
     'blog-module/blog/index.html',
@@ -630,7 +634,7 @@ function dropInlineThemeBoot(html) {
 
 function ensureThemeInitScript(html, themeInfo, relPath = '') {
     if (!themeInfo || !themeInfo.min || !themeInfo.hash) return html;
-    if (relPath === 'ghostcar/index.html' || relPath === 'f1telemetry/index.html') return html;
+    if (REDIRECT_STUBS.has(relPath)) return html;
     if (/\/scripts\/theme-init(?:\.min)?\.js(?:\?v=[a-f0-9]+)?/i.test(html)) return html;
 
     const themeSrc = `/${themeInfo.min}?v=${themeInfo.hash}`;
@@ -648,7 +652,7 @@ function ensureThemeInitScript(html, themeInfo, relPath = '') {
 const THEME_INIT_TAG = /\n?[ \t]*<script src="\/scripts\/theme-init(?:\.min)?\.js(?:\?v=[a-f0-9]+)?"><\/script>/;
 
 function placeHeadScripts(html, relPath = '') {
-    if (relPath === 'ghostcar/index.html' || relPath === 'f1telemetry/index.html') return html;
+    if (REDIRECT_STUBS.has(relPath)) return html;
     let result = String(html || '').replace(
         /<script src=(["']\/scripts\/perf\/error-beacon(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["'])><\/script>/i,
         '<script defer src=$1></script>'

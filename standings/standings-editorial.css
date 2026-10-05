@@ -294,6 +294,9 @@ body.standings-page { --track-dom-second-dark-rgb: 122, 116, 108; --track-dom-se
     .standings-page .standings-masthead { grid-template-columns: 1fr; gap: 0; padding-top: 16px; padding-bottom: 20px; }
     .standings-page .standings-edition { flex-wrap: wrap; font-size: .75rem; letter-spacing: .07em; gap: 10px; margin-bottom: 16px; }
     .standings-page .race-desk-nav { flex: 1 0 100%; margin-top: 0; border-top: 1px solid var(--border); }
+    /* Four products (THE GRID, TELEMETRY, GHOST CAR, TYRES) must fit 320px without wrapping or clipping. */
+    .standings-page .race-desk-nav { justify-content: space-between; }
+    @media (max-width: 400px) { .standings-page .race-desk-nav { gap: 8px; } .standings-page .race-desk-nav a { letter-spacing: .03em; } }
     .standings-page .standings-title-display { font-size: clamp(3.5rem, 16vw, 4.5rem); margin-left: -2px; }
     .standings-page .standings-title-greek { margin-top: 10px; max-width: none; font-size: 1.125rem; }
     .standings-page .standings-masthead-aside { display: none; margin-top: 27px; margin-left: 20%; padding: 0 24px 0 15px; max-width: 430px; }

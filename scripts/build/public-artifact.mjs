@@ -271,7 +271,7 @@ function collectPublicImageRefs() {
         }
     }
 
-    ['authors', 'ghostcar', 'f1telemetry', 'privacy'].forEach(dir => {
+    ['authors', 'ghostcar', 'f1telemetry', 'tyres', 'privacy'].forEach(dir => {
         const absDir = path.join(REPO_ROOT, dir);
         if (!fs.existsSync(absDir)) return;
         for (const entry of fs.readdirSync(absDir, { withFileTypes: true })) {
@@ -358,7 +358,7 @@ function shouldCopy(relPath) {
     if (shouldCopyBlogEntry(relPath)) return true;
     if (shouldCopyStandings(relPath)) return true;
 
-    if (/^(?:ghostcar|f1telemetry|privacy)\//.test(relPath)) {
+    if (/^(?:ghostcar|f1telemetry|tyres|privacy)\//.test(relPath)) {
         return /\.html$/i.test(relPath);
     }
 

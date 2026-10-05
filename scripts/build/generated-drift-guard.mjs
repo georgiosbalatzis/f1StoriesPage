@@ -18,6 +18,7 @@ const GENERATED_EXACT = new Set([
     'f1telemetry/index.html',
     'generate.html',
     'ghostcar/index.html',
+    'tyres/index.html',
     'home.min.css',
     'housekeeping.html',
     'images/icons/sprite.svg',
