@@ -1,0 +1,29 @@
+name: Ecosystem dry run
+
+on:
+  workflow_dispatch:
+
+# Deliberately no Pages/OIDC/write permissions and no deploy job.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: npm run test:deployment
+      - run: npm run build:ecosystem
+      - name: Install browser for integration smoke
+        run: node_modules/.bin/playwright-core install --with-deps chromium
+      - run: npm run test:integration -- --site .build/priority6/site --reports .build/priority6/reports
+      - name: Upload reviewable artifact and evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: f1stories-aggregate-dry-run
+          include-hidden-files: true
+          path: .build/priority6/

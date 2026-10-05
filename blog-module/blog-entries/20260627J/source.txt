@@ -10,4 +10,4 @@ Betcast: 267 Austria GP: Προβλέπουμε χαμό ; ..
 
 Για τον αγώνα θα συνεχίσουμε επίσης με δύο επιλογές: να μη δουν και οι δύο Cadillac την καρό σημαία σε απόδοση 3,00 και τον Lindblad για τερματισμό στο Top 10 σε απόδοση 2,50.
 
-<iframe src="https://georgiosbalatzis.github.io/BetCastVisualisation/?viz=dataTable&week=8&embed=1" title="BetCast F1 Stories" loading="lazy" style="width:100%;min-height:960px;border:0;"></iframe>
+BETCAST:20260627J

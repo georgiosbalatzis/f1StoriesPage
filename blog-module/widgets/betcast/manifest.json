@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "version": "08e905355126",
+  "entry": "/blog-module/widgets/betcast/widget.js?v=08e905355126",
+  "integrity": "sha384-u9DX/SuPV4BIq9k+mOkb06wYI+RODHNePwFhDlRaBeKw3ZATKJ56kdchhtmyoXJf",
+  "bytes": 4565,
+  "gzipBytes": 1871,
+  "api": "F1StoriesBetCastWidget.mount(element, config) -> unmount()"
+}

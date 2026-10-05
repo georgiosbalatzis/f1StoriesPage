@@ -270,10 +270,50 @@ title: Ο τίτλος του άρθρου
 | `CSV_TABLE_HTML:αρχείο.csv` | Το ίδιο, αλλά επιτρέπει HTML μέσα στα κελιά. |
 | `IFRAME:https://...` | Iframe, μόνο από hosts του `CONFIG.IFRAME_WHITELIST`: YouTube, Spotify, Vimeo, CodePen, Datawrapper, Sketchfab, Facebook, f1stories.gr, georgiosbalatzis.github.io. |
 | `EMBED:αρχείο.html` ή `WIDGET:αρχείο.html` | Βάζει ένα τοπικό `.html`/`.htm` του φακέλου ή του `embeds/`. Paths που βγαίνουν έξω από τον φάκελο μπλοκάρονται. |
+| `BETCAST:<snapshot-id>` | Βάζει native πίνακα από επικυρωμένο JSON στο `blog-module/betcast-snapshots/`. Δέχεται μόνο snapshot με `viz=dataTable`. |
 | Σκέτος σύνδεσμος σε δική του γραμμή | Ένα link YouTube (και Shorts), X/Twitter, Instagram, Threads ή Facebook μετατρέπεται σε embed. |
 | Pipe πίνακας (`\| a \| b \|` και από κάτω `\|---\|---\|`) | Responsive πίνακας. |
 
 Όλα τα embeds περνούν από sanitization (`blog-module/build/embed-render.js`). Η λίστα των επιτρεπτών πηγών πρέπει να ταιριάζει με το Content Security Policy στο `scripts/build/security-policy.mjs`.
+
+#### Native πίνακας BetCast σε άρθρο
+
+1. Στο BetCast διάλεξε «Πίνακας» και όρισε την ίδια σεζόν και τα ίδια φίλτρα που θέλεις να δει ο αναγνώστης. Αντέγραψε το URL του πίνακα.
+2. Πάρε CSV από την επαληθευμένη καρτέλα του Google Sheet ή άφησε το εργαλείο να κατεβάσει το δημόσιο sheet. Δήλωσε επαληθευμένη ετικέτα σεζόν· το `current` είναι κινούμενο alias και δεν αποτελεί ετικέτα. Κράτησε τα `from`/`to` όπως υπάρχουν στο URL· ένα ανοιχτό `from=11` δεν γίνεται αυτόματα `from=11&to=11`.
+3. Εξήγαγε snapshot. Για παράδειγμα, από το checkout του BetCast:
+
+   ```sh
+   npm run export:article-table -- \
+     --url 'https://georgiosbalatzis.github.io/BetCastVisualisation/?viz=dataTable&week=16&embed=1&theme=dark' \
+     --id 20261002J \
+     --season-label '2026' \
+     --csv ./verified-current-season.csv \
+     --out ../f1StoriesPage/blog-module/betcast-snapshots/20261002J.json
+   ```
+
+   Το εργαλείο γράφει απευθείας στο `blog-module/betcast-snapshots/`. Έλεγξε sheet/tab, capture timestamp, content hash, selection και row count. Χωρίς `--csv`, κατεβάζει το δημόσιο sheet με όριο 15 δευτερολέπτων.
+4. Βάλε `BETCAST:<snapshot-id>` σε δική του γραμμή στο `source.txt`, στο σημείο του άρθρου όπου πρέπει να εμφανιστεί ο πίνακας. Η τιμή μετά την άνω και κάτω τελεία πρέπει να είναι μόνο το ID. Έτσι συνηθισμένες γραμμές όπως `Betcast: 267 Austria GP` παραμένουν κείμενο.
+5. Ξαναχτίσε το αντίστοιχο άρθρο από την κανονική ροή `build:blog` και έλεγξε ότι το παραγόμενο `article.html` έχει marker snapshot και δεν έχει το αντίστοιχο BetCast iframe. Μην αλλάζεις το HTML με το χέρι. Για ενημέρωση υπάρχοντος snapshot, πέρασε `--overwrite`, έλεγξε τη σύνοψη αλλαγών και κάνε commit το JSON μαζί με το `source.txt`.
+
+Η μετάβαση των 13 επιβεβαιωμένων πινάκων καταγράφηκε στις `2026-10-05` από το ίδιο CSV του sheet `16cz7p-hZIs3PrvhL9JJ1q1tqyVEupXQ2k8kN8F9mexc`, tab `796888004`. Η ετικέτα `2026` επιβεβαιώνεται από τις ημερομηνίες των populated rows (`07/03/2026`–`04/10/2026`). Τα `from=11` και `from=12` παρέμειναν open-ended όπως στα αρχικά iframe URLs· διατηρήθηκαν επίσης το unbounded scope και το `week=16`.
+
+| Άρθρο | Επιλογή | Γραμμές | Καταγραφή (UTC) |
+|---|---:|---:|---|
+| `20260502J` | `from=4&to=4` | 5 | `2026-10-05T08:29:32Z` |
+| `20260523J` | χωρίς φίλτρο | 72 | `2026-10-05T08:29:32Z` |
+| `20260606J` | `week=6` | 7 | `2026-10-05T08:29:32Z` |
+| `20260613J` | `week=7` | 6 | `2026-10-05T08:29:32Z` |
+| `20260627J` | `week=8` | 4 | `2026-10-05T08:29:32Z` |
+| `20260704J` | `week=9` | 2 | `2026-10-05T08:29:32Z` |
+| `20260719J` | `from=10&to=10` | 2 | `2026-10-05T08:29:32Z` |
+| `20260725J` | `from=11` | 28 | `2026-10-05T08:29:32Z` |
+| `20260822J` | `from=12` | 24 | `2026-10-05T08:29:32Z` |
+| `20260905J` | `from=13&to=13` | 6 | `2026-10-05T08:29:32Z` |
+| `20260912J` | `week=14` | 4 | `2026-10-05T08:29:32Z` |
+| `20260924J` | `from=15&to=15` | 4 | `2026-10-05T08:29:32Z` |
+| `20261002J` | `week=16` | 5 | `2026-10-05T08:29:32Z` |
+
+Η καταγραφή αποτυπώνει τα δεδομένα της συγκεκριμένης εξαγωγής και δεν ανακατασκευάζει τι έδειχνε το άρθρο την αρχική ημερομηνία δημοσίευσής του. Αν το `season=current`, ο σύνδεσμος μπορεί να δείξει άλλη σεζόν μετά από αλλαγή χρονιάς, ενώ ο πίνακας του άρθρου παραμένει pinned στο snapshot. Οι σύνδεσμοι πλήρους ανάλυσης κρατούν `season`, `viz`, `from`, `to`, `week`, `cmpA` και `cmpB`, αφαιρώντας παραμέτρους embed και theme. Από προεπιλογή δείχνουν στο GitHub Pages BetCast· για το εγκεκριμένο same-origin path, όρισε `BETCAST_BASE_URL=https://f1stories.gr/betcast/` στο περιβάλλον του build.
 
 ---
 

@@ -283,6 +283,8 @@
 .home-page .episode__play .icon { width: 1em; height: 1em; margin-left: 4px; }
 .home-page .home-video-facade:is(:hover, :focus-visible) .episode__play { background: var(--accent); transform: translate(-50%, -50%) scale(1.06); }
 .home-page .home-video-facade:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+/* Transformed poster images paint over the facade outline; keep a contrasting ring on the play control. */
+.home-page .home-video-facade:focus-visible .episode__play { outline: 2px solid var(--bg-base); outline-offset: -5px; }
 .home-page .episode__tab { position: absolute; top: 0; left: 0; z-index: 1; padding: 7px 12px 6px; background: var(--bg-base); color: var(--text-primary); font-size: .75rem; font-weight: 600; letter-spacing: .12em; line-height: 1.3; }
 .home-page .episode__text { padding-top: 20px; }
 .home-page .episode__latest { display: inline-flex; align-items: center; gap: 8px; color: var(--text-primary); font-weight: 600; }
@@ -398,6 +400,9 @@
 .home-page :is(.team-card__social, .team-directory-link) { position: relative; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: var(--text-secondary); font-size: .75rem; font-weight: 500; letter-spacing: .12em; }
 .home-page :is(.team-card__social, .team-directory-link)::after { content: ''; position: absolute; left: 0; right: 0; bottom: 8px; height: 1px; background: currentColor; }
 .home-page .team-card__social:hover { color: var(--author-accent); }
+/* Muted and author inks can fall below 4.5:1 on these tinted light surfaces. */
+:root[data-theme="light"] .home-page .team-card :is(.team-card__desk, .team-card__specialty, .team-card__stories span, .team-card__social),
+:root[data-theme="light"] .home-page .team-card[data-author-slug="f1-stories"] .team-card__label { color: var(--text-primary); }
 .home-page .team-directory-link { margin-top: 18px; color: var(--text-primary); font-weight: 600; }
 .home-page .team-directory-link:hover { color: var(--accent); }
 
@@ -521,7 +526,7 @@
     .home-page .tech-stage { display: flex; flex-direction: column; }
     .home-page .tech-mast { margin-top: 0; }
     .home-page .tech-copy { padding-top: 24px; }
-    .home-page .tech-photo { margin: 40px calc((100cqw - 100vw) / 2) 0; }
+    .home-page .tech-photo { align-self: stretch; margin: 40px calc((100cqw - 100vw) / 2) 0; }
     .home-page .tech-photo__media::after { display: none; }
     .home-page .tech-photo figcaption { top: 0; bottom: auto; }
     .home-page .telemetry { margin: -40px 12% 0 0; }

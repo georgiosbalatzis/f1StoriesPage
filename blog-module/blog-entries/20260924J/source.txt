@@ -16,4 +16,4 @@ Betcast 274 και πάμε με τέρμα γκάζι στο Baku, στο Azerb
 
 Παρακάτω μπορείτε να δείτε τα πρωταγωνιστικά της εβδομάδας.
 
-<iframe src="https://georgiosbalatzis.github.io/BetCastVisualisation/?viz=dataTable&from=15&to=15&embed=1&theme=light" title="BetCast F1 Stories" loading="lazy" style="width:100%;min-height:960px;border:0;"></iframe>
+BETCAST:20260924J

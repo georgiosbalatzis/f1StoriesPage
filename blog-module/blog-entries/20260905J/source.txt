@@ -12,4 +12,4 @@ BetCast #272 και πάμε να δούμε τι έχουμε εδώ... Στο 
 
 Εμείς έχουμε μπόλικα και ωραία σημεία για τον ναό... οκ, ναι, της ταχύτητας...
 
-<iframe src="https://georgiosbalatzis.github.io/BetCastVisualisation/?viz=dataTable&from=13&to=13&embed=1" title="BetCast F1Stories" loading="lazy" style="width:100%;min-height:960px;border:0;"></iframe>
+BETCAST:20260905J

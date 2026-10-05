@@ -7,6 +7,7 @@
     "build": "npm run build:html && npm run build:youtube && npm run build:blog && npm run build:assets",
     "build:blog": "node blog-module/build/index.js",
     "build:blog:force": "node blog-module/build/index.js --force",
+    "build:betcast-widget": "node scripts/build-betcast-widget.mjs",
     "build:html": "node scripts/build/include.mjs",
     "build:logo": "node scripts/build/optimize-logo.mjs",
     "build:driver-headshots": "node scripts/build/fetch-driver-headshots.mjs",
@@ -28,7 +29,7 @@
     "build:public": "npm run pages:guard && npm run build:html && npm run build:blog && npm run build:assets && npm run build:data-contracts && node scripts/build/public-artifact.mjs && node scripts/build/validate-public-artifact.mjs",
     "build:data-contracts": "node scripts/build/validate-data-contracts.mjs",
     "build:check": "node scripts/build/generated-drift-guard.mjs",
-    "test:blog": "node --test blog-module/build/__tests__/*.test.js && node blog-module/build/__tests__/run-golden.js",
+    "test:blog": "node --test blog-module/build/__tests__/*.test.js blog-module/widgets/betcast/widget.test.cjs && node blog-module/build/__tests__/run-golden.js",
     "test:taxonomy": "node --test blog-module/build/__tests__/taxonomy*.test.js",
     "test:author": "node --test scripts/author/__tests__/*.test.mjs",
     "test:standings": "node --test standings/core/__tests__/*.test.mjs",
@@ -52,7 +53,10 @@
     "perf:lighthouse": "node scripts/perf/lighthouse-guard.mjs",
     "verify": "npm run build:public && npm run build:check && npm run quality:static && npm run audit:runtime && npm run test:blog && npm run test:author && npm run test:standings && npm run test:security && npm run perf:budget && npm run perf:article-media && npm run perf:images && npm run qa:author-images && npm run test:consent && npm run qa:visual && npm run perf:lighthouse",
     "build:sponsors": "node scripts/build/normalize-sponsors.mjs",
-    "test:build": "node --test scripts/build/__tests__/*.test.mjs"
+    "test:build": "node --test scripts/build/__tests__/*.test.mjs",
+    "build:ecosystem": "node scripts/deployment/build.mjs",
+    "test:deployment": "node --test scripts/deployment/*.test.mjs",
+    "test:integration": "node scripts/deployment/smoke.mjs"
   },
   "dependencies": {
     "adm-zip": "^0.6.1",

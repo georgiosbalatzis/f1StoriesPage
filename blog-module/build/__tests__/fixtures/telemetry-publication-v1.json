@@ -1,0 +1,688 @@
+{
+  "schemaVersion": 1,
+  "panelId": "telemetry-speed-trace",
+  "capturedAt": "2026-10-05T00:00:00.000Z",
+  "scope": {
+    "year": 2025,
+    "circuit": "Monza",
+    "sessionKey": 9912,
+    "driverNums": [
+      1,
+      4
+    ],
+    "lapNum": 52,
+    "tab": "telemetry"
+  },
+  "context": {
+    "grandPrix": "Monza",
+    "session": "Race"
+  },
+  "editorial": {
+    "title": "Monza speed comparison",
+    "caption": "Contract fixture; the image is a structural placeholder, not a published race chart.",
+    "description": "Recorded Verstappen and Norris lap 52 speeds normalized by telemetry sample index."
+  },
+  "provenance": {
+    "source": "OpenF1",
+    "method": "120 index-normalized lap progress samples; not distance-aligned.",
+    "guideExplanation": "",
+    "partialAcknowledged": false,
+    "drivers": [
+      {
+        "driverNumber": 1,
+        "status": "complete",
+        "sampleCount": 310
+      },
+      {
+        "driverNumber": 4,
+        "status": "complete",
+        "sampleCount": 310
+      }
+    ]
+  },
+  "data": {
+    "kind": "speed",
+    "axis": "progress",
+    "drivers": [
+      {
+        "number": 1,
+        "fullName": "Max VERSTAPPEN",
+        "acronym": "VER",
+        "teamColour": "#4781D7",
+        "brakeDash": "6 4"
+      },
+      {
+        "number": 4,
+        "fullName": "Lando NORRIS",
+        "acronym": "NOR",
+        "teamColour": "#F47600",
+        "brakeDash": "6 4"
+      }
+    ],
+    "points": [
+      {
+        "progress": 0,
+        "speed_1": 323,
+        "speed_4": 320
+      },
+      {
+        "progress": 1,
+        "speed_1": 328,
+        "speed_4": 325
+      },
+      {
+        "progress": 2,
+        "speed_1": 330,
+        "speed_4": 327
+      },
+      {
+        "progress": 3,
+        "speed_1": 334,
+        "speed_4": 329
+      },
+      {
+        "progress": 3,
+        "speed_1": 336,
+        "speed_4": 330
+      },
+      {
+        "progress": 4,
+        "speed_1": 339,
+        "speed_4": 332
+      },
+      {
+        "progress": 5,
+        "speed_1": 337,
+        "speed_4": 333
+      },
+      {
+        "progress": 6,
+        "speed_1": 334,
+        "speed_4": 334
+      },
+      {
+        "progress": 7,
+        "speed_1": 330,
+        "speed_4": 331
+      },
+      {
+        "progress": 8,
+        "speed_1": 326,
+        "speed_4": 329
+      },
+      {
+        "progress": 8,
+        "speed_1": 319,
+        "speed_4": 327
+      },
+      {
+        "progress": 9,
+        "speed_1": 233,
+        "speed_4": 321
+      },
+      {
+        "progress": 10,
+        "speed_1": 209,
+        "speed_4": 319
+      },
+      {
+        "progress": 11,
+        "speed_1": 133,
+        "speed_4": 228
+      },
+      {
+        "progress": 12,
+        "speed_1": 99,
+        "speed_4": 157
+      },
+      {
+        "progress": 13,
+        "speed_1": 78,
+        "speed_4": 101
+      },
+      {
+        "progress": 13,
+        "speed_1": 86,
+        "speed_4": 80
+      },
+      {
+        "progress": 14,
+        "speed_1": 80,
+        "speed_4": 77
+      },
+      {
+        "progress": 15,
+        "speed_1": 77,
+        "speed_4": 77
+      },
+      {
+        "progress": 16,
+        "speed_1": 86,
+        "speed_4": 70
+      },
+      {
+        "progress": 17,
+        "speed_1": 121,
+        "speed_4": 73
+      },
+      {
+        "progress": 18,
+        "speed_1": 158,
+        "speed_4": 101
+      },
+      {
+        "progress": 18,
+        "speed_1": 181,
+        "speed_4": 135
+      },
+      {
+        "progress": 19,
+        "speed_1": 212,
+        "speed_4": 179
+      },
+      {
+        "progress": 20,
+        "speed_1": 230,
+        "speed_4": 191
+      },
+      {
+        "progress": 21,
+        "speed_1": 248,
+        "speed_4": 213
+      },
+      {
+        "progress": 22,
+        "speed_1": 261,
+        "speed_4": 236
+      },
+      {
+        "progress": 23,
+        "speed_1": 270,
+        "speed_4": 248
+      },
+      {
+        "progress": 24,
+        "speed_1": 285,
+        "speed_4": 262
+      },
+      {
+        "progress": 24,
+        "speed_1": 290,
+        "speed_4": 270
+      },
+      {
+        "progress": 25,
+        "speed_1": 297,
+        "speed_4": 281
+      },
+      {
+        "progress": 26,
+        "speed_1": 302,
+        "speed_4": 288
+      },
+      {
+        "progress": 27,
+        "speed_1": 309,
+        "speed_4": 295
+      },
+      {
+        "progress": 28,
+        "speed_1": 314,
+        "speed_4": 301
+      },
+      {
+        "progress": 29,
+        "speed_1": 316,
+        "speed_4": 305
+      },
+      {
+        "progress": 29,
+        "speed_1": 320,
+        "speed_4": 310
+      },
+      {
+        "progress": 30,
+        "speed_1": 319,
+        "speed_4": 312
+      },
+      {
+        "progress": 31,
+        "speed_1": 318,
+        "speed_4": 311
+      },
+      {
+        "progress": 32,
+        "speed_1": 315,
+        "speed_4": 311
+      },
+      {
+        "progress": 33,
+        "speed_1": 313,
+        "speed_4": 311
+      },
+      {
+        "progress": 34,
+        "speed_1": 255,
+        "speed_4": 309
+      },
+      {
+        "progress": 34,
+        "speed_1": 183,
+        "speed_4": 308
+      },
+      {
+        "progress": 35,
+        "speed_1": 127,
+        "speed_4": 241
+      },
+      {
+        "progress": 36,
+        "speed_1": 109,
+        "speed_4": 177
+      },
+      {
+        "progress": 37,
+        "speed_1": 110,
+        "speed_4": 147
+      },
+      {
+        "progress": 38,
+        "speed_1": 118,
+        "speed_4": 115
+      },
+      {
+        "progress": 39,
+        "speed_1": 121,
+        "speed_4": 110
+      },
+      {
+        "progress": 39,
+        "speed_1": 148,
+        "speed_4": 119
+      },
+      {
+        "progress": 40,
+        "speed_1": 184,
+        "speed_4": 129
+      },
+      {
+        "progress": 41,
+        "speed_1": 214,
+        "speed_4": 164
+      },
+      {
+        "progress": 42,
+        "speed_1": 231,
+        "speed_4": 191
+      },
+      {
+        "progress": 43,
+        "speed_1": 238,
+        "speed_4": 212
+      },
+      {
+        "progress": 44,
+        "speed_1": 246,
+        "speed_4": 233
+      },
+      {
+        "progress": 45,
+        "speed_1": 233,
+        "speed_4": 242
+      },
+      {
+        "progress": 45,
+        "speed_1": 210,
+        "speed_4": 248
+      },
+      {
+        "progress": 46,
+        "speed_1": 195,
+        "speed_4": 224
+      },
+      {
+        "progress": 47,
+        "speed_1": 201,
+        "speed_4": 213
+      },
+      {
+        "progress": 48,
+        "speed_1": 216,
+        "speed_4": 204
+      },
+      {
+        "progress": 49,
+        "speed_1": 230,
+        "speed_4": 213
+      },
+      {
+        "progress": 50,
+        "speed_1": 245,
+        "speed_4": 226
+      },
+      {
+        "progress": 50,
+        "speed_1": 251,
+        "speed_4": 236
+      },
+      {
+        "progress": 51,
+        "speed_1": 256,
+        "speed_4": 242
+      },
+      {
+        "progress": 52,
+        "speed_1": 206,
+        "speed_4": 252
+      },
+      {
+        "progress": 53,
+        "speed_1": 189,
+        "speed_4": 248
+      },
+      {
+        "progress": 54,
+        "speed_1": 185,
+        "speed_4": 199
+      },
+      {
+        "progress": 55,
+        "speed_1": 211,
+        "speed_4": 187
+      },
+      {
+        "progress": 55,
+        "speed_1": 228,
+        "speed_4": 224
+      },
+      {
+        "progress": 56,
+        "speed_1": 256,
+        "speed_4": 238
+      },
+      {
+        "progress": 57,
+        "speed_1": 270,
+        "speed_4": 257
+      },
+      {
+        "progress": 58,
+        "speed_1": 282,
+        "speed_4": 272
+      },
+      {
+        "progress": 59,
+        "speed_1": 291,
+        "speed_4": 281
+      },
+      {
+        "progress": 60,
+        "speed_1": 298,
+        "speed_4": 289
+      },
+      {
+        "progress": 61,
+        "speed_1": 305,
+        "speed_4": 298
+      },
+      {
+        "progress": 61,
+        "speed_1": 313,
+        "speed_4": 307
+      },
+      {
+        "progress": 62,
+        "speed_1": 317,
+        "speed_4": 313
+      },
+      {
+        "progress": 63,
+        "speed_1": 321,
+        "speed_4": 316
+      },
+      {
+        "progress": 64,
+        "speed_1": 326,
+        "speed_4": 317
+      },
+      {
+        "progress": 65,
+        "speed_1": 326,
+        "speed_4": 316
+      },
+      {
+        "progress": 66,
+        "speed_1": 324,
+        "speed_4": 316
+      },
+      {
+        "progress": 66,
+        "speed_1": 321,
+        "speed_4": 314
+      },
+      {
+        "progress": 67,
+        "speed_1": 319,
+        "speed_4": 311
+      },
+      {
+        "progress": 68,
+        "speed_1": 316,
+        "speed_4": 311
+      },
+      {
+        "progress": 69,
+        "speed_1": 214,
+        "speed_4": 305
+      },
+      {
+        "progress": 70,
+        "speed_1": 187,
+        "speed_4": 244
+      },
+      {
+        "progress": 71,
+        "speed_1": 195,
+        "speed_4": 205
+      },
+      {
+        "progress": 71,
+        "speed_1": 213,
+        "speed_4": 185
+      },
+      {
+        "progress": 72,
+        "speed_1": 218,
+        "speed_4": 195
+      },
+      {
+        "progress": 73,
+        "speed_1": 230,
+        "speed_4": 225
+      },
+      {
+        "progress": 74,
+        "speed_1": 248,
+        "speed_4": 239
+      },
+      {
+        "progress": 75,
+        "speed_1": 255,
+        "speed_4": 252
+      },
+      {
+        "progress": 76,
+        "speed_1": 264,
+        "speed_4": 261
+      },
+      {
+        "progress": 76,
+        "speed_1": 279,
+        "speed_4": 265
+      },
+      {
+        "progress": 77,
+        "speed_1": 290,
+        "speed_4": 275
+      },
+      {
+        "progress": 78,
+        "speed_1": 303,
+        "speed_4": 283
+      },
+      {
+        "progress": 79,
+        "speed_1": 310,
+        "speed_4": 293
+      },
+      {
+        "progress": 80,
+        "speed_1": 316,
+        "speed_4": 301
+      },
+      {
+        "progress": 81,
+        "speed_1": 320,
+        "speed_4": 305
+      },
+      {
+        "progress": 82,
+        "speed_1": 325,
+        "speed_4": 311
+      },
+      {
+        "progress": 82,
+        "speed_1": 326,
+        "speed_4": 316
+      },
+      {
+        "progress": 83,
+        "speed_1": 325,
+        "speed_4": 316
+      },
+      {
+        "progress": 84,
+        "speed_1": 322,
+        "speed_4": 316
+      },
+      {
+        "progress": 85,
+        "speed_1": 320,
+        "speed_4": 316
+      },
+      {
+        "progress": 86,
+        "speed_1": 317,
+        "speed_4": 316
+      },
+      {
+        "progress": 87,
+        "speed_1": 312,
+        "speed_4": 314
+      },
+      {
+        "progress": 87,
+        "speed_1": 241,
+        "speed_4": 311
+      },
+      {
+        "progress": 88,
+        "speed_1": 217,
+        "speed_4": 308
+      },
+      {
+        "progress": 89,
+        "speed_1": 210,
+        "speed_4": 259
+      },
+      {
+        "progress": 90,
+        "speed_1": 222,
+        "speed_4": 221
+      },
+      {
+        "progress": 91,
+        "speed_1": 230,
+        "speed_4": 209
+      },
+      {
+        "progress": 92,
+        "speed_1": 244,
+        "speed_4": 239
+      },
+      {
+        "progress": 92,
+        "speed_1": 255,
+        "speed_4": 252
+      },
+      {
+        "progress": 93,
+        "speed_1": 262,
+        "speed_4": 259
+      },
+      {
+        "progress": 94,
+        "speed_1": 277,
+        "speed_4": 269
+      },
+      {
+        "progress": 95,
+        "speed_1": 282,
+        "speed_4": 278
+      },
+      {
+        "progress": 96,
+        "speed_1": 295,
+        "speed_4": 288
+      },
+      {
+        "progress": 97,
+        "speed_1": 302,
+        "speed_4": 297
+      },
+      {
+        "progress": 97,
+        "speed_1": 308,
+        "speed_4": 302
+      },
+      {
+        "progress": 98,
+        "speed_1": 314,
+        "speed_4": 307
+      },
+      {
+        "progress": 99,
+        "speed_1": 317,
+        "speed_4": 312
+      },
+      {
+        "progress": 100,
+        "speed_1": 321,
+        "speed_4": 318
+      }
+    ],
+    "guides": []
+  },
+  "images": {
+    "narrowLight": {
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"240\" viewBox=\"0 0 320 240\"><path d=\"M0 240L320 0\" stroke=\"#3671c6\"/></svg>",
+      "width": 320,
+      "height": 240
+    },
+    "wideLight": {
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"240\" viewBox=\"0 0 320 240\"><path d=\"M0 240L320 0\" stroke=\"#3671c6\"/></svg>",
+      "width": 320,
+      "height": 240
+    },
+    "narrowDark": {
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"240\" viewBox=\"0 0 320 240\"><path d=\"M0 240L320 0\" stroke=\"#3671c6\"/></svg>",
+      "width": 320,
+      "height": 240
+    },
+    "wideDark": {
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"240\" viewBox=\"0 0 320 240\"><path d=\"M0 240L320 0\" stroke=\"#3671c6\"/></svg>",
+      "width": 320,
+      "height": 240
+    }
+  }
+}

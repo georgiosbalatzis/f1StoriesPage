@@ -60,3 +60,11 @@ perf/visual-qa/
 
 # Local code-graph cache (graphify); regenerate with /graphify
 graphify-out/
+
+# Independent-source aggregate builds and local migration evidence
+.build/aggregate/
+scratchpad/priority6/
+
+# Local ecosystem deployment rehearsal and redirect preparation
+.build/priority6/
+.build/aggregate/

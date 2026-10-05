@@ -304,6 +304,9 @@ body.editorial-page .blog-nav-link.active {
     font-weight: 600;
 }
 
+/* Full-height masthead links meet the viewport edge; keep every side of the ring inside it. */
+body.editorial-page .blog-nav-link:focus-visible { outline-offset: -5px; }
+
 body.editorial-page .blog-nav-right {
     gap: 0.6rem;
     min-width: 0;

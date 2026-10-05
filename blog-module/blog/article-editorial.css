@@ -512,6 +512,10 @@
 .article-page .article-rail-related-item:hover { color: var(--accent); transform: translateX(4px); }
 .article-page .article-side-rail .article-toolbar { gap: 14px; padding: 0 0 25px; margin: 0; border-color: var(--border); }
 .article-page .share-buttons { gap: 6px; }
+/* Adjacent share buttons otherwise cover the outward ring's trailing edge. */
+.article-page .share-buttons .share-btn:focus-visible { outline-offset: -3px; }
+/* The image viewer is a fixed dark surface in both themes. */
+.article-page .lb-overlay button:focus-visible { outline-color: var(--paper); }
 .article-page .share-label span { display: inline; }
 .article-page .article-toc { max-width: none; margin: 0; border-color: var(--border); }
 .article-page .toc-toggle { min-height: 48px; padding-block: 16px; color: var(--text-primary); font: 500 .75rem/1.5 var(--font-body); }
@@ -796,3 +800,270 @@
     .article-page .article-nav-link.next { grid-column: 1; justify-self: start; text-align: left; }
     .article-page .article-nav-link.next .article-nav-label { justify-content: flex-start; }
 }
+
+/* Static BetCast selections stay in article flow and use the host theme tokens. */
+.article-page .article-content .betcast-article-block {
+    --betcast-rule: color-mix(in srgb, var(--accent-readable) 55%, var(--border));
+    max-width: 100%;
+    margin: 2rem 0;
+    padding: 18px 0 15px;
+    border-top: 2px solid var(--accent-readable);
+    border-bottom: 1px solid var(--border);
+    color: var(--text-primary);
+    font: 400 .9rem/1.55 var(--font-body);
+}
+.article-page .article-content .betcast-article-block__brand {
+    margin: 0 0 8px;
+    color: var(--accent-readable);
+    font: 600 .72rem/1.2 var(--font-display);
+    letter-spacing: .13em;
+}
+.article-page .article-content .betcast-article-block__title {
+    margin: 0;
+    color: var(--text-primary);
+    font: 600 clamp(1.25rem, 2.4vw, 1.7rem)/1.25 var(--font-editorial);
+    letter-spacing: -.02em;
+}
+.article-page .article-content .betcast-article-block__scope {
+    margin: 7px 0 17px;
+    color: var(--text-secondary);
+    font-size: .8rem;
+}
+.article-page .article-content .betcast-article-block__table-region {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-color: var(--border) transparent;
+    -webkit-overflow-scrolling: touch;
+}
+.article-page .article-content .betcast-article-block__table-region:focus-visible {
+    outline: 2px solid var(--accent-readable);
+    outline-offset: 3px;
+}
+.article-page .article-content .betcast-article-block__scroll-hint {
+    margin: 0 0 6px;
+    color: var(--text-secondary);
+    font-size: .72rem;
+}
+.article-page .article-content .betcast-article-block table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    color: var(--text-primary);
+    font-size: .8rem;
+    font-variant-numeric: tabular-nums;
+}
+.article-page .article-content .betcast-article-block caption {
+    padding: 0 0 8px;
+    color: var(--text-secondary);
+    text-align: left;
+    font-size: .74rem;
+}
+.article-page .article-content .betcast-article-block th,
+.article-page .article-content .betcast-article-block td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--betcast-rule);
+    text-align: left;
+    vertical-align: top;
+}
+.article-page .article-content .betcast-article-block th {
+    color: var(--text-secondary);
+    font-size: .7rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.article-page .article-content .betcast-article-block td:nth-child(2) {
+    min-width: 170px;
+    max-width: 260px;
+    overflow-wrap: anywhere;
+}
+.article-page .article-content .betcast-article-block__number { text-align: center !important; }
+.article-page .article-content .betcast-article-block__numeric { text-align: right !important; white-space: nowrap; }
+.article-page .article-content .betcast-article-block__result { font-weight: 600; }
+.article-page .article-content .betcast-article-block__result--win,
+.article-page .article-content .betcast-article-block__profit { color: var(--accent-readable); }
+.article-page .article-content .betcast-article-block__result--loss,
+.article-page .article-content .betcast-article-block__loss { color: var(--text-secondary); }
+.article-page .article-content .betcast-article-block__empty {
+    margin: 15px 0;
+    color: var(--text-secondary);
+}
+.article-page .article-content .betcast-article-block__more { margin-top: 8px; }
+.article-page .article-content .betcast-article-block__more > summary {
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    width: fit-content;
+    padding: 4px 10px 4px 0;
+    color: var(--accent-readable);
+    cursor: pointer;
+    font-size: .82rem;
+    font-weight: 600;
+}
+.article-page .article-content .betcast-article-block__more > summary:focus-visible,
+.article-page .article-content .betcast-article-block__analysis a:focus-visible {
+    outline: 2px solid var(--accent-readable);
+    outline-offset: 3px;
+}
+.article-page .article-content .betcast-article-block__freshness {
+    margin: 12px 0 0;
+    color: var(--text-secondary);
+    font-size: .72rem;
+}
+.article-page .article-content .betcast-article-block__analysis { margin: 2px 0 0; }
+.article-page .article-content .betcast-article-block__analysis a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 5px;
+    color: var(--accent-readable);
+    font-size: .82rem;
+    font-weight: 600;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+.article-page .article-content .betcast-managed-embed { margin-block: 1.5rem; }
+.article-page .article-content .betcast-managed-embed iframe[data-f1s-betcast-managed] { display: block; width: 100%; border: 0; }
+.article-page .article-content .betcast-embed-fallback { display: inline-flex; align-items: center; min-height: 40px; margin-top: 6px; color: var(--text-secondary); font-size: .875rem; text-decoration: underline; text-underline-offset: .2em; }
+.article-page .article-content .betcast-embed-fallback:hover { color: var(--accent-readable); }
+.article-page .article-content .betcast-chart-fallback {
+    --betcast-widget-ink: var(--text-primary, #24262b);
+    --betcast-widget-muted: var(--text-secondary, #626874);
+    --betcast-widget-accent: var(--accent, #e10600);
+    margin: 1.5rem 0;
+    padding: 1rem;
+    border: 1px solid color-mix(in srgb, var(--betcast-widget-ink) 16%, transparent);
+    border-radius: .75rem;
+    color: var(--betcast-widget-ink);
+    background: var(--surface, #fff);
+}
+.article-page .article-content .betcast-chart-fallback figcaption { margin-bottom: .5rem; font-weight: 700; }
+.article-page .article-content .betcast-chart-fallback__static svg,
+.article-page .article-content .f1s-betcast-widget__chart { display: block; width: 100%; height: auto; overflow: visible; }
+.article-page .article-content .betcast-chart-fallback svg text,
+.article-page .article-content .f1s-betcast-widget__chart .label { fill: var(--betcast-widget-muted, #626874); font: 11px sans-serif; }
+.article-page .article-content .betcast-chart-fallback .axis,
+.article-page .article-content .f1s-betcast-widget__chart .axis { stroke: color-mix(in srgb, var(--betcast-widget-ink, #24262b) 28%, transparent); stroke-width: 1; }
+.article-page .article-content .betcast-chart-fallback .bar,
+.article-page .article-content .f1s-betcast-widget__chart .bar { fill: var(--betcast-widget-accent, #e10600); }
+.article-page .article-content .betcast-chart-fallback .bar--negative,
+.article-page .article-content .f1s-betcast-widget__chart .bar--negative { fill: #64748b; }
+.article-page .article-content .betcast-chart-fallback__static > a { display: inline-block; margin-top: .5rem; color: inherit; }
+.article-page .article-content .f1s-betcast-widget { color: inherit; font: inherit; }
+.article-page .article-content .f1s-betcast-widget__label { display: flex; align-items: center; gap: .5rem; margin: .25rem 0 .75rem; font-weight: 600; }
+.article-page .article-content .f1s-betcast-widget__select { max-width: 100%; padding: .35rem .5rem; border: 1px solid currentColor; border-radius: .3rem; color: inherit; background: transparent; font: inherit; }
+.article-page .article-content .f1s-betcast-widget__plot { width: 100%; }
+@media (max-width: 600px) {
+    .article-page .article-content .betcast-article-block { margin: 1.7rem 0; padding-top: 15px; }
+    .article-page .article-content .betcast-article-block__title { font-size: 1.28rem; }
+    .article-page .article-content .betcast-article-block table { min-width: 790px; }
+}
+@media print {
+    .article-page .article-content .betcast-article-block { color: #000; border-color: #777; }
+    .article-page .article-content .betcast-article-block :is(h2, p, th, td, caption, a, span) { color: #000 !important; }
+    .article-page .article-content .betcast-article-block__table-region { overflow: visible; }
+    .article-page .article-content .betcast-article-block table { min-width: 0; font-size: 8pt; }
+    .article-page .article-content .betcast-article-block th,
+    .article-page .article-content .betcast-article-block td { padding: 4px; }
+    .article-page .article-content .betcast-article-block details:not([open]) > :not(summary) { display: block !important; }
+    .article-page .article-content .betcast-article-block details > summary { display: none; }
+    .article-page .article-content .betcast-article-block__analysis a { text-decoration: underline; }
+}
+
+/* Saved telemetry is editorial content: responsive image pairs reserve their
+ * own geometry, while the article root selects a frozen light/dark variant. */
+.article-page .article-content .f1-telemetry-figure {
+    margin: clamp(2.25rem, 5vw, 3.5rem) 0;
+    padding: 1.1rem 0 1.25rem;
+    border-block: 1px solid var(--border);
+    color: var(--text-primary);
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+.article-page .article-content .f1-telemetry-label {
+    margin: 0 0 .55rem;
+    color: var(--article-signal-readable);
+    font: 600 .7rem/1.3 var(--font-body);
+    letter-spacing: .12em;
+}
+.article-page .article-content .f1-telemetry-figure > h3 {
+    margin: 0 0 .45rem;
+    color: var(--text-primary);
+    font: 600 clamp(1.2rem, 2.6vw, 1.55rem)/1.3 var(--font-editorial);
+    letter-spacing: -.015em;
+}
+.article-page .article-content .f1-telemetry-context,
+.article-page .article-content .f1-telemetry-source {
+    color: var(--text-secondary);
+    font: 400 .78rem/1.55 var(--font-body);
+    font-variant-numeric: tabular-nums;
+}
+.article-page .article-content .f1-telemetry-context { margin: 0 0 .9rem; }
+.article-page .article-content .f1-telemetry-picture {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    background: #f2eee4;
+}
+.article-page .article-content .f1-telemetry-image {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+.article-page .article-content .f1-telemetry-picture--dark { display: none; }
+:root:not([data-theme="light"]) .article-page .article-content .f1-telemetry-picture--light { display: none; }
+:root:not([data-theme="light"]) .article-page .article-content .f1-telemetry-picture--dark { display: block; }
+.article-page .article-content .f1-telemetry-source { margin: .55rem 0 0; }
+.article-page .article-content .f1-telemetry-figure > figcaption {
+    display: block;
+    margin: .65rem 0 0;
+    padding: .65rem 0 0;
+    border-top: 1px solid var(--border);
+    color: var(--text-secondary);
+    font: 400 .88rem/1.65 var(--font-body);
+}
+.article-page .article-content .f1-telemetry-figure > figcaption::before { content: none; }
+.article-page .article-content .f1-telemetry-analysis { margin: .7rem 0 0; font-size: .85rem; }
+.article-page .article-content .f1-telemetry-analysis a { text-underline-offset: .2em; }
+.article-page .article-content .f1-telemetry-interactive-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin: .75rem 0 .25rem;
+    padding: .55rem .9rem;
+    border: 1px solid currentColor;
+    border-radius: .45rem;
+    color: var(--text-primary);
+    background: transparent;
+    font: 600 .85rem/1.2 var(--font-body);
+    cursor: pointer;
+}
+.article-page .article-content .f1-telemetry-interactive-toggle:focus-visible { outline: 3px solid var(--article-signal-readable); outline-offset: 3px; }
+.article-page .article-content .f1-telemetry-interactive-toggle:disabled { cursor: progress; opacity: .7; }
+.article-page .article-content .f1-telemetry-interactive-status { min-height: 1.3em; margin: .2rem 0; color: var(--text-secondary); font-size: .8rem; }
+.article-page .article-content .f1-telemetry-interactive-host { margin: .9rem 0; }
+.article-page .article-content .f1-telemetry-figure.f1-telemetry-interactive .f1-telemetry-picture { display: none; }
+@media print {
+    .article-page .article-content .f1-telemetry-figure {
+        color: #20251f !important;
+        background: #fff !important;
+        border-color: #777 !important;
+        break-inside: avoid-page;
+        page-break-inside: avoid;
+    }
+    .article-page .article-content .f1-telemetry-figure .f1-telemetry-picture--light { display: block !important; }
+    .article-page .article-content .f1-telemetry-figure .f1-telemetry-picture--dark { display: none !important; }
+    .article-page .article-content .f1-telemetry-interactive-toggle,
+    .article-page .article-content .f1-telemetry-interactive-status,
+    .article-page .article-content .f1-telemetry-interactive-host { display: none !important; }
+    .article-page .article-content .f1-telemetry-figure :is(h3, p, figcaption, a) { color: #20251f !important; }
+    .article-page .article-content .f1-telemetry-analysis a::after { content: " (" attr(href) ")"; overflow-wrap: anywhere; }
+}
+.article-page .article-content .f1-telemetry-figure > h3 { position: static; padding-left: 0; }
+.article-page .article-content .f1-telemetry-figure > h3::before { content: none; }

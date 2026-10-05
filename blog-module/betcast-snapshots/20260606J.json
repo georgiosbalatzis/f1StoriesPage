@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "id": "20260606J",
+  "capturedAt": "2026-10-05T08:29:32.332Z",
+  "source": {
+    "alias": "current",
+    "label": "2026",
+    "sheetId": "16cz7p-hZIs3PrvhL9JJ1q1tqyVEupXQ2k8kN8F9mexc",
+    "gid": "796888004",
+    "kind": "provided-csv",
+    "contentHash": "5b3f61e5993390330b1c24c1035abbc7bd9c7759145e0392960c8e326f77be87"
+  },
+  "selection": {
+    "viz": "dataTable",
+    "season": "current",
+    "from": null,
+    "to": null,
+    "week": 6,
+    "cmpA": null,
+    "cmpB": null
+  },
+  "rows": [
+    {
+      "id": 24,
+      "week": 6,
+      "betNumber": 1,
+      "betLabel": "",
+      "betType": "Pole Position : Kimi Antoneli",
+      "company": "stoiximan",
+      "odds": 6,
+      "stake": 15,
+      "result": "Win",
+      "profitLoss": 75,
+      "cumulativeBudget": 215
+    },
+    {
+      "id": 25,
+      "week": 6,
+      "betNumber": 2,
+      "betLabel": "",
+      "betType": "Pole Position : Lewis Hamilton",
+      "company": "stoiximan",
+      "odds": 4.5,
+      "stake": 15,
+      "result": "Lose",
+      "profitLoss": -15,
+      "cumulativeBudget": 200
+    },
+    {
+      "id": 26,
+      "week": 6,
+      "betNumber": 3,
+      "betLabel": "",
+      "betType": "Διαφορά Νικητή : 0,0 - 0,1",
+      "company": "bwin",
+      "odds": 2.5,
+      "stake": 20,
+      "result": "Win",
+      "profitLoss": 30,
+      "cumulativeBudget": 230
+    },
+    {
+      "id": 27,
+      "week": 6,
+      "betNumber": 4,
+      "betLabel": "",
+      "betType": "Τοπ 3 : Max Verstappen",
+      "company": "stoiximan",
+      "odds": 3.5,
+      "stake": 15,
+      "result": "Win",
+      "profitLoss": 38,
+      "cumulativeBudget": 268
+    },
+    {
+      "id": 28,
+      "week": 6,
+      "betNumber": 5,
+      "betLabel": "",
+      "betType": "Tοπ 10: Carlos Sainz",
+      "company": "stoiximan",
+      "odds": 4.5,
+      "stake": 10,
+      "result": "Lose",
+      "profitLoss": -10,
+      "cumulativeBudget": 258
+    },
+    {
+      "id": 29,
+      "week": 6,
+      "betNumber": 6,
+      "betLabel": "",
+      "betType": "Tοπ 10: Pierre Gasly",
+      "company": "stoiximan",
+      "odds": 3.5,
+      "stake": 15,
+      "result": "Win",
+      "profitLoss": 38,
+      "cumulativeBudget": 295
+    },
+    {
+      "id": 30,
+      "week": 6,
+      "betNumber": 7,
+      "betLabel": "",
+      "betType": "VSC : ΝΑΙ",
+      "company": "bwin",
+      "odds": 2.5,
+      "stake": 15,
+      "result": "Lose",
+      "profitLoss": -15,
+      "cumulativeBudget": 280
+    }
+  ]
+}

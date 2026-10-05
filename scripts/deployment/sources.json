@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "enabled": false,
+  "origin": "https://f1stories.gr",
+  "applications": [
+    {
+      "application": "main",
+      "repository": "georgiosbalatzis/f1StoriesPage",
+      "path": "/",
+      "output": "dist",
+      "build": "build:public"
+    },
+    {
+      "application": "telemetry",
+      "repository": "georgiosbalatzis/f1-telemetry-dashboard",
+      "sha": "69d5c7eb9951f3de52640cf66fb43da6fc278c1b",
+      "path": "/telemetry/",
+      "output": "dist",
+      "build": "build:f1stories"
+    },
+    {
+      "application": "ghostcar",
+      "repository": "georgiosbalatzis/ghostcar",
+      "sha": "2b5d2d100d461124275732c9a2df5cde5b74804e",
+      "path": "/ghostcar/",
+      "output": "dist",
+      "build": "build:f1stories"
+    },
+    {
+      "application": "betcast",
+      "repository": "georgiosbalatzis/BetCastVisualisation",
+      "sha": "14ab8a1a2be39c3be1f35ecadc8061e39521f958",
+      "path": "/betcast/",
+      "output": "build",
+      "build": "build:f1stories"
+    }
+  ],
+  "releaseReady": false
+}

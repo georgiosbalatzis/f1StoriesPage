@@ -36,14 +36,34 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - name: Read assembly mode
+        id: assembly
+        run: node -e 'const fs = require("node:fs"); const c = require("./scripts/deployment/sources.json"); fs.appendFileSync(process.env.GITHUB_OUTPUT, "enabled=" + c.enabled + "\n");'
+
       - name: Build public artifact
+        if: steps.assembly.outputs.enabled != 'true'
         run: npm run build:public
+
+      - name: Build pinned aggregate artifact
+        if: steps.assembly.outputs.enabled == 'true'
+        run: |
+          node scripts/deployment/build.mjs --output .build/priority6/site --reports .build/priority6/reports
+          rm -rf dist
+          mv .build/priority6/site dist
 
       - name: Run static source guard
         run: npm run quality:static
 
       - name: Audit runtime dependencies
         run: npm run audit:runtime
+
+      - name: Install integration browser
+        if: steps.assembly.outputs.enabled == 'true'
+        run: node_modules/.bin/playwright-core install --with-deps chromium
+
+      - name: Smoke test canonical artifact
+        if: steps.assembly.outputs.enabled == 'true'
+        run: npm run test:integration -- --site dist --reports .build/priority6/reports
 
       - name: Configure Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0

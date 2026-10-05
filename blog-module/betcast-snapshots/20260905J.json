@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "id": "20260905J",
+  "capturedAt": "2026-10-05T08:29:32.342Z",
+  "source": {
+    "alias": "current",
+    "label": "2026",
+    "sheetId": "16cz7p-hZIs3PrvhL9JJ1q1tqyVEupXQ2k8kN8F9mexc",
+    "gid": "796888004",
+    "kind": "provided-csv",
+    "contentHash": "5b3f61e5993390330b1c24c1035abbc7bd9c7759145e0392960c8e326f77be87"
+  },
+  "selection": {
+    "viz": "dataTable",
+    "season": "current",
+    "from": 13,
+    "to": 13,
+    "week": null,
+    "cmpA": null,
+    "cmpB": null
+  },
+  "rows": [
+    {
+      "id": 54,
+      "week": 13,
+      "betNumber": 1,
+      "betLabel": "",
+      "betType": "Νικητής  - Κατατακτήριες : Ferrari",
+      "company": "stoiximan",
+      "odds": 2.7,
+      "stake": 15,
+      "result": "Lose",
+      "profitLoss": -15,
+      "cumulativeBudget": 304
+    },
+    {
+      "id": 55,
+      "week": 13,
+      "betNumber": 2,
+      "betLabel": "",
+      "betType": "Κατατακτήριες : Τοπ 3 - Max Verstappen",
+      "company": "stoiximan",
+      "odds": 6.2,
+      "stake": 10,
+      "result": "Lose",
+      "profitLoss": -10,
+      "cumulativeBudget": 294
+    },
+    {
+      "id": 56,
+      "week": 13,
+      "betNumber": 3,
+      "betLabel": "",
+      "betType": "Κατατακτήριες : Τοπ 3 - Lando Norris",
+      "company": "stoiximan",
+      "odds": 2.2,
+      "stake": 15,
+      "result": "Lose",
+      "profitLoss": -15,
+      "cumulativeBudget": 279
+    },
+    {
+      "id": 57,
+      "week": 13,
+      "betNumber": 4,
+      "betLabel": "",
+      "betType": "Αγώνας : Τοπ 3 - Kimi Antonelli",
+      "company": "bet365",
+      "odds": 8,
+      "stake": 15,
+      "result": "Win",
+      "profitLoss": 105,
+      "cumulativeBudget": 384
+    },
+    {
+      "id": 58,
+      "week": 13,
+      "betNumber": 5,
+      "betLabel": "",
+      "betType": "Αγώνας: Αυτοκίνητο Ασφαλείας - ΝΑΙ",
+      "company": "stoiximan",
+      "odds": 2.1,
+      "stake": 15,
+      "result": "Win",
+      "profitLoss": 17,
+      "cumulativeBudget": 400
+    },
+    {
+      "id": 59,
+      "week": 13,
+      "betNumber": 6,
+      "betLabel": "",
+      "betType": "Αγώνας: Κατάταξη - 19 και κάτω",
+      "company": "bet365",
+      "odds": 2.9,
+      "stake": 15,
+      "result": "Win",
+      "profitLoss": 29,
+      "cumulativeBudget": 429
+    }
+  ]
+}

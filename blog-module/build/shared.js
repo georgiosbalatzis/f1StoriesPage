@@ -9,6 +9,8 @@ const BLOG_MODULE_DIR = path.join(__dirname, '..');
 
 const CONFIG = {
     BLOG_DIR: path.join(BLOG_MODULE_DIR, 'blog-entries'),
+    BETCAST_SNAPSHOT_DIR: path.join(BLOG_MODULE_DIR, 'betcast-snapshots'),
+    BETCAST_BASE_URL: process.env.BETCAST_BASE_URL || 'https://georgiosbalatzis.github.io/BetCastVisualisation/',
     OUTPUT_JSON: path.join(BLOG_MODULE_DIR, 'blog-data.json'),
     SOURCE_CACHE_JSON: path.join(BLOG_MODULE_DIR, 'blog-source-cache.json'),
     OUTPUT_HTML_DIR: path.join(BLOG_MODULE_DIR, 'blog'),
@@ -230,6 +232,7 @@ const utils = {
             const articleHtml = fs.readFileSync(articlePath, 'utf8');
             if (hasInlineDataImageTag(articleHtml)) return false;
             if (!hasResponsiveHeroSrcset(articleHtml)) return false;
+            if (!require('./betcast').hasCurrentSnapshotMarkers(articleHtml)) return false;
         } catch (_) {
             return false;
         }
@@ -254,7 +257,12 @@ const utils = {
             return fs.statSync(path.join(entryPath, fileName)).mtimeMs > htmlMtime;
         });
 
-        return docMtime <= htmlMtime && !anyImageNewer && !anyCsvNewer && !anyEmbedNewer;
+        const telemetryBundleDir = path.join(entryPath, 'embeds');
+        const anyTelemetryBundleNewer = fs.existsSync(telemetryBundleDir) && fs.readdirSync(telemetryBundleDir, { withFileTypes: true })
+            .filter(entry => entry.isFile() && /^.+\.f1embed\.json$/i.test(entry.name))
+            .some(entry => fs.statSync(path.join(telemetryBundleDir, entry.name)).mtimeMs > htmlMtime);
+
+        return docMtime <= htmlMtime && !anyImageNewer && !anyCsvNewer && !anyEmbedNewer && !anyTelemetryBundleNewer;
     }
 };
 

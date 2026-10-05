@@ -6,6 +6,7 @@ This repository publishes a static site through GitHub Pages. Article media can 
 
 - Article source text lives in each `blog-module/blog-entries/<entry>/` folder.
 - Public article media should be optimized AVIF/WebP variants.
+- The build-generated `embeds/telemetry-<sha256>-<variant>.svg` files are an intentional vector-chart exception. The telemetry publisher validates their XML, bounds each file to 1 MiB, names assets from the immutable publication bundle, and the public artifact copies only those referenced generated variants. SVGs are not raw photo uploads and are not included in the photo media budget.
 - Raw JPG, JPEG, PNG, and GIF files are treated as reviewed source assets, not default public assets.
 - Generated/public delivery size is guarded separately from repository size.
 

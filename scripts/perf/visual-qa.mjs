@@ -313,7 +313,17 @@ async function scanPage(page, routeSlug) {
 
         function parseColor(value) {
             const match = String(value || '').match(/rgba?\(([^)]+)\)/i);
-            if (!match) return null;
+            if (!match) {
+                // color-mix author surfaces compute to color(srgb ...), rather than rgb().
+                if (!CSS.supports('color', value)) return null;
+                const canvas = document.createElement('canvas');
+                canvas.width = canvas.height = 1;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = value;
+                ctx.fillRect(0, 0, 1, 1);
+                const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+                return { r, g, b, a: a / 255 };
+            }
             const parts = match[1].split(',').map(part => part.trim());
             if (parts.length < 3) return null;
             return {
@@ -456,10 +466,12 @@ async function scanPage(page, routeSlug) {
             if (!isVisible(el) || el.disabled) return;
             const visibleText = (el.textContent || '').replace(/\s+/g, ' ').trim();
             if (!visibleText && !el.matches('input, select, textarea, a.primary, a.secondary, .retry')) return;
-            const style = window.getComputedStyle(el);
+            // The facade is a transparent wrapper; its visible play glyph owns the foreground/surface.
+            const contrastTarget = el.matches('.home-video-facade') ? el.querySelector('.episode__play') || el : el;
+            const style = window.getComputedStyle(contrastTarget);
             const foreground = parseColor(style.color);
             if (!foreground) return;
-            const background = effectiveBackground(el);
+            const background = effectiveBackground(contrastTarget);
             const ratio = contrastRatio(foreground, background);
             if (ratio < 3) {
                 issues.push({
@@ -468,6 +480,12 @@ async function scanPage(page, routeSlug) {
                     detail: `ratio ${ratio.toFixed(2)} below 3:1`
                 });
             }
+        });
+
+        // Rotation picks a random initial author; check every card's actual computed ink/surface.
+        document.querySelectorAll('.team-card :is(.team-card__label, .team-card__desk, .team-card__specialty, .team-card__stories span, .team-card__social)').forEach(el => {
+            const ratio = contrastRatio(parseColor(getComputedStyle(el).color), effectiveBackground(el));
+            if (ratio < 4.5) issues.push({ type: 'text-contrast', selector: selectorFor(el), detail: `ratio ${ratio.toFixed(2)} below 4.5:1 on author surface` });
         });
 
         if (currentRouteSlug === 'blog') {
@@ -691,6 +709,97 @@ async function checkGridRowFocus(page) {
     return issues;
 }
 
+// Pixel checks include descendants and adjacent controls: computed outlines alone can be obscured.
+async function checkCompactFocusRings(page, routeSlug) {
+    const selectors = routeSlug === 'home'
+        ? [['.home-video-facade', '.episode__play'], ['.blog-nav-link', null]]
+        : routeSlug === 'latest-article' ? [['.share-btn.facebook', null], ['.share-btn.whatsapp', null]] : [];
+    const issues = [];
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    for (const [selector, child] of selectors) {
+        const control = page.locator(selector).first();
+        if (!(await control.count()) || !(await control.isVisible())) continue;
+        await control.evaluate(el => el.scrollIntoView({ block: 'center' }));
+        await page.keyboard.press('Tab');
+        await control.focus();
+        // The play control scales on focus; measure its final painted box before comparing frames.
+        await page.waitForTimeout(400);
+        const target = child ? control.locator(child) : control;
+        const r = await target.boundingBox();
+        const view = page.viewportSize();
+        const x = Math.max(0, Math.floor(r.x - 10)), y = Math.max(0, Math.floor(r.y - 10));
+        const clip = { x, y, width: Math.min(view.width, Math.ceil(r.x + r.width + 10)) - x, height: Math.min(view.height, Math.ceil(r.y + r.height + 10)) - y };
+        const decode = async () => sharp(await page.screenshot({ clip, type: 'png' })).raw().toBuffer({ resolveWithObject: true });
+        const focused = await decode();
+        const hide = await page.addStyleTag({ content: `${selector}:focus-visible${child ? ' ' + child : ''} { outline: none !important; }` });
+        const plain = await decode();
+        await hide.evaluate(el => el.remove());
+        const changed = (px, py) => {
+            const dx = Math.round(px - x), dy = Math.round(py - y);
+            if (dx < 0 || dy < 0 || dx >= focused.info.width || dy >= focused.info.height) return false;
+            const i = (dy * focused.info.width + dx) * focused.info.channels;
+            return [0, 1, 2].reduce((sum, c) => sum + Math.abs(focused.data[i + c] - plain.data[i + c]), 0) > 50;
+        };
+        const coverage = (from, to, near, vertical) => {
+            let hits = 0, total = 0;
+            for (let t = Math.ceil(from); t <= Math.floor(to); t += 1) {
+                total += 1;
+                for (let n = Math.floor(near - 10); n <= Math.ceil(near + 10); n += 1) {
+                    if (vertical ? changed(n, t) : changed(t, n)) { hits += 1; break; }
+                }
+            }
+            return total ? hits / total : 0;
+        };
+        const edges = {
+            left: coverage(r.y + 9, r.y + r.height - 9, r.x, true),
+            right: coverage(r.y + 9, r.y + r.height - 9, r.x + r.width, true),
+            top: coverage(r.x + 9, r.x + r.width - 9, r.y, false),
+            bottom: coverage(r.x + 9, r.x + r.width - 9, r.y + r.height, false)
+        };
+        for (const [edge, value] of Object.entries(edges)) {
+            if (value < 0.9) issues.push({ type: 'control-focus', selector, detail: `${edge} ring only ${Math.round(value * 100)}% visible` });
+        }
+    }
+    return issues;
+}
+
+async function checkArticleLightbox(page) {
+    const issues = [];
+    const trigger = page.locator('.article-header picture').first();
+    if (!(await trigger.count())) return [{ type: 'image-viewer', detail: 'article image trigger missing' }];
+    await trigger.scrollIntoViewIfNeeded();
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    const overlay = page.locator('.lb-overlay.open');
+    await overlay.waitFor();
+    if (!(await overlay.getAttribute('aria-label'))) issues.push({ type: 'image-viewer', detail: 'missing modal name' });
+    for (const key of ['Tab', 'Tab', 'Tab', 'Shift+Tab', 'Shift+Tab', 'Shift+Tab']) {
+        await page.keyboard.press(key);
+        if (!(await page.evaluate(() => !!document.activeElement.closest('.lb-overlay.open')))) {
+            issues.push({ type: 'image-viewer', detail: `${key} escaped the modal` });
+        }
+    }
+    await page.locator('#nav-hamburger').evaluate(el => el.focus());
+    if (!(await page.evaluate(() => !!document.activeElement.closest('.lb-overlay.open')))) {
+        issues.push({ type: 'image-viewer', detail: 'background can receive focus while modal is open' });
+    }
+    const close = overlay.locator('.lb-close');
+    await close.focus();
+    const ring = await close.evaluate(el => {
+        const s = getComputedStyle(el), r = el.getBoundingClientRect();
+        return { visible: el.matches(':focus-visible'), width: parseFloat(s.outlineWidth), color: s.outlineColor, box: [r.width, r.height] };
+    });
+    if (!ring.visible || ring.width < 2 || Math.min(...ring.box) < 44) issues.push({ type: 'image-viewer', detail: `unusable close focus/target: ${JSON.stringify(ring)}` });
+    await page.keyboard.press('Escape');
+    if (!(await trigger.evaluate(el => el === document.activeElement)) || await overlay.count()) {
+        issues.push({ type: 'image-viewer', detail: 'Escape failed to close or restore trigger focus' });
+    }
+    if (await page.locator('#nav-hamburger').evaluate(el => el.closest('[inert]') !== null)) {
+        issues.push({ type: 'image-viewer', detail: 'background remained inert after close' });
+    }
+    return issues;
+}
+
 async function captureRoute(browser, origin, outputDir, route, viewport, theme, screenshotType) {
     const page = await preparePage(browser, viewport, theme);
     const url = origin + route.path;
@@ -722,6 +831,8 @@ async function captureRoute(browser, origin, outputDir, route, viewport, theme, 
         const issues = scan.issues.slice();
         const focusIssues = await checkFocusSequence(page);
         issues.push(...focusIssues);
+        issues.push(...await checkCompactFocusRings(page, route.slug));
+        if (route.slug === 'latest-article') issues.push(...await checkArticleLightbox(page));
         if (route.slug === 'standings-drivers' || route.slug === 'standings-constructors') {
             issues.push(...await checkGridRowFocus(page));
         }
@@ -779,6 +890,8 @@ async function runNavInteraction(browser, origin, outputDir) {
             height: Math.round(document.querySelector('#nav-mobile')?.getBoundingClientRect().height || 0)
         }));
         await page.screenshot({ path: screenshotPath, fullPage: false, type: 'jpeg', quality: 82 });
+        // A keyboard-focused link must not make the trigger's pointer toggle reopen the menu on blur.
+        await page.locator('#nav-mobile a').first().focus();
         await page.click('#nav-hamburger');
         await page.waitForTimeout(300);
         const closedState = await page.evaluate(() => ({
@@ -794,6 +907,47 @@ async function runNavInteraction(browser, origin, outputDir) {
             result.detail = `menu did not close correctly: ${JSON.stringify(closedState)}`;
         } else {
             result.detail = `opened to ${openState.height}px and closed cleanly`;
+            for (const width of [390, 375, 320]) {
+                await page.setViewportSize({ width, height: 844 });
+                await page.goto(origin + '/standings/', { waitUntil: 'domcontentloaded' });
+                await waitForPageReady(page, 'standings-drivers');
+                const trigger = page.locator('#nav-hamburger');
+                await trigger.focus();
+                await page.keyboard.press('Enter');
+                await page.waitForTimeout(300);
+                await page.locator('#nav-mobile a').last().focus();
+                await page.keyboard.press('Tab');
+                // The existing menu collapse lasts 350ms; wait for the focused control's actual visibility.
+                await page.waitForFunction(() => {
+                    const el = document.activeElement, r = el.getBoundingClientRect();
+                    return !document.querySelector('#nav-mobile').classList.contains('open') &&
+                        el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+                });
+                const next = await page.evaluate(() => {
+                    const el = document.activeElement, r = el.getBoundingClientRect();
+                    return {
+                        menuOpen: document.querySelector('#nav-mobile').classList.contains('open'),
+                        product: el.textContent.trim(),
+                        uncovered: el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)),
+                        current: document.querySelector('.blog-nav-link.active')?.getAttribute('aria-current')
+                    };
+                });
+                if (next.menuOpen || next.product !== 'THE GRID' || !next.uncovered || next.current !== 'page') {
+                    result.status = 'fail';
+                    result.detail = `${width}px menu exit hides or skips product focus: ${JSON.stringify(next)}`;
+                    break;
+                }
+                await trigger.focus();
+                await page.keyboard.press('Enter');
+                await page.waitForTimeout(300);
+                await page.locator('#nav-mobile a').first().focus();
+                await page.keyboard.press('Escape');
+                if (!(await trigger.evaluate(el => el === document.activeElement))) {
+                    result.status = 'fail';
+                    result.detail = `${width}px Escape did not return focus`;
+                    break;
+                }
+            }
         }
     } catch (error) {
         result.status = 'fail';

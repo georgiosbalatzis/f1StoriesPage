@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "id": "20260502J",
+  "capturedAt": "2026-10-05T08:29:32.327Z",
+  "source": {
+    "alias": "current",
+    "label": "2026",
+    "sheetId": "16cz7p-hZIs3PrvhL9JJ1q1tqyVEupXQ2k8kN8F9mexc",
+    "gid": "796888004",
+    "kind": "provided-csv",
+    "contentHash": "5b3f61e5993390330b1c24c1035abbc7bd9c7759145e0392960c8e326f77be87"
+  },
+  "selection": {
+    "viz": "dataTable",
+    "season": "current",
+    "from": 4,
+    "to": 4,
+    "week": null,
+    "cmpA": null,
+    "cmpB": null
+  },
+  "rows": [
+    {
+      "id": 14,
+      "week": 4,
+      "betNumber": 1,
+      "betLabel": "",
+      "betType": "Πρωτοπόρος στον πρώτο γύρο Oscar Piastri",
+      "company": "stoiximan",
+      "odds": 12,
+      "stake": 10,
+      "result": "Lose",
+      "profitLoss": -10,
+      "cumulativeBudget": 194
+    },
+    {
+      "id": 15,
+      "week": 4,
+      "betNumber": 2,
+      "betLabel": "",
+      "betType": "Hulkenberg πάνω από Bortoleto",
+      "company": "bwin",
+      "odds": 2.25,
+      "stake": 15,
+      "result": "Win",
+      "profitLoss": 19,
+      "cumulativeBudget": 212
+    },
+    {
+      "id": 16,
+      "week": 4,
+      "betNumber": 3,
+      "betLabel": "",
+      "betType": "Pole Position - Charles Leclerc",
+      "company": "stoiximan",
+      "odds": 5.6,
+      "stake": 15,
+      "result": "Lose",
+      "profitLoss": -15,
+      "cumulativeBudget": 197
+    },
+    {
+      "id": 17,
+      "week": 4,
+      "betNumber": 4,
+      "betLabel": "",
+      "betType": "ΤΟΠ 10 - Oliver Bearman",
+      "company": "stoiximan",
+      "odds": 3,
+      "stake": 15,
+      "result": "Lose",
+      "profitLoss": -15,
+      "cumulativeBudget": 182
+    },
+    {
+      "id": 18,
+      "week": 4,
+      "betNumber": 5,
+      "betLabel": "",
+      "betType": "Αριθμός πρωτοπόρων 3 ή παραπάνω",
+      "company": "bet365",
+      "odds": 1.9,
+      "stake": 20,
+      "result": "Win",
+      "profitLoss": 18,
+      "cumulativeBudget": 200
+    }
+  ]
+}

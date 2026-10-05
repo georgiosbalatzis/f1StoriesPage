@@ -168,6 +168,7 @@ async function convertTxtToHtml(filePath) {
         htmlContent = processEmbeddedCSV(htmlContent, entryPath);
         return resolveEmbedPlaceholders(htmlContent, placeholders);
     } catch (error) {
+        if (error.code === 'BETCAST_SNAPSHOT' || error.code === 'TELEMETRY_FIGURE') throw error;
         console.error(`Error converting document: ${filePath}`, error);
         return '';
     }

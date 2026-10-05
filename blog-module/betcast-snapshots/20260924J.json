@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "id": "20260924J",
+  "capturedAt": "2026-10-05T08:29:32.321Z",
+  "source": {
+    "alias": "current",
+    "label": "2026",
+    "sheetId": "16cz7p-hZIs3PrvhL9JJ1q1tqyVEupXQ2k8kN8F9mexc",
+    "gid": "796888004",
+    "kind": "provided-csv",
+    "contentHash": "5b3f61e5993390330b1c24c1035abbc7bd9c7759145e0392960c8e326f77be87"
+  },
+  "selection": {
+    "viz": "dataTable",
+    "season": "current",
+    "from": 15,
+    "to": 15,
+    "week": null,
+    "cmpA": null,
+    "cmpB": null
+  },
+  "rows": [
+    {
+      "id": 64,
+      "week": 15,
+      "betNumber": 1,
+      "betLabel": "",
+      "betType": "Κατακτακτηριες : Max Top3",
+      "company": "bwin",
+      "odds": 2.8,
+      "stake": 15,
+      "result": "Lose",
+      "profitLoss": -15,
+      "cumulativeBudget": 359
+    },
+    {
+      "id": 65,
+      "week": 15,
+      "betNumber": 2,
+      "betLabel": "",
+      "betType": "Pole Position Russell",
+      "company": "Stoximan",
+      "odds": 3.5,
+      "stake": 10,
+      "result": "Win",
+      "profitLoss": 25,
+      "cumulativeBudget": 384
+    },
+    {
+      "id": 66,
+      "week": 15,
+      "betNumber": 3,
+      "betLabel": "",
+      "betType": "Αγώνας : Red Flag - ΝΑΙ",
+      "company": "bwin",
+      "odds": 2,
+      "stake": 15,
+      "result": "Lose",
+      "profitLoss": -15,
+      "cumulativeBudget": 369
+    },
+    {
+      "id": 67,
+      "week": 15,
+      "betNumber": 4,
+      "betLabel": "",
+      "betType": "Αγώνας : Τοπ 3 - Lando Norris",
+      "company": "stoiximan",
+      "odds": 2.1,
+      "stake": 15,
+      "result": "Lose",
+      "profitLoss": -15,
+      "cumulativeBudget": 354
+    }
+  ]
+}

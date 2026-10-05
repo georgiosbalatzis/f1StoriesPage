@@ -12,4 +12,4 @@ Lando Norris σε απόδοση 7,70 και George Russell σε απόδοση 
 Για το Τοπ 10 θα δώσουμε μία επιλογή στον Oliver Bearman στην πολύ καλή απόδοση 7,20.
 Συνδυασμό των πρωτοπορων θα επιλέηουμε άλλον συνδυασμό από αυτούς που θα εκκινήσουν στο 1-2 σε απόδοση 2,00.  Τέλος θα κλείσουμε με την κατάταξη των μονοθεσίων να είναι 17-18.
 
-<iframe src="https://georgiosbalatzis.github.io/BetCastVisualisation/?viz=dataTable&week=7&embed=1" title="BetCast F1Stories" loading="lazy" style="width:100%;min-height:960px;border:0;"></iframe>
+BETCAST:20260613J

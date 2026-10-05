@@ -1,6 +1,8 @@
 const { fs, path, CONFIG, escapeHtmlAttribute } = require('./shared');
 const { decodeHtmlEntities } = require('./metadata');
 const { buildYouTubeFacade } = require('./youtube-facade');
+const { renderBetcastArticleBlock, renderBetcastChartBlock } = require('./betcast');
+const { renderTelemetryFigure } = require('./telemetry-figure');
 
 function buildYouTubeEmbed(videoId) {
     return `\n${buildYouTubeFacade(videoId)}`;
@@ -105,6 +107,26 @@ function escapeHtml(value) {
 
 function normalizeEmbedUrl(urlStr) {
     return decodeHtmlEntities(String(urlStr || '').trim());
+}
+
+function getManagedBetCastUrl(input) {
+    try {
+        const url = new URL(input);
+        const approved = (url.origin === 'https://georgiosbalatzis.github.io'
+                && (url.pathname === '/BetCastVisualisation/' || url.pathname === '/BetCastVisualisation'))
+            || (url.origin === 'https://f1stories.gr' && url.pathname === '/betcast/');
+        const embed = url.searchParams.get('embed');
+        if (!approved || url.username || url.password || url.port || embed == null
+            || ['0', 'false', 'no', 'off'].includes(embed.toLowerCase())) return null;
+        return url;
+    } catch (_) { return null; }
+}
+
+function renderManagedBetCastFrame(url, attrs) {
+    const analysisUrl = new URL(url.href);
+    ['embed', 'presentation', 'theme'].forEach(key => analysisUrl.searchParams.delete(key));
+    const iframe = renderIframe(url.href, attrs).replace('<iframe', '<iframe data-f1s-betcast-managed="true"');
+    return `<div class="embed-container embed-iframe betcast-managed-embed">\n${iframe}\n<a class="betcast-embed-fallback" href="${escapeHtmlAttribute(analysisUrl.toString())}" target="_blank" rel="noopener noreferrer">Άνοιγμα BetCast ↗</a>\n</div>`;
 }
 
 function buildEmbedError(title, message) {
@@ -265,6 +287,10 @@ function normalizeHtmlFragmentForMatching(fragment) {
 }
 
 function buildEmbedHtml(info) {
+    if (info.type === 'betcast') return renderBetcastArticleBlock(info.value);
+    if (info.type === 'betcast-chart') return renderBetcastChartBlock(info.value, info.view);
+    if (info.type === 'telemetry') return renderTelemetryFigure(info.value, info.entryPath);
+
     if (info.type === 'iframe') {
         const pipeIdx = info.value.indexOf('|');
         const url = normalizeEmbedUrl(pipeIdx > -1 ? info.value.substring(0, pipeIdx) : info.value);
@@ -293,6 +319,9 @@ function buildEmbedHtml(info) {
         const height = attrs.height || '650';
 
         console.log(`  📺 IFRAME embed: ${url} (h=${height})`);
+
+        const managedUrl = getManagedBetCastUrl(url);
+        if (managedUrl) return renderManagedBetCastFrame(managedUrl, attrs);
 
         return `
         <div class="embed-container embed-iframe">
@@ -364,6 +393,8 @@ function buildEmbedHtml(info) {
         const rawAttrs = parseHtmlAttributes(info.value);
         const attrs = sanitizeIframeAttributes(rawAttrs);
         console.log(`  📺 Raw IFRAME embed: ${src}`);
+        const managedUrl = getManagedBetCastUrl(src);
+        if (managedUrl) return renderManagedBetCastFrame(managedUrl, attrs);
         return `<div class="embed-container embed-iframe">\n${renderIframe(src, attrs)}\n</div>`;
     }
 
@@ -447,7 +478,7 @@ function resolveEmbedPlaceholders(htmlContent, placeholders) {
     const markerMap = {};
     const rawBlockMap = {};
     Object.entries(placeholders).forEach(([key, info]) => {
-        if (info.type === 'iframe' || info.type === 'embed') markerMap[key] = buildEmbedHtml(info);
+        if (info.type === 'iframe' || info.type === 'embed' || info.type === 'betcast' || info.type === 'betcast-chart' || info.type === 'telemetry') markerMap[key] = buildEmbedHtml(info);
         else rawBlockMap[key] = info;
     });
 
@@ -483,6 +514,7 @@ module.exports = {
     isUrlWhitelisted,
     normalizeWhitespace,
     normalizeHtmlFragmentForMatching,
+    getManagedBetCastUrl,
     buildEmbedHtml,
     processRawHtmlEmbeds,
     resolveEmbedPlaceholders

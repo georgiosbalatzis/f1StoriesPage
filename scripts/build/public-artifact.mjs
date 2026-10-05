@@ -147,7 +147,7 @@ function addBlogEntryRef(refs, ref, fromRelPath = '') {
         relPath = path.posix.normalize(clean);
     }
 
-    if (!/^blog-module\/blog-entries\/[^/]+\/[^/]+$/i.test(relPath)) return;
+    if (!/^blog-module\/blog-entries\/[^/]+\/(?:[^/]+|embeds\/telemetry-[a-f\d]{20}-(?:narrowLight|wideLight|narrowDark|wideDark)\.svg|embeds\/telemetry-[a-f\d]{20}-data\.json)$/i.test(relPath)) return;
     refs.add(relPath);
 }
 
@@ -181,7 +181,7 @@ function collectRefsFromJsonValue(refs, value) {
 }
 
 function collectHtmlRefs(refs, html, relPath) {
-    const attrPattern = /\b(?:href|src|data-src|data-full-src|content)=["']([^"']+)["']/gi;
+    const attrPattern = /\b(?:href|src|data-src|data-full-src|data-telemetry-data|content)=["']([^"']+)["']/gi;
     for (const match of String(html || '').matchAll(attrPattern)) {
         addBlogEntryRef(refs, match[1], relPath);
     }
@@ -302,6 +302,12 @@ const LEAD_CARD_REFS = (() => {
 
 function shouldCopyBlogEntry(relPath) {
     if (!relPath.startsWith('blog-module/blog-entries/')) return false;
+    if (/^blog-module\/blog-entries\/[^/]+\/embeds\/telemetry-[a-f\d]{20}-(?:narrowLight|wideLight|narrowDark|wideDark)\.svg$/i.test(relPath)) {
+        return BLOG_ENTRY_PUBLIC_REFS.has(relPath);
+    }
+    if (/^blog-module\/blog-entries\/[^/]+\/embeds\/telemetry-[a-f\d]{20}-data\.json$/i.test(relPath)) {
+        return BLOG_ENTRY_PUBLIC_REFS.has(relPath);
+    }
     const name = path.posix.basename(relPath);
     if (name === 'article.html') return true;
     // Card srcsets advertise "<base>-mobile.webp 800w" (and "<base>.webp 1600w"

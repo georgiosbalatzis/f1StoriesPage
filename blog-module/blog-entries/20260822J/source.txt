@@ -14,8 +14,7 @@ BetCast #271.  Τέλος οι διακοπές....
 
 Ορίστε τα σημεία μας!
 
-<iframe src="https://georgiosbalatzis.github.io/BetCastVisualisation/?viz=dataTable&from=12&embed=1" title="BetCast F1Stories" loading="lazy" style="width:100%;min-height:960px;border:0;"></iframe>
-
+BETCAST:20260822J
 Και λίγες λεπτομέρειες για το τι είδαμε…
 
 McLaren: Δυνατές, όπως αναμενόταν. Ειδικά ο Lando Norris, σε μία πίστα που του αρέσει ιδιαίτερα.

@@ -5,6 +5,11 @@
     var url = target ? target.getAttribute('content') : '';
 
     if (url) {
-        window.location.replace(url);
+        var targetUrl = new URL(url, window.location.href);
+        targetUrl.search = window.location.search;
+        targetUrl.hash = window.location.hash;
+        var fallback = document.querySelector('body a');
+        if (fallback) fallback.href = targetUrl.href;
+        window.location.replace(targetUrl.href);
     }
 })();

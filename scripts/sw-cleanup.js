@@ -10,11 +10,13 @@
     var RELOAD_FLAG = 'f1s-sw-removed';
 
     navigator.serviceWorker.getRegistrations().then(function (registrations) {
-        return Promise.all(registrations.map(function (registration) { return registration.unregister(); }));
+        return Promise.all(registrations.filter(function (registration) {
+            return registration.scope === window.location.origin + '/';
+        }).map(function (registration) { return registration.unregister(); }));
     }).then(function () {
         if (!('caches' in window)) return false;
         return caches.keys().then(function (keys) {
-            var ours = keys.filter(function (key) { return key.indexOf('f1s-') === 0; });
+            var ours = keys.filter(function (key) { return /^f1s-(?:shell|pages|assets|data)-v\d+$/.test(key); });
             // v41 (caches named -v40) answered stamped CSS/JS with its old copies, so a page it
             // controlled can be mis-styled until one uncontrolled load. v42 served fresh assets.
             var stale = ours.some(function (key) { return !/-v42$/.test(key); });

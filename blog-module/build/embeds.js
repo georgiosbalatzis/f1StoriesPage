@@ -401,6 +401,30 @@ function extractEmbedPlaceholders(rawText, entryPath, insertTokens) {
             return;
         }
 
+        const telemetryTagMatch = trimmed.match(/^TELEMETRY:(.*)$/i);
+        if (telemetryTagMatch) {
+            const key = makeKey(trimmed);
+            placeholders[key] = { type: 'telemetry', value: telemetryTagMatch[1].trim(), entryPath };
+            processedLines.push(insertTokens ? key : line);
+            return;
+        }
+
+        const betcastTagMatch = trimmed.match(/^BETCAST:([A-Za-z0-9][A-Za-z0-9_-]{0,79})$/i);
+        if (betcastTagMatch) {
+            const key = makeKey(trimmed);
+            placeholders[key] = { type: 'betcast', value: betcastTagMatch[1].trim() };
+            processedLines.push(insertTokens ? key : line);
+            return;
+        }
+
+        const betcastChartMatch = trimmed.match(/^BETCAST_CHART:([A-Za-z0-9][A-Za-z0-9_-]{0,79})(?:\|view=(budget|weeklyProfit|weeklyRoi|winRate))?$/i);
+        if (betcastChartMatch) {
+            const key = makeKey(trimmed);
+            placeholders[key] = { type: 'betcast-chart', value: betcastChartMatch[1], view: betcastChartMatch[2] || 'budget' };
+            processedLines.push(insertTokens ? key : line);
+            return;
+        }
+
         processedLines.push(line);
     });
 

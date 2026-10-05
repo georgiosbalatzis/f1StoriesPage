@@ -19,6 +19,11 @@
     var hamburger = document.getElementById('nav-hamburger');
     var mobileMenu = document.getElementById('nav-mobile');
     var blogNav = document.getElementById('blog-nav');
+    if (blogNav) {
+        blogNav.querySelectorAll('.blog-nav-link.active, .blog-nav-mobile-link.active').forEach(function (link) {
+            link.setAttribute('aria-current', 'page');
+        });
+    }
 
     function ensureNavThemeButton() {
         var navRight = document.querySelector('.blog-nav-right');
@@ -57,6 +62,9 @@
         });
         mobileMenu.querySelectorAll('a').forEach(function (link) {
             link.addEventListener('click', closeMobileMenu);
+        });
+        mobileMenu.addEventListener('focusout', function (event) {
+            if (event.relatedTarget && event.relatedTarget !== hamburger && !mobileMenu.contains(event.relatedTarget)) closeMobileMenu();
         });
         document.addEventListener('keydown', function (event) {
             if (event.key !== 'Escape' || !mobileMenu.classList.contains('open')) return;
