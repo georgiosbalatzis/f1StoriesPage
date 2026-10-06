@@ -510,7 +510,7 @@ body.standings-embed .standings-side-panel,
 body.standings-embed .chart-note { display: none !important; }
 
 /* Intro copy stays as a short header: two lines at most. */
-body.standings-embed :is(.quali-sub, .lap1-sub, .tyre-pace-sub, .dirty-air-sub, .track-dom-sub, .pit-stops-sub, .debrief-sub, .destructors-sub) {
+body.standings-embed :is(.quali-sub, .lap1-sub, .tyre-pace-sub, .dirty-air-sub, .track-dom-sub, .pit-stops-sub, .debrief-sub) {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
@@ -669,7 +669,7 @@ body.standings-embed .embed-footer-meta span { white-space: nowrap; }
 
 /* The embed renders exactly the state its URL encodes: no session/round pickers, no view tab strips. */
 body.standings-embed :is(
-    .quali-view-switch, .lap1-view-switch, .pit-stops-view-switch, .debrief-view-switch, .destructors-view-switch, .dirty-air-view-switch,
+    .quali-view-switch, .lap1-view-switch, .pit-stops-view-switch, .debrief-view-switch, .dirty-air-view-switch,
     .quali-race-controls, .lap1-race-controls, .tyre-pace-controls, .dirty-air-controls, .track-dom-controls, .track-dom-team-pickers,
     .pit-stops-controls, .debrief-round-selector,
     .lap1-race-head .lap1-overview-note

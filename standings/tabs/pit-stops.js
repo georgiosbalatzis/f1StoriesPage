@@ -61,11 +61,9 @@ export function initPitStops(options) {
 
     if (!listenersBound && pitStopsTable) {
         // Bind in capture phase so our handler always fires before the
-        // legacy bundle's bubble-phase listener on the same element. Unlike
-        // destructors (whose legacy click handler self-guards on
-        // destructorsState.snapshot), the legacy pit-stops handlers have no
-        // such guard — if they ran, they'd overwrite the module's innerHTML
-        // and re-render using legacy's private state.
+        // legacy bundle's bubble-phase listener on the same element. The legacy
+        // pit-stops handlers have no guard — if they ran, they'd overwrite the
+        // module's innerHTML and re-render using legacy's private state.
         pitStopsTable.addEventListener('change', handleRoundChange, true);
         pitStopsTable.addEventListener('click', handleViewClick, true);
         listenersBound = true;

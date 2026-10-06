@@ -81,15 +81,6 @@ const snapshot = {
     constructorStandings: standingsPayload
 };
 assert.equal(payloads.validateStandingsSnapshotPayload(snapshot), snapshot);
-assert.equal(payloads.validateDestructorsSnapshotPayload({
-    drivers: [{ fullName: 'Driver', damage: 100 }],
-    zeroTeams: [],
-    source: {}
-}).drivers.length, 1);
-assert.throws(
-    () => payloads.validateDestructorsSnapshotPayload({ drivers: [] }),
-    /destructors drivers must not be empty/
-);
 assert.equal(payloads.validateOpenF1ArrayPayload([], 'empty OpenF1', { allowEmpty: true }).length, 0);
 assert.throws(
     () => payloads.validateOpenF1ArrayPayload({}, 'OpenF1 payload'),

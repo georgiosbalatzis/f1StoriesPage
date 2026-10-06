@@ -11,7 +11,6 @@ Current checked contracts:
 - `standings/standings-cache.json`: Jolpica standings snapshot.
 - `standings/dirty-air-cache.json`: dirty-air cache `version: 1` (build input, not published).
 - `standings/dirty-air/index.json` + `standings/dirty-air/<session_key>.json`: the published split of the dirty-air cache: session metadata, then one file per session loaded on selection.
-- `standings/destructors-cache.json`: destructors cache `version: 1`.
 - `standings/debrief-cache.json`: Friday debrief cache `version: 2`.
 - `scripts/build/asset-manifest.json` and `sitemap.xml`.
 
@@ -19,5 +18,4 @@ When a versioned generated format changes, update the validator and record the m
 
 - `blog-index-data` `v: 2`: compact rows are `[id, title, authorIndex, date, thumbnailWidth, thumbnailHeight, excerpt, readingTime, categoryIndexes]`. `categoryIndexes[0]` is the primary category (the one that carries the colour signal); the rest follow in taxonomy order. Top-level `h` and `s` are run-length flag strings (comma-separated runs of a `0`/`1` marker plus a base36 length, covering every row): `h` = the `-card.webp` thumbnail exists; `s` = the folder has a `source.txt` the author tools can edit (source-less legacy articles are read-only there). `s` is optional for older payloads.
 - `dirty-air-cache` `version: 1`: sessions contain normalized rows, proximity counts, and timeline segments.
-- `destructors-cache` `version: 1`: drivers contain `acronym`, `fullName`, `teamKey`, and `damage`.
 - `debrief-cache` `version: 2`: rounds contain driver and team-level Friday debrief arrays.

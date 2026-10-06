@@ -65,7 +65,7 @@ const ABOVE_FOLD_CONSTRUCTOR_LOGOS = 8;
 const LIVE_STANDINGS_REFRESH_DELAY_MS = 3500;
 const LAZY_IMAGE_PLACEHOLDER = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 
-const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief', 'destructors'];
+const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief'];
 const LIGHTWEIGHT_TABS = ['drivers', 'constructors'];
 const REPORT_DETAILS = {
     'drivers': { label: 'Οδηγοί', note: 'Βαθμολογία πρωταθλήματος · Jolpica F1' },
@@ -76,15 +76,13 @@ const REPORT_DETAILS = {
     'dirty-air': { label: 'Dirty Air', note: 'Ανάλυση κίνησης και απόστασης · OpenF1' },
     'track-dominance': { label: 'Κυριαρχία πίστας', note: 'Σύγκριση τομέων ταχύτερου γύρου · OpenF1' },
     'pit-stops': { label: 'Pit Stops', note: 'Κατάταξη χρόνων στάσης · OpenF1' },
-    'debrief': { label: 'Debrief', note: 'Ανάλυση ελεύθερων δοκιμών Παρασκευής · FIA / OpenF1' },
-    'destructors': { label: 'Destructors', note: 'Κόστος ζημιών · F1 Stories' }
+    'debrief': { label: 'Debrief', note: 'Ανάλυση ελεύθερων δοκιμών Παρασκευής · FIA / OpenF1' }
 };
 // Phase 6C: every heavy tab now lives in its own module while the
 // drivers/constructors tables keep rendering from this shell.
 // Keep each lazy import as a literal so esbuild can place every tab in its
 // own split chunk and hoist shared core utilities into common chunks.
 const TAB_LOADERS = {
-    'destructors': function() { return import('./tabs/destructors.js'); },
     'pit-stops': function() { return import('./tabs/pit-stops.js'); },
     'quali-gaps': function() { return import('./tabs/quali-gaps.js'); },
     'lap1-gains': function() { return import('./tabs/lap1-gains.js'); },
@@ -106,8 +104,7 @@ const SHARE_TARGETS = {
     'panel-dirty-air': { tab: 'dirty-air', title: 'Ανάλυση Dirty Air', height: 1520 },
     'panel-track-dominance': { tab: 'track-dominance', title: 'Κυριαρχία πίστας', height: 1320 },
     'panel-pit-stops': { tab: 'pit-stops', title: 'Ταχύτερα pit stop', height: 1080 },
-    'panel-debrief': { tab: 'debrief', title: 'Debrief Παρασκευής', height: 1200 },
-    'panel-destructors': { tab: 'destructors', title: 'Πρωτάθλημα Destructors', height: 1260 }
+    'panel-debrief': { tab: 'debrief', title: 'Debrief Παρασκευής', height: 1200 }
 };
 
 let activeStandingsTab = 'drivers';
@@ -116,7 +113,6 @@ let pendingRevealTarget = '';
 let isEmbedMode = false;
 let shareFeedbackTimer = 0;
 let standingsPromise = null;
-let pendingDestructorsView = 'teams';
 let pendingPitStopsView = 'race';
 let pendingPitStopsRound = '';
 let pendingQualiView = 'overview';
@@ -194,10 +190,6 @@ function sanitizeShareTarget(value) {
     return value && SHARE_TARGETS[value] ? value : '';
 }
 
-function sanitizeDestructorsView(value) {
-    return value === 'flow' ? 'flow' : 'teams';
-}
-
 function sanitizePitStopsView(value) {
     return value === 'season' ? 'season' : 'race';
 }
@@ -258,7 +250,6 @@ function readStandingsURLState() {
         tab: tab,
         focus: focus,
         embed: params.get('embed') === '1',
-        destructorsView: sanitizeDestructorsView(params.get('destructorsView')),
         pitView: sanitizePitStopsView(params.get('pitView')),
         pitRound: sanitizePitStopsRound(params.get('pitRound')),
         qualiView: sanitizeQualiView(params.get('qualiView')),
@@ -273,12 +264,6 @@ function readStandingsURLState() {
         debriefRound: sanitizeDebriefRound(params.get('debriefRound')),
         debriefView: sanitizeDebriefView(params.get('debriefView'))
     };
-}
-
-function currentDestructorsView() {
-    const mod = tabModuleInstances['destructors'];
-    if (mod && typeof mod.getActiveView === 'function') return mod.getActiveView();
-    return pendingDestructorsView;
 }
 
 function currentPitStopsView() {
@@ -367,10 +352,6 @@ function buildStandingsURL(target, embed) {
     url.searchParams.set('tab', tabName);
     if (shareTarget) url.searchParams.set('focus', shareTarget);
     if (embed) url.searchParams.set('embed', '1');
-    if (tabName === 'destructors') {
-        const view = currentDestructorsView();
-        if (view && view !== 'teams') url.searchParams.set('destructorsView', view);
-    }
     if (tabName === 'pit-stops') {
         const view = currentPitStopsView();
         if (view && view !== 'race') url.searchParams.set('pitView', view);
@@ -604,7 +585,7 @@ function refreshEmbedVisibility() {
     }
 }
 
-const EMBED_FOOTER_ROUND_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'destructors'];
+const EMBED_FOOTER_ROUND_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains'];
 
 // Embed mode footer: source/season/round on the left, a link to the full interactive view on the right.
 function refreshEmbedFooter() {
@@ -695,8 +676,7 @@ const TAB_STYLESHEETS = {
     'dirty-air': 'dirty-air.min.css',
     'track-dominance': 'track-dominance.min.css',
     'pit-stops': 'pit-stops.min.css',
-    'debrief': 'debrief.min.css',
-    'destructors': 'destructors.min.css'
+    'debrief': 'debrief.min.css'
 };
 const injectedTabStyles = Object.create(null);
 
@@ -739,17 +719,6 @@ function loadTabModule(tabName) {
 
     tabModulePromises[tabName] = loadModule().then(function(mod) {
         tabModuleInstances[tabName] = mod;
-        if (tabName === 'destructors') {
-            if (typeof mod.initDestructors === 'function') {
-                mod.initDestructors({
-                    onRendered: finalizeRenderedPanel,
-                    onViewChange: function() {
-                        if (activeStandingsTab === 'destructors') writeStandingsURLState(true);
-                    }
-                });
-            }
-            if (typeof mod.setActiveView === 'function') mod.setActiveView(pendingDestructorsView);
-        }
         if (tabName === 'pit-stops') {
             if (typeof mod.initPitStops === 'function') {
                 mod.initPitStops({
@@ -1583,7 +1552,6 @@ function bindEvents() {
         currentFocusTarget = nextState.focus;
         pendingRevealTarget = nextState.focus;
         isEmbedMode = nextState.embed;
-        pendingDestructorsView = nextState.destructorsView;
         pendingPitStopsView = nextState.pitView;
         pendingPitStopsRound = nextState.pitRound;
         pendingQualiView = nextState.qualiView;
@@ -1597,10 +1565,6 @@ function bindEvents() {
         pendingTrackTeamB = nextState.trackTeamB;
         pendingDebriefRound = nextState.debriefRound;
         pendingDebriefView = nextState.debriefView;
-        const destructorsMod = tabModuleInstances['destructors'];
-        if (destructorsMod && typeof destructorsMod.setActiveView === 'function') {
-            destructorsMod.setActiveView(nextState.destructorsView);
-        }
         const pitStopsMod = tabModuleInstances['pit-stops'];
         if (pitStopsMod) {
             if (typeof pitStopsMod.setActiveView === 'function') pitStopsMod.setActiveView(nextState.pitView);
@@ -1649,7 +1613,6 @@ function init() {
     currentFocusTarget = initialURLState.focus;
     pendingRevealTarget = initialURLState.focus;
     isEmbedMode = initialURLState.embed;
-    pendingDestructorsView = initialURLState.destructorsView;
     pendingPitStopsView = initialURLState.pitView;
     pendingPitStopsRound = initialURLState.pitRound;
     pendingQualiView = initialURLState.qualiView;
@@ -1671,7 +1634,7 @@ function init() {
     if (driversChart) driversChart.style.display = 'block';
     if (driversChartBars) renderTrustedHtml(driversChartBars, skelChartRows(2), 'loading driver standings chart rows');
 
-    ['qualifying-gaps-year', 'lap1-gains-year', 'tyre-pace-year', 'dirty-air-year', 'track-dominance-year', 'pit-stops-year', 'debrief-year', 'destructors-year'].forEach(function(id) {
+    ['qualifying-gaps-year', 'lap1-gains-year', 'tyre-pace-year', 'dirty-air-year', 'track-dominance-year', 'pit-stops-year', 'debrief-year'].forEach(function(id) {
         const el = document.getElementById(id);
         if (el) el.textContent = YEAR;
     });

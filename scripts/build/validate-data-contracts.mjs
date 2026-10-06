@@ -22,7 +22,6 @@ const FILE_LIMITS = {
     'scripts/build/asset-manifest.json': 256 * 1024,
     'sitemap.xml': 256 * 1024,
     'standings/debrief-cache.json': 1024 * 1024,
-    'standings/destructors-cache.json': 64 * 1024,
     'standings/dirty-air-cache.json': 4 * 1024 * 1024,
     'standings/dirty-air/index.json': 32 * 1024,
     'standings/standings-cache.json': 256 * 1024
@@ -496,28 +495,6 @@ function validateDirtyAirSplit() {
     files.forEach(name => addError(`${label}/${name}`, 'stale session file not in dirty-air-cache.json'));
 }
 
-function validateDestructorsCache() {
-    const relPath = 'standings/destructors-cache.json';
-    const data = requireObject(readJson(relPath), relPath);
-    assertCondition(data.version === 1, relPath, 'version must be 1');
-    validateSeason(data.season, `${relPath}.season`);
-    validateDateTimeString(`${relPath}.generatedAt`, requireString(data, 'generatedAt', relPath, { maxLength: 40 }));
-    requireString(data, 'snapshotLabel', relPath, { maxLength: 240 });
-    requireObject(data.source, `${relPath}.source`);
-
-    const drivers = requireArray(data.drivers, `${relPath}.drivers`, { allowEmpty: true, maxLength: 40 });
-    drivers.forEach((driver, index) => {
-        const label = `${relPath}.drivers[${index}]`;
-        requireObject(driver, label);
-        requireString(driver, 'acronym', label, { maxLength: 4 });
-        requireString(driver, 'fullName', label, { maxLength: 120 });
-        requireString(driver, 'teamKey', label, { maxLength: 80 });
-        requireNumber(driver, 'damage', label, { min: 0, max: 100000000 });
-    });
-    requireArray(data.zeroTeams, `${relPath}.zeroTeams`, { allowEmpty: true, maxLength: 20 })
-        .forEach((team, index) => requireString({ team }, 'team', `${relPath}.zeroTeams[${index}]`, { maxLength: 80 }));
-}
-
 function validateDebriefDriverRow(row, label) {
     requireObject(row, label);
     requireString(row, 'code', label, { maxLength: 4 });
@@ -616,7 +593,6 @@ function main() {
     validateStandingsCache();
     validateDirtyAirCache();
     validateDirtyAirSplit();
-    validateDestructorsCache();
     validateDebriefCache();
     validateAssetManifest();
     validateSitemap();

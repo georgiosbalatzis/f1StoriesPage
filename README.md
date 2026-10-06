@@ -39,7 +39,7 @@
 - **Node.js 22 ή νεότερο.** Το CI τρέχει σε Node 22 και το `package.json` δηλώνει `>=22`.
 - **npm** με υποστήριξη για `npm ci`.
 - **Google Chrome**, μόνο για τα `qa:visual`, `perf:lighthouse` και `test:consent`. Αν δεν βρεθεί αυτόματα, δώστε τη διαδρομή του με `CHROME_PATH`.
-- **Σύνδεση στο internet** για τα builds που τραβούν δεδομένα (YouTube, Jolpica, OpenF1, F1 Top App).
+- **Σύνδεση στο internet** για τα builds που τραβούν δεδομένα (YouTube, Jolpica, OpenF1).
 
 ### Εγκατάσταση
 
@@ -142,7 +142,7 @@ npm run verify
 │   ├── blog-processor.js       Wrapper που καλεί το build/
 │   ├── taxonomy.js             Δημόσιες κατηγορίες, aliases, labels (Node και browser)
 │   ├── blog-index.js, blog-fixes.js
-│   ├── dirty-air-cache.js, destructors-cache.js   Builders για τα cache των standings
+│   ├── dirty-air-cache.js   Builder για τα cache των standings
 │   ├── generate-image-variants.js
 │   └── *.json                  Generated feeds (index, page-1, home-latest, source-cache)
 ├── standings/
@@ -420,7 +420,6 @@ npm run test:blog
 | Tab | Module | Δεδομένα |
 |---|---|---|
 | Βαθμολογία οδηγών / κατασκευαστών | `standings.js` | `standings-cache.json`, μετά live Jolpica, με fallback στο OpenF1 |
-| Destructors | `tabs/destructors.js` | `destructors-cache.json` |
 | Pit stops | `tabs/pit-stops.js` | OpenF1 (live) |
 | Quali gaps | `tabs/quali-gaps.js` | OpenF1 (live) |
 | Lap 1 gains | `tabs/lap1-gains.js` | OpenF1 (live) |
@@ -443,7 +442,6 @@ npm run test:blog
 |---|---|---|
 | `standings/standings-cache.json` | `scripts/build/refresh-standings-data.mjs` | Jolpica (Ergast mirror) |
 | `standings/dirty-air-cache.json` (+ split `standings/dirty-air/`) | `blog-module/dirty-air-cache.js` | OpenF1 |
-| `standings/destructors-cache.json` | `blog-module/destructors-cache.js` | F1 Top App (parse του HTML) |
 | `standings/debrief-cache.json` | `standings/debrief-cache.js` | OpenF1 |
 
 Ανανεώνονται όλα μαζί με:
@@ -884,7 +882,6 @@ npm run quality:rendering:update
 |---|---|---|
 | Jolpica (`api.jolpi.ca`, Ergast mirror) | Βαθμολογίες | build και browser |
 | OpenF1 (`api.openf1.org`) | Sessions, laps, stints, pit stops, debrief, dirty air | build και browser |
-| F1 Top App (`f1.top-app.eu`) | Destructors championship | build |
 | Formula1.com media CDN | Φωτογραφίες οδηγών και λογότυπα ομάδων | χειροκίνητο build |
 | YouTube RSS | Snapshot των πρόσφατων videos | build |
 | Google Analytics 4 | Analytics και Web Vitals (`web_vital` event), μόνο μετά από συγκατάθεση | browser |

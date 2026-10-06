@@ -13,7 +13,6 @@ const MAX_ATTEMPTS = 3;
 const STANDINGS_OUTPUT_PATH = path.join(REPO_ROOT, 'standings', 'standings-cache.json');
 
 const { updateDirtyAirCache } = require(path.join(REPO_ROOT, 'blog-module', 'dirty-air-cache.js'));
-const { updateDestructorsCache } = require(path.join(REPO_ROOT, 'blog-module', 'destructors-cache.js'));
 const { updateDebriefCache } = require(path.join(REPO_ROOT, 'standings', 'debrief-cache.js'));
 
 function sleep(ms) {
@@ -145,13 +144,6 @@ async function main() {
         `Dirty air cache saved to ${dirtyAirResult.outputPath} ` +
         `(${dirtyAirResult.sessionCount} sessions, ${dirtyAirResult.rebuiltCount} rebuilt, ` +
         `${dirtyAirResult.reusedCount} reused, ${dirtyAirResult.failedCount} failed)`
-    );
-
-    const destructorsResult = await updateDestructorsCache(options);
-    console.log(
-        `Destructors cache saved to ${destructorsResult.outputPath} ` +
-        `(${destructorsResult.driverCount} drivers, ${destructorsResult.activeTeamCount} active teams` +
-        `${destructorsResult.unchanged ? ', unchanged' : ''})`
     );
 
     const debriefResult = await updateDebriefCache(options);

@@ -10,7 +10,6 @@
 //   .track-dom-*        → tabs/track-dominance.css
 //   .pit-stops-*        → tabs/pit-stops.css
 //   .debrief-* / .compound-* / .strategy-pill → tabs/debrief.css
-//   .destructors-*      → tabs/destructors.css
 //   everything else     → standings.css (shell)
 //
 // Rules whose selector list mixes a tab namespace with shell-level selectors
@@ -33,8 +32,7 @@ const TABS = [
     { id: 'dirty-air', test: (s) => /\.dirty-air-/.test(s) },
     { id: 'track-dominance', test: (s) => /\.track-dom-/.test(s) },
     { id: 'pit-stops', test: (s) => /\.pit-stops-/.test(s) },
-    { id: 'debrief', test: (s) => /\.debrief-|\.compound-|\.strategy-pill/.test(s) },
-    { id: 'destructors', test: (s) => /\.destructors-/.test(s) }
+    { id: 'debrief', test: (s) => /\.debrief-|\.compound-|\.strategy-pill/.test(s) }
 ];
 
 function classifySelector(selector) {
@@ -188,7 +186,7 @@ function main() {
     const src = fs.readFileSync(SRC, 'utf8');
     const stmts = parseStatements(src);
 
-    const buckets = { shell: [], 'quali-gaps': [], 'lap1-gains': [], 'tyre-pace': [], 'dirty-air': [], 'track-dominance': [], 'pit-stops': [], debrief: [], destructors: [] };
+    const buckets = { shell: [], 'quali-gaps': [], 'lap1-gains': [], 'tyre-pace': [], 'dirty-air': [], 'track-dominance': [], 'pit-stops': [], debrief: [] };
 
     for (const s of stmts) {
         if (s.kind === 'comment') {
@@ -213,7 +211,7 @@ function main() {
             if (/^@media/i.test(s.prelude)) {
                 // split body into inner statements and partition
                 const inner = parseStatements(s.body);
-                const innerBuckets = { shell: [], 'quali-gaps': [], 'lap1-gains': [], 'tyre-pace': [], 'dirty-air': [], 'track-dominance': [], 'pit-stops': [], debrief: [], destructors: [] };
+                const innerBuckets = { shell: [], 'quali-gaps': [], 'lap1-gains': [], 'tyre-pace': [], 'dirty-air': [], 'track-dominance': [], 'pit-stops': [], debrief: [] };
                 for (const is of inner) {
                     if (is.kind === 'rule') {
                         const t = classifyRule(is.selectors);

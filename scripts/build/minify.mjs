@@ -54,8 +54,7 @@ const CSS_INPUTS = [
     'standings/tabs/dirty-air.css',
     'standings/tabs/track-dominance.css',
     'standings/tabs/pit-stops.css',
-    'standings/tabs/debrief.css',
-    'standings/tabs/destructors.css'
+    'standings/tabs/debrief.css'
 ];
 
 const CSS_BUNDLE_INPUTS = new Set([
@@ -96,7 +95,7 @@ const JS_INPUTS = [
 ];
 
 const STANDINGS_TAB_ENTRIES = [
-    'destructors', 'pit-stops', 'quali-gaps', 'lap1-gains',
+    'pit-stops', 'quali-gaps', 'lap1-gains',
     'tyre-pace', 'dirty-air', 'track-dominance', 'debrief'
 ];
 

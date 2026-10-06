@@ -65,11 +65,3 @@ export function validateOpenF1ArrayPayload(payload, label, options) {
     requireArray(payload, label || 'OpenF1 payload', options);
     return payload;
 }
-
-export function validateDestructorsSnapshotPayload(payload) {
-    requireObject(payload, 'destructors snapshot');
-    requireArray(payload.drivers, 'destructors drivers');
-    if (payload.zeroTeams != null) requireArray(payload.zeroTeams, 'destructors zeroTeams', { allowEmpty: true });
-    if (payload.source != null) requireObject(payload.source, 'destructors source');
-    return payload;
-}

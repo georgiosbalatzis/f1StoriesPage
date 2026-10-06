@@ -77,7 +77,6 @@ const AUTHORS_PUBLIC_FILES = new Set([
 
 const STANDINGS_ROOT_FILES = new Set([
     'standings/debrief-cache.json',
-    'standings/destructors-cache.json',
     'standings/index.html',
     'standings/standings-cache.json',
     'standings/standings.min.css',

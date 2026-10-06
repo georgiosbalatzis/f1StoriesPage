@@ -50,7 +50,6 @@ const REQUIRED_EXACT = [
     'standings/index.html',
     'authors/index.html',
     'standings/debrief-cache.json',
-    'standings/destructors-cache.json',
     'standings/dirty-air/index.json',
     'standings/standings-cache.json',
     'styles.min.css',
