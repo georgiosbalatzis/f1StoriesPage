@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
-const { setupBetCastFrameBridge } = require('../../blog/article-script');
+const { setupBetCastFrameBridge, setupStandingsFrameBridge } = require('../../blog/article-script');
 
 function fixture(src = 'https://georgiosbalatzis.github.io/BetCastVisualisation/?embed=1&presentation=article&theme=host') {
     const listeners = new Map();
@@ -79,4 +79,73 @@ test('unapproved iframe URLs are left outside the managed adapter', () => {
     assert.equal(frame.dataset.f1sBetcastManaged, undefined);
     assert.equal(frame.contentWindow.messages.length, 0);
     cleanup();
+});
+
+function standingsFixture(src = 'https://f1stories.gr/standings/?tab=drivers&focus=drivers-chart&embed=1') {
+    const listeners = new Map();
+    const attrs = {};
+    const frame = {
+        src,
+        dataset: {},
+        style: { height: '', removed: [], removeProperty(name) { this.removed.push(name); } },
+        contentWindow: { messages: [], postMessage(data, origin) { this.messages.push({ data, origin }); } },
+        getAttribute(name) { return name === 'src' ? this.src : attrs[name] ?? null; },
+        setAttribute(name, value) { attrs[name] = value; },
+        addEventListener(type, listener) { listeners.set(type, listener); },
+    };
+    class MutationObserver {
+        observe() {}
+        disconnect() {}
+    }
+    const win = {
+        location: { href: 'https://f1stories.gr/blog-module/blog-entries/example/article.html', origin: 'https://f1stories.gr' },
+        MutationObserver,
+        addEventListener(type, listener) { listeners.set(type, listener); },
+        removeEventListener(type) { listeners.delete(type); },
+        setTimeout(callback, _delay, ...args) { return setTimeout(() => callback(...args), 100000); },
+        clearTimeout(timer) { clearTimeout(timer); },
+    };
+    const cleanup = setupStandingsFrameBridge({ querySelectorAll: () => [frame] }, {}, win);
+    return { cleanup, frame, listeners, attrs };
+}
+
+test('standings frames request measurement from their own origin', () => {
+    const { cleanup, frame } = standingsFixture();
+    assert.equal(frame.dataset.f1sStandingsManaged, 'true');
+    assert.deepEqual(frame.contentWindow.messages[0], { data: { type: 'f1s-standings:measure' }, origin: 'https://f1stories.gr' });
+    cleanup();
+});
+
+test('standings host accepts only a matching frame, origin, message shape, and sane integer height', () => {
+    const { cleanup, frame, listeners, attrs } = standingsFixture();
+    const onMessage = listeners.get('message');
+    const message = (data, source = frame.contentWindow, origin = 'https://f1stories.gr') => onMessage({ data, source, origin });
+    for (const height of [99, 12001, Infinity, 120.5, '500']) message({ type: 'f1s-standings:resize', height });
+    message({ type: 'f1s-standings:resize', height: 500, extra: true });
+    message({ type: 'f1s-standings:resize', height: 500 }, {});
+    message({ type: 'f1s-standings:resize', height: 500 }, frame.contentWindow, 'https://evil.example');
+    message({ type: 'betcast:resize', height: 500 });
+    assert.equal(frame.style.height, '');
+    assert.deepEqual(frame.style.removed, []);
+
+    message({ type: 'f1s-standings:resize', height: 777 });
+    assert.equal(frame.style.height, '777px');
+    assert.deepEqual(frame.style.removed, ['min-height']);
+    assert.equal(frame.dataset.f1sStandingsReady, 'true');
+    assert.equal(attrs.scrolling, 'no');
+    cleanup();
+});
+
+test('standings bridge ignores non-standings, non-embed and foreign-origin frames', () => {
+    for (const src of [
+        'https://f1stories.gr/standings/?tab=drivers',
+        'https://f1stories.gr/other/?embed=1',
+        'https://evil.example/standings/?embed=1',
+        'https://georgiosbalatzis.github.io/BetCastVisualisation/?embed=1',
+    ]) {
+        const { cleanup, frame } = standingsFixture(src);
+        assert.equal(frame.dataset.f1sStandingsManaged, undefined, src);
+        assert.equal(frame.contentWindow.messages.length, 0, src);
+        cleanup();
+    }
 });

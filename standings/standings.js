@@ -602,6 +602,40 @@ function refreshEmbedVisibility() {
     }
 }
 
+// Embed mode: tell the hosting article how tall the content is so it can size the iframe.
+// The article validates source, origin and message shape (setupStandingsFrameBridge).
+function setupEmbedHeightReporter() {
+    if (!isEmbedMode || window.parent === window) return;
+    let lastHeight = 0;
+    let frameRequested = 0;
+
+    function report(force) {
+        frameRequested = 0;
+        const height = Math.ceil(document.body.getBoundingClientRect().height);
+        if (!Number.isFinite(height) || height < 1 || (!force && height === lastHeight)) return;
+        lastHeight = height;
+        try {
+            window.parent.postMessage({ type: 'f1s-standings:resize', height: height }, window.location.origin);
+        } catch (_) {}
+    }
+
+    function schedule(force) {
+        if (force) {
+            report(true);
+            return;
+        }
+        if (!frameRequested) frameRequested = window.requestAnimationFrame(function() { report(false); });
+    }
+
+    if (typeof ResizeObserver === 'function') new ResizeObserver(function() { schedule(false); }).observe(document.body);
+    window.addEventListener('load', function() { schedule(false); });
+    window.addEventListener('message', function(event) {
+        if (event.source !== window.parent || event.origin !== window.location.origin) return;
+        if (event.data && event.data.type === 'f1s-standings:measure') schedule(true);
+    });
+    schedule(false);
+}
+
 function isLightweightTab(tabName) {
     return LIGHTWEIGHT_TABS.indexOf(tabName) !== -1;
 }
@@ -1598,6 +1632,7 @@ function init() {
 
     bindEvents();
     activateStandingsTab(activeStandingsTab, { skipURL: true, skipFocus: true });
+    setupEmbedHeightReporter();
 
     // Always hydrate drivers/constructors in the background so adjacent
     // panels don't sit empty on the first tab switch.

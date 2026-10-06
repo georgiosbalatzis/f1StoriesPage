@@ -96,6 +96,77 @@ function setupBetCastFrameBridge(articleContent, doc, win) {
     };
 }
 
+// Sizes /standings/ embeds (?embed=1) to their real content height. The embed posts
+// `f1s-standings:resize`; same-origin only, since embeds are for f1stories.gr articles.
+function setupStandingsFrameBridge(articleContent, doc, win) {
+    if (!articleContent || !doc || !win) return () => {};
+    const frameUrl = src => {
+        try {
+            const url = new URL(src, win.location.href);
+            const sameSite = url.origin === 'https://f1stories.gr' || url.origin === win.location.origin;
+            const embed = url.searchParams.get('embed');
+            if (!sameSite || !url.pathname.startsWith('/standings/') || embed == null
+                || ['0', 'false', 'no', 'off'].includes(embed.toLowerCase())) return null;
+            return url;
+        } catch (_) { return null; }
+    };
+    const frames = new Map();
+    const post = (state, type) => {
+        try { state.frame.contentWindow?.postMessage({ type }, state.url.origin); } catch (_) {}
+    };
+    const clearRetries = state => {
+        state.timers.forEach(timer => win.clearTimeout(timer));
+        state.timers = [];
+    };
+    const requestMeasurement = state => post(state, 'f1s-standings:measure');
+    const startMeasuring = state => {
+        clearRetries(state);
+        requestMeasurement(state);
+        [250, 750, 1600, 3200].forEach(delay => state.timers.push(win.setTimeout(requestMeasurement, delay, state)));
+    };
+    const initializeFrame = frame => {
+        if (!frame || !frame.contentWindow || frames.has(frame.contentWindow)) return;
+        const url = frameUrl(frame.getAttribute('src') || frame.src);
+        if (!url) return;
+        frame.dataset.f1sStandingsManaged = 'true';
+        const state = { frame, url, timers: [] };
+        frames.set(frame.contentWindow, state);
+        frame.addEventListener('load', () => startMeasuring(state));
+        startMeasuring(state);
+    };
+    const onMessage = event => {
+        const state = frames.get(event.source);
+        if (!state || event.origin !== state.url.origin) return;
+        const data = event.data;
+        if (!data || typeof data !== 'object' || Array.isArray(data)) return;
+        const keys = Object.keys(data).sort().join(',');
+        if (data.type !== 'f1s-standings:resize' || keys !== 'height,type' || typeof data.height !== 'number'
+            || !Number.isInteger(data.height) || data.height < 100 || data.height > 12000) return;
+        clearRetries(state);
+        state.frame.dataset.f1sStandingsReady = 'true';
+        state.frame.setAttribute('scrolling', 'no');
+        state.frame.style.height = `${data.height}px`;
+        state.frame.style.removeProperty('min-height');
+    };
+
+    win.addEventListener('message', onMessage);
+    articleContent.querySelectorAll('iframe').forEach(initializeFrame);
+    const observer = win.MutationObserver ? new win.MutationObserver(records => {
+        records.forEach(record => record.addedNodes.forEach(node => {
+            if (node.nodeType !== 1) return;
+            if (node.matches?.('iframe')) initializeFrame(node);
+            node.querySelectorAll?.('iframe').forEach(initializeFrame);
+        }));
+    }) : null;
+    observer?.observe(articleContent, { childList: true, subtree: true });
+
+    return () => {
+        win.removeEventListener('message', onMessage);
+        observer?.disconnect();
+        frames.forEach(clearRetries);
+    };
+}
+
 function setupBetCastWidgets(articleContent, doc, win) {
     if (!articleContent || !doc || !win) return () => {};
     const figures = [...articleContent.querySelectorAll('[data-f1s-betcast-widget="1"]')];
@@ -266,7 +337,7 @@ function setupTelemetryFigures(articleContent, doc, win) {
     };
 }
 
-if (typeof module !== 'undefined' && module.exports) module.exports = { setupBetCastFrameBridge, setupBetCastWidgets, setupTelemetryFigures };
+if (typeof module !== 'undefined' && module.exports) module.exports = { setupBetCastFrameBridge, setupStandingsFrameBridge, setupBetCastWidgets, setupTelemetryFigures };
 
 if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded', function () {
     const $ = sel => document.querySelector(sel);
@@ -947,6 +1018,7 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
     updateShareLinks();
     setupArticleMiniBar();
     setupBetCastFrameBridge(articleContent, document, window);
+    setupStandingsFrameBridge(articleContent, document, window);
     setupBetCastWidgets(articleContent, document, window);
     setupTelemetryFigures(articleContent, document, window);
     markAuthoredSectionNumbers();
