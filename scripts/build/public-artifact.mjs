@@ -67,6 +67,7 @@ const BLOG_PUBLIC_FILES = new Set([
     'blog-module/blog-index-data.json',
     'blog-module/blog-index.min.js',
     'blog-module/taxonomy.min.js',
+    'blog-module/inline-markup.min.js',
     'blog-module/home-latest.json',
     'blog-module/images/default-blog.jpg'
 ]);

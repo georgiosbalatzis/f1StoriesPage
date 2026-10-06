@@ -1397,15 +1397,10 @@
             .replace(/"/g, '&quot;');
     }
 
+    // **bold**, *italic* and [link text](https://example.com): the same formatter the build uses
+    // (blog-module/inline-markup.js), so the preview matches the published article.
     function inlineFormat(text) {
-        text = escapeHtml(text);
-        // Bold: **text** or __text__
-        text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-        text = text.replace(/__(.+?)__/g, '<strong>$1</strong>');
-        // Italic: *text* or _text_
-        text = text.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
-        text = text.replace(/(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g, '<em>$1</em>');
-        return text;
+        return window.F1S_INLINE.formatInline(text);
     }
 
     // ── Embed detection ──────────────────────────────────
