@@ -18,11 +18,13 @@ import { getCachedHeadshotResult } from '../core/drivers-meta.js';
 import { fetchJSON, fetchOpenF1BySessionKeys } from '../core/fetchers.js';
 import { setTrustedHtml } from '../core/rendering.js';
 import { isFiniteNumber } from './_shared.js';
+import { buildRosterByNumber } from '../core/roster.js';
 import { capEmbedRows, embedCapLinkHTML } from '../core/embed.js';
 
 // Rows are tall (avatar, team chip, move), so an embed shows fewer than the shared default.
 const EMBED_LAP1_MOVES = 5;
 
+const ROSTER_SNAPSHOT_URL = 'standings-cache.json';
 const OPENF1 = 'https://api.openf1.org/v1';
 const YEAR = new Date().getFullYear();
 // Drivers missing from the OpenF1 lookup get a warm neutral, not the retired legacy blue.
@@ -224,8 +226,42 @@ function formatPositionTag(position) {
     return 'P' + position;
 }
 
-function buildLap1GainRows(sessions, drivers, positions, lapOneLaps, lapTwoLaps) {
+function rosterDriver(entry) {
+    const fullName = entry.fullName;
+    return {
+        driverNumber: entry.driverNumber,
+        fullName: fullName,
+        firstName: entry.firstName,
+        lastName: entry.lastName,
+        acronym: entry.acronym,
+        headshot: getCachedHeadshotResult('', fullName, '').url,
+        teamName: entry.teamName,
+        teamColor: getCanonicalTeamColor(entry.constructorId, entry.teamName, '')
+    };
+}
+
+export function resolveLap1Driver(number, sessionDrivers, otherSessionDrivers, roster) {
+    return (sessionDrivers && sessionDrivers[number])
+        || (otherSessionDrivers && otherSessionDrivers[number])
+        || (roster && roster[number] ? rosterDriver(roster[number]) : null)
+        || {
+            driverNumber: number,
+            acronym: '#' + number,
+            fullName: 'Οδηγός #' + number,
+            headshot: '',
+            teamName: '',
+            teamColor: UNKNOWN_DRIVER_COLOR
+        };
+}
+
+function buildLap1GainRows(sessions, drivers, positions, lapOneLaps, lapTwoLaps, roster) {
     const driverLookup = buildDriverLookup(drivers);
+    const anySessionDrivers = {};
+    Object.keys(driverLookup).forEach(function(key) {
+        Object.keys(driverLookup[key]).forEach(function(number) {
+            if (driverLookup[key][number].fullName) anySessionDrivers[number] = driverLookup[key][number];
+        });
+    });
     const positionsBySession = groupRecordsBySession(positions);
     const lapOneBySession = groupRecordsBySession(lapOneLaps);
     const lapTwoBySession = groupRecordsBySession(lapTwoLaps);
@@ -270,15 +306,7 @@ function buildLap1GainRows(sessions, drivers, positions, lapOneLaps, lapTwoLaps)
 
             seenLapTwo[record.driver_number] = true;
 
-            const driverMap = driverLookup[sessionKey] || {};
-            const driver = driverMap[record.driver_number] || {
-                driverNumber: record.driver_number,
-                acronym: '#' + record.driver_number,
-                fullName: 'Οδηγός #' + record.driver_number,
-                headshot: '',
-                teamName: '',
-                teamColor: UNKNOWN_DRIVER_COLOR
-            };
+            const driver = resolveLap1Driver(record.driver_number, driverLookup[sessionKey], anySessionDrivers, roster);
             const startPosition = normalizedStartMap[record.driver_number];
             const afterPosition = moves.length + 1;
             const teamColor = getCanonicalTeamColor('', driver.teamName || '', driver.teamColor || '');
@@ -531,6 +559,15 @@ function createLap1SkeletonRows(count) {
     return html + '</div>';
 }
 
+// Static, already fetched by the page; never fails the tab.
+function loadDriverRoster() {
+    return fetchJSON(ROSTER_SNAPSHOT_URL).then(function(snapshot) {
+        return buildRosterByNumber(snapshot && snapshot.driverStandings);
+    }).catch(function() {
+        return {};
+    });
+}
+
 function loadLap1GainRows() {
     return getCompletedRaceAndSprintSessions().then(function(raceSessions) {
         if (!raceSessions.length) return [];
@@ -543,9 +580,10 @@ function loadLap1GainRows() {
             fetchOpenF1BySessionKeys(OPENF1, 'drivers', sessionKeys),
             fetchOpenF1BySessionKeys(OPENF1, 'position', sessionKeys),
             fetchOpenF1BySessionKeys(OPENF1, 'laps', sessionKeys, 'lap_number=1'),
-            fetchOpenF1BySessionKeys(OPENF1, 'laps', sessionKeys, 'lap_number=2')
+            fetchOpenF1BySessionKeys(OPENF1, 'laps', sessionKeys, 'lap_number=2'),
+            loadDriverRoster()
         ]).then(function(payload) {
-            return buildLap1GainRows(raceSessions, payload[0], payload[1], payload[2], payload[3]);
+            return buildLap1GainRows(raceSessions, payload[0], payload[1], payload[2], payload[3], payload[4]);
         });
     });
 }
