@@ -566,6 +566,14 @@
 .article-page .author-card__links a:hover > span { transform: translateX(4px); }
 .article-page .author-card a:focus-visible { outline: 2px solid var(--accent-readable); outline-offset: 3px; }
 .article-page .sponsor-strip { margin-top: 36px; padding-top: 22px; border-color: var(--border); }
+/* Night edition: partners sit on the page itself as light-grey marks and show their colours on a paper chip on
+ * hover, like the Telemetry dashboard. The paper edition keeps the cream panel (styles/editorial.css). */
+:root:not([data-theme="light"]) .article-page .sponsor-logos { gap: 8px; padding: 0; background: transparent; border: 0; border-radius: 0; color-scheme: dark; overflow: visible; }
+:root:not([data-theme="light"]) .article-page .sponsor-logo { height: 96px; min-height: 96px; padding: 16px 12px; border-radius: var(--radius-control); }
+:root:not([data-theme="light"]) .article-page .sponsor-logo img { filter: grayscale(1) invert(1); opacity: .68; transition: filter .35s var(--ease-editorial), opacity .35s var(--ease-editorial); }
+:root:not([data-theme="light"]) .article-page .sponsor-logo:is(:hover, :focus-visible) { background: var(--paper); }
+:root:not([data-theme="light"]) .article-page .sponsor-logo:is(:hover, :focus-visible) img { filter: none; opacity: 1; }
+:root:not([data-theme="light"]) .article-page .sponsor-logo:focus-visible { outline: 2px solid var(--accent-readable); outline-offset: 2px; }
 
 .article-page .article-comments { max-width: 968px; margin: 64px auto 0; padding-top: 28px; border-color: var(--border); }
 .article-page .article-comments h2 { font: 400 2rem/1.25 var(--font-editorial); }
