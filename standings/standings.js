@@ -18,6 +18,7 @@ import {
 } from './core/drivers-meta.js';
 import { cacheClear, cachePurgeExpired } from './core/cache.js';
 import { fetchJSON, fetchJSONNoCache } from './core/fetchers.js';
+import { IS_EMBED, EMBED_ROW_CAP, embedCapLinkHTML, wireEmbedCapLinks } from './core/embed.js';
 import {
     renderMessage,
     renderTrustedHtml
@@ -1201,6 +1202,11 @@ function loadFromOpenF1Fallback() {
         });
 }
 
+// Rows expand to a detail row on the full page; in an embed they are static.
+function rowInteractionAttrs(detailId) {
+    return IS_EMBED ? '' : ' role="button" tabindex="0" aria-expanded="false" aria-controls="' + detailId + '" data-detail-target="' + detailId + '"';
+}
+
 function renderDrivers(standings, openf1Map) {
     if (!standings || !standings.length) {
         renderMessage(driversTable, {
@@ -1217,6 +1223,7 @@ function renderDrivers(standings, openf1Map) {
     let html = tableHeadHTML('Οδηγός / Ομάδα');
 
     standings.forEach(function(s, index) {
+        if (IS_EMBED && index >= EMBED_ROW_CAP) return;
         const driver = s.Driver;
         const constructor = s.Constructors && s.Constructors[0];
         const cId = constructor ? constructor.constructorId : '';
@@ -1239,7 +1246,7 @@ function renderDrivers(standings, openf1Map) {
         const imgAttrs = hs.url ? imageSourceAttrs(hs.url, index, ABOVE_FOLD_DRIVER_IMAGES, index === 0) : '';
         const detailId = 'driver-detail-' + escAttr(driverId || index);
 
-        html += '<div class="st-row st-rank-' + esc(pos) + '" role="button" tabindex="0" aria-expanded="false" aria-controls="' + detailId + '" data-detail-target="' + detailId + '" style="--team-color:#' + esc(tc) + ';">'
+        html += '<div class="st-row st-rank-' + esc(pos) + '"' + rowInteractionAttrs(detailId) + ' style="--team-color:#' + esc(tc) + ';">'
             + '<div class="st-pos">' + pos + '</div>'
             + '<div class="st-info">'
             + (hs.url ? '<img class="st-headshot" alt="' + esc(name) + '" width="40" height="40"' + hs.style + imgAttrs + '>'
@@ -1251,13 +1258,14 @@ function renderDrivers(standings, openf1Map) {
             + '</div>'
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
             + '</div>'
-            + detailRowHTML(detailId, [
+            + (IS_EMBED ? '' : detailRowHTML(detailId, [
                 { label: 'Φόρμα', value: wins > 0 ? formatWinsLabel(wins) : 'Χωρίς νίκες ακόμη' },
                 { label: 'Ομάδα', value: teamName || 'Άγνωστη' },
                 { label: 'Διαφορά από τον προηγούμενο', value: index === 0 ? 'Πρωτοπόρος' : '+' + pointsText(gapAhead) + ' βαθ.' },
                 { label: 'Διαφορά από τον επόμενο', value: next ? pointsText(gapBehind) + ' βαθ.' : 'Τελευταία καταχώριση' }
-            ]);
+            ]));
     });
+    html += embedCapLinkHTML(standings.length, EMBED_ROW_CAP);
     renderTrustedHtml(driversTable, html, 'driver standings rows from validated standings payload');
     hydrateStandingsLazyImages(driversTable);
 
@@ -1330,7 +1338,7 @@ function renderConstructors(standings, driverStandings) {
         const imgAttrs = logo ? imageSourceAttrs(logo, index, eagerLimit, activeStandingsTab === 'constructors' && index === 0) : '';
         const detailId = 'constructor-detail-' + escAttr(cId || index);
 
-        html += '<div class="st-row st-rank-' + esc(pos) + '" role="button" tabindex="0" aria-expanded="false" aria-controls="' + detailId + '" data-detail-target="' + detailId + '" style="--team-color:#' + esc(tc) + ';">'
+        html += '<div class="st-row st-rank-' + esc(pos) + '"' + rowInteractionAttrs(detailId) + ' style="--team-color:#' + esc(tc) + ';">'
             + '<div class="st-pos">' + pos + '</div>'
             + '<div class="st-info">'
             + '<div class="st-team-swatch" data-team-short="' + escAttr(shortName) + '" style="border-color:#' + esc(tc) + '60;">'
@@ -1343,12 +1351,12 @@ function renderConstructors(standings, driverStandings) {
             + '</div>'
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
             + '</div>'
-            + detailRowHTML(detailId, [
+            + (IS_EMBED ? '' : detailRowHTML(detailId, [
                 { label: 'Φόρμα', value: wins > 0 ? formatWinsLabel(wins) : 'Χωρίς νίκες ακόμη' },
                 { label: 'Οδηγοί', value: drivers.length ? drivers.join(' / ') : 'Δεν έχει οριστεί' },
                 { label: 'Διαφορά από τον προηγούμενο', value: index === 0 ? 'Πρωτοπόρος' : '+' + pointsText(gapAhead) + ' βαθ.' },
                 { label: 'Διαφορά από τον επόμενο', value: next ? pointsText(gapBehind) + ' βαθ.' : 'Τελευταία καταχώριση' }
-            ]);
+            ]));
     });
     renderTrustedHtml(constructorsTable, html, 'constructor standings rows from validated standings payload');
     hydrateStandingsLazyImages(constructorsTable);
@@ -1626,6 +1634,14 @@ function init() {
     pendingTrackTeamB = initialURLState.trackTeamB;
     pendingDebriefRound = initialURLState.debriefRound;
     pendingDebriefView = initialURLState.debriefView;
+    if (isEmbedMode) {
+        pendingLap1View = 'race-detail';
+        if (initialURLState.qualiSession && !new URLSearchParams(window.location.search).has('qualiView')) pendingQualiView = 'race-detail';
+        wireEmbedCapLinks(function() {
+            refreshEmbedFooter();
+            return document.getElementById('embed-footer-link').href;
+        });
+    }
 
     // Keep the first viewport useful while the tracked snapshot is fetched;
     // only the rows currently affected by the refresh need a placeholder.

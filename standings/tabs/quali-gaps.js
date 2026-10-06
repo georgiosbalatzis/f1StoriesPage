@@ -18,6 +18,9 @@ import { getCachedHeadshotResult } from '../core/drivers-meta.js';
 import { fetchJSON, fetchOpenF1BySessionKeys } from '../core/fetchers.js';
 import { setTrustedHtml } from '../core/rendering.js';
 import { isFiniteNumber, parseTimeSeconds } from './_shared.js';
+import { capEmbedRows, embedCapLinkHTML } from '../core/embed.js';
+
+const EMBED_OVERVIEW_PAIRS = 5;
 
 const OPENF1 = 'https://api.openf1.org/v1';
 const YEAR = new Date().getFullYear();
@@ -702,7 +705,7 @@ function renderQualifyingGapOverview(rows) {
     const laneOffsets = [28, 40, 52, 64, 34, 58];
     let html = '<div class="quali-gaps-list">';
 
-    rows.forEach(function(row) {
+    capEmbedRows(rows, EMBED_OVERVIEW_PAIRS).forEach(function(row) {
         const leftMax = row.dots.reduce(function(acc, dot) { return Math.max(acc, -dot.signedGap); }, 0);
         const rightMax = row.dots.reduce(function(acc, dot) { return Math.max(acc, dot.signedGap); }, 0);
         let axisLeft = qualiAxisSide(leftMax);
@@ -770,7 +773,7 @@ function renderQualifyingGapOverview(rows) {
             + '</div>';
     });
 
-    return html + '</div>';
+    return html + '</div>' + embedCapLinkHTML(rows.length, EMBED_OVERVIEW_PAIRS);
 }
 
 function renderQualifyingRaceDriverPin(driver, topPct, driverChannels) {

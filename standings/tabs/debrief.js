@@ -21,6 +21,7 @@ import {
 import { fetchJSONNoCache } from '../core/fetchers.js';
 import { setTrustedHtml } from '../core/rendering.js';
 import { parseNumberValue, isFiniteNumber, parseTimeSeconds } from './_shared.js';
+import { capEmbedRows, embedCapLinkHTML } from '../core/embed.js';
 
 const YEAR = new Date().getFullYear();
 const DEBRIEF_CACHE_URL = 'debrief-cache.json';
@@ -472,7 +473,7 @@ function buildDebriefSingleLapHTML(round) {
         return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-flag-checkered"/></svg><p>Δεν υπάρχουν δεδομένα γρήγορου γύρου για αυτόν τον γύρο.</p></div>';
     }
 
-    const rows = round.singleLap.map(function(entry, index) {
+    const rows = capEmbedRows(round.singleLap).map(function(entry, index) {
         const compoundClass = getDebriefCompoundClass(entry.compound);
         const gapText = (entry.gap && entry.gap !== 'null') ? entry.gap : (index === 0 ? 'Πρώτος' : '');
         const gapClass = index === 0 ? 'debrief-delta-leader' : 'debrief-gap';
@@ -486,7 +487,7 @@ function buildDebriefSingleLapHTML(round) {
             + '</tr>';
     }).join('');
 
-    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Χρόνος γύρου</th><th>Διαφορά</th><th>Ελαστικό</th><th>Γύροι</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Χρόνος γύρου</th><th>Διαφορά</th><th>Ελαστικό</th><th>Γύροι</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + embedCapLinkHTML(round.singleLap.length);
 }
 
 function buildDebriefLongRunHTML(round) {
@@ -494,7 +495,7 @@ function buildDebriefLongRunHTML(round) {
         return '<div class="debrief-empty"><svg class="icon" aria-hidden="true"><use href="#fa-wave-square"/></svg><p>Δεν υπάρχουν δεδομένα long run για αυτόν τον γύρο.</p></div>';
     }
 
-    const rows = round.longRun.map(function(entry, index) {
+    const rows = capEmbedRows(round.longRun).map(function(entry, index) {
         const compoundClass = getDebriefCompoundClass(entry.compound);
         const deltaText = (entry.delta && entry.delta !== 'null') ? entry.delta : (index === 0 ? 'Πρώτος' : '');
         return '<tr>'
@@ -507,7 +508,7 @@ function buildDebriefLongRunHTML(round) {
             + '</tr>';
     }).join('');
 
-    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Μέσος γύρος</th><th>Δέλτα</th><th>Ελαστικό</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Μέσος γύρος</th><th>Δέλτα</th><th>Ελαστικό</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + embedCapLinkHTML(round.longRun.length);
 }
 
 function buildDebriefTyreDegHTML(round) {
@@ -524,7 +525,7 @@ function buildDebriefTyreDegHTML(round) {
         }
     });
 
-    const rows = round.tyreDeg.map(function(entry, index) {
+    const rows = capEmbedRows(round.tyreDeg).map(function(entry, index) {
         const compoundClass = getDebriefCompoundClass(entry.compound);
         const degValue = parseNumberValue(entry && entry.deg);
         const degText = entry.deg ? (entry.deg + ' s/lap') : 'n/a';
@@ -547,7 +548,7 @@ function buildDebriefTyreDegHTML(round) {
             + '</tr>';
     }).join('');
 
-    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Φθορά</th><th>Δέλτα</th><th>Ελαστικό</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Φθορά</th><th>Δέλτα</th><th>Ελαστικό</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + embedCapLinkHTML(round.tyreDeg.length);
 }
 
 function buildDebriefIdealScatterSVG(rows, title, xMin, xMax) {

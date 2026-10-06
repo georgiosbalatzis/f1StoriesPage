@@ -674,3 +674,26 @@ body.standings-embed :is(
     .pit-stops-controls, .debrief-round-selector,
     .lap1-race-head .lap1-overview-note
 ) { display: none !important; }
+
+/* Embed caps: rows are static (no expand control) and capped lists end with a link to the full view. */
+body.standings-embed .st-row::after,
+body.standings-embed .st-detail-row { display: none !important; }
+
+body.standings-embed .embed-cap-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin-top: 0.5rem;
+    color: var(--st-accent-readable);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.16em;
+}
+
+/* Season-best view: the race header belongs to the per-race view. */
+body.standings-embed .pit-stops-card.is-season-view .pit-stops-head { display: none; }
+
+/* The full page reserves 22 driver rows against layout shift; a capped embed is sized by its content. */
+body.standings-embed :is(#drivers-table, #constructors-table) { min-height: 0; }

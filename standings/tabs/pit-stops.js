@@ -28,6 +28,7 @@ import {
     validateJolpicaRacePayload
 } from '../core/payloads.js';
 import { isFiniteNumber, parseTimeSeconds } from './_shared.js';
+import { capEmbedRows, embedCapLinkHTML } from '../core/embed.js';
 
 const JOLPICA = 'https://api.jolpi.ca/ergast/f1';
 const YEAR    = new Date().getFullYear();
@@ -354,13 +355,13 @@ function renderPitStopsSeasonContent(seasonCache) {
     if (driverBest.length) {
         html += '<p class="pit-stops-section-title" style="margin-top:1.4rem;"><svg class="icon" aria-hidden="true" style="margin-right:0.4rem;opacity:0.7;"><use href="#fa-helmet-safety"/></svg>Ρεκόρ σεζόν οδηγών</p><div class="pit-stops-rows">';
         const driverFastest = driverBest[0].duration;
-        driverBest.forEach(function(entry, idx) {
+        capEmbedRows(driverBest).forEach(function(entry, idx) {
             const modifiedEntry = Object.assign({}, entry, {
                 fullName: 'R' + entry.round + ' · ' + entry.raceName
             });
             html += buildPitStopsDriverRowHTML(modifiedEntry, idx, driverFastest);
         });
-        html += '</div>';
+        html += '</div>' + embedCapLinkHTML(driverBest.length);
     }
 
     return html;
@@ -417,7 +418,7 @@ function renderPitStops(raceData, race, races) {
         return '<option value="' + esc(r.round) + '"' + (String(r.round) === String(state.selectedRound) ? ' selected' : '') + '>R' + r.round + ' · ' + esc(r.raceName) + '</option>';
     }).join('');
 
-    let html = '<div class="pit-stops-card">'
+    let html = '<div class="pit-stops-card' + (state.activeView === 'season' ? ' is-season-view' : '') + '">'
         + '<div class="pit-stops-head">'
         + '<div class="pit-stops-head-copy"><h4 class="pit-stops-head-title">' + esc(race.raceName) + '</h4>'
         + '<p class="pit-stops-head-note">' + esc(formatRaceDate(race)) + ' · ' + totalStops + ' pit stops</p></div>'
@@ -443,10 +444,10 @@ function renderPitStops(raceData, race, races) {
             + '</div></div>';
 
         html += '<div class="pit-stops-rows">';
-        sorted.forEach(function(entry, idx) {
+        capEmbedRows(sorted).forEach(function(entry, idx) {
             html += buildPitStopsDriverRowHTML(entry, idx, p1.duration);
         });
-        html += '</div>';
+        html += '</div>' + embedCapLinkHTML(sorted.length);
     }
     html += '</div>';
 
