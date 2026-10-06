@@ -504,6 +504,45 @@ body.standings-embed .standings-panel.active { display: block !important; animat
 
 body.standings-embed [data-embed-hidden="true"] { display: none !important; }
 
+/* Strict focus: the embed shows the chosen element plus the footer, nothing else. */
+body.standings-embed .standings-context-row,
+body.standings-embed .standings-side-panel,
+body.standings-embed .chart-note { display: none !important; }
+
+/* Intro copy stays as a short header: two lines at most. */
+body.standings-embed :is(.quali-sub, .lap1-sub, .tyre-pace-sub, .dirty-air-sub, .track-dom-sub, .pit-stops-sub, .debrief-sub, .destructors-sub) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+}
+
+.embed-footer { display: none; }
+
+body.standings-embed .embed-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--st-border-strong);
+    font-size: 0.75rem;
+    color: var(--st-text-muted);
+}
+
+body.standings-embed .embed-footer-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--st-accent-readable);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.16em;
+}
+
 @media (max-width: 767.98px) {
     body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn) { display: none; }
 }

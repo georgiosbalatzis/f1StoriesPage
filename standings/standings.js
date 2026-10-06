@@ -602,6 +602,29 @@ function refreshEmbedVisibility() {
     }
 }
 
+// Embed mode footer: source/season/round on the left, a link to the full interactive view on the right.
+function refreshEmbedFooter() {
+    if (!isEmbedMode) return;
+    const meta = document.getElementById('embed-footer-meta');
+    const link = document.getElementById('embed-footer-link');
+    if (!meta || !link) return;
+
+    const seasonEl = document.getElementById('season-year');
+    const roundEl = document.getElementById('round-num');
+    const season = seasonEl && seasonEl.textContent ? seasonEl.textContent : String(YEAR);
+    const round = roundEl && roundEl.textContent ? roundEl.textContent.trim() : '';
+    const target = currentFocusTarget && SHARE_TARGETS[currentFocusTarget] ? currentFocusTarget : 'panel-' + activeStandingsTab;
+    const isStandingsTarget = SHARE_TARGETS[target] && ['drivers', 'constructors'].indexOf(SHARE_TARGETS[target].tab) !== -1;
+
+    const parts = ['F1 Stories'];
+    if (isStandingsTarget) parts.push(String(latestStandingsMeta.source || 'Jolpica F1').split(' · ')[0]);
+    parts.push('Σεζόν ' + season);
+    if (round) parts.push('Δεδομένα έως Γύρο ' + round);
+    meta.textContent = parts.join(' · ');
+
+    link.href = buildStandingsURL(SHARE_TARGETS[target] ? target : '', false);
+}
+
 // Embed mode: tell the hosting article how tall the content is so it can size the iframe.
 // The article validates source, origin and message shape (setupStandingsFrameBridge).
 function setupEmbedHeightReporter() {
@@ -1071,6 +1094,7 @@ function renderStandingsPayload(driverData, constructorData, meta) {
         document.getElementById('round-num').textContent = round;
     }
     updateStandingsReportContext(activeStandingsTab);
+    refreshEmbedFooter();
 
     renderDrivers(dStandings, {});
     renderConstructors(cStandings, dStandings);
@@ -1633,6 +1657,12 @@ function init() {
     bindEvents();
     activateStandingsTab(activeStandingsTab, { skipURL: true, skipFocus: true });
     setupEmbedHeightReporter();
+    if (isEmbedMode) {
+        refreshEmbedFooter();
+        // Tab modules settle their session/round after load: rebuild the link at the moment it is used.
+        const footerLink = document.getElementById('embed-footer-link');
+        if (footerLink) ['pointerdown', 'focus'].forEach(function(type) { footerLink.addEventListener(type, refreshEmbedFooter); });
+    }
 
     // Always hydrate drivers/constructors in the background so adjacent
     // panels don't sit empty on the first tab switch.
