@@ -27,6 +27,9 @@ const FILE_LIMITS = {
     'standings/standings-cache.json': 256 * 1024
 };
 
+// Every standings/rounds/*.json is a Jolpica standings pair; one is ~13 KB.
+const ROUND_SNAPSHOT_MAX_BYTES = 64 * 1024;
+
 const errors = [];
 
 function relAbs(relPath) {
@@ -409,6 +412,35 @@ function validateStandingsCache() {
     validateJolpicaStandingsPayload(data.constructorStandings, `${relPath}.constructorStandings`);
 }
 
+// standings/rounds/<season>-<round>.json: the immutable per-round snapshots that pinned embeds read.
+function validateRoundSnapshots() {
+    const dir = 'standings/rounds';
+    if (!fs.existsSync(relAbs(dir))) { addError(dir, 'missing generated directory'); return; }
+    const files = fs.readdirSync(relAbs(dir)).filter(name => name.endsWith('.json')).sort();
+    assertCondition(files.length > 0, dir, 'must contain at least one round snapshot');
+    files.forEach(name => {
+        const relPath = `${dir}/${name}`;
+        const match = /^(\d{4})-(\d{1,2})\.json$/.exec(name);
+        if (!match) { addError(relPath, 'file name must be <season>-<round>.json'); return; }
+        const [season, round] = [Number(match[1]), Number(match[2])];
+        validateSeason(season, `${relPath} season`);
+        assertCondition(round >= 1 && round <= 30, relPath, 'round out of range');
+        FILE_LIMITS[relPath] = ROUND_SNAPSHOT_MAX_BYTES;
+        const data = requireObject(readJson(relPath), relPath);
+        if (!data) return;
+        validateDateTimeString(`${relPath}.generatedAt`, requireString(data, 'generatedAt', relPath, { maxLength: 40 }));
+        requireString(data, 'raceName', relPath, { maxLength: 120 });
+        const source = requireObject(data.source, `${relPath}.source`);
+        assertCondition(isHttpsUrl(source.driverStandingsUrl), `${relPath}.source`, 'driverStandingsUrl must be HTTPS');
+        assertCondition(isHttpsUrl(source.constructorStandingsUrl), `${relPath}.source`, 'constructorStandingsUrl must be HTTPS');
+        ['driverStandings', 'constructorStandings'].forEach(key => {
+            validateJolpicaStandingsPayload(data[key], `${relPath}.${key}`);
+            const table = data[key] && data[key].MRData && data[key].MRData.StandingsTable;
+            assertCondition(table && String(table.season) === String(season) && String(table.round) === String(round), `${relPath}.${key}`, 'season/round must match the file name');
+        });
+    });
+}
+
 function validateSeason(value, label) {
     assertCondition(isInteger(value) && value >= 2024 && value <= CURRENT_YEAR + 1, label, 'season/year out of expected range');
 }
@@ -591,6 +623,7 @@ function main() {
     validateBlogSourceCache();
     validateYoutubeSnapshot();
     validateStandingsCache();
+    validateRoundSnapshots();
     validateDirtyAirCache();
     validateDirtyAirSplit();
     validateDebriefCache();

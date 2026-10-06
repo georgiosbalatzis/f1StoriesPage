@@ -9,6 +9,7 @@ Current checked contracts:
 - `blog-module/home-latest.json`: homepage latest-articles payload, at most 4 posts: `[0]` is the cover story, `[1..3]` fill the journal. Optional `deck` (≤240 chars) and `lede` (≤320 chars) are whole sentences from the article's opening paragraph, used by the cover instead of the truncated `excerpt`.
 - `assets/youtube-latest.json`: local YouTube snapshot.
 - `standings/standings-cache.json`: Jolpica standings snapshot.
+- `standings/rounds/<season>-<round>.json`: immutable per-round standings snapshot (same shape as the cache plus `raceName`); `season`/`round` in both standings payloads must match the file name.
 - `standings/dirty-air-cache.json`: dirty-air cache `version: 1` (build input, not published).
 - `standings/dirty-air/index.json` + `standings/dirty-air/<session_key>.json`: the published split of the dirty-air cache: session metadata, then one file per session loaded on selection.
 - `standings/debrief-cache.json`: Friday debrief cache `version: 2`.

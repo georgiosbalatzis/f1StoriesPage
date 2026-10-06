@@ -55,6 +55,7 @@ These files are generated but intentionally committed:
 - `blog-module/home-latest.json`
 - `assets/youtube-latest.json`
 - `standings/standings-cache.json`
+- `standings/rounds/*.json`
 - `standings/dirty-air-cache.json` and its published split `standings/dirty-air/*.json`
 - `standings/debrief-cache.json`
 - `sitemap.xml`

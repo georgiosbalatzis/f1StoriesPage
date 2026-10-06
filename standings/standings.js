@@ -19,6 +19,7 @@ import {
 import { cacheClear, cachePurgeExpired } from './core/cache.js';
 import { fetchJSON, fetchJSONNoCache } from './core/fetchers.js';
 import { IS_EMBED, EMBED_ROW_CAP, embedCapLinkHTML, wireEmbedCapLinks } from './core/embed.js';
+import { loadPinnedStandings, parseRoundPin } from './core/rounds.js';
 import {
     renderMessage,
     renderTrustedHtml
@@ -136,6 +137,9 @@ let latestStandingsMeta = {
     raceName: ''
 };
 let latestStandingsRound = '';
+let latestStandingsSeason = '';
+// ?round=N in an embed: standings as of that round, never refreshed live (see core/rounds.js).
+let pinnedRound = null;
 let liveStandingsRefreshTimer = 0;
 let standingsLazyImageObserver = null;
 const tabModulePromises = Object.create(null);
@@ -353,6 +357,11 @@ function buildStandingsURL(target, embed) {
     url.searchParams.set('tab', tabName);
     if (shareTarget) url.searchParams.set('focus', shareTarget);
     if (embed) url.searchParams.set('embed', '1');
+    // A copied embed of the standings keeps showing the round it was copied at, not whatever is live later.
+    if (embed && (tabName === 'drivers' || tabName === 'constructors') && latestStandingsRound) {
+        url.searchParams.set('season', latestStandingsSeason || String(YEAR));
+        url.searchParams.set('round', latestStandingsRound);
+    }
     if (tabName === 'pit-stops') {
         const view = currentPitStopsView();
         if (view && view !== 'race') url.searchParams.set('pitView', view);
@@ -586,6 +595,7 @@ function refreshEmbedVisibility() {
     }
 }
 
+const EMBED_FOOTER_LINK_TEXT = 'Άνοιγμα στο F1 Stories →';
 const EMBED_FOOTER_ROUND_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains'];
 
 // Embed mode footer: source/season/round on the left, a link to the full interactive view on the right.
@@ -626,6 +636,8 @@ function refreshEmbedFooter() {
     });
 
     link.href = buildStandingsURL(SHARE_TARGETS[target] ? target : '', false);
+    // A pinned embed shows an old round, so its link says where the live numbers are.
+    link.textContent = pinnedRound && isStandingsTarget ? 'Σημερινή βαθμολογία →' : EMBED_FOOTER_LINK_TEXT;
 }
 
 // Embed mode: tell the hosting article how tall the content is so it can size the iframe.
@@ -1067,6 +1079,7 @@ function renderStandingsPayload(driverData, constructorData, meta) {
     // The snapshot names the race; the live API payload doesn't, so keep the name while the round is unchanged.
     const raceName = meta && meta.raceName ? meta.raceName : (latestStandingsRound === String(round) ? latestStandingsMeta.raceName : '');
     latestStandingsRound = String(round || '');
+    latestStandingsSeason = String(season || '');
     latestStandingsMeta = {
         updatedAt: meta && meta.updatedAt ? meta.updatedAt : latestStandingsMeta.updatedAt,
         source: source,
@@ -1157,8 +1170,33 @@ function loadStandingsSnapshot() {
     });
 }
 
+function loadPinnedRoundStandings() {
+    return loadPinnedStandings(pinnedRound, {
+        fetchSnapshot: function(url) { return fetchJSONNoCache(url, 4500); },
+        fetchLive: fetchJSON,
+        validateSnapshot: validateStandingsSnapshotPayload,
+        validateStandings: validateJolpicaStandingsPayload,
+        jolpicaBase: JOLPICA
+    }).then(function(pinned) {
+        renderStandingsPayload(pinned.driverStandings, pinned.constructorStandings, {
+            updatedAt: '',
+            source: 'Jolpica F1 · Γύρος ' + pinnedRound.round,
+            raceName: pinned.raceName
+        });
+    }).catch(function(error) {
+        console.error('Pinned round standings failed:', error);
+        showError(driversTable);
+        showError(constructorsTable);
+        setStandingsDataStatus('error');
+    });
+}
+
 function loadStandings() {
     if (standingsPromise) return standingsPromise;
+    if (pinnedRound) {
+        standingsPromise = loadPinnedRoundStandings();
+        return standingsPromise;
+    }
 
     standingsPromise = loadStandingsSnapshot().catch(function(snapshotError) {
         console.warn('Standings snapshot unavailable:', snapshotError);
@@ -1635,6 +1673,7 @@ function init() {
     pendingDebriefRound = initialURLState.debriefRound;
     pendingDebriefView = initialURLState.debriefView;
     if (isEmbedMode) {
+        pinnedRound = parseRoundPin(window.location.search, YEAR);
         pendingLap1View = 'race-detail';
         if (initialURLState.qualiSession && !new URLSearchParams(window.location.search).has('qualiView')) pendingQualiView = 'race-detail';
         wireEmbedCapLinks(function() {

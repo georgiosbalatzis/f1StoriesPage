@@ -441,6 +441,7 @@ npm run test:blog
 | Αρχείο | Builder | Πηγή |
 |---|---|---|
 | `standings/standings-cache.json` | `scripts/build/refresh-standings-data.mjs` | Jolpica (Ergast mirror) |
+| `standings/rounds/<season>-<round>.json` | `scripts/build/refresh-standings-data.mjs` (`--rounds-only` για μόνο αυτά) | Jolpica, ένα αμετάβλητο snapshot ανά ολοκληρωμένο γύρο· τα διαβάζουν τα embeds με `?season=&round=` |
 | `standings/dirty-air-cache.json` (+ split `standings/dirty-air/`) | `blog-module/dirty-air-cache.js` | OpenF1 |
 | `standings/debrief-cache.json` | `standings/debrief-cache.js` | OpenF1 |
 
