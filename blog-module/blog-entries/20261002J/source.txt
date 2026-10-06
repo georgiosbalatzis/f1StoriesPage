@@ -19,4 +19,4 @@ title: BetCast #275: Το Grid είναι πιο ΑΜΦΙΡΡΟΠΟ απ' όσο
 ## Εμείς θα ρισκάρουμε λίγο παραπάνω, εφόσον μας το επιτρέπει και ο καιρός, αλλά και η έλλειψη εμπειρίας από πολλούς στο συγκεκριμένο circuit. Αυτές είναι οι επιλογές μας για το διήμερο.
 
 BETCAST:20261002J
-<iframe src="https://f1stories.gr/standings/?tab=quali-gaps&amp;focus=panel-quali-gaps&amp;embed=1&amp;qualiSession=11373" loading="lazy" decoding="async" style="width:100%;min-height:1120px;border:0;border-radius:16px;" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<iframe src="https://f1stories.gr/standings/?tab=quali-gaps&amp;focus=panel-quali-gaps&amp;embed=1&amp;qualiSession=11373" title="Κενά κατατακτήριων συμπαικτών — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:1000px;border:0;"></iframe>

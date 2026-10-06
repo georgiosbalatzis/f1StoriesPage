@@ -20,7 +20,7 @@ title: Η Haas ήταν εκεί όταν άνοιξε ο δρόμος
 
 Οι Ocon και Bearman δεν επιχείρησαν κάτι θεαματικό, γιατί το μονοθέσιο δεν τους το επέτρεπε. Απέφυγαν τα λάθη, έμειναν μέσα στο γκρουπ του midfield και όταν οι μπροστινοί άρχισαν να χάνονται στην δύση του ηλίου, αυτοί ήταν ακόμη εκεί να παλεύουν. Στη γραμμή του τερματισμού ο Ocon βρέθηκε μόλις 0,030 δευτερόλεπτα πίσω από τον Lindblad για το P7, ο Bearman 0,740 πίσω από τον teammate του και ο Sainz περίπου μισό δευτερόλεπτο πίσω από τη δεύτερη Haas. Από την έβδομη μέχρι τη δέκατη θέση, τέσσερα μονοθέσια σε 1,257 δευτερόλεπτα.
 
-<iframe src="https://f1stories.gr/standings/?tab=constructors&amp;focus=constructors-chart&amp;embed=1" loading="lazy" decoding="async" style="width:100%;min-height:520px;border:0;border-radius:16px;" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<iframe src="https://f1stories.gr/standings/?tab=constructors&amp;focus=constructors-chart&amp;embed=1&amp;season=2026&amp;round=15" title="Γράφημα βαθμών κατασκευαστών — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:520px;border:0;"></iframe>
 
 Με τους βαθμούς του Baku η Haas έφτασε τους 21 και παραμένει έβδομη στους Κατασκευαστές, μπροστά από την Audi με 17 και τη Williams με 11. Η διαφορά δεν είναι τέτοια ώστε να επιτρέπει χαλάρωση, αλλά αλλάζει την εικόνα μίας ομάδας που για μήνες έμοιαζε να κινείται προς τα πίσω.
 
