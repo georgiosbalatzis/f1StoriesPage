@@ -18,7 +18,7 @@ import {
 } from './core/drivers-meta.js';
 import { cacheClear, cachePurgeExpired } from './core/cache.js';
 import { fetchJSON, fetchJSONNoCache } from './core/fetchers.js';
-import { IS_EMBED, EMBED_ROW_CAP, embedCapLinkHTML, wireEmbedCapLinks } from './core/embed.js';
+import { IS_EMBED, EMBED_ROW_CAP, embedCapLinkHTML, embedIframeHTML, wireEmbedCapLinks } from './core/embed.js';
 import { loadPinnedStandings, parseRoundPin } from './core/rounds.js';
 import {
     renderMessage,
@@ -93,19 +93,20 @@ const TAB_LOADERS = {
     'track-dominance': function() { return import('./tabs/track-dominance.js'); },
     'debrief': function() { return import('./tabs/debrief.js'); }
 };
+// height: fallback for the pasted iframe (the article resizes it to the real content height); measured at 680px.
 const SHARE_TARGETS = {
-    'panel-drivers': { tab: 'drivers', title: 'Βαθμολογία οδηγών', height: 980 },
-    'drivers-table': { tab: 'drivers', title: 'Πίνακας βαθμολογίας οδηγών', height: 760 },
-    'drivers-chart': { tab: 'drivers', title: 'Γράφημα βαθμών οδηγών', height: 520 },
-    'panel-constructors': { tab: 'constructors', title: 'Βαθμολογία κατασκευαστών', height: 940 },
-    'constructors-table': { tab: 'constructors', title: 'Πίνακας βαθμολογίας κατασκευαστών', height: 740 },
+    'panel-drivers': { tab: 'drivers', title: 'Βαθμολογία οδηγών', height: 1310 },
+    'drivers-table': { tab: 'drivers', title: 'Πίνακας βαθμολογίας οδηγών', height: 910 },
+    'drivers-chart': { tab: 'drivers', title: 'Γράφημα βαθμών οδηγών', height: 490 },
+    'panel-constructors': { tab: 'constructors', title: 'Βαθμολογία κατασκευαστών', height: 1360 },
+    'constructors-table': { tab: 'constructors', title: 'Πίνακας βαθμολογίας κατασκευαστών', height: 940 },
     'constructors-chart': { tab: 'constructors', title: 'Γράφημα βαθμών κατασκευαστών', height: 520 },
-    'panel-quali-gaps': { tab: 'quali-gaps', title: 'Κενά κατατακτήριων συμπαικτών', height: 1120 },
-    'panel-lap1-gains': { tab: 'lap1-gains', title: 'Κέρδη 1ου γύρου', height: 1160 },
-    'panel-tyre-pace': { tab: 'tyre-pace', title: 'Ρυθμός ελαστικών', height: 1080 },
-    'panel-dirty-air': { tab: 'dirty-air', title: 'Ανάλυση Dirty Air', height: 1520 },
-    'panel-track-dominance': { tab: 'track-dominance', title: 'Κυριαρχία πίστας', height: 1320 },
-    'panel-pit-stops': { tab: 'pit-stops', title: 'Ταχύτερα pit stop', height: 1080 },
+    'panel-quali-gaps': { tab: 'quali-gaps', title: 'Κενά κατατακτήριων συμπαικτών', height: 1000 },
+    'panel-lap1-gains': { tab: 'lap1-gains', title: 'Κέρδη 1ου γύρου', height: 1440 },
+    'panel-tyre-pace': { tab: 'tyre-pace', title: 'Ρυθμός ελαστικών', height: 1020 },
+    'panel-dirty-air': { tab: 'dirty-air', title: 'Ανάλυση Dirty Air', height: 1320 },
+    'panel-track-dominance': { tab: 'track-dominance', title: 'Κυριαρχία πίστας', height: 1730 },
+    'panel-pit-stops': { tab: 'pit-stops', title: 'Ταχύτερα pit stop', height: 1330 },
     'panel-debrief': { tab: 'debrief', title: 'Debrief Παρασκευής', height: 1200 }
 };
 
@@ -497,7 +498,7 @@ function createEmbedCode(target) {
     const meta = SHARE_TARGETS[target];
     const src = buildStandingsURL(target, true);
     const height = meta && meta.height ? meta.height : 960;
-    return '<iframe src="' + esc(src) + '" loading="lazy" decoding="async" style="width:100%;min-height:' + height + 'px;border:0;border-radius:16px;" referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+    return embedIframeHTML(src, (meta && meta.title ? meta.title : 'Βαθμολογίες') + ' — F1 Stories', height);
 }
 
 function handleShareAction(kind, target) {

@@ -705,8 +705,14 @@ body.standings-embed :is(#drivers-table, #constructors-table) { min-height: 0; }
     body.standings-embed .embed-scroll-hint { display: block; margin: 0 0 0.4rem; font-size: 0.72rem; color: var(--st-text-muted); }
 }
 
-/* Debrief tables are 6 columns wide; in a narrow embed each row becomes a compact card instead of a scroller. */
-@media (max-width: 799px) {
+/* Debrief tables are 6 columns wide. Mid-width embeds (the article column) drop the lap-count column so the
+   table fits without scrolling; below that each row becomes a compact card. */
+@media (min-width: 600px) and (max-width: 799px) {
+    body.standings-embed .debrief-table table { min-width: 0; width: 100%; }
+    body.standings-embed .debrief-table :is(th, td):nth-child(6) { display: none; }
+}
+
+@media (max-width: 599px) {
     body.standings-embed .debrief-table { overflow: visible; }
     body.standings-embed .debrief-table :is(table, tbody) { display: block; width: 100%; min-width: 0; }
     body.standings-embed .debrief-table thead { display: none; }

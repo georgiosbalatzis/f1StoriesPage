@@ -41,3 +41,20 @@ export function wireEmbedCapLinks(getHref) {
         });
     }).observe(document.body, { childList: true, subtree: true });
 }
+
+function escapeAttr(value) {
+    return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// The code a reader pastes into an article. Attributes the article build keeps (see
+// blog-module/build/embed-render.js): title, loading, referrerpolicy, style. `height` is a fallback until
+// the article resizes the frame to its content; `title` names the frame for screen readers.
+export function embedIframeHTML(src, title, height) {
+    const px = Math.max(100, Math.round(Number(height) || 960));
+    return '<iframe src="' + escapeAttr(src) + '"'
+        + ' title="' + escapeAttr(title) + '"'
+        + ' loading="lazy"'
+        + ' referrerpolicy="strict-origin-when-cross-origin"'
+        + ' style="display:block;width:100%;height:' + px + 'px;border:0;"></iframe>';
+}
