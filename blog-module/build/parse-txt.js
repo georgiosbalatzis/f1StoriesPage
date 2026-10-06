@@ -7,6 +7,7 @@ const {
     resolveEmbedPlaceholders
 } = require('./embeds');
 const { buildResponsiveDocTable, processDocumentTables, processEmbeddedCSV } = require('./csv-to-table');
+const { formatInline } = require('../inline-markup');
 
 function escapeHtml(text) {
     return String(text || '')
@@ -16,13 +17,9 @@ function escapeHtml(text) {
         .replace(/"/g, '&quot;');
 }
 
+// **bold**, *italic* and [link text](https://example.com); shared with the author preview.
 function inlineFormat(text) {
-    const safe = escapeHtml(text);
-    return safe
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/__(.+?)__/g, '<strong>$1</strong>')
-        .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>')
-        .replace(/(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g, '<em>$1</em>');
+    return formatInline(text);
 }
 
 function parsePipeTableRow(line) {
