@@ -32,17 +32,28 @@
         return '';
     }
 
-    var storedTheme = readStoredTheme();
-    if (storedTheme === 'light') {
-        root.setAttribute('data-theme', 'light');
-        return;
-    }
-    if (storedTheme === 'dark') {
-        root.removeAttribute('data-theme');
-        return;
+    function applyTheme() {
+        var storedTheme = readStoredTheme();
+        if (storedTheme === 'light') {
+            root.setAttribute('data-theme', 'light');
+        } else if (storedTheme === 'dark') {
+            root.removeAttribute('data-theme');
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            root.setAttribute('data-theme', 'light');
+        } else {
+            root.removeAttribute('data-theme');
+        }
     }
 
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-        root.setAttribute('data-theme', 'light');
+    applyTheme();
+
+    // Standings embeds: flag the root before paint so CSS can match its color-scheme to the host
+    // article (a mismatch makes the browser paint an opaque canvas), and follow the host's theme toggle
+    // live. The toggle writes localStorage, which fires `storage` in same-origin iframes.
+    if (/[?&]embed=1(?:&|$)/.test(window.location.search) && /^\/standings\//.test(window.location.pathname)) {
+        root.setAttribute('data-embed', '1');
+        window.addEventListener('storage', function (event) {
+            if (event.key === THEME_KEY) applyTheme();
+        });
     }
 })();

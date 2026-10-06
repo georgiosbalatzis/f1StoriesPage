@@ -472,6 +472,10 @@ body { overflow-y: visible !important; }
 
 /* ── Pit Stops ── */
 
+/* Match the embed root's color-scheme to the host article; a mismatch paints an opaque canvas. */
+html[data-embed] { color-scheme: dark; background: transparent; }
+html[data-embed][data-theme="light"] { color-scheme: light; }
+
 body.standings-embed { background: transparent !important; }
 
 body.standings-embed .background,
