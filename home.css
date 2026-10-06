@@ -51,9 +51,11 @@
 /* On the night page the dark spread lifts one step and takes rules, so it still reads as its own spread. */
 :root:not([data-theme="light"]) .home-page .home-tech { --tech-bg: var(--bg-surface); --tech-panel: var(--bg-surface-alt); --tech-rule: var(--border); border-block: 1px solid var(--border); }
 
-/* Team radio and the partners are printed on cream paper in both editions: they carry
- * the paper edition's inks, so the night page needs no overrides for them. */
-.home-page :is(#contact, #home-sponsors) {
+/* Team radio is printed on cream paper in both editions: it carries the paper edition's inks, so the night
+ * page needs no overrides for it. The partners do the same in the paper edition only; at night they sit on
+ * the page itself (see the partners block below). */
+.home-page #contact,
+:root[data-theme="light"] .home-page #home-sponsors {
     --text-primary: #20251f;
     --text-secondary: #5b6256;
     --border: #c8c8b9;
@@ -455,8 +457,8 @@
 .home-page .form-alert--error { border-top-color: var(--signal); }
 .home-page .form-alert a { border-bottom: 1px solid currentColor; }
 
-/* Partners: grey logos on the page itself that take their colour on hover. In the
- * night edition they keep one light mat, since the marks are drawn for paper. */
+/* Partners: grey logos on the page itself that take their colour on hover. At night the marks are inverted to
+ * light grey on the dark page, and show their own colours on a paper chip on hover. */
 .home-page #home-sponsors { --partner-mat: transparent; padding: 36px 0 56px; border: 0; }
 .home-page .sponsor-strip-layout { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter-home); align-items: center; }
 /* The rule belongs to the content column, so it lines up with the rules above. */
@@ -469,6 +471,12 @@
 .home-page #home-sponsors .sponsor-logo:is(:hover, :focus-visible) img { filter: none; opacity: 1; }
 .home-page #home-sponsors .sponsor-logo:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .home-page #home-sponsors .sponsor-logo span { color: var(--text-secondary); font-size: .6875rem; font-weight: 500; letter-spacing: .12em; text-align: center; }
+:root:not([data-theme="light"]) .home-page #home-sponsors { background: var(--bg-base); color: var(--text-primary); }
+:root:not([data-theme="light"]) .home-page #home-sponsors .sponsor-logo img { mix-blend-mode: normal; filter: grayscale(1) invert(1); }
+:root:not([data-theme="light"]) .home-page #home-sponsors .sponsor-logo { border-radius: var(--radius-control); }
+:root:not([data-theme="light"]) .home-page #home-sponsors .sponsor-logo:is(:hover, :focus-visible) { background: var(--paper); }
+:root:not([data-theme="light"]) .home-page #home-sponsors .sponsor-logo:is(:hover, :focus-visible) img { filter: none; opacity: 1; }
+:root:not([data-theme="light"]) .home-page #home-sponsors .sponsor-logo:is(:hover, :focus-visible) span { color: var(--ink); }
 
 /* Motion remains optional. Text is visible even when scripts cannot run. */
 @keyframes cover-arrive { from { transform: translateY(22px); } to { transform: translateY(0); } }
