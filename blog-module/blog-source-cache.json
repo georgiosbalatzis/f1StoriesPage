@@ -39,6 +39,37 @@
       "backgroundImageHeight": 1080
     },
     {
+      "id": "20261006F",
+      "title": "Γιατί το νέο πάτωμα δεν έφερε τα δέκατα που υποσχθέθηκε",
+      "author": "F1 Stories Team",
+      "date": "2026-10-06",
+      "dateISO": "2026-10-06",
+      "displayDate": "6 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261006F/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261006F/1.webp",
+      "excerpt": "Η Mercedes πήγε στη Μαλαισία με ένα από τα πιο ουσιαστικά πακέτα αναβαθμίσεων που είχε φέρει φέτος. Το πάτωμα άλλαξε σχεδόν σε όλη του την έκταση, με νέα γεωμετρία στην οροφή του diffuser και στα...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261006F/article.html",
+      "category": "Technical",
+      "categories": [
+        "Technical"
+      ],
+      "tags": [
+        "Mercedes",
+        "2026",
+        "Bahrain",
+        "Malayisia",
+        "Sepang"
+      ],
+      "wordCount": 1740,
+      "readingTime": "9 min",
+      "imageWidth": 1200,
+      "imageHeight": 800,
+      "backgroundImageWidth": 1200,
+      "backgroundImageHeight": 800
+    },
+    {
       "id": "20261005W",
       "title": "Δεν είναι δική μας δουλειά να αποφασίσουμε πώς θα τελειώσει η ιστορία του Marc Márquez",
       "author": "Themis Charvalis",
@@ -10049,5 +10080,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-06T12:37:47.796Z"
+  "lastUpdated": "2026-10-06T17:35:32.999Z"
 }
