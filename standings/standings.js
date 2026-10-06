@@ -18,6 +18,8 @@ import {
 } from './core/drivers-meta.js';
 import { cacheClear, cachePurgeExpired } from './core/cache.js';
 import { fetchJSON, fetchJSONNoCache } from './core/fetchers.js';
+import { IS_EMBED, EMBED_ROW_CAP, embedCapLinkHTML, embedIframeHTML, wireEmbedCapLinks } from './core/embed.js';
+import { loadPinnedStandings, parseRoundPin } from './core/rounds.js';
 import {
     renderMessage,
     renderTrustedHtml
@@ -65,7 +67,7 @@ const ABOVE_FOLD_CONSTRUCTOR_LOGOS = 8;
 const LIVE_STANDINGS_REFRESH_DELAY_MS = 3500;
 const LAZY_IMAGE_PLACEHOLDER = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 
-const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief', 'destructors'];
+const VALID_STANDINGS_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'tyre-pace', 'dirty-air', 'track-dominance', 'pit-stops', 'debrief'];
 const LIGHTWEIGHT_TABS = ['drivers', 'constructors'];
 const REPORT_DETAILS = {
     'drivers': { label: 'Οδηγοί', note: 'Βαθμολογία πρωταθλήματος · Jolpica F1' },
@@ -76,15 +78,13 @@ const REPORT_DETAILS = {
     'dirty-air': { label: 'Dirty Air', note: 'Ανάλυση κίνησης και απόστασης · OpenF1' },
     'track-dominance': { label: 'Κυριαρχία πίστας', note: 'Σύγκριση τομέων ταχύτερου γύρου · OpenF1' },
     'pit-stops': { label: 'Pit Stops', note: 'Κατάταξη χρόνων στάσης · OpenF1' },
-    'debrief': { label: 'Debrief', note: 'Ανάλυση ελεύθερων δοκιμών Παρασκευής · FIA / OpenF1' },
-    'destructors': { label: 'Destructors', note: 'Κόστος ζημιών · F1 Stories' }
+    'debrief': { label: 'Debrief', note: 'Ανάλυση ελεύθερων δοκιμών Παρασκευής · FIA / OpenF1' }
 };
 // Phase 6C: every heavy tab now lives in its own module while the
 // drivers/constructors tables keep rendering from this shell.
 // Keep each lazy import as a literal so esbuild can place every tab in its
 // own split chunk and hoist shared core utilities into common chunks.
 const TAB_LOADERS = {
-    'destructors': function() { return import('./tabs/destructors.js'); },
     'pit-stops': function() { return import('./tabs/pit-stops.js'); },
     'quali-gaps': function() { return import('./tabs/quali-gaps.js'); },
     'lap1-gains': function() { return import('./tabs/lap1-gains.js'); },
@@ -93,21 +93,21 @@ const TAB_LOADERS = {
     'track-dominance': function() { return import('./tabs/track-dominance.js'); },
     'debrief': function() { return import('./tabs/debrief.js'); }
 };
+// height: fallback for the pasted iframe (the article resizes it to the real content height); measured at 680px.
 const SHARE_TARGETS = {
-    'panel-drivers': { tab: 'drivers', title: 'Βαθμολογία οδηγών', height: 980 },
-    'drivers-table': { tab: 'drivers', title: 'Πίνακας βαθμολογίας οδηγών', height: 760 },
-    'drivers-chart': { tab: 'drivers', title: 'Γράφημα βαθμών οδηγών', height: 520 },
-    'panel-constructors': { tab: 'constructors', title: 'Βαθμολογία κατασκευαστών', height: 940 },
-    'constructors-table': { tab: 'constructors', title: 'Πίνακας βαθμολογίας κατασκευαστών', height: 740 },
+    'panel-drivers': { tab: 'drivers', title: 'Βαθμολογία οδηγών', height: 1310 },
+    'drivers-table': { tab: 'drivers', title: 'Πίνακας βαθμολογίας οδηγών', height: 910 },
+    'drivers-chart': { tab: 'drivers', title: 'Γράφημα βαθμών οδηγών', height: 490 },
+    'panel-constructors': { tab: 'constructors', title: 'Βαθμολογία κατασκευαστών', height: 1360 },
+    'constructors-table': { tab: 'constructors', title: 'Πίνακας βαθμολογίας κατασκευαστών', height: 940 },
     'constructors-chart': { tab: 'constructors', title: 'Γράφημα βαθμών κατασκευαστών', height: 520 },
-    'panel-quali-gaps': { tab: 'quali-gaps', title: 'Κενά κατατακτήριων συμπαικτών', height: 1120 },
-    'panel-lap1-gains': { tab: 'lap1-gains', title: 'Κέρδη 1ου γύρου', height: 1160 },
-    'panel-tyre-pace': { tab: 'tyre-pace', title: 'Ρυθμός ελαστικών', height: 1080 },
-    'panel-dirty-air': { tab: 'dirty-air', title: 'Ανάλυση Dirty Air', height: 1520 },
-    'panel-track-dominance': { tab: 'track-dominance', title: 'Κυριαρχία πίστας', height: 1320 },
-    'panel-pit-stops': { tab: 'pit-stops', title: 'Ταχύτερα pit stop', height: 1080 },
-    'panel-debrief': { tab: 'debrief', title: 'Debrief Παρασκευής', height: 1200 },
-    'panel-destructors': { tab: 'destructors', title: 'Πρωτάθλημα Destructors', height: 1260 }
+    'panel-quali-gaps': { tab: 'quali-gaps', title: 'Κενά κατατακτήριων συμπαικτών', height: 1000 },
+    'panel-lap1-gains': { tab: 'lap1-gains', title: 'Κέρδη 1ου γύρου', height: 1440 },
+    'panel-tyre-pace': { tab: 'tyre-pace', title: 'Ρυθμός ελαστικών', height: 1020 },
+    'panel-dirty-air': { tab: 'dirty-air', title: 'Ανάλυση Dirty Air', height: 1320 },
+    'panel-track-dominance': { tab: 'track-dominance', title: 'Κυριαρχία πίστας', height: 1730 },
+    'panel-pit-stops': { tab: 'pit-stops', title: 'Ταχύτερα pit stop', height: 1330 },
+    'panel-debrief': { tab: 'debrief', title: 'Debrief Παρασκευής', height: 1200 }
 };
 
 let activeStandingsTab = 'drivers';
@@ -116,7 +116,6 @@ let pendingRevealTarget = '';
 let isEmbedMode = false;
 let shareFeedbackTimer = 0;
 let standingsPromise = null;
-let pendingDestructorsView = 'teams';
 let pendingPitStopsView = 'race';
 let pendingPitStopsRound = '';
 let pendingQualiView = 'overview';
@@ -135,8 +134,13 @@ let scheduledModuleTab = '';
 let latestStandingsSignature = '';
 let latestStandingsMeta = {
     updatedAt: '',
-    source: 'Jolpica F1'
+    source: 'Jolpica F1',
+    raceName: ''
 };
+let latestStandingsRound = '';
+let latestStandingsSeason = '';
+// ?round=N in an embed: standings as of that round, never refreshed live (see core/rounds.js).
+let pinnedRound = null;
 let liveStandingsRefreshTimer = 0;
 let standingsLazyImageObserver = null;
 const tabModulePromises = Object.create(null);
@@ -190,10 +194,6 @@ function sanitizeStandingsTab(value) {
 
 function sanitizeShareTarget(value) {
     return value && SHARE_TARGETS[value] ? value : '';
-}
-
-function sanitizeDestructorsView(value) {
-    return value === 'flow' ? 'flow' : 'teams';
 }
 
 function sanitizePitStopsView(value) {
@@ -256,7 +256,6 @@ function readStandingsURLState() {
         tab: tab,
         focus: focus,
         embed: params.get('embed') === '1',
-        destructorsView: sanitizeDestructorsView(params.get('destructorsView')),
         pitView: sanitizePitStopsView(params.get('pitView')),
         pitRound: sanitizePitStopsRound(params.get('pitRound')),
         qualiView: sanitizeQualiView(params.get('qualiView')),
@@ -271,12 +270,6 @@ function readStandingsURLState() {
         debriefRound: sanitizeDebriefRound(params.get('debriefRound')),
         debriefView: sanitizeDebriefView(params.get('debriefView'))
     };
-}
-
-function currentDestructorsView() {
-    const mod = tabModuleInstances['destructors'];
-    if (mod && typeof mod.getActiveView === 'function') return mod.getActiveView();
-    return pendingDestructorsView;
 }
 
 function currentPitStopsView() {
@@ -365,9 +358,10 @@ function buildStandingsURL(target, embed) {
     url.searchParams.set('tab', tabName);
     if (shareTarget) url.searchParams.set('focus', shareTarget);
     if (embed) url.searchParams.set('embed', '1');
-    if (tabName === 'destructors') {
-        const view = currentDestructorsView();
-        if (view && view !== 'teams') url.searchParams.set('destructorsView', view);
+    // A copied embed of the standings keeps showing the round it was copied at, not whatever is live later.
+    if (embed && (tabName === 'drivers' || tabName === 'constructors') && latestStandingsRound) {
+        url.searchParams.set('season', latestStandingsSeason || String(YEAR));
+        url.searchParams.set('round', latestStandingsRound);
     }
     if (tabName === 'pit-stops') {
         const view = currentPitStopsView();
@@ -504,7 +498,7 @@ function createEmbedCode(target) {
     const meta = SHARE_TARGETS[target];
     const src = buildStandingsURL(target, true);
     const height = meta && meta.height ? meta.height : 960;
-    return '<iframe src="' + esc(src) + '" loading="lazy" decoding="async" style="width:100%;min-height:' + height + 'px;border:0;border-radius:16px;" referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+    return embedIframeHTML(src, (meta && meta.title ? meta.title : 'Βαθμολογίες') + ' — F1 Stories', height);
 }
 
 function handleShareAction(kind, target) {
@@ -602,6 +596,85 @@ function refreshEmbedVisibility() {
     }
 }
 
+const EMBED_FOOTER_LINK_TEXT = 'Άνοιγμα στο F1 Stories →';
+const EMBED_FOOTER_ROUND_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains'];
+
+// Embed mode footer: source/season/round on the left, a link to the full interactive view on the right.
+function refreshEmbedFooter() {
+    if (!isEmbedMode) return;
+    const meta = document.getElementById('embed-footer-meta');
+    const link = document.getElementById('embed-footer-link');
+    if (!meta || !link) return;
+
+    const seasonEl = document.getElementById('season-year');
+    const roundEl = document.getElementById('round-num');
+    const season = seasonEl && seasonEl.textContent ? seasonEl.textContent : String(YEAR);
+    const round = roundEl && roundEl.textContent ? roundEl.textContent.trim() : '';
+    const target = currentFocusTarget && SHARE_TARGETS[currentFocusTarget] ? currentFocusTarget : 'panel-' + activeStandingsTab;
+    const isStandingsTarget = SHARE_TARGETS[target] && ['drivers', 'constructors'].indexOf(SHARE_TARGETS[target].tab) !== -1;
+
+    // Season-cumulative views are "as of round N". Session-scoped tabs (tyre pace, dirty air, track
+    // dominance, pit stops, debrief) already name their own race in the embed, so no round is claimed.
+    const tab = SHARE_TARGETS[target] ? SHARE_TARGETS[target].tab : activeStandingsTab;
+    const isSeasonView = EMBED_FOOTER_ROUND_TABS.indexOf(tab) !== -1;
+
+    const parts = ['F1 Stories'];
+    if (isStandingsTarget) parts.push(String(latestStandingsMeta.source || 'Jolpica F1').split(' · ')[0]);
+    parts.push('Σεζόν ' + season);
+    if (isSeasonView && round) {
+        const raceName = isStandingsTarget && latestStandingsMeta.raceName
+            ? ' · ' + String(latestStandingsMeta.raceName).replace(/ Grand Prix/, ' GP')
+            : '';
+        parts.push('Δεδομένα έως Γύρο ' + round + raceName);
+    }
+    // One span per part so a narrow frame wraps between parts, never inside "Γύρο 16".
+    meta.textContent = '';
+    parts.forEach(function(text, index) {
+        const span = document.createElement('span');
+        span.textContent = text + (index < parts.length - 1 ? ' ·' : '');
+        meta.appendChild(span);
+        if (index < parts.length - 1) meta.appendChild(document.createTextNode(' '));
+    });
+
+    link.href = buildStandingsURL(SHARE_TARGETS[target] ? target : '', false);
+    // A pinned embed shows an old round, so its link says where the live numbers are.
+    link.textContent = pinnedRound && isStandingsTarget ? 'Σημερινή βαθμολογία →' : EMBED_FOOTER_LINK_TEXT;
+}
+
+// Embed mode: tell the hosting article how tall the content is so it can size the iframe.
+// The article validates source, origin and message shape (setupStandingsFrameBridge).
+function setupEmbedHeightReporter() {
+    if (!isEmbedMode || window.parent === window) return;
+    let lastHeight = 0;
+    let frameRequested = 0;
+
+    function report(force) {
+        frameRequested = 0;
+        const height = Math.ceil(document.body.getBoundingClientRect().height);
+        if (!Number.isFinite(height) || height < 1 || (!force && height === lastHeight)) return;
+        lastHeight = height;
+        try {
+            window.parent.postMessage({ type: 'f1s-standings:resize', height: height }, window.location.origin);
+        } catch (_) {}
+    }
+
+    function schedule(force) {
+        if (force) {
+            report(true);
+            return;
+        }
+        if (!frameRequested) frameRequested = window.requestAnimationFrame(function() { report(false); });
+    }
+
+    if (typeof ResizeObserver === 'function') new ResizeObserver(function() { schedule(false); }).observe(document.body);
+    window.addEventListener('load', function() { schedule(false); });
+    window.addEventListener('message', function(event) {
+        if (event.source !== window.parent || event.origin !== window.location.origin) return;
+        if (event.data && event.data.type === 'f1s-standings:measure') schedule(true);
+    });
+    schedule(false);
+}
+
 function isLightweightTab(tabName) {
     return LIGHTWEIGHT_TABS.indexOf(tabName) !== -1;
 }
@@ -617,8 +690,7 @@ const TAB_STYLESHEETS = {
     'dirty-air': 'dirty-air.min.css',
     'track-dominance': 'track-dominance.min.css',
     'pit-stops': 'pit-stops.min.css',
-    'debrief': 'debrief.min.css',
-    'destructors': 'destructors.min.css'
+    'debrief': 'debrief.min.css'
 };
 const injectedTabStyles = Object.create(null);
 
@@ -661,17 +733,6 @@ function loadTabModule(tabName) {
 
     tabModulePromises[tabName] = loadModule().then(function(mod) {
         tabModuleInstances[tabName] = mod;
-        if (tabName === 'destructors') {
-            if (typeof mod.initDestructors === 'function') {
-                mod.initDestructors({
-                    onRendered: finalizeRenderedPanel,
-                    onViewChange: function() {
-                        if (activeStandingsTab === 'destructors') writeStandingsURLState(true);
-                    }
-                });
-            }
-            if (typeof mod.setActiveView === 'function') mod.setActiveView(pendingDestructorsView);
-        }
         if (tabName === 'pit-stops') {
             if (typeof mod.initPitStops === 'function') {
                 mod.initPitStops({
@@ -1016,9 +1077,14 @@ function renderStandingsPayload(driverData, constructorData, meta) {
     const sameStandings = signature && signature === latestStandingsSignature;
     if (sameStandings && source === latestStandingsMeta.source) return false;
     latestStandingsSignature = signature;
+    // The snapshot names the race; the live API payload doesn't, so keep the name while the round is unchanged.
+    const raceName = meta && meta.raceName ? meta.raceName : (latestStandingsRound === String(round) ? latestStandingsMeta.raceName : '');
+    latestStandingsRound = String(round || '');
+    latestStandingsSeason = String(season || '');
     latestStandingsMeta = {
         updatedAt: meta && meta.updatedAt ? meta.updatedAt : latestStandingsMeta.updatedAt,
-        source: source
+        source: source,
+        raceName: raceName
     };
     setStandingsDataStatus(meta && meta.live ? 'live' : 'snapshot');
 
@@ -1037,6 +1103,7 @@ function renderStandingsPayload(driverData, constructorData, meta) {
         document.getElementById('round-num').textContent = round;
     }
     updateStandingsReportContext(activeStandingsTab);
+    refreshEmbedFooter();
 
     renderDrivers(dStandings, {});
     renderConstructors(cStandings, dStandings);
@@ -1097,14 +1164,40 @@ function loadStandingsSnapshot() {
         validateStandingsSnapshotPayload(snapshot);
         renderStandingsPayload(snapshot.driverStandings, snapshot.constructorStandings, {
             updatedAt: snapshot.generatedAt || '',
-            source: snapshot.source && snapshot.source.name ? snapshot.source.name : 'Jolpica F1 · στιγμιότυπο'
+            source: snapshot.source && snapshot.source.name ? snapshot.source.name : 'Jolpica F1 · στιγμιότυπο',
+            raceName: typeof snapshot.raceName === 'string' ? snapshot.raceName : ''
         });
         scheduleLiveStandingsRefresh();
     });
 }
 
+function loadPinnedRoundStandings() {
+    return loadPinnedStandings(pinnedRound, {
+        fetchSnapshot: function(url) { return fetchJSONNoCache(url, 4500); },
+        fetchLive: fetchJSON,
+        validateSnapshot: validateStandingsSnapshotPayload,
+        validateStandings: validateJolpicaStandingsPayload,
+        jolpicaBase: JOLPICA
+    }).then(function(pinned) {
+        renderStandingsPayload(pinned.driverStandings, pinned.constructorStandings, {
+            updatedAt: '',
+            source: 'Jolpica F1 · Γύρος ' + pinnedRound.round,
+            raceName: pinned.raceName
+        });
+    }).catch(function(error) {
+        console.error('Pinned round standings failed:', error);
+        showError(driversTable);
+        showError(constructorsTable);
+        setStandingsDataStatus('error');
+    });
+}
+
 function loadStandings() {
     if (standingsPromise) return standingsPromise;
+    if (pinnedRound) {
+        standingsPromise = loadPinnedRoundStandings();
+        return standingsPromise;
+    }
 
     standingsPromise = loadStandingsSnapshot().catch(function(snapshotError) {
         console.warn('Standings snapshot unavailable:', snapshotError);
@@ -1148,6 +1241,11 @@ function loadFromOpenF1Fallback() {
         });
 }
 
+// Rows expand to a detail row on the full page; in an embed they are static.
+function rowInteractionAttrs(detailId) {
+    return IS_EMBED ? '' : ' role="button" tabindex="0" aria-expanded="false" aria-controls="' + detailId + '" data-detail-target="' + detailId + '"';
+}
+
 function renderDrivers(standings, openf1Map) {
     if (!standings || !standings.length) {
         renderMessage(driversTable, {
@@ -1164,6 +1262,7 @@ function renderDrivers(standings, openf1Map) {
     let html = tableHeadHTML('Οδηγός / Ομάδα');
 
     standings.forEach(function(s, index) {
+        if (IS_EMBED && index >= EMBED_ROW_CAP) return;
         const driver = s.Driver;
         const constructor = s.Constructors && s.Constructors[0];
         const cId = constructor ? constructor.constructorId : '';
@@ -1186,7 +1285,7 @@ function renderDrivers(standings, openf1Map) {
         const imgAttrs = hs.url ? imageSourceAttrs(hs.url, index, ABOVE_FOLD_DRIVER_IMAGES, index === 0) : '';
         const detailId = 'driver-detail-' + escAttr(driverId || index);
 
-        html += '<div class="st-row st-rank-' + esc(pos) + '" role="button" tabindex="0" aria-expanded="false" aria-controls="' + detailId + '" data-detail-target="' + detailId + '" style="--team-color:#' + esc(tc) + ';">'
+        html += '<div class="st-row st-rank-' + esc(pos) + '"' + rowInteractionAttrs(detailId) + ' style="--team-color:#' + esc(tc) + ';">'
             + '<div class="st-pos">' + pos + '</div>'
             + '<div class="st-info">'
             + (hs.url ? '<img class="st-headshot" alt="' + esc(name) + '" width="40" height="40"' + hs.style + imgAttrs + '>'
@@ -1198,13 +1297,14 @@ function renderDrivers(standings, openf1Map) {
             + '</div>'
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
             + '</div>'
-            + detailRowHTML(detailId, [
+            + (IS_EMBED ? '' : detailRowHTML(detailId, [
                 { label: 'Φόρμα', value: wins > 0 ? formatWinsLabel(wins) : 'Χωρίς νίκες ακόμη' },
                 { label: 'Ομάδα', value: teamName || 'Άγνωστη' },
                 { label: 'Διαφορά από τον προηγούμενο', value: index === 0 ? 'Πρωτοπόρος' : '+' + pointsText(gapAhead) + ' βαθ.' },
                 { label: 'Διαφορά από τον επόμενο', value: next ? pointsText(gapBehind) + ' βαθ.' : 'Τελευταία καταχώριση' }
-            ]);
+            ]));
     });
+    html += embedCapLinkHTML(standings.length, EMBED_ROW_CAP);
     renderTrustedHtml(driversTable, html, 'driver standings rows from validated standings payload');
     hydrateStandingsLazyImages(driversTable);
 
@@ -1277,7 +1377,7 @@ function renderConstructors(standings, driverStandings) {
         const imgAttrs = logo ? imageSourceAttrs(logo, index, eagerLimit, activeStandingsTab === 'constructors' && index === 0) : '';
         const detailId = 'constructor-detail-' + escAttr(cId || index);
 
-        html += '<div class="st-row st-rank-' + esc(pos) + '" role="button" tabindex="0" aria-expanded="false" aria-controls="' + detailId + '" data-detail-target="' + detailId + '" style="--team-color:#' + esc(tc) + ';">'
+        html += '<div class="st-row st-rank-' + esc(pos) + '"' + rowInteractionAttrs(detailId) + ' style="--team-color:#' + esc(tc) + ';">'
             + '<div class="st-pos">' + pos + '</div>'
             + '<div class="st-info">'
             + '<div class="st-team-swatch" data-team-short="' + escAttr(shortName) + '" style="border-color:#' + esc(tc) + '60;">'
@@ -1290,12 +1390,12 @@ function renderConstructors(standings, driverStandings) {
             + '</div>'
             + '<div class="st-bar-wrap"><div class="st-bar" style="width:' + barPct + '%;background:#' + esc(tc) + ';"></div></div>'
             + '</div>'
-            + detailRowHTML(detailId, [
+            + (IS_EMBED ? '' : detailRowHTML(detailId, [
                 { label: 'Φόρμα', value: wins > 0 ? formatWinsLabel(wins) : 'Χωρίς νίκες ακόμη' },
                 { label: 'Οδηγοί', value: drivers.length ? drivers.join(' / ') : 'Δεν έχει οριστεί' },
                 { label: 'Διαφορά από τον προηγούμενο', value: index === 0 ? 'Πρωτοπόρος' : '+' + pointsText(gapAhead) + ' βαθ.' },
                 { label: 'Διαφορά από τον επόμενο', value: next ? pointsText(gapBehind) + ' βαθ.' : 'Τελευταία καταχώριση' }
-            ]);
+            ]));
     });
     renderTrustedHtml(constructorsTable, html, 'constructor standings rows from validated standings payload');
     hydrateStandingsLazyImages(constructorsTable);
@@ -1499,7 +1599,6 @@ function bindEvents() {
         currentFocusTarget = nextState.focus;
         pendingRevealTarget = nextState.focus;
         isEmbedMode = nextState.embed;
-        pendingDestructorsView = nextState.destructorsView;
         pendingPitStopsView = nextState.pitView;
         pendingPitStopsRound = nextState.pitRound;
         pendingQualiView = nextState.qualiView;
@@ -1513,10 +1612,6 @@ function bindEvents() {
         pendingTrackTeamB = nextState.trackTeamB;
         pendingDebriefRound = nextState.debriefRound;
         pendingDebriefView = nextState.debriefView;
-        const destructorsMod = tabModuleInstances['destructors'];
-        if (destructorsMod && typeof destructorsMod.setActiveView === 'function') {
-            destructorsMod.setActiveView(nextState.destructorsView);
-        }
         const pitStopsMod = tabModuleInstances['pit-stops'];
         if (pitStopsMod) {
             if (typeof pitStopsMod.setActiveView === 'function') pitStopsMod.setActiveView(nextState.pitView);
@@ -1565,7 +1660,6 @@ function init() {
     currentFocusTarget = initialURLState.focus;
     pendingRevealTarget = initialURLState.focus;
     isEmbedMode = initialURLState.embed;
-    pendingDestructorsView = initialURLState.destructorsView;
     pendingPitStopsView = initialURLState.pitView;
     pendingPitStopsRound = initialURLState.pitRound;
     pendingQualiView = initialURLState.qualiView;
@@ -1579,6 +1673,15 @@ function init() {
     pendingTrackTeamB = initialURLState.trackTeamB;
     pendingDebriefRound = initialURLState.debriefRound;
     pendingDebriefView = initialURLState.debriefView;
+    if (isEmbedMode) {
+        pinnedRound = parseRoundPin(window.location.search, YEAR);
+        pendingLap1View = 'race-detail';
+        if (initialURLState.qualiSession && !new URLSearchParams(window.location.search).has('qualiView')) pendingQualiView = 'race-detail';
+        wireEmbedCapLinks(function() {
+            refreshEmbedFooter();
+            return document.getElementById('embed-footer-link').href;
+        });
+    }
 
     // Keep the first viewport useful while the tracked snapshot is fetched;
     // only the rows currently affected by the refresh need a placeholder.
@@ -1587,7 +1690,7 @@ function init() {
     if (driversChart) driversChart.style.display = 'block';
     if (driversChartBars) renderTrustedHtml(driversChartBars, skelChartRows(2), 'loading driver standings chart rows');
 
-    ['qualifying-gaps-year', 'lap1-gains-year', 'tyre-pace-year', 'dirty-air-year', 'track-dominance-year', 'pit-stops-year', 'debrief-year', 'destructors-year'].forEach(function(id) {
+    ['qualifying-gaps-year', 'lap1-gains-year', 'tyre-pace-year', 'dirty-air-year', 'track-dominance-year', 'pit-stops-year', 'debrief-year'].forEach(function(id) {
         const el = document.getElementById(id);
         if (el) el.textContent = YEAR;
     });
@@ -1598,6 +1701,13 @@ function init() {
 
     bindEvents();
     activateStandingsTab(activeStandingsTab, { skipURL: true, skipFocus: true });
+    setupEmbedHeightReporter();
+    if (isEmbedMode) {
+        refreshEmbedFooter();
+        // Tab modules settle their session/round after load: rebuild the link at the moment it is used.
+        const footerLink = document.getElementById('embed-footer-link');
+        if (footerLink) ['pointerdown', 'focus', 'mouseenter', 'touchstart', 'contextmenu', 'auxclick'].forEach(function(type) { footerLink.addEventListener(type, refreshEmbedFooter); });
+    }
 
     // Always hydrate drivers/constructors in the background so adjacent
     // panels don't sit empty on the first tab switch.

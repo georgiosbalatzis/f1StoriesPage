@@ -18,6 +18,9 @@ import { getCachedHeadshotResult } from '../core/drivers-meta.js';
 import { fetchJSON, fetchOpenF1BySessionKeys } from '../core/fetchers.js';
 import { setTrustedHtml } from '../core/rendering.js';
 import { isFiniteNumber, parseTimeSeconds } from './_shared.js';
+import { capEmbedRows, embedCapLinkHTML } from '../core/embed.js';
+
+const EMBED_OVERVIEW_PAIRS = 5;
 
 const OPENF1 = 'https://api.openf1.org/v1';
 const YEAR = new Date().getFullYear();
@@ -702,7 +705,7 @@ function renderQualifyingGapOverview(rows) {
     const laneOffsets = [28, 40, 52, 64, 34, 58];
     let html = '<div class="quali-gaps-list">';
 
-    rows.forEach(function(row) {
+    capEmbedRows(rows, EMBED_OVERVIEW_PAIRS).forEach(function(row) {
         const leftMax = row.dots.reduce(function(acc, dot) { return Math.max(acc, -dot.signedGap); }, 0);
         const rightMax = row.dots.reduce(function(acc, dot) { return Math.max(acc, dot.signedGap); }, 0);
         let axisLeft = qualiAxisSide(leftMax);
@@ -770,7 +773,7 @@ function renderQualifyingGapOverview(rows) {
             + '</div>';
     });
 
-    return html + '</div>';
+    return html + '</div>' + embedCapLinkHTML(rows.length, EMBED_OVERVIEW_PAIRS);
 }
 
 function renderQualifyingRaceDriverPin(driver, topPct, driverChannels) {
@@ -798,6 +801,7 @@ function renderQualifyingGapRaceView(rows, selectedRow) {
     let html = '<div class="quali-race-card">'
         + '<div class="quali-race-head"><div class="quali-race-head-copy"><h3 class="quali-race-head-title">Κενά συμπαικτών ανά συνεδρία</h3><p class="quali-race-head-note">Ο ταχύτερος συμπαίκτης είναι επάνω, ο πιο αργός κάτω, και οι ομάδες ταξινομούνται από τη μικρότερη στη μεγαλύτερη διαφορά.</p></div><label class="quali-race-controls"><span class="quali-race-controls-label">Διαθέσιμες συνεδρίες</span><select class="quali-race-select" data-quali-race-select aria-label="Επιλογή κατατακτήριων για τα κενά συμπαικτών">' + selectorOptions + '</select></label></div>'
         + '<div class="quali-race-summary"><div><div class="quali-race-summary-title">' + esc(selectedRow.meetingName) + '</div><div class="quali-race-summary-sub">' + esc(selectedRow.sessionName + (selectedRow.dateLabel ? ' · ' + selectedRow.dateLabel : '')) + '</div></div><div class="quali-race-summary-stats"><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Ομάδες</span><span class="quali-race-summary-value">' + esc(String(selectedRow.pairCount)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Μικρότερο</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.smallestGap, true)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Μεγαλύτερο</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.biggestGap, true)) + '</span></div><div class="quali-race-summary-stat"><span class="quali-race-summary-label">Μέσος όρος</span><span class="quali-race-summary-value">' + esc(formatSignedGap(selectedRow.avgGap, true)) + '</span></div></div></div>'
+        + '<p class="embed-scroll-hint">Σύρε για όλες τις ομάδες →</p>'
         + '<div class="quali-race-chart-scroll"><div class="quali-race-chart" style="--pair-count:' + selectedRow.pairCount + ';min-width:' + chartMinWidth + 'px;">';
 
     selectedRow.pairs.forEach(function(pair) {

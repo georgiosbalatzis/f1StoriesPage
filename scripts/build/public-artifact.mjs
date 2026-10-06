@@ -77,7 +77,6 @@ const AUTHORS_PUBLIC_FILES = new Set([
 
 const STANDINGS_ROOT_FILES = new Set([
     'standings/debrief-cache.json',
-    'standings/destructors-cache.json',
     'standings/index.html',
     'standings/standings-cache.json',
     'standings/standings.min.css',
@@ -337,6 +336,7 @@ function shouldCopyStandings(relPath) {
     if (/^standings\/chunks\/[^/]+\.min\.js$/i.test(relPath)) return true;
     // Dirty air ships as an index plus per-session files; the whole bundle stays source-only.
     if (/^standings\/dirty-air\/[^/]+\.json$/i.test(relPath)) return true;
+    if (/^standings\/rounds\/\d{4}-\d{1,2}\.json$/.test(relPath)) return true;
     return false;
 }
 

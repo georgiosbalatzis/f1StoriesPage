@@ -22,11 +22,13 @@ const FILE_LIMITS = {
     'scripts/build/asset-manifest.json': 256 * 1024,
     'sitemap.xml': 256 * 1024,
     'standings/debrief-cache.json': 1024 * 1024,
-    'standings/destructors-cache.json': 64 * 1024,
     'standings/dirty-air-cache.json': 4 * 1024 * 1024,
     'standings/dirty-air/index.json': 32 * 1024,
     'standings/standings-cache.json': 256 * 1024
 };
+
+// Every standings/rounds/*.json is a Jolpica standings pair; one is ~13 KB.
+const ROUND_SNAPSHOT_MAX_BYTES = 64 * 1024;
 
 const errors = [];
 
@@ -410,6 +412,35 @@ function validateStandingsCache() {
     validateJolpicaStandingsPayload(data.constructorStandings, `${relPath}.constructorStandings`);
 }
 
+// standings/rounds/<season>-<round>.json: the immutable per-round snapshots that pinned embeds read.
+function validateRoundSnapshots() {
+    const dir = 'standings/rounds';
+    if (!fs.existsSync(relAbs(dir))) { addError(dir, 'missing generated directory'); return; }
+    const files = fs.readdirSync(relAbs(dir)).filter(name => name.endsWith('.json')).sort();
+    assertCondition(files.length > 0, dir, 'must contain at least one round snapshot');
+    files.forEach(name => {
+        const relPath = `${dir}/${name}`;
+        const match = /^(\d{4})-(\d{1,2})\.json$/.exec(name);
+        if (!match) { addError(relPath, 'file name must be <season>-<round>.json'); return; }
+        const [season, round] = [Number(match[1]), Number(match[2])];
+        validateSeason(season, `${relPath} season`);
+        assertCondition(round >= 1 && round <= 30, relPath, 'round out of range');
+        FILE_LIMITS[relPath] = ROUND_SNAPSHOT_MAX_BYTES;
+        const data = requireObject(readJson(relPath), relPath);
+        if (!data) return;
+        validateDateTimeString(`${relPath}.generatedAt`, requireString(data, 'generatedAt', relPath, { maxLength: 40 }));
+        requireString(data, 'raceName', relPath, { maxLength: 120 });
+        const source = requireObject(data.source, `${relPath}.source`);
+        assertCondition(isHttpsUrl(source.driverStandingsUrl), `${relPath}.source`, 'driverStandingsUrl must be HTTPS');
+        assertCondition(isHttpsUrl(source.constructorStandingsUrl), `${relPath}.source`, 'constructorStandingsUrl must be HTTPS');
+        ['driverStandings', 'constructorStandings'].forEach(key => {
+            validateJolpicaStandingsPayload(data[key], `${relPath}.${key}`);
+            const table = data[key] && data[key].MRData && data[key].MRData.StandingsTable;
+            assertCondition(table && String(table.season) === String(season) && String(table.round) === String(round), `${relPath}.${key}`, 'season/round must match the file name');
+        });
+    });
+}
+
 function validateSeason(value, label) {
     assertCondition(isInteger(value) && value >= 2024 && value <= CURRENT_YEAR + 1, label, 'season/year out of expected range');
 }
@@ -494,28 +525,6 @@ function validateDirtyAirSplit() {
         assertCondition(fs.readFileSync(relAbs(relPath), 'utf8') === JSON.stringify(session), relPath, 'must equal the bundle session');
     });
     files.forEach(name => addError(`${label}/${name}`, 'stale session file not in dirty-air-cache.json'));
-}
-
-function validateDestructorsCache() {
-    const relPath = 'standings/destructors-cache.json';
-    const data = requireObject(readJson(relPath), relPath);
-    assertCondition(data.version === 1, relPath, 'version must be 1');
-    validateSeason(data.season, `${relPath}.season`);
-    validateDateTimeString(`${relPath}.generatedAt`, requireString(data, 'generatedAt', relPath, { maxLength: 40 }));
-    requireString(data, 'snapshotLabel', relPath, { maxLength: 240 });
-    requireObject(data.source, `${relPath}.source`);
-
-    const drivers = requireArray(data.drivers, `${relPath}.drivers`, { allowEmpty: true, maxLength: 40 });
-    drivers.forEach((driver, index) => {
-        const label = `${relPath}.drivers[${index}]`;
-        requireObject(driver, label);
-        requireString(driver, 'acronym', label, { maxLength: 4 });
-        requireString(driver, 'fullName', label, { maxLength: 120 });
-        requireString(driver, 'teamKey', label, { maxLength: 80 });
-        requireNumber(driver, 'damage', label, { min: 0, max: 100000000 });
-    });
-    requireArray(data.zeroTeams, `${relPath}.zeroTeams`, { allowEmpty: true, maxLength: 20 })
-        .forEach((team, index) => requireString({ team }, 'team', `${relPath}.zeroTeams[${index}]`, { maxLength: 80 }));
 }
 
 function validateDebriefDriverRow(row, label) {
@@ -614,9 +623,9 @@ function main() {
     validateBlogSourceCache();
     validateYoutubeSnapshot();
     validateStandingsCache();
+    validateRoundSnapshots();
     validateDirtyAirCache();
     validateDirtyAirSplit();
-    validateDestructorsCache();
     validateDebriefCache();
     validateAssetManifest();
     validateSitemap();

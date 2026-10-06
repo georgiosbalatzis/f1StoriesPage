@@ -48,6 +48,7 @@
     "build:article-originals": "node scripts/build/normalize-article-originals.mjs",
     "perf:images": "node scripts/perf/public-image-guard.mjs",
     "qa:visual": "node scripts/perf/visual-qa.mjs",
+    "qa:embeds": "node scripts/perf/embed-qa.mjs",
     "qa:author-images": "node scripts/perf/author-image-ingest-check.mjs",
     "test:consent": "node --test scripts/perf/__tests__/analytics-events.test.mjs && node scripts/perf/consent-guard.mjs",
     "perf:lighthouse": "node scripts/perf/lighthouse-guard.mjs",

@@ -472,6 +472,10 @@ body { overflow-y: visible !important; }
 
 /* ── Pit Stops ── */
 
+/* Match the embed root's color-scheme to the host article; a mismatch paints an opaque canvas. */
+html[data-embed] { color-scheme: dark; background: transparent; }
+html[data-embed][data-theme="light"] { color-scheme: light; }
+
 body.standings-embed { background: transparent !important; }
 
 body.standings-embed .background,
@@ -499,6 +503,45 @@ body.standings-embed .standings-panel { display: none !important; }
 body.standings-embed .standings-panel.active { display: block !important; animation: none; }
 
 body.standings-embed [data-embed-hidden="true"] { display: none !important; }
+
+/* Strict focus: the embed shows the chosen element plus the footer, nothing else. */
+body.standings-embed .standings-context-row,
+body.standings-embed .standings-side-panel,
+body.standings-embed .chart-note { display: none !important; }
+
+/* Intro copy stays as a short header: two lines at most. */
+body.standings-embed :is(.quali-sub, .lap1-sub, .tyre-pace-sub, .dirty-air-sub, .track-dom-sub, .pit-stops-sub, .debrief-sub) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+}
+
+.embed-footer { display: none; }
+
+body.standings-embed .embed-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--st-border-strong);
+    font-size: 0.75rem;
+    color: var(--st-text-muted);
+}
+
+body.standings-embed .embed-footer-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--st-accent-readable);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.16em;
+}
 
 @media (max-width: 767.98px) {
     body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn) { display: none; }
@@ -620,4 +663,79 @@ body.standings-embed [data-embed-hidden="true"] { display: none !important; }
     .skel { animation: none; opacity: 0.55; }
     .standings-panel.active { animation: none; }
     * { transition-duration: 0.01ms !important; }
+}
+
+body.standings-embed .embed-footer-meta span { white-space: nowrap; }
+
+/* The embed renders exactly the state its URL encodes: no session/round pickers, no view tab strips. */
+body.standings-embed :is(
+    .quali-view-switch, .lap1-view-switch, .pit-stops-view-switch, .debrief-view-switch, .dirty-air-view-switch,
+    .quali-race-controls, .lap1-race-controls, .tyre-pace-controls, .dirty-air-controls, .track-dom-controls, .track-dom-team-pickers,
+    .pit-stops-controls, .debrief-round-selector,
+    .lap1-race-head .lap1-overview-note
+) { display: none !important; }
+
+/* Embed caps: rows are static (no expand control) and capped lists end with a link to the full view. */
+body.standings-embed .st-row::after,
+body.standings-embed .st-detail-row { display: none !important; }
+
+body.standings-embed .embed-cap-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin-top: 0.5rem;
+    color: var(--st-accent-readable);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.16em;
+}
+
+/* Season-best view: the race header belongs to the per-race view. */
+body.standings-embed .pit-stops-card.is-season-view .pit-stops-head { display: none; }
+
+/* The full page reserves 22 driver rows against layout shift; a capped embed is sized by its content. */
+body.standings-embed :is(#drivers-table, #constructors-table) { min-height: 0; }
+
+/* Wide content in a narrow embed scrolls sideways and says so. */
+.embed-scroll-hint { display: none; }
+
+@media (max-width: 767.98px) {
+    body.standings-embed .embed-scroll-hint { display: block; margin: 0 0 0.4rem; font-size: 0.72rem; color: var(--st-text-muted); }
+}
+
+/* Debrief tables are 6 columns wide. Mid-width embeds (the article column) drop the lap-count column so the
+   table fits without scrolling; below that each row becomes a compact card. */
+@media (min-width: 600px) and (max-width: 799px) {
+    body.standings-embed .debrief-table table { min-width: 0; width: 100%; }
+    body.standings-embed .debrief-table :is(th, td):nth-child(6) { display: none; }
+}
+
+@media (max-width: 599px) {
+    body.standings-embed .debrief-table { overflow: visible; }
+    body.standings-embed .debrief-table :is(table, tbody) { display: block; width: 100%; min-width: 0; }
+    body.standings-embed .debrief-table thead { display: none; }
+    body.standings-embed .debrief-table tr {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 0.4rem 0.6rem;
+        padding: 0.7rem 0.25rem;
+        border-bottom: 1px solid var(--st-border);
+    }
+    body.standings-embed .debrief-table td { display: block; min-width: 0; padding: 0; border: 0; }
+    body.standings-embed .debrief-table td:nth-child(1) { flex: 0 0 1.4rem; }
+    body.standings-embed .debrief-table td:nth-child(2) { flex: 1 1 calc(100% - 2.2rem); }
+    body.standings-embed .debrief-table td:nth-child(n + 3) { flex: 1 1 auto; }
+    body.standings-embed .debrief-table td:nth-child(n + 3)::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 0.15rem;
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--st-text-muted);
+    }
 }

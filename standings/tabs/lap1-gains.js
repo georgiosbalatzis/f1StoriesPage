@@ -18,6 +18,10 @@ import { getCachedHeadshotResult } from '../core/drivers-meta.js';
 import { fetchJSON, fetchOpenF1BySessionKeys } from '../core/fetchers.js';
 import { setTrustedHtml } from '../core/rendering.js';
 import { isFiniteNumber } from './_shared.js';
+import { capEmbedRows, embedCapLinkHTML } from '../core/embed.js';
+
+// Rows are tall (avatar, team chip, move), so an embed shows fewer than the shared default.
+const EMBED_LAP1_MOVES = 5;
 
 const OPENF1 = 'https://api.openf1.org/v1';
 const YEAR = new Date().getFullYear();
@@ -453,7 +457,8 @@ function renderLap1RaceDetailContent(rows, selectedRow) {
         + '<div class="lap1-race-summary-main"><span class="lap1-session-type">' + esc(selectedRow.sessionTypeShort) + '</span><div class="lap1-race-summary-copy"><div class="lap1-race-summary-title">' + esc(selectedRow.meetingName) + '</div><div class="lap1-race-summary-sub">' + esc(selectedRow.dateLabel + ' · ' + selectedRow.sessionName) + '</div></div></div>'
         + '<div class="lap1-race-summary-stats"><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Μεγαλύτερη άνοδος</span><span class="lap1-race-summary-value">' + esc(topMoverLabel) + '</span></div><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Καλύτερο κέρδος</span><span class="lap1-race-summary-value">' + esc(formatGainValue(selectedRow.maxGain)) + '</span></div><div class="lap1-race-summary-stat"><span class="lap1-race-summary-label">Οδηγοί</span><span class="lap1-race-summary-value">' + esc(String(selectedRow.moves.length)) + '</span></div></div>'
         + '</div>'
-        + '<div class="lap1-race-rows">' + selectedRow.moves.map(renderLap1RaceDriverRow).join('') + '</div>'
+        + '<div class="lap1-race-rows">' + capEmbedRows(selectedRow.moves, EMBED_LAP1_MOVES).map(renderLap1RaceDriverRow).join('') + '</div>'
+        + embedCapLinkHTML(selectedRow.moves.length, EMBED_LAP1_MOVES)
         + '</div>';
 }
 

@@ -36,7 +36,6 @@ const SOURCE_FILES = [
     'standings/tabs/track-dominance.css',
     'standings/tabs/pit-stops.css',
     'standings/tabs/debrief.css',
-    'standings/tabs/destructors.css',
     'standings/standings.js',
     'standings/core/format.js',
     'standings/core/teams.js',
@@ -47,11 +46,10 @@ const SOURCE_FILES = [
     'standings/core/payloads.js',
     'standings/core/rendering.js',
     // Phase 6C: per-tab ES modules. _shared holds the leaf helpers the tab
-    // modules pull in; steps 1-8 extracted destructors, pit-stops,
+    // modules pull in; steps 1-8 extracted pit-stops,
     // quali-gaps, lap1-gains, tyre-pace, dirty-air, track-dominance,
     // and debrief.
     'standings/tabs/_shared.js',
-    'standings/tabs/destructors.js',
     'standings/tabs/pit-stops.js',
     'standings/tabs/quali-gaps.js',
     'standings/tabs/lap1-gains.js',
@@ -96,7 +94,6 @@ const SOURCE_FILES = [
 
 const MINIFIED_JS_SOURCES = new Set([
     'standings/standings.js',
-    'standings/tabs/destructors.js',
     'standings/tabs/pit-stops.js',
     'standings/tabs/quali-gaps.js',
     'standings/tabs/lap1-gains.js',

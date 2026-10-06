@@ -15,7 +15,7 @@ F1 Racing
 
 # Ορίστε και το Tyre Pace που μπορείτε να βρείτε μόνο σε εμάς ...
 
-<iframe src="https://f1stories.gr/standings/?tab=tyre-pace&amp;focus=panel-tyre-pace&amp;embed=1&amp;tyreSession=11361" loading="lazy" decoding="async" style="width:100%;min-height:1080px;border:0;border-radius:16px;" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<iframe src="https://f1stories.gr/standings/?tab=tyre-pace&amp;focus=panel-tyre-pace&amp;embed=1&amp;tyreSession=11361" title="Ρυθμός ελαστικών — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:1020px;border:0;"></iframe>
 
 Η αλήθεια είναι ότι η Mercedes έχει διαλέξει... τουλάχιστον αυτό βλέπουμε οδηγό. Και εδώ έρχομαι να πω, δίκαιος, άδικος; Μπορούμε εμείς να το κρίνουμε;
 

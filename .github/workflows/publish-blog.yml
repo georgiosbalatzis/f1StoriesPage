@@ -257,7 +257,7 @@ jobs:
             standings/standings-cache.json
             standings/dirty-air-cache.json
             standings/dirty-air
-            standings/destructors-cache.json
+            standings/rounds
             standings/debrief-cache.json
           token: ${{ github.token }}
 

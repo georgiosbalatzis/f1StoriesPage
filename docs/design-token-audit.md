@@ -89,7 +89,6 @@ Classification:
 | `standings/tabs/track-dominance.css` | 30 | A/C old fills/rules; B team/advantage RGB and circuit semantics |
 | `standings/tabs/pit-stops.css` | 25 | A/C old fills/rules; B crew/time/position/team semantics |
 | `standings/tabs/debrief.css` | 50 | A/C old chart chrome; B chart/compound/positive/negative/point-hover semantics |
-| `standings/tabs/destructors.css` | 22 | A/C old fills/rules; B cost/severity/status semantics |
 | `styles.css` | 68 | C older charcoal/blue palette, generic utilities, danger/success roles; do not migrate author tools in this task |
 | `styles/shared-nav.css` | 76 | C non-editorial blue/pink nav/toggle defaults; public editorial styles own resolved colors; shell geometry preserved |
 | `styles/layers.css` | 5 | C root fallback aliases (`--color-*`); root alias resolution does not inherit later body tokens |

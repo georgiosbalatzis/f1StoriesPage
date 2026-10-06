@@ -18,6 +18,6 @@ title: Lindblad: λάθη, μια συγγνώμη και ένα P7 για 0,030
 
 Αν δεις τα νούμερα της χρονιάς, η εικόνα είναι καλή, με τα πάνω και τα κάτω της. Μετά το Baku ο Lindblad έχει δέκα τερματισμούς στη δεκάδα και 37 βαθμούς, και είχε σκοράρει ήδη από το ντεμπούτο του στην Αυστραλία. Μέσα στην ομάδα όμως ο Lawson κρατάει ακόμα το πάνω χέρι: 7-5 στις κατατακτήριες και 8-4 στους αγώνες. Πολύ δυνατή πρώτη χρονιά, όχι όμως χωρίς σκαμπανεβάσματα.
 
-<iframe src="https://f1stories.gr/standings/?tab=quali-gaps&amp;focus=panel-quali-gaps&amp;embed=1&amp;qualiSession=11373" loading="lazy" decoding="async" style="width:100%;min-height:1120px;border:0;border-radius:16px;" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<iframe src="https://f1stories.gr/standings/?tab=quali-gaps&amp;focus=panel-quali-gaps&amp;embed=1&amp;qualiSession=11373" title="Κενά κατατακτήριων συμπαικτών — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:1000px;border:0;"></iframe>
 
 Το χτύπημα στο FP2, τα λάθη στις κατατακτήριες και η επαφή με τον Lawson είναι όλα εκεί, όσο καλά κι αν φαίνεται το P7 στον πίνακα. Εξίσου σημαντικό είναι το πώς ξαναμπήκε στον αγώνα μετά την επαφή στην T1. Ότι είναι γρήγορος το έχει δείξει αρκετές φορές φέτος. Αυτό που του μένει είναι να μάθει πότε το «κάτι παραπάνω» τού δίνει χρόνο και πότε απλώς ρίσκο. Αν το καταφέρει, η Racing Bulls θα έχει στα χέρια της κάτι πολύ καλό. Μέχρι τότε, μάλλον θα δούμε κι άλλα Σαββατοκύριακα σαν αυτό.

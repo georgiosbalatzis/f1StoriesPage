@@ -38,8 +38,8 @@
 
 - **Node.js 22 ή νεότερο.** Το CI τρέχει σε Node 22 και το `package.json` δηλώνει `>=22`.
 - **npm** με υποστήριξη για `npm ci`.
-- **Google Chrome**, μόνο για τα `qa:visual`, `perf:lighthouse` και `test:consent`. Αν δεν βρεθεί αυτόματα, δώστε τη διαδρομή του με `CHROME_PATH`.
-- **Σύνδεση στο internet** για τα builds που τραβούν δεδομένα (YouTube, Jolpica, OpenF1, F1 Top App).
+- **Google Chrome**, μόνο για τα `qa:visual`, `qa:embeds`, `perf:lighthouse` και `test:consent`. Αν δεν βρεθεί αυτόματα, δώστε τη διαδρομή του με `CHROME_PATH`.
+- **Σύνδεση στο internet** για τα builds που τραβούν δεδομένα (YouTube, Jolpica, OpenF1).
 
 ### Εγκατάσταση
 
@@ -142,7 +142,7 @@ npm run verify
 │   ├── blog-processor.js       Wrapper που καλεί το build/
 │   ├── taxonomy.js             Δημόσιες κατηγορίες, aliases, labels (Node και browser)
 │   ├── blog-index.js, blog-fixes.js
-│   ├── dirty-air-cache.js, destructors-cache.js   Builders για τα cache των standings
+│   ├── dirty-air-cache.js   Builder για τα cache των standings
 │   ├── generate-image-variants.js
 │   └── *.json                  Generated feeds (index, page-1, home-latest, source-cache)
 ├── standings/
@@ -276,6 +276,17 @@ title: Ο τίτλος του άρθρου
 | Pipe πίνακας (`\| a \| b \|` και από κάτω `\|---\|---\|`) | Responsive πίνακας. |
 
 Όλα τα embeds περνούν από sanitization (`blog-module/build/embed-render.js`). Η λίστα των επιτρεπτών πηγών πρέπει να ταιριάζει με το Content Security Policy στο `scripts/build/security-policy.mjs`.
+
+#### Embeds βαθμολογίας (Standings)
+
+Η σελίδα `/standings/` δίνει κώδικα iframe για 13 στόχους: πίνακας και γράφημα οδηγών/κατασκευαστών, και οι καρτέλες Κενά κατατακτήριων, Κέρδη 1ου γύρου, Ρυθμός ελαστικών, Dirty Air, Κυριαρχία πίστας, Pit Stops, Debrief.
+
+1. **Αντιγραφή.** Στη σελίδα πάτα «Ενσωμάτωση γραφήματος» ή «Ενσωμάτωση καρτέλας». Ο κώδικας είναι ένα `<iframe>` με `title`, `loading="lazy"` και ύψος-εφεδρεία. Βάλε τον όπως είναι σε δική του γραμμή του `source.txt`· περνά από το sanitization του άρθρου.
+2. **Τι δείχνει.** Μόνο το στοιχείο που διάλεξες, με κεφαλίδα και υποσέλιδο (σεζόν, γύρος, link «Άνοιγμα στο F1 Stories →» στο ίδιο view). Δεν έχει επιλογείς ούτε tabs: την κατάσταση την ορίζει το URL. Οι μεγάλες λίστες κόβονται (top 10 οδηγοί, 5 ζευγάρια στα κατατακτήρια, 5 κινήσεις στον 1ο γύρο, top 10 pit stops/debrief) και τελειώνουν με link «Δες όλο τον πίνακα».
+3. **Καρφωμένος γύρος.** Ο κώδικας για πίνακα/γράφημα οδηγών ή κατασκευαστών περιέχει `season=…&round=N` (ο τελευταίος ολοκληρωμένος γύρος τη στιγμή της αντιγραφής). Το embed διαβάζει το αμετάβλητο snapshot `standings/rounds/<σεζόν>-<γύρος>.json`, με fallback στο Jolpica, και **δεν ανανεώνεται ποτέ live**: ένα άρθρο δείχνει πάντα τη βαθμολογία της εποχής του. Το υποσέλιδο γράφει «Δεδομένα έως Γύρο N · όνομα GP» και το link λέει «Σημερινή βαθμολογία →». Για παλιό άρθρο βάλε τον γύρο χειροκίνητα: ο τελευταίος γύρος με ημερομηνία αγώνα μέχρι την ημέρα δημοσίευσης (πρόγραμμα: `https://api.jolpi.ca/ergast/f1/<σεζόν>.json`). Οι καρτέλες ανάλυσης δεν καρφώνονται με γύρο· κρατούν τη συνεδρία τους (`qualiSession`, `lap1Session`, `tyreSession`, `dirtyAirSession`, `trackSession`, `pitRound`, `debriefRound`).
+4. **Ύψος.** Το άρθρο προσαρμόζει το ύψος του iframe στο πραγματικό περιεχόμενο (postMessage `f1s-standings:resize`, μόνο από το ίδιο origin), οπότε δεν εμφανίζεται εσωτερικό scrollbar. Το `height` του κώδικα είναι μόνο η εφεδρεία πριν φορτώσει.
+5. **Θέμα.** Το embed ακολουθεί το φωτεινό/σκοτεινό θέμα του άρθρου, και αλλάζει ζωντανά όταν ο αναγνώστης πατήσει το κουμπί θέματος.
+6. **Έλεγχος.** `npm run qa:embeds` (Chrome και δίκτυο, δεν τρέχει στο CI): φορτώνει όλους τους στόχους στα 320, 390 και 680px, σε σκοτεινό και φωτεινό θέμα, και ελέγχει ύψος, περιθώρια, επιλογείς, υποσέλιδο και θέμα. Φίλτρα: `--only=lap1,pit`, `--theme=dark`, `--widths=390`, `--root=dist`.
 
 #### Native πίνακας BetCast σε άρθρο
 
@@ -420,7 +431,6 @@ npm run test:blog
 | Tab | Module | Δεδομένα |
 |---|---|---|
 | Βαθμολογία οδηγών / κατασκευαστών | `standings.js` | `standings-cache.json`, μετά live Jolpica, με fallback στο OpenF1 |
-| Destructors | `tabs/destructors.js` | `destructors-cache.json` |
 | Pit stops | `tabs/pit-stops.js` | OpenF1 (live) |
 | Quali gaps | `tabs/quali-gaps.js` | OpenF1 (live) |
 | Lap 1 gains | `tabs/lap1-gains.js` | OpenF1 (live) |
@@ -442,8 +452,8 @@ npm run test:blog
 | Αρχείο | Builder | Πηγή |
 |---|---|---|
 | `standings/standings-cache.json` | `scripts/build/refresh-standings-data.mjs` | Jolpica (Ergast mirror) |
+| `standings/rounds/<season>-<round>.json` | `scripts/build/refresh-standings-data.mjs` (`--rounds-only` για μόνο αυτά) | Jolpica, ένα αμετάβλητο snapshot ανά ολοκληρωμένο γύρο· τα διαβάζουν τα embeds με `?season=&round=` |
 | `standings/dirty-air-cache.json` (+ split `standings/dirty-air/`) | `blog-module/dirty-air-cache.js` | OpenF1 |
-| `standings/destructors-cache.json` | `blog-module/destructors-cache.js` | F1 Top App (parse του HTML) |
 | `standings/debrief-cache.json` | `standings/debrief-cache.js` | OpenF1 |
 
 Ανανεώνονται όλα μαζί με:
@@ -779,6 +789,7 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 | `npm run perf:images` | Καμία δημόσια εικόνα πάνω από 300 KB. | όχι |
 | `npm run test:consent` | Τα analytics δεν φορτώνουν πριν από συγκατάθεση (Chrome). | όχι |
 | `npm run qa:visual` | Screenshots σε desktop και mobile, overflow, σπασμένες εικόνες, landmarks, focus, contrast, tabs, 404 (Chrome, πάνω στο `dist/`). Αποτελέσματα στο `perf/visual-qa/`. | όχι |
+| `npm run qa:embeds` | Embeds της βαθμολογίας: ύψος, περιθώρια, επιλογείς, υποσέλιδο, θέμα, σε 3 πλάτη × 2 θέματα (Chrome και live δεδομένα, πάνω στο working tree). | όχι |
 | `npm run perf:lighthouse` | Lighthouse budgets ανά route πάνω στο `dist/` (Chrome). | όχι |
 | `npm run verify` | Όλα τα παραπάνω με τη σειρά. Είναι ο πλήρης έλεγχος πριν από release. | όχι |
 
@@ -823,6 +834,7 @@ npm run quality:rendering:update
 | `test:blog`, `test:taxonomy`, `test:author`, `test:standings`, `test:build`, `test:consent` | Tests |
 | `perf:budget`, `perf:article-media`, `perf:images`, `perf:lighthouse` (και `:update`) | Performance guards |
 | `qa:visual` | Visual QA |
+| `qa:embeds` | QA των embeds βαθμολογίας |
 | `verify` | Πλήρης έλεγχος |
 
 ---
@@ -837,7 +849,7 @@ npm run quality:rendering:update
 | `YOUTUBE_CHANNEL_ID` | `build:youtube` | κανάλι F1 Stories | Άλλο κανάλι |
 | `PREVIEW_HOST` / `PREVIEW_PORT` | `preview` | `127.0.0.1` / `4173` | Διεύθυνση του preview server |
 | `AUTHOR_HOST` / `AUTHOR_PORT` | `serve-tools.mjs` | `127.0.0.1` / `4179` | Διεύθυνση του server των εργαλείων |
-| `CHROME_PATH` | `qa:visual`, `perf:lighthouse`, `test:consent` | αυτόματος εντοπισμός | Διαδρομή του Chrome |
+| `CHROME_PATH` | `qa:visual`, `qa:embeds`, `perf:lighthouse`, `test:consent` | αυτόματος εντοπισμός | Διαδρομή του Chrome |
 | `PUPPETEER_EXECUTABLE_PATH` | `qa:visual` | | Εναλλακτική του `CHROME_PATH` |
 | `LIGHTHOUSE_ROOT`, `LIGHTHOUSE_BUDGET_PATH`, `LIGHTHOUSE_OUTPUT_DIR`, `LIGHTHOUSE_KEEP_JSON`, `LIGHTHOUSE_CHROME_FLAGS` | `perf:lighthouse` | | Ρυθμίσεις του Lighthouse guard |
 
@@ -884,7 +896,6 @@ npm run quality:rendering:update
 |---|---|---|
 | Jolpica (`api.jolpi.ca`, Ergast mirror) | Βαθμολογίες | build και browser |
 | OpenF1 (`api.openf1.org`) | Sessions, laps, stints, pit stops, debrief, dirty air | build και browser |
-| F1 Top App (`f1.top-app.eu`) | Destructors championship | build |
 | Formula1.com media CDN | Φωτογραφίες οδηγών και λογότυπα ομάδων | χειροκίνητο build |
 | YouTube RSS | Snapshot των πρόσφατων videos | build |
 | Google Analytics 4 | Analytics και Web Vitals (`web_vital` event), μόνο μετά από συγκατάθεση | browser |
@@ -980,7 +991,7 @@ Actions > Site Maintenance > Run workflow > `standings`. Τοπικά: `npm run 
 | Το scheduled standings run γράφει `run=false` | Ήταν το cron της άλλης ζώνης ώρας (EET/EEST). Αυτό είναι αναμενόμενο. |
 | Το `build:public` αποτυγχάνει στον validator | Διαβάστε το μήνυμα. Συνήθως είναι νέο αρχείο που δεν είναι στο allowlist, σπασμένο reference ή λάθος CSP. |
 | Το `perf:article-media` αποτυγχάνει | Προστέθηκε raw JPG/PNG/GIF. Μετατρέψτε το σε WebP/AVIF ή ενημερώστε το baseline με αιτιολόγηση. |
-| Το `qa:visual` / `perf:lighthouse` δεν βρίσκει Chrome | Ορίστε `CHROME_PATH`. |
+| Το `qa:visual` / `qa:embeds` / `perf:lighthouse` δεν βρίσκει Chrome | Ορίστε `CHROME_PATH`. |
 | Κενό icon σε κάποια σελίδα | Το sprite δεν είναι ενημερωμένο. Τρέξτε `npm run build:assets` και `npm run check:assets`. |
 | Ο browser δείχνει παλιά έκδοση | Κάντε hard reload. Αν επιμένει, ελέγξτε στο DevTools > Application ότι δεν υπάρχει service worker (το `sw-cleanup.js` τον αφαιρεί στην πρώτη επίσκεψη). |
 
