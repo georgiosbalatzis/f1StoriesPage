@@ -1,6 +1,44 @@
 {
   "posts": [
     {
+      "id": "20261006G",
+      "title": "Το SC τιμώρησε αυτούς που το ερμήνευσαν σωστά",
+      "author": "Georgios Balatzis",
+      "date": "2026-10-06",
+      "dateISO": "2026-10-06",
+      "displayDate": "6 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261006G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261006G/1.webp",
+      "excerpt": "Η Williams είχε δίκιο , οι βαθμοί όμως πήγαν στη McLaren Στον όγδοο γύρο του Grand Prix του Μπαχρέιν στο Sepang, η Williams είχε κάνει σχεδόν όλα όσα θα ζητούσες από ένα pit wall σε έναν αγώνα με...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261006G/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "Bahrain",
+        "Malaysia",
+        "Sepang",
+        "2026",
+        "Williams",
+        "Ferrari",
+        "Audi",
+        "Redbull",
+        "RacingBulls",
+        "Cadillac",
+        "Mercedes",
+        "McLaren"
+      ],
+      "wordCount": 1625,
+      "readingTime": "9 min",
+      "imageWidth": 1920,
+      "imageHeight": 1080,
+      "backgroundImageWidth": 1920,
+      "backgroundImageHeight": 1080
+    },
+    {
       "id": "20261005W",
       "title": "Δεν είναι δική μας δουλειά να αποφασίσουμε πώς θα τελειώσει η ιστορία του Marc Márquez",
       "author": "Themis Charvalis",
@@ -10011,5 +10049,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-05T16:13:44.919Z"
+  "lastUpdated": "2026-10-06T12:37:47.796Z"
 }
