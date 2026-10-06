@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildRosterByNumber } from '../roster.js';
+import { buildRosterByNumber, loadDriverRoster, supplementDriverRecords, teamDisplayName } from '../roster.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const snapshot = JSON.parse(fs.readFileSync(path.join(root, 'standings', 'standings-cache.json'), 'utf8'));
@@ -30,3 +30,39 @@ const partial = buildRosterByNumber({ MRData: { StandingsTable: { StandingsLists
 ] }] } } });
 assert.deepEqual(Object.keys(partial), ['7']);
 assert.equal(partial[7].acronym, 'TST');
+
+// Team names follow OpenF1's spelling, not Jolpica's.
+const teamNames = Object.fromEntries(Object.values(roster).map(e => [e.constructorId, e.teamName]));
+assert.equal(teamNames.rb, 'Racing Bulls');
+assert.equal(teamNames.red_bull, 'Red Bull Racing');
+assert.equal(teamNames.haas, 'Haas F1 Team');
+assert.equal(teamNames.alpine, 'Alpine');
+assert.equal(teamNames.cadillac, 'Cadillac');
+assert.equal(teamDisplayName('unknown_team', 'Some Team'), 'Some Team', 'unknown constructors keep their Jolpica name');
+
+// Supplement: only sessions OpenF1 did not answer for are filled.
+const real = { session_key: 1, driver_number: 12, full_name: 'Kimi ANTONELLI', name_acronym: 'ANT', team_name: 'Mercedes' };
+const merged = supplementDriverRecords([real], [1, 2], roster);
+assert.equal(merged.filter(r => r.session_key === 1).length, 1, 'an answered session is untouched');
+assert.equal(merged.filter(r => r.session_key === 1)[0], real);
+const filled = merged.filter(r => r.session_key === 2);
+assert.equal(filled.length, Object.keys(roster).length, 'an unanswered session gets the full roster');
+assert.ok(filled.every(r => r.driver_number && r.full_name && r.name_acronym && r.team_name));
+assert.deepEqual(supplementDriverRecords(null, [5], {}), [], 'no roster, no records');
+assert.deepEqual(supplementDriverRecords([real], [1, 2], {}), [real]);
+
+// loadDriverRoster never rejects
+assert.deepEqual(await loadDriverRoster(() => Promise.reject(new Error('down'))), {});
+assert.equal((await loadDriverRoster(() => Promise.resolve(snapshot)))[12].acronym, 'ANT');
+
+// Diacritics are dropped from the family name, matching OpenF1 ("PEREZ", not "PÉREZ").
+const accented = buildRosterByNumber({ MRData: { StandingsTable: { StandingsLists: [{ DriverStandings: [
+    { Driver: { permanentNumber: '11', givenName: 'Sergio', familyName: 'Pérez', code: 'PER' }, Constructors: [{ name: 'Cadillac F1 Team', constructorId: 'cadillac' }] }
+] }] } } });
+assert.equal(accented[11].fullName, 'Sergio PEREZ');
+
+// With activity, only drivers who took part in the session are filled in.
+const lapsOf = [{ session_key: 9, driver_number: 12 }, { session_key: 9, driver_number: 63 }, { session_key: 8, driver_number: 1 }];
+const limited = supplementDriverRecords([], [9], roster, lapsOf);
+assert.deepEqual(limited.map(r => r.driver_number).sort((a, b) => a - b), [12, 63], 'only session 9 participants');
+assert.equal(supplementDriverRecords([], [9], roster, []).length, 0, 'empty activity fills nothing');

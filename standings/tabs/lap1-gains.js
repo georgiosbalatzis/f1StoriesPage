@@ -18,7 +18,7 @@ import { getCachedHeadshotResult } from '../core/drivers-meta.js';
 import { fetchJSON, fetchOpenF1BySessionKeys } from '../core/fetchers.js';
 import { setTrustedHtml } from '../core/rendering.js';
 import { isFiniteNumber } from './_shared.js';
-import { buildRosterByNumber } from '../core/roster.js';
+import { loadDriverRoster, supplementDriverRecords } from '../core/roster.js';
 import { capEmbedRows, embedCapLinkHTML } from '../core/embed.js';
 
 // Rows are tall (avatar, team chip, move), so an embed shows fewer than the shared default.
@@ -226,24 +226,11 @@ function formatPositionTag(position) {
     return 'P' + position;
 }
 
-function rosterDriver(entry) {
-    const fullName = entry.fullName;
-    return {
-        driverNumber: entry.driverNumber,
-        fullName: fullName,
-        firstName: entry.firstName,
-        lastName: entry.lastName,
-        acronym: entry.acronym,
-        headshot: getCachedHeadshotResult('', fullName, '').url,
-        teamName: entry.teamName,
-        teamColor: getCanonicalTeamColor(entry.constructorId, entry.teamName, '')
-    };
-}
-
-export function resolveLap1Driver(number, sessionDrivers, otherSessionDrivers, roster) {
+// A number resolves through this session's record, then the same number in another session; a session OpenF1
+// did not answer for is filled from the standings roster before this runs (core/roster.js).
+export function resolveLap1Driver(number, sessionDrivers, otherSessionDrivers) {
     return (sessionDrivers && sessionDrivers[number])
         || (otherSessionDrivers && otherSessionDrivers[number])
-        || (roster && roster[number] ? rosterDriver(roster[number]) : null)
         || {
             driverNumber: number,
             acronym: '#' + number,
@@ -254,7 +241,7 @@ export function resolveLap1Driver(number, sessionDrivers, otherSessionDrivers, r
         };
 }
 
-function buildLap1GainRows(sessions, drivers, positions, lapOneLaps, lapTwoLaps, roster) {
+function buildLap1GainRows(sessions, drivers, positions, lapOneLaps, lapTwoLaps) {
     const driverLookup = buildDriverLookup(drivers);
     const anySessionDrivers = {};
     Object.keys(driverLookup).forEach(function(key) {
@@ -306,7 +293,7 @@ function buildLap1GainRows(sessions, drivers, positions, lapOneLaps, lapTwoLaps,
 
             seenLapTwo[record.driver_number] = true;
 
-            const driver = resolveLap1Driver(record.driver_number, driverLookup[sessionKey], anySessionDrivers, roster);
+            const driver = resolveLap1Driver(record.driver_number, driverLookup[sessionKey], anySessionDrivers);
             const startPosition = normalizedStartMap[record.driver_number];
             const afterPosition = moves.length + 1;
             const teamColor = getCanonicalTeamColor('', driver.teamName || '', driver.teamColor || '');
@@ -559,15 +546,6 @@ function createLap1SkeletonRows(count) {
     return html + '</div>';
 }
 
-// Static, already fetched by the page; never fails the tab.
-function loadDriverRoster() {
-    return fetchJSON(ROSTER_SNAPSHOT_URL).then(function(snapshot) {
-        return buildRosterByNumber(snapshot && snapshot.driverStandings);
-    }).catch(function() {
-        return {};
-    });
-}
-
 function loadLap1GainRows() {
     return getCompletedRaceAndSprintSessions().then(function(raceSessions) {
         if (!raceSessions.length) return [];
@@ -581,9 +559,9 @@ function loadLap1GainRows() {
             fetchOpenF1BySessionKeys(OPENF1, 'position', sessionKeys),
             fetchOpenF1BySessionKeys(OPENF1, 'laps', sessionKeys, 'lap_number=1'),
             fetchOpenF1BySessionKeys(OPENF1, 'laps', sessionKeys, 'lap_number=2'),
-            loadDriverRoster()
+            loadDriverRoster(fetchJSON, ROSTER_SNAPSHOT_URL)
         ]).then(function(payload) {
-            return buildLap1GainRows(raceSessions, payload[0], payload[1], payload[2], payload[3], payload[4]);
+            return buildLap1GainRows(raceSessions, supplementDriverRecords(payload[0], sessionKeys, payload[4], payload[3]), payload[1], payload[2], payload[3]);
         });
     });
 }

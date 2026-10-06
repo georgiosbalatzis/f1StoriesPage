@@ -17,7 +17,9 @@ import {
 import { fetchJSON, fetchOpenF1BySessionKeys } from '../core/fetchers.js';
 import { setTrustedHtml } from '../core/rendering.js';
 import { isFiniteNumber, parseTimeSeconds } from './_shared.js';
+import { loadDriverRoster, supplementDriverRecords } from '../core/roster.js';
 
+const ROSTER_SNAPSHOT_URL = 'standings-cache.json';
 const OPENF1 = 'https://api.openf1.org/v1';
 const YEAR = new Date().getFullYear();
 const TYRE_PACE_SVG_VIEW_HEIGHT = 252;
@@ -617,9 +619,10 @@ function loadTyrePaceSessionData(sessionKey) {
     return Promise.all([
         fetchOpenF1BySessionKeys(OPENF1, 'drivers', [session.session_key]),
         fetchOpenF1BySessionKeys(OPENF1, 'laps', [session.session_key]),
-        fetchOpenF1BySessionKeys(OPENF1, 'stints', [session.session_key])
+        fetchOpenF1BySessionKeys(OPENF1, 'stints', [session.session_key]),
+        loadDriverRoster(fetchJSON, ROSTER_SNAPSHOT_URL)
     ]).then(function(payload) {
-        const built = buildTyrePaceSessionData(session, payload[0], payload[1], payload[2]);
+        const built = buildTyrePaceSessionData(session, supplementDriverRecords(payload[0], [session.session_key], payload[3], payload[1]), payload[1], payload[2]);
         state.cache[cacheKey] = built;
         return built;
     });

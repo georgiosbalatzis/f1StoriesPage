@@ -19,9 +19,11 @@ import { fetchJSON, fetchOpenF1BySessionKeys } from '../core/fetchers.js';
 import { setTrustedHtml } from '../core/rendering.js';
 import { isFiniteNumber, parseTimeSeconds } from './_shared.js';
 import { capEmbedRows, embedCapLinkHTML } from '../core/embed.js';
+import { loadDriverRoster, supplementDriverRecords } from '../core/roster.js';
 
 const EMBED_OVERVIEW_PAIRS = 5;
 
+const ROSTER_SNAPSHOT_URL = 'standings-cache.json';
 const OPENF1 = 'https://api.openf1.org/v1';
 const YEAR = new Date().getFullYear();
 
@@ -412,9 +414,10 @@ function loadQualifyingGapRows() {
 
         return Promise.all([
             fetchOpenF1BySessionKeys(OPENF1, 'drivers', sessionKeys),
-            fetchOpenF1BySessionKeys(OPENF1, 'session_result', sessionKeys)
+            fetchOpenF1BySessionKeys(OPENF1, 'session_result', sessionKeys),
+            loadDriverRoster(fetchJSON, ROSTER_SNAPSHOT_URL)
         ]).then(function(payload) {
-            const built = buildQualifyingSessionTeams(qualifyingSessions, payload[0], payload[1]);
+            const built = buildQualifyingSessionTeams(qualifyingSessions, supplementDriverRecords(payload[0], sessionKeys, payload[2], payload[1]), payload[1]);
             return {
                 overviewRows: buildQualifyingGapOverviewRows(built.sessionMap, built.sessionTeams),
                 raceRows: buildQualifyingGapRaceRows(built.sessionMap, built.sessionTeams)

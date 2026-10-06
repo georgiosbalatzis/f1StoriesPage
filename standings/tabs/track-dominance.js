@@ -25,7 +25,9 @@ import {
 } from '../core/fetchers.js';
 import { setTrustedHtml } from '../core/rendering.js';
 import { parseNumberValue, isFiniteNumber, parseTimeSeconds } from './_shared.js';
+import { loadDriverRoster, supplementDriverRecords } from '../core/roster.js';
 
+const ROSTER_SNAPSHOT_URL = 'standings-cache.json';
 const OPENF1 = 'https://api.openf1.org/v1';
 const YEAR = new Date().getFullYear();
 
@@ -1076,9 +1078,10 @@ function loadTrackDominanceSessionData(sessionKey) {
 
     return Promise.all([
         fetchOpenF1BySessionKeys(OPENF1, 'drivers', [session.session_key]),
-        fetchOpenF1BySessionKeys(OPENF1, 'laps', [session.session_key])
+        fetchOpenF1BySessionKeys(OPENF1, 'laps', [session.session_key]),
+        loadDriverRoster(fetchJSON, ROSTER_SNAPSHOT_URL)
     ]).then(function(payload) {
-        const built = buildTrackDominanceSessionData(session, payload[0], payload[1]);
+        const built = buildTrackDominanceSessionData(session, supplementDriverRecords(payload[0], [session.session_key], payload[2], payload[1]), payload[1]);
         state.sessionCache[cacheKey] = built;
         return built;
     });
