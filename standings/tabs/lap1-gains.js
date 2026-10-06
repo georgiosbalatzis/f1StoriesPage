@@ -21,7 +21,7 @@ import { isFiniteNumber } from './_shared.js';
 import { capEmbedRows, embedCapLinkHTML } from '../core/embed.js';
 
 // Rows are tall (avatar, team chip, move), so an embed shows fewer than the shared default.
-const EMBED_LAP1_MOVES = 6;
+const EMBED_LAP1_MOVES = 5;
 
 const OPENF1 = 'https://api.openf1.org/v1';
 const YEAR = new Date().getFullYear();
