@@ -211,3 +211,10 @@
     .track-dom-track-svg, .track-dom-skeleton-track { width: 100%; }
     .track-dom-tooltip { max-width: calc(100% - 20px); padding: 0.55rem 0.65rem; font-size: 0.7rem; }
 }
+
+/* Stacked cards: the right-hand card's metrics are right-aligned for the side-by-side layout; once the
+   cards stack they must start at the left edge or the row overflows the frame. */
+@media (max-width: 767px) {
+    .track-dom-team-metrics.right { justify-content: flex-start; }
+    .track-dom-team-card.right .track-dom-team-metric { text-align: left; }
+}

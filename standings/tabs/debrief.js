@@ -480,10 +480,10 @@ function buildDebriefSingleLapHTML(round) {
         return '<tr>'
             + '<td>' + (index + 1) + '</td>'
             + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
-            + '<td><span class="debrief-time">' + esc(entry.lapTime) + '</span></td>'
-            + '<td><span class="' + gapClass + '">' + esc(gapText) + '</span></td>'
-            + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
-            + '<td>' + esc(lapCountLabel(entry.laps)) + '</td>'
+            + '<td data-label="Χρόνος"><span class="debrief-time">' + esc(entry.lapTime) + '</span></td>'
+            + '<td data-label="Διαφορά"><span class="' + gapClass + '">' + esc(gapText) + '</span></td>'
+            + '<td data-label="Γόμα"><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
+            + '<td data-label="Γύροι">' + esc(lapCountLabel(entry.laps)) + '</td>'
             + '</tr>';
     }).join('');
 
@@ -501,10 +501,10 @@ function buildDebriefLongRunHTML(round) {
         return '<tr>'
             + '<td>' + (index + 1) + '</td>'
             + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
-            + '<td><span class="debrief-time">' + esc(entry.avgLap) + '</span></td>'
-            + '<td><span class="debrief-gap">' + esc(deltaText) + '</span></td>'
-            + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
-            + '<td>' + esc(lapCountLabel(entry.stintLaps)) + '</td>'
+            + '<td data-label="Μέσος"><span class="debrief-time">' + esc(entry.avgLap) + '</span></td>'
+            + '<td data-label="Δέλτα"><span class="debrief-gap">' + esc(deltaText) + '</span></td>'
+            + '<td data-label="Γόμα"><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
+            + '<td data-label="Stint">' + esc(lapCountLabel(entry.stintLaps)) + '</td>'
             + '</tr>';
     }).join('');
 
@@ -541,10 +541,10 @@ function buildDebriefTyreDegHTML(round) {
         return '<tr>'
             + '<td>' + (index + 1) + '</td>'
             + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
-            + '<td><span class="debrief-time' + (degClass ? ' ' + degClass : '') + '">' + esc(degText) + '</span></td>'
-            + '<td><span class="debrief-gap">' + esc(deltaText) + '</span></td>'
-            + '<td><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
-            + '<td>' + esc(lapCountLabel(entry.stintLaps)) + '</td>'
+            + '<td data-label="Φθορά"><span class="debrief-time' + (degClass ? ' ' + degClass : '') + '">' + esc(degText) + '</span></td>'
+            + '<td data-label="Δέλτα"><span class="debrief-gap">' + esc(deltaText) + '</span></td>'
+            + '<td data-label="Γόμα"><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
+            + '<td data-label="Stint">' + esc(lapCountLabel(entry.stintLaps)) + '</td>'
             + '</tr>';
     }).join('');
 
