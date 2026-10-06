@@ -18,7 +18,9 @@ import {
 } from '../core/fetchers.js';
 import { setTrustedHtml } from '../core/rendering.js';
 import { parseNumberValue, isFiniteNumber, parseTimeSeconds } from './_shared.js';
+import { loadDriverRoster, supplementDriverRecords } from '../core/roster.js';
 
+const ROSTER_SNAPSHOT_URL = 'standings-cache.json';
 const OPENF1 = 'https://api.openf1.org/v1';
 // A small session index, then one cached file per session, fetched when it is shown.
 const DIRTY_AIR_CACHE_URL = 'dirty-air/index.json';
@@ -1278,8 +1280,12 @@ function loadDirtyAirSessionData(sessionKey) {
 }
 
 function loadDirtyAirSessionFromOpenF1(session, cacheKey) {
-    return fetchOpenF1BySessionKeys(OPENF1, 'drivers', [session.session_key]).then(function(driversPayload) {
+    return Promise.all([
+        fetchOpenF1BySessionKeys(OPENF1, 'drivers', [session.session_key]),
+        loadDriverRoster(fetchJSON, ROSTER_SNAPSHOT_URL)
+    ]).then(function(first) {
         return fetchOpenF1BySessionKeys(OPENF1, 'laps', [session.session_key]).then(function(lapsPayload) {
+            const driversPayload = supplementDriverRecords(first[0], [session.session_key], first[1], lapsPayload);
             return fetchOpenF1BySessionKeys(OPENF1, 'session_result', [session.session_key]).then(function(resultsPayload) {
                 return fetchOpenF1BySessionKeys(OPENF1, 'race_control', [session.session_key]).then(function(raceControlPayload) {
                     return [driversPayload, lapsPayload, resultsPayload, raceControlPayload];
