@@ -96,8 +96,21 @@ async function updateMainStandingsSnapshot(options) {
     ]);
     const driverLists = getStandingsLists(driverStandings, 'Driver standings');
     const constructorLists = getStandingsLists(constructorStandings, 'Constructor standings');
+    // Best effort: the embed footer names the round's race; a missing name is simply omitted.
+    const round = (driverLists[0] && driverLists[0].round) || '';
+    let raceName = '';
+    if (round) {
+        try {
+            const race = await fetchJSON(`${JOLPICA}/${options.year}/${round}.json`);
+            const races = race && race.MRData && race.MRData.RaceTable && race.MRData.RaceTable.Races;
+            raceName = (Array.isArray(races) && races[0] && races[0].raceName) || '';
+        } catch (error) {
+            console.warn(`Race name for round ${round} unavailable: ${error.message}`);
+        }
+    }
     const payload = {
         generatedAt: new Date().toISOString(),
+        raceName,
         source: {
             driverStandingsUrl,
             constructorStandingsUrl

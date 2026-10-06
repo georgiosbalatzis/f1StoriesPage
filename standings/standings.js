@@ -135,8 +135,10 @@ let scheduledModuleTab = '';
 let latestStandingsSignature = '';
 let latestStandingsMeta = {
     updatedAt: '',
-    source: 'Jolpica F1'
+    source: 'Jolpica F1',
+    raceName: ''
 };
+let latestStandingsRound = '';
 let liveStandingsRefreshTimer = 0;
 let standingsLazyImageObserver = null;
 const tabModulePromises = Object.create(null);
@@ -602,6 +604,8 @@ function refreshEmbedVisibility() {
     }
 }
 
+const EMBED_FOOTER_ROUND_TABS = ['drivers', 'constructors', 'quali-gaps', 'lap1-gains', 'destructors'];
+
 // Embed mode footer: source/season/round on the left, a link to the full interactive view on the right.
 function refreshEmbedFooter() {
     if (!isEmbedMode) return;
@@ -616,11 +620,28 @@ function refreshEmbedFooter() {
     const target = currentFocusTarget && SHARE_TARGETS[currentFocusTarget] ? currentFocusTarget : 'panel-' + activeStandingsTab;
     const isStandingsTarget = SHARE_TARGETS[target] && ['drivers', 'constructors'].indexOf(SHARE_TARGETS[target].tab) !== -1;
 
+    // Season-cumulative views are "as of round N". Session-scoped tabs (tyre pace, dirty air, track
+    // dominance, pit stops, debrief) already name their own race in the embed, so no round is claimed.
+    const tab = SHARE_TARGETS[target] ? SHARE_TARGETS[target].tab : activeStandingsTab;
+    const isSeasonView = EMBED_FOOTER_ROUND_TABS.indexOf(tab) !== -1;
+
     const parts = ['F1 Stories'];
     if (isStandingsTarget) parts.push(String(latestStandingsMeta.source || 'Jolpica F1').split(' · ')[0]);
     parts.push('Σεζόν ' + season);
-    if (round) parts.push('Δεδομένα έως Γύρο ' + round);
-    meta.textContent = parts.join(' · ');
+    if (isSeasonView && round) {
+        const raceName = isStandingsTarget && latestStandingsMeta.raceName
+            ? ' · ' + String(latestStandingsMeta.raceName).replace(/ Grand Prix/, ' GP')
+            : '';
+        parts.push('Δεδομένα έως Γύρο ' + round + raceName);
+    }
+    // One span per part so a narrow frame wraps between parts, never inside "Γύρο 16".
+    meta.textContent = '';
+    parts.forEach(function(text, index) {
+        const span = document.createElement('span');
+        span.textContent = text + (index < parts.length - 1 ? ' ·' : '');
+        meta.appendChild(span);
+        if (index < parts.length - 1) meta.appendChild(document.createTextNode(' '));
+    });
 
     link.href = buildStandingsURL(SHARE_TARGETS[target] ? target : '', false);
 }
@@ -1073,9 +1094,13 @@ function renderStandingsPayload(driverData, constructorData, meta) {
     const sameStandings = signature && signature === latestStandingsSignature;
     if (sameStandings && source === latestStandingsMeta.source) return false;
     latestStandingsSignature = signature;
+    // The snapshot names the race; the live API payload doesn't, so keep the name while the round is unchanged.
+    const raceName = meta && meta.raceName ? meta.raceName : (latestStandingsRound === String(round) ? latestStandingsMeta.raceName : '');
+    latestStandingsRound = String(round || '');
     latestStandingsMeta = {
         updatedAt: meta && meta.updatedAt ? meta.updatedAt : latestStandingsMeta.updatedAt,
-        source: source
+        source: source,
+        raceName: raceName
     };
     setStandingsDataStatus(meta && meta.live ? 'live' : 'snapshot');
 
@@ -1155,7 +1180,8 @@ function loadStandingsSnapshot() {
         validateStandingsSnapshotPayload(snapshot);
         renderStandingsPayload(snapshot.driverStandings, snapshot.constructorStandings, {
             updatedAt: snapshot.generatedAt || '',
-            source: snapshot.source && snapshot.source.name ? snapshot.source.name : 'Jolpica F1 · στιγμιότυπο'
+            source: snapshot.source && snapshot.source.name ? snapshot.source.name : 'Jolpica F1 · στιγμιότυπο',
+            raceName: typeof snapshot.raceName === 'string' ? snapshot.raceName : ''
         });
         scheduleLiveStandingsRefresh();
     });
@@ -1661,7 +1687,7 @@ function init() {
         refreshEmbedFooter();
         // Tab modules settle their session/round after load: rebuild the link at the moment it is used.
         const footerLink = document.getElementById('embed-footer-link');
-        if (footerLink) ['pointerdown', 'focus'].forEach(function(type) { footerLink.addEventListener(type, refreshEmbedFooter); });
+        if (footerLink) ['pointerdown', 'focus', 'mouseenter', 'touchstart', 'contextmenu', 'auxclick'].forEach(function(type) { footerLink.addEventListener(type, refreshEmbedFooter); });
     }
 
     // Always hydrate drivers/constructors in the background so adjacent
