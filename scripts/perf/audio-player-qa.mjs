@@ -199,6 +199,8 @@ async function persistenceChecks(browser, origin) {
     await page.waitForFunction(() => window.__audios[0] && !window.__audios[0].paused, null, { timeout: 8000 }).catch(() => {});
     let s = await snapshot(page);
     check('playback continues on the next page without a click', s.audios === 1 && s.paused === false && s.active && s.aria === 'Παύση BetCast, ON AIR', JSON.stringify(s));
+    // The seek lands once the stream's metadata arrives, so wait for it rather than sampling at load.
+    await page.waitForFunction(() => window.__audios[0].currentTime > 0.5, null, { timeout: 4000 }).catch(() => {});
     check('resumed position is not back at the start', await page.evaluate(() => window.__audios[0].currentTime) > 0.5);
     check('the box is already filled on the next page', s.progress >= filling - 1, `${s.progress} vs ${filling}`);
 
@@ -233,6 +235,31 @@ async function persistenceChecks(browser, origin) {
     s = await snapshot(ending.page);
     check('a finished episode does not resume on the next page', s.audios === 0 && !s.active, JSON.stringify(s));
     await ending.context.close();
+
+    // Article embeds are /standings/?embed=1 pages in iframes sharing the tab's sessionStorage: they must never
+    // host a player, or each one resumes the episode as it scrolls into view.
+    const host = await open(browser, origin, { meta: { audioUrl: AUDIO_URL }, pagePath: '/authors/' });
+    await host.page.click('.nav-audio-btn');
+    await playing(host.page);
+    await host.page.waitForTimeout(1300);
+    await host.page.evaluate(src => new Promise(resolve => {
+        const frame = document.createElement('iframe');
+        frame.id = 'embed-under-test';
+        frame.src = src;
+        frame.style.cssText = 'width:600px;height:400px';
+        frame.onload = () => resolve();
+        document.body.appendChild(frame);
+    }), '/standings/?tab=drivers&embed=1');
+    await host.page.waitForTimeout(800);
+    const inFrame = await host.page.frames().find(f => f.url().includes('embed=1')).evaluate(() => ({ players: document.querySelectorAll('.nav-audio').length, audios: window.__audios.length }));
+    check('an embedded iframe page creates no player and no audio', inFrame.players === 0 && inFrame.audios === 0, JSON.stringify(inFrame));
+    s = await snapshot(host.page);
+    check('the host page keeps exactly one audio element, still playing', s.audios === 1 && s.paused === false && s.active, JSON.stringify(s));
+    const direct = await host.context.newPage();
+    await direct.goto(`${origin}/standings/?tab=drivers&embed=1`, { waitUntil: 'load' });
+    await direct.waitForTimeout(600);
+    check('an embed-mode page opened directly has no player either', await direct.evaluate(() => document.querySelectorAll('.nav-audio').length) === 0);
+    await host.context.close();
 
     const stale = await open(browser, origin, { meta: { audioUrl: AUDIO_URL }, pagePath: '/authors/' });
     await stale.page.evaluate(() => sessionStorage.setItem('f1stories-audio', JSON.stringify({ url: 'https://audio.f1stories.test/previous-episode.mp3', playing: true, time: 30, at: Date.now() })));

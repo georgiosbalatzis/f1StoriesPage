@@ -82,6 +82,9 @@
     }
 
     function initAudioPlayer() {
+        // Article embeds are whole pages in iframes that share this tab's sessionStorage: each would otherwise
+        // resume the episode again as it scrolls into view. Only the top-level page ever hosts the player.
+        if (window.self !== window.top || /[?&]embed=1(?:&|$)/.test(window.location.search)) return;
         var navRight = document.querySelector('.blog-nav-right');
         if (!navRight || navRight.querySelector('.nav-audio')) return;
 
