@@ -115,14 +115,18 @@ function setupDataFrameBridge(articleContent, doc, win, kind) {
         } catch (_) { return null; }
     };
     const frames = new Map();
-    const post = (state, type) => {
-        try { state.frame.contentWindow?.postMessage({ type }, state.url.origin); } catch (_) {}
+    const post = (state, type, extra) => {
+        try { state.frame.contentWindow?.postMessage({ type, ...extra }, state.url.origin); } catch (_) {}
+    };
+    // Telemetry embeds cannot read this origin's theme storage: push the article theme to them.
+    const sendTheme = state => {
+        if (kind === 'telemetry') post(state, 'f1s-telemetry:theme', { theme: doc.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark' });
     };
     const clearRetries = state => {
         state.timers.forEach(timer => win.clearTimeout(timer));
         state.timers = [];
     };
-    const requestMeasurement = state => post(state, `f1s-${kind}:measure`);
+    const requestMeasurement = state => { post(state, `f1s-${kind}:measure`); sendTheme(state); };
     const startMeasuring = state => {
         clearRetries(state);
         requestMeasurement(state);
@@ -163,10 +167,13 @@ function setupDataFrameBridge(articleContent, doc, win, kind) {
         }));
     }) : null;
     observer?.observe(articleContent, { childList: true, subtree: true });
+    const themeObserver = kind === 'telemetry' && win.MutationObserver ? new win.MutationObserver(() => frames.forEach(sendTheme)) : null;
+    themeObserver?.observe(doc.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
     return () => {
         win.removeEventListener('message', onMessage);
         observer?.disconnect();
+        themeObserver?.disconnect();
         frames.forEach(clearRetries);
     };
 }
