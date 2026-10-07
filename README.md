@@ -650,12 +650,10 @@ npm run build:public
 - **Trigger:** `pull_request` προς `main` και `workflow_dispatch`.
 - **Δικαιώματα:** `contents: read`.
 - **Concurrency:** `quality-<ref>` με `cancel-in-progress`. Ένα νέο push στο ίδιο PR ακυρώνει τον προηγούμενο έλεγχο.
-- **Βήματα:**
-  1. `npm run build:public`
-  2. `npm run quality:static`
-  3. `npm run audit:runtime`
-  4. `npm run test:author`
-  5. `npm run test:standings`
+- **Ταξινόμηση αλλαγών:** checkout με `fetch-depth: 2` και `scripts/build/classify-quality.mjs`. Επιβεβαιώνει ότι ο δεύτερος γονέας του δοκιμαζόμενου PR merge είναι το head commit του event και συγκρίνει το merge με τον πρώτο γονέα του (το `main`). Ελέγχει όλα τα αλλαγμένα αρχεία, μαζί με διαγραφές και τις δύο πλευρές μετονομασιών, χωρίς όριο αρχείων του GitHub API ή πλήρες Git ιστορικό. Το όνομα του branch δεν επηρεάζει τη διαδρομή ελέγχων.
+- **Μόνο άρθρα:** όταν το PR αλλάζει αποκλειστικά το `blog-module/blog-entries/**`, τρέχουν `build:html`, `build:blog`, `build:assets` και `build:data-contracts`. Παραλείπονται η cache εικόνων, το packaging του `dist/` και το runtime dependency audit. Η ίδια διαδρομή καλύπτει τα `author/scheduled/**` και τα χειροκίνητα content PRs.
+- **Πλήρεις έλεγχοι:** μικτές αλλαγές ή οποιοδήποτε αρχείο έξω από τα entries τρέχουν `build:public` και `audit:runtime`, ακόμη και σε branch συντάκτη. Κενό diff, έλλειψη ιστορικού ή αποτυχία σύγκρισης οδηγούν συντηρητικά στους πλήρεις ελέγχους. Το χειροκίνητο `workflow_dispatch` χρησιμοποιεί πάντα αυτή τη διαδρομή.
+- **Κοινά βήματα:** `quality:static`, `test:author`, `test:standings`, `test:security` και publishing regression tests τρέχουν και στις δύο διαδρομές. Το μοναδικό check παραμένει **Quality gates**, που περιμένουν τα workflows αυτόματης και προγραμματισμένης δημοσίευσης.
 - Timeout 25 λεπτά.
 
 ### 13.2 Publish Article (`auto-publish-author-pr.yml`)
