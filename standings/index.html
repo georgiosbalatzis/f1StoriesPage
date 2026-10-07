@@ -385,6 +385,23 @@
 
 <button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Επιστροφή στην κορυφή"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
 <div class="share-feedback" id="share-feedback" aria-live="polite"></div>
+<dialog class="embed-dialog" id="embed-dialog" aria-labelledby="embed-title">
+    <form method="dialog" class="embed-form">
+        <header class="embed-head">
+            <h2 id="embed-title" class="embed-title">Ενσωμάτωση σε άρθρο</h2>
+            <button type="submit" class="embed-close" aria-label="Κλείσιμο"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5 5 15"/></svg></button>
+        </header>
+        <fieldset class="embed-choice" id="embed-panels"><legend>Πάνελ</legend></fieldset>
+        <label class="embed-label" for="embed-code">Κώδικας για το άρθρο</label>
+        <textarea class="embed-code" id="embed-code" rows="5" readonly spellcheck="false"></textarea>
+        <p class="embed-actions">
+            <button type="button" class="embed-copy" id="embed-copy">Αντιγραφή κώδικα</button>
+            <span class="embed-status" id="embed-status" role="status"></span>
+        </p>
+        <p class="embed-label" id="embed-preview-label">Προεπισκόπηση, όπως θα εμφανιστεί στο άρθρο</p>
+        <iframe class="embed-preview" id="embed-preview" title="Προεπισκόπηση ενσωμάτωσης" aria-describedby="embed-preview-label"></iframe>
+    </form>
+</dialog>
 
 <!-- @include partials/footer.html -->
 <!-- @include:begin partials/footer.html -->

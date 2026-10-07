@@ -152,6 +152,64 @@ body.standings-page {
 .standings-page .data-source { text-align: left; border-top: 1px solid var(--st-border); padding-top: 17px; margin-top: 42px; line-height: 1.7; font-size: .75rem; }
 .standings-page .share-feedback { background: var(--ink); color: var(--paper); border: 1px solid var(--border); border-radius: 2px; box-shadow: 0 3px 14px #00000018; }
 
+/* Embed dialog: pick the panel, copy the code, see it as the article will show it. The same layout as the
+ * Tyres tool's "Ενσωμάτωση" dialog, in this page's tokens so it follows the theme. */
+.standings-page .embed-dialog {
+    width: min(760px, calc(100% - 32px));
+    max-height: calc(100svh - 32px);
+    margin: auto;
+    padding: 0;
+    border: 0;
+    border-top: 2px solid var(--text-primary);
+    border-radius: 0;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    overflow: auto;
+}
+.standings-page .embed-dialog::backdrop { background: rgba(23, 25, 27, .6); }
+.standings-page .embed-form { display: grid; gap: 16px; padding: 24px; }
+.standings-page .embed-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.standings-page .embed-title { flex: 1; margin: 6px 0 0; font: 600 .75rem/1.4 var(--font-body); letter-spacing: .13em; text-transform: uppercase; }
+.standings-page .embed-close {
+    display: grid; place-items: center; flex: 0 0 auto; width: 44px; height: 44px; margin: -10px -10px 0 0; padding: 0;
+    border: 1px solid transparent; border-radius: var(--radius-control); background: none; color: var(--text-primary);
+    cursor: pointer; transition: border-color .18s;
+}
+.standings-page .embed-close:hover { border-color: var(--border); }
+.standings-page .embed-close svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.standings-page .embed-choice { display: flex; flex-wrap: wrap; gap: 0 20px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.standings-page .embed-choice legend,
+.standings-page .embed-label { margin: 0 0 4px; padding: 0; color: var(--text-secondary); font: 600 .6875rem/1.4 var(--font-body); letter-spacing: .12em; text-transform: uppercase; }
+.standings-page .embed-choice legend { float: left; width: 100%; }
+.standings-page .embed-choice label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--text-secondary); font-size: .875rem; cursor: pointer; }
+.standings-page .embed-choice label:has(input:checked) { color: var(--text-primary); font-weight: 600; }
+.standings-page .embed-choice input { accent-color: var(--text-primary); }
+.standings-page .embed-label { margin: 0 0 -8px; }
+.standings-page .embed-code {
+    width: 100%; padding: 12px; border: 1px solid var(--text-secondary); border-radius: var(--radius-control);
+    background: var(--bg-surface); color: var(--text-primary); resize: vertical;
+    font: .8125rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.standings-page .embed-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin: 0; }
+.standings-page .embed-copy {
+    min-height: 44px; padding: 0 18px; border: 1px solid var(--text-primary); border-radius: var(--radius-control);
+    background: var(--text-primary); color: var(--bg-base); font: 600 .875rem/1 var(--font-body); cursor: pointer;
+    transition: background-color .18s, color .18s, border-color .18s;
+}
+.standings-page .embed-copy:hover,
+.standings-page .embed-copy.is-copied { border-color: var(--signal); background: var(--signal); color: var(--signal-ink); }
+.standings-page .embed-status { color: var(--text-secondary); font-size: .75rem; }
+.standings-page .embed-preview { display: block; width: 100%; height: 240px; border: 0; outline: 1px dashed var(--border); outline-offset: 4px; background: transparent; }
+@media (max-width: 575.98px) {
+    .standings-page .embed-dialog { width: calc(100% - 16px); max-height: calc(100svh - 16px); }
+    .standings-page .embed-form { gap: 14px; padding: 16px; }
+    .standings-page .embed-choice { gap: 0 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .standings-page .embed-close,
+    .standings-page .embed-copy { transition: none; }
+}
+
 /* All ten reports share the same typography and controls. Specificity is higher
  * than each report's lazy CSS, including its separate light-theme selectors. */
 .standings-page .standings-panel :is(.quali-gaps-intro, .lap1-gains-intro, .tyre-pace-intro, .dirty-air-intro, .track-dom-intro, .pit-stops-intro, .debrief-intro) { padding: 8px 0 24px; border: 0; border-radius: 0; background: none; box-shadow: none; }

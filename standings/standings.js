@@ -499,12 +499,118 @@ function createEmbedCode(target) {
     return embedIframeHTML(src, (meta && meta.title ? meta.title : 'Βαθμολογίες') + ' — F1 Stories', height);
 }
 
+// ── Embed dialog ──
+// "Ενσωμάτωση" opens a dialog instead of silently copying: choose the panel (the one whose button was
+// pressed is preselected), see the code, copy it, and watch the frame the article will show. The panel list
+// is SHARE_TARGETS itself, so a new share target appears here without a second list to keep in step.
+const EMBED_PREVIEW_MIN_HEIGHT = 160;
+const EMBED_PREVIEW_MAX_HEIGHT = 2400;
+let openEmbedDialog = null;
+let embedCopiedTimer = 0;
+
+function setupEmbedDialog() {
+    const dialog = document.getElementById('embed-dialog');
+    if (isEmbedMode || !dialog || typeof dialog.showModal !== 'function') return;
+    const choice = document.getElementById('embed-panels');
+    const code = document.getElementById('embed-code');
+    const copy = document.getElementById('embed-copy');
+    const status = document.getElementById('embed-status');
+    const preview = document.getElementById('embed-preview');
+    if (!choice || !code || !copy || !status || !preview) return;
+
+    Object.keys(SHARE_TARGETS).forEach(function(key) {
+        const label = document.createElement('label');
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'embed-panel';
+        input.value = key;
+        const text = document.createElement('span');
+        text.textContent = SHARE_TARGETS[key].title;
+        label.appendChild(input);
+        label.appendChild(text);
+        choice.appendChild(label);
+    });
+
+    function selectedTarget() {
+        const checked = choice.querySelector('input:checked');
+        return checked ? checked.value : '';
+    }
+
+    function refresh() {
+        const target = selectedTarget();
+        if (!target) return;
+        const meta = SHARE_TARGETS[target];
+        code.value = createEmbedCode(target);
+        status.textContent = '';
+        copy.classList.remove('is-copied');
+        preview.title = 'Προεπισκόπηση: ' + meta.title;
+        // The frame reports its real height once it has rendered; until then use the pasted fallback, capped.
+        preview.style.height = Math.min(meta.height, 480) + 'px';
+        preview.src = buildStandingsURL(target, true);
+    }
+
+    choice.addEventListener('change', refresh);
+    code.addEventListener('focus', function() { code.select(); });
+
+    copy.addEventListener('click', function() {
+        copyTextToClipboard(code.value).then(function() {
+            status.textContent = 'Αντιγράφηκε. Επικόλλησέ το στο άρθρο.';
+            copy.classList.add('is-copied');
+            if (embedCopiedTimer) window.clearTimeout(embedCopiedTimer);
+            embedCopiedTimer = window.setTimeout(function() { copy.classList.remove('is-copied'); }, 1800);
+        }).catch(function() {
+            status.textContent = 'Η αντιγραφή δεν ήταν δυνατή. Επίλεξε τον κώδικα και αντίγραψέ τον.';
+            code.focus();
+            code.select();
+        });
+    });
+
+    // Size the preview exactly as an article does: the frame reports, the host validates source and origin.
+    window.addEventListener('message', function(event) {
+        if (event.source !== preview.contentWindow || event.origin !== window.location.origin) return;
+        const data = event.data;
+        if (!data || data.type !== 'f1s-standings:resize') return;
+        const height = Number(data.height);
+        if (!Number.isFinite(height) || height < 1) return;
+        preview.style.height = Math.min(Math.max(Math.ceil(height), EMBED_PREVIEW_MIN_HEIGHT), EMBED_PREVIEW_MAX_HEIGHT) + 'px';
+    });
+    preview.addEventListener('load', function() {
+        if (preview.getAttribute('src') === 'about:blank') return;
+        try { preview.contentWindow.postMessage({ type: 'f1s-standings:measure' }, window.location.origin); } catch (_) {}
+    });
+
+    // A closed dialog leaves nothing running: drop the preview page and the copied state.
+    dialog.addEventListener('close', function() {
+        preview.src = 'about:blank';
+        status.textContent = '';
+        copy.classList.remove('is-copied');
+    });
+    // The form fills the dialog, so a click that lands on the dialog itself is a click on the backdrop.
+    dialog.addEventListener('click', function(event) {
+        if (event.target === dialog) dialog.close();
+    });
+
+    openEmbedDialog = function(target) {
+        choice.querySelectorAll('input').forEach(function(radio) {
+            radio.checked = radio.value === target;
+            radio.autofocus = radio.checked;
+        });
+        refresh();
+        dialog.showModal();
+    };
+}
+
 function handleShareAction(kind, target) {
     const shareTarget = sanitizeShareTarget(target);
     const meta = SHARE_TARGETS[shareTarget];
     if (!meta) return;
 
     if (kind === 'embed') {
+        if (openEmbedDialog) {
+            openEmbedDialog(shareTarget);
+            return Promise.resolve();
+        }
+        // No <dialog> support: keep the previous behaviour of copying the code straight away.
         return copyTextToClipboard(createEmbedCode(shareTarget)).then(function() {
             showShareFeedback('Ο κώδικας ενσωμάτωσης αντιγράφηκε.');
         }).catch(function() {
@@ -1698,6 +1804,7 @@ function init() {
     });
 
     bindEvents();
+    setupEmbedDialog();
     activateStandingsTab(activeStandingsTab, { skipURL: true, skipFocus: true });
     setupEmbedHeightReporter();
     if (isEmbedMode) {
