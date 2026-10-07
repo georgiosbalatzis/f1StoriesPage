@@ -68,4 +68,4 @@ jobs:
         run: npm run test:security
 
       - name: Run publishing regression tests
-        run: node --test scripts/build/__tests__/public-article-images.test.mjs scripts/build/__tests__/publication-routing.test.mjs scripts/build/__tests__/maintenance-patch.test.mjs scripts/build/__tests__/quality-routing.test.mjs scripts/build/__tests__/pages-preparation.test.mjs scripts/build/__tests__/maintenance-schedules.test.mjs
+        run: node --test scripts/build/__tests__/public-article-images.test.mjs scripts/build/__tests__/image-variant-demand.test.mjs scripts/build/__tests__/publication-routing.test.mjs scripts/build/__tests__/maintenance-patch.test.mjs scripts/build/__tests__/quality-routing.test.mjs scripts/build/__tests__/pages-preparation.test.mjs scripts/build/__tests__/maintenance-schedules.test.mjs

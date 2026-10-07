@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // generate-image-variants.js
-// Backfills AVIF and small (800px) srcset variants for all existing blog-entry images.
+// Backfills variants used by article heroes, archive cards and the homepage.
 // Safe to re-run: skips files that already exist.
 //
 // Usage:
@@ -47,9 +47,18 @@ if (!isMainThread) {
 }
 
 // ─── Main thread ──────────────────────────────────────────────────────────────
-async function main() {
-    const entries = fs.readdirSync(BLOG_DIR).filter(name => {
-        const full = path.join(BLOG_DIR, name);
+const { utils } = require('./build/shared');
+
+async function collectImageVariantTasks({ blogDir = BLOG_DIR, cardsOnly = CARDS_ONLY, force = FORCE } = {}) {
+    // The builder writes this cache before generating variants. Use its current
+    // image selections, rather than the previous build's homepage/index files.
+    const cachePath = path.join(path.dirname(blogDir), 'blog-source-cache.json');
+    const posts = fs.existsSync(cachePath) ? JSON.parse(fs.readFileSync(cachePath, 'utf8')).posts : [];
+    const postsById = new Map(posts.map(post => [post.id, post]));
+    const homepageIds = new Set(posts.slice(0, 4).map(post => post.id));
+    const imageBase = value => /^([12])\.webp$/i.exec(path.basename(String(value || '').split('?')[0]))?.[1];
+    const entries = fs.readdirSync(blogDir).filter(name => {
+        const full = path.join(blogDir, name);
         return fs.statSync(full).isDirectory();
     });
 
@@ -57,14 +66,14 @@ async function main() {
     const allTasks = [];
 
     for (const folder of entries) {
-        const entryPath = path.join(BLOG_DIR, folder);
+        const entryPath = path.join(blogDir, folder);
         const files = fs.readdirSync(entryPath);
 
         // Find numbered content images: 3.webp, 4.webp, ... (not 1/2 = hero/bg)
         const contentWebps = files.filter(f => /^\d+\.webp$/i.test(f) && parseInt(f) >= 3);
 
         for (const webpFile of contentWebps) {
-            if (CARDS_ONLY) continue;
+            if (cardsOnly) continue;
             const num  = path.parse(webpFile).name;        // "3"
             const src  = path.join(entryPath, webpFile);
             const sourceWidth = (await sharp(src).metadata()).width || 0;
@@ -81,7 +90,7 @@ async function main() {
             }
 
             for (const v of variants) {
-                if (!FORCE && fs.existsSync(v.dest)) continue;   // already done
+                if (!force && fs.existsSync(v.dest)) continue;   // already done
                 allTasks.push({ src, ...v });
             }
         }
@@ -89,19 +98,41 @@ async function main() {
         // Gallery thumbnails, for every image a built gallery shows (also with --cards-only,
         // which the blog build uses).
         const articlePath = path.join(entryPath, 'article.html');
-        if (fs.existsSync(articlePath)) {
-            const html = fs.readFileSync(articlePath, 'utf8');
+        const html = fs.existsSync(articlePath) ? fs.readFileSync(articlePath, 'utf8') : '';
+        if (html) {
             const nums = new Set([...html.matchAll(/class="gallery-thumb[^"]*"[^>]*>\s*<img src="(\d+)(?:-sm|-thumb)?\.webp"/g)].map(m => m[1]));
             for (const num of nums) {
                 const src = path.join(entryPath, `${num}.webp`);
                 const dest = path.join(entryPath, `${num}-thumb.webp`);
-                if (fs.existsSync(src) && (FORCE || !fs.existsSync(dest))) {
+                if (fs.existsSync(src) && (force || !fs.existsSync(dest))) {
                     allTasks.push({ src, dest, format: 'webp', quality: 80, box: THUMB_BOX });
                 }
             }
         }
 
-        // Hero/bg images (1.webp, 2.webp)
+        // Source-less articles keep their existing media: backfill only variants
+        // they already reference. Source-backed heroes can be rendered again,
+        // so prepare their responsive picture even on a first publication.
+        const needed = new Set([...html.matchAll(/\b([12](?:-mobile|-card)?\.(?:avif|webp))\b/g)].map(match => match[1]));
+        const post = postsById.get(folder);
+        const cardBase = imageBase(post?.image) || '1';
+        // 1-card.webp is also the compact archive's default thumbnail.
+        for (const base of new Set(['1', cardBase])) {
+            needed.add(`${base}-card.webp`);
+            needed.add(`${base}-mobile.webp`);
+        }
+        if (utils.findSourceDocument(files)) {
+            const heroBase = imageBase(post?.backgroundImage || post?.image) || (files.includes('2.webp') ? '2' : '1');
+            needed.add(`${heroBase}.avif`);
+            needed.add(`${heroBase}-mobile.avif`);
+            needed.add(`${heroBase}-mobile.webp`);
+        }
+        if (homepageIds.has(folder)) {
+            const homepageBase = imageBase(post.image || post.backgroundImage);
+            if (homepageBase) needed.add(`${homepageBase}.avif`);
+        }
+
+        // Hero/bg images (1.webp, 2.webp), only for an actual consumer.
         const heroWebps = files.filter(f => /^[12]\.webp$/i.test(f));
         for (const webpFile of heroWebps) {
             const num = path.parse(webpFile).name;
@@ -113,14 +144,20 @@ async function main() {
                 { dest: path.join(entryPath, `${num}-card.webp`), format: 'webp', quality: 60, maxWidth: CARD_MAX_WIDTH }
             ];
             for (const v of variants) {
-                if (!FORCE && fs.existsSync(v.dest)) continue;
+                if (!needed.has(path.basename(v.dest))) continue;
+                if (!force && fs.existsSync(v.dest)) continue;
                 allTasks.push({ src, ...v });
             }
         }
     }
 
+    return { tasks: allTasks, entryCount: entries.length };
+}
+
+async function main() {
+    const { tasks: allTasks, entryCount } = await collectImageVariantTasks();
     if (DRY_RUN) {
-        console.log(`[dry-run] Would generate ${allTasks.length} image variants across ${entries.length} entries.`);
+        console.log(`[dry-run] Would generate ${allTasks.length} image variants across ${entryCount} entries.`);
         console.log('Run with --run to execute, --run --force to regenerate all.');
         const byFormat = {};
         for (const t of allTasks) { byFormat[t.format] = (byFormat[t.format] || 0) + 1; }
@@ -161,4 +198,8 @@ async function main() {
     console.log(`\nDone. ${done} generated, ${errors} errors in ${((Date.now() - start) / 1000).toFixed(1)}s`);
 }
 
-main().catch(e => { console.error(e); process.exit(1); });
+if (require.main === module) {
+    main().catch(e => { console.error(e); process.exit(1); });
+}
+
+module.exports = { collectImageVariantTasks };
