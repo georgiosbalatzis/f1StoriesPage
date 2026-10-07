@@ -1,21 +1,14 @@
 (function (global) {
     'use strict';
 
-    // Article images are sized here, before an author PR or ZIP is created,
-    // so the repository only receives originals the site can use.
-    // - maxWidth is twice the widest public variant (1600 px: FULL_MAX_WIDTH in
-    //   blog-module/generate-image-variants.js, PUBLIC_ARTICLE_IMAGE_MAX_WIDTH in
-    //   scripts/build/public-artifact.mjs). Lossy WebP stores colour at half
-    //   resolution, so a 2x master still gives the build's Lanczos downscale
-    //   full-resolution colour for every 1600 px AVIF/WebP variant; a 1600 px
-    //   master measurably softens them (about 2 dB PSNR on AVIF).
-    // - maxBytes is the per-original cap in perf/article-media-budget.json.
-    // The first quality step is the 0.9 the tools always used for conversion;
-    // lower steps only run for images that would still be over the cap.
+    // Match the public delivery limits before a ZIP or author PR is created.
+    // Ready originals bypass scripts/build/public-article-images.mjs; the build
+    // still makes responsive variants. Lower quality, then dimensions, only
+    // when needed to meet the byte budget. Keep fitting WebP bytes unchanged.
     var ARTICLE_IMAGE_POLICY = {
-        maxWidth: 3200,
-        maxBytes: 1024 * 1024,
-        qualities: [0.9, 0.85, 0.8, 0.75, 0.7]
+        maxWidth: 1600,
+        maxBytes: 300 * 1024,
+        qualities: [0.9, 0.82, 0.74, 0.66, 0.58, 0.5]
     };
 
     function sanitizeImageExtension(name) {
@@ -89,6 +82,12 @@
                     reject(new Error((label || 'Image') + ' could not be converted to WebP.'));
                     return;
                 }
+                // Unsupported canvas encoders fall back to PNG. Never upload
+                // those bytes with a WebP filename or MIME type.
+                if (blob.type !== 'image/webp') {
+                    reject(new Error((label || 'Image') + ': this browser cannot encode WebP. Please use a browser with WebP encoding support.'));
+                    return;
+                }
                 resolve(blob);
             }, 'image/webp', quality == null ? 0.9 : quality);
         });
@@ -117,27 +116,39 @@
             throw new Error((label || 'Image') + ' has invalid dimensions for WebP conversion.');
         }
 
-        var plan = planArticleImage({ webp: isWebpFile(file), width: width, height: height, bytes: file.size }, policy);
+        // Filename/MIME alone can misidentify imported files. Check the actual
+        // container before allowing an unchanged upload.
+        var signature = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+        var webp = isWebpFile(file) &&
+            String.fromCharCode.apply(null, signature.subarray(0, 4)) === 'RIFF' &&
+            String.fromCharCode.apply(null, signature.subarray(8, 12)) === 'WEBP';
+        var plan = planArticleImage({ webp: webp, width: width, height: height, bytes: file.size }, policy);
         if (plan.keep) return file;
 
-        var canvas = drawToCanvas(img, plan.width, plan.height);
-        var best = null;
-        for (var i = 0; i < policy.qualities.length; i++) {
-            var blob = await canvasToWebpBlob(canvas, policy.qualities[i], label);
-            if (!best || blob.size < best.size) best = blob;
-            // A browser without a WebP encoder returns PNG; quality has no effect.
-            if (blob.size <= policy.maxBytes || blob.type !== 'image/webp') break;
+        var targetWidth = plan.width;
+        while (true) {
+            var targetHeight = Math.max(1, Math.round(height * targetWidth / width));
+            var canvas = drawToCanvas(img, targetWidth, targetHeight);
+            var best = null;
+            for (var i = 0; i < policy.qualities.length; i++) {
+                var blob = await canvasToWebpBlob(canvas, policy.qualities[i], label);
+                if (!best || blob.size < best.size) best = blob;
+                if (blob.size <= policy.maxBytes) {
+                    return new File(
+                        [blob],
+                        replaceFileExtension(file.name, 'webp'),
+                        { type: 'image/webp', lastModified: file.lastModified || Date.now() }
+                    );
+                }
+            }
+            // No quality fits: redraw from the original, preserving the aspect
+            // ratio and avoiding cumulative resize/encoding loss.
+            if (targetWidth <= 1 || !best) {
+                throw new Error((label || 'Image') + ' could not fit the publication image budget.');
+            }
+            var scale = Math.min(0.8, Math.sqrt(policy.maxBytes / best.size));
+            targetWidth = Math.max(1, Math.floor(targetWidth * scale));
         }
-
-        // A fitting-width WebP that was only over the byte cap: never trade it
-        // for a larger re-encode.
-        if (isWebpFile(file) && !plan.resize && best.size >= file.size) return file;
-
-        return new File(
-            [best],
-            replaceFileExtension(file.name, 'webp'),
-            { type: 'image/webp', lastModified: file.lastModified || Date.now() }
-        );
     }
 
     global.F1S_AUTHOR_IMAGE_TOOLS = {
