@@ -228,22 +228,22 @@ async function buildImageCarousel(folderName, imageNumbers, options = {}) {
     }
 
     const html = `
-    <div class="gallery-carousel" role="region" aria-label="${escapeHtmlAttribute(ariaLabel)}" aria-roledescription="carousel">
+    <div class="gallery-carousel" role="region" aria-label="${escapeHtmlAttribute(ariaLabel)}"${total > 1 ? ' aria-roledescription="καρουζέλ"' : ''}>
         <div class="gallery-carousel-stage">
             <div class="gallery-carousel-slides">
                 ${slidesHtml}
             </div>
-            <button class="gallery-carousel-prev" aria-label="Previous image" disabled>
+            ${total > 1 ? `<button type="button" class="gallery-carousel-prev" aria-label="Προηγούμενη φωτογραφία" disabled>
                 <svg class="icon" aria-hidden="true"><use href="#fa-chevron-left"/></svg>
             </button>
-            <button class="gallery-carousel-next" aria-label="Next image"${imageNumbers.length <= 1 ? ' disabled' : ''}>
+            <button type="button" class="gallery-carousel-next" aria-label="Επόμενη φωτογραφία">
                 <svg class="icon" aria-hidden="true"><use href="#fa-chevron-right"/></svg>
             </button>
-            <div class="gallery-carousel-counter">1 / ${imageNumbers.length}</div>
+            <div class="gallery-carousel-counter">1 / ${total}</div>` : ''}
         </div>
-        <div class="gallery-carousel-thumbs">
+        ${total > 1 ? `<div class="gallery-carousel-thumbs">
             ${thumbsHtml}
-        </div>
+        </div>` : ''}
     </div>`;
 
     return withUnwrapMarkers ? `<!--ig-carousel-->${html}<!--/ig-carousel-->` : html;

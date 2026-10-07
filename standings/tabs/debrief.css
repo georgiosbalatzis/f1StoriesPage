@@ -75,7 +75,7 @@
 
 [data-theme="light"] .debrief-chart-tooltip { background: rgba(29,29,31,0.94); }
 
-.debrief-hchart-shell { min-width: 920px; }
+.debrief-hchart-shell { min-width: 920px; box-sizing: border-box; padding-inline-end: 10rem; }
 
 .debrief-hchart-row { display: grid; grid-template-columns: 132px minmax(0,1fr); align-items: center; gap: 0.6rem; min-height: 44px; }
 
@@ -146,6 +146,8 @@
 .debrief-ideal-bar-label { font-size: 0.74rem; font-weight: 700; color: var(--st-text-secondary); line-height: 1; }
 
 .debrief-corner-grid { display: grid; grid-template-columns: repeat(2, minmax(420px, 1fr)); gap: 1rem; min-width: 980px; }
+
+.debrief-corner-shell { box-sizing: border-box; padding-inline-end: 5rem; }
 
 .debrief-corner-title { font-family: 'Outfit',sans-serif; font-size: 1rem; font-weight: 700; color: var(--st-text); margin-bottom: 0.35rem; }
 
@@ -267,4 +269,18 @@
     .debrief-driver-cell img, .debrief-avatar-fallback { display: none; }
     .debrief-team-bar { min-height: 28px; }
     .compound-pill { min-height: 22px; padding: 0.16rem 0.42rem; font-size: 0.6rem; }
+
+    /* Keep position, driver identity and the primary result visible before scrolling. */
+    body:not(.standings-embed) .debrief-table table { table-layout: fixed; width: 100%; min-width: 36rem; }
+    body:not(.standings-embed) .debrief-table :is(th, td) { padding: 0.65rem 0.5rem; }
+    body:not(.standings-embed) .debrief-table :is(th, td):nth-child(1) { width: 2rem; }
+    body:not(.standings-embed) .debrief-table :is(th, td):nth-child(2) { width: 6.5rem; }
+    body:not(.standings-embed) .debrief-table :is(th, td):nth-child(3) { width: 8.5rem; }
+    body:not(.standings-embed) .debrief-table :is(th, td):nth-child(4),
+    body:not(.standings-embed) .debrief-table :is(th, td):nth-child(5) { width: 6.5rem; }
+    body:not(.standings-embed) .debrief-table :is(th, td):nth-child(6) { width: 6rem; }
+    body:not(.standings-embed) .debrief-table th:nth-child(3) { white-space: normal; }
+    body:not(.standings-embed) .debrief-driver-cell { min-width: 0; width: 100%; }
+    body:not(.standings-embed) .debrief-driver-cell > div { min-width: 0; flex: 1; }
+    body:not(.standings-embed) .debrief-driver-name { max-width: 100%; }
 }

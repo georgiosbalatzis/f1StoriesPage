@@ -7,7 +7,7 @@
 // onViewChange hooks, then drives rendering via ensureLoaded() and syncs the
 // URL state via setActiveView() / setSelectedRound().
 
-import { esc } from '../core/format.js';
+import { esc, formatEditorialDate } from '../core/format.js';
 import {
     resolveTeamId,
     getCanonicalTeamColor,
@@ -215,15 +215,7 @@ function createPitStopsSeasonLoading() {
 }
 
 function formatRaceDate(race) {
-    const value = race && race.date ? race.date : race;
-    let d;
-    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
-        const parts = value.split('-');
-        d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-    } else {
-        d = new Date(value);
-    }
-    return d.toLocaleDateString('el-GR', { day: 'numeric', month: 'long', year: 'numeric' });
+    return formatEditorialDate(race && race.date ? race.date : race);
 }
 
 function loadPitStopRaces() {

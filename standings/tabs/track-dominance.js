@@ -8,7 +8,7 @@
 // and syncs deep links through getSelectedSession() / getSelectedDriverKeys()
 // and setSelection().
 
-import { esc } from '../core/format.js';
+import { esc, formatEditorialDate, sessionLabel } from '../core/format.js';
 import {
     getCanonicalTeamColor,
     getCanonicalTeamName,
@@ -269,13 +269,7 @@ function pickDefaultTrackDominanceSession(sessions) {
 }
 
 function formatSessionDateShort(session) {
-    const value = session && (session.date_start || session.date || session.date_end);
-    const date = value ? new Date(value) : null;
-    if (!date || isNaN(date.getTime())) return '';
-    return date.toLocaleDateString('el-GR', {
-        day: 'numeric',
-        month: 'short'
-    }).replace(/\./g, '');
+    return formatEditorialDate(session && (session.date_start || session.date || session.date_end));
 }
 
 function getDriverDisplayName(driver) {
@@ -960,7 +954,7 @@ function renderTrackDominance(sessionData, pairData, session) {
     }
 
     const sessionOptions = state.sessions.slice().reverse().map(function(item) {
-        return '<option value="' + esc(item.session_key) + '"' + (String(item.session_key) === String(state.selectedSessionKey) ? ' selected' : '') + '>' + esc((item.meeting_name || item.circuit_short_name || item.location || 'Session') + ' · ' + (item.session_name || item.session_type || 'Session') + (formatSessionDateShort(item) ? ' · ' + formatSessionDateShort(item) : '')) + '</option>';
+        return '<option value="' + esc(item.session_key) + '"' + (String(item.session_key) === String(state.selectedSessionKey) ? ' selected' : '') + '>' + esc((item.meeting_name || item.circuit_short_name || item.location || 'Session') + ' · ' + sessionLabel(item.session_name || item.session_type || 'Session') + (formatSessionDateShort(item) ? ' · ' + formatSessionDateShort(item) : '')) + '</option>';
     }).join('');
 
     const leftDriverOptions = sessionData.teams.map(function(team) {
@@ -1001,7 +995,7 @@ function renderTrackDominance(sessionData, pairData, session) {
         + '</div>'
         + '<div class="track-dom-duel">'
         + renderTrackDominanceDriverCard('left', leftDriver, leftChannels, metricComparison)
-        + '<div class="track-dom-vs-card"><div class="track-dom-vs-label">Συνεδρία</div><div class="track-dom-vs-title">' + esc(session.meeting_name || session.circuit_short_name || session.location || 'Πίστα') + '</div><div class="track-dom-vs-sub">' + esc((session.session_name || session.session_type || 'Συνεδρία') + (formatSessionDateShort(session) ? ' · ' + formatSessionDateShort(session) : '')) + '</div><div class="track-dom-vs-delta">' + esc(finishLeader + ' -' + Math.abs(finishDelta).toFixed(3) + 's') + '</div><div class="track-dom-vs-note">έναντι ' + esc(finishTrailer) + '</div></div>'
+        + '<div class="track-dom-vs-card"><div class="track-dom-vs-label">Συνεδρία</div><div class="track-dom-vs-title">' + esc(session.meeting_name || session.circuit_short_name || session.location || 'Πίστα') + '</div><div class="track-dom-vs-sub">' + esc(sessionLabel(session.session_name || session.session_type || 'Συνεδρία') + (formatSessionDateShort(session) ? ' · ' + formatSessionDateShort(session) : '')) + '</div><div class="track-dom-vs-delta">' + esc(finishLeader + ' -' + Math.abs(finishDelta).toFixed(3) + 's') + '</div><div class="track-dom-vs-note">έναντι ' + esc(finishTrailer) + '</div></div>'
         + renderTrackDominanceDriverCard('right', rightDriver, rightChannels, metricComparison)
         + '</div>';
 
@@ -1043,7 +1037,7 @@ function renderTrackDominance(sessionData, pairData, session) {
 function showTrackDominanceError() {
     if (!trackDominanceTable) return;
     const sessionOptions = state.sessions.slice().reverse().map(function(item) {
-        return '<option value="' + esc(item.session_key) + '"' + (String(item.session_key) === String(state.selectedSessionKey) ? ' selected' : '') + '>' + esc((item.meeting_name || item.circuit_short_name || item.location || 'Session') + ' · ' + (item.session_name || item.session_type || 'Session') + (formatSessionDateShort(item) ? ' · ' + formatSessionDateShort(item) : '')) + '</option>';
+        return '<option value="' + esc(item.session_key) + '"' + (String(item.session_key) === String(state.selectedSessionKey) ? ' selected' : '') + '>' + esc((item.meeting_name || item.circuit_short_name || item.location || 'Session') + ' · ' + sessionLabel(item.session_name || item.session_type || 'Session') + (formatSessionDateShort(item) ? ' · ' + formatSessionDateShort(item) : '')) + '</option>';
     }).join('');
 
     setTrustedHtml(trackDominanceTable, '<div class="track-dom-card">'

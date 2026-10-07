@@ -318,7 +318,7 @@ body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn):not(.
   }
 }
 
-/* Keep the consent banner out of document flow before async CSS loads. */
+/* Keep consent hidden and out of document flow until its shared CSS loads. */
 .cookie-banner,
 .cookie-consent {
   position: fixed;
@@ -326,151 +326,10 @@ body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn):not(.
   left: 0;
   width: 100%;
   z-index: 9999;
-  max-height: min(28vh, 240px);
-  overflow-y: auto;
-  color: var(--text-primary);
-  background: rgba(17,17,19,0.9);
-  border-top: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px 12px 0 0;
-  box-shadow: 0 -4px 16px rgba(0,0,0,0.32);
   transform: translateY(100%);
   opacity: 0;
   visibility: hidden;
   contain: layout style;
-}
-.cookie-banner.show,
-.cookie-consent.show {
-  transform: translateY(0);
-  opacity: 1;
-  visibility: visible;
-}
-.cookie-banner.show:not(.is-ready),
-.cookie-consent.show:not(.is-ready) {
-  transform: translateY(100%);
-  opacity: 0;
-  visibility: hidden;
-}
-.cookie-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0.56rem 0.74rem 0.62rem;
-  color: var(--text-primary);
-}
-.cookie-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: 0;
-}
-.cookie-header h3 {
-  margin: 0;
-  color: var(--accent);
-  font-size: 0.76rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.close-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: 0;
-  background: transparent;
-  color: inherit;
-}
-.cookie-intro,
-.cookie-content > p {
-  margin: 0;
-  font-size: 0.76rem;
-  line-height: 1.3;
-}
-.cookie-details {
-  margin: 0;
-  border: 0;
-  border-radius: 8px;
-  overflow: hidden;
-}
-.cookie-details[open] {
-  margin-top: 0.12rem;
-  padding: 0.52rem;
-  border: 1px solid rgba(255,255,255,0.08);
-}
-.cookie-settings-summary {
-  width: max-content;
-  max-width: 100%;
-  padding: 0.18rem 0;
-  color: var(--accent);
-  font-size: 0.76rem;
-  font-weight: 700;
-}
-.cookie-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 0.42rem;
-  margin: 0;
-}
-.cookie-btn {
-  min-width: 0;
-  padding: 0.46rem 0.68rem;
-  border: 0;
-  border-radius: 5px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-.decline {
-  min-height: auto;
-  padding: 0.35rem 0.2rem;
-  border-color: transparent;
-  background: transparent;
-  color: var(--text-secondary);
-}
-.cookie-details:not([open]) ~ .cookie-actions .reject-btn,
-.cookie-details:not([open]) ~ .cookie-actions .accept-selected-btn {
-  display: none;
-}
-.cookie-footer {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 0.65rem;
-  font-size: 0.8rem;
-}
-@media (max-width: 767.98px) {
-  .cookie-banner,
-  .cookie-consent {
-    max-height: min(22vh, 156px);
-    border-radius: 12px 12px 0 0;
-  }
-  .cookie-content {
-    max-width: 100%;
-    padding: 0.48rem 0.76rem max(0.56rem, env(safe-area-inset-bottom));
-  }
-  .cookie-header { margin-bottom: 0; }
-  .cookie-intro,
-  .cookie-content > p { font-size: 0.72rem; }
-  .cookie-details { margin-top: 0; }
-  .cookie-actions {
-    display: flex;
-    flex-direction: row;
-    gap: 0.38rem;
-    width: 100%;
-    margin: 0;
-  }
-  .cookie-btn {
-    width: 100%;
-    max-width: 100%;
-    min-height: 44px;
-    padding: 0.46rem 0.5rem;
-    overflow: hidden;
-    font-size: clamp(0.7rem, 2.45vw, 0.78rem);
-    text-overflow: ellipsis;
-  }
-  .cookie-footer { display: none; }
 }
 
 /* ── Hero baseline (homepage/standings share this shape) ── */

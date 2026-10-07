@@ -53,6 +53,21 @@ function adoptNavPartial(html) {
   return html.replace(BAKED_NAV_RE, (match, indent) => `${indent}<!-- @include partials/nav.html -->`);
 }
 
+function adoptCookiePartial(html) {
+  if (html.includes('<!-- @include partials/cookie-banner.html -->')) return html;
+  const start = html.search(/<div\b[^>]*\bid="cookie-consent"/);
+  if (start < 0) return html;
+  const tags = /<\/?div\b[^>]*>/g;
+  tags.lastIndex = start;
+  let depth = 0;
+  let tag;
+  while ((tag = tags.exec(html))) {
+    depth += tag[0].startsWith('</') ? -1 : 1;
+    if (!depth) return html.slice(0, start) + '<!-- @include partials/cookie-banner.html -->' + html.slice(tags.lastIndex);
+  }
+  throw new Error('Unclosed cookie banner');
+}
+
 const INCLUDE_RE =
   /^([ \t]*)<!--\s*@include\s+([^\s]+)\s*-->[ \t]*\n?(?:\1<!--\s*@include:begin\s+\2\s*-->[\s\S]*?\1<!--\s*@include:end\s+\2\s*-->[ \t]*\n?)?/gm;
 
@@ -154,7 +169,7 @@ async function main() {
       ...(isArticle ? ARTICLE_CONTEXT : PAGE_CONTEXT[relativePath] || {}),
     };
     const expanded = await expandIncludes(
-      isArticle ? adoptNavPartial(original) : original,
+      adoptCookiePartial(isArticle ? adoptNavPartial(original) : original),
       path.dirname(absolutePath),
       context,
       [absolutePath]

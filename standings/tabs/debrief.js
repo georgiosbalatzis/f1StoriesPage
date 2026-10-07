@@ -8,7 +8,7 @@
 // syncs deep links through getSelectedRound() / setSelectedRound() and
 // getActiveView() / setActiveView().
 
-import { esc, escAttr } from '../core/format.js';
+import { esc, escAttr, formatEditorialDate } from '../core/format.js';
 import {
     getCanonicalTeamColor,
     getCanonicalTeamName,
@@ -153,19 +153,11 @@ function deriveSnapshotAcronym(fullName) {
 }
 
 function formatRaceDate(race) {
-    const value = race && race.date ? race.date : race;
-    let date;
-    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
-        const parts = value.split('-');
-        date = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-    } else {
-        date = new Date(value);
-    }
-    return date.toLocaleDateString('el-GR', { day: 'numeric', month: 'long', year: 'numeric' });
+    return formatEditorialDate(race && race.date ? race.date : race);
 }
 
 function formatLapTime(seconds, forceMinutes) {
-    if (!isFiniteNumber(seconds)) return 'n/a';
+    if (!isFiniteNumber(seconds)) return '—';
     const minutes = Math.floor(seconds / 60);
     const remaining = seconds - minutes * 60;
     let secText = remaining.toFixed(3);
@@ -479,7 +471,7 @@ function buildDebriefSingleLapHTML(round) {
             + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
             + '<td data-label="Χρόνος"><span class="debrief-time">' + esc(entry.lapTime) + '</span></td>'
             + '<td data-label="Διαφορά"><span class="' + gapClass + '">' + esc(gapText) + '</span></td>'
-            + '<td data-label="Γόμα"><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
+            + '<td data-label="Γόμα"><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || '—') + '</span></td>'
             + '<td data-label="Γύροι">' + esc(lapCountLabel(entry.laps)) + '</td>'
             + '</tr>';
     }).join('');
@@ -500,12 +492,12 @@ function buildDebriefLongRunHTML(round) {
             + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
             + '<td data-label="Μέσος"><span class="debrief-time">' + esc(entry.avgLap) + '</span></td>'
             + '<td data-label="Δέλτα"><span class="debrief-gap">' + esc(deltaText) + '</span></td>'
-            + '<td data-label="Γόμα"><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
-            + '<td data-label="Stint">' + esc(lapCountLabel(entry.stintLaps)) + '</td>'
+            + '<td data-label="Γόμα"><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || '—') + '</span></td>'
+            + '<td data-label="Γύροι">' + esc(lapCountLabel(entry.stintLaps)) + '</td>'
             + '</tr>';
     }).join('');
 
-    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Μέσος γύρος</th><th>Δέλτα</th><th>Ελαστικό</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + embedCapLinkHTML(round.longRun.length);
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Μέσος γύρος</th><th>Δέλτα</th><th>Ελαστικό</th><th>Γύροι</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + embedCapLinkHTML(round.longRun.length);
 }
 
 function buildDebriefTyreDegHTML(round) {
@@ -525,7 +517,7 @@ function buildDebriefTyreDegHTML(round) {
     const rows = capEmbedRows(round.tyreDeg).map(function(entry, index) {
         const compoundClass = getDebriefCompoundClass(entry.compound);
         const degValue = parseNumberValue(entry && entry.deg);
-        const degText = entry.deg ? (entry.deg + ' s/lap') : 'n/a';
+        const degText = entry.deg ? (entry.deg + ' s/γύρο') : '—';
         const degClass = entry.deg ? getDebriefDegClass(entry.deg) : '';
         let deltaText = (entry.delta && entry.delta !== 'null') ? entry.delta : '';
         if (!deltaText && isFiniteNumber(degValue) && isFiniteNumber(leaderDeg)) {
@@ -533,19 +525,19 @@ function buildDebriefTyreDegHTML(round) {
             deltaText = deltaValue > 0.0004 ? ('+' + deltaValue.toFixed(3)) : '';
         }
         if (!deltaText && index === 0) {
-            deltaText = 'Leader';
+            deltaText = 'Πρώτος';
         }
         return '<tr>'
             + '<td>' + (index + 1) + '</td>'
             + '<td>' + buildDebriefDriverCellHTML(entry) + '</td>'
             + '<td data-label="Φθορά"><span class="debrief-time' + (degClass ? ' ' + degClass : '') + '">' + esc(degText) + '</span></td>'
             + '<td data-label="Δέλτα"><span class="debrief-gap">' + esc(deltaText) + '</span></td>'
-            + '<td data-label="Γόμα"><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || 'n/a') + '</span></td>'
-            + '<td data-label="Stint">' + esc(lapCountLabel(entry.stintLaps)) + '</td>'
+            + '<td data-label="Γόμα"><span class="compound-pill' + (compoundClass ? ' ' + compoundClass : '') + '">' + esc(entry.compound || '—') + '</span></td>'
+            + '<td data-label="Γύροι">' + esc(lapCountLabel(entry.stintLaps)) + '</td>'
             + '</tr>';
     }).join('');
 
-    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Φθορά</th><th>Δέλτα</th><th>Ελαστικό</th><th>Stint</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + embedCapLinkHTML(round.tyreDeg.length);
+    return '<div class="debrief-table"><table><thead><tr><th>P</th><th>Οδηγός</th><th>Φθορά</th><th>Δέλτα</th><th>Ελαστικό</th><th>Γύροι</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + embedCapLinkHTML(round.tyreDeg.length);
 }
 
 function buildDebriefIdealScatterSVG(rows, title, xMin, xMax) {
@@ -689,7 +681,7 @@ function buildDebriefTeamIdealHTML(round) {
         return a.idealGap - b.idealGap;
     });
     const chartView = sanitizeDebriefIdealChartView(state.idealChartView);
-    const tabsHTML = '<div class="debrief-ideal-switch"><div class="debrief-ideal-tabs" role="tablist" aria-label="Ideal lap analysis charts">'
+    const tabsHTML = '<div class="debrief-ideal-switch"><div class="debrief-ideal-tabs" role="tablist" aria-label="Γραφήματα ανάλυσης ιδανικού γύρου">'
         + '<button class="debrief-ideal-tab' + (chartView === 'classified' ? ' active' : '') + '" type="button" data-ideal-view="classified" role="tab" aria-selected="' + (chartView === 'classified' ? 'true' : 'false') + '">Σειρά κατάταξης</button>'
         + '<button class="debrief-ideal-tab' + (chartView === 'ideal' ? ' active' : '') + '" type="button" data-ideal-view="ideal" role="tab" aria-selected="' + (chartView === 'ideal' ? 'true' : 'false') + '">Ιδανική σειρά</button>'
         + '<button class="debrief-ideal-tab' + (chartView === 'gap' ? ' active' : '') + '" type="button" data-ideal-view="gap" role="tab" aria-selected="' + (chartView === 'gap' ? 'true' : 'false') + '">Διαφορά από τον ιδανικό γύρο</button>'
@@ -731,7 +723,7 @@ function buildDebriefCornerPanelHTML(title, rows, metricKey) {
 
     const rowsHTML = chartRows.map(function(entry) {
         const width = entry.gap > 0 ? Math.max(2, (entry.gap / axisMax) * 100) : 0;
-        const valueText = entry.gap > 0 ? '+' + entry.gap.toFixed(3) : 'Leader';
+        const valueText = entry.gap > 0 ? '+' + entry.gap.toFixed(3) : 'Πρώτος';
         const valueStyle = entry.gap > 0
             ? 'left:calc(' + width.toFixed(3) + '% + 0.45rem);'
             : 'left:0.4rem;';
@@ -758,7 +750,7 @@ function buildDebriefCornerPanelHTML(title, rows, metricKey) {
         + '<div class="debrief-corner-shell">'
         + rowsHTML
         + '<div class="debrief-corner-axis">' + ticksHTML + '</div>'
-        + '<div class="debrief-corner-xlabel">Gap to Best (s)</div>'
+        + '<div class="debrief-corner-xlabel">Διαφορά από τον ταχύτερο (s)</div>'
         + '</div>'
         + '</div>';
 }
@@ -826,7 +818,7 @@ function renderDebrief(snapshot) {
     summaryParts.push(selectedRound.location + ' · ' + formatRaceDate(selectedRound));
     if (singleLapLeader) summaryParts.push('Γρήγορος γύρος: ' + singleLapLeader.code + ' ' + singleLapLeader.lapTime);
     if (longRunLeader) summaryParts.push('Ρυθμός stint: ' + longRunLeader.code + ' ' + longRunLeader.avgLap);
-    if (tyreDegLeader) summaryParts.push('Φθορά ελαστικών: ' + tyreDegLeader.code + ' ' + tyreDegLeader.deg + ' s/lap');
+    if (tyreDegLeader) summaryParts.push('Φθορά ελαστικών: ' + tyreDegLeader.code + ' ' + tyreDegLeader.deg + ' s/γύρο');
     // The cache's methodology note is written in English by the data builder; readers get it in Greek.
     if (snapshot.source) summaryParts.push(DEBRIEF_METHOD_NOTE);
 

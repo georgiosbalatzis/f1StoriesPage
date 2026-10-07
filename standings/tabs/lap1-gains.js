@@ -12,7 +12,7 @@
 // self-guards — they re-render from their own lap1GainsState regardless of
 // who last dispatched — so we intercept first when the module is active.
 
-import { esc } from '../core/format.js';
+import { esc, formatEditorialDate, sessionLabel } from '../core/format.js';
 import { hexToRgbChannels, getCanonicalTeamColor } from '../core/teams.js';
 import { getCachedHeadshotResult } from '../core/drivers-meta.js';
 import { fetchJSON, fetchOpenF1BySessionKeys } from '../core/fetchers.js';
@@ -162,15 +162,12 @@ function getRaceSessionTypeShort(session) {
 
 function getSessionLabel(session) {
     const meeting = session.meeting_name || session.country_name || session.location || 'Session';
-    const sessionName = session.session_name || session.session_type || 'Race';
+    const sessionName = sessionLabel(session.session_name || session.session_type || 'Race');
     return meeting + ' · ' + sessionName;
 }
 
 function formatSessionDateShort(session) {
-    const value = session && (session.date_start || session.date || session.date_end);
-    const date = value ? new Date(value) : null;
-    if (!date || isNaN(date.getTime())) return '';
-    return date.toLocaleDateString('el-GR', { day: 'numeric', month: 'short' }).replace(/\./g, '');
+    return formatEditorialDate(session && (session.date_start || session.date || session.date_end));
 }
 
 function groupRecordsBySession(records) {
@@ -326,7 +323,7 @@ function buildLap1GainRows(sessions, drivers, positions, lapOneLaps, lapTwoLaps)
             sessionKey: sessionKey,
             index: index,
             meetingName: session.circuit_short_name || session.location || session.country_name || 'Session',
-            sessionName: session.session_name || session.session_type || 'Race',
+            sessionName: sessionLabel(session.session_name || session.session_type || 'Race'),
             sessionTypeShort: getRaceSessionTypeShort(session),
             sessionLabel: getSessionLabel(session),
             dateLabel: formatSessionDateShort(session),

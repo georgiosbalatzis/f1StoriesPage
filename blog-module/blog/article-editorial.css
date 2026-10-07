@@ -419,6 +419,7 @@
 
 /* Article photography uses the language of a printed contact sheet. */
 .article-page .gallery-carousel { position: relative; margin: 3.1em 0 3.5em; }
+.article-page .gallery-carousel:has(.gallery-slide:only-child) :is(.gallery-carousel-prev, .gallery-carousel-next, .gallery-carousel-counter, .gallery-carousel-thumbs) { display: none; }
 .article-page .gallery-carousel::before {
     content: 'ΣΤΗΝ ΠΙΣΤΑ / ΦΩΤΟΓΡΑΦΙΚΟ ΑΡΧΕΙΟ';
     display: block;
@@ -932,7 +933,7 @@
 }
 .article-page .article-content .betcast-managed-embed { margin-block: 1.5rem; }
 .article-page .article-content .betcast-managed-embed iframe[data-f1s-betcast-managed] { display: block; width: 100%; border: 0; }
-.article-page .article-content .embed-container.embed-iframe iframe[data-f1s-standings-managed] { display: block; width: 100%; border: 0; }
+.article-page .article-content .embed-container.embed-iframe iframe:is([data-f1s-standings-managed], [data-f1s-telemetry-managed]) { display: block; width: 100%; border: 0; }
 .article-page .article-content .betcast-embed-fallback { display: inline-flex; align-items: center; min-height: 40px; margin-top: 6px; color: var(--text-secondary); font-size: .875rem; text-decoration: underline; text-underline-offset: .2em; }
 .article-page .article-content .betcast-embed-fallback:hover { color: var(--accent-readable); }
 .article-page .article-content .betcast-chart-fallback {

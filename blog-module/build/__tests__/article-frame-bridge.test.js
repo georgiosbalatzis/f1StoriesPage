@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
-const { setupBetCastFrameBridge, setupStandingsFrameBridge } = require('../../blog/article-script');
+const { setupBetCastFrameBridge, setupStandingsFrameBridge, setupTelemetryFrameBridge } = require('../../blog/article-script');
 
 function fixture(src = 'https://georgiosbalatzis.github.io/BetCastVisualisation/?embed=1&presentation=article&theme=host') {
     const listeners = new Map();
@@ -81,7 +81,7 @@ test('unapproved iframe URLs are left outside the managed adapter', () => {
     cleanup();
 });
 
-function standingsFixture(src = 'https://f1stories.gr/standings/?tab=drivers&focus=drivers-chart&embed=1') {
+function standingsFixture(src = 'https://f1stories.gr/standings/?tab=drivers&focus=drivers-chart&embed=1', bridge = setupStandingsFrameBridge) {
     const listeners = new Map();
     const attrs = {};
     const frame = {
@@ -105,7 +105,7 @@ function standingsFixture(src = 'https://f1stories.gr/standings/?tab=drivers&foc
         setTimeout(callback, _delay, ...args) { return setTimeout(() => callback(...args), 100000); },
         clearTimeout(timer) { clearTimeout(timer); },
     };
-    const cleanup = setupStandingsFrameBridge({ querySelectorAll: () => [frame] }, {}, win);
+    const cleanup = bridge({ querySelectorAll: () => [frame] }, {}, win);
     return { cleanup, frame, listeners, attrs };
 }
 
@@ -146,6 +146,36 @@ test('standings bridge ignores non-standings, non-embed and foreign-origin frame
         const { cleanup, frame } = standingsFixture(src);
         assert.equal(frame.dataset.f1sStandingsManaged, undefined, src);
         assert.equal(frame.contentWindow.messages.length, 0, src);
+        cleanup();
+    }
+});
+
+test('telemetry frames grow and shrink while rejecting spoofed or invalid measurements', () => {
+    for (const src of ['https://georgiosbalatzis.github.io/f1-telemetry-dashboard/?embed=1', 'https://f1stories.gr/telemetry/?embed=1']) {
+        const { cleanup, frame, listeners, attrs } = standingsFixture(src, setupTelemetryFrameBridge);
+        const origin = new URL(src).origin;
+        assert.equal(frame.dataset.f1sTelemetryManaged, 'true');
+        assert.deepEqual(frame.contentWindow.messages[0], { data: { type: 'f1s-telemetry:measure' }, origin });
+        const message = (data, source = frame.contentWindow, eventOrigin = origin) => listeners.get('message')({ data, source, origin: eventOrigin });
+        message({ type: 'f1s-telemetry:resize', height: 500 }, {}, origin);
+        message({ type: 'f1s-telemetry:resize', height: 500 }, frame.contentWindow, 'https://evil.example');
+        for (const height of [99, 12001, Infinity, 120.5, '500']) message({ type: 'f1s-telemetry:resize', height });
+        message({ type: 'f1s-telemetry:resize', height: 500, extra: true });
+        assert.equal(frame.style.height, '');
+        message({ type: 'f1s-telemetry:resize', height: 960 });
+        assert.equal(frame.style.height, '960px');
+        message({ type: 'f1s-telemetry:resize', height: 320 });
+        assert.equal(frame.style.height, '320px');
+        assert.equal(frame.dataset.f1sTelemetryReady, 'true');
+        assert.equal(attrs.scrolling, 'no');
+        cleanup();
+    }
+});
+
+test('telemetry bridge ignores foreign hosts, other applications and full dashboard pages', () => {
+    for (const src of ['https://evil.example/f1-telemetry-dashboard/?embed=1', 'https://georgiosbalatzis.github.io/other/?embed=1', 'https://f1stories.gr/telemetry/', 'https://user:pass@f1stories.gr/telemetry/?embed=1']) {
+        const { cleanup, frame } = standingsFixture(src, setupTelemetryFrameBridge);
+        assert.equal(frame.dataset.f1sTelemetryManaged, undefined, src);
         cleanup();
     }
 });

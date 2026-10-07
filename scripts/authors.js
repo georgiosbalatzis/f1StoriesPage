@@ -50,7 +50,4 @@
     var back = document.querySelector('[data-author-directory-back]');
     if (back) back.hidden = false;
 
-    window.requestAnimationFrame(function () {
-        selected.scrollIntoView({ block: 'start', behavior: 'smooth' });
-    });
 }());

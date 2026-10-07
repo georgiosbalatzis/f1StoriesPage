@@ -173,6 +173,8 @@ body.standings-page {
 .standings-page .standings-panel .tyre-pace-plot { background: color-mix(in srgb, var(--st-text) 3%, transparent); border-radius: 0; }
 .standings-page .standings-panel :is(.debrief-figure-title, .track-dom-map-title, .pit-stops-section-title, .dirty-air-section-title) { font: 400 1.45rem/1.2 var(--font-editorial); letter-spacing: -.02em; }
 .standings-page .standings-panel :is(.quali-race-gap-badge, .lap1-gain-pill) { background: var(--st-surface); border: 1px solid var(--st-border); border-radius: 2px; box-shadow: none; }
+.standings-page .standings-panel .quali-race-gap-badge { color: var(--st-text); }
+.standings-page .standings-panel .quali-race-gap-stage { color: var(--st-text-secondary); }
 .standings-page .standings-panel :is(.lap1-gain-card, .quali-race-driver-card, .pit-stops-card, .tyre-pace-card, .dirty-air-card) { border-radius: 0; box-shadow: none; }
 .standings-page .standings-panel :is(.lap1-race-row, .quali-gaps-row, .pit-stops-row) { transition: background .25s; }
 
@@ -181,9 +183,8 @@ body.standings-page {
  * value while the ring still carries the driver's team identity. */
 /* Tyre pace: a quiet cue while drivers are hidden to the right; columns are labelled by code,
  * with the full name kept for screen readers (the chart already carries it per column). */
-.standings-page .standings-panel .tyre-pace-scroll-hint { display: none; margin: 6px 0 0; color: var(--st-text-secondary); font-size: .75rem; }
-.standings-page .standings-panel .tyre-pace-card:has(.tyre-pace-chart-scroll.is-overflowing) .tyre-pace-scroll-hint { display: block; }
-.standings-page .standings-panel .tyre-pace-chart-scroll.is-overflowing { -webkit-mask-image: linear-gradient(90deg, #000 86%, transparent); mask-image: linear-gradient(90deg, #000 86%, transparent); }
+.standings-page .standings-panel .tyre-pace-axis { position: sticky; left: 0; z-index: 2; background: var(--st-surface); }
+.standings-page .standings-panel .tyre-pace-axis-title { left: 6px; transform: translate(-50%, -50%) rotate(-90deg); }
 .standings-page .standings-panel .tyre-pace-name { width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .standings-page .standings-panel .tyre-pace-code { bottom: 4px; font-weight: 600; }
 
@@ -361,6 +362,7 @@ body.standings-page { --track-dom-second-dark-rgb: 122, 116, 108; --track-dom-se
 @media (max-width: 374.98px) { .standings-page .standings-context-row:empty { min-height: 172px; } }
 
 /* Embeds keep their existing compact shell and selected chart visibility. */
+body.standings-page.standings-embed { min-height: 0; }
 body.standings-page.standings-embed::after { display: none; }
 body.standings-page.standings-embed .standings-wrapper > .container { width: auto; max-width: none; padding: 12px; }
 body.standings-page.standings-embed .standings-layout { display: block; }

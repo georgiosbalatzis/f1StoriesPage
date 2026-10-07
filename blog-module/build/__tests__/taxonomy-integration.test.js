@@ -5,7 +5,7 @@ const path = require('node:path');
 const test = require('node:test');
 const { PUBLIC_CATEGORIES, AUTHORS, findAuthor, authorLabel, authorThumb, getPostTaxonomy } = require('../../taxonomy');
 const {
-    buildIndexPosts, buildCompactIndexData,
+    buildIndexPosts, buildCompactIndexData, buildHomeLatest,
     loadEditorialSelection, resolveJournalFront, renderJournalFront, renderLedgerRows
 } = require('../index');
 const { refreshArticleTaxonomy, getEditorialProfile, renderArticleSources, renderAuthorCard } = require('../article-render');
@@ -235,6 +235,49 @@ test('ON AIR shows the newest episode behind a facade and falls back to YouTube 
     assert.equal(renderOnAir({ videos: [] }), '');
 });
 
+test('ON AIR uses a newer published BetCast article when the YouTube snapshot is stale', () => {
+    const { renderOnAir, selectEpisodes } = require('../home-panels');
+    const snapshot = { videos: [{ id: 'l0vNNK6FO3g', title: 'BetCast #270: Hungaroring', publishedAt: '2026-07-25' }] };
+    const article = (id, title, date) => ({ id, title, date, url: `/blog-module/blog-entries/${id}/article.html`, image: `/blog-module/blog-entries/${id}/1.webp`, author: 'Giannis Poulikidis' });
+    const posts = [
+        article('20260912J', 'BetCast #273: Προσπεράσεις', '2026-09-12'),
+        article('20261004J', 'Ferrari update', '2026-10-04'),
+        article('20261002J', 'BetCast #275: Το Grid', '2026-10-02'),
+        article('20260725J', 'BetCast #270: Hungaroring', '2026-07-25'),
+        article('invalid', 'BetCast #999: Invalid date', 'invalid')
+    ];
+    assert.deepEqual(selectEpisodes(snapshot, posts).map(item => item.id), ['20261002J', '20260912J', 'l0vNNK6FO3g']);
+    const html = renderOnAir(snapshot, () => false, posts);
+    const lead = html.slice(0, html.indexOf('<ol class="episodes"'));
+    assert.match(lead, /episode__tab">BETCAST \/ #275</);
+    assert.match(lead, /ΤΕΛΕΥΤΑΙΟ ΕΠΕΙΣΟΔΙΟ/);
+    assert.match(lead, /datetime="2026-10-02">2 Οκτ 2026/);
+    assert.match(lead, /href="\/blog-module\/blog-entries\/20261002J\/article\.html"/);
+    assert.match(lead, /aria-label="Διαβάστε: BetCast #275: Το Grid"/);
+    assert.doesNotMatch(lead, /data-video-id|#fa-play/);
+    assert.match(html, /https:\/\/www\.youtube\.com\/watch\?v=l0vNNK6FO3g/);
+    assert.match(renderOnAir(null, () => false, posts), /BETCAST \/ #275/);
+
+    // A fresh feed takes over again without a manual homepage change.
+    const fresh = { videos: [{ id: 'Q_SQJqa6CMU', title: 'BetCast #276: Next race', publishedAt: '2026-10-07' }] };
+    const refreshedLead = renderOnAir(fresh, () => false, posts).split('<ol class="episodes"')[0];
+    assert.match(refreshedLead, /data-video-id="Q_SQJqa6CMU"/);
+    assert.match(refreshedLead, /BETCAST \/ #276/);
+    assert.match(refreshedLead, /datetime="2026-10-07"/);
+});
+
+test('the homepage cover uses the article header photograph before the card thumbnail', async () => {
+    const [hero] = await buildHomeLatest([{
+        id: '20261007W', title: 'Hamilton', date: '2026-10-07',
+        image: '/blog-module/blog-entries/20261007W/1.webp',
+        backgroundImage: '/blog-module/blog-entries/20261007W/2.webp'
+    }]);
+    assert.equal(hero.heroImage, '/blog-module/blog-entries/20261007W/2.webp');
+    assert.equal(hero.heroAvif, '/blog-module/blog-entries/20261007W/2.avif');
+    assert.equal(hero.heroImageWidth, 1350);
+    assert.equal(hero.heroImageHeight, 900);
+});
+
 test('THE NUMBERS renders the top five, scales bars to the leader and pace to the fifth team', () => {
     const { renderNumbers } = require('../home-panels');
     const driver = (position, code, points) => ({ position: String(position), points: String(points), Driver: { code, familyName: code }, Constructors: [{ constructorId: 'mercedes', name: 'Mercedes' }] });
@@ -314,7 +357,7 @@ test('the homepage team gives every writer a spotlight card with their three new
     const card = html.slice(html.indexOf('data-author-slug="georgios-balatzis"'));
     const stories = card.slice(card.indexOf('team-card__stories'), card.indexOf('</ul>'));
     assert.deepEqual([...stories.matchAll(/<span>([^<]+)<\/span><a[^>]*>([^<]+)</g)].map(m => [m[1], m[2]]),
-        [['20.09.2026', 'Newest'], ['15.09.2026', 'Second'], ['10.09.2026', 'Third']]);
+        [['20 Σεπ 2026', 'Newest'], ['15 Σεπ 2026', 'Second'], ['10 Σεπ 2026', 'Third']]);
     assert.match(card, /ΟΛΑ ΤΑ ΑΡΘΡΑ ΤΟΥ ΓΙΩΡΓΟΥ/);
 });
 

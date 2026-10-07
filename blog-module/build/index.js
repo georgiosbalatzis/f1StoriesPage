@@ -407,8 +407,7 @@ function homeByline(name) {
 }
 
 function homeDate(value) {
-    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value || ''));
-    return match ? `${match[3]}.${match[2]}.${match[1]}` : '';
+    return formatDate(value);
 }
 
 function homeStoryMeta(post, index, { withIndex = true, withTime = false } = {}) {
@@ -471,13 +470,14 @@ function renderHomeJournal(posts, leadDek = '') {
 function renderHomeTech(post, dek, telemetry, teamName) {
     const image = storyImage(post);
     const url = escapeHtmlAttribute(storyUrl(post));
+    const date = String(post.date || '').slice(0, 10).split('-').reverse().join('.');
     const readingTime = storyReadingTime(post);
     const meta = [`<span class="home-story__kind">${escapeHtmlAttribute(greekUpper(categoryLabel(primaryCategory(post))))}</span>`]
         .concat(readingTime ? [`<span>${escapeHtmlAttribute(greekUpper(readingTime))}</span>`] : []).join('');
     return `
         <div class="container tech-folio">
             <span class="section-kicker">03 / ΤΕΧΝΙΚΗ ΑΝΑΛΥΣΗ</span>
-            <span class="section-kicker tech-folio__desk" aria-hidden="true">TECH DESK · ${homeDate(post.date)}</span>
+            <span class="section-kicker tech-folio__desk" aria-hidden="true">TECH DESK · ${date}</span>
         </div>
         <div class="container">
             <div class="tech-stage" data-kind="${categoryKind(primaryCategory(post))}">
@@ -487,7 +487,7 @@ function renderHomeTech(post, dek, telemetry, teamName) {
                     <h2 class="tech-copy__title" id="tech-heading"><a href="${url}">${escapeHtmlAttribute(post.title)}</a></h2>`
         + (dek ? `\n                    <p class="tech-copy__dek">${escapeHtmlAttribute(dek)}</p>` : '')
         + `
-                    <p class="home-story__byline">${escapeHtmlAttribute(homeByline(post.author))} · ${homeDate(post.date)}</p>
+                    <p class="home-story__byline">${escapeHtmlAttribute(homeByline(post.author))} · ${date}</p>
                     <a class="tech-copy__button" href="${url}">ΔΙΑΒΑΣΕ ΤΗΝ ΑΝΑΛΥΣΗ <span aria-hidden="true">→</span></a>
                 </div>`
         + (image ? `
@@ -620,7 +620,7 @@ function getHomepageHeroVariant(image, extension) {
 }
 
 async function buildHomepageHeroData(post) {
-    const image = post && (post.image || post.backgroundImage) || CONFIG.DEFAULT_BLOG_IMAGE;
+    const image = post && (post.backgroundImage || post.image) || CONFIG.DEFAULT_BLOG_IMAGE;
     const dimensions = await getImageDimensionsForPublicPath(image);
     return {
         image,
@@ -1167,7 +1167,7 @@ async function processBlogEntries(options = {}) {
     console.log(`Home latest data saved to ${homeLatestPath} (${jsonKb(homeLatest)} KB)`);
     injectHomepageHero(homeLatest[0]);
     injectHomeJournal(indexPosts, blogPosts);
-    await injectHomePanels();
+    await injectHomePanels(undefined, blogPosts);
 
     generateSitemap(blogPosts);
     await renderCachedArticlePages(freshPosts.concat(cachedPosts));

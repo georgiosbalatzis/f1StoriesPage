@@ -660,3 +660,14 @@ header > .navbar { display: none !important; }
     .scroll-to-top-btn { bottom: calc(1.5rem + env(safe-area-inset-bottom)); }
     .blog-nav-mobile { padding-bottom: env(safe-area-inset-bottom); }
 }
+/* Explicit controls keep horizontal content discoverable at either edge. */
+.horizontal-scroll-region { min-width: 0; max-width: 100%; }
+.horizontal-scroll-cue { display: flex; align-items: center; gap: 8px; margin: 6px 0; color: var(--text-secondary); font-size: .75rem; }
+.horizontal-scroll-cue[hidden] { display: none; }
+.horizontal-scroll-cue > span { flex: 1; }
+.horizontal-scroll-cue button { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px; min-height: 44px; padding: 0; border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-primary); font: 500 1.2rem/1 var(--font-body); cursor: pointer; }
+.horizontal-scroll-cue button:disabled { opacity: .35; cursor: default; }
+.horizontal-scroll-cue button:focus-visible, .horizontal-scroll-content:focus-visible { outline: 2px solid var(--accent-readable); outline-offset: 2px; }
+.horizontal-scroll-region .horizontal-scroll-content { scrollbar-width: thin; scrollbar-color: var(--text-secondary) transparent; }
+.horizontal-scroll-content::-webkit-scrollbar { height: 6px; }
+.horizontal-scroll-content::-webkit-scrollbar-thumb { background: var(--text-secondary); }

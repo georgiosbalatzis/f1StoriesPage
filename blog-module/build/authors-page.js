@@ -2,7 +2,7 @@
 // so a writer's name, portrait, desk, specialty, bio, column and featured stories
 // are never retyped in HTML. Numbering follows the list order.
 const { fs, path, CONFIG, escapeHtmlAttribute } = require('./shared');
-const { AUTHORS, findAuthor, greekUpper } = require('../taxonomy');
+const { AUTHORS, findAuthor, greekUpper, formatDate } = require('../taxonomy');
 
 const AUTHORS_HTML_PATH = path.join(CONFIG.BLOG_DIR, '..', '..', 'authors', 'index.html');
 const HOME_HTML_PATH = path.join(CONFIG.BLOG_DIR, '..', '..', 'index.html');
@@ -71,12 +71,6 @@ function injectAuthorsDirectory(posts, htmlPath = AUTHORS_HTML_PATH) {
     return true;
 }
 
-// "2026-09-23" → "23.09.2026"
-function dotDate(value) {
-    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value || ''));
-    return match ? `${match[3]}.${match[2]}.${match[1]}` : '';
-}
-
 // Homepage team: one spotlight card per writer (the page script rotates them) and
 // the roster beside it. Every card carries the writer's three newest stories.
 function renderHomeTeam(posts) {
@@ -87,7 +81,7 @@ function renderHomeTeam(posts) {
         const stories = newest
             .filter(post => (findAuthor(post.author) || {}).slug === author.slug)
             .slice(0, 3)
-            .map(post => `<li><span>${dotDate(post.date)}</span><a href="/blog-module/blog-entries/${esc(post.id)}/article.html">${esc(post.title)}</a></li>`)
+            .map(post => `<li><span>${formatDate(post.date)}</span><a href="/blog-module/blog-entries/${esc(post.id)}/article.html">${esc(post.title)}</a></li>`)
             .join('');
         const social = author.instagram
             ? `<a class="team-card__social" href="${esc(author.instagram)}" target="_blank" rel="noopener">INSTAGRAM <span aria-hidden="true">↗</span></a>`

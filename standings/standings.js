@@ -7,7 +7,7 @@
 // dependency on standings.legacy.js; the preserved source file now exists
 // only as an emergency rollback artifact outside the live asset graph.
 
-import { esc, escAttr, formatWinsLabel } from './core/format.js';
+import { esc, escAttr, formatWinsLabel, formatEditorialDate } from './core/format.js';
 import {
     getCanonicalTeamColor,
     getTeamLogo
@@ -1046,7 +1046,7 @@ function setStandingsDataStatus(state) {
     if (!standingsDataStatus) return;
     const updated = new Date(latestStandingsMeta.updatedAt);
     const date = Number.isFinite(updated.getTime())
-        ? updated.toLocaleDateString('el-GR', { day: 'numeric', month: 'short' })
+        ? formatEditorialDate(updated)
         : '';
     const labels = {
         live: 'Live δεδομένα',

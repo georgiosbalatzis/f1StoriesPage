@@ -8,7 +8,7 @@
 // callbacks once via initTyrePace(), and syncs deep links through
 // getSelectedSession() / setSelectedSession().
 
-import { esc } from '../core/format.js';
+import { esc, formatEditorialDate, sessionLabel } from '../core/format.js';
 import {
     normalizeHexColor,
     hexToRgbChannels,
@@ -205,18 +205,12 @@ function getCompletedRaceAndSprintSessions() {
 
 function getSessionLabel(session) {
     const meeting = session.meeting_name || session.country_name || session.location || 'Session';
-    const sessionName = session.session_name || session.session_type || 'Qualifying';
+    const sessionName = sessionLabel(session.session_name || session.session_type || 'Qualifying');
     return meeting + ' · ' + sessionName;
 }
 
 function formatSessionDateShort(session) {
-    const value = session && (session.date_start || session.date || session.date_end);
-    const date = value ? new Date(value) : null;
-    if (!date || isNaN(date.getTime())) return '';
-    return date.toLocaleDateString('el-GR', {
-        day: 'numeric',
-        month: 'short'
-    }).replace(/\./g, '');
+    return formatEditorialDate(session && (session.date_start || session.date || session.date_end));
 }
 
 function getDriverDisplayName(driver) {
@@ -523,13 +517,13 @@ function renderTyrePace(data, session) {
 
     const selectOptions = state.sessions.slice().reverse().map(function(race) {
         return '<option value="' + esc(race.session_key) + '"' + (String(race.session_key) === String(session.session_key) ? ' selected' : '') + '>'
-            + esc((race.circuit_short_name || race.location || race.country_name || 'Session') + ' · ' + (race.session_name || race.session_type || 'Race') + (formatSessionDateShort(race) ? ' · ' + formatSessionDateShort(race) : ''))
+            + esc((race.circuit_short_name || race.location || race.country_name || 'Session') + ' · ' + sessionLabel(race.session_name || race.session_type || 'Race') + (formatSessionDateShort(race) ? ' · ' + formatSessionDateShort(race) : ''))
             + '</option>';
     }).join('');
 
     let html = '<div class="tyre-pace-card">'
         + '<div class="tyre-pace-head"><div class="tyre-pace-head-copy"><h3 class="tyre-pace-head-title">Κατανομές χρόνων γύρου ανά γόμα</h3><p class="tyre-pace-head-note">Χρώματα στεγνής γόμας: σκληρή λευκή, medium κίτρινη, soft κόκκινη. Οι γύροι εξόδου, εισόδου και οι πολύ αργοί ακραίοι γύροι αφαιρούνται για καθαρότερη εικόνα ρυθμού.</p></div><label class="tyre-pace-controls"><span class="tyre-pace-controls-label">Διαθέσιμες συνεδρίες</span><select class="tyre-pace-select" data-tyre-pace-select aria-label="Επιλογή συνεδρίας για το Tyre Pace">' + selectOptions + '</select></label></div>'
-        + '<div class="tyre-pace-summary"><div><div class="tyre-pace-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="tyre-pace-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || session.session_type || 'Αγώνας')) + '</div></div><div class="tyre-pace-summary-stats"><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Οδηγοί</span><span class="tyre-pace-summary-value">' + esc(String(data.driverCount)) + '</span></div><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Έγκυροι γύροι</span><span class="tyre-pace-summary-value">' + esc(String(data.validLapCount)) + '</span></div><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Καλύτερος γύρος</span><span class="tyre-pace-summary-value">' + esc(formatLapTime(data.rows[0] && data.rows[0].bestLap, true)) + '</span></div></div></div>'
+        + '<div class="tyre-pace-summary"><div><div class="tyre-pace-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="tyre-pace-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + sessionLabel(session.session_name || session.session_type || 'Αγώνας')) + '</div></div><div class="tyre-pace-summary-stats"><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Οδηγοί</span><span class="tyre-pace-summary-value">' + esc(String(data.driverCount)) + '</span></div><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Έγκυροι γύροι</span><span class="tyre-pace-summary-value">' + esc(String(data.validLapCount)) + '</span></div><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Καλύτερος γύρος</span><span class="tyre-pace-summary-value">' + esc(formatLapTime(data.rows[0] && data.rows[0].bestLap, true)) + '</span></div></div></div>'
         + '<div class="tyre-pace-legend"><span class="tyre-pace-legend-title">Γόμα ελαστικών</span>';
 
     compounds.forEach(function(compound) {
@@ -538,9 +532,8 @@ function renderTyrePace(data, session) {
     });
 
     html += '</div>'
-        + '<p class="tyre-pace-scroll-hint" aria-hidden="true">Σύρε για όλους τους οδηγούς →</p>'
         + '<div class="tyre-pace-chart-scroll" data-horizontal-chart-scroll><div class="tyre-pace-chart-shell" style="min-width:' + chartMinWidth + 'px;">'
-        + '<div class="tyre-pace-axis"><span class="tyre-pace-axis-title">Χρόνος γύρου (δ.)</span><div class="tyre-pace-axis-layer">';
+        + '<div class="tyre-pace-axis"><span class="tyre-pace-axis-title">Χρόνος γύρου (s)</span><div class="tyre-pace-axis-layer">';
 
     axisValues.forEach(function(value) {
         const top = getTyrePaceAxisFraction(value, data.minTime, data.maxTime) * 100;
@@ -570,21 +563,7 @@ function renderTyrePace(data, session) {
     html += '</div></div></div></div><p class="tyre-pace-footnote">Πηγή: OpenF1. Οι γόμες αντιστοιχίζονται από τα διαστήματα των stint σε κάθε έγκυρο γύρο αγώνα.</p></div>';
 
     setTrustedHtml(tyrePaceTable, html, 'tyre pace report template');
-    watchChartOverflow(tyrePaceTable.querySelector('.tyre-pace-chart-scroll'));
     fireRendered();
-}
-
-// Presentation only: flag the scroller while columns are hidden to the right,
-// so CSS can show the edge fade and the swipe hint.
-function watchChartOverflow(scroller) {
-    if (!scroller) return;
-    const update = function () {
-        const hiddenRight = scroller.scrollWidth - scroller.clientWidth - scroller.scrollLeft > 4;
-        scroller.classList.toggle('is-overflowing', hiddenRight);
-    };
-    scroller.addEventListener('scroll', update, { passive: true });
-    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(update).observe(scroller);
-    update();
 }
 
 function showTyrePaceError() {

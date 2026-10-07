@@ -160,19 +160,71 @@
     // ── Reading Progress Bar (article pages only) ─
     var progressBar = document.getElementById('reading-progress');
 
-    function initLegalTocCue() {
-        var toc = document.querySelector('.legal-toc');
-        if (!toc) return;
-        var update = function () {
-            var remaining = toc.scrollWidth - toc.clientWidth - toc.scrollLeft;
-            toc.classList.toggle('has-overflow', toc.scrollWidth > toc.clientWidth + 1);
-            toc.classList.toggle('at-end', remaining <= 1);
-        };
-        toc.addEventListener('scroll', update, { passive: true });
-        window.addEventListener('resize', update);
-        update();
+    function initHorizontalScrollCues() {
+        var selector = '.tyre-pace-chart-scroll, .quali-race-chart-scroll, #category-strip, #author-strip, .legal-toc';
+        var regions = new Map();
+        var nextId = 0;
+        function scan() {
+            regions.forEach(function (state, scroller) {
+                if (!scroller.isConnected) {
+                    if (state.observer) state.observer.disconnect();
+                    regions.delete(scroller);
+                }
+            });
+            document.querySelectorAll(selector).forEach(function (scroller) {
+                if (regions.has(scroller)) { regions.get(scroller).update(); return; }
+                var label = scroller.matches('.tyre-pace-chart-scroll') ? 'οδηγούς'
+                    : scroller.matches('.quali-race-chart-scroll') ? 'ομάδες'
+                    : scroller.id === 'category-strip' ? 'θέματα'
+                    : scroller.id === 'author-strip' ? 'συντάκτες' : 'ενότητες';
+                var wrapper = document.createElement('div');
+                wrapper.className = 'horizontal-scroll-region' + (scroller.matches('.legal-toc') ? ' legal-scroll-region' : '');
+                scroller.parentNode.insertBefore(wrapper, scroller);
+                var cue = document.createElement('div');
+                cue.className = 'horizontal-scroll-cue';
+                var description = document.createElement('span');
+                description.id = 'horizontal-scroll-hint-' + (++nextId);
+                description.textContent = 'Σύρε για ' + (label === 'οδηγούς' || label === 'συντάκτες' ? 'όλους τους ' : label === 'θέματα' ? 'όλα τα ' : 'όλες τις ') + label;
+                cue.appendChild(description);
+                var buttons = [-1, 1].map(function (direction) {
+                    var button = document.createElement('button');
+                    button.type = 'button';
+                    button.textContent = direction < 0 ? '←' : '→';
+                    button.setAttribute('aria-label', 'Κύλιση ' + (direction < 0 ? 'αριστερά' : 'δεξιά') + ': ' + label);
+                    button.addEventListener('click', function () {
+                        scroller.scrollBy({ left: direction * Math.max(140, scroller.clientWidth * .75), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+                    });
+                    cue.appendChild(button);
+                    return button;
+                });
+                wrapper.appendChild(cue);
+                wrapper.appendChild(scroller);
+                scroller.classList.add('horizontal-scroll-content');
+                scroller.setAttribute('aria-describedby', ((scroller.getAttribute('aria-describedby') || '') + ' ' + description.id).trim());
+                if (!scroller.matches('nav')) {
+                    scroller.tabIndex = 0;
+                    scroller.setAttribute('role', 'region');
+                    scroller.setAttribute('aria-label', 'Οριζόντια κύλιση: ' + label);
+                }
+                var update = function () {
+                    var maximum = scroller.scrollWidth - scroller.clientWidth;
+                    cue.hidden = maximum <= 2 || !scroller.clientWidth;
+                    buttons[0].disabled = scroller.scrollLeft <= 2;
+                    buttons[1].disabled = scroller.scrollLeft >= maximum - 2;
+                };
+                scroller.addEventListener('scroll', update, { passive: true });
+                var observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : null;
+                if (observer) { observer.observe(scroller); if (scroller.firstElementChild) observer.observe(scroller.firstElementChild); }
+                regions.set(scroller, { update: update, observer: observer });
+                update();
+            });
+        }
+        scan();
+        new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
+        window.addEventListener('resize', scan);
+        if (document.fonts) document.fonts.ready.then(scan);
     }
-    initLegalTocCue();
+    initHorizontalScrollCues();
     var articleEl = progressBar ? document.querySelector('.article-content') : null;
     var articleHeight = 0;
     var articleTop = 0;

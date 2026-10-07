@@ -96,16 +96,20 @@ function setupBetCastFrameBridge(articleContent, doc, win) {
     };
 }
 
-// Sizes /standings/ embeds (?embed=1) to their real content height. The embed posts
-// `f1s-standings:resize`; same-origin only, since embeds are for f1stories.gr articles.
-function setupStandingsFrameBridge(articleContent, doc, win) {
+// Size approved standings and telemetry embeds to their reported content height.
+// Validate the originating frame, application URL, message shape and height.
+function setupDataFrameBridge(articleContent, doc, win, kind) {
     if (!articleContent || !doc || !win) return () => {};
     const frameUrl = src => {
         try {
             const url = new URL(src, win.location.href);
             const sameSite = url.origin === 'https://f1stories.gr' || url.origin === win.location.origin;
             const embed = url.searchParams.get('embed');
-            if (!sameSite || !url.pathname.startsWith('/standings/') || embed == null
+            const allowed = kind === 'telemetry'
+                ? ((sameSite && url.pathname === '/telemetry/')
+                    || ((sameSite || url.origin === 'https://georgiosbalatzis.github.io') && url.pathname === '/f1-telemetry-dashboard/'))
+                : sameSite && url.pathname.startsWith('/standings/');
+            if (!allowed || url.username || url.password || embed == null
                 || ['0', 'false', 'no', 'off'].includes(embed.toLowerCase())) return null;
             return url;
         } catch (_) { return null; }
@@ -118,7 +122,7 @@ function setupStandingsFrameBridge(articleContent, doc, win) {
         state.timers.forEach(timer => win.clearTimeout(timer));
         state.timers = [];
     };
-    const requestMeasurement = state => post(state, 'f1s-standings:measure');
+    const requestMeasurement = state => post(state, `f1s-${kind}:measure`);
     const startMeasuring = state => {
         clearRetries(state);
         requestMeasurement(state);
@@ -128,7 +132,7 @@ function setupStandingsFrameBridge(articleContent, doc, win) {
         if (!frame || !frame.contentWindow || frames.has(frame.contentWindow)) return;
         const url = frameUrl(frame.getAttribute('src') || frame.src);
         if (!url) return;
-        frame.dataset.f1sStandingsManaged = 'true';
+        frame.dataset[kind === 'telemetry' ? 'f1sTelemetryManaged' : 'f1sStandingsManaged'] = 'true';
         const state = { frame, url, timers: [] };
         frames.set(frame.contentWindow, state);
         frame.addEventListener('load', () => startMeasuring(state));
@@ -140,10 +144,10 @@ function setupStandingsFrameBridge(articleContent, doc, win) {
         const data = event.data;
         if (!data || typeof data !== 'object' || Array.isArray(data)) return;
         const keys = Object.keys(data).sort().join(',');
-        if (data.type !== 'f1s-standings:resize' || keys !== 'height,type' || typeof data.height !== 'number'
+        if (data.type !== `f1s-${kind}:resize` || keys !== 'height,type' || typeof data.height !== 'number'
             || !Number.isInteger(data.height) || data.height < 100 || data.height > 12000) return;
         clearRetries(state);
-        state.frame.dataset.f1sStandingsReady = 'true';
+        state.frame.dataset[kind === 'telemetry' ? 'f1sTelemetryReady' : 'f1sStandingsReady'] = 'true';
         state.frame.setAttribute('scrolling', 'no');
         state.frame.style.height = `${data.height}px`;
         state.frame.style.removeProperty('min-height');
@@ -165,6 +169,14 @@ function setupStandingsFrameBridge(articleContent, doc, win) {
         observer?.disconnect();
         frames.forEach(clearRetries);
     };
+}
+
+function setupStandingsFrameBridge(articleContent, doc, win) {
+    return setupDataFrameBridge(articleContent, doc, win, 'standings');
+}
+
+function setupTelemetryFrameBridge(articleContent, doc, win) {
+    return setupDataFrameBridge(articleContent, doc, win, 'telemetry');
 }
 
 function setupBetCastWidgets(articleContent, doc, win) {
@@ -337,7 +349,7 @@ function setupTelemetryFigures(articleContent, doc, win) {
     };
 }
 
-if (typeof module !== 'undefined' && module.exports) module.exports = { setupBetCastFrameBridge, setupStandingsFrameBridge, setupBetCastWidgets, setupTelemetryFigures };
+if (typeof module !== 'undefined' && module.exports) module.exports = { setupBetCastFrameBridge, setupStandingsFrameBridge, setupTelemetryFrameBridge, setupBetCastWidgets, setupTelemetryFigures };
 
 if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded', function () {
     const $ = sel => document.querySelector(sel);
@@ -780,7 +792,16 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
             const nextBtn = carousel.querySelector('.gallery-carousel-next');
             const counter = carousel.querySelector('.gallery-carousel-counter');
 
+            if (slides.length <= 1) {
+                carousel.querySelectorAll('.gallery-carousel-prev, .gallery-carousel-next, .gallery-carousel-counter, .gallery-carousel-thumbs').forEach(function (control) { control.remove(); });
+                carousel.removeAttribute('tabindex');
+                carousel.removeAttribute('aria-roledescription');
+                return;
+            }
+
             if (!slides.length || !prevBtn || !nextBtn || !counter) return;
+            prevBtn.setAttribute('aria-label', 'Προηγούμενη φωτογραφία');
+            nextBtn.setAttribute('aria-label', 'Επόμενη φωτογραφία');
 
             let current = Math.max(0, Array.from(slides).findIndex(slide => slide.classList.contains('active')));
 
@@ -1019,6 +1040,7 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
     setupArticleMiniBar();
     setupBetCastFrameBridge(articleContent, document, window);
     setupStandingsFrameBridge(articleContent, document, window);
+    setupTelemetryFrameBridge(articleContent, document, window);
     setupBetCastWidgets(articleContent, document, window);
     setupTelemetryFigures(articleContent, document, window);
     markAuthoredSectionNumbers();

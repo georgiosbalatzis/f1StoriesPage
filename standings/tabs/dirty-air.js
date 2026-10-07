@@ -8,7 +8,7 @@
 // onSessionChange once via initDirtyAir(), and syncs deep links through
 // getSelectedSession() / setSelectedSession().
 
-import { esc } from '../core/format.js';
+import { esc, formatEditorialDate, sessionLabel } from '../core/format.js';
 import { getCanonicalTeamColor, getCanonicalTeamName } from '../core/teams.js';
 import {
     fetchJSON,
@@ -208,18 +208,12 @@ function isCompletedSession(session) {
 
 function getSessionLabel(session) {
     const meeting = session.meeting_name || session.country_name || session.location || 'Session';
-    const sessionName = session.session_name || session.session_type || 'Qualifying';
+    const sessionName = sessionLabel(session.session_name || session.session_type || 'Qualifying');
     return meeting + ' · ' + sessionName;
 }
 
 function formatSessionDateShort(session) {
-    const value = session && (session.date_start || session.date || session.date_end);
-    const date = value ? new Date(value) : null;
-    if (!date || isNaN(date.getTime())) return '';
-    return date.toLocaleDateString('el-GR', {
-        day: 'numeric',
-        month: 'short'
-    }).replace(/\./g, '');
+    return formatEditorialDate(session && (session.date_start || session.date || session.date_end));
 }
 
 function getCompletedRaceSessions() {
@@ -1148,7 +1142,7 @@ function renderDirtyAir(sessionData, session) {
     if (!hasRenderableDirtyAirRows(sessionData)) {
         setTrustedHtml(dirtyAirTable, '<div class="dirty-air-card">'
             + '<div class="dirty-air-head"><div class="dirty-air-head-copy"><h3 class="dirty-air-head-title">Ανάλυση εγγύτητας Dirty Air</h3><p class="dirty-air-head-note">Καθαρός αέρας σημαίνει ότι δεν υπάρχει μονοθέσιο μπροστά μέσα σε 4.0s στο ίδιο minisector. Τα backmarkers που ετοιμάζονται να δεχτούν γύρο υπολογίζονται κανονικά ως κίνηση.</p></div><label class="dirty-air-controls"><span class="dirty-air-controls-label">Διαθέσιμοι αγώνες</span><select class="dirty-air-select" data-dirty-air-select aria-label="Επιλογή αγώνα για την ανάλυση Dirty Air">' + sessionOptions + '</select></label></div>'
-            + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || 'Αγώνας')) + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Οδηγοί</span><span class="dirty-air-summary-value">0</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Minisectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div></div></div>'
+            + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + sessionLabel(session.session_name || 'Αγώνας')) + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Οδηγοί</span><span class="dirty-air-summary-value">0</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Minisectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div></div></div>'
             + '<div class="dirty-air-empty-card">'
             + '<svg class="icon" aria-hidden="true"><use href="#fa-wind"/></svg>'
             + '<p>Δεν υπάρχουν ακόμη αρκετά δείγματα τηλεμετρίας για τον συγκεκριμένο αγώνα.</p>'
@@ -1234,7 +1228,7 @@ function renderDirtyAir(sessionData, session) {
 
     const html = '<div class="dirty-air-card">'
         + '<div class="dirty-air-head"><div class="dirty-air-head-copy"><h3 class="dirty-air-head-title">Ανάλυση εγγύτητας Dirty Air</h3><p class="dirty-air-head-note">Καθαρός αέρας σημαίνει ότι δεν υπάρχει μονοθέσιο μπροστά μέσα σε 4.0s στο ίδιο minisector. Τα backmarkers που ετοιμάζονται να δεχτούν γύρο υπολογίζονται κανονικά ως κίνηση.</p></div><label class="dirty-air-controls"><span class="dirty-air-controls-label">Διαθέσιμοι αγώνες</span><select class="dirty-air-select" data-dirty-air-select aria-label="Επιλογή αγώνα για την ανάλυση Dirty Air">' + sessionOptions + '</select></label></div>'
-        + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + (session.session_name || 'Αγώνας') + ' · ' + sessionData.maxLaps + ' γύροι') + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Οδηγοί</span><span class="dirty-air-summary-value">' + esc(String(sessionData.rows.length)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Minisectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Περίοδοι SC</span><span class="dirty-air-summary-value">' + esc(String((sessionData.safetyCarSpans || []).length)) + '</span></div></div></div>'
+        + '<div class="dirty-air-summary"><div><div class="dirty-air-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="dirty-air-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + sessionLabel(session.session_name || 'Αγώνας') + ' · ' + sessionData.maxLaps + ' γύροι') + '</div></div><div class="dirty-air-summary-stats"><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Οδηγοί</span><span class="dirty-air-summary-value">' + esc(String(sessionData.rows.length)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Minisectors</span><span class="dirty-air-summary-value">' + esc(String(DIRTY_AIR_MINISECTORS)) + '</span></div><div class="dirty-air-summary-stat"><span class="dirty-air-summary-label">Περίοδοι SC</span><span class="dirty-air-summary-value">' + esc(String((sessionData.safetyCarSpans || []).length)) + '</span></div></div></div>'
         + '<div class="dirty-air-legend">' + legendHTML + '</div>'
         + viewSwitchHTML
         + '<div class="dirty-air-view-panel' + (activeView === 'summary' ? ' active' : '') + '" data-dirty-air-panel="summary"><section class="dirty-air-section"><div class="dirty-air-section-head"><div><h4 class="dirty-air-section-title">Ποσοστό αγώνα ανά απόσταση</h4><p class="dirty-air-section-note">Ποσοστό των έγκυρων minisectors αγώνα που δαπανήθηκαν σε κάθε κατηγορία κίνησης.</p></div></div><div class="dirty-air-summary-list">' + summaryRowsHTML + '</div></section></div>'
