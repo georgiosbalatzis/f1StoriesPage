@@ -43,7 +43,6 @@ const AUTHOR_TOOL_FILES = new Set([
     'scripts/author/github-client.js',
     'scripts/author/housekeeping-page.js',
     'scripts/author/image-tools.js',
-    'scripts/author/media-policy.js',
     'scripts/author/session-token.js',
     'styles/author/generate.css',
     'styles/author/housekeeping.css'

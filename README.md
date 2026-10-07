@@ -373,12 +373,12 @@ npm run build:blog:force    # ξαναχτίζει όλα τα άρθρα που
 
 ### 6.2 Παραλλαγές εικόνων
 
-Το `blog-module/generate-image-variants.js` συμπληρώνει τις παραλλαγές που λείπουν:
+Το `blog-module/generate-image-variants.js` συμπληρώνει τις παραλλαγές που χρησιμοποιούνται από τα άρθρα, τις κάρτες και τα τέσσερα νεότερα άρθρα της αρχικής σελίδας. Διαβάζει τις τρέχουσες επιλογές εικόνων από το `blog-source-cache.json`, ώστε μια αλλαγή στην αρχική ή στην εικόνα κάρτας να δημιουργεί όσα αρχεία χρειάζονται. Στα άρθρα χωρίς source διατηρεί τις υπάρχουσες αναφορές εικόνων αντί να δημιουργεί παραλλαγές που δεν προβάλλονται. Τα αρχικά αριθμημένα WebP διατηρούνται για μελλοντικές αλλαγές και rebuilds.
 
 ```bash
 node blog-module/generate-image-variants.js                  # dry run, δείχνει μόνο τι θα γίνει
 node blog-module/generate-image-variants.js --run            # τις δημιουργεί
-node blog-module/generate-image-variants.js --run --force    # τις ξαναδημιουργεί όλες
+node blog-module/generate-image-variants.js --run --force    # ξαναδημιουργεί τις παραλλαγές που χρησιμοποιούνται
 ```
 
 | Παραλλαγή | Πλάτος | Χρήση |
@@ -433,7 +433,7 @@ npm run test:blog
 
 ### 8.1 Runtime
 
-Η σελίδα `/standings/` δουλεύει με ES modules. Το `standings.js` είναι το κύριο module. Τα κοινά modules είναι στο `standings/core/`. Κάθε tab είναι ξεχωριστό module στο `standings/tabs/` και φορτώνει με `import()` την πρώτη φορά που ανοίγει το tab. Το ίδιο ισχύει και για το CSS κάθε tab. Το `standings-nomodule.js` είναι fallback για browsers χωρίς υποστήριξη modules.
+Η σελίδα `/standings/` δουλεύει με ES modules. Το `standings.js` είναι το κύριο module. Τα κοινά modules είναι στο `standings/core/`. Κάθε tab είναι ξεχωριστό module στο `standings/tabs/` και φορτώνει με `import()` την πρώτη φορά που ανοίγει το tab. Το ίδιο ισχύει και για το CSS κάθε tab.
 
 | Tab | Module | Δεδομένα |
 |---|---|---|
