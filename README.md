@@ -697,7 +697,7 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 
 ### 13.3 Site Maintenance (`publish-blog.yml`)
 
-Κάνει τρεις ανεξάρτητες εργασίες, με ένα job για την καθεμία, και στο τέλος deploy.
+Κάνει build του blog και ανανεώνει YouTube/standings. Τα jobs συλλογής δεδομένων παραδίδουν τις αλλαγές σε ξεχωριστό job δημοσίευσης, και στο τέλος γίνεται deploy.
 
 **Triggers και schedule** (οι ώρες του cron είναι σε UTC):
 
@@ -723,11 +723,12 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 **Jobs:**
 
 - **`publish_blog`**: checkout του `main` με πλήρες ιστορικό και επαναφορά των git mtimes. Κάθε αρχείο του `blog-entries/` παίρνει ως `mtime` την ώρα του τελευταίου commit που το άλλαξε. Το checkout δίνει σε όλα τα αρχεία την ίδια ώρα, οπότε χωρίς αυτό το βήμα ο incremental έλεγχος θα παρέλειπε άρθρα που άλλαξαν. Μετά `node blog-module/blog-processor.js` και `commit-and-push` με `chore(blog): auto-build generated artifacts [skip ci]`.
-- **`refresh_youtube`**: `node scripts/build/fetch-youtube.mjs` και `commit-and-push` του `assets/youtube-latest.json` ως `chore(data): refresh youtube snapshot [skip ci]`.
-- **`refresh_standings_data`**: `npm run build:standings-data` και `commit-and-push` των τεσσάρων `standings/*-cache.json` ως `chore(data): refresh standings snapshots [skip ci]`.
+- **`refresh_youtube`**: read-only checkout και `node scripts/build/fetch-youtube.mjs`, χωρίς να κρατά το lock δημοσίευσης άρθρων. Παράγει Git patch μόνο για το `assets/youtube-latest.json` και το `images/youtube/`, μαζί με προσθήκες και διαγραφές εικόνων.
+- **`refresh_standings_data`**: read-only checkout και `npm run build:standings-data`, επίσης χωρίς το lock άρθρων. Το patch περιλαμβάνει τα `standings/*-cache.json`, `standings/dirty-air/` και `standings/rounds/`, μαζί με διαγραμμένα snapshots.
+- **`publish_data`**: τρέχει μόνο όταν ένα refresh ολοκληρωθεί επιτυχώς με αλλαγές. Κατεβάζει το patch artifact (διατηρείται μία ημέρα) μέσω του μοναδικού ID του, κάνει νέο checkout του τρέχοντος `main` με πλήρες ιστορικό και εφαρμόζει `git apply --3way --index`. Έτσι διατηρεί άρθρα που δημοσιεύθηκαν όσο έτρεχε το fetch. Αν τα ίδια δεδομένα έχουν αλλάξει ασύμβατα στο μεταξύ, αποτυγχάνει πριν από το commit/push. Χρησιμοποιεί το `commit-and-push` με τα υπάρχοντα `chore(data): ... [skip ci]` μηνύματα, χωρίς Node setup ή `npm ci`.
 - **`deploy`**: καλεί το `deploy-pages.yml` μία φορά μετά από επιτυχημένο main push, ακόμη κι αν δεν χρειάστηκε νέο generated commit. Για scheduled, χειροκίνητες και reusable εργασίες συντήρησης, καλείται μόνο αν κάποιο content job έκανε πραγματικό push.
 
-Και τα τρία jobs είναι στο concurrency group `content-publishing`, και τα runs τους μπαίνουν σε ουρά. Έτσι δεν γράφουν ποτέ ταυτόχρονα στο `main`, ακόμα και όταν τα καλεί το Publish Article.
+Μόνο τα `publish_blog` και `publish_data` είναι στο κοινό concurrency group `content-publishing`. Τα fetch jobs έχουν ανεξάρτητα groups (`youtube-fetch`, `standings-fetch`), ώστε ένα αργό API να μη δεσμεύει την ουρά άρθρων. Το lock των δεδομένων καλύπτει μόνο checkout, εφαρμογή patch και commit/push. Η συνολική διάρκεια του fetch παραμένει ίδια και προστίθεται ένα σύντομο publishing job· το όφελος είναι η μικρότερη αναμονή των άρθρων. Αν δεν αλλάξουν δεδομένα, δεν ανεβαίνει artifact και παραλείπονται το publishing και το deploy.
 
 ### 13.4 Deploy Pages (`deploy-pages.yml`)
 

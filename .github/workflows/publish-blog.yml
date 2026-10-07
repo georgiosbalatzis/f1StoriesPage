@@ -42,9 +42,9 @@ on:
           - standings
           - youtube
 
-# Granted per job. The three content jobs push generated commits to main; the
-# write token is handed to the push step only (persist-credentials: false), so
-# npm ci and the build never see it in .git/config.
+# Fetch jobs are read-only and do not hold the article publishing lock.
+# publish_blog and publish_data serialize their commits to main; the write
+# token is handed to the push step only (persist-credentials: false).
 permissions: {}
 
 jobs:
@@ -159,18 +159,20 @@ jobs:
   refresh_youtube:
     name: Refresh YouTube snapshot
     permissions:
-      contents: write
+      contents: read
     if: >-
       ${{
         contains(fromJSON('["59 20 * * 6", "59 21 * * 6"]'), github.event.schedule) ||
         inputs.task == 'youtube'
       }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     concurrency:
-      group: content-publishing
+      group: youtube-fetch
       queue: max
     outputs:
-      changed: ${{ steps.commit.outputs.changed }}
+      patch: ${{ steps.patch.outputs.changed }}
+      artifact: ${{ steps.snapshot.outputs.artifact-id }}
     steps:
       - name: Check Athens schedule window
         id: schedule_window
@@ -201,7 +203,6 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
-          fetch-depth: 0
           persist-credentials: false
 
       - if: ${{ steps.schedule_window.outputs.run == 'true' }}
@@ -211,33 +212,46 @@ jobs:
         if: ${{ steps.schedule_window.outputs.run == 'true' }}
         run: node scripts/build/fetch-youtube.mjs
 
-      - name: Commit updated snapshot
-        id: commit
+      - name: Prepare YouTube patch
+        id: patch
         if: ${{ steps.schedule_window.outputs.run == 'true' }}
-        uses: ./.github/actions/commit-and-push
+        run: |
+          set -eu
+          git add -- assets/youtube-latest.json images/youtube
+          git diff --cached --binary --full-index > "$RUNNER_TEMP/maintenance.patch"
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload YouTube patch
+        id: snapshot
+        if: ${{ steps.patch.outputs.changed == 'true' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          message: 'chore(data): refresh youtube snapshot [skip ci]'
-          # The homepage ON AIR panel self-hosts the newest episodes' frames.
-          paths: >-
-            assets/youtube-latest.json
-            images/youtube
-          token: ${{ github.token }}
+          name: youtube-refresh-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/maintenance.patch
+          retention-days: 1
+          if-no-files-found: error
 
   refresh_standings_data:
     name: Refresh standings data
     permissions:
-      contents: write
+      contents: read
     if: >-
       ${{
         (github.event_name == 'schedule' && !contains(fromJSON('["59 20 * * 6", "59 21 * * 6"]'), github.event.schedule)) ||
         inputs.task == 'standings'
       }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     concurrency:
-      group: content-publishing
+      group: standings-fetch
       queue: max
     outputs:
-      changed: ${{ steps.commit.outputs.changed }}
+      patch: ${{ steps.patch.outputs.changed }}
+      artifact: ${{ steps.snapshot.outputs.artifact-id }}
     steps:
       - name: Check Athens schedule window
         id: schedule_window
@@ -270,7 +284,6 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
-          fetch-depth: 0
           persist-credentials: false
 
       - if: ${{ steps.schedule_window.outputs.run == 'true' }}
@@ -280,23 +293,87 @@ jobs:
         if: ${{ steps.schedule_window.outputs.run == 'true' }}
         run: npm run build:standings-data
 
-      - name: Commit updated standings data
-        id: commit
+      - name: Prepare standings patch
+        id: patch
         if: ${{ steps.schedule_window.outputs.run == 'true' }}
+        run: |
+          set -eu
+          git add -- standings/standings-cache.json standings/dirty-air-cache.json standings/dirty-air standings/rounds standings/debrief-cache.json
+          git diff --cached --binary --full-index > "$RUNNER_TEMP/maintenance.patch"
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload standings patch
+        id: snapshot
+        if: ${{ steps.patch.outputs.changed == 'true' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: standings-refresh-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/maintenance.patch
+          retention-days: 1
+          if-no-files-found: error
+
+  publish_data:
+    name: Commit refreshed data
+    needs: [refresh_youtube, refresh_standings_data]
+    if: >-
+      ${{
+        !cancelled() &&
+        (
+          (needs.refresh_youtube.result == 'success' && needs.refresh_youtube.outputs.patch == 'true') ||
+          (needs.refresh_standings_data.result == 'success' && needs.refresh_standings_data.outputs.patch == 'true')
+        )
+      }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    concurrency:
+      group: content-publishing
+      queue: max
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          # Three-way application needs the patch's original blobs if main moved.
+          fetch-depth: 0
+          persist-credentials: false
+
+      # Each schedule/manual task refreshes exactly one data source. The artifact
+      # ID also works when only a failed publishing job is rerun later.
+      - name: Download snapshot patch
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          artifact-ids: ${{ needs.refresh_youtube.outputs.artifact || needs.refresh_standings_data.outputs.artifact }}
+          path: ${{ runner.temp }}/maintenance
+          merge-multiple: true
+
+      - name: Apply snapshot patch
+        env:
+          PATCH: ${{ runner.temp }}/maintenance/maintenance.patch
+        run: |
+          set -eu
+          # Merge data against current main instead of copying a stale checkout.
+          # A conflicting data update fails this job before anything is pushed.
+          git apply --3way --index "$PATCH"
+
+      - name: Commit refreshed data
+        id: commit
         uses: ./.github/actions/commit-and-push
         with:
-          message: 'chore(data): refresh standings snapshots [skip ci]'
-          paths: >-
-            standings/standings-cache.json
-            standings/dirty-air-cache.json
-            standings/dirty-air
-            standings/rounds
-            standings/debrief-cache.json
+          message: >-
+            ${{ needs.refresh_youtube.outputs.patch == 'true' && 'chore(data): refresh youtube snapshot [skip ci]' || 'chore(data): refresh standings snapshots [skip ci]' }}
           token: ${{ github.token }}
 
   deploy:
     name: Deploy site once
-    needs: [changes, publish_blog, refresh_youtube, refresh_standings_data]
+    needs: [changes, publish_blog, publish_data]
     if: >-
       ${{
         !cancelled() &&
@@ -307,8 +384,7 @@ jobs:
             (needs.publish_blog.result == 'success' || needs.publish_blog.result == 'skipped')
           ) ||
           needs.publish_blog.outputs.changed == 'true' ||
-          needs.refresh_youtube.outputs.changed == 'true' ||
-          needs.refresh_standings_data.outputs.changed == 'true'
+          needs.publish_data.outputs.changed == 'true'
         )
       }}
     permissions:
