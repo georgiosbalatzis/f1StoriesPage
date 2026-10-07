@@ -400,5 +400,6 @@ test('legacy headers keep comma-separated detail tags even when phrases contain 
     const taxonomy = getPostTaxonomy(metadata);
     assert.ok(taxonomy.tags.includes('Lewis Hamilton'));
     assert.ok(taxonomy.tags.includes('Ferrari F1'));
-    assert.ok(taxonomy.categories.includes('2026'));
+    assert.deepEqual(taxonomy.categories, ['News']); // "2026" is only a tag; with no real category the post is News
+    assert.ok(taxonomy.tags.includes('2026'));
 });

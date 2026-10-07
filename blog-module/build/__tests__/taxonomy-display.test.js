@@ -5,7 +5,6 @@ const { categoryLabel, authorLabel, formatDate, formatReadingTime } = require('.
 test('category labels are Greek and fall back to the canonical value', () => {
     assert.equal(categoryLabel('News'), 'Ειδήσεις');
     assert.equal(categoryLabel('Technical'), 'Τεχνικά');
-    assert.equal(categoryLabel('2026'), '2026');
     assert.equal(categoryLabel('Unknown'), 'Unknown');
 });
 

@@ -29,7 +29,7 @@ assert.equal(
 const compact = {
     v: 2,
     a: ['F1 Stories Team', 'Georgios Balatzis'],
-    c: ['Analysis', '2026', 'Technical'],
+    c: ['Analysis', 'Opinion', 'Technical'],
     t: ['Lewis Hamilton', 'Ferrari F1', 'Strategy'],
     p: [
         ['20260623G', 'Race title', 1, '2026-06-23', 848, 400, 'Excerpt', '3 min', [0, 1], [0, 1]],
@@ -44,7 +44,7 @@ assert.equal(expanded[0].author, 'Georgios Balatzis');
 assert.equal(expanded[0].tag, undefined, 'The first public category is not a tag');
 assert.equal(expanded[0].category, 'Analysis');
 assert.equal(expanded[0].tags.join(','), 'Lewis Hamilton,Ferrari F1');
-assert.equal(expanded[0].categories.join(','), 'Analysis,2026');
+assert.equal(expanded[0].categories.join(','), 'Analysis,Opinion');
 assert.equal(expanded[0].imageWidth, 848);
 assert.equal(expanded[0].url, '/blog-module/blog-entries/20260623G/article.html');
 assert.equal(expanded[1].imageWidth, 400);
@@ -72,12 +72,12 @@ assert.equal(filtered.length, 1);
 assert.equal(filtered[0].id, '20260623G');
 assert.equal(articleIndex.filterPosts(expanded, { query: 'missing' }).length, 0);
 assert.equal(articleIndex.filterPosts(expanded, { query: 'Ferrari F1' }).length, 1);
-assert.equal(articleIndex.filterPosts(expanded, { category: '2026' }).length, 1);
+assert.equal(articleIndex.filterPosts(expanded, { category: 'Opinion' }).length, 1);
 assert.equal(articleIndex.filterPosts(expanded, { tag: 'Analysis' }).length, 0);
 
 const options = articleIndex.collectFilterOptions(expanded);
 assert.equal(options.tags.join(','), 'Ferrari F1,Lewis Hamilton,Strategy');
-assert.equal(options.categories.join(','), 'Analysis,Technical,2026');
+assert.equal(options.categories.join(','), 'Analysis,Technical,Opinion');
 assert.equal(options.authors.join(','), 'F1 Stories Team,Georgios Balatzis');
 
 const noTags = articleIndex.expandCompactPosts({ v: 2, c: ['News'], p: [['id', 'Title', 0, '', 0, 0, '', '', [0]]] });

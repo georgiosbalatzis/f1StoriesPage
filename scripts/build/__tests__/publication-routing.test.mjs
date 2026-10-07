@@ -35,6 +35,9 @@ test('push routing detects mixed changes, deletions and renames without overlook
         { files: [{ filename: 'blog-module/build/index.js' }], blog: true },
         { files: [{ filename: 'blog-module/build/publish-order.js' }], blog: true },
         { files: [{ filename: 'blog-module/build/__tests__/publish-order.test.js' }], blog: false },
+        // The category vocabulary shapes every card, filter and article masthead.
+        { files: [{ filename: 'blog-module/taxonomy.js' }], blog: true },
+        { files: [{ filename: 'blog-module/taxonomy.min.js' }], blog: false },
         { files: [{ filename: '.github/workflows/publish-blog.yml' }], blog: true },
         { files: Array.from({ length: 300 }, (_, i) => ({ filename: `docs/${i}.md` })), blog: true },
         { files: [], apiFailure: true, blog: true },

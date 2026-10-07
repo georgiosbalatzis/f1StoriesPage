@@ -27,7 +27,7 @@ function encodePathSegment(value) {
 // block, so readers can tell what kind of piece they are in.
 const EDITORIAL_LABELS = Object.freeze({
     Technical: 'ΤΕΧΝΙΚΟ ΔΕΛΤΙΟ', Analysis: 'ΑΝΑΛΥΣΗ ΑΓΩΝΑ', History: 'ΑΠΟ ΤΟ ΑΡΧΕΙΟ', Opinion: 'ΣΗΜΕΙΩΜΑ ΓΝΩΜΗΣ',
-    Betting: 'BETCAST NOTE', Drivers: 'ΠΡΟΣΩΠΟ ΤΟΥ GRID', Teams: 'ΟΜΑΔΑ ΣΤΟ GRID', News: 'ΡΕΠΟΡΤΑΖ', '2026': 'ΣΕΖΟΝ 2026'
+    Betting: 'BETCAST NOTE', Drivers: 'ΠΡΟΣΩΠΟ ΤΟΥ GRID', Teams: 'ΟΜΑΔΑ ΣΤΟ GRID', News: 'ΡΕΠΟΡΤΑΖ'
 });
 
 function authorProfileHref(name) {

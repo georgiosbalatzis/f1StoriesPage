@@ -7,9 +7,9 @@ const taxonomy = require('../../taxonomy');
 const { PUBLIC_CATEGORIES, LEGACY_CATEGORY_OVERRIDES, normalizeTags, normalizeCategories, isPublicCategory, getPostTaxonomy } = taxonomy;
 
 test('public vocabulary is fixed, ordered and immutable; legacy aliases never become public labels', () => {
-    assert.deepEqual(PUBLIC_CATEGORIES, ['News', 'Analysis', 'Technical', 'History', 'Opinion', 'Betting', 'Drivers', 'Teams', '2026']);
+    assert.deepEqual(PUBLIC_CATEGORIES, ['News', 'Analysis', 'Technical', 'History', 'Opinion', 'Betting', 'Drivers', 'Teams']);
     assert.ok(Object.isFrozen(PUBLIC_CATEGORIES));
-    assert.deepEqual(normalizeCategories(['2026', 'Driver', 'Tech', 'Race-Analysis', 'bet', 'Historical', 'unknown', 'technical']), ['Analysis', 'Technical', 'History', 'Betting', 'Drivers', '2026']);
+    assert.deepEqual(normalizeCategories(['2026', 'Driver', 'Tech', 'Race-Analysis', 'bet', 'Historical', 'unknown', 'technical']), ['Analysis', 'Technical', 'History', 'Betting', 'Drivers']);
     assert.deepEqual(normalizeCategories('Racing,F1,Grand-Prix,random,2025,Ferrari'), []);
     assert.equal(isPublicCategory('History'), true);
     assert.equal(isPublicCategory('Historical'), false);
@@ -25,7 +25,7 @@ test('tag normalization splits damaged delimiters, preserves names, deduplicates
 
 test('both malformed public examples migrate into one clean category and retained detail tags', () => {
     assert.deepEqual(getPostTaxonomy({ tag: 'F1', category: 'Racing,-2026,-Lewis-Hamilton,-Ferrari-F1' }), {
-        category: '2026', categories: ['2026'], tags: ['F1', 'Racing', 'Lewis Hamilton', 'Ferrari F1']
+        category: 'News', categories: ['News'], tags: ['F1', 'Racing', '2026', 'Lewis Hamilton', 'Ferrari F1']
     });
     assert.deepEqual(getPostTaxonomy({ tag: 'F1', category: 'Racing,-70ς,-History,-F1-Legends' }), {
         category: 'History', categories: ['History'], tags: ['F1', 'Racing', '70ς', 'F1 Legends']
@@ -42,7 +42,20 @@ test('legacy specific categories beat generic F1/Racing and aliases keep useful 
     assert.deepEqual(getPostTaxonomy({ tag: 'Drivers', category: 'Head2Head' }).categories, ['Analysis', 'Drivers']);
     assert.deepEqual(getPostTaxonomy({ tag: 'F1', category: 'Audi,-Cadillac' }).categories, ['Teams']);
     assert.deepEqual(getPostTaxonomy({ tag: 'F1', category: 'Racing,-Ferrari,-Lewis-Hamilton' }).categories, ['News']);
-    assert.deepEqual(getPostTaxonomy({ tag: 'F1', category: 'Racing,-2026-season' }).categories, ['2026']);
+    assert.deepEqual(getPostTaxonomy({ tag: 'F1', category: 'Racing,-2026-season' }).categories, ['News']);
+});
+
+test('2026 is not a category: it falls to News, never displaces a real category, and stays a plain tag', () => {
+    assert.equal(isPublicCategory('2026'), false);
+    assert.deepEqual(normalizeCategories(['2026', '2026 season', 'season 2026', 'f1 2026']), []);
+    // Marked only with 2026 (as a category, an alias or a legacy header): News.
+    assert.deepEqual(getPostTaxonomy({ category: '2026' }), { category: 'News', categories: ['News'], tags: ['2026'] });
+    assert.deepEqual(getPostTaxonomy({ category: '2026 season', tags: 'Sepang' }).categories, ['News']);
+    // Already built posts that still carry the old value migrate the same way on the next build.
+    assert.deepEqual(getPostTaxonomy({ category: '2026', categories: ['2026'], tags: ['Sepang'] }).categories, ['News']);
+    // A real category beside it stays; only 2026 is dropped.
+    assert.deepEqual(getPostTaxonomy({ category: 'Racing,-Drivers,-2026' }), { category: 'Drivers', categories: ['Drivers'], tags: ['Racing', '2026'] });
+    assert.deepEqual(getPostTaxonomy({ category: 'Technical', categories: ['Technical', '2026'] }).categories, ['Technical']);
 });
 
 test('modern categories are authoritative and explicit internal tags stay internal', () => {

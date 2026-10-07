@@ -7,7 +7,7 @@
     'use strict';
 
     const PUBLIC_CATEGORIES = Object.freeze([
-        'News', 'Analysis', 'Technical', 'History', 'Opinion', 'Betting', 'Drivers', 'Teams', '2026'
+        'News', 'Analysis', 'Technical', 'History', 'Opinion', 'Betting', 'Drivers', 'Teams'
     ]);
     const aliases = Object.freeze({
         news: 'News', 'race news': 'News', 'f1 news': 'News',
@@ -18,8 +18,7 @@
         'racing legend': 'History', 'racing legends': 'History', 'le mans legends': 'History', 'wrc legend': 'History', 'mclaren history': 'History',
         opinion: 'Opinion', opinions: 'Opinion', editorial: 'Opinion', commentary: 'Opinion',
         betting: 'Betting', bet: 'Betting', betcast: 'Betting', 'bet cast': 'Betting',
-        drivers: 'Drivers', driver: 'Drivers', teams: 'Teams', team: 'Teams',
-        '2026': '2026', '2026 season': '2026', 'season 2026': '2026', '2026 championship': '2026', 'f1 2026': '2026'
+        drivers: 'Drivers', driver: 'Drivers', teams: 'Teams', team: 'Teams'
     });
     const legacyTeams = new Set([
         'ferrari', 'redbull', 'red bull', 'mclaren', 'mercedes', 'audi', 'cadillac',
@@ -46,7 +45,7 @@
     // only the text a reader sees is Greek.
     const CATEGORY_LABELS = Object.freeze({
         News: 'Ειδήσεις', Analysis: 'Ανάλυση', Technical: 'Τεχνικά', History: 'Ιστορία', Opinion: 'Άποψη',
-        Betting: 'Στοίχημα', Drivers: 'Οδηγοί', Teams: 'Ομάδες', '2026': '2026'
+        Betting: 'Στοίχημα', Drivers: 'Οδηγοί', Teams: 'Ομάδες'
     });
     // The writers, in directory order: the one source for names, folder codes,
     // portraits, the short editorial profile and the stories /authors/ features (build,
@@ -115,7 +114,7 @@
     // One kind per public category: the class/data value that carries its signal colour.
     const CATEGORY_KINDS = Object.freeze({
         News: 'news', Analysis: 'analysis', Technical: 'technical', History: 'history', Opinion: 'opinion',
-        Betting: 'betting', Drivers: 'drivers', Teams: 'teams', '2026': 'season'
+        Betting: 'betting', Drivers: 'drivers', Teams: 'teams'
     });
     // Fixed month tables keep build (Node ICU) and browser output identical.
     const MONTHS_SHORT = ['Ιαν', 'Φεβ', 'Μαρ', 'Απρ', 'Μαΐ', 'Ιουν', 'Ιουλ', 'Αυγ', 'Σεπ', 'Οκτ', 'Νοε', 'Δεκ'];
