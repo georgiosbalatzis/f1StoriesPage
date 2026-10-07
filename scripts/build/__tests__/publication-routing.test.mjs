@@ -61,6 +61,7 @@ test('deployment waits for regeneration, survives skipped jobs and stops on push
     const needs = {
         changes: { result: 'success', outputs: { blog: 'true' } },
         publish_blog: { result: 'success', outputs: { changed: 'true' } },
+        publish_data: { result: 'skipped', outputs: {} },
         refresh_youtube: { result: 'skipped', outputs: {} },
         refresh_standings_data: { result: 'skipped', outputs: {} }
     };
@@ -85,6 +86,7 @@ test('automatic, scheduled and manual publishers deploy only changed maintenance
     const needs = {
         changes: { result: 'skipped', outputs: {} },
         publish_blog: { result: 'success', outputs: { changed: 'true' } },
+        publish_data: { result: 'skipped', outputs: {} },
         refresh_youtube: { result: 'skipped', outputs: {} },
         refresh_standings_data: { result: 'skipped', outputs: {} }
     };
@@ -97,10 +99,31 @@ test('automatic, scheduled and manual publishers deploy only changed maintenance
     }
     needs.publish_blog = { result: 'skipped', outputs: {} };
     assert.equal(condition('publish_blog', { event_name: 'schedule' }, needs), false);
-    needs.refresh_standings_data = { result: 'success', outputs: { changed: 'true' } };
+    needs.publish_data = { result: 'success', outputs: { changed: 'true' } };
     assert.equal(condition('deploy', { event_name: 'schedule' }, needs), true);
-    needs.refresh_standings_data.outputs.changed = 'false';
+    needs.publish_data.outputs.changed = 'false';
     assert.equal(condition('deploy', { event_name: 'schedule' }, needs), false);
-    needs.refresh_youtube = { result: 'success', outputs: { changed: 'true' } };
+    needs.publish_data.outputs.changed = 'true';
     assert.equal(condition('deploy', { event_name: 'workflow_dispatch' }, needs), true);
+});
+
+test('fetch jobs cannot deploy data before its publishing job has pushed it', () => {
+    const needs = {
+        changes: { result: 'skipped', outputs: {} },
+        publish_blog: { result: 'skipped', outputs: {} },
+        publish_data: { result: 'skipped', outputs: {} },
+        refresh_youtube: { result: 'skipped', outputs: {} },
+        refresh_standings_data: { result: 'success', outputs: { patch: 'true' } }
+    };
+    assert.equal(condition('publish_data', { event_name: 'schedule' }, needs), true);
+    assert.equal(condition('deploy', { event_name: 'schedule' }, needs), false);
+    needs.publish_data = { result: 'failure', outputs: {} };
+    assert.equal(condition('deploy', { event_name: 'schedule' }, needs), false);
+    needs.refresh_standings_data.result = 'failure';
+    assert.equal(condition('publish_data', { event_name: 'schedule' }, needs), false);
+    needs.refresh_standings_data = { result: 'success', outputs: { patch: 'false' } };
+    assert.equal(condition('publish_data', { event_name: 'schedule' }, needs), false);
+    needs.refresh_youtube = { result: 'success', outputs: { patch: 'true' } };
+    assert.equal(condition('publish_data', { event_name: 'workflow_dispatch' }, needs), true);
+    assert.equal(condition('publish_data', { event_name: 'workflow_dispatch' }, needs, {}, true), false);
 });
