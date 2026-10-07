@@ -56,10 +56,6 @@ function isInteger(value) {
     return Number.isInteger(value);
 }
 
-function isFiniteNumber(value) {
-    return typeof value === 'number' && Number.isFinite(value);
-}
-
 function isIsoDate(value) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ''))) return false;
     const parsed = new Date(`${value}T12:00:00Z`);
@@ -146,16 +142,6 @@ function requireInteger(obj, key, label, options = {}) {
         if (options.max != null) assertCondition(value <= options.max, label, `${key} must be <= ${options.max}`);
     }
     return isInteger(value) ? value : 0;
-}
-
-function requireNumber(obj, key, label, options = {}) {
-    const value = obj ? obj[key] : undefined;
-    assertCondition(isFiniteNumber(value), label, `${key} must be a finite number`);
-    if (isFiniteNumber(value)) {
-        if (options.min != null) assertCondition(value >= options.min, label, `${key} must be >= ${options.min}`);
-        if (options.max != null) assertCondition(value <= options.max, label, `${key} must be <= ${options.max}`);
-    }
-    return isFiniteNumber(value) ? value : 0;
 }
 
 function validateFileSize(relPath) {

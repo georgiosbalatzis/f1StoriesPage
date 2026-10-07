@@ -166,14 +166,11 @@
     }
 
     function setActiveTab(tabName) {
-        tabs.forEach(function (tab, index) {
+        tabs.forEach(function (tab) {
             var isActive = tab.getAttribute('data-tab') === tabName;
             tab.classList.toggle('active', isActive);
             tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
             tab.setAttribute('tabindex', isActive ? '0' : '-1');
-            if (index === 0 && !tab.hasAttribute('tabindex')) {
-                tab.setAttribute('tabindex', isActive ? '0' : '-1');
-            }
         });
 
         panels.forEach(function (panel) {
@@ -182,13 +179,7 @@
             panel.hidden = !isActive;
         });
 
-        document.dispatchEvent(new CustomEvent('homepage:latest-panel-change', {
-            detail: { tab: tabName }
-        }));
-
-        if (tabName === 'articles') {
-            document.dispatchEvent(new CustomEvent('homepage:articles-tab-open'));
-        } else if (tabName === 'videos') {
+        if (tabName === 'videos') {
             maybeLoadVideos(true);
         }
     }

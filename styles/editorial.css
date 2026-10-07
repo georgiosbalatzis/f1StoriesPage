@@ -673,7 +673,6 @@ body.editorial-page :is(.page-btn, .share-btn, .retry-btn, .gallery-carousel-pre
     cursor: not-allowed;
 }
 body.editorial-page .cookie-header h3, body.editorial-page .cookie-banner a { color: var(--accent); }
-body.editorial-page .reading-progress-bar { background: var(--signal); }
 body.editorial-page .blog-nav :focus-visible { outline-color: var(--ink); }
 @media (max-width: 1199px) { body.editorial-page .container { padding-inline: 32px; } }
 @media (max-width: 767px) { body.editorial-page .container { padding-inline: 22px; } }
@@ -764,7 +763,6 @@ body.editorial-page :is(.blog-nav-hamburger, .theme-toggle-nav-btn) { min-width:
 }
 .editorial-page .sponsor-logo::before,
 .editorial-page .sponsor-logo::after { content: none; }
-.editorial-page .sponsor-logo__relation { display: none; }
 .editorial-page .sponsor-logo img {
     display: block;
     width: 100%;

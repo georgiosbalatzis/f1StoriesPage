@@ -606,7 +606,6 @@ body.editorial-page .scroll-to-top-btn.is-suppressed.visible,
 }
 
 /* ── Hide old navbar if present ───────────────── */
-.theme-toggle-container { display: none !important; }
 header > .navbar { display: none !important; }
 
 @media (max-width: 767px) {

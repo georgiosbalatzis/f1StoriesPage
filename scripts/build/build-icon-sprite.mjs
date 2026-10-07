@@ -39,17 +39,6 @@ const OUT_PATH = path.join(REPO_ROOT, 'images', 'icons', 'sprite.svg');
 // Map `fa<prefix>` class → FA svgs subdir.
 const PREFIX_DIR = { fas: 'solid', fab: 'brands', far: 'regular', fa: 'solid' };
 
-// Source files to scan. Deliberately narrow: no node_modules, no generated
-// article HTML (those will be re-generated in Phase 3c via blog-processor.js).
-const SCAN_GLOBS = [
-    '*.html',
-    'blog-module/**/*.html',
-    'privacy/**/*.html',
-    'standings/**/*.html',
-    'scripts/**/*.js',
-    'blog-module/*.js',
-    'standings/*.js'
-];
 // Scanned *for icon usage*. blog-entries/ is included because Phase 3c will
 // regenerate those articles against this same sprite — capturing icons only
 // used inside article bodies now (e.g. fa-spotify, fa-calendar, fa-folder)

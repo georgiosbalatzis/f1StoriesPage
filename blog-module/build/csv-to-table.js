@@ -1,5 +1,5 @@
 const { fs, path, CONFIG, escapeHtmlAttribute } = require('./shared');
-const { decodeHtmlEntities, htmlToPlainText } = require('./metadata');
+const { htmlToPlainText } = require('./metadata');
 
 function parseCSVRow(row) {
     const cells = [];

@@ -40,7 +40,6 @@ const state = {
 };
 
 let debriefTooltip = null;
-let debriefTooltipTarget = null;
 let onRendered = null;
 // The last full report render: revisiting the tab with the same snapshot, round and view keeps
 // this DOM instead of rebuilding it (the rebuild cost several dropped frames on mobile).
@@ -382,7 +381,6 @@ function ensureDebriefTooltip() {
 function hideDebriefTooltip() {
     if (!debriefTooltip) return;
     debriefTooltip.classList.remove('is-active');
-    debriefTooltipTarget = null;
 }
 
 function showDebriefTooltip(target, clientX, clientY) {
@@ -395,7 +393,6 @@ function showDebriefTooltip(target, clientX, clientY) {
         return;
     }
 
-    debriefTooltipTarget = target;
     tooltip.textContent = String(text).replace(/ \| /g, '\n');
     tooltip.classList.add('is-active');
     tooltip.style.left = '0px';

@@ -83,11 +83,6 @@ export function getCanonicalTeamName(teamName) {
     return teamId && TEAMS[teamId] ? TEAMS[teamId].name : (teamName || '');
 }
 
-export function getTeamColor(constructorId) {
-    const t = TEAMS[constructorId];
-    return t ? t.color : '41B6E6';
-}
-
 export function getTeamLogo(constructorId, teamName) {
     const teamId = resolveTeamId(constructorId, teamName);
     const t = teamId ? TEAMS[teamId] : null;

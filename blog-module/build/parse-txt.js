@@ -9,14 +9,6 @@ const {
 const { buildResponsiveDocTable, processDocumentTables, processEmbeddedCSV } = require('./csv-to-table');
 const { formatInline } = require('../inline-markup');
 
-function escapeHtml(text) {
-    return String(text || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-}
-
 // **bold**, *italic* and [link text](https://example.com); shared with the author preview.
 function inlineFormat(text) {
     return formatInline(text);

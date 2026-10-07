@@ -62,10 +62,6 @@ export function renderTrustedHtml(target, html, reason, afterRender) {
     if (typeof afterRender === 'function') afterRender();
 }
 
-export function renderLoading(target, options, reason) {
-    renderTrustedHtml(target, loadingCardHTML(options), reason || 'standings loading state');
-}
-
 export function renderMessage(target, options, reason, afterRender) {
     renderTrustedHtml(target, messageCardHTML(options), reason || 'standings message state', afterRender);
 }

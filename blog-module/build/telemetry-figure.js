@@ -191,8 +191,6 @@ function renderTelemetryFigure(basename, entryPath) {
     const { images: _images, ...interactiveData } = bundle;
     fs.writeFileSync(path.join(directory, dataName), JSON.stringify(interactiveData), 'utf8');
     const dataPath = assetBase + dataName;
-    const narrow = bundle.images.narrowLight;
-    const wide = bundle.images.wideLight;
     const linkBase = process.env.TELEMETRY_BASE_URL || 'https://f1stories.gr/telemetry/';
     let url;
     try { url = new URL(linkBase); } catch (_) { fail(filePath, 'TELEMETRY_BASE_URL is not a URL'); }
