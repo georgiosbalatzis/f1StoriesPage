@@ -43,6 +43,7 @@ jobs:
     needs: build
     if: ${{ !cancelled() && (needs.build.result == 'success' || (inputs.artifact_ready && needs.build.result == 'skipped')) }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       pages: write
       id-token: write

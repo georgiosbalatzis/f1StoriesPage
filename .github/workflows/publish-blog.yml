@@ -9,19 +9,16 @@ name: Site Maintenance
 
 on:
   schedule:
-    # YouTube snapshot: Saturday 23:59 Europe/Athens. GitHub cron is UTC, so both
-    # EET and EEST offsets are scheduled and the job keeps the matching one.
-    - cron: '59 20 * * 6'
-    - cron: '59 21 * * 6'
+    # Local Athens schedules follow daylight saving time automatically.
+    # YouTube snapshot: Saturday 23:59.
+    - cron: '59 23 * * 6'
+      timezone: Europe/Athens
     # Standings refresh: Friday 23:59, Saturday 07:01 and Monday 07:01 Europe/Athens
-    # (after practice, after qualifying, after the race). GitHub cron is UTC, so
-    # both EET and EEST offsets are scheduled and the job keeps the matching one.
-    - cron: '59 20 * * 5'
-    - cron: '59 21 * * 5'
-    - cron: '1 4 * * 6'
-    - cron: '1 5 * * 6'
-    - cron: '1 4 * * 1'
-    - cron: '1 5 * * 1'
+    # (after practice, after qualifying, after the race).
+    - cron: '59 23 * * 5'
+      timezone: Europe/Athens
+    - cron: '1 7 * * 1,6'
+      timezone: Europe/Athens
   push:
     branches: [main]
   workflow_call:
@@ -96,6 +93,7 @@ jobs:
         )
       }}
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     concurrency:
       group: content-publishing
       queue: max
@@ -174,7 +172,7 @@ jobs:
       contents: read
     if: >-
       ${{
-        contains(fromJSON('["59 20 * * 6", "59 21 * * 6"]'), github.event.schedule) ||
+        (github.event_name == 'schedule' && github.event.schedule == '59 23 * * 6') ||
         inputs.task == 'youtube'
       }}
     runs-on: ubuntu-latest
@@ -186,47 +184,19 @@ jobs:
       patch: ${{ steps.patch.outputs.changed }}
       artifact: ${{ steps.snapshot.outputs.artifact-id }}
     steps:
-      - name: Check Athens schedule window
-        id: schedule_window
-        shell: bash
-        env:
-          SCHEDULE: ${{ github.event.schedule }}
-        run: |
-          set -eu
-          if [ -z "$SCHEDULE" ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          # Same cron-slot rule as the standings job: keep only the Saturday 23:59
-          # Athens slot that matches today's UTC offset.
-          offset_hours=$((10#$(TZ=Europe/Athens date +%z | cut -c2-3)))
-          read -r _ cron_hour _ <<< "$SCHEDULE"
-          athens_hour=$(( (10#$cron_hour + offset_hours) % 24 ))
-          should_run=false
-          if [ "$athens_hour" = "23" ]; then
-            should_run=true
-          fi
-
-          echo "Schedule '$SCHEDULE' → Athens hour $athens_hour (UTC+$offset_hours), run=$should_run"
-          echo "run=$should_run" >> "$GITHUB_OUTPUT"
-
       - name: Checkout main
-        if: ${{ steps.schedule_window.outputs.run == 'true' }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
           persist-credentials: false
 
-      - if: ${{ steps.schedule_window.outputs.run == 'true' }}
-        uses: ./.github/actions/setup
+      - uses: ./.github/actions/setup
 
       - name: Refresh YouTube snapshot
-        if: ${{ steps.schedule_window.outputs.run == 'true' }}
         run: node scripts/build/fetch-youtube.mjs
 
       - name: Prepare YouTube patch
         id: patch
-        if: ${{ steps.schedule_window.outputs.run == 'true' }}
         run: |
           set -eu
           git add -- assets/youtube-latest.json images/youtube
@@ -253,7 +223,7 @@ jobs:
       contents: read
     if: >-
       ${{
-        (github.event_name == 'schedule' && !contains(fromJSON('["59 20 * * 6", "59 21 * * 6"]'), github.event.schedule)) ||
+        (github.event_name == 'schedule' && contains(fromJSON('["59 23 * * 5", "1 7 * * 1,6"]'), github.event.schedule)) ||
         inputs.task == 'standings'
       }}
     runs-on: ubuntu-latest
@@ -265,49 +235,19 @@ jobs:
       patch: ${{ steps.patch.outputs.changed }}
       artifact: ${{ steps.snapshot.outputs.artifact-id }}
     steps:
-      - name: Check Athens schedule window
-        id: schedule_window
-        shell: bash
-        env:
-          SCHEDULE: ${{ github.event.schedule }}
-        run: |
-          set -eu
-          if [ -z "$SCHEDULE" ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          # Decide from the cron slot that fired, not the wall clock: GitHub often
-          # starts scheduled runs hours late, and a wall-clock window then skips
-          # every refresh. Each Athens slot (Fri 23:59, Sat/Mon 07:01) is scheduled for
-          # both UTC offsets; only the slot matching today's offset runs.
-          offset_hours=$((10#$(TZ=Europe/Athens date +%z | cut -c2-3)))
-          read -r _ cron_hour _ <<< "$SCHEDULE"
-          athens_hour=$(( (10#$cron_hour + offset_hours) % 24 ))
-          should_run=false
-          if [ "$athens_hour" = "23" ] || [ "$athens_hour" = "7" ]; then
-            should_run=true
-          fi
-
-          echo "Schedule '$SCHEDULE' → Athens hour $athens_hour (UTC+$offset_hours), run=$should_run"
-          echo "run=$should_run" >> "$GITHUB_OUTPUT"
-
       - name: Checkout main
-        if: ${{ steps.schedule_window.outputs.run == 'true' }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
           persist-credentials: false
 
-      - if: ${{ steps.schedule_window.outputs.run == 'true' }}
-        uses: ./.github/actions/setup
+      - uses: ./.github/actions/setup
 
       - name: Refresh standings data
-        if: ${{ steps.schedule_window.outputs.run == 'true' }}
         run: npm run build:standings-data
 
       - name: Prepare standings patch
         id: patch
-        if: ${{ steps.schedule_window.outputs.run == 'true' }}
         run: |
           set -eu
           git add -- standings/standings-cache.json standings/dirty-air-cache.json standings/dirty-air standings/rounds standings/debrief-cache.json
