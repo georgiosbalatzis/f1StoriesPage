@@ -53,6 +53,7 @@ function main() {
     assertPattern(DEPLOY_WORKFLOW, workflow, /\bid-token:\s*write\b/, 'Pages deploy must declare id-token: write permission');
     assertPattern(DEPLOY_WORKFLOW, workflow, /\bworkflow_call:\s*$/m, 'Pages deploy must remain reusable by publishing workflows');
     assertNoPattern(DEPLOY_WORKFLOW, workflow, /\bworkflow_run:\s*$/m, 'Pages deploy must not fan out from completed workflows');
+    assertNoPattern(DEPLOY_WORKFLOW, workflow, /^  push:\s*$/m, 'main pushes must deploy through maintenance, not a second Pages run');
 
     const articleWorkflow = readText(ARTICLE_PUBLISH_WORKFLOW);
     // Article publishing reaches the Pages deploy through the reusable maintenance workflow.
@@ -61,6 +62,7 @@ function main() {
     assertNoPattern(ARTICLE_PUBLISH_WORKFLOW, articleWorkflow, /gh\s+workflow\s+run\s+["']?Deploy Pages/i, 'article publishing must not dispatch a second Pages workflow run');
 
     const maintenanceWorkflow = readText(MAINTENANCE_WORKFLOW);
+    assertPattern(MAINTENANCE_WORKFLOW, maintenanceWorkflow, /^  push:\s*\n\s+branches:\s*\[main\]/m, 'maintenance must own main pushes');
     assertPattern(MAINTENANCE_WORKFLOW, maintenanceWorkflow, /uses:\s*\.\/\.github\/workflows\/deploy-pages\.yml\b/, 'maintenance must call the reusable Pages deploy in the same run');
     assertPattern(MAINTENANCE_WORKFLOW, maintenanceWorkflow, /outputs:\s*\n\s+changed:/, 'maintenance jobs must expose whether they committed a change');
 

@@ -1,8 +1,9 @@
 name: Site Maintenance
 
 # Owns generated content maintenance: blog artifacts, standings data, and the YouTube snapshot.
-# Scheduled jobs are split by cron through job-level conditions. Push events
-# only run the blog publisher for article changes. Publish Article calls this
+# Scheduled jobs are split by cron through job-level conditions. This is the
+# sole main-push entry point: regenerate blog content when needed, then deploy once.
+# Publish Article calls this
 # workflow with task=blog after merging an author PR.
 # The blog build is offline; the standings job is the only one that fetches F1 data.
 
@@ -23,11 +24,6 @@ on:
     - cron: '1 5 * * 1'
   push:
     branches: [main]
-    paths:
-      - 'blog-module/blog-entries/**'
-      - 'blog-module/blog-processor.js'
-      - 'blog-module/blog/template.html'
-      - '.github/workflows/publish-blog.yml'
   workflow_call:
     inputs:
       task:
@@ -52,14 +48,51 @@ on:
 permissions: {}
 
 jobs:
+  changes:
+    name: Route main push
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      blog: ${{ steps.paths.outputs.blog }}
+    steps:
+      - name: Detect blog changes
+        id: paths
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          set -eu
+          # A new branch or unavailable/truncated comparison conservatively rebuilds.
+          blog=true
+          if [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
+            if gh api "repos/$REPO/compare/$BEFORE...$AFTER" > comparison.json; then
+              blog="$(jq -r '
+                (.files | length) >= 300 or
+                any(.files[];
+                  [.filename, (.previous_filename // "")]
+                  | any(test("^(blog-module/blog-entries/|blog-module/blog-processor\\.js$|blog-module/blog/template\\.html$|\\.github/workflows/publish-blog\\.yml$)"))
+                )' comparison.json)"
+            fi
+          fi
+          echo "blog=$blog" >> "$GITHUB_OUTPUT"
+
   publish_blog:
     name: Publish blog artifacts
+    needs: changes
     permissions:
       contents: write
     if: >-
       ${{
-        github.event_name == 'push' ||
-        inputs.task == 'blog'
+        !cancelled() &&
+        (
+          (github.event_name == 'push' && needs.changes.outputs.blog == 'true') ||
+          inputs.task == 'blog'
+        )
       }}
     runs-on: ubuntu-latest
     concurrency:
@@ -262,12 +295,17 @@ jobs:
           token: ${{ github.token }}
 
   deploy:
-    name: Deploy changed maintenance content
-    needs: [publish_blog, refresh_youtube, refresh_standings_data]
+    name: Deploy site once
+    needs: [changes, publish_blog, refresh_youtube, refresh_standings_data]
     if: >-
       ${{
-        always() &&
+        !cancelled() &&
         (
+          (
+            github.event_name == 'push' &&
+            needs.changes.result == 'success' &&
+            (needs.publish_blog.result == 'success' || needs.publish_blog.result == 'skipped')
+          ) ||
           needs.publish_blog.outputs.changed == 'true' ||
           needs.refresh_youtube.outputs.changed == 'true' ||
           needs.refresh_standings_data.outputs.changed == 'true'

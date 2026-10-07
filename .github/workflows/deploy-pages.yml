@@ -2,14 +2,7 @@ name: Deploy Pages
 
 on:
   workflow_call:
-  push:
-    branches: [main]
-    # Exactly the Site Maintenance push paths: it rebuilds the blog and deploys itself.
-    paths-ignore:
-      - 'blog-module/blog-entries/**'
-      - 'blog-module/blog-processor.js'
-      - 'blog-module/blog/template.html'
-      - '.github/workflows/publish-blog.yml'
+  # Site Maintenance owns main pushes, including mixed content/code changes.
   workflow_dispatch:
 
 # Granted per job: only the deploy job can publish Pages or mint an OIDC token.
@@ -39,6 +32,15 @@ jobs:
       - name: Read assembly mode
         id: assembly
         run: node -e 'const fs = require("node:fs"); const c = require("./scripts/deployment/sources.json"); fs.appendFileSync(process.env.GITHUB_OUTPUT, "enabled=" + c.enabled + "\n");'
+
+      - name: Reuse optimized article images
+        if: steps.assembly.outputs.enabled != 'true'
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .build/public-images
+          key: public-images-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/build/public-article-images.mjs') }}-${{ hashFiles('package-lock.json', 'blog-module/blog-entries/**/*.webp', 'blog-module/blog-entries/**/*.avif') }}
+          restore-keys: |
+            public-images-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/build/public-article-images.mjs') }}-
 
       - name: Build public artifact
         if: steps.assembly.outputs.enabled != 'true'

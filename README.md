@@ -627,19 +627,19 @@ npm run build:public
 
 ## 13. GitHub Actions
 
-Υπάρχουν πέντε workflows στο `.github/workflows/`:
+Η δημοσίευση χρησιμοποιεί τα παρακάτω workflows στο `.github/workflows/`:
 
 | Αρχείο | Όνομα | Πότε τρέχει | Τι κάνει |
 |---|---|---|---|
 | `quality.yml` | **Site Quality** | PR προς `main`, χειροκίνητα | Build και έλεγχοι, μόνο με ανάγνωση. Δεν κάνει deploy. |
 | `auto-publish-author-pr.yml` | **Publish Article** | Όταν ολοκληρωθεί το Site Quality σε branch `author/**` | Έλεγχος και merge του PR του συντάκτη, μετά κλήση του Site Maintenance (`task: blog`). |
 | `scheduled-publish.yml` | **Scheduled Publish** | Κάθε μέρα 09:00 και 18:00 ώρα Αθήνας, χειροκίνητα | Merge των PR `author/scheduled/**` των οποίων η ώρα πέρασε, μετά κλήση του Site Maintenance (`task: blog`). |
-| `publish-blog.yml` | **Site Maintenance** | Schedule, push σε άρθρα, χειροκίνητα, κλήση από το Publish Article | Build του blog, ανανέωση YouTube, ανανέωση standings, deploy αν άλλαξε κάτι. |
-| `deploy-pages.yml` | **Deploy Pages** | Push στο `main`, χειροκίνητα, κλήση από άλλο workflow | `build:public`, έλεγχοι, upload και deploy στο GitHub Pages. |
+| `publish-blog.yml` | **Site Maintenance** | Schedule, κάθε push στο `main`, χειροκίνητα, κλήση από το Publish Article | Build του blog όταν χρειάζεται, ανανέωση YouTube/standings, μία κλήση deploy ανά push. |
+| `deploy-pages.yml` | **Deploy Pages** | Χειροκίνητα, κλήση από άλλο workflow | `build:public` με επαναχρησιμοποίηση εικόνων, έλεγχοι, upload και deploy στο GitHub Pages. |
 
 Τα κοινά βήματα βρίσκονται σε δύο composite actions στο `.github/actions/`:
 
-- **`setup`**: `actions/setup-node@v5` με Node 22 και npm cache, και μετά `npm ci --no-audit --no-fund`. Το χρησιμοποιούν όλα τα jobs. Η έκδοση του Node αλλάζει μόνο εδώ.
+- **`setup`**: `actions/setup-node@v7` με Node 22, χωρίς npm cache, και μετά `npm ci --no-audit --no-fund`. Το χρησιμοποιούν τα build jobs. Η cache των βελτιστοποιημένων εικόνων είναι ξεχωριστή.
 - **`commit-and-push`**: ορίζει την ταυτότητα του commit, κάνει stage τα `paths` (προεπιλογή `-A`) και commit με το `message`, και κάνει push στο `main`. Αν το push χάσει race με άλλο publisher, κάνει `fetch` και `rebase` και ξαναδοκιμάζει έως 3 φορές. Επιστρέφει `changed=true` μόνο όταν έγινε push.
 
 Όλα τα jobs τρέχουν σε `ubuntu-latest`.
@@ -714,11 +714,9 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 
 Επιπλέον:
 
-- **`push` στο `main`** που αλλάζει κάποιο από τα:
-  - `blog-module/blog-entries/**`, `blog-processor.js`, `blog/template.html`,
-  - το ίδιο το workflow.
+- **Κάθε `push` στο `main`** περνά από το `changes`, που συγκρίνει το προηγούμενο και το νέο commit μέσω GitHub API. Το `publish_blog` τρέχει όταν αλλάζουν τα `blog-module/blog-entries/**`, `blog-processor.js`, `blog/template.html` ή το ίδιο το workflow. Ελέγχονται και τα προηγούμενα ονόματα μετονομασμένων αρχείων. Αν η σύγκριση λείπει ή φτάνει το όριο των 300 αρχείων, γίνεται συντηρητικά rebuild του blog.
 
-  Αυτό τρέχει μόνο το `publish_blog`.
+  Το deploy περιμένει το rebuild, αν χρειάζεται, και καλείται μία φορά. Έτσι ένα push που αλλάζει μαζί άρθρα και κώδικα δεν ξεκινά δύο deployments. Αν το routing ή το rebuild αποτύχει, το push δεν κάνει deploy.
 - **`workflow_dispatch`** με επιλογή `task`: `blog`, `standings` ή `youtube`.
 - **`workflow_call`** με input `task`. Το χρησιμοποιεί το Publish Article με `task: blog`.
 
@@ -729,7 +727,7 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 - **`publish_blog`**: checkout του `main` με πλήρες ιστορικό και επαναφορά των git mtimes. Κάθε αρχείο του `blog-entries/` παίρνει ως `mtime` την ώρα του τελευταίου commit που το άλλαξε. Το checkout δίνει σε όλα τα αρχεία την ίδια ώρα, οπότε χωρίς αυτό το βήμα ο incremental έλεγχος θα παρέλειπε άρθρα που άλλαξαν. Μετά `node blog-module/blog-processor.js` και `commit-and-push` με `chore(blog): auto-build generated artifacts [skip ci]`.
 - **`refresh_youtube`**: `node scripts/build/fetch-youtube.mjs` και `commit-and-push` του `assets/youtube-latest.json` ως `chore(data): refresh youtube snapshot [skip ci]`.
 - **`refresh_standings_data`**: `npm run build:standings-data` και `commit-and-push` των τεσσάρων `standings/*-cache.json` ως `chore(data): refresh standings snapshots [skip ci]`.
-- **`deploy`**: καλεί το `deploy-pages.yml` **μόνο** αν κάποιο από τα παραπάνω jobs έκανε πραγματικό push.
+- **`deploy`**: καλεί το `deploy-pages.yml` μία φορά μετά από επιτυχημένο main push, ακόμη κι αν δεν χρειάστηκε νέο generated commit. Για scheduled, χειροκίνητες και reusable εργασίες συντήρησης, καλείται μόνο αν κάποιο content job έκανε πραγματικό push.
 
 Και τα τρία jobs είναι στο concurrency group `content-publishing`, και τα runs τους μπαίνουν σε ουρά. Έτσι δεν γράφουν ποτέ ταυτόχρονα στο `main`, ακόμα και όταν τα καλεί το Publish Article.
 
@@ -737,13 +735,18 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 
 - **Triggers:**
   - `workflow_call`, όταν το καλούν το Publish Article ή το Site Maintenance.
-  - `push` στο `main`.
   - `workflow_dispatch`.
-- **`paths-ignore` στο push:** τα ίδια paths που ενεργοποιούν το Site Maintenance. Μια αλλαγή σε άρθρο δεν κάνει deploy δύο φορές. Κάνει deploy μόνο το Site Maintenance, και μόνο αφού ξαναχτίσει το blog.
+- **Ένας υπεύθυνος για main pushes:** μόνο το Site Maintenance έχει `push` trigger. Το Deploy Pages παραμένει reusable και δεν ξεκινά ανεξάρτητο run για το ίδιο push.
 - **Δικαιώματα:** `contents: read`, `pages: write`, `id-token: write`.
 - **Concurrency:** `pages`, σε ουρά.
 - **Job `build`** (timeout 25 λεπτά): checkout του `main`, `setup`, `npm run build:public`, `npm run quality:static`, `npm run audit:runtime`, `actions/configure-pages@v6` και `actions/upload-pages-artifact@v5` με `path: dist`.
 - **Job `deploy`:** `actions/deploy-pages@v5` στο environment `github-pages`.
+
+**Επαναχρησιμοποίηση βελτιστοποιημένων εικόνων:** το `public-article-images.mjs` διατηρεί τις δημόσιες εκδόσεις στη `.build/public-images/` (gitignored). Το κλειδί κάθε εικόνας περιλαμβάνει το περιεχόμενο της πηγής, το format, τα όρια μεγέθους/πλάτους, τον κώδικα του optimizer και τις εκδόσεις των native encoders. Τα originals δεν αλλάζουν. Η ακεραιότητα της cache ελέγχεται πριν από την αντιγραφή και οι ελλιπείς ή κατεστραμμένες εγγραφές ξαναπαράγονται.
+
+Το Deploy Pages επαναφέρει και αποθηκεύει αυτή την cache μέσω `actions/cache`. Το Site Quality μόνο επαναφέρει τις εικόνες του main· τα PR jobs δεν αποθηκεύουν deployment cache. Μια αλλαγή εικόνας επαναχρησιμοποιεί τις υπόλοιπες εγγραφές από το προηγούμενο snapshot. Αν υπάρχουν oversized πηγές και η cache είναι άδεια, χρειάζονται βελτιστοποίηση. Το log του public artifact αναφέρει πόσες εικόνες επαναχρησιμοποιήθηκαν (`reused`) και πόσες κωδικοποιήθηκαν (`encoded`).
+
+Οι 59 ήδη δημοσιευμένες εικόνες που ξεπερνούσαν τα 300 KB έχουν συμπιεστεί μία φορά και οι δημόσιες εκδόσεις τους αποθηκεύονται στο repo. Έτσι το υπάρχον archive δεν χρειάζεται encoding ακόμη και με άδεια cache. Η cache παραμένει για μελλοντικές oversized εικόνες και για αλλαγές στα όρια δημοσίευσης.
 
 ### 13.5 Scheduled Publish (`scheduled-publish.yml`)
 

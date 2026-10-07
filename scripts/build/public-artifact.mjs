@@ -7,19 +7,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import sharp from 'sharp';
 import { injectSecurityMeta, securityHeadersText } from './security-policy.mjs';
+import { optimizePublicArticleImage } from './public-article-images.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DIST_ROOT = path.join(REPO_ROOT, 'dist');
 const PUBLIC_LOGO_IMAGE = 'images/icons/icon-512.png';
 const PUBLIC_IMAGE_MAX_BYTES = Number(process.env.PUBLIC_IMAGE_MAX_BYTES || 300 * 1024);
-const PUBLIC_ARTICLE_IMAGE_MAX_WIDTH = Number(process.env.PUBLIC_ARTICLE_IMAGE_MAX_WIDTH || 1600);
-const PUBLIC_IMAGE_QUALITY = {
-    avif: [52, 48, 44, 40, 36, 32, 28, 24, 20],
-    webp: [82, 78, 74, 70, 66, 62, 58, 54, 50, 46, 42, 38, 34, 30, 26]
-};
 
 const ROOT_FILES = new Set([
     '.nojekyll',
@@ -100,7 +95,7 @@ function ensureDir(dir) {
 
 function walk(absDir, visitor) {
     for (const entry of fs.readdirSync(absDir, { withFileTypes: true })) {
-        if (entry.name === '.git' || entry.name === 'node_modules' || entry.name === 'dist') continue;
+        if (entry.name === '.git' || entry.name === '.build' || entry.name === 'node_modules' || entry.name === 'dist') continue;
         const abs = path.join(absDir, entry.name);
         if (entry.isDirectory()) {
             walk(abs, visitor);
@@ -112,10 +107,6 @@ function walk(absDir, visitor) {
 
 function isOptimizedImage(relPath) {
     return /\.(?:avif|webp)$/i.test(relPath);
-}
-
-function isPublicArticleImage(relPath) {
-    return /^blog-module\/blog-entries\/[^/]+\/[^/]+\.(?:avif|webp)$/i.test(relPath);
 }
 
 function cleanPublicRef(ref) {
@@ -395,55 +386,6 @@ function rewritePublicLogoRefs(html) {
     return String(html || '').replace(/https:\/\/f1stories\.gr\/images\/logo\.png/g, `https://f1stories.gr/${PUBLIC_LOGO_IMAGE}`);
 }
 
-async function optimizePublicArticleImage(src, dest, relPath) {
-    if (!isPublicArticleImage(relPath)) return null;
-
-    const originalSize = fs.statSync(src).size;
-    if (originalSize <= PUBLIC_IMAGE_MAX_BYTES) return null;
-
-    const ext = path.extname(relPath).slice(1).toLowerCase();
-    const qualities = PUBLIC_IMAGE_QUALITY[ext];
-    if (!qualities) return null;
-
-    let best = null;
-    for (const quality of qualities) {
-        const pipeline = sharp(src)
-            .rotate()
-            .resize({
-                width: PUBLIC_ARTICLE_IMAGE_MAX_WIDTH,
-                withoutEnlargement: true
-            });
-
-        const buffer = ext === 'avif'
-            ? await pipeline.avif({ quality, effort: 6 }).toBuffer()
-            : await pipeline.webp({ quality, effort: 6 }).toBuffer();
-
-        if (!best || buffer.length < best.buffer.length) {
-            best = { buffer, quality };
-        }
-
-        if (buffer.length <= PUBLIC_IMAGE_MAX_BYTES) {
-            fs.writeFileSync(dest, buffer);
-            return {
-                relPath,
-                originalSize,
-                outputSize: buffer.length,
-                quality,
-                withinBudget: true
-            };
-        }
-    }
-
-    fs.writeFileSync(dest, best.buffer);
-    return {
-        relPath,
-        originalSize,
-        outputSize: best.buffer.length,
-        quality: best.quality,
-        withinBudget: best.buffer.length <= PUBLIC_IMAGE_MAX_BYTES
-    };
-}
-
 async function copyFile(relPath) {
     const src = path.join(REPO_ROOT, relPath);
     const dest = path.join(DIST_ROOT, relPath);
@@ -482,8 +424,9 @@ async function main() {
     const publicFiles = copied.concat(writeSecurityHeadersFile()).sort();
     const bytes = publicFiles.reduce((sum, relPath) => sum + fs.statSync(path.join(DIST_ROOT, relPath)).size, 0);
     const savings = optimizedImages.reduce((sum, image) => sum + image.originalSize - image.outputSize, 0);
+    const reused = optimizedImages.filter(image => image.cacheHit).length;
     const suffix = optimizedImages.length
-        ? `; optimized ${optimizedImages.length} article image(s), saved ${(savings / 1024 / 1024).toFixed(2)} MB`
+        ? `; optimized ${optimizedImages.length} article image(s) (${reused} reused, ${optimizedImages.length - reused} encoded), saved ${(savings / 1024 / 1024).toFixed(2)} MB`
         : '';
     console.log(`✓ public artifact: ${publicFiles.length} files, ${(bytes / 1024 / 1024).toFixed(2)} MB → dist/${suffix}`);
 

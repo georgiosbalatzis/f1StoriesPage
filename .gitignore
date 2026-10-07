@@ -13,6 +13,7 @@ nextsteps.txt
 blog-module/blog/images/
 dist/
 .build/pages/
+.build/public-images/
 
 # Node
 node_modules/
