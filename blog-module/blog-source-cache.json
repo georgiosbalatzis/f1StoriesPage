@@ -66,6 +66,35 @@
       "backgroundImageHeight": 900
     },
     {
+      "id": "20261007F",
+      "title": "Το πρώτο test της Formula 1 του 2026 έγινε στη βροχή",
+      "author": "F1 Stories Team",
+      "date": "2026-10-07",
+      "dateISO": "2026-10-07",
+      "displayDate": "7 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261007F/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261007F/1.webp",
+      "excerpt": "Το πρώτο integration test της Formula 1 του 2026 έγινε στη βροχή του Sepang Για δεκαπέντε αγώνες, το 2026 έλεγε σε γενικές γραμμές μια ιστορία που είχαμε μάθει να διαβάζουμε. Η Mercedes έβαλε τον...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261007F/article.html",
+      "category": "2026",
+      "categories": [
+        "2026"
+      ],
+      "tags": [
+        "Sepang",
+        "2026",
+        "Bahrain"
+      ],
+      "wordCount": 2056,
+      "readingTime": "11 min",
+      "imageWidth": 770,
+      "imageHeight": 513,
+      "backgroundImageWidth": 770,
+      "backgroundImageHeight": 513
+    },
+    {
       "id": "20261006G",
       "title": "Το SC τιμώρησε αυτούς που το ερμήνευσαν σωστά",
       "author": "Georgios Balatzis",
@@ -10145,5 +10174,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-07T09:28:54.285Z"
+  "lastUpdated": "2026-10-07T18:28:09.749Z"
 }
