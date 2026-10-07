@@ -1,35 +1,33 @@
 {
   "posts": [
     {
-      "id": "20261007W",
-      "title": "Χάμιλτον: Ένα βάθρο που άξιζε περισσότερο απ’ όσο δείχνει",
-      "author": "Themis Charvalis",
+      "id": "20261007F",
+      "title": "Το πρώτο test της Formula 1 του 2026 έγινε στη βροχή",
+      "author": "F1 Stories Team",
       "date": "2026-10-07",
       "dateISO": "2026-10-07",
       "displayDate": "7 Οκτωβρίου 2026",
-      "image": "/blog-module/blog-entries/20261007W/1.webp",
-      "backgroundImage": "/blog-module/blog-entries/20261007W/2.webp",
-      "excerpt": "Από την 18η θέση στην τρίτη, σε έναν αγώνα όπου ο Verstappen είχε τον πρώτο λόγο Μια τρίτη θέση συνήθως δεν χρειάζεται πολλές εξηγήσεις. Για τον Lewis Hamilton, όμως, το βάθρο στην Sepang ήταν πολύ...",
+      "image": "/blog-module/blog-entries/20261007F/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261007F/1.webp",
+      "excerpt": "Το πρώτο integration test της Formula 1 του 2026 έγινε στη βροχή του Sepang Για δεκαπέντε αγώνες, το 2026 έλεγε σε γενικές γραμμές μια ιστορία που είχαμε μάθει να διαβάζουμε. Η Mercedes έβαλε τον...",
       "sources": "",
       "comments": 0,
-      "url": "/blog-module/blog-entries/20261007W/article.html",
-      "category": "Analysis",
+      "url": "/blog-module/blog-entries/20261007F/article.html",
+      "category": "2026",
       "categories": [
-        "Analysis"
+        "2026"
       ],
       "tags": [
-        "Lewis Hamilton",
-        "Ferrari",
-        "F1",
-        "Grand Prix Bahrain",
-        "Sepang circuit"
+        "Sepang",
+        "2026",
+        "Bahrain"
       ],
-      "wordCount": 581,
-      "readingTime": "3 min",
-      "imageWidth": 1092,
-      "imageHeight": 683,
-      "backgroundImageWidth": 1350,
-      "backgroundImageHeight": 900
+      "wordCount": 2056,
+      "readingTime": "11 min",
+      "imageWidth": 770,
+      "imageHeight": 513,
+      "backgroundImageWidth": 770,
+      "backgroundImageHeight": 513
     },
     {
       "id": "20261007G",
@@ -66,33 +64,66 @@
       "backgroundImageHeight": 900
     },
     {
-      "id": "20261007F",
-      "title": "Το πρώτο test της Formula 1 του 2026 έγινε στη βροχή",
-      "author": "F1 Stories Team",
+      "id": "20261007W",
+      "title": "Χάμιλτον: Ένα βάθρο που άξιζε περισσότερο απ’ όσο δείχνει",
+      "author": "Themis Charvalis",
       "date": "2026-10-07",
       "dateISO": "2026-10-07",
       "displayDate": "7 Οκτωβρίου 2026",
-      "image": "/blog-module/blog-entries/20261007F/1.webp",
-      "backgroundImage": "/blog-module/blog-entries/20261007F/1.webp",
-      "excerpt": "Το πρώτο integration test της Formula 1 του 2026 έγινε στη βροχή του Sepang Για δεκαπέντε αγώνες, το 2026 έλεγε σε γενικές γραμμές μια ιστορία που είχαμε μάθει να διαβάζουμε. Η Mercedes έβαλε τον...",
+      "image": "/blog-module/blog-entries/20261007W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261007W/2.webp",
+      "excerpt": "Από την 18η θέση στην τρίτη, σε έναν αγώνα όπου ο Verstappen είχε τον πρώτο λόγο Μια τρίτη θέση συνήθως δεν χρειάζεται πολλές εξηγήσεις. Για τον Lewis Hamilton, όμως, το βάθρο στην Sepang ήταν πολύ...",
       "sources": "",
       "comments": 0,
-      "url": "/blog-module/blog-entries/20261007F/article.html",
-      "category": "2026",
+      "url": "/blog-module/blog-entries/20261007W/article.html",
+      "category": "Analysis",
       "categories": [
-        "2026"
+        "Analysis"
       ],
       "tags": [
-        "Sepang",
-        "2026",
-        "Bahrain"
+        "Lewis Hamilton",
+        "Ferrari",
+        "F1",
+        "Grand Prix Bahrain",
+        "Sepang circuit"
       ],
-      "wordCount": 2056,
-      "readingTime": "11 min",
-      "imageWidth": 770,
-      "imageHeight": 513,
-      "backgroundImageWidth": 770,
-      "backgroundImageHeight": 513
+      "wordCount": 581,
+      "readingTime": "3 min",
+      "imageWidth": 1092,
+      "imageHeight": 683,
+      "backgroundImageWidth": 1350,
+      "backgroundImageHeight": 900
+    },
+    {
+      "id": "20261006F",
+      "title": "Γιατί το νέο πάτωμα δεν έφερε τα δέκατα που υποσχθέθηκε",
+      "author": "F1 Stories Team",
+      "date": "2026-10-06",
+      "dateISO": "2026-10-06",
+      "displayDate": "6 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261006F/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261006F/1.webp",
+      "excerpt": "Η Mercedes πήγε στη Μαλαισία με ένα από τα πιο ουσιαστικά πακέτα αναβαθμίσεων που είχε φέρει φέτος. Το πάτωμα άλλαξε σχεδόν σε όλη του την έκταση, με νέα γεωμετρία στην οροφή του diffuser και στα...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261006F/article.html",
+      "category": "Technical",
+      "categories": [
+        "Technical"
+      ],
+      "tags": [
+        "Mercedes",
+        "2026",
+        "Bahrain",
+        "Malayisia",
+        "Sepang"
+      ],
+      "wordCount": 1740,
+      "readingTime": "9 min",
+      "imageWidth": 1200,
+      "imageHeight": 800,
+      "backgroundImageWidth": 1200,
+      "backgroundImageHeight": 800
     },
     {
       "id": "20261006G",
@@ -131,37 +162,6 @@
       "imageHeight": 1080,
       "backgroundImageWidth": 1920,
       "backgroundImageHeight": 1080
-    },
-    {
-      "id": "20261006F",
-      "title": "Γιατί το νέο πάτωμα δεν έφερε τα δέκατα που υποσχθέθηκε",
-      "author": "F1 Stories Team",
-      "date": "2026-10-06",
-      "dateISO": "2026-10-06",
-      "displayDate": "6 Οκτωβρίου 2026",
-      "image": "/blog-module/blog-entries/20261006F/1.webp",
-      "backgroundImage": "/blog-module/blog-entries/20261006F/1.webp",
-      "excerpt": "Η Mercedes πήγε στη Μαλαισία με ένα από τα πιο ουσιαστικά πακέτα αναβαθμίσεων που είχε φέρει φέτος. Το πάτωμα άλλαξε σχεδόν σε όλη του την έκταση, με νέα γεωμετρία στην οροφή του diffuser και στα...",
-      "sources": "",
-      "comments": 0,
-      "url": "/blog-module/blog-entries/20261006F/article.html",
-      "category": "Technical",
-      "categories": [
-        "Technical"
-      ],
-      "tags": [
-        "Mercedes",
-        "2026",
-        "Bahrain",
-        "Malayisia",
-        "Sepang"
-      ],
-      "wordCount": 1740,
-      "readingTime": "9 min",
-      "imageWidth": 1200,
-      "imageHeight": 800,
-      "backgroundImageWidth": 1200,
-      "backgroundImageHeight": 800
     },
     {
       "id": "20261005W",
@@ -224,6 +224,35 @@
       "backgroundImageHeight": 576
     },
     {
+      "id": "20261004J",
+      "title": "Ίσως κάτι αλλάζει στη Ferrari!",
+      "author": "Giannis Poulikidis",
+      "date": "2026-10-04",
+      "dateISO": "2026-10-04",
+      "displayDate": "4 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261004J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261004J/1.webp",
+      "excerpt": "Σε έναν αγώνα όπου η βροχή ήταν ο πρωταγωνιστής, το χάος ξεκίνησε από νωρίς και η κόκκινη σημαία βγήκε στον γύρο σχηματισμού. Τρομερό; Και όμως, πραγματικά τρομερό, αφού ένα ένα τα μονοθέσια...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261004J/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "Ferrari",
+        "Bahrain",
+        "2026"
+      ],
+      "wordCount": 525,
+      "readingTime": "3 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
+    },
+    {
       "id": "20261004W",
       "title": "Elfyn Evans: Όταν τελικά κάθε προσπάθεια αξίζει",
       "author": "Themis Charvalis",
@@ -254,29 +283,30 @@
       "backgroundImageHeight": 554
     },
     {
-      "id": "20261004J",
-      "title": "Ίσως κάτι αλλάζει στη Ferrari!",
+      "id": "20261002J",
+      "title": "BetCast #275: Το Grid είναι πιο ΑΜΦΙΡΡΟΠΟ απ' όσο περιμέναμε! | F1",
       "author": "Giannis Poulikidis",
-      "date": "2026-10-04",
-      "dateISO": "2026-10-04",
-      "displayDate": "4 Οκτωβρίου 2026",
-      "image": "/blog-module/blog-entries/20261004J/1.webp",
-      "backgroundImage": "/blog-module/blog-entries/20261004J/1.webp",
-      "excerpt": "Σε έναν αγώνα όπου η βροχή ήταν ο πρωταγωνιστής, το χάος ξεκίνησε από νωρίς και η κόκκινη σημαία βγήκε στον γύρο σχηματισμού. Τρομερό; Και όμως, πραγματικά τρομερό, αφού ένα ένα τα μονοθέσια...",
+      "date": "2026-10-02",
+      "dateISO": "2026-10-02",
+      "displayDate": "2 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261002J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261002J/1.webp",
+      "excerpt": "Σε αχαρτογράφητα νερά, με παλιά δεδομένα και το μισό grid να μην έχει τρέξει ποτέ σε αυτήν την πίστα... Λοιπόν, καλώς ήρθατε στο Sepang International Circuit. Τα πρώτα FP έδειξαν ότι υπάρχει μεγάλος...",
       "sources": "",
       "comments": 0,
-      "url": "/blog-module/blog-entries/20261004J/article.html",
-      "category": "Opinion",
+      "url": "/blog-module/blog-entries/20261002J/article.html",
+      "category": "Betting",
       "categories": [
-        "Opinion"
+        "Betting"
       ],
       "tags": [
-        "Ferrari",
+        "BetCast",
         "Bahrain",
-        "2026"
+        "Ποντάρισμα",
+        "Bet"
       ],
-      "wordCount": 525,
-      "readingTime": "3 min",
+      "wordCount": 342,
+      "readingTime": "2 min",
       "imageWidth": 1600,
       "imageHeight": 900,
       "backgroundImageWidth": 1600,
@@ -310,36 +340,6 @@
       "imageHeight": 533,
       "backgroundImageWidth": 1170,
       "backgroundImageHeight": 740
-    },
-    {
-      "id": "20261002J",
-      "title": "BetCast #275: Το Grid είναι πιο ΑΜΦΙΡΡΟΠΟ απ' όσο περιμέναμε! | F1",
-      "author": "Giannis Poulikidis",
-      "date": "2026-10-02",
-      "dateISO": "2026-10-02",
-      "displayDate": "2 Οκτωβρίου 2026",
-      "image": "/blog-module/blog-entries/20261002J/1.webp",
-      "backgroundImage": "/blog-module/blog-entries/20261002J/1.webp",
-      "excerpt": "Σε αχαρτογράφητα νερά, με παλιά δεδομένα και το μισό grid να μην έχει τρέξει ποτέ σε αυτήν την πίστα... Λοιπόν, καλώς ήρθατε στο Sepang International Circuit. Τα πρώτα FP έδειξαν ότι υπάρχει μεγάλος...",
-      "sources": "",
-      "comments": 0,
-      "url": "/blog-module/blog-entries/20261002J/article.html",
-      "category": "Betting",
-      "categories": [
-        "Betting"
-      ],
-      "tags": [
-        "BetCast",
-        "Bahrain",
-        "Ποντάρισμα",
-        "Bet"
-      ],
-      "wordCount": 342,
-      "readingTime": "2 min",
-      "imageWidth": 1600,
-      "imageHeight": 900,
-      "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
     },
     {
       "id": "20261001W",
@@ -460,33 +460,35 @@
       "backgroundImageHeight": 438
     },
     {
-      "id": "20260929G",
-      "title": "Lindblad: λάθη, μια συγγνώμη και ένα P7 για 0,030",
+      "id": "20260929-2G",
+      "title": "Ferrari + Leclerc + P2 = ???",
       "author": "Georgios Balatzis",
       "date": "2026-09-29",
       "dateISO": "2026-09-29",
       "displayDate": "29 Σεπτεμβρίου 2026",
-      "image": "/blog-module/blog-entries/20260929G/1.webp",
-      "backgroundImage": "/blog-module/blog-entries/20260929G/1.webp",
-      "excerpt": "Επανεκκίνηση, Turn 1. Ο Arvid Lindblad βουτάει από μέσα, ακουμπάει το πίσω μέρος του Liam Lawson και ο ομόσταβλός του κάνει τετ-α-κέ, με ζημιά στο πάτωμα. Αν ο αγώνας της Racing Bulls τελείωνε εκεί,...",
+      "image": "/blog-module/blog-entries/20260929-2G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260929-2G/1.webp",
+      "excerpt": "Θα το πω από την αρχή: η δεύτερη θέση του Leclerc στις κατατακτήριες του Baku δεν με έπεισε ούτε για μια στιγμή. Όχι επειδή ο γύρος ήταν κακός. Το 1:43.363 ήταν ό,τι καλύτερο μπορούσε να βγάλει η...",
       "sources": "",
       "comments": 0,
-      "url": "/blog-module/blog-entries/20260929G/article.html",
-      "category": "Drivers",
+      "url": "/blog-module/blog-entries/20260929-2G/article.html",
+      "category": "Teams",
       "categories": [
-        "Drivers"
+        "Teams"
       ],
       "tags": [
-        "Lindblad",
+        "Ferrari",
+        "Leclerc",
+        "Hamilton",
         "2026",
         "Baku"
       ],
-      "wordCount": 564,
-      "readingTime": "3 min",
-      "imageWidth": 1600,
-      "imageHeight": 900,
-      "backgroundImageWidth": 1600,
-      "backgroundImageHeight": 900
+      "wordCount": 673,
+      "readingTime": "4 min",
+      "imageWidth": 800,
+      "imageHeight": 449,
+      "backgroundImageWidth": 800,
+      "backgroundImageHeight": 449
     },
     {
       "id": "20260929F",
@@ -520,35 +522,33 @@
       "backgroundImageHeight": 900
     },
     {
-      "id": "20260929-2G",
-      "title": "Ferrari + Leclerc + P2 = ???",
+      "id": "20260929G",
+      "title": "Lindblad: λάθη, μια συγγνώμη και ένα P7 για 0,030",
       "author": "Georgios Balatzis",
       "date": "2026-09-29",
       "dateISO": "2026-09-29",
       "displayDate": "29 Σεπτεμβρίου 2026",
-      "image": "/blog-module/blog-entries/20260929-2G/1.webp",
-      "backgroundImage": "/blog-module/blog-entries/20260929-2G/1.webp",
-      "excerpt": "Θα το πω από την αρχή: η δεύτερη θέση του Leclerc στις κατατακτήριες του Baku δεν με έπεισε ούτε για μια στιγμή. Όχι επειδή ο γύρος ήταν κακός. Το 1:43.363 ήταν ό,τι καλύτερο μπορούσε να βγάλει η...",
+      "image": "/blog-module/blog-entries/20260929G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260929G/1.webp",
+      "excerpt": "Επανεκκίνηση, Turn 1. Ο Arvid Lindblad βουτάει από μέσα, ακουμπάει το πίσω μέρος του Liam Lawson και ο ομόσταβλός του κάνει τετ-α-κέ, με ζημιά στο πάτωμα. Αν ο αγώνας της Racing Bulls τελείωνε εκεί,...",
       "sources": "",
       "comments": 0,
-      "url": "/blog-module/blog-entries/20260929-2G/article.html",
-      "category": "Teams",
+      "url": "/blog-module/blog-entries/20260929G/article.html",
+      "category": "Drivers",
       "categories": [
-        "Teams"
+        "Drivers"
       ],
       "tags": [
-        "Ferrari",
-        "Leclerc",
-        "Hamilton",
+        "Lindblad",
         "2026",
         "Baku"
       ],
-      "wordCount": 673,
-      "readingTime": "4 min",
-      "imageWidth": 800,
-      "imageHeight": 449,
-      "backgroundImageWidth": 800,
-      "backgroundImageHeight": 449
+      "wordCount": 564,
+      "readingTime": "3 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
     },
     {
       "id": "20260928W",
@@ -585,33 +585,32 @@
       "backgroundImageHeight": 900
     },
     {
-      "id": "20260928G",
-      "title": "Το Baku ήταν το τελευταίο upgrade test της McLaren",
+      "id": "20260928-2G",
+      "title": "Cadillac: η αθόρυβη δουλειά στα brake ducts",
       "author": "Georgios Balatzis",
       "date": "2026-09-28",
       "dateISO": "2026-09-28",
       "displayDate": "28 Σεπτεμβρίου 2026",
-      "image": "/blog-module/blog-entries/20260928G/1.webp",
-      "backgroundImage": "/blog-module/blog-entries/20260928G/1.webp",
-      "excerpt": "Η McLaren έφτασε στο Baku με κάτι πολύ περισσότερο από ένα ακόμη πακέτο αναβαθμίσεων. Νέα sidepods, αλλαγές στα radiator inlets και στο engine cover, νέο πάτωμα, διαφορετικά fairings στην πίσω...",
+      "image": "/blog-module/blog-entries/20260928-2G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260928-2G/1.webp",
+      "excerpt": "Όταν μιλάμε για αναβαθμίσεις, το μυαλό πάει συνήθως στην εμπρός πτέρυγα, στο πάτωμα ή στον diffuser. Στην περίπτωση της Cadillac όμως, το κομμάτι που έχει απασχολήσει την ομάδα περισσότερο από...",
       "sources": "",
       "comments": 0,
-      "url": "/blog-module/blog-entries/20260928G/article.html",
-      "category": "News",
+      "url": "/blog-module/blog-entries/20260928-2G/article.html",
+      "category": "Technical",
       "categories": [
-        "News"
+        "Technical"
       ],
       "tags": [
-        "McLaren",
+        "Cadillac",
+        "Bottas",
         "2026",
-        "News",
         "Baku",
-        "Norris",
-        "Stella",
-        "Piastri"
+        "Perez",
+        "SC"
       ],
-      "wordCount": 711,
-      "readingTime": "4 min",
+      "wordCount": 933,
+      "readingTime": "5 min",
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
@@ -647,63 +646,93 @@
       "backgroundImageHeight": 1080
     },
     {
-      "id": "20260928-2G",
-      "title": "Cadillac: η αθόρυβη δουλειά στα brake ducts",
+      "id": "20260928G",
+      "title": "Το Baku ήταν το τελευταίο upgrade test της McLaren",
       "author": "Georgios Balatzis",
       "date": "2026-09-28",
       "dateISO": "2026-09-28",
       "displayDate": "28 Σεπτεμβρίου 2026",
-      "image": "/blog-module/blog-entries/20260928-2G/1.webp",
-      "backgroundImage": "/blog-module/blog-entries/20260928-2G/1.webp",
-      "excerpt": "Όταν μιλάμε για αναβαθμίσεις, το μυαλό πάει συνήθως στην εμπρός πτέρυγα, στο πάτωμα ή στον diffuser. Στην περίπτωση της Cadillac όμως, το κομμάτι που έχει απασχολήσει την ομάδα περισσότερο από...",
+      "image": "/blog-module/blog-entries/20260928G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260928G/1.webp",
+      "excerpt": "Η McLaren έφτασε στο Baku με κάτι πολύ περισσότερο από ένα ακόμη πακέτο αναβαθμίσεων. Νέα sidepods, αλλαγές στα radiator inlets και στο engine cover, νέο πάτωμα, διαφορετικά fairings στην πίσω...",
       "sources": "",
       "comments": 0,
-      "url": "/blog-module/blog-entries/20260928-2G/article.html",
-      "category": "Technical",
+      "url": "/blog-module/blog-entries/20260928G/article.html",
+      "category": "News",
       "categories": [
-        "Technical"
+        "News"
       ],
       "tags": [
-        "Cadillac",
-        "Bottas",
+        "McLaren",
         "2026",
+        "News",
         "Baku",
-        "Perez",
-        "SC"
+        "Norris",
+        "Stella",
+        "Piastri"
       ],
-      "wordCount": 933,
-      "readingTime": "5 min",
+      "wordCount": 711,
+      "readingTime": "4 min",
       "imageWidth": 1672,
       "imageHeight": 941,
       "backgroundImageWidth": 1672,
       "backgroundImageHeight": 941
     },
     {
-      "id": "20260927W",
-      "title": "Μια νίκη που ξαναβάζει τον Russell στη μάχη.",
+      "id": "20260927-2G",
+      "title": "6 εβδομάδες απών, 51 γύροι για να θυμίσει ποιος είναι",
+      "author": "Georgios Balatzis",
+      "date": "2026-09-27",
+      "dateISO": "2026-09-27",
+      "displayDate": "27 Σεπτεμβρίου 2026",
+      "image": "/blog-module/blog-entries/20260927-2G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260927-2G/1.webp",
+      "excerpt": "Έξι εβδομάδες χωρίς αγώνα είναι πολύς καιρός για οποιονδήποτε οδηγό. Για τον Isack Hadjar ήταν ακόμα χειρότερα, γιατί ήρθαν ακριβώς τη στιγμή που προσπαθούσε να βρει τη θέση του δίπλα στον Max...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20260927-2G/article.html",
+      "category": "Drivers",
+      "categories": [
+        "Drivers"
+      ],
+      "tags": [
+        "Hadjar",
+        "2026",
+        "RedBull"
+      ],
+      "wordCount": 710,
+      "readingTime": "4 min",
+      "imageWidth": 1092,
+      "imageHeight": 683,
+      "backgroundImageWidth": 1092,
+      "backgroundImageHeight": 683
+    },
+    {
+      "id": "20260927-2W",
+      "title": "Kimi Raikkonen: Ο άνθρωπος που ήταν πάντα ο ίδιος από την αρχή ως το τέλος.",
       "author": "Themis Charvalis",
       "date": "2026-09-27",
       "dateISO": "2026-09-27",
       "displayDate": "27 Σεπτεμβρίου 2026",
-      "image": "/blog-module/blog-entries/20260927W/1.webp",
-      "backgroundImage": "/blog-module/blog-entries/20260927W/2.webp",
-      "excerpt": "Αρκεί η σημερινή νίκη για να αυξήσει το πάθος του για το φετινό πρωτάθλημα; Ο Βρετανός πήρε την pole position με διαφορά μεγαλύτερη των οκτώ δεκάτων και στη συνέχεια μετέτρεψε την ταχύτητα ενός γύρου...",
+      "image": "/blog-module/blog-entries/20260927-2W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260927-2W/2.webp",
+      "excerpt": "Το μονοθέσιο έμοιαζε να χωράει μέσα στα χέρια του. Δεν το οδηγούσε απλώς αλλά το άφηνε να κινηθεί όπως ήθελε, σαν να υπήρχε ανάμεσα στους δύο μια συμφωνία που κανείς άλλος δεν μπορούσε να καταλάβει....",
       "sources": "",
       "comments": 0,
-      "url": "/blog-module/blog-entries/20260927W/article.html",
-      "category": "Analysis",
+      "url": "/blog-module/blog-entries/20260927-2W/article.html",
+      "category": "History",
       "categories": [
-        "Analysis"
+        "History"
       ],
       "tags": [
-        "George Russell"
+        "Kimi Raikkonen"
       ],
-      "wordCount": 444,
-      "readingTime": "3 min",
-      "imageWidth": 768,
-      "imageHeight": 432,
-      "backgroundImageWidth": 678,
-      "backgroundImageHeight": 452
+      "wordCount": 615,
+      "readingTime": "4 min",
+      "imageWidth": 724,
+      "imageHeight": 483,
+      "backgroundImageWidth": 739,
+      "backgroundImageHeight": 415
     },
     {
       "id": "20260927G",
@@ -737,60 +766,31 @@
       "backgroundImageHeight": 432
     },
     {
-      "id": "20260927-2W",
-      "title": "Kimi Raikkonen: Ο άνθρωπος που ήταν πάντα ο ίδιος από την αρχή ως το τέλος.",
+      "id": "20260927W",
+      "title": "Μια νίκη που ξαναβάζει τον Russell στη μάχη.",
       "author": "Themis Charvalis",
       "date": "2026-09-27",
       "dateISO": "2026-09-27",
       "displayDate": "27 Σεπτεμβρίου 2026",
-      "image": "/blog-module/blog-entries/20260927-2W/1.webp",
-      "backgroundImage": "/blog-module/blog-entries/20260927-2W/2.webp",
-      "excerpt": "Το μονοθέσιο έμοιαζε να χωράει μέσα στα χέρια του. Δεν το οδηγούσε απλώς αλλά το άφηνε να κινηθεί όπως ήθελε, σαν να υπήρχε ανάμεσα στους δύο μια συμφωνία που κανείς άλλος δεν μπορούσε να καταλάβει....",
+      "image": "/blog-module/blog-entries/20260927W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260927W/2.webp",
+      "excerpt": "Αρκεί η σημερινή νίκη για να αυξήσει το πάθος του για το φετινό πρωτάθλημα; Ο Βρετανός πήρε την pole position με διαφορά μεγαλύτερη των οκτώ δεκάτων και στη συνέχεια μετέτρεψε την ταχύτητα ενός γύρου...",
       "sources": "",
       "comments": 0,
-      "url": "/blog-module/blog-entries/20260927-2W/article.html",
-      "category": "History",
+      "url": "/blog-module/blog-entries/20260927W/article.html",
+      "category": "Analysis",
       "categories": [
-        "History"
+        "Analysis"
       ],
       "tags": [
-        "Kimi Raikkonen"
+        "George Russell"
       ],
-      "wordCount": 615,
-      "readingTime": "4 min",
-      "imageWidth": 724,
-      "imageHeight": 483,
-      "backgroundImageWidth": 739,
-      "backgroundImageHeight": 415
-    },
-    {
-      "id": "20260927-2G",
-      "title": "6 εβδομάδες απών, 51 γύροι για να θυμίσει ποιος είναι",
-      "author": "Georgios Balatzis",
-      "date": "2026-09-27",
-      "dateISO": "2026-09-27",
-      "displayDate": "27 Σεπτεμβρίου 2026",
-      "image": "/blog-module/blog-entries/20260927-2G/1.webp",
-      "backgroundImage": "/blog-module/blog-entries/20260927-2G/1.webp",
-      "excerpt": "Έξι εβδομάδες χωρίς αγώνα είναι πολύς καιρός για οποιονδήποτε οδηγό. Για τον Isack Hadjar ήταν ακόμα χειρότερα, γιατί ήρθαν ακριβώς τη στιγμή που προσπαθούσε να βρει τη θέση του δίπλα στον Max...",
-      "sources": "",
-      "comments": 0,
-      "url": "/blog-module/blog-entries/20260927-2G/article.html",
-      "category": "Drivers",
-      "categories": [
-        "Drivers"
-      ],
-      "tags": [
-        "Hadjar",
-        "2026",
-        "RedBull"
-      ],
-      "wordCount": 710,
-      "readingTime": "4 min",
-      "imageWidth": 1092,
-      "imageHeight": 683,
-      "backgroundImageWidth": 1092,
-      "backgroundImageHeight": 683
+      "wordCount": 444,
+      "readingTime": "3 min",
+      "imageWidth": 768,
+      "imageHeight": 432,
+      "backgroundImageWidth": 678,
+      "backgroundImageHeight": 452
     },
     {
       "id": "20260926G",
@@ -964,32 +964,32 @@
       "backgroundImageHeight": 900
     },
     {
-      "id": "20260923G",
-      "title": "Το B-spec της Williams και το πραγματικό τεστ",
-      "author": "Georgios Balatzis",
+      "id": "20260923",
+      "title": "Το πραγματικό πρόβλημα του Baku είναι η ενέργεια",
+      "author": "F1 Stories Team",
       "date": "2026-09-23",
       "dateISO": "2026-09-23",
       "displayDate": "23 Σεπτεμβρίου 2026",
-      "image": "/blog-module/blog-entries/20260923G/1.webp",
-      "backgroundImage": "/blog-module/blog-entries/20260923G/1.webp",
-      "excerpt": "Θυμάστε το Baku πέρσι; Ο Sainz στο podium και η Williams να ζει ένα από τα καλύτερα Σαββατοκύριακά της εδώ και πολλά χρόνια. Τότε έλεγα κι εγώ, όπως οι περισσότεροι, ότι το project του Vowles άρχιζε...",
+      "image": "/blog-module/blog-entries/20260923/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260923/1.webp",
+      "excerpt": "Το Baku ανέκαθεν ήταν πίστα με διχασμένη προσωπικότητα. Στο δεύτερο sector, ανάμεσα στα τείχη της παλιάς πόλης, θέλεις πρόσφυση, ένα αυτοκίνητο σταθερό στο φρενάρισμα και αρκετό downforce για να μη...",
       "sources": "",
       "comments": 0,
-      "url": "/blog-module/blog-entries/20260923G/article.html",
-      "category": "Technical",
+      "url": "/blog-module/blog-entries/20260923/article.html",
+      "category": "Opinion",
       "categories": [
-        "Technical"
+        "Opinion"
       ],
       "tags": [
-        "Williams",
+        "Baku",
         "2026"
       ],
-      "wordCount": 628,
+      "wordCount": 708,
       "readingTime": "4 min",
-      "imageWidth": 474,
-      "imageHeight": 266,
-      "backgroundImageWidth": 474,
-      "backgroundImageHeight": 266
+      "imageWidth": 1920,
+      "imageHeight": 1080,
+      "backgroundImageWidth": 1920,
+      "backgroundImageHeight": 1080
     },
     {
       "id": "20260923-2G",
@@ -1020,32 +1020,32 @@
       "backgroundImageHeight": 530
     },
     {
-      "id": "20260923",
-      "title": "Το πραγματικό πρόβλημα του Baku είναι η ενέργεια",
-      "author": "F1 Stories Team",
+      "id": "20260923G",
+      "title": "Το B-spec της Williams και το πραγματικό τεστ",
+      "author": "Georgios Balatzis",
       "date": "2026-09-23",
       "dateISO": "2026-09-23",
       "displayDate": "23 Σεπτεμβρίου 2026",
-      "image": "/blog-module/blog-entries/20260923/1.webp",
-      "backgroundImage": "/blog-module/blog-entries/20260923/1.webp",
-      "excerpt": "Το Baku ανέκαθεν ήταν πίστα με διχασμένη προσωπικότητα. Στο δεύτερο sector, ανάμεσα στα τείχη της παλιάς πόλης, θέλεις πρόσφυση, ένα αυτοκίνητο σταθερό στο φρενάρισμα και αρκετό downforce για να μη...",
+      "image": "/blog-module/blog-entries/20260923G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20260923G/1.webp",
+      "excerpt": "Θυμάστε το Baku πέρσι; Ο Sainz στο podium και η Williams να ζει ένα από τα καλύτερα Σαββατοκύριακά της εδώ και πολλά χρόνια. Τότε έλεγα κι εγώ, όπως οι περισσότεροι, ότι το project του Vowles άρχιζε...",
       "sources": "",
       "comments": 0,
-      "url": "/blog-module/blog-entries/20260923/article.html",
-      "category": "Opinion",
+      "url": "/blog-module/blog-entries/20260923G/article.html",
+      "category": "Technical",
       "categories": [
-        "Opinion"
+        "Technical"
       ],
       "tags": [
-        "Baku",
+        "Williams",
         "2026"
       ],
-      "wordCount": 708,
+      "wordCount": 628,
       "readingTime": "4 min",
-      "imageWidth": 1920,
-      "imageHeight": 1080,
-      "backgroundImageWidth": 1920,
-      "backgroundImageHeight": 1080
+      "imageWidth": 474,
+      "imageHeight": 266,
+      "backgroundImageWidth": 474,
+      "backgroundImageHeight": 266
     },
     {
       "id": "20260922W",
@@ -10174,5 +10174,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-07T18:28:09.749Z"
+  "lastUpdated": "2026-10-07T18:38:04.876Z"
 }
