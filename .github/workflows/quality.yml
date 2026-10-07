@@ -21,19 +21,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # Compare the tested PR merge with its base parent without full history.
+          fetch-depth: 2
           persist-credentials: false
 
       - uses: ./.github/actions/setup
 
+      - name: Classify changed files
+        id: changes
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/build/classify-quality.mjs
+
       # PR jobs can reuse main's images, but cannot save a cache used by deployment.
       - name: Restore optimized article images
-        if: >-
-          ${{
-            !startsWith(github.head_ref, 'author/blog/') &&
-            !startsWith(github.head_ref, 'author/import/') &&
-            !startsWith(github.head_ref, 'author/delete/') &&
-            !startsWith(github.head_ref, 'author/edit/')
-          }}
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .build/public-images
@@ -42,36 +44,18 @@ jobs:
             public-images-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/build/public-article-images.mjs') }}-
 
       - name: Build public artifact
-        if: >-
-          ${{
-            !startsWith(github.head_ref, 'author/blog/') &&
-            !startsWith(github.head_ref, 'author/import/') &&
-            !startsWith(github.head_ref, 'author/delete/') &&
-            !startsWith(github.head_ref, 'author/edit/')
-          }}
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run build:public
 
-      - name: Validate author content
-        if: >-
-          ${{
-            startsWith(github.head_ref, 'author/blog/') ||
-            startsWith(github.head_ref, 'author/import/') ||
-            startsWith(github.head_ref, 'author/delete/') ||
-            startsWith(github.head_ref, 'author/edit/')
-          }}
+      - name: Validate article content
+        if: ${{ steps.changes.outputs.content_only == 'true' }}
         run: npm run build:html && npm run build:blog && npm run build:assets && npm run build:data-contracts
 
       - name: Run static source guard
         run: npm run quality:static
 
       - name: Audit runtime dependencies
-        if: >-
-          ${{
-            !startsWith(github.head_ref, 'author/blog/') &&
-            !startsWith(github.head_ref, 'author/import/') &&
-            !startsWith(github.head_ref, 'author/delete/') &&
-            !startsWith(github.head_ref, 'author/edit/')
-          }}
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run audit:runtime
 
       - name: Run author module tests
@@ -84,4 +68,4 @@ jobs:
         run: npm run test:security
 
       - name: Run publishing regression tests
-        run: node --test scripts/build/__tests__/public-article-images.test.mjs scripts/build/__tests__/publication-routing.test.mjs scripts/build/__tests__/maintenance-patch.test.mjs
+        run: node --test scripts/build/__tests__/public-article-images.test.mjs scripts/build/__tests__/publication-routing.test.mjs scripts/build/__tests__/maintenance-patch.test.mjs scripts/build/__tests__/quality-routing.test.mjs
