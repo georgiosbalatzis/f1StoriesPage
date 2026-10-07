@@ -24,23 +24,34 @@ This repository publishes a static site through GitHub Pages. Article media can 
 before a ZIP export or an author PR is created (`ARTICLE_IMAGE_POLICY` in
 `scripts/author/image-tools.js`):
 
-- at most **3200 px wide**, aspect ratio kept. That is twice the widest public
-  variant (1600 px). Lossy WebP stores colour at half resolution, so a 2x master
-  still gives the build's Lanczos downscale full-resolution colour for every
-  1600 px AVIF/WebP variant. A 1600 px master measurably softens them;
-- at most **1 MB**, the per-original cap of `perf:article-media`. WebP quality
-  starts at the 0.9 the tools always used and steps down only when needed;
-- a WebP that already fits is uploaded byte for byte.
+- at most **1600 px wide**, matching the widest public variant, with the aspect
+  ratio preserved and no upscaling;
+- at most **300 KiB (307,200 bytes)**, matching the public image budget. WebP
+  quality starts at 0.9 and steps down only when needed. If quality alone cannot
+  meet the cap, the browser reduces dimensions and retries from the original;
+- a genuine WebP that already fits is uploaded byte for byte. Imports with a
+  misleading extension are converted rather than passed through;
+- unsupported WebP encoding, unreadable images, and an impossible budget fail
+  with an error instead of producing a mislabeled or oversized upload.
 
-`npm run qa:author-images` runs that code in Chromium on generated fixtures and
-real article photos. It checks the size, the format and the aspect ratio, and
-that the reader-facing AVIF stays within 1 dB PSNR of what the previous tool
-produced.
+These are publication-ready originals, replacing the former 3200 px / 1 MiB
+masters. Some fidelity is traded for smaller uploads and faster publication.
+The public artifact copies these originals without re-encoding them. The build
+still creates responsive AVIF/WebP variants; cached CI compression remains a
+fallback for oversized images committed outside the author tools.
 
-Originals already in the repository can be brought under the same policy with
-`npm run build:article-originals` (dry run; `--write` to apply, `--all` to also
-resize every original wider than 3200 px). Existing AVIF and small variants are
-left untouched; rebuild the affected articles afterwards.
+`npm run qa:author-images` runs the browser code in Chromium on generated
+fixtures and real article photos. It checks format, dimensions, aspect ratio,
+byte limits, unchanged fitting WebP files, difficult oversized images, failure
+cases, and that every output bypasses the public optimizer. Reader-facing AVIF
+PSNR against the previous master policy is reported for comparison, rather than
+requiring fidelity equivalent to the larger masters.
+
+The repository media guard retains its separate historical limits. Existing
+originals can be checked with `npm run build:article-originals` (dry run; `--write`
+to apply, `--all` to also resize originals wider than the current policy).
+Existing AVIF and small variants are left untouched; rebuild affected articles
+if originals are intentionally changed.
 
 ## Commands
 

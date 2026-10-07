@@ -750,6 +750,8 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 
 Οι 59 ήδη δημοσιευμένες εικόνες που ξεπερνούσαν τα 300 KB έχουν συμπιεστεί μία φορά και οι δημόσιες εκδόσεις τους αποθηκεύονται στο repo. Έτσι το υπάρχον archive δεν χρειάζεται encoding ακόμη και με άδεια cache. Η cache παραμένει για μελλοντικές oversized εικόνες και για αλλαγές στα όρια δημοσίευσης.
 
+Οι νέες εικόνες από `generate.html` και `housekeeping.html` συμπιέζονται στον browser πριν το ZIP ή το PR: WebP, έως 1600 px πλάτος και 300 KiB, με διατήρηση αναλογιών. Αν χρειάζεται, μειώνεται πρώτα η ποιότητα και έπειτα οι διαστάσεις. Εικόνες WebP που ήδη χωρούν περνούν χωρίς αλλαγή. Έτσι τα νέα originals παρακάμπτουν τη συμπίεση του public artifact· το build εξακολουθεί να παράγει τα responsive AVIF/WebP variants. Η cache καλύπτει oversized εικόνες που προστίθενται εκτός των author tools. Η πολιτική και ο έλεγχος Chromium (`npm run qa:author-images`) περιγράφονται στο [`docs/article-media-policy.md`](docs/article-media-policy.md).
+
 ### 13.5 Scheduled Publish (`scheduled-publish.yml`)
 
 Δημοσιεύει τα προγραμματισμένα άρθρα του `generate.html`. Το Publish Article δεν αγγίζει τα branches `author/scheduled/**`, οπότε τίποτα δεν γίνεται merge πριν την ώρα του.

@@ -5,16 +5,21 @@
 // - at most ARTICLE_IMAGE_POLICY.maxWidth wide, at most maxBytes, real WebP;
 // - aspect ratio kept, and images that fit are not resized;
 // - a WebP that already fits is passed through byte for byte;
-// - readers lose nothing measurable on real photos: the 1600 px AVIF the build
-//   makes from the new master stays within MAX_AVIF_LOSS_DB PSNR of the one it
-//   made from the previous tool output (a full-resolution WebP q0.9), both
-//   measured against a Lanczos resize of the untouched source.
+// - oversized images reduce dimensions if quality alone cannot meet the budget;
+// - ready originals bypass the public artifact optimizer, with no cache entry;
+// - unsupported encoders and corrupt images fail before an author commit.
+// Reader AVIF PSNR is reported against the former 3200 px / 1 MiB policy.
+// Smaller publication-ready originals intentionally trade some fidelity for
+// faster uploads and deployment; the former 1 dB master-preservation gate no
+// longer describes this policy.
 //
 // Fixtures are generated deterministically, plus real article photos from
 // the repo re-saved as camera-style JPEGs.
 
 import fs from 'node:fs';
 import http from 'node:http';
+import os from 'node:os';
+import { optimizePublicArticleImage } from '../build/public-article-images.mjs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
@@ -26,15 +31,16 @@ const { Launcher } = require('chrome-launcher');
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const IMAGE_TOOLS = path.join(REPO_ROOT, 'scripts', 'author', 'image-tools.js');
-const MAX_AVIF_LOSS_DB = 1.0;
 const PUBLIC_MAX_WIDTH = 1600; // generate-image-variants.js FULL_MAX_WIDTH
 
-// Real photos wider than 1600 px, already in the repo and not modified by the tools.
+// Real landscape/portrait photos, including sources wider than the public limit.
 const REAL_PHOTOS = [
     'blog-module/blog-entries/20260829W/4.webp',
     'blog-module/blog-entries/20260725W/2.webp',
     'blog-module/blog-entries/20250323G/2.webp',
-    'blog-module/blog-entries/20260910-4G/1.webp'
+    'blog-module/blog-entries/20260910-4G/1.webp',
+    'blog-module/blog-entries/20260925W/3.webp',
+    'blog-module/blog-entries/20260918W/1.webp'
 ];
 
 function chromePath() {
@@ -59,6 +65,19 @@ async function syntheticPhoto(width, height) {
     return sharp(raw, { raw: { width, height, channels: 3 } });
 }
 
+// High entropy exercises the fallback when no quality fits at the initial width.
+function syntheticNoise(width, height) {
+    const raw = Buffer.alloc(width * height * 3);
+    let seed = 7;
+    for (let i = 0; i < raw.length; i++) {
+        seed ^= seed << 13;
+        seed ^= seed >>> 17;
+        seed ^= seed << 5;
+        raw[i] = seed >>> 24;
+    }
+    return sharp(raw, { raw: { width, height, channels: 3 } });
+}
+
 // Flat UI with sharp text-like edges (screenshots, graphics, tables).
 async function syntheticGraphic(width, height) {
     const rows = [];
@@ -78,7 +97,11 @@ async function fixtures() {
         { name: 'wide-webp-3000x1500.webp', type: 'image/webp', buffer: await (await syntheticPhoto(3000, 1500)).webp({ quality: 90 }).toBuffer() },
         { name: 'fits-1200x675.webp', type: 'image/webp', buffer: await (await syntheticPhoto(1200, 675)).webp({ quality: 85 }).toBuffer(), expectPassthrough: true },
         { name: 'huge-6000x4000.jpg', type: 'image/jpeg', buffer: await (await syntheticPhoto(6000, 4000)).jpeg({ quality: 92 }).toBuffer() },
-        { name: 'small-900x600.jpg', type: 'image/jpeg', buffer: await (await syntheticPhoto(900, 600)).jpeg({ quality: 90 }).toBuffer() }
+        { name: 'small-900x600.jpg', type: 'image/jpeg', buffer: await (await syntheticPhoto(900, 600)).jpeg({ quality: 90 }).toBuffer() },
+        { name: 'noise-1600x2400.png', type: 'image/png', buffer: await syntheticNoise(1600, 2400).png().toBuffer(), expectReduced: true },
+        { name: 'oversized-1200x800.webp', type: 'image/webp', buffer: await syntheticNoise(1200, 800).webp({ quality: 95 }).toBuffer() },
+        { name: 'mislabeled.webp', type: 'image/webp', buffer: await (await syntheticGraphic(800, 600)).png().toBuffer() }
+
     ];
     for (const relPath of REAL_PHOTOS) {
         const abs = path.join(REPO_ROOT, relPath);
@@ -86,8 +109,7 @@ async function fixtures() {
         list.push({
             name: `${relPath.split('/').slice(-2).join('-').replace(/\.webp$/, '')}-camera.jpg`,
             type: 'image/jpeg',
-            buffer: await sharp(abs).jpeg({ quality: 95 }).toBuffer(),
-            photo: true
+            buffer: await sharp(abs).jpeg({ quality: 95 }).toBuffer()
         });
     }
     return list;
@@ -122,19 +144,6 @@ async function readerQuality(legacy, master, source) {
     };
 }
 
-// What the tools did before the size policy: keep any WebP, convert anything
-// else to a full-resolution WebP at 0.9.
-const LEGACY_INGEST = `window.legacyIngest = async function (file) {
-    const tools = window.F1S_AUTHOR_IMAGE_TOOLS;
-    if (tools.isWebpFile(file)) return file;
-    const img = await tools.loadImageFromFile(file, file.name);
-    const canvas = document.createElement('canvas');
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    canvas.getContext('2d').drawImage(img, 0, 0);
-    return tools.canvasToWebpBlob(canvas, 0.9, file.name);
-};`;
-
 async function main() {
     const executablePath = chromePath();
     if (!executablePath) {
@@ -149,10 +158,11 @@ async function main() {
             return;
         }
         res.writeHead(200, { 'content-type': 'text/html' });
-        res.end(`<!doctype html><meta charset="utf-8"><script src="/image-tools.js"></script><script>${LEGACY_INGEST}</script>`);
+        res.end(`<!doctype html><meta charset="utf-8"><script src="/image-tools.js"></script>`);
     });
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
     const browser = await chromium.launch({ executablePath });
+    const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'author-images-'));
     const errors = [];
     const rows = [];
 
@@ -174,7 +184,12 @@ async function main() {
                     for (let i = 0; i < buffer.length; i += 0x8000) binary += String.fromCharCode.apply(null, buffer.subarray(i, i + 0x8000));
                     return btoa(binary);
                 };
-                return { name: out.name, type: out.type, same: out === file, b64: await encode(out), legacy: await encode(await window.legacyIngest(file)), ms };
+                const again = await window.F1S_AUTHOR_IMAGE_TOOLS.prepareArticleImage(out, name);
+                const previous = await window.F1S_AUTHOR_IMAGE_TOOLS.prepareArticleImage(file, name, {
+                    maxWidth: 3200, maxBytes: 1024 * 1024, qualities: [0.9, 0.85, 0.8, 0.75, 0.7]
+                });
+                return { name: out.name, type: out.type, same: out === file, idempotent: again === out,
+                    b64: await encode(out), legacy: await encode(previous), ms };
             }, { name: fixture.name, type: fixture.type, b64: fixture.buffer.toString('base64') });
 
             const output = Buffer.from(result.b64, 'base64');
@@ -198,18 +213,50 @@ async function main() {
             if (!/\.webp$/.test(result.name)) fail(`output name ${result.name} is not .webp`);
             if (outMeta.width > policy.maxWidth) fail(`output ${outMeta.width} px wide > ${policy.maxWidth}`);
             if (output.length > policy.maxBytes) fail(`output ${output.length} B > ${policy.maxBytes}`);
-            if (inMeta.width <= policy.maxWidth && outMeta.width !== inMeta.width) fail('an image that fits was resized');
-            const expectedHeight = inMeta.width > policy.maxWidth ? Math.round(inMeta.height * policy.maxWidth / inMeta.width) : inMeta.height;
+            if (outMeta.width > inMeta.width) fail('an image was upscaled');
+            const expectedHeight = Math.max(1, Math.round(inMeta.height * outMeta.width / inMeta.width));
             if (outMeta.height !== expectedHeight) fail(`height ${outMeta.height} ≠ ${expectedHeight} (aspect ratio)`);
-            // Synthetic patterns mostly measure resampler differences; judge fidelity on real photos.
-            if (fixture.photo && quality.before - quality.after > MAX_AVIF_LOSS_DB) {
-                fail(`reader AVIF loses ${(quality.before - quality.after).toFixed(1)} dB PSNR (> ${MAX_AVIF_LOSS_DB} dB) against the previous tool output`);
-            }
+            if (!result.idempotent) fail('a second preparation changed an already-ready image');
+            if (fixture.expectReduced && outMeta.width >= Math.min(inMeta.width, policy.maxWidth)) fail('the fallback did not reduce dimensions');
+            const readySource = path.join(temp, 'ready.webp');
+            const dest = path.join(temp, 'optimized.webp');
+            const cacheRoot = path.join(temp, 'cache');
+            fs.writeFileSync(readySource, output);
+            const optimized = await optimizePublicArticleImage(readySource, dest, 'blog-module/blog-entries/test/1.webp', { cacheRoot });
+            if (optimized !== null || fs.existsSync(dest) || fs.existsSync(cacheRoot)) fail('ready output triggered CI compression');
             if (fixture.expectPassthrough && !(result.same && output.equals(fixture.buffer))) fail('a fitting WebP was re-encoded instead of kept');
+        }
+        const errorCases = await page.evaluate(async () => {
+            const tools = window.F1S_AUTHOR_IMAGE_TOOLS;
+            const rejects = async (operation, message) => {
+                try { await operation(); return false; }
+                catch (error) { return error.message.includes(message); }
+            };
+            const canvas = document.createElement('canvas');
+            canvas.width = canvas.height = 100;
+            const png = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            const file = new File([png], 'test.png', { type: 'image/png' });
+            const originalToBlob = HTMLCanvasElement.prototype.toBlob;
+            try {
+                HTMLCanvasElement.prototype.toBlob = function (callback) { callback(png); };
+                const unsupported = await rejects(() => tools.prepareArticleImage(file), 'cannot encode WebP');
+                HTMLCanvasElement.prototype.toBlob = function (callback) { callback(null); };
+                const empty = await rejects(() => tools.prepareArticleImage(file), 'could not be converted');
+                HTMLCanvasElement.prototype.toBlob = originalToBlob;
+                const corrupt = await rejects(() => tools.prepareArticleImage(new File(['broken'], 'broken.webp')), 'could not be decoded');
+                const impossible = await rejects(() => tools.prepareArticleImage(file, 'Tiny', {
+                    maxWidth: 100, maxBytes: 1, qualities: [0.9]
+                }), 'could not fit');
+                return { unsupported, empty, corrupt, impossible };
+            } finally { HTMLCanvasElement.prototype.toBlob = originalToBlob; }
+        });
+        for (const [name, rejected] of Object.entries(errorCases)) {
+            if (!rejected) errors.push(`${name}: expected a clear error instead of an uploadable result`);
         }
     } finally {
         await browser.close();
         server.close();
+        fs.rmSync(temp, { recursive: true, force: true });
     }
 
     console.table(rows);
@@ -218,7 +265,7 @@ async function main() {
         errors.forEach(error => console.error(`  - ${error}`));
         process.exit(1);
     }
-    console.log(`author image ingestion check passed: ${rows.length} fixtures, WebP within the size policy, reader AVIF on real photos within ${MAX_AVIF_LOSS_DB} dB of the previous tool.`);
+    console.log(`author image ingestion check passed: ${rows.length} fixtures, WebP within the size policy, CI compression bypassed; encoder, decode and impossible-budget failures rejected.`);
 }
 
 main().catch(error => {

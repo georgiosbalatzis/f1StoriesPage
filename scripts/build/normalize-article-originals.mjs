@@ -50,6 +50,9 @@ async function encode(input, plan, policy) {
         if (!best || buffer.length < best.buffer.length) best = { buffer, quality };
         if (buffer.length <= policy.maxBytes) break;
     }
+    if (!best || best.buffer.length > policy.maxBytes) {
+        throw new Error('Original could not fit the image budget; use the browser author tools to reduce dimensions.');
+    }
     return best;
 }
 
@@ -84,7 +87,7 @@ async function main() {
     if (rows.length) console.table(rows.map(({ saved, ...row }) => row));
     const saved = rows.reduce((sum, row) => sum + Math.max(0, row.saved), 0);
     console.log(`${write ? 'rewrote' : 'would rewrite'} ${rows.length} original(s), ${(saved / 1024 / 1024).toFixed(2)} MB smaller`
-        + ` (policy: ≤ ${policy.maxWidth} px wide, ≤ ${(policy.maxBytes / 1024 / 1024).toFixed(0)} MB)`);
+        + ` (policy: ≤ ${policy.maxWidth} px wide, ≤ ${(policy.maxBytes / 1024).toFixed(0)} KB)`);
     if (write && rows.length) console.log('Rebuild the affected articles (npm run build:blog) so width/height and srcset follow the new size.');
 }
 

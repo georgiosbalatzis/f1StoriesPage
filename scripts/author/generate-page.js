@@ -799,7 +799,7 @@
     }
 
     // Converts to WebP and applies the article image size policy (at most
-    // 3200 px wide and 1 MB) before the ZIP export or PR upload (image-tools.js).
+    // 1600 px wide and 300 KB) before the ZIP export or PR upload (image-tools.js).
     function ensureWebpFile(file, label) {
         return imageTools.prepareArticleImage(file, label);
     }
