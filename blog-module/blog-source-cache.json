@@ -32,6 +32,40 @@
       "backgroundImageHeight": 900
     },
     {
+      "id": "20261007G",
+      "title": "Η πίστα άλλαξε, όχι η AMR26",
+      "author": "Georgios Balatzis",
+      "date": "2026-10-07",
+      "dateISO": "2026-10-07",
+      "displayDate": "7 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261007G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261007G/1.webp",
+      "excerpt": "Μία εβδομάδα πριν από το Sepang, στο Baku, η Aston Martin δεν είχε πολλά να θυμάται με χαρά. Ο Fernando Alonso και ο Lance Stroll ήταν 19ος και 21ος στις κατατακτήριες, και την επόμενη μέρα κανένας...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261007G/article.html",
+      "category": "Teams",
+      "categories": [
+        "Teams"
+      ],
+      "tags": [
+        "AstonMartin",
+        "Newey",
+        "Alonso",
+        "Stroll",
+        "2026",
+        "Sepang",
+        "Bahrain",
+        "Honda"
+      ],
+      "wordCount": 1631,
+      "readingTime": "9 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
+    },
+    {
       "id": "20261006G",
       "title": "Το SC τιμώρησε αυτούς που το ερμήνευσαν σωστά",
       "author": "Georgios Balatzis",
@@ -10111,5 +10145,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-07T07:12:50.628Z"
+  "lastUpdated": "2026-10-07T09:28:54.285Z"
 }
