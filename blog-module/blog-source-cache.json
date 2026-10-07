@@ -214,10 +214,10 @@
       ],
       "wordCount": 525,
       "readingTime": "3 min",
-      "imageWidth": 1672,
-      "imageHeight": 941,
-      "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
     },
     {
       "id": "20261002W",
@@ -273,10 +273,10 @@
       ],
       "wordCount": 342,
       "readingTime": "2 min",
-      "imageWidth": 1672,
-      "imageHeight": 941,
-      "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
     },
     {
       "id": "20261001W",
@@ -420,10 +420,10 @@
       ],
       "wordCount": 564,
       "readingTime": "3 min",
-      "imageWidth": 3200,
-      "imageHeight": 1800,
-      "backgroundImageWidth": 3200,
-      "backgroundImageHeight": 1800
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
     },
     {
       "id": "20260929F",
@@ -451,10 +451,10 @@
       ],
       "wordCount": 625,
       "readingTime": "4 min",
-      "imageWidth": 3200,
-      "imageHeight": 1800,
-      "backgroundImageWidth": 3200,
-      "backgroundImageHeight": 1800
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
     },
     {
       "id": "20260929-2G",
@@ -518,8 +518,8 @@
       "readingTime": "4 min",
       "imageWidth": 1200,
       "imageHeight": 768,
-      "backgroundImageWidth": 3200,
-      "backgroundImageHeight": 1800
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
     },
     {
       "id": "20260928G",
@@ -897,8 +897,8 @@
       "readingTime": "3 min",
       "imageWidth": 588,
       "imageHeight": 330,
-      "backgroundImageWidth": 3200,
-      "backgroundImageHeight": 1800
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
     },
     {
       "id": "20260923G",
@@ -1160,8 +1160,8 @@
       "readingTime": "7 min",
       "imageWidth": 460,
       "imageHeight": 276,
-      "backgroundImageWidth": 3392,
-      "backgroundImageHeight": 2262
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 1067
     },
     {
       "id": "20260916G",
@@ -1488,10 +1488,10 @@
       ],
       "wordCount": 399,
       "readingTime": "2 min",
-      "imageWidth": 3072,
-      "imageHeight": 4096,
-      "backgroundImageWidth": 3072,
-      "backgroundImageHeight": 4096
+      "imageWidth": 1600,
+      "imageHeight": 2133,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 2133
     },
     {
       "id": "20260910-3G",
@@ -2421,8 +2421,8 @@
       "readingTime": "4 min",
       "imageWidth": 640,
       "imageHeight": 480,
-      "backgroundImageWidth": 1920,
-      "backgroundImageHeight": 1080
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
     },
     {
       "id": "20260727J",
@@ -2568,8 +2568,8 @@
       "readingTime": "3 min",
       "imageWidth": 668,
       "imageHeight": 459,
-      "backgroundImageWidth": 3840,
-      "backgroundImageHeight": 2160
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
     },
     {
       "id": "20260725J",
@@ -2679,10 +2679,10 @@
       ],
       "wordCount": 2191,
       "readingTime": "11 min",
-      "imageWidth": 1920,
-      "imageHeight": 1080,
-      "backgroundImageWidth": 1920,
-      "backgroundImageHeight": 1080
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
     },
     {
       "id": "20260722G",
@@ -3975,8 +3975,8 @@
       "readingTime": "3 min",
       "imageWidth": 437,
       "imageHeight": 575,
-      "backgroundImageWidth": 2491,
-      "backgroundImageHeight": 1619
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 1040
     },
     {
       "id": "20260614W",
@@ -4407,10 +4407,10 @@
       ],
       "wordCount": 2470,
       "readingTime": "13 min",
-      "imageWidth": 1672,
-      "imageHeight": 941,
-      "backgroundImageWidth": 1672,
-      "backgroundImageHeight": 941
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
     },
     {
       "id": "20260604G",
@@ -4495,8 +4495,8 @@
       "readingTime": "2 min",
       "imageWidth": 739,
       "imageHeight": 415,
-      "backgroundImageWidth": 3840,
-      "backgroundImageHeight": 2586
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 1078
     },
     {
       "id": "20260602W",
@@ -10111,5 +10111,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-07T00:21:27.686Z"
+  "lastUpdated": "2026-10-07T07:12:50.628Z"
 }
