@@ -1,6 +1,11 @@
 name: Setup
 description: Install Node and the locked npm dependencies.
 
+outputs:
+  dependency_hash:
+    description: Hash of the manifests used for the installed dependencies.
+    value: ${{ steps.install.outputs.dependency_hash }}
+
 runs:
   using: composite
   steps:
@@ -11,5 +16,8 @@ runs:
         package-manager-cache: false
 
     - name: Install dependencies
+      id: install
       shell: bash
-      run: npm ci --no-audit --no-fund
+      run: |
+        npm ci --no-audit --no-fund
+        echo "dependency_hash=$(git hash-object package.json package-lock.json | git hash-object --stdin)" >> "$GITHUB_OUTPUT"

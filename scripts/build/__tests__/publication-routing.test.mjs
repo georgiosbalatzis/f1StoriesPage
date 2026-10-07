@@ -75,6 +75,10 @@ test('deployment waits for regeneration, survives skipped jobs and stops on push
     assert.equal(condition('deploy', { event_name: 'push' }, needs), true);
     needs.publish_blog.result = 'failure';
     assert.equal(condition('deploy', { event_name: 'push' }, needs), false);
+    // Artifact preparation can fail after the generated commit was pushed.
+    needs.publish_blog.outputs.changed = 'true';
+    assert.equal(condition('deploy', { event_name: 'push' }, needs), false);
+    assert.equal(condition('deploy', { event_name: 'workflow_dispatch' }, needs), false);
     needs.publish_blog.result = 'skipped';
     needs.changes.result = 'failure';
     assert.equal(condition('deploy', { event_name: 'push' }, needs), false);
@@ -118,6 +122,8 @@ test('fetch jobs cannot deploy data before its publishing job has pushed it', ()
     assert.equal(condition('publish_data', { event_name: 'schedule' }, needs), true);
     assert.equal(condition('deploy', { event_name: 'schedule' }, needs), false);
     needs.publish_data = { result: 'failure', outputs: {} };
+    assert.equal(condition('deploy', { event_name: 'schedule' }, needs), false);
+    needs.publish_data.outputs.changed = 'true';
     assert.equal(condition('deploy', { event_name: 'schedule' }, needs), false);
     needs.refresh_standings_data.result = 'failure';
     assert.equal(condition('publish_data', { event_name: 'schedule' }, needs), false);

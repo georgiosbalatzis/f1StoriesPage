@@ -2,6 +2,12 @@ name: Deploy Pages
 
 on:
   workflow_call:
+    inputs:
+      artifact_ready:
+        description: A trusted caller already validated and uploaded the Pages artifact in this run.
+        required: false
+        type: boolean
+        default: false
   # Site Maintenance owns main pushes, including mixed content/code changes.
   workflow_dispatch:
 
@@ -15,6 +21,7 @@ concurrency:
 jobs:
   build:
     name: Build Pages artifact
+    if: ${{ !inputs.artifact_ready }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
@@ -29,55 +36,12 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - name: Read assembly mode
-        id: assembly
-        run: node -e 'const fs = require("node:fs"); const c = require("./scripts/deployment/sources.json"); fs.appendFileSync(process.env.GITHUB_OUTPUT, "enabled=" + c.enabled + "\n");'
-
-      - name: Reuse optimized article images
-        if: steps.assembly.outputs.enabled != 'true'
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: .build/public-images
-          key: public-images-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/build/public-article-images.mjs') }}-${{ hashFiles('package-lock.json', 'blog-module/blog-entries/**/*.webp', 'blog-module/blog-entries/**/*.avif') }}
-          restore-keys: |
-            public-images-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/build/public-article-images.mjs') }}-
-
-      - name: Build public artifact
-        if: steps.assembly.outputs.enabled != 'true'
-        run: npm run build:public
-
-      - name: Build pinned aggregate artifact
-        if: steps.assembly.outputs.enabled == 'true'
-        run: |
-          node scripts/deployment/build.mjs --output .build/priority6/site --reports .build/priority6/reports
-          rm -rf dist
-          mv .build/priority6/site dist
-
-      - name: Run static source guard
-        run: npm run quality:static
-
-      - name: Audit runtime dependencies
-        run: npm run audit:runtime
-
-      - name: Install integration browser
-        if: steps.assembly.outputs.enabled == 'true'
-        run: node_modules/.bin/playwright-core install --with-deps chromium
-
-      - name: Smoke test canonical artifact
-        if: steps.assembly.outputs.enabled == 'true'
-        run: npm run test:integration -- --site dist --reports .build/priority6/reports
-
-      - name: Configure Pages
-        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
-        with:
-          path: dist
+      - uses: ./.github/actions/build-pages
 
   deploy:
     name: Deploy Pages artifact
     needs: build
+    if: ${{ !cancelled() && (needs.build.result == 'success' || (inputs.artifact_ready && needs.build.result == 'skipped')) }}
     runs-on: ubuntu-latest
     permissions:
       pages: write
