@@ -228,7 +228,7 @@ body.standings-page {
 .standings-page .standings-panel select { max-width: 100%; min-height: 44px; border: 1px solid var(--st-border); border-radius: 2px; background: var(--st-surface); color: var(--st-text); box-shadow: none; font-family: var(--font-body); font-size: .875rem; font-weight: 500; }
 .standings-page .standings-panel :is(.track-dom-team-card, .track-dom-map-card, .track-dom-track-shell, .debrief-figure) { background: var(--st-surface); border-color: var(--st-border); border-radius: 0; box-shadow: none; }
 .standings-page .standings-panel .track-dom-track-shell { border-radius: 0 0 var(--cut-md) 0; }
-.standings-page .standings-panel .tyre-pace-plot { background: color-mix(in srgb, var(--st-text) 3%, transparent); border-radius: 0; }
+.standings-page .standings-panel .tyre-pace-plot { background: transparent; border-radius: 0; }
 .standings-page .standings-panel :is(.debrief-figure-title, .track-dom-map-title, .pit-stops-section-title, .dirty-air-section-title) { font: 400 1.45rem/1.2 var(--font-editorial); letter-spacing: -.02em; }
 .standings-page .standings-panel :is(.quali-race-gap-badge, .lap1-gain-pill) { background: var(--st-surface); border: 1px solid var(--st-border); border-radius: 2px; box-shadow: none; }
 .standings-page .standings-panel .quali-race-gap-badge { color: var(--st-text); }

@@ -22,9 +22,9 @@ import { loadDriverRoster, supplementDriverRecords } from '../core/roster.js';
 const ROSTER_SNAPSHOT_URL = 'standings-cache.json';
 const OPENF1 = 'https://api.openf1.org/v1';
 const YEAR = new Date().getFullYear();
-const TYRE_PACE_SVG_VIEW_HEIGHT = 252;
-const TYRE_PACE_SVG_TOP_PAD = 8;
-const TYRE_PACE_SVG_PLOT_HEIGHT = 236;
+const TYRE_PACE_SVG_VIEW_HEIGHT = 480;
+const TYRE_PACE_SVG_TOP_PAD = 12;
+const TYRE_PACE_SVG_PLOT_HEIGHT = 456;
 
 const tyrePaceTable = document.getElementById('tyre-pace-table');
 
@@ -265,31 +265,18 @@ function getCompoundMeta(compound) {
     return map[key] || { label: key || 'Unknown', hex: 'A1A1AA' };
 }
 
-function buildLapTimeAxisValues(minTime, maxTime) {
+export function buildLapTimeAxisValues(minTime, maxTime) {
     if (!isFiniteNumber(minTime) || !isFiniteNumber(maxTime)) return [];
     const range = Math.max(1, maxTime - minTime);
-    const step = range > 8 ? 2 : 1;
+    const roughStep = Math.max(1, range / 8);
+    const magnitude = Math.pow(10, Math.floor(Math.log10(roughStep)));
+    const step = [1, 2, 5, 10].find(function(value) { return value * magnitude >= roughStep; }) * magnitude;
     const start = Math.floor(minTime / step) * step;
     const end = Math.ceil(maxTime / step) * step;
     const values = [];
     for (let value = start; value <= end + 0.0001; value += step) values.push(value);
     if (!values.length || values[values.length - 1] < maxTime) values.push(end + step);
     return values;
-}
-
-function clampNumber(value, min, max) {
-    return Math.min(max, Math.max(min, value));
-}
-
-function adjustHexColor(hex, delta) {
-    const value = normalizeHexColor(hex);
-    const rgb = [0, 2, 4].map(function(index) {
-        return clampNumber(parseInt(value.slice(index, index + 2), 16) + delta, 0, 255);
-    });
-    return rgb.map(function(channel) {
-        const str = channel.toString(16);
-        return str.length === 1 ? '0' + str : str;
-    }).join('');
 }
 
 function getCompoundForLap(lapNumber, stints) {
@@ -303,18 +290,7 @@ function getCompoundForLap(lapNumber, stints) {
     return 'UNKNOWN';
 }
 
-function createCenteredOffsets(count, maxOffset) {
-    if (count <= 1) return [0];
-    const offsets = [];
-    for (let i = 0; i < count; i++) {
-        offsets.push(-maxOffset + (2 * maxOffset * (count === 1 ? 0 : i / (count - 1))));
-    }
-    return offsets.sort(function(a, b) {
-        return Math.abs(a) - Math.abs(b);
-    });
-}
-
-function buildTyrePaceSvg(laps, minTime, maxTime, teamColor) {
+export function buildTyrePaceSvg(laps, minTime, maxTime, teamColor) {
     if (!laps || !laps.length) return '';
 
     const viewWidth = 84;
@@ -323,63 +299,80 @@ function buildTyrePaceSvg(laps, minTime, maxTime, teamColor) {
     const topPad = TYRE_PACE_SVG_TOP_PAD;
     const plotHeight = TYRE_PACE_SVG_PLOT_HEIGHT;
     const range = getTyrePaceTimeRange(minTime, maxTime);
-    const binSize = Math.max(0.18, range / 14);
-    const binCount = Math.max(6, Math.ceil(range / binSize) + 1);
-    const bins = [];
-    let maxCount = 0;
+    const sorted = laps.slice().sort(function(a, b) {
+        return a.duration - b.duration || a.lapNumber - b.lapNumber;
+    });
+    const durations = sorted.map(function(lap) { return lap.duration; });
+    const low = durations[0];
+    const high = durations[durations.length - 1];
+    const middle = Math.floor(durations.length / 2);
+    const median = durations.length % 2 ? durations[middle] : (durations[middle - 1] + durations[middle]) / 2;
+    const color = '#' + normalizeHexColor(teamColor || '41B6E6');
 
     function timeToY(value) {
         return topPad + ((maxTime - value) / range) * plotHeight;
     }
 
-    for (let index = 0; index < binCount; index++) bins.push([]);
-
-    laps.forEach(function(lap) {
-        const binIndex = clampNumber(Math.round((lap.duration - minTime) / binSize), 0, binCount - 1);
-        bins[binIndex].push(lap);
-        if (bins[binIndex].length > maxCount) maxCount = bins[binIndex].length;
-    });
-
-    maxCount = Math.max(maxCount, 1);
-
-    const leftPoints = [];
-    const rightPoints = [];
-    bins.forEach(function(bin, binIndex) {
-        const centerTime = minTime + (binIndex * binSize);
-        const width = bin.length ? 7 + ((bin.length / maxCount) * 18) : 5;
-        const y = timeToY(centerTime);
-        leftPoints.push((centerX - width).toFixed(2) + ',' + y.toFixed(2));
-        rightPoints.unshift((centerX + width).toFixed(2) + ',' + y.toFixed(2));
-    });
-
-    const path = 'M ' + leftPoints.join(' L ') + ' L ' + rightPoints.join(' L ') + ' Z';
-    const fillChannels = hexToRgbChannels(adjustHexColor(teamColor || '41B6E6', 12));
-    const strokeChannels = hexToRgbChannels(teamColor || '41B6E6');
-    let circles = '';
-
-    bins.forEach(function(bin) {
-        if (!bin.length) return;
-        const binMin = Math.min.apply(null, bin.map(function(item) { return item.duration; }));
-        const binMax = Math.max.apply(null, bin.map(function(item) { return item.duration; }));
-        const localWidth = 7 + ((bin.length / maxCount) * 18);
-        const offsets = createCenteredOffsets(bin.length, Math.max(3, localWidth - 4));
-
-        bin.slice().sort(function(a, b) {
-            if (a.duration !== b.duration) return a.duration - b.duration;
-            return a.lapNumber - b.lapNumber;
-        }).forEach(function(lap, lapIndex) {
-            const ratio = binMax === binMin ? 0.5 : (lap.duration - binMin) / (binMax - binMin);
-            let y = timeToY(lap.duration);
-            if (bin.length > 1 && binMax !== binMin) y += (ratio - 0.5) * 6;
-            const meta = getCompoundMeta(lap.compound);
-            circles += '<circle class="tyre-pace-dot" cx="' + (centerX + offsets[lapIndex]).toFixed(2) + '" cy="' + y.toFixed(2) + '" r="4.2" fill="rgb(' + esc(hexToRgbChannels(meta.hex)) + ')">'
-                + '<title>' + esc(lap.compound + ' · Γύρος ' + lap.lapNumber + ' · ' + formatLapTime(lap.duration, true)) + '</title>'
-                + '</circle>';
+    // Gaussian density, clipped to the driver's observed range. A robust
+    // bandwidth keeps isolated slow laps from flattening the main distribution.
+    let silhouette = '';
+    if (high > low) {
+        const mean = durations.reduce(function(sum, value) { return sum + value; }, 0) / durations.length;
+        const deviation = Math.sqrt(durations.reduce(function(sum, value) {
+            return sum + Math.pow(value - mean, 2);
+        }, 0) / (durations.length - 1));
+        const iqr = durations[Math.floor((durations.length - 1) * 0.75)] - durations[Math.floor((durations.length - 1) * 0.25)];
+        const spread = iqr > 0 ? Math.min(deviation, iqr / 1.34) : deviation;
+        const bandwidth = Math.max(0.08, 0.9 * spread * Math.pow(durations.length, -0.2));
+        const profile = [];
+        let peak = 0;
+        for (let index = 0; index <= 96; index++) {
+            const time = low + (high - low) * index / 96;
+            let density = durations.reduce(function(sum, value) {
+                return sum + Math.exp(-0.5 * Math.pow((time - value) / bandwidth, 2));
+            }, 0);
+            density *= Math.min(1, (time - low) / bandwidth, (high - time) / bandwidth);
+            peak = Math.max(peak, density);
+            profile.push({ time: time, density: density });
+        }
+        const left = [];
+        const right = [];
+        profile.forEach(function(sample) {
+            const width = peak ? 30 * sample.density / peak : 0;
+            const y = timeToY(sample.time).toFixed(2);
+            left.push((centerX - width).toFixed(2) + ',' + y);
+            right.unshift((centerX + width).toFixed(2) + ',' + y);
         });
+        silhouette = '<path class="tyre-pace-violin" d="M ' + left.join(' L ') + ' L ' + right.join(' L ') + ' Z" fill="' + esc(color) + '"></path>';
+    }
+
+    // Move points horizontally only: their vertical position is always the
+    // actual lap time. Prefer the centre, then pack alternating sides.
+    const placed = [];
+    const offsets = [0];
+    const spacing = 5.4;
+    for (let step = 1; step <= 5; step++) offsets.push(step * spacing, -step * spacing);
+    let circles = '';
+    sorted.forEach(function(lap) {
+        const y = timeToY(lap.duration);
+        const neighbours = placed.filter(function(point) { return Math.abs(point.y - y) < spacing; });
+        let bestOffset = 0;
+        let leastOverlap = Infinity;
+        offsets.forEach(function(offset) {
+            const overlap = neighbours.reduce(function(sum, point) {
+                return sum + Math.max(0, spacing - Math.hypot(offset - point.x, y - point.y));
+            }, 0);
+            if (overlap < leastOverlap) { leastOverlap = overlap; bestOffset = offset; }
+        });
+        placed.push({ x: bestOffset, y: y });
+        const meta = getCompoundMeta(lap.compound);
+        circles += '<circle class="tyre-pace-dot" cx="' + (centerX + bestOffset).toFixed(2) + '" cy="' + y.toFixed(2) + '" r="2.3" fill="rgb(' + esc(hexToRgbChannels(meta.hex)) + ')">'
+            + '<title>' + esc(meta.label + ' · Γύρος ' + lap.lapNumber + ' · ' + formatLapTime(lap.duration, true)) + '</title></circle>';
     });
 
-    return '<svg class="tyre-pace-svg" viewBox="0 0 ' + viewWidth + ' ' + viewHeight + '" preserveAspectRatio="none" aria-hidden="true">'
-        + '<path d="' + esc(path) + '" fill="rgba(' + esc(fillChannels) + ', 0.22)" stroke="rgba(' + esc(strokeChannels) + ', 0.42)" stroke-width="1.2"></path>'
+    return '<svg class="tyre-pace-svg" viewBox="0 0 ' + viewWidth + ' ' + viewHeight + '" preserveAspectRatio="none" role="img" aria-label="' + esc(laps.length + ' γύροι · Διάμεσος ' + formatLapTime(median, true)) + '">'
+        + silhouette
+        + '<line class="tyre-pace-median" x1="12" x2="72" y1="' + timeToY(median).toFixed(2) + '" y2="' + timeToY(median).toFixed(2) + '"><title>' + esc('Διάμεσος · ' + formatLapTime(median, true)) + '</title></line>'
         + circles
         + '</svg>';
 }
@@ -393,7 +386,7 @@ function getTyrePaceAxisFraction(value, minTime, maxTime) {
     return (TYRE_PACE_SVG_TOP_PAD + ((maxTime - value) / range) * TYRE_PACE_SVG_PLOT_HEIGHT) / TYRE_PACE_SVG_VIEW_HEIGHT;
 }
 
-function buildTyrePaceSessionData(session, drivers, laps, stints) {
+export function buildTyrePaceSessionData(session, drivers, laps, stints) {
     const sessionKey = String(session.session_key);
     const driverLookup = buildDriverLookup(drivers)[sessionKey] || {};
     const lapsByDriver = {};
@@ -434,7 +427,14 @@ function buildTyrePaceSessionData(session, drivers, laps, stints) {
             const duration = parseTimeSeconds(lap.lap_duration);
             const nextLap = driverLaps[lapIndex + 1];
             const isPitInLap = !!(nextLap && nextLap.is_pit_out_lap);
-            if (!isFiniteNumber(duration) || duration <= 0 || lap.is_pit_out_lap || isPitInLap) return;
+            const sectorFields = ['duration_sector_1', 'duration_sector_2', 'duration_sector_3'];
+            const hasSectorData = sectorFields.some(function(field) { return Object.hasOwn(lap, field); });
+            const completeSectors = !hasSectorData || sectorFields.every(function(field) {
+                const seconds = parseTimeSeconds(lap[field]);
+                return isFiniteNumber(seconds) && seconds > 0;
+            });
+            if (!isFiniteNumber(duration) || duration <= 0 || lap.lap_number <= 1
+                || !completeSectors || lap.is_pit_out_lap || isPitInLap) return;
 
             usableLaps.push({
                 lapNumber: lap.lap_number,
@@ -445,11 +445,13 @@ function buildTyrePaceSessionData(session, drivers, laps, stints) {
 
         let filteredLaps = usableLaps.slice();
         if (usableLaps.length) {
-            const bestLap = usableLaps.reduce(function(best, lap) {
-                return Math.min(best, lap.duration);
-            }, usableLaps[0].duration);
+            // Wet-tyre laps must not be judged against a later dry-tyre best.
+            const bestByCompound = {};
+            usableLaps.forEach(function(lap) {
+                bestByCompound[lap.compound] = Math.min(bestByCompound[lap.compound] ?? Infinity, lap.duration);
+            });
             filteredLaps = usableLaps.filter(function(lap) {
-                return lap.duration <= bestLap + 12;
+                return lap.duration <= bestByCompound[lap.compound] + 12;
             });
             if (!filteredLaps.length) filteredLaps = usableLaps.slice();
         }
@@ -509,6 +511,8 @@ function renderTyrePace(data, session) {
     }
 
     const axisValues = buildLapTimeAxisValues(data.minTime, data.maxTime);
+    const minTime = axisValues[0];
+    const maxTime = axisValues[axisValues.length - 1];
     const chartMinWidth = Math.max(1360, 96 + (data.rows.length * 80));
     const compounds = data.compounds.length ? data.compounds.slice().sort(function(a, b) {
         const order = { 'SOFT': 0, 'MEDIUM': 1, 'HARD': 2, 'INTERMEDIATE': 3, 'WET': 4 };
@@ -522,7 +526,7 @@ function renderTyrePace(data, session) {
     }).join('');
 
     let html = '<div class="tyre-pace-card">'
-        + '<div class="tyre-pace-head"><div class="tyre-pace-head-copy"><h3 class="tyre-pace-head-title">Κατανομές χρόνων γύρου ανά γόμα</h3><p class="tyre-pace-head-note">Χρώματα στεγνής γόμας: σκληρή λευκή, medium κίτρινη, soft κόκκινη. Οι γύροι εξόδου, εισόδου και οι πολύ αργοί ακραίοι γύροι αφαιρούνται για καθαρότερη εικόνα ρυθμού.</p></div><label class="tyre-pace-controls"><span class="tyre-pace-controls-label">Διαθέσιμες συνεδρίες</span><select class="tyre-pace-select" data-tyre-pace-select aria-label="Επιλογή συνεδρίας για το Tyre Pace">' + selectOptions + '</select></label></div>'
+        + '<div class="tyre-pace-head"><div class="tyre-pace-head-copy"><h3 class="tyre-pace-head-title">Κατανομές χρόνων γύρου ανά γόμα</h3><p class="tyre-pace-head-note">Κάθε σχήμα δείχνει την κατανομή ρυθμού ενός οδηγού στο χρώμα της ομάδας του. Κάθε τελεία είναι ένας γύρος, με χρώμα ανά γόμα· η διακεκομμένη γραμμή δείχνει τη διάμεσο. Αφαιρούνται ο πρώτος γύρος, οι γύροι με ελλιπείς χρόνους τομέων και οι γύροι εξόδου ή εισόδου. Εξαιρούνται επίσης γύροι πάνω από 12 δευτερόλεπτα πιο αργοί από τον καλύτερο του οδηγού με την ίδια γόμα.</p></div><label class="tyre-pace-controls"><span class="tyre-pace-controls-label">Διαθέσιμες συνεδρίες</span><select class="tyre-pace-select" data-tyre-pace-select aria-label="Επιλογή συνεδρίας για το Tyre Pace">' + selectOptions + '</select></label></div>'
         + '<div class="tyre-pace-summary"><div><div class="tyre-pace-summary-title">' + esc(session.meeting_name || getSessionLabel(session)) + '</div><div class="tyre-pace-summary-sub">' + esc(formatSessionDateShort(session) + ' · ' + sessionLabel(session.session_name || session.session_type || 'Αγώνας')) + '</div></div><div class="tyre-pace-summary-stats"><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Οδηγοί</span><span class="tyre-pace-summary-value">' + esc(String(data.driverCount)) + '</span></div><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Έγκυροι γύροι</span><span class="tyre-pace-summary-value">' + esc(String(data.validLapCount)) + '</span></div><div class="tyre-pace-summary-stat"><span class="tyre-pace-summary-label">Καλύτερος γύρος</span><span class="tyre-pace-summary-value">' + esc(formatLapTime(data.rows[0] && data.rows[0].bestLap, true)) + '</span></div></div></div>'
         + '<div class="tyre-pace-legend"><span class="tyre-pace-legend-title">Γόμα ελαστικών</span>';
 
@@ -536,23 +540,23 @@ function renderTyrePace(data, session) {
         + '<div class="tyre-pace-axis"><span class="tyre-pace-axis-title">Χρόνος γύρου (s)</span><div class="tyre-pace-axis-layer">';
 
     axisValues.forEach(function(value) {
-        const top = getTyrePaceAxisFraction(value, data.minTime, data.maxTime) * 100;
+        const top = getTyrePaceAxisFraction(value, minTime, maxTime) * 100;
         html += '<span class="tyre-pace-axis-label" style="top:' + top.toFixed(2) + '%;">' + esc(formatLapTime(value, true)) + '</span>';
     });
 
     html += '</div></div><div class="tyre-pace-chart-body"><div class="tyre-pace-grid-layer">';
 
     axisValues.forEach(function(value) {
-        const top = getTyrePaceAxisFraction(value, data.minTime, data.maxTime) * 100;
+        const top = getTyrePaceAxisFraction(value, minTime, maxTime) * 100;
         html += '<div class="tyre-pace-grid-line" style="top:' + top.toFixed(2) + '%;"></div>';
     });
 
     html += '</div><div class="tyre-pace-columns" style="grid-template-columns:repeat(' + data.rows.length + ', minmax(68px, 1fr));">';
 
     data.rows.forEach(function(row) {
-        html += '<article class="tyre-pace-col">';
+        html += '<article class="tyre-pace-col" aria-label="' + esc(row.fullName + ' · ' + row.teamName) + '">';
         if (row.laps.length) {
-            html += '<div class="tyre-pace-plot">' + buildTyrePaceSvg(row.laps, data.minTime, data.maxTime, row.teamColor) + '</div>'
+            html += '<div class="tyre-pace-plot">' + buildTyrePaceSvg(row.laps, minTime, maxTime, row.teamColor) + '</div>'
                 + '<div class="tyre-pace-best">' + esc(formatLapTime(row.bestLap, true)) + '</div>';
         } else {
             html += '<div class="tyre-pace-no-data">Χωρίς γύρους</div><div class="tyre-pace-best">—</div>';
