@@ -324,17 +324,6 @@ function clampNumber(value, min, max) {
     return Math.min(max, Math.max(min, value));
 }
 
-function adjustHexColor(hex, delta) {
-    const value = normalizeHexColor(hex);
-    const rgb = [0, 2, 4].map(function(index) {
-        return clampNumber(parseInt(value.slice(index, index + 2), 16) + delta, 0, 255);
-    });
-    return rgb.map(function(channel) {
-        const str = channel.toString(16);
-        return str.length === 1 ? '0' + str : str;
-    }).join('');
-}
-
 function getCompletedTrackDominanceSessions() {
     return fetchJSON(OPENF1 + '/sessions?year=' + YEAR).then(function(sessions) {
         return (sessions || []).filter(function(session) {

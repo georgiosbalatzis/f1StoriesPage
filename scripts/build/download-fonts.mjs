@@ -68,10 +68,6 @@ const FAMILIES = [
 // and greek; drop cyrillic, vietnamese, etc.
 const KEEP_SUBSETS = new Set(['latin', 'latin-ext', 'greek', 'greek-ext']);
 
-// Heuristic matcher: Google's CSS has comments like `/* latin */` above each
-// @font-face so we can tell subsets apart.
-const SUBSET_COMMENT_RE = /\/\*\s*([a-z-]+)\s*\*\//g;
-
 function slugify(s) {
     return s.toLowerCase().replace(/\s+/g, '-');
 }

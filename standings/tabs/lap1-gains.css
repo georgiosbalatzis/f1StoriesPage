@@ -143,10 +143,6 @@
 
 [data-theme="light"] .lap1-view-tab.active { box-shadow: 0 8px 18px rgba(65,182,230,0.18); }
 
-.lap1-view-panel { display: none; }
-
-.lap1-view-panel.active { display: block; animation: panelIn 0.28s ease-out; }
-
 .lap1-race-card { background: var(--st-surface-raised); border: 1px solid var(--st-border); border-radius: var(--st-radius); box-shadow: var(--st-shadow-sm); padding: 1rem; }
 
 .lap1-race-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }

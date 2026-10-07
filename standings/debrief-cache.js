@@ -443,16 +443,6 @@ function buildLongRunSessionList(meeting, primarySession) {
     return sessions;
 }
 
-function buildMergedDriverMap(sessionDataList) {
-    var roster = {};
-    (sessionDataList || []).forEach(function(sessionData) {
-        Object.keys(sessionData.drivers || {}).forEach(function(driverNumber) {
-            if (!roster[driverNumber]) roster[driverNumber] = sessionData.drivers[driverNumber];
-        });
-    });
-    return roster;
-}
-
 function buildSingleLapCandidate(sessionData, driverNumber) {
     var driver = sessionData.drivers[driverNumber];
     var laps = sessionData.lapsByDriver[driverNumber] || [];

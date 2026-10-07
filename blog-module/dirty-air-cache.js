@@ -182,10 +182,6 @@ function getDirtyAirCategoryKey(gapSeconds) {
     return 'low';
 }
 
-function getDirtyAirCategoryMeta(categoryKey) {
-    return DIRTY_AIR_CATEGORIES.find(category => category.key === categoryKey) || DIRTY_AIR_CATEGORIES[DIRTY_AIR_CATEGORIES.length - 1];
-}
-
 function getDriverDisplayName(driver) {
     return driver.fullName || [driver.firstName, driver.lastName].filter(Boolean).join(' ') || `Driver #${driver.driverNumber || '?'}`;
 }
