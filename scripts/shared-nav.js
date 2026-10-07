@@ -48,6 +48,215 @@
 
     ensureNavThemeButton();
 
+    // ── Navbar audio player ──────────────────────
+    // ( play ) BETCAST and nothing else. The newest episode's audio is the first enclosure of the show's public
+    // podcast feed (Spotify for Podcasters / Anchor, CORS-open, ~11 KB, cached by the browser for 5 minutes) and
+    // plays through a plain <audio> element created on the first click. Never a YouTube player. Nothing starts on
+    // its own: only a listener who pressed play continues on the next page (sessionStorage, this tab only), and
+    // only the latest episode ever plays; when it ends the player simply stops.
+    var BETCAST_FEED = 'https://anchor.fm/s/101588098/podcast/rss';
+
+    function safeAudioUrl(value) {
+        try {
+            var parsed = new URL(value);
+            // YouTube is never an audio source.
+            return parsed.protocol === 'https:' && !/(^|\.)(youtube\.com|youtube-nocookie\.com|youtu\.be|googlevideo\.com|ytimg\.com)$/i.test(parsed.hostname) ? parsed.href : '';
+        } catch (_) {
+            return '';
+        }
+    }
+
+    // Feeds list the newest episode first.
+    function newestEnclosure(xml) {
+        var item = new DOMParser().parseFromString(xml, 'application/xml').getElementsByTagName('item')[0];
+        var tags = item ? item.getElementsByTagName('enclosure') : [];
+        for (var i = 0; i < tags.length; i++) {
+            var href = tags[i].getAttribute('url') || '';
+            if (/^audio\//i.test(tags[i].getAttribute('type') || '') || /\.(mp3|m4a|aac|ogg)(\?|$)/i.test(href)) {
+                var safe = safeAudioUrl(href);
+                if (safe) return safe;
+            }
+        }
+        return '';
+    }
+
+    function initAudioPlayer() {
+        var navRight = document.querySelector('.blog-nav-right');
+        if (!navRight || navRight.querySelector('.nav-audio')) return;
+
+        function el(tag, className) {
+            var node = document.createElement(tag);
+            node.className = className;
+            return node;
+        }
+        var root = el('div', 'nav-audio');
+        var button = el('button', 'nav-audio-btn');
+        button.type = 'button';
+        button.appendChild(el('span', 'nav-audio-glyph')).setAttribute('aria-hidden', 'true');
+        var status = el('span', 'nav-audio-status');
+        status.textContent = 'BETCAST';
+        var note = el('span', 'nav-audio-note');
+        note.setAttribute('role', 'status');
+        root.appendChild(button);
+        root.appendChild(status);
+        root.appendChild(note);
+        navRight.insertBefore(root, navRight.firstChild);
+
+        var STORE_KEY = 'f1stories-audio';
+        var ready = false;
+        var url = '';
+        var audio = null;
+        var active = false;
+        var buffering = false;
+        var leaving = false;
+        var lastSave = 0;
+        var resumeAt = 0;
+        var noteTimer = 0;
+
+        function render() {
+            root.classList.toggle('is-active', active);
+            button.setAttribute('aria-label', (active ? 'Παύση ' : 'Αναπαραγωγή ') + 'BetCast');
+            button.setAttribute('aria-busy', String(active && buffering));
+        }
+
+        function tell(message) {
+            note.textContent = message;
+            clearTimeout(noteTimer);
+            noteTimer = setTimeout(function () { note.textContent = ''; }, 5000);
+        }
+
+        // Pages are separate documents, so the tab's sessionStorage carries "is it playing, and where" to the next one.
+        function readSaved() {
+            try {
+                var saved = JSON.parse(sessionStorage.getItem(STORE_KEY));
+                return saved && typeof saved === 'object' ? saved : null;
+            } catch (_) {
+                return null;
+            }
+        }
+
+        function save(playing, time) {
+            if (leaving || !url) return;
+            try {
+                sessionStorage.setItem(STORE_KEY, JSON.stringify({ url: url, playing: playing, time: time || 0, at: Date.now() }));
+            } catch (_) {}
+        }
+
+        function stop() {
+            active = false;
+            if (audio) audio.pause();
+            render();
+        }
+
+        function fail() {
+            if (!active) return;
+            stop();
+            tell('Ο ήχος δεν είναι διαθέσιμος αυτή τη στιγμή.');
+        }
+
+        function ensureAudio() {
+            if (audio) return audio;
+            audio = new Audio();
+            audio.preload = 'none';
+            audio.loop = false; // one episode: when it ends, nothing else starts
+            ['waiting', 'playing', 'pause'].forEach(function (name) {
+                audio.addEventListener(name, function () {
+                    buffering = name === 'waiting';
+                    if (name === 'pause') {
+                        // Media keys and headphone buttons can pause outside our button.
+                        active = false;
+                        save(false, audio.ended ? 0 : audio.currentTime);
+                    }
+                    render();
+                });
+            });
+            audio.addEventListener('timeupdate', function () {
+                var now = Date.now();
+                if (active && now - lastSave > 1000) {
+                    lastSave = now;
+                    save(true, audio.currentTime);
+                }
+            });
+            audio.addEventListener('ended', stop);
+            audio.addEventListener('error', fail);
+            return audio;
+        }
+
+        // silent: a resume after navigation may be refused by the browser's autoplay rules; that just leaves it paused.
+        function begin(seekTo, silent) {
+            var player = ensureAudio();
+            if (player.getAttribute('src') !== url) {
+                player.src = url;
+                if (seekTo > 1) {
+                    player.addEventListener('loadedmetadata', function seek() {
+                        player.removeEventListener('loadedmetadata', seek);
+                        try {
+                            if (!isFinite(player.duration) || seekTo < player.duration - 1) player.currentTime = seekTo;
+                        } catch (_) {}
+                    });
+                }
+            }
+            function refuse() {
+                if (silent) { active = false; save(false, seekTo); render(); } else fail();
+            }
+            active = true;
+            save(true, seekTo);
+            render();
+            var started;
+            try { started = player.play(); } catch (_) { refuse(); return; }
+            if (started && started.catch) {
+                started.catch(function (error) {
+                    if (!error || error.name !== 'AbortError') refuse();
+                });
+            }
+        }
+
+        button.addEventListener('click', function () {
+            if (!ready) return;
+            if (active) { stop(); return; }
+            if (!url) { tell('Ο ήχος δεν είναι διαθέσιμος αυτή τη στιγμή.'); return; }
+            begin(resumeAt, false);
+        });
+
+        window.addEventListener('pagehide', function () {
+            if (audio) save(active, audio.ended ? 0 : audio.currentTime);
+            leaving = true;
+        });
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) leaving = false;
+        });
+
+        function accept(latest) {
+            ready = true;
+            url = latest;
+            // Only the same (latest) episode carries over; a new episode starts fresh.
+            var saved = readSaved();
+            if (!url || !saved || saved.url !== url) return;
+            var elapsed = saved.playing ? Math.min(Math.max((Date.now() - (saved.at || 0)) / 1000, 0), 10) : 0;
+            resumeAt = Math.max(0, (Number(saved.time) || 0) + elapsed);
+            if (saved.playing) begin(resumeAt, true);
+        }
+
+        function loadLatest() {
+            try {
+                fetch(BETCAST_FEED, { credentials: 'omit' })
+                    .then(function (response) { return response.ok ? response.text() : ''; })
+                    .then(function (xml) { return xml ? newestEnclosure(xml) : ''; })
+                    .catch(function () { return ''; })
+                    .then(accept);
+            } catch (_) {
+                accept('');
+            }
+        }
+
+        render();
+        // Read the feed once the page itself has loaded, so it never competes with it.
+        if (document.readyState === 'complete') loadLatest();
+        else window.addEventListener('load', loadLatest, { once: true });
+    }
+
+    initAudioPlayer();
+
     if (hamburger && mobileMenu) {
         function closeMobileMenu() {
             hamburger.classList.remove('open');
