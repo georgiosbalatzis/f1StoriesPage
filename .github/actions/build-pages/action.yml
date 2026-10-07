@@ -1,0 +1,75 @@
+name: Prepare Pages artifact
+description: Build, validate and upload Pages using the current checkout and installed dependencies.
+
+inputs:
+  dependency_hash:
+    description: Optional hash of installed manifests, to detect a publishing rebase that changed dependencies.
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Refresh dependencies if their manifests changed
+      if: inputs.dependency_hash != ''
+      shell: bash
+      env:
+        INSTALLED_HASH: ${{ inputs.dependency_hash }}
+      run: |
+        set -eu
+        if [ "$INSTALLED_HASH" != "$(git hash-object package.json package-lock.json | git hash-object --stdin)" ]; then
+          npm ci --no-audit --no-fund
+        fi
+
+    - name: Read assembly mode
+      id: assembly
+      shell: bash
+      run: node -e 'const fs = require("node:fs"); const c = require("./scripts/deployment/sources.json"); fs.appendFileSync(process.env.GITHUB_OUTPUT, "enabled=" + c.enabled + "\n");'
+
+    - name: Reuse optimized article images
+      if: steps.assembly.outputs.enabled != 'true'
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .build/public-images
+        key: public-images-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/build/public-article-images.mjs') }}-${{ hashFiles('package-lock.json', 'blog-module/blog-entries/**/*.webp', 'blog-module/blog-entries/**/*.avif') }}
+        restore-keys: |
+          public-images-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/build/public-article-images.mjs') }}-
+
+    - name: Build public artifact
+      if: steps.assembly.outputs.enabled != 'true'
+      shell: bash
+      run: npm run build:public
+
+    - name: Build pinned aggregate artifact
+      if: steps.assembly.outputs.enabled == 'true'
+      shell: bash
+      run: |
+        node scripts/deployment/build.mjs --output .build/priority6/site --reports .build/priority6/reports
+        rm -rf dist
+        mv .build/priority6/site dist
+
+    - name: Run static source guard
+      shell: bash
+      run: npm run quality:static
+
+    - name: Audit runtime dependencies
+      shell: bash
+      run: npm run audit:runtime
+
+    - name: Install integration browser
+      if: steps.assembly.outputs.enabled == 'true'
+      shell: bash
+      run: node_modules/.bin/playwright-core install --with-deps chromium
+
+    - name: Smoke test canonical artifact
+      if: steps.assembly.outputs.enabled == 'true'
+      shell: bash
+      run: npm run test:integration -- --site dist --reports .build/priority6/reports
+
+    - name: Configure Pages
+      uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+    - name: Upload Pages artifact
+      uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+      with:
+        path: dist

@@ -11,6 +11,7 @@ const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DEPLOY_WORKFLOW = '.github/workflows/deploy-pages.yml';
 const ARTICLE_PUBLISH_WORKFLOW = '.github/workflows/auto-publish-author-pr.yml';
 const MAINTENANCE_WORKFLOW = '.github/workflows/publish-blog.yml';
+const BUILD_PAGES_ACTION = '.github/actions/build-pages/action.yml';
 const PUBLIC_ARTIFACT_SCRIPT = 'scripts/build/public-artifact.mjs';
 const PUBLIC_VALIDATOR_SCRIPT = 'scripts/build/validate-public-artifact.mjs';
 const PACKAGE_JSON = 'package.json';
@@ -45,9 +46,13 @@ function main() {
     assertPattern(PACKAGE_JSON, buildPublic, /\bnpm run pages:guard\b/, '`build:public` must run `pages:guard` before building dist/');
 
     const workflow = readText(DEPLOY_WORKFLOW);
-    assertPattern(DEPLOY_WORKFLOW, workflow, /run:\s*npm run build:public\b/, 'Pages deploy must build the validated public artifact');
-    assertPattern(DEPLOY_WORKFLOW, workflow, /uses:\s*actions\/upload-pages-artifact@/i, 'Pages deploy must upload an Actions Pages artifact');
-    assertPattern(DEPLOY_WORKFLOW, workflow, /\bpath:\s*dist\b/, 'Pages artifact upload path must be dist');
+    assertPattern(DEPLOY_WORKFLOW, workflow, /uses:\s*\.\/\.github\/actions\/build-pages\b/, 'Pages deploy must use the shared artifact preparation action');
+    const preparation = readText(BUILD_PAGES_ACTION);
+    assertPattern(BUILD_PAGES_ACTION, preparation, /run:\s*npm run build:public\b/, 'Pages preparation must build the validated public artifact');
+    assertPattern(BUILD_PAGES_ACTION, preparation, /uses:\s*actions\/upload-pages-artifact@/i, 'Pages preparation must upload an Actions Pages artifact');
+    assertPattern(BUILD_PAGES_ACTION, preparation, /\bpath:\s*dist\b/, 'Pages artifact upload path must be dist');
+    assertPattern(BUILD_PAGES_ACTION, preparation, /run:\s*npm run quality:static\b/, 'Pages preparation must run the static source guard');
+    assertPattern(BUILD_PAGES_ACTION, preparation, /run:\s*npm run audit:runtime\b/, 'Pages preparation must audit runtime dependencies');
     assertPattern(DEPLOY_WORKFLOW, workflow, /uses:\s*actions\/deploy-pages@/i, 'Pages deploy must use actions/deploy-pages');
     assertPattern(DEPLOY_WORKFLOW, workflow, /\bpages:\s*write\b/, 'Pages deploy must declare pages: write permission');
     assertPattern(DEPLOY_WORKFLOW, workflow, /\bid-token:\s*write\b/, 'Pages deploy must declare id-token: write permission');
@@ -65,6 +70,7 @@ function main() {
     assertPattern(MAINTENANCE_WORKFLOW, maintenanceWorkflow, /^  push:\s*\n\s+branches:\s*\[main\]/m, 'maintenance must own main pushes');
     assertPattern(MAINTENANCE_WORKFLOW, maintenanceWorkflow, /uses:\s*\.\/\.github\/workflows\/deploy-pages\.yml\b/, 'maintenance must call the reusable Pages deploy in the same run');
     assertPattern(MAINTENANCE_WORKFLOW, maintenanceWorkflow, /outputs:\s*\n\s+changed:/, 'maintenance jobs must expose whether they committed a change');
+    assertPattern(MAINTENANCE_WORKFLOW, maintenanceWorkflow, /uses:\s*\.\/\.github\/actions\/build-pages\b/, 'article generation must prepare Pages using its installed dependencies');
 
     const publicArtifact = readText(PUBLIC_ARTIFACT_SCRIPT);
     for (const file of AUTHOR_TOOL_FILES) {

@@ -637,9 +637,10 @@ npm run build:public
 | `publish-blog.yml` | **Site Maintenance** | Schedule, κάθε push στο `main`, χειροκίνητα, κλήση από το Publish Article | Build του blog όταν χρειάζεται, ανανέωση YouTube/standings, μία κλήση deploy ανά push. |
 | `deploy-pages.yml` | **Deploy Pages** | Χειροκίνητα, κλήση από άλλο workflow | `build:public` με επαναχρησιμοποίηση εικόνων, έλεγχοι, upload και deploy στο GitHub Pages. |
 
-Τα κοινά βήματα βρίσκονται σε δύο composite actions στο `.github/actions/`:
+Τα κοινά βήματα βρίσκονται σε τρία composite actions στο `.github/actions/`:
 
 - **`setup`**: `actions/setup-node@v7` με Node 22, χωρίς npm cache, και μετά `npm ci --no-audit --no-fund`. Το χρησιμοποιούν τα build jobs. Η cache των βελτιστοποιημένων εικόνων είναι ξεχωριστή.
+- **`build-pages`**: χρησιμοποιεί το υπάρχον checkout και τα εγκατεστημένα dependencies για build, ελέγχους και upload του `dist/`. Διατηρεί και τη διαδρομή pinned aggregate με integration smoke test. Αν ένα publishing rebase αλλάξει `package.json` ή `package-lock.json`, ανανεώνει τα dependencies πριν από το build.
 - **`commit-and-push`**: ορίζει την ταυτότητα του commit, κάνει stage τα `paths` (προεπιλογή `-A`) και commit με το `message`, και κάνει push στο `main`. Αν το push χάσει race με άλλο publisher, κάνει `fetch` και `rebase` και ξαναδοκιμάζει έως 3 φορές. Επιστρέφει `changed=true` μόνο όταν έγινε push.
 
 Όλα τα jobs τρέχουν σε `ubuntu-latest`.
@@ -699,14 +700,13 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 
 Κάνει build του blog και ανανεώνει YouTube/standings. Τα jobs συλλογής δεδομένων παραδίδουν τις αλλαγές σε ξεχωριστό job δημοσίευσης, και στο τέλος γίνεται deploy.
 
-**Triggers και schedule** (οι ώρες του cron είναι σε UTC):
+**Triggers και schedule** (όλα με `timezone: Europe/Athens`, σε τοπική ώρα):
 
 | Cron | Job | Ώρα |
 |---|---|---|
-| `59 20 * * 6`, `59 21 * * 6` | `refresh_youtube` | Σάββατο 23:59 ώρα Αθήνας |
-| `59 20 * * 5`, `59 21 * * 5` | `refresh_standings_data` | Παρασκευή 23:59 ώρα Αθήνας |
-| `1 4 * * 6`, `1 5 * * 6` | `refresh_standings_data` | Σάββατο 07:01 ώρα Αθήνας |
-| `1 4 * * 1`, `1 5 * * 1` | `refresh_standings_data` | Δευτέρα 07:01 ώρα Αθήνας |
+| `59 23 * * 6` | `refresh_youtube` | Σάββατο 23:59 |
+| `59 23 * * 5` | `refresh_standings_data` | Παρασκευή 23:59 |
+| `1 7 * * 1,6` | `refresh_standings_data` | Σάββατο και Δευτέρα 07:01 |
 
 Το `publish_blog` δεν έχει schedule. Τρέχει μόνο όταν αλλάξει κάποιο άρθρο, αφού το build του blog βγάζει ίδιο αποτέλεσμα όταν δεν αλλάζει τίποτα.
 
@@ -718,17 +718,19 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 - **`workflow_dispatch`** με επιλογή `task`: `blog`, `standings` ή `youtube`.
 - **`workflow_call`** με input `task`. Το χρησιμοποιεί το Publish Article με `task: blog`.
 
-**Γιατί υπάρχουν δύο cron για κάθε ώρα των standings και του YouTube.** Το cron του GitHub είναι πάντα σε UTC, ενώ η Αθήνα αλλάζει μεταξύ UTC+2 (χειμώνας) και UTC+3 (θερινή ώρα). Γι' αυτό προγραμματίζονται και οι δύο εκδοχές. Το πρώτο βήμα του job υπολογίζει την ώρα Αθήνας από το cron που ενεργοποιήθηκε, όχι από το ρολόι, και συνεχίζει μόνο αν βγαίνει 23 ή 7 (για το YouTube μόνο 23). Το GitHub συχνά ξεκινά τα scheduled runs με καθυστέρηση, οπότε ένας έλεγχος με βάση το ρολόι θα παρέλειπε τα runs.
+Το GitHub υποστηρίζει [timezone-aware schedules](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule) και χειρίζεται αυτόματα τη θερινή/χειμερινή ώρα. Δεν χρειάζονται διπλά UTC cron ή shell έλεγχος ώρας. Το job επιλέγεται από συγκεκριμένα maintenance cron, οπότε ένας καθυστερημένος scheduled run δεν παραλείπεται λόγω της ώρας εκκίνησής του και μια reusable κλήση από το Scheduled Publish δεν ξεκινά κατά λάθος standings refresh. Οι πραγματικές τοπικές ώρες παραμένουν ίδιες.
 
 **Jobs:**
 
-- **`publish_blog`**: checkout του `main` με πλήρες ιστορικό και επαναφορά των git mtimes. Κάθε αρχείο του `blog-entries/` παίρνει ως `mtime` την ώρα του τελευταίου commit που το άλλαξε. Το checkout δίνει σε όλα τα αρχεία την ίδια ώρα, οπότε χωρίς αυτό το βήμα ο incremental έλεγχος θα παρέλειπε άρθρα που άλλαξαν. Μετά `node blog-module/blog-processor.js` και `commit-and-push` με `chore(blog): auto-build generated artifacts [skip ci]`.
+- **`publish_blog`**: checkout του `main` με πλήρες ιστορικό και επαναφορά των git mtimes. Κάθε αρχείο του `blog-entries/` παίρνει ως `mtime` την ώρα του τελευταίου commit που το άλλαξε. Το checkout δίνει σε όλα τα αρχεία την ίδια ώρα, οπότε χωρίς αυτό το βήμα ο incremental έλεγχος θα παρέλειπε άρθρα που άλλαξαν. Μετά `node blog-module/blog-processor.js`, stamp των άρθρων και `commit-and-push` με `chore(blog): auto-build generated artifacts [skip ci]`. Στο ίδιο job, το `build-pages` ετοιμάζει και ανεβάζει το Pages artifact από το checkout μετά το commit/rebase. Έτσι το συνηθισμένο article publish χρειάζεται ένα checkout και ένα `npm ci` για generation και packaging. Το χειροκίνητο/reusable blog task χωρίς αλλαγές παραλείπει packaging και deploy.
 - **`refresh_youtube`**: read-only checkout και `node scripts/build/fetch-youtube.mjs`, χωρίς να κρατά το lock δημοσίευσης άρθρων. Παράγει Git patch μόνο για το `assets/youtube-latest.json` και το `images/youtube/`, μαζί με προσθήκες και διαγραφές εικόνων.
 - **`refresh_standings_data`**: read-only checkout και `npm run build:standings-data`, επίσης χωρίς το lock άρθρων. Το patch περιλαμβάνει τα `standings/*-cache.json`, `standings/dirty-air/` και `standings/rounds/`, μαζί με διαγραμμένα snapshots.
 - **`publish_data`**: τρέχει μόνο όταν ένα refresh ολοκληρωθεί επιτυχώς με αλλαγές. Κατεβάζει το patch artifact (διατηρείται μία ημέρα) μέσω του μοναδικού ID του, κάνει νέο checkout του τρέχοντος `main` με πλήρες ιστορικό και εφαρμόζει `git apply --3way --index`. Έτσι διατηρεί άρθρα που δημοσιεύθηκαν όσο έτρεχε το fetch. Αν τα ίδια δεδομένα έχουν αλλάξει ασύμβατα στο μεταξύ, αποτυγχάνει πριν από το commit/push. Χρησιμοποιεί το `commit-and-push` με τα υπάρχοντα `chore(data): ... [skip ci]` μηνύματα, χωρίς Node setup ή `npm ci`.
 - **`deploy`**: καλεί το `deploy-pages.yml` μία φορά μετά από επιτυχημένο main push, ακόμη κι αν δεν χρειάστηκε νέο generated commit. Για scheduled, χειροκίνητες και reusable εργασίες συντήρησης, καλείται μόνο αν κάποιο content job έκανε πραγματικό push.
 
 Μόνο τα `publish_blog` και `publish_data` είναι στο κοινό concurrency group `content-publishing`. Τα fetch jobs έχουν ανεξάρτητα groups (`youtube-fetch`, `standings-fetch`), ώστε ένα αργό API να μη δεσμεύει την ουρά άρθρων. Το lock των δεδομένων καλύπτει μόνο checkout, εφαρμογή patch και commit/push. Η συνολική διάρκεια του fetch παραμένει ίδια και προστίθεται ένα σύντομο publishing job· το όφελος είναι η μικρότερη αναμονή των άρθρων. Αν δεν αλλάξουν δεδομένα, δεν ανεβαίνει artifact και παραλείπονται το publishing και το deploy.
+
+**Timeouts:** routing 5 λεπτά, blog generation/Pages preparation 25, YouTube fetch 10, standings fetch 30 και data commit 5. Έτσι κανένα maintenance runner job δεν μένει στο προεπιλεγμένο όριο έξι ωρών.
 
 ### 13.4 Deploy Pages (`deploy-pages.yml`)
 
@@ -738,8 +740,9 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 - **Ένας υπεύθυνος για main pushes:** μόνο το Site Maintenance έχει `push` trigger. Το Deploy Pages παραμένει reusable και δεν ξεκινά ανεξάρτητο run για το ίδιο push.
 - **Δικαιώματα:** `contents: read`, `pages: write`, `id-token: write`.
 - **Concurrency:** `pages`, σε ουρά.
-- **Job `build`** (timeout 25 λεπτά): checkout του `main`, `setup`, `npm run build:public`, `npm run quality:static`, `npm run audit:runtime`, `actions/configure-pages@v6` και `actions/upload-pages-artifact@v5` με `path: dist`.
-- **Job `deploy`:** `actions/deploy-pages@v5` στο environment `github-pages`.
+- **Job `build`** (timeout 25 λεπτά): checkout του `main`, `setup` και `build-pages`, που διατηρεί `build:public`, `quality:static`, `audit:runtime`, configure και upload του `dist/`. Τρέχει για χειροκίνητο deploy, code-only pushes και ανανεώσεις δεδομένων.
+- **Έτοιμο artifact άρθρου:** το reusable input `artifact_ready` είναι `false` από προεπιλογή. Το Site Maintenance το ορίζει σε `true` μόνο όταν το `publish_blog` ολοκλήρωσε επιτυχώς το artifact preparation/upload. Τότε παραλείπεται ολόκληρο το δεύτερο build job, μαζί με checkout και npm install. Οποιαδήποτε αποτυχία των ελέγχων του publisher σταματά το deploy.
+- **Job `deploy`** (timeout 10 λεπτά): `actions/deploy-pages@v5` στο environment `github-pages`. Είναι το μόνο job με `pages: write` και `id-token: write`.
 
 **Επαναχρησιμοποίηση βελτιστοποιημένων εικόνων:** το `public-article-images.mjs` διατηρεί τις δημόσιες εκδόσεις στη `.build/public-images/` (gitignored). Το κλειδί κάθε εικόνας περιλαμβάνει το περιεχόμενο της πηγής, το format, τα όρια μεγέθους/πλάτους, τον κώδικα του optimizer και τις εκδόσεις των native encoders. Τα originals δεν αλλάζουν. Η ακεραιότητα της cache ελέγχεται πριν από την αντιγραφή και οι ελλιπείς ή κατεστραμμένες εγγραφές ξαναπαράγονται.
 
@@ -751,7 +754,7 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 
 Δημοσιεύει τα προγραμματισμένα άρθρα του `generate.html`. Το Publish Article δεν αγγίζει τα branches `author/scheduled/**`, οπότε τίποτα δεν γίνεται merge πριν την ώρα του.
 
-- **Trigger:** schedule δύο φορές τη μέρα, 09:00 και 18:00 ώρα Αθήνας, και `workflow_dispatch`. Όπως στα standings, προγραμματίζονται και οι δύο εκδοχές UTC (`0 6`, `0 7`, `0 15`, `0 16`) και το πρώτο βήμα κρατά μόνο αυτή που βγαίνει 9 ή 18 ώρα Αθήνας. Ένα άρθρο βγαίνει στο πρώτο run μετά την ώρα του, οπότε αυτές είναι στην πράξη οι ώρες δημοσίευσης· το `generate.html` δείχνει στον συντάκτη ποιο run θα το πάρει. Το GitHub μπορεί να καθυστερήσει τα scheduled runs κατά μερικά λεπτά. Για δημοσίευση νωρίτερα: Actions > Scheduled Publish > Run workflow (κάνει merge ό,τι έχει ήδη περάσει η ώρα του).
+- **Trigger:** `0 9,18 * * *` με `timezone: Europe/Athens`, δηλαδή δύο φορές τη μέρα στις 09:00 και 18:00 τοπική ώρα, και `workflow_dispatch`. Ένα άρθρο βγαίνει στο πρώτο run μετά την ώρα του, οπότε αυτές είναι στην πράξη οι ώρες δημοσίευσης· το `generate.html` δείχνει στον συντάκτη ποιο run θα το πάρει. Το GitHub μπορεί να καθυστερήσει τα scheduled runs κατά μερικά λεπτά. Για δημοσίευση νωρίτερα: Actions > Scheduled Publish > Run workflow (κάνει merge ό,τι έχει ήδη περάσει η ώρα του).
 - **Ώρα δημοσίευσης:** κρυφή γραμμή στο κείμενο του PR, `<!-- f1s-publish-at: 2026-10-01T09:00:00Z -->` (UTC). Για αλλαγή ώρας, Edit στην περιγραφή του PR και αλλαγή της γραμμής.
 - **Ακύρωση:** κλείσιμο του PR ή μετατροπή σε draft.
 - **Job `merge`** (`contents: write`, `pull-requests: write`, `checks: read`): για κάθε ανοιχτό, μη draft PR `author/scheduled/**` από το ίδιο repo προς `main`, με ώρα που πέρασε:
