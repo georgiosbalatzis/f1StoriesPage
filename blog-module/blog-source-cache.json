@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261007W",
+      "title": "Χάμιλτον: Ένα βάθρο που άξιζε περισσότερο απ’ όσο δείχνει",
+      "author": "Themis Charvalis",
+      "date": "2026-10-07",
+      "dateISO": "2026-10-07",
+      "displayDate": "7 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261007W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261007W/2.webp",
+      "excerpt": "Από την 18η θέση στην τρίτη, σε έναν αγώνα όπου ο Verstappen είχε τον πρώτο λόγο Μια τρίτη θέση συνήθως δεν χρειάζεται πολλές εξηγήσεις. Για τον Lewis Hamilton, όμως, το βάθρο στην Sepang ήταν πολύ...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261007W/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "Lewis Hamilton",
+        "Ferrari",
+        "F1",
+        "Grand Prix Bahrain",
+        "Sepang circuit"
+      ],
+      "wordCount": 581,
+      "readingTime": "3 min",
+      "imageWidth": 1092,
+      "imageHeight": 683,
+      "backgroundImageWidth": 1350,
+      "backgroundImageHeight": 900
+    },
+    {
       "id": "20261006G",
       "title": "Το SC τιμώρησε αυτούς που το ερμήνευσαν σωστά",
       "author": "Georgios Balatzis",
@@ -10080,5 +10111,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-06T17:35:32.999Z"
+  "lastUpdated": "2026-10-07T00:21:27.686Z"
 }
