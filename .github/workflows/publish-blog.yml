@@ -72,7 +72,7 @@ jobs:
                 (.files | length) >= 300 or
                 any(.files[];
                   [.filename, (.previous_filename // "")]
-                  | any(test("^(blog-module/blog-entries/|blog-module/blog-processor\\.js$|blog-module/blog/template\\.html$|\\.github/workflows/publish-blog\\.yml$)"))
+                  | any(test("^(blog-module/blog-entries/|blog-module/blog-processor\\.js$|blog-module/build/(?!__tests__/)|blog-module/blog/template\\.html$|\\.github/workflows/publish-blog\\.yml$)"))
                 )' comparison.json)"
             fi
           fi

@@ -22,6 +22,9 @@ const {
     formatReadingTime, cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture
 } = require('../taxonomy');
 
+const { loadPublishTimes, comparePosts } = require('./publish-order');
+
+const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const EDITORIAL_SELECTION_PATH = path.join(__dirname, '..', 'editorial-selection.json');
 
 function parseBuildOptions(argv = process.argv, env = process.env) {
@@ -1112,14 +1115,9 @@ async function processBlogEntries(options = {}) {
         );
     }
 
-    blogPosts.sort((a, b) => {
-        const dateDiff = new Date(b.date) - new Date(a.date);
-        if (dateDiff !== 0) return dateDiff;
-        if (existingOrderById.has(a.id) && existingOrderById.has(b.id)) {
-            return existingOrderById.get(a.id) - existingOrderById.get(b.id);
-        }
-        return String(b.id).localeCompare(String(a.id));
-    });
+    // Same-day articles are ordered by when they reached main (see publish-order.js), not by author letter.
+    const publishTimes = loadPublishTimes(REPO_ROOT);
+    blogPosts.sort((a, b) => comparePosts(a, b, { publishTimes, existingOrderById }));
 
     const lastUpdated = new Date().toISOString();
     const blogData = {

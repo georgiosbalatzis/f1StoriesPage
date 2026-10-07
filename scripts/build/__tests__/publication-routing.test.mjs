@@ -31,6 +31,10 @@ test('push routing detects mixed changes, deletions and renames without overlook
         { files: [{ filename: 'blog-module/blog-entries/deleted/article.html', status: 'removed' }], blog: true },
         { files: [{ filename: 'archive/source.txt', previous_filename: 'blog-module/blog-entries/moved/source.txt' }], blog: true },
         { files: [{ filename: 'blog-module/blog-processor.js' }], blog: true },
+        // The generator itself decides article order and markup, so changing it must regenerate; its tests need not.
+        { files: [{ filename: 'blog-module/build/index.js' }], blog: true },
+        { files: [{ filename: 'blog-module/build/publish-order.js' }], blog: true },
+        { files: [{ filename: 'blog-module/build/__tests__/publish-order.test.js' }], blog: false },
         { files: [{ filename: '.github/workflows/publish-blog.yml' }], blog: true },
         { files: Array.from({ length: 300 }, (_, i) => ({ filename: `docs/${i}.md` })), blog: true },
         { files: [], apiFailure: true, blog: true },
