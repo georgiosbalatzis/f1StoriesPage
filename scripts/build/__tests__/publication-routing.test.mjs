@@ -38,6 +38,8 @@ test('push routing detects mixed changes, deletions and renames without overlook
         // The category vocabulary shapes every card, filter and article masthead.
         { files: [{ filename: 'blog-module/taxonomy.js' }], blog: true },
         { files: [{ filename: 'blog-module/taxonomy.min.js' }], blog: false },
+        // Editing the hand-picked Journal front must regenerate the archive page it feeds.
+        { files: [{ filename: 'blog-module/editorial-selection.json' }], blog: true },
         { files: [{ filename: '.github/workflows/publish-blog.yml' }], blog: true },
         { files: Array.from({ length: 300 }, (_, i) => ({ filename: `docs/${i}.md` })), blog: true },
         { files: [], apiFailure: true, blog: true },

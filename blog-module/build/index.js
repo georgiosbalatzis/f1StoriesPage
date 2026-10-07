@@ -219,9 +219,11 @@ function loadEditorialSelection(filePath = EDITORIAL_SELECTION_PATH) {
 }
 
 // The Journal front: one lead, three secondary stories, a short recent list and
-// optional deep reads. Explicit picks come from editorial-selection.json; every
-// empty or invalid slot falls back to the newest story not already shown, so the
-// front is valid with no selection file at all. `posts` must be newest first.
+// the deep reads ("ΑΝΑΛΥΤΙΚΕΣ ΑΠΟΨΕΙΣ"). Explicit picks come from editorial-selection.json;
+// every empty or invalid slot falls back to the newest story not already shown, so the
+// front is valid with no selection file at all. The deep reads fall back to the newest
+// Analysis stories, taken after the other slots so none is shown twice.
+// `posts` must be newest first.
 function resolveJournalFront(posts, selection = {}) {
     const byId = new Map(posts.map(post => [post.id, post]));
     const used = new Set();
@@ -239,10 +241,10 @@ function resolveJournalFront(posts, selection = {}) {
         });
         return picked;
     }
-    function fill(picked, limit) {
+    function fill(picked, limit, accepts = () => true) {
         for (const post of posts) {
             if (picked.length >= limit) break;
-            if (used.has(post.id)) continue;
+            if (used.has(post.id) || !accepts(post)) continue;
             used.add(post.id);
             picked.push(post);
         }
@@ -254,6 +256,7 @@ function resolveJournalFront(posts, selection = {}) {
     fill(lead, 1);
     fill(secondary, JOURNAL_LAYOUT.secondary);
     const recent = fill([], JOURNAL_LAYOUT.recent);
+    fill(deepReads, JOURNAL_LAYOUT.deepReads, post => primaryCategory(post) === 'Analysis');
     return { lead: lead[0] || null, secondary, recent, deepReads, ids: [...used], warnings };
 }
 

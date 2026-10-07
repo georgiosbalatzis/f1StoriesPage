@@ -129,6 +129,40 @@ test('journal front honours a valid selection and never repeats a story', () => 
     assert.equal(new Set(front.ids).size, front.ids.length);
 });
 
+// Analysis stories scattered through an otherwise Technical archive: p2, p5, p8, p10 (newest first).
+const mixedPosts = frontPosts.map(post => ({ ...post, categories: ['2', '5', '8', '10'].includes(post.id.slice(1)) ? ['Analysis'] : ['Technical'] }));
+
+test('deep reads fill themselves with the newest Analysis stories not already on the front', () => {
+    const front = resolveJournalFront(mixedPosts, {});
+    // p2 is already a secondary story and p5 is in the recent list, so neither repeats in the deep reads.
+    assert.deepEqual(front.secondary.map(post => post.id), ['p1', 'p2', 'p3']);
+    assert.deepEqual(front.recent.map(post => post.id), ['p4', 'p5', 'p6', 'p7']);
+    assert.deepEqual(front.deepReads.map(post => post.id), ['p8', 'p10']);
+    assert.equal(new Set(front.ids).size, front.ids.length);
+    // Moving the newest Analysis story out of the way gives it to the deep reads instead.
+    const quiet = resolveJournalFront(mixedPosts.map(post => post.id === 'p2' ? { ...post, categories: ['Technical'] } : post), {});
+    assert.deepEqual(quiet.deepReads.map(post => post.id), ['p8', 'p10']);
+});
+
+test('an explicit deep read wins its slot and the fill completes the section', () => {
+    const front = resolveJournalFront(mixedPosts, { deepReads: ['p11'] });
+    assert.deepEqual(front.deepReads.map(post => post.id), ['p11', 'p8']);
+    const both = resolveJournalFront(mixedPosts, { deepReads: ['p11', 'p9'] });
+    assert.deepEqual(both.deepReads.map(post => post.id), ['p11', 'p9']);
+    // A pinned id that no longer exists is dropped with a warning and the fill covers the gap.
+    const gone = resolveJournalFront(mixedPosts, { deepReads: ['gone'] });
+    assert.deepEqual(gone.deepReads.map(post => post.id), ['p8', 'p10']);
+    assert.equal(gone.warnings.length, 1);
+});
+
+test('deep reads stay empty, and the section absent, when no Analysis story is free', () => {
+    assert.deepEqual(resolveJournalFront(frontPosts, {}).deepReads, []);
+    const few = resolveJournalFront(mixedPosts.slice(0, 6), {});
+    assert.deepEqual(few.deepReads, []);
+    assert.doesNotMatch(renderJournalFront(few, {}), /ΑΝΑΛΥΤΙΚΕΣ ΑΠΟΨΕΙΣ/);
+    assert.match(renderJournalFront(resolveJournalFront(mixedPosts, {}), {}), /ΑΝΑΛΥΤΙΚΕΣ ΑΠΟΨΕΙΣ/);
+});
+
 test('journal front drops unknown or deleted ids with a warning', () => {
     const front = resolveJournalFront(frontPosts, { lead: 'deleted-story', secondary: ['p3'], deepReads: ['gone'] });
     assert.equal(front.lead.id, 'p0');
