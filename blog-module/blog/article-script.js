@@ -579,9 +579,10 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
     // Tyre Intelligence embeds (georgiosbalatzis.github.io/Tyres/embed/…) carry no script of their own:
     // a "#dark" fragment switches them to the charcoal theme through CSS :target. Fragment changes never
     // reload the iframe, so a 3D view the reader opened survives a theme toggle.
+    // Ghost Car embeds (georgiosbalatzis.github.io/ghostcar/) read the same #light / #dark fragment.
     function setupTyreEmbeds() {
         if (!articleContent) return;
-        const frames = articleContent.querySelectorAll('iframe[src^="https://georgiosbalatzis.github.io/Tyres/embed/"]');
+        const frames = articleContent.querySelectorAll('iframe[src^="https://georgiosbalatzis.github.io/Tyres/embed/"], iframe[src^="https://georgiosbalatzis.github.io/ghostcar/"]');
         if (!frames.length) return;
         const sync = () => {
             const fragment = document.documentElement.getAttribute('data-theme') === 'light' ? '#light' : '#dark';
