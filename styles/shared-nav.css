@@ -415,55 +415,69 @@
     background: transparent;
 }
 
-/* ── Navbar audio player: ( ▶ ) BETCAST ───────────────────────────
-   Injected by scripts/shared-nav.js. Reads like a nav item: an accent ring and a label, no box or fill
-   until it is hovered, focused or playing. The 44px target is the button's reach beyond its 32px ring. */
+/* ── Navbar audio player: [ ▶ ON AIR. ] ──────────────────────────
+   Injected by scripts/shared-nav.js. The masthead's end-cap: an ink block that fills with signal red as the
+   episode plays. Two identical faces: ink with paper type underneath, and a signal face with ink type on top
+   that --p (0–100%) opens from the left, so the type stays legible on both. From 992px the cap leaves the
+   bar's flow and runs flush to the right edge at full masthead height; below that it is an inline 44px block
+   before the theme toggle. The word is the "ON AIR." of the homepage's section 04, in the same face. */
 .nav-audio {
+    --p: 0%;
     position: relative;
     display: flex;
     flex: 0 0 auto;
-    align-items: center;
-    gap: 0.55rem;
+    align-items: stretch;
     height: 44px;
 }
 .nav-audio-btn {
     position: relative;
-    display: grid;
-    place-items: center;
-    width: 32px;
-    height: 32px;
+    display: block;
+    height: 100%;
     padding: 0;
-    border: 1.5px solid var(--accent);
-    border-radius: 50%;
-    background: transparent;
-    color: var(--accent);
+    border: 0;
+    border-radius: 0;
+    background: var(--text-primary);
+    color: var(--bg-base);
     cursor: pointer;
-    transition: background-color 160ms ease, color 160ms ease;
+    overflow: hidden;
+    transition: background-color 160ms ease;
 }
-.nav-audio-btn::after { content: ''; position: absolute; top: 50%; left: 50%; width: 44px; height: 44px; transform: translate(-50%, -50%); }
-.nav-audio-btn:hover,
-.nav-audio.is-active .nav-audio-btn { background: var(--accent); color: var(--bg-base); }
-.nav-audio-glyph { position: relative; display: block; width: 10px; height: 10px; }
+.nav-audio-btn:hover { background: color-mix(in srgb, var(--text-primary) 84%, var(--signal)); }
+.nav-audio-btn:focus-visible { outline: 2px solid var(--bg-base); outline-offset: -5px; }
+.nav-audio-face {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    height: 100%;
+    padding: 0 14px 0 12px;
+    white-space: nowrap;
+}
+.nav-audio-face--fill {
+    position: absolute;
+    inset: 0;
+    background: var(--signal);
+    color: var(--signal-ink);
+    clip-path: inset(0 calc(100% - var(--p)) 0 0);
+    transition: clip-path 300ms linear;
+}
+.nav-audio.is-instant .nav-audio-face--fill { transition: none; }
+.nav-audio-glyph { position: relative; display: block; width: 12px; height: 12px; flex: 0 0 auto; }
 .nav-audio-glyph::before,
 .nav-audio-glyph::after { content: ''; position: absolute; top: 0; bottom: 0; background: currentColor; }
 .nav-audio-glyph::before { left: 1px; right: -1px; clip-path: polygon(0 0, 100% 50%, 0 100%); }
 .nav-audio-glyph::after { display: none; }
-.nav-audio.is-active .nav-audio-glyph::before { left: 0; right: auto; width: 3px; clip-path: none; }
-.nav-audio.is-active .nav-audio-glyph::after { display: block; right: 0; width: 3px; }
-.nav-audio-status {
-    color: var(--text-secondary);
-    font-family: var(--font-brand, sans-serif);
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    line-height: 1;
+.nav-audio.is-active .nav-audio-glyph::before { left: 1px; right: auto; width: 3.5px; clip-path: none; }
+.nav-audio.is-active .nav-audio-glyph::after { display: block; right: 1px; width: 3.5px; }
+.nav-audio-word {
+    padding-top: 2px;
+    font: 700 1.3rem/1 var(--font-brand);
+    letter-spacing: -0.02em;
     text-transform: uppercase;
-    white-space: nowrap;
 }
-.nav-audio.is-active .nav-audio-status { color: var(--text-primary); }
-@media (prefers-reduced-motion: reduce) {
-    .nav-audio-btn { transition: none; }
-}
+.nav-audio-word i { font-style: normal; color: var(--signal); }
+.nav-audio-face--fill .nav-audio-word i { color: inherit; }
 .nav-audio-note {
     position: absolute;
     top: calc(100% + 6px);
@@ -479,9 +493,20 @@
     line-height: 1.35;
 }
 .nav-audio-note:empty { display: none; }
+@media (min-width: 992px) {
+    .nav-audio { position: absolute; top: 0; right: 0; bottom: 0; height: auto; }
+    .nav-audio-btn { width: 140px; }
+    .nav-audio-face { gap: 12px; }
+    .nav-audio-word { font-size: 1.55rem; }
+    .blog-nav-right { margin-right: 116px; }
+}
 @media (max-width: 575.98px) {
-    .nav-audio { gap: 0.4rem; }
-    .nav-audio-status { font-size: 0.72rem; letter-spacing: 0.08em; }
+    .nav-audio-face { gap: 7px; padding: 0 11px 0 10px; }
+    .nav-audio-word { font-size: 1.15rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .nav-audio-btn,
+    .nav-audio-face--fill { transition: none; }
 }
 
 @media (max-width: 991px) {

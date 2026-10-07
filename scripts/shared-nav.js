@@ -49,7 +49,8 @@
     ensureNavThemeButton();
 
     // ── Navbar audio player ──────────────────────
-    // ( play ) BETCAST and nothing else. The newest episode's audio is the first enclosure of the show's public
+    // [ ▶ ON AIR. ] and nothing else: the masthead's end-cap, which fills with red as the episode plays. The
+    // newest episode's audio is the first enclosure of the show's public
     // podcast feed (Spotify for Podcasters / Anchor, CORS-open, ~11 KB, cached by the browser for 5 minutes) and
     // plays through a plain <audio> element created on the first click. Never a YouTube player. Nothing starts on
     // its own: only a listener who pressed play continues on the next page (sessionStorage, this tab only), and
@@ -89,16 +90,26 @@
             node.className = className;
             return node;
         }
+        // Two identical faces: ink underneath, a red copy on top that --p opens from the left (see shared-nav.css).
+        function face(extraClass) {
+            var node = el('span', 'nav-audio-face' + (extraClass ? ' ' + extraClass : ''));
+            node.appendChild(el('span', 'nav-audio-glyph')).setAttribute('aria-hidden', 'true');
+            var word = el('span', 'nav-audio-word');
+            word.appendChild(document.createTextNode('ON AIR'));
+            word.appendChild(el('i', '')).textContent = '.';
+            node.appendChild(word);
+            return node;
+        }
         var root = el('div', 'nav-audio');
         var button = el('button', 'nav-audio-btn');
         button.type = 'button';
-        button.appendChild(el('span', 'nav-audio-glyph')).setAttribute('aria-hidden', 'true');
-        var status = el('span', 'nav-audio-status');
-        status.textContent = 'BETCAST';
+        button.appendChild(face(''));
+        var fillFace = face('nav-audio-face--fill');
+        fillFace.setAttribute('aria-hidden', 'true');
+        button.appendChild(fillFace);
         var note = el('span', 'nav-audio-note');
         note.setAttribute('role', 'status');
         root.appendChild(button);
-        root.appendChild(status);
         root.appendChild(note);
         navRight.insertBefore(root, navRight.firstChild);
 
@@ -111,12 +122,29 @@
         var leaving = false;
         var lastSave = 0;
         var resumeAt = 0;
+        var ratio = 0;
         var noteTimer = 0;
 
         function render() {
             root.classList.toggle('is-active', active);
-            button.setAttribute('aria-label', (active ? 'Παύση ' : 'Αναπαραγωγή ') + 'BetCast');
+            // The visible word is "ON AIR", so the accessible name keeps it (label in name).
+            button.setAttribute('aria-label', (active ? 'Παύση ' : 'Αναπαραγωγή ') + 'BetCast, ON AIR');
             button.setAttribute('aria-busy', String(active && buffering));
+        }
+
+        // How much of the episode has played, 0..1: the red fill of the box. instant skips the sweep on page load.
+        function setProgress(next, instant) {
+            ratio = next > 0 ? Math.min(next, 1) : 0;
+            if (instant) root.classList.add('is-instant');
+            root.style.setProperty('--p', (ratio * 100).toFixed(2) + '%');
+            if (instant) {
+                void root.offsetWidth;
+                root.classList.remove('is-instant');
+            }
+        }
+
+        function ratioOf(time) {
+            return audio && isFinite(audio.duration) && audio.duration > 0 ? Math.min(time / audio.duration, 1) : ratio;
         }
 
         function tell(message) {
@@ -138,7 +166,7 @@
         function save(playing, time) {
             if (leaving || !url) return;
             try {
-                sessionStorage.setItem(STORE_KEY, JSON.stringify({ url: url, playing: playing, time: time || 0, at: Date.now() }));
+                sessionStorage.setItem(STORE_KEY, JSON.stringify({ url: url, playing: playing, time: time || 0, ratio: ratioOf(time || 0), at: Date.now() }));
             } catch (_) {}
         }
 
@@ -171,13 +199,17 @@
                 });
             });
             audio.addEventListener('timeupdate', function () {
+                setProgress(ratioOf(audio.currentTime));
                 var now = Date.now();
                 if (active && now - lastSave > 1000) {
                     lastSave = now;
                     save(true, audio.currentTime);
                 }
             });
-            audio.addEventListener('ended', stop);
+            audio.addEventListener('ended', function () {
+                stop();
+                setProgress(0); // finished: the box empties and nothing else starts
+            });
             audio.addEventListener('error', fail);
             return audio;
         }
@@ -234,6 +266,7 @@
             if (!url || !saved || saved.url !== url) return;
             var elapsed = saved.playing ? Math.min(Math.max((Date.now() - (saved.at || 0)) / 1000, 0), 10) : 0;
             resumeAt = Math.max(0, (Number(saved.time) || 0) + elapsed);
+            setProgress(Number(saved.ratio) || 0, true);
             if (saved.playing) begin(resumeAt, true);
         }
 
