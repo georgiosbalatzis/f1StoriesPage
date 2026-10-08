@@ -1,6 +1,37 @@
 {
   "posts": [
     {
+      "id": "20261008J",
+      "title": "GRIDCAST #01 : Singapore - Ανάλυση",
+      "author": "Giannis Poulikidis",
+      "date": "2026-10-08",
+      "dateISO": "2026-10-08",
+      "displayDate": "8 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261008J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261008J/1.webp",
+      "excerpt": "Γύρος δεκαεφτά και η καρό σημαία για το πρωτάθλημα του 2026 ετοιμάζεται να πέσει. Η ζυγαριά έγειρε λίγο ακόμα προς το μικρό Kimi από την Μπολόνια. Με την εγκατάλειψη του George Russell στον...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261008J/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "Σιγκαπούρι",
+        "Singapore",
+        "Marina Bay",
+        "Gridcast",
+        "Ανάλυση"
+      ],
+      "wordCount": 373,
+      "readingTime": "2 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
+    },
+    {
       "id": "20261008W",
       "title": "Takuma Sato:Ήρθε και έφυγε με τις αναμνήσεις μιας ωραίας εποχής.",
       "author": "Themis Charvalis",
@@ -10225,5 +10256,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-08T19:03:38.484Z"
+  "lastUpdated": "2026-10-08T19:57:32.083Z"
 }
