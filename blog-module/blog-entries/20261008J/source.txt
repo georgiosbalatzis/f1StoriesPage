@@ -1,0 +1,56 @@
+---
+category: Analysis
+tags: Σιγκαπούρι, Singapore, Marina Bay, Gridcast, Ανάλυση
+title: GRIDCAST #01 : Singapore - Ανάλυση
+---
+
+Γύρος δεκαεφτά και η καρό σημαία για το πρωτάθλημα του 2026 ετοιμάζεται να πέσει. Η ζυγαριά έγειρε λίγο ακόμα προς το μικρό Kimi από την Μπολόνια.
+
+Με την εγκατάλειψη του George Russell στον προηγούμενο αγώνα, η διαφορά ανέβηκε στους 84. **Τα σενάρια δεν είναι πολύ ενθαρρυντικά για τον Βρετανό, όμως η ελπίδα, όπως γνωρίζουμε, πεθαίνει πάντα τελευταία, άμα δεν έχει πεθάνει ακόμα, βέβαια...
+
+Τι έχουμε όμως να περιμένουμε από το Marina Bay Street Circuit; Το ενθαρρυντικό για εμάς είναι ότι, ενώ έχουμε circuit πόλης, έχουμε και προσπεράσεις. **Τουλάχιστον το 2025, στο Singapore GP, έγιναν 58 προσπεράσεις στον αγώνα**. Δεν το λες και άσχημο νούμερο, άμα σκεφτείς ότι στη Μαδρίτη είχαμε 4 προσπεράσεις. Μην όμως παίρνουν τα μυαλά μας αέρα, οι προσπεράσεις στο συγκεκριμένο circuit είναι αρκετά δύσκολες.
+
+Ας δούμε όμως λίγο αναλυτικά την πίστα, στην οποία αυτό το τριήμερο θα έχουμε αγώνα Sprint.
+
+<iframe src="https://georgiosbalatzis.github.io/Tyres/embed/el/2026/marina-bay/circuit-info/" title="Στοιχεία πίστας: Singapore Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="1213" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+<iframe src="https://georgiosbalatzis.github.io/Tyres/embed/el/2026/marina-bay/demands/" title="Απαιτήσεις πίστας: Singapore Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="370" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+Η πίστα θα φέρει αντιμέτωπους τους οδηγούς με αλλαγές, κυρίως στην εξέλιξη του ασφαλτοτάπητα, η οποία αναμένεται να είναι ραγδαία. Δύσκολο έργο μπροστά τους θα έχουν και τα φρένα, αφού η καταπόνησή τους θα είναι μεγάλη. Το καλό όμως, είναι ότι δεν θα έχουμε μεγάλη φθορά ελαστικών, τουλάχιστον με τα δεδομένα των προηγούμενων χρόνων, οπότε προσμένουμε ένα pit stop στον αγώνα.
+
+<iframe src="https://georgiosbalatzis.github.io/Tyres/embed/el/2026/marina-bay/3d/" title="Τρισδιάστατη προβολή: Singapore Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="632" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+
+**Ένα ενδιαφέρον στοιχείο είναι ότι δεν προβλέπουμε μεγάλο Downforce στο Setup, διότι οι αργές στροφές θα χρειαστούν περισσότερο μηχανικό grip, το οποίο σε συνδυασμό με το ένα FP, ίσως κάνει τις ομάδες να πονοκεφαλιάσουν.**
+
+Στα ελαστικά θα έχουμε τις εξής γόμες.
+
+<iframe src="https://georgiosbalatzis.github.io/Tyres/embed/el/2026/marina-bay/summary/" title="Ελαστικά αγώνα: Singapore Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="446" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+
+
+# Αποτελέσματα προηγούμενων χρόνων:
+
+**2025 — Pole Position: George Russell – Mercedes | Νικητής: George Russell – Mercedes**
+
+**2024 — Pole Position: Lando Norris – McLaren | Νικητής: Lando Norris – McLaren**
+
+**2023 — Pole Position: Carlos Sainz – Ferrari | Νικητής: Carlos Sainz – Ferrari**
+
+**2022 — Pole Position: Charles Leclerc – Ferrari | Νικητής: Sergio Pérez – Red Bull**
+
+**2019 — Pole Position: Charles Leclerc – Ferrari | Νικητής: Sebastian Vettel – Ferrari**
+
+
+**Σας έχω όμως και μια έκπληξη... Ο καιρός είναι με το μέρος μας! Λέτε να πάμε να σπρώξουμε κανένα μονοθέσιο στο Formation Lap;**
+
+<iframe src="https://georgiosbalatzis.github.io/Tyres/embed/el/2026/marina-bay/weather/" title="Καιρός τριημέρου: Singapore Grand Prix 2026 (F1 Stories TYRES)" width="100%" height="784" loading="lazy" style="border:0;width:100%;max-width:100%;display:block;"></iframe>
+
+
+Η αναμονή τελείωσε και, με τρίτο σερί αγώνα και τον καιρό στο παιχνίδι, προσμένουμε χαοτικό GP.
+
+Αυτά από εμάς για το δεύτερο GRIDCAST της χρονιάς.
+
+Από το F1Stories...
+
+Over... and... Out!
