@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261009W",
+      "title": "Grand prix Σιγκαπούρης: Η νύχτα, η ιστορία και η απόλυτη δοκιμασία της Formula 1",
+      "author": "Themis Charvalis",
+      "date": "2026-10-09",
+      "dateISO": "2026-10-09",
+      "displayDate": "9 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261009W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261009W/2.webp",
+      "excerpt": "Από τους επικίνδυνους δρόμους του Thomson Road μέχρι τη φουτουριστική Marina Bay, το Grand Prix της Σιγκαπούρης εξελίχθηκε σε έναν από τους πιο ξεχωριστούς αγώνες του παγκόσμιου πρωταθλήματος. Μια...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261009W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Grand prix Singapore",
+        "History",
+        "F1 Legends",
+        "Crashgate",
+        "Sebastian Vettel",
+        "Leweis Hamilton"
+      ],
+      "wordCount": 1818,
+      "readingTime": "10 min",
+      "imageWidth": 399,
+      "imageHeight": 501,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
+    },
+    {
       "id": "20261008J",
       "title": "GRIDCAST #02 : Singapore - Ανάλυση",
       "author": "Giannis Poulikidis",
@@ -10256,5 +10288,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-08T20:01:27.303Z"
+  "lastUpdated": "2026-10-09T17:38:08.473Z"
 }
