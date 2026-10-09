@@ -166,6 +166,11 @@
     border-bottom: none;
 }
 
+/* Replaces the Bootstrap subset's off-palette pink (#d63384, 3.9:1). */
+.legal-section code {
+    color: var(--text-primary);
+}
+
 .legal-section a {
     color: var(--accent);
 }
