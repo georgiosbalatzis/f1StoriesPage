@@ -580,9 +580,10 @@
         });
     }
 
-    // Team spotlight: a random writer every five seconds. The active card's fuse (a
-    // 5s CSS animation) drives the rotation, so hover, focus and the pause button only
-    // pause that animation and the timing always matches what the reader sees.
+    // Team spotlight: the next writer in roster order every twelve seconds, from a random
+    // start. The active card's fuse (a 12s CSS animation) drives the rotation, so hover,
+    // focus and the pause button only pause that animation and the timing always matches
+    // what the reader sees.
     function initTeamSpotlight() {
         var spotlight = document.querySelector('[data-team-spotlight]');
         if (!spotlight) return;
@@ -606,10 +607,9 @@
             });
         }
 
-        // Random, but never the same writer twice in a row.
+        // Roster order from a random start, so every writer gets a turn before any repeats.
         function showNext() {
-            var index = Math.floor(Math.random() * (cards.length - 1));
-            show(index >= current ? index + 1 : index);
+            show((current + 1) % cards.length);
         }
 
         show(Math.floor(Math.random() * cards.length));

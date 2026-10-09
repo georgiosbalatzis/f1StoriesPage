@@ -245,8 +245,11 @@ test('the homepage journal numbers on from the cover and signs with short byline
     assert.match(html, /<ol class="home-ledger" start="5">/);
     assert.match(html, /home-story__dek">The lead dek\./);
     assert.match(html, /Θ\. ΧΑΡΒΑΛΗΣ<\/p>/);
-    assert.match(html, /F1 STORIES · 4 ΛΕΠΤΑ/);
-    assert.match(html, /GUEST WRITER · 4 ΛΕΠΤΑ/);
+    // Number and unit never wrap apart: a no-break space (U+00A0), in the lead meta and in bylines.
+    assert.match(html, /F1 STORIES · 4\u00a0ΛΕΠΤΑ/);
+    assert.match(html, /GUEST WRITER · 4\u00a0ΛΕΠΤΑ/);
+    assert.match(html, /<span>4\u00a0ΛΕΠΤΑ<\/span>/);
+    assert.doesNotMatch(html, /\d ΛΕΠΤΑ/);
     assert.match(html, /home-story__kind">ΙΣΤΟΡΙΑ/);
 });
 
@@ -298,6 +301,20 @@ test('ON AIR uses a newer published BetCast article when the YouTube snapshot is
     assert.match(refreshedLead, /data-video-id="Q_SQJqa6CMU"/);
     assert.match(refreshedLead, /BETCAST \/ #276/);
     assert.match(refreshedLead, /datetime="2026-10-07"/);
+});
+
+test('ON AIR signs an article episode like the Journal and shows square art whole', () => {
+    const { renderOnAir } = require('../home-panels');
+    const article = (id, title, date, extra = {}) => ({ id, title, date, url: `/blog-module/blog-entries/${id}/article.html`, image: `/blog-module/blog-entries/${id}/1.webp`, author: 'Giannis Poulikidis', ...extra });
+    const html = renderOnAir(null, () => false, [
+        article('20261002J', 'BetCast #275: Το Grid', '2026-10-02'),
+        article('20260924J', 'BetCast #274: Baku', '2026-09-24', { imageWidth: 300, imageHeight: 300 }),
+        article('20260912J', 'BetCast #273: Προσπεράσεις', '2026-09-12', { imageWidth: 1672, imageHeight: 941 })
+    ]);
+    assert.match(html.split('<ol class="episodes"')[0], /home-story__byline">Γ\. ΠΟΥΛΙΚΙΔΗΣ</);
+    assert.equal((html.match(/episode__thumb--contain/g) || []).length, 1);
+    assert.match(html.match(/<a class="episode__thumb[^"]*" href="[^"]*20260924J[^>]*>/)[0], /episode__thumb--contain/);
+    assert.doesNotMatch(html.match(/<a class="episode__thumb[^"]*" href="[^"]*20260912J[^>]*>/)[0], /contain/);
 });
 
 test('the homepage cover uses the article header photograph before the card thumbnail', async () => {

@@ -3,7 +3,7 @@
 // so every deploy's build refreshes them without a network request.
 const { pathToFileURL } = require('url');
 const { fs, path, CONFIG, escapeHtmlAttribute: esc } = require('./shared');
-const { greekUpper, authorLabel, formatDate } = require('../taxonomy');
+const { greekUpper, authorLabel, formatDate, findAuthor } = require('../taxonomy');
 
 const REPO_ROOT = path.join(CONFIG.BLOG_DIR, '..', '..');
 const HOME_HTML_PATH = path.join(REPO_ROOT, 'index.html');
@@ -23,6 +23,15 @@ const SERIES_COPY = Object.freeze({
 
 function readJson(filePath) {
     try { return JSON.parse(fs.readFileSync(filePath, 'utf8')); } catch (_) { return null; }
+}
+
+// "Themis Charvalis" → "Θ. ΧΑΡΒΑΛΗΣ"; the house byline stays whole.
+function homeByline(name) {
+    const author = findAuthor(name);
+    const label = authorLabel(name || 'F1 Stories');
+    if (!author || author.slug === 'f1-stories') return greekUpper(label);
+    const [first, ...rest] = label.split(' ');
+    return greekUpper(rest.length ? `${first[0]}. ${rest.join(' ')}` : label);
 }
 
 function episodeDate(value) {
@@ -95,9 +104,11 @@ function renderOnAir(snapshot, exists = fs.existsSync, posts = []) {
         // Density pair, exactly as stamp-html's addDensitySrcset writes it, so the two never disagree.
         const srcset = thumb.srcset ? ` srcset="/images/youtube/${video.id}-1x.webp 1x, ${thumb.src} 2x"` : '';
         const url = video.url;
+        // Square or portrait art (a 16:9 crop would cut its lettering) is shown whole.
+        const contain = thumb.width / thumb.height < 1.3 ? ' episode__thumb--contain' : '';
         const attributes = video.article ? '' : ' target="_blank" rel="noopener"';
         return `                <li class="episode episode--small">
-                    <a class="episode__thumb" href="${esc(url)}"${attributes} tabindex="-1" aria-hidden="true"><img src="${esc(thumb.src)}"${srcset} alt="" width="${thumb.width}" height="${thumb.height}" loading="lazy" decoding="async"></a>
+                    <a class="episode__thumb${contain}" href="${esc(url)}"${attributes} tabindex="-1" aria-hidden="true"><img src="${esc(thumb.src)}"${srcset} alt="" width="${thumb.width}" height="${thumb.height}" loading="lazy" decoding="async"></a>
                     <div>
                         <p class="home-story__meta"><span>${esc(greekUpper(item.series || 'F1 STORIES'))}</span><time datetime="${esc(String(video.publishedAt || '').slice(0, 10))}">${episodeDate(video.publishedAt)}</time></p>
                         <h3 class="episode__small-title"><a href="${esc(url)}"${attributes}>${esc(item.name)} <span class="episode__out" aria-hidden="true">${video.article ? '→' : '↗'}</span></a></h3>
@@ -116,7 +127,7 @@ function renderOnAir(snapshot, exists = fs.existsSync, posts = []) {
                     <p class="home-story__meta"><span class="episode__latest"><span class="episode__dot" aria-hidden="true"></span>ΤΕΛΕΥΤΑΙΟ ΕΠΕΙΣΟΔΙΟ</span><time datetime="${esc(String(lead.publishedAt || '').slice(0, 10))}">${episodeDate(lead.publishedAt)}</time></p>
                     <h3 class="episode__title"><a href="${esc(watch)}"${linkAttributes}>${esc(title)}</a></h3>`
         + (copy.dek ? `\n                    <p class="episode__dek">${esc(copy.dek)}</p>` : '')
-        + (lead.article || copy.byline ? `\n                    <p class="home-story__byline">${esc(lead.article ? authorLabel(lead.author) : copy.byline)}</p>` : '')
+        + (lead.article || copy.byline ? `\n                    <p class="home-story__byline">${esc(lead.article ? homeByline(lead.author) : copy.byline)}</p>` : '')
         + `
                 </div>
             </article>`
@@ -299,4 +310,4 @@ async function injectHomePanels(htmlPath = HOME_HTML_PATH, posts = readJson(CONF
     return true;
 }
 
-module.exports = { injectHomePanels, selectEpisodes, renderOnAir, renderNumbers, splitEpisodeTitle, findTeamKey, latestDebriefRound, renderTelemetry, episodeDate };
+module.exports = { injectHomePanels, homeByline, selectEpisodes, renderOnAir, renderNumbers, splitEpisodeTitle, findTeamKey, latestDebriefRound, renderTelemetry, episodeDate };

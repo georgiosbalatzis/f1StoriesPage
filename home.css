@@ -125,7 +125,7 @@
 .home-page .hero-photograph { position: absolute; z-index: 0; top: 0; bottom: 48px; left: var(--hero-split); right: calc((100cqw - 100vw) / 2); margin: 0; min-width: 0; }
 .home-page #hero .hero-overlay { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; background: #32392f; opacity: 1; border-radius: clamp(28px, 4vw, 64px) 0 0 clamp(28px, 4vw, 64px); overflow: hidden; }
 /* A shade on the photograph's left side keeps the crossing headline legible on bright pictures. */
-.home-page #hero .hero-overlay::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(14 15 13 / .62), rgb(14 15 13 / .3) 45%, transparent 75%); pointer-events: none; }
+.home-page #hero .hero-overlay::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(14 15 13 / .62), rgb(14 15 13 / .45) 50%, rgb(14 15 13 / .29) 77%, transparent 90%); pointer-events: none; }
 .home-page .hero-overlay.image-bg img { width: 100%; height: 100%; object-fit: cover; object-position: var(--f1s-hero-position, center); filter: saturate(.8) contrast(1.04); transform: none; transition: transform .65s var(--ease-editorial); }
 .home-page .hero-photograph figcaption { position: absolute; top: calc(100% + 12px); left: 0; right: calc((100vw - 100cqw) / 2); display: flex; justify-content: space-between; gap: 15px; color: var(--home-cover-muted); font-size: .75rem; font-weight: 500; letter-spacing: .08em; }
 /* The stamp straddles the photograph's top edge, aligned with the content column's right edge. */
@@ -300,6 +300,9 @@
 .home-page .episodes { grid-column: 10 / 13; display: grid; gap: 28px; margin: 0; padding: 0 0 0 var(--gutter-home); list-style: none; border-left: 1px solid var(--border); }
 .home-page .episode--small + .episode--small { padding-top: 28px; border-top: 1px solid var(--border); }
 .home-page .episode__thumb { aspect-ratio: 16 / 9; margin-bottom: 14px; }
+/* Square or portrait art is shown whole, on the same charcoal as the lead frame. */
+.home-page .episode__thumb--contain { background: #1b1a19; }
+.home-page .episode__thumb--contain img { object-fit: contain; }
 .home-page .episode__small-title { margin: 6px 0 0; font-size: clamp(1.25rem, 1.05rem + .6vw, 1.625rem); font-weight: 600; line-height: 1.2; letter-spacing: -.02em; }
 .home-page .episode__out { color: var(--text-secondary); font-size: .8em; }
 
@@ -354,6 +357,8 @@
 /* Team: one writer in the spotlight card, the whole roster beside it. The card
  * takes the spotlighted writer's ink (--author-accent, styles/editorial.css). */
 .home-page #about { padding: clamp(80px, 9vw, 152px) 0; }
+/* Skip off-screen rendering. `auto` remembers the real height after the first paint; the seed is the measured team section. */
+.home-page #about { content-visibility: auto; contain-intrinsic-size: auto 1400px; }
 .home-page :is(.team-head, .journal-head) { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter-home); align-items: end; margin-bottom: clamp(40px, 5vw, 72px); }
 .home-page :is(.team-head__main, .journal-head__main) { grid-column: 1 / 8; }
 .home-page :is(.team-head, .journal-head) h2 { margin: 0; font-size: clamp(2.625rem, 1.2rem + 4.3vw, 5.75rem); font-weight: 600; line-height: 1.07; letter-spacing: -.038em; text-wrap: balance; }
@@ -374,10 +379,10 @@
     transition: opacity .45s var(--ease-editorial), visibility 0s .45s;
 }
 .home-page .team-card.is-active { visibility: visible; opacity: 1; transition: opacity .45s var(--ease-editorial); }
-/* Five-second fuse: when it burns out the page script spotlights another writer. */
+/* Twelve-second fuse (a card holds 35-65 words): when it burns out the page script spotlights the next writer. */
 .home-page .team-card__timer { position: absolute; top: 0; left: 0; right: 0; height: 2px; overflow: hidden; }
 .home-page .team-card__timer::after { content: ''; display: block; height: 100%; background: var(--author-accent); transform: scaleX(0); transform-origin: left; }
-.home-page .team-spotlight.is-rotating .team-card.is-active .team-card__timer::after { animation: team-fuse 5s linear forwards; }
+.home-page .team-spotlight.is-rotating .team-card.is-active .team-card__timer::after { animation: team-fuse 12s linear forwards; }
 .home-page .team-spotlight.is-rotating:is(:hover, :focus-within, .is-paused) .team-card.is-active .team-card__timer::after { animation-play-state: paused; }
 @keyframes team-fuse { to { transform: scaleX(1); } }
 .home-page .team-spotlight__pause { position: absolute; z-index: 2; top: 14px; right: 14px; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--border); border-radius: var(--radius-control); background: transparent; color: var(--text-secondary); font-size: .75rem; letter-spacing: .08em; cursor: pointer; }
@@ -644,6 +649,7 @@
     .home-page :is(.data-tools a, .data-tools a + a) { padding: 16px 0; border-left: 0; }
     .home-page .data-tools a + a { border-top: 1px solid var(--border); }
     /* The spotlight card runs edge to edge on phones. */
+    .home-page #about { contain-intrinsic-size: auto 2100px; }
     .home-page .team-card { padding: 28px 22px 32px; }
     .home-page .team-spotlight { margin-inline: -22px; }
     .home-page .team-spotlight__pause { right: 10px; }
@@ -665,6 +671,10 @@
     .home-page .hero-listen { font-size: .75rem; }
     .home-page :is(.team-spotlight, .home-story--lead .home-story__media, .episode--lead .episode__frame) { margin-inline: -17px; }
     .home-page .team-card { padding-inline: 17px; }
+    /* A 156px name column breaks "Κεραμιδιώτης" before the final sigma; a narrower portrait frees the width. */
+    .home-page .team-card__head { grid-template-columns: 88px minmax(0, 1fr); column-gap: 14px; }
+    /* The meta rule separators eat 24px each; tighten them so a wrap does not start on a rule. */
+    .home-page .home-story__meta > * + *::before { width: 10px; margin: 0 6px; }
 }
 @media (max-width: 991px) and (max-height: 500px) and (orientation: landscape) {
     /* Landscape phones keep the crossing headline, scaled to the short screen. */

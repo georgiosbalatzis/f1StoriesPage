@@ -17,9 +17,9 @@ const { injectPrevNextLinks } = require('./nav');
 const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
 const { readingTimeFromWords, readingTimeFromPage } = require('./reading-time');
 const { injectAuthorsDirectory, injectHomeTeam } = require('./authors-page');
-const { injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry } = require('./home-panels');
+const { injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry, homeByline } = require('./home-panels');
 const {
-    PUBLIC_CATEGORIES, AUTHORS, findAuthor, authorThumb, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
+    PUBLIC_CATEGORIES, AUTHORS, authorThumb, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
     formatReadingTime, cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture
 } = require('../taxonomy');
 
@@ -404,17 +404,14 @@ function renderLedgerRows(posts, startIndex = 0) {
 // cover (01): a lead (02), two side stories (03–04) and the recent list (05–08).
 const HOME_JOURNAL = Object.freeze({ side: 2, recent: 4 });
 
-// "Themis Charvalis" → "Θ. ΧΑΡΒΑΛΗΣ"; the house byline stays whole.
-function homeByline(name) {
-    const author = findAuthor(name);
-    const label = authorLabel(name || 'F1 Stories');
-    if (!author || author.slug === 'f1-stories') return greekUpper(label);
-    const [first, ...rest] = label.split(' ');
-    return greekUpper(rest.length ? `${first[0]}. ${rest.join(' ')}` : label);
-}
-
 function homeDate(value) {
     return formatDate(value);
+}
+
+// "3 λεπτά" → "3 ΛΕΠΤΑ" with a no-break space, so a wrap never splits number from unit.
+function homeReadingTime(post) {
+    const readingTime = storyReadingTime(post);
+    return readingTime ? greekUpper(readingTime).replace(/(\d) /, '$1\u00a0') : '';
 }
 
 function homeStoryMeta(post, index, { withIndex = true, withTime = false } = {}) {
@@ -422,8 +419,8 @@ function homeStoryMeta(post, index, { withIndex = true, withTime = false } = {})
     if (withIndex) items.push(`<span class="home-story__idx" aria-hidden="true">${String(index).padStart(2, '0')}</span>`);
     items.push(`<span class="home-story__kind">${escapeHtmlAttribute(greekUpper(categoryLabel(primaryCategory(post))))}</span>`);
     items.push(`<time datetime="${escapeHtmlAttribute(post.date || '')}">${homeDate(post.date)}</time>`);
-    const readingTime = storyReadingTime(post);
-    if (withTime && readingTime) items.push(`<span>${escapeHtmlAttribute(greekUpper(readingTime))}</span>`);
+    const readingTime = homeReadingTime(post);
+    if (withTime && readingTime) items.push(`<span>${escapeHtmlAttribute(readingTime)}</span>`);
     return `<p class="home-story__meta">${items.join('')}</p>`;
 }
 
@@ -431,8 +428,8 @@ function homeStoryMeta(post, index, { withIndex = true, withTime = false } = {})
 function renderHomeStory(post, index, variant, dek) {
     const image = storyImage(post);
     const lead = variant === 'lead';
-    const readingTime = storyReadingTime(post);
-    const byline = homeByline(post.author) + (!lead && readingTime ? ` · ${greekUpper(readingTime)}` : '');
+    const readingTime = homeReadingTime(post);
+    const byline = homeByline(post.author) + (!lead && readingTime ? ` · ${readingTime}` : '');
     return `<article class="home-story home-story--${variant}${image ? '' : ' home-story--text'}" data-kind="${categoryKind(primaryCategory(post))}">`
         + (image ? `<div class="home-story__media">${renderStoryImage(post, image, { sizes: lead ? CARD_SIZES.homeLead : CARD_SIZES.homeSecondary, full: lead })}`
             + (lead ? '<span class="home-story__tab">ΤΩΡΑ ΣΤΟ JOURNAL</span>' : '') + '</div>' : '')
@@ -449,12 +446,12 @@ function renderHomeJournal(posts, leadDek = '') {
     const recent = rest.slice(HOME_JOURNAL.side, HOME_JOURNAL.side + HOME_JOURNAL.recent);
     const firstRecent = 3 + side.length;
     const ledger = recent.map((post, offset) => {
-        const readingTime = storyReadingTime(post);
+        const readingTime = homeReadingTime(post);
         return `<li class="home-ledger__item" data-kind="${categoryKind(primaryCategory(post))}">`
             + `<span class="home-ledger__num" aria-hidden="true">${String(firstRecent + offset).padStart(2, '0')}</span>`
             + homeStoryMeta(post, 0, { withIndex: false })
             + `<h3 class="home-ledger__title"><a href="${escapeHtmlAttribute(storyUrl(post))}">${escapeHtmlAttribute(post.title)}</a></h3>`
-            + `<p class="home-story__byline">${escapeHtmlAttribute(homeByline(post.author) + (readingTime ? ` · ${greekUpper(readingTime)}` : ''))}</p></li>`;
+            + `<p class="home-story__byline">${escapeHtmlAttribute(homeByline(post.author) + (readingTime ? ` · ${readingTime}` : ''))}</p></li>`;
     }).join('\n                ');
     return `        <div class="home-front">
             ${renderHomeStory(lead, 2, 'lead', leadDek)}
@@ -680,6 +677,9 @@ function updateHomepageHeroPeriod(html, presentation) {
     );
 }
 
+const HOME_COVER_MIN_WIDTH = 1200;
+const HOME_COVER_RENDER_WIDTH = 1100;
+
 function injectHomepageHero(hero) {
     const indexHtmlPath = path.join(CONFIG.BLOG_DIR, '..', '..', 'index.html');
     if (!fs.existsSync(indexHtmlPath) || !hero) {
@@ -700,6 +700,11 @@ function injectHomepageHero(hero) {
     const href = `/blog-module/blog-entries/${encodeURIComponent(storyId)}/article.html`;
     const width = parseInt(hero.heroImageWidth, 10) || 1920;
     const height = parseInt(hero.heroImageHeight, 10) || 1080;
+    // The cover renders up to ~1,100 CSS px wide (1920 viewport). An unmeasured image (no width) is not flagged.
+    const measuredWidth = parseInt(hero.heroImageWidth, 10);
+    if (measuredWidth > 0 && measuredWidth < HOME_COVER_MIN_WIDTH) {
+        console.warn(`⚠️  Cover image ${image} (story ${storyId}) is ${measuredWidth}px wide; the homepage cover renders up to ~${HOME_COVER_RENDER_WIDTH}px, so it is upscaled ${(HOME_COVER_RENDER_WIDTH / measuredWidth).toFixed(2)}× at 1920 (double on 2× displays). Supply a ≥1,600px master (D8).`);
+    }
     const imageSizes = '(max-width: 767px) 100vw, 55vw';
     const imageUrl = /^https?:\/\//i.test(image) ? image : `https://f1stories.gr${image}`;
     let html = fs.readFileSync(indexHtmlPath, 'utf8');
