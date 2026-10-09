@@ -225,8 +225,8 @@
 .home-page .home-tech__grid { position: absolute; inset: 0; max-width: 1476px; margin-inline: auto; background-image: linear-gradient(to right, rgb(238 232 219 / .045) 1px, transparent 1px); background-size: calc((100% - 2 * var(--tech-pad)) / 12) 100%; background-position: var(--tech-pad) 0; pointer-events: none; }
 .home-page .tech-folio { position: relative; display: flex; justify-content: space-between; gap: 16px; margin-bottom: clamp(40px, 5vw, 72px); padding-bottom: 16px; border-bottom: 1px solid var(--tech-rule); }
 .home-page .home-tech .section-kicker { margin: 0; color: var(--tech-muted); }
-.home-page .tech-stage { position: relative; container-type: inline-size; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter-home); align-items: start; }
-.home-page .tech-mast { position: relative; z-index: 2; grid-column: 1 / 11; grid-row: 1; margin-top: clamp(20px, 2.4vw, 40px); color: var(--tech-ink); font-size: clamp(4rem, 1.4rem + 8.6vw, 11.5rem); pointer-events: none; }
+.home-page .tech-stage { --tech-mast-size: clamp(4rem, 1.4rem + 8.6vw, 11.5rem); position: relative; container-type: inline-size; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter-home); align-items: start; }
+.home-page .tech-mast { position: relative; z-index: 2; grid-column: 1 / 11; grid-row: 1; margin-top: clamp(20px, 2.4vw, 40px); color: var(--tech-ink); font-size: var(--tech-mast-size); pointer-events: none; }
 .home-page .home-tech .editorial-accent { color: var(--tech-accent); }
 .home-page .tech-copy { position: relative; z-index: 2; grid-column: 1 / 5; grid-row: 2; padding-top: clamp(28px, 3vw, 48px); }
 .home-page .home-tech .home-story__meta { margin-bottom: 14px; color: var(--tech-muted); }
@@ -244,6 +244,18 @@
 .home-page .tech-photo__media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(14 15 13 / .6), rgb(14 15 13 / .25) 40%, transparent 70%); pointer-events: none; }
 .home-page .tech-photo__media img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%; filter: saturate(.92) contrast(1.05); transition: transform .65s var(--ease-editorial); }
 .home-page .tech-stage:has(a:hover) .tech-photo__media img { transform: scale(1.03); }
+/* Artwork with printed type or a diagram (`homeImage: graphic`) keeps its own proportions at every width, so no
+ * lettering is cropped. Where the mast would cross it (≥992) it also starts after the mast and is not shaded.
+ * "TECHNICAL" is 3.77em wide in Barlow Condensed 700, so the offset follows the mast's own size. */
+.home-page .tech-stage--no-cross .tech-photo__media { aspect-ratio: auto; }
+.home-page .tech-stage--no-cross .tech-photo__media img { height: auto; filter: none; }
+.home-page .tech-stage--no-cross:has(a:hover) .tech-photo__media img { transform: none; }
+.home-page .tech-stage--no-cross .tech-photo figcaption { position: static; padding-inline: 14px calc((100vw - 100cqw) / 2); text-align: right; }
+.home-page .tech-stage--no-cross .telemetry { margin-top: 16px; }
+@media (min-width: 992px) {
+    .home-page .tech-stage--no-cross .tech-photo { margin-left: calc(var(--tech-mast-size) * 3.8 + 24px); }
+    .home-page .tech-stage--no-cross .tech-photo__media::after { display: none; }
+}
 .home-page .tech-photo figcaption { position: absolute; right: calc((100vw - 100cqw) / 2); bottom: 0; padding: 10px 0 10px 14px; background: var(--tech-bg); color: var(--tech-muted); font-size: .75rem; font-weight: 500; letter-spacing: .12em; }
 .home-page .telemetry { position: relative; z-index: 3; grid-column: 6 / 11; grid-row: 3; margin-top: calc(-1 * clamp(80px, 9vw, 150px)); padding: clamp(24px, 2.6vw, 40px); border: 1px solid var(--tech-rule); border-top: 2px solid var(--tech-accent); background: var(--tech-panel); }
 .home-page .telemetry p { margin: 0; }

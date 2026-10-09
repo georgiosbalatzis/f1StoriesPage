@@ -170,6 +170,9 @@ async function processBlogEntry(entryPath) {
         // `sources: Label | https://example.com; Another source | https://…`
         // The renderer validates URLs before anything reaches public HTML.
         sources: metadata.sources || '',
+        // Optional front matter `homeImage: graphic`: the lead image is artwork with printed type or a diagram,
+        // so the homepage's technical spread starts it after its mast. Absent for every photograph.
+        ...(String(metadata.homeImage || '').toLowerCase() === 'graphic' ? { homeImage: 'graphic' } : {}),
         comments: 0,
         url: `/blog-module/blog-entries/${folderName}/article.html`,
         ...getPostTaxonomy({ ...metadata, id: folderName }),

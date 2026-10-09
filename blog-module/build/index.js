@@ -470,21 +470,22 @@ function renderHomeJournal(posts, leadDek = '') {
 }
 
 // The dark technical spread: one technical story under the "TECHNICAL DEEP DIVE."
-// mast, with Friday's numbers for the team it names (home-panels.js).
-function renderHomeTech(post, dek, telemetry, teamName) {
+// mast, with Friday's numbers for the team it names (home-panels.js). `graphic` (the article's
+// `homeImage: graphic`) starts the image after the mast instead of under it, for artwork with printed type.
+function renderHomeTech(post, dek, telemetry, teamName, { graphic = false } = {}) {
     const image = storyImage(post);
     const url = escapeHtmlAttribute(storyUrl(post));
     const date = String(post.date || '').slice(0, 10).split('-').reverse().join('.');
-    const readingTime = storyReadingTime(post);
+    const readingTime = homeReadingTime(post);
     const meta = [`<span class="home-story__kind">${escapeHtmlAttribute(greekUpper(categoryLabel(primaryCategory(post))))}</span>`]
-        .concat(readingTime ? [`<span>${escapeHtmlAttribute(greekUpper(readingTime))}</span>`] : []).join('');
+        .concat(readingTime ? [`<span>${escapeHtmlAttribute(readingTime)}</span>`] : []).join('');
     return `
         <div class="container tech-folio">
             <span class="section-kicker">03 / ΤΕΧΝΙΚΗ ΑΝΑΛΥΣΗ</span>
             <span class="section-kicker tech-folio__desk" aria-hidden="true">TECH DESK · ${date}</span>
         </div>
         <div class="container">
-            <div class="tech-stage" data-kind="${categoryKind(primaryCategory(post))}">
+            <div class="tech-stage${graphic ? ' tech-stage--no-cross' : ''}" data-kind="${categoryKind(primaryCategory(post))}">
                 <p class="home-mast tech-mast" aria-hidden="true">TECHNICAL<br>DEEP DIVE<span class="editorial-accent">.</span></p>
                 <div class="tech-copy">
                     <p class="home-story__meta">${meta}</p>
@@ -506,7 +507,31 @@ function renderHomeTech(post, dek, telemetry, teamName) {
         `;
 }
 
-function injectHomeJournal(indexPosts, blogPosts) {
+// The homepage's story slots, with no story in two of them: the cover (the newest story), the
+// technical spread and the Journal (the next seven). The spread is the editor's `homeTech` pick in
+// editorial-selection.json when it is valid, otherwise the newest Technical story that is not the cover,
+// and the Journal then skips it. `posts` is newest first (comparePosts), which also settles same-day ties.
+function selectHomeStories(posts, selection = {}) {
+    const warnings = [];
+    const cover = posts[0] || null;
+    const isTechnical = post => primaryCategory(post) === 'Technical';
+    let tech = null;
+    const requested = selection && selection.homeTech;
+    if (requested !== undefined && requested !== null && requested !== '') {
+        const id = typeof requested === 'string' ? requested.trim() : '';
+        const pick = id && posts.find(post => post.id === id);
+        if (!id) warnings.push('homeTech must be one article id');
+        else if (!pick) warnings.push(`homeTech "${id}" is not a published article`);
+        else if (!isTechnical(pick)) warnings.push(`homeTech "${id}" is not a Technical story`);
+        else if (pick === cover) warnings.push(`homeTech "${id}" is already the homepage cover`);
+        else tech = pick;
+    }
+    if (!tech) tech = posts.find(post => post !== cover && isTechnical(post)) || null;
+    const journal = posts.filter(post => post !== cover && post !== tech).slice(0, 1 + HOME_JOURNAL.side + HOME_JOURNAL.recent);
+    return { cover, tech, journal, warnings };
+}
+
+function injectHomeJournal(indexPosts, blogPosts, selection = {}) {
     const indexHtmlPath = path.join(CONFIG.BLOG_DIR, '..', '..', 'index.html');
     if (!fs.existsSync(indexHtmlPath)) return false;
     const html = fs.readFileSync(indexHtmlPath, 'utf8');
@@ -514,20 +539,24 @@ function injectHomeJournal(indexPosts, blogPosts) {
         console.warn('⚠️  index.html has no home-journal markers; the homepage journal was not rendered');
         return false;
     }
-    // [0] is the cover story, rendered by injectHomepageHero.
-    const posts = indexPosts.slice(1, 2 + HOME_JOURNAL.side + HOME_JOURNAL.recent);
+    // The cover story is rendered by injectHomepageHero.
+    const { tech, journal: posts, warnings } = selectHomeStories(indexPosts, selection);
+    warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the technical spread falls back to the newest Technical story`));
     const leadSource = posts[0] && blogPosts.find(post => post.id === posts[0].id);
     let updated = replaceInlineMarkers(html, 'home-journal', `\n${renderHomeJournal(posts, leadSource ? leadSource.excerpt || '' : '')}`);
-    // The technical spread takes the newest technical story not already on the page.
-    const shown = new Set([indexPosts[0], ...posts].filter(Boolean).map(post => post.id));
-    const tech = indexPosts.find(post => primaryCategory(post) === 'Technical' && !shown.has(post.id));
     if (tech && updated.includes('<!-- f1s:home-tech:begin -->')) {
         const source = blogPosts.find(post => post.id === tech.id) || tech;
         const teamKey = findTeamKey(tech.title, (tech.tags || []).join(' '));
         const round = latestDebriefRound();
         const team = round && round.teamIdealLap.find(item => item.teamKey === teamKey);
         const telemetry = renderTelemetry(round, teamKey);
-        updated = replaceInlineMarkers(updated, 'home-tech', renderHomeTech(tech, source.excerpt || '', telemetry, team ? team.teamName : ''));
+        updated = replaceInlineMarkers(updated, 'home-tech', renderHomeTech(tech, source.excerpt || '', telemetry, team ? team.teamName : '', { graphic: source.homeImage === 'graphic' }));
+    } else if (!tech && updated.includes('<!-- f1s:home-tech:begin -->')) {
+        updated = replaceInlineMarkers(updated, 'home-tech', '\n');
+    }
+    if (updated.includes('<!-- f1s:home-tech:begin -->')) {
+        // An empty eligible pool must not leave a previous feature visible; a later build restores the section.
+        updated = updated.replace(/(<section id="tech")(?: hidden)?(?=\s)/, `$1${tech ? '' : ' hidden'}`);
     }
     if (updated === html) return false;
     fs.writeFileSync(indexHtmlPath, updated);
@@ -1170,7 +1199,8 @@ async function processBlogEntries(options = {}) {
     fs.writeFileSync(indexPath, JSON.stringify(compactIndexData, null, 0));
     console.log(`Blog index data saved to ${indexPath} (${jsonKb(compactIndexData)} KB)`);
 
-    const front = resolveJournalFront(indexPosts, loadEditorialSelection());
+    const selection = loadEditorialSelection();
+    const front = resolveJournalFront(indexPosts, selection);
     front.warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the slot falls back to the newest story`));
     const postsById = new Map(blogPosts.map(post => [post.id, post]));
     const decks = {};
@@ -1186,7 +1216,7 @@ async function processBlogEntries(options = {}) {
     fs.writeFileSync(homeLatestPath, JSON.stringify(homeLatest, null, 0));
     console.log(`Home latest data saved to ${homeLatestPath} (${jsonKb(homeLatest)} KB)`);
     injectHomepageHero(homeLatest[0]);
-    injectHomeJournal(indexPosts, blogPosts);
+    injectHomeJournal(indexPosts, blogPosts, selection);
     await injectHomePanels(undefined, blogPosts);
 
     generateSitemap(blogPosts);
@@ -1218,6 +1248,8 @@ module.exports = {
     renderLedgerRows,
     renderHomeJournal,
     renderHomeTech,
+    selectHomeStories,
+    injectHomeJournal,
     injectBlogIndexFirstPage,
     buildHomeLatest,
     loadExistingPosts,
