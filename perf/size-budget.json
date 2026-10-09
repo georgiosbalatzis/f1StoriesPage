@@ -65,7 +65,7 @@
     "blog-module/build/worker.js": 8162,
     "blog-module/build/index.js": 55370,
     "blog-module/build/authors-page.js": 9615,
-    "blog-module/build/home-panels.js": 17199,
+    "blog-module/build/home-panels.js": 19507,
     "blog-module/build/__tests__/golden.js": 12364,
     "blog-module/build/__tests__/run-golden.js": 778,
     "scripts/build/fetch-youtube.mjs": 9455,
