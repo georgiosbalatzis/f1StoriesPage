@@ -4,7 +4,7 @@
 /* The same folio line the archive, articles and standings open with. */
 .authors-edition { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 20px; border-top: 1px solid var(--border); padding-top: 11px; margin-bottom: -8px; color: var(--text-secondary); font-size: .75rem; font-weight: 500; letter-spacing: .12em; }
 /* Measures in em (Plex "0" = .6em): `ch` reads .5em while the Latin subset loads. */
-.authors-intro h1 { margin: 0; font: 600 clamp(3rem, 6.5vw, 6.25rem)/.98 var(--font-display); letter-spacing: -.03em; max-width: 5.4em; }
+.authors-intro h1 { margin: 0; font: 600 clamp(3rem, 6.5vw, 6.25rem)/1.07 var(--font-display); letter-spacing: -.03em; max-width: 5.4em; }
 .authors-intro__copy { display: grid; gap: 18px; align-content: end; max-width: 25.2em; }
 .authors-intro p { max-width: 25.2em; margin: 0; color: var(--text-secondary); font-size: 1rem; line-height: 1.8; }
 .authors-intro__data-link { width: max-content; max-width: 100%; color: var(--accent); font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-decoration: none; text-transform: uppercase; }
