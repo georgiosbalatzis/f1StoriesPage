@@ -356,7 +356,7 @@
 .home-page #about { padding: clamp(80px, 9vw, 152px) 0; }
 .home-page :is(.team-head, .journal-head) { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter-home); align-items: end; margin-bottom: clamp(40px, 5vw, 72px); }
 .home-page :is(.team-head__main, .journal-head__main) { grid-column: 1 / 8; }
-.home-page :is(.team-head, .journal-head) h2 { margin: 0; font-size: clamp(2.625rem, 1.2rem + 4.3vw, 5.75rem); font-weight: 600; line-height: .98; letter-spacing: -.038em; text-wrap: balance; }
+.home-page :is(.team-head, .journal-head) h2 { margin: 0; font-size: clamp(2.625rem, 1.2rem + 4.3vw, 5.75rem); font-weight: 600; line-height: 1.07; letter-spacing: -.038em; text-wrap: balance; }
 .home-page :is(.team-head__aside, .journal-head__aside) { grid-column: 9 / 13; max-width: 32em; margin: 0; padding-bottom: 6px; color: var(--text-secondary); line-height: 1.6; }
 .home-page .team-layout { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter-home); align-items: start; }
 .home-page .team-spotlight { position: relative; grid-column: 1 / 8; }
