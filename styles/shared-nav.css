@@ -536,6 +536,10 @@
     }
     [data-theme="light"] .blog-nav-hamburger { background: transparent; }
 }
+@media (max-width: 359.98px) {
+    .nav-audio-face { gap: 6px; padding: 0 8px; }
+    .nav-audio-word { font-size: 1rem; }
+}
 
 /* ── Floating Utility Buttons ─────────────────── */
 :root {

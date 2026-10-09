@@ -15,6 +15,7 @@ const { htmlToPlainText } = require('./metadata');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
 const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
+const { readingTimeFromWords, readingTimeFromPage } = require('./reading-time');
 const { injectAuthorsDirectory, injectHomeTeam } = require('./authors-page');
 const { injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry } = require('./home-panels');
 const {
@@ -277,7 +278,7 @@ function storyImage(post) {
 
 function storyReadingTime(post) {
     let readingTime = post.readingTime || post.readTime || '';
-    if (!readingTime && post.wordCount) readingTime = `${Math.max(1, Math.ceil(post.wordCount / 200))} min`;
+    if (!readingTime && post.wordCount) readingTime = readingTimeFromWords(post.wordCount);
     return formatReadingTime(readingTime);
 }
 
@@ -903,6 +904,18 @@ function loadExistingPosts() {
     }
 }
 
+// Posts carried over without their body (cache hits, source-less legacy pages) keep whatever reading time an older
+// build stored. Measure the page that is actually served so the card, the index and the article badge agree.
+function syncCachedReadingTimes(posts) {
+    posts.forEach(post => {
+        if (!post || !post.id || (typeof post.content === 'string' && post.content.trim())) return;
+        const articlePath = path.join(CONFIG.BLOG_DIR, post.id, 'article.html');
+        if (!fs.existsSync(articlePath)) return;
+        const measured = readingTimeFromPage(fs.readFileSync(articlePath, 'utf8'));
+        if (measured) post.readingTime = measured;
+    });
+}
+
 async function renderCachedArticlePages(cachedPosts) {
     let rendered = 0;
     for (const post of cachedPosts) {
@@ -1099,6 +1112,7 @@ async function processBlogEntries(options = {}) {
     ];
 
     fixMissingAuthors(blogPosts);
+    syncCachedReadingTimes(blogPosts);
     blogPosts.forEach(post => {
         Object.assign(post, getPostTaxonomy(post));
         delete post.tag;

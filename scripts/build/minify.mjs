@@ -80,6 +80,7 @@ const JS_INPUTS = [
     'blog-module/inline-markup.js',
     'blog-module/blog-index.js',
     'blog-module/blog/article-rail.js',
+    'blog-module/blog/article-embeds.js',
     'blog-module/blog/article-script.js',
     'blog-module/blog/article-comments.js',
     'blog-module/blog-fixes.js',

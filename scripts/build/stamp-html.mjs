@@ -145,6 +145,7 @@ const ARTICLE_RUNTIME_SOURCES = new Set([
     'scripts/perf/error-beacon.js',
     'scripts/perf/web-vitals-beacon.js',
     'blog-module/blog/article-rail.js',
+    'blog-module/blog/article-embeds.js',
     'blog-module/blog/article-script.js',
     'blog-module/blog/article-comments.js',
     'blog-module/blog-fixes.js',
@@ -722,6 +723,21 @@ function ensureArticleCommentsScript(html, commentsInfo) {
     );
 }
 
+// article-embeds.js (BetCast/standings/telemetry adapters, ~12 KB min) is shipped only to articles that carry a
+// managed embed; the markers mirror MANAGED_EMBED_SELECTOR in article-script.js. It precedes article-script so
+// both deferred scripts run, in order, before DOMContentLoaded.
+const MANAGED_EMBED_MARKUP = /<iframe\b[^>]*\bsrc=["'][^"']*(?:\/standings\/|\/telemetry\/|f1-telemetry-dashboard|BetCastVisualisation|\/betcast\/)|data-f1s-betcast-widget|class=["'][^"']*\bf1-telemetry-figure\b/i;
+
+function ensureArticleEmbedsScript(html, embedsInfo) {
+    if (!embedsInfo || !embedsInfo.min || !embedsInfo.hash) return html;
+    if (!MANAGED_EMBED_MARKUP.test(html)) return html;
+    if (/\/blog-module\/blog\/article-embeds(?:\.min)?\.js(?:\?v=[a-f0-9]+)?/i.test(html)) return html;
+    return String(html || '').replace(
+        /([ \t]*<script\s+defer\s+src=["']\/blog-module\/blog\/article-script(?:\.min)?\.js(?:\?v=[a-f0-9]+)?["']><\/script>)/i,
+        `<script defer src="/${embedsInfo.min}?v=${embedsInfo.hash}"></script>\n$1`
+    );
+}
+
 function ensureArticleRailAssets(html, railCssInfo, railJsInfo) {
     let result = String(html || '');
 
@@ -908,7 +924,7 @@ function ensureLazyIframes(html) {
     ));
 }
 
-function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo, railJsInfo, swInfo) {
+function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo, railJsInfo, swInfo, embedsInfo) {
     const articleId = articleIdFromRel(relPath);
     let result = String(html || '');
     result = asyncifyStylesheets(result, relPath).result;
@@ -932,6 +948,7 @@ function normalizeArticleRuntimeMarkup(html, relPath, commentsInfo, railCssInfo,
     );
     result = ensureArticleMiniBar(result);
     result = ensureArticleRailAssets(result, railCssInfo, railJsInfo);
+    result = ensureArticleEmbedsScript(result, embedsInfo);
     result = ensureArticleCommentsScript(result, commentsInfo);
     result = ensureSwCleanupScript(result, swInfo);
     result = normalizeArticleConsentCopy(result);
@@ -961,7 +978,7 @@ function stampArticleRuntimeMarkup(commentsInfo, railCssInfo, railJsInfo, dry, m
     for (const rel of listArticleHtml()) {
         const abs = path.join(REPO_ROOT, rel);
         const original = fs.readFileSync(abs, 'utf8');
-        let result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, railCssInfo, railJsInfo, manifest['scripts/sw-cleanup.js']);
+        let result = normalizeArticleRuntimeMarkup(original, rel, commentsInfo, railCssInfo, railJsInfo, manifest['scripts/sw-cleanup.js'], manifest['blog-module/blog/article-embeds.js']);
         // Refresh the marker block on every stamp. applyArticleEditorial is
         // byte-stable when hashes are current and updates archived pages when
         // any shared editorial stylesheet changes.

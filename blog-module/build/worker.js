@@ -12,6 +12,7 @@ const { extractMetadata, stripLeadingArticleBoilerplate } = require('./metadata'
 const { convertDocxToHtml } = require('./parse-docx');
 const { convertTxtToHtml } = require('./parse-txt');
 const { renderArticleHtml } = require('./article-render');
+const { countWords, readingTimeFromWords } = require('./reading-time');
 const { getPostTaxonomy } = require('../taxonomy');
 const {
     processImages,
@@ -139,8 +140,8 @@ async function processBlogEntry(entryPath) {
     assertNoInlineDataImages(content, folderName);
 
     const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-    const wordCount = plainText ? plainText.split(/\s+/).length : 0;
-    const readingTime = `${Math.max(1, Math.ceil(wordCount / 200))} min`;
+    const wordCount = countWords(plainText);
+    const readingTime = readingTimeFromWords(wordCount);
     const generatedExcerpt = plainText
         ? plainText.length <= 200
             ? plainText

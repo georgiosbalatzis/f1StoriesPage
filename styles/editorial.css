@@ -438,6 +438,12 @@ body.editorial-page .blog-nav:has(.theme-toggle-nav-btn) .blog-nav-mobile .theme
     body.editorial-page .blog-nav-brand img { width: 32px; height: 32px; }
 }
 
+/* Brand + ON AIR + theme + menu need ~353px in flow; below 360px the brand and row gap give back the rest (menu stays inside the gutter at 320). */
+@media (max-width: 359.98px) {
+    body.editorial-page .blog-nav-inner { gap: 0.5rem; }
+    body.editorial-page .blog-nav-brand { gap: 0.35rem; font-size: 1.2rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
     body.editorial-page .blog-nav-brand img,
     body.editorial-page .blog-nav-link::after,

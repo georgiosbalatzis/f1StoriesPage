@@ -47,7 +47,8 @@
     "scripts/perf/web-vitals-beacon.js": 4558,
     "blog-module/blog-index.js": 28984,
     "blog-module/blog-index-data.json": 131020,
-    "blog-module/blog/article-script.js": 28364,
+    "blog-module/blog/article-embeds.js": 22065,
+    "blog-module/blog/article-script.js": 31877,
     "blog-module/blog-fixes.js": 5043,
     "blog-module/blog-processor.js": 236,
     "blog-module/build/shared.js": 10168,
@@ -105,7 +106,8 @@
     "scripts/perf/error-beacon.min.js": 1450,
     "scripts/perf/web-vitals-beacon.min.js": 2267,
     "blog-module/blog-index.min.js": 13872,
-    "blog-module/blog/article-script.min.js": 14111,
+    "blog-module/blog/article-embeds.min.js": 13491,
+    "blog-module/blog/article-script.min.js": 16192,
     "blog-module/blog-fixes.min.js": 1890
   }
 }

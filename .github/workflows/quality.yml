@@ -64,6 +64,9 @@ jobs:
       - name: Run standings module tests
         run: npm run test:standings
 
+      - name: Run blog module tests
+        run: npm run test:blog
+
       - name: Run security policy tests
         run: npm run test:security
 

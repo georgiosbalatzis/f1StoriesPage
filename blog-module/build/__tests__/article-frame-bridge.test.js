@@ -105,7 +105,7 @@ function standingsFixture(src = 'https://f1stories.gr/standings/?tab=drivers&foc
         setTimeout(callback, _delay, ...args) { return setTimeout(() => callback(...args), 100000); },
         clearTimeout(timer) { clearTimeout(timer); },
     };
-    const cleanup = bridge({ querySelectorAll: () => [frame] }, {}, win);
+    const cleanup = bridge({ querySelectorAll: () => [frame] }, { documentElement: { getAttribute: () => null } }, win);
     return { cleanup, frame, listeners, attrs };
 }
 
@@ -156,6 +156,7 @@ test('telemetry frames grow and shrink while rejecting spoofed or invalid measur
         const origin = new URL(src).origin;
         assert.equal(frame.dataset.f1sTelemetryManaged, 'true');
         assert.deepEqual(frame.contentWindow.messages[0], { data: { type: 'f1s-telemetry:measure' }, origin });
+        assert.deepEqual(frame.contentWindow.messages[1], { data: { type: 'f1s-telemetry:theme', theme: 'dark' }, origin });
         const message = (data, source = frame.contentWindow, eventOrigin = origin) => listeners.get('message')({ data, source, origin: eventOrigin });
         message({ type: 'f1s-telemetry:resize', height: 500 }, {}, origin);
         message({ type: 'f1s-telemetry:resize', height: 500 }, frame.contentWindow, 'https://evil.example');

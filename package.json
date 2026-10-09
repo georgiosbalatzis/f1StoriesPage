@@ -49,6 +49,7 @@
     "perf:images": "node scripts/perf/public-image-guard.mjs",
     "qa:visual": "node scripts/perf/visual-qa.mjs",
     "qa:embeds": "node scripts/perf/embed-qa.mjs",
+    "qa:countdown": "node scripts/perf/countdown-qa.mjs",
     "qa:audio-player": "node scripts/perf/audio-player-qa.mjs",
     "qa:embed-dialog": "node scripts/perf/embed-dialog-qa.mjs",
     "qa:author-images": "node scripts/perf/author-image-ingest-check.mjs",

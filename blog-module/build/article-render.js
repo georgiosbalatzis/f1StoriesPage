@@ -1,5 +1,6 @@
 const { fs, path, CONFIG, utils, escapeHtmlAttribute, getImageDimensionsForPublicPath } = require('./shared');
-const { getPostTaxonomy, categoryLabel, categoryKind, authorLabel, findAuthor, authorThumb } = require('../taxonomy');
+const { getPostTaxonomy, categoryLabel, categoryKind, authorLabel, findAuthor, authorThumb, formatReadingTime } = require('../taxonomy');
+const { readingTimeFromWords, wordsInHtml } = require('./reading-time');
 
 function escapeHtmlText(value) {
     return String(value ?? '')
@@ -127,6 +128,15 @@ function renderArticleSources(sources, profile) {
         : 'Το αρχείο δεν έχει ακόμη ξεχωριστό κατάλογο πηγών. Οι τεκμηριωμένες παραπομπές προστίθενται σε αυτή την καρτέλα με κάθε συντακτική ενημέρωση.';
 
     return `<span class="article-trust__pending">${escapeHtmlText(context)}</span>`;
+}
+
+// Badge text such as "8 λεπτά ανάγνωσης": the same stored value the cards, index and homepage show (see reading-time.js).
+function readingBadgeText(post) {
+    const stored = post.readingTime || post.readTime
+        || (post.wordCount ? readingTimeFromWords(post.wordCount) : '')
+        || (post.content ? readingTimeFromWords(wordsInHtml(post.content)) : '');
+    const minutes = formatReadingTime(stored);
+    return minutes ? `${minutes} ανάγνωσης` : '';
 }
 
 function replaceTemplateTokens(templateHtml, tokens) {
@@ -269,6 +279,10 @@ function refreshArticleTaxonomy(html, post) {
         .replace(/(<span class="article-rail-label">)Article(<\/span>)/i, `$1${escapeHtmlText(profile.label)}$2`)
         .replace(/(<span class="article-rail-label">)Related(<\/span>)/i, '$1ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ$2')
         .replace(/<p class="article-header-byline"[^>]*>[\s\S]*?<\/p>/, () => renderHeaderByline(post))
+        .replace(/(<span id="reading-time-value">)[^<]*(<\/span>)/, (block, open, close) => {
+            const badge = readingBadgeText(post);
+            return badge ? `${open}${escapeHtmlText(badge)}${close}` : block;
+        })
         // Every story ends on the current author card (all shapes of the old box included).
         .replace(/<(?:div class="article-author-footer"|section class="author-card")[\s\S]*?(?=\s*<div class="sponsor-strip">)/, () => renderAuthorCard(post));
 
@@ -346,6 +360,7 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_EXCERPT_ATTR: escapeHtmlAttribute(postData.excerpt),
         ARTICLE_EXCERPT_JSON: jsonScriptLiteral(postData.excerpt),
         ARTICLE_COMMENTS: String(postData.comments || 0),
+        ARTICLE_READING_TIME: escapeHtmlText(readingBadgeText(postData) || '1 λεπτό ανάγνωσης'),
         ARTICLE_IMAGE_WIDTH: String(headerImageDimensions && headerImageDimensions.width ? headerImageDimensions.width : 848),
         ARTICLE_IMAGE_HEIGHT: String(headerImageDimensions && headerImageDimensions.height ? headerImageDimensions.height : 400),
         ARTICLE_IMAGE_ATTR: escapeHtmlAttribute(imageFilePath),
