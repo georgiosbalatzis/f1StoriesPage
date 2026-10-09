@@ -1,5 +1,8 @@
 /* ═══════════════════════════════════════════════
    shared-nav.css — Unified Blog Navbar + Theme Toggle + Scroll-to-top
+   Owns masthead structure and behaviour. Some skin still lives here and wins the cascade (mobile-link type and rules,
+   light-theme hover/active colours, countdown, BetCast link, nav theme-button size): pending migration to
+   styles/editorial.css (docs/css-architecture.md). Do not add new skin here.
    Replaces duplicated navbar CSS from:
    - index.html <style> block
    - blog/index.html <style> block  
@@ -18,27 +21,19 @@
 
 /* ── Blog Navbar ──────────────────────────────── */
 .blog-nav {
-    --nav-bg: rgba(14,14,16,0.98);
-    --nav-border: rgba(255,255,255,0.12);
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 1060;
-    background: var(--nav-bg);
     backdrop-filter: none;
-    -webkit-backdrop-filter: none;
     border-bottom: 1px solid var(--nav-border);
     transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
-    will-change: transform;
 }
 .blog-nav.scrolled {
     background: var(--nav-bg);
     box-shadow: none;
 }
 [data-theme="light"] .blog-nav {
-    --nav-bg: rgba(255,255,255,0.98);
-    --nav-border: rgba(29,29,31,0.12);
     backdrop-filter: none;
-    -webkit-backdrop-filter: none;
 }
 [data-theme="light"] .blog-nav.scrolled {
     --nav-bg: rgba(255,255,255,0.98);
@@ -49,13 +44,9 @@
 .blog-nav-inner {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
     padding: 0.6rem 0;
-    min-height: 58px;
 }
 .blog-nav-brand img {
-    height: 38px;
-    width: auto;
     display: block;
     transition: opacity 0.25s;
 }
@@ -65,7 +56,6 @@
 .blog-nav-links {
     display: flex;
     align-items: center;
-    gap: 1.35rem;
     margin-left: 0;
 }
 .blog-nav-link {
@@ -73,34 +63,11 @@
     align-items: center;
     gap: 0.4rem;
     position: relative;
-    padding: 0.1rem 0;
-    border: 0;
-    border-bottom: 2px solid transparent;
-    border-radius: 0;
-    background: transparent;
-    color: rgba(255,255,255,0.58);
-    text-decoration: none;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.025em;
-    box-shadow: none;
     transform: none;
     transition: color 0.2s, border-color 0.2s;
     white-space: nowrap;
 }
 .blog-nav-link i { font-size: 0.72rem; opacity: 0.7; }
-.blog-nav-link:hover {
-    color: #f0f0f2;
-    border-bottom-color: rgba(255,255,255,0.28);
-    background: transparent;
-}
-.blog-nav-link.active {
-    color: #f0f0f2;
-    border-bottom-color: #41B6E6;
-    background: transparent;
-    font-weight: 700;
-}
-[data-theme="light"] .blog-nav-link { color: #6e6e73; }
 [data-theme="light"] .blog-nav-link:hover {
     color: #1d1d1f;
     border-bottom-color: rgba(29,29,31,0.28);
@@ -152,7 +119,6 @@
 .blog-nav-right {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
     margin-left: auto;
 }
 
@@ -169,40 +135,28 @@
 }
 [data-theme="light"] .blog-nav-countdown {
     background: transparent;
-    border-left-color: rgba(29,29,31,0.14);
 }
 .countdown-flag { font-size: 1.1rem; line-height: 1; }
 .countdown-info { display: flex; flex-direction: column; line-height: 1.2; }
 .countdown-race {
-    font-size: 0.68rem;
-    color: rgba(255,255,255,0.38);
     font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 140px;
 }
-[data-theme="light"] .countdown-race { color: #86868b; }
 .countdown-timer {
-    font-size: 0.78rem;
-    color: #41B6E6;
     font-weight: 700;
-    font-variant-numeric: tabular-nums;
     letter-spacing: 0.02em;
 }
-[data-theme="light"] .countdown-timer { color: var(--accent-readable, #0A4F66); }
 
 .blog-nav-countdown-mobile {
     display: none;
     align-items: center;
     gap: 0.35rem;
-    font-size: 0.78rem;
-    color: #41B6E6;
     font-weight: 600;
     flex-shrink: 0;
     white-space: nowrap;
 }
-[data-theme="light"] .blog-nav-countdown-mobile { color: var(--accent-readable, #0A4F66); }
 .blog-nav-countdown-mobile i { font-size: 0.65rem; color: rgba(255,255,255,0.38); }
 [data-theme="light"] .blog-nav-countdown-mobile i { color: #86868b; }
 .blog-nav-countdown-mobile .countdown-flag-mobile {
@@ -216,8 +170,6 @@
 .blog-nav-hamburger {
     display: none;
     width: 44px; height: 44px;
-    border: none;
-    background: none;
     cursor: pointer;
     padding: 8px;
     flex-direction: column;
@@ -230,12 +182,9 @@
 .blog-nav-hamburger span {
     display: block;
     height: 2px; width: 22px;
-    background: rgba(255,255,255,0.6);
-    border-radius: 2px;
     transition: all 0.3s ease;
     transform-origin: center;
 }
-[data-theme="light"] .blog-nav-hamburger span { background: #86868b; }
 .blog-nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .blog-nav-hamburger.open span:nth-child(2) { opacity: 0; }
 .blog-nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
@@ -248,58 +197,31 @@
     transition: max-height 0.35s ease;
     padding: 0;
     border-top: 1px solid transparent;
-    background: var(--nav-bg);
 }
 .blog-nav-mobile.open {
-    max-height: 420px;
     padding: 0;
-    border-top-color: rgba(255,255,255,0.08);
 }
-[data-theme="light"] .blog-nav-mobile { background: var(--nav-bg); }
-[data-theme="light"] .blog-nav-mobile.open { border-top-color: rgba(0,0,0,0.06); }
 
 .blog-nav-mobile-link {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    padding: 0.72rem 1rem;
     border: 0;
     border-left: 3px solid transparent;
     border-bottom: 1px solid rgba(255,255,255,0.08);
     border-radius: 0;
-    background: transparent;
-    color: rgba(255,255,255,0.6);
-    text-decoration: none;
     font-size: 0.92rem;
     font-weight: 500;
     transition: color 0.2s, border-color 0.2s;
-    min-height: 44px;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
 }
 .blog-nav-mobile-link i { width: 18px; text-align: center; font-size: 0.82rem; opacity: 0.7; }
-.blog-nav-mobile-link:hover,
-.blog-nav-mobile-link:active {
-    color: #f0f0f2;
-    background: transparent;
-}
 .blog-nav-mobile-link.active {
-    color: #41B6E6;
-    border-left-color: #41B6E6;
-    background: transparent;
     font-weight: 600;
-}
-[data-theme="light"] .blog-nav-mobile-link {
-    color: #6e6e73;
-    border-bottom-color: rgba(29,29,31,0.08);
-}
-[data-theme="light"] .blog-nav-mobile-link:hover {
-    color: #1d1d1f;
-    background: transparent;
 }
 [data-theme="light"] .blog-nav-mobile-link.active {
     color: var(--accent-readable, #0A4F66);
-    border-left-color: #0A7FA8;
     background: transparent;
 }
 
@@ -331,17 +253,13 @@
     position: static;
     width: 100%;
     height: auto;
-    min-height: 44px;
     margin: 0;
-    padding: 0.72rem 1rem;
     border: 0;
     border-left: 3px solid transparent;
     border-bottom: 1px solid rgba(255,255,255,0.08);
     border-radius: 0;
     justify-content: flex-start;
     gap: 0.6rem;
-    background: transparent;
-    color: rgba(255,255,255,0.72);
     box-shadow: none;
     transform: none;
     backdrop-filter: none;
@@ -353,25 +271,16 @@
 .blog-nav-mobile .theme-toggle-menu-btn:hover,
 .blog-nav-mobile .theme-toggle-menu-btn:focus-visible {
     border-left-color: transparent;
-    border-bottom-color: rgba(255,255,255,0.08);
-    background: transparent;
-    color: #41B6E6;
     box-shadow: none;
     transform: none;
 }
 .theme-toggle-menu-btn .theme-toggle-label-light { display: none; }
 [data-theme="light"] .blog-nav-mobile .theme-toggle-menu-btn {
-    background: transparent;
-    color: #6e6e73;
     border-left-color: transparent;
-    border-bottom-color: rgba(29,29,31,0.08);
 }
 [data-theme="light"] .blog-nav-mobile .theme-toggle-menu-btn:hover,
 [data-theme="light"] .blog-nav-mobile .theme-toggle-menu-btn:focus-visible {
     border-left-color: transparent;
-    border-bottom-color: rgba(29,29,31,0.08);
-    background: transparent;
-    color: var(--accent-readable, #0A4F66);
 }
 [data-theme="light"] .theme-toggle-menu-btn .theme-toggle-label-dark { display: none; }
 [data-theme="light"] .theme-toggle-menu-btn .theme-toggle-label-light { display: inline; }
@@ -379,39 +288,15 @@
 .blog-nav .theme-toggle-nav-btn {
     position: static;
     z-index: auto;
-    width: 44px;
-    height: 44px;
-    border-radius: 0;
-    border: 0;
-    background: transparent;
-    color: rgba(255,255,255,0.72);
-    box-shadow: none;
     backdrop-filter: none;
-    -webkit-backdrop-filter: none;
     flex: 0 0 auto;
     font-size: 0.9rem;
 }
 .blog-nav .theme-toggle-nav-btn span {
     display: none;
 }
-.blog-nav .theme-toggle-nav-btn:hover,
-.blog-nav .theme-toggle-nav-btn:focus-visible {
-    color: #41B6E6;
-    border-color: transparent;
-    background: transparent;
-    transform: none;
-    box-shadow: none;
-}
-[data-theme="light"] .blog-nav .theme-toggle-nav-btn {
-    background: transparent;
-    border-color: transparent;
-    color: #6e6e73;
-    box-shadow: none;
-}
 [data-theme="light"] .blog-nav .theme-toggle-nav-btn:hover,
 [data-theme="light"] .blog-nav .theme-toggle-nav-btn:focus-visible {
-    color: var(--accent-readable, #0A4F66);
-    border-color: transparent;
     background: transparent;
 }
 
@@ -519,22 +404,16 @@
     .blog-nav-countdown-mobile { display: flex; }
 }
 @media (max-width: 575.98px) {
-    .blog-nav-inner { gap: 0.75rem; padding-right: calc(44px + 1.5rem); }
-    .blog-nav-right { gap: 0.25rem; min-width: 0; }
     /* Keep the header focused on brand, theme and menu at phone widths. */
     .blog-nav-countdown-mobile { display: none; }
-    .blog-nav-brand { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; }
+    .blog-nav-brand { min-width: 44px; min-height: 44px; }
     .blog-nav-brand img { max-width: 38px; max-height: 38px; }
     .blog-nav-hamburger {
         display: flex !important;
-        position: fixed;
         top: 11px;
         right: 12px;
         z-index: 1062;
-        border-radius: 0;
-        background: transparent;
     }
-    [data-theme="light"] .blog-nav-hamburger { background: transparent; }
 }
 @media (max-width: 359.98px) {
     .nav-audio-face { gap: 6px; padding: 0 8px; }
@@ -566,34 +445,11 @@
 /* ── Link navigation: visible from compact desktop upward ───── */
 @media (min-width: 992px) {
     .blog-nav-inner {
-        gap: 0;
-        min-height: 64px;
         padding: 0;
-    }
-
-    .blog-nav-brand {
-        padding-right: 1.45rem;
-    }
-
-    .blog-nav-brand img {
-        height: 36px;
-    }
-
-    .blog-nav-links {
-        align-self: stretch;
     }
 
     .blog-nav-link .icon {
         display: none;
-    }
-
-    .blog-nav-right {
-        gap: 1rem;
-    }
-
-    .blog-nav .theme-toggle-nav-btn {
-        width: 36px;
-        height: 36px;
     }
 }
 
@@ -711,7 +567,6 @@ header > .navbar { display: none !important; }
     .blog-nav,
     [data-theme="light"] .blog-nav {
         backdrop-filter: none;
-        -webkit-backdrop-filter: none;
     }
     body:not(.standings-embed) > .theme-toggle-btn:not(.theme-toggle-menu-btn):not(.theme-toggle-nav-btn) {
         display: none;
