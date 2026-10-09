@@ -323,7 +323,8 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
         toggle.className = 'toc-toggle';
         toggle.id = 'toc-toggle';
         toggle.type = 'button';
-        toggle.setAttribute('aria-label', 'Toggle table of contents');
+        toggle.setAttribute('aria-controls', 'toc-body');
+        toggle.setAttribute('aria-expanded', 'false');
         const label = document.createElement('span');
         label.textContent = 'Περιεχόμενα';
         toggle.append(createIcon('fa-list-ul'), label, createIcon('fa-chevron-down', 'icon toc-chevron'));
@@ -348,6 +349,7 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
             tocToggle.addEventListener('click', () => {
                 tocBody.classList.toggle('open');
                 tocToggle.classList.toggle('open');
+                tocToggle.setAttribute('aria-expanded', String(tocBody.classList.contains('open')));
             });
         }
 
