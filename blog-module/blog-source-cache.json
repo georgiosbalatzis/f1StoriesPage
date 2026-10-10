@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261010W",
+      "title": "Luciano Burti: ο οδηγός που το 2001 είδε την καριέρα του να αλλάζει μέσα σε λίγα δευτερόλεπτα.",
+      "author": "Themis Charvalis",
+      "date": "2026-10-10",
+      "dateISO": "2026-10-10",
+      "displayDate": "10 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261010W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261010W/2.webp",
+      "excerpt": "Ο Βραζιλιάνος δεν ήταν ένας «τυχαίος» οδηγός της εποχής. Πρωταθλητής Formula Vauxhall Junior το 1997, τρίτος στη βρετανική Formula 3 το 1998 και δεύτερος το 1999, την ίδια χρονιά που έγινε δοκιμαστής...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261010W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Luciano Burti",
+        "Jaguar f1",
+        "00s heroes"
+      ],
+      "wordCount": 487,
+      "readingTime": "3 min",
+      "imageWidth": 640,
+      "imageHeight": 426,
+      "backgroundImageWidth": 350,
+      "backgroundImageHeight": 233
+    },
+    {
       "id": "20261010J",
       "title": "Betcast #276 - Singapore GP",
       "author": "Giannis Poulikidis",
@@ -10316,5 +10345,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-10T06:00:56.801Z"
+  "lastUpdated": "2026-10-10T18:22:02.465Z"
 }
