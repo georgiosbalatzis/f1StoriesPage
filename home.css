@@ -199,7 +199,7 @@
 .home-page .home-ledger .home-story__byline { margin-top: auto; padding-top: 6px; }
 
 /* Condensed brand masts: "ON AIR." and "THE NUMBERS." */
-.home-page .home-mast { margin: 0; color: var(--text-primary); font: 700 clamp(4rem, 1.6rem + 7.2vw, 9.5rem)/.82 var(--font-brand); letter-spacing: -.02em; }
+.home-page .home-mast { margin: 0; color: var(--text-primary); font: 700 clamp(2.75rem, 1.2rem + 4.4vw, 6rem)/.82 var(--font-brand); letter-spacing: -.02em; }
 
 /* TECHNICAL: the dark spread. The mast opens the section top-left and runs into the
  * photograph (the photo's dark left edge keeps it legible); the story sits under the
@@ -322,7 +322,6 @@
 .home-page #numbers { padding: clamp(80px, 9vw, 152px) 0; background: var(--bg-surface); font-variant-numeric: tabular-nums; }
 .home-page .numbers-head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter-home); align-items: end; margin-bottom: clamp(40px, 5vw, 72px); }
 .home-page .numbers-head__main { grid-column: 1 / 8; }
-.home-page .numbers-head .home-mast { font-size: clamp(4.5rem, 1.6rem + 8.6vw, 11rem); }
 .home-page .numbers-head__aside { grid-column: 9 / 13; padding-bottom: 6px; }
 .home-page .numbers-head__aside > p:first-child { max-width: 32em; margin: 0; color: var(--text-secondary); line-height: 1.6; }
 .home-page .numbers-stamp { margin-top: 18px; color: var(--text-primary); }
@@ -373,7 +372,7 @@
 .home-page #about { content-visibility: auto; contain-intrinsic-size: auto 1400px; }
 .home-page :is(.team-head, .journal-head) { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter-home); align-items: end; margin-bottom: clamp(40px, 5vw, 72px); }
 .home-page :is(.team-head__main, .journal-head__main) { grid-column: 1 / 8; }
-.home-page :is(.team-head, .journal-head) h2 { margin: 0; font-size: clamp(2.625rem, 1.2rem + 4.3vw, 5.75rem); font-weight: 600; line-height: 1.07; letter-spacing: -.038em; text-wrap: balance; }
+.home-page :is(.team-head, .journal-head) h2 { margin: 0; font-size: clamp(1.875rem, 1.1rem + 2.6vw, 3.75rem); font-weight: 600; line-height: 1.07; letter-spacing: -.038em; text-wrap: balance; }
 .home-page :is(.team-head__aside, .journal-head__aside) { grid-column: 9 / 13; max-width: 32em; margin: 0; padding-bottom: 6px; color: var(--text-secondary); line-height: 1.6; }
 .home-page .team-layout { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter-home); align-items: start; }
 .home-page .team-spotlight { position: relative; grid-column: 1 / 8; }
@@ -448,7 +447,7 @@
 .home-page .contact-layout { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter-home); row-gap: 40px; }
 .home-page .contact-head { grid-column: 1 / 5; }
 .home-page .contact-head .section-kicker { margin-bottom: 20px; }
-.home-page .contact-title { margin: 0 0 18px; font-size: clamp(2.25rem, 1.3rem + 2.6vw, 3.75rem); font-weight: 600; line-height: 1; letter-spacing: -.035em; }
+.home-page .contact-title { margin: 0 0 18px; font-size: clamp(1.875rem, 1.1rem + 2.6vw, 3.75rem); font-weight: 600; line-height: 1; letter-spacing: -.035em; }
 .home-page .contact-head > p { max-width: 24em; margin: 0; color: var(--text-secondary); }
 .home-page .contact-email { position: relative; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; margin-top: 12px; color: var(--text-primary); font-size: .75rem; font-weight: 600; letter-spacing: .02em; }
 .home-page .contact-email::after { content: ''; position: absolute; left: 0; right: 0; bottom: 8px; height: 1px; background: currentColor; }
