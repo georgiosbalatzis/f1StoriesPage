@@ -1,6 +1,34 @@
 {
   "posts": [
     {
+      "id": "20261010J",
+      "title": "Betcast #276 - Singapore GP",
+      "author": "Giannis Poulikidis",
+      "date": "2026-10-10",
+      "dateISO": "2026-10-10",
+      "displayDate": "10 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261010J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261010J/1.webp",
+      "excerpt": "Με το δεξί έγινε η αρχή για το GP της Σιγκαπούρης. Με ένα ελεύθερο δοκιμαστικό είχαμε, όπως προβλέψαμε, «χάος». Η σκόνη στην πίστα έκανε ακόμα πιο δύσκολο το έργο των οδηγών, όπως και η φθορά των...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261010J/article.html",
+      "category": "Betting",
+      "categories": [
+        "Betting"
+      ],
+      "tags": [
+        "Betcast",
+        "2026"
+      ],
+      "wordCount": 126,
+      "readingTime": "1 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
+    },
+    {
       "id": "20261009W",
       "title": "Grand prix Σιγκαπούρης: Η νύχτα, η ιστορία και η απόλυτη δοκιμασία της Formula 1",
       "author": "Themis Charvalis",
@@ -10288,5 +10316,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-09T17:38:08.473Z"
+  "lastUpdated": "2026-10-10T06:00:56.801Z"
 }
