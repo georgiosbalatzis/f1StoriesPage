@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20261011J",
+      "title": "Vasseur εναντίον Hamilton; Η Ferrari ψάχνει τον ένοχο",
+      "author": "Giannis Poulikidis",
+      "date": "2026-10-11",
+      "dateISO": "2026-10-11",
+      "displayDate": "11 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261011J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261011J/1.webp",
+      "excerpt": "Από πού να ξεκινήσουμε να μιλάμε για τη Ferrari και πού να τελειώσουμε; Σαν να ακούω τους τιφόζι να τραγουδάνε... «Τι αμαρτίες, έχω κάνει; Δεν αντέχω... Άλλο φτάνει». Μαζί και οι φίλαθλοι του Lewis...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261011J/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "Lewis Hamilton",
+        "Vasseur",
+        "Ferrari",
+        "Singapore"
+      ],
+      "wordCount": 1092,
+      "readingTime": "6 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
+    },
+    {
       "id": "20261011W",
       "title": "Marco Bezzecchi: Η κυριαρχία στην Ινδονησία και η νίκη που έδωσε ξανά ζωή στα όνειρά του!",
       "author": "Themis Charvalis",
@@ -10375,5 +10405,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-11T17:28:10.969Z"
+  "lastUpdated": "2026-10-11T19:59:17.988Z"
 }
