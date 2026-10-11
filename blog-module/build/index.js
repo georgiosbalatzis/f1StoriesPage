@@ -481,8 +481,7 @@ function renderHomeTech(post, dek, telemetry, teamName, { graphic = false } = {}
         .concat(readingTime ? [`<span>${escapeHtmlAttribute(readingTime)}</span>`] : []).join('');
     return `
         <div class="container tech-folio">
-            <span class="section-kicker">03 / ΤΕΧΝΙΚΗ ΑΝΑΛΥΣΗ</span>
-            <span class="section-kicker tech-folio__desk" aria-hidden="true">TECH DESK · ${date}</span>
+            <span class="section-kicker">ΤΕΧΝΙΚΗ ΑΝΑΛΥΣΗ</span>
         </div>
         <div class="container">
             <div class="tech-stage${graphic ? ' tech-stage--no-cross' : ''}" data-kind="${categoryKind(primaryCategory(post))}">

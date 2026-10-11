@@ -75,6 +75,8 @@
 .home-page #hero::before { display: none; }
 .home-page .hero-shell { padding-top: 26px; }
 .home-page .hero-edition { display: flex; justify-content: space-between; border-top: 1px solid var(--home-cover-rule); padding-top: 10px; font-size: .75rem; letter-spacing: .11em; font-weight: 500; }
+/* The right-hand span is the build's season/round line; without standings data it stays empty. */
+.home-page .hero-edition > span:empty { display: none; }
 /* --hero-split is where the photograph starts; the headline's two inks meet there too. */
 .home-page .hero-stage { --hero-split: 40cqw; --hero-on-photo: #f4efe6; position: relative; container-type: inline-size; display: grid; min-height: clamp(560px, calc(86vh - 76px), 820px); margin-top: 44px; padding: 56px 0 96px; }
 .home-page .hero-content { position: static; z-index: 2; max-width: none; padding: 0; margin: 0; text-align: left; animation: none; }
@@ -127,7 +129,6 @@
 /* A shade on the photograph's left side keeps the crossing headline legible on bright pictures. */
 .home-page #hero .hero-overlay::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(14 15 13 / .62), rgb(14 15 13 / .45) 50%, rgb(14 15 13 / .29) 77%, transparent 90%); pointer-events: none; }
 .home-page .hero-overlay.image-bg img { width: 100%; height: 100%; object-fit: cover; object-position: var(--f1s-hero-position, center); filter: saturate(.8) contrast(1.04); transform: none; transition: transform .65s var(--ease-editorial); }
-.home-page .hero-photograph figcaption { position: absolute; top: calc(100% + 12px); left: 0; right: calc((100vw - 100cqw) / 2); display: flex; justify-content: space-between; gap: 15px; color: var(--home-cover-muted); font-size: .75rem; font-weight: 500; letter-spacing: .08em; }
 /* The stamp straddles the photograph's top edge, aligned with the content column's right edge. */
 .home-page .hero-stamp { position: absolute; z-index: 1; top: -31px; right: calc((100vw - 100cqw) / 2 + 24px); padding: 14px 16px; background: var(--signal); color: var(--signal-ink); font: 700 1.45rem/.95 var(--font-brand); transform: rotate(7deg); border: 1px solid var(--ink); }
 .home-page .paddock-strip { color: var(--signal-ink); background: var(--signal); }
@@ -356,9 +357,8 @@
 .home-page .pace__dot { position: absolute; left: var(--x); top: -5px; width: 11px; height: 11px; margin-left: -5px; border: 2px solid var(--bg-surface); border-radius: 50%; background: var(--team); }
 .home-page .pace__gap { text-align: right; font-weight: 600; }
 .home-page .data-tools { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: clamp(48px, 5vw, 72px); border-top: 1px solid var(--text-primary); }
-.home-page .data-tools a { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "num label arrow" "num note arrow"; column-gap: 12px; align-items: baseline; padding: 18px 18px 18px 0; color: var(--text-primary); }
+.home-page .data-tools a { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "label arrow" "note arrow"; column-gap: 12px; align-items: baseline; padding: 18px 18px 18px 0; color: var(--text-primary); }
 .home-page .data-tools a + a { padding-left: 18px; border-left: 1px solid var(--border); }
-.home-page .data-tools__num { grid-area: num; color: var(--text-secondary); font-size: .75rem; font-weight: 600; }
 .home-page .data-tools__label { grid-area: label; font-size: .75rem; font-weight: 600; letter-spacing: .13em; }
 .home-page .data-tools__note { grid-area: note; margin-top: 4px; color: var(--text-secondary); font-size: .875rem; }
 .home-page .data-tools__arrow { grid-area: arrow; transition: transform .18s var(--ease-editorial); }
@@ -427,10 +427,9 @@
 
 .home-page .team-side { grid-column: 9 / 13; }
 .home-page .team-roster { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--text-primary); }
-.home-page .team-roster__item { position: relative; display: grid; grid-template-columns: 1.8rem 88px minmax(0, 1fr) auto; align-items: center; column-gap: 18px; padding: 18px 0 18px 12px; border-bottom: 1px solid var(--border); box-shadow: inset 0 0 0 var(--author-accent); transition: box-shadow .25s var(--ease-editorial), background-color .25s; }
+.home-page .team-roster__item { position: relative; display: grid; grid-template-columns: 88px minmax(0, 1fr) auto; align-items: center; column-gap: 18px; padding: 18px 0 18px 12px; border-bottom: 1px solid var(--border); box-shadow: inset 0 0 0 var(--author-accent); transition: box-shadow .25s var(--ease-editorial), background-color .25s; }
 /* The writer in the spotlight is marked in the roster with their ink. */
 .home-page .team-roster__item.is-current { box-shadow: inset 3px 0 0 var(--author-accent); background: color-mix(in srgb, var(--author-accent) 6%, transparent); }
-.home-page .team-roster__num { color: var(--text-secondary); font-size: .75rem; font-weight: 600; font-variant-numeric: tabular-nums; }
 .home-page .team-roster__item img { width: 88px; height: 88px; object-fit: contain; transition: transform .35s var(--ease-editorial); }
 .home-page .team-roster__item:hover img { transform: scale(1.06) rotate(-3deg); }
 .home-page .team-roster__desk { margin: 0 0 4px; color: var(--author-accent); font-size: .75rem; font-weight: 600; letter-spacing: .12em; }
@@ -522,7 +521,7 @@
     .home-page .home-ledger { grid-column: 1 / -1; }
     .home-page .team-spotlight { grid-column: 1 / 9; }
     .home-page .team-roster__item { grid-template-columns: 64px minmax(0, 1fr); column-gap: 14px; }
-    .home-page :is(.team-roster__num, .team-roster__arrow) { display: none; }
+    .home-page .team-roster__arrow { display: none; }
     .home-page .team-roster__item img { width: 64px; height: 64px; }
     .home-page .home-tech { --tech-pad: 32px; }
     .home-page .tech-copy { grid-column: 1 / 6; }
@@ -581,9 +580,8 @@
     .home-page .hero-content h1.is-medium { font-size: clamp(2.125rem, 6.8vw, 3.25rem); }
     .home-page .hero-content h1.is-long { max-width: none; font-size: clamp(1.875rem, 5.6vw, 2.75rem); }
     .home-page .hero-content .hero-subtitle { margin-top: 16px; }
-    .home-page .hero-photograph { position: relative; order: 1; inset: auto; aspect-ratio: 16 / 9; margin: 28px 0 60px; }
+    .home-page .hero-photograph { position: relative; order: 1; inset: auto; aspect-ratio: 16 / 9; margin: 28px 0 40px; }
     .home-page #hero .hero-overlay::after { display: none; }
-    .home-page .hero-photograph figcaption { right: 0; }
     .home-page .hero-stamp { top: -24px; right: 16px; }
     .home-page :is(.hero-description, .hero-story-byline, .hero-ctas) { order: 2; }
     .home-page .hero-description { margin-top: 0; max-width: 36em; }
@@ -595,7 +593,9 @@
     /* A compact cover: headline, photograph, then the two ways into the stories. */
     .home-page .hero-shell { padding-top: 17px; }
     .home-page .hero-edition { font-size: .75rem; letter-spacing: .06em; }
-    .home-page .hero-edition > span:last-child { display: none; }
+    /* Phones: the logo above already names the paper, so the edition line shows the round instead. */
+    .home-page .hero-edition > span:first-child { display: none; }
+    .home-page .hero-edition > span:first-child:has(+ span:empty) { display: inline; }
     .home-page .hero-eyebrow { margin-bottom: 14px; }
     .home-page .hero-content h1 { line-height: 1.08; letter-spacing: -.03em; }
     .home-page .hero-content .hero-subtitle { font-size: 1.25rem; line-height: 1.45; }
@@ -603,11 +603,9 @@
     .home-page .hero-ctas { gap: 14px; }
     .home-page .hero-ctas .cta-button { min-height: 45px; font-size: .75rem; padding: 12px 14px; }
     .home-page .hero-listen { font-size: .75rem; gap: 6px; }
-    .home-page .hero-photograph { aspect-ratio: 1.65; margin: 24px 0 52px; }
+    .home-page .hero-photograph { aspect-ratio: 1.65; margin: 24px 0 32px; }
     .home-page .hero-overlay.image-bg img { object-position: var(--f1s-hero-mobile-position, center); }
-    .home-page .hero-photograph figcaption { top: calc(100% + 9px); }
     .home-page .hero-stamp { top: -13px; right: 12px; padding: 8px 10px; font-size: .9rem; }
-    .home-page .hero-photograph figcaption > span:last-child { display: none; }
     .home-page .paddock-strip .container { gap: 10px; padding-block: 4px; }
     .home-page .paddock-strip .container > span:first-child { font-size: 1.15rem; }
     .home-page .paddock-strip a { font-size: .75rem; letter-spacing: 0; }
@@ -636,7 +634,6 @@
     .home-page .home-ledger__num { grid-row: 1 / span 3; font-size: 2.25rem; }
     .home-page .home-ledger .home-story__byline { margin-top: 0; padding-top: 0; }
     .home-page .home-tech { --tech-pad: 22px; padding: 48px 0 56px; }
-    .home-page .tech-folio__desk { display: none; }
     .home-page .telemetry { margin: -28px 0 0; }
     .home-page .bars li { grid-template-columns: 8.5em minmax(0, 1fr) 4em; gap: 10px; }
     /* ON AIR: the lead episode runs edge to edge, earlier ones become thumbnail rows. */
@@ -701,6 +698,5 @@
     .home-page .hero-ctas { gap: 12px; margin-top: 18px; }
     .home-page .hero-ctas .cta-button, .home-page .hero-listen { min-height: 44px; font-size: .75rem; }
     .home-page .hero-photograph { aspect-ratio: auto; margin: 0; bottom: 36px; }
-    .home-page .hero-photograph figcaption { top: calc(100% + 6px); }
     .home-page .hero-stamp { top: -15px; padding: 8px 10px; font-size: .9rem; }
 }

@@ -218,10 +218,16 @@ ${teamRows}
                 </div>${pace}
             </div>
             `;
-    const stamp = drivers.season
-        ? `<span>ΣΕΖΟΝ ${esc(drivers.season)}</span><span>ΜΕΤΑ ΤΟΝ ΓΥΡΟ ${esc(drivers.round)}</span>`
-        : '';
-    return { boards: driverRows ? boards : '', stamp };
+    // The snapshot's round is its last completed race (standings exist only after one). The NUMBERS stamp
+    // and the cover edition line share it; an unusable value is left out, never guessed.
+    const season = /^\d{4}$/.test(String(drivers.season)) ? String(drivers.season) : '';
+    const completed = season && /^[1-9]\d?$/.test(String(drivers.round)) ? String(drivers.round) : '';
+    const labels = [season && `ΣΕΖΟΝ ${season}`, completed && `ΜΕΤΑ ΤΟΝ ΓΥΡΟ ${completed}`].filter(Boolean);
+    return {
+        boards: driverRows ? boards : '',
+        stamp: labels.map(label => `<span>${label}</span>`).join(''),
+        edition: labels.join(' · ')
+    };
 }
 
 // Teams as articles name them, matched against debrief team keys. ponytail: first
@@ -302,8 +308,13 @@ async function injectHomePanels(htmlPath = HOME_HTML_PATH, posts = readJson(CONF
     const onAir = renderOnAir(readJson(YOUTUBE_PATH), fs.existsSync, posts);
     if (onAir) updated = replaceMarked(updated, 'home-onair', `\n${onAir}`);
     const numbers = renderNumbers(readJson(STANDINGS_PATH), readJson(DEBRIEF_PATH), teamColor);
-    if (numbers.boards) updated = replaceMarked(updated, 'home-numbers', `\n${numbers.boards}`);
-    if (numbers.stamp) updated = replaceMarked(updated, 'home-numbers-stamp', numbers.stamp);
+    // Boards, stamp and cover edition line describe one snapshot: written together or, without standings
+    // rows, all left as the last build published them.
+    if (numbers.boards) {
+        updated = replaceMarked(updated, 'home-numbers', `\n${numbers.boards}`);
+        updated = replaceMarked(updated, 'home-numbers-stamp', numbers.stamp);
+        updated = replaceMarked(updated, 'home-edition-round', numbers.edition);
+    }
     if (updated === html) return false;
     fs.writeFileSync(htmlPath, updated);
     console.log(`Homepage ON AIR and THE NUMBERS rendered into ${htmlPath}`);

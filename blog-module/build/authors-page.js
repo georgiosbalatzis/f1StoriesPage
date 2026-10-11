@@ -103,7 +103,6 @@ function renderHomeTeam(posts) {
                 </article>`;
     }).join('\n');
     const roster = AUTHORS.map((author, index) => `                <li class="team-roster__item${index === 0 ? ' is-current' : ''}" data-author-slug="${author.slug}"${index === 0 ? ' aria-current="true"' : ''}>
-                    <span class="team-roster__num" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>
                     <img src="${esc(author.portrait)}" alt="" width="240" height="240" loading="lazy" decoding="async">
                     <div class="team-roster__text">
                         <p class="team-roster__desk">${esc(greekUpper(author.desk))}</p>
