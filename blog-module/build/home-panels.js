@@ -63,11 +63,13 @@ function thumbnail(id, exists) {
 
 // Archive publication continues even when the YouTube feed cannot refresh.
 // Rank both sources by publication date and show each numbered episode once.
+const EPISODE_ARTICLE_RE = /^BetCast\s*#\d+\b/i;
+
 function selectEpisodes(snapshot, posts = []) {
     const videos = (snapshot && Array.isArray(snapshot.videos) ? snapshot.videos : [])
         .filter(video => YOUTUBE_ID_RE.test(video.id || ''))
         .map(video => ({ ...video, url: `https://www.youtube.com/watch?v=${video.id}` }));
-    const articles = posts.filter(post => /^BetCast\s*#\d+\b/i.test(post.title || '')
+    const articles = posts.filter(post => EPISODE_ARTICLE_RE.test(post.title || '')
         && /^\/blog-module\/blog-entries\/[A-Za-z0-9_-]+\/article\.html$/.test(post.url || ''))
         .map(post => ({ ...post, publishedAt: post.date, article: true }));
     const seen = new Set();
@@ -80,6 +82,21 @@ function selectEpisodes(snapshot, posts = []) {
             seen.add(key);
             return true;
         });
+}
+
+// The episode ON AIR leads with, so the Journal can leave it out: the same blog article, or the article of the
+// same numbered series ("BetCast #276") when the video is the newer entry. Anything unnumbered matches by id only.
+function featuredEpisode(posts = [], snapshot = readJson(YOUTUBE_PATH)) {
+    const [lead] = selectEpisodes(snapshot, posts);
+    if (!lead) return null;
+    return { id: lead.article ? lead.id : '', series: splitEpisodeTitle(lead.title).series.toLowerCase() };
+}
+
+function isFeaturedEpisode(post, featured) {
+    if (!featured || !post) return false;
+    if (featured.id && post.id === featured.id) return true;
+    const series = splitEpisodeTitle(post.title).series.toLowerCase();
+    return Boolean(featured.series && series === featured.series && EPISODE_ARTICLE_RE.test(post.title || ''));
 }
 
 function episodeImage(item, exists) {
@@ -421,4 +438,4 @@ async function injectHomePanels(htmlPath = HOME_HTML_PATH, posts = readJson(CONF
     return true;
 }
 
-module.exports = { injectHomePanels, homeByline, selectEpisodes, renderOnAir, renderNumbers, splitEpisodeTitle, findTeamKey, latestDebriefRound, renderTelemetry, episodeDate };
+module.exports = { featuredEpisode, isFeaturedEpisode, injectHomePanels, homeByline, selectEpisodes, renderOnAir, renderNumbers, splitEpisodeTitle, findTeamKey, latestDebriefRound, renderTelemetry, episodeDate };

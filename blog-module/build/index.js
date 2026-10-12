@@ -17,7 +17,7 @@ const { injectPrevNextLinks } = require('./nav');
 const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
 const { readingTimeFromWords, readingTimeFromPage } = require('./reading-time');
 const { injectAuthorsDirectory, injectHomeTeam } = require('./authors-page');
-const { injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry, homeByline } = require('./home-panels');
+const { featuredEpisode, isFeaturedEpisode, injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry, homeByline } = require('./home-panels');
 const {
     PUBLIC_CATEGORIES, AUTHORS, authorThumb, findAuthor, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
     formatReadingTime, cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture
@@ -598,7 +598,10 @@ function injectHomeJournal(indexPosts, blogPosts, selection = {}) {
         return false;
     }
     // The cover story itself is rendered by injectHomepageHero; its reading time and the two frames beside it come from here.
-    const { cover, tech, journal: posts, warnings } = selectHomeStories(indexPosts, selection);
+    const { cover, tech, journal, warnings } = selectHomeStories(indexPosts, selection);
+    // ON AIR already leads with this episode; the Journal moves on to the next story.
+    const onAirEpisode = featuredEpisode(blogPosts);
+    const posts = journal.filter(post => !isFeaturedEpisode(post, onAirEpisode));
     warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the technical spread falls back to the newest Technical story`));
     const paddock = selectPaddock(posts);
     const featureSource = paddock.feature && blogPosts.find(post => post.id === paddock.feature.id);
@@ -803,6 +806,11 @@ function injectHomepageHero(hero) {
     // The lead frame is the full width up to 1099px and half the page above it (the cover strip).
     const imageSizes = '(max-width: 1099px) 100vw, 50vw';
     const imageUrl = /^https?:\/\//i.test(image) ? image : `https://f1stories.gr${image}`;
+    // A master wider than the 800px copy is offered at both widths, so a phone does not fetch the 1,600px file.
+    const widths = width > 800 && /\/1\.webp$/.test(image) && /\/1\.avif$/.test(avif) ? coverFrameSources({ id: storyId }, { image, imageWidth: width }) : { webp: [], avif: [] };
+    // Widest first: validate-public-artifact reads the first candidate as the story image.
+    const avifSet = widths.avif.length > 1 ? [...widths.avif].reverse().join(', ') : '';
+    const webpSet = widths.webp.length > 1 ? [...widths.webp].reverse().join(', ') : '';
     let html = fs.readFileSync(indexHtmlPath, 'utf8');
     const original = html;
 
@@ -853,10 +861,12 @@ function injectHomepageHero(hero) {
         `$1${escapeHtmlAttribute(href)}$2`
     );
     html = updateElementById(html, 'hero-source-avif', attributes => {
-        return avif ? setHtmlAttribute(attributes, 'srcset', avif) : removeHtmlAttribute(attributes, 'srcset');
+        const updated = avif ? setHtmlAttribute(attributes, 'srcset', avifSet || avif) : removeHtmlAttribute(attributes, 'srcset');
+        return avifSet ? setHtmlAttribute(updated, 'sizes', imageSizes) : removeHtmlAttribute(updated, 'sizes');
     });
     html = updateElementById(html, 'hero-source-webp', attributes => {
-        return webp ? setHtmlAttribute(attributes, 'srcset', webp) : removeHtmlAttribute(attributes, 'srcset');
+        const updated = webp ? setHtmlAttribute(attributes, 'srcset', webpSet || webp) : removeHtmlAttribute(attributes, 'srcset');
+        return webpSet ? setHtmlAttribute(updated, 'sizes', imageSizes) : removeHtmlAttribute(updated, 'sizes');
     });
     html = updateElementById(html, 'hero-image', attributes => {
         let updated = setHtmlAttribute(attributes, 'src', image);
@@ -869,7 +879,7 @@ function injectHomepageHero(hero) {
     });
     html = updateElementById(html, 'hero-image-preload', attributes => {
         let updated = setHtmlAttribute(attributes, 'href', avif || image);
-        updated = removeHtmlAttribute(updated, 'imagesrcset');
+        updated = avifSet ? setHtmlAttribute(updated, 'imagesrcset', avifSet) : removeHtmlAttribute(updated, 'imagesrcset');
         updated = setHtmlAttribute(updated, 'imagesizes', imageSizes);
         return updated;
     });
@@ -1320,6 +1330,7 @@ module.exports = {
     renderHomeTech,
     selectHomeStories,
     injectHomeJournal,
+    injectHomepageHero,
     injectBlogIndexFirstPage,
     buildHomeLatest,
     loadExistingPosts,
