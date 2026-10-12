@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20261012W",
+      "title": "Max Verstappen: Ακριβής, πειθαρχημένος και ικανότατος  διαχειριστής της μεγάλης φθοράς των ελαστικών στην Σιγκαπούρη.",
+      "author": "Themis Charvalis",
+      "date": "2026-10-12",
+      "dateISO": "2026-10-12",
+      "displayDate": "12 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261012W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261012W/2.webp",
+      "excerpt": "Ο Verstappen είχε ήδη δώσει δείγματα της ανταγωνιστικότητας της Red Bull κατακτώντας τη νίκη στο Sprint του Σαββάτου, σε έναν αγώνα που επηρεάστηκε από τη βροχή. Την Κυριακή, όμως, έπρεπε να...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261012W/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "Max Verstappen",
+        "F1",
+        "Red bull Rb22",
+        "Singapore gp"
+      ],
+      "wordCount": 337,
+      "readingTime": "2 min",
+      "imageWidth": 1200,
+      "imageHeight": 704,
+      "backgroundImageWidth": 764,
+      "backgroundImageHeight": 401
+    },
+    {
       "id": "20261011J",
       "title": "Vasseur εναντίον Hamilton; Η Ferrari ψάχνει τον ένοχο",
       "author": "Giannis Poulikidis",
@@ -10405,5 +10435,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-11T19:59:17.988Z"
+  "lastUpdated": "2026-10-12T17:03:07.768Z"
 }
