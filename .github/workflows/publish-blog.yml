@@ -210,7 +210,7 @@ jobs:
       - name: Upload YouTube patch
         id: snapshot
         if: ${{ steps.patch.outputs.changed == 'true' }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: youtube-refresh-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/maintenance.patch
@@ -261,7 +261,7 @@ jobs:
       - name: Upload standings patch
         id: snapshot
         if: ${{ steps.patch.outputs.changed == 'true' }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: standings-refresh-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/maintenance.patch
@@ -300,7 +300,7 @@ jobs:
       # Each schedule/manual task refreshes exactly one data source. The artifact
       # ID also works when only a failed publishing job is rerun later.
       - name: Download snapshot patch
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           artifact-ids: ${{ needs.refresh_youtube.outputs.artifact || needs.refresh_standings_data.outputs.artifact }}
           path: ${{ runner.temp }}/maintenance

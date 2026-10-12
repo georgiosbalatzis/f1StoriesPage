@@ -1,6 +1,215 @@
 {
   "posts": [
     {
+      "id": "20261011J",
+      "title": "Vasseur εναντίον Hamilton; Η Ferrari ψάχνει τον ένοχο",
+      "author": "Giannis Poulikidis",
+      "date": "2026-10-11",
+      "dateISO": "2026-10-11",
+      "displayDate": "11 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261011J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261011J/1.webp",
+      "excerpt": "Από πού να ξεκινήσουμε να μιλάμε για τη Ferrari και πού να τελειώσουμε; Σαν να ακούω τους τιφόζι να τραγουδάνε... «Τι αμαρτίες, έχω κάνει; Δεν αντέχω... Άλλο φτάνει». Μαζί και οι φίλαθλοι του Lewis...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261011J/article.html",
+      "category": "Opinion",
+      "categories": [
+        "Opinion"
+      ],
+      "tags": [
+        "Lewis Hamilton",
+        "Vasseur",
+        "Ferrari",
+        "Singapore"
+      ],
+      "wordCount": 1092,
+      "readingTime": "6 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
+    },
+    {
+      "id": "20261011W",
+      "title": "Marco Bezzecchi: Η κυριαρχία στην Ινδονησία και η νίκη που έδωσε ξανά ζωή στα όνειρά του!",
+      "author": "Themis Charvalis",
+      "date": "2026-10-11",
+      "dateISO": "2026-10-11",
+      "displayDate": "11 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261011W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261011W/2.webp",
+      "excerpt": "Ο Marco Bezzecchi επέστρεψε στον δρόμο των επιτυχιών με τον πιο εμφατικό τρόπο, κατακτώντας τη νίκη στο Grand Prix της Ινδονησίας και επιβεβαιώνοντας πως η Aprilia διαθέτει ταχύτητα ικανή να...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261011W/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "Marco Bezzechi",
+        "Motogp 2026",
+        "Aprillia",
+        "Indonesia Gp"
+      ],
+      "wordCount": 290,
+      "readingTime": "2 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 770,
+      "backgroundImageHeight": 513
+    },
+    {
+      "id": "20261010W",
+      "title": "Luciano Burti: ο οδηγός που το 2001 είδε την καριέρα του να αλλάζει μέσα σε λίγα δευτερόλεπτα.",
+      "author": "Themis Charvalis",
+      "date": "2026-10-10",
+      "dateISO": "2026-10-10",
+      "displayDate": "10 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261010W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261010W/2.webp",
+      "excerpt": "Ο Βραζιλιάνος δεν ήταν ένας «τυχαίος» οδηγός της εποχής. Πρωταθλητής Formula Vauxhall Junior το 1997, τρίτος στη βρετανική Formula 3 το 1998 και δεύτερος το 1999, την ίδια χρονιά που έγινε δοκιμαστής...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261010W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Luciano Burti",
+        "Jaguar f1",
+        "00s heroes"
+      ],
+      "wordCount": 487,
+      "readingTime": "3 min",
+      "imageWidth": 640,
+      "imageHeight": 426,
+      "backgroundImageWidth": 350,
+      "backgroundImageHeight": 233
+    },
+    {
+      "id": "20261010J",
+      "title": "Betcast #276 - Singapore GP",
+      "author": "Giannis Poulikidis",
+      "date": "2026-10-10",
+      "dateISO": "2026-10-10",
+      "displayDate": "10 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261010J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261010J/1.webp",
+      "excerpt": "Με το δεξί έγινε η αρχή για το GP της Σιγκαπούρης. Με ένα ελεύθερο δοκιμαστικό είχαμε, όπως προβλέψαμε, «χάος». Η σκόνη στην πίστα έκανε ακόμα πιο δύσκολο το έργο των οδηγών, όπως και η φθορά των...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261010J/article.html",
+      "category": "Betting",
+      "categories": [
+        "Betting"
+      ],
+      "tags": [
+        "Betcast",
+        "2026"
+      ],
+      "wordCount": 126,
+      "readingTime": "1 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
+    },
+    {
+      "id": "20261009W",
+      "title": "Grand prix Σιγκαπούρης: Η νύχτα, η ιστορία και η απόλυτη δοκιμασία της Formula 1",
+      "author": "Themis Charvalis",
+      "date": "2026-10-09",
+      "dateISO": "2026-10-09",
+      "displayDate": "9 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261009W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261009W/2.webp",
+      "excerpt": "Από τους επικίνδυνους δρόμους του Thomson Road μέχρι τη φουτουριστική Marina Bay, το Grand Prix της Σιγκαπούρης εξελίχθηκε σε έναν από τους πιο ξεχωριστούς αγώνες του παγκόσμιου πρωταθλήματος. Μια...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261009W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Grand prix Singapore",
+        "History",
+        "F1 Legends",
+        "Crashgate",
+        "Sebastian Vettel",
+        "Leweis Hamilton"
+      ],
+      "wordCount": 1818,
+      "readingTime": "10 min",
+      "imageWidth": 399,
+      "imageHeight": 501,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
+    },
+    {
+      "id": "20261008J",
+      "title": "GRIDCAST #02 : Singapore - Ανάλυση",
+      "author": "Giannis Poulikidis",
+      "date": "2026-10-08",
+      "dateISO": "2026-10-08",
+      "displayDate": "8 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261008J/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261008J/1.webp",
+      "excerpt": "Γύρος δεκαεφτά και η καρό σημαία για το πρωτάθλημα του 2026 ετοιμάζεται να πέσει. Η ζυγαριά έγειρε λίγο ακόμα προς το μικρό Kimi από την Μπολόνια. Με την εγκατάλειψη του George Russell στον...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261008J/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "Σιγκαπούρι",
+        "Singapore",
+        "Marina Bay",
+        "Gridcast",
+        "Ανάλυση"
+      ],
+      "wordCount": 373,
+      "readingTime": "2 min",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "backgroundImageWidth": 1600,
+      "backgroundImageHeight": 900
+    },
+    {
+      "id": "20261008W",
+      "title": "Takuma Sato:Ήρθε και έφυγε με τις αναμνήσεις μιας ωραίας εποχής.",
+      "author": "Themis Charvalis",
+      "date": "2026-10-08",
+      "dateISO": "2026-10-08",
+      "displayDate": "8 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261008W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261008W/2.webp",
+      "excerpt": "Να βλέπεις τον Takuma Sato να φοράει τα χρώματα της BAR Honda, να κατεβαίνει στην Eau Rouge, να στρίβει την πρώτη στροφή του Suzuka με εκείνη την παράξενη, σχεδόν αφοπλιστική αποφασιστικότητα και να...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261008W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Takuma Sato",
+        "Honda",
+        "Lagend"
+      ],
+      "wordCount": 264,
+      "readingTime": "2 min",
+      "imageWidth": 1600,
+      "imageHeight": 1106,
+      "backgroundImageWidth": 588,
+      "backgroundImageHeight": 340
+    },
+    {
       "id": "20261007F",
       "title": "Το πρώτο test της Formula 1 του 2026 έγινε στη βροχή",
       "author": "F1 Stories Team",
@@ -372,7 +581,7 @@
     },
     {
       "id": "20260930J",
-      "title": "AnalystCast #01 : GP Bahrain... τελική ευθεία",
+      "title": "GRIDCAST #01 : GP Bahrain... τελική ευθεία",
       "author": "Giannis Poulikidis",
       "date": "2026-09-30",
       "dateISO": "2026-09-30",
@@ -6815,7 +7024,7 @@
       "url": "/blog-module/blog-entries/20250806G/article.html",
       "category": "News",
       "wordCount": 3108,
-      "readingTime": "15 min",
+      "readingTime": "16 min",
       "categories": [
         "News"
       ],
@@ -7091,7 +7300,7 @@
       "url": "/blog-module/blog-entries/20250712G/article.html",
       "category": "News",
       "wordCount": 4816,
-      "readingTime": "24 min",
+      "readingTime": "25 min",
       "categories": [
         "News"
       ],
@@ -7206,7 +7415,7 @@
       "url": "/blog-module/blog-entries/20250707G/article.html",
       "category": "News",
       "wordCount": 3785,
-      "readingTime": "18 min",
+      "readingTime": "19 min",
       "categories": [
         "News"
       ],
@@ -7298,7 +7507,7 @@
       "url": "/blog-module/blog-entries/20250630G/article.html",
       "category": "News",
       "wordCount": 3301,
-      "readingTime": "16 min",
+      "readingTime": "17 min",
       "categories": [
         "News"
       ],
@@ -7504,7 +7713,7 @@
       "url": "/blog-module/blog-entries/20250615G/article.html",
       "category": "News",
       "wordCount": 4280,
-      "readingTime": "20 min",
+      "readingTime": "22 min",
       "categories": [
         "News"
       ],
@@ -7527,7 +7736,7 @@
       "url": "/blog-module/blog-entries/20250613G/article.html",
       "category": "News",
       "wordCount": 1413,
-      "readingTime": "7 min",
+      "readingTime": "8 min",
       "categories": [
         "News"
       ],
@@ -7779,7 +7988,7 @@
       "url": "/blog-module/blog-entries/20250603GF/article.html",
       "category": "News",
       "wordCount": 4052,
-      "readingTime": "20 min",
+      "readingTime": "21 min",
       "categories": [
         "News"
       ],
@@ -7802,7 +8011,7 @@
       "url": "/blog-module/blog-entries/20250602-1G/article.html",
       "category": "News",
       "wordCount": 6066,
-      "readingTime": "29 min",
+      "readingTime": "31 min",
       "categories": [
         "News"
       ],
@@ -7825,7 +8034,7 @@
       "url": "/blog-module/blog-entries/20250602G/article.html",
       "category": "Technical",
       "wordCount": 2861,
-      "readingTime": "14 min",
+      "readingTime": "15 min",
       "categories": [
         "Technical"
       ],
@@ -7985,7 +8194,7 @@
       "url": "/blog-module/blog-entries/20250528G/article.html",
       "category": "Drivers",
       "wordCount": 4853,
-      "readingTime": "24 min",
+      "readingTime": "25 min",
       "categories": [
         "Drivers"
       ],
@@ -8053,7 +8262,7 @@
       "url": "/blog-module/blog-entries/20250525G/article.html",
       "category": "News",
       "wordCount": 1316,
-      "readingTime": "5 min",
+      "readingTime": "7 min",
       "categories": [
         "News"
       ],
@@ -8259,7 +8468,7 @@
       "url": "/blog-module/blog-entries/20250519GF/article.html",
       "category": "News",
       "wordCount": 1662,
-      "readingTime": "7 min",
+      "readingTime": "9 min",
       "categories": [
         "News"
       ],
@@ -8328,7 +8537,7 @@
       "url": "/blog-module/blog-entries/20250516G/article.html",
       "category": "News",
       "wordCount": 3636,
-      "readingTime": "16 min",
+      "readingTime": "19 min",
       "categories": [
         "News"
       ],
@@ -8917,7 +9126,7 @@
       "url": "/blog-module/blog-entries/20250505GF/article.html",
       "category": "News",
       "wordCount": 1746,
-      "readingTime": "7 min",
+      "readingTime": "9 min",
       "categories": [
         "News"
       ],
@@ -9007,7 +9216,7 @@
       "url": "/blog-module/blog-entries/20250501G/article.html",
       "category": "News",
       "wordCount": 1240,
-      "readingTime": "5 min",
+      "readingTime": "7 min",
       "categories": [
         "News"
       ],
@@ -10196,5 +10405,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-09T06:37:01.467Z"
+  "lastUpdated": "2026-10-11T19:59:17.988Z"
 }
