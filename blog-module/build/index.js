@@ -11,7 +11,7 @@ const {
     getImageDimensionsForPublicPath
 } = require('./shared');
 const { generateSitemap } = require('./sitemap');
-const { htmlToPlainText } = require('./metadata');
+const { htmlToPlainText, extractMetadata } = require('./metadata');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
 const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
@@ -19,7 +19,7 @@ const { readingTimeFromWords, readingTimeFromPage } = require('./reading-time');
 const { injectAuthorsDirectory, injectHomeTeam } = require('./authors-page');
 const { injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry, homeByline } = require('./home-panels');
 const {
-    PUBLIC_CATEGORIES, AUTHORS, authorThumb, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
+    PUBLIC_CATEGORIES, AUTHORS, authorThumb, findAuthor, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
     formatReadingTime, cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture
 } = require('../taxonomy');
 
@@ -400,9 +400,12 @@ function renderLedgerRows(posts, startIndex = 0) {
     return rows.join('\n            ');
 }
 
-// Homepage journal: the stories after the cover. Numbering continues from the
-// cover (01): a lead (02), two side stories (03–04) and the recent list (05–08).
-const HOME_JOURNAL = Object.freeze({ side: 2, recent: 4 });
+// Homepage journal (THE PADDOCK): every story after the cover and the technical spread, newest first.
+// The two newest with a picture stand beside the cover photograph, the next is the analysis feature, then
+// the opinion columns (VOICES), the History pieces (ARCHIVE) and the news desk (WIRE). Each slot takes the
+// newest eligible stories, so a quiet desk shows fewer items rather than another desk's.
+const HOME_PADDOCK = Object.freeze({ frames: 2, voices: 3, archive: 2, wire: 4 });
+const WIRE_CATEGORIES = new Set(['News', 'Teams', 'Drivers']);
 
 function homeDate(value) {
     return formatDate(value);
@@ -414,64 +417,118 @@ function homeReadingTime(post) {
     return readingTime ? greekUpper(readingTime).replace(/(\d) /, '$1\u00a0') : '';
 }
 
-function homeStoryMeta(post, index, { withIndex = true, withTime = false } = {}) {
-    const items = [];
-    if (withIndex) items.push(`<span class="home-story__idx" aria-hidden="true">${String(index).padStart(2, '0')}</span>`);
-    items.push(`<span class="home-story__kind">${escapeHtmlAttribute(greekUpper(categoryLabel(primaryCategory(post))))}</span>`);
-    items.push(`<time datetime="${escapeHtmlAttribute(post.date || '')}">${homeDate(post.date)}</time>`);
+// Desk and reading time: "ΑΝΑΛΥΣΗ" then "9 ΛΕΠΤΑ".
+function homeStoryMeta(post, { withDate = false } = {}) {
+    const items = [`<span class="home-story__kind">${escapeHtmlAttribute(greekUpper(categoryLabel(primaryCategory(post))))}</span>`];
+    if (withDate) items.push(`<time datetime="${escapeHtmlAttribute(post.date || '')}">${homeDate(post.date)}</time>`);
     const readingTime = homeReadingTime(post);
-    if (withTime && readingTime) items.push(`<span>${escapeHtmlAttribute(readingTime)}</span>`);
+    if (readingTime) items.push(`<span>${escapeHtmlAttribute(readingTime)}</span>`);
     return `<p class="home-story__meta">${items.join('')}</p>`;
 }
 
-// The title link stretches over the whole story, so picture and text both open it.
-function renderHomeStory(post, index, variant, dek) {
-    const image = storyImage(post);
-    const lead = variant === 'lead';
-    const readingTime = homeReadingTime(post);
-    const byline = homeByline(post.author) + (!lead && readingTime ? ` · ${readingTime}` : '');
-    return `<article class="home-story home-story--${variant}${image ? '' : ' home-story--text'}" data-kind="${categoryKind(primaryCategory(post))}">`
-        + (image ? `<div class="home-story__media">${renderStoryImage(post, image, { sizes: lead ? CARD_SIZES.homeLead : CARD_SIZES.homeSecondary, full: lead })}`
-            + (lead ? '<span class="home-story__tab">ΤΩΡΑ ΣΤΟ JOURNAL</span>' : '') + '</div>' : '')
-        + `<div class="home-story__text">${homeStoryMeta(post, index, { withTime: lead })}`
-        + `<h3 class="home-story__title"><a href="${escapeHtmlAttribute(storyUrl(post))}">${escapeHtmlAttribute(post.title)}</a></h3>`
-        + (lead && dek ? `<p class="home-story__dek">${escapeHtmlAttribute(dek)}</p>` : '')
-        + `<p class="home-story__byline">${escapeHtmlAttribute(byline)}</p></div></article>`;
+function selectPaddock(pool = []) {
+    const used = new Set();
+    const take = (count, accept) => pool.filter(post => !used.has(post) && accept(post)).slice(0, count)
+        .map(post => { used.add(post); return post; });
+    const hasImage = post => Boolean(storyImage(post));
+    const frames = take(HOME_PADDOCK.frames, hasImage);
+    const feature = take(1, hasImage)[0] || take(1, () => true)[0] || null;
+    const voices = take(HOME_PADDOCK.voices, post => primaryCategory(post) === 'Opinion');
+    const archive = take(HOME_PADDOCK.archive, post => primaryCategory(post) === 'History');
+    const wire = take(HOME_PADDOCK.wire, post => WIRE_CATEGORIES.has(primaryCategory(post)));
+    return { frames, feature, voices, archive, wire };
 }
 
-function renderHomeJournal(posts, leadDek = '') {
-    const [lead, ...rest] = posts;
-    if (!lead) return '';
-    const side = rest.slice(0, HOME_JOURNAL.side);
-    const recent = rest.slice(HOME_JOURNAL.side, HOME_JOURNAL.side + HOME_JOURNAL.recent);
-    const firstRecent = 3 + side.length;
-    const ledger = recent.map((post, offset) => {
+// A cover frame's picture: the card, its 800px mobile copy and the original, with AVIF twins where they exist. The
+// homepage is a reference source of scripts/build/public-artifact.mjs, so every file named here is published (and
+// validate-public-artifact.mjs fails the build if one is not). `source` is the blog post: its image is the original.
+function coverFrameSources(post, source = {}) {
+    const has = name => fs.existsSync(path.join(CONFIG.BLOG_DIR, post.id, name));
+    const url = name => `/blog-module/blog-entries/${post.id}/${name}`;
+    const width = parseInt(source.imageWidth, 10) || 0;
+    const height = parseInt(source.imageHeight, 10) || 0;
+    // The original is offered at its measured width, and only when it is larger than the 800px copy.
+    const original = /\/1\.webp$/.test(source.image || '') && width > 800 ? width : 0;
+    const card = has('1-card.webp');
+    const webp = [card && `${url('1-card.webp')} 400w`, card && has('1-mobile.webp') && `${url('1-mobile.webp')} 800w`,
+        original && has('1.webp') && `${url('1.webp')} ${original}w`].filter(Boolean);
+    // AVIF only as a complete set for the same widths, so the two formats never disagree on what is available.
+    const avif = card && has('1-mobile.avif') && (!original || has('1.avif'))
+        ? [`${url('1-mobile.avif')} 800w`, original && `${url('1.avif')} ${original}w`].filter(Boolean) : [];
+    return { webp, avif, width, height };
+}
+
+// The two photographs beside the cover's: each frame is its story's link, captioned with desk and headline.
+// The frames crop landscape photographs to tall boxes, so `sizes` asks for the box height times the picture's own
+// proportions: the box is clamp(320px, 39vw, 600px) tall from 1100px, a 4:3 half-width box on tablets and 150px tall
+// on phones. Above the fold but not the largest paint, so they load at once with low priority.
+function renderCoverFrames(frames = [], sourceOf = () => ({})) {
+    return frames.map(post => {
         const readingTime = homeReadingTime(post);
-        return `<li class="home-ledger__item" data-kind="${categoryKind(primaryCategory(post))}">`
-            + `<span class="home-ledger__num" aria-hidden="true">${String(firstRecent + offset).padStart(2, '0')}</span>`
-            + homeStoryMeta(post, 0, { withIndex: false })
-            + `<h3 class="home-ledger__title"><a href="${escapeHtmlAttribute(storyUrl(post))}">${escapeHtmlAttribute(post.title)}</a></h3>`
-            + `<p class="home-story__byline">${escapeHtmlAttribute(homeByline(post.author) + (readingTime ? ` · ${readingTime}` : ''))}</p></li>`;
-    }).join('\n                ');
-    return `        <div class="home-front">
-            ${renderHomeStory(lead, 2, 'lead', leadDek)}
-            <div class="home-front__side">
-                ${side.map((post, offset) => renderHomeStory(post, 3 + offset, 'side')).join('\n                ')}
-            </div>
-        </div>`
-        + (ledger ? `
-        <div class="home-latest">
-            <p class="home-latest__label">ΠΡΟΣΦΑΤΑ</p>
-            <ol class="home-ledger" start="${firstRecent}">
-                ${ledger}
-            </ol>
-        </div>` : '')
-        + '\n        ';
+        const desk = greekUpper(categoryLabel(primaryCategory(post))) + (readingTime ? ` · ${readingTime}` : '');
+        const { webp, avif, width, height } = coverFrameSources(post, sourceOf(post));
+        const ratio = width && height ? width / height : (parseInt(post.thumbnailWidth, 10) || 16) / (parseInt(post.thumbnailHeight, 10) || 9);
+        const r = ratio.toFixed(3);
+        // Rounded down: a 150px-tall 16:9 frame needs 266.7px, and 267 at 3× would just miss the 800px copy.
+        const sizes = `(max-width: ${Math.round(300 * ratio)}px) ${Math.floor(150 * ratio)}px, (max-width: 767px) 50vw, `
+            + `(max-width: 1099px) ${ratio > 4 / 3 ? `calc(37.5vw * ${r})` : '50vw'}, (max-width: 1538px) calc(39vw * ${r}), ${Math.round(600 * ratio)}px`;
+        const fallback = storyImage(post);
+        const img = `<img src="${escapeHtmlAttribute(fallback)}" srcset="${escapeHtmlAttribute(webp.join(', '))}" sizes="${sizes}" `
+            + `width="${width || parseInt(post.thumbnailWidth, 10) || 400}" height="${height || parseInt(post.thumbnailHeight, 10) || 225}" fetchpriority="low" decoding="async" alt="" data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`;
+        // AVIF copies start at 800px; phones keep the 400px card, which already fills their 150px-tall frames.
+        const picture = avif.length ? `<picture><source type="image/avif" media="(min-width: 768px)" srcset="${escapeHtmlAttribute(avif.join(', '))}" sizes="${sizes}">${img}</picture>` : img;
+        return `\n        <a class="cover-frame" href="${escapeHtmlAttribute(storyUrl(post))}">${picture}`
+            + `<span class="cover-frame__tag"><span>${escapeHtmlAttribute(desk)}</span>${escapeHtmlAttribute(post.title)}</span></a>`;
+    }).join('') + (frames.length ? '\n        ' : '');
 }
 
-// The dark technical spread: one technical story under the "TECHNICAL DEEP DIVE."
-// mast, with Friday's numbers for the team it names (home-panels.js). `graphic` (the article's
-// `homeImage: graphic`) starts the image after the mast instead of under it, for artwork with printed type.
+function renderHomeJournal({ feature = null, voices = [], archive = [], wire = [] } = {}, featureDek = '') {
+    const esc = escapeHtmlAttribute;
+    const link = (post, text = post.title) => `<a href="${esc(storyUrl(post))}">${esc(text)}</a>`;
+    const kind = post => categoryKind(primaryCategory(post));
+    const byline = post => `<p class="home-story__byline">${esc(homeByline(post.author))} · <time datetime="${esc(post.date || '')}">${homeDate(post.date)}</time></p>`;
+    // Only the analysis feature is wide enough to need the full-size variant (as the old Journal lead did).
+    const picture = (post, sizes, full = false) => {
+        const image = storyImage(post);
+        return image ? `<figure>${renderStoryImage(post, image, { sizes, full })}</figure>` : '';
+    };
+    const blocks = [];
+    if (feature) {
+        const figure = picture(feature, '(max-width: 1099px) 100vw, 64vw', true);
+        blocks.push(`<article class="pd-analysis${figure ? '' : ' pd-analysis--text'}" data-kind="${kind(feature)}">${figure}`
+            + `<div class="pd-analysis__panel">${homeStoryMeta(feature)}<h3 class="pd-analysis__title">${link(feature)}</h3>`
+            + (featureDek ? `<p class="pd-analysis__dek">${esc(featureDek)}</p>` : '') + `${byline(feature)}</div></article>`);
+    }
+    const wireList = wire.length ? '<section class="pd-wire" aria-labelledby="wire-heading"><h3 class="pd-label" id="wire-heading">WIRE · ΕΙΔΗΣΕΙΣ</h3><ol>'
+        + wire.map(post => {
+            const date = ledgerDate(post.date);
+            const day = date ? `<b>${date.day.padStart(2, '0')}</b>${date.month}<span class="visually-hidden"> ${date.year}</span>` : '';
+            return `<li data-kind="${kind(post)}"><time class="pd-wire__date" datetime="${esc(post.date || '')}">${day}</time>`
+                + `<div>${homeStoryMeta(post)}<h4 class="pd-wire__title">${link(post)}</h4></div></li>`;
+        }).join('') + '</ol></section>' : '';
+    // The first column carries its picture when it has one; the others are the writer and the headline.
+    const voicesList = voices.length ? '<section class="pd-voices" aria-labelledby="voices-heading"><h3 class="pd-label" id="voices-heading">VOICES · ΑΠΟΨΗ</h3>'
+        + voices.map((post, index) => {
+            const author = findAuthor(post.author);
+            const figure = index === 0 ? picture(post, '(max-width: 767px) 100vw, 26vw') : '';
+            const face = author ? `<img src="${esc(authorThumb(author))}" alt="" width="96" height="96" loading="lazy" decoding="async">` : '';
+            return `<article class="pd-voice${figure ? ' pd-voice--photo' : ''}" data-kind="${kind(post)}">${figure}`
+                + `<div><p class="pd-voice__who">${face}${esc(greekUpper(authorLabel(post.author || 'F1 Stories')))}</p>`
+                + `<h4 class="pd-voice__title">${link(post, `«${post.title}»`)}</h4>${homeStoryMeta(post, { withDate: true })}</div></article>`;
+        }).join('') + '</section>' : '';
+    const archiveBand = archive.length ? '\n    <section class="pd-archive" aria-labelledby="archive-heading"><div class="container"><h3 class="pd-label" id="archive-heading">ARCHIVE · ΑΠΟ ΤΟ ΑΡΧΕΙΟ</h3><div class="pd-archive__grid">'
+        + archive.map(post => `<article class="pd-archive__item" data-kind="${kind(post)}">${picture(post, '(max-width: 767px) 100vw, 46vw')}`
+            + `${homeStoryMeta(post)}<h4 class="pd-archive__title">${link(post)}</h4>`
+            + (post.excerpt ? `<p class="pd-archive__excerpt">${esc(post.excerpt)}</p>` : '') + '</article>').join('')
+        + '</div></div></section>' : '';
+    const split = wireList || voicesList ? `\n        <div class="pd-split">${wireList}${voicesList}</div>` : '';
+    if (!blocks.length && !split && !archiveBand) return '';
+    return `\n    <div class="container">${blocks.map(block => `\n        ${block}`).join('')}${split}\n    </div>${archiveBand}\n    `;
+}
+
+// The dark technical spread: one technical story under the "TECHNICAL." mast, beside its picture, with
+// Friday's numbers for the team it names in a strip underneath (home-panels.js). Nothing is laid over the
+// picture; `graphic` (the article's `homeImage: graphic`) also shows artwork with printed type uncropped.
 function renderHomeTech(post, dek, telemetry, teamName, { graphic = false } = {}) {
     const image = storyImage(post);
     const url = escapeHtmlAttribute(storyUrl(post));
@@ -480,12 +537,12 @@ function renderHomeTech(post, dek, telemetry, teamName, { graphic = false } = {}
     const meta = [`<span class="home-story__kind">${escapeHtmlAttribute(greekUpper(categoryLabel(primaryCategory(post))))}</span>`]
         .concat(readingTime ? [`<span>${escapeHtmlAttribute(readingTime)}</span>`] : []).join('');
     return `
-        <div class="container tech-folio">
-            <span class="section-kicker">ΤΕΧΝΙΚΗ ΑΝΑΛΥΣΗ</span>
-        </div>
         <div class="container">
+            <header class="pd-mast pd-mast--tech">
+                <p class="pd-mast__word" aria-hidden="true">TECHNICAL<span>.</span></p>
+                <p class="pd-mast__sub"><span>DEEP DIVE</span><span>ΤΕΧΝΙΚΗ ΑΝΑΛΥΣΗ</span></p>
+            </header>
             <div class="tech-stage${graphic ? ' tech-stage--no-cross' : ''}" data-kind="${categoryKind(primaryCategory(post))}">
-                <p class="home-mast tech-mast" aria-hidden="true">TECHNICAL<br>DEEP DIVE<span class="editorial-accent">.</span></p>
                 <div class="tech-copy">
                     <p class="home-story__meta">${meta}</p>
                     <h2 class="tech-copy__title" id="tech-heading"><a href="${url}">${escapeHtmlAttribute(post.title)}</a></h2>`
@@ -496,20 +553,22 @@ function renderHomeTech(post, dek, telemetry, teamName, { graphic = false } = {}
                 </div>`
         + (image ? `
                 <figure class="tech-photo">
-                    <a class="tech-photo__media" href="${url}" tabindex="-1" aria-hidden="true">${renderStoryImage(post, image, { sizes: '(max-width: 991px) 100vw, 64vw', full: true })}</a>
+                    <a class="tech-photo__media" href="${url}" tabindex="-1" aria-hidden="true">${renderStoryImage(post, image, { sizes: '(max-width: 1099px) 100vw, 58vw', full: true })}</a>
                     <figcaption>ΕΙΚΟΝΑ / ${escapeHtmlAttribute(greekUpper(teamName || 'F1 Stories'))}</figcaption>
                 </figure>` : '')
+        + `
+            </div>`
         + (telemetry ? `\n${telemetry}` : '')
         + `
-            </div>
         </div>
         `;
 }
 
 // The homepage's story slots, with no story in two of them: the cover (the newest story), the
-// technical spread and the Journal (the next seven). The spread is the editor's `homeTech` pick in
-// editorial-selection.json when it is valid, otherwise the newest Technical story that is not the cover,
-// and the Journal then skips it. `posts` is newest first (comparePosts), which also settles same-day ties.
+// technical spread and the Journal (every other story, newest first; selectPaddock places them). The
+// spread is the editor's `homeTech` pick in editorial-selection.json when it is valid, otherwise the newest
+// Technical story that is not the cover, and the Journal then skips it. `posts` is newest first
+// (comparePosts), which also settles same-day ties.
 function selectHomeStories(posts, selection = {}) {
     const warnings = [];
     const cover = posts[0] || null;
@@ -526,7 +585,7 @@ function selectHomeStories(posts, selection = {}) {
         else tech = pick;
     }
     if (!tech) tech = posts.find(post => post !== cover && isTechnical(post)) || null;
-    const journal = posts.filter(post => post !== cover && post !== tech).slice(0, 1 + HOME_JOURNAL.side + HOME_JOURNAL.recent);
+    const journal = posts.filter(post => post !== cover && post !== tech);
     return { cover, tech, journal, warnings };
 }
 
@@ -538,17 +597,25 @@ function injectHomeJournal(indexPosts, blogPosts, selection = {}) {
         console.warn('⚠️  index.html has no home-journal markers; the homepage journal was not rendered');
         return false;
     }
-    // The cover story is rendered by injectHomepageHero.
-    const { tech, journal: posts, warnings } = selectHomeStories(indexPosts, selection);
+    // The cover story itself is rendered by injectHomepageHero; its reading time and the two frames beside it come from here.
+    const { cover, tech, journal: posts, warnings } = selectHomeStories(indexPosts, selection);
     warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the technical spread falls back to the newest Technical story`));
-    const leadSource = posts[0] && blogPosts.find(post => post.id === posts[0].id);
-    let updated = replaceInlineMarkers(html, 'home-journal', `\n${renderHomeJournal(posts, leadSource ? leadSource.excerpt || '' : '')}`);
+    const paddock = selectPaddock(posts);
+    const featureSource = paddock.feature && blogPosts.find(post => post.id === paddock.feature.id);
+    let updated = replaceInlineMarkers(html, 'home-journal', renderHomeJournal(paddock, featureSource ? featureSource.excerpt || '' : ''));
+    updated = replaceInlineMarkers(updated, 'home-cover-frames', renderCoverFrames(paddock.frames, post => blogPosts.find(item => item.id === post.id) || {}));
+    updated = replaceInlineMarkers(updated, 'home-cover-time', cover ? escapeHtmlAttribute(homeReadingTime(cover)) : '');
     if (tech && updated.includes('<!-- f1s:home-tech:begin -->')) {
         const source = blogPosts.find(post => post.id === tech.id) || tech;
         const teamKey = findTeamKey(tech.title, (tech.tags || []).join(' '));
-        const round = latestDebriefRound();
+        // Read explicit source provenance even when the article's cached metadata predates this contract.
+        const sourcePath = path.join(CONFIG.BLOG_DIR, tech.id, 'source.txt');
+        const metadata = fs.existsSync(sourcePath) ? extractMetadata(sourcePath, fs.readFileSync(sourcePath, 'utf8')) : {};
+        const storyDate = String(tech.date || '').slice(0, 10);
+        const season = metadata.debriefSeason;
+        const round = latestDebriefRound(undefined, { season, date: storyDate, round: metadata.debriefRound, location: metadata.debriefLocation });
         const team = round && round.teamIdealLap.find(item => item.teamKey === teamKey);
-        const telemetry = renderTelemetry(round, teamKey);
+        const telemetry = renderTelemetry(round, teamKey, { season });
         updated = replaceInlineMarkers(updated, 'home-tech', renderHomeTech(tech, source.excerpt || '', telemetry, team ? team.teamName : '', { graphic: source.homeImage === 'graphic' }));
     } else if (!tech && updated.includes('<!-- f1s:home-tech:begin -->')) {
         updated = replaceInlineMarkers(updated, 'home-tech', '\n');
@@ -733,7 +800,8 @@ function injectHomepageHero(hero) {
     if (measuredWidth > 0 && measuredWidth < HOME_COVER_MIN_WIDTH) {
         console.warn(`⚠️  Cover image ${image} (story ${storyId}) is ${measuredWidth}px wide; the homepage cover renders up to ~${HOME_COVER_RENDER_WIDTH}px, so it is upscaled ${(HOME_COVER_RENDER_WIDTH / measuredWidth).toFixed(2)}× at 1920 (double on 2× displays). Supply a ≥1,600px master (D8).`);
     }
-    const imageSizes = '(max-width: 767px) 100vw, 55vw';
+    // The lead frame is the full width up to 1099px and half the page above it (the cover strip).
+    const imageSizes = '(max-width: 1099px) 100vw, 50vw';
     const imageUrl = /^https?:\/\//i.test(image) ? image : `https://f1stories.gr${image}`;
     let html = fs.readFileSync(indexHtmlPath, 'utf8');
     const original = html;
@@ -779,8 +847,9 @@ function injectHomepageHero(hero) {
         byline
     );
 
+    // The button and the cover photograph's frame both open the story.
     html = html.replace(
-        /(<a\b[^>]*\bid="hero-story-link"[^>]*\bhref=")[^"]*(")/i,
+        /(<a\b[^>]*\bid="hero-(?:story|frame)-link"[^>]*\bhref=")[^"]*(")/gi,
         `$1${escapeHtmlAttribute(href)}$2`
     );
     html = updateElementById(html, 'hero-source-avif', attributes => {
@@ -1246,6 +1315,8 @@ module.exports = {
     renderJournalFront,
     renderLedgerRows,
     renderHomeJournal,
+    selectPaddock,
+    renderCoverFrames,
     renderHomeTech,
     selectHomeStories,
     injectHomeJournal,

@@ -8,7 +8,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
-const { selectHomeStories, renderHomeJournal, renderHomeTech, injectHomeJournal } = require('../index');
+const { selectHomeStories, selectPaddock, renderHomeJournal, renderHomeTech, injectHomeJournal } = require('../index');
 const { processBlogEntry } = require('../worker');
 const { CONFIG } = require('../shared');
 
@@ -30,7 +30,7 @@ test('with no pick the spread takes the newest Technical story that is not the c
     assert.equal(cover.id, 'c0');
     assert.equal(tech.id, FALLBACK);
     assert.deepEqual(warnings, []);
-    assert.deepEqual(ids(journal), ['n2', 't3', 'n4', 'n5', 'n6', 'n7', 'n8']);
+    assert.deepEqual(ids(journal), ['n2', 't3', 'n4', 'n5', 'n6', 'n7', 'n8', 't9', 'n10']);
 });
 
 test('a missing, empty or absent selection is not a warning', () => {
@@ -109,15 +109,32 @@ test('with no Technical story there is no spread and the Journal still fills', (
     assert.equal(selectHomeStories([], {}).cover, null);
 });
 
-test('the Journal skips the spread story and keeps its seven stories (lead, two side, four recent)', () => {
+test('the Journal pool skips the spread story and keeps every other story, newest first', () => {
     const fallback = selectHomeStories(posts, {});
     assert.ok(!ids(fallback.journal).includes(fallback.tech.id));
-    assert.equal(fallback.journal.length, 7);
-    // A pick that would have sat inside the Journal window leaves it, and the Journal reaches one story further.
-    const picked = selectHomeStories(posts, { homeTech: 't3' });
-    assert.deepEqual(ids(picked.journal), ['t1', 'n2', 'n4', 'n5', 'n6', 'n7', 'n8']);
-    // A pick outside the window changes nothing in the Journal.
-    assert.deepEqual(ids(selectHomeStories(posts, { homeTech: 't9' }).journal), ['t1', 'n2', 't3', 'n4', 'n5', 'n6', 'n7']);
+    assert.equal(fallback.journal.length, posts.length - 2);
+    // The pick leaves the pool wherever it sat; the fallback Technical story returns to it in date order.
+    assert.deepEqual(ids(selectHomeStories(posts, { homeTech: 't3' }).journal), ['t1', 'n2', 'n4', 'n5', 'n6', 'n7', 'n8', 't9', 'n10']);
+    assert.deepEqual(ids(selectHomeStories(posts, { homeTech: 't9' }).journal), ['t1', 'n2', 't3', 'n4', 'n5', 'n6', 'n7', 'n8', 'n10']);
+});
+
+test('THE PADDOCK places each story once: frames need a picture, then the feature, voices, archive and wire by desk', () => {
+    // Two stories whose card images ship in the repo; the rest have none.
+    const pictured = (id, date, category) => ({ ...post(id, date, category), thumbnail: `/blog-module/blog-entries/${id}/1-card.webp` });
+    const pool = [post('a', '2026-10-08', 'Opinion'), pictured('20261007G', '2026-10-07', 'Teams'), post('b', '2026-10-07', 'News'),
+        pictured('20261006F', '2026-10-06', 'History'), post('c', '2026-10-06', 'Opinion'), post('d', '2026-10-05', 'History'),
+        post('e', '2026-10-04', 'Teams'), post('f', '2026-10-03', 'Betting'), post('g', '2026-10-02', 'Technical')];
+    const placed = selectPaddock(pool);
+    // The frames take the newest pictured stories, whatever their desk; the feature then falls back to a text story.
+    assert.deepEqual(ids(placed.frames), ['20261007G', '20261006F']);
+    assert.equal(placed.feature.id, 'a');
+    assert.deepEqual(ids(placed.voices), ['c']);
+    assert.deepEqual(ids(placed.archive), ['d']);
+    assert.deepEqual(ids(placed.wire), ['b', 'e']);
+    // A story fills one slot only; Betting (ON AIR) and Technical (the spread's desk) are not wire stories.
+    const shown = [...placed.frames, placed.feature, ...placed.voices, ...placed.archive, ...placed.wire];
+    assert.equal(new Set(shown).size, shown.length);
+    assert.deepEqual(selectPaddock([]), { frames: [], feature: null, voices: [], archive: [], wire: [] });
 });
 
 test('no story appears twice across the cover, the spread and the Journal, and the input is untouched', () => {
@@ -139,10 +156,14 @@ test('a short archive keeps what it has, with no story repeated', () => {
 
 test('the rendered Journal does not contain the spread story', () => {
     const { tech, journal } = selectHomeStories(posts, { homeTech: 't3' });
-    const html = renderHomeJournal(journal, '');
+    const html = renderHomeJournal(selectPaddock(journal), '');
     assert.doesNotMatch(html, new RegExp(`blog-entries/${tech.id}/`));
+    // No story here has a picture: t1 leads as a text feature; the News stories fill the wire, the Opinion one a voice.
+    assert.match(html, /<article class="pd-analysis pd-analysis--text" data-kind="technical">/);
     assert.match(html, /blog-entries\/t1\//);
-    assert.equal((html.match(/class="home-ledger__item"/g) || []).length, 4);
+    assert.equal((html.match(/<li data-kind="news">/g) || []).length, 4);
+    assert.equal((html.match(/class="pd-voice"/g) || []).length, 1);
+    assert.equal(renderHomeJournal(selectPaddock([]), ''), '');
 });
 
 // A story whose card image ships in the repo, so storyImage() renders the figure.

@@ -584,6 +584,16 @@
     // start. The active card's fuse (a 12s CSS animation) drives the rotation, so hover,
     // focus and the pause button only pause that animation and the timing always matches
     // what the reader sees.
+    // The section jump bar scrolls sideways. Browsers scroll a focused link in only when it is wholly outside the
+    // bar, so one half outside would keep a clipped focus ring: bring every focused link fully into view.
+    function initPageIndex() {
+        var bar = document.querySelector('.page-index');
+        if (!bar) return;
+        bar.addEventListener('focusin', function (event) {
+            if (event.target.closest('a')) event.target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        });
+    }
+
     function initTeamSpotlight() {
         var spotlight = document.querySelector('[data-team-spotlight]');
         if (!spotlight) return;
@@ -638,4 +648,5 @@
     initHomeVideoFacade();
     initVideoLoading();
     initTeamSpotlight();
+    initPageIndex();
 })();

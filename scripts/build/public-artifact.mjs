@@ -217,6 +217,8 @@ function collectPublicImageRefsFromText(refs, text, relPath) {
 function collectBlogEntryPublicRefs() {
     const refs = new Set();
     const dataSources = [
+        // The homepage cover asks for full-size originals of its supporting photographs (P3A-R3).
+        'index.html',
         'blog-module/blog/index.html',
         'blog-module/blog-index-data.json',
         'blog-module/home-latest.json'

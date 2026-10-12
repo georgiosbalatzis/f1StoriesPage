@@ -1,5 +1,8 @@
 ---
 category: Technical
+debriefSeason: 2026
+debriefRound: 16
+debriefLocation: Kuala Lumpur
 tags: Mercedes, 2026, Bahrain, Malayisia, Sepang
 title: Γιατί το νέο πάτωμα δεν έφερε τα δέκατα που υποσχθέθηκε
 ---

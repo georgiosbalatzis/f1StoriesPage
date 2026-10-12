@@ -1,4 +1,4 @@
-// P3A Batch 2C: the cover edition line, label trims, numbering and the THE GRID link.
+// P3A Batch 2C: the cover edition line, label trims, numbering and the THE GRID link (updated for the P3A-R3 layout).
 // The edition line reads the same standings snapshot as the NUMBERS stamp: its round is the last completed
 // round (Jolpica publishes standings only after a race), never a calendar or build date.
 const assert = require('node:assert/strict');
@@ -60,32 +60,35 @@ test('the published cover edition line and NUMBERS stamp come from one snapshot'
     assert.match(edition, /^(ΣΕΖΟΝ \d{4}( · ΜΕΤΑ ΤΟΝ ΓΥΡΟ [1-9]\d?)?)?$/);
 });
 
-test('the cover drops the pseudo-caption and the tagline but keeps folio, stamp and strip', () => {
+// P3A-R3 (Paddock Edition): the cover is three photographs — the lead story's and the next two stories' — with
+// the folio and the edition line; the stamp, the slogan strip and the photo caption are gone.
+test('the cover shows the lead photograph beside the next two stories, with the folio and no stamp, strip or caption', () => {
     const html = fs.readFileSync(path.join(REPO_ROOT, 'index.html'), 'utf8');
     const hero = html.slice(html.indexOf('<section id="hero"'), html.indexOf('</section>', html.indexOf('<section id="hero"')));
-    assert.doesNotMatch(hero, /<figcaption/);
-    assert.doesNotMatch(html, /ΤΕΧΝΙΚΗ ΜΑΤΙΑ|ΜΕΣΑ ΣΤΗ ΔΡΑΣΗ|ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ|TECH DESK/);
+    assert.match(hero, /<a class="cover-frame cover-frame--lead" id="hero-frame-link" href="\/blog-module\/blog-entries\/[^"]+\/article\.html"/);
+    assert.match(hero, /<picture id="hero-picture">/);
+    const frames = [...hero.matchAll(/<a class="cover-frame" href="(\/blog-module\/blog-entries\/[^"]+\/article\.html)">/g)].map(match => match[1]);
+    assert.equal(frames.length, 2);
+    assert.equal(new Set([...frames, hero.match(/id="hero-story-link" href="([^"]+)"/)[1]]).size, 3);
     assert.match(hero, /<span>F1 STORIES \/ ΕΛΛΗΝΙΚΗ F1 ΚΟΙΝΟΤΗΤΑ<\/span>/);
-    assert.match(hero, /class="hero-stamp"/);
-    assert.match(html, /RACE\. TALK\. REPEAT\./);
-    assert.match(html, /paddock-strip__topics/);
+    assert.doesNotMatch(hero, /<figcaption|hero-stamp/);
+    assert.doesNotMatch(html, /ΤΕΧΝΙΚΗ ΜΑΤΙΑ|ΜΕΣΑ ΣΤΗ ΔΡΑΣΗ|ΑΠΟ ΤΗ ΔΙΚΗ ΜΑΣ ΟΠΤΙΚΗ|TECH DESK|RACE\. TALK\. REPEAT\.|paddock-strip/);
 });
 
-test('section kickers, data tools and the roster carry no decorative numbers; story order and ranks stay', () => {
+test('section masts carry no decorative numbers; the data tools stay and THE GRID ranks are real positions', () => {
     const html = fs.readFileSync(path.join(REPO_ROOT, 'index.html'), 'utf8');
-    const kickers = [...html.matchAll(/<span class="section-kicker">([^<]*)<\/span>/g)].map(match => match[1]);
-    assert.deepEqual(kickers, ['ΤΟ JOURNAL', 'ΤΕΧΝΙΚΗ ΑΝΑΛΥΣΗ', 'ΕΠΕΙΣΟΔΙΑ & ΑΝΑΛΥΣΕΙΣ', 'RACE DESK', 'Η ΠΑΡΕΑ', 'TEAM RADIO']);
-    assert.doesNotMatch(html, /data-tools__num|team-roster__num/);
+    const masts = [...html.matchAll(/<p class="pd-mast__word" aria-hidden="true">([^<]*)</g)].map(match => match[1]);
+    assert.deepEqual(masts, ['THE PADDOCK', 'TECHNICAL', 'THE GRID', 'ON AIR', 'THE CREW', 'TEAM RADIO']);
+    assert.doesNotMatch(html, /data-tools__num|team-roster__num|home-story__idx|home-ledger__num|section-kicker/);
     assert.equal((html.match(/class="data-tools__label"/g) || []).length, 5);
-    // Running order 02–08 and championship positions are real order.
-    assert.equal((html.match(/home-story__idx/g) || []).length, 3);
-    assert.equal((html.match(/home-ledger__num/g) || []).length, 4);
-    assert.equal((html.match(/board-row__pos/g) || []).length, 10);
+    const positions = [...html.matchAll(/<span class="tower-row__pos">(\d+)<\/span>/g)].map(match => Number(match[1]));
+    assert.deepEqual(positions, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 });
 
-test('the spread folio and the roster render without the removed numbers', () => {
+test('the spread mast and the roster render without the removed numbers', () => {
     const tech = renderHomeTech({ id: 't1', title: 'Tech', date: '2026-10-06', author: 'F1 Stories', categories: ['Technical'] }, '', '', '');
-    assert.match(tech, /<span class="section-kicker">ΤΕΧΝΙΚΗ ΑΝΑΛΥΣΗ<\/span>/);
+    assert.match(tech, /<p class="pd-mast__word" aria-hidden="true">TECHNICAL<span>\.<\/span><\/p>/);
+    assert.match(tech, /<p class="pd-mast__sub"><span>DEEP DIVE<\/span><span>ΤΕΧΝΙΚΗ ΑΝΑΛΥΣΗ<\/span><\/p>/);
     assert.doesNotMatch(tech, /tech-folio__desk|TECH DESK/);
     assert.match(tech, /home-story__byline">F1 STORIES · 06\.10\.2026</);
     const team = renderHomeTeam([]);
@@ -95,6 +98,6 @@ test('the spread folio and the roster render without the removed numbers', () =>
 
 test('the Race Desk link is named THE GRID and still opens the standings', () => {
     const html = fs.readFileSync(path.join(REPO_ROOT, 'index.html'), 'utf8');
-    assert.match(html, /<a class="journal-all" href="\/standings\/">THE GRID <span aria-hidden="true">→<\/span><\/a>/);
+    assert.match(html, /<a class="pd-link" href="\/standings\/">THE GRID <span aria-hidden="true">→<\/span><\/a>/);
     assert.doesNotMatch(html, /ΑΝΟΙΞΕ ΤΟ RACE DESK/);
 });

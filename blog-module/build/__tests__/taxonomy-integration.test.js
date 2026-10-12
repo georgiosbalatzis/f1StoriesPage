@@ -229,27 +229,30 @@ test('every author resolves from the one list, by canonical name or slug', () =>
     assert.equal(authorLabel('Guest Writer'), 'Guest Writer');
 });
 
-test('the homepage journal numbers on from the cover and signs with short bylines', () => {
-    const { renderHomeJournal } = require('../index');
-    const post = (id, author, extra = {}) => ({ id, title: `Story ${id}`, author, date: '2026-09-27', readingTime: '4 min', categories: ['History'], ...extra });
-    const html = renderHomeJournal([
-        post('L', 'Themis Charvalis'),
-        post('S1', 'F1 Stories Team'),
-        post('S2', 'Guest Writer'),
-        post('R1', 'Georgios Balatzis'), post('R2', 'Georgios Balatzis'), post('R3', 'Georgios Balatzis'), post('R4', 'Georgios Balatzis')
-    ], 'The lead dek.');
-    // Stories without a card image in the repo render as text-only.
-    assert.equal((html.match(/home-story--text/g) || []).length, 3);
-    assert.deepEqual([...html.matchAll(/home-story__idx" aria-hidden="true">(\d+)/g)].map(m => m[1]), ['02', '03', '04']);
-    assert.deepEqual([...html.matchAll(/home-ledger__num" aria-hidden="true">(\d+)/g)].map(m => m[1]), ['05', '06', '07', '08']);
-    assert.match(html, /<ol class="home-ledger" start="5">/);
-    assert.match(html, /home-story__dek">The lead dek\./);
-    assert.match(html, /Θ\. ΧΑΡΒΑΛΗΣ<\/p>/);
-    // Number and unit never wrap apart: a no-break space (U+00A0), in the lead meta and in bylines.
-    assert.match(html, /F1 STORIES · 4\u00a0ΛΕΠΤΑ/);
-    assert.match(html, /GUEST WRITER · 4\u00a0ΛΕΠΤΑ/);
-    assert.match(html, /<span>4\u00a0ΛΕΠΤΑ<\/span>/);
+test('THE PADDOCK signs with short bylines and dates the wire, voices and archive', () => {
+    const { renderHomeJournal, selectPaddock } = require('../index');
+    const post = (id, author, category, extra = {}) => ({ id, title: `Story ${id}`, author, date: '2026-09-27', readingTime: '4 min', categories: [category], ...extra });
+    const html = renderHomeJournal(selectPaddock([
+        post('L', 'Themis Charvalis', 'Analysis'),
+        post('V1', 'Giannis Poulikidis', 'Opinion'), post('V2', 'Guest Writer', 'Opinion'),
+        post('A1', 'F1 Stories Team', 'History', { excerpt: 'From the archive.' }),
+        post('W1', 'Georgios Balatzis', 'News'), post('W2', 'Georgios Balatzis', 'Drivers')
+    ]), 'The lead dek.');
+    // Stories without a card image in the repo render as text: the feature, then each desk.
+    assert.match(html, /<article class="pd-analysis pd-analysis--text" data-kind="analysis">/);
+    assert.match(html, /pd-analysis__dek">The lead dek\./);
+    assert.match(html, /home-story__byline">Θ\. ΧΑΡΒΑΛΗΣ · <time datetime="2026-09-27">27 Σεπ 2026<\/time>/);
+    assert.deepEqual([...html.matchAll(/<h4 class="pd-voice__title"><a [^>]+>«Story (\w+)»/g)].map(m => m[1]), ['V1', 'V2']);
+    assert.match(html, /pd-voice__who"><img src="\/images\/avatars\/SV-96\.webp"[^>]*>ΓΙΑΝΝΗΣ ΠΟΥΛΙΚΙΔΗΣ/);
+    // A writer outside the list has no portrait, only the name.
+    assert.match(html, /pd-voice__who">GUEST WRITER</);
+    assert.deepEqual([...html.matchAll(/<h4 class="pd-wire__title"><a [^>]+>Story (\w+)/g)].map(m => m[1]), ['W1', 'W2']);
+    assert.match(html, /<time class="pd-wire__date" datetime="2026-09-27"><b>27<\/b>ΣΕΠ<span class="visually-hidden"> 2026<\/span><\/time>/);
+    assert.match(html, /pd-archive__excerpt">From the archive\./);
+    // Number and unit never wrap apart: a no-break space (U+00A0).
+    assert.match(html, /<span>4 ΛΕΠΤΑ<\/span>/);
     assert.doesNotMatch(html, /\d ΛΕΠΤΑ/);
+    assert.match(html, /home-story__kind">ΑΝΑΛΥΣΗ/);
     assert.match(html, /home-story__kind">ΙΣΤΟΡΙΑ/);
 });
 
@@ -329,14 +332,14 @@ test('the homepage cover uses the article header photograph before the card thum
     assert.equal(hero.heroImageHeight, 900);
 });
 
-test('THE NUMBERS renders the top five, scales bars to the leader and pace to the fifth team', () => {
+test('THE GRID renders the top ten, scales bars to the leader, the points share and the pace to the slowest team', () => {
     const { renderNumbers } = require('../home-panels');
-    const driver = (position, code, points) => ({ position: String(position), points: String(points), Driver: { code, familyName: code }, Constructors: [{ constructorId: 'mercedes', name: 'Mercedes' }] });
+    const driver = (position, code, points, wins = 0) => ({ position: String(position), points: String(points), wins: String(wins), Driver: { code, givenName: 'G', familyName: code }, Constructors: [{ constructorId: 'mercedes', name: 'Mercedes' }] });
     const team = (position, name, points, wins) => ({ position: String(position), points: String(points), wins: String(wins), Constructor: { constructorId: name.toLowerCase(), name } });
     const table = (key, rows) => ({ MRData: { StandingsTable: { StandingsLists: [{ season: '2026', round: '15', [key]: rows }] } } });
     const standings = {
-        driverStandings: table('DriverStandings', [driver(1, 'ANT', 200), driver(2, 'RUS', 100), driver(3, 'A', 50), driver(4, 'B', 40), driver(5, 'C', 30), driver(6, 'D', 20)]),
-        constructorStandings: table('ConstructorStandings', [team(1, 'Mercedes', 300, 1), team(2, 'Ferrari', 150, 0)])
+        driverStandings: table('DriverStandings', [driver(1, 'ANT', 200, 1), driver(2, 'RUS', 100, 2), ...['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'].map((code, i) => driver(i + 3, code, 50 - i * 5))]),
+        constructorStandings: table('ConstructorStandings', [team(1, 'Mercedes', 300, 11), team(2, 'Ferrari', 100, 0), team(3, 'Cadillac', 0, 0)])
     };
     const debrief = { rounds: [
         { round: 14, location: 'Madrid', racePacePrediction: [
@@ -346,16 +349,34 @@ test('THE NUMBERS renders the top five, scales bars to the leader and pace to th
         ] },
         { round: 15, location: 'Baku', racePacePrediction: [] }
     ] };
-    const { boards, stamp } = renderNumbers(standings, debrief, () => '#123456');
+    const { boards, stamp, season } = renderNumbers(standings, debrief, () => '#123456');
     assert.equal(stamp, '<span>ΣΕΖΟΝ 2026</span><span>ΜΕΤΑ ΤΟΝ ΓΥΡΟ 15</span>');
-    assert.equal((boards.match(/board-row__code/g) || []).length, 5);
-    assert.match(boards, /RUS[\s\S]*?width:50%/);
-    assert.match(boards, /1 ΝΙΚΗ/);
-    assert.match(boards, /0 ΝΙΚΕΣ/);
+    // Ten rows, real positions, bars and gaps against the leader.
+    assert.deepEqual([...boards.matchAll(/tower-row__pos">(\d+)</g)].map(m => m[1]), ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']);
+    assert.match(boards, /tower-row__code">RUS[\s\S]*?/);
+    assert.match(boards, /--w:50%">\s*<span class="tower-row__pos">2</);
+    assert.match(boards, /tower-row__gap">LEADER</);
+    assert.match(boards, /tower-row__gap">−100</);
+    assert.match(boards, /Mercedes · 1 νίκη/);
+    assert.match(boards, /Mercedes · 2 νίκες/);
+    // The points share counts only teams that have scored: 300 and 100 of 400.
+    assert.match(boards, /aria-label="Mercedes 300, Ferrari 100"/);
+    assert.match(boards, /<span>Mercedes<\/span><b>300<\/b><small>75%<\/small>/);
+    assert.match(boards, /<span>Cadillac<\/span><b>0<\/b><small>0%<\/small>/);
     // The newest round with a prediction; the slowest shown team sits at the end of the track.
-    assert.match(boards, /R14 · MADRID/);
+    assert.match(boards, /ΠΡΟΒΛΕΨΗ R14 · MADRID/);
     assert.match(boards, /--x:0%[\s\S]*--x:50%[\s\S]*--x:100%/);
     assert.match(boards, /1:39\.611/);
+    // The cover's season line comes from the same snapshot: leader, gap to second, the leading team's wins out of
+    // the completed rounds, then the pace prediction with its own round.
+    assert.deepEqual([...season.matchAll(/<b>(.*?)<\/b><span>(.*?)<\/span>/g)].map(m => [m[1], m[2]]), [
+        ['200', 'ANT · ΒΑΘΜΟΙ ΣΤΗΝ ΚΟΡΥΦΗ'], ['+100', 'ΔΙΑΦΟΡΑ ΑΠΟ RUS'], ['11<small>/15</small>', 'ΝΙΚΕΣ MERCEDES'], ['1:39.611', 'ΠΡΟΒΛΕΨΗ ΡΥΘΜΟΥ · MER · R14']
+    ]);
+    // A debrief from another season is not shown next to these standings; no standings, no season line.
+    const otherSeason = renderNumbers(standings, { ...debrief, season: 2025 }, () => '#123456');
+    assert.doesNotMatch(otherSeason.boards, /ΡΥΘΜΟΣ ΑΓΩΝΑ/);
+    assert.doesNotMatch(otherSeason.season, /ΠΡΟΒΛΕΨΗ/);
+    assert.deepEqual(renderNumbers(null, debrief, () => '#123456'), { boards: '', season: '', stamp: '', edition: '' });
 });
 
 test('the technical spread finds the article\'s team and shows its Friday numbers', () => {
@@ -384,7 +405,8 @@ test('the technical spread finds the article\'s team and shows its Friday number
     const fastest = renderTelemetry(round, '');
     assert.match(fastest, /FERRARI · ΙΔΑΝΙΚΟΣ ΓΥΡΟΣ ΟΜΑΔΑΣ/);
     assert.match(fastest, /telemetry__value">1:33\.443</);
-    assert.match(fastest, /Η ταχύτερη ομάδα · 2η από 3 ομάδες/);
+    // The fastest ideal lap is first, whatever `pos` the bundle carries (Ferrari is listed with pos 2 here).
+    assert.match(fastest, /Η ταχύτερη ομάδα · 1η από 3 ομάδες/);
     assert.doesNotMatch(fastest, /class="bars"/);
     assert.equal(renderTelemetry(null, 'audi'), '');
 });
@@ -405,7 +427,9 @@ test('the homepage team gives every writer a spotlight card with their three new
     // Only the first card and roster row start active; the page script takes over from there.
     assert.equal((html.match(/is-active/g) || []).length, 1);
     assert.equal((html.match(/is-current/g) || []).length, 1);
-    const card = html.slice(html.indexOf('data-author-slug="georgios-balatzis"'));
+    // The roster tiles come first; the card is the spotlight article for the same writer.
+    assert.ok(html.indexOf('class="team-roster"') < html.indexOf('data-team-spotlight'));
+    const card = html.slice(html.indexOf('<article class="team-card" data-author-slug="georgios-balatzis"'));
     const stories = card.slice(card.indexOf('team-card__stories'), card.indexOf('</ul>'));
     assert.deepEqual([...stories.matchAll(/<span>([^<]+)<\/span><a[^>]*>([^<]+)</g)].map(m => [m[1], m[2]]),
         [['20 Σεπ 2026', 'Newest'], ['15 Σεπ 2026', 'Second'], ['10 Σεπ 2026', 'Third']]);

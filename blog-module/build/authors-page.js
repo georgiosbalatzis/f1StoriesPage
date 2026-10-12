@@ -103,7 +103,7 @@ function renderHomeTeam(posts) {
                 </article>`;
     }).join('\n');
     const roster = AUTHORS.map((author, index) => `                <li class="team-roster__item${index === 0 ? ' is-current' : ''}" data-author-slug="${author.slug}"${index === 0 ? ' aria-current="true"' : ''}>
-                    <img src="${esc(author.portrait)}" alt="" width="240" height="240" loading="lazy" decoding="async">
+                    <span class="team-roster__tile"><img src="${esc(author.portrait)}" alt="" width="240" height="240" loading="lazy" decoding="async"></span>
                     <div class="team-roster__text">
                         <p class="team-roster__desk">${esc(greekUpper(author.desk))}</p>
                         <h3 class="team-roster__name"><a href="/authors/?author=${author.slug}">${esc(author.label)}</a></h3>
@@ -111,17 +111,17 @@ function renderHomeTeam(posts) {
                     </div>
                     <span class="team-roster__arrow" aria-hidden="true">→</span>
                 </li>`).join('\n');
-    return `            <div class="team-spotlight" data-team-spotlight role="region" aria-roledescription="carousel" aria-label="Συντάκτης στο προσκήνιο">
+    // The roster (the six portrait tiles) comes first; the writer it marks is the one in the spotlight below.
+    return `            <div class="team-side">
+                <ol class="team-roster" aria-label="Η ομάδα">
+${roster}
+                </ol>
+            </div>
+            <div class="team-spotlight" data-team-spotlight role="region" aria-roledescription="carousel" aria-label="Συντάκτης στο προσκήνιο">
                 <button class="team-spotlight__pause" type="button" aria-pressed="false" data-team-pause hidden><span class="visually-hidden">Παύση εναλλαγής</span><span aria-hidden="true">❚❚</span></button>
                 <div class="team-spotlight__cards">
 ${cards}
                 </div>
-            </div>
-            <div class="team-side">
-                <ol class="team-roster" aria-label="Η ομάδα">
-${roster}
-                </ol>
-                <a class="team-directory-link" href="/authors/">ΓΝΩΡΙΣΕ ΟΛΗ ΤΗΝ ΟΜΑΔΑ <span aria-hidden="true">→</span></a>
             </div>
             `;
 }
