@@ -20,8 +20,9 @@ const { injectAuthorsDirectory, injectHomeTeam } = require('./authors-page');
 const { featuredEpisode, isFeaturedEpisode, injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry, homeByline } = require('./home-panels');
 const {
     PUBLIC_CATEGORIES, AUTHORS, authorThumb, findAuthor, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
-    formatReadingTime, cardImageSrcset, CARD_SIZES, JOURNAL_LAYOUT, isLedgerPicture
+    formatReadingTime, cardImageSrcset, CARD_SIZES, athensDay
 } = require('../taxonomy');
+const { buildPages, writeDiscoveryPages } = require('./discovery');
 
 const { loadPublishTimes, comparePosts } = require('./publish-order');
 
@@ -145,10 +146,6 @@ function compactExcerpt(value, maxLength = 120) {
     return `${clipped || text.slice(0, maxLength).trim()}...`;
 }
 
-function formatBlogIndexDate(post) {
-    return formatDate(post.date || '') || post.displayDate || '';
-}
-
 function jsonKb(value) {
     return Math.round(Buffer.byteLength(JSON.stringify(value)) / 1024);
 }
@@ -208,6 +205,21 @@ function buildCompactIndexData(posts) {
     };
 }
 
+// The Edition Index: the blog index and its additive section, month and archive pages (see discovery.js). The
+// pages are static files; blog-index.js only renders the ?category= / ?author= / ?q= views on top of them.
+function injectEdition(indexPosts, selection = {}) {
+    const blogDir = CONFIG.OUTPUT_HTML_DIR;
+    if (!fs.existsSync(path.join(blogDir, 'index.html'))) {
+        console.warn(`⚠️  Blog index HTML not found, Edition Index skipped: ${blogDir}`);
+        return null;
+    }
+    const edition = buildPages(indexPosts, { today: athensDay(), selection, deps: { storyImage, renderStoryImage } });
+    edition.model.warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the week leads with its newest story`));
+    writeDiscoveryPages(blogDir, edition);
+    console.log(`Edition Index rendered: ${edition.pages.length} pages into ${blogDir}`);
+    return edition;
+}
+
 function loadEditorialSelection(filePath = EDITORIAL_SELECTION_PATH) {
     if (!fs.existsSync(filePath)) return {};
     try {
@@ -217,48 +229,6 @@ function loadEditorialSelection(filePath = EDITORIAL_SELECTION_PATH) {
         console.warn(`⚠️  ${path.basename(filePath)} is not valid JSON; the Journal front falls back to the newest stories (${error.message})`);
         return {};
     }
-}
-
-// The Journal front: one lead, three secondary stories, a short recent list and
-// the deep reads ("ΑΝΑΛΥΤΙΚΕΣ ΑΠΟΨΕΙΣ"). Explicit picks come from editorial-selection.json;
-// every empty or invalid slot falls back to the newest story not already shown, so the
-// front is valid with no selection file at all. The deep reads fall back to the newest
-// Analysis stories, taken after the other slots so none is shown twice.
-// `posts` must be newest first.
-function resolveJournalFront(posts, selection = {}) {
-    const byId = new Map(posts.map(post => [post.id, post]));
-    const used = new Set();
-    const warnings = [];
-    function pick(value, limit) {
-        const picked = [];
-        (Array.isArray(value) ? value : [value]).forEach(id => {
-            if (typeof id !== 'string' || !id.trim()) return;
-            const post = byId.get(id.trim());
-            if (!post) warnings.push(`unknown article id "${id}"`);
-            else if (!used.has(post.id) && picked.length < limit) {
-                used.add(post.id);
-                picked.push(post);
-            }
-        });
-        return picked;
-    }
-    function fill(picked, limit, accepts = () => true) {
-        for (const post of posts) {
-            if (picked.length >= limit) break;
-            if (used.has(post.id) || !accepts(post)) continue;
-            used.add(post.id);
-            picked.push(post);
-        }
-        return picked;
-    }
-    const lead = pick(selection.lead, 1);
-    const secondary = pick(selection.secondary, JOURNAL_LAYOUT.secondary);
-    const deepReads = pick(selection.deepReads, JOURNAL_LAYOUT.deepReads);
-    fill(lead, 1);
-    fill(secondary, JOURNAL_LAYOUT.secondary);
-    const recent = fill([], JOURNAL_LAYOUT.recent);
-    fill(deepReads, JOURNAL_LAYOUT.deepReads, post => primaryCategory(post) === 'Analysis');
-    return { lead: lead[0] || null, secondary, recent, deepReads, ids: [...used], warnings };
 }
 
 function storyUrl(post) {
@@ -292,112 +262,6 @@ function renderStoryImage(post, image, { sizes, full = false, eager = false }) {
         + ` width="${width}" height="${height}"`
         + (eager ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"')
         + ` decoding="async" alt="" data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`;
-}
-
-function renderStoryCategory(post, withSecondary = false) {
-    const [primary, ...rest] = post.categories && post.categories.length ? post.categories : ['News'];
-    const more = withSecondary && rest.length
-        ? `<span class="story-cats">${escapeHtmlAttribute(rest.map(categoryLabel).join(' · '))}</span>`
-        : '';
-    return `<p class="story-kicker"><span class="story-cat">${escapeHtmlAttribute(greekUpper(categoryLabel(primary)))}</span>${more}</p>`;
-}
-
-function renderStoryMeta(post, withDate) {
-    const items = [`<span>${escapeHtmlAttribute(authorLabel(post.author || 'F1 Stories'))}</span>`];
-    if (withDate) items.push(`<time datetime="${escapeHtmlAttribute(post.date || '')}">${escapeHtmlAttribute(formatBlogIndexDate(post))}</time>`);
-    const readingTime = storyReadingTime(post);
-    if (readingTime) items.push(`<span>${escapeHtmlAttribute(readingTime)}</span>`);
-    return `<p class="story-meta">${items.join('')}</p>`;
-}
-
-function renderJournalLead(post, deck) {
-    const image = storyImage(post);
-    // Long headlines step down a size so the deck and byline stay on the first screen;
-    // qa:visual checks the live lead. ponytail: character count stands
-    // in for rendered width (62 fits every current title at 360px); if qa:visual flags the lead, lower it.
-    const long = post.title.length > 62 ? ' journal-lead--long' : '';
-    return `<article class="journal-lead${image ? '' : ' journal-lead--text'}${long}" data-kind="${categoryKind(primaryCategory(post))}">`
-        + `<a class="journal-lead__link" href="${escapeHtmlAttribute(storyUrl(post))}">`
-        + (image ? `<div class="journal-lead__media">${renderStoryImage(post, image, { sizes: CARD_SIZES.archiveLead, full: true, eager: true })}</div>` : '')
-        + `<div class="journal-lead__text">${renderStoryCategory(post, true)}`
-        + `<h2 class="journal-lead__title">${escapeHtmlAttribute(post.title)}</h2>`
-        + (deck ? `<p class="journal-lead__deck">${escapeHtmlAttribute(deck)}</p>` : '')
-        + `${renderStoryMeta(post, true)}</div></a></article>`;
-}
-
-function renderJournalSecondary(post) {
-    const image = storyImage(post);
-    return `<article class="journal-second${image ? '' : ' journal-second--text'}" data-kind="${categoryKind(primaryCategory(post))}">`
-        + `<a class="journal-second__link" href="${escapeHtmlAttribute(storyUrl(post))}">`
-        + (image ? `<div class="journal-second__media">${renderStoryImage(post, image, { sizes: CARD_SIZES.archiveSecond })}</div>` : '')
-        + `<div class="journal-second__text">${renderStoryCategory(post)}`
-        + `<h2 class="journal-second__title">${escapeHtmlAttribute(post.title)}</h2>`
-        + `${renderStoryMeta(post, false)}</div></a></article>`;
-}
-
-function renderJournalRecent(posts) {
-    if (!posts.length) return '';
-    const items = posts.map((post, index) => `<li class="journal-recent__item" data-kind="${categoryKind(primaryCategory(post))}">`
-        + `<a class="journal-recent__link" href="${escapeHtmlAttribute(storyUrl(post))}">`
-        + `<span class="journal-recent__num" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>`
-        + `${renderStoryCategory(post)}<h3 class="journal-recent__title">${escapeHtmlAttribute(post.title)}</h3>`
-        + `${renderStoryMeta(post, true)}</a></li>`);
-    return '<section class="journal-recent" aria-labelledby="journal-recent-title">'
-        + '<h2 class="journal-label" id="journal-recent-title">ΠΡΟΣΦΑΤΑ</h2>'
-        + `<ol class="journal-recent__list">${items.join('')}</ol></section>`;
-}
-
-function renderJournalDeepReads(items) {
-    if (!items.length) return '';
-    const stories = items.map(({ post, deck }) => `<article class="journal-deep__item" data-kind="${categoryKind(primaryCategory(post))}">`
-        + `<a class="journal-deep__link" href="${escapeHtmlAttribute(storyUrl(post))}">${renderStoryCategory(post, true)}`
-        + `<h3 class="journal-deep__title">${escapeHtmlAttribute(post.title)}</h3>`
-        + (deck ? `<p class="journal-deep__deck">${escapeHtmlAttribute(deck)}</p>` : '')
-        + `${renderStoryMeta(post, true)}</a></article>`);
-    return '<section class="journal-deep" aria-labelledby="journal-deep-title">'
-        + `<h2 class="journal-label" id="journal-deep-title">ΑΝΑΛΥΤΙΚΕΣ ΑΠΟΨΕΙΣ</h2>${stories.join('')}</section>`;
-}
-
-function renderJournalFront(front, decks = {}) {
-    const lead = front.lead ? renderJournalLead(front.lead, decks[front.lead.id] || front.lead.excerpt || '') : '';
-    const secondary = front.secondary.map(renderJournalSecondary).join('');
-    return `<section class="journal-front" aria-label="Πρωτοσέλιδο">`
-        + `${lead}<div class="journal-front__side">${secondary}</div></section>`
-        + '<div class="journal-shelf">'
-        + renderJournalRecent(front.recent)
-        + renderJournalDeepReads(front.deepReads.map(post => ({ post, deck: decks[post.id] || post.excerpt || '' })))
-        + '</div>';
-}
-
-function renderLedgerRow(post, index) {
-    const date = ledgerDate(post.date);
-    const image = isLedgerPicture(index) ? storyImage(post) : '';
-    const day = date
-        ? `${date.day} ${date.month}<span class="visually-hidden"> ${date.year}</span>`
-        : escapeHtmlAttribute(formatBlogIndexDate(post));
-    return `<li class="ledger-row${image ? ' ledger-row--picture' : ''}" data-kind="${categoryKind(primaryCategory(post))}">`
-        + `<a class="ledger-row__link" href="${escapeHtmlAttribute(storyUrl(post))}">`
-        + `<time class="ledger-row__date" datetime="${escapeHtmlAttribute(post.date || '')}">${day}</time>`
-        + renderStoryCategory(post)
-        + (image ? `<span class="ledger-row__media">${renderStoryImage(post, image, { sizes: CARD_SIZES.archiveLedger })}</span>` : '')
-        + `<h3 class="ledger-row__title">${escapeHtmlAttribute(post.title)}</h3>`
-        + (image && post.excerpt ? `<p class="ledger-row__excerpt">${escapeHtmlAttribute(post.excerpt)}</p>` : '')
-        + `${renderStoryMeta(post, false)}</a></li>`;
-}
-
-// Rows are grouped under month rules; each page opens with its month.
-function renderLedgerRows(posts, startIndex = 0) {
-    let month = '';
-    const rows = [];
-    posts.forEach((post, offset) => {
-        const date = ledgerDate(post.date);
-        if (date && date.key !== month) {
-            month = date.key;
-            rows.push(`<li class="ledger-month" aria-hidden="true">${date.monthTitle}</li>`);
-        }
-        rows.push(renderLedgerRow(post, startIndex + offset));
-    });
-    return rows.join('\n            ');
 }
 
 // Homepage journal (THE PADDOCK): every story after the cover and the technical spread, newest first.
@@ -631,38 +495,6 @@ function injectHomeJournal(indexPosts, blogPosts, selection = {}) {
     fs.writeFileSync(indexHtmlPath, updated);
     console.log(`Homepage journal rendered into ${indexHtmlPath}`);
     return true;
-}
-
-// Writers from the one author list; the slug carries each writer's accent (CSS) and
-// the specialty feeds the archive's author view.
-function renderAuthorFilterOptions() {
-    const base = '/blog-module/blog/index.html';
-    return [`<a class="filter-option" href="${base}" data-author="all" aria-current="true">Όλοι</a>`]
-        .concat(AUTHORS.map(author => `<a class="filter-option filter-option--author" href="${base}?author=${author.slug}" data-author="${escapeHtmlAttribute(author.name)}" data-author-slug="${author.slug}" data-specialty="${escapeHtmlAttribute(author.specialty)}">`
-            + `<img src="${authorThumb(author)}" alt="" width="48" height="48" loading="lazy" decoding="async">${escapeHtmlAttribute(author.label)}</a>`))
-        .join('\n                            ');
-}
-
-function renderCategoryFilterOptions() {
-    const base = '/blog-module/blog/index.html';
-    return [`<a class="filter-option" href="${base}" data-category="all" aria-current="true">Όλα</a>`]
-        .concat(PUBLIC_CATEGORIES.map(name => `<a class="filter-option" href="${base}?category=${encodeURIComponent(name)}" data-category="${escapeHtmlAttribute(name)}" data-kind="${categoryKind(name)}">${escapeHtmlAttribute(categoryLabel(name))}</a>`))
-        .join('\n                        ');
-}
-
-function replaceMarkedBlock(html, begin, end, innerHtml) {
-    const start = html.indexOf(begin);
-    const finish = html.indexOf(end);
-    if (start === -1 || finish === -1 || finish < start) return html;
-    const lineStart = html.lastIndexOf('\n', start) + 1;
-    const indentMatch = html.slice(lineStart, start).match(/^[ \t]*/);
-    const indent = indentMatch ? indentMatch[0] : '';
-    return html.slice(0, start + begin.length)
-        + '\n'
-        + innerHtml
-        + '\n'
-        + indent
-        + html.slice(finish);
 }
 
 function replaceInlineMarkedBlock(html, begin, end, value) {
@@ -899,45 +731,6 @@ function injectHomepageHero(hero) {
 function replaceInlineMarkers(html, name, value) {
     const pattern = new RegExp(`(<!-- f1s:${name}:begin -->)[\\s\\S]*?(<!-- f1s:${name}:end -->)`, 'g');
     return html.replace(pattern, (match, begin, end) => begin + value + end);
-}
-
-// The archive ships as static HTML: the front, the category filters and the first
-// ledger page, so the first screen needs no data request. The browser loads the
-// compact index only for filters, search, sorting and later pages.
-function injectBlogIndexFirstPage(indexPosts, front, decks = {}) {
-    const indexHtmlPath = path.join(CONFIG.OUTPUT_HTML_DIR, 'index.html');
-    if (!fs.existsSync(indexHtmlPath)) {
-        console.warn(`⚠️  Blog index HTML not found, static first-page render skipped: ${indexHtmlPath}`);
-        return false;
-    }
-
-    const shown = new Set(front.ids);
-    const ledger = indexPosts.filter(post => !shown.has(post.id)).slice(0, JOURNAL_LAYOUT.page);
-    const leadImage = front.lead ? storyImage(front.lead) : '';
-    const leadSrcset = leadImage ? cardImageSrcset(leadImage, true) : '';
-    // Mirror the lead image's srcset/sizes, or the preload fetches a candidate the <img> never uses.
-    const preload = leadImage
-        ? `<link rel="preload" as="image" href="${escapeHtmlAttribute(leadImage)}"${leadSrcset ? ` imagesrcset="${escapeHtmlAttribute(leadSrcset)}" imagesizes="${CARD_SIZES.archiveLead}"` : ''} fetchpriority="high">`
-        : '';
-    const edition = `<div class="journal-edition" id="journal-edition" data-story-ids="${escapeHtmlAttribute(front.ids.join(' '))}" data-total="${indexPosts.length}">`
-        + renderJournalFront(front, decks)
-        + '</div>';
-
-    let html = fs.readFileSync(indexHtmlPath, 'utf8');
-    const original = html;
-    html = replaceMarkedBlock(html, '<!-- f1s:blog-index-preload:begin -->', '<!-- f1s:blog-index-preload:end -->', preload ? `    ${preload}` : '');
-    html = replaceMarkedBlock(html, '<!-- f1s:journal-front:begin -->', '<!-- f1s:journal-front:end -->', `        ${edition}`);
-    html = replaceMarkedBlock(html, '<!-- f1s:blog-categories:begin -->', '<!-- f1s:blog-categories:end -->', `                        ${renderCategoryFilterOptions()}`);
-    html = replaceMarkedBlock(html, '<!-- f1s:blog-authors:begin -->', '<!-- f1s:blog-authors:end -->', `                            ${renderAuthorFilterOptions()}`);
-    html = replaceMarkedBlock(html, '<!-- f1s:blog-first-page:begin -->', '<!-- f1s:blog-first-page:end -->', `            ${renderLedgerRows(ledger)}`);
-    html = replaceInlineMarkers(html, 'journal-total', String(indexPosts.length));
-
-    if (html !== original) {
-        fs.writeFileSync(indexHtmlPath, html);
-        console.log(`Blog first page rendered into ${indexHtmlPath}`);
-        return true;
-    }
-    return false;
 }
 
 // Cover copy comes from the article's opening paragraph and is cut only at sentence ends:
@@ -1285,14 +1078,7 @@ async function processBlogEntries(options = {}) {
     console.log(`Blog index data saved to ${indexPath} (${jsonKb(compactIndexData)} KB)`);
 
     const selection = loadEditorialSelection();
-    const front = resolveJournalFront(indexPosts, selection);
-    front.warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the slot falls back to the newest story`));
-    const postsById = new Map(blogPosts.map(post => [post.id, post]));
-    const decks = {};
-    [front.lead, ...front.deepReads].filter(Boolean).forEach(post => {
-        decks[post.id] = heroCopy(postsById.get(post.id) || post).deck;
-    });
-    injectBlogIndexFirstPage(indexPosts, front, decks);
+    const edition = injectEdition(indexPosts, selection);
     injectAuthorsDirectory(indexPosts);
     injectHomeTeam(indexPosts);
 
@@ -1304,7 +1090,7 @@ async function processBlogEntries(options = {}) {
     injectHomeJournal(indexPosts, blogPosts, selection);
     await injectHomePanels(undefined, blogPosts);
 
-    generateSitemap(blogPosts);
+    generateSitemap(blogPosts, edition ? edition.pages.filter(page => page.file !== 'index.html') : []);
     await renderCachedArticlePages(freshPosts.concat(cachedPosts));
     await injectRelatedArticles(blogPosts);
     injectPrevNextLinks(blogPosts);
@@ -1328,9 +1114,7 @@ module.exports = {
     buildIndexPosts,
     buildCompactIndexData,
     loadEditorialSelection,
-    resolveJournalFront,
-    renderJournalFront,
-    renderLedgerRows,
+    injectEdition,
     renderHomeJournal,
     selectPaddock,
     renderCoverFrames,
@@ -1338,7 +1122,6 @@ module.exports = {
     selectHomeStories,
     injectHomeJournal,
     injectHomepageHero,
-    injectBlogIndexFirstPage,
     buildHomeLatest,
     loadExistingPosts,
     renderCachedArticlePages,

@@ -6,7 +6,7 @@ const test = require('node:test');
 const { PUBLIC_CATEGORIES, AUTHORS, findAuthor, authorLabel, authorThumb, getPostTaxonomy } = require('../../taxonomy');
 const {
     buildIndexPosts, buildCompactIndexData, buildHomeLatest,
-    loadEditorialSelection, resolveJournalFront, renderJournalFront, renderLedgerRows
+    loadEditorialSelection
 } = require('../index');
 const { refreshArticleTaxonomy, getEditorialProfile, renderArticleSources, renderAuthorCard } = require('../article-render');
 const { extractMetadata } = require('../metadata');
@@ -105,72 +105,6 @@ test('archive index lists the primary category first', async () => {
     assert.deepEqual(post.categories, ['Drivers', 'Analysis']);
 });
 
-const frontPosts = Array.from({ length: 12 }, (_, index) => ({
-    id: `p${index}`, title: `Story ${index}`, author: 'Georgios Balatzis',
-    date: `2026-09-${String(20 - index).padStart(2, '0')}`, categories: ['Technical'], excerpt: 'Excerpt.', thumbnail: ''
-}));
-
-test('journal front falls back to the newest stories without a selection', () => {
-    const front = resolveJournalFront(frontPosts, {});
-    assert.equal(front.lead.id, 'p0');
-    assert.deepEqual(front.secondary.map(post => post.id), ['p1', 'p2', 'p3']);
-    assert.deepEqual(front.recent.map(post => post.id), ['p4', 'p5', 'p6', 'p7']);
-    assert.deepEqual(front.deepReads, []);
-    assert.deepEqual(front.warnings, []);
-    assert.deepEqual(front.ids, ['p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7']);
-});
-
-test('journal front honours a valid selection and never repeats a story', () => {
-    const front = resolveJournalFront(frontPosts, { lead: 'p5', secondary: ['p0', 'p5'], deepReads: ['p11', 'p10', 'p9'] });
-    assert.equal(front.lead.id, 'p5');
-    assert.deepEqual(front.secondary.map(post => post.id), ['p0', 'p1', 'p2']);
-    assert.deepEqual(front.deepReads.map(post => post.id), ['p11', 'p10']);
-    assert.deepEqual(front.recent.map(post => post.id), ['p3', 'p4', 'p6', 'p7']);
-    assert.equal(new Set(front.ids).size, front.ids.length);
-});
-
-// Analysis stories scattered through an otherwise Technical archive: p2, p5, p8, p10 (newest first).
-const mixedPosts = frontPosts.map(post => ({ ...post, categories: ['2', '5', '8', '10'].includes(post.id.slice(1)) ? ['Analysis'] : ['Technical'] }));
-
-test('deep reads fill themselves with the newest Analysis stories not already on the front', () => {
-    const front = resolveJournalFront(mixedPosts, {});
-    // p2 is already a secondary story and p5 is in the recent list, so neither repeats in the deep reads.
-    assert.deepEqual(front.secondary.map(post => post.id), ['p1', 'p2', 'p3']);
-    assert.deepEqual(front.recent.map(post => post.id), ['p4', 'p5', 'p6', 'p7']);
-    assert.deepEqual(front.deepReads.map(post => post.id), ['p8', 'p10']);
-    assert.equal(new Set(front.ids).size, front.ids.length);
-    // Moving the newest Analysis story out of the way gives it to the deep reads instead.
-    const quiet = resolveJournalFront(mixedPosts.map(post => post.id === 'p2' ? { ...post, categories: ['Technical'] } : post), {});
-    assert.deepEqual(quiet.deepReads.map(post => post.id), ['p8', 'p10']);
-});
-
-test('an explicit deep read wins its slot and the fill completes the section', () => {
-    const front = resolveJournalFront(mixedPosts, { deepReads: ['p11'] });
-    assert.deepEqual(front.deepReads.map(post => post.id), ['p11', 'p8']);
-    const both = resolveJournalFront(mixedPosts, { deepReads: ['p11', 'p9'] });
-    assert.deepEqual(both.deepReads.map(post => post.id), ['p11', 'p9']);
-    // A pinned id that no longer exists is dropped with a warning and the fill covers the gap.
-    const gone = resolveJournalFront(mixedPosts, { deepReads: ['gone'] });
-    assert.deepEqual(gone.deepReads.map(post => post.id), ['p8', 'p10']);
-    assert.equal(gone.warnings.length, 1);
-});
-
-test('deep reads stay empty, and the section absent, when no Analysis story is free', () => {
-    assert.deepEqual(resolveJournalFront(frontPosts, {}).deepReads, []);
-    const few = resolveJournalFront(mixedPosts.slice(0, 6), {});
-    assert.deepEqual(few.deepReads, []);
-    assert.doesNotMatch(renderJournalFront(few, {}), /ΑΝΑΛΥΤΙΚΕΣ ΑΠΟΨΕΙΣ/);
-    assert.match(renderJournalFront(resolveJournalFront(mixedPosts, {}), {}), /ΑΝΑΛΥΤΙΚΕΣ ΑΠΟΨΕΙΣ/);
-});
-
-test('journal front drops unknown or deleted ids with a warning', () => {
-    const front = resolveJournalFront(frontPosts, { lead: 'deleted-story', secondary: ['p3'], deepReads: ['gone'] });
-    assert.equal(front.lead.id, 'p0');
-    assert.deepEqual(front.secondary.map(post => post.id), ['p3', 'p1', 'p2']);
-    assert.deepEqual(front.deepReads, []);
-    assert.equal(front.warnings.length, 2);
-});
-
 test('journal selection file is optional and tolerates invalid JSON', () => {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-selection-'));
     try {
@@ -183,26 +117,6 @@ test('journal selection file is optional and tolerates invalid JSON', () => {
     } finally {
         fs.rmSync(directory, { recursive: true, force: true });
     }
-});
-
-test('journal front renders a text lead when the story has no image', () => {
-    const html = renderJournalFront(resolveJournalFront(frontPosts, {}), { p0: 'A whole-sentence deck.' });
-    assert.match(html, /class="journal-lead journal-lead--text" data-kind="technical"/);
-    assert.match(html, /A whole-sentence deck\./);
-    assert.doesNotMatch(html, /<img/);
-    assert.match(html, /<span class="story-cat">ΤΕΧΝΙΚΑ<\/span>/);
-});
-
-test('archive ledger groups rows by month and marks the category signal', () => {
-    const html = renderLedgerRows([
-        { id: 'a', title: 'A', author: 'Themis Charvalis', date: '2026-09-02', categories: ['History'], readingTime: '4 min' },
-        { id: 'b', title: 'B', author: 'Themis Charvalis', date: '2026-08-31', categories: ['Analysis', 'Drivers'], readingTime: '1 min' }
-    ]);
-    assert.equal((html.match(/class="ledger-month"/g) || []).length, 2);
-    assert.match(html, /ΣΕΠΤΕΜΒΡΙΟΣ 2026[\s\S]*ΑΥΓΟΥΣΤΟΣ 2026/);
-    assert.match(html, /data-kind="analysis"[\s\S]*ΑΝΑΛΥΣΗ/);
-    assert.match(html, /2 ΣΕΠ<span class="visually-hidden"> 2026<\/span>/);
-    assert.match(html, /Θέμης Χαρβάλης<\/span><span>1 λεπτό/);
 });
 
 test('an article takes its colour from the author-chosen primary category', () => {

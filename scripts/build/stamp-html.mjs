@@ -184,6 +184,29 @@ const FONT_PRELOADS = {
     ]
 };
 
+// The Edition Index's generated section and archive pages (blog-module/blog/section, /archive; written by
+// blog-module/build/discovery.js) are the blog index's shell with another <main>: they stamp exactly as it does.
+function listDiscoveryPages() {
+    const pages = [];
+    function walk(dir) {
+        if (!fs.existsSync(dir)) return;
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            const abs = path.join(dir, entry.name);
+            if (entry.isDirectory()) walk(abs);
+            else if (entry.name === 'index.html') pages.push(path.relative(REPO_ROOT, abs).split(path.sep).join('/'));
+        }
+    }
+    ['section', 'archive'].forEach(root => walk(path.join(REPO_ROOT, 'blog-module/blog', root)));
+    return pages.sort();
+}
+for (const rel of listDiscoveryPages()) {
+    TARGET_HTML.push(rel);
+    SPRITE_TARGETS.add(rel);
+    EDITORIAL_TARGETS.add(rel);
+    ROUTE_FONTS_SOURCES[rel] = ROUTE_FONTS_SOURCES['blog-module/blog/index.html'];
+    FONT_PRELOADS[rel] = FONT_PRELOADS['blog-module/blog/index.html'];
+}
+
 // Marker comments around the font preload block. Idempotent replacement.
 const FONTS_BEGIN = '<!-- f1s:fonts-preload:begin -->';
 const FONTS_END   = '<!-- f1s:fonts-preload:end -->';

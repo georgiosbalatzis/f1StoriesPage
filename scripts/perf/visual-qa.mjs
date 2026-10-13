@@ -211,7 +211,7 @@ async function waitForPageReady(page, routeSlug) {
     await page.evaluate(() => document.fonts && document.fonts.ready ? document.fonts.ready : null).catch(() => {});
 
     if (routeSlug === 'blog') {
-        await page.waitForSelector('#articles-grid .ledger-row', { timeout: 6000 }).catch(() => {});
+        await page.waitForSelector('.edition .ed-row', { timeout: 6000 }).catch(() => {});
     } else if (routeSlug.startsWith('standings')) {
         await page.waitForSelector('.standings-tab.active', { timeout: 6000 }).catch(() => {});
         await page.waitForSelector('.standings-panel.active, .standings-panel:not([hidden])', { timeout: 6000 }).catch(() => {});
@@ -488,7 +488,7 @@ async function scanPage(page, routeSlug) {
         });
 
         if (currentRouteSlug === 'blog') {
-            const cardCount = Array.from(document.querySelectorAll('#articles-grid .ledger-row')).filter(isVisible).length;
+            const cardCount = Array.from(document.querySelectorAll('.edition .ed-row')).filter(isVisible).length;
             if (cardCount < 1) issues.push({ type: 'blog-cards', detail: 'no visible archive rows rendered' });
         }
 
@@ -542,13 +542,12 @@ async function scanPage(page, routeSlug) {
             }
         }
 
-        // The Journal's lead must show headline, deck and byline on the first screen;
-        // long headlines are sized down for this (journal-lead--long in blog-module/build/index.js).
+        // The Edition Index must offer its sections on the first screen (the contents bar, or its first phone row).
         if (currentRouteSlug === 'blog') {
-            const byline = document.querySelector('.journal-lead .story-meta');
-            const bottom = byline ? Math.round(byline.getBoundingClientRect().bottom + window.scrollY) : Infinity;
+            const first = document.querySelector('.ed-contents__list a');
+            const bottom = first ? Math.round(first.getBoundingClientRect().bottom + window.scrollY) : Infinity;
             if (bottom > window.innerHeight) {
-                issues.push({ type: 'journal-lead-fold', selector: '.journal-lead .story-meta', detail: `lead byline ends at ${bottom}px on a ${window.innerHeight}px screen` });
+                issues.push({ type: 'edition-contents-fold', selector: '.ed-contents__list a', detail: `first section link ends at ${bottom}px on a ${window.innerHeight}px screen` });
             }
         }
 
