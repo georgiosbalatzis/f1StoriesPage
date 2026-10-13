@@ -363,24 +363,19 @@
 .article-page .youtube-facade:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .article-page .article-content figure { margin: 2.8em 0; }
 .article-page .article-content figure :is(img, picture) { display: block; max-width: 100%; }
-.article-page .article-content figure .article-content-img { width: 100%; margin: 0; border-radius: 0 0 var(--cut-sm) 0; }
+/* At most the column width and never larger than its own pixels (a 275px file is not stretched to 656px). */
+.article-page .article-content figure .article-content-img { width: 100%; max-width: min(100%, var(--nat-w, 100%)); height: auto; margin: 0; border-radius: 0 0 var(--cut-sm) 0; }
+/* "Εικ. N" (numbered from 1 in reading order) and, when the editors recorded them, the caption and credit. */
 .article-page .article-content figcaption {
     display: flex;
-    gap: 12px;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
     margin-top: 10px;
-    padding-top: 9px;
+    padding-top: 8px;
     border-top: 1px solid var(--border);
     color: var(--text-secondary);
-    font-size: .75rem;
-    line-height: 1.6;
-}
-.article-page .article-content figcaption::before {
-    content: 'ΕΙΚΟΝΑ /';
-    flex: 0 0 auto;
-    color: var(--article-signal);
-    font-size: .75rem;
-    font-weight: 600;
-    letter-spacing: .1em;
+    font: 400 .8125rem/1.45 var(--font-body);
 }
 
 /* Data tables read like the standings ledger: a heavy top rule, row rules and
@@ -1124,9 +1119,21 @@
 .article-page .rr-edition { display: flex; gap: 10px; margin: 0; padding: 14px var(--gutter) 12px; color: var(--on-deep-2); font: 700 .9375rem/1.1 var(--cond); letter-spacing: .16em; text-transform: uppercase; }
 .article-page .rr-edition a { color: var(--on-deep); text-decoration: none; }
 .article-page .rr-edition__date { margin-left: auto; font-variant-numeric: tabular-nums; }
-.article-page .rr-cover__media { margin: 0; overflow: hidden; background: var(--deep-2); }
+.article-page .rr-cover__media { margin: 0; overflow: hidden; }
 .article-page .rr-cover__media picture { display: contents; }
-.article-page .rr-cover__media img { display: block; width: 100%; height: 100%; max-width: none; margin: 0; border-radius: 0; object-fit: cover; }
+.article-page .rr-cover__media img { display: block; width: 100%; height: 100%; max-width: none; margin: 0; border-radius: 0; object-fit: cover; object-position: var(--focus, 50% 50%); }
+/* THE DOCUMENTARY LENS (P3D): a cover keeps its own proportions; a crop happens only where the slot caps the height,
+ * and then from the recorded focal point (--focus). Artwork with printed type, diagrams and archival prints
+ * (data-media, from media-metadata.json) are never cropped: shown whole on the ink, archival prints with a keyline. */
+.article-page .rr-cover__media[data-media]:not([data-media="render"]) img { object-fit: contain; }
+.article-page .rr-cover__media[data-media="archival"] img { outline: 1px solid rgba(238, 232, 223, .16); outline-offset: -1px; }
+/* One quiet line under the image: verified caption, documented credit, AI disclosure. Only printed when recorded. */
+.article-page .rr-cover__caption { margin: 0; padding: 12px var(--gutter) 0; }
+.article-page .media-credit { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; color: var(--text-secondary); font: 400 .8125rem/1.5 var(--font-body); letter-spacing: 0; text-transform: none; }
+.article-page .media-credit__caption { flex: 1 1 100%; max-width: 44em; color: var(--text-primary); font-size: .875rem; }
+.article-page .media-credit__label { font-size: .6875rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.article-page .media-credit__ai { padding: 1px 6px; border: 1px solid currentColor; color: var(--text-primary); font-weight: 600; }
+.article-page :is(.rr-cover--split, .rr-cover--inset) .rr-cover__caption { width: min(100%, var(--cover-w, 100%)); padding-inline: 0; }
 .article-page .rr-kicker { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0; color: var(--on-deep-2); font: 600 .6875rem/1.3 var(--font-body); letter-spacing: .16em; text-transform: uppercase; }
 .article-page .rr-kicker a { color: var(--signal); text-decoration: none; }
 .article-page .rr-kicker a:hover { text-decoration: underline 2px; text-underline-offset: 4px; }
@@ -1144,8 +1151,10 @@
 
 /* Full bleed: wide landscape sources, never wider than their own pixels. */
 /* Short screens (landscape phones, 200% zoom) keep the headline within reach of the first screen. */
-.article-page .rr-cover--bleed .rr-cover__media { max-width: var(--cover-max, none); height: clamp(200px, min(42vw, 60vh), 620px); margin-inline: auto; }
-.article-page .rr-cover--bleed .rr-cover__media img { object-position: center 42%; }
+.article-page .rr-cover--bleed .rr-cover__media { max-width: var(--cover-max, none); margin-inline: auto; overflow: visible; }
+.article-page .rr-cover--bleed .rr-cover__media img { height: auto; max-height: min(78vh, 780px); object-position: var(--focus, center 42%); }
+.article-page .rr-cover--bleed .rr-cover__media[data-media]:not([data-media="render"]) { padding-top: clamp(16px, 2.4vw, 32px); }
+.article-page .rr-cover--bleed .rr-cover__media[data-media]:not([data-media="render"]) img { width: auto; max-width: 100%; max-height: min(72vh, 680px); margin-inline: auto; }
 .article-page .rr-cover--bleed .rr-cover__text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); gap: 20px 56px; align-items: end; padding: clamp(28px, 3.6vw, 52px) var(--gutter) clamp(32px, 4vw, 56px); }
 .article-page .rr-cover--bleed .rr-cover__side { grid-column: 2; grid-row: 1 / span 2; }
 /* Split and inset: the text beside the photograph. An inset photograph (small or portrait source) sits whole at
@@ -1156,8 +1165,11 @@
 .article-page :is(.rr-cover--split, .rr-cover--inset) .rr-title { font-size: clamp(2.4rem, 4.4vw, 4.6rem); }
 .article-page :is(.rr-cover--split, .rr-cover--inset) .rr-title--long { font-size: clamp(2.1rem, 3.5vw, 3.6rem); }
 .article-page :is(.rr-cover--split, .rr-cover--inset) .rr-cover__side { margin-top: 32px; }
-.article-page .rr-cover--inset .rr-cover__media { display: grid; place-items: center; padding: clamp(16px, 3vw, 48px); }
-.article-page .rr-cover--inset .rr-cover__media img { width: min(100%, var(--cover-w, 100%)); height: auto; max-height: min(560px, 70vh); object-fit: contain; }
+.article-page .rr-cover--inset .rr-cover__media { display: grid; place-items: center; align-content: center; padding: clamp(16px, 3vw, 48px); }
+.article-page .rr-cover--inset .rr-cover__media img { width: min(100%, var(--cover-w, 100%)); height: auto; max-height: min(560px, 70vh); object-fit: contain; outline: 1px solid rgba(238, 232, 223, .16); outline-offset: -1px; }
+/* Split: the whole photograph in its half, on the ink, with its caption under it (no crop to the column). */
+.article-page .rr-cover--split .rr-cover__media { display: grid; align-content: center; padding: clamp(16px, 3vw, 48px) clamp(16px, 3vw, 48px) clamp(16px, 3vw, 48px) 0; overflow: visible; }
+.article-page .rr-cover--split .rr-cover__media img { height: auto; object-fit: contain; }
 
 .article-page .rr-timing { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--deep-rule); }
 .article-page .rr-timing > div { display: grid; align-content: start; gap: 8px; min-width: 0; padding: 20px 24px 24px; border-left: 1px solid var(--deep-rule); }
@@ -1243,8 +1255,15 @@
 .article-page .rr .rr-body .rr-chart__desc { margin: 0 0 16px; color: var(--text-secondary); font-size: .9375rem; line-height: 1.5; }
 .article-page .rr .rr-body .rr-chart .article-figure { margin: 0; }
 .article-page .rr .rr-body .rr-chart .article-figure img { display: block; width: 100%; height: auto; margin: 0; border-radius: 0; }
-.article-page .rr .rr-body .rr-chart figcaption { display: block; margin-top: 10px; padding: 0; border: 0; color: var(--text-secondary); font: 700 .9375rem/1 var(--cond); letter-spacing: .14em; text-transform: uppercase; }
-.article-page .rr .rr-body .rr-chart figcaption::before { content: none; }
+.article-page .rr .rr-body .rr-chart figcaption { margin-top: 10px; text-align: left; }
+/* Charts (Concept B's legible phone scroller): below 700px the raster keeps a 680px width inside its own labelled,
+ * keyboard-focusable scroller; the page itself never scrolls sideways. Wider screens show it at the column width. */
+.article-page .rr .rr-body .rr-chart__scroll { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+.article-page .rr .rr-body .rr-chart__scroll:focus-visible { outline: 2px solid var(--article-signal); outline-offset: 2px; }
+@media (max-width: 699px) {
+    .article-page .rr .rr-body .rr-chart .rr-chart__scroll img { width: 680px; min-width: 680px; max-width: none; }
+    .article-page .rr .rr-body .rr-chart__scroll::after { content: 'Σύρετε το γράφημα οριζόντια →'; position: sticky; left: 0; display: block; padding-top: 8px; color: var(--text-secondary); font: 400 .75rem/1.4 var(--font-body); }
+}
 
 /* Data bands: an F1 Stories tool leaves the column and becomes an ink section of its own. */
 .article-page .rr .rr-body .rr-data { position: relative; z-index: 2; width: 100vw; margin: 2.6em 0 2.8em calc(50% - 50vw); padding: clamp(28px, 3.4vw, 48px) var(--gutter) clamp(32px, 4vw, 56px); border-block: 1px solid var(--deep-rule); scroll-margin-top: 124px; }
@@ -1270,11 +1289,16 @@
 .article-page .rr .rr-body .gallery-carousel-stage::after { content: counter(rr-frame, decimal-leading-zero) ' φωτογραφίες · σύρετε →'; position: absolute; top: 28px; right: var(--gutter); color: var(--on-deep-2); font: 600 .75rem/1 var(--font-body); letter-spacing: .06em; }
 .article-page .rr .rr-body .gallery-carousel:has(.gallery-slide:only-child) .gallery-carousel-stage::after { content: none; }
 .article-page .rr .rr-body .gallery-carousel { position: relative; }
-.article-page .rr .rr-body .gallery-carousel-slides { display: grid; grid-auto-flow: column; grid-auto-columns: min(78vw, 480px); gap: 3px; height: auto; min-height: 0; padding: 0 var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); scrollbar-width: thin; }
+.article-page .rr .rr-body .gallery-carousel-slides { display: grid; grid-auto-flow: column; grid-auto-columns: max-content; justify-content: start; align-items: end; gap: 3px; height: auto; min-height: 0; padding: 0 var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); scrollbar-width: thin; }
 .article-page .rr .rr-body .gallery-slide { counter-increment: rr-frame; display: block; width: auto; height: auto; padding: 0; animation: none; scroll-snap-align: start; }
 .article-page .rr .rr-body .gallery-slide::after { content: counter(rr-frame, decimal-leading-zero); display: block; padding-top: 8px; color: var(--on-deep); font: 700 1rem/1 var(--cond); letter-spacing: .06em; }
-.article-page .rr .rr-body .gallery-slide picture { display: block; width: 100%; height: auto; max-height: none; }
-.article-page .rr .rr-body .gallery-slide .article-content-img { display: block; width: 100%; height: auto; max-height: none; aspect-ratio: 3 / 2; margin: 0; border-radius: 0; background: var(--deep-2); object-fit: cover; box-shadow: none; }
+.article-page .rr .gallery-slide .media-credit__caption { color: var(--on-deep); }
+.article-page .rr .gallery-carousel:has(.gallery-slide [data-media="graphic"])::before { content: 'MEDIA ARCHIVE'; }
+.article-page .rr .gallery-carousel:has(.gallery-slide [data-media="graphic"]) .gallery-carousel-stage::after { content: counter(rr-frame, decimal-leading-zero) ' εικόνες · σύρετε →'; }
+.article-page .rr .rr-body .gallery-slide picture { display: block; width: auto; height: auto; max-height: none; }
+/* Whole frames: one shared height, each at its own proportions (from its width/height attributes), never taller than
+ * its own pixels (--nat-h, written by the build) and never cropped; a panorama wider than the screen is letterboxed. */
+.article-page .rr .rr-body .gallery-slide .article-content-img { display: block; width: auto; height: min(clamp(220px, 30vw, 400px), var(--nat-h, 400px)); max-width: min(86vw, 720px); max-height: none; margin: 0; border-radius: 0; background: none; object-fit: contain; box-shadow: none; }
 .article-page .rr .rr-body .gallery-carousel :is(.gallery-carousel-prev, .gallery-carousel-next, .gallery-carousel-counter, .gallery-carousel-thumbs) { display: none; }
 .article-page .rr .rr-body .gallery-carousel-slides:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
 /* An article that ends on its archive runs straight into the pit wall. */
@@ -1362,8 +1386,8 @@
 .article-page .rr-next__mast { margin: 0 0 28px; padding-bottom: 12px; border-bottom: 2px solid var(--text-primary); color: var(--text-primary); font: 700 clamp(4rem, 11vw, 10rem)/.8 var(--cond); letter-spacing: -.012em; }
 .article-page .rr-next__mast span { color: var(--signal); }
 .article-page .rr-next__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); grid-template-rows: auto 1fr; gap: 0 40px; }
-.article-page .rr-next__lead { grid-row: 1 / span 2; display: grid; align-content: start; gap: 10px; color: var(--text-primary); text-decoration: none; }
-.article-page .rr-next__lead img { width: 100%; height: auto; margin: 0 0 8px; border-radius: 0; aspect-ratio: 16 / 9; object-fit: cover; }
+.article-page .rr-next__lead { position: relative; grid-row: 1 / span 2; display: grid; align-content: start; gap: 10px; color: var(--text-primary); text-decoration: none; }
+.article-page .rr-next__lead img { width: 100%; height: auto; margin: 0 0 8px; border-radius: 0; aspect-ratio: 16 / 9; object-fit: cover; object-position: var(--focus, 50% 50%); }
 .article-page .rr-next__meta { color: var(--text-secondary); font: 600 .6875rem/1.3 var(--font-body); letter-spacing: .14em; text-transform: uppercase; }
 .article-page .rr-next__title { font: 600 clamp(1.75rem, 3vw, 2.75rem)/1.04 var(--font-body); letter-spacing: -.04em; text-wrap: balance; text-decoration: underline transparent 2px; text-underline-offset: .12em; }
 .article-page .rr-next__by { color: var(--text-secondary); font: 600 .6875rem/1.3 var(--font-body); letter-spacing: .12em; text-transform: uppercase; }
@@ -1371,7 +1395,9 @@
 .article-page .rr-next__list a { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 18px; align-items: start; padding: 18px 0; border-bottom: 1px solid var(--border); color: var(--text-primary); text-decoration: none; }
 .article-page .rr-next__list a.rr-next__noimg { grid-template-columns: minmax(0, 1fr); }
 .article-page .rr-next__list a > span { display: grid; gap: 6px; }
-.article-page .rr-next__list img { width: 140px; height: auto; margin: 0; border-radius: 0; aspect-ratio: 3 / 2; object-fit: cover; }
+.article-page .rr-next__list img { width: 140px; height: auto; margin: 0; border-radius: 0; aspect-ratio: 3 / 2; object-fit: cover; object-position: var(--focus, 50% 50%); }
+.article-page .rr-next img[data-media]:not([data-media="render"]) { object-fit: contain; background: var(--bg-surface); }
+.article-page .rr-next .media-credit__ai--card { position: absolute; top: 0; left: 0; padding: 5px 8px; border: 0; background: var(--deep); color: var(--on-deep); font: 600 .6875rem/1.2 var(--font-body); }
 .article-page .rr-next__small { font: 600 1.1875rem/1.2 var(--font-body); letter-spacing: -.02em; text-decoration: underline transparent 2px; text-underline-offset: .12em; }
 .article-page .rr-next__lead:hover .rr-next__title,
 .article-page .rr-next__list a:hover .rr-next__small,
@@ -1401,16 +1427,13 @@
     .article-page .rr-cover--bleed .rr-cover__side { grid-column: 1; grid-row: auto; margin-top: 14px; }
     .article-page :is(.rr-cover--split, .rr-cover--inset) .rr-cover__grid { grid-template-columns: 1fr; min-height: 0; }
     .article-page :is(.rr-cover--split, .rr-cover--inset) .rr-cover__media { grid-column: 1; grid-row: 1; }
-    .article-page .rr-cover--split .rr-cover__media { width: 100%; max-height: 60vh; aspect-ratio: 3 / 2; }
+    .article-page .rr-cover--split .rr-cover__media { width: 100%; padding: 0; }
+    .article-page :is(.rr-cover--split, .rr-cover--inset) .rr-cover__caption { width: auto; padding-inline: var(--gutter); }
     .article-page :is(.rr-cover--split, .rr-cover--inset) .rr-cover__text { grid-column: 1; grid-row: 2; padding: 28px var(--gutter) 32px; }
     .article-page .rr-cover--inset .rr-cover__media img { max-height: 60vh; }
     .article-page .rr-timing { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .article-page .rr-timing > div:nth-child(3) { padding-left: var(--gutter); border-left: 0; }
     .article-page .rr-timing > div:nth-child(n + 3) { border-top: 1px solid var(--deep-rule); }
-}
-/* Tablet: a stacked split cover stays 16:9 so the headline reaches the first screen. */
-@media (min-width: 600px) and (max-width: 899px) {
-    .article-page .rr-cover--split .rr-cover__media { aspect-ratio: 16 / 9; }
 }
 /* Phones, and any short screen (landscape phones): only the 44-48px bar stays fixed while reading. */
 @media (max-width: 767px), (max-height: 500px) {
@@ -1423,7 +1446,10 @@
 @media (max-width: 599px) {
     .article-page .rr-edition { font-size: .8125rem; }
     .article-page .rr-edition > span { display: none; }
-    .article-page .rr-cover--bleed .rr-cover__media { width: 100%; height: auto; max-height: 60vh; aspect-ratio: 4 / 3; }
+    /* Phone: the whole frame at its own ratio instead of a 4:3 crop. */
+    .article-page .rr-cover--bleed .rr-cover__media { width: 100%; }
+    .article-page .rr-cover--bleed .rr-cover__media img { max-height: 70vh; }
+    .article-page .rr-cover__caption { padding-top: 10px; }
     .article-page .rr .rr-title,
     .article-page :is(.rr-cover--split, .rr-cover--inset) .rr-title { font-size: clamp(2.15rem, 9.4vw, 2.6rem); line-height: 1.02; letter-spacing: -.035em; }
     .article-page .rr .rr-title--long,

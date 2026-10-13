@@ -2,7 +2,8 @@
 // scheduled jobs keep in the repo (assets/youtube-latest.json, standings caches),
 // so every deploy's build refreshes them without a network request.
 const { pathToFileURL } = require('url');
-const { fs, path, CONFIG, escapeHtmlAttribute: esc } = require('./shared');
+const { fs, path, CONFIG, escapeHtmlAttribute: esc, getCardThumbnailPath } = require('./shared');
+const { cardSrcset } = require('./image-sizes');
 const { greekUpper, authorLabel, formatDate, findAuthor } = require('../taxonomy');
 
 const REPO_ROOT = path.join(CONFIG.BLOG_DIR, '..', '..');
@@ -99,10 +100,13 @@ function isFeaturedEpisode(post, featured) {
     return Boolean(featured.series && series === featured.series && EPISODE_ARTICLE_RE.test(post.title || ''));
 }
 
-function episodeImage(item, exists) {
-    return item.article
-        ? { src: item.image || CONFIG.DEFAULT_BLOG_IMAGE, srcset: '', width: item.imageWidth || 1600, height: item.imageHeight || 900 }
-        : thumbnail(item.id, exists);
+// An article episode offers its card-sized copies (measured widths) instead of the full original for a 132px tile.
+function episodeImage(item, exists, { full = false } = {}) {
+    if (!item.article) return thumbnail(item.id, exists);
+    const image = item.image || CONFIG.DEFAULT_BLOG_IMAGE;
+    const card = getCardThumbnailPath(image);
+    const srcset = card !== image ? cardSrcset(card, full) : '';
+    return { src: srcset ? card : image, srcset, article: true, width: item.imageWidth || 1600, height: item.imageHeight || 900 };
 }
 
 function renderOnAir(snapshot, exists = fs.existsSync, posts = []) {
@@ -111,7 +115,7 @@ function renderOnAir(snapshot, exists = fs.existsSync, posts = []) {
     const parts = splitEpisodeTitle(lead.title);
     const title = episodeTitle(parts);
     const copy = SERIES_COPY[parts.series.split(' ')[0].toLowerCase()] || {};
-    const image = episodeImage(lead, exists);
+    const image = episodeImage(lead, exists, { full: true });
     const watch = lead.url;
     const linkAttributes = lead.article ? '' : ' target="_blank" rel="noopener"';
     const frameOpening = lead.article
@@ -121,7 +125,8 @@ function renderOnAir(snapshot, exists = fs.existsSync, posts = []) {
         const item = splitEpisodeTitle(video.title);
         const thumb = episodeImage(video, exists);
         // Density pair, exactly as stamp-html's addDensitySrcset writes it, so the two never disagree.
-        const srcset = thumb.srcset ? ` srcset="/images/youtube/${video.id}-1x.webp 1x, ${thumb.src} 2x"` : '';
+        const srcset = thumb.article ? (thumb.srcset ? ` srcset="${esc(thumb.srcset)}" sizes="132px"` : '')
+            : thumb.srcset ? ` srcset="/images/youtube/${video.id}-1x.webp 1x, ${thumb.src} 2x"` : '';
         const url = video.url;
         // Square or portrait art (a 16:9 crop would cut its lettering) is shown whole.
         const contain = thumb.width / thumb.height < 1.3 ? ' episode__thumb--contain' : '';

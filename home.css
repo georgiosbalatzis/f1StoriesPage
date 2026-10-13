@@ -101,7 +101,7 @@
 .home-page :is(.pd-analysis, .pd-wire li, .pd-voice, .pd-archive__item) { position: relative; }
 .home-page :is(.pd-analysis__title, .pd-wire__title, .pd-voice__title, .pd-archive__title) a::after { content: ''; position: absolute; inset: 0; z-index: 2; }
 .home-page :is(.pd-analysis, .pd-voice, .pd-archive__item) figure { margin: 0; overflow: hidden; background: var(--bg-surface-alt); }
-.home-page :is(.pd-analysis, .pd-voice, .pd-archive__item) img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .65s var(--ease-editorial), filter .4s; }
+.home-page :is(.pd-analysis, .pd-voice, .pd-archive__item) img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: var(--focus, 50% 50%); transition: transform .65s var(--ease-editorial), filter .4s; }
 .home-page :is(.pd-analysis, .pd-voice):hover img { transform: scale(1.03); }
 
 /* Cover ------------------------------------------------------------------------------------------------ */
@@ -114,13 +114,25 @@
 .home-page .cover-strip { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3px; height: clamp(320px, 39vw, 600px); }
 .home-page .cover-frame { position: relative; display: block; overflow: hidden; min-width: 0; background: var(--deep-2); color: var(--on-deep); }
 .home-page .cover-frame :is(picture, img) { display: block; width: 100%; height: 100%; }
-.home-page .cover-frame img { object-fit: cover; transition: transform .6s var(--ease-editorial); }
+.home-page .cover-frame img { object-fit: cover; object-position: var(--focus, 50% 50%); transition: transform .6s var(--ease-editorial); }
 .home-page .cover-frame:hover img { transform: scale(1.03); }
 .home-page .cover-frame--lead img { object-position: var(--f1s-hero-position, center 62%); }
 .home-page .cover-frame__tag { position: absolute; left: 0; right: 0; bottom: 0; display: grid; gap: 6px; padding: 14px 16px 16px; background: var(--deep); font: 600 1.0625rem/1.22 var(--font-body); letter-spacing: -.01em; }
 .home-page .cover-frame__tag span { color: var(--signal); font: 600 .625rem/1.2 var(--font-body); letter-spacing: .14em; }
 .home-page .cover-frame:focus-visible { outline: 2px solid var(--signal); outline-offset: -4px; }
 .home-page .cover-frame:is(:hover, :focus-visible) .cover-frame__tag { text-decoration: underline var(--signal) 2px; text-underline-offset: .12em; }
+/* THE DOCUMENTARY LENS (P3D): artwork with printed type, diagrams and archival prints (data-media, from
+ * media-metadata.json) are shown whole in their frame on the ink, never cropped or zoomed; photographs crop from
+ * their recorded focal point (--focus). The AI label marks a picture documented as generated. */
+.home-page img[data-media]:not([data-media="render"]) { object-fit: contain; background: var(--bg-surface); }
+.home-page :is(.cover-frame, .tech-photo__media) img[data-media]:not([data-media="render"]) { background: var(--deep); }
+.home-page :is(a, .tech-stage):hover img[data-media]:not([data-media="render"]) { transform: none; }
+.home-page :has(> .media-credit__ai--card) { position: relative; }
+.home-page .media-credit__ai--card { position: absolute; top: 0; left: 0; z-index: 1; padding: 5px 8px; background: var(--deep); color: var(--on-deep); font: 600 .6875rem/1.2 var(--font-body); }
+.home-page .media-credit { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.home-page .media-credit__caption { flex: 1 1 100%; color: var(--on-deep); }
+.home-page .media-credit__label { font-size: .625rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+.home-page .media-credit__ai:not(.media-credit__ai--card) { padding: 1px 6px; border: 1px solid currentColor; color: var(--on-deep); font-weight: 600; }
 .home-page .cover-text { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter-home); padding-block: clamp(28px, 3.4vw, 48px) clamp(32px, 4vw, 56px); }
 .home-page .cover-main { grid-column: 1 / 9; }
 .home-page .cover-kicker { display: flex; gap: 12px; margin: 0; color: var(--on-deep-2); font: 600 .6875rem/1.3 var(--font-body); letter-spacing: .14em; }
@@ -190,14 +202,14 @@
 .home-page .tech-copy__dek { margin: 0; color: var(--on-deep-2); font-size: 1.0625rem; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .home-page .tech-photo { grid-column: 6 / 13; margin: 0; }
 .home-page .tech-photo__media { display: block; aspect-ratio: 3 / 2; overflow: hidden; background: var(--deep-2); }
-.home-page .tech-photo__media img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .65s var(--ease-editorial); }
+.home-page .tech-photo__media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: var(--focus, 50% 50%); transition: transform .65s var(--ease-editorial); }
 .home-page .tech-stage:has(a:hover) .tech-photo__media img { transform: scale(1.03); }
 /* Artwork with printed type or a diagram (`homeImage: graphic`) keeps its own proportions: nothing is cropped,
  * and the numbers sit below it, never on it. */
 .home-page .tech-stage--no-cross .tech-photo__media { aspect-ratio: auto; }
 .home-page .tech-stage--no-cross .tech-photo__media img { height: auto; }
 .home-page .tech-stage--no-cross:has(a:hover) .tech-photo__media img { transform: none; }
-.home-page .tech-photo figcaption { margin-top: 8px; color: var(--on-deep-2); font: 600 .625rem/1 var(--font-body); letter-spacing: .14em; }
+.home-page .tech-photo figcaption { margin-top: 10px; color: var(--on-deep-2); font: 400 .75rem/1.5 var(--font-body); }
 .home-page .telemetry { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter-home); margin-top: clamp(36px, 4vw, 56px); padding-top: 22px; border-top: 2px solid var(--on-deep); }
 .home-page .telemetry p { margin: 0; }
 .home-page .telemetry__module { min-width: 0; }

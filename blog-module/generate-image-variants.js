@@ -7,6 +7,7 @@
 //   node blog-module/generate-image-variants.js            # dry run preview
 //   node blog-module/generate-image-variants.js --run      # actually generate
 //   node blog-module/generate-image-variants.js --run --force  # regenerate even if exists
+//   node blog-module/generate-image-variants.js --run --cap-only  # only re-encode full AVIFs wider than 1600px
 
 const fs   = require('fs');
 const path = require('path');
@@ -17,6 +18,8 @@ const sharp = require('sharp');
 const DRY_RUN = !process.argv.includes('--run');
 const FORCE   = process.argv.includes('--force');
 const CARDS_ONLY = process.argv.includes('--cards-only');
+// Only re-encode existing full AVIFs wider than FULL_MAX_WIDTH; create nothing new.
+const CAP_ONLY = process.argv.includes('--cap-only');
 const BLOG_DIR = path.join(__dirname, 'blog-entries');
 const SM_MAX_WIDTH = 800;
 const FULL_MAX_WIDTH = 1600;
@@ -30,11 +33,13 @@ if (!isMainThread) {
     (async () => {
         const { tasks } = workerData;
         const results = [];
-        for (const { src, dest, format, maxWidth, box, quality } of tasks) {
+        for (const { src, dest, format, maxWidth, box, quality, keepXmp } of tasks) {
             try {
                 let p = sharp(src);
                 if (maxWidth) p = p.resize(maxWidth, null, { withoutEnlargement: true });
                 if (box) p = p.resize(box.width, box.height, { fit: 'outside', withoutEnlargement: true });
+                // A replaced derivative keeps the provenance record the old file carried (e.g. IPTC "trainedAlgorithmicMedia").
+                if (keepXmp) p = p.withXmp(keepXmp);
                 await p[format]({ quality }).toFile(dest);
                 results.push({ dest, ok: true });
             } catch (e) {
@@ -48,6 +53,23 @@ if (!isMainThread) {
 
 // ─── Main thread ──────────────────────────────────────────────────────────────
 const { utils } = require('./build/shared');
+
+// Existing derivatives are skipped, except a full AVIF that was never capped (written by an older tool at the
+// source's full size, up to 4,789px): it is regenerated at FULL_MAX_WIDTH. Returns the task fields, or null to skip.
+// An AVIF wider than its own WebP source holds pixels the source no longer has (it was encoded from an earlier
+// master): it is kept, never downscaled from the smaller file, and reported for the editors.
+async function staleOrMissing(v, force) {
+    if (!fs.existsSync(v.dest)) return {};
+    const fullAvif = v.format === 'avif' && v.maxWidth === FULL_MAX_WIDTH;
+    if (!force && !fullAvif) return null;
+    const meta = await sharp(v.dest).metadata().catch(() => ({}));
+    if (!force && !(meta.width > FULL_MAX_WIDTH)) return null;
+    if (!force && meta.width > ((await sharp(v.src).metadata()).width || 0)) {
+        console.warn(`  keeping ${path.relative(BLOG_DIR, v.dest)}: ${meta.width}px, wider than its source ${path.basename(v.src)} (the only high-resolution copy)`);
+        return null;
+    }
+    return meta.xmp ? { keepXmp: meta.xmp.toString('utf8') } : {};
+}
 
 async function collectImageVariantTasks({ blogDir = BLOG_DIR, cardsOnly = CARDS_ONLY, force = FORCE } = {}) {
     // The builder writes this cache before generating variants. Use its current
@@ -90,8 +112,8 @@ async function collectImageVariantTasks({ blogDir = BLOG_DIR, cardsOnly = CARDS_
             }
 
             for (const v of variants) {
-                if (!force && fs.existsSync(v.dest)) continue;   // already done
-                allTasks.push({ src, ...v });
+                const task = await staleOrMissing({ src, ...v }, force);   // null: already done
+                if (task) allTasks.push({ src, ...v, ...task });
             }
         }
 
@@ -145,8 +167,8 @@ async function collectImageVariantTasks({ blogDir = BLOG_DIR, cardsOnly = CARDS_
             ];
             for (const v of variants) {
                 if (!needed.has(path.basename(v.dest))) continue;
-                if (!force && fs.existsSync(v.dest)) continue;
-                allTasks.push({ src, ...v });
+                const task = await staleOrMissing({ src, ...v }, force);
+                if (task) allTasks.push({ src, ...v, ...task });
             }
         }
     }
@@ -155,7 +177,9 @@ async function collectImageVariantTasks({ blogDir = BLOG_DIR, cardsOnly = CARDS_
 }
 
 async function main() {
-    const { tasks: allTasks, entryCount } = await collectImageVariantTasks();
+    const collected = await collectImageVariantTasks();
+    const entryCount = collected.entryCount;
+    const allTasks = CAP_ONLY ? collected.tasks.filter(task => fs.existsSync(task.dest)) : collected.tasks;
     if (DRY_RUN) {
         console.log(`[dry-run] Would generate ${allTasks.length} image variants across ${entryCount} entries.`);
         console.log('Run with --run to execute, --run --force to regenerate all.');

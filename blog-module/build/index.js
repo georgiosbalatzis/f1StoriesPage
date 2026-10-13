@@ -10,6 +10,8 @@ const {
     getCardThumbnailPath,
     getImageDimensionsForPublicPath
 } = require('./shared');
+const { primeImageDimensions, truthfulSrcset, cardSrcset } = require('./image-sizes');
+const { mediaFor, slotOf, isContained, creditLineHtml, cardDisclosureHtml, mediaAttributes } = require('./media-meta');
 const { generateSitemap } = require('./sitemap');
 const { htmlToPlainText, extractMetadata } = require('./metadata');
 const { injectRelatedArticles } = require('./related');
@@ -20,7 +22,7 @@ const { injectAuthorsDirectory, injectHomeTeam } = require('./authors-page');
 const { featuredEpisode, isFeaturedEpisode, injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry, homeByline } = require('./home-panels');
 const {
     PUBLIC_CATEGORIES, AUTHORS, authorThumb, findAuthor, getPostTaxonomy, categoryLabel, categoryKind, authorLabel, greekUpper, formatDate, ledgerDate,
-    formatReadingTime, cardImageSrcset, CARD_SIZES, athensDay
+    formatReadingTime, CARD_SIZES, athensDay
 } = require('../taxonomy');
 const { buildPages, writeDiscoveryPages } = require('./discovery');
 
@@ -213,7 +215,7 @@ function injectEdition(indexPosts, selection = {}) {
         console.warn(`⚠️  Blog index HTML not found, Edition Index skipped: ${blogDir}`);
         return null;
     }
-    const edition = buildPages(indexPosts, { today: athensDay(), selection, deps: { storyImage, renderStoryImage } });
+    const edition = buildPages(indexPosts, { today: athensDay(), selection, deps: { storyImage, renderStoryImage, cardSrcset } });
     edition.model.warnings.forEach(warning => console.warn(`⚠️  editorial-selection.json: ${warning}; the week leads with its newest story`));
     writeDiscoveryPages(blogDir, edition);
     console.log(`Edition Index rendered: ${edition.pages.length} pages into ${blogDir}`);
@@ -253,15 +255,18 @@ function storyReadingTime(post) {
 }
 
 // Story images sit inside a link that already carries the headline, so alt stays empty.
-function renderStoryImage(post, image, { sizes, full = false, eager = false }) {
-    const srcset = cardImageSrcset(image, full);
+// The editors' media record (media-metadata.json) adds the crop's focal point, marks artwork and archival prints for
+// containment (data-media), and adds the AI label when the picture is documented as generated.
+function renderStoryImage(post, image, { sizes, full = false, eager = false, disclose = true }) {
+    const srcset = cardSrcset(image, full);
     const width = parseInt(post.thumbnailWidth, 10) || 400;
     const height = parseInt(post.thumbnailHeight, 10) || 188;
     return `<img src="${escapeHtmlAttribute(image)}"`
         + (srcset ? ` srcset="${escapeHtmlAttribute(srcset)}" sizes="${sizes}"` : '')
         + ` width="${width}" height="${height}"`
         + (eager ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"')
-        + ` decoding="async" alt="" data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`;
+        + ` decoding="async" alt=""${mediaAttributes(post.id, image)} data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`
+        + (disclose ? cardDisclosureHtml(post.id, image) : '');
 }
 
 // Homepage journal (THE PADDOCK): every story after the cover and the technical spread, newest first.
@@ -307,18 +312,20 @@ function selectPaddock(pool = []) {
 // homepage is a reference source of scripts/build/public-artifact.mjs, so every file named here is published (and
 // validate-public-artifact.mjs fails the build if one is not). `source` is the blog post: its image is the original.
 function coverFrameSources(post, source = {}) {
-    const has = name => fs.existsSync(path.join(CONFIG.BLOG_DIR, post.id, name));
+    const dir = path.join(CONFIG.BLOG_DIR, post.id);
+    const has = name => fs.existsSync(path.join(dir, name));
     const url = name => `/blog-module/blog-entries/${post.id}/${name}`;
     const width = parseInt(source.imageWidth, 10) || 0;
     const height = parseInt(source.imageHeight, 10) || 0;
-    // The original is offered at its measured width, and only when it is larger than the 800px copy.
-    const original = /\/1\.webp$/.test(source.image || '') && width > 800 ? width : 0;
+    // Every candidate at its measured width; the original only when the story's image is the 1.webp it measures.
+    const original = /\/1\.webp$/.test(source.image || '');
     const card = has('1-card.webp');
-    const webp = [card && `${url('1-card.webp')} 400w`, card && has('1-mobile.webp') && `${url('1-mobile.webp')} 800w`,
-        original && has('1.webp') && `${url('1.webp')} ${original}w`].filter(Boolean);
-    // AVIF only as a complete set for the same widths, so the two formats never disagree on what is available.
+    const split = value => (value ? value.split(', ') : []);
+    const webp = card ? split(truthfulSrcset(dir, ['1-card.webp', '1-mobile.webp'].concat(original ? ['1.webp'] : []), url)) : [];
+    // AVIF only as a complete set (the mobile copy, plus the full file when the original is offered), so the two
+    // formats never disagree on what is available.
     const avif = card && has('1-mobile.avif') && (!original || has('1.avif'))
-        ? [`${url('1-mobile.avif')} 800w`, original && `${url('1.avif')} ${original}w`].filter(Boolean) : [];
+        ? split(truthfulSrcset(dir, ['1-mobile.avif'].concat(original ? ['1.avif'] : []), url)) : [];
     return { webp, avif, width, height };
 }
 
@@ -338,10 +345,10 @@ function renderCoverFrames(frames = [], sourceOf = () => ({})) {
             + `(max-width: 1099px) ${ratio > 4 / 3 ? `calc(37.5vw * ${r})` : '50vw'}, (max-width: 1538px) calc(39vw * ${r}), ${Math.round(600 * ratio)}px`;
         const fallback = storyImage(post);
         const img = `<img src="${escapeHtmlAttribute(fallback)}" srcset="${escapeHtmlAttribute(webp.join(', '))}" sizes="${sizes}" `
-            + `width="${width || parseInt(post.thumbnailWidth, 10) || 400}" height="${height || parseInt(post.thumbnailHeight, 10) || 225}" fetchpriority="low" decoding="async" alt="" data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`;
+            + `width="${width || parseInt(post.thumbnailWidth, 10) || 400}" height="${height || parseInt(post.thumbnailHeight, 10) || 225}" fetchpriority="low" decoding="async" alt=""${mediaAttributes(post.id, fallback)} data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`;
         // AVIF copies start at 800px; phones keep the 400px card, which already fills their 150px-tall frames.
         const picture = avif.length ? `<picture><source type="image/avif" media="(min-width: 768px)" srcset="${escapeHtmlAttribute(avif.join(', '))}" sizes="${sizes}">${img}</picture>` : img;
-        return `\n        <a class="cover-frame" href="${escapeHtmlAttribute(storyUrl(post))}">${picture}`
+        return `\n        <a class="cover-frame" href="${escapeHtmlAttribute(storyUrl(post))}">${picture}${cardDisclosureHtml(post.id, fallback)}`
             + `<span class="cover-frame__tag"><span>${escapeHtmlAttribute(desk)}</span>${escapeHtmlAttribute(post.title)}</span></a>`;
     }).join('') + (frames.length ? '\n        ' : '');
 }
@@ -395,6 +402,11 @@ function renderHomeJournal({ feature = null, voices = [], archive = [], wire = [
 // picture; `graphic` (the article's `homeImage: graphic`) also shows artwork with printed type uncropped.
 function renderHomeTech(post, dek, telemetry, teamName, { graphic = false } = {}) {
     const image = storyImage(post);
+    // The picture's caption is what the editors recorded for it (caption, credit, AI label), or nothing: the team
+    // name printed as "ΕΙΚΟΝΑ / <TEAM>" read like a photo credit and was not one, so `teamName` is no longer printed.
+    const imageMeta = image ? mediaFor(post.id, slotOf(image)) : null;
+    const caption = creditLineHtml(imageMeta);
+    graphic = graphic || isContained(imageMeta);
     const url = escapeHtmlAttribute(storyUrl(post));
     const date = String(post.date || '').slice(0, 10).split('-').reverse().join('.');
     const readingTime = homeReadingTime(post);
@@ -417,8 +429,8 @@ function renderHomeTech(post, dek, telemetry, teamName, { graphic = false } = {}
                 </div>`
         + (image ? `
                 <figure class="tech-photo">
-                    <a class="tech-photo__media" href="${url}" tabindex="-1" aria-hidden="true">${renderStoryImage(post, image, { sizes: '(max-width: 1099px) 100vw, 58vw', full: true })}</a>
-                    <figcaption>ΕΙΚΟΝΑ / ${escapeHtmlAttribute(greekUpper(teamName || 'F1 Stories'))}</figcaption>
+                    <a class="tech-photo__media" href="${url}" tabindex="-1" aria-hidden="true">${renderStoryImage(post, image, { sizes: '(max-width: 1099px) 100vw, 58vw', full: true, disclose: false })}</a>${caption ? `
+                    <figcaption>${caption}</figcaption>` : ''}
                 </figure>` : '')
         + `
             </div>`
@@ -700,6 +712,9 @@ function injectHomepageHero(hero) {
         const updated = webp ? setHtmlAttribute(attributes, 'srcset', webpSet || webp) : removeHtmlAttribute(attributes, 'srcset');
         return webpSet ? setHtmlAttribute(updated, 'sizes', imageSizes) : removeHtmlAttribute(updated, 'sizes');
     });
+    // The editors' record for the cover picture: its focal point drives the lead's crop (home.css reads
+    // --f1s-hero-position), and artwork with printed type is shown whole (data-media).
+    const heroMeta = mediaFor(storyId, slotOf(image));
     html = updateElementById(html, 'hero-image', attributes => {
         let updated = setHtmlAttribute(attributes, 'src', image);
         updated = removeHtmlAttribute(updated, 'srcset');
@@ -707,8 +722,13 @@ function injectHomepageHero(hero) {
         updated = setHtmlAttribute(updated, 'width', width);
         updated = setHtmlAttribute(updated, 'height', height);
         updated = setHtmlAttribute(updated, 'sizes', imageSizes);
+        updated = heroMeta && heroMeta.type && heroMeta.type !== 'photo' ? setHtmlAttribute(updated, 'data-media', heroMeta.type) : removeHtmlAttribute(updated, 'data-media');
+        updated = heroMeta && heroMeta.focus ? setHtmlAttribute(updated, 'style', `--f1s-hero-position: ${heroMeta.focus}`) : removeHtmlAttribute(updated, 'style');
         return updated;
     });
+    const heroLabel = cardDisclosureHtml(storyId, image).replace('<span class=', '<span id="hero-ai-label" class=');
+    html = html.replace(/<span id="hero-ai-label"[^>]*>[^<]*<\/span>/, '')
+        .replace(/(<picture id="hero-picture">[\s\S]*?<\/picture>)/, `$1${heroLabel}`);
     html = updateElementById(html, 'hero-image-preload', attributes => {
         let updated = setHtmlAttribute(attributes, 'href', avif || image);
         updated = avifSet ? setHtmlAttribute(updated, 'imagesrcset', avifSet) : removeHtmlAttribute(updated, 'imagesrcset');
@@ -1053,6 +1073,10 @@ async function processBlogEntries(options = {}) {
         posts: blogPosts,
         lastUpdated
     };
+    const previousBlogData = readJsonIfExists(CONFIG.OUTPUT_JSON);
+    if (sameJsonExceptKey(previousBlogData, blogData, 'lastUpdated') && previousBlogData.lastUpdated) {
+        blogData.lastUpdated = previousBlogData.lastUpdated;
+    }
     fs.writeFileSync(CONFIG.OUTPUT_JSON, JSON.stringify(blogData, null, 2));
     console.log(`Blog data saved to ${CONFIG.OUTPUT_JSON}`);
 
@@ -1071,6 +1095,7 @@ async function processBlogEntries(options = {}) {
     // their thumbnail paths, while the generator's existence checks keep this
     // incremental for an unchanged archive.
     generateMissingImageVariants();
+    await primeImageDimensions();
     const indexPosts = await buildIndexPosts(blogPosts);
     const indexPath = path.join(CONFIG.BLOG_DIR, '..', 'blog-index-data.json');
     const compactIndexData = buildCompactIndexData(indexPosts);

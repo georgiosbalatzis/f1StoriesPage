@@ -1,4 +1,6 @@
-const { fs, path, CONFIG, utils, escapeHtmlAttribute, getImageDimensionsForPublicPath } = require('./shared');
+const { fs, path, CONFIG, utils, escapeHtmlAttribute, getImageDimensions, getImageDimensionsForPublicPath } = require('./shared');
+const { truthfulSrcset } = require('./image-sizes');
+const { mediaFor, slotOf, creditLineHtml, applyBodyMedia } = require('./media-meta');
 const { getPostTaxonomy, categoryLabel, categoryKind, authorLabel, findAuthor, authorThumb, formatReadingTime } = require('../taxonomy');
 const { readingTimeFromWords, wordsInHtml } = require('./reading-time');
 const { transformBody, renderRunningOrder, coverVariant, COVER_SIZES } = require('./race-report');
@@ -355,6 +357,43 @@ function refreshArticleTaxonomy(html, post) {
     return updated;
 }
 
+// Older published bodies declare widths their files no longer have (a 1600px file as "2048w"). Each width descriptor of
+// a story's own file is rewritten to the file's measured width; anything else is left as written. Idempotent.
+async function measureBodySrcsets(html, entryPath, id) {
+    const names = new Set();
+    for (const set of html.matchAll(/\bsrcset="([^"]+)"/g)) {
+        for (const part of set[1].split(',')) {
+            const [name, descriptor] = part.trim().split(/\s+/);
+            if (/^\d+w$/.test(descriptor || '') && /^[\w.-]+$/.test(name)) names.add(name);
+        }
+    }
+    const widths = new Map();
+    await Promise.all([...names].map(async name => {
+        const size = fs.existsSync(path.join(entryPath, name)) ? await getImageDimensions(path.join(entryPath, name)) : null;
+        if (size) widths.set(name, size.width);
+    }));
+    // A same-path editorial replacement can change the original's proportions, too.
+    const images = new Map();
+    for (const tag of html.matchAll(/<img\b[^>]*\bclass="article-content-img"[^>]*>/g)) {
+        const name = (/\ssrc="([^"]+)"/.exec(tag[0]) || [])[1];
+        if (name && /^[\w.-]+$/.test(name) && mediaFor(id, slotOf(name))?.type === 'graphic') images.set(name, await getImageDimensions(path.join(entryPath, name)));
+    }
+    html = html.replace(/<img\b[^>]*\bclass="article-content-img"[^>]*>/g, tag => {
+        const size = images.get((/\ssrc="([^"]+)"/.exec(tag) || [])[1]);
+        return size ? tag.replace(/\bwidth="\d+"/, `width="${size.width}"`).replace(/\bheight="\d+"/, `height="${size.height}"`) : tag;
+    });
+    return html.replace(/\bsrcset="([^"]+)"/g, (match, set) => {
+        const parts = set.split(',').map(part => part.trim().split(/\s+/));
+        const wrong = parts.some(([name, descriptor]) => widths.has(name) && /^\d+w$/.test(descriptor || '') && descriptor !== `${widths.get(name)}w`);
+        if (!wrong) return match;
+        // Two copies that turn out to be the same width are one candidate (the first, lighter one stays).
+        const seen = new Set();
+        return `srcset="${parts.map(([name, descriptor]) => (widths.has(name) && /^\d+w$/.test(descriptor || '') ? `${name} ${widths.get(name)}w` : [name, descriptor].filter(Boolean).join(' ')))
+            .filter(candidate => { const w = candidate.split(' ')[1]; if (!w || !w.endsWith('w')) return true; if (seen.has(w)) return false; seen.add(w); return true; })
+            .join(', ')}"`;
+    });
+}
+
 async function renderArticleHtml(postData, entryPath, folderName = postData.id || path.basename(entryPath)) {
     const taxonomy = getPostTaxonomy(postData);
     const editorialProfile = getEditorialProfile(taxonomy.category);
@@ -366,27 +405,46 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
     const heroBase = path.parse(bgImageFilename).name;
     const mobileWebp = `${heroBase}-mobile.webp`;
     const mobileAvif = `${heroBase}-mobile.avif`;
-    const headerImageDimensions = postData.backgroundImageWidth && postData.backgroundImageHeight
+    const replacementDimensions = mediaFor(folderName, slotOf(bgImageFilename))?.type === 'graphic'
+        ? await getImageDimensionsForPublicPath(headerImage) : null;
+    const headerImageDimensions = replacementDimensions || (postData.backgroundImageWidth && postData.backgroundImageHeight
         ? { width: postData.backgroundImageWidth, height: postData.backgroundImageHeight }
-        : await getImageDimensionsForPublicPath(headerImage);
+        : await getImageDimensionsForPublicPath(headerImage));
     const coverWidth = headerImageDimensions && headerImageDimensions.width;
     const cover = coverVariant(coverWidth, headerImageDimensions && headerImageDimensions.height);
     const heroSizes = COVER_SIZES[cover];
-    const heroAvifSrcset = fs.existsSync(path.join(entryPath, heroAvifFile))
-        ? `${fs.existsSync(path.join(entryPath, mobileAvif)) ? `${encodePathSegment(mobileAvif)} 800w, ` : ''}${encodePathSegment(heroAvifFile)} 1600w`
+    // Width descriptors are the files' measured widths (a small original's "mobile" copy is not 800px, and an
+    // older full AVIF can be wider than 1600px), so the browser picks from what really exists.
+    const measured = new Map();
+    await Promise.all([mobileAvif, heroAvifFile, mobileWebp, bgImageFilename].map(async name => {
+        const file = path.join(entryPath, name);
+        if (fs.existsSync(file)) measured.set(file, await getImageDimensions(file));
+    }));
+    const dimensionsOf = file => measured.get(file) || null;
+    const heroAvifSrcset = measured.get(path.join(entryPath, heroAvifFile))
+        ? truthfulSrcset(entryPath, [mobileAvif, heroAvifFile], encodePathSegment, dimensionsOf)
         : '';
     const heroAvifSource = heroAvifSrcset
         ? `<source type="image/avif" srcset="${heroAvifSrcset}" sizes="${heroSizes}">`
         : '';
-    const heroWebpSrcset = fs.existsSync(path.join(entryPath, mobileWebp))
-        ? `${encodePathSegment(mobileWebp)} 800w, ${encodePathSegment(bgImageFilename)} 1600w`
-        : encodePathSegment(bgImageFilename);
+    const heroWebpSrcset = truthfulSrcset(entryPath, [mobileWebp, bgImageFilename], encodePathSegment, dimensionsOf)
+        || encodePathSegment(bgImageFilename);
+    // The editors' record for the cover file (media-metadata.json): presentation type, focal point, caption/credit
+    // line and verified alt. Nothing is printed or changed without an entry.
+    const coverMeta = headerImage.startsWith('/blog-module/blog-entries/') ? mediaFor(folderName, slotOf(bgImageFilename)) : null;
+    const coverStyle = [
+        coverWidth && cover !== 'split' ? `--cover-${cover === 'bleed' ? 'max' : 'w'}: ${coverWidth}px` : '',
+        coverMeta && coverMeta.focus ? `--focus: ${coverMeta.focus}` : ''
+    ].filter(Boolean).join('; ');
+    const coverLine = creditLineHtml(coverMeta);
     // Preload the candidate the <picture> will actually pick: AVIF when it has an
     // AVIF source (browsers without AVIF skip the typed preload), otherwise WebP.
+    // The href is the widest candidate the srcset really lists (a small original's copies collapse to one file).
+    const widest = set => set.split(', ').pop().split(' ')[0];
     const heroPreload = heroAvifSrcset
-        ? `<link rel="preload" as="image" type="image/avif" href="${escapeHtmlAttribute(encodePathSegment(heroAvifFile))}" imagesrcset="${escapeHtmlAttribute(heroAvifSrcset)}" imagesizes="${heroSizes}" fetchpriority="high">`
-        : `<link rel="preload" as="image" href="${escapeHtmlAttribute(encodePathSegment(bgImageFilename))}" imagesrcset="${escapeHtmlAttribute(heroWebpSrcset)}" imagesizes="${heroSizes}" fetchpriority="high">`;
-    const body = transformBody(postData.content || '');
+        ? `<link rel="preload" as="image" type="image/avif" href="${escapeHtmlAttribute(widest(heroAvifSrcset))}" imagesrcset="${escapeHtmlAttribute(heroAvifSrcset)}" imagesizes="${heroSizes}" fetchpriority="high">`
+        : `<link rel="preload" as="image" href="${escapeHtmlAttribute(widest(heroWebpSrcset))}" imagesrcset="${escapeHtmlAttribute(heroWebpSrcset)}" imagesizes="${heroSizes}" fetchpriority="high">`;
+    const body = transformBody(await measureBodySrcsets(applyBodyMedia(postData.content || '', folderName), entryPath, folderName));
     const badge = readingBadgeText(postData);
     const minutes = parseInt(badge, 10) || 1;
     const titleText = String(postData.title || '');
@@ -436,7 +494,11 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
         ARTICLE_COVER_SIZES: heroSizes,
         // The photograph's own width: a bleed never stretches past it on very wide screens, and an inset
         // reserves its box before the file arrives (no layout shift).
-        ARTICLE_COVER_STYLE: coverWidth && cover !== 'split' ? ` style="--cover-${cover === 'bleed' ? 'max' : 'w'}: ${coverWidth}px"` : '',
+        // A graphic, diagram or archival print is marked so the cover shows it whole instead of cropping it.
+        ARTICLE_COVER_STYLE: (coverMeta && coverMeta.type && coverMeta.type !== 'photo' ? ` data-media="${coverMeta.type}"` : '')
+            + (coverStyle ? ` style="${coverStyle}"` : ''),
+        ARTICLE_COVER_CAPTION: coverLine ? `<figcaption class="rr-cover__caption">${coverLine}</figcaption>` : '',
+        ARTICLE_COVER_ALT: escapeHtmlAttribute(coverMeta && coverMeta.alt ? coverMeta.alt : postData.title),
         // Long titles step down a size; a title that ends in its own punctuation gets no signal full stop.
         ARTICLE_TITLE_CLASS: titleText.length > 64 ? 'rr-title rr-title--long' : 'rr-title',
         ARTICLE_TITLE_PERIOD: /[.!?;…»"”)]$/.test(titleText.trim()) ? '' : '<span class="rr-period" aria-hidden="true">.</span>',

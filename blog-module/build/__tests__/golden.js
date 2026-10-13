@@ -5,6 +5,7 @@ const { execFileSync } = require('child_process');
 const { processBlogEntry } = require('../worker');
 const { classifyEntry } = require('../index');
 const { CONFIG } = require('../shared');
+const { primeImageDimensions } = require('../image-sizes');
 const { convertTxtToHtml } = require('../parse-txt');
 const { createResponsiveTableFromCSV, enhancedExtractCSVTags } = require('../csv-to-table');
 const { injectRelatedArticles } = require('../related');
@@ -258,6 +259,7 @@ async function updateGoldenSnapshots() {
 
     await withGoldenWorkspace(async entriesDir => {
         const goldenPosts = await buildGoldenPostGraph(entriesDir);
+        await primeImageDimensions(entriesDir);
         await injectRelatedArticles(goldenPosts);
         injectPrevNextLinks(goldenPosts);
 
@@ -307,6 +309,7 @@ async function verifyGoldenSnapshots() {
 
     await withGoldenWorkspace(async entriesDir => {
         const goldenPosts = await buildGoldenPostGraph(entriesDir);
+        await primeImageDimensions(entriesDir);
         await injectRelatedArticles(goldenPosts);
         injectPrevNextLinks(goldenPosts);
 

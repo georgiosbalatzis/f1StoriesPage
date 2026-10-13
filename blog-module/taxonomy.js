@@ -197,10 +197,17 @@
     function isLedgerPicture(index) {
         return index >= JOURNAL_LAYOUT.pictureAt && (index - JOURNAL_LAYOUT.pictureAt) % JOURNAL_LAYOUT.pictureEvery === 0;
     }
-    function cardImageSrcset(url, includeFull) {
+    function cardImageSrcset(url, includeFull, dimensions) {
         const match = /^(.*)-card\.webp$/.exec(String(url || ''));
-        if (!match) return '';
-        return `${match[1]}-card.webp 400w, ${match[1]}-mobile.webp 800w${includeFull ? `, ${match[1]}.webp 1600w` : ''}`;
+        if (!match || !dimensions) return '';
+        const candidates = [`${match[1]}-card.webp`, `${match[1]}-mobile.webp`].concat(includeFull ? [`${match[1]}.webp`] : []);
+        let lastWidth = 0;
+        return candidates.filter(candidate => {
+            const width = dimensions[candidate];
+            if (!Number.isInteger(width) || width <= lastWidth) return false;
+            lastWidth = width;
+            return true;
+        }).map(candidate => `${candidate} ${dimensions[candidate]}w`).join(', ');
     }
 
     // The Edition Index (archive discovery): layout and calendar rules shared by the build (static section and

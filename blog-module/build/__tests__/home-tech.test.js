@@ -8,6 +8,8 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
+// The homepage renderers read image sizes measured once per build (image-sizes.primeImageDimensions).
+test.before(() => require('../image-sizes').primeImageDimensions());
 const { selectHomeStories, selectPaddock, renderHomeJournal, renderHomeTech, injectHomeJournal } = require('../index');
 const { processBlogEntry } = require('../worker');
 const { CONFIG } = require('../shared');
