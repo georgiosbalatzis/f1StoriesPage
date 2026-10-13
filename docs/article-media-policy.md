@@ -136,3 +136,27 @@ measured width (`srcset` widths are never nominal).
 `npm run qa:media` checks the completed `dist/` artifact, including final optimizer widths, viewer originals, retained destinations and verified AI markers. Run `npm run build:public` first. `--root=.` checks generated source pages for the content-only CI path. Missing prerequisites fail; verification never fetches media from the network. `verify`, quality CI and Pages artifact preparation run the gate after their build.
 
 An AI disclosure must remain visible in the image viewer as well as prominent editorial artwork. Source attribution, copyright ownership and usage permission are separate facts: an embedded agency credit or CDN URL does not establish permission. Suspected images stay in the private editorial decision queue until evidence supports a public label.
+
+### P3D public-release conditions (2026-10-13)
+
+The R6-approved remediation and upstream article integration may be updated on
+the non-production `ultrareview` branch. Public deployment still requires:
+
+- Owner/editor decisions on these ten existing assets under
+  `blog-module/blog-entries/`: `20260922W/2.webp`, `20260525-2W/2.webp`,
+  `20260430W/2.webp`, `20250905W/2.webp`, `20250618G/2.webp`,
+  `20260722/1.webp`, `20250328G/5.webp`, `20261007F/1.webp`,
+  `20250412G/7.webp`, and `20260926D/1.webp`. Agency/illustration permissions,
+  event context, and the parody's origin remain unresolved.
+- Source and consent confirmation for `20261002W/4.webp`, which depicts an
+  identifiable child. The archive's remaining rights/authenticity queue stays
+  open, including `20250409G/1.webp`, the underlying photo in the
+  `20260508W/4.webp` screenshot, and third-party media usage terms.
+- A valid Lighthouse run and a physical-device spot check; neither has passed.
+- After an authorized deployment, refresh social previews for `20250409G`,
+  `20260817J`, and `20260930G`.
+
+The nine previously documented performance-budget failures remain accepted
+legacy exceptions; their budgets are unchanged. Recovery originals and audit
+evidence stay local and outside the production commit and public artifact.
+Historical originals already in Git remain retrievable from repository history.
