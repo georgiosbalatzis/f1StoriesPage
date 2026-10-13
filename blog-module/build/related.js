@@ -1,5 +1,5 @@
 const { fs, path, CONFIG, escapeHtmlAttribute, getCardThumbnailPath, getImageDimensionsForPublicPath } = require('./shared');
-const { getPostTaxonomy, authorLabel, formatDate, formatReadingTime, cardImageSrcset, CARD_SIZES } = require('../taxonomy');
+const { getPostTaxonomy, authorLabel, formatDate, formatReadingTime, cardImageSrcset } = require('../taxonomy');
 
 function scoreRelatedPosts(blogPosts, post, index) {
     const taxonomy = getPostTaxonomy(post);
@@ -33,91 +33,49 @@ function scoreRelatedPosts(blogPosts, post, index) {
     return relatedPosts;
 }
 
+// NEXT UP. (the article's Race Report ending): the best match leads with a large photograph,
+// the others follow as a short list. Titles are the links' text, so the pictures carry alt="".
 async function buildRelatedPostsHtml(relatedPosts) {
-    const icon = name => `<svg class="icon" aria-hidden="true"><use href="#${name}"/></svg>`;
-    const cards = await Promise.all(relatedPosts.map(async related => {
+    const items = await Promise.all(relatedPosts.map(async (related, index) => {
+        const lead = index === 0;
         const relatedImage = getCardThumbnailPath(related.image);
         const relatedImagePath = relatedImage.substring(relatedImage.lastIndexOf('/') + 1);
-        const relDateStr = formatDate(related.date);
-        const relatedTitle = escapeHtmlAttribute(related.title);
-        const relatedSrcset = escapeHtmlAttribute(cardImageSrcset(`/blog-module/blog-entries/${related.id}/${relatedImagePath}`));
-        const relatedAuthor = escapeHtmlAttribute(authorLabel(related.author));
-        const relatedReadTime = escapeHtmlAttribute(formatReadingTime(related.readingTime));
+        const srcset = escapeHtmlAttribute(cardImageSrcset(`/blog-module/blog-entries/${related.id}/${relatedImagePath}`, lead));
         const imageDimensions = await getImageDimensionsForPublicPath(relatedImage);
         const hasImage = Boolean(relatedImage && relatedImage !== CONFIG.DEFAULT_BLOG_IMAGE && imageDimensions);
-        const widthAttr = imageDimensions && imageDimensions.width ? ` width="${imageDimensions.width}"` : '';
-        const heightAttr = imageDimensions && imageDimensions.height ? ` height="${imageDimensions.height}"` : '';
-        const hoverMeta = relatedReadTime
-            ? `<span class="related-card-hover-meta">${icon('fa-clock')} ${relatedReadTime}</span>`
+        const size = imageDimensions ? ` width="${imageDimensions.width}" height="${imageDimensions.height}"` : '';
+        const image = hasImage
+            ? `<img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}"${srcset ? ` srcset="${srcset}" sizes="${lead ? '(max-width: 1099px) 100vw, 56vw' : '140px'}"` : ''} alt="" loading="lazy" decoding="async"${size} data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`
             : '';
-        const hover = `<div class="related-card-hover"><span class="related-card-hover-label">Περισσότερα</span>${hoverMeta ? `\n                                ${hoverMeta}` : ''}</div>`;
-
-        const mediaHtml = hasImage ? `
-                        <div class="related-card-media">
-                            <img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}"${relatedSrcset ? `
-                                 srcset="${relatedSrcset}" sizes="${CARD_SIZES.related}"` : ''}
-                                 alt="${relatedTitle}"
-                                 loading="lazy"
-                                 decoding="async"${widthAttr}${heightAttr}
-                                 data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">
-                            ${hover}
-                        </div>` : `
-                        <div class="related-card-media related-card-media--placeholder" aria-hidden="true">
-                            <span class="related-card-placeholder">F1 Stories</span>
-                            ${hover}
-                        </div>`;
-
-        return `
-            <div class="col-md-4 mb-4">
-                <a href="${related.url}" class="related-card-link">
-                    <div class="related-article-card${hasImage ? '' : ' related-article-card--no-image'}">
-                        ${mediaHtml}
-                        <div class="card-body">
-                            <div class="related-date-badge">${icon('fa-calendar-alt')} ${relDateStr}</div>
-                            <h3>${relatedTitle}</h3>
-                            <div class="related-card-footer">
-                                <span class="related-card-read">Διάβασε ${icon('fa-arrow-right')}</span>
-                                <span class="related-card-author">${relatedAuthor}</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>`;
+        const readTime = formatReadingTime(related.readingTime);
+        const meta = `<span class="rr-next__meta">${escapeHtmlAttribute(formatDate(related.date))}${readTime ? ` · ${escapeHtmlAttribute(readTime)}` : ''}</span>`;
+        const title = escapeHtmlAttribute(related.title);
+        const author = `<span class="rr-next__by">${escapeHtmlAttribute(authorLabel(related.author))}</span>`;
+        return lead
+            ? `<a href="${related.url}" class="rr-next__lead">${image}${meta}<span class="rr-next__title">${title}</span>${author}</a>`
+            : `<li><a href="${related.url}"${hasImage ? '' : ' class="rr-next__noimg"'}>${image}<span>${meta}<span class="rr-next__small">${title}</span>${author}</span></a></li>`;
     }));
-    return cards.join('');
+    const [lead, ...rest] = items;
+    if (!lead) return '';
+    return `${lead}\n            <ol class="rr-next__list">\n                ${rest.join('\n                ')}\n            </ol>`;
 }
 
-function renderRelatedArticlesSection(relatedPostsHtml) {
-    const cardsHtml = relatedPostsHtml ? relatedPostsHtml.replace(/^\n/, '') : '';
-    return `        <div class="row article-related-section">
-            <div class="col-12 related-section-head"><span class="related-section-eyebrow">Επόμενη ανάγνωση</span><h2 class="related-section-title">Σχετικά άρθρα</h2></div>${cardsHtml ? `\n\n${cardsHtml}` : ''}
-        </div>`;
-}
-
+// Every article page is rendered from the template on each build, so the RELATED_ARTICLES
+// slot is always fresh; pages without one (no article body) are left as they are.
 async function injectRelatedArticles(blogPosts) {
     for (const [index, post] of blogPosts.entries()) {
         const postHtmlPath = path.join(CONFIG.BLOG_DIR, post.id, 'article.html');
         if (!fs.existsSync(postHtmlPath)) continue;
+        const postHtml = fs.readFileSync(postHtmlPath, 'utf8');
+        if (!/^[ \t]*RELATED_ARTICLES[ \t]*$/m.test(postHtml)) continue;
 
-        const relatedPosts = scoreRelatedPosts(blogPosts, post, index);
-        const relatedPostsHtml = await buildRelatedPostsHtml(relatedPosts);
-        let postHtml = fs.readFileSync(postHtmlPath, 'utf8');
-        const originalHtml = postHtml;
-        if (postHtml.includes('RELATED_ARTICLES')) {
-            postHtml = postHtml.replace(/^[ \t]*RELATED_ARTICLES[ \t]*$/gm, relatedPostsHtml || '');
-        } else {
-            postHtml = postHtml.replace(
-                /        <div class="row(?: mt-5| article-related-section)">\n\s*<div class="col-12(?: related-section-head)?">[\s\S]*?related-section-title">(?:Related Articles|Σχετικά άρθρα)<\/h2><\/div>[\s\S]*?\n        <\/div>(?=\n    <\/div>\n<\/main>)/,
-                renderRelatedArticlesSection(relatedPostsHtml)
-            );
-        }
-        if (postHtml !== originalHtml) fs.writeFileSync(postHtmlPath, postHtml);
+        const relatedPostsHtml = await buildRelatedPostsHtml(scoreRelatedPosts(blogPosts, post, index));
+        fs.writeFileSync(postHtmlPath, postHtml.replace(/^[ \t]*RELATED_ARTICLES[ \t]*$/gm, relatedPostsHtml ? `            ${relatedPostsHtml}` : ''));
     }
 }
 
 module.exports = {
     scoreRelatedPosts,
     buildRelatedPostsHtml,
-    renderRelatedArticlesSection,
     injectRelatedArticles
 };

@@ -12,8 +12,9 @@ function readingTimeFromWords(wordCount) {
     return `${Math.max(1, Math.ceil((Number(wordCount) || 0) / WORDS_PER_MINUTE))} min`;
 }
 
+// A data band's header (tool name, links) is page furniture, not reading (race-report.js).
 function wordsInHtml(html) {
-    return countWords(String(html || '').replace(/<[^>]*>/g, ''));
+    return countWords(String(html || '').replace(/<header class="rr-data__head">[\s\S]*?<\/header>/g, '').replace(/<[^>]*>/g, ''));
 }
 
 // Inner HTML of the article body in a rendered page (nested divs are balanced); '' when the page has none.

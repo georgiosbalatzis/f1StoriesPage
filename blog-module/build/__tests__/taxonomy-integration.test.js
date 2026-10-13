@@ -438,7 +438,8 @@ test('the homepage team gives every writer a spotlight card with their three new
 
 test('the article author card signs with the writer and degrades for an unknown name', () => {
     const card = renderAuthorCard({ author: 'Georgios Balatzis' });
-    assert.match(card, /class="author-card" data-author-slug="georgios-balatzis"/);
+    assert.match(card, /class="rr-pitwall__author" data-author-slug="georgios-balatzis"/);
+    assert.match(card, /<h2 class="rr-pitwall__name" id="author-card-name">/, 'the pit wall is labelled by the writer');
     assert.match(card, /Γιώργος Μπαλατζής/);
     assert.match(card, /Τεχνική ανάλυση και αγωνιστικός ρυθμός/);
     assert.match(card, /index\.html\?author=georgios-balatzis">Όλα τα άρθρα του Γιώργου/);
@@ -448,6 +449,7 @@ test('the article author card signs with the writer and degrades for an unknown 
     assert.doesNotMatch(team, /Instagram/);
     const guest = renderAuthorCard({ author: 'Guest Writer' });
     assert.doesNotMatch(guest, /data-author-slug|<img|Instagram/);
+    assert.match(guest, /id="author-card-name">Η ομάδα του F1 Stories</);
 });
 
 test('the author card migration replaces the old box once and stays idempotent', () => {

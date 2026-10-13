@@ -87,54 +87,72 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
         });
     }
 
-    function setupArticleMiniBar() {
-        const miniBar = $('#article-mini-bar');
-        if (!miniBar) return;
-
-        const header = $('.article-header');
-        const shareButton = $('#article-mini-share');
-        const titleEl = $('.article-title');
-        const miniTitle = miniBar.querySelector('.article-mini-bar__title');
-        const getShortTitle = text => {
-            const clean = String(text || '').replace(/\s+/g, ' ').trim();
-            if (!clean) return '';
-            const split = clean.split(/[:;·–—-]/).map(part => part.trim()).filter(Boolean);
-            const candidate = split[0] && split[0].length >= 12 ? split[0] : clean;
-            return candidate.length > 64 ? `${candidate.slice(0, 61).trim()}…` : candidate;
-        };
-        const triggerShare = () => {
-            const webShare = $('#web-share-btn');
-            const copyLink = $('#copy-link-btn');
-            if (webShare && typeof navigator.share === 'function') {
-                webShare.click();
-                return;
-            }
-            if (copyLink) copyLink.click();
-        };
-
-        if (shareButton) shareButton.addEventListener('click', triggerShare);
-
+    // THE RACE REPORT: the sector bar slides in under the masthead once the cover has gone and leaves at the
+    // pit wall. It, the running order and the contents list follow the section being read; the meter is the
+    // share of the body that has passed the reading line. Sections and segments are written at build time.
+    function setupRaceReport() {
+        const bar = $('#rr-sectorbar');
+        const cover = $('[data-cover]');
+        if (!bar || !cover || !articleContent) return;
+        const end = $('[data-article-end]');
+        const meter = bar.querySelector('[role="progressbar"]');
+        const current = bar.querySelector('[data-current]');
+        const segments = bar.querySelectorAll('.rr-sectorbar__segs li');
+        const title = current ? current.textContent : '';
+        // The build's navigable sections (race-report.js): headings with words of their own and no media.
+        const sections = Array.from(articleContent.querySelectorAll(':scope > h2[id], :scope > h3[id]'))
+            .filter(heading => heading.textContent.trim() && !heading.querySelector('figure, img, picture, iframe, video'));
+        const links = Array.from($$('.rr-ro a'));
         let shown = null;
+        let active = -2;
+        let percent = -1;
         let frame = 0;
+
         const update = () => {
             frame = 0;
-            if (!header) return;
-            const show = window.innerWidth <= 767 && header.getBoundingClientRect().bottom < 82;
-            if (show === shown) return;
-            shown = show;
-            miniBar.classList.toggle('is-visible', show);
-            miniBar.setAttribute('aria-hidden', String(!show));
-            miniBar.inert = !show; // a hidden bar's share button must not take focus
+            const show = cover.getBoundingClientRect().bottom < 90 && !(end && end.getBoundingClientRect().top < window.innerHeight * 0.6);
+            if (show !== shown) {
+                shown = show;
+                bar.classList.toggle('is-visible', show);
+                bar.setAttribute('aria-hidden', String(!show));
+                bar.inert = !show; // a hidden bar's share button must not take focus
+                document.body.classList.toggle('rr-bar-on', show);
+            }
+            const body = articleContent.getBoundingClientRect();
+            const read = Math.min(1, Math.max(0, (window.innerHeight * 0.35 - body.top) / Math.max(1, body.height)));
+            bar.style.setProperty('--read', read.toFixed(4));
+            if (meter && Math.round(read * 100) !== percent) {
+                percent = Math.round(read * 100);
+                meter.setAttribute('aria-valuenow', String(percent));
+            }
+            let now = -1;
+            sections.forEach((section, index) => { if (section.getBoundingClientRect().top < window.innerHeight * 0.3) now = index; });
+            if (now === active) return;
+            active = now;
+            if (current) current.textContent = now >= 0 ? sections[now].textContent.replace(/\s+/g, ' ').trim() : title;
+            segments.forEach((segment, index) => { segment.className = index < now ? 'is-done' : index === now ? 'is-now' : ''; });
+            const href = now >= 0 ? `#${sections[now].id}` : '';
+            links.forEach(link => {
+                if (link.getAttribute('href') === href) link.setAttribute('aria-current', 'location');
+                else link.removeAttribute('aria-current');
+            });
         };
         const schedule = () => { frame = frame || requestAnimationFrame(update); };
-
         update();
         window.addEventListener('scroll', schedule, { passive: true });
         window.addEventListener('resize', schedule);
 
-        if (titleEl && miniTitle) {
-            miniTitle.textContent = getShortTitle(titleEl.textContent);
-        }
+        // The bar's share button uses the native sheet where there is one, otherwise copies the link.
+        const share = $('#rr-sectorbar-share');
+        if (share) share.addEventListener('click', () => {
+            const target = typeof navigator.share === 'function' ? $('#web-share-btn') : $('#copy-link-btn');
+            if (target) target.click();
+        });
+        // Choosing a section in the phone contents list closes it.
+        $$('.rr-contents a').forEach(link => link.addEventListener('click', () => {
+            const details = link.closest('details');
+            if (details) details.open = false;
+        }));
     }
 
     function loadScriptOnce(src, attrs = {}) {
@@ -300,86 +318,6 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
         });
     }
 
-    function buildTableOfContents() {
-        if (!articleContent) return;
-        const headings = articleContent.querySelectorAll('h2, h3');
-        if (headings.length < 3) return;
-
-        headings.forEach((h, i) => { if (!h.id) h.id = 'section-' + (i + 1); });
-
-        function createIcon(iconId, className) {
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('class', className || 'icon');
-            svg.setAttribute('aria-hidden', 'true');
-            const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-            use.setAttribute('href', '#' + iconId);
-            svg.appendChild(use);
-            return svg;
-        }
-
-        const tocEl = document.createElement('nav');
-        tocEl.className = 'article-toc';
-        const toggle = document.createElement('button');
-        toggle.className = 'toc-toggle';
-        toggle.id = 'toc-toggle';
-        toggle.type = 'button';
-        toggle.setAttribute('aria-controls', 'toc-body');
-        toggle.setAttribute('aria-expanded', 'false');
-        const label = document.createElement('span');
-        label.textContent = 'Περιεχόμενα';
-        toggle.append(createIcon('fa-list-ul'), label, createIcon('fa-chevron-down', 'icon toc-chevron'));
-
-        const body = document.createElement('div');
-        body.className = 'toc-body';
-        body.id = 'toc-body';
-        headings.forEach(h => {
-            const link = document.createElement('a');
-            link.setAttribute('href', '#' + h.id);
-            link.className = h.tagName === 'H3' ? 'toc-item toc-sub' : 'toc-item';
-            link.textContent = h.textContent.trim();
-            body.appendChild(link);
-        });
-        tocEl.append(toggle, body);
-
-        articleContent.parentNode.insertBefore(tocEl, articleContent);
-
-        const tocToggle = toggle;
-        const tocBody = body;
-        if (tocToggle && tocBody) {
-            tocToggle.addEventListener('click', () => {
-                tocBody.classList.toggle('open');
-                tocToggle.classList.toggle('open');
-                tocToggle.setAttribute('aria-expanded', String(tocBody.classList.contains('open')));
-            });
-        }
-
-        tocEl.querySelectorAll('.toc-item').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const target = document.querySelector(link.getAttribute('href'));
-                if (target) {
-                    const offset = 80;
-                    const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
-                    window.scrollTo({ top, behavior: 'smooth' });
-                }
-            });
-        });
-
-        const tocLinks = tocEl.querySelectorAll('.toc-item');
-        let activeHeadingId = '';
-
-        const headingObserver = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) activeHeadingId = entry.target.id;
-            });
-            tocLinks.forEach(link => {
-                link.classList.toggle('active', link.getAttribute('href') === '#' + activeHeadingId);
-            });
-        }, { rootMargin: '-10% 0px -80% 0px', threshold: 0 });
-
-        headings.forEach(h => headingObserver.observe(h));
-    }
-
     function setupResponsiveTables() {
         if (!articleContent) return;
 
@@ -438,6 +376,19 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
             const prevBtn = carousel.querySelector('.gallery-carousel-prev');
             const nextBtn = carousel.querySelector('.gallery-carousel-next');
             const counter = carousel.querySelector('.gallery-carousel-counter');
+
+            // Race Report articles show the archive as a filmstrip band (CSS hides the carousel controls):
+            // every frame is visible and the strip scrolls sideways, by keyboard too.
+            const strip = carousel.closest('.rr-body') && carousel.querySelector('.gallery-carousel-slides');
+            if (strip) {
+                carousel.removeAttribute('aria-roledescription');
+                if (slides.length > 1) {
+                    strip.tabIndex = 0;
+                    strip.setAttribute('role', 'group');
+                    strip.setAttribute('aria-label', `${slides.length} φωτογραφίες, οριζόντια κύλιση`);
+                }
+                return;
+            }
 
             if (slides.length <= 1) {
                 carousel.querySelectorAll('.gallery-carousel-prev, .gallery-carousel-next, .gallery-carousel-counter, .gallery-carousel-thumbs').forEach(function (control) { control.remove(); });
@@ -624,11 +575,12 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
 
         const headerImage = $('.article-header-img');
         if (headerImage) {
-            const header = headerImage.closest('.article-header');
-            const picture = headerImage.closest('picture');
+            // Race Report cover: the figure is the control (its <picture> is display: contents and cannot take focus).
+            const header = headerImage.closest('.article-header, .rr-cover__media');
+            const picture = headerImage.closest('.rr-cover__media') || headerImage.closest('picture');
             picture.tabIndex = 0;
             picture.setAttribute('role', 'button');
-            picture.setAttribute('aria-label', 'Open article image');
+            picture.setAttribute('aria-label', 'Άνοιγμα φωτογραφίας εξωφύλλου');
             header.addEventListener('click', e => {
                 if (e.target.closest('a, button, .article-title, .article-edition, .article-header-byline, .article-meta')) return;
                 openImage(headerImage, e);
@@ -683,7 +635,7 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
 
     setupImageFallbacks();
     updateShareLinks();
-    setupArticleMiniBar();
+    setupRaceReport();
     if (embedAdapters.setupBetCastFrameBridge) {
         ['setupBetCastFrameBridge', 'setupStandingsFrameBridge', 'setupTelemetryFrameBridge', 'setupBetCastWidgets', 'setupTelemetryFigures']
             .forEach(name => embedAdapters[name](articleContent, document, window));
@@ -691,7 +643,6 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
         console.warn('article-embeds.js is missing: managed embeds will not resize or follow the theme.');
     }
     markAuthoredSectionNumbers();
-    buildTableOfContents();
     setupResponsiveTables();
     setupNavigation();
     setupYouTubeFacades();

@@ -169,7 +169,9 @@ const FONT_PRELOADS = {
         'assets/fonts/barlow-condensed-700.woff2',
         'assets/fonts/ibm-plex-sans-400-600-greek.woff2'
     ],
+    // The Race Report cover sets its edition bar and timing numerals in Barlow Condensed, as the homepage does.
     'blog-module/blog/template.html': [
+        'assets/fonts/barlow-condensed-700.woff2',
         'assets/fonts/ibm-plex-sans-400-600-greek.woff2'
     ],
     'generate.html': [
@@ -740,6 +742,8 @@ function ensureArticleEmbedsScript(html, embedsInfo) {
 
 function ensureArticleRailAssets(html, railCssInfo, railJsInfo) {
     let result = String(html || '');
+    // Race Report pages (P3B) have no side rail; only older page shapes still carry one.
+    if (!/\bdata-rail-related\b/.test(result)) return result;
 
     if (railCssInfo && railCssInfo.min && railCssInfo.hash && !/\/blog-module\/blog\/article-rail(?:\.min)?\.css(?:\?v=[a-f0-9]+)?/i.test(result)) {
         const railCssHref = `/${railCssInfo.min}?v=${railCssInfo.hash}`;

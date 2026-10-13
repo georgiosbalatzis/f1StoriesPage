@@ -54,14 +54,14 @@
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=673c392e">
     <!-- f1s:fonts-preload:begin -->
+    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/barlow-condensed-700.woff2?v=e3e520cb" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
     <link rel="stylesheet" href="/styles.min.css?v=73f302cc">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=5c33bdf2">
-    <link rel="stylesheet" href="/blog-module/blog/article-rail.min.css?v=45080fa7">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=187f9b13">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=38d47ab9">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=d9b8eddd">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=e4fd97c9">
 
     <!-- Preload hero image for LCP -->
     ARTICLE_HERO_PRELOAD
@@ -144,11 +144,6 @@
 <div class="background"></div>
 <div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
 
-<!-- Reading Progress Bar -->
-<div class="reading-progress-track" aria-hidden="true">
-    <div class="reading-progress-fill" id="reading-progress"></div>
-</div>
-
 <!-- Theme Toggle -->
 <button class="theme-toggle-btn" id="theme-toggle" aria-label="Εναλλαγή φωτεινού ή σκοτεινού θέματος">
     <svg class="icon icon-sun" aria-hidden="true"><use href="#fa-sun"/></svg>
@@ -205,112 +200,79 @@
 </header>
 <!-- @include:end partials/nav.html -->
 
-<div class="article-mini-bar" id="article-mini-bar" aria-hidden="true" inert data-article-kind="ARTICLE_EDITORIAL_KIND">
-    <div class="article-mini-bar__text">
-        <span class="article-mini-bar__category">ARTICLE_CATEGORY_TEXT</span>
-        <span class="article-mini-bar__title">ARTICLE_TITLE_TEXT</span>
-    </div>
-    <button class="article-mini-bar__share" id="article-mini-share" type="button" aria-label="Κοινοποίηση άρθρου">
-        <svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg>
-    </button>
-</div>
-
-<!-- Article -->
-<main id="main" class="article-page-wrapper">
-    <div class="container article-page-shell">
-        <article class="article-container article-container--ARTICLE_EDITORIAL_KIND" data-article-kind="ARTICLE_EDITORIAL_KIND">
-            <div class="article-header" data-article-dossier="ARTICLE_EDITORIAL_LABEL">
-                <picture>
-                    ARTICLE_HERO_AVIF_SOURCE
-                    <img src="ARTICLE_IMAGE_ATTR" srcset="ARTICLE_IMAGE_SRCSET" sizes="(max-width: 820px) calc(100vw - 2rem), 770px" alt="ARTICLE_TITLE_ATTR" class="article-header-img"
-                         loading="eager" fetchpriority="high" decoding="sync"
-                         width="ARTICLE_IMAGE_WIDTH" height="ARTICLE_IMAGE_HEIGHT"
-                         data-fallback-src="/blog-module/images/default-blog.jpg">
-                </picture>
-                <div class="article-header-overlay">
-                    <div class="article-edition"><span>F1 STORIES / Η ΕΚΔΟΣΗ</span><span>ARTICLE_EDITORIAL_LABEL</span></div>
-                    <div class="article-header-kicker-row">
-                        <a href="/blog-module/blog/index.html" class="back-link"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Στο αρχείο</a>
-                        <span class="article-category-pill">ARTICLE_CATEGORY_TEXT</span>
-                    </div>
-                    <h1 class="article-title">ARTICLE_TITLE_TEXT</h1>
+<!-- Article: THE RACE REPORT. Ink cover, timing strip, sector bar, running order, paper body, pit wall, NEXT UP. -->
+<main id="main" class="article-page-wrapper rr" data-article-kind="ARTICLE_EDITORIAL_KIND">
+    <article class="rr-article" data-article-kind="ARTICLE_EDITORIAL_KIND" aria-labelledby="article-title">
+        <header class="rr-cover rr-cover--ARTICLE_COVER_VARIANT" data-cover>
+            <p class="rr-edition"><a href="/blog-module/blog/index.html">F1 Stories</a><span>/ ARTICLE_EDITORIAL_LABEL</span><time class="rr-edition__date" datetime="ARTICLE_DATE_ISO">ARTICLE_EDITION_DATE</time></p>
+            <div class="rr-cover__grid">
+                <figure class="rr-cover__media"ARTICLE_COVER_STYLE>
+                    <picture>
+                        ARTICLE_HERO_AVIF_SOURCE
+                        <img src="ARTICLE_IMAGE_ATTR" srcset="ARTICLE_IMAGE_SRCSET" sizes="ARTICLE_COVER_SIZES" alt="ARTICLE_TITLE_ATTR" class="article-header-img"
+                             loading="eager" fetchpriority="high" decoding="sync"
+                             width="ARTICLE_IMAGE_WIDTH" height="ARTICLE_IMAGE_HEIGHT"
+                             data-fallback-src="/blog-module/images/default-blog.jpg">
+                    </picture>
+                </figure>
+                <div class="rr-cover__text">
+                    <p class="rr-kicker"><a href="ARTICLE_CATEGORY_HREF">ARTICLE_CATEGORY_TEXT</a><span id="reading-time-value">ARTICLE_READING_TIME</span></p>
+                    <h1 class="ARTICLE_TITLE_CLASS" id="article-title">ARTICLE_TITLE_TEXTARTICLE_TITLE_PERIOD</h1>
                     ARTICLE_HEADER_BYLINE
-                    <div class="article-meta">
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-calendar-alt"/></svg> ARTICLE_DATE</span>
-                        <span><svg class="icon" aria-hidden="true"><use href="#fa-tag"/></svg> ARTICLE_CATEGORY_LINKS</span>
-                        <span class="reading-time-badge"><svg class="icon" aria-hidden="true"><use href="#fa-clock"/></svg> <span id="reading-time-value">ARTICLE_READING_TIME</span></span>
-                    </div>
                 </div>
             </div>
+            ARTICLE_TIMING_HTML
+        </header>
 
-            <div class="article-body-grid">
-                <aside class="article-side-rail" aria-label="Πληροφορίες άρθρου">
-                    <div class="article-rail-sticky">
-                        <div class="article-toolbar">
-                            <div class="share-label"><svg class="icon" aria-hidden="true"><use href="#fa-share-alt"/></svg> <span>Κοινοποίηση</span></div>
-                            <div class="share-buttons">
-                                <a href="https://www.facebook.com/sharer/sharer.php?u=ARTICLE_URL_PARAM" target="_blank" rel="noopener" class="share-btn facebook" aria-label="Κοινοποίηση στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
-                                <a href="https://api.whatsapp.com/send?text=ARTICLE_TITLE_PARAM%20ARTICLE_URL_PARAM" target="_blank" rel="noopener" class="share-btn whatsapp" aria-label="Κοινοποίηση στο WhatsApp"><svg class="icon" aria-hidden="true"><use href="#fa-whatsapp"/></svg></a>
-                                <button id="web-share-btn" class="share-btn web-share" aria-label="Κοινοποίηση άρθρου"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg></button>
-                                <button class="share-btn copy-link" id="copy-link-btn" aria-label="Αντιγραφή συνδέσμου"><svg class="icon" aria-hidden="true"><use href="#fa-link"/></svg></button>
-                            </div>
-                        </div>
-
-                        <div class="article-rail-card article-rail-related">
-                            <span class="article-rail-label">ΣΧΕΤΙΚΕΣ ΙΣΤΟΡΙΕΣ</span>
-                            <div class="article-rail-related-list" data-rail-related></div>
-                        </div>
-                    </div>
-                </aside>
-
-                <div class="article-main-column">
-                    ARTICLE_TRUST_HTML
-                    <div class="article-content">ARTICLE_CONTENT</div>
-
-                    ARTICLE_AUTHOR_CARD
-
-                    <div class="sponsor-strip">
-                        <div class="sponsor-strip-label">Υποστηρίζουν το F1 Stories</div>
-                        <div class="sponsor-logos">
-                            <a href="https://balatzis.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Χωματουργικά">
-                                <img src="/images/sponsors/normalized/Balatzis.webp" srcset="/images/sponsors/normalized/Balatzis-1x.webp 1x, /images/sponsors/normalized/Balatzis.webp 2x" alt="Μπαλατζής Χωματουργικά" loading="lazy" decoding="async" width="320" height="160">
-                            </a>
-                            <a href="https://pourtsidisgenerators.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Πουρτσίδης Γεννήτριες">
-                                <img src="/images/sponsors/normalized/ps.webp" srcset="/images/sponsors/normalized/ps-1x.webp 1x, /images/sponsors/normalized/ps.webp 2x" alt="Πουρτσίδης Γεννήτριες" loading="lazy" decoding="async" width="320" height="160">
-                            </a>
-                            <a href="https://balatzis.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Μπαλατζής Δομικά">
-                                <img src="/images/sponsors/normalized/BalatzisDomika.webp" srcset="/images/sponsors/normalized/BalatzisDomika-1x.webp 1x, /images/sponsors/normalized/BalatzisDomika.webp 2x" alt="Μπαλατζής Δομικά" loading="lazy" decoding="async" width="320" height="160">
-                            </a>
-                            <a href="https://ambrosiadis.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Αμβροσιάδης">
-                                <img src="/images/sponsors/normalized/am.webp" srcset="/images/sponsors/normalized/am-1x.webp 1x, /images/sponsors/normalized/am.webp 2x" alt="Αμβροσιάδης" loading="lazy" decoding="async" width="320" height="160">
-                            </a>
-                            <a href="https://www.bedandhome.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Bed and Home">
-                                <img src="/images/sponsors/normalized/bedhome.webp" srcset="/images/sponsors/normalized/bedhome-1x.webp 1x, /images/sponsors/normalized/bedhome.webp 2x" alt="Bed and Home" loading="lazy" decoding="async" width="320" height="160">
-                            </a>
-                            <a href="https://www.grandrealm.gr/" target="_blank" rel="noopener sponsored" class="sponsor-logo" aria-label="Grand Realm">
-                                <img src="/images/sponsors/normalized/GrandRealm.webp" srcset="/images/sponsors/normalized/GrandRealm-1x.webp 1x, /images/sponsors/normalized/GrandRealm.webp 2x" alt="Grand Realm" loading="lazy" decoding="async" width="320" height="160">
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </article>
-
-        <div class="article-comments">
-            <h2><svg class="icon" aria-hidden="true" style="margin-right:0.5rem;font-size:0.95em;"><use href="#fa-comments"/></svg>Σχόλια</h2>
-            <div id="disqus_thread" data-article-id="ARTICLE_ID"></div>
+        <div class="rr-sectorbar" id="rr-sectorbar" aria-hidden="true" inert>
+            <span class="rr-sectorbar__kind">ARTICLE_CATEGORY_TEXT</span>
+            <span class="rr-sectorbar__now" data-current>ARTICLE_TITLE_TEXT</span>
+            ARTICLE_SECTOR_SEGMENTS
+            <span class="rr-sectorbar__meter" role="progressbar" aria-label="Πρόοδος ανάγνωσης" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></span>
+            <button type="button" class="rr-sectorbar__share" id="rr-sectorbar-share" aria-label="Κοινοποίηση άρθρου"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg></button>
         </div>
 
+        <div class="rr-layout">
+            ARTICLE_RUNNING_ORDER
+            <div class="rr-body article-content" data-body>ARTICLE_CONTENT</div>
+        </div>
+
+        <section class="rr-pitwall" data-article-end aria-labelledby="author-card-name">
+            <div class="rr-pitwall__inner">
+                ARTICLE_AUTHOR_CARD
+                <div class="rr-pitwall__side">
+                    <p class="rr-label">Κοινοποίηση</p>
+                    <div class="share-buttons rr-pitwall__share">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=ARTICLE_URL_PARAM" target="_blank" rel="noopener" class="share-btn facebook" aria-label="Κοινοποίηση στο Facebook"><svg class="icon" aria-hidden="true"><use href="#fa-facebook-f"/></svg></a>
+                        <a href="https://api.whatsapp.com/send?text=ARTICLE_TITLE_PARAM%20ARTICLE_URL_PARAM" target="_blank" rel="noopener" class="share-btn whatsapp" aria-label="Κοινοποίηση στο WhatsApp"><svg class="icon" aria-hidden="true"><use href="#fa-whatsapp"/></svg></a>
+                        <button type="button" id="web-share-btn" class="share-btn web-share" aria-label="Κοινοποίηση άρθρου"><svg class="icon" aria-hidden="true"><use href="#fa-share-nodes"/></svg></button>
+                        <button type="button" class="share-btn copy-link" id="copy-link-btn" aria-label="Αντιγραφή συνδέσμου"><svg class="icon" aria-hidden="true"><use href="#fa-link"/></svg></button>
+                    </div>
+                    ARTICLE_TRUST_HTML
+                </div>
+            </div>
+        </section>
+    </article>
+
+    <section class="rr-partners" aria-labelledby="partners-heading">
+        ARTICLE_SPONSORS
+    </section>
+
+    <div class="article-comments rr-comments">
+        <h2><svg class="icon" aria-hidden="true"><use href="#fa-comments"/></svg>Σχόλια</h2>
+        <div id="disqus_thread" data-article-id="ARTICLE_ID"></div>
+    </div>
+
+    <section class="rr-next" aria-labelledby="rr-next-title">
+        <h2 class="rr-next__mast" id="rr-next-title">NEXT UP<span aria-hidden="true">.</span></h2>
+        <div class="rr-next__grid">
+            RELATED_ARTICLES
         <div class="article-navigation">
             <a href="PREV_ARTICLE_URL" id="prev-article-link" class="article-nav-link prev"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Προηγούμενο</a>
             <a href="NEXT_ARTICLE_URL" id="next-article-link" class="article-nav-link next">Επόμενο <svg class="icon" aria-hidden="true"><use href="#fa-arrow-right"/></svg></a>
         </div>
-
-        <div class="row article-related-section">
-            <div class="col-12 related-section-head"><span class="related-section-eyebrow">Επόμενη ανάγνωση</span><h2 class="related-section-title">Σχετικά άρθρα</h2></div>
-            RELATED_ARTICLES
         </div>
-    </div>
+    </section>
 </main>
 
 <button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Επιστροφή στην κορυφή"><svg class="icon" aria-hidden="true"><use href="#fa-chevron-up"/></svg></button>
@@ -387,8 +349,7 @@
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=bd995958"></script>
-<script defer src="/blog-module/blog/article-rail.min.js?v=bda041d2"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=fdedcf14"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=8df896aa"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>

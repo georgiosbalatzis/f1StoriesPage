@@ -15,7 +15,7 @@ const { htmlToPlainText, extractMetadata } = require('./metadata');
 const { injectRelatedArticles } = require('./related');
 const { injectPrevNextLinks } = require('./nav');
 const { renderArticleHtml, refreshArticleTaxonomy } = require('./article-render');
-const { readingTimeFromWords, readingTimeFromPage } = require('./reading-time');
+const { readingTimeFromWords, readingTimeFromPage, articleBodyHtml } = require('./reading-time');
 const { injectAuthorsDirectory, injectHomeTeam } = require('./authors-page');
 const { featuredEpisode, isFeaturedEpisode, injectHomePanels, findTeamKey, latestDebriefRound, renderTelemetry, homeByline } = require('./home-panels');
 const {
@@ -947,8 +947,8 @@ function heroCopy(post) {
     let html = typeof post.content === 'string' ? post.content : '';
     if (!html) {
         try {
-            html = fs.readFileSync(path.join(CONFIG.BLOG_DIR, post.id, 'article.html'), 'utf8');
-            html = html.slice(html.indexOf('class="article-content"'));
+            html = articleBodyHtml(fs.readFileSync(path.join(CONFIG.BLOG_DIR, post.id, 'article.html'), 'utf8'))
+                .replace(/<header class="rr-data__head">[\s\S]*?<\/header>/g, '');
         } catch (_) { html = ''; }
     }
     const paragraph = /<p\b[^>]*>([\s\S]*?)<\/p>/i.exec(html);
@@ -1037,11 +1037,18 @@ async function renderCachedArticlePages(cachedPosts) {
         if (typeof post.content === 'string' && post.content.trim()) {
             await renderArticleHtml(post, entryPath, post.id);
         } else {
-            // Source-less articles retain their existing body and media. Only owned
-            // taxonomy slots are migrated, including their structured metadata.
+            // Source-less articles keep their published body and media: the page around it is
+            // rendered from the current template (race-report.js transforms are idempotent).
             const articlePath = path.join(entryPath, 'article.html');
             if (!fs.existsSync(articlePath)) continue;
             const html = fs.readFileSync(articlePath, 'utf8');
+            const content = articleBodyHtml(html);
+            if (content.trim()) {
+                await renderArticleHtml({ ...post, content }, entryPath, post.id);
+                rendered++;
+                continue;
+            }
+            // A page without an article body: only owned taxonomy slots are migrated.
             const updated = refreshArticleTaxonomy(html, post);
             if (updated === html) continue;
             fs.writeFileSync(articlePath, updated);
