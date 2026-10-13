@@ -1,6 +1,38 @@
 {
   "posts": [
     {
+      "id": "20261013W",
+      "title": "Carlos Checa: Αγαπημένος σκληροτράχηλος και απόλυτος επαγγελματίας των 2 τροχών",
+      "author": "Themis Charvalis",
+      "date": "2026-10-13",
+      "dateISO": "2026-10-13",
+      "displayDate": "13 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261013W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261013W/2.webp",
+      "excerpt": "Για περισσότερες από δύο δεκαετίες, το όνομά του Carlos Checa συνδέθηκε με το Παγκόσμιο Πρωτάθλημα Ταχύτητας, με εργοστασιακές ομάδες, μεγάλες μοτοσυκλέτες, νίκες, απογοητεύσεις και κυρίως με μια...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261013W/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Motogp",
+        "Superbikes",
+        "Carlos Checa",
+        "Ducati",
+        "Honda",
+        "Yamaha"
+      ],
+      "wordCount": 278,
+      "readingTime": "2 min",
+      "imageWidth": 540,
+      "imageHeight": 370,
+      "backgroundImageWidth": 678,
+      "backgroundImageHeight": 452
+    },
+    {
       "id": "20261013G",
       "title": "Mercedes W17 , μα 388mm διαφορά ...",
       "author": "Georgios Balatzis",
@@ -10473,5 +10505,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-13T09:32:32.105Z"
+  "lastUpdated": "2026-10-13T17:18:02.187Z"
 }
