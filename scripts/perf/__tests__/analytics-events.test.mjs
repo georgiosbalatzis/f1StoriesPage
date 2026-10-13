@@ -113,6 +113,14 @@ test('click analytics stays consent-gated and records safe internal and outbound
     assert.equal(config[2].page_location, 'https://f1stories.gr/?utm_source=weekly');
 });
 
+test('Journal clients receive the actual consent contract, never a boolean analytics property', () => {
+    const page = boot('/blog-module/blog/index.html', '');
+    assert.equal(page.window.f1storiesAnalytics.getConsentState().analytics_storage, 'denied');
+    page.consent();
+    assert.equal(page.window.f1storiesAnalytics.getConsentState().analytics_storage, 'granted');
+    assert.equal(page.window.f1storiesAnalytics.getConsentState().analytics, undefined);
+});
+
 test('article engagement requires consent, 30 visible seconds, and 50% scroll depth', () => {
     const page = boot('/blog-module/blog-entries/20260927G/article.html', '', 600);
     page.listeners.window.scroll.forEach(callback => callback());

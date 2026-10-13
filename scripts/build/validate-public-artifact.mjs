@@ -616,9 +616,16 @@ function validateRouteMarkers(errors, editorialRefs) {
         {
             relPath: 'blog-module/blog/index.html',
             label: 'blog index',
-            patterns: [/<main\b/i, /<body\b[^>]*class=["'][^"']*\beditorial-page\b/i, /<body\b[^>]*class=["'][^"']*\barchive-page\b/i, /id=["']articles-grid["']/i, /class=["']journal-lead\b/i, /class=["']ledger-row\b/i],
+            patterns: [/<main\b/i, /<body\b[^>]*class=["'][^"']*\beditorial-page\b/i, /<body\b[^>]*class=["'][^"']*\barchive-page\b/i, /id=["']journal-archive["']/i, /class=["']ed-lead\b/i, /class=["']ed-row\b/i, /class=["']ed-contents\b/i],
             editorialSources: ['styles/home-fonts.css', 'styles/editorial.css', 'blog-module/blog/archive-editorial.css']
         },
+        // The Edition Index's static routes: every public section page, the newest month and the archive hub.
+        ...['section/technical/', 'section/news/page/2/', 'archive/', 'archive/2026/10/'].map(route => ({
+            relPath: `blog-module/blog/${route}index.html`,
+            label: `edition ${route}`,
+            patterns: [/<main\b/i, /<body\b[^>]*class=["'][^"']*\barchive-page\b/i, /<h1\b[^>]*class=["']ed-section__title/i, /class=["']ed-contents\b/i, /rel=["']canonical["']/i],
+            editorialSources: ['styles/home-fonts.css', 'styles/editorial.css', 'blog-module/blog/archive-editorial.css']
+        })),
         {
             relPath: 'standings/index.html',
             label: 'standings',

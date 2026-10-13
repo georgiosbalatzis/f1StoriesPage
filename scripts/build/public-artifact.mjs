@@ -349,6 +349,8 @@ function shouldCopy(relPath) {
     if (AUTHOR_TOOL_FILES.has(relPath)) return true;
     if (AUTHORS_PUBLIC_FILES.has(relPath)) return true;
     if (BLOG_PUBLIC_FILES.has(relPath)) return true;
+    // The Edition Index's static section and month pages (blog-module/build/discovery.js).
+    if (/^blog-module\/blog\/(?:section|archive)\/(?:[^/]+\/)*index\.html$/.test(relPath)) return true;
     if (shouldCopyBlogEntry(relPath)) return true;
     if (shouldCopyStandings(relPath)) return true;
 
