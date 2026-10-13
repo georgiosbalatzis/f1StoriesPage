@@ -1292,6 +1292,9 @@
 .article-page .rr .rr-body .gallery-carousel-slides { display: grid; grid-auto-flow: column; grid-auto-columns: max-content; justify-content: start; align-items: end; gap: 3px; height: auto; min-height: 0; padding: 0 var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); scrollbar-width: thin; }
 .article-page .rr .rr-body .gallery-slide { counter-increment: rr-frame; display: block; width: auto; height: auto; padding: 0; animation: none; scroll-snap-align: start; }
 .article-page .rr .rr-body .gallery-slide::after { content: counter(rr-frame, decimal-leading-zero); display: block; padding-top: 8px; color: var(--on-deep); font: 700 1rem/1 var(--cond); letter-spacing: .06em; }
+.article-page .rr .gallery-slide .media-credit__caption { color: var(--on-deep); }
+.article-page .rr .gallery-carousel:has(.gallery-slide [data-media="graphic"])::before { content: 'MEDIA ARCHIVE'; }
+.article-page .rr .gallery-carousel:has(.gallery-slide [data-media="graphic"]) .gallery-carousel-stage::after { content: counter(rr-frame, decimal-leading-zero) ' εικόνες · σύρετε →'; }
 .article-page .rr .rr-body .gallery-slide picture { display: block; width: auto; height: auto; max-height: none; }
 /* Whole frames: one shared height, each at its own proportions (from its width/height attributes), never taller than
  * its own pixels (--nat-h, written by the build) and never cropped; a panorama wider than the screen is letterboxed. */

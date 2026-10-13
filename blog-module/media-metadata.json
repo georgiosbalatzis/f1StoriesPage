@@ -348,6 +348,34 @@
     },
     "20261013G/1": {
       "focus": "36% 46%"
+    },
+    "20250409G/2": {
+      "type": "graphic",
+      "alt": "F1 Stories — Οδηγοί: συντακτικό γραφικό",
+      "note": "Neutral editorial cover approved by owner; original retained for provenance review."
+    },
+    "20260817J/1": {
+      "type": "graphic",
+      "alt": "F1 Stories — Ειδήσεις: συντακτικό γραφικό",
+      "note": "Neutral editorial cover approved by owner; original retained for provenance review."
+    },
+    "20260930G/1": {
+      "type": "graphic",
+      "alt": "F1 Stories — Ειδήσεις: συντακτικό γραφικό",
+      "note": "Neutral editorial cover approved by owner; original retained for provenance review."
+    },
+    "20261002W/3": {
+      "type": "graphic",
+      "alt": "F1 Stories — Ιστορία: συντακτικό γραφικό",
+      "note": "Neutral graphic replaces withheld Alamy preview; original retained in the editorial remediation audit.",
+      "caption": "Γραφικό"
+    },
+    "20260508W/4": {
+      "type": "graphic",
+      "caption": "Screenshot",
+      "captionLang": "en",
+      "alt": "Στιγμιότυπο οθόνης Android με αγωνιστική εικόνα και τα χειριστήρια του προγράμματος προβολής",
+      "note": "Full 1080×2400 screenshot retained, including interface controls; underlying photograph rights are not documented."
     }
   }
 }

@@ -556,12 +556,15 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
             lbImg.src = fullSrc(img);
             lbImg.alt = img.alt || '';
             lbCounter.textContent = imgs.length > 1 ? `${current + 1} / ${imgs.length}` : '';
-            const disclosure = img.closest('figure')?.querySelector('.media-credit__ai');
-            if (disclosure) {
-                lbCounter.textContent += (lbCounter.textContent ? ' · ' : '') + disclosure.textContent;
+            const container = img.closest('figure, .gallery-slide');
+            const disclosure = container?.querySelector('.media-credit__ai');
+            const caption = disclosure || container?.querySelector('.media-credit__caption');
+            const graphic = img.dataset.media === 'graphic' || container?.dataset.media === 'graphic';
+            if (caption) {
+                lbCounter.textContent += (lbCounter.textContent ? ' · ' : '') + caption.textContent;
                 lbImg.setAttribute('aria-describedby', lbCounter.id);
             } else lbImg.removeAttribute('aria-describedby');
-            overlay.setAttribute('aria-label', disclosure ? 'Προβολή εικονογράφησης' : 'Προβολή φωτογραφίας');
+            overlay.setAttribute('aria-label', disclosure ? 'Προβολή εικονογράφησης' : graphic ? 'Προβολή εικόνας' : 'Προβολή φωτογραφίας');
             lbPrev.disabled = current === 0;
             lbNext.disabled = current === imgs.length - 1;
         }
@@ -599,7 +602,7 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
             const picture = headerImage.closest('.rr-cover__media') || headerImage.closest('picture');
             picture.tabIndex = 0;
             picture.setAttribute('role', 'button');
-            picture.setAttribute('aria-label', picture.querySelector('.media-credit__ai') ? 'Άνοιγμα εικονογράφησης εξωφύλλου' : 'Άνοιγμα φωτογραφίας εξωφύλλου');
+            picture.setAttribute('aria-label', picture.querySelector('.media-credit__ai') ? 'Άνοιγμα εικονογράφησης εξωφύλλου' : picture.dataset.media === 'graphic' ? 'Άνοιγμα γραφικού εξωφύλλου' : 'Άνοιγμα φωτογραφίας εξωφύλλου');
             header.addEventListener('click', e => {
                 if (e.target.closest('a, button, .article-title, .article-edition, .article-header-byline, .article-meta')) return;
                 openImage(headerImage, e);

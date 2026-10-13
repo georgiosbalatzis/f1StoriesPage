@@ -8,7 +8,7 @@ import { preservedPublicMedia, assertPreservedPublicMedia, rewriteOptimizedImage
 import T from '../../../blog-module/taxonomy.js';
 const repo=fileURLToPath(new URL('../../../',import.meta.url));
 
-test('four published destinations retain their pinned original bytes, and fail on deletion or substitution', t => {
+test('published destinations retain their pinned original bytes, and fail on deletion or substitution', t => {
     const root=fs.mkdtempSync(path.join(os.tmpdir(),'f1s-public-media-'));
     t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
     for(const rel of Object.keys(preservedPublicMedia)) {
@@ -17,12 +17,21 @@ test('four published destinations retain their pinned original bytes, and fail o
         fs.copyFileSync(path.join(repo,rel),dest);
     }
     assertPreservedPublicMedia(root);
-    assert.equal(Object.keys(preservedPublicMedia).length,4);
+    assert.equal(Object.keys(preservedPublicMedia).length,20);
     const rel=Object.keys(preservedPublicMedia)[0];
     fs.writeFileSync(path.join(root,rel),'smaller substitute');
     assert.throws(()=>assertPreservedPublicMedia(root),/bytes changed/);
     fs.rmSync(path.join(root,rel));
     assert.throws(()=>assertPreservedPublicMedia(root),/media missing/);
+});
+
+test('all sixteen historical gallery thumbnail URLs remain pinned for normal public builds', () => {
+    const ids = ['20261007W', '20260927W', '20260822W', '20260803W', '20260726W', '20260711W', '20260708W', '20260704W', '20260628W', '20260622W', '20260621W', '20260619W', '20260618W', '20260616W', '20260612W', '20260425-2W'];
+    for (const id of ids) {
+        const rel = `blog-module/blog-entries/${id}/3-thumb.webp`;
+        assert.match(preservedPublicMedia[rel] || '', /^[a-f\d]{64}$/, rel);
+    }
+    assertPreservedPublicMedia(repo);
 });
 
 test('final artifact widths reach image candidates and preloads with relative and public URLs', () => {

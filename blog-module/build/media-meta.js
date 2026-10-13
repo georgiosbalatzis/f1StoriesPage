@@ -84,8 +84,18 @@ function applyBodyMedia(html, id) {
         .replace(/<!--media-->[\s\S]*?<!--\/media-->/g, '');
     out = out.replace(/<img\b[^>]*\bclass="article-content-img"[^>]*>/g, tag => {
         const meta = mediaFor(id, slotOf((/\ssrc="([^"]+)"/.exec(tag) || [])[1]));
-        return meta && meta.alt ? tag.replace(/\balt="[^"]*"/, `alt="${escapeHtmlAttribute(meta.alt)}"`) : tag;
+        if (meta?.alt) tag = tag.replace(/\balt="[^"]*"/, `alt="${escapeHtmlAttribute(meta.alt)}"`);
+        if (meta?.type === 'graphic') tag = tag.replace(/\sdata-media="[^"]*"/g, '').replace(/>$/, ' data-media="graphic">');
+        return tag;
     });
+    out = out.replace(/<div class="gallery-slide[^"]*"[^>]*>[\s\S]*?<\/div>/g, slide => {
+        const meta = mediaFor(id, slotOf((/<img\b[^>]*?\ssrc="([^"]+)"/.exec(slide) || [])[1]));
+        const line = creditLineHtml(meta);
+        return line ? slide.replace(/<\/div>$/, `<!--media-->${line}<!--/media--></div>`) : slide;
+    });
+    if (/<div class="gallery-slide[^"]*"[^>]*>[\s\S]*?data-media="graphic"/.test(out)) {
+        out = out.replace(/(class="gallery-carousel"[^>]*aria-label=")Φωτογραφικό αρχείο/g, '$1Αρχείο εικόνων');
+    }
     return out.replace(/<figure class="article-figure">[\s\S]*?<\/figure>/g, figure => {
         const meta = mediaFor(id, slotOf((/<img\b[^>]*?\ssrc="([^"]+)"/.exec(figure) || [])[1]));
         const line = creditLineHtml(meta);

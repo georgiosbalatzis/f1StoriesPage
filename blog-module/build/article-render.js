@@ -359,7 +359,7 @@ function refreshArticleTaxonomy(html, post) {
 
 // Older published bodies declare widths their files no longer have (a 1600px file as "2048w"). Each width descriptor of
 // a story's own file is rewritten to the file's measured width; anything else is left as written. Idempotent.
-async function measureBodySrcsets(html, entryPath) {
+async function measureBodySrcsets(html, entryPath, id) {
     const names = new Set();
     for (const set of html.matchAll(/\bsrcset="([^"]+)"/g)) {
         for (const part of set[1].split(',')) {
@@ -372,6 +372,16 @@ async function measureBodySrcsets(html, entryPath) {
         const size = fs.existsSync(path.join(entryPath, name)) ? await getImageDimensions(path.join(entryPath, name)) : null;
         if (size) widths.set(name, size.width);
     }));
+    // A same-path editorial replacement can change the original's proportions, too.
+    const images = new Map();
+    for (const tag of html.matchAll(/<img\b[^>]*\bclass="article-content-img"[^>]*>/g)) {
+        const name = (/\ssrc="([^"]+)"/.exec(tag[0]) || [])[1];
+        if (name && /^[\w.-]+$/.test(name) && mediaFor(id, slotOf(name))?.type === 'graphic') images.set(name, await getImageDimensions(path.join(entryPath, name)));
+    }
+    html = html.replace(/<img\b[^>]*\bclass="article-content-img"[^>]*>/g, tag => {
+        const size = images.get((/\ssrc="([^"]+)"/.exec(tag) || [])[1]);
+        return size ? tag.replace(/\bwidth="\d+"/, `width="${size.width}"`).replace(/\bheight="\d+"/, `height="${size.height}"`) : tag;
+    });
     return html.replace(/\bsrcset="([^"]+)"/g, (match, set) => {
         const parts = set.split(',').map(part => part.trim().split(/\s+/));
         const wrong = parts.some(([name, descriptor]) => widths.has(name) && /^\d+w$/.test(descriptor || '') && descriptor !== `${widths.get(name)}w`);
@@ -395,9 +405,11 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
     const heroBase = path.parse(bgImageFilename).name;
     const mobileWebp = `${heroBase}-mobile.webp`;
     const mobileAvif = `${heroBase}-mobile.avif`;
-    const headerImageDimensions = postData.backgroundImageWidth && postData.backgroundImageHeight
+    const replacementDimensions = mediaFor(folderName, slotOf(bgImageFilename))?.type === 'graphic'
+        ? await getImageDimensionsForPublicPath(headerImage) : null;
+    const headerImageDimensions = replacementDimensions || (postData.backgroundImageWidth && postData.backgroundImageHeight
         ? { width: postData.backgroundImageWidth, height: postData.backgroundImageHeight }
-        : await getImageDimensionsForPublicPath(headerImage);
+        : await getImageDimensionsForPublicPath(headerImage));
     const coverWidth = headerImageDimensions && headerImageDimensions.width;
     const cover = coverVariant(coverWidth, headerImageDimensions && headerImageDimensions.height);
     const heroSizes = COVER_SIZES[cover];
@@ -432,7 +444,7 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
     const heroPreload = heroAvifSrcset
         ? `<link rel="preload" as="image" type="image/avif" href="${escapeHtmlAttribute(widest(heroAvifSrcset))}" imagesrcset="${escapeHtmlAttribute(heroAvifSrcset)}" imagesizes="${heroSizes}" fetchpriority="high">`
         : `<link rel="preload" as="image" href="${escapeHtmlAttribute(widest(heroWebpSrcset))}" imagesrcset="${escapeHtmlAttribute(heroWebpSrcset)}" imagesizes="${heroSizes}" fetchpriority="high">`;
-    const body = transformBody(await measureBodySrcsets(applyBodyMedia(postData.content || '', folderName), entryPath));
+    const body = transformBody(await measureBodySrcsets(applyBodyMedia(postData.content || '', folderName), entryPath, folderName));
     const badge = readingBadgeText(postData);
     const minutes = parseInt(badge, 10) || 1;
     const titleText = String(postData.title || '');

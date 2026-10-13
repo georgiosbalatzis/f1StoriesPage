@@ -7,12 +7,42 @@ const path = require('node:path');
 const test = require('node:test');
 const sharp = require('sharp');
 const { validateRegister, loadMediaRegister, creditLineHtml, applyBodyMedia, cardDisclosureHtml, mediaAttributes, slotOf, AI_LABEL } = require('../media-meta');
+
+test('gallery remediation captions and screenshot alt survive repeated rendering', () => {
+    for (const [id, slot, caption] of [['20260508W', 4, 'Screenshot'], ['20261002W', 3, 'Γραφικό']]) {
+        const body = `<div class="gallery-carousel" aria-label="Φωτογραφικό αρχείο: T"><div class="gallery-slide active" data-index="0"><picture><img src="${slot}.webp" alt="old photo" class="article-content-img"></picture></div></div>`;
+        const once = applyBodyMedia(body, id);
+        assert.match(once, new RegExp(caption));
+        assert.doesNotMatch(once, /alt="old photo"/);
+        assert.match(once, /aria-label="Αρχείο εικόνων: T"/);
+        assert.match(once, /data-media="graphic"/);
+        assert.equal(applyBodyMedia(once, id), once);
+        assert.equal((once.match(/class="media-credit"/g) || []).length, 1);
+    }
+});
 const { truthfulSrcset } = require('../image-sizes');
 const { transformBody } = require('../race-report');
 const { scoreRelatedPosts } = require('../related');
 const { collectImageVariantTasks } = require('../../generate-image-variants');
 
 const ENTRIES = path.join(__dirname, '..', '..', 'blog-entries');
+
+test('same-path editorial replacements use measured hero and gallery dimensions, not stale cached ones', async t => {
+    const { renderArticleHtml } = require('../article-render');
+    const entry = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-replacement-'));
+    t.after(() => fs.rmSync(entry, { recursive: true, force: true }));
+    for (const name of ['1.webp', '1.avif']) fs.copyFileSync(path.join(ENTRIES, '20260817J', name), path.join(entry, name));
+    const html = await renderArticleHtml({
+        id: '20260817J', title: 'Test', category: 'News', date: '2026-08-17', author: 'F1 Stories',
+        backgroundImage: '/blog-module/blog-entries/20260817J/1.webp',
+        backgroundImageWidth: 1536, backgroundImageHeight: 1024,
+        content: '<div class="gallery-slide active" data-index="0"><img src="1.webp" class="article-content-img" width="1536" height="1024"></div>'
+    }, entry);
+    assert.match(html, /rr-cover--inset/);
+    assert.match(html, /--cover-w: 900px/);
+    assert.match(html, /width="900" height="450"/);
+    assert.doesNotMatch(html, /width="1536"|height="1024"/);
+});
 
 test('the register validates its vocabulary: suspicion is not a status, only documented AI is "confirmed"', () => {
     assert.deepEqual(validateRegister({ images: { 'X/1': { type: 'poster', focus: '50% 30%', synthetic: 'confirmed', rights: 'documented' } } }).errors, []);
