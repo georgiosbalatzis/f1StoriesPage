@@ -256,7 +256,8 @@ function sectionBody(ctx, section, page) {
     const writers = model.writers.map(({ author }) => ({ author, count: section.posts.filter(post => post.author === author.name).length }))
         .filter(writer => writer.count).sort((a, b) => b.count - a.count);
     const first = FRONT_SIZE + (page - 1) * PAGE_SIZE;
-    const shown = page === 1 ? `1–${front.length + slice.length}` : `${first + 1}–${first + slice.length}`;
+    // The list's own range: on page 1 the newest stories sit in the front above it, so the list starts after them.
+    const shown = `${first + 1}–${first + slice.length}`;
     const head = '<header class="ed-section__head"><p class="ed-label">Ενότητα</p>'
         + `<h1 class="ed-section__title" id="ed-section-title">${esc(section.label)}</h1>`
         + `<p class="ed-section__facts ed-num">${esc(T.plural(section.posts.length, 'ιστορία', 'ιστορίες'))}${rangeText(section.posts) ? ` · ${esc(rangeText(section.posts))}` : ''}${page > 1 ? ` · Σελίδα ${page} από ${total}` : ''}</p>`
@@ -266,7 +267,7 @@ function sectionBody(ctx, section, page) {
         + leadHtml(front[0], ctx, { level: 2, sizes: T.CARD_SIZES.editionSection, eager: true, cls: 'ed-lead--section' })
         + `<ol class="ed-rows ed-rows--side">${front.slice(1).map(post => rowHtml(post, ctx, { thumb: true, kickerOn: false, fullDate: true, date: false, level: 2 })).join('')}</ol></div>` : '';
     const list = slice.length ? '<section class="ed-list" aria-labelledby="ed-list-title">'
-        + sechead('ed-list-title', `Όλες οι ιστορίες · ${section.label}`, `${shown} από ${section.posts.length}`)
+        + sechead('ed-list-title', `Όλες οι ιστορίες · ${section.label}`, `${shown} από ${section.posts.length}${front.length ? ` · 1–${front.length} παραπάνω` : ''}`)
         + `<div id="articles-grid">${monthGroups(slice, ctx, { kickerOn: false, level: 4 })}</div>`
         + pagination(page, total, to => route.section(section.kind, to)) + '</section>' : '';
     const aside = '<aside class="ed-aside"><nav class="ed-aside__block" aria-label="Άλλες ενότητες"><h2 class="ed-label">Άλλες ενότητες</h2><ol class="ed-aside__list">'

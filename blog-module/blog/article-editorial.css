@@ -1221,6 +1221,11 @@
 .article-page .rr-contents > summary span { margin-left: auto; margin-right: 14px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
 .article-page .rr-contents .rr-ro { padding-bottom: 12px; }
 .article-page .rr-contents .rr-ro .rr-ro__label { font-size: .9375rem; }
+/* Below the running order's breakpoint the disclosure sits right above the text: a body that opens on a heading starts
+ * under it, not 2.1em lower (the heading margin outranks the body's :first-child reset by source order). */
+@media (max-width: 1239px) {
+    .article-page .rr .rr-body > :is(h1, h2, h3, .rr-subhead):first-child { margin-top: 0; }
+}
 @media (min-width: 1240px) {
     .article-page .rr-tower { display: block; position: sticky; top: calc(var(--nav-h) + 72px); grid-column: 1; grid-row: 1 / span 2; align-self: start; justify-self: end; width: 232px; margin-right: 56px; }
     .article-page .rr-contents { display: none; }
@@ -1444,6 +1449,8 @@
     body.article-page .blog-nav { transition: transform .18s ease; }
 }
 @media (max-width: 599px) {
+    /* Phones read on the homepage's 22px gutter (17px under 360px), not a 16px edge. */
+    .article-page .rr { --gutter: 22px; }
     .article-page .rr-edition { font-size: .8125rem; }
     .article-page .rr-edition > span { display: none; }
     /* Phone: the whole frame at its own ratio instead of a 4:3 crop. */
@@ -1462,13 +1469,20 @@
     .article-page .rr-sectorbar__now { font-size: .8125rem; }
     .article-page .rr-sectorbar__segs li { width: 10px; height: 5px; }
     .article-page .rr-sectorbar__share { width: 44px; height: 43px; }
-    .article-page .rr .rr-body { font-size: 1.125rem; line-height: 1.7; }
-    .article-page .rr .rr-body > p.article-lead { padding-left: 16px; font-size: 1.3125rem; }
-    .article-page .rr .rr-body > :is(h1, h2) { font-size: 1.75rem; }
-    .article-page .rr .rr-body > :is(h3, .rr-subhead) { font-size: 1.375rem; }
-    .article-page .rr .rr-body .rr-chart { width: 100vw; margin-left: calc(50% - 50vw); padding: 18px 16px 14px; }
-    .article-page .rr .rr-body .rr-data { padding-inline: 0; }
-    .article-page .rr .rr-data__head { padding-inline: 16px; }
+    .article-page .rr .rr-body { font-size: 1.125rem; line-height: 1.68; }
+    .article-page .rr .rr-body > p { margin-bottom: 1.05em; }
+    .article-page .rr .rr-body > p.article-lead { padding-left: 16px; font-size: 1.25rem; line-height: 1.48; }
+    .article-page .rr .rr-contents { margin-bottom: 1.6em; }
+    /* Section heads stay close to the text they open: a shorter run-in above, less air below. */
+    .article-page .rr .rr-body > :is(h1, h2, h3, .rr-subhead) { margin: 1.7em 0 .5em; scroll-margin-top: 64px; }
+    .article-page .rr .rr-body > :is(h1, h2) { font-size: 1.625rem; line-height: 1.14; }
+    .article-page .rr .rr-body > :is(h3, .rr-subhead) { font-size: 1.3125rem; line-height: 1.22; letter-spacing: -.02em; }
+    .article-page .rr .rr-body > [id] { scroll-margin-top: 64px; }
+    .article-page .rr .rr-body .rr-chart { width: 100vw; margin-left: calc(50% - 50vw); padding: 18px var(--gutter) 14px; }
+    .article-page .rr .rr-body .rr-data { padding-inline: 0; scroll-margin-top: 44px; }
+    .article-page .rr .rr-data__head { padding-inline: var(--gutter); }
+    /* Shorter frames on a phone, so the next photograph shows past the edge and the strip reads as one to swipe. */
+    .article-page .rr .rr-body .gallery-slide .article-content-img { height: min(200px, var(--nat-h, 400px)); }
     .article-page .rr .rr-data__screen { outline: 0; }
     .article-page .rr-pitwall__author { grid-template-columns: 88px minmax(0, 1fr); gap: 18px; }
     .article-page .rr-pitwall__author img { width: 88px; height: 88px; }
@@ -1477,6 +1491,9 @@
     .article-page .rr-next .article-navigation { grid-template-columns: 1fr; }
     .article-page .rr-next .article-nav-link.next { grid-column: 1; text-align: left; }
     .article-page .rr-next .article-nav-link.next .article-nav-label { justify-content: flex-start; }
+}
+@media (max-width: 359px) {
+    .article-page .rr { --gutter: 17px; }
 }
 @media print {
     .article-page :is(.rr-sectorbar, .rr-tower, .rr-contents, .rr-data__links, .rr-partners, .rr-next) { display: none; }

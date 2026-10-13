@@ -592,6 +592,10 @@
         bar.addEventListener('focusin', function (event) {
             if (event.target.closest('a')) event.target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         });
+        function edge() { bar.classList.toggle('is-more', bar.scrollLeft + bar.clientWidth < bar.scrollWidth - 2); }
+        bar.addEventListener('scroll', edge, { passive: true });
+        window.addEventListener('resize', edge);
+        edge();
     }
 
     function initTeamSpotlight() {

@@ -113,6 +113,10 @@ test('a section is paginated into stable, disjoint pages that cover every story 
     assert.equal(new Set(seen).size, seen.length, 'a story appears on one page of the section only');
     assert.deepEqual(seen, posts.map(item => item.id), 'in order, none missing');
     assert.equal(links(files['section/news/index.html'].main).size, 4 + 30);
+    // The list's range counts its own rows; the front's four stories are named as sitting above it.
+    assert.match(files['section/news/index.html'].main, /ed-sechead__note ed-num">5–34 από 75 · 1–4 παραπάνω</);
+    assert.match(files['section/news/page/2/index.html'].main, /ed-sechead__note ed-num">35–64 από 75</);
+    assert.match(files['section/news/page/3/index.html'].main, /ed-sechead__note ed-num">65–75 από 75</);
     // Pager: current page is not a link; prev/next are real links with rel.
     assert.match(files['section/news/page/2/index.html'].main, /aria-current="page"><span class="visually-hidden">Σελίδα <\/span>2</);
     assert.match(files['section/news/page/2/index.html'].main, /rel="prev" href="\/blog-module\/blog\/section\/news\/"/);

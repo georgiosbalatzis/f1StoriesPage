@@ -42,15 +42,29 @@
         if (!T.isDay(until) || !T.isNewStory(T.addDays(until, 1 - T.NEW_DAYS), today)) mark.remove();
     });
     // The strip scrolls sideways; the open section starts in view. Only the strip moves, never the page.
+    var strip = main.querySelector('.ed-rail ol');
+    // The strip fades at an edge that has more links past it.
+    function railEdges() {
+        strip.classList.toggle('is-before', strip.scrollLeft > 2);
+        strip.classList.toggle('is-after', strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 2);
+    }
     function revealRail() {
-        var strip = main.querySelector('.ed-rail ol');
         var current = strip && strip.querySelector('[aria-current]');
-        if (!current || strip.scrollWidth <= strip.clientWidth) return;
-        var box = current.getBoundingClientRect();
-        var stripBox = strip.getBoundingClientRect();
-        strip.scrollLeft += box.left - stripBox.left - (stripBox.width - box.width) / 2;
+        if (current && strip.scrollWidth > strip.clientWidth) {
+            var box = current.getBoundingClientRect();
+            var stripBox = strip.getBoundingClientRect();
+            strip.scrollLeft += box.left - stripBox.left - (stripBox.width - box.width) / 2;
+        }
+        if (strip) railEdges();
     }
     revealRail();
+    if (strip) {
+        // Browsers scroll a focused link in only when it is wholly outside the strip: bring a half-clipped one fully
+        // into view, its ring included (the strip's scroll-padding).
+        strip.addEventListener('focusin', function(event) { event.target.scrollIntoView({ block: 'nearest', inline: 'nearest' }); });
+        strip.addEventListener('scroll', railEdges, { passive: true });
+        window.addEventListener('resize', railEdges);
+    }
     // A missing cover never leaves a hole: the srcset, then the default image, then a text-only card.
     main.addEventListener('error', function(event) {
         var image = event.target;

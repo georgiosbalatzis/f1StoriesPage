@@ -198,6 +198,14 @@ html[data-journal-filtered] .edition #journal-edition { display: none; }
     .edition .ed-bylines__list li:nth-child(n + 4) { border-top: 1px solid var(--ed-rule); }
     .edition .ed-contents__list a { padding-inline: 9px; font-size: .875rem; }
 }
+/* Tablets and small laptops: the contents no longer fit one line (they need ~1240px), so instead of wrapping into a
+ * full row and a stretched remainder they set as a ruled table of equal columns, as on phones. */
+@media (min-width: 768px) and (max-width: 1339px) {
+    .edition .ed-contents__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); column-gap: 24px; padding-bottom: 6px; }
+    .edition .ed-contents__list a { justify-content: space-between; padding: 12px 0 10px; border-bottom: 1px solid var(--ed-rule); }
+    .edition .ed-contents__list a[aria-current] { border-bottom: 3px solid var(--kind, var(--text-primary)); padding-bottom: 8px; }
+    .edition .ed-contents__aux { border-left: 0; }
+}
 @media (max-width: 991px) {
     .edition .ed-front__grid, .edition .ed-section__front { grid-template-columns: minmax(0, 1fr); gap: 40px; }
     .edition .ed-columns, .edition .ed-columns--archive { grid-template-columns: minmax(0, 1fr); gap: 40px; }
@@ -229,14 +237,23 @@ html[data-journal-filtered] .edition #journal-edition { display: none; }
     .edition.ed-page--section .ed-contents { display: none; }
     .edition.ed-page--section .ed-mast { margin-bottom: 0; border-bottom-width: 1px; }
     .edition.ed-page--section .ed-rail { display: block; position: sticky; top: var(--ed-nav); z-index: 30; margin: 0 calc(-1 * var(--ed-gutter)) 20px; background: var(--bg-base); border-bottom: 2px solid var(--ed-strong); }
-    .edition.ed-page--section .ed-rail ol { display: flex; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scroll-padding-inline: var(--ed-gutter); padding-inline: var(--ed-gutter); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .edition.ed-page--section .ed-rail ol { display: flex; overflow-x: auto; overscroll-behavior-x: contain; scroll-padding-inline: calc(var(--ed-gutter) + 12px); padding-inline: var(--ed-gutter); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    /* Edges with more sections past them fade out (blog-index.js marks them), so the strip reads as scrollable. */
+    .edition .ed-rail ol.is-after { mask-image: linear-gradient(to left, transparent, #000 32px); }
+    .edition .ed-rail ol.is-before { mask-image: linear-gradient(to right, transparent, #000 32px); }
+    .edition .ed-rail ol.is-before.is-after { mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent); }
     .edition .ed-rail ol::-webkit-scrollbar { display: none; }
-    .edition .ed-rail li { flex: none; scroll-snap-align: start; }
+    /* No scroll snapping: it pulled a keyboard-focused link at the edge back out of view after the browser scrolled it in. */
+    .edition .ed-rail li { flex: none; }
     .edition .ed-rail a { display: flex; align-items: baseline; gap: 6px; min-height: 48px; padding: 14px 14px 11px; font-size: .9375rem; font-weight: 500; white-space: nowrap; border-bottom: 3px solid transparent; }
     .edition .ed-rail a .ed-num { font-size: .6875rem; font-weight: 600; color: var(--kind-text, var(--text-secondary)); }
     .edition .ed-rail a[aria-current] { border-bottom-color: var(--kind, var(--text-primary)); font-weight: 600; }
     /* The strip clips its own overflow, so its focus ring sits inside the link. */
     .edition .ed-rail a:focus-visible { outline-offset: -3px; }
+}
+/* Keyboard focus and in-page jumps land below the site nav and the stuck strip, never under them. */
+@media (max-width: 767px) and (min-height: 501px) {
+    :root:has(.edition.ed-page--section) { scroll-padding-top: 132px; }
 }
 /* A phone on its side has no height to spare: the strip scrolls away with the page. */
 @media (max-width: 767px) and (max-height: 500px) {
@@ -246,6 +263,9 @@ html[data-journal-filtered] .edition #journal-edition { display: none; }
 
     .edition .ed-lead__link { grid-template-columns: minmax(0, 1fr); gap: 16px; }
     .edition .ed-week .ed-lead__link { grid-template-columns: minmax(0, 1fr); }
+    /* A section's front reads as one block: its lead, then the next three under a rule, not after an empty band. */
+    .edition .ed-section__front { gap: 0; }
+    .edition .ed-rows--side { padding-top: 0; border-top: 1px solid var(--ed-rule); }
     .edition .ed-row__link { grid-template-columns: 58px minmax(0, 1fr); gap: 2px 12px; }
     .edition .ed-row--thumb .ed-row__link, .edition .ed-row--thumb .ed-row__link:has(> .ed-date) { grid-template-columns: minmax(0, 1fr) 96px; }
     .edition .ed-row--thumb .ed-row__link > .ed-date { display: none; }
@@ -260,6 +280,9 @@ html[data-journal-filtered] .edition #journal-edition { display: none; }
     .edition .ed-bylines__list img { width: 40px; height: 40px; }
     .edition .ed-cal__months, .edition .ed-archive__index .ed-cal__months, .edition .ed-calendar .ed-cal__months { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .edition .ed-calendar .ed-cal__months > li > * { flex-direction: row; align-items: baseline; }
+    /* A month page leads with its own year only, so its stories start within the first screens; every year stays a
+     * tap away in the monthly archive (the contents' "Αρχείο ανά μήνα") and in the newer/older steps. */
+    .edition .ed-archive__index .ed-cal:not(:has([aria-current])) { display: none; }
     .edition .ed-sort { margin-left: 0; width: 100%; }
     .edition .ed-byline__head { grid-template-columns: 88px minmax(0, 1fr); gap: 18px; }
     .edition .ed-byline__portrait { width: 88px; height: 88px; }
