@@ -369,6 +369,18 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
     }
 
     // ── Gallery Carousel ────────────────────────────────────
+    function setupChartScrolling() {
+        document.querySelectorAll('.rr-chart__scroll').forEach(scroller => {
+            // WebKit does not consistently scroll a focused horizontal region with arrow keys.
+            scroller.addEventListener('keydown', event => {
+                if (event.target !== scroller || scroller.scrollWidth <= scroller.clientWidth) return;
+                if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+                event.preventDefault();
+                scroller.scrollLeft += event.key === 'ArrowRight' ? 64 : -64;
+            });
+        });
+    }
+
     function setupGalleryCarousel() {
         document.querySelectorAll('.gallery-carousel').forEach(function (carousel) {
             const slides = carousel.querySelectorAll('.gallery-slide');
@@ -478,19 +490,20 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
         overlay.className = 'lb-overlay';
         overlay.setAttribute('role', 'dialog');
         overlay.setAttribute('aria-modal', 'true');
-        overlay.setAttribute('aria-label', 'Image viewer');
-        const closeButton = createLightboxButton('lb-close', 'Close', 'fa-times');
+        overlay.setAttribute('aria-label', 'Προβολή φωτογραφίας');
+        const closeButton = createLightboxButton('lb-close', 'Κλείσιμο', 'fa-times');
         const imageWrap = document.createElement('div');
         imageWrap.className = 'lb-img-wrap';
         const image = document.createElement('img');
         image.className = 'lb-img';
-        image.src = '';
         image.alt = '';
         imageWrap.appendChild(image);
-        const prevButton = createLightboxButton('lb-prev', 'Previous image', 'fa-chevron-left');
-        const nextButton = createLightboxButton('lb-next', 'Next image', 'fa-chevron-right');
+        const prevButton = createLightboxButton('lb-prev', 'Προηγούμενη φωτογραφία', 'fa-chevron-left');
+        const nextButton = createLightboxButton('lb-next', 'Επόμενη φωτογραφία', 'fa-chevron-right');
         const counter = document.createElement('div');
         counter.className = 'lb-counter';
+        counter.id = 'article-image-viewer-caption';
+        counter.setAttribute('aria-live', 'polite');
         overlay.append(closeButton, imageWrap, prevButton, nextButton, counter);
         document.body.appendChild(overlay);
 
@@ -543,6 +556,12 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
             lbImg.src = fullSrc(img);
             lbImg.alt = img.alt || '';
             lbCounter.textContent = imgs.length > 1 ? `${current + 1} / ${imgs.length}` : '';
+            const disclosure = img.closest('figure')?.querySelector('.media-credit__ai');
+            if (disclosure) {
+                lbCounter.textContent += (lbCounter.textContent ? ' · ' : '') + disclosure.textContent;
+                lbImg.setAttribute('aria-describedby', lbCounter.id);
+            } else lbImg.removeAttribute('aria-describedby');
+            overlay.setAttribute('aria-label', disclosure ? 'Προβολή εικονογράφησης' : 'Προβολή φωτογραφίας');
             lbPrev.disabled = current === 0;
             lbNext.disabled = current === imgs.length - 1;
         }
@@ -580,7 +599,7 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
             const picture = headerImage.closest('.rr-cover__media') || headerImage.closest('picture');
             picture.tabIndex = 0;
             picture.setAttribute('role', 'button');
-            picture.setAttribute('aria-label', 'Άνοιγμα φωτογραφίας εξωφύλλου');
+            picture.setAttribute('aria-label', picture.querySelector('.media-credit__ai') ? 'Άνοιγμα εικονογράφησης εξωφύλλου' : 'Άνοιγμα φωτογραφίας εξωφύλλου');
             header.addEventListener('click', e => {
                 if (e.target.closest('a, button, .article-title, .article-edition, .article-header-byline, .article-meta')) return;
                 openImage(headerImage, e);
@@ -648,6 +667,7 @@ if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded
     setupYouTubeFacades();
     setupSocialEmbeds();
     setupTyreEmbeds();
+    setupChartScrolling();
     setupGalleryCarousel();
     setupLightbox();
 });

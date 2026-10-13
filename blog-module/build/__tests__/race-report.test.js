@@ -32,7 +32,7 @@ test('the transform is idempotent, so published bodies can be re-rendered every 
 
 test('a chart keeps its own title and description in one panel; the import label is Greek', () => {
     const out = transformBody(`<p>${long}</p>\n<p>Εξέλιξη της διαφοράς</p>\n<p>Η διαφορά ανά γύρο.\n<figure class="article-figure"><img src="3.webp"><figcaption>Image 3</figcaption></figure></p>\n<p>${long}</p>`);
-    assert.match(out.html, /<div class="rr-chart">\n<p class="rr-chart__title">Εξέλιξη της διαφοράς<\/p>\n<p class="rr-chart__desc">Η διαφορά ανά γύρο\.<\/p>\n<figure class="article-figure">[\s\S]*<figcaption>Εικ\. 3<\/figcaption><\/figure>\n<\/div>/);
+    assert.match(out.html, /<div class="rr-chart">\n<p class="rr-chart__title">Εξέλιξη της διαφοράς<\/p>\n<p class="rr-chart__desc">Η διαφορά ανά γύρο\.<\/p>\n<figure class="article-figure">[\s\S]*<figcaption>Εικ\. 1<\/figcaption><\/figure>\n<\/div>/);
     assert.equal(out.sections, 0, 'a chart title is not a section');
 });
 

@@ -61,10 +61,10 @@
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=5c33bdf2">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=187f9b13">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=38d47ab9">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=56ff6c9e">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=fcdceb9b">
 
     <!-- Preload hero image for LCP -->
-    <link rel="preload" as="image" type="image/avif" href="1.avif" imagesrcset="1-mobile.avif 800w, 1.avif 1600w" imagesizes="100vw" fetchpriority="high">
+    <link rel="preload" as="image" type="image/avif" href="1.avif" imagesrcset="1-mobile.avif 800w, 1.avif 1544w" imagesizes="100vw" fetchpriority="high">
 
     <script defer src="/scripts/analytics.min.js?v=bdd2c3f4"></script>
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
@@ -74,7 +74,7 @@
 </head>
 <body class="editorial-page article-page">
 <!-- f1s:icon-sprite:begin -->
-<div hidden data-hash="f4273ec1"><svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+<div hidden data-hash="381e44ac"><svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
   <symbol id="fa-arrow-left" viewBox="0 0 512 512"><path fill="currentColor" d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 288 480 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-370.7 0 105.4-105.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></symbol>
   <symbol id="fa-arrow-right" viewBox="0 0 512 512"><path fill="currentColor" d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-105.4 105.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></symbol>
   <symbol id="fa-arrow-trend-up" viewBox="0 0 576 512"><path fill="currentColor" d="M384 160c-17.7 0-32-14.3-32-32s14.3-32 32-32l160 0c17.7 0 32 14.3 32 32l0 160c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-82.7-169.4 169.4c-12.5 12.5-32.8 12.5-45.3 0L192 269.3 54.6 406.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160c12.5-12.5 32.8-12.5 45.3 0L320 306.7 466.7 160 384 160z"/></symbol>
@@ -120,14 +120,12 @@
   <symbol id="fa-rocket" viewBox="0 0 512 512"><path fill="currentColor" d="M128 320L24.5 320c-24.9 0-40.2-27.1-27.4-48.5L50 183.3C58.7 168.8 74.3 160 91.2 160l95 0c76.1-128.9 189.6-135.4 265.5-124.3 12.8 1.9 22.8 11.9 24.6 24.6 11.1 75.9 4.6 189.4-124.3 265.5l0 95c0 16.9-8.8 32.5-23.3 41.2l-88.2 52.9c-21.3 12.8-48.5-2.6-48.5-27.4L192 384c0-35.3-28.7-64-64-64l-.1 0zM400 160a48 48 0 1 0 -96 0 48 48 0 1 0 96 0z"/></symbol>
   <symbol id="fa-rotate" viewBox="0 0 512 512"><path fill="currentColor" d="M480.1 192l7.9 0c13.3 0 24-10.7 24-24l0-144c0-9.7-5.8-18.5-14.8-22.2S477.9 .2 471 7L419.3 58.8C375 22.1 318 0 256 0 127 0 20.3 95.4 2.6 219.5 .1 237 12.2 253.2 29.7 255.7s33.7-9.7 36.2-27.1C79.2 135.5 159.3 64 256 64 300.4 64 341.2 79 373.7 104.3L327 151c-6.9 6.9-8.9 17.2-5.2 26.2S334.3 192 344 192l136.1 0zm29.4 100.5c2.5-17.5-9.7-33.7-27.1-36.2s-33.7 9.7-36.2 27.1c-13.3 93-93.4 164.5-190.1 164.5-44.4 0-85.2-15-117.7-40.3L185 361c6.9-6.9 8.9-17.2 5.2-26.2S177.7 320 168 320L24 320c-13.3 0-24 10.7-24 24L0 488c0 9.7 5.8 18.5 14.8 22.2S34.1 511.8 41 505l51.8-51.8C137 489.9 194 512 256 512 385 512 491.7 416.6 509.4 292.5z"/></symbol>
   <symbol id="fa-route" viewBox="0 0 512 512"><path fill="currentColor" d="M512 96c0 50.2-59.1 125.1-84.6 155-3.8 4.4-9.4 6.1-14.5 5L320 256c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c53 0 96 43 96 96s-43 96-96 96l-276.4 0c8.7-9.9 19.3-22.6 30-36.8 6.3-8.4 12.8-17.6 19-27.2L416 448c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0c-53 0-96-43-96-96s43-96 96-96l39.8 0c-21-31.5-39.8-67.7-39.8-96 0-53 43-96 96-96s96 43 96 96zM117.1 489.1c-3.8 4.3-7.2 8.1-10.1 11.3l-1.8 2-.2-.2c-6 4.6-14.6 4-20-1.8-25.2-27.4-85-97.9-85-148.4 0-53 43-96 96-96s96 43 96 96c0 30-21.1 67-43.5 97.9-10.7 14.7-21.7 28-30.8 38.5l-.6 .7zM128 352a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zM416 128a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"/></symbol>
-  <symbol id="fa-search" viewBox="0 0 512 512"><path fill="currentColor" d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376C296.3 401.1 253.9 416 208 416 93.1 416 0 322.9 0 208S93.1 0 208 0 416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></symbol>
-  <symbol id="fa-share-alt" viewBox="0 0 512 512"><path fill="currentColor" d="M384 192c53 0 96-43 96-96s-43-96-96-96-96 43-96 96c0 5.4 .5 10.8 1.3 16L159.6 184.1c-16.9-15-39.2-24.1-63.6-24.1-53 0-96 43-96 96s43 96 96 96c24.4 0 46.6-9.1 63.6-24.1L289.3 400c-.9 5.2-1.3 10.5-1.3 16 0 53 43 96 96 96s96-43 96-96-43-96-96-96c-24.4 0-46.6 9.1-63.6 24.1L190.7 272c.9-5.2 1.3-10.5 1.3-16s-.5-10.8-1.3-16l129.7-72.1c16.9 15 39.2 24.1 63.6 24.1z"/></symbol>
   <symbol id="fa-share-nodes" viewBox="0 0 512 512"><path fill="currentColor" d="M384 192c53 0 96-43 96-96s-43-96-96-96-96 43-96 96c0 5.4 .5 10.8 1.3 16L159.6 184.1c-16.9-15-39.2-24.1-63.6-24.1-53 0-96 43-96 96s43 96 96 96c24.4 0 46.6-9.1 63.6-24.1L289.3 400c-.9 5.2-1.3 10.5-1.3 16 0 53 43 96 96 96s96-43 96-96-43-96-96-96c-24.4 0-46.6 9.1-63.6 24.1L190.7 272c.9-5.2 1.3-10.5 1.3-16s-.5-10.8-1.3-16l129.7-72.1c16.9 15 39.2 24.1 63.6 24.1z"/></symbol>
+  <symbol id="fa-spinner" viewBox="0 0 512 512"><path fill="currentColor" d="M208 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm0 416a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zM48 208a48 48 0 1 1 0 96 48 48 0 1 1 0-96zm368 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zM75 369.1A48 48 0 1 1 142.9 437 48 48 0 1 1 75 369.1zM75 75A48 48 0 1 1 142.9 142.9 48 48 0 1 1 75 75zM437 369.1A48 48 0 1 1 369.1 437 48 48 0 1 1 437 369.1z"/></symbol>
   <symbol id="fa-star" viewBox="0 0 576 512"><path fill="currentColor" d="M309.5-18.9c-4.1-8-12.4-13.1-21.4-13.1s-17.3 5.1-21.4 13.1L193.1 125.3 33.2 150.7c-8.9 1.4-16.3 7.7-19.1 16.3s-.5 18 5.8 24.4l114.4 114.5-25.2 159.9c-1.4 8.9 2.3 17.9 9.6 23.2s16.9 6.1 25 2L288.1 417.6 432.4 491c8 4.1 17.7 3.3 25-2s11-14.2 9.6-23.2L441.7 305.9 556.1 191.4c6.4-6.4 8.6-15.8 5.8-24.4s-10.1-14.9-19.1-16.3L383 125.3 309.5-18.9z"/></symbol>
   <symbol id="fa-stopwatch" viewBox="0 0 448 512"><path fill="currentColor" d="M168.5 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l32 0 0 25.3c-108 11.9-192 103.5-192 214.7 0 119.3 96.7 216 216 216s216-96.7 216-216c0-39.8-10.8-77.1-29.6-109.2l28.2-28.2c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-23.4 23.4c-32.9-30.2-75.2-50.3-122-55.5l0-25.3 32 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-112 0zm80 184l0 104c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-104c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></symbol>
   <symbol id="fa-sun" viewBox="0 0 576 512"><path fill="currentColor" d="M288-32c8.4 0 16.3 4.4 20.6 11.7L364.1 72.3 468.9 46c8.2-2 16.9 .4 22.8 6.3S500 67 498 75.1l-26.3 104.7 92.7 55.5c7.2 4.3 11.7 12.2 11.7 20.6s-4.4 16.3-11.7 20.6L471.7 332.1 498 436.8c2 8.2-.4 16.9-6.3 22.8S477 468 468.9 466l-104.7-26.3-55.5 92.7c-4.3 7.2-12.2 11.7-20.6 11.7s-16.3-4.4-20.6-11.7L211.9 439.7 107.2 466c-8.2 2-16.8-.4-22.8-6.3S76 445 78 436.8l26.2-104.7-92.6-55.5C4.4 272.2 0 264.4 0 256s4.4-16.3 11.7-20.6L104.3 179.9 78 75.1c-2-8.2 .3-16.8 6.3-22.8S99 44 107.2 46l104.7 26.2 55.5-92.6 1.8-2.6c4.5-5.7 11.4-9.1 18.8-9.1zm0 144a144 144 0 1 0 0 288 144 144 0 1 0 0-288zm0 240a96 96 0 1 1 0-192 96 96 0 1 1 0 192z"/></symbol>
   <symbol id="fa-table" viewBox="0 0 448 512"><path fill="currentColor" d="M384 32c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64l-320 0-6.5-.3C25.2 476.4 0 449.1 0 416L0 96C0 60.7 28.7 32 64 32l320 0zM64 320l0 96 128 0 0-96-128 0zm192 0l0 96 128 0 0-96-128 0zM64 256l128 0 0-96-128 0 0 96zm192 0l128 0 0-96-128 0 0 96z"/></symbol>
-  <symbol id="fa-tag" viewBox="0 0 512 512"><path fill="currentColor" d="M32.5 96l0 149.5c0 17 6.7 33.3 18.7 45.3l192 192c25 25 65.5 25 90.5 0L483.2 333.3c25-25 25-65.5 0-90.5l-192-192C279.2 38.7 263 32 246 32L96.5 32c-35.3 0-64 28.7-64 64zm112 16a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></symbol>
   <symbol id="fa-th-large" viewBox="0 0 448 512"><path fill="currentColor" d="M384 96l-128 0 0 128 128 0 0-128zm64 128l0 192c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 128zM64 288l0 128 128 0 0-128-128 0zm128-64l0-128-128 0 0 128 128 0zm64 64l0 128 128 0 0-128-128 0z"/></symbol>
   <symbol id="fa-tiktok" viewBox="0 0 448 512"><path fill="currentColor" d="M448.5 209.9c-44 .1-87-13.6-122.8-39.2l0 178.7c0 33.1-10.1 65.4-29 92.6s-45.6 48-76.6 59.6-64.8 13.5-96.9 5.3-60.9-25.9-82.7-50.8-35.3-56-39-88.9 2.9-66.1 18.6-95.2 40-52.7 69.6-67.7 62.9-20.5 95.7-16l0 89.9c-15-4.7-31.1-4.6-46 .4s-27.9 14.6-37 27.3-14 28.1-13.9 43.9 5.2 31 14.5 43.7 22.4 22.1 37.4 26.9 31.1 4.8 46-.1 28-14.4 37.2-27.1 14.2-28.1 14.2-43.8l0-349.4 88 0c-.1 7.4 .6 14.9 1.9 22.2 3.1 16.3 9.4 31.9 18.7 45.7s21.3 25.6 35.2 34.6c19.9 13.1 43.2 20.1 67 20.1l0 87.4z"/></symbol>
   <symbol id="fa-times" viewBox="0 0 384 512"><path fill="currentColor" d="M55.1 73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L147.2 256 9.9 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192.5 301.3 329.9 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.8 256 375.1 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192.5 210.7 55.1 73.4z"/></symbol>
@@ -208,12 +206,13 @@
             <div class="rr-cover__grid">
                 <figure class="rr-cover__media" style="--cover-max: 1544px">
                     <picture>
-                        <source type="image/avif" srcset="1-mobile.avif 800w, 1.avif 1600w" sizes="100vw">
-                        <img src="1.webp" srcset="1-mobile.webp 800w, 1.webp 1600w" sizes="100vw" alt="Τεχνική Ανάλυση της Ferrari SF26: Η Συντηρητική Επανάσταση" class="article-header-img"
+                        <source type="image/avif" srcset="1-mobile.avif 800w, 1.avif 1544w" sizes="100vw">
+                        <img src="1.webp" srcset="1-mobile.webp 800w, 1.webp 1544w" sizes="100vw" alt="Τεχνική Ανάλυση της Ferrari SF26: Η Συντηρητική Επανάσταση" class="article-header-img"
                              loading="eager" fetchpriority="high" decoding="sync"
                              width="1544" height="1030"
                              data-fallback-src="/blog-module/images/default-blog.jpg">
                     </picture>
+
                 </figure>
                 <div class="rr-cover__text">
                     <p class="rr-kicker"><a href="/blog-module/blog/index.html?category=Technical">Τεχνικά</a><span id="reading-time-value">7 λεπτά ανάγνωσης</span></p>
@@ -281,9 +280,9 @@
                  class="article-content-img"
                  loading="lazy" decoding="async" width="1280" height="720"
                  data-full-src="3.webp"
-                 data-fallback-src="/blog-module/images/default-blog.jpg">
+                 data-fallback-src="/blog-module/images/default-blog.jpg" style="--nat-w: 1280px">
             </picture>
-                <figcaption>Εικ. 3</figcaption>
+                <figcaption>Εικ. 1</figcaption>
             </figure>
 <p>Το πιο ενδιαφέρον είναι τα υλικά. Για πρώτη φορά, η Ferrari χρησιμοποίησε ανθρακονήματα με υψηλή πυκνότητα (high-density carbon fiber) σε συνδυασμό με θερμοπλαστικά για τις μη κρίσιμες δομές. Αυτό επιτρέπει την εξοικονόμηση 12 kg χωρίς θυσία στην ακαμψία. Οι ενισχύσεις από τιτάνιο δεν είναι τυχαίες - τοποθετήθηκαν στα σημεία όπου η ανάρτηση συναντά το monocoque, εκεί όπου οι δυνάμεις είναι μέγιστες κατά τις στροφές.</p>
 <h3 id="section-2">Μύτη</h3>
@@ -298,9 +297,9 @@
                  class="article-content-img"
                  loading="lazy" decoding="async" width="882" height="588"
                  data-full-src="4.webp"
-                 data-fallback-src="/blog-module/images/default-blog.jpg">
+                 data-fallback-src="/blog-module/images/default-blog.jpg" style="--nat-w: 882px">
             </picture>
-                <figcaption>Εικ. 4</figcaption>
+                <figcaption>Εικ. 2</figcaption>
             </figure>
 <p>Η μύτη της SF26 είναι ίσως το πιο αμφιλεγόμενο στοιχείο του αυτοκινήτου. Η Ferrari επέλεξε μια συμμετρική μύτη με τριπλό στοιχείο (T-Pod), μια λύση που θυμίζει τις Mercedes του 2014. Αλλά η ομοιότητα είναι μόνο επιφανειακή.</p>
 <p>Το πραγματικό ματς κρύβεται στα bargeboards. Η Ferrari χρησιμοποίησε πέντε διαφορετικές πλάκες, όχι για να κάνει το αυτοκίνητο να μοιάζει περίπλοκο, αλλά για να ελέγξει με ακρίβεια την ροή του αέρα. Κάθε πλάκη έχει μια συγκεκριμένη γωνία και καμπυλότητα, δημιουργώντας μια &quot;κατάστρωση&quot; που κατευθύνει τον αέρα προς το δάπεδο.</p>
@@ -322,9 +321,9 @@
                  class="article-content-img"
                  loading="lazy" decoding="async" width="1280" height="720"
                  data-full-src="5.webp"
-                 data-fallback-src="/blog-module/images/default-blog.jpg">
+                 data-fallback-src="/blog-module/images/default-blog.jpg" style="--nat-w: 1280px">
             </picture>
-                <figcaption>Εικ. 5</figcaption>
+                <figcaption>Εικ. 3</figcaption>
             </figure>
 <p>Το DRS είναι επίσης διαφορετικό. Δεν είναι απλώς μια λωρίδα - είναι ένα διπλό σύστημα. Η πρώτη λωρίδα είναι το κλασικό DRS για προσπεράσεις. Η δεύτερη λωρίδα ελέγχει την αεροδυναμική αντίσταση κατά το recharge της μπαταρίας - όταν ο κινητήρας λειτουργεί ως γεννήτρια, η δεύτερη λωρίδα ανοίγει ελαφρά, μειώνοντας την αντίσταση και επιτρέποντας περισσότερη ενέργεια να ανακτηθεί.</p>
 <p>Η αεροδυναμική οροφή έχει και μια κρυφή λειτουργία - λειτουργεί ως &quot;αεροδυναμικό φρένο&quot;. Σε περιπτώσεις έκτακτης ανάγκης, τα αεροδυναμικά στοιχεία κλειδώματος μπορούν να ανοίξουν ελαφρά, δημιουργώντας επιπλέον αντίσταση και βοηθώντας τον οδηγό να ελέγξει το αυτοκίνητο.</p>
@@ -343,9 +342,9 @@
                  class="article-content-img"
                  loading="lazy" decoding="async" width="713" height="401"
                  data-full-src="6.webp"
-                 data-fallback-src="/blog-module/images/default-blog.jpg">
+                 data-fallback-src="/blog-module/images/default-blog.jpg" style="--nat-w: 713px">
             </picture>
-                <figcaption>Εικ. 6</figcaption>
+                <figcaption>Εικ. 4</figcaption>
             </figure>
 <p>Οι έξι λειτουργίες Boost/Overtake δεν είναι απλώς προγράμματα - είναι ένας πολύπλοκος αλγόριθμος που συνδυάζει πολλαπλές μεταβλητές: θέση στο γκριτ, απόσταση από τον ανταγωνιστή, υπόλοιπο καυσίμου, θερμοκρασία των μπαταριών. Η λειτουργία 6, που ενεργοποιείται από τον οδηγό, είναι στην πραγματικότητα μια &quot;emergency override&quot; - όταν ο οδηγός πιέζει το κουμπί, το σύστημα παράγει την μέγιστη δυνατή ισχύ για 2 δευτερόλεπτα, ρισκάροντας την υπερθέρμανση των μπαταριών.</p>
 <h3 id="section-6">Κινητήρας</h3>
@@ -361,9 +360,9 @@
                  class="article-content-img"
                  loading="lazy" decoding="async" width="1544" height="1030"
                  data-full-src="7.webp"
-                 data-fallback-src="/blog-module/images/default-blog.jpg">
+                 data-fallback-src="/blog-module/images/default-blog.jpg" style="--nat-w: 1544px">
             </picture>
-                <figcaption>Εικ. 7</figcaption>
+                <figcaption>Εικ. 5</figcaption>
             </figure>
 <p>Οι κανονισμοί 2026 επιβάλλουν βιοκαύσιμα έως 40%, αλλά η Ferrari πήρε ένα βήμα παραπέρα - ανέπτυξε ένα σύστημα ψυχής εγχύσεως καυσίμου. Αυτό το σύστημα ψυχρέπει το καύσιμο πριν το εγχύσει στον κύλινδρο, επιτρέποντας καλύτερη καύση και μείωση των εκπομπών κατά 18%.</p>
 
@@ -449,10 +448,10 @@
     <section class="rr-next" aria-labelledby="rr-next-title">
         <h2 class="rr-next__mast" id="rr-next-title">NEXT UP<span aria-hidden="true">.</span></h2>
         <div class="rr-next__grid">
-            <a href="/blog-module/blog-entries/20260416G/article.html" class="rr-next__lead"><img src="/blog-module/blog-entries/20260416G/1-card.webp" srcset="/blog-module/blog-entries/20260416G/1-card.webp 400w, /blog-module/blog-entries/20260416G/1-mobile.webp 800w, /blog-module/blog-entries/20260416G/1.webp 1600w" sizes="(max-width: 1099px) 100vw, 56vw" alt="" loading="lazy" decoding="async" width="400" height="225" data-fallback-src="/blog-module/images/default-blog.jpg"><span class="rr-next__meta">16 Απρ 2026 · 3 λεπτά</span><span class="rr-next__title">Ξενέρωσε ο Max ;</span><span class="rr-next__by">Γιώργος Μπαλατζής</span></a>
+            <a href="/blog-module/blog-entries/20260416G/article.html" class="rr-next__lead"><img src="/blog-module/blog-entries/20260416G/1-card.webp" srcset="/blog-module/blog-entries/20260416G/1-card.webp 400w, /blog-module/blog-entries/20260416G/1-mobile.webp 800w" sizes="(max-width: 1099px) 100vw, 56vw" alt="" loading="lazy" decoding="async" width="400" height="225" data-fallback-src="/blog-module/images/default-blog.jpg"><span class="rr-next__meta">16 Απρ 2026 · 3 λεπτά</span><span class="rr-next__title">Ξενέρωσε ο Max ;</span><span class="rr-next__by">Γιώργος Μπαλατζής</span></a>
             <ol class="rr-next__list">
                 <li><a href="/blog-module/blog-entries/20260415/article.html"><img src="/blog-module/blog-entries/20260415/1-card.webp" srcset="/blog-module/blog-entries/20260415/1-card.webp 400w, /blog-module/blog-entries/20260415/1-mobile.webp 800w" sizes="140px" alt="" loading="lazy" decoding="async" width="400" height="500" data-fallback-src="/blog-module/images/default-blog.jpg"><span><span class="rr-next__meta">15 Απρ 2026 · 1 λεπτό</span><span class="rr-next__small">F1 Liveries 2026</span><span class="rr-next__by">F1 Stories</span></span></a></li>
-                <li><a href="/blog-module/blog-entries/20260610W/article.html"><img src="/blog-module/blog-entries/20260610W/1-card.webp" srcset="/blog-module/blog-entries/20260610W/1-card.webp 400w, /blog-module/blog-entries/20260610W/1-mobile.webp 800w" sizes="140px" alt="" loading="lazy" decoding="async" width="400" height="244" data-fallback-src="/blog-module/images/default-blog.jpg"><span><span class="rr-next__meta">10 Ιουν 2026 · 1 λεπτό</span><span class="rr-next__small">Alain Prost: Ο άνθρωπος που κέρδισε με το μυαλο</span><span class="rr-next__by">Θέμης Χαρβάλης</span></span></a></li>
+                <li><a href="/blog-module/blog-entries/20260610W/article.html"><img src="/blog-module/blog-entries/20260610W/1-card.webp" srcset="/blog-module/blog-entries/20260610W/1-card.webp 400w, /blog-module/blog-entries/20260610W/1-mobile.webp 470w" sizes="140px" alt="" loading="lazy" decoding="async" width="400" height="244" data-fallback-src="/blog-module/images/default-blog.jpg"><span><span class="rr-next__meta">10 Ιουν 2026 · 1 λεπτό</span><span class="rr-next__small">Alain Prost: Ο άνθρωπος που κέρδισε με το μυαλο</span><span class="rr-next__by">Θέμης Χαρβάλης</span></span></a></li>
             </ol>
         <div class="article-navigation">
             <a href="/blog-module/blog-entries/20260416G/article.html" id="prev-article-link" class="article-nav-link prev"><span class="article-nav-label"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Προηγούμενο</span><span class="article-nav-title">Ξενέρωσε ο Max ;</span></a>
@@ -536,7 +535,7 @@
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=d6b3acf8"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=e9b79b8d"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=8df896aa"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>

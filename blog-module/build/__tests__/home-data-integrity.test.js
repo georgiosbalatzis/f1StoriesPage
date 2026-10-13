@@ -3,6 +3,8 @@
 // story (C-5), and sizes the cover's supporting photographs for their crop (C-2).
 const assert = require('node:assert/strict');
 const test = require('node:test');
+// The homepage renderers read image sizes measured once per build (image-sizes.primeImageDimensions).
+test.before(() => require('../image-sizes').primeImageDimensions());
 const { renderNumbers, renderTelemetry, latestDebriefRound } = require('../home-panels');
 const { renderCoverFrames } = require('../index');
 
@@ -138,9 +140,11 @@ test('C-2: supporting photographs ask for their cropped size, at the widths the 
     // A 600px-tall desktop frame needs 1067px of a 16:9 photograph; a 150px phone frame 266px.
     assert.match(html, /sizes="\(max-width: 533px\) 266px, \(max-width: 767px\) 50vw, \(max-width: 1099px\) calc\(37\.5vw \* 1\.778\), \(max-width: 1538px\) calc\(39vw \* 1\.778\), 1067px"/);
     assert.match(html, /width="1600" height="900" fetchpriority="low"/);
-    // An original no larger than the 800px copy is not offered as bigger than it is.
-    const small = renderCoverFrames([post], () => ({ image: '/blog-module/blog-entries/20261007G/1.webp', imageWidth: 770, imageHeight: 433 }));
-    assert.doesNotMatch(small, /1\.webp \d+w|1\.avif/);
+    // An original no larger than its "800px" copy (20261007F is 770px, so the copy is too) is offered once, at 770w.
+    const smallPost = { ...post, id: '20261007F', thumbnail: '/blog-module/blog-entries/20261007F/1-card.webp' };
+    const small = renderCoverFrames([smallPost], () => ({ image: '/blog-module/blog-entries/20261007F/1.webp', imageWidth: 770, imageHeight: 513 }));
+    assert.match(small, /srcset="[^"]*1-card\.webp 400w, [^"]*1-mobile\.webp 770w"/);
+    assert.doesNotMatch(small, /1\.webp \d+w|1\.avif|800w/);
     // A header photograph that is not the first image is not mistaken for it.
     assert.doesNotMatch(renderCoverFrames([post], () => ({ image: '/blog-module/blog-entries/20261007G/2.webp', imageWidth: 1600, imageHeight: 900 })), /1\.webp \d+w/);
 });

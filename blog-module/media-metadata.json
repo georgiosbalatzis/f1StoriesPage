@@ -1,0 +1,353 @@
+{
+  "_about": "P3D media contract (blog-module/build/media-meta.js). Keys are \"<article id>/<slot>\" (1 card, 2 cover background, 3+ body). Only verified facts: type and focus are presentation; credit comes from the file's own metadata or text printed in the image; synthetic is set only when the file documents AI generation. Unresolved provenance and rights questions live in the editorial audit, not here.",
+  "images": {
+    "20250412G/7": {
+      "credit": "XPB Images",
+      "source": "XMP in the published 7.avif: photoshop:Credit, photoshop:Source xpbimages.com"
+    },
+    "20250603GF/1": {
+      "type": "diagram"
+    },
+    "20250603GF/2": {
+      "type": "diagram"
+    },
+    "20250607G/1": {
+      "credit": "Getty Images/iStockphoto",
+      "source": "XMP in the published 2.avif: photoshop:Credit, photoshop:Source iStockphoto (same picture as 1.webp)"
+    },
+    "20250607G/2": {
+      "credit": "Getty Images/iStockphoto",
+      "source": "XMP in the published 2.avif: photoshop:Credit, photoshop:Source iStockphoto (same picture as 1.webp)"
+    },
+    "20250617J/1": {
+      "type": "poster"
+    },
+    "20250617J/2": {
+      "type": "poster"
+    },
+    "20250706G/1": {
+      "synthetic": "confirmed",
+      "source": "XMP in the published 2.avif: Iptc4xmpExt:DigitalSourceType = trainedAlgorithmicMedia; photoshop:Credit = \"Made with Google AI\""
+    },
+    "20250706G/2": {
+      "synthetic": "confirmed",
+      "source": "XMP in the published 2.avif: Iptc4xmpExt:DigitalSourceType = trainedAlgorithmicMedia; photoshop:Credit = \"Made with Google AI\""
+    },
+    "20250712G/1": {
+      "type": "diagram"
+    },
+    "20250712G/2": {
+      "type": "diagram"
+    },
+    "20250715G/1": {
+      "synthetic": "confirmed",
+      "source": "XMP in the published 2.avif: Iptc4xmpExt:DigitalSourceType = trainedAlgorithmicMedia; photoshop:Credit = \"Made with Google AI\""
+    },
+    "20250715G/2": {
+      "synthetic": "confirmed",
+      "source": "XMP in the published 2.avif: Iptc4xmpExt:DigitalSourceType = trainedAlgorithmicMedia; photoshop:Credit = \"Made with Google AI\""
+    },
+    "20250721J/1": {
+      "synthetic": "confirmed",
+      "source": "XMP in the published 2.avif: Iptc4xmpExt:DigitalSourceType = trainedAlgorithmicMedia; photoshop:Credit = \"Made with Google AI\""
+    },
+    "20250721J/2": {
+      "synthetic": "confirmed",
+      "source": "XMP in the published 2.avif: Iptc4xmpExt:DigitalSourceType = trainedAlgorithmicMedia; photoshop:Credit = \"Made with Google AI\""
+    },
+    "20250808G/1": {
+      "credit": "XPB Images",
+      "source": "XMP in the published 2.avif: photoshop:Credit, photoshop:Source xpbimages.com (same picture as 1.webp)"
+    },
+    "20250808G/2": {
+      "credit": "XPB Images",
+      "source": "XMP in the published 2.avif: photoshop:Credit, photoshop:Source xpbimages.com (same picture as 1.webp)"
+    },
+    "20250816W/1": {
+      "type": "diagram"
+    },
+    "20250816W/2": {
+      "type": "diagram"
+    },
+    "20251007W/1": {
+      "focus": "50% 45%"
+    },
+    "20251009W/1": {
+      "focus": "50% 40%"
+    },
+    "20260224J/1": {
+      "type": "poster"
+    },
+    "20260224J/2": {
+      "type": "poster"
+    },
+    "20260304D/1": {
+      "type": "poster"
+    },
+    "20260304D/2": {
+      "type": "poster"
+    },
+    "20260319W/1": {
+      "type": "illustration",
+      "credit": "Ferrari Press Office",
+      "source": "printed in the image (lower left)"
+    },
+    "20260319W/2": {
+      "type": "illustration",
+      "credit": "Ferrari Press Office",
+      "source": "printed in the image (lower left)"
+    },
+    "20260320J/1": {
+      "type": "poster"
+    },
+    "20260320J/2": {
+      "type": "poster"
+    },
+    "20260327J/1": {
+      "type": "poster"
+    },
+    "20260327J/2": {
+      "type": "poster"
+    },
+    "20260502J/1": {
+      "type": "poster"
+    },
+    "20260506J/1": {
+      "type": "graphic"
+    },
+    "20260507D/1": {
+      "type": "graphic"
+    },
+    "20260513J/1": {
+      "type": "poster"
+    },
+    "20260523J/1": {
+      "type": "poster"
+    },
+    "20260526D/1": {
+      "type": "graphic"
+    },
+    "20260604/1": {
+      "type": "graphic"
+    },
+    "20260604G/1": {
+      "type": "graphic"
+    },
+    "20260604T/1": {
+      "type": "graphic"
+    },
+    "20260605/1": {
+      "type": "graphic"
+    },
+    "20260605G/1": {
+      "type": "graphic"
+    },
+    "20260606J/1": {
+      "type": "poster"
+    },
+    "20260607D/1": {
+      "type": "graphic"
+    },
+    "20260610-2J/1": {
+      "type": "poster"
+    },
+    "20260610G/1": {
+      "type": "graphic"
+    },
+    "20260613J/1": {
+      "type": "poster"
+    },
+    "20260620J/1": {
+      "type": "poster"
+    },
+    "20260624G/1": {
+      "type": "poster"
+    },
+    "20260627G/1": {
+      "type": "graphic"
+    },
+    "20260627J/1": {
+      "type": "poster"
+    },
+    "20260701D/1": {
+      "type": "graphic"
+    },
+    "20260701G/1": {
+      "type": "graphic"
+    },
+    "20260704J/1": {
+      "type": "poster"
+    },
+    "20260706D/1": {
+      "type": "graphic"
+    },
+    "20260709J/1": {
+      "type": "poster"
+    },
+    "20260713J/1": {
+      "type": "poster"
+    },
+    "20260719J/1": {
+      "type": "poster"
+    },
+    "20260719J/2": {
+      "type": "poster"
+    },
+    "20260721W/1": {
+      "type": "graphic"
+    },
+    "20260721W/2": {
+      "type": "graphic"
+    },
+    "20260722T/1": {
+      "focus": "30% 70%"
+    },
+    "20260722T/3": {
+      "type": "chart",
+      "alt": "Γράφημα γραμμής: Εξέλιξη της διαφοράς Antonelli–Leclerc από τον 22ο έως τον 44ο γύρο. Θετική τιμή: Antonelli πίσω, αρνητική: Antonelli μπροστά.",
+      "credit": "FIA Race History Chart (δεδομένα), υπολογισμοί F1Stories",
+      "source": "printed in the image: \"Πηγή δεδομένων: FIA Race History Chart. Υπολογισμοί F1Stories.\""
+    },
+    "20260722T/4": {
+      "type": "chart",
+      "alt": "Ραβδόγραμμα: Πώς άλλαξε το pace delta. Μέση διαφορά υπέρ της Mercedes ανά φάση (κατατακτήριες, Medium 5–17, Hard 22–25, Hard 26–33, μετά το πέρασμα 35–42). Αρνητική τιμή σημαίνει ότι η Ferrari ήταν ταχύτερη."
+    },
+    "20260722T/5": {
+      "type": "chart",
+      "alt": "Ραβδόγραμμα: Διάρκεια των δύο stint. Γύροι σε κάθε σετ Medium και Hard για Antonelli και Leclerc στον αγώνα των 44 γύρων."
+    },
+    "20260722T/6": {
+      "type": "chart",
+      "alt": "Ραβδόγραμμα: Τα αγωνιστικά παράθυρα του Hard stint. Πόσους γύρους πέρασε ο Antonelli σε κάθε ζώνη διαφοράς απέναντι στον Leclerc, από τον 22ο έως τον 44ο γύρο."
+    },
+    "20260724G/1": {
+      "type": "graphic"
+    },
+    "20260725J/1": {
+      "type": "poster"
+    },
+    "20260726D/1": {
+      "type": "graphic"
+    },
+    "20260727J/1": {
+      "type": "poster"
+    },
+    "20260729W/1": {
+      "type": "archival",
+      "focus": "62% 52%"
+    },
+    "20260729W/2": {
+      "type": "archival",
+      "focus": "66% 36%"
+    },
+    "20260729W/3": {
+      "type": "archival"
+    },
+    "20260729W/4": {
+      "type": "archival"
+    },
+    "20260822J/1": {
+      "type": "poster"
+    },
+    "20260824D/1": {
+      "type": "graphic"
+    },
+    "20260824J/1": {
+      "type": "poster"
+    },
+    "20260831W/1": {
+      "type": "archival",
+      "focus": "40% 72%"
+    },
+    "20260831W/2": {
+      "type": "archival",
+      "focus": "55% 62%"
+    },
+    "20260831W/3": {
+      "type": "archival"
+    },
+    "20260831W/4": {
+      "type": "archival"
+    },
+    "20260901J/1": {
+      "type": "poster"
+    },
+    "20260905J/1": {
+      "type": "poster"
+    },
+    "20260909J/1": {
+      "type": "poster"
+    },
+    "20260912J/1": {
+      "type": "poster"
+    },
+    "20260914J/1": {
+      "type": "poster"
+    },
+    "20260918-2G/1": {
+      "focus": "56% 28%"
+    },
+    "20260924J/1": {
+      "type": "poster"
+    },
+    "20260928-2G/1": {
+      "type": "poster"
+    },
+    "20260930J/1": {
+      "type": "poster"
+    },
+    "20261002J/1": {
+      "type": "poster"
+    },
+    "20261004J/1": {
+      "type": "poster"
+    },
+    "20261005W/1": {
+      "focus": "68% 50%"
+    },
+    "20261006F/1": {
+      "focus": "52% 52%"
+    },
+    "20261006G/1": {
+      "focus": "60% 58%"
+    },
+    "20261007F/1": {
+      "credit": "AP Photo/Aijaz Rahi",
+      "source": "XMP in 1.webp: photoshop:Credit, dc:creator Aijaz Rahi, photoshop:Source AP",
+      "focus": "56% 74%"
+    },
+    "20261008J/1": {
+      "type": "poster"
+    },
+    "20261009W/1": {
+      "focus": "50% 84%"
+    },
+    "20261009W/2": {
+      "focus": "42% 62%"
+    },
+    "20261010J/1": {
+      "type": "poster"
+    },
+    "20261010W/1": {
+      "focus": "62% 58%"
+    },
+    "20261010W/2": {
+      "focus": "55% 50%"
+    },
+    "20261011J/1": {
+      "type": "poster"
+    },
+    "20261011W/1": {
+      "focus": "42% 38%"
+    },
+    "20261012W/1": {
+      "focus": "58% 62%"
+    },
+    "20261012W/2": {
+      "focus": "50% 55%"
+    },
+    "20261013G/1": {
+      "focus": "36% 46%"
+    }
+  }
+}

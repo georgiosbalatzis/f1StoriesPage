@@ -1,7 +1,19 @@
+const crypto = require('crypto');
 const { fs, path, CONFIG, escapeHtmlAttribute, getCardThumbnailPath, getImageDimensionsForPublicPath } = require('./shared');
-const { getPostTaxonomy, authorLabel, formatDate, formatReadingTime, cardImageSrcset } = require('../taxonomy');
+const { cardSrcset } = require('./image-sizes');
+const { getPostTaxonomy, authorLabel, formatDate, formatReadingTime } = require('../taxonomy');
+const { mediaAttributes, cardDisclosureHtml } = require('./media-meta');
 
-function scoreRelatedPosts(blogPosts, post, index) {
+// `picturesOf(post)` lists keys of the photographs a post shows (cover and card); a candidate whose card repeats the
+// article's own cover or another chosen card is passed over, so one photograph appears once per page.
+function scoreRelatedPosts(blogPosts, post, index, picturesOf = () => []) {
+    const shown = new Set(picturesOf(post));
+    const distinct = candidate => {
+        const keys = picturesOf(candidate).slice(-1);
+        if (keys.some(key => shown.has(key))) return false;
+        keys.forEach(key => shown.add(key));
+        return true;
+    };
     const taxonomy = getPostTaxonomy(post);
     const genericTags = new Set(['f1', 'formula 1', 'racing', 'misc', 'random', 'images', 'gallery', 'gp']);
     const tags = new Set(taxonomy.tags.map(tag => tag.toLocaleLowerCase()).filter(tag => !genericTags.has(tag)));
@@ -22,15 +34,31 @@ function scoreRelatedPosts(blogPosts, post, index) {
         .filter(item => item.score > 0)
         .sort((a, b) => b.score - a.score || new Date(b.post.date) - new Date(a.post.date));
 
-    let relatedPosts = scored.slice(0, 3).map(item => item.post);
-    if (relatedPosts.length < 3) {
-        const ids = new Set(relatedPosts.map(candidate => candidate.id));
-        const fallbacks = blogPosts
-            .filter((candidate, candidateIndex) => candidateIndex !== index && !ids.has(candidate.id))
-            .slice(0, 3 - relatedPosts.length);
-        relatedPosts = relatedPosts.concat(fallbacks);
+    const relatedPosts = [];
+    for (const candidate of scored.map(item => item.post)) {
+        if (relatedPosts.length === 3) break;
+        if (distinct(candidate)) relatedPosts.push(candidate);
+    }
+    const ids = new Set(relatedPosts.map(candidate => candidate.id));
+    for (const [candidateIndex, candidate] of blogPosts.entries()) {
+        if (relatedPosts.length === 3) break;
+        if (candidateIndex !== index && !ids.has(candidate.id) && distinct(candidate)) relatedPosts.push(candidate);
     }
     return relatedPosts;
+}
+
+// Content hashes of the post's cover file and card source (byte-identical reuse across stories counts as the same picture).
+const pictureHashes = new Map();
+function pictureKeysOf(post) {
+    const files = [post.backgroundImage || post.image, post.image].map(image => {
+        if (!image || !image.startsWith('/blog-module/blog-entries/')) return null;
+        return path.join(CONFIG.BLOG_DIR, '..', image.replace(/^\/blog-module\//, ''));
+    });
+    return files.map(file => {
+        if (!file || !fs.existsSync(file)) return null;
+        if (!pictureHashes.has(file)) pictureHashes.set(file, crypto.createHash('sha1').update(fs.readFileSync(file)).digest('hex'));
+        return pictureHashes.get(file);
+    }).filter(Boolean);
 }
 
 // NEXT UP. (the article's Race Report ending): the best match leads with a large photograph,
@@ -40,12 +68,13 @@ async function buildRelatedPostsHtml(relatedPosts) {
         const lead = index === 0;
         const relatedImage = getCardThumbnailPath(related.image);
         const relatedImagePath = relatedImage.substring(relatedImage.lastIndexOf('/') + 1);
-        const srcset = escapeHtmlAttribute(cardImageSrcset(`/blog-module/blog-entries/${related.id}/${relatedImagePath}`, lead));
+        const srcset = escapeHtmlAttribute(cardSrcset(`/blog-module/blog-entries/${related.id}/${relatedImagePath}`, lead));
         const imageDimensions = await getImageDimensionsForPublicPath(relatedImage);
         const hasImage = Boolean(relatedImage && relatedImage !== CONFIG.DEFAULT_BLOG_IMAGE && imageDimensions);
         const size = imageDimensions ? ` width="${imageDimensions.width}" height="${imageDimensions.height}"` : '';
         const image = hasImage
-            ? `<img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}"${srcset ? ` srcset="${srcset}" sizes="${lead ? '(max-width: 1099px) 100vw, 56vw' : '140px'}"` : ''} alt="" loading="lazy" decoding="async"${size} data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`
+            ? `<img src="/blog-module/blog-entries/${related.id}/${relatedImagePath}"${srcset ? ` srcset="${srcset}" sizes="${lead ? '(max-width: 1099px) 100vw, 56vw' : '140px'}"` : ''} alt="" loading="lazy" decoding="async"${size}${mediaAttributes(related.id, relatedImagePath)} data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`
+                + (lead ? cardDisclosureHtml(related.id, relatedImagePath) : '')
             : '';
         const readTime = formatReadingTime(related.readingTime);
         const meta = `<span class="rr-next__meta">${escapeHtmlAttribute(formatDate(related.date))}${readTime ? ` · ${escapeHtmlAttribute(readTime)}` : ''}</span>`;
@@ -69,7 +98,7 @@ async function injectRelatedArticles(blogPosts) {
         const postHtml = fs.readFileSync(postHtmlPath, 'utf8');
         if (!/^[ \t]*RELATED_ARTICLES[ \t]*$/m.test(postHtml)) continue;
 
-        const relatedPostsHtml = await buildRelatedPostsHtml(scoreRelatedPosts(blogPosts, post, index));
+        const relatedPostsHtml = await buildRelatedPostsHtml(scoreRelatedPosts(blogPosts, post, index, pictureKeysOf));
         fs.writeFileSync(postHtmlPath, postHtml.replace(/^[ \t]*RELATED_ARTICLES[ \t]*$/gm, relatedPostsHtml ? `            ${relatedPostsHtml}` : ''));
     }
 }

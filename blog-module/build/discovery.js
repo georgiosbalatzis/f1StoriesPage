@@ -329,7 +329,7 @@ function buildPages(posts, { today, selection = {}, deps, preload = '' }) {
     const pages = [];
     const rail = current => railHtml(ctx, current);
     const leadImage = model.lead ? deps.storyImage(model.lead) : '';
-    const leadSrcset = leadImage ? T.cardImageSrcset(leadImage, false) : '';
+    const leadSrcset = leadImage ? (deps.cardSrcset || T.cardImageSrcset)(leadImage, false) : '';
     pages.push({
         file: 'index.html', path: route.index, canonical: `${SITE}${route.index}`, lastmod: model.reference,
         head: headHtml({

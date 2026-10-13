@@ -52,6 +52,10 @@ runs:
       shell: bash
       run: npm run quality:static
 
+    - name: Verify public editorial media
+      shell: bash
+      run: npm run qa:media
+
     - name: Audit runtime dependencies
       shell: bash
       run: npm run audit:runtime

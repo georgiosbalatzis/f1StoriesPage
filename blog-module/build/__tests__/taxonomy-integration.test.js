@@ -3,6 +3,8 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
+// The homepage renderers read image sizes measured once per build (image-sizes.primeImageDimensions).
+test.before(() => require('../image-sizes').primeImageDimensions());
 const { PUBLIC_CATEGORIES, AUTHORS, findAuthor, authorLabel, authorThumb, getPostTaxonomy } = require('../../taxonomy');
 const {
     buildIndexPosts, buildCompactIndexData, buildHomeLatest,

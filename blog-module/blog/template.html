@@ -58,10 +58,10 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
     <link rel="stylesheet" href="/styles.min.css?v=73f302cc">
-    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=5c33bdf2">
+    <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=7cba917d">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=187f9b13">
     <link rel="stylesheet" href="/styles/editorial.min.css?v=38d47ab9">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=e4fd97c9">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=aceba33a">
 
     <!-- Preload hero image for LCP -->
     ARTICLE_HERO_PRELOAD
@@ -207,11 +207,12 @@
                 <figure class="rr-cover__media"ARTICLE_COVER_STYLE>
                     <picture>
                         ARTICLE_HERO_AVIF_SOURCE
-                        <img src="ARTICLE_IMAGE_ATTR" srcset="ARTICLE_IMAGE_SRCSET" sizes="ARTICLE_COVER_SIZES" alt="ARTICLE_TITLE_ATTR" class="article-header-img"
+                        <img src="ARTICLE_IMAGE_ATTR" srcset="ARTICLE_IMAGE_SRCSET" sizes="ARTICLE_COVER_SIZES" alt="ARTICLE_COVER_ALT" class="article-header-img"
                              loading="eager" fetchpriority="high" decoding="sync"
                              width="ARTICLE_IMAGE_WIDTH" height="ARTICLE_IMAGE_HEIGHT"
                              data-fallback-src="/blog-module/images/default-blog.jpg">
                     </picture>
+                    ARTICLE_COVER_CAPTION
                 </figure>
                 <div class="rr-cover__text">
                     <p class="rr-kicker"><a href="ARTICLE_CATEGORY_HREF">ARTICLE_CATEGORY_TEXT</a><span id="reading-time-value">ARTICLE_READING_TIME</span></p>
@@ -347,7 +348,7 @@
     </div>
 </footer>
 <!-- @include:end partials/footer.html -->
-<script defer src="/blog-module/blog/article-script.min.js?v=fdedcf14"></script>
+<script defer src="/blog-module/blog/article-script.min.js?v=e8c273a0"></script>
 <script defer src="/blog-module/blog/article-comments.min.js?v=80c13fc1"></script>
 <script defer src="/scripts/shared-nav.min.js?v=8df896aa"></script>
 <script defer src="/scripts/cookie-consent.min.js?v=217b6a3e"></script>

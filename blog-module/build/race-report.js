@@ -179,8 +179,52 @@ function subheadIndexes(blocks) {
     return found.length >= 2 ? found : [];
 }
 
+// Technical charts keep a legible width on phones: the raster sits in its own labelled, keyboard-focusable
+// horizontal scroller (the page itself never scrolls sideways). Idempotent.
+function wrapChartScroller(chartHtml) {
+    if (chartHtml.includes('class="rr-chart__scroll"')) return chartHtml;
+    const title = textOf((/<p class="rr-chart__title">([\s\S]*?)<\/p>/.exec(chartHtml) || [])[1]);
+    const label = escapeHtmlAttribute(`Γράφημα${title ? `: ${decodeAmp(title)}` : ''} (οριζόντια κύλιση)`);
+    return chartHtml.replace(/(<figure class="article-figure">\s*)(<picture>[\s\S]*?<\/picture>|<img\b[^>]*>)/,
+        `$1<div class="rr-chart__scroll" tabindex="0" role="region" aria-label="${label}">$2</div>`);
+}
+
+// Images carry their own pixel size, so CSS never enlarges them past it: with width descriptors a browser sizes an
+// image to its `sizes` slot (a 275px file in a "770px" slot draws 770px wide). Figures get --nat-w, gallery frames
+// --nat-h (the filmstrip shares one height). No gallery frame loads before it nears the viewport (the first used to
+// load eagerly although the strip sits below the fold). Idempotent: only this build's own style is replaced.
+const OWN_STYLE = /\sstyle="--nat-[hw]: \d+px"/;
+function naturalSizes(html) {
+    const sized = (img, prop, attr) => {
+        const value = Number((new RegExp(`\\s${attr}="(\\d+)"`).exec(img) || [])[1]);
+        const tag = img.replace(OWN_STYLE, '');
+        return value && !/\sstyle="/.test(tag) ? tag.replace(/>$/, ` style="--nat-${prop}: ${value}px">`) : tag;
+    };
+    // A frame is drawn at its own ratio in a strip 220px tall on phones and at most 400px tall (never past its own
+    // pixels, never wider than 720px); `sizes` asks for that width instead of the article column's 770px.
+    const frameSizes = img => {
+        const w = Number((/\swidth="(\d+)"/.exec(img) || [])[1]);
+        const h = Number((/\sheight="(\d+)"/.exec(img) || [])[1]);
+        if (!w || !h) return null;
+        const at = height => Math.min(720, Math.round(Math.min(height, h) * w / h));
+        return `(max-width: 733px) ${at(220)}px, ${at(400)}px`;
+    };
+    return html
+        .replace(/(<div class="gallery-slide[^"]*"[^>]*>\s*(?:<picture>[\s\S]*?)?)(<img\b[^>]*>)/g, (match, before, img) => {
+            const sizes = frameSizes(img);
+            const set = text => (sizes ? text.replace(/\ssizes="[^"]*"/g, ` sizes="${sizes}"`) : text);
+            return set(before) + set(sized(img.replace(/\bloading="eager"(\s+fetchpriority="low")?/, 'loading="lazy"'), 'h', 'height'));
+        })
+        .replace(/(<figure class="article-figure">\s*(?:<div class="rr-chart__scroll"[^>]*>\s*)?(?:<picture>[\s\S]*?)?)(<img\b[^>]*\bclass="article-content-img"[^>]*>)/g, (match, before, img) =>
+            before + sized(img, 'w', 'width'));
+}
+
 function transformBody(rawHtml) {
-    const html = String(rawHtml || '').replace(/<figcaption>Image (\d+)<\/figcaption>/g, '<figcaption>Εικ. $1</figcaption>');
+    let figureNo = 0;
+    // Generic captions count the figures a reader sees (they used to print the file's slot number, starting at 3).
+    const html = naturalSizes(String(rawHtml || '')
+        .replace(/<figcaption>Image (\d+)<\/figcaption>/g, '<figcaption>Εικ. $1</figcaption>')
+        .replace(/<figcaption>Εικ\. \d+/g, () => `<figcaption>Εικ. ${++figureNo}`));
     let blocks = topLevelBlocks(html)
         .map(unpromote)
         .map(demoteBodyH1)
@@ -216,6 +260,9 @@ function transformBody(rawHtml) {
         blocks.splice(i - 2, 3, { tag: 'div', before: title.before, html: chart });
         i -= 2;
     }
+    blocks.forEach(block => {
+        if (block.tag === 'div' && hasClass(block.html, 'rr-chart')) block.html = wrapChartScroller(block.html);
+    });
 
     // Paragraph subheads (archive entries imported without real headings) become native h2 sections, text and inline
     // markup unchanged. The class marks them as inferred, so the next build can tell them from authored headings.
