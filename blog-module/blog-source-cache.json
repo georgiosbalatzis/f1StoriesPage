@@ -1,6 +1,36 @@
 {
   "posts": [
     {
+      "id": "20261012W",
+      "title": "Max Verstappen: Ακριβής, πειθαρχημένος και ικανότατος  διαχειριστής της μεγάλης φθοράς των ελαστικών στην Σιγκαπούρη.",
+      "author": "Themis Charvalis",
+      "date": "2026-10-12",
+      "dateISO": "2026-10-12",
+      "displayDate": "12 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261012W/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261012W/2.webp",
+      "excerpt": "Ο Verstappen είχε ήδη δώσει δείγματα της ανταγωνιστικότητας της Red Bull κατακτώντας τη νίκη στο Sprint του Σαββάτου, σε έναν αγώνα που επηρεάστηκε από τη βροχή. Την Κυριακή, όμως, έπρεπε να...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261012W/article.html",
+      "category": "Analysis",
+      "categories": [
+        "Analysis"
+      ],
+      "tags": [
+        "Max Verstappen",
+        "F1",
+        "Red bull Rb22",
+        "Singapore gp"
+      ],
+      "wordCount": 337,
+      "readingTime": "2 min",
+      "imageWidth": 1200,
+      "imageHeight": 704,
+      "backgroundImageWidth": 764,
+      "backgroundImageHeight": 401
+    },
+    {
       "id": "20261011J",
       "title": "Vasseur εναντίον Hamilton; Η Ferrari ψάχνει τον ένοχο",
       "author": "Giannis Poulikidis",
@@ -296,7 +326,7 @@
         "Grand Prix Bahrain",
         "Sepang circuit"
       ],
-      "wordCount": 581,
+      "wordCount": 578,
       "readingTime": "3 min",
       "imageWidth": 1092,
       "imageHeight": 683,
@@ -994,7 +1024,7 @@
       "tags": [
         "George Russell"
       ],
-      "wordCount": 444,
+      "wordCount": 441,
       "readingTime": "3 min",
       "imageWidth": 768,
       "imageHeight": 432,
@@ -2415,7 +2445,7 @@
         "Lando Norris",
         "McLaren"
       ],
-      "wordCount": 830,
+      "wordCount": 827,
       "readingTime": "5 min",
       "imageWidth": 547,
       "imageHeight": 365,
@@ -2566,7 +2596,7 @@
         "Kimi Antonelli",
         "Mercedes"
       ],
-      "wordCount": 418,
+      "wordCount": 415,
       "readingTime": "3 min",
       "imageWidth": 739,
       "imageHeight": 415,
@@ -2777,7 +2807,7 @@
         "Charles Leclerc",
         "Lewis Hamilton"
       ],
-      "wordCount": 670,
+      "wordCount": 667,
       "readingTime": "4 min",
       "imageWidth": 737,
       "imageHeight": 416,
@@ -3398,7 +3428,7 @@
         "Mark Marquez",
         "Ducati"
       ],
-      "wordCount": 494,
+      "wordCount": 491,
       "readingTime": "3 min",
       "imageWidth": 1506,
       "imageHeight": 786,
@@ -3491,7 +3521,7 @@
         "Williams F1",
         "V10"
       ],
-      "wordCount": 372,
+      "wordCount": 369,
       "readingTime": "2 min",
       "imageWidth": 687,
       "imageHeight": 447,
@@ -3637,7 +3667,7 @@
         "Kimi Antonelli",
         "Mercedes AMG F1"
       ],
-      "wordCount": 579,
+      "wordCount": 576,
       "readingTime": "3 min",
       "imageWidth": 2048,
       "imageHeight": 1152,
@@ -3694,8 +3724,7 @@
         "Racing",
         "2026 season",
         "Silverstone",
-        "Sprint qualifying",
-        "2026"
+        "Sprint qualifying"
       ],
       "wordCount": 781,
       "readingTime": "4 min",
@@ -3878,7 +3907,7 @@
         "Ai Ogura",
         "Grand prix of Assen"
       ],
-      "wordCount": 298,
+      "wordCount": 295,
       "readingTime": "2 min",
       "imageWidth": 1024,
       "imageHeight": 576,
@@ -4057,7 +4086,7 @@
         "Jenson Button",
         "2009 season"
       ],
-      "wordCount": 408,
+      "wordCount": 405,
       "readingTime": "3 min",
       "imageWidth": 460,
       "imageHeight": 276,
@@ -4087,10 +4116,9 @@
         "Marquez",
         "Ducati",
         "Brno",
-        "2026 season",
-        "2026"
+        "2026 season"
       ],
-      "wordCount": 326,
+      "wordCount": 323,
       "readingTime": "2 min",
       "imageWidth": 739,
       "imageHeight": 415,
@@ -4120,8 +4148,7 @@
         "Peco Bagnaia",
         "Ducati",
         "Brno",
-        "2026 season",
-        "2026"
+        "2026 season"
       ],
       "wordCount": 330,
       "readingTime": "2 min",
@@ -4181,10 +4208,9 @@
         "Ferrari",
         "Lewis Hamilton",
         "2026 season",
-        "Carlo Santi",
-        "2026"
+        "Carlo Santi"
       ],
-      "wordCount": 722,
+      "wordCount": 719,
       "readingTime": "4 min",
       "imageWidth": 739,
       "imageHeight": 415,
@@ -4216,7 +4242,7 @@
         "Michael Schumacher",
         "Mika Hakkinen"
       ],
-      "wordCount": 388,
+      "wordCount": 385,
       "readingTime": "2 min",
       "imageWidth": 635,
       "imageHeight": 381,
@@ -4248,7 +4274,7 @@
         "Prost",
         "Senna"
       ],
-      "wordCount": 422,
+      "wordCount": 419,
       "readingTime": "3 min",
       "imageWidth": 437,
       "imageHeight": 575,
@@ -4276,8 +4302,7 @@
         "F1",
         "Racing",
         "Kimi Antonelli",
-        "2026 Championship",
-        "2026"
+        "2026 Championship"
       ],
       "wordCount": 742,
       "readingTime": "4 min",
@@ -4338,7 +4363,7 @@
         "Jochen Rindt",
         "F1 Champions"
       ],
-      "wordCount": 638,
+      "wordCount": 635,
       "readingTime": "4 min",
       "imageWidth": 1600,
       "imageHeight": 1050,
@@ -4481,9 +4506,9 @@
       "tags": [
         "F1",
         "Racing",
+        "2026",
         "Lewis Hamilton",
-        "Ferrari F1",
-        "2026"
+        "Ferrari F1"
       ],
       "wordCount": 630,
       "readingTime": "4 min",
@@ -5455,7 +5480,7 @@
         "Racing",
         "90ς"
       ],
-      "wordCount": 263,
+      "wordCount": 260,
       "readingTime": "2 min",
       "imageWidth": 1080,
       "imageHeight": 1604,
@@ -10405,5 +10430,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-12T12:03:32.753Z"
+  "lastUpdated": "2026-10-13T07:48:10.586Z"
 }
