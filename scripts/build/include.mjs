@@ -27,6 +27,9 @@ const DEFAULT_CONTEXT = {
   navJournal: '',
   navStandings: '',
   navAuthors: '',
+  // partials/race-desk-index.html: its heading level, and THE GRID marked current on its own page.
+  deskHeading: 'h3',
+  deskGridCurrent: '',
 };
 
 const ACTIVE = ' active';
@@ -37,6 +40,8 @@ const PAGE_CONTEXT = {
   'authors/index.html': { navAuthors: ACTIVE },
   'standings/index.html': {
     navStandings: ACTIVE,
+    deskHeading: 'h2',
+    deskGridCurrent: ' aria-current="page"',
     footerExtraLinks:
       '\n' +
       '                    <span class="footer-separator">|</span>\n' +

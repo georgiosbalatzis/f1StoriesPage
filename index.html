@@ -33,7 +33,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ibm-plex-sans-400-600-greek.woff2?v=a29d4e63" crossorigin>
     <!-- f1s:fonts-preload:end -->
     <link rel="stylesheet" href="styles.min.css?v=73f302cc">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=38d47ab9">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=b3dda432">
     <link rel="stylesheet" href="home.min.css?v=47fb2b24">
     <link rel="stylesheet" href="styles/shared-nav.min.css?v=187f9b13">
     <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
@@ -357,6 +357,21 @@
             <a href="/standings/?tab=dirty-air"><span class="data-tools__label">DIRTY AIR</span><span class="data-tools__note">Ζωή πίσω από άλλον</span></a>
             <a href="/standings/?tab=lap1-gains"><span class="data-tools__label">LAP 1</span><span class="data-tools__note">Κέρδη στην εκκίνηση</span></a>
         </nav>
+        <!-- @include partials/race-desk-index.html -->
+        <!-- @include:begin partials/race-desk-index.html -->
+        <section class="desk-index" aria-labelledby="desk-index-title">
+            <div class="desk-index__head">
+                <h3 class="desk-index__title" id="desk-index-title" lang="en">RACE DESK<span aria-hidden="true">.</span></h3>
+                <p class="desk-index__lede">Τα εργαλεία δεδομένων του F1 Stories: τι δείχνει το καθένα και από πού έρχονται τα στοιχεία.</p>
+            </div>
+            <ol class="desk-index__list">
+                <li><a href="/standings/"><span class="desk-index__name" lang="en">THE GRID</span><span class="desk-index__what">Βαθμολογίες, Friday debrief, ρυθμός ελαστικών, pit stops και εκκινήσεις.</span><span class="desk-index__src">Jolpica F1 · OpenF1</span></a></li>
+                <li><a href="https://georgiosbalatzis.github.io/f1-telemetry-dashboard/"><span class="desk-index__name" lang="en">TELEMETRY</span><span class="desk-index__what">Ταχύτητα, φρένα, sectors και στρατηγική ανά γύρο. Σύγκριση έως τεσσάρων οδηγών.</span><span class="desk-index__src">OpenF1</span></a></li>
+                <li><a href="https://georgiosbalatzis.github.io/ghostcar/"><span class="desk-index__name" lang="en">GHOST CAR</span><span class="desk-index__what">Δύο γύροι στην ίδια πίστα, μέτρο προς μέτρο: πού κερδίζεται και πού χάνεται ο χρόνος.</span><span class="desk-index__src">OpenF1 · 2023–2026</span></a></li>
+                <li><a href="https://georgiosbalatzis.github.io/Tyres/"><span class="desk-index__name" lang="en">TYRES</span><span class="desk-index__what">Γόμες, απαιτήσεις πίστας και όρια ρυθμίσεων για κάθε Grand Prix.</span><span class="desk-index__src">Προεπισκόπηση Pirelli</span></a></li>
+            </ol>
+        </section>
+        <!-- @include:end partials/race-desk-index.html -->
     </div>
 </section>
 
