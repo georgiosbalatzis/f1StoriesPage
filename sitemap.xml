@@ -54,13 +54,13 @@
   </url>
   <url>
     <loc>https://f1stories.gr/blog-module/blog/section/technical/</loc>
-    <lastmod>2026-10-06</lastmod>
+    <lastmod>2026-10-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://f1stories.gr/blog-module/blog/section/technical/page/2/</loc>
-    <lastmod>2026-10-06</lastmod>
+    <lastmod>2026-10-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
@@ -120,7 +120,7 @@
   </url>
   <url>
     <loc>https://f1stories.gr/blog-module/blog/archive/2026/10/</loc>
-    <lastmod>2026-10-12</lastmod>
+    <lastmod>2026-10-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -222,7 +222,7 @@
   </url>
   <url>
     <loc>https://f1stories.gr/blog-module/blog/archive/</loc>
-    <lastmod>2026-10-12</lastmod>
+    <lastmod>2026-10-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -245,6 +245,12 @@
     <loc>https://f1stories.gr/privacy/terms.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://f1stories.gr/blog-module/blog-entries/20261013G/article.html</loc>
+    <lastmod>2026-10-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://f1stories.gr/blog-module/blog-entries/20261012W/article.html</loc>

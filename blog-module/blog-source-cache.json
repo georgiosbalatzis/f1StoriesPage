@@ -1,6 +1,44 @@
 {
   "posts": [
     {
+      "id": "20261013G",
+      "title": "Mercedes W17 , μα 388mm διαφορά ...",
+      "author": "Georgios Balatzis",
+      "date": "2026-10-13",
+      "dateISO": "2026-10-13",
+      "displayDate": "13 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261013G/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261013G/1.webp",
+      "excerpt": "Ο George Russell είχε ένα καλό επιχείρημα όταν τον ρώτησαν γιατί η Mercedes αποφάσισε να γυρίσει πίσω στο παλιό της αεροδυναμικό πακέτο. Με ουσιαστικά το ίδιο μονοθέσιο, είπε, η ομάδα είχε βρεθεί...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261013G/article.html",
+      "category": "Technical",
+      "categories": [
+        "Technical"
+      ],
+      "tags": [
+        "Technical",
+        "Mercedes",
+        "W17",
+        "Toto",
+        "Wolf",
+        "George",
+        "Russel",
+        "Kimi",
+        "Antonelli",
+        "AMG",
+        "Petronas",
+        "Bono"
+      ],
+      "wordCount": 1213,
+      "readingTime": "7 min",
+      "imageWidth": 1200,
+      "imageHeight": 800,
+      "backgroundImageWidth": 1200,
+      "backgroundImageHeight": 800
+    },
+    {
       "id": "20261012W",
       "title": "Max Verstappen: Ακριβής, πειθαρχημένος και ικανότατος  διαχειριστής της μεγάλης φθοράς των ελαστικών στην Σιγκαπούρη.",
       "author": "Themis Charvalis",
@@ -10430,5 +10468,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-13T08:52:14.042Z"
+  "lastUpdated": "2026-10-13T09:32:32.105Z"
 }

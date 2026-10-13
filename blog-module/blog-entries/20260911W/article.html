@@ -51,7 +51,6 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
     <link rel="stylesheet" href="/styles/vendor/bootstrap.slim.min.css?v=673c392e">
     <!-- f1s:fonts-preload:begin -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/barlow-condensed-700.woff2?v=e3e520cb" crossorigin>
@@ -60,8 +59,6 @@
     <link rel="stylesheet" href="/styles.min.css?v=73f302cc">
     <link rel="stylesheet" href="/blog-module/blog/article-styles.min.css?v=5c33bdf2">
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=187f9b13">
-    <link rel="stylesheet" href="/styles/editorial.min.css?v=38d47ab9">
-    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=e4fd97c9">
 
     <!-- Preload hero image for LCP -->
     <link rel="preload" as="image" type="image/avif" href="2.avif" imagesrcset="2-mobile.avif 800w, 2.avif 1600w" imagesizes="(max-width: 899px) 100vw, 50vw" fetchpriority="high">
@@ -70,6 +67,11 @@
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
 
     <!-- Prevent FOUC -->
+    <!-- f1s:article-editorial:begin -->
+    <link rel="stylesheet" href="/styles/home-fonts.min.css?v=bc876546">
+    <link rel="stylesheet" href="/styles/editorial.min.css?v=38d47ab9">
+    <link rel="stylesheet" href="/blog-module/blog/article-editorial.min.css?v=e4fd97c9">
+    <!-- f1s:article-editorial:end -->
     <script src="/scripts/theme-init.min.js?v=d8c05277"></script>
 </head>
 <body class="editorial-page article-page">
