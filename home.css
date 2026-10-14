@@ -495,6 +495,8 @@ body.home-page footer .footer-wordmark { font: 700 clamp(4rem, 15vw, 14rem)/.78 
     .home-page .page-index a:focus-visible { outline-offset: -2px; }
     /* While more links wait off the edge (f1-optimized.js sets is-more), the bar fades out there. */
     .home-page .page-index.is-more { mask-image: linear-gradient(to left, transparent, #000 56px); }
+    /* The edge fade must not dim a focused link or its keyboard ring. */
+    .home-page .page-index.is-more:focus-within { mask-image: none; }
     .home-page :is(.sponsor-strip-label, #home-sponsors .sponsor-logos) { grid-column: 1 / -1; }
     .home-page #home-sponsors .sponsor-logos { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 16px; margin-top: 20px; }
 }

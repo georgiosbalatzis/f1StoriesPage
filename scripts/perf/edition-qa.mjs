@@ -239,6 +239,21 @@ try {
         const rail = await page.evaluate(() => { const r = document.querySelector('.ed-rail').getBoundingClientRect(); return { top: Math.round(r.top), nav: Math.round(document.querySelector('.blog-nav').getBoundingClientRect().bottom), current: !!document.querySelector('.ed-rail [aria-current]'), over: document.documentElement.scrollWidth - document.documentElement.clientWidth }; });
         check('phone', 'the category strip stays under the site nav while scrolling', Math.abs(rail.top - rail.nav) <= 2 && rail.current, JSON.stringify(rail));
         check('phone', 'no horizontal overflow', rail.over <= 0, rail.over);
+        for (const width of [320, 375, 390]) {
+            await page.setViewportSize({ width, height: 844 });
+            for (const theme of ['light', 'dark']) {
+                await page.evaluate(value => document.documentElement.dataset.theme = value, theme);
+                for (const link of await page.locator('.ed-rail a').all()) {
+                    await link.focus();
+                    const focus = await link.evaluate(el => {
+                        const box = el.getBoundingClientRect();
+                        const strip = el.closest('ol');
+                        return { left: box.left, right: box.right, height: box.height, mask: getComputedStyle(strip).maskImage };
+                    });
+                    check('phone', `${width}px ${theme}: category focus is fully visible`, focus.left >= 0 && focus.right <= width && focus.height >= 44 && focus.mask === 'none', JSON.stringify(focus));
+                }
+            }
+        }
         await context.close();
     }
     {

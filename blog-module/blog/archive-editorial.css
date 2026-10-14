@@ -242,6 +242,7 @@ html[data-journal-filtered] .edition #journal-edition { display: none; }
     .edition .ed-rail ol.is-after { mask-image: linear-gradient(to left, transparent, #000 32px); }
     .edition .ed-rail ol.is-before { mask-image: linear-gradient(to right, transparent, #000 32px); }
     .edition .ed-rail ol.is-before.is-after { mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent); }
+    .edition .ed-rail ol:is(.is-before, .is-after):focus-within { mask-image: none; }
     .edition .ed-rail ol::-webkit-scrollbar { display: none; }
     /* No scroll snapping: it pulled a keyboard-focused link at the edge back out of view after the browser scrolled it in. */
     .edition .ed-rail li { flex: none; }

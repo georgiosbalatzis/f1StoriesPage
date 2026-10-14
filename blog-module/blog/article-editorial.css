@@ -1306,6 +1306,11 @@
 .article-page .rr .rr-body .gallery-slide .article-content-img { display: block; width: auto; height: min(clamp(220px, 30vw, 400px), var(--nat-h, 400px)); max-width: min(86vw, 720px); max-height: none; margin: 0; border-radius: 0; background: none; object-fit: contain; box-shadow: none; }
 .article-page .rr .rr-body .gallery-carousel :is(.gallery-carousel-prev, .gallery-carousel-next, .gallery-carousel-counter, .gallery-carousel-thumbs) { display: none; }
 .article-page .rr .rr-body .gallery-carousel-slides:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+/* At 320px the archive title and count need separate lines. */
+@media (max-width: 359px) {
+    .article-page .rr .rr-body .gallery-carousel:has(.gallery-slide + .gallery-slide)::before { padding-bottom: 34px; }
+    .article-page .rr .rr-body .gallery-carousel-stage::after { top: 49px; left: var(--gutter); right: auto; }
+}
 /* An article that ends on its archive runs straight into the pit wall. */
 .article-page .rr .rr-body > .gallery-carousel:last-child,
 .article-page .rr .rr-body > .rr-data:nth-last-child(2) { margin-bottom: 0; }
