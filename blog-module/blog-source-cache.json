@@ -1,6 +1,35 @@
 {
   "posts": [
     {
+      "id": "20261014F",
+      "title": "Amber Alert :  Safety Car !",
+      "author": "F1 Stories Team",
+      "date": "2026-10-14",
+      "dateISO": "2026-10-14",
+      "displayDate": "14 Οκτωβρίου 2026",
+      "image": "/blog-module/blog-entries/20261014F/1.webp",
+      "backgroundImage": "/blog-module/blog-entries/20261014F/1.webp",
+      "excerpt": "Η Σιγκαπούρη ξεσυνήθισε το Safety Car Για δεκατέσσερις αγώνες, στη Σιγκαπούρη μπορούσες να είσαι σίγουρος για ένα πράγμα πριν καν σβήσουν τα φώτα: κάποια στιγμή θα έβγαινε το Safety Car. Από το 2008...",
+      "sources": "",
+      "comments": 0,
+      "url": "/blog-module/blog-entries/20261014F/article.html",
+      "category": "History",
+      "categories": [
+        "History"
+      ],
+      "tags": [
+        "Safety Car",
+        "2026",
+        "Singapore GP"
+      ],
+      "wordCount": 1539,
+      "readingTime": "8 min",
+      "imageWidth": 1200,
+      "imageHeight": 800,
+      "backgroundImageWidth": 1200,
+      "backgroundImageHeight": 800
+    },
+    {
       "id": "20261014G",
       "title": "Ολημερίς το έχτιζαν, το βράδυ γκρεμιζόταν",
       "author": "Georgios Balatzis",
@@ -10535,5 +10564,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-10-14T12:38:23.850Z"
+  "lastUpdated": "2026-10-14T13:57:08.177Z"
 }
