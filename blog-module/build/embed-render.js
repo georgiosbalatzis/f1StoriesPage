@@ -114,7 +114,7 @@ function getManagedBetCastUrl(input) {
         const url = new URL(input);
         const approved = (url.origin === 'https://georgiosbalatzis.github.io'
                 && (url.pathname === '/BetCastVisualisation/' || url.pathname === '/BetCastVisualisation'))
-            || (url.origin === 'https://f1stories.gr' && url.pathname === '/betcast/');
+            || (url.origin === 'https://f1-stories.gr' && url.pathname === '/betcast/');
         const embed = url.searchParams.get('embed');
         if (!approved || url.username || url.password || url.port || embed == null
             || ['0', 'false', 'no', 'off'].includes(embed.toLowerCase())) return null;

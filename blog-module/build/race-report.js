@@ -70,8 +70,8 @@ function toolKind(src) {
     if (host === 'georgiosbalatzis.github.io' && route.startsWith('/ghostcar/')) return { label: 'GHOST CAR', el: 'Σύγκριση γύρων' };
     if (host === 'georgiosbalatzis.github.io' && route.startsWith('/f1-telemetry-dashboard/')) return { label: 'TELEMETRY', el: 'Τηλεμετρία' };
     if (host === 'georgiosbalatzis.github.io' && route.startsWith('/BetCastVisualisation/')) return { label: 'BETCAST', el: 'Προγνωστικά' };
-    if (/(^|\.)f1stories\.gr$/.test(host) && route.startsWith('/telemetry/')) return { label: 'TELEMETRY', el: 'Τηλεμετρία' };
-    if (/(^|\.)f1stories\.gr$/.test(host) && route.startsWith('/standings/')) {
+    if (/(^|\.)f1-stories\.gr$/.test(host) && route.startsWith('/telemetry/')) return { label: 'TELEMETRY', el: 'Τηλεμετρία' };
+    if (/(^|\.)f1-stories\.gr$/.test(host) && route.startsWith('/standings/')) {
         const tabs = {
             debrief: ['DEBRIEF', 'Debrief Παρασκευής'], 'lap1-gains': ['LAP 1', 'Κέρδη 1ου γύρου'], 'tyre-pace': ['TYRE PACE', 'Ρυθμός ελαστικών'],
             'quali-gaps': ['QUALI GAPS', 'Κενά κατατακτήριων'], 'dirty-air': ['DIRTY AIR', 'Βρόμικος αέρας'], 'track-dominance': ['TRACK DOMINANCE', 'Κυριαρχία πίστας'],

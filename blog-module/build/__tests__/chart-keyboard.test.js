@@ -14,7 +14,7 @@ test('chart arrows scroll the focused region without intercepting child controls
         querySelectorAll: selector => selector === '.rr-chart__scroll' ? [scroller] : [],
         addEventListener(type, handler) { if (type === 'DOMContentLoaded') ready = handler; }
     };
-    vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../blog/article-script.js'), 'utf8'), { document, window: { location: { href: 'https://f1stories.gr/article.html' } }, console });
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../blog/article-script.js'), 'utf8'), { document, window: { location: { href: 'https://f1-stories.gr/article.html' } }, console });
     ready();
     function key(name, target = scroller) {
         let prevented = false;

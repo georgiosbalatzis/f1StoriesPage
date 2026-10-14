@@ -198,7 +198,7 @@ test('paginated and month pages say what they are in title and description', () 
     const files = byFile({ pages });
     assert.match(files['section/news/index.html'].head, /<title>Ειδήσεις — Άρθρα F1 Stories<\/title>/);
     assert.match(files['section/news/page/2/index.html'].head, /<title>Ειδήσεις · Σελίδα 2 — F1 Stories<\/title>/);
-    assert.match(files['section/news/page/2/index.html'].head, /rel="prev" href="https:\/\/f1stories\.gr\/blog-module\/blog\/section\/news\/"/);
+    assert.match(files['section/news/page/2/index.html'].head, /rel="prev" href="https:\/\/f1-stories\.gr\/blog-module\/blog\/section\/news\/"/);
     assert.match(files['archive/2026/10/index.html'].head, /<title>Οκτώβριος 2026 — Αρχείο F1 Stories<\/title>/);
     assert.equal(new Set(pages.map(page => /<title>(.*)<\/title>/.exec(page.head)[1])).size, pages.length, 'unique titles');
 });
@@ -295,7 +295,7 @@ test('every published article keeps its URL and its own canonical', () => {
         assert.ok(fs.existsSync(file), `${item.id} still has its page`);
         const html = fs.readFileSync(file, 'utf8');
         const canonical = (/<link rel="canonical" href="([^"]+)">/.exec(html) || [])[1];
-        assert.equal(canonical, `https://f1stories.gr/blog-module/blog-entries/${encodeURI(item.id)}/article.html`, item.id);
+        assert.equal(canonical, `https://f1-stories.gr/blog-module/blog-entries/${encodeURI(item.id)}/article.html`, item.id);
         assert.ok(all.includes(`/blog-module/blog-entries/${item.id}/article.html`) || !T.isDay(item.date), `${item.id} is linked`);
     }
 });

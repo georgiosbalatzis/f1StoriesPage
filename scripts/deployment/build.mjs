@@ -16,7 +16,7 @@ const expected = [
     ['ghostcar', 'georgiosbalatzis/ghostcar', '/ghostcar/', 'dist'],
     ['betcast', 'georgiosbalatzis/BetCastVisualisation', '/betcast/', 'build'],
 ];
-if (config.origin !== 'https://f1stories.gr' || config.applications.length !== expected.length) throw new Error('Invalid origin/application lock');
+if (config.origin !== 'https://f1-stories.gr' || config.applications.length !== expected.length) throw new Error('Invalid origin/application lock');
 expected.forEach(([application, repository, canonicalPath, output], index) => {
     const app = config.applications[index];
     if (app.application !== application || app.repository !== repository || app.path !== canonicalPath || app.output !== output) throw new Error('Invalid source lock entry');

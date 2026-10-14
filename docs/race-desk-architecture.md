@@ -34,13 +34,13 @@ F1 STORIES
 
 ## Deployment boundaries
 
-The GitHub Pages hosts for Telemetry, Ghost Car and TYRES are temporary deployment boundaries, not separate brands. The switcher links to them as ordinary same-tab product navigation: no `target="_blank"`, no ↗, no iframe or proxy. When the products later move under f1stories.gr, only the `href`s change.
+The GitHub Pages hosts for Telemetry, Ghost Car and TYRES are temporary deployment boundaries, not separate brands. The switcher links to them as ordinary same-tab product navigation: no `target="_blank"`, no ↗, no iframe or proxy. When the products later move under f1-stories.gr, only the `href`s change.
 
 The `/f1telemetry/`, `/ghostcar/` and `/tyres/` pages in this repo are redirect stubs. The switcher links straight to the live apps, not to the stubs.
 
 | Product | Canonical URL |
 |---|---|
-| THE GRID | `https://f1stories.gr/standings/` (the main site uses `/standings/`) |
+| THE GRID | `https://f1-stories.gr/standings/` (the main site uses `/standings/`) |
 | TELEMETRY | `https://georgiosbalatzis.github.io/f1-telemetry-dashboard/` |
 | GHOST CAR | `https://georgiosbalatzis.github.io/ghostcar/` |
 | TYRES | `https://georgiosbalatzis.github.io/Tyres/` |

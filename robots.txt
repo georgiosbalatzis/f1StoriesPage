@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://f1stories.gr/sitemap.xml
+Sitemap: https://f1-stories.gr/sitemap.xml
 
 # Block indexing of raw data files
 Disallow: /standings/debrief-cache.json

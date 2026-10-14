@@ -11,7 +11,7 @@ function setupBetCastFrameBridge(articleContent, doc, win) {
             const url = new URL(src, win.location.href);
             const allowed = (url.origin === 'https://georgiosbalatzis.github.io'
                     && (url.pathname === '/BetCastVisualisation/' || url.pathname === '/BetCastVisualisation'))
-                || (url.origin === 'https://f1stories.gr' && url.pathname === '/betcast/');
+                || (url.origin === 'https://f1-stories.gr' && url.pathname === '/betcast/');
             const embed = url.searchParams.get('embed');
             if (!allowed || url.username || url.password || url.port || embed == null || ['0', 'false', 'no', 'off'].includes(embed.toLowerCase())) return null;
             return url;
@@ -108,7 +108,7 @@ function setupDataFrameBridge(articleContent, doc, win, kind) {
     const frameUrl = src => {
         try {
             const url = new URL(src, win.location.href);
-            const sameSite = url.origin === 'https://f1stories.gr' || url.origin === win.location.origin;
+            const sameSite = url.origin === 'https://f1-stories.gr' || url.origin === win.location.origin;
             const embed = url.searchParams.get('embed');
             const allowed = kind === 'telemetry'
                 ? ((sameSite && url.pathname === '/telemetry/')
@@ -294,8 +294,8 @@ function setupTelemetryFigures(articleContent, doc, win) {
         try { data = new URL(dataUrl, doc.baseURI); manifest = new URL(manifestUrl, doc.baseURI); page = new URL(doc.baseURI); } catch (_) { return; }
         const localRuntime = manifest.origin === page.origin && /^\/(?:telemetry|f1-telemetry-dashboard)\/interactive\/manifest\.json$/.test(manifest.pathname);
         const approvedRuntime = new Set([
-            'https://f1stories.gr/telemetry/interactive/manifest.json',
-            'https://www.f1stories.gr/telemetry/interactive/manifest.json',
+            'https://f1-stories.gr/telemetry/interactive/manifest.json',
+            'https://www.f1-stories.gr/telemetry/interactive/manifest.json',
             'https://georgiosbalatzis.github.io/f1-telemetry-dashboard/interactive/manifest.json',
             'https://georgiosbalatzis.github.io/f1StoriesPage/f1telemetry/interactive/manifest.json'
         ]).has(manifest.href);

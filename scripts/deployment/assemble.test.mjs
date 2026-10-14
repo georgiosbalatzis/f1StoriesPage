@@ -16,12 +16,12 @@ function fixture(t, entries) {
 }
 
 for (const duplicate of ['canonical', 'OG URL']) test(`duplicate ${duplicate} metadata prevents release`, t => {
-    const canonical = '<link rel="canonical" href="https://f1stories.gr/telemetry/">';
-    const og = '<meta property="og:url" content="https://f1stories.gr/telemetry/">';
+    const canonical = '<link rel="canonical" href="https://f1-stories.gr/telemetry/">';
+    const og = '<meta property="og:url" content="https://f1-stories.gr/telemetry/">';
     const root = fixture(t, {
         'index.html': 'Main', '404.html': 'Missing', 'standings/index.html': 'Grid',
         'robots.txt': 'User-agent: *\nAllow: /',
-        'sitemap.xml': '<urlset><url><loc>https://f1stories.gr/telemetry/</loc></url></urlset>',
+        'sitemap.xml': '<urlset><url><loc>https://f1-stories.gr/telemetry/</loc></url></urlset>',
         'telemetry/index.html': canonical + og + (duplicate === 'canonical' ? canonical : og),
     });
     assert.throws(() => validateSite(root, [{ application: 'telemetry', path: '/telemetry/' }]), /must have exactly one/);

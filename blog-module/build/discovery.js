@@ -13,7 +13,7 @@ const T = require('../taxonomy');
 const { escapeHtmlAttribute: esc } = require('./shared');
 
 const BLOG = '/blog-module/blog';
-const SITE = 'https://f1stories.gr';
+const SITE = 'https://f1-stories.gr';
 const { page: PAGE_SIZE, front: FRONT_SIZE } = T.EDITION_LAYOUT;
 const GENERATED_ROOTS = ['section', 'archive'];
 

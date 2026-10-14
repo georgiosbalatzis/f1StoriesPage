@@ -22,7 +22,7 @@ title: Η πίστα άλλαξε, όχι η AMR26
 
 Το FP2 δεν έδειχνε καμία ανάσταση νεκρών. Ο Alonso ήταν 15ος με 1:39.478 και ο Stroll 18ος με 1:40.150. Στο Friday Debrief του F1 Stories, ο ιδανικός γύρος της Aston Martin, δηλαδή οι καλύτεροι τομείς της ενωμένοι σε έναν γύρο, έβγαινε 1:39.332, περίπου 1,879 δευτερόλεπτα πίσω από τον καλύτερο συνδυαστικό χρόνο της Ferrari. Το μοντέλο ρυθμού αγώνα την έβαζε μάλιστα μόλις δέκατη, με εκτίμηση 1:46.805. Πουθενά δεν υπήρχε κάποιο νούμερο που να φωνάζει ότι η Aston ετοιμαζόταν να γίνει η έκπληξη του midfield.
 
-<iframe src="https://f1stories.gr/standings/?tab=debrief&amp;focus=panel-debrief&amp;embed=1&amp;debriefRound=16&amp;debriefView=team-ideal" title="Debrief Παρασκευής — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:1200px;border:0;"></iframe>
+<iframe src="https://f1-stories.gr/standings/?tab=debrief&amp;focus=panel-debrief&amp;embed=1&amp;debriefRound=16&amp;debriefView=team-ideal" title="Debrief Παρασκευής — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:1200px;border:0;"></iframe>
 
 Γιατί ιδανικός γύρος και όχι απλώς ο πίνακας του FP2; Γιατί αν κοιτάξεις μόνο το 15ος και 18ος, εύκολα συμπεραίνεις ότι η Aston ήταν πάλι εκεί που ήταν πάντα. Ο ιδανικός γύρος αφαιρεί μέρος του θορύβου από έναν γύρο που δεν βγήκε τέλειος και δείχνει τι υπήρχε διαθέσιμο, αν ενώσεις τους καλύτερους τομείς. Ούτε αυτός ήταν εντυπωσιακός. Ήταν όμως αρκετά καλύτερος από ό,τι θα περίμενες από μια ομάδα καταδικασμένη στο Q1.
 
@@ -44,7 +44,7 @@ title: Η πίστα άλλαξε, όχι η AMR26
 
 <iframe
   src="https://georgiosbalatzis.github.io/f1-telemetry-dashboard/?year=2026&circuit=Kuala+Lumpur&session=11730&drivers=55%2C14&lap=5&tab=telemetry&embed=1&theme=light#telemetry-speed-trace"
-  title="f1stories.gr F1 Telemetry Dashboard"
+  title="f1-stories.gr F1 Telemetry Dashboard"
   width="100%"
   height="720"
   loading="lazy"
@@ -52,7 +52,7 @@ title: Η πίστα άλλαξε, όχι η AMR26
 ></iframe>
 <iframe
   src="https://georgiosbalatzis.github.io/f1-telemetry-dashboard/?year=2026&circuit=Kuala+Lumpur&session=11730&drivers=55%2C14&lap=5&tab=telemetry&embed=1&theme=light#telemetry-throttle-brake"
-  title="f1stories.gr F1 Telemetry Dashboard"
+  title="f1-stories.gr F1 Telemetry Dashboard"
   width="100%"
   height="720"
   loading="lazy"
@@ -65,7 +65,7 @@ title: Η πίστα άλλαξε, όχι η AMR26
 
 Η Κυριακή, αντί να ξεκαθαρίσει την εικόνα, τη μπέρδεψε παραπάνω. Η Aston Martin ξεκίνησε με [κατλα την άποψη μου λάθος απόφαση](https://www.astonmartinf1.com/en-GB/races/2026-bahrain-gp), βάζοντας και τους δύο οδηγούς σε Medium σε μια πίστα που ήταν ακόμα πολύ βρεγμένη. Ο Stroll αντέδρασε και πέρασε σε Intermediate, ενώ ο Alonso επέμεινε στα slicks. Το Safety Car του ένατου γύρου ξαναμοίρασε ουσιαστικά την τράπουλα, και από εκεί και πέρα τα δύο AMR26 πήγαν σε Hard. Ο Alonso έκανε δύο συνεχόμενα stint με αυτή τη γόμα, πέρασε τον Ocon και αργότερα τον Lindblad, έβαλε Soft για το τελευταίο κομμάτι και κράτησε πίσω του τον Norris μέχρι τη σημαία, για την όγδοη θέση.
 
-<iframe src="https://f1stories.gr/standings/?tab=tyre-pace&amp;focus=panel-tyre-pace&amp;embed=1&amp;tyreSession=11731" title="Ρυθμός ελαστικών — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:1020px;border:0;"></iframe>
+<iframe src="https://f1-stories.gr/standings/?tab=tyre-pace&amp;focus=panel-tyre-pace&amp;embed=1&amp;tyreSession=11731" title="Ρυθμός ελαστικών — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:1020px;border:0;"></iframe>
 
 Κάποιος θα το έλεγε «τυχερό P8», και δεν θα είχε εντελώς άδικο. Ναι, ο Alonso κέρδισε θέσεις όταν ο Russell και ο Norris είχαν τα προβλήματά τους, και ναι, το Safety Car τον βοήθησε στρατηγικά. Χρειάστηκε όμως και αρκετή πραγματική ταχύτητα για να περάσει αυτοκίνητα μέσα στην πίστα και, στο τέλος, να μην αφήσει τον Norris να τον προσπεράσει. Για την Aston Martin, το P8 ήταν το καλύτερο αποτέλεσμα της χρονιάς και μόλις η δεύτερη φορά που μπήκε στους βαθμούς το 2026.
 

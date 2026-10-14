@@ -135,7 +135,7 @@ function cleanPublicRef(ref) {
     if (/^(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(clean)) {
         try {
             const url = new URL(clean);
-            if (!/^(?:www\.)?f1stories\.gr$/i.test(url.hostname)) return '';
+            if (!/^(?:www\.)?f1-stories\.gr$/i.test(url.hostname)) return '';
             clean = url.pathname || '';
         } catch (_) {
             return '';
@@ -203,7 +203,7 @@ function collectHtmlRefs(refs, html, relPath) {
         });
     }
 
-    const publicPathPattern = /(?:https:\/\/f1stories\.gr)?\/blog-module\/blog-entries\/[^"'()\s<>]+/gi;
+    const publicPathPattern = /(?:https:\/\/f1-stories\.gr)?\/blog-module\/blog-entries\/[^"'()\s<>]+/gi;
     for (const match of String(html || '').matchAll(publicPathPattern)) {
         addBlogEntryRef(refs, match[0], relPath);
     }
@@ -227,7 +227,7 @@ function collectPublicImageRefsFromText(refs, text, relPath) {
         addPublicImageRef(refs, match[2], relPath);
     }
 
-    const publicImagePattern = /(?:https:\/\/f1stories\.gr)?\/images\/[^"'()\s<>]+/gi;
+    const publicImagePattern = /(?:https:\/\/f1-stories\.gr)?\/images\/[^"'()\s<>]+/gi;
     for (const match of String(text || '').matchAll(publicImagePattern)) {
         addPublicImageRef(refs, match[0], relPath);
     }
@@ -408,7 +408,7 @@ function writeSecurityHeadersFile() {
 }
 
 function rewritePublicLogoRefs(html) {
-    return String(html || '').replace(/https:\/\/f1stories\.gr\/images\/logo\.png/g, `https://f1stories.gr/${PUBLIC_LOGO_IMAGE}`);
+    return String(html || '').replace(/https:\/\/f1-stories\.gr\/images\/logo\.png/g, `https://f1-stories.gr/${PUBLIC_LOGO_IMAGE}`);
 }
 
 async function copyFile(relPath) {

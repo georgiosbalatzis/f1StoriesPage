@@ -1,6 +1,6 @@
 # F1 Stories
 
-Αυτό είναι το αποθετήριο του δημόσιου site [f1stories.gr](https://f1stories.gr). Το F1 Stories είναι ελληνικό podcast και editorial project για τη Formula 1. Το site περιλαμβάνει αρχική σελίδα, blog με άρθρα, βαθμολογίες, σελίδα συντακτών και τοπικά εργαλεία συγγραφής άρθρων.
+Αυτό είναι το αποθετήριο του δημόσιου site [f1-stories.gr](https://f1-stories.gr). Το F1 Stories είναι ελληνικό podcast και editorial project για τη Formula 1. Το site περιλαμβάνει αρχική σελίδα, blog με άρθρα, βαθμολογίες, σελίδα συντακτών και τοπικά εργαλεία συγγραφής άρθρων.
 
 Είναι ένα static site. Δεν έχει backend, βάση δεδομένων ή frontend framework. Είναι γραμμένο σε HTML, CSS και vanilla JavaScript. Τα Node.js scripts παράγουν ό,τι χρειάζεται στο build time, όπως τα άρθρα, τα JSON feeds, τα cache δεδομένων, τα minified assets και το τελικό artifact. Το GitHub Actions κάνει τα builds, τα merges των άρθρων, την ανανέωση δεδομένων και το deploy στο GitHub Pages.
 
@@ -99,7 +99,7 @@ npm run verify
                                          |
                      actions/upload-pages-artifact  ->  actions/deploy-pages
                                          v
-                                 https://f1stories.gr
+                                 https://f1-stories.gr
 ```
 
 Βασικές αποφάσεις:
@@ -263,7 +263,7 @@ title: Ο τίτλος του άρθρου
 **Σύνδεσμοι μέσα στο κείμενο.** Γράψε `[λέξεις](https://example.com)` και οι λέξεις γίνονται σύνδεσμος. Δουλεύει σε παραγράφους, υπότιτλους, λίστες και κελιά πινάκων, και το κείμενο του συνδέσμου μπορεί να έχει `**έντονα**` ή `*πλάγια*`.
 
 - Επιτρέπονται `https://` και `http://`, `mailto:`, διαδρομές του ίδιου site που ξεκινούν με `/` (π.χ. `[βαθμολογία](/standings/)`) και anchors `#ενότητα`. Οτιδήποτε άλλο (`javascript:`, `data:`, σύνδεσμος χωρίς σχήμα) μένει σκέτο κείμενο και δεν γίνεται σύνδεσμος.
-- Οι εξωτερικοί σύνδεσμοι ανοίγουν σε νέα καρτέλα με `rel="noopener noreferrer"`· οι σύνδεσμοι προς το f1stories.gr ανοίγουν στην ίδια.
+- Οι εξωτερικοί σύνδεσμοι ανοίγουν σε νέα καρτέλα με `rel="noopener noreferrer"`· οι σύνδεσμοι προς το f1-stories.gr ανοίγουν στην ίδια.
 - Μια διεύθυνση μόνη της σε δική της γραμμή (YouTube, X, Instagram, ...) παραμένει embed, όπως πριν. Ο σύνδεσμος με λέξεις είναι μέσα σε κανονική παράγραφο.
 - Παρένθεση μέσα στη διεύθυνση δουλεύει μέχρι ένα επίπεδο (`.../Formula_One_(disambiguation)`). Η προεπισκόπηση στο `/generate.html` δείχνει τον σύνδεσμο όπως θα δημοσιευτεί.
 
@@ -276,7 +276,7 @@ title: Ο τίτλος του άρθρου
 | `[img-instert-tag]` | Βάζει την επόμενη εικόνα περιεχομένου (`3.*`, μετά `4.*`, ...) σε αυτό το σημείο. Η ορθογραφία είναι όντως `instert`. Εικόνες που περισσεύουν μπαίνουν σε carousel στο τέλος. |
 | `CSV_TABLE:αρχείο.csv` | Φτιάχνει responsive πίνακα από CSV του φακέλου. Μορφή: `CSV_TABLE:αρχείο.csv \| λεζάντα \| πηγή`. |
 | `CSV_TABLE_HTML:αρχείο.csv` | Το ίδιο, αλλά επιτρέπει HTML μέσα στα κελιά. |
-| `IFRAME:https://...` | Iframe, μόνο από hosts του `CONFIG.IFRAME_WHITELIST`: YouTube, Spotify, Vimeo, CodePen, Datawrapper, Sketchfab, Facebook, f1stories.gr, georgiosbalatzis.github.io. |
+| `IFRAME:https://...` | Iframe, μόνο από hosts του `CONFIG.IFRAME_WHITELIST`: YouTube, Spotify, Vimeo, CodePen, Datawrapper, Sketchfab, Facebook, f1-stories.gr, georgiosbalatzis.github.io. |
 | `EMBED:αρχείο.html` ή `WIDGET:αρχείο.html` | Βάζει ένα τοπικό `.html`/`.htm` του φακέλου ή του `embeds/`. Paths που βγαίνουν έξω από τον φάκελο μπλοκάρονται. |
 | `BETCAST:<snapshot-id>` | Βάζει native πίνακα από επικυρωμένο JSON στο `blog-module/betcast-snapshots/`. Δέχεται μόνο snapshot με `viz=dataTable`. |
 | Σκέτος σύνδεσμος σε δική του γραμμή | Ένα link YouTube (και Shorts), X/Twitter, Instagram, Threads ή Facebook μετατρέπεται σε embed. |
@@ -332,7 +332,7 @@ title: Ο τίτλος του άρθρου
 | `20260924J` | `from=15&to=15` | 4 | `2026-10-05T08:29:32Z` |
 | `20261002J` | `week=16` | 5 | `2026-10-05T08:29:32Z` |
 
-Η καταγραφή αποτυπώνει τα δεδομένα της συγκεκριμένης εξαγωγής και δεν ανακατασκευάζει τι έδειχνε το άρθρο την αρχική ημερομηνία δημοσίευσής του. Αν το `season=current`, ο σύνδεσμος μπορεί να δείξει άλλη σεζόν μετά από αλλαγή χρονιάς, ενώ ο πίνακας του άρθρου παραμένει pinned στο snapshot. Οι σύνδεσμοι πλήρους ανάλυσης κρατούν `season`, `viz`, `from`, `to`, `week`, `cmpA` και `cmpB`, αφαιρώντας παραμέτρους embed και theme. Από προεπιλογή δείχνουν στο GitHub Pages BetCast· για το εγκεκριμένο same-origin path, όρισε `BETCAST_BASE_URL=https://f1stories.gr/betcast/` στο περιβάλλον του build.
+Η καταγραφή αποτυπώνει τα δεδομένα της συγκεκριμένης εξαγωγής και δεν ανακατασκευάζει τι έδειχνε το άρθρο την αρχική ημερομηνία δημοσίευσής του. Αν το `season=current`, ο σύνδεσμος μπορεί να δείξει άλλη σεζόν μετά από αλλαγή χρονιάς, ενώ ο πίνακας του άρθρου παραμένει pinned στο snapshot. Οι σύνδεσμοι πλήρους ανάλυσης κρατούν `season`, `viz`, `from`, `to`, `week`, `cmpA` και `cmpB`, αφαιρώντας παραμέτρους embed και theme. Από προεπιλογή δείχνουν στο GitHub Pages BetCast· για το εγκεκριμένο same-origin path, όρισε `BETCAST_BASE_URL=https://f1-stories.gr/betcast/` στο περιβάλλον του build.
 
 ---
 
@@ -772,7 +772,7 @@ Deploy Pages (reusable): build:public -> guards -> upload dist -> deploy
 - **Secrets.** Δεν χρειάζεται κανένα secret. Όλα δουλεύουν με το αυτόματο `GITHUB_TOKEN` και δημόσια APIs.
 - **Ρυθμίσεις του repository:**
   - Settings > Pages > Source πρέπει να είναι **GitHub Actions**. Το παλιό publishing από branch δεν χρησιμοποιείται.
-  - Το custom domain ορίζεται από το `CNAME` (`f1stories.gr`).
+  - Το custom domain ορίζεται από το `CNAME` (`f1-stories.gr`).
   - Οι κανόνες προστασίας του `main` πρέπει να επιτρέπουν στο `GITHUB_TOKEN` να κάνει merge PR και push.
 - **Χειροκίνητη εκτέλεση.** Actions > Site Maintenance > Run workflow > επιλογή `blog`, `standings` ή `youtube`. Για deploy χωρίς αλλαγές: Actions > Deploy Pages > Run workflow.
 - **Όλοι οι δρόμοι προς την παραγωγή:**
@@ -926,7 +926,7 @@ npm run quality:rendering:update
 
 ### Νέο άρθρο (προτεινόμενος τρόπος)
 
-1. `node scripts/author/serve-tools.mjs` και άνοιγμα του `generate.html`, ή απευθείας το `https://f1stories.gr/generate.html`.
+1. `node scripts/author/serve-tools.mjs` και άνοιγμα του `generate.html`, ή απευθείας το `https://f1-stories.gr/generate.html`.
 2. Συμπλήρωση των πέντε βημάτων και «Δημοσίευση».
 3. Τα υπόλοιπα γίνονται αυτόματα (ενότητα 13.2). Το άρθρο εμφανίζεται στο site μέσα σε λίγα λεπτά.
 

@@ -36,7 +36,7 @@ test('all sixteen historical gallery thumbnail URLs remain pinned for normal pub
 
 test('final artifact widths reach image candidates and preloads with relative and public URLs', () => {
     const rel='blog-module/blog-entries/test/1.webp';
-    const html='<img srcset="1.webp 2362w, 1-mobile.webp 800w"><link imagesrcset="/blog-module/blog-entries/test/1.webp 2362w"><source srcset="https://f1stories.gr/blog-module/blog-entries/test/1.webp 2362w, https://example.org/1.webp 2362w">';
+    const html='<img srcset="1.webp 2362w, 1-mobile.webp 800w"><link imagesrcset="/blog-module/blog-entries/test/1.webp 2362w"><source srcset="https://f1-stories.gr/blog-module/blog-entries/test/1.webp 2362w, https://example.org/1.webp 2362w">';
     const result=rewriteOptimizedImageWidths(html,'blog-module/blog-entries/test/article.html',new Map([[rel,1600]]));
     assert.equal((result.match(/1600w/g)||[]).length,3);
     assert.match(result,/1-mobile.webp 800w/);

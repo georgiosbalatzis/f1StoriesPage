@@ -11,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..', '..');
 const DIST_ROOT = path.join(REPO_ROOT, 'dist');
 const BUILD_MANIFEST_PATH = path.join(REPO_ROOT, 'scripts', 'build', 'asset-manifest.json');
-const SITE_ORIGIN = 'https://f1stories.gr';
+const SITE_ORIGIN = 'https://f1-stories.gr';
 const MAX_FILE_BYTES = Number(process.env.PUBLIC_ARTIFACT_MAX_BYTES || 2 * 1024 * 1024);
 
 const FORBIDDEN_EXACT = new Set([
@@ -470,7 +470,7 @@ function validateCname(errors) {
     const abs = path.join(DIST_ROOT, relPath);
     if (!fs.existsSync(abs)) return;
     const value = fs.readFileSync(abs, 'utf8').trim();
-    if (value !== 'f1stories.gr') errors.push(`${relPath}: expected f1stories.gr`);
+    if (value !== 'f1-stories.gr') errors.push(`${relPath}: expected f1-stories.gr`);
 }
 
 function loadEditorialAssetRefs(errors) {

@@ -6,7 +6,7 @@
 // fallback covers it, or whether the hosting layer cannot supply it at all
 // (GitHub Pages serves no custom response headers; it ignores dist/_headers).
 //
-//   npm run security:headers                     # https://f1stories.gr
+//   npm run security:headers                     # https://f1-stories.gr
 //   node scripts/quality/security-headers-verify.mjs --base-url https://example.org --json
 //
 // Exit codes: 0 = every header is served, or covered by the meta fallback, or
@@ -24,7 +24,7 @@ import {
     parseCsp
 } from '../build/security-policy.mjs';
 
-export const DEFAULT_BASE_URL = 'https://f1stories.gr';
+export const DEFAULT_BASE_URL = 'https://f1-stories.gr';
 export const DEFAULT_PATHS = [
     '/',
     '/blog-module/blog/index.html',

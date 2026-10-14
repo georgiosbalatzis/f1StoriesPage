@@ -24,7 +24,7 @@ function fixture() {
     figure.attributes.set('data-runtime-manifest', '/telemetry/interactive/manifest.json');
     figure.source = new Element('p'); figure.host = new Element('div'); figure.host.hidden = true;
     const article = { querySelectorAll: () => [figure] };
-    const doc = { baseURI: 'https://f1stories.gr/article/', documentElement: { getAttribute: () => 'dark' }, createElement: tag => new Element(tag) };
+    const doc = { baseURI: 'https://f1-stories.gr/article/', documentElement: { getAttribute: () => 'dark' }, createElement: tag => new Element(tag) };
     const observers = [];
     class MutationObserver { constructor(callback) { this.callback = callback; observers.push(this); } observe() {} disconnect() {} }
     let calls = 0;

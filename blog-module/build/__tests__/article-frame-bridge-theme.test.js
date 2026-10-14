@@ -4,7 +4,7 @@ const { setupStandingsFrameBridge, setupTelemetryFrameBridge } = require('../../
 
 // Real documents always have documentElement; `theme` mirrors the host's data-theme attribute
 // (the main site stores dark as "no attribute", light as data-theme="light").
-function themeFixture(bridge, theme = null, src = 'https://f1stories.gr/telemetry/?embed=1', initialHref = null) {
+function themeFixture(bridge, theme = null, src = 'https://f1-stories.gr/telemetry/?embed=1', initialHref = null) {
     const observers = [];
     const mkFrame = () => ({
         src,
@@ -25,7 +25,7 @@ function themeFixture(bridge, theme = null, src = 'https://f1stories.gr/telemetr
     const listeners = new Map();
     const timers = { set: 0, cleared: 0 };
     const win = {
-        location: { href: 'https://f1stories.gr/blog-module/blog-entries/example/article.html', origin: 'https://f1stories.gr' },
+        location: { href: 'https://f1-stories.gr/blog-module/blog-entries/example/article.html', origin: 'https://f1-stories.gr' },
         MutationObserver,
         addEventListener(type, listener) { listeners.set(type, listener); },
         removeEventListener() {},
@@ -89,7 +89,7 @@ test('a telemetry frame whose listener missed the early theme gets it again on i
 });
 
 test('a lazy frame that has not navigated yet gets no messages (no console noise); its load event delivers measure and theme', () => {
-    const { cleanup, frames, themes } = themeFixture(setupTelemetryFrameBridge, 'light', 'https://f1stories.gr/telemetry/?embed=1', 'about:blank');
+    const { cleanup, frames, themes } = themeFixture(setupTelemetryFrameBridge, 'light', 'https://f1-stories.gr/telemetry/?embed=1', 'about:blank');
     for (const frame of frames) assert.equal(frame.contentWindow.messages.length, 0, 'nothing is posted to an about:blank frame');
     for (const frame of frames) { frame.contentWindow.location = undefined; frame.loadListener(); } // navigated: a loaded cross-origin frame's location is unreadable
     for (const frame of frames) assert.deepEqual(themes(frame), ['light'], 'the load event delivers the theme');
@@ -97,7 +97,7 @@ test('a lazy frame that has not navigated yet gets no messages (no console noise
 });
 
 test('standings embeds still stop their retries on the first resize and never receive a theme', () => {
-    const { cleanup, frames, resize, timers } = themeFixture(setupStandingsFrameBridge, 'light', 'https://f1stories.gr/standings/?embed=1');
+    const { cleanup, frames, resize, timers } = themeFixture(setupStandingsFrameBridge, 'light', 'https://f1-stories.gr/standings/?embed=1');
     const before = timers.cleared;
     resize(frames[0]);
     assert.ok(timers.cleared > before, 'retries cancelled once the standings frame reports');
@@ -106,7 +106,7 @@ test('standings embeds still stop their retries on the first resize and never re
 });
 
 test('standings embeds are never sent a theme message', () => {
-    const { cleanup, frames } = themeFixture(setupStandingsFrameBridge, 'light', 'https://f1stories.gr/standings/?embed=1');
+    const { cleanup, frames } = themeFixture(setupStandingsFrameBridge, 'light', 'https://f1-stories.gr/standings/?embed=1');
     assert.equal(frames[0].dataset.f1sStandingsManaged, 'true');
     assert.ok(frames[0].contentWindow.messages.length > 0);
     assert.equal(frames[0].contentWindow.messages.some(m => /theme/.test(m.data.type)), false);

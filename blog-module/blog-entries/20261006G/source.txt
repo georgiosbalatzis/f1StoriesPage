@@ -32,7 +32,7 @@ title: Το SC τιμώρησε αυτούς που το ερμήνευσαν σ
 
 
 
-<iframe src="https://f1stories.gr/standings/?tab=lap1-gains&amp;focus=panel-lap1-gains&amp;embed=1&amp;lap1View=race-detail&amp;lap1Session=11731" title="Κέρδη 1ου γύρου — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:1440px;border:0;"></iframe>
+<iframe src="https://f1-stories.gr/standings/?tab=lap1-gains&amp;focus=panel-lap1-gains&amp;embed=1&amp;lap1View=race-detail&amp;lap1Session=11731" title="Κέρδη 1ου γύρου — F1 Stories" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="display:block;width:100%;height:1440px;border:0;"></iframe>
 
 
 
@@ -54,7 +54,7 @@ To FW48 είναι ακόμα ένα χαρακτηριστικό παράδει
 
 <iframe
   src="https://georgiosbalatzis.github.io/f1-telemetry-dashboard/?year=2026&circuit=Kuala+Lumpur&session=11731&drivers=55%2C44&lap=8&tab=telemetry&embed=1&theme=dark#telemetry-speed-trace"
-  title="f1stories.gr F1 Telemetry Dashboard"
+  title="f1-stories.gr F1 Telemetry Dashboard"
   width="100%"
   height="720"
   loading="lazy"

@@ -102,7 +102,7 @@ async function fetchFeedXml() {
         try {
             const response = await fetch(RSS_URL, {
                 headers: {
-                    'user-agent': 'f1stories-youtube-snapshot/1.0 (+https://f1stories.gr)'
+                    'user-agent': 'f1stories-youtube-snapshot/1.0 (+https://f1-stories.gr)'
                 },
                 signal: controller?.signal
             });

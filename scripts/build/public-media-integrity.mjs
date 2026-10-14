@@ -18,7 +18,7 @@ export function rewriteOptimizedImageWidths(html, page, widths) {
     return html.replace(/\b(srcset|imagesrcset)=("|')([^"']+)\2/gi, (attribute, name, quote, value) => {
         const rewritten = value.split(',').map(part => part.replace(/(\S+)\s+(\d+)w/, (candidate, url) => {
             let rel;
-            if (/^https:\/\/(?:www\.)?f1stories\.gr\//.test(url)) rel = new URL(url).pathname.slice(1);
+            if (/^https:\/\/(?:www\.)?f1-stories\.gr\//.test(url)) rel = new URL(url).pathname.slice(1);
             else if (/^(?:[a-z]+:|\/\/)/i.test(url)) return candidate;
             else rel = url.startsWith('/') ? url.slice(1) : path.posix.normalize(path.posix.join(path.posix.dirname(page), url));
             const width = widths.get(decodeURIComponent(rel.split(/[?#]/)[0]));

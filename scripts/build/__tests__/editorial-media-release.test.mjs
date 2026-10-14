@@ -54,7 +54,7 @@ for (const item of fixture.cases) {
         }
         const article = `blog-module/blog-entries/${item.id}/article.html`;
         const html = read('dist/' + article).toString();
-        assert.ok(html.includes(`<link rel="canonical" href="https://f1stories.gr/${article}"`));
+        assert.ok(html.includes(`<link rel="canonical" href="https://f1-stories.gr/${article}"`));
         assert.equal(digest(bodyText(html)), item.bodyTextSha256, 'article explanation changed');
         const post = posts.find(p => p.id === item.id);
         for (const [key, value] of Object.entries(item.editorial)) assert.deepEqual(post[key], value, `${item.id}: ${key}`);
@@ -76,7 +76,7 @@ for (const item of fixture.cases) {
                 for (const candidate of match[1].split(',').map(c => c.trim().split(/\s+/)[0])) {
                     if (!candidate) continue;
                     let url;
-                    try { url = new URL(candidate, `https://f1stories.gr/${path.relative(path.join(root, 'dist'), file)}`); } catch { continue; }
+                    try { url = new URL(candidate, `https://f1-stories.gr/${path.relative(path.join(root, 'dist'), file)}`); } catch { continue; }
                     const rel = decodeURIComponent(url.pathname).slice(1);
                     if (!Object.hasOwn(item.outputs, rel)) continue;
                     references++;

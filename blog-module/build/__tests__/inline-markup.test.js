@@ -12,12 +12,12 @@ test('[words](url) becomes a link; external links open in a new tab safely', () 
     );
 });
 
-test('links to f1stories.gr, site paths, anchors and mailto stay in the same tab', () => {
-    assert.equal(formatInline('[x](https://f1stories.gr/standings/)'), '<a href="https://f1stories.gr/standings/">x</a>');
-    assert.equal(formatInline('[x](https://www.f1stories.gr/)'), '<a href="https://www.f1stories.gr/">x</a>');
+test('links to f1-stories.gr, site paths, anchors and mailto stay in the same tab', () => {
+    assert.equal(formatInline('[x](https://f1-stories.gr/standings/)'), '<a href="https://f1-stories.gr/standings/">x</a>');
+    assert.equal(formatInline('[x](https://www.f1-stories.gr/)'), '<a href="https://www.f1-stories.gr/">x</a>');
     assert.equal(formatInline('[x](/standings/?tab=drivers)'), '<a href="/standings/?tab=drivers">x</a>');
     assert.equal(formatInline('[x](#sources)'), '<a href="#sources">x</a>');
-    assert.equal(formatInline('[mail](mailto:hello@f1stories.gr)'), '<a href="mailto:hello@f1stories.gr">mail</a>');
+    assert.equal(formatInline('[mail](mailto:hello@f1-stories.gr)'), '<a href="mailto:hello@f1-stories.gr">mail</a>');
 });
 
 test('underscores and asterisks inside a URL are not treated as emphasis', () => {

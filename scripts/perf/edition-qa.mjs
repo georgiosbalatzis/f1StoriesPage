@@ -122,7 +122,7 @@ try {
         } else {
             check('legacy', `${item.url} unfiltered front page`, v.front && v.view === 'all' && !v.category && !v.author);
         }
-        check('legacy', `${item.url} canonical unchanged`, (await on.page.locator('link[rel=canonical]').getAttribute('href')) === 'https://f1stories.gr/blog-module/blog/index.html');
+        check('legacy', `${item.url} canonical unchanged`, (await on.page.locator('link[rel=canonical]').getAttribute('href')) === 'https://f1-stories.gr/blog-module/blog/index.html');
         await on.context.close();
         // JavaScript off: the baseline never filtered without script; the page is the readable front page.
         const off = await open({ js: false });
@@ -156,14 +156,14 @@ try {
         const { context, page } = await open();
         const response = await page.goto(`${base}/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`);
         await page.waitForLoadState('load');
-        check('articles', `${id} opens at its URL with its own canonical`, response.status() === 200 && (await page.locator('link[rel=canonical]').getAttribute('href')) === `https://f1stories.gr/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`);
+        check('articles', `${id} opens at its URL with its own canonical`, response.status() === 200 && (await page.locator('link[rel=canonical]').getAttribute('href')) === `https://f1-stories.gr/blog-module/blog-entries/${encodeURIComponent(id)}/article.html`);
         await context.close();
     }
     for (const url of fixture.siblings) check('articles', `${url} still resolves`, (await fetch(base + url)).status === 200);
 
     // 3. Static routes from the sitemap.
     const sitemap = fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8');
-    const routes = [...sitemap.matchAll(/<loc>https:\/\/f1stories\.gr(\/blog-module\/blog\/(?:section|archive)\/[^<]*)<\/loc>/g)].map(match => match[1]);
+    const routes = [...sitemap.matchAll(/<loc>https:\/\/f1-stories\.gr(\/blog-module\/blog\/(?:section|archive)\/[^<]*)<\/loc>/g)].map(match => match[1]);
     check('routes', 'the sitemap lists section and month pages', routes.some(r => r.includes('/section/')) && routes.some(r => /\/archive\/\d{4}\/\d{2}\//.test(r)), routes.length);
     const off = await open({ js: false });
     for (const route of routes) {
@@ -173,7 +173,7 @@ try {
             stories: new Set([...document.querySelectorAll('main a[href*="/blog-entries/"]')].map(a => a.getAttribute('href'))).size,
             shown: (document.querySelector('.ed-section__facts') || {}).textContent
         }));
-        check('routes', `${route} is a real page without JavaScript`, response.status() === 200 && facts.h1 === 1 && facts.canonical === `https://f1stories.gr${route}`, JSON.stringify(facts));
+        check('routes', `${route} is a real page without JavaScript`, response.status() === 200 && facts.h1 === 1 && facts.canonical === `https://f1-stories.gr${route}`, JSON.stringify(facts));
         const month = /\/archive\/(\d{4})\/(\d{2})\//.exec(route);
         if (month) {
             const inMonth = posts.filter(post => post.date.startsWith(`${month[1]}-${month[2]}`)).length;

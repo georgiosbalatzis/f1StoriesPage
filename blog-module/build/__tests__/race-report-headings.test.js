@@ -11,7 +11,7 @@ const { renderArticleHtml } = require('../article-render');
 
 const para = n => `<p>${'Η Formula 1 άλλαξε εκείνη τη χρονιά και ο κινητήρας έγραψε ιστορία στις πίστες. '.repeat(n).trim()}</p>`;
 const subheads = html => [...html.matchAll(/<h2 [^>]*class="rr-subhead"[^>]*>([\s\S]*?)<\/h2>/g)].map(m => m[1]);
-const tool = '<div class="embed-container embed-iframe">\n<iframe src="https://f1stories.gr/standings/?tab=debrief&amp;embed=1&amp;debriefRound=16" title="Debrief Παρασκευής — F1 Stories" loading="lazy"></iframe>\n</div>';
+const tool = '<div class="embed-container embed-iframe">\n<iframe src="https://f1-stories.gr/standings/?tab=debrief&amp;embed=1&amp;debriefRound=16" title="Debrief Παρασκευής — F1 Stories" loading="lazy"></iframe>\n</div>';
 
 // Modelled on a 2025 engine profile: a real section title, then a specification list whose LAST line ("Καύσιμο: …")
 // happens to be followed by a long paragraph, and a titles list closed by "Σύνολο Νικών: 25".
@@ -113,15 +113,15 @@ test('generated structured data is valid and agrees with the taxonomy', async ()
     assert.deepEqual(blocks.map(b => b['@type']), ['Article', 'BreadcrumbList'], 'exactly one Article and one BreadcrumbList');
     const [article, crumbs] = blocks;
     const canonical = (/<link rel="canonical" href="([^"]+)"/.exec(page) || [])[1];
-    assert.equal(canonical, 'https://f1stories.gr/blog-module/blog-entries/20260101G/article.html');
+    assert.equal(canonical, 'https://f1-stories.gr/blog-module/blog-entries/20260101G/article.html');
     assert.equal(article.headline, 'Ο τίτλος «με εισαγωγικά» & σύμβολα');
     assert.deepEqual(article.articleSection, ['Analysis', 'Drivers']);
     assert.equal(article.mainEntityOfPage['@id'], canonical);
     assert.equal(article.datePublished, '2026-01-01');
     assert.equal(article.author.name, 'Georgios Balatzis');
     assert.deepEqual(crumbs.itemListElement.map(i => [i.position, i.name, i.item]), [
-        [1, 'F1 Stories', 'https://f1stories.gr/'],
-        [2, 'Άρθρα', 'https://f1stories.gr/blog-module/blog/index.html'],
+        [1, 'F1 Stories', 'https://f1-stories.gr/'],
+        [2, 'Άρθρα', 'https://f1-stories.gr/blog-module/blog/index.html'],
         [3, 'Ο τίτλος «με εισαγωγικά» & σύμβολα', undefined]
     ]);
 });

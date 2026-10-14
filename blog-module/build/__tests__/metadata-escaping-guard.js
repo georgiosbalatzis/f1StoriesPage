@@ -22,7 +22,7 @@ async function verifyArticleMetadataEscapingGuard() {
     const tag = 'Tag & <Fast>';
     const category = 'Cat "Air" & <Race>';
     const excerpt = 'Περιγραφή "quote" & <angle> \'δοκιμή\'';
-    const articleUrl = `https://f1stories.gr/blog-module/blog-entries/${slug}/article.html`;
+    const articleUrl = `https://f1-stories.gr/blog-module/blog-entries/${slug}/article.html`;
     const encodedTitle = encodeURIComponent(title);
     const encodedUrl = encodeURIComponent(articleUrl);
     const failures = [];

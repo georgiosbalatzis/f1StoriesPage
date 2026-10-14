@@ -31,7 +31,7 @@ test('validates and emits stable local SVG variants and escaped editorial HTML',
     assert.equal(first, second);
     assert.match(first, /<figure class="f1-telemetry-figure"/);
     assert.match(first, /data-telemetry-data="\/blog-module\/blog-entries\/20261005G\/embeds\/telemetry-[a-f\d]{20}-data\.json"/);
-    assert.match(first, /data-runtime-manifest="https:\/\/f1stories\.gr\/telemetry\/interactive\/manifest\.json"/);
+    assert.match(first, /data-runtime-manifest="https:\/\/f1-stories\.gr\/telemetry\/interactive\/manifest\.json"/);
     assert.doesNotMatch(first, /<button\b/);
     assert.equal((first.match(/class="f1-telemetry-picture f1-telemetry-picture--/g) || []).length, 2);
     assert.match(first, /class="f1-telemetry-picture f1-telemetry-picture--light"/);
@@ -40,7 +40,7 @@ test('validates and emits stable local SVG variants and escaped editorial HTML',
     assert.match(first, /<source media="\(min-width: 700px\)" srcset="[^"]+wideDark\.svg"/);
     assert.equal((first.match(/class="f1-telemetry-image"/g) || []).length, 2);
     assert.match(first, /&lt;|&amp;|<h3>/);
-    assert.match(first, /href="https:\/\/f1stories\.gr\/telemetry\/?\?year=2025&amp;circuit=Monza/);
+    assert.match(first, /href="https:\/\/f1-stories\.gr\/telemetry\/?\?year=2025&amp;circuit=Monza/);
     const assets = fs.readdirSync(path.join(entry, 'embeds')).sort();
     assert.equal(assets.length, 5);
     assert.ok(assets.filter(name => name.endsWith('.svg')).every(name => /^telemetry-[a-f\d]{20}-(?:narrowLight|wideLight|narrowDark|wideDark)\.svg$/.test(name)));

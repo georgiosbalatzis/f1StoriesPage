@@ -17,7 +17,7 @@
     // Placeholders for links while emphasis runs, so "_" and "*" inside a URL are never treated as markup.
     const OPEN = '\u0001';
     const CLOSE = '\u0002';
-    const SITE_HOSTS = new Set(['f1stories.gr', 'www.f1stories.gr']);
+    const SITE_HOSTS = new Set(['f1-stories.gr', 'www.f1-stories.gr']);
 
     function escapeHtml(text) {
         return String(text == null ? '' : text)

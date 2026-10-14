@@ -57,6 +57,10 @@ jobs:
       - name: Verify generated editorial media
         run: npm run qa:media -- --root=${{ steps.changes.outputs.content_only == 'true' && '.' || 'dist' }}
 
+      - name: Verify release media and primary domain
+        if: ${{ steps.changes.outputs.content_only != 'true' }}
+        run: node --test scripts/build/__tests__/editorial-media-release.test.mjs scripts/build/__tests__/primary-domain.test.mjs
+
       - name: Audit runtime dependencies
         if: ${{ steps.changes.outputs.content_only != 'true' }}
         run: npm run audit:runtime

@@ -449,9 +449,9 @@ async function renderArticleHtml(postData, entryPath, folderName = postData.id |
     const minutes = parseInt(badge, 10) || 1;
     const titleText = String(postData.title || '');
     const templateHtml = fs.readFileSync(CONFIG.TEMPLATE_PATH, 'utf8');
-    const articleUrl = `https://f1stories.gr/blog-module/blog-entries/${encodePathSegment(folderName)}/article.html`;
+    const articleUrl = `https://f1-stories.gr/blog-module/blog-entries/${encodePathSegment(folderName)}/article.html`;
     const imageFilePath = encodePathSegment(bgImageFilename);
-    const imageUrl = `https://f1stories.gr/blog-module/blog-entries/${encodePathSegment(folderName)}/${imageFilePath}`;
+    const imageUrl = `https://f1-stories.gr/blog-module/blog-entries/${encodePathSegment(folderName)}/${imageFilePath}`;
     const renderTokens = {
         ARTICLE_TITLE_TEXT: escapeHtmlText(postData.title),
         ARTICLE_TITLE_ATTR: escapeHtmlAttribute(postData.title),

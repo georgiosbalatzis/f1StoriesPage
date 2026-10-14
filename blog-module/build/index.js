@@ -649,7 +649,7 @@ function injectHomepageHero(hero) {
     }
     // The lead frame is the full width up to 1099px and half the page above it (the cover strip).
     const imageSizes = '(max-width: 1099px) 100vw, 50vw';
-    const imageUrl = /^https?:\/\//i.test(image) ? image : `https://f1stories.gr${image}`;
+    const imageUrl = /^https?:\/\//i.test(image) ? image : `https://f1-stories.gr${image}`;
     // A master wider than the 800px copy is offered at both widths, so a phone does not fetch the 1,600px file.
     const widths = width > 800 && /\/1\.webp$/.test(image) && /\/1\.avif$/.test(avif) ? coverFrameSources({ id: storyId }, { image, imageWidth: width }) : { webp: [], avif: [] };
     // Widest first: validate-public-artifact reads the first candidate as the story image.

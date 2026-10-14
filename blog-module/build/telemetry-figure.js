@@ -191,11 +191,11 @@ function renderTelemetryFigure(basename, entryPath) {
     const { images: _images, ...interactiveData } = bundle;
     fs.writeFileSync(path.join(directory, dataName), JSON.stringify(interactiveData), 'utf8');
     const dataPath = assetBase + dataName;
-    const linkBase = process.env.TELEMETRY_BASE_URL || 'https://f1stories.gr/telemetry/';
+    const linkBase = process.env.TELEMETRY_BASE_URL || 'https://f1-stories.gr/telemetry/';
     let url;
     try { url = new URL(linkBase); } catch (_) { fail(filePath, 'TELEMETRY_BASE_URL is not a URL'); }
     const allowedBases = [
-        'https://f1stories.gr/telemetry/', 'https://www.f1stories.gr/telemetry/',
+        'https://f1-stories.gr/telemetry/', 'https://www.f1-stories.gr/telemetry/',
         'https://georgiosbalatzis.github.io/f1-telemetry-dashboard/', 'https://georgiosbalatzis.github.io/f1StoriesPage/f1telemetry/'
     ].map(value => new URL(value));
     if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password || url.search || url.hash || !url.pathname.endsWith('/') || !allowedBases.some(base => base.origin === url.origin && base.pathname === url.pathname)) fail(filePath, 'TELEMETRY_BASE_URL is not an approved dashboard base');

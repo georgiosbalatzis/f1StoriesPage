@@ -5,7 +5,7 @@ const { wordsInHtml } = require('../reading-time');
 
 const long = 'Λέξη '.repeat(30).trim() + '.';
 const tool = src => `<div class="embed-container embed-iframe">\n<iframe\n                src="${src}"\n                title="Debrief Παρασκευής — F1 Stories"\n                loading="lazy">\n            </iframe>\n</div>`;
-const debrief = 'https://f1stories.gr/standings/?tab=debrief&amp;focus=panel-debrief&amp;embed=1&amp;debriefRound=16';
+const debrief = 'https://f1-stories.gr/standings/?tab=debrief&amp;focus=panel-debrief&amp;embed=1&amp;debriefRound=16';
 const ghost = 'https://georgiosbalatzis.github.io/ghostcar/?y=2026&amp;mk=1308&amp;embed=1';
 
 test('F1 Stories tools become numbered data bands; the iframe and its URL are untouched', () => {
@@ -15,7 +15,7 @@ test('F1 Stories tools become numbered data bands; the iframe and its URL are un
     assert.match(out.html, /<section class="rr-data" id="data-1" aria-labelledby="data-1-title">[\s\S]*DATA 01<span>\/02<\/span>[\s\S]*DEBRIEF/);
     assert.match(out.html, /id="data-2"[\s\S]*GHOST CAR/);
     assert.ok(out.html.includes(`src="${debrief}"`), 'the embed URL, season and round parameters are kept verbatim');
-    assert.match(out.html, /href="https:\/\/f1stories\.gr\/standings\/\?tab=debrief&amp;focus=panel-debrief&amp;debriefRound=16"[^>]*target="_blank" rel="noopener">Άνοιγμα εργαλείου/);
+    assert.match(out.html, /href="https:\/\/f1-stories\.gr\/standings\/\?tab=debrief&amp;focus=panel-debrief&amp;debriefRound=16"[^>]*target="_blank" rel="noopener">Άνοιγμα εργαλείου/);
     assert.match(out.html, /<a href="#after-data-1">Συνέχεια κειμένου[\s\S]*<span class="rr-anchor" id="after-data-1"><\/span>/);
     assert.match(out.html, /sketchfab[\s\S]*<\/div>$/, 'third-party embeds stay in the column');
     assert.doesNotMatch(out.html.split('sketchfab')[0].slice(-200), /rr-data__screen/);
