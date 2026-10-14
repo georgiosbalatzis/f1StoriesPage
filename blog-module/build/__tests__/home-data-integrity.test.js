@@ -2,7 +2,13 @@
 // ranks Friday ideal laps by the laps themselves (C-4), never shows another season's Friday beside a technical
 // story (C-5), and sizes the cover's supporting photographs for their crop (C-2).
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 const test = require('node:test');
+const sharp = require('sharp');
+const { CONFIG } = require('../shared');
+const { primeImageDimensions } = require('../image-sizes');
 // The homepage renderers read image sizes measured once per build (image-sizes.primeImageDimensions).
 test.before(() => require('../image-sizes').primeImageDimensions());
 const { renderNumbers, renderTelemetry, latestDebriefRound } = require('../home-panels');
@@ -132,7 +138,7 @@ test('C-5: a technical story gets only its own season\'s Friday, from that weeke
     assert.equal(latestDebriefRound(debrief), null);
 });
 
-test('C-2: supporting photographs ask for their cropped size, at the widths the files really have', () => {
+test('C-2: supporting photographs ask for their cropped size, at the widths the files really have', async () => {
     const post = { id: '20261007G', title: 'Η πίστα άλλαξε', categories: ['Teams'], readingTime: '9 min', thumbnail: '/blog-module/blog-entries/20261007G/1-card.webp', thumbnailWidth: 400, thumbnailHeight: 225 };
     const html = renderCoverFrames([post], () => ({ image: '/blog-module/blog-entries/20261007G/1.webp', imageWidth: 1600, imageHeight: 900 }));
     assert.match(html, /srcset="[^"]*1-card\.webp 400w, [^"]*1-mobile\.webp 800w, [^"]*1\.webp 1600w"/);
@@ -140,11 +146,26 @@ test('C-2: supporting photographs ask for their cropped size, at the widths the 
     // A 600px-tall desktop frame needs 1067px of a 16:9 photograph; a 150px phone frame 266px.
     assert.match(html, /sizes="\(max-width: 533px\) 266px, \(max-width: 767px\) 50vw, \(max-width: 1099px\) calc\(37\.5vw \* 1\.778\), \(max-width: 1538px\) calc\(39vw \* 1\.778\), 1067px"/);
     assert.match(html, /width="1600" height="900" fetchpriority="low"/);
-    // An original no larger than its "800px" copy (20261007F is 770px, so the copy is too) is offered once, at 770w.
-    const smallPost = { ...post, id: '20261007F', thumbnail: '/blog-module/blog-entries/20261007F/1-card.webp' };
-    const small = renderCoverFrames([smallPost], () => ({ image: '/blog-module/blog-entries/20261007F/1.webp', imageWidth: 770, imageHeight: 513 }));
-    assert.match(small, /srcset="[^"]*1-card\.webp 400w, [^"]*1-mobile\.webp 770w"/);
-    assert.doesNotMatch(small, /1\.webp \d+w|1\.avif|800w/);
     // A header photograph that is not the first image is not mistaken for it.
     assert.doesNotMatch(renderCoverFrames([post], () => ({ image: '/blog-module/blog-entries/20261007G/2.webp', imageWidth: 1600, imageHeight: 900 })), /1\.webp \d+w/);
+    // Use a fixture: 20261007F now carries authorized neutral artwork, not the former 770px photo.
+    const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'f1s-small-cover-'));
+    const original = CONFIG.BLOG_DIR;
+    try {
+        CONFIG.BLOG_DIR = temp;
+        fs.mkdirSync(path.join(temp, 'small'));
+        for (const [name, width] of [['1-card.webp', 400], ['1-mobile.webp', 770], ['1.webp', 770]]) {
+            await sharp({ create: { width, height: Math.round(width * 513 / 770), channels: 3, background: '#556677' } })
+                .webp().toFile(path.join(temp, 'small', name));
+        }
+        await primeImageDimensions();
+        const smallPost = { ...post, id: 'small', thumbnail: '/blog-module/blog-entries/small/1-card.webp' };
+        const small = renderCoverFrames([smallPost], () => ({ image: '/blog-module/blog-entries/small/1.webp', imageWidth: 770, imageHeight: 513 }));
+        assert.match(small, /srcset="[^"]*1-card\.webp 400w, [^"]*1-mobile\.webp 770w"/);
+        assert.doesNotMatch(small, /1\.webp \d+w|1\.avif|800w/);
+    } finally {
+        CONFIG.BLOG_DIR = original;
+        fs.rmSync(temp, { recursive: true, force: true });
+        await primeImageDimensions();
+    }
 });

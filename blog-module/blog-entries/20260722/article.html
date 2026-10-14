@@ -61,7 +61,7 @@
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=187f9b13">
 
     <!-- Preload hero image for LCP -->
-    <link rel="preload" as="image" type="image/avif" href="1.avif" imagesrcset="1-mobile.avif 800w, 1.avif 1500w" imagesizes="100vw" fetchpriority="high">
+    <link rel="preload" as="image" type="image/avif" href="1.avif" imagesrcset="1-mobile.avif 800w, 1.avif 900w" imagesizes="(max-width: 899px) 100vw, 50vw" fetchpriority="high">
 
     <script defer src="/scripts/analytics.min.js?v=bdd2c3f4"></script>
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
@@ -141,18 +141,18 @@
 <!-- Article: THE RACE REPORT. Ink cover, timing strip, sector bar, running order, paper body, pit wall, NEXT UP. -->
 <main id="main" class="article-page-wrapper rr" data-article-kind="news">
     <article class="rr-article" data-article-kind="news" aria-labelledby="article-title">
-        <header class="rr-cover rr-cover--bleed" data-cover>
+        <header class="rr-cover rr-cover--inset" data-cover>
             <p class="rr-edition"><a href="/blog-module/blog/index.html">F1 Stories</a><span>/ ΡΕΠΟΡΤΑΖ</span><time class="rr-edition__date" datetime="2026-07-22">22.07.2026</time></p>
             <div class="rr-cover__grid">
-                <figure class="rr-cover__media" style="--cover-max: 1500px">
+                <figure class="rr-cover__media" data-media="graphic" style="--cover-w: 900px">
                     <picture>
-                        <source type="image/avif" srcset="1-mobile.avif 800w, 1.avif 1500w" sizes="100vw">
-                        <img src="1.webp" srcset="1-mobile.webp 800w, 1.webp 1500w" sizes="100vw" alt="Η Ferrari SF-26 δεν είναι πλέον γρήγορη μόνο στις αργές στροφές" class="article-header-img"
+                        <source type="image/avif" srcset="1-mobile.avif 800w, 1.avif 900w" sizes="(max-width: 899px) 100vw, 50vw">
+                        <img src="1.webp" srcset="1-mobile.webp 800w, 1.webp 900w" sizes="(max-width: 899px) 100vw, 50vw" alt="F1 Stories — ΕΙΔΗΣΕΙΣ. Γραφικό" class="article-header-img"
                              loading="eager" fetchpriority="high" decoding="sync"
-                             width="1500" height="1000"
+                             width="900" height="450"
                              data-fallback-src="/blog-module/images/default-blog.jpg">
                     </picture>
-
+                    <figcaption class="rr-cover__caption"><span class="media-credit"><span class="media-credit__caption">Γραφικό</span></span></figcaption>
                 </figure>
                 <div class="rr-cover__text">
                     <p class="rr-kicker"><a href="/blog-module/blog/index.html?category=News">Ειδήσεις</a><span id="reading-time-value">12 λεπτά ανάγνωσης</span></p>
@@ -345,10 +345,10 @@
     <section class="rr-next" aria-labelledby="rr-next-title">
         <h2 class="rr-next__mast" id="rr-next-title">NEXT UP<span aria-hidden="true">.</span></h2>
         <div class="rr-next__grid">
-            <a href="/blog-module/blog-entries/20261007F/article.html" class="rr-next__lead"><img src="/blog-module/blog-entries/20261007F/1-card.webp" srcset="/blog-module/blog-entries/20261007F/1-card.webp 400w, /blog-module/blog-entries/20261007F/1-mobile.webp 770w" sizes="(max-width: 1099px) 100vw, 56vw" alt="" loading="lazy" decoding="async" width="400" height="266" style="--focus: 56% 74%" data-fallback-src="/blog-module/images/default-blog.jpg"><span class="rr-next__meta">7 Οκτ 2026 · 11 λεπτά</span><span class="rr-next__title">Το πρώτο test της Formula 1 του 2026 έγινε στη βροχή</span><span class="rr-next__by">F1 Stories</span></a>
+            <a href="/blog-module/blog-entries/20260910/article.html" class="rr-next__lead"><img src="/blog-module/blog-entries/20260910/1-card.webp" srcset="/blog-module/blog-entries/20260910/1-card.webp 400w, /blog-module/blog-entries/20260910/1-mobile.webp 500w" sizes="(max-width: 1099px) 100vw, 56vw" alt="" loading="lazy" decoding="async" width="400" height="320" data-fallback-src="/blog-module/images/default-blog.jpg"><span class="rr-next__meta">10 Σεπ 2026 · 2 λεπτά</span><span class="rr-next__title">Madridring aka Jarama est. 1989</span><span class="rr-next__by">F1 Stories</span></a>
             <ol class="rr-next__list">
-                <li><a href="/blog-module/blog-entries/20260910/article.html"><img src="/blog-module/blog-entries/20260910/1-card.webp" srcset="/blog-module/blog-entries/20260910/1-card.webp 400w, /blog-module/blog-entries/20260910/1-mobile.webp 500w" sizes="140px" alt="" loading="lazy" decoding="async" width="400" height="320" data-fallback-src="/blog-module/images/default-blog.jpg"><span><span class="rr-next__meta">10 Σεπ 2026 · 2 λεπτά</span><span class="rr-next__small">Madridring aka Jarama est. 1989</span><span class="rr-next__by">F1 Stories</span></span></a></li>
                 <li><a href="/blog-module/blog-entries/20260817J/article.html"><img src="/blog-module/blog-entries/20260817J/1-card.webp" srcset="/blog-module/blog-entries/20260817J/1-card.webp 400w, /blog-module/blog-entries/20260817J/1-mobile.webp 800w" sizes="140px" alt="" loading="lazy" decoding="async" width="400" height="200" data-media="graphic" data-fallback-src="/blog-module/images/default-blog.jpg"><span><span class="rr-next__meta">17 Αυγ 2026 · 3 λεπτά</span><span class="rr-next__small">Η στιγμή που φάνηκε ο Πρωταθλητής</span><span class="rr-next__by">Γιάννης Πουλικίδης</span></span></a></li>
+                <li><a href="/blog-module/blog-entries/20260815W/article.html"><img src="/blog-module/blog-entries/20260815W/1-card.webp" srcset="/blog-module/blog-entries/20260815W/1-card.webp 399w" sizes="140px" alt="" loading="lazy" decoding="async" width="399" height="501" data-fallback-src="/blog-module/images/default-blog.jpg"><span><span class="rr-next__meta">15 Αυγ 2026 · 3 λεπτά</span><span class="rr-next__small">McLaren MP4/14 εναντίον Ferrari F399: Η μάχη της απόλυτης ταχύτητας απέναντι στην απόλυτη αποτελεσματικότητα</span><span class="rr-next__by">Θέμης Χαρβάλης</span></span></a></li>
             </ol>
         <div class="article-navigation">
             <a href="/blog-module/blog-entries/20260721W/article.html" id="prev-article-link" class="article-nav-link prev"><span class="article-nav-label"><svg class="icon" aria-hidden="true"><use href="#fa-arrow-left"/></svg> Προηγούμενο</span><span class="article-nav-title">Brawn BGP 001 vs Red Bull RB5: Η μάχη δύο αριστουργημάτων της Formula 1</span></a>

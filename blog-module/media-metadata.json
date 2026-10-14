@@ -2,8 +2,10 @@
   "_about": "P3D media contract (blog-module/build/media-meta.js). Keys are \"<article id>/<slot>\" (1 card, 2 cover background, 3+ body). Only verified facts: type and focus are presentation; credit comes from the file's own metadata or text printed in the image; synthetic is set only when the file documents AI generation. Unresolved provenance and rights questions live in the editorial audit, not here.",
   "images": {
     "20250412G/7": {
-      "credit": "XPB Images",
-      "source": "XMP in the published 7.avif: photoshop:Credit, photoshop:Source xpbimages.com"
+      "type": "graphic",
+      "alt": "F1 Stories — ΤΕΧΝΙΚΑ. Η τεχνική εικόνα δεν είναι διαθέσιμη.",
+      "caption": "Η τεχνική εικόνα δεν είναι διαθέσιμη.",
+      "note": "Owner-authorized temporary neutral treatment. XPB XMP identifies MCL36/Miami 2022; permission and contextual use unresolved. Original source/permission remains unverified; no AI finding."
     },
     "20250603GF/1": {
       "type": "diagram"
@@ -312,9 +314,10 @@
       "focus": "60% 58%"
     },
     "20261007F/1": {
-      "credit": "AP Photo/Aijaz Rahi",
-      "source": "XMP in 1.webp: photoshop:Credit, dc:creator Aijaz Rahi, photoshop:Source AP",
-      "focus": "56% 74%"
+      "type": "graphic",
+      "alt": "F1 Stories — ΕΙΔΗΣΕΙΣ. Γραφικό",
+      "caption": "Γραφικό",
+      "note": "Owner-authorized temporary neutral treatment. AP/Aijaz Rahi XMP; caption names Bahrain Grand Prix in Sepang, Malaysia; register flags permission and event context unresolved. Original source/permission remains unverified; no AI finding."
     },
     "20261008J/1": {
       "type": "poster"
@@ -376,6 +379,66 @@
       "captionLang": "en",
       "alt": "Στιγμιότυπο οθόνης Android με αγωνιστική εικόνα και τα χειριστήρια του προγράμματος προβολής",
       "note": "Full 1080×2400 screenshot retained, including interface controls; underlying photograph rights are not documented."
+    },
+    "20260922W/2": {
+      "type": "graphic",
+      "alt": "F1 Stories — ΙΣΤΟΡΙΑ. Γραφικό",
+      "caption": "Γραφικό",
+      "note": "Owner-authorized temporary neutral treatment. Visible LAT Images mark; permission unverified. Original source/permission remains unverified; no AI finding."
+    },
+    "20260525-2W/2": {
+      "type": "graphic",
+      "alt": "F1 Stories — ΕΙΔΗΣΕΙΣ. Γραφικό",
+      "caption": "Γραφικό",
+      "note": "Owner-authorized temporary neutral treatment. Visible LAT Images mark; permission unverified. Original source/permission remains unverified; no AI finding."
+    },
+    "20260430W/2": {
+      "type": "graphic",
+      "alt": "F1 Stories — ΕΙΔΗΣΕΙΣ. Γραφικό",
+      "caption": "Γραφικό",
+      "note": "Owner-authorized temporary neutral treatment. Visible motorsport.com mark; permission unverified. Original source/permission remains unverified; no AI finding."
+    },
+    "20250905W/2": {
+      "type": "graphic",
+      "alt": "F1 Stories — ΙΣΤΟΡΙΑ. Γραφικό",
+      "caption": "Γραφικό",
+      "note": "Owner-authorized temporary neutral treatment. Visible motorsport.com mark; permission unverified. Original source/permission remains unverified; no AI finding."
+    },
+    "20250618G/2": {
+      "type": "graphic",
+      "alt": "F1 Stories — ΕΙΔΗΣΕΙΣ. Γραφικό",
+      "caption": "Γραφικό",
+      "note": "Owner-authorized temporary neutral treatment. Visible Getty credit; register specifically flags missing permission; credit is not proof of a preview. Original source/permission remains unverified; no AI finding."
+    },
+    "20250618G/1": {
+      "type": "graphic",
+      "alt": "F1 Stories — ΕΙΔΗΣΕΙΣ. Γραφικό",
+      "caption": "Γραφικό",
+      "note": "Owner-authorized temporary neutral treatment. Visible Getty credit; register specifically flags missing permission; credit is not proof of a preview. Original source/permission remains unverified; no AI finding."
+    },
+    "20260722/1": {
+      "type": "graphic",
+      "alt": "F1 Stories — ΕΙΔΗΣΕΙΣ. Γραφικό",
+      "caption": "Γραφικό",
+      "note": "Owner-authorized temporary neutral treatment. Visible FB-PhotoImages credit; register specifically flags missing permission. Original source/permission remains unverified; no AI finding."
+    },
+    "20250328G/5": {
+      "type": "graphic",
+      "alt": "F1 Stories — ΤΕΧΝΙΚΑ. Η τεχνική εικόνα δεν είναι διαθέσιμη.",
+      "caption": "Η τεχνική εικόνα δεν είναι διαθέσιμη.",
+      "note": "Owner-authorized temporary neutral treatment. Piola signature and repeated motorsport.com preview marks; license unverified. Original source/permission remains unverified; no AI finding."
+    },
+    "20260926D/1": {
+      "type": "graphic",
+      "alt": "F1 Stories — ΑΠΟΨΕΙΣ. Γραφικό",
+      "caption": "Γραφικό",
+      "note": "Owner-authorized temporary neutral treatment. Registered Russell/Woody parody; source/context unverified; no AI finding. Original source/permission remains unverified; no AI finding."
+    },
+    "20261002W/4": {
+      "type": "graphic",
+      "alt": "F1 Stories — ΙΣΤΟΡΙΑ. Η φωτογραφία δεν είναι διαθέσιμη.",
+      "caption": "Η φωτογραφία δεν είναι διαθέσιμη.",
+      "note": "Owner-authorized temporary neutral treatment. Identifiable child; no source/permission documentation; R6 release concern. Original source/permission remains unverified; no AI finding."
     }
   }
 }

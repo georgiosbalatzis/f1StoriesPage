@@ -61,7 +61,7 @@
     <link rel="stylesheet" href="/styles/shared-nav.min.css?v=187f9b13">
 
     <!-- Preload hero image for LCP -->
-    <link rel="preload" as="image" type="image/avif" href="2.avif" imagesrcset="2.avif 1200w" imagesizes="(max-width: 899px) 100vw, 50vw" fetchpriority="high">
+    <link rel="preload" as="image" type="image/avif" href="2.avif" imagesrcset="2.avif 900w" imagesizes="(max-width: 899px) 100vw, 50vw" fetchpriority="high">
 
     <script defer src="/scripts/analytics.min.js?v=bdd2c3f4"></script>
     <script defer src="/scripts/perf/web-vitals-beacon.min.js?v=402b419a"></script>
@@ -141,18 +141,18 @@
 <!-- Article: THE RACE REPORT. Ink cover, timing strip, sector bar, running order, paper body, pit wall, NEXT UP. -->
 <main id="main" class="article-page-wrapper rr" data-article-kind="history">
     <article class="rr-article" data-article-kind="history" aria-labelledby="article-title">
-        <header class="rr-cover rr-cover--split" data-cover>
+        <header class="rr-cover rr-cover--inset" data-cover>
             <p class="rr-edition"><a href="/blog-module/blog/index.html">F1 Stories</a><span>/ ΑΠΟ ΤΟ ΑΡΧΕΙΟ</span><time class="rr-edition__date" datetime="2025-09-05">05.09.2025</time></p>
             <div class="rr-cover__grid">
-                <figure class="rr-cover__media">
+                <figure class="rr-cover__media" data-media="graphic" style="--cover-w: 900px">
                     <picture>
-                        <source type="image/avif" srcset="2.avif 1200w" sizes="(max-width: 899px) 100vw, 50vw">
-                        <img src="2.webp" srcset="2.webp 1200w" sizes="(max-width: 899px) 100vw, 50vw" alt="Carlo Chiti: Ο θρυλικός αρχιτέκτονας της ιταλικής αγωνιστικής δόξας" class="article-header-img"
+                        <source type="image/avif" srcset="2.avif 900w" sizes="(max-width: 899px) 100vw, 50vw">
+                        <img src="2.webp" srcset="2.webp 900w" sizes="(max-width: 899px) 100vw, 50vw" alt="F1 Stories — ΙΣΤΟΡΙΑ. Γραφικό" class="article-header-img"
                              loading="eager" fetchpriority="high" decoding="sync"
-                             width="1200" height="800"
+                             width="900" height="450"
                              data-fallback-src="/blog-module/images/default-blog.jpg">
                     </picture>
-
+                    <figcaption class="rr-cover__caption"><span class="media-credit"><span class="media-credit__caption">Γραφικό</span></span></figcaption>
                 </figure>
                 <div class="rr-cover__text">
                     <p class="rr-kicker"><a href="/blog-module/blog/index.html?category=History">Ιστορία</a><span id="reading-time-value">4 λεπτά ανάγνωσης</span></p>
