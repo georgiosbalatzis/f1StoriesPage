@@ -329,20 +329,44 @@ function coverFrameSources(post, source = {}) {
     return { webp, avif, width, height };
 }
 
-// The two photographs beside the cover's: each frame is its story's link, captioned with desk and headline.
+// A frame's candidates and the `sizes` its box asks for, shared by the frame and its preload.
 // The frames crop landscape photographs to tall boxes, so `sizes` asks for the box height times the picture's own
-// proportions: the box is clamp(320px, 39vw, 600px) tall from 1100px, a 4:3 half-width box on tablets and 150px tall
-// on phones. Above the fold but not the largest paint, so they load at once with low priority.
+// proportions: the box is clamp(320px, 39vw, 600px) tall from 1100px and a 4:3 half-width box on tablets.
+function coverFramePicture(post, source) {
+    const { webp, avif, width, height } = coverFrameSources(post, source);
+    const ratio = width && height ? width / height : (parseInt(post.thumbnailWidth, 10) || 16) / (parseInt(post.thumbnailHeight, 10) || 9);
+    const r = ratio.toFixed(3);
+    // Rounded down: a 150px-tall 16:9 frame needs 266.7px, and 267 at 3× would just miss the 800px copy. (Phones draw
+    // 112×84 thumbnails; asking for that box picks the 400px card, measurably softer at 3×, so phones keep this rule.)
+    const sizes = `(max-width: ${Math.round(300 * ratio)}px) ${Math.floor(150 * ratio)}px, (max-width: 767px) 50vw, `
+        + `(max-width: 1099px) ${ratio > 4 / 3 ? `calc(37.5vw * ${r})` : '50vw'}, (max-width: 1538px) calc(39vw * ${r}), ${Math.round(600 * ratio)}px`;
+    return { webp, avif, width, height, sizes };
+}
+
+// From 768px the frames are the cover's largest pictures (the LCP on tablets and desktops), but the browser holds body
+// images back until the render-blocking stylesheets have arrived. A head preload per frame, for the candidates its own
+// picture uses there (the AVIF source when it has one, so a browser without AVIF skips it), starts them with the
+// document; only a high-priority preload starts before the stylesheets finish (a default one measured no gain). Phones
+// show the frames as thumbnails and do not preload them.
+function renderCoverFramePreloads(frames = [], sourceOf = () => ({})) {
+    const links = frames.map(post => {
+        const { webp, avif, sizes } = coverFramePicture(post, sourceOf(post));
+        const set = avif.length ? avif : webp;
+        if (!set.length) return '';
+        const href = set[set.length - 1].split(' ')[0];
+        return `\n    <link rel="preload" as="image" media="(min-width: 768px)"${avif.length ? ' type="image/avif"' : ''} href="${escapeHtmlAttribute(href)}" `
+            + `imagesrcset="${escapeHtmlAttribute(set.join(', '))}" imagesizes="${sizes}" fetchpriority="high">`;
+    }).filter(Boolean);
+    return links.length ? `${links.join('')}\n    ` : '';
+}
+
+// The two photographs beside the cover's: each frame is its story's link, captioned with desk and headline.
+// They load at once with low priority; from 768px their head preloads (renderCoverFramePreloads) start them early.
 function renderCoverFrames(frames = [], sourceOf = () => ({})) {
     return frames.map(post => {
         const readingTime = homeReadingTime(post);
         const desk = greekUpper(categoryLabel(primaryCategory(post))) + (readingTime ? ` · ${readingTime}` : '');
-        const { webp, avif, width, height } = coverFrameSources(post, sourceOf(post));
-        const ratio = width && height ? width / height : (parseInt(post.thumbnailWidth, 10) || 16) / (parseInt(post.thumbnailHeight, 10) || 9);
-        const r = ratio.toFixed(3);
-        // Rounded down: a 150px-tall 16:9 frame needs 266.7px, and 267 at 3× would just miss the 800px copy.
-        const sizes = `(max-width: ${Math.round(300 * ratio)}px) ${Math.floor(150 * ratio)}px, (max-width: 767px) 50vw, `
-            + `(max-width: 1099px) ${ratio > 4 / 3 ? `calc(37.5vw * ${r})` : '50vw'}, (max-width: 1538px) calc(39vw * ${r}), ${Math.round(600 * ratio)}px`;
+        const { webp, avif, width, height, sizes } = coverFramePicture(post, sourceOf(post));
         const fallback = storyImage(post);
         const img = `<img src="${escapeHtmlAttribute(fallback)}" srcset="${escapeHtmlAttribute(webp.join(', '))}" sizes="${sizes}" `
             + `width="${width || parseInt(post.thumbnailWidth, 10) || 400}" height="${height || parseInt(post.thumbnailHeight, 10) || 225}" fetchpriority="low" decoding="async" alt=""${mediaAttributes(post.id, fallback)} data-fallback-src="${CONFIG.DEFAULT_BLOG_IMAGE}">`;
@@ -482,7 +506,9 @@ function injectHomeJournal(indexPosts, blogPosts, selection = {}) {
     const paddock = selectPaddock(posts);
     const featureSource = paddock.feature && blogPosts.find(post => post.id === paddock.feature.id);
     let updated = replaceInlineMarkers(html, 'home-journal', renderHomeJournal(paddock, featureSource ? featureSource.excerpt || '' : ''));
-    updated = replaceInlineMarkers(updated, 'home-cover-frames', renderCoverFrames(paddock.frames, post => blogPosts.find(item => item.id === post.id) || {}));
+    const frameSource = post => blogPosts.find(item => item.id === post.id) || {};
+    updated = replaceInlineMarkers(updated, 'home-cover-frames', renderCoverFrames(paddock.frames, frameSource));
+    updated = replaceInlineMarkers(updated, 'home-frame-preload', renderCoverFramePreloads(paddock.frames, frameSource));
     updated = replaceInlineMarkers(updated, 'home-cover-time', cover ? escapeHtmlAttribute(homeReadingTime(cover)) : '');
     if (tech && updated.includes('<!-- f1s:home-tech:begin -->')) {
         const source = blogPosts.find(post => post.id === tech.id) || tech;
@@ -650,8 +676,16 @@ function injectHomepageHero(hero) {
     // The lead frame is the full width up to 1099px and half the page above it (the cover strip).
     const imageSizes = '(max-width: 1099px) 100vw, 50vw';
     const imageUrl = /^https?:\/\//i.test(image) ? image : `https://f1-stories.gr${image}`;
-    // A master wider than the 800px copy is offered at both widths, so a phone does not fetch the 1,600px file.
-    const widths = width > 800 && /\/1\.webp$/.test(image) && /\/1\.avif$/.test(avif) ? coverFrameSources({ id: storyId }, { image, imageWidth: width }) : { webp: [], avif: [] };
+    // A master wider than the 800px copy is offered at both widths, so a phone does not fetch the 1,600px file. The
+    // cover is the story's 1.webp or its separate 2.webp cover; AVIF only as a complete set (mobile copy and master).
+    const base = (/\/blog-module\/blog-entries\/[^/]+\/([12])\.webp$/.exec(image) || [])[1];
+    const heroDir = path.join(CONFIG.BLOG_DIR, storyId);
+    const heroSet = names => (width > 800 && base
+        ? truthfulSrcset(heroDir, names, name => `/blog-module/blog-entries/${storyId}/${name}`).split(', ').filter(Boolean) : []);
+    const widths = {
+        webp: heroSet([`${base}-card.webp`, `${base}-mobile.webp`, `${base}.webp`]),
+        avif: avif.endsWith(`/${base}.avif`) && fs.existsSync(path.join(heroDir, `${base}-mobile.avif`)) ? heroSet([`${base}-mobile.avif`, `${base}.avif`]) : []
+    };
     // Widest first: validate-public-artifact reads the first candidate as the story image.
     const avifSet = widths.avif.length > 1 ? [...widths.avif].reverse().join(', ') : '';
     const webpSet = widths.webp.length > 1 ? [...widths.webp].reverse().join(', ') : '';
@@ -730,8 +764,12 @@ function injectHomepageHero(hero) {
     html = html.replace(/<span id="hero-ai-label"[^>]*>[^<]*<\/span>/, '')
         .replace(/(<picture id="hero-picture">[\s\S]*?<\/picture>)/, `$1${heroLabel}`);
     html = updateElementById(html, 'hero-image-preload', attributes => {
+        // Typed when it is the AVIF, so a browser without AVIF skips it instead of fetching a file it will not show;
+        // its candidates are those of the source the browser will use, so the preload is the displayed file.
         let updated = setHtmlAttribute(attributes, 'href', avif || image);
-        updated = avifSet ? setHtmlAttribute(updated, 'imagesrcset', avifSet) : removeHtmlAttribute(updated, 'imagesrcset');
+        updated = avif ? setHtmlAttribute(updated, 'type', 'image/avif') : removeHtmlAttribute(updated, 'type');
+        const preloadSet = avif ? avifSet : webpSet;
+        updated = preloadSet ? setHtmlAttribute(updated, 'imagesrcset', preloadSet) : removeHtmlAttribute(updated, 'imagesrcset');
         updated = setHtmlAttribute(updated, 'imagesizes', imageSizes);
         return updated;
     });
@@ -1143,6 +1181,7 @@ module.exports = {
     renderHomeJournal,
     selectPaddock,
     renderCoverFrames,
+    renderCoverFramePreloads,
     renderHomeTech,
     selectHomeStories,
     injectHomeJournal,
