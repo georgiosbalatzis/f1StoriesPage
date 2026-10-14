@@ -506,13 +506,23 @@ function countLiteral(text, value) {
     return String(text).split(value).length - 1;
 }
 
+// Public pages carry their head CSS inline (inline-head-css.mjs); it must be the current file, byte for byte.
+const inlineCssCache = new Map();
+function currentInlineCss(ref) {
+    if (!inlineCssCache.has(ref)) {
+        const abs = path.join(DIST_ROOT, ref.split('?')[0]);
+        inlineCssCache.set(ref, fs.existsSync(abs) ? `<style>${fs.readFileSync(abs, 'utf8').trim()}</style>` : '');
+    }
+    return inlineCssCache.get(ref);
+}
+
 function validateEditorialRefs(errors, html, relPath, sources, editorialRefs) {
     sources.forEach(source => {
         const ref = editorialRefs[source];
         if (!ref) return;
         const rooted = `href="${ref}"`;
         const relative = `href="${ref.slice(1)}"`;
-        const count = countLiteral(html, rooted) + countLiteral(html, relative);
+        const count = countLiteral(html, rooted) + countLiteral(html, relative) + countLiteral(html, currentInlineCss(ref));
         if (count !== 1) {
             errors.push(`${relPath}: expected one current ${source} reference, found ${count}`);
         }
