@@ -152,7 +152,9 @@ the non-production `ultrareview` branch. Public deployment still requires:
   identifiable child. The archive's remaining rights/authenticity queue stays
   open, including `20250409G/1.webp`, the underlying photo in the
   `20260508W/4.webp` screenshot, and third-party media usage terms.
-- A valid Lighthouse run and a physical-device spot check; neither has passed.
+- A physical-device spot check remains required. P6's local Lighthouse 13.5
+  three-run medians passed all four route budgets after correcting the retired
+  DOM audit name in the harness; this does not verify physical devices.
 - After an authorized deployment, refresh social previews for `20250409G`,
   `20260817J`, and `20260930G`.
 

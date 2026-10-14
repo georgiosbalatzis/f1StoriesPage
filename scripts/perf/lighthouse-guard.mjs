@@ -352,7 +352,7 @@ function fmtCls(value) {
     return value == null ? '-' : value.toFixed(3);
 }
 
-function routeMetrics(lhr) {
+export function routeMetrics(lhr) {
     const metrics = {
         performance: score(lhr, 'performance'),
         accessibility: score(lhr, 'accessibility'),
@@ -361,7 +361,7 @@ function routeMetrics(lhr) {
         'largest-contentful-paint': auditValue(lhr, 'largest-contentful-paint'),
         'cumulative-layout-shift': auditValue(lhr, 'cumulative-layout-shift'),
         'total-blocking-time': auditValue(lhr, 'total-blocking-time'),
-        'dom-size': auditValue(lhr, 'dom-size'),
+        'dom-size': auditValue(lhr, 'dom-size') ?? auditValue(lhr, 'dom-size-insight'),
         'lcp-image-bytes': auditValue(lhr, 'largest-contentful-paint-element')
     };
     // Lighthouse 12 reports lowercase resource types and plain-string request entities.
@@ -383,7 +383,7 @@ function medianMetrics(runs) {
     return Object.fromEntries(Object.keys(runs[0]).map(id => [id, median(runs.map(run => run[id]))]));
 }
 
-function evaluateRoute(route, metrics) {
+export function evaluateRoute(route, metrics) {
     const thresholds = route.thresholds || {};
     const failures = [];
     for (const [id, threshold] of Object.entries(thresholds)) {
@@ -472,7 +472,7 @@ async function main() {
     }
 }
 
-main().catch(error => {
+if (process.argv[1] && path.resolve(process.argv[1]) === __filename) main().catch(error => {
     console.error(error.message || error);
     if (error.stderr) console.error(error.stderr.trim());
     process.exit(1);
